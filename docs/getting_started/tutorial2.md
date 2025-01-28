@@ -3,7 +3,7 @@
 Now let's add some other views.
 
 
-## Create view
+## The Create View
 
 ```python
 from crispy_forms.layout import Row

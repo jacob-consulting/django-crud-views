@@ -1,4 +1,4 @@
-site_name: Django ViewSet
+site_name: Django CRUD Views
 theme: readthedocs
 #nav:
 #  - Home: index.md
@@ -6,4 +6,4 @@ theme: readthedocs
 plugins:
     - search
     - awesome-pages
-repo_url: https://github.com/example/repository/
+repo_url: https://github.com/jacob-consulting/django-crud-views

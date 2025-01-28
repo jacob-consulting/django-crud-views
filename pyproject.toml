@@ -1,0 +1,79 @@
+[build-system]
+requires = ["setuptools", "wheel", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "django-crud-views"
+version = "0.0.1"
+description = "Django Crud Views"
+authors = [
+    { name = "Alexander Jacob", email = "alexander.jacob@jacob-consulting.de" }
+]
+license = { text = "MIT" }
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "django (>=4.2.0)",
+    "pydantic (>=2.2.1)",
+    "python-box (>=6.0.2)",
+    "django-tables2 (>=2.5.3)",
+    "django-filter (>=21.1)",
+    "typing-extensions (>=4.7.1)",
+    "django-ordered-model (>=3.4.3)"
+]
+
+[project.optional-dependencies]
+
+dev = [
+    "black",
+    "bumpver",
+    "pip-tools",
+    "pytest",
+    "twine",
+    "mkdocs (>=1.6.1)",
+    "mkdocs-awesome-pages-plugin (>=2.10.1)",
+    "mkdocs-get-deps (>=0.2.0)"
+]
+
+bootstrap5 = [
+    "django-bootstrap5 (>=21.3)",
+    "django-crispy-forms (>=2.0)",
+    "crispy-bootstrap5 (>=2023.10)",
+]
+
+minimal = [
+    "django (==4.2.0)",
+    "pydantic (==2.2.1)",
+    "python-box (==6.0.2)",
+    "django-tables2 (==2.5.3)",
+    "django-filter (==21.1)",
+    "typing-extensions (==4.7.1)",
+    "django-ordered-model (==3.4.3)"
+]
+
+bootstrap5minimal = [
+    "django-bootstrap5 (==21.3)",
+    "django-crispy-forms (==2.0)",
+    "crispy-bootstrap5 (==2023.10)",
+]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+include = ["viewset*"]
+
+[tool.setuptools.package-data]
+"viewset" = ["templates/*.html"]
+
+[tool.bumpver]
+current_version = "0.0.1"
+version_pattern = "MAJOR.MINOR.PATCH"
+commit_message = "Bump version {old_version} -> {new_version}"
+commit = true
+tag = true
+push = false
+
+[tool.bumpver.file_patterns]
+"pyproject.toml" = ['current_version = "{version}"', 'version = "{version}"']
+"crud_views/__init__.py" = ["{version}"]

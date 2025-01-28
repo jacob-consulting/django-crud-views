@@ -1,0 +1,5 @@
+.idea
+.venv
+/dist
+/django_crud_views.egg-info
+/PRIVATE.md

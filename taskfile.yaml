@@ -1,0 +1,38 @@
+version: '3'
+
+tasks:
+
+  dev:
+    cmds:
+      - pip install -e .[dev]
+
+  dev-bootstrap5:
+    cmds:
+      - pip install -e .[bootstap,dev]
+
+  compile:
+    cmds:
+      - task: compile-latest
+      - task: compile-latest-bootstrap5
+      - task: compile-minimal
+      - task: compile-minimal-bootstrap5
+
+  compile-latest:
+    cmds:
+      - pip-compile pyproject.toml --upgrade --output-file requirements/requirements.txt
+    silent: true
+
+  compile-latest-bootstrap5:
+    cmds:
+      - pip-compile pyproject.toml --upgrade --extra=bootstrap5 --output-file requirements/requirements-boostrap5.txt
+    silent: true
+
+  compile-minimal:
+    cmds:
+      - pip-compile pyproject.toml --upgrade --extra=minimal  --output-file requirements/requirements-minimal.txt
+    silent: true
+
+  compile-minimal-bootstrap5:
+    cmds:
+      - pip-compile pyproject.toml --extra=minimal --extra=bootstrap5minimal --output-file requirements/requirements-minimal-bootstrap5.txt
+    silent: true

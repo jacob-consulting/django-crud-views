@@ -1,0 +1,11 @@
+{% load viewset %}
+
+{% if view.vs_context_actions %}
+
+    <div class="btn-group btn-group-lg" role="group" aria-label="Actions" vs-context-container="true">
+        {% for key in view.vs_context_actions %}
+            {% vs_context_action key object %}
+        {% endfor %}
+    </div>
+
+{% endif %}

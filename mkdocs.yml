@@ -1,0 +1,9 @@
+site_name: Django ViewSet
+theme: readthedocs
+#nav:
+#  - Home: index.md
+#  - Development: development.md
+plugins:
+    - search
+    - awesome-pages
+repo_url: https://github.com/example/repository/

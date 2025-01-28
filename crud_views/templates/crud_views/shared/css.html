@@ -1,0 +1,4 @@
+{% load static %}
+{% for link in css.values %}
+    <link rel="stylesheet" href="{% static link %}">
+{% endfor %}

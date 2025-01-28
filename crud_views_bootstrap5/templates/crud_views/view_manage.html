@@ -1,0 +1,117 @@
+{% extends viewset.extends %}
+
+{% load viewset %}
+{% load django_tables2 %}
+
+{% block vs_content %}
+
+    <h4>Properties</h4>
+
+    <table class="table table-striped">
+
+        <tr>
+            <th scope="col">
+                Name
+            </th>
+            <td>
+                {{ vs.name }}
+            </td>
+        </tr>
+        <tr>
+            <th scope="col">
+                Prefix
+            </th>
+            <td>
+                {{ vs.prefix }}
+            </td>
+        </tr>
+        <tr>
+            <th scope="col">
+                app
+            </th>
+            <td>
+                {{ vs.app }}
+            </td>
+        </tr>
+        <tr>
+            <th scope="col">
+                pk
+            </th>
+            <td>
+                {{ vs.pk }}
+            </td>
+        </tr>
+        <tr>
+            <th scope="col">
+                pk_name
+            </th>
+            <td>
+                {{ vs.pk_name }}
+            </td>
+        </tr>
+        <tr>
+            <th scope="col">
+                parent
+            </th>
+            <td>
+                {{ vs.parent }}
+            </td>
+        </tr>
+    </table>
+
+    <h4>Permissions</h4>
+
+    <table class="table table-striped">
+        <tr>
+            <th scope="col">Permission</th>
+            <th scope="col">Django Permission</th>
+            <th scope="col">Access</th>
+        </tr>
+        {% for row in data %}
+            <tr>
+                <td>
+                    {{ row.viewset }}
+                </td>
+                <td>
+                    {{ row.django }}
+                </td>
+                <td>
+                    {{ row.has_permission }}
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    <br><hr><br>
+
+    <h3>Views</h3>
+
+    <br>
+
+    {% for view_key, view in views.items %}
+
+        <h4>{{ view_key }}</h4>
+
+        <table class="table table-striped">
+            {% for section, section_data in view.items %}
+
+                <tr>
+                    <th scope="col" colspan="2">{{ section }}</th>
+                </tr>
+
+                {% for key, value in section_data.items %}
+                    <tr>
+                        <td>{{ key }}</td>
+                        <td>{{ value }}</td>
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+        </table>
+
+        <br>
+
+    {% endfor %}
+
+{% endblock vs_content %}
+
+

@@ -1,0 +1,11 @@
+{% load viewset %}
+
+{% for key in view.vs_list_actions %}
+    {% vs_list_action_form key record %}
+{% endfor %}
+
+<div class="btn-group btn-group-xs" role="group" aria-label="Actions" vs-list-container="true">
+    {% for key in view.vs_list_actions %}
+        {% vs_list_action key record %}
+    {% endfor %}
+</div>

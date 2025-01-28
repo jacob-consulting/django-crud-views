@@ -1,0 +1,9 @@
+<script type="text/javascript">
+    const ViewSet = {
+        request: {
+            path: "{{ request_path|safe }}",
+            query_string: "{{ request_query_string|safe }}",
+        },
+    };
+    console.log("ViewSet", ViewSet);
+</script>

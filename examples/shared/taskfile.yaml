@@ -1,0 +1,27 @@
+version: '3'
+
+tasks:
+
+  init:
+    cmds:
+      - task: migrate
+      - task: superuser
+
+  migrations:
+    cmds:
+      - ./manage.py makemigrations
+    silent: true
+
+  migrate:
+    cmds:
+      - ./manage.py migrate
+    silent: true
+
+  superuser:
+    cmds:
+      - ./manage.py createsuperuser --noinput
+    silent: true
+    env:
+      DJANGO_SUPERUSER_USERNAME: admin
+      DJANGO_SUPERUSER_PASSWORD: foobar4711
+      DJANGO_SUPERUSER_EMAIL: admin@example.org

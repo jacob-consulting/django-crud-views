@@ -1,0 +1,15 @@
+.vs-property {
+    margin-bottom: 10px;
+    display: flex;
+}
+
+.vs-property-name {
+    font-weight: bold;
+    width: 120px; /* Adjust this value as needed */
+    text-align: right;
+    margin-right: 10px;
+}
+
+.vs-property-value {
+    color: #666;
+}

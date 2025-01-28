@@ -1,0 +1,52 @@
+{% load static %}
+{% load django_bootstrap5 %}
+{% load viewset %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="x-ua-compatible" content="ie=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>{% block title %}{% endblock title %}</title>
+
+    <!-- Bootstrap CSS and JS -->
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+
+    <!-- Font-Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+          integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+
+    <!-- jquery -->
+    <script
+            src="https://code.jquery.com/jquery-3.7.1.js"
+            integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+            crossorigin="anonymous"></script>
+
+    <!-- ViewSet -->
+    {% vs_const_js %}
+    <link rel="stylesheet" href="{% static "viewset/css/property.css" %}">
+</head>
+
+<body>
+
+<!-- static navigation -->
+{% block nav %}
+    {% include "app/nav.html" %}
+{% endblock nav %}
+
+    <main class="container">
+
+        {% bootstrap_messages %}
+
+        {% block content %}
+        {% endblock content %}
+
+    </main>
+
+
+</body>
+</html>

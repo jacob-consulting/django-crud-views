@@ -1,0 +1,10 @@
+{% extends viewset.extends %}
+
+{% load viewset %}
+
+{% block vs_content %}
+    {{ object }}
+    {% include "crud_views/form_delete.html" %}
+{% endblock vs_content %}
+
+

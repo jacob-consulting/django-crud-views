@@ -1,0 +1,15 @@
+{% extends viewset.extends %}
+
+{% load static %}
+{% load django_tables2 %}
+{% load viewset %}
+
+{% block vs_filter %}
+    {% if view.filterset_class %}
+        {% vs_render_filter %}
+    {% endif %}
+{% endblock vs_filter %}
+
+{% block vs_content %}
+    {% render_table table %}
+{% endblock vs_content %}

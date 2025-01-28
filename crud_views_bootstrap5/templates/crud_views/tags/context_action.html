@@ -1,0 +1,18 @@
+{% if vs_key %}
+    {% if vs_access is True %}
+        <a href="{{ vs_url }}" class="btn btn-outline-primary btn-lg"
+           role="button"
+           title="{{ vs_action_label }}"
+           vs-key="{{ vs_key }}">
+            <i class="{{ vs_icon_action }}"></i>
+        </a>
+    {% else %}
+        <a href="{{ vs_url }}"
+           class="btn btn-outline-secondary btn-lg disabled"
+           role="button"
+           vs-key="{{ vs_key }}"
+           title="{{ vs_action_label }}">
+            <i class="{{ vs_icon_action }}"></i>
+        </a>
+    {% endif %}
+{% endif %}

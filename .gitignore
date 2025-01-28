@@ -1,5 +1,6 @@
 .idea
 .venv
+db.sqlite3
 /dist
 /django_crud_views.egg-info
 /PRIVATE.md

@@ -6,9 +6,9 @@ tasks:
     cmds:
       - pip install -e .[dev]
 
-  dev-bootstrap5:
+  dev-all:
     cmds:
-      - pip install -e .[bootstap,dev]
+      - pip install -e .[bootstrap5,polymorphic,dev]
 
   compile:
     cmds:
@@ -35,4 +35,9 @@ tasks:
   compile-minimal-bootstrap5:
     cmds:
       - pip-compile pyproject.toml --extra=minimal --extra=bootstrap5minimal --output-file requirements/requirements-minimal-bootstrap5.txt
+    silent: true
+
+  docs:
+    cmds:
+      - mkdocs serve -a localhost:8001
     silent: true

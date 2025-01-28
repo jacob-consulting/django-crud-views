@@ -1,0 +1,5 @@
+{% load viewset %}
+
+{% for key in view.vs_list_actions %}
+    {% vs_list_action key record %}
+{% endfor %}

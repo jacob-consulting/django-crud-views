@@ -25,11 +25,20 @@ dependencies = [
 [project.optional-dependencies]
 
 dev = [
+    # qs
     "black",
+    # versioning and deployment
     "bumpver",
     "pip-tools",
-    "pytest",
     "twine",
+    # test
+    "pytest",
+    "pytest-cov",
+    "pytest-random-order",
+    "pytest-mock",
+    "pytest-django",
+    "lxml",
+    # docs
     "mkdocs (>=1.6.1)",
     "mkdocs-awesome-pages-plugin (>=2.10.1)",
     "mkdocs-get-deps (>=0.2.0)"
@@ -39,6 +48,10 @@ bootstrap5 = [
     "django-bootstrap5 (>=21.3)",
     "django-crispy-forms (>=2.0)",
     "crispy-bootstrap5 (>=2023.10)",
+]
+
+polymorphic = [
+    "django-polymorphic (>=3.1.0)"
 ]
 
 minimal = [
@@ -56,6 +69,8 @@ bootstrap5minimal = [
     "django-crispy-forms (==2.0)",
     "crispy-bootstrap5 (==2023.10)",
 ]
+
+# todo: polymorphic-minimal
 
 [tool.setuptools]
 include-package-data = true
@@ -77,3 +92,4 @@ push = false
 [tool.bumpver.file_patterns]
 "pyproject.toml" = ['current_version = "{version}"', 'version = "{version}"']
 "crud_views/__init__.py" = ["{version}"]
+"docs/index.md" = ["{version}"]

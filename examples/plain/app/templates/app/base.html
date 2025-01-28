@@ -1,0 +1,51 @@
+{% load static %}
+{% load viewset %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="x-ua-compatible" content="ie=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>{% block title %}{% endblock title %}</title>
+
+    <!-- viewset -->
+    <script
+            src="https://code.jquery.com/jquery-3.7.1.js"
+            integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+            crossorigin="anonymous"></script>
+    {% vs_const_js %}
+    {% vs_css %}
+</head>
+
+<body>
+
+<!-- static header -->
+<h1>Django ViewSet Example</h1>
+<h3>Theme: plain</h3>
+<hr>
+
+<!-- static navigation -->
+{% block nav %}
+    {% include "app/nav.html" %}
+{% endblock nav %}
+
+<!-- django messages -->
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}Important: {% endif %}
+                {{ message }}
+            </li>
+        {% endfor %}
+    </ul>
+    <hr>
+{% endif %}
+
+<!-- content -->
+{% block body %}
+{% endblock body %}
+
+</body>
+</html>

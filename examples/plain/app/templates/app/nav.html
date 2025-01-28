@@ -1,0 +1,17 @@
+<b>Navigation:</b>
+<a href="{% url "author-list" %}">Author</a> |
+<a href="{% url "foo-list" %}">Foo</a> |
+<a href="{% url "poly-list" %}">Poly</a>
+
+{% if request.user.is_authenticated %}
+    <form action="{% url 'logout' %}" method="post">
+        {% csrf_token %}
+        <button type="submit">Log Out</button>
+    </form>
+{% else %}
+    <form action="{% url 'login' %}" method="get">
+        <button type="submit">Log In</button>
+    </form>
+{% endif %}
+
+<hr>

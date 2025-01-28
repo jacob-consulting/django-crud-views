@@ -1,0 +1,26 @@
+{% extends "app/base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    Login
+                </div>
+                <div class="card-body">
+                    {{ form.non_form_errors }}
+                    <form method="post">
+                        {% csrf_token %}
+                        {% crispy form form.helper %}
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4"></div>
+    </div>
+
+{% endblock content %}

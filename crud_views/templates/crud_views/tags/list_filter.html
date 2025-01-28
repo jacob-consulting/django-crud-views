@@ -1,0 +1,12 @@
+{% load static %}
+
+<form id="filter-form" method="get">
+    <table>
+        {{ filter.form.as_table }}
+    </table>
+    <input type="submit" value="Filter" id="filter-button"/>
+    <input type="reset" value="Reset" id="filter-button-reset"/>
+    <input type="text" name="sort" value="{{ request.GET.sort }}" hidden>
+</form>
+
+<script type="application/javascript" src="{% static viewset.javascript.list_filter %}"></script>

@@ -1,0 +1,4 @@
+{% load static %}
+{% for link in js.values %}
+    <script type="application/javascript" src="{% static link %}"></script>
+{% endfor %}

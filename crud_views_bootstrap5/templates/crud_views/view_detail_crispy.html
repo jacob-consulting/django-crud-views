@@ -1,0 +1,10 @@
+{% extends viewset.extends %}
+
+{% load crispy_forms_tags %}
+{% load viewset %}
+
+{% block vs_content %}
+
+    {% crispy form form.helper %}
+
+{% endblock vs_content %}

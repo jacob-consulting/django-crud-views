@@ -1,0 +1,9 @@
+{% load viewset %}
+
+<form class="theme-form" method="post" novalidate>
+    {% csrf_token %}
+
+    {{ form.non_form_errors }}
+
+    {% vs_render_form %}
+</form>

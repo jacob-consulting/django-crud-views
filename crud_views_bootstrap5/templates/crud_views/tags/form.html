@@ -1,0 +1,7 @@
+{% load crispy_forms_tags %}
+
+{% if form.helper %}
+    {% crispy form form.helper %}
+{% else %}
+    {% crispy form %}
+{% endif %}

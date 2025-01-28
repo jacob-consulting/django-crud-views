@@ -1,0 +1,27 @@
+{% extends viewset.extends %}
+
+{% load viewset %}
+{% load django_tables2 %}
+
+{% block vs_content %}
+    <table>
+        <tr>
+            <th>Object</th>
+            <th>Action</th>
+        </tr>
+        {% for object in object_list %}
+            <tr>
+                <td>
+                    {{ object }}
+                </td>
+                <td>
+                    {% for key in view.vs_list_actions %}
+                        {% vs_list_action key object %}
+                    {% endfor %}
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock vs_content %}
+
+

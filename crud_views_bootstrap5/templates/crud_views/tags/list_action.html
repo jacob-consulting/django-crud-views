@@ -1,0 +1,12 @@
+<a {% if vs_list_action_method == "get" %}
+    href="{{ vs_url }}"
+{% elif vs_list_action_method == "post" %}
+    href="javascript:{}"
+    onclick="return vs_list_action_form_submit('{{ vs_oid }}')"
+{% endif %}
+    class="btn btn-outline-{% if vs_access is True %}primary{% else %}secondary{% endif %} btn-xs{% if vs_access is not True %} disabled{% endif %}"
+    role="button"
+    title="{{ vs_action_label }}"
+    vs-key="{{ vs_key }}">
+    <i class="{{ vs_icon_action }}"></i>
+</a>

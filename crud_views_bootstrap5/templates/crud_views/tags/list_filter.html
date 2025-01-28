@@ -1,0 +1,23 @@
+{% load crispy_forms_tags %}
+{% load static %}
+{% load viewset %}
+
+<div class="collapse{% if vs_filter_expanded %} show{% endif %}" id="filter-collapse">
+    <div class="card">
+        <div class="card-header">
+            {% block vs_filter_header_icon %}
+                {% vs_filter_icon %}
+            {% endblock vs_filter_header_icon %}
+            {% block vs_filter_header %}
+                {% vs_filter_header %}
+            {% endblock vs_filter_header %}
+        </div>
+        <div class="card-body">
+            {% block vs_content_filter %}
+                <form id="filter-form" method="get">
+                    {% crispy filter.form filter.form.helper %}
+                </form>
+            {% endblock vs_content_filter %}
+        </div>
+    </div>
+</div>

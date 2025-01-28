@@ -1,0 +1,13 @@
+{% if vs_url %}
+    {% if  vs_list_action_method == "get" %}
+        <a href="{{  vs_url }}" title="{{ vs_action_label }}">{{  vs_action_short_label }}</a>
+    {% endif %}
+    {% if vs_list_action_method == "post" %}
+        <form action="{{ vs_url }}" method="post" style="display:inline">
+            {% csrf_token %}
+            <a href="javascript:{}"
+               onclick="this.closest('form').submit();return false;"
+               title="{{ vs_action_label }}">{{ vs_action_short_label }}</a>
+        </form>
+    {% endif %}
+{% endif %}

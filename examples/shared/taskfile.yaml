@@ -1,5 +1,8 @@
 version: '3'
 
+env:
+  PYTHONPATH: ../../.
+
 tasks:
 
   init:
@@ -25,3 +28,9 @@ tasks:
       DJANGO_SUPERUSER_USERNAME: admin
       DJANGO_SUPERUSER_PASSWORD: foobar4711
       DJANGO_SUPERUSER_EMAIL: admin@example.org
+
+  shell:
+    cmds:
+      - ./manage.py shell
+    silent: true
+

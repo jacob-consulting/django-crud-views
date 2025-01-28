@@ -41,3 +41,14 @@ tasks:
     cmds:
       - mkdocs serve -a localhost:8001
     silent: true
+
+  build:
+    cmds:
+      - python -m build
+      - twine check dist/*
+    silent: true
+
+  upload:
+    cmds:
+      - twine upload -r pypi dist/*
+    silent: true

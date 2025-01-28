@@ -106,3 +106,4 @@ push = false
 "pyproject.toml" = ['current_version = "{version}"', 'version = "{version}"']
 "crud_views/__init__.py" = ["{version}"]
 "docs/index.md" = ["{version}"]
+"README.md" = ["{version}"]

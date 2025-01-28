@@ -5,6 +5,9 @@ This tutorial will show you the features of Django CRUD Views.
 > **Note:** Basic Django knowledge such as creating a Python environment with a Django project and a Django app is
 > required. See the [Django Tutorial](https://docs.djangoproject.com/en/3.2/intro/tutorial01/) for more information.
 
+
+## Django Model
+
 Create a Django model, i.e. for an author:
 
 ```python
@@ -18,6 +21,8 @@ class Author(models.Model):
     created_dt = models.DateTimeField(auto_now_add=True)
     modified_dt = models.DateTimeField(auto_now=True)
 ```
+
+## ViewSet
 
 Next create a ViewSet:
 
@@ -35,6 +40,9 @@ vs_author = ViewSet(
 
 > **Note:** A `ViewSet` is the container for all views that belong to it. It configures the routers for all these views and helps the views to link to their sibling views.  
 
+
+## Urls
+
 Add the ViewSet's urlpattern to your app:
 
 ```python
@@ -49,6 +57,8 @@ urlpatterns += vs_author.urlpatterns
 ```
 
 > **Note:** `ViewSet` creates routers for each `ViewSetView` of the ViewSet.  
+
+## The List View
 
 Create a list view with a table based on [django-tables2](https://django-tables2.readthedocs.io/en/latest/)
 
@@ -89,7 +99,5 @@ alex@inifinity:~/django-crud-views/examples/bootstrap5$ task shell
 ```
 
 Then go to `http://localhost:8000/author/` and you will see the list view of the authors.
-
-
 
 ![list](assets/list.png)

@@ -7,3 +7,4 @@ plugins:
     - search
     - awesome-pages
 repo_url: https://github.com/jacob-consulting/django-crud-views
+edit_uri: blob/master/docs/

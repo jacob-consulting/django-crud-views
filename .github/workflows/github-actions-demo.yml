@@ -22,7 +22,7 @@ jobs:
 
       - name: Install the project
         run: |
-          uv venv --python=3.13
+          uv venv --python=3.10
           uv pip install -r ${{ github.workspace }}/requirements/requirements-test.txt
 
       - name: Run tests

@@ -29,6 +29,10 @@ jobs:
           restore-keys: |
             uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
             uv-${{ runner.os }}
+      - name: install 
+        run: |
+          uv venv --python=3.13
+          uv pip install --upgrade .[test]
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
       - run: echo "🖥️ The workflow is now ready to test your code on the runner."
       - name: List files in the repository

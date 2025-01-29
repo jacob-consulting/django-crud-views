@@ -1,6 +1,7 @@
 .idea
 .venv
 db.sqlite3
+uv.lock
 /dist
 /django_crud_views.egg-info
 /PRIVATE.md

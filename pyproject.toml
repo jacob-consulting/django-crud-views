@@ -44,17 +44,19 @@ dev = [
     "bumpver",
     "pip-tools",
     "twine",
-    # test
+    # docs
+    "mkdocs (>=1.6.1)",
+    "mkdocs-awesome-pages-plugin (>=2.10.1)",
+    "mkdocs-get-deps (>=0.2.0)"
+]
+
+test = [
     "pytest",
     "pytest-cov",
     "pytest-random-order",
     "pytest-mock",
     "pytest-django",
     "lxml",
-    # docs
-    "mkdocs (>=1.6.1)",
-    "mkdocs-awesome-pages-plugin (>=2.10.1)",
-    "mkdocs-get-deps (>=0.2.0)"
 ]
 
 bootstrap5 = [

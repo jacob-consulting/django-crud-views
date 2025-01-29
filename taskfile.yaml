@@ -4,11 +4,11 @@ tasks:
 
   dev:
     cmds:
-      - pip install -e .[dev]
+      - pip install -e .[dev,test]
 
   dev-all:
     cmds:
-      - pip install -e .[bootstrap5,polymorphic,dev]
+      - pip install -e .[bootstrap5,polymorphic,dev,test]
 
   compile:
     cmds:

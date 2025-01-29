@@ -21,7 +21,9 @@ jobs:
         uses: astral-sh/setup-uv@v5
 
       - name: Install the project
-        run: uv pip install -r ${{ github.workspace }}/requirements/requirements-test.txt
+        run: |
+          uv venv --python=3.13
+          uv pip install -r ${{ github.workspace }}/requirements/requirements-test.txt
 
       - name: Run tests
         # For example, using `pytest`

@@ -62,14 +62,12 @@ def vs_list_action_form(context, key, obj=None):
     return vs_get_context(context=context, key=key, obj=obj)
 
 
-# @register.inclusion_tag(f"{viewset_settings.theme_path}/tags/context_action.html", takes_context=True)
 @register.simple_tag(takes_context=True)
-@ignore_exception(ViewSetKeyFoundError, default_empty_dict=True)
+@ignore_exception(ViewSetKeyFoundError, default_value="")
 def vs_context_action(context, key, obj=None):
     ctx = vs_get_context(context=context, key=key, obj=obj)
     template = ctx.get("vs_template", f"{crud_views_settings.theme_path}/tags/context_action.html")
     return render_to_string(template, context=ctx, request=context["request"])
-    # return vs_get_context(context=context, key=key, obj=obj)
 
 
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/context_actions.html", takes_context=True)

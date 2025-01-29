@@ -1,40 +1,38 @@
 version: '3'
 
+vars:
+  PYTHON: "3.11"
+
 tasks:
 
   dev:
     cmds:
-      - pip install -e .[dev,test]
+      - task: uv-venv
+      - task: uv-install
 
-  dev-all:
+  uv-venv:
     cmds:
-      - pip install -e .[bootstrap5,polymorphic,dev,test]
-
-  compile:
-    cmds:
-      - task: compile-latest
-      - task: compile-latest-bootstrap5
-      - task: compile-minimal
-      - task: compile-minimal-bootstrap5
-
-  compile-latest:
-    cmds:
-      - pip-compile pyproject.toml --upgrade --output-file requirements/requirements.txt
+      - uv venv --python={{ .PYTHON }}
     silent: true
 
-  compile-latest-bootstrap5:
+  uv-install:
     cmds:
-      - pip-compile pyproject.toml --upgrade --extra=bootstrap5 --output-file requirements/requirements-boostrap5.txt
+      - uv pip install --upgrade .[bootstrap5,polymorphic,dev,test]
     silent: true
 
-  compile-minimal:
+  uv-install-minimal:
     cmds:
-      - pip-compile pyproject.toml --upgrade --extra=minimal  --output-file requirements/requirements-minimal.txt
+      - uv pip install --upgrade .[minimal,bootstrap5minimal,polymorphic,dev,test]
     silent: true
 
-  compile-minimal-bootstrap5:
+  uv-build:
     cmds:
-      - pip-compile pyproject.toml --extra=minimal --extra=bootstrap5minimal --output-file requirements/requirements-minimal-bootstrap5.txt
+      - uv build
+    silent: true
+
+  uv-publish:
+    cmds:
+      - uv publish
     silent: true
 
   docs:
@@ -42,11 +40,6 @@ tasks:
       - mkdocs serve -a localhost:8001
     silent: true
 
-  build:
-    cmds:
-      - python -m build
-      - twine check dist/*
-    silent: true
 
   upload:
     cmds:

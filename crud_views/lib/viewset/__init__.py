@@ -12,7 +12,7 @@ from django.utils.translation import gettext as _
 from pydantic import BaseModel, PrivateAttr, Field, model_validator
 from typing_extensions import Self
 
-from crud_views.lib.exceptions import vs_raise, ViewSetNotFoundError, ViewSetKeyFoundError
+from crud_views.lib.exceptions import cv_raise, ViewSetNotFoundError, ViewSetKeyFoundError
 from crud_views.lib.viewset import path_regs
 from .parentviewset import ParentViewSet
 from .. import check
@@ -90,7 +90,7 @@ class ViewSet(BaseModel):
         if switch == "yes" or switch == "debug_only" and settings.DEBUG:
             class AutoManageView(ManageView):
                 model = self.model
-                vs = self
+                cv = self
 
         return self
 
@@ -105,8 +105,8 @@ class ViewSet(BaseModel):
         """
         Iterator over all checks of all viewsets
         """
-        for vs in _REGISTRY.values():
-            yield from vs.checks()
+        for cv in _REGISTRY.values():
+            yield from cv.checks()
 
     def has_view(self, name) -> bool:
         return name in self._views
@@ -202,19 +202,19 @@ class ViewSet(BaseModel):
         return self.model.objects.all()
 
     def register_view_class(self, key: str, view_class: Type[ViewSetView]):
-        vs_raise(key not in self._views, f"key {key} already registered at {self}")
+        cv_raise(key not in self._views, f"key {key} already registered at {self}")
         self._views[key] = view_class
         # add manage view to context
         if True:  # todo: based on settings
-            if isinstance(view_class.vs_context_actions, list):
-                if "manage" not in view_class.vs_context_actions and view_class.vs_key != "manage":
-                    view_class.vs_context_actions.append("manage")
+            if isinstance(view_class.cv_context_actions, list):
+                if "manage" not in view_class.cv_context_actions and view_class.cv_key != "manage":
+                    view_class.cv_context_actions.append("manage")
 
     def is_view_registered(self, key: str) -> bool:
         return key in self._views
 
     def get_view_class(self, key: str) -> Type[ViewSetView]:
-        vs_raise(self.is_view_registered(key), f"key {key} not registered at {self}", ViewSetKeyFoundError)
+        cv_raise(self.is_view_registered(key), f"key {key} not registered at {self}", ViewSetKeyFoundError)
         return self._views[key]
 
     def get_router_name(self, key: str) -> str:
@@ -225,10 +225,10 @@ class ViewSet(BaseModel):
         return f"{app}{self.name}-{key}"
 
     def get_view_path(self, key: str) -> str:
-        return self.get_view_class(key).vs_path
+        return self.get_view_class(key).cv_path
 
     def get_view_pk_path(self, key: str) -> str:
-        if self.get_view_class(key).vs_object:
+        if self.get_view_class(key).cv_object:
             return f"/{self.pk}"
         return ""
 
@@ -259,7 +259,7 @@ class ViewSet(BaseModel):
         """
         Return path_pk of URL pattern [path_parent/]path_prefix/[path_pk/]path_view/
         """
-        if self.get_view_class(key).vs_object:
+        if self.get_view_class(key).cv_object:
             path_pk = path_regs.get_path_pk(self.pk_name, self.pk)
             return f"{path_pk}/"
         return ""
@@ -268,7 +268,7 @@ class ViewSet(BaseModel):
         """
         Return path_view of URL pattern [path_parent/]path_prefix/[path_pk/]path_view/
         """
-        path = self.get_view_class(key).vs_path
+        path = self.get_view_class(key).cv_path
         if not path:
             return ""
         return f"{path}/"
@@ -280,7 +280,7 @@ class ViewSet(BaseModel):
         """
 
         # check if any views are registered
-        vs_raise(len(self._views.keys()) > 0, f"no views registered at {self}")
+        cv_raise(len(self._views.keys()) > 0, f"no views registered at {self}")
 
         urlpatterns = []
 
@@ -293,7 +293,7 @@ class ViewSet(BaseModel):
             # view specific path parts
             path_pk = self.get_path_pk(key)
             path_view = self.get_path_view(key)
-            path_contribute = view_class.vs_path_contribute()
+            path_contribute = view_class.cv_path_contribute()
 
             # args for re_path
             route = fr"^{path_parent}{path_prefix}{path_pk}{path_view}{path_contribute}$"
@@ -322,7 +322,7 @@ class ViewSet(BaseModel):
         permissions = OrderedDict()
         for permission in Permission.objects.filter(content_type=content_type):
             action, model_name = permission.codename.split("_")  # noqa
-            vs_raise(model_name == model._meta.model_name,
+            cv_raise(model_name == model._meta.model_name,
                      f"permission model name {model_name} "
                      f"does not match ViewSet model name {model._meta.model_name} "
                      f"at {self}")
@@ -342,7 +342,7 @@ class ViewSet(BaseModel):
         meta = self.model._meta
         data = {
             "viewset": self,
-            "vs": self,
+            "cv": self,
             "verbose_name": meta.verbose_name.capitalize(),
             "verbose_name_plural": meta.verbose_name_plural.capitalize()
         }

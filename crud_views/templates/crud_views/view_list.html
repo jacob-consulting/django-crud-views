@@ -3,7 +3,7 @@
 {% load viewset %}
 {% load django_tables2 %}
 
-{% block vs_content %}
+{% block cv_content %}
     <table>
         <tr>
             <th>Object</th>
@@ -15,13 +15,13 @@
                     {{ object }}
                 </td>
                 <td>
-                    {% for key in view.vs_list_actions %}
-                        {% vs_list_action key object %}
+                    {% for key in view.cv_list_actions %}
+                        {% cv_list_action key object %}
                     {% endfor %}
                 </td>
             </tr>
         {% endfor %}
     </table>
-{% endblock vs_content %}
+{% endblock cv_content %}
 
 

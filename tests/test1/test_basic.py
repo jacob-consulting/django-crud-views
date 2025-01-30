@@ -7,7 +7,7 @@ from tests.lib.helper.boostrap5 import Table
 User = get_user_model()
 
 @pytest.mark.django_db
-def test_debug_view(user_author_view: User, vs_author, author_douglas_adams, author_terry_pratchett):
+def test_debug_view(user_author_view: User, cv_author, author_douglas_adams, author_terry_pratchett):
     client = Client()
 
     client.force_login(user_author_view)

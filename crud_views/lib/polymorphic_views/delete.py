@@ -8,4 +8,4 @@ class PolymorphicDeleteView(DeleteView):
 
 
 class PolymorphicDeleteViewPermissionRequired(ViewSetViewPermissionRequiredMixin, PolymorphicDeleteView):  # this file
-    vs_permission = "delete"
+    cv_permission = "delete"

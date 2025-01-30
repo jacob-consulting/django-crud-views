@@ -2,17 +2,17 @@
 
 {% load viewset %}
 
-{% block vs_content %}
+{% block cv_content %}
 
     <div id="objectProperties">
 
-        {% for property in view.vs_properties %}
-            <div class="vs-property">
-                <span class="vs-property-name">{% vs_property_label object property %}:</span>
-                <span class="vs-property-value">{% vs_property_value object property %}</span>
+        {% for property in view.cv_properties %}
+            <div class="cv-property">
+                <span class="cv-property-name">{% cv_property_label object property %}:</span>
+                <span class="cv-property-value">{% cv_property_value object property %}</span>
             </div>
 
         {% endfor %}
     </div>
 
-{% endblock vs_content %}
+{% endblock cv_content %}

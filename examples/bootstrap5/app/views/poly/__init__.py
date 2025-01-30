@@ -16,7 +16,7 @@ from crud_views.lib.views import ListViewPermissionRequired
 from crud_views.lib.views import ListViewTableMixin
 from crud_views.lib.viewset import ViewSet, path_regs
 
-vs_poly = ViewSet(
+cv_poly = ViewSet(
     model=Poly,
     name="poly",
     pk=path_regs.UUID,
@@ -32,13 +32,13 @@ class PolyTable(Table):
 class PolyListView(ListViewTableMixin, ListViewPermissionRequired):
     model = Poly
     table_class = PolyTable
-    vs = vs_poly
-    vs_list_actions = [
+    cv = cv_poly
+    cv_list_actions = [
         "detail",
         "update",
         "delete"
     ]
-    vs_context_actions = ["create_select", ]
+    cv_context_actions = ["create_select", ]
 
 
 class CrispyPolymorphicContentTypeForm(CrispyForm, PolymorphicContentTypeForm):
@@ -51,12 +51,12 @@ class CrispyPolymorphicContentTypeForm(CrispyForm, PolymorphicContentTypeForm):
 class PolyCreateSelectView(CrispyModelViewMixin, PolymorphicCreateSelectView):
     model = Poly
     form_class = CrispyPolymorphicContentTypeForm
-    vs = vs_poly
+    cv = cv_poly
 
 
 class PolyCreateView(CrispyModelViewMixin, PolymorphicCreateViewPermissionRequired):
     model = Poly
-    vs = vs_poly
+    cv = cv_poly
     polymorphic_forms = {
         PolyOne: PolyOneForm,
         PolyTwo: PolyTwoForm
@@ -65,7 +65,7 @@ class PolyCreateView(CrispyModelViewMixin, PolymorphicCreateViewPermissionRequir
 
 class PolyUpdateView(CrispyModelViewMixin, PolymorphicUpdateViewPermissionRequired):
     model = Poly
-    vs = vs_poly
+    cv = cv_poly
     polymorphic_forms = {
         PolyOne: PolyOneForm,
         PolyTwo: PolyTwoForm
@@ -74,10 +74,10 @@ class PolyUpdateView(CrispyModelViewMixin, PolymorphicUpdateViewPermissionRequir
 
 class PolyDeleteView(PolymorphicDeleteViewPermissionRequired):
     model = Poly
-    vs = vs_poly
+    cv = cv_poly
 
 
 class PolyDetailView(PolymorphicDetailViewPermissionRequired):
     model = Poly
-    vs = vs_poly
-    vs_properties = ["id", "shared"]
+    cv = cv_poly
+    cv_properties = ["id", "shared"]

@@ -6,7 +6,7 @@ from crud_views.lib.view import ViewSetView, ViewSetViewPermissionRequiredMixin
 
 
 class ActionView(ViewSetView, SingleObjectMixin, generic.View):
-    vs_list_action_method = "post"
+    cv_list_action_method = "post"
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -22,4 +22,4 @@ class ActionView(ViewSetView, SingleObjectMixin, generic.View):
 
 
 class ActionViewPermissionRequired(ViewSetViewPermissionRequiredMixin, ActionView):  # this file
-    vs_permission = "change"
+    cv_permission = "change"

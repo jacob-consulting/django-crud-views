@@ -8,7 +8,7 @@ from crud_views.lib.views import DetailViewPermissionRequired, UpdateViewPermiss
     ListViewTableMixin, DeleteViewPermissionRequired, ListViewPermissionRequired
 from crud_views.lib.viewset import ViewSet, ParentViewSet
 
-vs_bar = ViewSet(
+cv_bar = ViewSet(
     model=Bar,
     name="bar",
     parent=ParentViewSet(name="foo"),
@@ -36,30 +36,30 @@ class BarTable(Table):
 class BarListView(ListViewTableMixin, ListViewPermissionRequired):
     model = Bar
     table_class = BarTable
-    vs = vs_bar
-    vs_list_actions = ["detail", "update", "delete"]
+    cv = cv_bar
+    cv_list_actions = ["detail", "update", "delete"]
 
 
 class BarDetailView(DetailViewPermissionRequired):
     model = Bar
-    vs = vs_bar
-    vs_properties = ["id", "name"]
+    cv = cv_bar
+    cv_properties = ["id", "name"]
 
 
 class BarUpdateView(CrispyModelViewMixin, UpdateViewPermissionRequired):
     model = Bar
     form_class = BarForm
 
-    vs = vs_bar
+    cv = cv_bar
 
 
 class BarCreateView(CrispyModelViewMixin, CreateViewPermissionRequired):
     model = Bar
     form_class = BarForm
-    vs = vs_bar
+    cv = cv_bar
 
 
 class BarDeleteView(CrispyModelViewMixin, DeleteViewPermissionRequired):
     model = Bar
     form_class = CrispyDeleteForm
-    vs = vs_bar
+    cv = cv_bar

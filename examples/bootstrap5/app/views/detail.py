@@ -10,7 +10,7 @@ from django.forms.widgets import Input, Widget
 from django.utils.translation import gettext as _
 
 from app.models import Author, Detail
-from crud_views.lib.view import vs_property
+from crud_views.lib.view import cv_property
 from crud_views.lib.crispy import Column4, CrispyModelForm, CrispyModelViewMixin, CrispyDeleteForm, Column3, Column8
 from crud_views.lib.table import Table, LinkChildColumn, UUIDLinkDetailColumn
 from crud_views.lib.views import (
@@ -28,7 +28,7 @@ from crud_views.lib.views import (
 from crud_views.lib.views.list import ListViewFilterFormHelper
 from crud_views.lib.viewset import ViewSet, path_regs
 
-vs_detail = ViewSet(
+cv_detail = ViewSet(
     model=Detail,
     name="detail",
     pk=path_regs.UUID,
@@ -74,37 +74,37 @@ class DetailTable(Table):
 
 class DetailListView(ListViewTableMixin, ListViewPermissionRequired):
     model = Detail
-    vs = vs_detail
+    cv = cv_detail
     table_class = DetailTable
 
 
 class DetailCreateView(CrispyModelViewMixin, MessageMixin, CreateViewPermissionRequired):
     model = Author
     form_class = DetailForm
-    vs = vs_detail
-    vs_message = "Created detail »{object}«"
+    cv = cv_detail
+    cv_message = "Created detail »{object}«"
 
 
 class DetailUpdateView(CrispyModelViewMixin, MessageMixin, UpdateViewPermissionRequired):
     model = Detail
     form_class = DetailForm
-    vs = vs_detail
-    vs_message = "Updated detail »{object}«"
+    cv = cv_detail
+    cv_message = "Updated detail »{object}«"
 
 
 class DetailDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequired):
     model = Detail
     form_class = CrispyDeleteForm
-    vs = vs_detail
-    vs_message = "Deleted detail »{object}«"
+    cv = cv_detail
+    cv_message = "Deleted detail »{object}«"
 
 
 class DetailDetailView(DetailLayoutViewPermissionRequired):
     model = Detail
-    vs = vs_detail
+    cv = cv_detail
 
     @property
-    def vs_layout(self) -> Layout:
+    def cv_layout(self) -> Layout:
         return Layout(
             Fieldset("Numbers",
                      Row(
@@ -132,18 +132,18 @@ class DetailDetailView(DetailLayoutViewPermissionRequired):
                      )),
         )
 
-    @vs_property(foo=4711, label="Ganzer Name")
+    @cv_property(foo=4711, label="Ganzer Name")
     def full_name(self) -> str:
         return f"{self.object.first_name} {self.object.last_name}"
 
-    @vs_property("foo", type=bool)
+    @cv_property("foo", type=bool)
     def bool_true(self) -> bool:
         return True
 
-    @vs_property("foo", type=bool)
+    @cv_property("foo", type=bool)
     def bool_false(self) -> bool:
         return False
 
-    @vs_property("foo", type=bool)
+    @cv_property("foo", type=bool)
     def bool_none(self) -> bool:
         return None

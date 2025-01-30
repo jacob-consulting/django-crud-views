@@ -7,7 +7,7 @@ from ..viewset import path_regs
 class PolymorphicCreateView(PolymorphicViewSetViewMixin, CreateView):
 
     @classmethod
-    def vs_path_contribute(cls) -> str:
+    def cv_path_contribute(cls) -> str:
         """
         Here we inject the polymorphic_ctype_id path.
         """
@@ -16,4 +16,4 @@ class PolymorphicCreateView(PolymorphicViewSetViewMixin, CreateView):
 
 
 class PolymorphicCreateViewPermissionRequired(ViewSetViewPermissionRequiredMixin, PolymorphicCreateView):
-    vs_permission = "add"
+    cv_permission = "add"

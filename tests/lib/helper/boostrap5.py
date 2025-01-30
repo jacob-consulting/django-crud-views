@@ -65,8 +65,8 @@ class Action:
     @property
     def key(self) -> str | None:
         if self.element.tag == "span":
-            return self.element.xpath("a")[0].attrib.get("vs-key", None)
-        return self.element.attrib.get("vs-key", None)
+            return self.element.xpath("a")[0].attrib.get("cv-key", None)
+        return self.element.attrib.get("cv-key", None)
 
     @property
     def href(self) -> str | None:
@@ -139,7 +139,7 @@ class Table:
 
     @property
     def context(self) -> Element:
-        return self.html.xpath("//div[@vs-context-container='true']")[0]
+        return self.html.xpath("//div[@cv-context-container='true']")[0]
 
     @property
     def context_actions(self) -> List[Action]:

@@ -20,7 +20,7 @@ $(document).ready(function () {
         }
     });
 
-    $("#vs-filter-toggle").click(function (event) {
+    $("#cv-filter-toggle").click(function (event) {
 
         // toggle icon
         $(this).find('i').toggleClass(' fa-filter fa-filter-circle-xmark');
@@ -46,7 +46,7 @@ $(document).ready(function () {
             }
         );
 
-        // console.log('vs_filter_toggle', isVisible, collapse, form);
+        // console.log('cv_filter_toggle', isVisible, collapse, form);
         collapse.collapse("toggle");
         event.preventDefault();
     });

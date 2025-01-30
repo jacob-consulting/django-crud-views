@@ -4,12 +4,12 @@
 {% load django_tables2 %}
 {% load viewset %}
 
-{% block vs_filter %}
+{% block cv_filter %}
     {% if view.filterset_class %}
-        {% vs_render_filter %}
+        {% cv_render_filter %}
     {% endif %}
-{% endblock vs_filter %}
+{% endblock cv_filter %}
 
-{% block vs_content %}
+{% block cv_content %}
     {% render_table table %}
-{% endblock vs_content %}
+{% endblock cv_content %}

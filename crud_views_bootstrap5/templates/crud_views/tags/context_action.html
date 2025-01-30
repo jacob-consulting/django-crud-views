@@ -1,18 +1,18 @@
-{% if vs_key %}
-    {% if vs_access is True %}
-        <a href="{{ vs_url }}" class="btn btn-outline-primary btn-lg"
+{% if cv_key %}
+    {% if cv_access is True %}
+        <a href="{{ cv_url }}" class="btn btn-outline-primary btn-lg"
            role="button"
-           title="{{ vs_action_label }}"
-           vs-key="{{ vs_key }}">
-            <i class="{{ vs_icon_action }}"></i>
+           title="{{ cv_action_label }}"
+           cv-key="{{ cv_key }}">
+            <i class="{{ cv_icon_action }}"></i>
         </a>
     {% else %}
-        <a href="{{ vs_url }}"
+        <a href="{{ cv_url }}"
            class="btn btn-outline-secondary btn-lg disabled"
            role="button"
-           vs-key="{{ vs_key }}"
-           title="{{ vs_action_label }}">
-            <i class="{{ vs_icon_action }}"></i>
+           cv-key="{{ cv_key }}"
+           title="{{ cv_action_label }}">
+            <i class="{{ cv_icon_action }}"></i>
         </a>
     {% endif %}
 {% endif %}

@@ -3,7 +3,7 @@
 {% load viewset %}
 {% load django_tables2 %}
 
-{% block vs_content %}
+{% block cv_content %}
 
     <h4>Properties</h4>
 
@@ -14,7 +14,7 @@
                 Name
             </th>
             <td>
-                {{ vs.name }}
+                {{ cv.name }}
             </td>
         </tr>
         <tr>
@@ -22,7 +22,7 @@
                 Prefix
             </th>
             <td>
-                {{ vs.prefix }}
+                {{ cv.prefix }}
             </td>
         </tr>
         <tr>
@@ -30,7 +30,7 @@
                 app
             </th>
             <td>
-                {{ vs.app }}
+                {{ cv.app }}
             </td>
         </tr>
         <tr>
@@ -38,7 +38,7 @@
                 pk
             </th>
             <td>
-                {{ vs.pk }}
+                {{ cv.pk }}
             </td>
         </tr>
         <tr>
@@ -46,7 +46,7 @@
                 pk_name
             </th>
             <td>
-                {{ vs.pk_name }}
+                {{ cv.pk_name }}
             </td>
         </tr>
         <tr>
@@ -54,7 +54,7 @@
                 parent
             </th>
             <td>
-                {{ vs.parent }}
+                {{ cv.parent }}
             </td>
         </tr>
     </table>
@@ -112,6 +112,6 @@
 
     {% endfor %}
 
-{% endblock vs_content %}
+{% endblock cv_content %}
 
 

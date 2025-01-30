@@ -1,8 +1,8 @@
 {% load viewset %}
 
-{% if view.vs_context_actions %}
-    {% for key in view.vs_context_actions %}
-        {% vs_context_action key object %}
+{% if view.cv_context_actions %}
+    {% for key in view.cv_context_actions %}
+        {% cv_context_action key object %}
     {% endfor %}
     <br>
 {% endif %}

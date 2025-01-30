@@ -8,7 +8,7 @@ from crud_views.lib.views import DetailViewPermissionRequired, UpdateViewPermiss
     ListViewTableMixin, DeleteViewPermissionRequired, ListViewPermissionRequired
 from crud_views.lib.viewset import ViewSet, ParentViewSet, path_regs
 
-vs_book = ViewSet(
+cv_book = ViewSet(
     model=Book,
     name="book",
     pk=path_regs.UUID,
@@ -43,31 +43,31 @@ class BookTable(Table):
 
 class BookListView(ListViewTableMixin, ListViewPermissionRequired):
     model = Book
-    vs = vs_book
-    # vs_list_actions = ["detail", "update", "delete"]
+    cv = cv_book
+    # cv_list_actions = ["detail", "update", "delete"]
 
     table_class = BookTable
 
 
 class BookDetailView(DetailViewPermissionRequired):
     model = Book
-    vs = vs_book
+    cv = cv_book
 
 
 class BookUpdateView(CrispyModelViewMixin, UpdateViewPermissionRequired):
     model = Book
     form_class = BookUpdateForm
-    vs = vs_book
+    cv = cv_book
 
 
 class BookCreateView(CrispyModelViewMixin, CreateViewPermissionRequired):
     model = Book
     form_class = BookCreateForm
-    vs = vs_book
+    cv = cv_book
 
 
 class BookDeleteView(CrispyModelViewMixin, DeleteViewPermissionRequired):
     model = Book
     form_class = CrispyDeleteForm
-    vs = vs_book
+    cv = cv_book
 

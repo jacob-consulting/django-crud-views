@@ -27,27 +27,27 @@ class ContextButton(BaseModel):
     def get_context(self, context: ViewContext) -> dict:
 
         dict_kwargs = dict(
-            vs_access=False,
-            vs_url=context.view.vs_get_url(key=self.key_target, obj=context.object)
+            cv_access=False,
+            cv_url=context.view.cv_get_url(key=self.key_target, obj=context.object)
         )
 
         # get target view class
-        cls = context.view.vs_get_cls_assert_object(self.key_target, context.object)
+        cls = context.view.cv_get_cls_assert_object(self.key_target, context.object)
 
         # check access
-        if cls.vs_has_access(context.view.request.user, context.object):
+        if cls.cv_has_access(context.view.request.user, context.object):
             # get the url for the target key
             dict_kwargs.update(
-                vs_access=True,
+                cv_access=True,
             )
 
         # final data
-        data = cls.vs_get_dict(context=context, **dict_kwargs)
+        data = cls.cv_get_dict(context=context, **dict_kwargs)
 
         # render action label
-        vs_action_label = self.render_label(data, context)
-        if vs_action_label:
-            data["vs_action_label"] = vs_action_label
+        cv_action_label = self.render_label(data, context)
+        if cv_action_label:
+            data["cv_action_label"] = cv_action_label
 
         return data
 
@@ -60,43 +60,43 @@ class ParentContextButton(ContextButton):
     def get_context(self, context: ViewContext) -> dict:
 
         # does the view has no parent?
-        if not context.view.vs.parent:
+        if not context.view.cv.parent:
             return dict()
 
         # get parent view class, defined by target
-        parent = context.view.vs.parent
+        parent = context.view.cv.parent
         cls = parent.viewset.get_view_class(self.key_target)
 
         dict_kwargs = dict(
-            vs_access=False,
-            vs_icon_action=cls.vs.icon_header
+            cv_access=False,
+            cv_icon_action=cls.cv.icon_header
         )
 
         # parent url kwargs
         kwargs = dict()
-        for idx, arg in enumerate(context.view.vs.get_parent_url_args()):
+        for idx, arg in enumerate(context.view.cv.get_parent_url_args()):
             if idx == 0:
-                if cls.vs_object:
+                if cls.cv_object:
                     kwargs[parent.viewset.pk_name] = context.view.kwargs[arg]
             else:
                 kwargs[arg] = context.view.kwargs[arg]
 
         # parent url
         router_name = parent.viewset.get_router_name(self.key_target)
-        vs_url = reverse(router_name, kwargs=kwargs)
+        cv_url = reverse(router_name, kwargs=kwargs)
 
         # get the url for the target key
         dict_kwargs.update(
-            vs_url=vs_url
+            cv_url=cv_url
         )
 
         # check permission
-        if cls.vs_has_access(context.view.request.user, context.object):
+        if cls.cv_has_access(context.view.request.user, context.object):
             dict_kwargs.update(
-                vs_access=True,
+                cv_access=True,
             )
 
-        data = cls.vs_get_dict(context=context, **dict_kwargs)
+        data = cls.cv_get_dict(context=context, **dict_kwargs)
         return data
 
 
@@ -111,7 +111,7 @@ class FilterContextButton:
         from ..views import ListViewTableFilterMixin
 
         dict_kwargs = dict(
-            vs_access=False
+            cv_access=False
         )
 
         # if view has no filter, no button is shown
@@ -120,22 +120,22 @@ class FilterContextButton:
 
         # todo, check permission
 
-        list_url = context.view.vs_get_url(key=context.view.vs_key)
+        list_url = context.view.cv_get_url(key=context.view.cv_key)
 
         data = dict()
 
         # render action label
-        vs_action_label = "Filter"  # todo, add render
-        if vs_action_label:
-            data["vs_action_label"] = vs_action_label
+        cv_action_label = "Filter"  # todo, add render
+        if cv_action_label:
+            data["cv_action_label"] = cv_action_label
 
-        data["vs_icon_action"] = "fa-solid fa-filter"
+        data["cv_icon_action"] = "fa-solid fa-filter"
         # "fa-solid fa-filter-circle-xmark"
-        # data["vs_url"] = "#filter-collapse"
-        data["vs_url"] = list_url
+        # data["cv_url"] = "#filter-collapse"
+        data["cv_url"] = list_url
 
-        data["vs_template"] = f"{crud_views_settings.theme_path}/tags/context_action_filter.html"
+        data["cv_template"] = f"{crud_views_settings.theme_path}/tags/context_action_filter.html"
 
-        # data["vs_url"] = "javascript:alert(1);return false;"
+        # data["cv_url"] = "javascript:alert(1);return false;"
 
         return data

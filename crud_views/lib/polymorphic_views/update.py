@@ -8,4 +8,4 @@ class PolymorphicUpdateView(PolymorphicViewSetViewMixin, UpdateView):
 
 
 class PolymorphicUpdateViewPermissionRequired(ViewSetViewPermissionRequiredMixin, PolymorphicUpdateView):  # this file
-    vs_permission = "change"
+    cv_permission = "change"

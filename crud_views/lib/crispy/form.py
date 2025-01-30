@@ -29,14 +29,14 @@ class CrispyFormMixin:
         - save
         - cancel, which is linked to the cancel key defined the ViewSetView
 
-    The mixin for ViewSetView(s) adds the view context vs_view to the form. CrispyModelViewMixin,
+    The mixin for ViewSetView(s) adds the view context cv_view to the form. CrispyModelViewMixin,
     when added to a ViewSetView, sets this extra argument for the form in get_form_kwargs.
     """
 
     submit_label: str = _("Save")
 
-    def __init__(self, vs_view, *args, **kwargs):
-        self.vs_view = vs_view
+    def __init__(self, cv_view, *args, **kwargs):
+        self.cv_view = cv_view
         super().__init__(*args, **kwargs)
 
     @property
@@ -73,15 +73,15 @@ class CrispyFormMixin:
         return Submit(**self.get_submit_button_kwargs())
 
     def get_cancel_button_kwargs(self) -> dict:
-        request = self.vs_view.request
+        request = self.cv_view.request
         # todo: do not get the cancel button via the context, since we use only the url
-        context = self.vs_view.get_cancel_button_context(obj=getattr(self, "instance", None), user=request.user,
+        context = self.cv_view.get_cancel_button_context(obj=getattr(self, "instance", None), user=request.user,
                                                          request=request)
-        url = context["vs_url"]
+        url = context["cv_url"]
         onclick = f"location.href='{url}';return false;"
         return {
             "name": "reset",
-            "value": context["vs_action_label"],
+            "value": context["cv_action_label"],
             "onclick": onclick,
             "css_class": "btn btn-secondary"
         }
@@ -129,12 +129,12 @@ class CrispyDeleteForm(CrispyForm):
 
 class CrispyModelViewMixin:
     """
-    This mixin makes sure that CrispyModelForm gets the vs_view argument
+    This mixin makes sure that CrispyModelForm gets the cv_view argument
     """
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()  # noqa
         form_class = self.get_form_class()  # noqa
         if issubclass(form_class, (CrispyModelForm, CrispyForm)):
-            kwargs["vs_view"] = self
+            kwargs["cv_view"] = self
         return kwargs

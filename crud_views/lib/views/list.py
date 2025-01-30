@@ -16,49 +16,49 @@ except ImportError:
 class ListView(ViewSetView, generic.ListView):
     template_name = "crud_views/view_list.html"
 
-    vs_pk: bool = False  # does not need primary key
-    vs_key = "list"
-    vs_path = ""
-    vs_object = False
-    vs_list_actions = crud_views_settings.list_actions
-    vs_context_actions = crud_views_settings.list_context_actions
+    cv_pk: bool = False  # does not need primary key
+    cv_key = "list"
+    cv_path = ""
+    cv_object = False
+    cv_list_actions = crud_views_settings.list_actions
+    cv_context_actions = crud_views_settings.list_context_actions
 
     # texts and labels
-    vs_header_template: str = crud_views_settings.list_header_template
-    vs_header_template_code: str = crud_views_settings.list_header_template_code
-    vs_paragraph_template: str = crud_views_settings.list_paragraph_template
-    vs_paragraph_template_code: str = crud_views_settings.list_paragraph_template_code
-    vs_action_label_template: str = crud_views_settings.list_action_label_template
-    vs_action_label_template_code: str = crud_views_settings.list_action_label_template_code
-    vs_action_short_label_template: str = crud_views_settings.list_action_short_label_template
-    vs_action_short_label_template_code: str = crud_views_settings.list_action_short_label_template_code
+    cv_header_template: str = crud_views_settings.list_header_template
+    cv_header_template_code: str = crud_views_settings.list_header_template_code
+    cv_paragraph_template: str = crud_views_settings.list_paragraph_template
+    cv_paragraph_template_code: str = crud_views_settings.list_paragraph_template_code
+    cv_action_label_template: str = crud_views_settings.list_action_label_template
+    cv_action_label_template_code: str = crud_views_settings.list_action_label_template_code
+    cv_action_short_label_template: str = crud_views_settings.list_action_short_label_template
+    cv_action_short_label_template_code: str = crud_views_settings.list_action_short_label_template_code
 
-    vs_filter_header_template: str | None = crud_views_settings.filter_header_template
-    vs_filter_header_template_code: str | None = crud_views_settings.filter_header_template_code
+    cv_filter_header_template: str | None = crud_views_settings.filter_header_template
+    cv_filter_header_template_code: str | None = crud_views_settings.filter_header_template_code
 
-    vs_icon_action = "fa-regular fa-rectangle-list"
+    cv_icon_action = "fa-regular fa-rectangle-list"
 
-    # todo: add check for vs_filter_header_template/vs_filter_header_template_code
+    # todo: add check for cv_filter_header_template/cv_filter_header_template_code
 
     @staticmethod
-    def vs_get_filter_icon() -> str:
+    def cv_get_filter_icon() -> str:
         """
         Currently there is only one global filter icon
         """
         return crud_views_settings.filter_icon
 
     @property
-    def vs_filter_header(self) -> str:
+    def cv_filter_header(self) -> str:
         """
         Get the filter header label
         """
-        return self.render_snippet(self.vs_get_meta(),
-                                   self.vs_filter_header_template,
-                                   self.vs_filter_header_template_code, )
+        return self.render_snippet(self.cv_get_meta(),
+                                   self.cv_filter_header_template,
+                                   self.cv_filter_header_template_code, )
 
 
 class ListViewPermissionRequired(ViewSetViewPermissionRequiredMixin, ListView):
-    vs_permission = "view"
+    cv_permission = "view"
 
 
 class ListViewFilterFormHelper(FormHelper):

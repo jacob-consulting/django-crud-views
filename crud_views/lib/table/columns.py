@@ -37,9 +37,9 @@ class LinkChildColumn(tables.TemplateColumn):
     def render(self, record, table, value, bound_column, **kwargs):
 
         viewset = ViewSet.get_viewset(self.name)
-        data = viewset.get_meta(table.view.vs_get_view_context())
+        data = viewset.get_meta(table.view.cv_get_view_context())
         data.update({
-            "url": table.view.vs_get_child_url(self.name, self.key, record)
+            "url": table.view.cv_get_child_url(self.name, self.key, record)
         })
         self.extra_context.update(data)
         return super().render(record, table, value, bound_column, **kwargs)
@@ -48,7 +48,7 @@ class LinkChildColumn(tables.TemplateColumn):
 class LinkDetailColumnMixin:
     @ignore_exception(ViewSetKeyFoundError)
     def get_url(self, table, record, **kwargs):
-        return table.view.vs_get_url("detail", obj=record)
+        return table.view.cv_get_url("detail", obj=record)
 
 
 class LinkDetailColumn(LinkDetailColumnMixin, Column):

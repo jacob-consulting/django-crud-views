@@ -164,8 +164,8 @@ class ContextActionCheck(Check):
     msg: str = "Attribute »{attribute}» does not exist or is not set at »{context}»"
 
     def messages(self) -> Iterable[CheckMessage]:
-        viewset = self.context.vs  # noqa
-        actions = self.context.vs_context_actions or list()  # noqa
+        viewset = self.context.cv  # noqa
+        actions = self.context.cv_context_actions or list()  # noqa
         for action in actions:  # noqa
             is_view = viewset.has_view(action)
             # is_special = action in viewset.special_keys

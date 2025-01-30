@@ -1,5 +1,5 @@
 from .context import ViewContext
-from .property import vs_property
+from .property import cv_property
 from .base import ViewSetView, ViewSetViewPermissionRequiredMixin
 from .buttons import ContextButton, ParentContextButton
 
@@ -9,5 +9,5 @@ __all__ = [
     "ViewContext",
     "ContextButton",
     "ParentContextButton",
-    "vs_property"
+    "cv_property"
 ]

@@ -10,7 +10,7 @@ from crud_views.lib.table import Table
 from crud_views.lib.views import ListViewTableMixin
 from crud_views.lib.viewset import ViewSet, path_regs
 
-vs_poly = ViewSet(
+cv_poly = ViewSet(
     model=Poly,
     name="poly",
     pk=path_regs.UUID,
@@ -25,19 +25,19 @@ class PolyTable(Table):
 class PolyListView(ListViewTableMixin, ListViewPermissionRequired):
     model = Poly
     table_class = PolyTable
-    vs = vs_poly
-    vs_list_actions = [
+    cv = cv_poly
+    cv_list_actions = [
         "detail",
         "update",
         "delete"
     ]
-    vs_context_actions = ["create_select", ]
+    cv_context_actions = ["create_select", ]
 
 
 class PolyCreateSelectView(PolymorphicCreateSelectView):
     model = Poly
     # fields = ["shared"]
-    vs = vs_poly
+    cv = cv_poly
 
 
 PolyOneFormCreate = modelform_factory(
@@ -59,7 +59,7 @@ PolyTwoFormCreate = modelform_factory(
 
 class PolyCreateView(PolymorphicCreateViewPermissionRequired):
     model = Poly
-    vs = vs_poly
+    cv = cv_poly
     polymorphic_forms = {
         PolyOne: PolyOneFormCreate,
         PolyTwo: PolyTwoFormCreate
@@ -85,7 +85,7 @@ PolyTwoFormUpdate = modelform_factory(
 
 class PolyUpdateView(PolymorphicUpdateViewPermissionRequired):
     model = Poly
-    vs = vs_poly
+    cv = cv_poly
     polymorphic_forms = {
         PolyOne: PolyOneFormUpdate,
         PolyTwo: PolyTwoFormUpdate
@@ -94,11 +94,11 @@ class PolyUpdateView(PolymorphicUpdateViewPermissionRequired):
 
 class PolyDeleteView(PolymorphicDeleteViewPermissionRequired):
     model = Poly
-    vs = vs_poly
+    cv = cv_poly
 
 
 class PolyDetailView(PolymorphicDetailViewPermissionRequired):
     model = Poly
-    vs = vs_poly
-    vs_properties = ["id", "shared"]
+    cv = cv_poly
+    cv_properties = ["id", "shared"]
 

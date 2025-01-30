@@ -5,24 +5,24 @@
 {% block body %}
 
     <b>CONTEXT:</b>
-    {% block vs_context %}
-        {% vs_context_actions object %}
-    {% endblock vs_context %}
+    {% block cv_context %}
+        {% cv_context_actions object %}
+    {% endblock cv_context %}
 
-    {% block vs_header %}
-        <h1>{% vs_header %}</h1>
-    {% endblock vs_header %}
+    {% block cv_header %}
+        <h1>{% cv_header %}</h1>
+    {% endblock cv_header %}
 
-    {% block vs_paragraph %}
-        {% vs_paragraph %}
-    {% endblock vs_paragraph %}
+    {% block cv_paragraph %}
+        {% cv_paragraph %}
+    {% endblock cv_paragraph %}
 
     <hr>
 
-    {% block vs_filter %}
-    {% endblock vs_filter %}
+    {% block cv_filter %}
+    {% endblock cv_filter %}
 
-    {% block vs_content %}
-    {% endblock vs_content %}
+    {% block cv_content %}
+    {% endblock cv_content %}
 
 {% endblock body %}

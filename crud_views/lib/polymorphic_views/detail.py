@@ -8,4 +8,4 @@ class PolymorphicDetailView(PolymorphicViewSetViewMixin, DetailView):
 
 
 class PolymorphicDetailViewPermissionRequired(ViewSetViewPermissionRequiredMixin, PolymorphicDetailView):  # this file
-    vs_permission = "view"
+    cv_permission = "view"

@@ -17,8 +17,8 @@ class MessageMixin:
     """
     Add messages for a view.
     Note: the view must configure the message template and message template or code:
-            - vs_message_template
-            - vs_message_template_code
+            - cv_message_template
+            - cv_message_template_code
     """
 
     @classmethod
@@ -29,18 +29,18 @@ class MessageMixin:
         yield from super().checks()  # noqa
         yield CheckEitherAttribute(context=cls,
                                    id="E203",
-                                   attribute1="vs_message_template",
-                                   attribute2="vs_message_template_code")
-        yield CheckAttributeTemplate(context=cls, attribute="vs_message_template")
+                                   attribute1="cv_message_template",
+                                   attribute2="cv_message_template_code")
+        yield CheckAttributeTemplate(context=cls, attribute="cv_message_template")
 
-    def vs_get_message(self, attribute: str = "vs_message") -> str | None:
-        return self.render_snippet(self.vs_get_meta(),
-                                   self.vs_message_template,
-                                   self.vs_message_template_code, )
+    def cv_get_message(self, attribute: str = "cv_message") -> str | None:
+        return self.render_snippet(self.cv_get_meta(),
+                                   self.cv_message_template,
+                                   self.cv_message_template_code, )
 
     def form_valid(self, form):
         response = super().form_valid(form)  # noqa
-        message = self.vs_get_message()
+        message = self.cv_get_message()
         if message:
             messages.success(self.request, message)
         return response
@@ -48,10 +48,10 @@ class MessageMixin:
     def action(self, context: dict) -> bool:
         result = super().action(context)
         if result:
-            messages.success(self.request, self.vs_get_message())
-        elif hasattr(self, "vs_error_message"):
+            messages.success(self.request, self.cv_get_message())
+        elif hasattr(self, "cv_error_message"):
             # error message is optional
-            messages.error(self.request, self.vs_get_message("vs_error_message"))
+            messages.error(self.request, self.cv_get_message("cv_error_message"))
 
         return result
 
@@ -82,10 +82,10 @@ class ListViewTableFilterMixin(FilterView):
     filterset_class = None
     formhelper_class = None
 
-    vs_filter_persistence: bool = crud_views_settings.filter_persistence
-    vs_session_key_querystring: str = "filter_query_string"
+    cv_filter_persistence: bool = crud_views_settings.filter_persistence
+    cv_session_key_querystring: str = "filter_query_string"
 
-    # todo: check vs_filter_persistence vs_session_key_querystring
+    # todo: check cv_filter_persistence cv_session_key_querystring
 
     def get_filterset(self, filterset_class):  # noqa
         kwargs = self.get_filterset_kwargs(filterset_class)
@@ -102,7 +102,7 @@ class ListViewTableFilterMixin(FilterView):
         # with SessionData.from_view(self) as sd:
         #     filter_expanded = sd["filter_expanded"]
 
-        context["vs_filter_expanded"] = filter_expanded
+        context["cv_filter_expanded"] = filter_expanded
         return context
 
     def post(self, request, *args, **kwargs):
@@ -110,7 +110,7 @@ class ListViewTableFilterMixin(FilterView):
         Store filter expanded state
         """
 
-        if not self.vs_filter_persistence:
+        if not self.cv_filter_persistence:
             return JsonResponse({"status": "ok", "filter_expanded": None})
 
         data = json.loads(request.body.decode("utf-8"))
@@ -130,13 +130,13 @@ class ListViewTableFilterMixin(FilterView):
             https://github.com/LorenzoProd/django-persistent-filters
         """
 
-        if not self.vs_filter_persistence:
+        if not self.cv_filter_persistence:
             return super().get(request, *args, **kwargs)
 
         with SessionData.from_view(self) as sd:
 
             # get stored query string and request query string
-            stored_query_string = sd.get(self.vs_session_key_querystring, "")
+            stored_query_string = sd.get(self.cv_session_key_querystring, "")
             query_string = self.request.META['QUERY_STRING']
 
             # reset filter ?
@@ -144,7 +144,7 @@ class ListViewTableFilterMixin(FilterView):
             reset_filter = qs.get("reset_filter", ["false"])[0] == "true"
             if reset_filter:
                 try:
-                    del sd[self.vs_session_key_querystring]
+                    del sd[self.cv_session_key_querystring]
                 except KeyError:
                     pass
                 url = self.request.path
@@ -155,7 +155,7 @@ class ListViewTableFilterMixin(FilterView):
 
             # there is a query string, update data
             if len(query_string) > 0:
-                sd[self.vs_session_key_querystring] = query_string
+                sd[self.cv_session_key_querystring] = query_string
 
             # no query string, but data in session, restore query string
             if len(query_string) == 0 and len(stored_query_string):

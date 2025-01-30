@@ -6,7 +6,7 @@ from crud_views.lib.views import DetailViewPermissionRequired, UpdateViewPermiss
     ListViewTableMixin, DeleteViewPermissionRequired, ListViewPermissionRequired
 from crud_views.lib.viewset import ViewSet, ParentViewSet
 
-vs_baz = ViewSet(
+cv_baz = ViewSet(
     model=Baz,
     name="baz",
     parent=ParentViewSet(name="bar")
@@ -21,28 +21,28 @@ class BazTable(Table):
 class BazListView(ListViewTableMixin, ListViewPermissionRequired):
     model = Baz
     table_class = BazTable
-    vs = vs_baz
-    vs_list_actions = ["detail", "update", "delete"]
+    cv = cv_baz
+    cv_list_actions = ["detail", "update", "delete"]
 
 
 class BazDetailView(DetailViewPermissionRequired):
     model = Baz
-    vs = vs_baz
-    vs_properties = ["id", "name"]
+    cv = cv_baz
+    cv_properties = ["id", "name"]
 
 
 class BazUpdateView(UpdateViewPermissionRequired):
     model = Baz
     fields = ["name"]
-    vs = vs_baz
+    cv = cv_baz
 
 
 class BazCreateView(CreateViewPermissionRequired):
     model = Baz
     fields = ["name"]
-    vs = vs_baz
+    cv = cv_baz
 
 
 class BazDeleteView(DeleteViewPermissionRequired):
     model = Baz
-    vs = vs_baz
+    cv = cv_baz

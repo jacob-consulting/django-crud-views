@@ -25,14 +25,9 @@ tasks:
       - uv pip install --upgrade .[minimal,bootstrap5minimal,polymorphic,dev,test]
     silent: true
 
-  uv-build:
+  build:
     cmds:
       - uv build
-    silent: true
-
-  uv-publish:
-    cmds:
-      - uv publish
     silent: true
 
   docs:
@@ -40,8 +35,7 @@ tasks:
       - mkdocs serve -a localhost:8001
     silent: true
 
-
-  upload:
+  clean-pycache:
     cmds:
-      - twine upload -r pypi dist/*
+      - find . -type d -name "__pycache__" -exec rm -r {} +
     silent: true

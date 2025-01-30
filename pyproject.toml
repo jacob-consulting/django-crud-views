@@ -56,7 +56,8 @@ bootstrap5 = [
 ]
 
 polymorphic = [
-    "django-polymorphic (>=3.1.0)"
+    "django-polymorphic (>=3.1.0)",
+    "setuptools"
 ]
 
 minimal = [

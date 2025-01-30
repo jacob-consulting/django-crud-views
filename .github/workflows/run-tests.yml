@@ -1,9 +1,9 @@
-name: Run Tests
+name: Default Workflow
 run-name: ${{ github.actor }} is running tests
 on: [push]
 
 jobs:
-  Explore-GitHub-Actions:
+  tests:
     runs-on: ubuntu-latest
     steps:
 
@@ -21,3 +21,10 @@ jobs:
 
       - name: Run the tests
         run: uv run nox
+
+  pypi-publish:
+    name: Upload release to PyPI
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Publishing to PyPI..."
+

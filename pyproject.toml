@@ -1,6 +1,6 @@
 [project]
 name = "django-crud-views"
-version = "0.0.1"
+version = "0.0.2"
 description = "Django Crud Views"
 authors = [
     { name = "Alexander Jacob", email = "alexander.jacob@jacob-consulting.de" }
@@ -89,7 +89,7 @@ build-backend = "hatchling.build"
 # todo: polymorphic-minimal
 
 [tool.bumpver]
-current_version = "0.0.1"
+current_version = "0.0.2"
 version_pattern = "MAJOR.MINOR.PATCH"
 commit_message = "Bump version {old_version} -> {new_version}"
 commit = true

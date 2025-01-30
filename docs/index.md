@@ -26,4 +26,4 @@ What it is not:
 - a complete page building system with navigations and lots of widgets
 
 # Version
-Current version: 0.0.3
+Current version: 0.0.4

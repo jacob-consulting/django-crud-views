@@ -65,7 +65,7 @@ jobs:
       - run: echo "Publishing to PyPI..."
 
       - name: Download distributions
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: dist
 

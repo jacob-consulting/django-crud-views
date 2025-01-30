@@ -1,5 +1,5 @@
 name: Pipeline
-run-name: ${{ github.actor }} is running tests
+run-name: ${{ github.actor }} triggered the pipeline
 on: [push]
 
 jobs:

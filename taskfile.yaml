@@ -42,5 +42,5 @@ tasks:
 
   bump-patch:
     cmds:
-      - bumpver update --patch
+      - bumpver update --patch --no-fetch
     silent: true

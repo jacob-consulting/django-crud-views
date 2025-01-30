@@ -1,4 +1,6 @@
 nav:
     - Home: index.md
     - getting_started
+    - reference
+    - development
     - ...

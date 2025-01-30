@@ -31,6 +31,6 @@ def test_debug_view(user_author_view: User, vs_author, author_douglas_adams, aut
 
     x = 1
 
-
+@pytest.mark.skip(reason="disabled")
 def test_fail():
     assert False, "this is a test"

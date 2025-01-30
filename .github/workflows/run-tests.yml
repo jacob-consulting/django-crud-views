@@ -9,15 +9,15 @@ jobs:
 
       - uses: actions/checkout@v4
 
-      - name: Install uv
+      - name: install uv
         uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
 
-      - name: Install the project
+      - name: create virtual environment and install requirements
         run: |
           uv venv --python=3.10
           uv pip install -r ${{ github.workspace }}/requirements/requirements-test.txt
 
-      - name: Run tests
+      - name: run the tests
         run: uv run nox

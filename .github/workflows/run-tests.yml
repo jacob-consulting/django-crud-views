@@ -16,7 +16,7 @@ jobs:
 
       - name: create virtual environment and install requirements
         run: |
-          uv venv --python=3.11
+          uv venv --python=3.12
           uv pip install -r ${{ github.workspace }}/requirements/requirements-test.txt
 
       - name: run the tests

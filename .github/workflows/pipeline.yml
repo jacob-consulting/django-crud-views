@@ -41,8 +41,14 @@ jobs:
 #          uv venv --python=3.12
 #          uv pip install -r ${{ github.workspace }}/requirements/requirements-test.txt
 
-      - name: Build the distributions
+      - name: Build distributions
         run: uv build
+
+      - name: Upload distributions
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
 
   pypi-publish:
     name: Upload release to PyPI
@@ -57,7 +63,15 @@ jobs:
     steps:
       # retrieve your distributions here
       - run: echo "Publishing to PyPI..."
-      - name: Publish package distributions to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
+
+      - name: Download distributions
+        uses: actions/download-artifact@v2
         with:
-            repository-url: https://test.pypi.org/legacy/
+          name: dist
+
+      - run: ls -l dist/
+
+#      - name: Publish package distributions to PyPI
+#        uses: pypa/gh-action-pypi-publish@release/v1
+#        with:
+#            repository-url: https://test.pypi.org/legacy/

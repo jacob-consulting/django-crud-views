@@ -27,6 +27,7 @@ jobs:
     name: Upload release to PyPI
     runs-on: ubuntu-latest
     needs: [tests]
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
     steps:
       - run: echo "Publishing to PyPI..."
 

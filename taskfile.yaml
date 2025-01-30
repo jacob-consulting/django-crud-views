@@ -7,20 +7,20 @@ tasks:
 
   dev:
     cmds:
-      - task: uv-venv
-      - task: uv-install
+      - task: dev-venv
+      - task: dev-install
 
-  uv-venv:
+  dev-venv:
     cmds:
       - uv venv --python={{ .PYTHON }}
     silent: true
 
-  uv-install:
+  dev-install:
     cmds:
       - uv pip install --upgrade .[bootstrap5,polymorphic,dev,test]
     silent: true
 
-  uv-install-minimal:
+  dev-install-minimal:
     cmds:
       - uv pip install --upgrade .[minimal,bootstrap5minimal,polymorphic,dev,test]
     silent: true

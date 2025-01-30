@@ -39,3 +39,8 @@ tasks:
     cmds:
       - find . -type d -name "__pycache__" -exec rm -r {} +
     silent: true
+
+  bump-patch:
+    cmds:
+      - bumpver update --patch
+    silent: true

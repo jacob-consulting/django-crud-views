@@ -13,7 +13,7 @@ Features:
     - [django-polymorphic](https://django-polymorphic.readthedocs.io/en/stable/)
     - [django-ordered-model](https://github.com/django-ordered-model/django-ordered-model)
 - ViewSets can be nested with deep URLs (multiple levels) if models are related via ForeignKey
-- includes basic ic CRUD operations: list, create, update, delete, detail, up/down 
+- includes basic CRUD operations: list, create, update, delete, detail, up/down 
 - a ViewSet generates all urlpatterns for its Views
 - Themes are pluggable, so you can easily customize the look and feel to your needs, includes themes
     - `plain` no CSS, minimal HTML and JavaScript

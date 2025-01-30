@@ -41,6 +41,7 @@ dev = [
 ]
 
 test = [
+    "nox",
     "pytest",
     "pytest-cov",
     "pytest-random-order",

@@ -44,3 +44,8 @@ tasks:
     cmds:
       - bumpver update --patch --no-fetch
     silent: true
+
+  test:
+    cmds:
+      - uv run nox
+    silent: true

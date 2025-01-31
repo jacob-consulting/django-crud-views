@@ -1,5 +1,5 @@
 nav:
+    - index.md
     - tutorial.md
     - tutorial2.md
-    - example.md
     - ...

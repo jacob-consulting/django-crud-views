@@ -4,7 +4,7 @@ from django.template.loader import render_to_string
 
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.exceptions import ViewSetKeyFoundError, ignore_exception
-from crud_views.lib.view import ViewSetView
+from crud_views.lib.view import CrudView
 from crud_views.lib.views import DetailView
 
 User = get_user_model()
@@ -31,14 +31,14 @@ def cv_csrf_token(context):
     return {}
 
 
-def cv_get_view(context) -> ViewSetView:
-    view: ViewSetView = context["view"]
-    assert isinstance(view, ViewSetView), f"view {view} is not ViewSetAware"
+def cv_get_view(context) -> CrudView:
+    view: CrudView = context["view"]
+    assert isinstance(view, CrudView), f"view {view} is not ViewSetAware"
     return view
 
 
 def cv_get_context(context, key, obj=None) -> dict:
-    view: ViewSetView = cv_get_view(context)
+    view: CrudView = cv_get_view(context)
     context = view.cv_get_context(key, obj=obj, user=context["request"].user, request=context["request"])
     return context
 
@@ -72,7 +72,7 @@ def cv_context_action(context, key, obj=None):
 
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/context_actions.html", takes_context=True)
 def cv_context_actions(context, obj=None):
-    view: ViewSetView = cv_get_view(context)
+    view: CrudView = cv_get_view(context)
     return {
         "view": view,
         "request": context["request"],
@@ -82,66 +82,66 @@ def cv_context_actions(context, obj=None):
 
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/button_cancel.html", takes_context=True)
 def cv_cancel_button(context, obj=None):
-    view: ViewSetView = cv_get_view(context)
+    view: CrudView = cv_get_view(context)
     context = view.get_cancel_button_context(obj=obj, user=context["request"].user, request=context["request"])
     return context
 
 
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/button_submit.html", takes_context=True)
 def cv_submit_button(context, obj=None):
-    view: ViewSetView = cv_get_view(context)
+    view: CrudView = cv_get_view(context)
     return {}
 
 
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/button_delete.html", takes_context=True)
 def cv_delete_button(context, obj=None):
-    view: ViewSetView = cv_get_view(context)
+    view: CrudView = cv_get_view(context)
     return {}
 
 
 @register.simple_tag(takes_context=True)
 def cv_property_label(context, obj: object, property: str):
-    view: ViewSetView = cv_get_view(context)
+    view: CrudView = cv_get_view(context)
     assert isinstance(view, DetailView)
     return property.upper()
 
 
 @register.simple_tag(takes_context=True)
 def cv_property_value(context, obj: object, property: str):
-    view: ViewSetView = cv_get_view(context)
+    view: CrudView = cv_get_view(context)
     assert isinstance(view, DetailView)
     return view.cv_get_property(obj, property)
 
 
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/icon.html", takes_context=True)
 def cv_header_icon(context):
-    view: ViewSetView = cv_get_view(context)
+    view: CrudView = cv_get_view(context)
     icon = view.cv_get_header_icon()
     return {"icon": icon}
 
 
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/icon.html", takes_context=True)
 def cv_filter_icon(context):
-    view: ViewSetView = cv_get_view(context)
+    view: CrudView = cv_get_view(context)
     icon = view.cv_get_filter_icon()  # noqa
     return {"icon": icon}
 
 
 @register.simple_tag(takes_context=True)
 def cv_filter_header(context):
-    view: ViewSetView = cv_get_view(context)
+    view: CrudView = cv_get_view(context)
     return view.cv_filter_header  # noqa
 
 
 @register.simple_tag(takes_context=True)
 def cv_header(context):
-    view: ViewSetView = cv_get_view(context)
+    view: CrudView = cv_get_view(context)
     return view.cv_header
 
 
 @register.simple_tag(takes_context=True)
 def cv_paragraph(context):
-    view: ViewSetView = cv_get_view(context)
+    view: CrudView = cv_get_view(context)
     return view.cv_paragraph
 
 

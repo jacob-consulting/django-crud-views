@@ -56,7 +56,7 @@ urlpatterns = [
 urlpatterns += vs_author.urlpatterns
 ```
 
-> **Note:** `ViewSet` creates routers for each `ViewSetView` of the ViewSet.  
+> **Note:** `ViewSet` creates routers for each `CrudView` of the ViewSet.  
 
 ## The List View
 

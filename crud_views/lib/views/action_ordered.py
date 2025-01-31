@@ -1,6 +1,6 @@
 from django.utils.translation import gettext_lazy as _
 
-from crud_views.lib.view import ViewSetViewPermissionRequiredMixin
+from crud_views.lib.view import CrudViewPermissionRequiredMixin
 from .action import ActionView
 from ..settings import crud_views_settings
 
@@ -35,7 +35,7 @@ class OrderedUpView(OrderedCheckBase, ActionView):
         return True
 
 
-class OrderedUpViewPermissionRequired(ViewSetViewPermissionRequiredMixin, OrderedUpView):  # this file
+class OrderedUpViewPermissionRequired(CrudViewPermissionRequiredMixin, OrderedUpView):  # this file
     cv_permission = "change"
 
 
@@ -61,5 +61,5 @@ class OrderedDownView(OrderedCheckBase, ActionView):
         return True
 
 
-class OrderedUpDownPermissionRequired(ViewSetViewPermissionRequiredMixin, OrderedDownView):  # this file
+class OrderedUpDownPermissionRequired(CrudViewPermissionRequiredMixin, OrderedDownView):  # this file
     cv_permission = "change"

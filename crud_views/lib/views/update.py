@@ -1,11 +1,11 @@
 from django.utils.translation import gettext_lazy as _
 from django.views import generic
 
-from crud_views.lib.view import ViewSetView, ViewSetViewPermissionRequiredMixin
+from crud_views.lib.view import CrudView, CrudViewPermissionRequiredMixin
 from crud_views.lib.settings import crud_views_settings
 
 
-class UpdateView(ViewSetView, generic.UpdateView):
+class UpdateView(CrudView, generic.UpdateView):
     template_name = "crud_views/view.update.html"
 
     cv_key = "update"
@@ -29,5 +29,5 @@ class UpdateView(ViewSetView, generic.UpdateView):
     cv_icon_action = "fa-regular fa-pen-to-square"
 
 
-class UpdateViewPermissionRequired(ViewSetViewPermissionRequiredMixin, UpdateView):  # this file
+class UpdateViewPermissionRequired(CrudViewPermissionRequiredMixin, UpdateView):  # this file
     cv_permission = "change"

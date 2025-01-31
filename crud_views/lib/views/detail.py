@@ -7,7 +7,7 @@ from django_filters.conf import is_callable
 from crud_views.lib.check import Check
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.exceptions import ViewSetError
-from crud_views.lib.view import ViewSetView, ViewSetViewPermissionRequiredMixin
+from crud_views.lib.view import CrudView, CrudViewPermissionRequiredMixin
 
 
 class PropertyCheck(Check):
@@ -32,7 +32,7 @@ class PropertyCheck(Check):
                 yield Error(id=f"viewset.{self.id}", msg=f"{self.msg} at {self.context}: {prop}")
 
 
-class DetailView(ViewSetView, generic.DetailView):
+class DetailView(CrudView, generic.DetailView):
     template_name = "crud_views/view_detail.html"
 
     cv_key = "detail"
@@ -71,5 +71,5 @@ class DetailView(ViewSetView, generic.DetailView):
             return p
 
 
-class DetailViewPermissionRequired(ViewSetViewPermissionRequiredMixin, DetailView):  # this file
+class DetailViewPermissionRequired(CrudViewPermissionRequiredMixin, DetailView):  # this file
     cv_permission = "view"

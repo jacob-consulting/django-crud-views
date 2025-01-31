@@ -6,11 +6,11 @@ from pydantic import BaseModel, field_validator
 
 class ViewContext(BaseModel, arbitrary_types_allowed=True):
     """
-    A container that is passed to methods of ViewSetView with the context:
+    A container that is passed to methods of CrudView with the context:
         - views
         - object
     """
-    view: 'ViewSetView'
+    view: 'CrudView'
     object: Model | None = None
 
     @field_validator('object', mode='before')

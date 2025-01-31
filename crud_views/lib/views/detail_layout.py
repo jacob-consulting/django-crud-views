@@ -10,7 +10,7 @@ from django.forms import Form, Widget
 from django.views import generic
 
 from crud_views.lib.settings import crud_views_settings
-from crud_views.lib.view import ViewSetView, ViewSetViewPermissionRequiredMixin
+from crud_views.lib.view import CrudView, CrudViewPermissionRequiredMixin
 
 
 class DetailWidget(Widget):
@@ -51,7 +51,7 @@ class DetailForm(Form):
         return helper
 
 
-class DetailLayoutView(ViewSetView, generic.DetailView):
+class DetailLayoutView(CrudView, generic.DetailView):
     template_name = "crud_views/view_detail_crispy.html"
 
     cv_key = "detail"
@@ -184,5 +184,5 @@ class DetailLayoutView(ViewSetView, generic.DetailView):
         return form
 
 
-class DetailLayoutViewPermissionRequired(ViewSetViewPermissionRequiredMixin, DetailLayoutView):  # this file
+class DetailLayoutViewPermissionRequired(CrudViewPermissionRequiredMixin, DetailLayoutView):  # this file
     cv_permission = "view"

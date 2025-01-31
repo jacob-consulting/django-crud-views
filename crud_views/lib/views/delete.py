@@ -2,10 +2,10 @@ from django.utils.translation import gettext_lazy as _
 from django.views import generic
 
 from crud_views.lib.settings import crud_views_settings
-from crud_views.lib.view import ViewSetView, ViewSetViewPermissionRequiredMixin
+from crud_views.lib.view import CrudView, CrudViewPermissionRequiredMixin
 
 
-class DeleteView(ViewSetView, generic.DeleteView):
+class DeleteView(CrudView, generic.DeleteView):
     template_name = "crud_views/view_delete.html"
 
     cv_key = "delete"
@@ -29,5 +29,5 @@ class DeleteView(ViewSetView, generic.DeleteView):
     cv_icon_action = "fa-regular fa-trash-can"
 
 
-class DeleteViewPermissionRequired(ViewSetViewPermissionRequiredMixin, DeleteView):  # this file
+class DeleteViewPermissionRequired(CrudViewPermissionRequiredMixin, DeleteView):  # this file
     cv_permission = "delete"

@@ -4,10 +4,10 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.views import generic
 
 from crud_views.lib.settings import crud_views_settings
-from crud_views.lib.view import ViewSetView
+from crud_views.lib.view import CrudView
 
 
-class ManageView(PermissionRequiredMixin, ViewSetView, generic.TemplateView):
+class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
     template_name = "crud_views/view_manage.html"
 
     cv_pk: bool = False  # does not need primary key

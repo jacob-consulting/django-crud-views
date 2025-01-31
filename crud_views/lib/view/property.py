@@ -3,7 +3,7 @@ from functools import wraps
 
 def cv_property(foo, type=str, label:str|None = None):
     """
-    Experimental property decorator for ViewSetView
+    Experimental property decorator for CrudView
     """
 
     def actual_decorator(func):

@@ -79,8 +79,8 @@ def pytest_configure():
         DEFAULT_AUTO_FIELD='django.db.models.BigAutoField',
 
         # Django ViewSet configuration
-        VIEWSET_THEME="bootstrap5",
-        VIEWSET_EXTENDS="app/viewset.html",
+        CRUD_VIEWS_THEME="bootstrap5",
+        CRUD_VIEWS_EXTENDS="app/crud_views.html",
 
         # crispy
         CRISPY_TEMPLATE_PACK="bootstrap5",
@@ -101,18 +101,18 @@ def user_a():
 
 
 @pytest.fixture
-def vs_author():
-    from tests.test1.app.views import vs_author as ret
+def cv_author():
+    from tests.test1.app.views import cv_author as ret
     return ret
 
 
 
 @pytest.fixture
-def user_author_view(vs_author):
+def user_author_view(cv_author):
     from django.contrib.auth.models import User
     user = User.objects.create_user(username="user_author_view", password="password")
 
-    user_viewset_permission(user, vs_author, "view")
+    user_viewset_permission(user, cv_author, "view")
 
     return user
 
@@ -129,21 +129,21 @@ def client_user_author_view(client, user_author_view) -> Client:
 
 
 @pytest.fixture
-def user_author_change(vs_author):
+def user_author_change(cv_author):
     from django.contrib.auth.models import User
     user = User.objects.create_user(username="user_author_change", password="password")
 
-    user_viewset_permission(user, vs_author, "change")
+    user_viewset_permission(user, cv_author, "change")
 
     return user
 
 
 @pytest.fixture
-def user_author_delete(vs_author):
+def user_author_delete(cv_author):
     from django.contrib.auth.models import User
     user = User.objects.create_user(username="user_author_delete", password="password")
 
-    user_viewset_permission(user, vs_author, "delete")
+    user_viewset_permission(user, cv_author, "delete")
 
     return user
 

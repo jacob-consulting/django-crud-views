@@ -1,6 +1,6 @@
 from django.utils.translation import gettext_lazy as _
 
-from crud_views.lib.view import ViewSetViewPermissionRequiredMixin
+from crud_views.lib.view import CrudViewPermissionRequiredMixin
 from .action import ActionView
 from ..settings import crud_views_settings
 
@@ -14,20 +14,20 @@ class OrderedCheckBase:
 
 
 class OrderedUpView(OrderedCheckBase, ActionView):
-    vs_key = "up"
-    vs_path = "up"
-    vs_backend_only = True
+    cv_key = "up"
+    cv_path = "up"
+    cv_backend_only = True
 
     # texts and labels
-    vs_action_label_template: str = crud_views_settings.up_action_label_template
-    vs_action_label_template_code: str = crud_views_settings.up_action_label_template_code
-    vs_action_short_label_template: str = crud_views_settings.up_action_short_label_template
-    vs_action_short_label_template_code: str = crud_views_settings.up_action_short_label_template_code
+    cv_action_label_template: str = crud_views_settings.up_action_label_template
+    cv_action_label_template_code: str = crud_views_settings.up_action_label_template_code
+    cv_action_short_label_template: str = crud_views_settings.up_action_short_label_template
+    cv_action_short_label_template_code: str = crud_views_settings.up_action_short_label_template_code
 
-    vs_message_template: str | None = crud_views_settings.up_action_message_template
-    vs_message_template_code: str | None = crud_views_settings.up_action_message_template_code
+    cv_message_template: str | None = crud_views_settings.up_action_message_template
+    cv_message_template_code: str | None = crud_views_settings.up_action_message_template_code
 
-    vs_icon_action = "fa-regular fa-circle-up"
+    cv_icon_action = "fa-regular fa-circle-up"
 
     def action(self, context: dict) -> bool:
         self.object.up()
@@ -35,25 +35,25 @@ class OrderedUpView(OrderedCheckBase, ActionView):
         return True
 
 
-class OrderedUpViewPermissionRequired(ViewSetViewPermissionRequiredMixin, OrderedUpView):  # this file
-    vs_permission = "change"
+class OrderedUpViewPermissionRequired(CrudViewPermissionRequiredMixin, OrderedUpView):  # this file
+    cv_permission = "change"
 
 
 class OrderedDownView(OrderedCheckBase, ActionView):
-    vs_key = "down"
-    vs_path = "down"
-    vs_backend_only = True
+    cv_key = "down"
+    cv_path = "down"
+    cv_backend_only = True
 
     # texts and labels
-    vs_action_label_template: str = crud_views_settings.down_action_label_template
-    vs_action_label_template_code: str = crud_views_settings.down_action_label_template_code
-    vs_action_short_label_template: str = crud_views_settings.down_action_short_label_template
-    vs_action_short_label_template_code: str = crud_views_settings.down_action_short_label_template_code
+    cv_action_label_template: str = crud_views_settings.down_action_label_template
+    cv_action_label_template_code: str = crud_views_settings.down_action_label_template_code
+    cv_action_short_label_template: str = crud_views_settings.down_action_short_label_template
+    cv_action_short_label_template_code: str = crud_views_settings.down_action_short_label_template_code
 
-    vs_message_template: str | None = crud_views_settings.down_action_message_template
-    vs_message_template_code: str | None = crud_views_settings.down_action_message_template_code
+    cv_message_template: str | None = crud_views_settings.down_action_message_template
+    cv_message_template_code: str | None = crud_views_settings.down_action_message_template_code
 
-    vs_icon_action = "fa-regular fa-circle-down"
+    cv_icon_action = "fa-regular fa-circle-down"
 
     def action(self, context: dict) -> bool:
         self.object.down()
@@ -61,5 +61,5 @@ class OrderedDownView(OrderedCheckBase, ActionView):
         return True
 
 
-class OrderedUpDownPermissionRequired(ViewSetViewPermissionRequiredMixin, OrderedDownView):  # this file
-    vs_permission = "change"
+class OrderedUpDownPermissionRequired(CrudViewPermissionRequiredMixin, OrderedDownView):  # this file
+    cv_permission = "change"

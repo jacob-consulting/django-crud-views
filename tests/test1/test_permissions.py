@@ -7,7 +7,7 @@ User = get_user_model()
 
 
 @pytest.mark.django_db
-def test_author_view(client_user_author_view, vs_author, author_douglas_adams):
+def test_author_view(client_user_author_view, cv_author, author_douglas_adams):
     client = client_user_author_view
 
     response = client.get("/author/")

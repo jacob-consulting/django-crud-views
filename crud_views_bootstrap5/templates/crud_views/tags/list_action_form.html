@@ -1,5 +1,5 @@
-{% if vs_list_action_method == "post" %}
-    <form id="vs_form_{{ vs_oid }}" action="{{ vs_url }}" method="post" style="display:none">
+{% if cv_list_action_method == "post" %}
+    <form id="cv_form_{{ cv_oid }}" action="{{ cv_url }}" method="post" style="display:none">
         {% csrf_token %}
     </form>
 {% endif %}

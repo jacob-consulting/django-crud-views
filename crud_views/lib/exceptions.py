@@ -10,13 +10,13 @@ class ViewSetKeyFoundError(Exception):
 class ViewSetError(Exception):
     pass
 
-class ViewSetViewError(Exception):
+class CrudViewError(Exception):
     pass
 
 class ParentViewSetError(Exception):
     pass
 
-def vs_raise(expression: bool, msg: str, exception: Exception = ViewSetError):
+def cv_raise(expression: bool, msg: str, exception: Exception = ViewSetError):
     if not expression:
         raise exception(msg)
 

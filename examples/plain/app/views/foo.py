@@ -6,7 +6,7 @@ from crud_views.lib.views import DetailViewPermissionRequired, UpdateViewPermiss
     ListViewTableMixin, DeleteViewPermissionRequired, ListViewPermissionRequired
 from crud_views.lib.viewset import ViewSet
 
-vs_foo = ViewSet(
+cv_foo = ViewSet(
     model=Foo,
     name="foo",
 )
@@ -20,28 +20,28 @@ class FooTable(Table):
 class FooListView(ListViewTableMixin, ListViewPermissionRequired):
     model = Foo
     table_class = FooTable
-    vs = vs_foo
-    vs_list_actions = ["detail", "update", "delete"]
+    cv_viewset = cv_foo
+    cv_list_actions = ["detail", "update", "delete"]
 
 
 class FooDetailView(DetailViewPermissionRequired):
     model = Foo
-    vs = vs_foo
-    vs_properties = ["id", "name"]
+    cv_viewset = cv_foo
+    cv_properties = ["id", "name"]
 
 
 class FooUpdateView(UpdateViewPermissionRequired):
     model = Foo
     fields = ["name"]
-    vs = vs_foo
+    cv_viewset = cv_foo
 
 
 class FooCreateView(CreateViewPermissionRequired):
     model = Foo
     fields = ["name"]
-    vs = vs_foo
+    cv_viewset = cv_foo
 
 
 class FooDeleteView(DeleteViewPermissionRequired):
     model = Foo
-    vs = vs_foo
+    cv_viewset = cv_foo

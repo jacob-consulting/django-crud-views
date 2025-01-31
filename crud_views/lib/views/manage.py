@@ -4,31 +4,31 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.views import generic
 
 from crud_views.lib.settings import crud_views_settings
-from crud_views.lib.view import ViewSetView
+from crud_views.lib.view import CrudView
 
 
-class ManageView(PermissionRequiredMixin, ViewSetView, generic.TemplateView):
+class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
     template_name = "crud_views/view_manage.html"
 
-    vs_pk: bool = False  # does not need primary key
-    vs_key = "manage"
-    vs_path = "manage"
-    vs_object = False
+    cv_pk: bool = False  # does not need primary key
+    cv_key = "manage"
+    cv_path = "manage"
+    cv_object = False
 
-    vs_context_actions = crud_views_settings.manage_context_actions
+    cv_context_actions = crud_views_settings.manage_context_actions
 
     # texts and labels
-    vs_header_template: str = crud_views_settings.manage_header_template
-    vs_header_template_code: str = crud_views_settings.manage_header_template_code
-    vs_paragraph_template: str = crud_views_settings.manage_paragraph_template
-    vs_paragraph_template_code: str = crud_views_settings.manage_paragraph_template_code
-    vs_action_label_template: str = crud_views_settings.manage_action_label_template
-    vs_action_label_template_code: str = crud_views_settings.manage_action_label_template_code
-    vs_action_short_label_template: str = crud_views_settings.manage_action_short_label_template
-    vs_action_short_label_template_code: str = crud_views_settings.manage_action_short_label_template_code
+    cv_header_template: str = crud_views_settings.manage_header_template
+    cv_header_template_code: str = crud_views_settings.manage_header_template_code
+    cv_paragraph_template: str = crud_views_settings.manage_paragraph_template
+    cv_paragraph_template_code: str = crud_views_settings.manage_paragraph_template_code
+    cv_action_label_template: str = crud_views_settings.manage_action_label_template
+    cv_action_label_template_code: str = crud_views_settings.manage_action_label_template_code
+    cv_action_short_label_template: str = crud_views_settings.manage_action_short_label_template
+    cv_action_short_label_template_code: str = crud_views_settings.manage_action_short_label_template_code
 
-    vs_icon_action = "fa-solid fa-gear"
-    vs_icon_header = "fa-solid fa-gear"
+    cv_icon_action = "fa-solid fa-gear"
+    cv_icon_header = "fa-solid fa-gear"
 
     def has_permission(self):
         """
@@ -38,7 +38,7 @@ class ManageView(PermissionRequiredMixin, ViewSetView, generic.TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        permissions = self.vs.permissions
+        permissions = self.cv_viewset.permissions
         rows = []
         for short, long in permissions.items():
             rows.append(dict(
@@ -48,7 +48,7 @@ class ManageView(PermissionRequiredMixin, ViewSetView, generic.TemplateView):
             ))
         views = self.get_view_data()
         context.update({
-            "vs": self.vs,
+            "cv": self.cv_viewset,
             "data": rows,
             "views": views
         })
@@ -56,34 +56,34 @@ class ManageView(PermissionRequiredMixin, ViewSetView, generic.TemplateView):
 
     def get_view_data(self):
         data = OrderedDict()
-        for key, view in self.vs.get_all_views().items():
+        for key, view in self.cv_viewset.get_all_views().items():
             view_data = OrderedDict({
                 "base": OrderedDict({
                     "class": str(view.__class__),
-                    "vs_key": view.vs_key,
-                    "vs_path": view.vs_path,
-                    "vs_backend_only": view.vs_backend_only,
-                    "vs_list_actions": view.vs_list_actions,
-                    "vs_list_action_method": view.vs_list_action_method,
-                    "vs_context_actions": view.vs_context_actions,
-                    "vs_home_key": view.vs_home_key,
-                    "vs_success_key": view.vs_success_key,
-                    "vs_cancel_key": view.vs_cancel_key,
-                    "vs_parent_key": view.vs_parent_key,
+                    "cv_key": view.cv_key,
+                    "cv_path": view.cv_path,
+                    "cv_backend_only": view.cv_backend_only,
+                    "cv_list_actions": view.cv_list_actions,
+                    "cv_list_action_method": view.cv_list_action_method,
+                    "cv_context_actions": view.cv_context_actions,
+                    "cv_home_key": view.cv_home_key,
+                    "cv_success_key": view.cv_success_key,
+                    "cv_cancel_key": view.cv_cancel_key,
+                    "cv_parent_key": view.cv_parent_key,
                 }),
                 "templates": OrderedDict({
-                    "vs_header_template": view.vs_header_template,
-                    "vs_header_template_code": view.vs_header_template_code,
-                    "vs_paragraph_template": view.vs_paragraph_template,
-                    "vs_paragraph_template_code": view.vs_paragraph_template_code,
-                    "vs_action_label_template": view.vs_action_label_template,
-                    "vs_action_label_template_code": view.vs_action_label_template_code,
-                    "vs_action_short_label_template": view.vs_action_short_label_template,
-                    "vs_action_short_label_template_code": view.vs_action_short_label_template_code,
+                    "cv_header_template": view.cv_header_template,
+                    "cv_header_template_code": view.cv_header_template_code,
+                    "cv_paragraph_template": view.cv_paragraph_template,
+                    "cv_paragraph_template_code": view.cv_paragraph_template_code,
+                    "cv_action_label_template": view.cv_action_label_template,
+                    "cv_action_label_template_code": view.cv_action_label_template_code,
+                    "cv_action_short_label_template": view.cv_action_short_label_template,
+                    "cv_action_short_label_template_code": view.cv_action_short_label_template_code,
                 }),
                 "icons": OrderedDict({
-                    "vs_icon_action": view.vs_icon_action,
-                    "vs_icon_header": view.vs_icon_header,
+                    "cv_icon_action": view.cv_icon_action,
+                    "cv_icon_header": view.cv_icon_header,
                 }),
             })
             data[key] = view_data

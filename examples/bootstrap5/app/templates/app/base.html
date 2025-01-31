@@ -1,6 +1,6 @@
 {% load static %}
 {% load django_bootstrap5 %}
-{% load viewset %}
+{% load crud_views %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -27,9 +27,9 @@
             crossorigin="anonymous"></script>
 
     <!-- ViewSet -->
-    {% vs_const_js %}
-    {% vs_css %}
-    {% vs_js %}
+    {% cv_const_js %}
+    {% cv_css %}
+    {% cv_js %}
 
 </head>
 

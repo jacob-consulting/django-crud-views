@@ -26,7 +26,7 @@ def get_polymorphic_child_models_content_types(model: PolymorphicModel) -> List[
     return content_types
 
 
-class PolymorphicViewSetViewMixin:
+class PolymorphicCrudViewMixin:
     """
     Polymorphic ViewSet mixin
     """

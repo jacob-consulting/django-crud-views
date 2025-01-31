@@ -1,5 +1,5 @@
-{% load viewset %}
+{% load crud_views %}
 
-{% for key in view.vs_list_actions %}
-    {% vs_list_action key record %}
+{% for key in view.cv_list_actions %}
+    {% cv_list_action key record %}
 {% endfor %}

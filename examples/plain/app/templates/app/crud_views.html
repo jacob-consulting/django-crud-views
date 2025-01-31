@@ -1,0 +1,28 @@
+{% extends "app/base.html" %}
+
+{% load crud_views %}
+
+{% block body %}
+
+    <b>CONTEXT:</b>
+    {% block cv_context %}
+        {% cv_context_actions object %}
+    {% endblock cv_context %}
+
+    {% block cv_header %}
+        <h1>{% cv_header %}</h1>
+    {% endblock cv_header %}
+
+    {% block cv_paragraph %}
+        {% cv_paragraph %}
+    {% endblock cv_paragraph %}
+
+    <hr>
+
+    {% block cv_filter %}
+    {% endblock cv_filter %}
+
+    {% block cv_content %}
+    {% endblock cv_content %}
+
+{% endblock body %}

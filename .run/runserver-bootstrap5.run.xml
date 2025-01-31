@@ -8,7 +8,7 @@
       <env name="PYTHONUNBUFFERED" value="1" />
     </envs>
     <option name="SDK_HOME" value="" />
-    <option name="SDK_NAME" value="django-crud-views" />
+    <option name="SDK_NAME" value="uv (django-crud-views)" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/examples/bootstrap5" />
     <option name="IS_MODULE_SDK" value="false" />
     <option name="ADD_CONTENT_ROOTS" value="true" />

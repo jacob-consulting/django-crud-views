@@ -10,7 +10,7 @@ def default_dict(*args, **kwargs) -> Any:
 
 
 class ViewData(BaseModel):
-    data: Dict[str, Any] = Field(default_factory=default_dict)  # vs_key to Any
+    data: Dict[str, Any] = Field(default_factory=default_dict)  # cv_key to Any
 
     def set(self, key, value):
         self.data[key] = value
@@ -40,7 +40,7 @@ class SessionData(BaseModel):
 
     @property
     def view_key(self) -> str:
-        return self.view.vs_key  # noqa
+        return self.view.cv_key  # noqa
 
     @property
     def app_label(self) -> str:

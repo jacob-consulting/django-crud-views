@@ -47,7 +47,7 @@ def as_view(cls, **initkwargs):
 
 
 @pytest.mark.django_db
-def test_factory(user_author_view: User, vs_author: ViewSet, author_douglas_adams: User):
+def test_factory(user_author_view: User, cv_author: ViewSet, author_douglas_adams: User):
 
     factory = RequestFactory()
 

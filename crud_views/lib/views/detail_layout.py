@@ -10,7 +10,7 @@ from django.forms import Form, Widget
 from django.views import generic
 
 from crud_views.lib.settings import crud_views_settings
-from crud_views.lib.view import ViewSetView, ViewSetViewPermissionRequiredMixin
+from crud_views.lib.view import CrudView, CrudViewPermissionRequiredMixin
 
 
 class DetailWidget(Widget):
@@ -51,47 +51,47 @@ class DetailForm(Form):
         return helper
 
 
-class DetailLayoutView(ViewSetView, generic.DetailView):
+class DetailLayoutView(CrudView, generic.DetailView):
     template_name = "crud_views/view_detail_crispy.html"
 
-    vs_key = "detail"
-    vs_path = "detail"
-    vs_context_actions = crud_views_settings.detail_context_actions
-    vs_properties: List[str] = []
+    cv_key = "detail"
+    cv_path = "detail"
+    cv_context_actions = crud_views_settings.detail_context_actions
+    cv_properties: List[str] = []
 
     # texts and labels
-    vs_header_template: str = crud_views_settings.detail_header_template
-    vs_header_template_code: str = crud_views_settings.detail_header_template_code
-    vs_paragraph_template: str = crud_views_settings.detail_paragraph_template
-    vs_paragraph_template_code: str = crud_views_settings.detail_paragraph_template_code
-    vs_action_label_template: str = crud_views_settings.detail_action_label_template
-    vs_action_label_template_code: str = crud_views_settings.detail_action_label_template_code
-    vs_action_short_label_template: str = crud_views_settings.detail_action_short_label_template
-    vs_action_short_label_template_code: str = crud_views_settings.detail_action_short_label_template_code
+    cv_header_template: str = crud_views_settings.detail_header_template
+    cv_header_template_code: str = crud_views_settings.detail_header_template_code
+    cv_paragraph_template: str = crud_views_settings.detail_paragraph_template
+    cv_paragraph_template_code: str = crud_views_settings.detail_paragraph_template_code
+    cv_action_label_template: str = crud_views_settings.detail_action_label_template
+    cv_action_label_template_code: str = crud_views_settings.detail_action_label_template_code
+    cv_action_short_label_template: str = crud_views_settings.detail_action_short_label_template
+    cv_action_short_label_template_code: str = crud_views_settings.detail_action_short_label_template_code
 
-    vs_icon_action = "fa-regular fa-eye"
+    cv_icon_action = "fa-regular fa-eye"
 
     # todo: add system checks
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data()
-        form = self.vs_get_form()
+        form = self.cv_get_form()
         data["form"] = form
         return data
 
     @property
-    def vs_layout(self) -> Layout:
+    def cv_layout(self) -> Layout:
         raise NotImplementedError
 
     @property
-    def vs_layout_fields(self) -> List[str]:
-        return [pointer.name for pointer in self.vs_layout.get_field_names()]
+    def cv_layout_fields(self) -> List[str]:
+        return [pointer.name for pointer in self.cv_layout.get_field_names()]
 
-    def vs_get_model_fields(self) -> Tuple[Dict[str, Field], Dict[str, Any]]:
+    def cv_get_model_fields(self) -> Tuple[Dict[str, Field], Dict[str, Any]]:
         """
         Todo
         """
-        layout_fields = self.vs_layout_fields
+        layout_fields = self.cv_layout_fields
 
         fields, initial = dict(), dict()
         for model_field in self.model._meta.get_fields():
@@ -116,11 +116,11 @@ class DetailLayoutView(ViewSetView, generic.DetailView):
 
         return fields, initial
 
-    def vs_get_property_fields(self) -> Tuple[Dict[str, Field], Dict[str, Any]]:
+    def cv_get_property_fields(self) -> Tuple[Dict[str, Field], Dict[str, Any]]:
         """
         Get dictionary of view properties
         """
-        layout_fields = self.vs_layout_fields
+        layout_fields = self.cv_layout_fields
 
         fields, initial = dict(), dict()
         for key, member in inspect.getmembers(self):
@@ -128,11 +128,11 @@ class DetailLayoutView(ViewSetView, generic.DetailView):
             if key not in layout_fields:
                 continue
 
-            if getattr(member, "vs_property", False) is False:
+            if getattr(member, "cv_property", False) is False:
                 continue
 
-            property_type = member.vs_type
-            label = member.vs_label or key.capitalize()
+            property_type = member.cv_type
+            label = member.cv_label or key.capitalize()
 
             if property_type is str:
                 widget = DetailWidget
@@ -147,11 +147,11 @@ class DetailLayoutView(ViewSetView, generic.DetailView):
 
         return fields, initial
 
-    def vs_get_form(self) -> Form:
+    def cv_get_form(self) -> Form:
 
         # Define the fields for the Meta class
         meta_fields = {
-            'fields': self.vs_layout_fields
+            'fields': self.cv_layout_fields
         }
 
         # Create a Meta class dynamically
@@ -161,8 +161,8 @@ class DetailLayoutView(ViewSetView, generic.DetailView):
         attrs = {'Meta': Meta}
 
         #
-        model_fields, model_initial = self.vs_get_model_fields()
-        properties_fields, property_initial = self.vs_get_property_fields()
+        model_fields, model_initial = self.cv_get_model_fields()
+        properties_fields, property_initial = self.cv_get_property_fields()
 
         # todo: warn if fields collide
 
@@ -179,10 +179,10 @@ class DetailLayoutView(ViewSetView, generic.DetailView):
             attrs[key] = field
 
         klass = type('DynamicDetailForm', (DetailForm,), attrs)
-        form = klass(layout=self.vs_layout, initial=initial)
+        form = klass(layout=self.cv_layout, initial=initial)
 
         return form
 
 
-class DetailLayoutViewPermissionRequired(ViewSetViewPermissionRequiredMixin, DetailLayoutView):  # this file
-    vs_permission = "view"
+class DetailLayoutViewPermissionRequired(CrudViewPermissionRequiredMixin, DetailLayoutView):  # this file
+    cv_permission = "view"

@@ -7,7 +7,7 @@ from django_filters.conf import is_callable
 from crud_views.lib.check import Check
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.exceptions import ViewSetError
-from crud_views.lib.view import ViewSetView, ViewSetViewPermissionRequiredMixin
+from crud_views.lib.view import CrudView, CrudViewPermissionRequiredMixin
 
 
 class PropertyCheck(Check):
@@ -24,33 +24,33 @@ class PropertyCheck(Check):
 
     def messages(self) -> Iterable[CheckMessage]:
         fields = self.fields
-        for prop in self.context.vs_properties:  # noqa
+        for prop in self.context.cv_properties:  # noqa
             is_model_prop = prop in fields
-            vs_prop = getattr(self.context, prop, None)
-            is_vs_prop = getattr(vs_prop, "vs_property", False)
-            if not is_model_prop and not is_vs_prop:
+            cv_prop = getattr(self.context, prop, None)
+            is_cv_prop = getattr(cv_prop, "cv_property", False)
+            if not is_model_prop and not is_cv_prop:
                 yield Error(id=f"viewset.{self.id}", msg=f"{self.msg} at {self.context}: {prop}")
 
 
-class DetailView(ViewSetView, generic.DetailView):
+class DetailView(CrudView, generic.DetailView):
     template_name = "crud_views/view_detail.html"
 
-    vs_key = "detail"
-    vs_path = "detail"
-    vs_context_actions = crud_views_settings.detail_context_actions
-    vs_properties: List[str] = []
+    cv_key = "detail"
+    cv_path = "detail"
+    cv_context_actions = crud_views_settings.detail_context_actions
+    cv_properties: List[str] = []
 
     # texts and labels
-    vs_header_template: str = crud_views_settings.detail_header_template
-    vs_header_template_code: str = crud_views_settings.detail_header_template_code
-    vs_paragraph_template: str = crud_views_settings.detail_paragraph_template
-    vs_paragraph_template_code: str = crud_views_settings.detail_paragraph_template_code
-    vs_action_label_template: str = crud_views_settings.detail_action_label_template
-    vs_action_label_template_code: str = crud_views_settings.detail_action_label_template_code
-    vs_action_short_label_template: str = crud_views_settings.detail_action_short_label_template
-    vs_action_short_label_template_code: str = crud_views_settings.detail_action_short_label_template_code
+    cv_header_template: str = crud_views_settings.detail_header_template
+    cv_header_template_code: str = crud_views_settings.detail_header_template_code
+    cv_paragraph_template: str = crud_views_settings.detail_paragraph_template
+    cv_paragraph_template_code: str = crud_views_settings.detail_paragraph_template_code
+    cv_action_label_template: str = crud_views_settings.detail_action_label_template
+    cv_action_label_template_code: str = crud_views_settings.detail_action_label_template_code
+    cv_action_short_label_template: str = crud_views_settings.detail_action_short_label_template
+    cv_action_short_label_template_code: str = crud_views_settings.detail_action_short_label_template_code
 
-    vs_icon_action = "fa-regular fa-eye"
+    cv_icon_action = "fa-regular fa-eye"
 
     @classmethod
     def checks(cls) -> Iterable[Check]:
@@ -60,7 +60,7 @@ class DetailView(ViewSetView, generic.DetailView):
         yield from super().checks()
         yield PropertyCheck(context=cls, id="E300", attribute="attribute")   # todo
 
-    def vs_get_property(self, obj: object, property: str) -> Any:
+    def cv_get_property(self, obj: object, property: str) -> Any:
         p = getattr(self, property, None)
         if p:
             if not is_callable(p):
@@ -71,5 +71,5 @@ class DetailView(ViewSetView, generic.DetailView):
             return p
 
 
-class DetailViewPermissionRequired(ViewSetViewPermissionRequiredMixin, DetailView):  # this file
-    vs_permission = "view"
+class DetailViewPermissionRequired(CrudViewPermissionRequiredMixin, DetailView):  # this file
+    cv_permission = "view"

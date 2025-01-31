@@ -3,7 +3,7 @@ import django_tables2 as tables
 from tests.test1.app.models import Author
 from crud_views.lib.crispy import CrispyModelViewMixin, CrispyDeleteForm, CrispyModelForm
 from crud_views.lib.table import Table, UUIDLinkDetailColumn
-from crud_views.lib.view import vs_property
+from crud_views.lib.view import cv_property
 from crud_views.lib.views import (
     ListViewTableMixin,
     ListViewPermissionRequired, DeleteViewPermissionRequired, ListView, DeleteView, CreateViewPermissionRequired,
@@ -13,7 +13,7 @@ from crud_views.lib.viewset import ViewSet, path_regs
 from crud_views.lib.crispy import Column4
 from crispy_forms.layout import Row
 
-vs_author = ViewSet(
+cv_author = ViewSet(
     model=Author,
     name="author",
     pk=path_regs.UUID,
@@ -32,8 +32,8 @@ class AuthorListView(ListViewTableMixin, ListViewPermissionRequired):
     model = Author
     table_class = AuthorTable
 
-    vs = vs_author
-    vs_list_actions = [
+    cv_viewset = cv_author
+    cv_list_actions = [
         "detail",
         "update", "delete",  # "up", "down", "redirect_child"
     ]
@@ -41,15 +41,15 @@ class AuthorListView(ListViewTableMixin, ListViewPermissionRequired):
 
 class AuthorDetailView(DetailViewPermissionRequired):
     model = Author
-    vs = vs_author
-    vs_properties = [
+    cv_viewset = cv_author
+    cv_properties = [
         "full_name",
         "first_name",
         "last_name",
         "pseudonym",
     ]
 
-    @vs_property(foo=4711)
+    @cv_property(foo=4711)
     def full_name(self) -> str:
         return f"{self.object.first_name} {self.object.last_name}"
 
@@ -68,16 +68,16 @@ class AuthorForm(CrispyModelForm):
 class AuthorCreateView(CrispyModelViewMixin, CreateViewPermissionRequired):
     model = Author
     form_class = AuthorForm
-    vs = vs_author
+    cv_viewset = cv_author
 
 
 class AuthorUpdateView(CrispyModelViewMixin, UpdateViewPermissionRequired):
     model = Author
     form_class = AuthorForm
-    vs = vs_author
+    cv_viewset = cv_author
 
 
 class AuthorDeleteView(CrispyModelViewMixin, DeleteViewPermissionRequired):
     model = Author
     form_class = CrispyDeleteForm
-    vs = vs_author
+    cv_viewset = cv_author

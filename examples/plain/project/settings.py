@@ -128,4 +128,4 @@ LOGOUT_REDIRECT_URL = "/"
 
 # Django ViewSet configuration
 CRUD_VIEWS_THEME = "plain"
-CRUD_VIEWS_EXTENDS = "app/viewset.html"
+CRUD_VIEWS_EXTENDS = "app/crud_views.html"

@@ -4,14 +4,14 @@ from pydantic import BaseModel
 
 from .context import ViewContext
 from ..settings import crud_views_settings
-from ..exceptions import ViewSetViewError
+from ..exceptions import CrudViewError
 
 User = get_user_model()
 
 
 class ContextButton(BaseModel):
     """
-    A context button is a button that is rendered in the context of a ViewSetView
+    A context button is a button that is rendered in the context of a CrudView
     """
     key: str
     key_target: str

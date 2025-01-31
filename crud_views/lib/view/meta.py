@@ -5,9 +5,9 @@ from crud_views.lib.exceptions import cv_raise
 User = get_user_model()
 
 
-class ViewSetViewMetaClass(type):
+class CrudViewMetaClass(type):
     """
-    Registers ViewSetViews at ViewSet
+    Registers CrudViews at ViewSet
     """
 
     def __new__(cls, name, bases, attrs, **kwargs):

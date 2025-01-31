@@ -3,10 +3,10 @@ from django.utils.translation import gettext_lazy as _
 from django.views import generic
 
 from crud_views.lib.settings import crud_views_settings
-from crud_views.lib.view import ViewSetView, ViewSetViewPermissionRequiredMixin
+from crud_views.lib.view import CrudView, CrudViewPermissionRequiredMixin
 
 
-class CreateView(ViewSetView, generic.CreateView):
+class CreateView(CrudView, generic.CreateView):
     template_name = "crud_views/view_create.html"
 
     cv_key = "create"
@@ -46,5 +46,5 @@ class CreateView(ViewSetView, generic.CreateView):
         return super().form_valid(form)
 
 
-class CreateViewPermissionRequired(ViewSetViewPermissionRequiredMixin, CreateView):  # this file
+class CreateViewPermissionRequired(CrudViewPermissionRequiredMixin, CreateView):  # this file
     cv_permission = "add"

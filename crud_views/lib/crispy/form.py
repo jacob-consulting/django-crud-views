@@ -27,10 +27,10 @@ class CrispyFormMixin:
 
     The for has FormActions element with two buttons:
         - save
-        - cancel, which is linked to the cancel key defined the ViewSetView
+        - cancel, which is linked to the cancel key defined the CrudView
 
-    The mixin for ViewSetView(s) adds the view context cv_view to the form. CrispyModelViewMixin,
-    when added to a ViewSetView, sets this extra argument for the form in get_form_kwargs.
+    The mixin for CrudView(s) adds the view context cv_view to the form. CrispyModelViewMixin,
+    when added to a CrudView, sets this extra argument for the form in get_form_kwargs.
     """
 
     submit_label: str = _("Save")

@@ -10,7 +10,7 @@ class ViewSetKeyFoundError(Exception):
 class ViewSetError(Exception):
     pass
 
-class ViewSetViewError(Exception):
+class CrudViewError(Exception):
     pass
 
 class ParentViewSetError(Exception):

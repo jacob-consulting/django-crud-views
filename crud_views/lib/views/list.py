@@ -1,7 +1,7 @@
 from django.utils.translation import gettext as _
 from django.views import generic
 
-from crud_views.lib.view import ViewSetView, ViewSetViewPermissionRequiredMixin, ViewContext
+from crud_views.lib.view import CrudView, CrudViewPermissionRequiredMixin, ViewContext
 from crud_views.lib.settings import crud_views_settings
 
 # crispy may not be installed
@@ -13,7 +13,7 @@ except ImportError:
     layout = None
 
 
-class ListView(ViewSetView, generic.ListView):
+class ListView(CrudView, generic.ListView):
     template_name = "crud_views/view_list.html"
 
     cv_pk: bool = False  # does not need primary key
@@ -57,7 +57,7 @@ class ListView(ViewSetView, generic.ListView):
                                    self.cv_filter_header_template_code, )
 
 
-class ListViewPermissionRequired(ViewSetViewPermissionRequiredMixin, ListView):
+class ListViewPermissionRequired(CrudViewPermissionRequiredMixin, ListView):
     cv_permission = "view"
 
 

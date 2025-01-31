@@ -18,7 +18,7 @@ from .parentviewset import ParentViewSet
 from .. import check
 from ..check import CheckAttributeReg, Check
 from ..settings import crud_views_settings
-from ..view import ContextButton, ParentContextButton, ViewSetView, ViewContext, ViewSetViewPermissionRequiredMixin
+from ..view import ContextButton, ParentContextButton, CrudView, ViewContext, CrudViewPermissionRequiredMixin
 from ..view.buttons import FilterContextButton
 from ..views.manage import ManageView
 
@@ -74,7 +74,7 @@ class ViewSet(BaseModel):
 
     icon_header: str | None = None
 
-    _views: Dict[str, Type[ViewSetView]] = PrivateAttr(default_factory=empty_dict)  # noqa
+    _views: Dict[str, Type[CrudView]] = PrivateAttr(default_factory=empty_dict)  # noqa
 
     def __repr__(self):
         return f"ViewSet({self.name})"
@@ -111,7 +111,7 @@ class ViewSet(BaseModel):
     def has_view(self, name) -> bool:
         return name in self._views
 
-    def get_all_views(self) -> Dict[str, Type[ViewSetView]]:
+    def get_all_views(self) -> Dict[str, Type[CrudView]]:
         return self._views
 
     def checks(self) -> Iterable[Check]:
@@ -172,7 +172,7 @@ class ViewSet(BaseModel):
 
         return attrs
 
-    def get_queryset(self, view: ViewSetView) -> QuerySet:
+    def get_queryset(self, view: CrudView) -> QuerySet:
         """
         Queryset with respect to parent
         """
@@ -201,7 +201,7 @@ class ViewSet(BaseModel):
         # default queryset
         return self.model.objects.all()
 
-    def register_view_class(self, key: str, view_class: Type[ViewSetView]):
+    def register_view_class(self, key: str, view_class: Type[CrudView]):
         cv_raise(key not in self._views, f"key {key} already registered at {self}")
         self._views[key] = view_class
         # add manage view to context
@@ -213,7 +213,7 @@ class ViewSet(BaseModel):
     def is_view_registered(self, key: str) -> bool:
         return key in self._views
 
-    def get_view_class(self, key: str) -> Type[ViewSetView]:
+    def get_view_class(self, key: str) -> Type[CrudView]:
         cv_raise(self.is_view_registered(key), f"key {key} not registered at {self}", ViewSetKeyFoundError)
         return self._views[key]
 

@@ -2,12 +2,12 @@ from django.utils.translation import gettext as _
 from django.views import generic
 from django.views.generic.detail import SingleObjectMixin
 
-from crud_views.lib.view import ViewSetView
+from crud_views.lib.view import CrudView
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.viewset import path_regs
 
 
-class RedirectChildView(ViewSetView, SingleObjectMixin, generic.RedirectView):
+class RedirectChildView(CrudView, SingleObjectMixin, generic.RedirectView):
     cv_key = "redirect_child"
     cv_path = "child"
     cv_backend_only = True

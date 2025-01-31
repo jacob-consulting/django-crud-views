@@ -2,10 +2,10 @@ from django.http import HttpResponseRedirect
 from django.views import generic
 from django.views.generic.detail import SingleObjectMixin
 
-from crud_views.lib.view import ViewSetView, ViewSetViewPermissionRequiredMixin
+from crud_views.lib.view import CrudView, CrudViewPermissionRequiredMixin
 
 
-class ActionView(ViewSetView, SingleObjectMixin, generic.View):
+class ActionView(CrudView, SingleObjectMixin, generic.View):
     cv_list_action_method = "post"
 
     def post(self, request, *args, **kwargs):
@@ -21,5 +21,5 @@ class ActionView(ViewSetView, SingleObjectMixin, generic.View):
         raise NotImplementedError("Action not implemented")
 
 
-class ActionViewPermissionRequired(ViewSetViewPermissionRequiredMixin, ActionView):  # this file
+class ActionViewPermissionRequired(CrudViewPermissionRequiredMixin, ActionView):  # this file
     cv_permission = "change"

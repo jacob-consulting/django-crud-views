@@ -14,16 +14,16 @@ from typing_extensions import Self
 from crud_views.lib import check
 from crud_views.lib.check import Check, CheckAttributeReg, CheckExpression, CheckEitherAttribute, ContextActionCheck, \
     CheckAttribute, CheckAttributeTemplate
-from crud_views.lib.exceptions import cv_raise, ParentViewSetError, ViewSetViewError
+from crud_views.lib.exceptions import cv_raise, ParentViewSetError, CrudViewError
 from .buttons import ContextButton
 from .context import ViewContext
-from .meta import ViewSetViewMetaClass
+from .meta import CrudViewMetaClass
 from ..settings import crud_views_settings
 
 User = get_user_model()
 
 
-class ViewSetView(metaclass=ViewSetViewMetaClass):
+class CrudView(metaclass=CrudViewMetaClass):
     """
     A view that is part of a ViewSet
     """
@@ -100,7 +100,7 @@ class ViewSetView(metaclass=ViewSetViewMetaClass):
         elif template:
             result = render_to_string(template, data)
         else:
-            raise ViewSetViewError(f"no template or template_code provided for {cls}")
+            raise CrudViewError(f"no template or template_code provided for {cls}")
 
         # strip leading and trailing whitespaces and mark it as safe
         return mark_safe(result.strip())
@@ -201,7 +201,7 @@ class ViewSetView(metaclass=ViewSetViewMetaClass):
         # get kwargs to pass
         #   1. parent kwargs
         #   2. extra kwargs defined at ViewSet
-        #   3. additional kwargs provided by ViewSetView
+        #   3. additional kwargs provided by CrudView
         parent_url_args = self.cv_viewset.get_parent_url_args()
         for name in parent_url_args:
             value = self.kwargs.get(name)
@@ -228,7 +228,7 @@ class ViewSetView(metaclass=ViewSetViewMetaClass):
         return ViewContext(**kwargs)
 
     def cv_get_context_button(self, key: str) -> ContextButton | None:
-        # todo: first look in ViewSetView context_buttons
+        # todo: first look in CrudView context_buttons
         pass
 
         # then look as ViewSet context_buttons
@@ -304,7 +304,7 @@ class ViewSetView(metaclass=ViewSetViewMetaClass):
 
     def cv_get_child_url(self, name: str, key: str, obj: Model | None = None) -> str:
         """
-        Get the URL to the child from the current ViewSetView's context
+        Get the URL to the child from the current CrudView's context
         """
         viewset = self.cv_viewset.get_viewset(name)
         if viewset.parent.name != self.cv_viewset.name:
@@ -336,11 +336,11 @@ class ViewSetView(metaclass=ViewSetViewMetaClass):
         return data
 
 
-# ViewContext uses a string type hint to ViewSetView, so we need to rebuild the model here
+# ViewContext uses a string type hint to CrudView, so we need to rebuild the model here
 ViewContext.model_rebuild()
 
 
-class ViewSetViewPermissionRequiredMixin(PermissionRequiredMixin):
+class CrudViewPermissionRequiredMixin(PermissionRequiredMixin):
     cv_permission: str = None  # permission required for the view
 
     @classmethod

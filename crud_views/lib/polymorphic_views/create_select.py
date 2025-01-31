@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect
 from django.utils.translation import gettext_lazy as _
 from django.views import generic
 
-from crud_views.lib.view import ViewSetView, ViewSetViewPermissionRequiredMixin
+from crud_views.lib.view import CrudView, CrudViewPermissionRequiredMixin
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.polymorphic_views.utils import get_polymorphic_child_models_content_types
 
@@ -16,7 +16,7 @@ class PolymorphicContentTypeForm(forms.Form):
         self.fields["polymorphic_ctype_id"].choices = polymorphic_ctype_choices
 
 
-class PolymorphicCreateSelectView(ViewSetView, generic.FormView):
+class PolymorphicCreateSelectView(CrudView, generic.FormView):
     template_name = "crud_views/view_create.html"
     form_class = PolymorphicContentTypeForm
 
@@ -68,6 +68,6 @@ class PolymorphicCreateSelectView(ViewSetView, generic.FormView):
     #     return super().form_valid(form)
 
 
-class PolymorphicCreateSelectViewPermissionRequired(ViewSetViewPermissionRequiredMixin,
+class PolymorphicCreateSelectViewPermissionRequired(CrudViewPermissionRequiredMixin,
                                                     PolymorphicCreateSelectView):
     cv_permission = "add"

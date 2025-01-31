@@ -18,7 +18,7 @@ jobs:
       - name: Create virtual environment and install requirements
         run: |
           uv venv --python=3.12
-          uv pip install -r ${{ github.workspace }}/requirements/requirements-test.txt
+          uv pip install -r ${{ github.workspace }}/requirements/test.txt
 
       - name: Run the tests
         run: uv run nox

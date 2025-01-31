@@ -1,11 +1,11 @@
-from crud_views.lib.view import ViewSetViewPermissionRequiredMixin
-from .utils import PolymorphicViewSetViewMixin
+from crud_views.lib.view import CrudViewPermissionRequiredMixin
+from .utils import PolymorphicCrudViewMixin
 from ..views import DetailView
 
 
-class PolymorphicDetailView(PolymorphicViewSetViewMixin, DetailView):
+class PolymorphicDetailView(PolymorphicCrudViewMixin, DetailView):
     pass
 
 
-class PolymorphicDetailViewPermissionRequired(ViewSetViewPermissionRequiredMixin, PolymorphicDetailView):  # this file
-    vs_permission = "view"
+class PolymorphicDetailViewPermissionRequired(CrudViewPermissionRequiredMixin, PolymorphicDetailView):  # this file
+    cv_permission = "view"

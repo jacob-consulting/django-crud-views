@@ -1,0 +1,37 @@
+{% extends "app/base.html" %}
+
+{% load crud_views %}
+
+{% block content %}
+
+    <div class="card">
+        <div class="card-header">
+            <h5 class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3>
+                        {% block cv_header_icon %}
+                            {% cv_header_icon %}
+                        {% endblock cv_header_icon %}
+                        {% block cv_header %}
+                            {% cv_header %}
+                        {% endblock cv_header %}
+                    </h3>
+                </div>
+                {% block cv_context %}
+                    {% cv_context_actions object %}
+                {% endblock cv_context %}
+            </h5>
+            {% block cv_paragraph %}
+                {% cv_paragraph %}
+            {% endblock cv_paragraph %}
+        </div>
+        <div class="card-body">
+            {% block cv_filter %}
+            {% endblock cv_filter %}
+
+            {% block cv_content %}
+            {% endblock cv_content %}
+        </div>
+    </div>
+
+{% endblock content %}

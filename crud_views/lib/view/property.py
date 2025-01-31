@@ -1,9 +1,9 @@
 from functools import wraps
 
 
-def vs_property(foo, type=str, label:str|None = None):
+def cv_property(foo, type=str, label:str|None = None):
     """
-    Experimental property decorator for ViewSetView
+    Experimental property decorator for CrudView
     """
 
     def actual_decorator(func):
@@ -11,9 +11,9 @@ def vs_property(foo, type=str, label:str|None = None):
         def wrapper(*args, **kwargs):
             return func(*args, **kwargs)
 
-        wrapper.vs_property = True
-        wrapper.vs_type = type
-        wrapper.vs_label = label
+        wrapper.cv_property = True
+        wrapper.cv_type = type
+        wrapper.cv_label = label
 
         return wrapper
 

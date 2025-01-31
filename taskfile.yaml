@@ -35,12 +35,19 @@ tasks:
       - mkdocs serve -a localhost:8001
     silent: true
 
-  clean-pycache:
+  cleanup:
     cmds:
       - find . -type d -name "__pycache__" -exec rm -r {} +
+      - rm -rf .nox dist
     silent: true
 
   bump-patch:
     cmds:
       - bumpver update --patch --no-fetch
+    silent: true
+
+  test:
+    cmds:
+      - uv run nox
+      - rm -rf .nox
     silent: true

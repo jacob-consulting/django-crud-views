@@ -74,34 +74,34 @@ class DetailTable(Table):
 
 class DetailListView(ListViewTableMixin, ListViewPermissionRequired):
     model = Detail
-    cv = cv_detail
+    cv_viewset = cv_detail
     table_class = DetailTable
 
 
 class DetailCreateView(CrispyModelViewMixin, MessageMixin, CreateViewPermissionRequired):
     model = Author
     form_class = DetailForm
-    cv = cv_detail
+    cv_viewset = cv_detail
     cv_message = "Created detail »{object}«"
 
 
 class DetailUpdateView(CrispyModelViewMixin, MessageMixin, UpdateViewPermissionRequired):
     model = Detail
     form_class = DetailForm
-    cv = cv_detail
+    cv_viewset = cv_detail
     cv_message = "Updated detail »{object}«"
 
 
 class DetailDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequired):
     model = Detail
     form_class = CrispyDeleteForm
-    cv = cv_detail
+    cv_viewset = cv_detail
     cv_message = "Deleted detail »{object}«"
 
 
 class DetailDetailView(DetailLayoutViewPermissionRequired):
     model = Detail
-    cv = cv_detail
+    cv_viewset = cv_detail
 
     @property
     def cv_layout(self) -> Layout:

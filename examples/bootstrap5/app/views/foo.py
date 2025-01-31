@@ -36,29 +36,29 @@ class FooTable(Table):
 class FooListView(ListViewTableMixin, ListViewPermissionRequired):
     model = Foo
     table_class = FooTable
-    cv = cv_foo
+    cv_viewset = cv_foo
     cv_list_actions = ["detail", "update", "delete"]
 
 
 class FooDetailView(DetailViewPermissionRequired):
     model = Foo
-    cv = cv_foo
+    cv_viewset = cv_foo
     cv_properties = ["id", "name"]
 
 
 class FooUpdateView(CrispyModelViewMixin, UpdateViewPermissionRequired):
     model = Foo
     form_class = FooForm
-    cv = cv_foo
+    cv_viewset = cv_foo
 
 
 class FooCreateView(CrispyModelViewMixin, CreateViewPermissionRequired):
     model = Foo
     form_class = FooForm
-    cv = cv_foo
+    cv_viewset = cv_foo
 
 
 class FooDeleteView(CrispyModelViewMixin, DeleteViewPermissionRequired):
     model = Foo
     form_class = CrispyDeleteForm
-    cv = cv_foo
+    cv_viewset = cv_foo

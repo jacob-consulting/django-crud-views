@@ -60,21 +60,21 @@ class ParentContextButton(ContextButton):
     def get_context(self, context: ViewContext) -> dict:
 
         # does the view has no parent?
-        if not context.view.cv.parent:
+        if not context.view.cv_viewset.parent:
             return dict()
 
         # get parent view class, defined by target
-        parent = context.view.cv.parent
+        parent = context.view.cv_viewset.parent
         cls = parent.viewset.get_view_class(self.key_target)
 
         dict_kwargs = dict(
             cv_access=False,
-            cv_icon_action=cls.cv.icon_header
+            cv_icon_action=cls.cv_viewset.icon_header
         )
 
         # parent url kwargs
         kwargs = dict()
-        for idx, arg in enumerate(context.view.cv.get_parent_url_args()):
+        for idx, arg in enumerate(context.view.cv_viewset.get_parent_url_args()):
             if idx == 0:
                 if cls.cv_object:
                     kwargs[parent.viewset.pk_name] = context.view.kwargs[arg]

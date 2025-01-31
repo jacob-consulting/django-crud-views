@@ -86,7 +86,7 @@ class AuthorListView(ListViewTableMixin,
     filterset_class = AuthorFilter
     formhelper_class = AuthorFilterFormHelper
 
-    cv = cv_author
+    cv_viewset = cv_author
     cv_list_actions = ["detail", "update", "delete", "up", "down", "redirect_child"]
 
     table_class = AuthorTable
@@ -95,27 +95,27 @@ class AuthorListView(ListViewTableMixin,
 class AuthorCreateView(CrispyModelViewMixin, MessageMixin, CreateViewPermissionRequired):
     model = Author
     form_class = AuthorCreateForm
-    cv = cv_author
+    cv_viewset = cv_author
     cv_message = "Created author »{object}«"
 
 
 class AuthorUpdateView(CrispyModelViewMixin, MessageMixin, UpdateViewPermissionRequired):
     model = Author
     form_class = AuthorUpdateForm
-    cv = cv_author
+    cv_viewset = cv_author
     cv_message = "Updated author »{object}«"
 
 
 class AuthorDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequired):
     model = Author
     form_class = CrispyDeleteForm
-    cv = cv_author
+    cv_viewset = cv_author
     cv_message = "Deleted author »{object}«"
 
 
 class AuthorDetailView(DetailViewPermissionRequired):
     model = Author
-    cv = cv_author
+    cv_viewset = cv_author
     cv_properties = [
         "full_name",
         "first_name",
@@ -135,13 +135,13 @@ class AuthorDetailView(DetailViewPermissionRequired):
 
 class AuthorUpView(MessageMixin, OrderedUpViewPermissionRequired):
     model = Author
-    cv = cv_author
+    cv_viewset = cv_author
     cv_message = "Successfully moved author »{object}« up"
 
 
 class AuthorDownView(MessageMixin, OrderedUpDownPermissionRequired):
     model = Author
-    cv = cv_author
+    cv_viewset = cv_author
     cv_message = "Successfully moved author »{object}« down"
 
 
@@ -151,4 +151,4 @@ class RedirectBooksView(RedirectChildView):
     cv_redirect_key = "list"
     cv_icon_action = "fa-regular fa-address-book"
 
-    cv = cv_author
+    cv_viewset = cv_author

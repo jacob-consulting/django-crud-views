@@ -21,28 +21,28 @@ class BazTable(Table):
 class BazListView(ListViewTableMixin, ListViewPermissionRequired):
     model = Baz
     table_class = BazTable
-    cv = cv_baz
+    cv_viewset = cv_baz
     cv_list_actions = ["detail", "update", "delete"]
 
 
 class BazDetailView(DetailViewPermissionRequired):
     model = Baz
-    cv = cv_baz
+    cv_viewset = cv_baz
     cv_properties = ["id", "name"]
 
 
 class BazUpdateView(UpdateViewPermissionRequired):
     model = Baz
     fields = ["name"]
-    cv = cv_baz
+    cv_viewset = cv_baz
 
 
 class BazCreateView(CreateViewPermissionRequired):
     model = Baz
     fields = ["name"]
-    cv = cv_baz
+    cv_viewset = cv_baz
 
 
 class BazDeleteView(DeleteViewPermissionRequired):
     model = Baz
-    cv = cv_baz
+    cv_viewset = cv_baz

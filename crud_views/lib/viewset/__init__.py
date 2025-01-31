@@ -90,7 +90,7 @@ class ViewSet(BaseModel):
         if switch == "yes" or switch == "debug_only" and settings.DEBUG:
             class AutoManageView(ManageView):
                 model = self.model
-                cv = self
+                cv_viewset = self
 
         return self
 

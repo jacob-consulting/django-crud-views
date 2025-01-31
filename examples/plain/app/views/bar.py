@@ -22,28 +22,28 @@ class BarTable(Table):
 class BarListView(ListViewTableMixin, ListViewPermissionRequired):
     model = Bar
     table_class = BarTable
-    cv = cv_bar
+    cv_viewset = cv_bar
     cv_list_actions = ["detail", "update", "delete"]
 
 
 class BarDetailView(DetailViewPermissionRequired):
     model = Bar
-    cv = cv_bar
+    cv_viewset = cv_bar
     cv_properties = ["id", "name"]
 
 
 class BarUpdateView(UpdateViewPermissionRequired):
     model = Bar
     fields = ["name"]
-    cv = cv_bar
+    cv_viewset = cv_bar
 
 
 class BarCreateView(CreateViewPermissionRequired):
     model = Bar
     fields = ["name"]
-    cv = cv_bar
+    cv_viewset = cv_bar
 
 
 class BarDeleteView(DeleteViewPermissionRequired):
     model = Bar
-    cv = cv_bar
+    cv_viewset = cv_bar

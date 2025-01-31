@@ -27,7 +27,7 @@ class ViewSetView(metaclass=ViewSetViewMetaClass):
     """
     A view that is part of a ViewSet
     """
-    cv: 'ViewSet' = None
+    cv_viewset: 'ViewSet' = None
     cv_object: bool = True  # view has object context (only list views do not have object context)
     cv_key: str = None  # the key to register the view (i.e. detail, list, create, update, delete)
     cv_path: str = None  # i.e. detail, update or "" for list views
@@ -82,7 +82,7 @@ class ViewSetView(metaclass=ViewSetViewMetaClass):
         return url
 
     def get_queryset(self):
-        return self.cv.get_queryset(view=self)
+        return self.cv_viewset.get_queryset(view=self)
 
     @classmethod
     def cv_has_access(cls, user: User, obj: Model | None = None) -> bool:
@@ -107,7 +107,7 @@ class ViewSetView(metaclass=ViewSetViewMetaClass):
 
     def cv_get_header_icon(self) -> str:
         view_icon = self.cv_icon_header
-        icon = view_icon or self.cv.icon_header
+        icon = view_icon or self.cv_viewset.icon_header
         return icon
 
     @property
@@ -124,13 +124,13 @@ class ViewSetView(metaclass=ViewSetViewMetaClass):
 
     @classmethod
     def cv_get_action_label(cls, context: ViewContext) -> str:
-        return cls.render_snippet(cls.cv.get_meta(context),
+        return cls.render_snippet(cls.cv_viewset.get_meta(context),
                                   cls.cv_action_label_template,
                                   cls.cv_action_label_template_code, )
 
     @classmethod
     def cv_get_action_short_label(cls, context: ViewContext) -> str:
-        return cls.render_snippet(cls.cv.get_meta(context),
+        return cls.render_snippet(cls.cv_viewset.get_meta(context),
                                   cls.cv_action_short_label_template,
                                   cls.cv_action_short_label_template_code, )
 
@@ -169,7 +169,7 @@ class ViewSetView(metaclass=ViewSetViewMetaClass):
         Get the class of the view or for a sibling of the view from ViewSet
         """
         key = key or self.cv_key
-        cls = self.__class__ if key == self.cv_key else self.cv.get_view_class(key)
+        cls = self.__class__ if key == self.cv_key else self.cv_viewset.get_view_class(key)
         return cls
 
     def cv_get_cls_assert_object(self, key: str | None = None, obj: Model | None = None) -> Type[Self]:
@@ -196,13 +196,13 @@ class ViewSetView(metaclass=ViewSetViewMetaClass):
 
         # if view requires object, add pk using the pk_name defined at ViewSet
         if cls.cv_object:
-            kwargs[self.cv.pk_name] = obj.pk
+            kwargs[self.cv_viewset.pk_name] = obj.pk
 
         # get kwargs to pass
         #   1. parent kwargs
         #   2. extra kwargs defined at ViewSet
         #   3. additional kwargs provided by ViewSetView
-        parent_url_args = self.cv.get_parent_url_args()
+        parent_url_args = self.cv_viewset.get_parent_url_args()
         for name in parent_url_args:
             value = self.kwargs.get(name)
             if not value:
@@ -210,7 +210,7 @@ class ViewSetView(metaclass=ViewSetViewMetaClass):
             kwargs[name] = value
         kwargs.update(cls.cv_get_url_extra_kwargs())
 
-        router_name = self.cv.get_router_name(key)
+        router_name = self.cv_viewset.get_router_name(key)
         url_path = reverse(router_name, kwargs=kwargs)
 
         return url_path
@@ -232,7 +232,7 @@ class ViewSetView(metaclass=ViewSetViewMetaClass):
         pass
 
         # then look as ViewSet context_buttons
-        for cb in self.cv.context_buttons:
+        for cb in self.cv_viewset.context_buttons:
             if cb.key == key:
                 return cb
         return None
@@ -245,7 +245,7 @@ class ViewSetView(metaclass=ViewSetViewMetaClass):
         if not obj:
             return None
         pk = str(obj.pk).replace("-", "").replace(" ", "")
-        return f"{self.cv.name}_{key}_{pk}"
+        return f"{self.cv_viewset.name}_{key}_{pk}"
 
     def cv_get_context(self,
                        key: str | None = None,
@@ -306,9 +306,9 @@ class ViewSetView(metaclass=ViewSetViewMetaClass):
         """
         Get the URL to the child from the current ViewSetView's context
         """
-        viewset = self.cv.get_viewset(name)
-        if viewset.parent.name != self.cv.name:
-            raise ParentViewSetError(f"ViewSet {viewset} is no child of {self.cv}")
+        viewset = self.cv_viewset.get_viewset(name)
+        if viewset.parent.name != self.cv_viewset.name:
+            raise ParentViewSetError(f"ViewSet {viewset} is no child of {self.cv_viewset}")
         # todo: check if this is a child of self.cv
         name = viewset.get_router_name(key)
         args = viewset.get_parent_url_args()
@@ -327,7 +327,7 @@ class ViewSetView(metaclass=ViewSetViewMetaClass):
         Metadata from ViewSet plus ViewContext
         """
         context = self.cv_get_view_context()
-        data = self.cv.get_meta(context=context)
+        data = self.cv_viewset.get_meta(context=context)
 
         # add view specific data
         if hasattr(self, "object"):
@@ -355,14 +355,14 @@ class ViewSetViewPermissionRequiredMixin(PermissionRequiredMixin):
     @cached_property
     def permission_required(self) -> str:
         cv_raise(self.cv_permission is not None, f"cv_permission not set at {self}")
-        perms = self.cv.permissions  # noqa
+        perms = self.cv_viewset.permissions  # noqa
         perm = perms.get(self.cv_permission)
         assert perm, f"permission {self.cv_permission} not found at {self}"
         return perm
 
     @classmethod
     def cv_has_access(cls, user: User, obj: Model | None = None) -> bool:
-        perm = cls.cv.permissions.get(cls.cv_permission)
+        perm = cls.cv_viewset.permissions.get(cls.cv_permission)
         perms = (perm,) if perm else tuple()
         has_access = user.has_perms(perms)
         return has_access

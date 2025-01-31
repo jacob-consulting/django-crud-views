@@ -20,28 +20,28 @@ class FooTable(Table):
 class FooListView(ListViewTableMixin, ListViewPermissionRequired):
     model = Foo
     table_class = FooTable
-    cv = cv_foo
+    cv_viewset = cv_foo
     cv_list_actions = ["detail", "update", "delete"]
 
 
 class FooDetailView(DetailViewPermissionRequired):
     model = Foo
-    cv = cv_foo
+    cv_viewset = cv_foo
     cv_properties = ["id", "name"]
 
 
 class FooUpdateView(UpdateViewPermissionRequired):
     model = Foo
     fields = ["name"]
-    cv = cv_foo
+    cv_viewset = cv_foo
 
 
 class FooCreateView(CreateViewPermissionRequired):
     model = Foo
     fields = ["name"]
-    cv = cv_foo
+    cv_viewset = cv_foo
 
 
 class FooDeleteView(DeleteViewPermissionRequired):
     model = Foo
-    cv = cv_foo
+    cv_viewset = cv_foo

@@ -1,4 +1,4 @@
-# Django CRUD Views - An app for creating CRUD views
+# Django CRUD Views
 
 Managing CRUD (Create, Read, Update, Delete) operations is a common requirement in Django applications. While Django’s
 class-based views provide flexibility, implementing CRUD functionality often involves repetitive code.

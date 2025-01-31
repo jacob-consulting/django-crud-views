@@ -1,7 +1,0 @@
-nox
-pytest
-pytest-cov
-pytest-random-order
-pytest-mock
-pytest-django
-lxml

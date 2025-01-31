@@ -132,8 +132,8 @@ LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
 # Django ViewSet configuration
-VIEWSET_THEME = "bootstrap5"
-VIEWSET_EXTENDS = "app/viewset.html"
+CRUD_VIEWS_THEME = "bootstrap5"
+CRUD_VIEWS_EXTENDS = "app/viewset.html"
 
 # crispy
 CRISPY_TEMPLATE_PACK = "bootstrap5"

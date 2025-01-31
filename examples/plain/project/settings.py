@@ -127,5 +127,5 @@ LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
 # Django ViewSet configuration
-VIEWSET_THEME = "plain"
-VIEWSET_EXTENDS = "app/viewset.html"
+CRUD_VIEWS_THEME = "plain"
+CRUD_VIEWS_EXTENDS = "app/viewset.html"

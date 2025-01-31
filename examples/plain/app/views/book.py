@@ -23,7 +23,7 @@ class BookTable(Table):
 
 class BookListView(ListViewTableMixin, ListViewPermissionRequired):
     model = Book
-    cv = cv_book
+    cv_viewset = cv_book
     # cv_list_actions = ["detail", "update", "delete"]
 
     table_class = BookTable
@@ -31,21 +31,21 @@ class BookListView(ListViewTableMixin, ListViewPermissionRequired):
 
 class BookDetailView(DetailViewPermissionRequired):
     model = Book
-    cv = cv_book
+    cv_viewset = cv_book
 
 
 class BookUpdateView(UpdateViewPermissionRequired):
     model = Book
     fields = ["title", "price"]
-    cv = cv_book
+    cv_viewset = cv_book
 
 
 class BookCreateView(CreateViewPermissionRequired):
     model = Book
     fields = ["title", "price"]
-    cv = cv_book
+    cv_viewset = cv_book
 
 
 class BookDeleteView(DeleteViewPermissionRequired):
     model = Book
-    cv = cv_book
+    cv_viewset = cv_book

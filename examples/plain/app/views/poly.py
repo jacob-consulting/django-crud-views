@@ -25,7 +25,7 @@ class PolyTable(Table):
 class PolyListView(ListViewTableMixin, ListViewPermissionRequired):
     model = Poly
     table_class = PolyTable
-    cv = cv_poly
+    cv_viewset = cv_poly
     cv_list_actions = [
         "detail",
         "update",
@@ -37,7 +37,7 @@ class PolyListView(ListViewTableMixin, ListViewPermissionRequired):
 class PolyCreateSelectView(PolymorphicCreateSelectView):
     model = Poly
     # fields = ["shared"]
-    cv = cv_poly
+    cv_viewset = cv_poly
 
 
 PolyOneFormCreate = modelform_factory(
@@ -59,7 +59,7 @@ PolyTwoFormCreate = modelform_factory(
 
 class PolyCreateView(PolymorphicCreateViewPermissionRequired):
     model = Poly
-    cv = cv_poly
+    cv_viewset = cv_poly
     polymorphic_forms = {
         PolyOne: PolyOneFormCreate,
         PolyTwo: PolyTwoFormCreate
@@ -85,7 +85,7 @@ PolyTwoFormUpdate = modelform_factory(
 
 class PolyUpdateView(PolymorphicUpdateViewPermissionRequired):
     model = Poly
-    cv = cv_poly
+    cv_viewset = cv_poly
     polymorphic_forms = {
         PolyOne: PolyOneFormUpdate,
         PolyTwo: PolyTwoFormUpdate
@@ -94,11 +94,11 @@ class PolyUpdateView(PolymorphicUpdateViewPermissionRequired):
 
 class PolyDeleteView(PolymorphicDeleteViewPermissionRequired):
     model = Poly
-    cv = cv_poly
+    cv_viewset = cv_poly
 
 
 class PolyDetailView(PolymorphicDetailViewPermissionRequired):
     model = Poly
-    cv = cv_poly
+    cv_viewset = cv_poly
     cv_properties = ["id", "shared"]
 

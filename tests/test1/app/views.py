@@ -32,7 +32,7 @@ class AuthorListView(ListViewTableMixin, ListViewPermissionRequired):
     model = Author
     table_class = AuthorTable
 
-    cv = cv_author
+    cv_viewset = cv_author
     cv_list_actions = [
         "detail",
         "update", "delete",  # "up", "down", "redirect_child"
@@ -41,7 +41,7 @@ class AuthorListView(ListViewTableMixin, ListViewPermissionRequired):
 
 class AuthorDetailView(DetailViewPermissionRequired):
     model = Author
-    cv = cv_author
+    cv_viewset = cv_author
     cv_properties = [
         "full_name",
         "first_name",
@@ -68,16 +68,16 @@ class AuthorForm(CrispyModelForm):
 class AuthorCreateView(CrispyModelViewMixin, CreateViewPermissionRequired):
     model = Author
     form_class = AuthorForm
-    cv = cv_author
+    cv_viewset = cv_author
 
 
 class AuthorUpdateView(CrispyModelViewMixin, UpdateViewPermissionRequired):
     model = Author
     form_class = AuthorForm
-    cv = cv_author
+    cv_viewset = cv_author
 
 
 class AuthorDeleteView(CrispyModelViewMixin, DeleteViewPermissionRequired):
     model = Author
     form_class = CrispyDeleteForm
-    cv = cv_author
+    cv_viewset = cv_author

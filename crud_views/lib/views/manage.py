@@ -38,7 +38,7 @@ class ManageView(PermissionRequiredMixin, ViewSetView, generic.TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        permissions = self.cv.permissions
+        permissions = self.cv_viewset.permissions
         rows = []
         for short, long in permissions.items():
             rows.append(dict(
@@ -48,7 +48,7 @@ class ManageView(PermissionRequiredMixin, ViewSetView, generic.TemplateView):
             ))
         views = self.get_view_data()
         context.update({
-            "cv": self.cv,
+            "cv": self.cv_viewset,
             "data": rows,
             "views": views
         })
@@ -56,7 +56,7 @@ class ManageView(PermissionRequiredMixin, ViewSetView, generic.TemplateView):
 
     def get_view_data(self):
         data = OrderedDict()
-        for key, view in self.cv.get_all_views().items():
+        for key, view in self.cv_viewset.get_all_views().items():
             view_data = OrderedDict({
                 "base": OrderedDict({
                     "class": str(view.__class__),

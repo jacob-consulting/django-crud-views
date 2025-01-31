@@ -38,13 +38,13 @@ class BazTable(Table):
 class BazListView(ListViewTableMixin, ListViewPermissionRequired):
     model = Baz
     table_class = BazTable
-    cv = cv_baz
+    cv_viewset = cv_baz
     cv_list_actions = ["detail", "update", "delete"]
 
 
 class BazDetailView(DetailViewPermissionRequired):
     model = Baz
-    cv = cv_baz
+    cv_viewset = cv_baz
     cv_properties = ["id", "name"]
 
 
@@ -52,16 +52,16 @@ class BazUpdateView(CrispyModelViewMixin, UpdateViewPermissionRequired):
     model = Baz
     form_class = BazForm
 
-    cv = cv_baz
+    cv_viewset = cv_baz
 
 
 class BazCreateView(CrispyModelViewMixin, CreateViewPermissionRequired):
     model = Baz
     form_class = BazForm
-    cv = cv_baz
+    cv_viewset = cv_baz
 
 
 class BazDeleteView(CrispyModelViewMixin, DeleteViewPermissionRequired):
     model = Baz
     form_class = CrispyDeleteForm
-    cv = cv_baz
+    cv_viewset = cv_baz

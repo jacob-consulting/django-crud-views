@@ -35,10 +35,10 @@ class CreateView(ViewSetView, generic.CreateView):
         Set parent model instance at form instance
         """
 
-        parent_model = self.cv.get_parent_model()
+        parent_model = self.cv_viewset.get_parent_model()
         if parent_model:
-            attr = self.cv.get_parent_attributes(first_only=True)
-            arg = self.cv.get_parent_url_args(first_only=True)
+            attr = self.cv_viewset.get_parent_attributes(first_only=True)
+            arg = self.cv_viewset.get_parent_url_args(first_only=True)
             pk = self.kwargs[arg]
             parent = get_object_or_404(parent_model, pk=pk)
             setattr(form.instance, attr, parent)

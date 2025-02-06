@@ -60,15 +60,12 @@ class DetailLayoutView(CrudView, generic.DetailView):
     cv_properties: List[str] = []
 
     # texts and labels
-    cv_header_template: str = crud_views_settings.detail_header_template
-    cv_header_template_code: str = crud_views_settings.detail_header_template_code
-    cv_paragraph_template: str = crud_views_settings.detail_paragraph_template
-    cv_paragraph_template_code: str = crud_views_settings.detail_paragraph_template_code
-    cv_action_label_template: str = crud_views_settings.detail_action_label_template
-    cv_action_label_template_code: str = crud_views_settings.detail_action_label_template_code
-    cv_action_short_label_template: str = crud_views_settings.detail_action_short_label_template
-    cv_action_short_label_template_code: str = crud_views_settings.detail_action_short_label_template_code
+    cv_header_template: str | None = "crud_views/snippets/header/detail.html"
+    cv_paragraph_template: str | None = "crud_views/snippets/paragraph/detail.html"
+    cv_action_label_template: str | None = "crud_views/snippets/action/detail.html"
+    cv_action_short_label_template: str | None = "crud_views/snippets/action_short/detail.html"
 
+    # icons
     cv_icon_action = "fa-regular fa-eye"
 
     # todo: add system checks

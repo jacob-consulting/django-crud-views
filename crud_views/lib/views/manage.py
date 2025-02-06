@@ -18,15 +18,12 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
     cv_context_actions = crud_views_settings.manage_context_actions
 
     # texts and labels
-    cv_header_template: str = crud_views_settings.manage_header_template
-    cv_header_template_code: str = crud_views_settings.manage_header_template_code
-    cv_paragraph_template: str = crud_views_settings.manage_paragraph_template
-    cv_paragraph_template_code: str = crud_views_settings.manage_paragraph_template_code
-    cv_action_label_template: str = crud_views_settings.manage_action_label_template
-    cv_action_label_template_code: str = crud_views_settings.manage_action_label_template_code
-    cv_action_short_label_template: str = crud_views_settings.manage_action_short_label_template
-    cv_action_short_label_template_code: str = crud_views_settings.manage_action_short_label_template_code
+    cv_header_template: str | None = "crud_views/snippets/header/manage.html"
+    cv_paragraph_template: str | None = "crud_views/snippets/paragraph/manage.html"
+    cv_action_label_template: str | None = "crud_views/snippets/action/manage.html"
+    cv_action_short_label_template: str | None = "crud_views/snippets/action_short/manage.html"
 
+    # icons
     cv_icon_action = "fa-solid fa-gear"
     cv_icon_header = "fa-solid fa-gear"
 

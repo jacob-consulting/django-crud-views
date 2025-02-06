@@ -49,6 +49,10 @@ class CrudView(metaclass=CrudViewMetaClass):
     cv_action_label_template_code: str | None = None  # template code to render action label
     cv_action_short_label_template: str | None = None  # template snippet to render short action label without icons
     cv_action_short_label_template_code: str | None = None  # template code to render short  action label  without icons
+    cv_filter_header_template: str | None = None  # template snippet to render filter header
+    cv_filter_header_template_code: str | None = None  # template code to render filter header
+    cv_message_template: str | None = None  # template snippet to render messages
+    cv_message_template_code: str | None = None  # template code to render messages
 
     # icons
     cv_icon_action: str | None = None  # font awesome icon

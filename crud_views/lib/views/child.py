@@ -13,11 +13,8 @@ class RedirectChildView(CrudView, SingleObjectMixin, generic.RedirectView):
     cv_backend_only = True
 
     # texts and labels
-    cv_action_label_template: str = crud_views_settings.child_action_label_template
-    cv_action_label_template_code: str = crud_views_settings.child_action_label_template_code
-    cv_action_short_label_template: str = crud_views_settings.child_action_short_label_template
-    cv_action_short_label_template_code: str = crud_views_settings.child_action_short_label_template_code
-
+    cv_action_label_template: str| None = "crud_views/snippets/action/child.html"
+    cv_action_short_label_template: str| None = "crud_views/snippets/action_short/child.html"
 
     def get_redirect_url(self, *args, **kwargs):
         obj = self.get_object()

@@ -19,15 +19,14 @@ class OrderedUpView(OrderedCheckBase, ActionView):
     cv_backend_only = True
 
     # texts and labels
-    cv_action_label_template: str = crud_views_settings.up_action_label_template
-    cv_action_label_template_code: str = crud_views_settings.up_action_label_template_code
-    cv_action_short_label_template: str = crud_views_settings.up_action_short_label_template
-    cv_action_short_label_template_code: str = crud_views_settings.up_action_short_label_template_code
+    cv_action_label_template: str| None = "crud_views/snippets/action/up.html"
+    cv_action_short_label_template: str| None = "crud_views/snippets/action_short/up.html"
 
-    cv_message_template: str | None = crud_views_settings.up_action_message_template
-    cv_message_template_code: str | None = crud_views_settings.up_action_message_template_code
-
+    # icons
     cv_icon_action = "fa-regular fa-circle-up"
+
+    # messages
+    cv_message_template: str | None = "crud_views/snippets/message/up.html"
 
     def action(self, context: dict) -> bool:
         self.object.up()
@@ -45,15 +44,14 @@ class OrderedDownView(OrderedCheckBase, ActionView):
     cv_backend_only = True
 
     # texts and labels
-    cv_action_label_template: str = crud_views_settings.down_action_label_template
-    cv_action_label_template_code: str = crud_views_settings.down_action_label_template_code
-    cv_action_short_label_template: str = crud_views_settings.down_action_short_label_template
-    cv_action_short_label_template_code: str = crud_views_settings.down_action_short_label_template_code
+    cv_action_label_template: str| None = "crud_views/snippets/action/down.html"
+    cv_action_short_label_template: str| None = "crud_views/snippets/action_short/down.html"
 
-    cv_message_template: str | None = crud_views_settings.down_action_message_template
-    cv_message_template_code: str | None = crud_views_settings.down_action_message_template_code
-
+    # icons
     cv_icon_action = "fa-regular fa-circle-down"
+
+    # messages
+    cv_message_template: str | None = "crud_views/snippets/message/down.html"
 
     def action(self, context: dict) -> bool:
         self.object.down()

@@ -24,18 +24,14 @@ class ListView(CrudView, generic.ListView):
     cv_context_actions = crud_views_settings.list_context_actions
 
     # texts and labels
-    cv_header_template: str = crud_views_settings.list_header_template
-    cv_header_template_code: str = crud_views_settings.list_header_template_code
-    cv_paragraph_template: str = crud_views_settings.list_paragraph_template
-    cv_paragraph_template_code: str = crud_views_settings.list_paragraph_template_code
-    cv_action_label_template: str = crud_views_settings.list_action_label_template
-    cv_action_label_template_code: str = crud_views_settings.list_action_label_template_code
-    cv_action_short_label_template: str = crud_views_settings.list_action_short_label_template
-    cv_action_short_label_template_code: str = crud_views_settings.list_action_short_label_template_code
+    cv_header_template: str | None = "crud_views/snippets/header/list.html"
+    cv_paragraph_template: str | None = "crud_views/snippets/paragraph/list.html"
+    cv_action_label_template: str | None = "crud_views/snippets/action/list.html"
+    cv_action_short_label_template: str | None = "crud_views/snippets/action_short/list.html"
+    cv_filter_header_template: str | None = "crud_views/snippets/header/filter.html"
+    cv_filter_header_template_code: str | None = None
 
-    cv_filter_header_template: str | None = crud_views_settings.filter_header_template
-    cv_filter_header_template_code: str | None = crud_views_settings.filter_header_template_code
-
+    # icons
     cv_icon_action = "fa-regular fa-rectangle-list"
 
     # todo: add check for cv_filter_header_template/cv_filter_header_template_code

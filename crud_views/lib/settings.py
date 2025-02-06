@@ -57,13 +57,16 @@ class CrudViewsSettings(BaseModel):
     @property
     def check_messages(self) -> List[CheckMessage]:
 
-        def check_template(t):
+        def check_template(t, required: str | None = None):
+            if required and not t:
+                self._check_messages.append(Error(id="E100", msg=f"settings.{required} is required"))
+                return
             try:
                 get_template(t)
             except TemplateDoesNotExist as exc:
                 self._check_messages.append(Error(id="E100", msg=f"template {t} not found"))
 
-        check_template(self.extends)
+        check_template(self.extends, "CRUD_VIEWS_EXTENDS")
 
         return self._check_messages
 

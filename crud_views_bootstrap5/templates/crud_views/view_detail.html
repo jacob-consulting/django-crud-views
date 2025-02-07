@@ -5,15 +5,6 @@
 
 {% block cv_content %}
 
-    <div id="objectProperties">
-
-        {% for property in view.cv_properties %}
-            <div class="cv-property">
-                <span class="cv-property-name">{% cv_property_label object property %}:</span>
-                <span class="cv-property-value">{% cv_property_value object property %}</span>
-            </div>
-
-        {% endfor %}
-    </div>
+    {% include "crud_views/view_detail_include.html" %}
 
 {% endblock cv_content %}

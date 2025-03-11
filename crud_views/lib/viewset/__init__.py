@@ -321,12 +321,8 @@ class ViewSet(BaseModel):
         content_type = ContentType.objects.get_for_model(model)
         permissions = OrderedDict()
         for permission in Permission.objects.filter(content_type=content_type):
-            action, model_name = permission.codename.split("_")  # noqa
-            cv_raise(model_name == model._meta.model_name,
-                     f"permission model name {model_name} "
-                     f"does not match ViewSet model name {model._meta.model_name} "
-                     f"at {self}")
-            assert model_name == model._meta.model_name  # noqa
+            # todo: model name must in codename
+            action = permission.codename.split(f"_{permission.content_type.model}")[0]
             permissions[action] = f"{permission.content_type.app_label}.{permission.codename}"
         return permissions
 

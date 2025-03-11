@@ -1,5 +1,5 @@
 from functools import cached_property
-from typing import Dict, List, Type, Any, Iterable
+from typing import Dict, List, Type, Any, Iterable, Tuple
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import PermissionRequiredMixin
@@ -188,19 +188,27 @@ class CrudView(metaclass=CrudViewMetaClass):
     def cv_get_url_extra_kwargs(cls) -> dict:
         return dict()
 
-    def cv_get_url(self, key: str | None = None, obj=None, extra_kwargs: dict | None = None) -> str:
+    def cv_get_router_and_args(self, key: str | None = None, obj=None, extra_kwargs: dict | None = None) -> Tuple[
+        str, tuple, dict]:
         """
-        Get the url for a sibling defined by key
+        Get the router name and args for a sibling defined by key
         """
+        # todo: key must not be None !!!
         cls = self.cv_get_cls_assert_object(key, obj)
 
+        # todo: are extra args used at all?
         if extra_kwargs:
             assert isinstance(extra_kwargs, dict)
         kwargs = extra_kwargs if extra_kwargs else dict()
 
+        # args in order of appearance
+        args = []
+
+
         # if view requires object, add pk using the pk_name defined at ViewSet
         if cls.cv_object:
             kwargs[self.cv_viewset.pk_name] = obj.pk
+            args.append(obj.pk)
 
         # get kwargs to pass
         #   1. parent kwargs
@@ -212,9 +220,21 @@ class CrudView(metaclass=CrudViewMetaClass):
             if not value:
                 raise ValueError(f"kwarg {name} not found at {self}")
             kwargs[name] = value
+            args.append(value)
+
         kwargs.update(cls.cv_get_url_extra_kwargs())
+        # todo: update args with extra?
 
         router_name = self.cv_viewset.get_router_name(key)
+
+        args.reverse()
+        return router_name, tuple(args), kwargs
+
+    def cv_get_url(self, key: str | None = None, obj=None, extra_kwargs: dict | None = None) -> str:
+        """
+        Get the url for a sibling defined by key
+        """
+        router_name, args, kwargs = self.cv_get_router_and_args(key=key, obj=obj, extra_kwargs=extra_kwargs)
         url_path = reverse(router_name, kwargs=kwargs)
 
         return url_path

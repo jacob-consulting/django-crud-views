@@ -55,7 +55,7 @@ class DetailView(CrudView, generic.DetailView):
         Iterator of checks for the view
         """
         yield from super().checks()
-        yield PropertyCheck(context=cls, id="E300", attribute="attribute")   # todo
+        # yield PropertyCheck(context=cls, id="E300", attribute="attribute")   # todo
 
     def cv_get_property(self, obj: object, property: str) -> Any:
         p = getattr(self, property, None)

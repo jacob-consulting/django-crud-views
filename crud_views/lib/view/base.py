@@ -1,4 +1,5 @@
 from functools import cached_property
+from typing_extensions import Self
 from typing import Dict, List, Type, Any, Iterable
 
 from django.contrib.auth import get_user_model
@@ -9,16 +10,13 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
-from typing_extensions import Self
 
 from crud_views.lib import check
-from crud_views.lib.check import Check, CheckAttributeReg, CheckExpression, CheckEitherAttribute, ContextActionCheck, \
-    CheckAttribute, CheckAttributeTemplate
+from crud_views.lib.check import Check, CheckAttributeReg, CheckAttribute, CheckTemplateOrCode
 from crud_views.lib.exceptions import cv_raise, ParentViewSetError, CrudViewError
 from .buttons import ContextButton
 from .context import ViewContext
 from .meta import CrudViewMetaClass
-from ..settings import crud_views_settings
 
 User = get_user_model()
 
@@ -72,14 +70,13 @@ class CrudView(metaclass=CrudViewMetaClass):
         # templates are required for frontend views
         is_frontend = not cls.cv_backend_only
         if is_frontend:
-            for a1, a2 in [
-                ("cv_header_template", "cv_header_template_code"),
-                ("cv_paragraph_template", "cv_paragraph_template_code"),
-                ("cv_action_label_template", "cv_action_label_template_code"),
-                ("cv_action_short_label_template", "cv_action_short_label_template_code"),
+            for attribute in [
+                "cv_header_template",
+                "cv_paragraph_template",
+                "cv_action_label_template",
+                "cv_action_short_label_template"
             ]:
-                yield CheckEitherAttribute(context=cls, id="E203", attribute1=a1, attribute2=a2)
-                yield CheckAttributeTemplate(context=cls, attribute=a1)
+                yield CheckTemplateOrCode(context=cls, attribute=attribute)
 
     def get_success_url(self) -> str:
         url = self.cv_get_url(key=self.cv_success_key)

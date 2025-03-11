@@ -1,4 +1,5 @@
 from functools import cached_property
+from typing_extensions import Self
 from typing import Dict, List, Type, Any, Iterable, Tuple
 
 from django.contrib.auth import get_user_model
@@ -9,16 +10,13 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
-from typing_extensions import Self
 
 from crud_views.lib import check
-from crud_views.lib.check import Check, CheckAttributeReg, CheckExpression, CheckEitherAttribute, ContextActionCheck, \
-    CheckAttribute, CheckAttributeTemplate
+from crud_views.lib.check import Check, CheckAttributeReg, CheckAttribute, CheckTemplateOrCode
 from crud_views.lib.exceptions import cv_raise, ParentViewSetError, CrudViewError
 from .buttons import ContextButton
 from .context import ViewContext
 from .meta import CrudViewMetaClass
-from ..settings import crud_views_settings
 
 User = get_user_model()
 
@@ -72,14 +70,13 @@ class CrudView(metaclass=CrudViewMetaClass):
         # templates are required for frontend views
         is_frontend = not cls.cv_backend_only
         if is_frontend:
-            for a1, a2 in [
-                ("cv_header_template", "cv_header_template_code"),
-                ("cv_paragraph_template", "cv_paragraph_template_code"),
-                ("cv_action_label_template", "cv_action_label_template_code"),
-                ("cv_action_short_label_template", "cv_action_short_label_template_code"),
+            for attribute in [
+                "cv_header_template",
+                "cv_paragraph_template",
+                "cv_action_label_template",
+                "cv_action_short_label_template"
             ]:
-                yield CheckEitherAttribute(context=cls, id="E203", attribute1=a1, attribute2=a2)
-                yield CheckAttributeTemplate(context=cls, attribute=a1)
+                yield CheckTemplateOrCode(context=cls, attribute=attribute)
 
     def get_success_url(self) -> str:
         url = self.cv_get_url(key=self.cv_success_key)
@@ -188,27 +185,19 @@ class CrudView(metaclass=CrudViewMetaClass):
     def cv_get_url_extra_kwargs(cls) -> dict:
         return dict()
 
-    def cv_get_router_and_args(self, key: str | None = None, obj=None, extra_kwargs: dict | None = None) -> Tuple[
-        str, tuple, dict]:
+    def cv_get_url(self, key: str | None = None, obj=None, extra_kwargs: dict | None = None) -> str:
         """
-        Get the router name and args for a sibling defined by key
+        Get the url for a sibling defined by key
         """
-        # todo: key must not be None !!!
         cls = self.cv_get_cls_assert_object(key, obj)
 
-        # todo: are extra args used at all?
         if extra_kwargs:
             assert isinstance(extra_kwargs, dict)
         kwargs = extra_kwargs if extra_kwargs else dict()
 
-        # args in order of appearance
-        args = []
-
-
         # if view requires object, add pk using the pk_name defined at ViewSet
         if cls.cv_object:
             kwargs[self.cv_viewset.pk_name] = obj.pk
-            args.append(obj.pk)
 
         # get kwargs to pass
         #   1. parent kwargs
@@ -220,21 +209,9 @@ class CrudView(metaclass=CrudViewMetaClass):
             if not value:
                 raise ValueError(f"kwarg {name} not found at {self}")
             kwargs[name] = value
-            args.append(value)
-
         kwargs.update(cls.cv_get_url_extra_kwargs())
-        # todo: update args with extra?
 
         router_name = self.cv_viewset.get_router_name(key)
-
-        args.reverse()
-        return router_name, tuple(args), kwargs
-
-    def cv_get_url(self, key: str | None = None, obj=None, extra_kwargs: dict | None = None) -> str:
-        """
-        Get the url for a sibling defined by key
-        """
-        router_name, args, kwargs = self.cv_get_router_and_args(key=key, obj=obj, extra_kwargs=extra_kwargs)
         url_path = reverse(router_name, kwargs=kwargs)
 
         return url_path

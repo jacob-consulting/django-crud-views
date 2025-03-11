@@ -138,21 +138,36 @@ class CheckEitherAttribute(Check):
                             "Both attributes »{attribute1}» and »{attribute2}» are set at »{context}»"))
 
 
-class CheckAttributeTemplate(CheckAttribute):
+class CheckTemplateOrCode(Check):
     """
-    Check for either attribute
+    Check for template or template_code
     """
-    id: str = "E203"
-    msg: str = "Template »{attribute}» »{value}» not found at »{context}»"
-    nullable: bool = True
+    id: str = "E110"
+    attribute: str | None = None
+    msg_none: str = "Neither »{attr_template}» nor »{attr_code}» defined at »{context}»"
+    msg_template_not_found: str = "Template »{template}» not found at »{context}»"
+
+    def get_message_context(self) -> dict:
+        context = super().get_message_context()
+        context.update(
+            attribute=self.attribute,
+        )
+        return context
 
     def messages(self) -> Iterable[CheckMessage]:
-        yield from super().messages()
-        if self.exists:
+        attr_template = f"{self.attribute}"
+        attr_code = f"{self.attribute}_code"
+        template = getattr(self.context, attr_template, None)
+        code = getattr(self.context, attr_code, None)
+        if not (template or code):
+            msg = self.msg_none.format(attr_template=attr_template, attr_code=attr_code, context=self.context)
+            yield Error(id=self.get_id(), msg=msg)
+        if template:
             try:
-                get_template(self.value)
+                get_template(template)
             except TemplateDoesNotExist as exc:
-                yield Error(id=self.get_id(), msg=self.get_message())
+                msg = self.msg_template_not_found.format(template=template, context=self.context)
+                yield Error(id=self.get_id(), msg=msg)
 
 
 class ContextActionCheck(Check):

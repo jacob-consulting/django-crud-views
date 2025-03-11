@@ -8,9 +8,9 @@ from django.http import HttpResponseRedirect, JsonResponse
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
 
-from crud_views.lib.check import Check, CheckEitherAttribute, CheckAttributeTemplate
-from crud_views.lib.settings import crud_views_settings
+from crud_views.lib.check import Check, CheckTemplateOrCode
 from crud_views.lib.session import SessionData
+from crud_views.lib.settings import crud_views_settings
 
 
 class MessageMixin:
@@ -27,11 +27,7 @@ class MessageMixin:
         Iterator of checks for the view
         """
         yield from super().checks()  # noqa
-        yield CheckEitherAttribute(context=cls,
-                                   id="E203",
-                                   attribute1="cv_message_template",
-                                   attribute2="cv_message_template_code")
-        yield CheckAttributeTemplate(context=cls, attribute="cv_message_template")
+        yield CheckTemplateOrCode(context=cls, attribute="cv_message_template")
 
     def cv_get_message(self, attribute: str = "cv_message") -> str | None:
         return self.render_snippet(self.cv_get_meta(),

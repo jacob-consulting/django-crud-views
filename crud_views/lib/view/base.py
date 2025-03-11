@@ -185,19 +185,22 @@ class CrudView(metaclass=CrudViewMetaClass):
     def cv_get_url_extra_kwargs(cls) -> dict:
         return dict()
 
-    def cv_get_url(self, key: str | None = None, obj=None, extra_kwargs: dict | None = None) -> str:
+    def cv_get_router_and_args(self, key: str | None = None, obj=None, extra_kwargs: dict | None = None) -> Tuple[
+        str, tuple, dict]:
         """
-        Get the url for a sibling defined by key
+        Get the router name, args, kwargs url for a sibling defined by key
         """
         cls = self.cv_get_cls_assert_object(key, obj)
 
         if extra_kwargs:
             assert isinstance(extra_kwargs, dict)
         kwargs = extra_kwargs if extra_kwargs else dict()
+        args = []
 
         # if view requires object, add pk using the pk_name defined at ViewSet
         if cls.cv_object:
             kwargs[self.cv_viewset.pk_name] = obj.pk
+            args.append(obj.pk)
 
         # get kwargs to pass
         #   1. parent kwargs
@@ -209,11 +212,19 @@ class CrudView(metaclass=CrudViewMetaClass):
             if not value:
                 raise ValueError(f"kwarg {name} not found at {self}")
             kwargs[name] = value
+            args.append(value)
         kwargs.update(cls.cv_get_url_extra_kwargs())
 
+        args.reverse()
         router_name = self.cv_viewset.get_router_name(key)
-        url_path = reverse(router_name, kwargs=kwargs)
+        return router_name, tuple(args), kwargs
 
+    def cv_get_url(self, key: str | None = None, obj=None, extra_kwargs: dict | None = None) -> str:
+        """
+        Get the url for a sibling defined by key
+        """
+        router_name, args, kwargs = self.cv_get_router_and_args(key=key, obj=obj, extra_kwargs=extra_kwargs)
+        url_path = reverse(router_name, kwargs=kwargs)
         return url_path
 
     def cv_get_view_context(self, **kwargs) -> ViewContext:

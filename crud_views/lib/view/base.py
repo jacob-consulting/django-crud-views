@@ -17,6 +17,7 @@ from crud_views.lib.exceptions import cv_raise, ParentViewSetError, CrudViewErro
 from .buttons import ContextButton
 from .context import ViewContext
 from .meta import CrudViewMetaClass
+from ..settings import crud_views_settings
 
 User = get_user_model()
 
@@ -37,6 +38,8 @@ class CrudView(metaclass=CrudViewMetaClass):
     cv_success_key: str | None = "list"  # success url, defaults to list
     cv_cancel_key: str | None = "list"  # cancel url, defaults to list
     cv_parent_key: str | None = "list"  # parent key, defaults to list todo: does this make sense at all?
+
+    cv_extends_template: str | None = None  # template to extend
 
     # texts and labels
     cv_header_template: str | None = None  # template snippet to render header label
@@ -64,6 +67,8 @@ class CrudView(metaclass=CrudViewMetaClass):
         yield CheckAttributeReg(context=cls, id="E200", attribute="cv_key", **check.REGS["name"])
         yield CheckAttributeReg(context=cls, id="E201", attribute="cv_path", **check.REGS["path"])
 
+        # todo: cv_extends test template if defined
+
         # todo: reactivate
         # yield ContextActionCheck(context=cls, id="E203", msg="action not defined")
 
@@ -84,6 +89,16 @@ class CrudView(metaclass=CrudViewMetaClass):
 
     def get_queryset(self):
         return self.cv_viewset.get_queryset(view=self)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["cv_extends"] = self.cv_get_extends_template()
+        return context
+
+    def cv_get_extends_template(self) -> str:
+        cv_extends = self.cv_extends_template
+        extends = cv_extends if cv_extends else crud_views_settings.extends
+        return extends
 
     @classmethod
     def cv_has_access(cls, user: User, obj: Model | None = None) -> bool:

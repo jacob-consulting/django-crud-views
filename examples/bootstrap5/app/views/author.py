@@ -1,10 +1,12 @@
 import django_filters
 import django_tables2 as tables
 from crispy_forms.layout import Layout, Row
+from django.forms.fields import CharField
+from django.forms.forms import Form
 from django.utils.translation import gettext as _
 
 from app.models import Author
-from crud_views.lib.crispy import Column4, CrispyModelForm, CrispyModelViewMixin, CrispyDeleteForm
+from crud_views.lib.crispy import Column4, CrispyModelForm, CrispyModelViewMixin, CrispyDeleteForm, Column12
 from crud_views.lib.table import Table, LinkChildColumn, UUIDLinkDetailColumn
 from crud_views.lib.table.columns import NaturalTimeColumn, NaturalDayColumn
 from crud_views.lib.view import cv_property
@@ -20,6 +22,7 @@ from crud_views.lib.views import (
     OrderedUpDownPermissionRequired,
     DeleteViewPermissionRequired, RedirectChildView
 )
+from crud_views.lib.views.form import CustomFormViewPermissionRequired
 from crud_views.lib.views.list import ListViewFilterFormHelper
 from crud_views.lib.viewset import ViewSet, path_regs
 
@@ -87,7 +90,7 @@ class AuthorListView(ListViewTableMixin,
     formhelper_class = AuthorFilterFormHelper
 
     cv_viewset = cv_author
-    cv_list_actions = ["detail", "update", "delete", "up", "down", "redirect_child"]
+    cv_list_actions = ["detail", "update", "delete", "up", "down", "redirect_child", "contact"]
 
     table_class = AuthorTable
 
@@ -152,3 +155,36 @@ class RedirectBooksView(RedirectChildView):
     cv_icon_action = "fa-regular fa-address-book"
 
     cv_viewset = cv_author
+
+
+class AuthorContactForm(CrispyModelForm):
+    submit_label = _("Send")
+
+    subject = CharField(label="Subject", required=True)
+    body = CharField(label="Body", required=True)
+
+    class Meta:
+        model = Author
+        fields = ["subject", "body"]
+
+    def get_layout_fields(self):
+        return Column12("subject"), Column12("body")
+
+
+class AuthorContactView(MessageMixin, CrispyModelViewMixin, CustomFormViewPermissionRequired):
+    model = Author
+    cv_key = "contact"
+    cv_path = "contact"
+    cv_icon_action = "fa-solid fa-envelope"
+    cv_viewset = cv_author
+    form_class = AuthorContactForm
+
+    cv_message_template_code = "Successfully contacted author »{object}«"
+
+    cv_header_template_code = _("Contact Author")
+    cv_paragraph_template_code = _("Send a message to the Author")
+    cv_action_label_template_code = _("Contact Author")
+    cv_action_short_label_template_code = _("Contact Author Short")
+
+    def form_valid(self, form):
+        return super().form_valid(form)

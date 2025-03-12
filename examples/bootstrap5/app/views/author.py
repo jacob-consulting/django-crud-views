@@ -119,6 +119,8 @@ class AuthorDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionR
 class AuthorDetailView(DetailViewPermissionRequired):
     model = Author
     cv_viewset = cv_author
+    cv_context_actions = ["home", "update", "contact", "delete"]
+
     cv_properties = [
         "full_name",
         "first_name",

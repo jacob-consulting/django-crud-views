@@ -7,6 +7,8 @@ from crud_views.lib.table import Table, LinkChildColumn, LinkDetailColumn
 from crud_views.lib.views import DetailViewPermissionRequired, UpdateViewPermissionRequired, CreateViewPermissionRequired, \
     ListViewTableMixin, DeleteViewPermissionRequired, ListViewPermissionRequired
 from crud_views.lib.viewset import ViewSet
+from .menu import MenuMixin
+
 
 cv_foo = ViewSet(
     model=Foo,
@@ -33,32 +35,32 @@ class FooTable(Table):
 
 
 
-class FooListView(ListViewTableMixin, ListViewPermissionRequired):
+class FooListView(MenuMixin,ListViewTableMixin, ListViewPermissionRequired):
     model = Foo
     table_class = FooTable
     cv_viewset = cv_foo
     cv_list_actions = ["detail", "update", "delete"]
 
 
-class FooDetailView(DetailViewPermissionRequired):
+class FooDetailView(MenuMixin, DetailViewPermissionRequired):
     model = Foo
     cv_viewset = cv_foo
     cv_properties = ["id", "name"]
 
 
-class FooUpdateView(CrispyModelViewMixin, UpdateViewPermissionRequired):
+class FooUpdateView(MenuMixin,CrispyModelViewMixin, UpdateViewPermissionRequired):
     model = Foo
     form_class = FooForm
     cv_viewset = cv_foo
 
 
-class FooCreateView(CrispyModelViewMixin, CreateViewPermissionRequired):
+class FooCreateView(MenuMixin, CrispyModelViewMixin, CreateViewPermissionRequired):
     model = Foo
     form_class = FooForm
     cv_viewset = cv_foo
 
 
-class FooDeleteView(CrispyModelViewMixin, DeleteViewPermissionRequired):
+class FooDeleteView(MenuMixin, CrispyModelViewMixin, DeleteViewPermissionRequired):
     model = Foo
     form_class = CrispyDeleteForm
     cv_viewset = cv_foo

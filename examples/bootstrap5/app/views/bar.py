@@ -7,6 +7,7 @@ from crud_views.lib.table import Table, LinkChildColumn, LinkDetailColumn
 from crud_views.lib.views import DetailViewPermissionRequired, UpdateViewPermissionRequired, CreateViewPermissionRequired, \
     ListViewTableMixin, DeleteViewPermissionRequired, ListViewPermissionRequired
 from crud_views.lib.viewset import ViewSet, ParentViewSet
+from .menu import MenuMixin
 
 cv_bar = ViewSet(
     model=Bar,
@@ -33,33 +34,33 @@ class BarTable(Table):
     baz = LinkChildColumn(name="baz", verbose_name="Baz", empty_values=())
 
 
-class BarListView(ListViewTableMixin, ListViewPermissionRequired):
+class BarListView(MenuMixin, ListViewTableMixin, ListViewPermissionRequired):
     model = Bar
     table_class = BarTable
     cv_viewset = cv_bar
     cv_list_actions = ["detail", "update", "delete"]
 
 
-class BarDetailView(DetailViewPermissionRequired):
+class BarDetailView(MenuMixin, DetailViewPermissionRequired):
     model = Bar
     cv_viewset = cv_bar
     cv_properties = ["id", "name"]
 
 
-class BarUpdateView(CrispyModelViewMixin, UpdateViewPermissionRequired):
+class BarUpdateView(MenuMixin, CrispyModelViewMixin, UpdateViewPermissionRequired):
     model = Bar
     form_class = BarForm
 
     cv_viewset = cv_bar
 
 
-class BarCreateView(CrispyModelViewMixin, CreateViewPermissionRequired):
+class BarCreateView(MenuMixin, CrispyModelViewMixin, CreateViewPermissionRequired):
     model = Bar
     form_class = BarForm
     cv_viewset = cv_bar
 
 
-class BarDeleteView(CrispyModelViewMixin, DeleteViewPermissionRequired):
+class BarDeleteView(MenuMixin, CrispyModelViewMixin, DeleteViewPermissionRequired):
     model = Bar
     form_class = CrispyDeleteForm
     cv_viewset = cv_bar

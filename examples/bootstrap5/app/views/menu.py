@@ -5,7 +5,7 @@ from django.urls.base import reverse
 
 from crud_views.lib.viewset import ViewSet
 
-TBreadCrumbInfo = Tuple[str, str | None, tuple | None, str]
+TBreadCrumbInfo = Tuple[str, str | None, tuple | None]  # label, router_name, args
 TBreadCrumbInfoList = List[TBreadCrumbInfo]
 
 

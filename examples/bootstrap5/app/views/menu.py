@@ -5,23 +5,16 @@ from django.urls.base import reverse
 
 from crud_views.lib.viewset import ViewSet
 
-
 TBreadCrumbInfo = Tuple[str, str | None, tuple | None, str]
 TBreadCrumbInfoList = List[TBreadCrumbInfo]
 
 
 class MenuMixin:
 
-
-    def cv_get_parents(self) -> List[ViewSet]:
-        parents = []
-        if self.cv_viewset.parent:
-            parent = self.cv_viewset.parent
-            while parent is not None:
-                parents.append(parent)
-                parent = parent.viewset.parent
-        parents.reverse()
-        return parents
+    # this is global for all views and viewsets
+    # todo: maybe we should move it to the ParentViewset class ?
+    cv_bc_key_container: str = "list"
+    cv_bc_key_object: str = "detail"
 
     def cv_bc_get(self) -> TBreadCrumbInfoList:
         """
@@ -35,7 +28,7 @@ class MenuMixin:
         context = self.cv_get_view_context(object=obj)
 
         # local helpers
-        def verbose_name_plural(viewset:ViewSet) -> str:
+        def verbose_name_plural(viewset: ViewSet) -> str:
             return viewset.get_meta(context)["verbose_name_plural_translate"]
 
         # 1. if view is object then add
@@ -56,7 +49,7 @@ class MenuMixin:
             bc.append((str(self.object), parent_router_name, args, reverse(parent_router_name, args=args)))
 
             # parent action label, link to list (if present)
-            parent_router_name, args, kwargs = self.cv_get_router_and_args("list", obj=obj)
+            parent_router_name, args, kwargs = self.cv_get_router_and_args(self.cv_bc_key_container, obj=obj)
             list_label = verbose_name_plural(self.cv_viewset)
             bc.append((list_label, parent_router_name, args, reverse(parent_router_name, args=args)))
 
@@ -67,13 +60,17 @@ class MenuMixin:
                 bc.append((self.cv_get_action_short_label(context=context), None, None, None))
 
             # get viewset name as list
-            parent_router_name, args, kwargs = self.cv_get_router_and_args("list", obj=obj)
+            parent_router_name, args, kwargs = self.cv_get_router_and_args(self.cv_bc_key_container, obj=obj)
             list_label = verbose_name_plural(self.cv_viewset)
             bc.append((list_label, parent_router_name, args, reverse(parent_router_name, args=args)))
 
         # get parents (in reverse order)
-        parents = self.cv_get_parents()
-        parents.reverse()
+        parents = []
+        if self.cv_viewset.parent:
+            parent = self.cv_viewset.parent
+            while parent is not None:
+                parents.append(parent)
+                parent = parent.viewset.parent
 
         # get current router and args
         parent_router_name, args, kwargs = self.cv_get_router_and_args(self.cv_key, obj=obj)
@@ -96,13 +93,13 @@ class MenuMixin:
             # add linking parent object
             parent_pk = arg_values[-1]
             parent_object = parent.viewset.get_queryset(view=self).get(pk=parent_pk)
-            parent_router_name = parent.viewset.get_router_name(key="detail") # todo get key from ViewsetParent
+            parent_router_name = parent.viewset.get_router_name(key=self.cv_bc_key_object)
             url = reverse(parent_router_name, args=arg_values)
             bc.append((str(parent_object), parent_router_name, arg_values, url))
 
             # get container: list view
             base_label = verbose_name_plural(parent.viewset)
-            base_router_name = parent.viewset.get_router_name(key="list") # todo get key from ViewsetParent
+            base_router_name = parent.viewset.get_router_name(key=self.cv_bc_key_container)
             base_args_values = arg_values[:-1]
             base_url = reverse(base_router_name, args=base_args_values)
             bc.append((base_label, base_router_name, base_args_values, base_url))

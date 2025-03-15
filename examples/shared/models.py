@@ -4,6 +4,9 @@ from django.db import models
 from ordered_model.models import OrderedModel
 from polymorphic.models import PolymorphicModel
 
+from crud_views.lib.view import cv_property
+from crud_views.lib.views.properties import r
+
 
 class Author(OrderedModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -15,6 +18,14 @@ class Author(OrderedModel):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
+
+    @property
+    def xyz(self):
+        return "xyz-prop"
+
+    @cv_property(label="ABC-Boolean", renderer=r.boolean)
+    def abc(self):
+        return True
 
 
 class Book(OrderedModel):
@@ -83,3 +94,7 @@ class Detail(OrderedModel):
 
     def __str__(self):
         return f"{self.id}"
+
+    @cv_property(label="model decorated property", label_tooltip="with custom tooltip", renderer=r.boolean)
+    def model_prop(self):
+        return True

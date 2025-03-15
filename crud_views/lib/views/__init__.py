@@ -2,7 +2,6 @@ from .action_ordered import OrderedUpView, OrderedDownView, OrderedUpViewPermiss
     OrderedUpDownPermissionRequired
 from .child import RedirectChildView
 from .delete import DeleteView, DeleteViewPermissionRequired
-from .detail_layout import DetailLayoutView, DetailLayoutViewPermissionRequired
 from .list import ListView, ListViewPermissionRequired
 from .detail import DetailView, DetailViewPermissionRequired
 from .create import CreateView, CreateViewPermissionRequired
@@ -16,8 +15,6 @@ __all__ = [
     "ListViewPermissionRequired",
     "DetailView",
     "DetailViewPermissionRequired",
-    "DetailLayoutView",
-    "DetailLayoutViewPermissionRequired",
     "CreateView",
     "CreateViewPermissionRequired",
     "UpdateView",

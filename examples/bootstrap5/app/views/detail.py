@@ -1,4 +1,5 @@
 import inspect
+from collections import OrderedDict
 
 import django_filters
 import django_tables2 as tables
@@ -23,8 +24,9 @@ from crud_views.lib.views import (
     ListViewPermissionRequired,
     OrderedUpViewPermissionRequired,
     OrderedUpDownPermissionRequired,
-    DeleteViewPermissionRequired, RedirectChildView, DetailLayoutViewPermissionRequired
+    DeleteViewPermissionRequired, RedirectChildView
 )
+from crud_views.lib.views.detail import PropertyGroup
 from crud_views.lib.views.list import ListViewFilterFormHelper
 from crud_views.lib.viewset import ViewSet, path_regs
 
@@ -75,6 +77,7 @@ class DetailTable(Table):
 class DetailListView(ListViewTableMixin, ListViewPermissionRequired):
     model = Detail
     cv_viewset = cv_detail
+    cv_context_actions = ListViewPermissionRequired.cv_context_actions + ["detail_basic"]
     table_class = DetailTable
 
 
@@ -99,51 +102,41 @@ class DetailDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionR
     cv_message = "Deleted detail »{object}«"
 
 
-class DetailDetailView(DetailLayoutViewPermissionRequired):
+class DetailDetailView(DetailViewPermissionRequired):
     model = Detail
     cv_viewset = cv_detail
 
-    @property
-    def cv_layout(self) -> Layout:
-        return Layout(
-            Fieldset("Numbers",
-                     Row(
-                         Column4("integer"), Column4("number")
-                     )),
-            Fieldset("Texts",
-                     Row(
-                         Column4("char"), Column8("text")
-                     )),
-            Fieldset("Booleans",
-                     Row(
-                         Column4("boolean"), Column4("boolean_two")
-                     )),
-            Fieldset("Date an time",
-                     Row(
-                         Column4("date"), Column4("date_time")
-                     )),
-            Fieldset("References",
-                     Row(
-                         Column4("author"), Column4("foo")
-                     )),
-            Fieldset("Timestamps",
-                     Row(
-                         Column4("created_dt"), Column4("modified_dt")
-                     )),
-        )
+    cv_property_groups = [
+        PropertyGroup(
+            key="attributes",
+            label=_("Attributes"),
+            properties=[
+                "a_property",
+                "integer",
+                "number",
+                "char",
+                "text",
+                "boolean",
+                "boolean_two",
+                "date",
+                "date_time",
+            ]
+        ),
+        PropertyGroup(
+            key="extra",
+            label=_("Extra"),
+            show=True,
+            properties=[
+                "id",
+                "author",
+                "foo",
+                "created_dt",
+                "modified_dt",
+                "model_prop"
+            ]
+        ),
+    ]
 
-    @cv_property(foo=4711, label="Ganzer Name")
-    def full_name(self) -> str:
-        return f"{self.object.first_name} {self.object.last_name}"
-
-    @cv_property("foo", type=bool)
-    def bool_true(self) -> bool:
-        return True
-
-    @cv_property("foo", type=bool)
-    def bool_false(self) -> bool:
-        return False
-
-    @cv_property("foo", type=bool)
-    def bool_none(self) -> bool:
-        return None
+    @cv_property(label=_("A property labelled at decorator"))
+    def a_property(self) -> str:
+        return "a-prop-value"

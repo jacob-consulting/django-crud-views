@@ -1,35 +1,62 @@
-from typing import List, Iterable, Any
+import collections
+from functools import cache
+from typing import List, Iterable, Any, OrderedDict, Dict, Callable
 
-from django.core.checks import CheckMessage, Error
 from django.views import generic
 from django_filters.conf import is_callable
+from pydantic import BaseModel, Field, field_validator
 
 from crud_views.lib.check import Check
-from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.exceptions import ViewSetError
+from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import CrudView, CrudViewPermissionRequiredMixin
+from crud_views.lib.views.properties import r
 
 
-class PropertyCheck(Check):
-    """
-    Check for detail properties
-    """
+class Property(BaseModel, arbitrary_types_allowed=True):
+    name: str
+    label: str | None = None
+    label_tooltip: str | None = None
+    renderer: Callable | None = None
+
+    def __hash__(self):
+        return hash(f"{self.name}-{self.label}")
 
     @property
-    def fields(self) -> dict:
-        return {
-            field.attname if hasattr(field, "attname") else field.get_accessor_name(): field
-            for field in self.context.model._meta.get_fields()  # noqa
-        }
+    def label_display(self) -> str:
+        return self.label or self.name.capitalize()
 
-    def messages(self) -> Iterable[CheckMessage]:
-        fields = self.fields
-        for prop in self.context.cv_properties:  # noqa
-            is_model_prop = prop in fields
-            cv_prop = getattr(self.context, prop, None)
-            is_cv_prop = getattr(cv_prop, "cv_property", False)
-            if not is_model_prop and not is_cv_prop:
-                yield Error(id=f"viewset.{self.id}", msg=f"{self.msg} at {self.context}: {prop}")
+
+class PropertyGroup(BaseModel, arbitrary_types_allowed=True):
+    key: str
+    label: str
+    properties: List[Property | str]
+    show: bool = True
+
+    @field_validator("properties", mode="before")
+    @classmethod
+    def properties_cast_type(cls, value: Any) -> Any:
+        if isinstance(value, list):
+            value = [Property(name=prop) if isinstance(prop, str) else prop for prop in value]
+        return value
+
+
+class PropertyInfo(BaseModel, arbitrary_types_allowed=True):
+    """
+    Runtime info
+    """
+    view: CrudView
+    property: Property
+    value: Any
+    label: str
+    label_tooltip: str | None = None
+    is_decorated: bool = False
+    is_field: bool = False
+    is_property: bool = False
+    renderer: callable
+
+    def render(self):
+        return self.renderer(self.value)
 
 
 class DetailView(CrudView, generic.DetailView):
@@ -38,7 +65,9 @@ class DetailView(CrudView, generic.DetailView):
     cv_key = "detail"
     cv_path = "detail"
     cv_context_actions = crud_views_settings.detail_context_actions
-    cv_properties: List[str] = []
+    cv_properties: OrderedDict[str, List[Any]] = Field(default_factory=collections.OrderedDict)
+
+    cv_property_groups: List[PropertyGroup] = Field(default_factory=list)
 
     # texts and labels
     cv_header_template: str | None = "crud_views/snippets/header/detail.html"
@@ -57,15 +86,101 @@ class DetailView(CrudView, generic.DetailView):
         yield from super().checks()
         # yield PropertyCheck(context=cls, id="E300", attribute="attribute")   # todo
 
-    def cv_get_property(self, obj: object, property: str) -> Any:
-        p = getattr(self, property, None)
-        if p:
-            if not is_callable(p):
-                raise ViewSetError(f"{property} is not callable at {obj}")
-            return p()
+    @property
+    def cv_property_group_keys(self) -> List[str]:
+        return [pg.key for pg in self.cv_property_groups]
+
+    @property
+    def cv_property_groups_dict(self) -> Dict[str, PropertyGroup]:
+        return {pg.key: pg for pg in self.cv_property_groups}
+
+    @property
+    def cv_property_groups_show(self) -> List[PropertyGroup]:
+        return [pg for pg in self.cv_property_groups if pg.show]
+
+    def cv_get_property_group(self, group_or_key: str | PropertyGroup) -> PropertyGroup:
+        groups = self.cv_property_groups_dict
+        if isinstance(group_or_key, PropertyGroup):
+            assert group_or_key.key in groups.keys(), f"{group_or_key.key} not in {groups.keys()}"
+            return group_or_key
+        elif isinstance(group_or_key, str):
+            assert group_or_key in groups.keys(), f"{group_or_key} not in {groups.keys()}"
+            return groups[group_or_key]
         else:
-            p = getattr(obj, property)
-            return p
+            raise TypeError(f"{group_or_key} is not a PropertyGroup or str")
+
+    @cache
+    def cv_get_property_info(self, obj: object, prop: Property) -> PropertyInfo:
+        """
+        Get property info which is cached so it is called only once in a template
+        """
+
+        # check if decorated at view level
+        if hasattr(self, prop.name):
+            attr = getattr(self, prop.name)
+            if not is_callable(attr):
+                raise ViewSetError(f"{prop.name} is not callable at {obj}")
+            elif not getattr(attr, "cv_property", False):
+                raise ViewSetError(f"{prop.name} is not decorated with cv_property at {obj}")
+            renderer = prop.renderer or attr.cv_renderer or r.default
+            label = getattr(attr, "cv_label", None) or prop.label_display
+            label_tooltip = getattr(attr, "cv_label_tooltip", None) or prop.label_tooltip
+            return PropertyInfo(
+                view=self,
+                property=prop,
+                value=attr(),
+                label=label,
+                label_tooltip=label_tooltip,
+                is_decorated=True,
+                renderer=renderer,
+            )
+
+        # proceed with model
+        if not hasattr(obj, prop.name):
+            raise ViewSetError(f"{prop.name} is not a property of {obj}")
+
+        # some defaults
+        field = None
+        is_property = False
+        label_tooltip = None
+
+        # get value
+        value = getattr(obj, prop.name)
+
+        # field map
+        fmap = {field.name: field for field in self.model._meta.get_fields()}
+
+        # check field first, since it may be callable
+        if prop.name in fmap:
+            # use form field mapping
+            field = fmap[prop.name]
+            label = prop.label or field.verbose_name
+            label_tooltip = field.help_text
+            renderer = r.field2renderer.get(field.__class__, r.default)
+        elif is_callable(value):
+            # custom property at model level?
+            if not getattr(value, "cv_property", False):
+                raise ViewSetError(f"{prop.name} is not decorated with cv_property at {obj}")
+            renderer = prop.renderer or value.cv_renderer or r.default
+            label = getattr(value, "cv_label", None) or prop.label_display
+            label_tooltip = getattr(value, "cv_label_tooltip", None) or prop.label_tooltip
+            value = value()
+        else:
+            # default
+            label = prop.label_display
+            label_tooltip = prop.label_tooltip
+            renderer = prop.renderer or r.field2renderer.get(None, r.default)
+
+        return PropertyInfo(
+            view=self,
+            property=prop,
+            is_field=field is not None,
+            is_property=is_property or field is None,
+            renderer=renderer,
+            value=value,
+            label=label,
+            label_tooltip=label_tooltip
+        )
 
 
 class DetailViewPermissionRequired(CrudViewPermissionRequiredMixin, DetailView):  # this file

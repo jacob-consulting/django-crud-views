@@ -112,7 +112,12 @@ def cv_property_group(context, group_or_key):
     view: CrudView = cv_get_view(context)
     group = view.cv_get_property_group(group_or_key=group_or_key)
     context["group"] = group
-    return render_to_string("crud_views/properties/group.html", context.flatten())
+    if group.template_name:
+        data = view.cv_get_property_group_data(group)
+        context.update(data)
+        return render_to_string(group.template_name, context.flatten())
+    else:
+        return render_to_string("crud_views/properties/group.html", context.flatten())
 
 
 @register.simple_tag(takes_context=True)

@@ -1,33 +1,21 @@
-import inspect
-from collections import OrderedDict
-
-import django_filters
 import django_tables2 as tables
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Row, Fieldset
-from django import forms
-from django.forms import Form, HiddenInput
-from django.forms.widgets import Input, Widget
+from crispy_forms.layout import Row, Fieldset
 from django.utils.translation import gettext as _
 
 from app.models import Author, Detail
+from crud_views.lib.crispy import Column4, CrispyModelForm, CrispyModelViewMixin, CrispyDeleteForm, Column8
+from crud_views.lib.table import Table, UUIDLinkDetailColumn
 from crud_views.lib.view import cv_property
-from crud_views.lib.crispy import Column4, CrispyModelForm, CrispyModelViewMixin, CrispyDeleteForm, Column3, Column8
-from crud_views.lib.table import Table, LinkChildColumn, UUIDLinkDetailColumn
 from crud_views.lib.views import (
     DetailViewPermissionRequired,
     UpdateViewPermissionRequired,
     CreateViewPermissionRequired,
     MessageMixin,
     ListViewTableMixin,
-    ListViewTableFilterMixin,
     ListViewPermissionRequired,
-    OrderedUpViewPermissionRequired,
-    OrderedUpDownPermissionRequired,
-    DeleteViewPermissionRequired, RedirectChildView
+    DeleteViewPermissionRequired
 )
 from crud_views.lib.views.detail import PropertyGroup
-from crud_views.lib.views.list import ListViewFilterFormHelper
 from crud_views.lib.viewset import ViewSet, path_regs
 
 cv_detail = ViewSet(
@@ -77,7 +65,8 @@ class DetailTable(Table):
 class DetailListView(ListViewTableMixin, ListViewPermissionRequired):
     model = Detail
     cv_viewset = cv_detail
-    cv_context_actions = ListViewPermissionRequired.cv_context_actions + ["detail_basic"]
+    cv_context_actions = ListViewPermissionRequired.cv_context_actions
+    cv_list_actions = ListViewPermissionRequired.cv_list_actions + ["detailtwo"]
     table_class = DetailTable
 
 
@@ -126,6 +115,49 @@ class DetailDetailView(DetailViewPermissionRequired):
             key="extra",
             label=_("Extra"),
             show=True,
+            properties=[
+                "id",
+                "author",
+                "foo",
+                "created_dt",
+                "modified_dt",
+                "model_prop"
+            ]
+        ),
+    ]
+
+    @cv_property(label=_("A property labelled at decorator"))
+    def a_property(self) -> str:
+        return "a-prop-value"
+
+
+class Detail2View(DetailViewPermissionRequired):
+    model = Detail
+    template_name = "app/detail_two.html"
+    cv_key = "detailtwo"
+    cv_path = "detailtwo"
+    cv_viewset = cv_detail
+    cv_property_groups = [
+        PropertyGroup(
+            key="attributes",
+            label=_("Attributes"),
+            properties=[
+                "a_property",
+                "integer",
+                "number",
+                "char",
+                "text",
+                "boolean",
+                "boolean_two",
+                "date",
+                "date_time",
+            ]
+        ),
+        PropertyGroup(
+            key="extra",
+            label=_("Extra"),
+            show=True,
+            template_name="app/detail_two_extra.html",
             properties=[
                 "id",
                 "author",

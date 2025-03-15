@@ -32,6 +32,7 @@ class PropertyGroup(BaseModel, arbitrary_types_allowed=True):
     label: str
     properties: List[Property | str]
     show: bool = True
+    template_name: str | None = None
 
     @field_validator("properties", mode="before")
     @classmethod
@@ -39,6 +40,13 @@ class PropertyGroup(BaseModel, arbitrary_types_allowed=True):
         if isinstance(value, list):
             value = [Property(name=prop) if isinstance(prop, str) else prop for prop in value]
         return value
+
+    def get_data(self, view, obj: object) -> dict:
+        data = dict()
+        for prop in self.properties:
+            info = view.cv_get_property_info(obj=obj, prop=prop)
+            data[prop.name] = info.data
+        return data
 
 
 class PropertyInfo(BaseModel, arbitrary_types_allowed=True):
@@ -53,10 +61,18 @@ class PropertyInfo(BaseModel, arbitrary_types_allowed=True):
     is_decorated: bool = False
     is_field: bool = False
     is_property: bool = False
-    renderer: callable
+    renderer: Callable
 
     def render(self):
         return self.renderer(self.value)
+
+    @property
+    def data(self) -> dict:
+        return dict(
+            label=str(self.label),
+            label_tooltip=self.label_tooltip,
+            value=self.render()
+        )
 
 
 class DetailView(CrudView, generic.DetailView):
@@ -181,6 +197,11 @@ class DetailView(CrudView, generic.DetailView):
             label=label,
             label_tooltip=label_tooltip
         )
+
+    def cv_get_property_group_data(self, group_or_key: str | PropertyGroup) -> dict:
+        group = self.cv_get_property_group(group_or_key)
+        data = group.get_data(self, self.object)
+        return data
 
 
 class DetailViewPermissionRequired(CrudViewPermissionRequiredMixin, DetailView):  # this file

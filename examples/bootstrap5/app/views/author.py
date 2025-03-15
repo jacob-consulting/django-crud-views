@@ -21,7 +21,7 @@ from crud_views.lib.views import (
     OrderedUpDownPermissionRequired,
     DeleteViewPermissionRequired, RedirectChildView
 )
-from crud_views.lib.views.detail import PropertyGroup
+from crud_views.lib.views.detail import PropertyGroup, Property
 from crud_views.lib.views.form import CustomFormViewPermissionRequired
 from crud_views.lib.views.list import ListViewFilterFormHelper
 from crud_views.lib.views.properties import r
@@ -139,6 +139,7 @@ class AuthorDetailView(DetailViewPermissionRequired):
             key="extra",
             label=_("Extra"),
             properties=[
+                Property(name="id", label="UUID"),
                 "pseudonym",
                 "books",
                 "abc",

@@ -2,7 +2,6 @@ import django_filters
 import django_tables2 as tables
 from crispy_forms.layout import Layout, Row
 from django.forms.fields import CharField
-from django.forms.forms import Form
 from django.utils.translation import gettext as _
 
 from app.models import Author
@@ -22,8 +21,10 @@ from crud_views.lib.views import (
     OrderedUpDownPermissionRequired,
     DeleteViewPermissionRequired, RedirectChildView
 )
+from crud_views.lib.views.detail import PropertyGroup
 from crud_views.lib.views.form import CustomFormViewPermissionRequired
 from crud_views.lib.views.list import ListViewFilterFormHelper
+from crud_views.lib.views.properties import r
 from crud_views.lib.viewset import ViewSet, path_regs
 
 cv_author = ViewSet(
@@ -121,21 +122,48 @@ class AuthorDetailView(DetailViewPermissionRequired):
     cv_viewset = cv_author
     cv_context_actions = ["home", "update", "contact", "delete"]
 
-    cv_properties = [
-        "full_name",
-        "first_name",
-        "last_name",
-        "pseudonym",
-        "books",
+    cv_property_groups = [
+        PropertyGroup(
+            key="attributes",
+            label=_("Attributes"),
+            properties=[
+                "xyz",
+                "a_boolean",
+                "b_boolean",
+                "full_name",
+                "first_name",
+                "last_name",
+            ]
+        ),
+        PropertyGroup(
+            key="extra",
+            label=_("Extra"),
+            properties=[
+                "pseudonym",
+                "books",
+                "abc",
+            ]
+        ),
     ]
 
-    @cv_property(foo=4711)
+    @cv_property(label="Full Name")
     def full_name(self) -> str:
         return f"{self.object.first_name} {self.object.last_name}"
 
-    @cv_property(foo=4711)
+
+    @cv_property(label=_("Number of books"))
     def books(self) -> str:
         return self.object.book_set.count()
+
+
+    @cv_property(label=_("A boolean 1"), renderer=r.boolean)
+    def a_boolean(self) -> bool:
+        return True
+
+
+    @cv_property(label=_("A boolean 2"), renderer=r.boolean)
+    def b_boolean(self) -> bool:
+        return False
 
 
 class AuthorUpView(MessageMixin, OrderedUpViewPermissionRequired):

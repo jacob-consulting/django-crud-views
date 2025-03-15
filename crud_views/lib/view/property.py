@@ -1,7 +1,11 @@
 from functools import wraps
+from typing import Callable
 
 
-def cv_property(foo, type=str, label:str|None = None):
+def cv_property(type=str,
+                label: str | None = None,
+                label_tooltip: str | None = None,
+                renderer: Callable | None = None):
     """
     Experimental property decorator for CrudView
     """
@@ -14,6 +18,8 @@ def cv_property(foo, type=str, label:str|None = None):
         wrapper.cv_property = True
         wrapper.cv_type = type
         wrapper.cv_label = label
+        wrapper.cv_label_tooltip = label_tooltip
+        wrapper.cv_renderer = renderer
 
         return wrapper
 

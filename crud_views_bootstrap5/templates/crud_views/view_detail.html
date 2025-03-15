@@ -1,10 +1,9 @@
 {% extends cv_extends %}
 
-{% load crispy_forms_tags %}
 {% load crud_views %}
 
 {% block cv_content %}
 
-    {% include "crud_views/view_detail_include.html" %}
+    {% cv_property_groups %}
 
 {% endblock cv_content %}

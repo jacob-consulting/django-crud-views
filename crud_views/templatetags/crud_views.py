@@ -6,6 +6,7 @@ from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.exceptions import ViewSetKeyFoundError, ignore_exception
 from crud_views.lib.view import CrudView
 from crud_views.lib.views import DetailView
+from crud_views.lib.views.detail import Property
 
 User = get_user_model()
 
@@ -100,17 +101,42 @@ def cv_delete_button(context, obj=None):
 
 
 @register.simple_tag(takes_context=True)
-def cv_property_label(context, obj: object, property: str):
+def cv_property_groups(context):
     view: CrudView = cv_get_view(context)
-    assert isinstance(view, DetailView)
-    return property.upper()
+    context["groups"] = view.cv_property_groups_show
+    return render_to_string("crud_views/properties/groups.html", context.flatten())
 
 
 @register.simple_tag(takes_context=True)
-def cv_property_value(context, obj: object, property: str):
+def cv_property_group(context, group_or_key):
+    view: CrudView = cv_get_view(context)
+    group = view.cv_get_property_group(group_or_key=group_or_key)
+    context["group"] = group
+    return render_to_string("crud_views/properties/group.html", context.flatten())
+
+
+@register.simple_tag(takes_context=True)
+def cv_property_label(context, obj: object, prop: Property):
     view: CrudView = cv_get_view(context)
     assert isinstance(view, DetailView)
-    return view.cv_get_property(obj, property)
+    info = view.cv_get_property_info(obj=obj, prop=prop)
+    return info.label
+
+
+@register.simple_tag(takes_context=True)
+def cv_property_label_tooltip(context, obj: object, prop: Property):
+    view: CrudView = cv_get_view(context)
+    assert isinstance(view, DetailView)
+    info = view.cv_get_property_info(obj=obj, prop=prop)
+    return info.label_tooltip
+
+
+@register.simple_tag(takes_context=True)
+def cv_property_value(context, obj: object, prop: Property):
+    view: CrudView = cv_get_view(context)
+    assert isinstance(view, DetailView)
+    info = view.cv_get_property_info(obj=obj, prop=prop)
+    return info.render()
 
 
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/icon.html", takes_context=True)

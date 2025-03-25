@@ -57,6 +57,7 @@ class PolyCreateSelectView(CrispyModelViewMixin, PolymorphicCreateSelectView):
 class PolyCreateView(CrispyModelViewMixin, PolymorphicCreateViewPermissionRequired):
     model = Poly
     cv_viewset = cv_poly
+    cv_context_actions = ["home"]
     polymorphic_forms = {
         PolyOne: PolyOneForm,
         PolyTwo: PolyTwoForm

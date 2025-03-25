@@ -4,8 +4,9 @@ from crispy_forms.layout import Row
 from app.models import Baz
 from crud_views.lib.crispy import CrispyModelForm, Column4, CrispyModelViewMixin, CrispyDeleteForm
 from crud_views.lib.table import Table, LinkDetailColumn
-from crud_views.lib.views import DetailViewPermissionRequired, UpdateViewPermissionRequired, CreateViewPermissionRequired, \
-    ListViewTableMixin, DeleteViewPermissionRequired, ListViewPermissionRequired
+from crud_views.lib.views import DetailViewPermissionRequired, UpdateViewPermissionRequired, \
+    CreateViewPermissionRequired, \
+    ListViewTableMixin, DeleteViewPermissionRequired, ListViewPermissionRequired, CreateViewParentMixin
 from crud_views.lib.viewset import ViewSet, ParentViewSet
 
 cv_baz = ViewSet(
@@ -55,7 +56,7 @@ class BazUpdateView(CrispyModelViewMixin, UpdateViewPermissionRequired):
     cv_viewset = cv_baz
 
 
-class BazCreateView(CrispyModelViewMixin, CreateViewPermissionRequired):
+class BazCreateView(CrispyModelViewMixin, CreateViewParentMixin, CreateViewPermissionRequired):
     model = Baz
     form_class = BazForm
     cv_viewset = cv_baz

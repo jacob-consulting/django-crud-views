@@ -64,6 +64,7 @@ class CreateViewParentMixin:
             # add the object to the m2m attribute
             m2m.add(self.object, through_defaults=through_defaults)
         else:
+            setattr(form.instance, attr, parent_object)
             response = super().form_valid(form)
 
         return response

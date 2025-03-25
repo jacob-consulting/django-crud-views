@@ -84,7 +84,7 @@ class CrudView(metaclass=CrudViewMetaClass):
                 yield CheckTemplateOrCode(context=cls, attribute=attribute)
 
     def get_success_url(self) -> str:
-        url = self.cv_get_url(key=self.cv_success_key)
+        url = self.cv_get_url(key=self.cv_success_key, obj=getattr(self, "object", None))
         return url
 
     def get_queryset(self):

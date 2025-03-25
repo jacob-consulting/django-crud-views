@@ -4,7 +4,7 @@ from .child import RedirectChildView
 from .delete import DeleteView, DeleteViewPermissionRequired
 from .list import ListView, ListViewPermissionRequired
 from .detail import DetailView, DetailViewPermissionRequired
-from .create import CreateView, CreateViewPermissionRequired
+from .create import CreateView, CreateViewPermissionRequired, CreateViewParentMixin
 from .mixins import MessageMixin, ListViewTableMixin, ListViewTableFilterMixin
 from .update import UpdateView, UpdateViewPermissionRequired
 from .action import ActionView, ActionViewPermissionRequired
@@ -16,6 +16,7 @@ __all__ = [
     "DetailView",
     "DetailViewPermissionRequired",
     "CreateView",
+    "CreateViewParentMixin",
     "CreateViewPermissionRequired",
     "UpdateView",
     "UpdateViewPermissionRequired",

@@ -19,7 +19,7 @@ from crud_views.lib.views import (
     ListViewPermissionRequired,
     OrderedUpViewPermissionRequired,
     OrderedUpDownPermissionRequired,
-    DeleteViewPermissionRequired, RedirectChildView
+    DeleteViewPermissionRequired, RedirectChildView, CreateViewParentMixin
 )
 from crud_views.lib.views.detail import PropertyGroup, Property
 from crud_views.lib.views.form import CustomFormViewPermissionRequired
@@ -96,7 +96,7 @@ class AuthorListView(ListViewTableMixin,
     table_class = AuthorTable
 
 
-class AuthorCreateView(CrispyModelViewMixin, MessageMixin, CreateViewPermissionRequired):
+class AuthorCreateView(CrispyModelViewMixin, MessageMixin, CreateViewParentMixin, CreateViewPermissionRequired):
     model = Author
     form_class = AuthorCreateForm
     cv_viewset = cv_author
@@ -120,7 +120,7 @@ class AuthorDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionR
 class AuthorDetailView(DetailViewPermissionRequired):
     model = Author
     cv_viewset = cv_author
-    cv_context_actions = ["home", "update", "contact", "delete"]
+    #cv_context_actions = ["home", "update", "contact", "delete"]
 
     cv_property_groups = [
         PropertyGroup(
@@ -212,6 +212,7 @@ class AuthorContactView(MessageMixin, CrispyModelViewMixin, CustomFormViewPermis
 
     cv_message_template_code = "Successfully contacted author »{object}«"
 
+    cv_context_actions = ["parent", "detail", "update", "delete", "contact"]
     cv_header_template_code = _("Contact Author")
     cv_paragraph_template_code = _("Send a message to the Author")
     cv_action_label_template_code = _("Contact Author")

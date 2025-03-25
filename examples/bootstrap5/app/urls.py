@@ -13,6 +13,8 @@ from app.views.bar import cv_bar
 from app.views.baz import cv_baz
 from app.views.poly import cv_poly
 from app.views.detail import cv_detail
+from app.views.group import cv_group
+from app.views.group_members import cv_person
 
 
 class CrispyAuthenticationForm(AuthenticationForm):
@@ -36,5 +38,7 @@ urlpatterns += (
         cv_bar.urlpatterns +
         cv_baz.urlpatterns +
         cv_poly.urlpatterns +
-        cv_detail.urlpatterns
+        cv_detail.urlpatterns +
+        cv_group.urlpatterns +
+        cv_person.urlpatterns
 )

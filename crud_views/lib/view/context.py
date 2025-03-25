@@ -28,3 +28,7 @@ class ViewContext(BaseModel, arbitrary_types_allowed=True):
         return {
             "object": self.object
         }
+
+    @property
+    def router_name(self) -> str:
+        return self.view.request.resolver_match.url_name

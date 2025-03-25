@@ -296,7 +296,8 @@ class CrudView(metaclass=CrudViewMetaClass):
         dict_kwargs = dict(
             cv_access=False,
             cv_oid=self.cv_get_oid(key=key, obj=obj),
-            cv_url=self.cv_get_url(key=key, obj=obj)
+            cv_url=self.cv_get_url(key=key, obj=obj),
+            cv_is_active=self.cv_viewset.get_router_name(key) ==  context.router_name,
         )
 
         # get target view class

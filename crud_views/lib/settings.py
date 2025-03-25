@@ -42,15 +42,17 @@ class CrudViewsSettings(BaseModel):
     # view defaults
     list_actions: List[str] = from_settings("CRUD_VIEWS_LIST_ACTIONS", default=["detail", "update", "delete"])
     list_context_actions: List[str] = from_settings("CRUD_VIEWS_LIST_CONTEXT_ACTIONS",
-                                                    default=["parent", "filter", "create"])
+                                                    default=["parent", "list", "filter", "create"])
     detail_context_actions: List[str] = from_settings("CRUD_VIEWS_DETAIL_CONTEXT_ACTIONS",
-                                                      ["home", "update", "delete"])
-    create_context_actions: List[str] = from_settings("CRUD_VIEWS_CREATE_CONTEXT_ACTIONS", default=["home", ])
-    update_context_actions: List[str] = from_settings("CRUD_VIEWS_UPDATE_CONTEXT_ACTIONS", ["home", ])
-    delete_context_actions: List[str] = from_settings("CRUD_VIEWS_DELETE_CONTEXT_ACTIONS", ["home", ])
+                                                      default=["home", "detail", "update", "delete"])
+    create_context_actions: List[str] = from_settings("CRUD_VIEWS_CREATE_CONTEXT_ACTIONS", default=["home", "create"])
+    update_context_actions: List[str] = from_settings("CRUD_VIEWS_UPDATE_CONTEXT_ACTIONS",
+                                                      default=["home", "detail", "update", "delete"])
+    delete_context_actions: List[str] = from_settings("CRUD_VIEWS_DELETE_CONTEXT_ACTIONS",
+                                                      default=["home", "detail", "update", "delete"])
     manage_context_actions: List[str] = from_settings("CRUD_VIEWS_MANAGE_CONTEXT_ACTIONS", default=["home"])
     create_select_context_actions: List[str] = from_settings("CRUD_VIEWS_CREATE_SELECT_CONTEXT_ACTIONS",
-                                                             default=["home", ])
+                                                             default=["home", "create_select"])
 
     _check_messages: List[CheckMessage] = PrivateAttr(default_factory=default_list)
 

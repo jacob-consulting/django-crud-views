@@ -149,6 +149,10 @@ class ViewSet(BaseModel):
 
         return args
 
+    @property
+    def has_parent(self) -> bool:
+        return self.parent is not None
+
     def get_parent_model(self):
         if self.parent:
             return self.parent.viewset.model

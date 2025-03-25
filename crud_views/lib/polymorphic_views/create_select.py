@@ -24,7 +24,7 @@ class PolymorphicCreateSelectView(CrudView, generic.FormView):
     cv_object = False
     cv_path = "create/select"
     cv_success_key = "list"
-    cv_context_actions = crud_views_settings.create_context_actions
+    cv_context_actions = crud_views_settings.create_select_context_actions
 
     # texts and labels
     cv_header_template: str = "crud_views/snippets/header/create_select.html"

@@ -33,7 +33,7 @@ from .models import Author
 vs_author = ViewSet(
     model=Author,
     name="author",
-    pk=path_regs.UUID,  # specify if it is not an integer which is the default
+    pk=path_regs.UUID,  # regexp for the primary key in the URL-routing  (defaults to integer)
     icon_header="fa-regular fa-user"  # when using boostrap5 with font-awsome
 )
 ```
@@ -77,17 +77,17 @@ class AuthorTable(Table):
     
 class AuthorListView(ListViewTableMixin, ListViewPermissionRequired):
     model = Author
-    table_class = AuthorTable   # set the table class to use
-    vs = vs_author  # this will link your list view to the ViewSet
+    table_class = AuthorTable   # set the table class
+    vs = vs_author  # this will attach your list view to the ViewSet
 ```
 
 > **Notes:** 
 > 
-> - `Table` is built on `django-tables2` `Table`. It adds the view to the table.
-> - `ListViewPermissionRequired` is built on Django's `generic.ListView` and `mixins.PermissionRequiredMixin`
+> - `Table` is from `django-tables2`.
+> - `ListViewPermissionRequired` implements Django's `generic.ListView` and `mixins.PermissionRequiredMixin`.
 > - `ListViewTableMixin` extends `SingleTableMixin` which passes the view to the Table constructor. 
 >
-> So everything is is as close to the Django classes as possible.
+> So everything is as close to Django's generic classes as possible.
 
 Now create a model:
 

@@ -1,4 +1,6 @@
 from functools import cached_property
+
+from django.utils.functional import classproperty
 from typing_extensions import Self
 from typing import Dict, List, Type, Any, Iterable, Tuple
 
@@ -27,9 +29,9 @@ class CrudView(metaclass=CrudViewMetaClass):
     A view that is part of a ViewSet
     """
     cv_viewset: 'ViewSet' = None
-    cv_object: bool = True  # view has object context (only list views do not have object context)
     cv_key: str = None  # the key to register the view (i.e. detail, list, create, update, delete)
     cv_path: str = None  # i.e. detail, update or "" for list views
+    cv_object: bool = True  # view has object context (only list views do not have object context)
     cv_backend_only: bool = False  # views is only available in the backend, so i.e. title and paragraph templates are not required
     cv_list_actions: List[str] | None = None  # actions for the list view
     cv_list_action_method: str = "get"  # method to call for list actions
@@ -58,6 +60,10 @@ class CrudView(metaclass=CrudViewMetaClass):
     # icons
     cv_icon_action: str | None = None  # font awesome icon
     cv_icon_header: str | None = None  # font awesome icon
+
+    # @classproperty
+    # def model(self):
+    #     return self.cv_viewset.model
 
     @classmethod
     def checks(cls) -> Iterable[Check]:

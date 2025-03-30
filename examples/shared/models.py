@@ -16,6 +16,10 @@ class Author(OrderedModel):
     created_dt = models.DateTimeField(auto_now_add=True)
     modified_dt = models.DateTimeField(auto_now=True)
 
+    class Meta(OrderedModel.Meta):
+        verbose_name = "Autor"
+        verbose_name_plural = "Autoren"
+
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
 

@@ -1,5 +1,6 @@
 import django_tables2 as tables
 from crispy_forms.layout import Row
+from crud_views.lib.views.detail import PropertyGroup
 
 from app.models import Book
 from crud_views.lib.crispy import CrispyModelForm, Column4, Column2, CrispyModelViewMixin, CrispyDeleteForm
@@ -52,6 +53,21 @@ class BookListView(ListViewTableMixin, ListViewPermissionRequired):
 class BookDetailView(DetailViewPermissionRequired):
     model = Book
     cv_viewset = cv_book
+
+    cv_property_groups = [
+        PropertyGroup(
+            key="attributes",
+            label="Attributes",
+            properties=[
+                "id",
+                "title",
+                "price",
+                "author",
+                "created_dt",
+                "modified_dt",
+            ]
+        ),
+    ]
 
 
 class BookUpdateView(CrispyModelViewMixin, UpdateViewPermissionRequired):

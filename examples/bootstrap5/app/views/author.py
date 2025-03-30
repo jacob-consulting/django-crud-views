@@ -86,14 +86,19 @@ class AuthorTable(Table):
 class AuthorListView(ListViewTableMixin,
                      ListViewTableFilterMixin,
                      ListViewPermissionRequired):
+    # generic view config
     model = Author
+
+    # table config
+    table_class = AuthorTable
+
+    # filter config
     filterset_class = AuthorFilter
     formhelper_class = AuthorFilterFormHelper
 
+    # viewset config
     cv_viewset = cv_author
     cv_list_actions = ["detail", "update", "delete", "up", "down", "redirect_child", "contact"]
-
-    table_class = AuthorTable
 
 
 class AuthorCreateView(CrispyModelViewMixin, MessageMixin, CreateViewParentMixin, CreateViewPermissionRequired):
@@ -120,7 +125,7 @@ class AuthorDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionR
 class AuthorDetailView(DetailViewPermissionRequired):
     model = Author
     cv_viewset = cv_author
-    #cv_context_actions = ["home", "update", "contact", "delete"]
+    # cv_context_actions = ["home", "update", "contact", "delete"]
 
     cv_property_groups = [
         PropertyGroup(
@@ -151,16 +156,13 @@ class AuthorDetailView(DetailViewPermissionRequired):
     def full_name(self) -> str:
         return f"{self.object.first_name} {self.object.last_name}"
 
-
     @cv_property(label=_("Number of books"))
     def books(self) -> str:
         return self.object.book_set.count()
 
-
     @cv_property(label=_("A boolean 1"), renderer=r.boolean)
     def a_boolean(self) -> bool:
         return True
-
 
     @cv_property(label=_("A boolean 2"), renderer=r.boolean)
     def b_boolean(self) -> bool:

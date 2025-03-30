@@ -67,7 +67,7 @@ class ViewSet(BaseModel):
     name: str
     prefix: str | None = None
     app: str | None = None
-    pk: str = path_regs.INT
+    pk: str = path_regs.INT     # todo: better name
     pk_name: str = "pk"
     context_buttons: List[ContextButton] = Field(default_factory=context_buttons_default)
     parent: ParentViewSet | None = None

@@ -1,0 +1,70 @@
+{% load crispy_forms_tags %}
+{% load crud_views_formsets %}
+
+{% if not x_formset.start_at_rows %}
+
+    <!-- formsets: start {{ x_formset.prefix }} -->
+    <div class="row">
+
+    {% if x_formset.has_pre_col %}
+        <div class="{{ x_formset.css_col_pre }}">&nbsp;</div>
+    {% endif %}
+
+    <div class="{{ x_formset.css_col }}">
+
+    <fieldset class="cv-formset-fieldset" id="cv-formset-fieldset-{{ x_formset.prefix }}"
+              cv-data-formset-key="{{ x_formset.key }}" cv-data-formset-prefix="{{ x_formset.prefix }}">
+
+    <legend>{{ x_formset.title }}</legend>
+
+    <div class="cv-formset-content" cv-data-formset="{{ x_formset.json_data }}"
+         cv-data-formset-prefix="{{ x_formset.prefix }}">
+
+    <!-- management form {{ x_formset.prefix }} {{ x_formset.level }} -->
+    {{ x_formset.management_form }}
+
+    <!-- non_form_errors {{ x_formset.prefix }} {{ x_formset.level }} -->
+    {{ x_formset.instance|as_crispy_errors }}
+
+{% endif %}
+
+<!-- forms {{ x_formset.instance.prefix }} -->
+{% for x_form in x_formset.forms %}
+
+    <!-- form {{ x_form.prefix }} #{{ forloop.counter0 }} -->
+    <div class="cv-formset-row"
+         cv-data-formset-form="{{ x_form.json_data }}"
+         cv-data-formset-prefix="{{ x_formset.prefix }}"
+         cv-data-formset-form-prefix="{{ x_form.prefix }}">
+
+        <!-- crispy form: start {{ x_form.prefix }} -->
+        <div class="cv-formset-form">
+            <!-- TODO: GET HELPER FROM x_form -->
+            {% crispy x_form.form x_form.helper %}
+            {% comment %}
+                {% crispy x_form.form x_formset.instance.helper %}
+            {% endcomment %}
+        </div>
+        <!-- crispy form: end {{ x_form.prefix }} -->
+
+        <!-- x_form.formsets: start {{ x_form.prefix }} -->
+        {% for x_formset_child in x_form.formsets %}
+            {% cv_x_formset x_formset_child %}
+        {% endfor %}
+        <!-- x_form.formsets: end {{ x_form.prefix }} -->
+
+    </div>
+
+{% endfor %}
+
+{% if not x_formset.end_at_rows %}
+
+    </div>
+
+    </fieldset>
+
+    </div>
+
+    </div>
+
+{% endif %}

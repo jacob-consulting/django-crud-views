@@ -1,5 +1,6 @@
 import django_tables2 as tables
 from crispy_forms.layout import Row
+from crud_views.lib.views.detail import PropertyGroup
 
 from app.models import Bar
 from crud_views.lib.crispy import CrispyModelForm, Column4, CrispyModelViewMixin, CrispyDeleteForm
@@ -44,7 +45,16 @@ class BarListView(ListViewTableMixin, ListViewPermissionRequired):
 class BarDetailView(DetailViewPermissionRequired):
     model = Bar
     cv_viewset = cv_bar
-    cv_properties = ["id", "name"]
+    cv_property_groups = [
+        PropertyGroup(
+            key="properties",
+            label="Properties",
+            properties=[
+                "id",
+                "name",
+            ]
+        ),
+    ]
 
 
 class BarUpdateView(CrispyModelViewMixin, UpdateViewPermissionRequired):

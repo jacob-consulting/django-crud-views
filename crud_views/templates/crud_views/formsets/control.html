@@ -1,0 +1,30 @@
+<div class="cv-form-ctrl">
+
+    <div class="btn-group" role="group">
+        {% if formset.can_order %}
+            <div class="btn-group" role="group" aria-label="Order">
+                <button type="button" class="btn btn-light cv-form-ctrl-up" title="up"
+                        cv-data-formset-form-prefix="{{ form.prefix }}">
+                    <i class="fa-solid fa-caret-up"></i>
+                </button>
+                <button type="button" class="btn btn-light cv-form-ctrl-down" title="down"
+                        cv-data-formset-form-prefix="{{ form.prefix }}">
+                    <i class="fa-solid fa-caret-down"></i>
+                </button>
+            </div>
+        {% endif %}
+        <div class="btn-group" role="group" aria-label="Order">
+            <button type="button" class="btn btn-light cv-form-ctrl-add" title="add"
+                    cv-data-formset-form-prefix="{{ form.prefix }}">
+                <i class="fa-solid fa-plus"></i>
+            </button>
+            {% if formset.can_delete %}
+                <button type="button" class="btn btn-light cv-form-ctrl-delete" title="delete"
+                        cv-data-formset-form-prefix="{{ form.prefix }}">
+                    <i class="fa-solid fa-square-xmark"></i>
+                </button>
+            {% endif %}
+        </div>
+    </div>
+
+</div>

@@ -2,7 +2,7 @@ import django_tables2 as tables
 from crispy_forms.layout import Row
 from django.utils.translation import gettext_lazy as _
 
-from app.models import Poly, PolyOne, PolyTwo
+from app.models.poly import Poly, PolyOne, PolyTwo
 from app.views.poly.one import PolyOneForm
 from app.views.poly.two import PolyTwoForm
 from crud_views.lib.crispy import Column4, CrispyModelViewMixin

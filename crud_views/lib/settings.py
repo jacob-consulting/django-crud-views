@@ -82,6 +82,7 @@ class CrudViewsSettings(BaseModel):
     def javascript(self) -> dict:
         return Box({
             "viewset": self.get_js("viewset.js"),
+            "formset": self.get_js("formset.js"),
             "list_filter": self.get_js("list.filter.js"),
         })
 

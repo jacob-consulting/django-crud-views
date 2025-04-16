@@ -1,5 +1,6 @@
 import django_tables2 as tables
 from crispy_forms.layout import Row
+from crud_views.lib.views.detail import PropertyGroup
 
 from app.models import Baz
 from crud_views.lib.crispy import CrispyModelForm, Column4, CrispyModelViewMixin, CrispyDeleteForm
@@ -46,7 +47,16 @@ class BazListView(ListViewTableMixin, ListViewPermissionRequired):
 class BazDetailView(DetailViewPermissionRequired):
     model = Baz
     cv_viewset = cv_baz
-    cv_properties = ["id", "name"]
+    cv_property_groups = [
+        PropertyGroup(
+            key="properties",
+            label="Properties",
+            properties=[
+                "id",
+                "name",
+            ]
+        ),
+    ]
 
 
 class BazUpdateView(CrispyModelViewMixin, UpdateViewPermissionRequired):

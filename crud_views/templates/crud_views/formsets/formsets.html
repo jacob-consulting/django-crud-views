@@ -1,0 +1,66 @@
+{% load crud_views_formsets %}
+{% load static %}
+
+<style>
+    /* Simple highlight animation */
+    @keyframes cv-highlight-delete {
+        0% {
+            background-color: #e2e0e0;
+        }
+        50% {
+            background-color: #ff6a6a;
+        }
+        100% {
+            background-color: #e2e0e0;
+        }
+    }
+
+    @keyframes cv-highlight-order {
+        0% {
+            background-color: #e2e0e0;
+        }
+        50% {
+            background-color: #8fb7ff;
+        }
+        100% {
+            background-color: #e2e0e0;
+        }
+    }
+
+    @keyframes cv-highlight-add {
+        0% {
+            background-color: #e2e0e0;
+        }
+        50% {
+            background-color: #b3d0b3;
+        }
+        100% {
+            background-color: #e2e0e0;
+        }
+    }
+
+    .cv-highlight-delete {
+        animation: cv-highlight-delete 0.5s;
+    }
+
+    .cv-highlight-order {
+        animation: cv-highlight-order 0.5s;
+    }
+
+    .cv-highlight-add {
+        animation: cv-highlight-add 0.5s;
+    }
+
+</style>
+{% for x_formset in formsets.x_formsets %}
+    {% cv_x_formset x_formset %}
+{% endfor %}
+
+{% if formsets.scripts %}
+    <script src="{% static "crud_views_fieldsets/js/formset.js" %}"></script>
+    <script type="text/javascript">
+        $(function () {
+            new CrudViewsFormset();
+        });
+    </script>
+{% endif %}

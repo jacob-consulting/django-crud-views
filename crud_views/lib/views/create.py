@@ -1,14 +1,12 @@
-from datetime import date
-
 from django.shortcuts import get_object_or_404
-from django.utils.translation import gettext_lazy as _
 from django.views import generic
 
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import CrudView, CrudViewPermissionRequiredMixin
+from .mixins import CrudViewProcessFormMixin
 
 
-class CreateView(CrudView, generic.CreateView):
+class CreateView(CrudViewProcessFormMixin, CrudView, generic.CreateView):
     template_name = "crud_views/view_create.html"
 
     cv_key = "create"
@@ -32,17 +30,11 @@ class CreateView(CrudView, generic.CreateView):
 
 class CreateViewParentMixin:
 
-    def form_valid(self, form):
+    def cv_form_valid(self, context: dict):
         """
-        Set parent model instance at form instance
+        Handle valid form
         """
-        if self.cv_viewset.has_parent:
-            return self.cv_form_valid_parent(form)
-        else:
-            return super().form_valid(form)
-
-    def cv_form_valid_parent(self, form):
-        assert self.cv_viewset.has_parent
+        assert self.cv_viewset.has_parent, "this ViewSet has no parent"
 
         # get the parent object
         parent_model = self.cv_viewset.get_parent_model()
@@ -52,8 +44,9 @@ class CreateViewParentMixin:
         parent_object = get_object_or_404(parent_model, pk=pk)
 
         if self.cv_viewset.parent.many_to_many_through_attribute:
-            # get the response, this sets the object
-            response = super().form_valid(form)
+
+            # this saves the object first
+            super().cv_form_valid(context)
 
             # get m2m attribute
             m2m = getattr(parent_object, self.cv_viewset.parent.many_to_many_through_attribute)
@@ -64,10 +57,11 @@ class CreateViewParentMixin:
             # add the object to the m2m attribute
             m2m.add(self.object, through_defaults=through_defaults)
         else:
-            setattr(form.instance, attr, parent_object)
-            response = super().form_valid(form)
+            # before saving, add the parent model to the form instance
+            setattr(context["form"].instance, attr, parent_object)
 
-        return response
+            # now save the form
+            super().cv_form_valid(context)
 
     def cv_parent_many_to_many_through_defaults(self, instance, parent_instance, m2m) -> dict:
         return dict()

@@ -31,10 +31,12 @@ class PolymorphicCrudViewMixin:
     Polymorphic ViewSet mixin
     """
 
+    # todo: rename to cv_polymorphic_forms
     polymorphic_forms: Dict[Model, ModelForm] = None
 
     # polymorphic_inline_formsets: Dict[Model, Dict[str, Any]] = None
 
+    # todo: rename to cv_~
     @property
     def polymorphic_ctype_id(self) -> int:
         """
@@ -48,6 +50,7 @@ class PolymorphicCrudViewMixin:
             polymorphic_ctype_id = instance.polymorphic_ctype_id
         return int(polymorphic_ctype_id)
 
+    # todo: rename to cv_~
     @cached_property
     def polymorphic_model(self) -> Model:
         """

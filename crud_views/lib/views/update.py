@@ -1,11 +1,11 @@
-from django.utils.translation import gettext_lazy as _
 from django.views import generic
 
-from crud_views.lib.view import CrudView, CrudViewPermissionRequiredMixin
 from crud_views.lib.settings import crud_views_settings
+from crud_views.lib.view import CrudView, CrudViewPermissionRequiredMixin
+from .mixins import CrudViewProcessFormMixin
 
 
-class UpdateView(CrudView, generic.UpdateView):
+class UpdateView(CrudViewProcessFormMixin, CrudView, generic.UpdateView):
     template_name = "crud_views/view.update.html"
 
     cv_key = "update"
@@ -24,7 +24,6 @@ class UpdateView(CrudView, generic.UpdateView):
 
     # messages
     cv_message_template: str | None = "crud_views/snippets/message/update.html"
-
 
 
 class UpdateViewPermissionRequired(CrudViewPermissionRequiredMixin, UpdateView):  # this file

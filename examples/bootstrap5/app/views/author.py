@@ -27,6 +27,7 @@ from crud_views.lib.views.list import ListViewFilterFormHelper
 from crud_views.lib.views.properties import r
 from crud_views.lib.viewset import ViewSet, path_regs
 
+
 cv_author = ViewSet(
     model=Author,
     name="author",
@@ -101,7 +102,7 @@ class AuthorListView(ListViewTableMixin,
     cv_list_actions = ["detail", "update", "delete", "up", "down", "redirect_child", "contact"]
 
 
-class AuthorCreateView(CrispyModelViewMixin, MessageMixin, CreateViewParentMixin, CreateViewPermissionRequired):
+class AuthorCreateView(CrispyModelViewMixin, MessageMixin, CreateViewPermissionRequired):
     model = Author
     form_class = AuthorCreateForm
     cv_viewset = cv_author

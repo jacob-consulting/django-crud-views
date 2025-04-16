@@ -46,6 +46,7 @@ class Check(BaseModel):
         return self.msg.format(**kwargs)
 
 
+# todo: check for type
 class CheckAttribute(Check):
     """
     Check for attribute

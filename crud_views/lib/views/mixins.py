@@ -4,13 +4,92 @@ from urllib.parse import parse_qs
 
 from django.contrib import messages
 from django.core.exceptions import BadRequest
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect
+from django.http import JsonResponse
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
 
 from crud_views.lib.check import Check, CheckTemplateOrCode
 from crud_views.lib.session import SessionData
 from crud_views.lib.settings import crud_views_settings
+
+
+class CrudViewProcessFormMixin:
+    """
+    Mixin for create and update views.
+    Note ProcessFormView.post is overridden.
+    Why? Because we need a more detailed handling of the post method.
+    """
+
+    def post(self, request, *args, **kwargs):
+        """
+        Override ProcessFormView
+        """
+
+        try:
+            self.object = self.get_object()  # noqa
+        except AttributeError:
+            self.object = None  # noqa
+
+        context = self.get_context_data(**kwargs)
+        self.cv_post_hook(context)
+        if self.cv_form_is_valid(context):
+            self.cv_form_valid(context)
+            self.cv_form_valid_hook(context)
+            return self.cv_form_valid_redirect(context)
+        else:
+            self.cv_form_invalid_hook(context)
+            return self.cv_form_invalid(context)
+
+    def cv_post_hook(self, context: dict):
+        """
+        Hook on post.
+        Crud Views modules may extend this method.
+        """
+        pass
+
+    def cv_form_is_valid(self, context: dict) -> bool:
+        """
+        Check if the form is valid.
+        Crud Views modules may extend this method with further checks.
+        """
+        return context["form"].is_valid()
+
+    def cv_form_valid(self, context: dict):
+        """
+        Handle valid form
+        """
+        self.object = context["form"].save()
+
+    def cv_form_valid_hook(self, context: dict):
+        """
+        Handle valid form hook
+        """
+        pass
+
+    def cv_form_invalid(self, context: dict):
+        """
+        Handle invalid form
+        """
+        return self.render_to_response(context)
+
+    def cv_form_invalid_hook(self, context: dict):
+        """
+        Handle invalid form hook
+        """
+        pass
+
+    def cv_form_valid_redirect(self, context: dict) -> HttpResponseRedirect:
+        """
+        Redirect to the success url
+        """
+        return HttpResponseRedirect(self.get_success_url())
+
+    def cv_form_invalid_redirect(self, context: dict) -> HttpResponseRedirect:
+        """
+        Handle invalid form
+        """
+        return self.render_to_response(context)
 
 
 class MessageMixin:
@@ -34,12 +113,10 @@ class MessageMixin:
                                    self.cv_message_template,
                                    self.cv_message_template_code, )
 
-    def form_valid(self, form):
-        response = super().form_valid(form)  # noqa
+    def cv_form_valid_hook(self, context: dict):
         message = self.cv_get_message()
         if message:
             messages.success(self.request, message)
-        return response
 
     def action(self, context: dict) -> bool:
         result = super().action(context)

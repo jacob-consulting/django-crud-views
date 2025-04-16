@@ -5,8 +5,9 @@ from crud_views.lib.views.detail import PropertyGroup
 from app.models import Book
 from crud_views.lib.crispy import CrispyModelForm, Column4, Column2, CrispyModelViewMixin, CrispyDeleteForm
 from crud_views.lib.table import Table, UUIDLinkDetailColumn
-from crud_views.lib.views import DetailViewPermissionRequired, UpdateViewPermissionRequired, CreateViewPermissionRequired, \
-    ListViewTableMixin, DeleteViewPermissionRequired, ListViewPermissionRequired
+from crud_views.lib.views import DetailViewPermissionRequired, UpdateViewPermissionRequired, \
+    CreateViewPermissionRequired, \
+    ListViewTableMixin, DeleteViewPermissionRequired, ListViewPermissionRequired, CreateViewParentMixin, MessageMixin
 from crud_views.lib.viewset import ViewSet, ParentViewSet, path_regs
 
 cv_book = ViewSet(
@@ -70,19 +71,19 @@ class BookDetailView(DetailViewPermissionRequired):
     ]
 
 
-class BookUpdateView(CrispyModelViewMixin, UpdateViewPermissionRequired):
+class BookUpdateView(CrispyModelViewMixin, MessageMixin, UpdateViewPermissionRequired):
     model = Book
     form_class = BookUpdateForm
     cv_viewset = cv_book
 
 
-class BookCreateView(CrispyModelViewMixin, CreateViewPermissionRequired):
+class BookCreateView(CrispyModelViewMixin, MessageMixin, CreateViewParentMixin, CreateViewPermissionRequired):
     model = Book
     form_class = BookCreateForm
     cv_viewset = cv_book
 
 
-class BookDeleteView(CrispyModelViewMixin, DeleteViewPermissionRequired):
+class BookDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequired):
     model = Book
     form_class = CrispyDeleteForm
     cv_viewset = cv_book

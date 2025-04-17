@@ -40,7 +40,7 @@ class PersonForm(CrispyModelForm):
 
 
 class PersonTable(Table):
-    id = LinkDetailColumn(attrs=Table.col_attr.wID)
+    id = LinkDetailColumn(attrs=Table.ca.ID)
     name = tables.Column()
     date_joined = tables.Column(verbose_name=_("Date joined"), empty_values=())
 

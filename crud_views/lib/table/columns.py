@@ -2,6 +2,8 @@ import django_tables2 as tables
 from django_tables2 import Column
 
 from crud_views.lib.exceptions import ViewSetKeyFoundError, ignore_exception
+from crud_views.lib.table.attrs import ColAttr, ColumnAttrs
+
 from crud_views.lib.viewset import ViewSet
 
 
@@ -16,6 +18,8 @@ class ActionColumn(tables.TemplateColumn):
             extra["orderable"] = False
         if "template_name" not in extra:
             extra["template_name"] = "crud_views/columns/actions.html"
+        if "attrs" not in extra:
+            extra["attrs"] = ColAttr.action
         super().__init__(**extra)
 
     def render(self, record, table, value, bound_column, **kwargs):
@@ -78,7 +82,7 @@ class NaturalTimeColumn(tables.TemplateColumn):
         from .table import Table
 
         if "attrs" not in extra:
-            extra["attrs"] = Table.col_attr.w10
+            extra["attrs"] = Table.ca.w10
 
         super().__init__(template_code=template_code, template_name=template_name, **extra)
 
@@ -89,6 +93,6 @@ class NaturalDayColumn(tables.TemplateColumn):
         from .table import Table
 
         if "attrs" not in extra:
-            extra["attrs"] = Table.col_attr.w10
+            extra["attrs"] = Table.ca.w10
 
         super().__init__(template_code=template_code, template_name=template_name, **extra)

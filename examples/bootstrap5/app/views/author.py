@@ -6,7 +6,7 @@ from django.utils.translation import gettext as _
 
 from app.models import Author
 from crud_views.lib.crispy import Column4, CrispyModelForm, CrispyModelViewMixin, CrispyDeleteForm, Column12
-from crud_views.lib.table import Table, LinkChildColumn, UUIDLinkDetailColumn
+from crud_views.lib.table import Table, LinkChildColumn, UUIDLinkDetailColumn, ActionColumn
 from crud_views.lib.table.columns import NaturalTimeColumn, NaturalDayColumn
 from crud_views.lib.view import cv_property
 from crud_views.lib.views import (
@@ -26,7 +26,6 @@ from crud_views.lib.views.form import CustomFormViewPermissionRequired
 from crud_views.lib.views.list import ListViewFilterFormHelper
 from crud_views.lib.views.properties import r
 from crud_views.lib.viewset import ViewSet, path_regs
-
 
 cv_author = ViewSet(
     model=Author,
@@ -75,11 +74,11 @@ class AuthorFilter(django_filters.FilterSet):
 
 
 class AuthorTable(Table):
-    id = UUIDLinkDetailColumn(attrs=Table.col_attr.wID)
+    id = UUIDLinkDetailColumn(attrs=Table.ca.ID)
     first_name = tables.Column()
     last_name = tables.Column()
-    pseudonym = tables.Column(attrs=Table.col_attr.w20)
-    books = LinkChildColumn(name="book", verbose_name="Books", attrs=Table.col_attr.w10)
+    pseudonym = tables.Column(attrs=Table.ca.w20)
+    books = LinkChildColumn(name="book", verbose_name="Books", attrs=Table.ca.w10)
     created_dt = NaturalDayColumn()
     modified_dt = NaturalTimeColumn()
 

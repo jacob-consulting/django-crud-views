@@ -43,7 +43,7 @@ class GroupUpdateForm(GroupCreateForm):
 
 
 class GroupTable(Table):
-    id = LinkDetailColumn(attrs=Table.col_attr.wID)
+    id = LinkDetailColumn(attrs=Table.ca.ID)
     name = tables.Column()
 
 

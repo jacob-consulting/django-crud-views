@@ -1,7 +1,22 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from ordered_model.models import OrderedModel
 
-from app.models import validate_questionmark, validate_alpha
+
+def validate_questionmark(value):
+    if "?" in value:
+        raise ValidationError(
+            "%(value)s must not contain a questionmark",
+            params={"value": value},
+        )
+
+
+def validate_alpha(value):
+    if not value.isalpha():
+        raise ValidationError(
+            "%(value)s is not an alpha",
+            params={"value": value},
+        )
 
 
 class Question(models.Model):

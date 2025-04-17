@@ -16,7 +16,7 @@ from crud_views.lib.views import (
     DeleteViewPermissionRequired
 )
 from crud_views.lib.views.detail import PropertyGroup
-from crud_views.lib.viewset import ViewSet, path_regs
+from crud_views.lib.viewset import ViewSet
 
 cv_detail = ViewSet(
     model=Detail,

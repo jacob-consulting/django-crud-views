@@ -1,6 +1,6 @@
 from collections import OrderedDict
 from functools import cached_property
-from typing import Dict, List, Type, Any, Iterable
+from typing import Dict, List, Type, Any, Iterable, ClassVar
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -15,6 +15,7 @@ from typing_extensions import Self
 from crud_views.lib.exceptions import cv_raise, ViewSetNotFoundError, ViewSetKeyFoundError
 from crud_views.lib.viewset import path_regs
 from .parentviewset import ParentViewSet
+from .path_regs import PrimaryKeys
 from .. import check
 from ..check import CheckAttributeReg, Check
 from ..settings import crud_views_settings
@@ -43,7 +44,6 @@ def context_buttons_default(*args, **kwargs) -> Any:
 
 _REGISTRY = OrderedDict()
 
-
 class ViewSet(BaseModel):
     """
     Manages CRUD collections of views
@@ -63,11 +63,13 @@ class ViewSet(BaseModel):
     - delete    : delete
     """
 
+    PK: ClassVar[Type[PrimaryKeys]] = PrimaryKeys
+
     model: Type[Model]
     name: str
     prefix: str | None = None
     app: str | None = None
-    pk: str = path_regs.INT     # todo: better name
+    pk: str = PK.INT     # todo: better name
     pk_name: str = "pk"
     context_buttons: List[ContextButton] = Field(default_factory=context_buttons_default)
     parent: ParentViewSet | None = None

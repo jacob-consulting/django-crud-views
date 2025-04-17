@@ -4,7 +4,7 @@ from django.views.generic.detail import SingleObjectMixin
 
 from crud_views.lib.view import CrudView
 from crud_views.lib.settings import crud_views_settings
-from crud_views.lib.viewset import path_regs
+from crud_views.lib.viewset import path_regs, PrimaryKeys
 
 
 class RedirectChildView(CrudView, SingleObjectMixin, generic.RedirectView):
@@ -30,6 +30,6 @@ class RedirectChildView(CrudView, SingleObjectMixin, generic.RedirectView):
         """
         Contribute path to the path of the view
         """
-        pr = path_regs.get_path("redirect", path_regs.KEY)
-        pk = path_regs.get_path("redirect_key", path_regs.KEY)
+        pr = path_regs.get_path("redirect", PrimaryKeys.KEY)
+        pk = path_regs.get_path("redirect_key", PrimaryKeys.KEY)
         return f"{pr}/{pk}"

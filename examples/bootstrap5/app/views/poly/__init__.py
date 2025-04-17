@@ -19,7 +19,7 @@ from crud_views.lib.viewset import ViewSet, path_regs
 cv_poly = ViewSet(
     model=Poly,
     name="poly",
-    pk=path_regs.UUID,
+    pk=ViewSet.PK.UUID,
     icon_header="fa-solid fa-sun"
 )
 

@@ -21,7 +21,7 @@ from crud_views.lib.viewset import ViewSet, path_regs
 cv_detail = ViewSet(
     model=Detail,
     name="detail",
-    pk=path_regs.UUID,
+    pk=ViewSet.PK.UUID,
     icon_header="fa-solid fa-circle-info"
 )
 

@@ -330,7 +330,7 @@ class FormSets(BaseModel, arbitrary_types_allowed=True):
         data = dict(x_formset=x_formset)
 
         rows = [form.prefix for form in x_formset.forms]
-        html = render_to_string("crud_views_formsets/formset.html", data)
+        html = render_to_string("crud_views/formsets/formset.html", data)
         data = dict(rows=rows, html=html)
         return data
 

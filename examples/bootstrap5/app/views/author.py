@@ -25,12 +25,12 @@ from crud_views.lib.views.detail import PropertyGroup, Property
 from crud_views.lib.views.form import CustomFormViewPermissionRequired
 from crud_views.lib.views.list import ListViewFilterFormHelper
 from crud_views.lib.views.properties import r
-from crud_views.lib.viewset import ViewSet, path_regs
+from crud_views.lib.viewset import ViewSet
 
 cv_author = ViewSet(
     model=Author,
     name="author",
-    pk=path_regs.UUID,
+    pk=ViewSet.PK.UUID,
     icon_header="fa-regular fa-user"
 )
 

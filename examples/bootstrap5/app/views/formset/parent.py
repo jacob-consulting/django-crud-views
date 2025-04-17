@@ -17,7 +17,7 @@ from app.models.poly import Parent
 cv_poly_parent_formset = ViewSet(
     model=Parent,
     name="parent",
-    pk=path_regs.UUID,
+    pk=ViewSet.PK.UUID,
     icon_header="fa-solid fa-user-group"
 )
 

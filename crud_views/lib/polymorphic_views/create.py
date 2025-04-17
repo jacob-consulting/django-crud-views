@@ -1,7 +1,7 @@
 from crud_views.lib.view import CrudViewPermissionRequiredMixin
 from .utils import PolymorphicCrudViewMixin
 from ..views import CreateView
-from ..viewset import path_regs
+from ..viewset import path_regs, PrimaryKeys
 
 
 class PolymorphicCreateView(PolymorphicCrudViewMixin, CreateView):
@@ -11,7 +11,7 @@ class PolymorphicCreateView(PolymorphicCrudViewMixin, CreateView):
         """
         Here we inject the polymorphic_ctype_id path.
         """
-        path_contribute = path_regs.get_path_pk("polymorphic_ctype_id", path_regs.INT)
+        path_contribute = path_regs.get_path_pk("polymorphic_ctype_id", PrimaryKeys.INT)
         return f"/ct/{path_contribute}/"
 
 

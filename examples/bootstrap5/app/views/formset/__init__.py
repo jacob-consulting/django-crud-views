@@ -29,7 +29,7 @@ from .two import PolyTwoForm
 cv_poly_formset = ViewSet(
     model=Poly,
     name="poly",
-    pk=path_regs.UUID,
+    pk=ViewSet.PK.UUID,
     icon_header="fa-solid fa-sun",
     parent=ParentViewSet(
         name="parent",
@@ -42,7 +42,6 @@ cv_poly_formset = ViewSet(
 class PolyTable(Table):
     id = UUIDLinkDetailColumn(attrs=Table.ca.ID)
     shared = tables.Column(attrs=Table.ca.w80)
-    actions = ActionColumn(attrs=Table.ca.w15)
 
 
 class PolyListView(ListViewTableMixin, ListViewPermissionRequired):

@@ -4,7 +4,7 @@ import django_tables2 as tables
 from crispy_forms.layout import Row
 from django.utils.translation import gettext as _
 
-from app.models import Author, Group, Person
+from app.models import Person
 from crud_views.lib.crispy import Column4, CrispyModelForm, CrispyModelViewMixin, CrispyDeleteForm
 from crud_views.lib.table import Table, LinkDetailColumn
 from crud_views.lib.views import (

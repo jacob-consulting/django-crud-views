@@ -1,6 +1,5 @@
 import django_tables2 as tables
 from crispy_forms.layout import Row
-from crud_views.lib.views.detail import PropertyGroup
 
 from app.models import Book
 from crud_views.lib.crispy import CrispyModelForm, Column4, Column2, CrispyModelViewMixin, CrispyDeleteForm
@@ -8,7 +7,8 @@ from crud_views.lib.table import Table, UUIDLinkDetailColumn
 from crud_views.lib.views import DetailViewPermissionRequired, UpdateViewPermissionRequired, \
     CreateViewPermissionRequired, \
     ListViewTableMixin, DeleteViewPermissionRequired, ListViewPermissionRequired, CreateViewParentMixin, MessageMixin
-from crud_views.lib.viewset import ViewSet, ParentViewSet, path_regs
+from crud_views.lib.views.detail import PropertyGroup
+from crud_views.lib.viewset import ViewSet, ParentViewSet
 
 cv_book = ViewSet(
     model=Book,

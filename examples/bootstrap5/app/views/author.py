@@ -6,7 +6,7 @@ from django.utils.translation import gettext as _
 
 from app.models import Author
 from crud_views.lib.crispy import Column4, CrispyModelForm, CrispyModelViewMixin, CrispyDeleteForm, Column12
-from crud_views.lib.table import Table, LinkChildColumn, UUIDLinkDetailColumn, ActionColumn
+from crud_views.lib.table import Table, LinkChildColumn, UUIDLinkDetailColumn
 from crud_views.lib.table.columns import NaturalTimeColumn, NaturalDayColumn
 from crud_views.lib.view import cv_property
 from crud_views.lib.views import (
@@ -19,7 +19,7 @@ from crud_views.lib.views import (
     ListViewPermissionRequired,
     OrderedUpViewPermissionRequired,
     OrderedUpDownPermissionRequired,
-    DeleteViewPermissionRequired, RedirectChildView, CreateViewParentMixin
+    DeleteViewPermissionRequired, RedirectChildView
 )
 from crud_views.lib.views.detail import PropertyGroup, Property
 from crud_views.lib.views.form import CustomFormViewPermissionRequired

@@ -3,6 +3,7 @@ from crispy_forms.layout import Row
 
 from crud_views.lib.crispy import CrispyModelViewMixin, CrispyDeleteForm, CrispyModelForm, Column4
 from crud_views.lib.table import Table, LinkDetailColumn, UUIDLinkDetailColumn, ActionColumn
+from crud_views.lib.table.table import ColumnAttrs
 from crud_views.lib.views import (
     ListViewTableMixin,
     ListViewPermissionRequired,
@@ -33,10 +34,8 @@ class ParentForm(CrispyModelForm):
 
 
 class ParentTable(Table):
-    id = UUIDLinkDetailColumn(attrs=Table.col_attr.wID)
-    name = tables.Column(attrs=Table.col_attr.w80)
-    # todo: action column with defaults
-    actions = ActionColumn(attrs={"td": {"class": "cv-col-5 justify-content-end"}})
+    id = UUIDLinkDetailColumn(attrs=Table.ca.ID)
+    name = tables.Column(attrs=Table.ca.w80)
 
 
 class ParentListView(ListViewTableMixin, ListViewPermissionRequired):

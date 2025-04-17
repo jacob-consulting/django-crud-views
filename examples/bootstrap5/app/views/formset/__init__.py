@@ -40,9 +40,9 @@ cv_poly_formset = ViewSet(
 
 
 class PolyTable(Table):
-    id = UUIDLinkDetailColumn(attrs=Table.col_attr.wID)
-    shared = tables.Column(attrs=Table.col_attr.w80)
-    actions = ActionColumn(attrs=Table.col_attr.w15)
+    id = UUIDLinkDetailColumn(attrs=Table.ca.ID)
+    shared = tables.Column(attrs=Table.ca.w80)
+    actions = ActionColumn(attrs=Table.ca.w15)
 
 
 class PolyListView(ListViewTableMixin, ListViewPermissionRequired):

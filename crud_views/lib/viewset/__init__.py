@@ -1,3 +1,4 @@
+import threading
 from collections import OrderedDict
 from functools import cached_property
 from typing import Dict, List, Type, Any, Iterable, ClassVar
@@ -43,6 +44,8 @@ def context_buttons_default(*args, **kwargs) -> Any:
 
 
 _REGISTRY = OrderedDict()
+_REGISTRY_LOCK = threading.Lock()
+
 
 class ViewSet(BaseModel):
     """
@@ -86,7 +89,8 @@ class ViewSet(BaseModel):
 
     @model_validator(mode='after')
     def register(self) -> Self:
-        _REGISTRY[self.name] = self
+        with _REGISTRY_LOCK:
+            _REGISTRY[self.name] = self
 
         switch = crud_views_settings.manage_views_enabled
         if switch == "yes" or switch == "debug_only" and settings.DEBUG:
@@ -107,8 +111,9 @@ class ViewSet(BaseModel):
         """
         Iterator over all checks of all viewsets
         """
-        for cv in _REGISTRY.values():
-            yield from cv.checks()
+        with _REGISTRY_LOCK:
+            for cv in _REGISTRY.values():
+                yield from cv.checks()
 
     def has_view(self, name) -> bool:
         return name in self._views

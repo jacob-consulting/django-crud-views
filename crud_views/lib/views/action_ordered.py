@@ -14,14 +14,14 @@ class OrderedCheckBase:
             raise ValueError(f"{self.model} is not a subclass of OrderedModel")
 
 
-class OrderedUpView(OrderedCheckBase, ActionView):
+class OrderedUpView(ActionView):
     cv_key = "up"
     cv_path = "up"
     cv_backend_only = True
 
     # texts and labels
-    cv_action_label_template: str| None = "crud_views/snippets/action/up.html"
-    cv_action_short_label_template: str| None = "crud_views/snippets/action_short/up.html"
+    cv_action_label_template: str | None = "crud_views/snippets/action/up.html"
+    cv_action_short_label_template: str | None = "crud_views/snippets/action_short/up.html"
 
     # icons
     cv_icon_action = "fa-regular fa-circle-up"
@@ -30,6 +30,9 @@ class OrderedUpView(OrderedCheckBase, ActionView):
     cv_message_template: str | None = "crud_views/snippets/message/up.html"
 
     def action(self, context: dict) -> bool:
+        return self.up(context)
+
+    def up(self, context: dict) -> bool:
         self.object.up()
         self.object.save()
         return True
@@ -39,14 +42,14 @@ class OrderedUpViewPermissionRequired(CrudViewPermissionRequiredMixin, OrderedUp
     cv_permission = "change"
 
 
-class OrderedDownView(OrderedCheckBase, ActionView):
+class OrderedDownView(ActionView):
     cv_key = "down"
     cv_path = "down"
     cv_backend_only = True
 
     # texts and labels
-    cv_action_label_template: str| None = "crud_views/snippets/action/down.html"
-    cv_action_short_label_template: str| None = "crud_views/snippets/action_short/down.html"
+    cv_action_label_template: str | None = "crud_views/snippets/action/down.html"
+    cv_action_short_label_template: str | None = "crud_views/snippets/action_short/down.html"
 
     # icons
     cv_icon_action = "fa-regular fa-circle-down"
@@ -55,7 +58,10 @@ class OrderedDownView(OrderedCheckBase, ActionView):
     cv_message_template: str | None = "crud_views/snippets/message/down.html"
 
     def action(self, context: dict) -> bool:
-        self.object.down()
+        return self.down(context)
+
+    def down(self, context: dict) -> bool:
+        self.object.up()
         self.object.save()
         return True
 

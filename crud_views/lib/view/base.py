@@ -209,7 +209,7 @@ class CrudView(metaclass=CrudViewMetaClass):
     def cv_get_router_and_args(self, key: str | None = None, obj=None, extra_kwargs: dict | None = None) -> Tuple[
         str, tuple, dict]:
         """
-        Get the router name, args, kwargs url for a sibling defined by key
+        Get the router name, args, kwargs url for a sibling defined by a key
         """
         cls = self.cv_get_cls_assert_object(key, obj)
 

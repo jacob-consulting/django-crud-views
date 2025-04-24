@@ -1,4 +1,5 @@
 from functools import wraps
+from typing import Type
 
 
 class ViewSetNotFoundError(Exception):
@@ -16,7 +17,7 @@ class CrudViewError(Exception):
 class ParentViewSetError(Exception):
     pass
 
-def cv_raise(expression: bool, msg: str, exception: Exception = ViewSetError):
+def cv_raise(expression: bool, msg: str, exception: Type[Exception] = ViewSetError):
     if not expression:
         raise exception(msg)
 

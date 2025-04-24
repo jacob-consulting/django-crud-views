@@ -218,7 +218,7 @@ class CrudView(metaclass=CrudViewMetaClass):
         kwargs = extra_kwargs if extra_kwargs else dict()
         args = []
 
-        # if view requires object, add pk using the pk_name defined at ViewSet
+        # if the view requires an object, add pk using the pk_name defined at ViewSet
         if cls.cv_object:
             kwargs[self.cv_viewset.pk_name] = obj.pk
             args.append(obj.pk)

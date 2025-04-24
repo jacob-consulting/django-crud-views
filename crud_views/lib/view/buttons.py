@@ -14,7 +14,7 @@ class ContextButton(BaseModel):
     A context button is a button that is rendered in the context of a CrudView
     """
     key: str
-    key_target: str
+    key_target: str | None = None
     label_template: str | None = None
     label_template_code: str | None = None
 
@@ -63,7 +63,7 @@ class ParentContextButton(ContextButton):
         if not context.view.cv_viewset.parent:
             return dict()
 
-        # get parent view class, defined by target
+        # get the parent view class, defined by target
         parent = context.view.cv_viewset.parent
         cls = parent.viewset.get_view_class(self.key_target)
 
@@ -100,7 +100,7 @@ class ParentContextButton(ContextButton):
         return data
 
 
-class FilterContextButton:
+class FilterContextButton(ContextButton):
     """
     A context button that
     """

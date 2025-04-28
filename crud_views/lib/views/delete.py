@@ -1,3 +1,4 @@
+from crud_views.lib.views.mixins import CrudViewProcessFormMixin
 from django.utils.translation import gettext_lazy as _
 from django.views import generic
 
@@ -5,7 +6,7 @@ from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import CrudView, CrudViewPermissionRequiredMixin
 
 
-class DeleteView(CrudView, generic.DeleteView):
+class DeleteView(CrudViewProcessFormMixin, CrudView, generic.DeleteView):
     template_name = "crud_views/view_delete.html"
 
     cv_key = "delete"
@@ -24,6 +25,12 @@ class DeleteView(CrudView, generic.DeleteView):
 
     # messages
     cv_message_template: str | None = "crud_views/snippets/message/delete.html"
+
+    def cv_form_valid(self, context: dict):
+        """
+        Handle valid form
+        """
+        self.object.delete()
 
 
 class DeleteViewPermissionRequired(CrudViewPermissionRequiredMixin, DeleteView):  # this file

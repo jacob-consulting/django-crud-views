@@ -1,8 +1,7 @@
-from django.shortcuts import get_object_or_404
-from django.views import generic
-
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import CrudView, CrudViewPermissionRequiredMixin
+from django.views import generic
+
 from .mixins import CrudViewProcessFormMixin
 
 
@@ -28,6 +27,11 @@ class CreateView(CrudViewProcessFormMixin, CrudView, generic.CreateView):
     cv_message_template: str | None = "crud_views/snippets/message/create.html"
 
 
+class CreateViewPermissionRequired(CrudViewPermissionRequiredMixin, CreateView):  # this file
+    cv_permission = "add"
+
+
+
 class CreateViewParentMixin:
 
     def cv_form_valid(self, context: dict):
@@ -36,12 +40,7 @@ class CreateViewParentMixin:
         """
         assert self.cv_viewset.has_parent, "this ViewSet has no parent"
 
-        # get the parent object
-        parent_model = self.cv_viewset.get_parent_model()
-        attr = self.cv_viewset.get_parent_attributes(first_only=True)
-        arg = self.cv_viewset.get_parent_url_args(first_only=True)
-        pk = self.kwargs[arg]
-        parent_object = get_object_or_404(parent_model, pk=pk)
+        parent_object = self.cv_get_parent_object()
 
         if self.cv_viewset.parent.many_to_many_through_attribute:
 
@@ -58,14 +57,10 @@ class CreateViewParentMixin:
             m2m.add(self.object, through_defaults=through_defaults)
         else:
             # before saving, add the parent model to the form instance
-            setattr(context["form"].instance, attr, parent_object)
+            setattr(context["form"].instance, self.cv_get_parent_object_attribute(), parent_object)
 
             # now save the form
             super().cv_form_valid(context)
 
     def cv_parent_many_to_many_through_defaults(self, instance, parent_instance, m2m) -> dict:
         return dict()
-
-
-class CreateViewPermissionRequired(CrudViewPermissionRequiredMixin, CreateView):  # this file
-    cv_permission = "add"

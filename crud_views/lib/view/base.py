@@ -1,21 +1,20 @@
 from functools import cached_property
-
-from django.utils.functional import classproperty
-from typing_extensions import Self
 from typing import Dict, List, Type, Any, Iterable, Tuple
 
+from crud_views.lib import check
+from crud_views.lib.check import Check, CheckAttributeReg, CheckAttribute, CheckTemplateOrCode
+from crud_views.lib.exceptions import cv_raise, ParentViewSetError, CrudViewError
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.db.models import Model
+from django.shortcuts import get_object_or_404
 from django.template import Context as TemplateContext, Template
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
+from typing_extensions import Self
 
-from crud_views.lib import check
-from crud_views.lib.check import Check, CheckAttributeReg, CheckAttribute, CheckTemplateOrCode
-from crud_views.lib.exceptions import cv_raise, ParentViewSetError, CrudViewError
 from .buttons import ContextButton
 from .context import ViewContext
 from .meta import CrudViewMetaClass
@@ -303,7 +302,7 @@ class CrudView(metaclass=CrudViewMetaClass):
             cv_access=False,
             cv_oid=self.cv_get_oid(key=key, obj=obj),
             cv_url=self.cv_get_url(key=key, obj=obj),
-            cv_is_active=self.cv_viewset.get_router_name(key) ==  context.router_name,
+            cv_is_active=self.cv_viewset.get_router_name(key) == context.router_name,
         )
 
         # get target view class
@@ -368,6 +367,31 @@ class CrudView(metaclass=CrudViewMetaClass):
             data["object"] = self.object
 
         return data
+
+    def cv_assert_parent(self):
+        assert self.cv_viewset.has_parent, f"ViewSet {self.cv_name} has no parent"
+
+    def cv_get_parent_object(self) -> Model:
+        """
+        Get parent object based on the view's kwargs
+        """
+        self.cv_assert_parent()
+
+        assert self.cv_viewset.has_parent, "this ViewSet has no parent"
+
+        # get the parent object
+        parent_model = self.cv_viewset.get_parent_model()
+        arg = self.cv_viewset.get_parent_url_args(first_only=True)
+        pk = self.kwargs[arg]  # noqa
+        return get_object_or_404(parent_model, pk=pk)
+
+    def cv_get_parent_object_attribute(self) -> str:
+        """
+        Get the attribute/field that points to the parent object
+        """
+        self.cv_assert_parent()
+
+        return self.cv_viewset.get_parent_attributes(first_only=True)
 
 
 # ViewContext uses a string type hint to CrudView, so we need to rebuild the model here

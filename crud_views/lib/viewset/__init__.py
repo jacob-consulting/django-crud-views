@@ -76,7 +76,7 @@ class ViewSet(BaseModel):
     pk_name: str = "pk"
     context_buttons: List[ContextButton] = Field(default_factory=context_buttons_default)
     parent: ParentViewSet | None = None
-
+    ordering: str | None = None
     icon_header: str | None = None
 
     _views: Dict[str, Type[CrudView]] = PrivateAttr(default_factory=empty_dict)  # noqa
@@ -207,10 +207,17 @@ class ViewSet(BaseModel):
                 # proceed to next parent
                 parent = parent.viewset.parent
 
-            return self.model.objects.filter(Q(**q_kwargs))
+            queryset = self.model.objects.filter(Q(**q_kwargs))
 
-        # default queryset
-        return self.model.objects.all()
+        else:
+            # default queryset
+            queryset = self.model.objects.all()
+
+        # add ordering
+        if self.ordering:
+            queryset = queryset.order_by(self.ordering)
+
+        return queryset
 
     def register_view_class(self, key: str, view_class: Type[CrudView]):
         cv_raise(key not in self._views, f"key {key} already registered at {self}")

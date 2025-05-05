@@ -28,7 +28,7 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, generic.DeleteView):
 
     def cv_form_valid(self, context: dict):
         """
-        Handle valid form
+        Handle valid form, delete the object
         """
         self.object.delete()
 

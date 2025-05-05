@@ -59,7 +59,7 @@ class CrudViewProcessFormMixin:
         """
         Handle valid form
         """
-        self.object = context["form"].save()
+        pass
 
     def cv_form_valid_hook(self, context: dict):
         """

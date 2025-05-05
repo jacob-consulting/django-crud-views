@@ -26,6 +26,12 @@ class CreateView(CrudViewProcessFormMixin, CrudView, generic.CreateView):
     # messages
     cv_message_template: str | None = "crud_views/snippets/message/create.html"
 
+    def cv_form_valid(self, context: dict):
+        """
+        Handle valid form: save the form instance
+        """
+        self.object = context["form"].save()
+
 
 class CreateViewPermissionRequired(CrudViewPermissionRequiredMixin, CreateView):  # this file
     cv_permission = "add"

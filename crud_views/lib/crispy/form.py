@@ -74,9 +74,9 @@ class CrispyFormMixin:
 
     def get_cancel_button_kwargs(self) -> dict:
         request = self.cv_view.request
-        # todo: do not get the cancel button via the context, since we use only the url
-        context = self.cv_view.get_cancel_button_context(obj=getattr(self, "instance", None), user=request.user,
-                                                         request=request)
+        # get the object from the form instance or the view context object
+        obj = getattr(self, "instance", getattr(self.cv_view, "object", None))
+        context = self.cv_view.get_cancel_button_context(obj=obj, user=request.user, request=request)
         url = context["cv_url"]
         onclick = f"location.href='{url}';return false;"
         return {
@@ -127,7 +127,7 @@ class CrispyDeleteForm(CrispyForm):
         return helper
 
 
-class CrispyModelViewMixin:
+class CrispyViewMixin:
     """
     This mixin makes sure that CrispyModelForm gets the cv_view argument
     """
@@ -138,3 +138,8 @@ class CrispyModelViewMixin:
         if issubclass(form_class, (CrispyModelForm, CrispyForm)):
             kwargs["cv_view"] = self
         return kwargs
+
+
+# todo: remove this
+class CrispyModelViewMixin(CrispyViewMixin):
+    pass

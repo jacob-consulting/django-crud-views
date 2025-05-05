@@ -25,6 +25,12 @@ class UpdateView(CrudViewProcessFormMixin, CrudView, generic.UpdateView):
     # messages
     cv_message_template: str | None = "crud_views/snippets/message/update.html"
 
+    def cv_form_valid(self, context: dict):
+        """
+        Handle valid form, save (update) the from instance
+        """
+        self.object = context["form"].save()
+
 
 class UpdateViewPermissionRequired(CrudViewPermissionRequiredMixin, UpdateView):  # this file
     cv_permission = "change"

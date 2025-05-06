@@ -1,0 +1,17 @@
+{% load crud_views %}
+
+<div class="tab-content">
+    {% for tab in tabs %}
+        <div class="tab-pane fade show {% if tab.selected %}active{% endif %}"
+             id="{{ tab.name }}"
+             role="tabpanel"
+             aria-labelledby="{{ tab.name }}-tab">
+            <br>
+            {% if tab.property_group_name %}
+                {% cv_property_group tab.property_group_name True %}
+            {% elif tab.table %}
+                {% cv_tab_content_table tab %}
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>

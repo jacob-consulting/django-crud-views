@@ -11,6 +11,7 @@ from crud_views.lib.exceptions import ViewSetError
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import CrudView, CrudViewPermissionRequiredMixin
 from crud_views.lib.views.properties import r
+from .tabs import Tab
 
 
 class Property(BaseModel, arbitrary_types_allowed=True):
@@ -82,8 +83,8 @@ class DetailView(CrudView, generic.DetailView):
     cv_path = "detail"
     cv_context_actions = crud_views_settings.detail_context_actions
     cv_properties: OrderedDict[str, List[Any]] = Field(default_factory=collections.OrderedDict)
-
     cv_property_groups: List[PropertyGroup] = Field(default_factory=list)
+    cv_tabs: List[Tab] = []
 
     # texts and labels
     cv_header_template: str | None = "crud_views/snippets/header/detail.html"
@@ -100,7 +101,17 @@ class DetailView(CrudView, generic.DetailView):
         Iterator of checks for the view
         """
         yield from super().checks()
+        # todo: check property groups
+        # todo: check tabs
         # yield PropertyCheck(context=cls, id="E300", attribute="attribute")   # todo
+
+    @property
+    def cv_has_visible_tabs(self) -> bool:
+        # todo: visibility
+        return len(self.cv_tabs) > 0
+
+    def cv_has_visible_property_groups(self) -> bool:
+        return len(self.cv_property_groups_show) > 0
 
     @property
     def cv_property_group_keys(self) -> List[str]:

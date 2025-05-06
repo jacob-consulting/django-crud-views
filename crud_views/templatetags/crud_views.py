@@ -108,10 +108,11 @@ def cv_property_groups(context):
 
 
 @register.simple_tag(takes_context=True)
-def cv_property_group(context, group_or_key):
+def cv_property_group(context, group_or_key, no_label: bool = False):
     view: CrudView = cv_get_view(context)
     group = view.cv_get_property_group(group_or_key=group_or_key)
     context["group"] = group
+    context["no_label"] = no_label
     if group.template_name:
         data = view.cv_get_property_group_data(group)
         context.update(data)
@@ -142,6 +143,37 @@ def cv_property_value(context, obj: object, prop: Property):
     assert isinstance(view, DetailView)
     info = view.cv_get_property_info(obj=obj, prop=prop)
     return info.render()
+
+
+@register.simple_tag(takes_context=True)
+def cv_tabs(context):
+    view: CrudView = cv_get_view(context)
+    context["tabs"] = view.cv_tabs
+    return render_to_string("crud_views/tabs/tabs.html", context.flatten())
+
+
+@register.simple_tag(takes_context=True)
+def cv_tab_content(context):
+    view: CrudView = cv_get_view(context)
+    context["tabs"] = view.cv_tabs
+    return render_to_string("crud_views/tabs/content.html", context.flatten())
+
+
+@register.simple_tag(takes_context=True)
+def cv_tab_content_table(context, tab):
+    view: CrudView = cv_get_view(context)
+    if tab.table in context:
+        table = context[tab.table]
+    elif hasattr(view, tab.table):
+        table_attr = getattr(view, tab.table)
+        if callable(table_attr):
+            table = table_attr()
+        else:
+            table = table_attr
+    else:
+        raise ViewSetKeyFoundError(f"Table {tab.table} not found in context or view")
+    context["table"] = table
+    return render_to_string("crud_views/tabs/content_table.html", context.flatten())
 
 
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/icon.html", takes_context=True)

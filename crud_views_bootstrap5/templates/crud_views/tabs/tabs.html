@@ -1,0 +1,19 @@
+<ul class="nav nav-tabs" role="tablist">
+    {% for tab in tabs %}
+        <li class="nav-item" role="presentation">
+            <button class="nav-link {% if tab.selected %}active{% endif %}"
+                    id="{{ tab.name }}-tab"
+                    data-bs-toggle="tab"
+                    data-bs-target="#{{ tab.name }}"
+                    type="button"
+                    role="tab"
+                    aria-controls="{{ tab.name }}"
+                    aria-selected="{% if tab.selected %}true{% else %}false{% endif %}">
+                {% if tab.icon %}
+                    <i class="{{ tab.icon }}"></i>
+                {% endif %}
+                {{ tab.label_display }}
+            </button>
+        </li>
+    {% endfor %}
+</ul>

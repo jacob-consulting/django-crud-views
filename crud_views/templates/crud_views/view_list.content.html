@@ -1,0 +1,20 @@
+{% load crud_views %}
+
+<table>
+    <tr>
+        <th>Object</th>
+        <th>Action</th>
+    </tr>
+    {% for object in object_list %}
+        <tr>
+            <td>
+                {{ object }}
+            </td>
+            <td>
+                {% for key in view.cv_list_actions %}
+                    {% cv_list_action key object %}
+                {% endfor %}
+            </td>
+        </tr>
+    {% endfor %}
+</table>

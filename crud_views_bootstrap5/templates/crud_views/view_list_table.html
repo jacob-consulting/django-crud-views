@@ -1,15 +1,9 @@
 {% extends cv_extends %}
 
-{% load static %}
-{% load django_tables2 %}
-{% load crud_views %}
-
 {% block cv_filter %}
-    {% if view.filterset_class %}
-        {% cv_render_filter %}
-    {% endif %}
+    {% include "crud_views/view_list_table.filter.html" %}
 {% endblock cv_filter %}
 
 {% block cv_content %}
-    {% render_table table %}
+    {% include "crud_views/view_list_table.content.html" %}
 {% endblock cv_content %}

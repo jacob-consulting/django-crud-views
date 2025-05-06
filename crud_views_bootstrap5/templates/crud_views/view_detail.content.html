@@ -1,0 +1,8 @@
+{% load crud_views %}
+
+{% if view.cv_has_visible_tabs %}
+    {% cv_tabs %}
+    {% cv_tab_content %}
+{% elif view.cv_has_visible_property_groups %}
+    {% cv_property_groups %}
+{% endif %}

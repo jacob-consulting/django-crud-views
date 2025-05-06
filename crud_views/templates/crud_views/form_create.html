@@ -1,9 +1,0 @@
-{% load crud_views %}
-
-<form class="cv-form" method="post" novalidate>
-    {% csrf_token %}
-
-    {{ form.non_form_errors }}
-
-    {% cv_render_form %}
-</form>

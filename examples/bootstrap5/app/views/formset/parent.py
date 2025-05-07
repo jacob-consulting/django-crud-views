@@ -1,18 +1,16 @@
 import django_tables2 as tables
 from crispy_forms.layout import Row
+from django.utils.translation import gettext as _
 
+from app.models.poly import Parent
 from crud_views.lib.crispy import CrispyModelViewMixin, CrispyDeleteForm, CrispyModelForm, Column4
-from crud_views.lib.table import Table, LinkDetailColumn, UUIDLinkDetailColumn, ActionColumn
-from crud_views.lib.table.table import ColumnAttrs
+from crud_views.lib.table import Table, UUIDLinkDetailColumn
 from crud_views.lib.views import (
     ListViewTableMixin,
     ListViewPermissionRequired,
     RedirectChildView, CreateViewPermissionRequired, UpdateViewPermissionRequired, DeleteViewPermissionRequired
 )
-from crud_views.lib.viewset import ViewSet, path_regs
-from django.utils.translation import gettext as _
-
-from app.models.poly import Parent
+from crud_views.lib.viewset import ViewSet
 
 cv_poly_parent_formset = ViewSet(
     model=Parent,

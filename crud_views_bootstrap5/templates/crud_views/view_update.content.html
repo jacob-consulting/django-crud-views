@@ -1,6 +1,6 @@
 {% load crud_views %}
 
-<form class="cv-form" method="post" novalidate>
+<form class="cv-form" method="post" enctype="multipart/form-data" novalidate>
     {% csrf_token %}
 
     {{ form.non_form_errors }}

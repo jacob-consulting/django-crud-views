@@ -349,7 +349,7 @@ class CrudView(metaclass=CrudViewMetaClass):
         kw = dict()
         for idx, (arg, attr) in enumerate(zip(args, attrs)):
             if idx == 0 and obj:
-                kw[arg] = obj.id  # it's me, because I'm linking to the child
+                kw[arg] = obj.pk  # it's me, because I'm linking to the child
             else:
                 kw[arg] = self.kwargs[arg]  # get value from the view's kwargs
         url = reverse(name, kwargs=kw)

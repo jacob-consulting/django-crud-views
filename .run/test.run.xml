@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="runserver-bootstrap5" type="PythonConfigurationType" factoryName="Python" folderName="examples">
+  <configuration default="false" name="test" type="PythonConfigurationType" factoryName="Python" folderName="examples">
     <module name="django-crud-views" />
     <option name="ENV_FILES" value="" />
     <option name="INTERPRETER_OPTIONS" value="" />
@@ -9,13 +9,13 @@
     </envs>
     <option name="SDK_HOME" value="" />
     <option name="SDK_NAME" value="uv (django-crud-views)" />
-    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/examples/bootstrap5" />
+    <option name="WORKING_DIRECTORY" value="" />
     <option name="IS_MODULE_SDK" value="false" />
     <option name="ADD_CONTENT_ROOTS" value="true" />
     <option name="ADD_SOURCE_ROOTS" value="true" />
     <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
     <option name="SCRIPT_NAME" value="./manage.py" />
-    <option name="PARAMETERS" value="runserver 8000" />
+    <option name="PARAMETERS" value="" />
     <option name="SHOW_COMMAND_LINE" value="false" />
     <option name="EMULATE_TERMINAL" value="false" />
     <option name="MODULE_MODE" value="false" />

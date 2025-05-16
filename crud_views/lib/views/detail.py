@@ -205,8 +205,8 @@ class DetailView(CrudView, generic.DetailView):
             is_property=is_property or field is None,
             renderer=renderer,
             value=value,
-            label=label,
-            label_tooltip=label_tooltip
+            label=str(label),
+            label_tooltip=str(label_tooltip)
         )
 
     def cv_get_property_group_data(self, group_or_key: str | PropertyGroup) -> dict:

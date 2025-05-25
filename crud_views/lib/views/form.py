@@ -15,7 +15,7 @@ class CustomFormView(CrudViewProcessFormMixin, CrudView,
         - cv_key
         - cv_path
     """
-    template_name = "crud_views/view.custom_form.html"
+    template_name = "crud_views/view_custom_form.html"
     cv_context_actions = crud_views_settings.detail_context_actions
 
     def cv_form_valid(self, context: dict):

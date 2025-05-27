@@ -1,8 +1,12 @@
+from typing import List, Type, Iterable
+
 from django import forms
 from django.http import HttpResponseRedirect
 from django.utils.translation import gettext_lazy as _
 from django.views import generic
+from polymorphic.models import PolymorphicModel
 
+from crud_views.lib.check import CheckEitherAttribute, Check
 from crud_views.lib.view import CrudView, CrudViewPermissionRequiredMixin
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.polymorphic_views.utils import get_polymorphic_child_models_content_types
@@ -25,6 +29,9 @@ class PolymorphicCreateSelectView(CrudView, generic.FormView):
     cv_path = "create/select"
     cv_success_key = "list"
     cv_context_actions = crud_views_settings.create_select_context_actions
+    # todo: check, only one can be set
+    cv_polymorphic_exclude: List[Type[PolymorphicModel]] | None = None
+    cv_polymorphic_include: List[Type[PolymorphicModel]] | None = None
 
     # texts and labels
     cv_header_template: str = "crud_views/snippets/header/create_select.html"
@@ -34,9 +41,25 @@ class PolymorphicCreateSelectView(CrudView, generic.FormView):
 
     cv_icon_action = "fa-regular fa-square-plus"
 
+    #
+    @classmethod
+    def checks(cls) -> Iterable[Check]:
+        """
+        Iterator of checks for the view
+        """
+        yield from super().checks()
+        yield CheckEitherAttribute(context=cls, id="E220",
+                                   attribute1="cv_polymorphic_exclude",
+                                   attribute2="cv_polymorphic_include",
+                                   allow_none=True)
+
     def get_form(self, form_class=None):
         form_class = form_class if form_class else self.get_form_class()
-        content_types = get_polymorphic_child_models_content_types(self.model)
+        content_types = get_polymorphic_child_models_content_types(self.model)  # noqa
+        if self.cv_polymorphic_exclude:
+            content_types = {k: v for k, v in content_types.items() if k not in self.cv_polymorphic_exclude}
+        elif self.cv_polymorphic_include:
+            content_types = {k: v for k, v in content_types.items() if k in self.cv_polymorphic_include}
         polymorphic_ctype_choices = [(ct.id, ct.name) for ct in content_types.values()]
         form_kwargs = self.get_form_kwargs()
         form = form_class(polymorphic_ctype_choices=polymorphic_ctype_choices, **form_kwargs)
@@ -47,21 +70,6 @@ class PolymorphicCreateSelectView(CrudView, generic.FormView):
         kwargs = {"polymorphic_ctype_id": polymorphic_ctype_id}
         url = self.cv_get_url("create", extra_kwargs=kwargs)
         return HttpResponseRedirect(url)
-
-    # def form_valid(self, form):
-    #     """
-    #     Set parent model instance at form instance
-    #     """
-    #
-    #     parent_model = self.cv_viewset.get_parent_model()
-    #     if parent_model:
-    #         attr = self.cv_viewset.get_parent_attributes(first_only=True)
-    #         arg = self.cv_viewset.get_parent_url_args(first_only=True)
-    #         pk = self.kwargs[arg]
-    #         parent = get_object_or_404(parent_model, pk=pk)
-    #         setattr(form.instance, attr, parent)
-    #
-    #     return super().form_valid(form)
 
 
 class PolymorphicCreateSelectViewPermissionRequired(CrudViewPermissionRequiredMixin,

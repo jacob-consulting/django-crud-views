@@ -40,7 +40,8 @@ class SessionData(BaseModel):
 
     @property
     def view_key(self) -> str:
-        return self.view.cv_key  # noqa
+        key = f"{self.view.cv_viewset.name}-{self.view.cv_key}"
+        return key
 
     @property
     def app_label(self) -> str:

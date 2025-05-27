@@ -104,6 +104,7 @@ class CheckEitherAttribute(Check):
     """
     attribute1: str | None = None
     attribute2: str | None = None
+    allow_none: bool = False
 
     msg: str = "Neither »{attribute1}» not »{attribute2}» are set or are missing »{context}»"
 
@@ -128,12 +129,12 @@ class CheckEitherAttribute(Check):
     def messages(self) -> Iterable[CheckMessage]:
         # yield from super().messages()
 
-        if not self.value1 and not self.value2:
+        if not self.value1 and not self.value2 and not self.allow_none:
             yield Error(id=self.get_id(),
                         msg=self.get_message(
                             "Neither attribute »{attribute1}» nor attribute »{attribute2}» are set at »{context}»"))
 
-        if self.value1 and self.value2:
+        elif self.value1 and self.value2:
             yield Error(id=self.get_id(),
                         msg=self.get_message(
                             "Both attributes »{attribute1}» and »{attribute2}» are set at »{context}»"))

@@ -1,5 +1,5 @@
 from functools import cached_property
-from typing import List, Dict
+from typing import List, Dict, Generator, Type
 
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Model
@@ -7,22 +7,23 @@ from django.forms import ModelForm
 from polymorphic.models import PolymorphicModel
 
 
-def get_polymorphic_child_models(model: PolymorphicModel) -> List[PolymorphicModel]:
+def get_polymorphic_child_models(model: PolymorphicModel) -> List[Type[PolymorphicModel]]:
     """
     Get all child models of a polymorphic model.
     """
     assert issubclass(model, PolymorphicModel), "not a polymorphic model"
+    def subclasses(m: Type[PolymorphicModel]) -> Generator[Type[PolymorphicModel], None, None]:
+        for sm in m.__subclasses__():
+            yield sm
+            yield from subclasses(sm)
 
-    children = []
-    for sub in model.__subclasses__():
-        # todo: check permissions
-        children.append(sub)
-    return children
+    child_models = list(subclasses(model))
+    return child_models
 
 
-def get_polymorphic_child_models_content_types(model: PolymorphicModel) -> List[ContentType]:
+def get_polymorphic_child_models_content_types(model: PolymorphicModel) -> Dict[Type[Model], ContentType]:
     child_models = get_polymorphic_child_models(model)
-    content_types = ContentType.objects.get_for_models(*child_models, for_concrete_models=False)
+    content_types = ContentType.objects.get_for_models(*child_models, for_concrete_models=True)
     return content_types
 
 

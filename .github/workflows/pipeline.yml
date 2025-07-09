@@ -52,7 +52,7 @@ jobs:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
     environment:
       name: pypi
-      url: https://test.pypi.org/p/django-crud-views
+      url: https://pypi.org/p/django-crud-views
     permissions:
       id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
     steps:
@@ -69,4 +69,4 @@ jobs:
       - name: Publish package distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-            repository-url: https://test.pypi.org/legacy/
+            repository-url: https://pypi.org/legacy/

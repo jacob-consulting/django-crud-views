@@ -36,3 +36,6 @@ you're building a small project or a large application, Django CRUD Views can he
 
 - a replacement for Django's admin interface
 - a complete page building system with navigations and lots of widgets
+
+## Current version
+Current version: 0.0.4

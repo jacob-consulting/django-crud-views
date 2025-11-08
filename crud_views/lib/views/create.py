@@ -31,6 +31,7 @@ class CreateView(CrudViewProcessFormMixin, CrudView, generic.CreateView):
         Handle valid form: save the form instance
         """
         self.object = context["form"].save()
+        context["object"] = self.object
 
 
 class CreateViewPermissionRequired(CrudViewPermissionRequiredMixin, CreateView):  # this file

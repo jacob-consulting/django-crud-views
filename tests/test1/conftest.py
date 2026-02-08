@@ -156,6 +156,40 @@ def author_douglas_adams():
 
 
 @pytest.fixture
+def user_author_add(cv_author):
+    from django.contrib.auth.models import User
+    user = User.objects.create_user(username="user_author_add", password="password")
+
+    user_viewset_permission(user, cv_author, "add")
+
+    return user
+
+
+@pytest.fixture
+def client_user_author_change(client, user_author_change) -> Client:
+    client.force_login(user_author_change)
+    return client
+
+
+@pytest.fixture
+def client_user_author_delete(client, user_author_delete) -> Client:
+    client.force_login(user_author_delete)
+    return client
+
+
+@pytest.fixture
+def client_user_author_add(client, user_author_add) -> Client:
+    client.force_login(user_author_add)
+    return client
+
+
+@pytest.fixture
+def client_user_a(client, user_a) -> Client:
+    client.force_login(user_a)
+    return client
+
+
+@pytest.fixture
 def author_terry_pratchett():
     from tests.test1.app.models import Author
 

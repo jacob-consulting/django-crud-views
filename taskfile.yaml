@@ -1,7 +1,7 @@
 version: '3'
 
 vars:
-  PYTHON: "3.11"
+  PYTHON: "3.12"
 
 tasks:
 
@@ -12,7 +12,7 @@ tasks:
 
   dev-venv:
     cmds:
-      - uv venv --python={{ .PYTHON }}
+      - uv venv --python={{ .PYTHON }} --clear
     silent: true
 
   dev-install:

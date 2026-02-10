@@ -2,13 +2,21 @@ from django.contrib.auth import get_user_model
 
 from crud_views.lib.exceptions import cv_raise
 
+try:
+    from django_filters.views import FilterMixin
+    _base_metaclass = type(FilterMixin)
+except ImportError:
+    _base_metaclass = type
+
 User = get_user_model()
 
 
-class CrudViewMetaClass(type):
+class CrudViewMetaClass(_base_metaclass):
     """
     Registers CrudViews at ViewSet
     """
+
+    renamed_attributes = ()
 
     def __new__(cls, name, bases, attrs, **kwargs):
         obj = super().__new__(cls, name, bases, attrs, **kwargs)

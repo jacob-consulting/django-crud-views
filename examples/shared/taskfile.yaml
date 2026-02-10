@@ -34,3 +34,6 @@ tasks:
       - ./manage.py shell
     silent: true
 
+  run:
+    cmds:
+      - uv run manage.py runserver 0.0.0.0:8000

@@ -61,7 +61,7 @@ class OrderedDownView(ActionView):
         return self.down(context)
 
     def down(self, context: dict) -> bool:
-        self.object.up()
+        self.object.down()
         self.object.save()
         return True
 

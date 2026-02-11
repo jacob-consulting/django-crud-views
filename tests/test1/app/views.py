@@ -1,16 +1,20 @@
 import django_tables2 as tables
 
+import django_filters
+
 from tests.test1.app.models import Author, Publisher, Book
 from crud_views.lib.crispy import CrispyModelViewMixin, CrispyDeleteForm, CrispyModelForm
 from crud_views.lib.table import Table, UUIDLinkDetailColumn, LinkDetailColumn
 from crud_views.lib.views import (
-    ListViewTableMixin,
+    ListViewTableMixin, ListViewTableFilterMixin, MessageMixin,
     ListViewPermissionRequired, DeleteViewPermissionRequired, ListView, DeleteView, CreateViewPermissionRequired,
-    UpdateViewPermissionRequired, DetailViewPermissionRequired, CreateViewParentMixin
+    UpdateViewPermissionRequired, DetailViewPermissionRequired, CreateViewParentMixin,
+    OrderedUpViewPermissionRequired, OrderedUpDownPermissionRequired
 )
+from crud_views.lib.views.list import ListViewFilterFormHelper
 from crud_views.lib.viewset import ViewSet, ParentViewSet, path_regs
 from crud_views.lib.crispy import Column4
-from crispy_forms.layout import Row
+from crispy_forms.layout import Row, Layout
 
 cv_author = ViewSet(
     model=Author,
@@ -84,6 +88,16 @@ class AuthorDeleteView(CrispyModelViewMixin, DeleteViewPermissionRequired):
     cv_viewset = cv_author
 
 
+class AuthorUpView(OrderedUpViewPermissionRequired):
+    model = Author
+    cv_viewset = cv_author
+
+
+class AuthorDownView(OrderedUpDownPermissionRequired):
+    model = Author
+    cv_viewset = cv_author
+
+
 # --- Publisher (INT PK) ---
 
 cv_publisher = ViewSet(
@@ -97,9 +111,23 @@ class PublisherTable(Table):
     name = tables.Column()
 
 
-class PublisherListView(ListViewTableMixin, ListViewPermissionRequired):
+class PublisherFilterFormHelper(ListViewFilterFormHelper):
+    layout = Layout(Row(Column4("name")))
+
+
+class PublisherFilter(django_filters.FilterSet):
+    name = django_filters.CharFilter(lookup_expr='icontains')
+
+    class Meta:
+        model = Publisher
+        fields = ["name"]
+
+
+class PublisherListView(ListViewTableMixin, ListViewTableFilterMixin, ListViewPermissionRequired):
     model = Publisher
     table_class = PublisherTable
+    filterset_class = PublisherFilter
+    formhelper_class = PublisherFilterFormHelper
     cv_viewset = cv_publisher
     cv_list_actions = ["detail", "update", "delete"]
 
@@ -126,19 +154,19 @@ class PublisherForm(CrispyModelForm):
         return Row(Column4("name"))
 
 
-class PublisherCreateView(CrispyModelViewMixin, CreateViewPermissionRequired):
+class PublisherCreateView(CrispyModelViewMixin, MessageMixin, CreateViewPermissionRequired):
     model = Publisher
     form_class = PublisherForm
     cv_viewset = cv_publisher
 
 
-class PublisherUpdateView(CrispyModelViewMixin, UpdateViewPermissionRequired):
+class PublisherUpdateView(CrispyModelViewMixin, MessageMixin, UpdateViewPermissionRequired):
     model = Publisher
     form_class = PublisherForm
     cv_viewset = cv_publisher
 
 
-class PublisherDeleteView(CrispyModelViewMixin, DeleteViewPermissionRequired):
+class PublisherDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequired):
     model = Publisher
     form_class = CrispyDeleteForm
     cv_viewset = cv_publisher

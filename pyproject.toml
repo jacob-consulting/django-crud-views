@@ -33,7 +33,7 @@ dependencies = [
 
 dev = [
     "black",
-    "bumpver",
+    "bump-my-version",
     "mkdocs (>=1.6.1)",
     "mkdocs-awesome-pages-plugin (>=2.10.1)",
     "mkdocs-get-deps (>=0.2.0)"
@@ -95,17 +95,33 @@ build-backend = "hatchling.build"
 
 # todo: polymorphic-minimal
 
-[tool.bumpver]
+[tool.bumpversion]
 current_version = "0.0.10"
-version_pattern = "MAJOR.MINOR.PATCH"
-commit_message = "Bump version {old_version} -> {new_version}"
 commit = true
 tag = true
-push = false
+tag_name = "v{new_version}"
 
-[tool.bumpver.file_patterns]
-"pyproject.toml" = ['current_version = "{version}"', 'version = "{version}"']
-"crud_views/__init__.py" = ["{version}"]
-"crud_views_bootstrap5/__init__.py" = ["{version}"]
-"docs/index.md" = ["{version}"]
-"README.md" = ["{version}"]
+[[tool.bumpversion.files]]
+filename = "pyproject.toml"
+search = 'version = "{current_version}"'
+replace = 'version = "{new_version}"'
+
+[[tool.bumpversion.files]]
+filename = "crud_views/__init__.py"
+search = '__version__ = "{current_version}"'
+replace = '__version__ = "{new_version}"'
+
+[[tool.bumpversion.files]]
+filename = "crud_views_bootstrap5/__init__.py"
+search = '__version__ = "{current_version}"'
+replace = '__version__ = "{new_version}"'
+
+[[tool.bumpversion.files]]
+filename = "docs/index.md"
+search = "Current version: {current_version}"
+replace = "Current version: {new_version}"
+
+[[tool.bumpversion.files]]
+filename = "README.md"
+search = "Current version: {current_version}"
+replace = "Current version: {new_version}"

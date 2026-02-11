@@ -11,7 +11,7 @@ def tests(session, django):
         session.skip("Django 4.2 does not support Python 3.14")
 
     session.install(f"django~={django}.0")
-    session.install(".[bootstrap5,test]")
+    session.install(".[bootstrap5,polymorphic,test]")
 
     with session.chdir("./tests"):
         session.run("pytest", "--cov", "--cov-report=term-missing", *session.posargs)

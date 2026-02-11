@@ -3,7 +3,6 @@ import django_tables2 as tables
 
 from app.models import Author
 from crud_views.lib.table import Table, LinkChildColumn, UUIDLinkDetailColumn
-from crud_views.lib.view import cv_property
 from crud_views.lib.views import DetailViewPermissionRequired, UpdateViewPermissionRequired, CreateViewPermissionRequired, \
     MessageMixin, ListViewTableMixin, ListViewTableFilterMixin, ListViewPermissionRequired, \
     OrderedUpViewPermissionRequired, OrderedUpDownPermissionRequired, DeleteViewPermissionRequired
@@ -49,15 +48,18 @@ class AuthorListView(ListViewTableMixin, ListViewTableFilterMixin, ListViewPermi
 class AuthorDetailView(DetailViewPermissionRequired):
     model = Author
     cv_viewset = cv_author
-    cv_properties = ["full_name", "first_name", "last_name", "pseudonym", "books"]
-
-    @cv_property(foo=4711)
-    def full_name(self) -> str:
-        return f"{self.object.first_name} {self.object.last_name}"
-
-    @cv_property(foo=4711)
-    def books(self) -> str:
-        return self.object.book_set.count()
+    property_display = [
+        {
+            "title": "Attributes",
+            "properties": [
+                "full_name",
+                "first_name",
+                "last_name",
+                "pseudonym",
+                "book_count",
+            ],
+        },
+    ]
 
 
 class AuthorUpdateView(MessageMixin, UpdateViewPermissionRequired):
@@ -90,8 +92,3 @@ class AuthorDownView(MessageMixin, OrderedUpDownPermissionRequired):
     model = Author
     cv_viewset = cv_author
     cv_message = "Successfully moved author »{object}« down"
-
-#
-# class AuthorManageView(ManageView):
-#     model = Author
-#     cv = cv_author

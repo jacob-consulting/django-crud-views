@@ -1,10 +1,8 @@
 import django_tables2 as tables
 
-from crud_views.lib.views.detail import PropertyGroup
 from tests.test1.app.models import Author
 from crud_views.lib.crispy import CrispyModelViewMixin, CrispyDeleteForm, CrispyModelForm
 from crud_views.lib.table import Table, UUIDLinkDetailColumn
-from crud_views.lib.view import cv_property
 from crud_views.lib.views import (
     ListViewTableMixin,
     ListViewPermissionRequired, DeleteViewPermissionRequired, ListView, DeleteView, CreateViewPermissionRequired,
@@ -44,22 +42,17 @@ class AuthorDetailView(DetailViewPermissionRequired):
     model = Author
     cv_viewset = cv_author
 
-    cv_property_groups = [
-        PropertyGroup(
-            key="attributes",
-            label="Attributes",
-            properties=[
+    property_display = [
+        {
+            "title": "Attributes",
+            "properties": [
                 "full_name",
                 "first_name",
                 "last_name",
                 "pseudonym",
-            ]
-        ),
+            ],
+        },
     ]
-
-    @cv_property(label="Full Name")
-    def full_name(self) -> str:
-        return f"{self.object.first_name} {self.object.last_name}"
 
 
 class AuthorForm(CrispyModelForm):

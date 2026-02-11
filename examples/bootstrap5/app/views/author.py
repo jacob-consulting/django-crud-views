@@ -8,7 +8,6 @@ from app.models import Author
 from crud_views.lib.crispy import Column4, CrispyModelForm, CrispyModelViewMixin, CrispyDeleteForm, Column12
 from crud_views.lib.table import Table, LinkChildColumn, UUIDLinkDetailColumn
 from crud_views.lib.table.columns import NaturalTimeColumn, NaturalDayColumn
-from crud_views.lib.view import cv_property
 from crud_views.lib.views import (
     DetailViewPermissionRequired,
     UpdateViewPermissionRequired,
@@ -21,10 +20,8 @@ from crud_views.lib.views import (
     OrderedUpDownPermissionRequired,
     DeleteViewPermissionRequired, RedirectChildView
 )
-from crud_views.lib.views.detail import PropertyGroup, Property
 from crud_views.lib.views.form import CustomFormViewPermissionRequired
 from crud_views.lib.views.list import ListViewFilterFormHelper
-from crud_views.lib.views.properties import r
 from crud_views.lib.viewset import ViewSet
 
 cv_author = ViewSet(
@@ -125,48 +122,31 @@ class AuthorDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionR
 class AuthorDetailView(DetailViewPermissionRequired):
     model = Author
     cv_viewset = cv_author
-    # cv_context_actions = ["home", "update", "contact", "delete"]
 
-    cv_property_groups = [
-        PropertyGroup(
-            key="attributes",
-            label=_("Attributes"),
-            properties=[
+    property_display = [
+        {
+            "title": _("Attributes"),
+            "icon": "tag",
+            "description": _("Core author information"),
+            "properties": [
                 "xyz",
-                "a_boolean",
-                "b_boolean",
-                "full_name",
+                {"path": "full_name", "detail": _("Computed from first and last name")},
                 "first_name",
                 "last_name",
-            ]
-        ),
-        PropertyGroup(
-            key="extra",
-            label=_("Extra"),
-            properties=[
-                Property(name="id", label="UUID"),
+            ],
+        },
+        {
+            "title": _("Extra"),
+            "icon": "circle-info",
+            "description": _("Additional metadata and computed values"),
+            "properties": [
+                {"path": "id", "title": "UUID", "detail": _("Unique identifier")},
                 "pseudonym",
-                "books",
+                {"path": "book_count", "detail": _("Total number of books by this author")},
                 "abc",
-            ]
-        ),
+            ],
+        },
     ]
-
-    @cv_property(label="Full Name")
-    def full_name(self) -> str:
-        return f"{self.object.first_name} {self.object.last_name}"
-
-    @cv_property(label=_("Number of books"))
-    def books(self) -> str:
-        return self.object.book_set.count()
-
-    @cv_property(label=_("A boolean 1"), renderer=r.boolean)
-    def a_boolean(self) -> bool:
-        return True
-
-    @cv_property(label=_("A boolean 2"), renderer=r.boolean)
-    def b_boolean(self) -> bool:
-        return False
 
 
 class AuthorUpView(MessageMixin, OrderedUpViewPermissionRequired):

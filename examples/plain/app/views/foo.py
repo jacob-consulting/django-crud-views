@@ -27,7 +27,12 @@ class FooListView(ListViewTableMixin, ListViewPermissionRequired):
 class FooDetailView(DetailViewPermissionRequired):
     model = Foo
     cv_viewset = cv_foo
-    cv_properties = ["id", "name"]
+    property_display = [
+        {
+            "title": "Properties",
+            "properties": ["id", "name"],
+        },
+    ]
 
 
 class FooUpdateView(UpdateViewPermissionRequired):

@@ -29,7 +29,12 @@ class BarListView(ListViewTableMixin, ListViewPermissionRequired):
 class BarDetailView(DetailViewPermissionRequired):
     model = Bar
     cv_viewset = cv_bar
-    cv_properties = ["id", "name"]
+    property_display = [
+        {
+            "title": "Properties",
+            "properties": ["id", "name"],
+        },
+    ]
 
 
 class BarUpdateView(UpdateViewPermissionRequired):

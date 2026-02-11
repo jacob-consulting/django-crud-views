@@ -10,3 +10,4 @@ uv.lock
 .coverage
 coverage.xml
 .nox
+/insights

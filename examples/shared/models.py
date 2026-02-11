@@ -4,9 +4,6 @@ from django.db import models
 from ordered_model.models import OrderedModel
 from polymorphic.models import PolymorphicModel
 
-from crud_views.lib.view import cv_property
-from crud_views.lib.views.properties import r
-
 
 class Author(OrderedModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -27,7 +24,7 @@ class Author(OrderedModel):
     def xyz(self):
         return "xyz-prop"
 
-    @cv_property(label="ABC-Boolean", renderer=r.boolean)
+    @property
     def abc(self):
         return True
 
@@ -99,7 +96,7 @@ class Detail(OrderedModel):
     def __str__(self):
         return f"{self.id}"
 
-    @cv_property(label="model decorated property", label_tooltip="with custom tooltip", renderer=r.boolean)
+    @property
     def model_prop(self):
         return True
 

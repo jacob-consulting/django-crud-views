@@ -7,7 +7,6 @@ from crud_views.lib.table import Table, UUIDLinkDetailColumn
 from crud_views.lib.views import DetailViewPermissionRequired, UpdateViewPermissionRequired, \
     CreateViewPermissionRequired, \
     ListViewTableMixin, DeleteViewPermissionRequired, ListViewPermissionRequired, CreateViewParentMixin, MessageMixin
-from crud_views.lib.views.detail import PropertyGroup
 from crud_views.lib.viewset import ViewSet, ParentViewSet
 
 cv_book = ViewSet(
@@ -55,19 +54,20 @@ class BookDetailView(DetailViewPermissionRequired):
     model = Book
     cv_viewset = cv_book
 
-    cv_property_groups = [
-        PropertyGroup(
-            key="attributes",
-            label="Attributes",
-            properties=[
+    property_display = [
+        {
+            "title": "Attributes",
+            "icon": "book-open",
+            "description": "Book details and metadata",
+            "properties": [
                 "id",
                 "title",
-                "price",
+                {"path": "price", "detail": "Retail price in EUR"},
                 "author",
                 "created_dt",
                 "modified_dt",
-            ]
-        ),
+            ],
+        },
     ]
 
 
@@ -87,4 +87,3 @@ class BookDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionReq
     model = Book
     form_class = CrispyDeleteForm
     cv_viewset = cv_book
-

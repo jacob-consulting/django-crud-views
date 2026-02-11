@@ -15,11 +15,9 @@ classifiers = [
     "Framework :: Django :: 5",
     "Framework :: Django :: 5.2",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
 ]
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 dependencies = [
     "django (>=4.2.0,<6)",
     "pydantic (>=2.2.1)",
@@ -27,7 +25,8 @@ dependencies = [
     "django-tables2 (>=2.5.3)",
     "django-filter (>=21.1)",
     "typing-extensions (>=4.7.1)",
-    "django-ordered-model (>=3.4.3)"
+    "django-ordered-model (>=3.4.3)",
+    "django-object-detail (>=0.1.7)"
 ]
 
 [project.optional-dependencies]

@@ -100,5 +100,10 @@ class PolyDeleteView(PolymorphicDeleteViewPermissionRequired):
 class PolyDetailView(PolymorphicDetailViewPermissionRequired):
     model = Poly
     cv_viewset = cv_poly
-    cv_properties = ["id", "shared"]
+    property_display = [
+        {
+            "title": "Properties",
+            "properties": ["id", "shared"],
+        },
+    ]
 

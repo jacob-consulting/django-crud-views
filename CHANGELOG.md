@@ -19,6 +19,6 @@
   - Polymorphic views: create-select, subtype-specific create/update, detail, delete
 - Cleaned up `test_factory.py` dead code
 
-## 0.1.11
+## 0.0.11
 
 - Replaced custom detail view property system (`PropertyGroup`, `Property`, `PropertyInfo`, renderers, `@cv_property` decorator, tabs) with [django-object-detail](https://django-object-detail.readthedocs.io/en/latest/)

@@ -1,5 +1,9 @@
 # Django CRUD Views - Changelog
 
+## 0.1.1
+
+- Added `polymorphic` extra to nox test sessions
+
 ## 0.1.0
 
 - Updated development status from Alpha to Beta

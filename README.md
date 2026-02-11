@@ -1,5 +1,11 @@
 # Django CRUD Views
 
+![Tests](https://github.com/jacob-consulting/django-crud-views/actions/workflows/tests.yml/badge.svg)
+![Coverage](https://codecov.io/gh/jacob-consulting/django-crud-views/branch/main/graph/badge.svg)
+![PyPI](https://img.shields.io/pypi/v/django-crud-views)
+![License](https://img.shields.io/pypi/l/django-crud-views)
+![Docs](https://readthedocs.org/projects/django-crud-views/badge/?version=latest)
+
 Managing CRUD (Create, Read, Update, Delete) operations is a common requirement in Django applications. While Django’s
 class-based views provide flexibility, implementing CRUD functionality often involves repetitive code.
 

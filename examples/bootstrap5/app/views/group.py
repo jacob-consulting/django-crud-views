@@ -14,7 +14,6 @@ from crud_views.lib.views import (
     ListViewPermissionRequired,
     DeleteViewPermissionRequired, RedirectChildView
 )
-from crud_views.lib.views.detail import PropertyGroup
 from crud_views.lib.viewset import ViewSet
 
 cv_group = ViewSet(
@@ -82,17 +81,17 @@ class GroupDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRe
 class GroupDetailView(DetailViewPermissionRequired):
     model = Group
     cv_viewset = cv_group
-    # cv_context_actions = ["home", "update", "contact", "delete"]
 
-    cv_property_groups = [
-        PropertyGroup(
-            key="attributes",
-            label=_("Attributes"),
-            properties=[
+    property_display = [
+        {
+            "title": _("Attributes"),
+            "icon": "users",
+            "description": _("Group identification"),
+            "properties": [
                 "id",
                 "name",
-            ]
-        ),
+            ],
+        },
     ]
 
 

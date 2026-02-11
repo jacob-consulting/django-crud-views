@@ -34,8 +34,6 @@
 - why? motivation
 
 ### DetailView
-- Properties and PropertyGroup
-- Labels
-- View methods vs model fields
-- Renderers, list of renderers
-- template tags
+- Uses [django-object-detail](https://django-object-detail.readthedocs.io/en/latest/) for property display
+- Configure `property_display` on your detail view
+- Model fields and `@property` methods are supported

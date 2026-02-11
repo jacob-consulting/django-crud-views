@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'crispy_bootstrap5',
     'ordered_model',
     'django_tables2',
+    "django_object_detail",
     "crud_views_bootstrap5.apps.CrudViewsBootstrap5Config",
     "crud_views.apps.CrudViewsConfig",
     'app.apps.ApplicationConfig',
@@ -141,3 +142,9 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 
 # django_tables2
 DJANGO_TABLES2_TEMPLATE = "crud_views/table/bootstrap5.html"
+
+# django-object-detail
+OBJECT_DETAIL_TEMPLATE_PACK_LAYOUT = "split-card"
+OBJECT_DETAIL_TEMPLATE_PACK_TYPES = "default"
+OBJECT_DETAIL_ICONS_LIBRARY = "fontawesome"
+OBJECT_DETAIL_ICONS_TYPE = "solid"  # or "regular", "light", "thin", "duotone"

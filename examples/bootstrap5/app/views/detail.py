@@ -5,7 +5,6 @@ from django.utils.translation import gettext as _
 from app.models import Author, Detail
 from crud_views.lib.crispy import Column4, CrispyModelForm, CrispyModelViewMixin, CrispyDeleteForm, Column8
 from crud_views.lib.table import Table, UUIDLinkDetailColumn
-from crud_views.lib.view import cv_property
 from crud_views.lib.views import (
     DetailViewPermissionRequired,
     UpdateViewPermissionRequired,
@@ -15,7 +14,6 @@ from crud_views.lib.views import (
     ListViewPermissionRequired,
     DeleteViewPermissionRequired
 )
-from crud_views.lib.views.detail import PropertyGroup
 from crud_views.lib.viewset import ViewSet
 
 cv_detail = ViewSet(
@@ -66,7 +64,6 @@ class DetailListView(ListViewTableMixin, ListViewPermissionRequired):
     model = Detail
     cv_viewset = cv_detail
     cv_context_actions = ListViewPermissionRequired.cv_context_actions
-    cv_list_actions = ListViewPermissionRequired.cv_list_actions + ["detailtwo"]
     table_class = DetailTable
 
 
@@ -95,80 +92,33 @@ class DetailDetailView(DetailViewPermissionRequired):
     model = Detail
     cv_viewset = cv_detail
 
-    cv_property_groups = [
-        PropertyGroup(
-            key="attributes",
-            label=_("Attributes"),
-            properties=[
-                "a_property",
+    property_display = [
+        {
+            "title": _("Attributes"),
+            "icon": "list",
+            "description": _("All field types supported by the detail view"),
+            "properties": [
                 "integer",
                 "number",
-                "char",
-                "text",
+                {"path": "char", "detail": _("Short text field")},
+                {"path": "text", "detail": _("Long text field")},
                 "boolean",
                 "boolean_two",
                 "date",
                 "date_time",
-            ]
-        ),
-        PropertyGroup(
-            key="extra",
-            label=_("Extra"),
-            show=True,
-            properties=[
-                "id",
+            ],
+        },
+        {
+            "title": _("Extra"),
+            "icon": "circle-info",
+            "description": _("References, timestamps and computed values"),
+            "properties": [
+                {"path": "id", "detail": _("Unique identifier")},
                 "author",
                 "foo",
-                "created_dt",
-                "modified_dt",
-                "model_prop"
-            ]
-        ),
+                {"path": "created_dt", "detail": _("When this record was created")},
+                {"path": "modified_dt", "detail": _("Last modification timestamp")},
+                {"path": "model_prop", "detail": _("Computed from a model property")},
+            ],
+        },
     ]
-
-    @cv_property(label=_("A property labelled at decorator"))
-    def a_property(self) -> str:
-        return "a-prop-value"
-
-
-class Detail2View(DetailViewPermissionRequired):
-    model = Detail
-    template_name = "app/detail_two.html"
-    cv_key = "detailtwo"
-    cv_path = "detailtwo"
-    cv_viewset = cv_detail
-    cv_property_groups = [
-        PropertyGroup(
-            key="attributes",
-            label=_("Attributes"),
-            properties=[
-                "a_property",
-                "integer",
-                "number",
-                "char",
-                "text",
-                "boolean",
-                "boolean_two",
-                "date",
-                "date_time",
-            ]
-        ),
-        PropertyGroup(
-            key="extra",
-            label=_("Extra"),
-            show=True,
-            template_name="app/detail_two_extra.html",
-            properties=[
-                "id",
-                "author",
-                "foo",
-                "created_dt",
-                "modified_dt",
-                "model_prop"
-            ]
-        ),
-    ]
-
-    @cv_property(label=_("A property labelled at decorator"))
-    def a_property(self) -> str:
-        return "a-prop-value"

@@ -1,0 +1,40 @@
+name: Publish
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.12", "3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: pip install nox uv
+      - run: nox -s "tests-${{ matrix.python-version }}(django='4.2')" "tests-${{ matrix.python-version }}(django='5.2')" "tests-${{ matrix.python-version }}(django='6.0')" -- --cov-report=xml
+      - uses: codecov/codecov-action@v5
+        if: matrix.python-version == '3.13'
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: tests/coverage.xml
+
+  publish:
+    needs: [tests]
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: pip install build
+      - run: python -m build
+      - uses: pypa/gh-action-pypi-publish@release/v1

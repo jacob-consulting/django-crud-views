@@ -2,8 +2,11 @@ import django_tables2 as tables
 
 import django_filters
 
-from tests.test1.app.models import Author, Publisher, Book
+from django.forms import modelform_factory
+
+from tests.test1.app.models import Author, Publisher, Book, Vehicle, Car, Truck
 from crud_views.lib.crispy import CrispyModelViewMixin, CrispyDeleteForm, CrispyModelForm
+from crud_views.lib.crispy.form import CrispyForm
 from crud_views.lib.table import Table, UUIDLinkDetailColumn, LinkDetailColumn
 from crud_views.lib.views import (
     ListViewTableMixin, ListViewTableFilterMixin, MessageMixin,
@@ -12,8 +15,14 @@ from crud_views.lib.views import (
     OrderedUpViewPermissionRequired, OrderedUpDownPermissionRequired
 )
 from crud_views.lib.views.list import ListViewFilterFormHelper
+from crud_views.lib.polymorphic_views import (
+    PolymorphicCreateViewPermissionRequired, PolymorphicCreateSelectViewPermissionRequired,
+    PolymorphicUpdateViewPermissionRequired, PolymorphicDetailViewPermissionRequired
+)
+from crud_views.lib.polymorphic_views.create_select import PolymorphicContentTypeForm
+from crud_views.lib.polymorphic_views.delete import PolymorphicDeleteViewPermissionRequired
 from crud_views.lib.viewset import ViewSet, ParentViewSet, path_regs
-from crud_views.lib.crispy import Column4
+from crud_views.lib.crispy import Column4, Column6
 from crispy_forms.layout import Row, Layout
 
 cv_author = ViewSet(
@@ -231,3 +240,89 @@ class BookDeleteView(CrispyModelViewMixin, DeleteViewPermissionRequired):
     model = Book
     form_class = CrispyDeleteForm
     cv_viewset = cv_book
+
+
+# --- Vehicle (polymorphic) ---
+
+cv_vehicle = ViewSet(
+    model=Vehicle,
+    name="vehicle",
+)
+
+
+class VehicleTable(Table):
+    id = LinkDetailColumn()
+    name = tables.Column()
+
+
+class VehicleListView(ListViewTableMixin, ListViewPermissionRequired):
+    model = Vehicle
+    table_class = VehicleTable
+    cv_viewset = cv_vehicle
+    cv_list_actions = ["detail", "update", "delete"]
+    cv_context_actions = ["create_select"]
+
+
+_CarForm = modelform_factory(Car, fields=["name", "doors"])
+
+
+class CarForm(CrispyForm, _CarForm):
+    def get_layout_fields(self):
+        return Row(Column6("name"), Column6("doors"))
+
+
+_TruckForm = modelform_factory(Truck, fields=["name", "payload_tons"])
+
+
+class TruckForm(CrispyForm, _TruckForm):
+    def get_layout_fields(self):
+        return Row(Column6("name"), Column6("payload_tons"))
+
+
+class CrispyVehicleContentTypeForm(CrispyForm, PolymorphicContentTypeForm):
+    submit_label = "Select"
+
+    def get_layout_fields(self):
+        return Row(Column4("polymorphic_ctype_id"))
+
+
+class VehicleCreateSelectView(CrispyModelViewMixin, PolymorphicCreateSelectViewPermissionRequired):
+    model = Vehicle
+    form_class = CrispyVehicleContentTypeForm
+    cv_viewset = cv_vehicle
+
+
+class VehicleCreateView(CrispyModelViewMixin, PolymorphicCreateViewPermissionRequired):
+    model = Vehicle
+    cv_viewset = cv_vehicle
+    cv_context_actions = ["home"]
+    polymorphic_forms = {
+        Car: CarForm,
+        Truck: TruckForm,
+    }
+
+
+class VehicleUpdateView(CrispyModelViewMixin, PolymorphicUpdateViewPermissionRequired):
+    model = Vehicle
+    cv_viewset = cv_vehicle
+    polymorphic_forms = {
+        Car: CarForm,
+        Truck: TruckForm,
+    }
+
+
+class VehicleDeleteView(CrispyModelViewMixin, PolymorphicDeleteViewPermissionRequired):
+    model = Vehicle
+    form_class = CrispyDeleteForm
+    cv_viewset = cv_vehicle
+
+
+class VehicleDetailView(PolymorphicDetailViewPermissionRequired):
+    model = Vehicle
+    cv_viewset = cv_vehicle
+    property_display = [
+        {
+            "title": "Attributes",
+            "properties": ["name"],
+        },
+    ]

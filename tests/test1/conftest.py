@@ -25,6 +25,7 @@ def pytest_configure():
             'django_bootstrap5',
             'crispy_forms',
             'crispy_bootstrap5',
+            'polymorphic',
             'ordered_model',
             'django_tables2',
             "django_object_detail",
@@ -347,4 +348,80 @@ def user_book_delete(cv_book):
 @pytest.fixture
 def client_user_book_delete(client, user_book_delete) -> Client:
     client.force_login(user_book_delete)
+    return client
+
+
+# --- Vehicle (polymorphic) fixtures ---
+
+@pytest.fixture
+def cv_vehicle():
+    from tests.test1.app.views import cv_vehicle as ret
+    return ret
+
+
+@pytest.fixture
+def car_sedan():
+    from tests.test1.app.models import Car
+    return Car.objects.create(name="Sedan", doors=4)
+
+
+@pytest.fixture
+def truck_semi():
+    from tests.test1.app.models import Truck
+    return Truck.objects.create(name="Semi", payload_tons=20)
+
+
+@pytest.fixture
+def user_vehicle_view(cv_vehicle):
+    from django.contrib.auth.models import User
+    user = User.objects.create_user(username="user_vehicle_view", password="password")
+    user_viewset_permission(user, cv_vehicle, "view")
+    return user
+
+
+@pytest.fixture
+def client_user_vehicle_view(client, user_vehicle_view) -> Client:
+    client.force_login(user_vehicle_view)
+    return client
+
+
+@pytest.fixture
+def user_vehicle_add(cv_vehicle):
+    from django.contrib.auth.models import User
+    user = User.objects.create_user(username="user_vehicle_add", password="password")
+    user_viewset_permission(user, cv_vehicle, "add")
+    return user
+
+
+@pytest.fixture
+def client_user_vehicle_add(client, user_vehicle_add) -> Client:
+    client.force_login(user_vehicle_add)
+    return client
+
+
+@pytest.fixture
+def user_vehicle_change(cv_vehicle):
+    from django.contrib.auth.models import User
+    user = User.objects.create_user(username="user_vehicle_change", password="password")
+    user_viewset_permission(user, cv_vehicle, "change")
+    return user
+
+
+@pytest.fixture
+def client_user_vehicle_change(client, user_vehicle_change) -> Client:
+    client.force_login(user_vehicle_change)
+    return client
+
+
+@pytest.fixture
+def user_vehicle_delete(cv_vehicle):
+    from django.contrib.auth.models import User
+    user = User.objects.create_user(username="user_vehicle_delete", password="password")
+    user_viewset_permission(user, cv_vehicle, "delete")
+    return user
+
+
+@pytest.fixture
+def client_user_vehicle_delete(client, user_vehicle_delete) -> Client:
+    client.force_login(user_vehicle_delete)
     return client

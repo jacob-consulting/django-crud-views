@@ -2,6 +2,7 @@ import uuid
 
 from django.db import models
 from ordered_model.models import OrderedModel
+from polymorphic.models import PolymorphicModel
 
 
 class Author(OrderedModel):
@@ -31,3 +32,18 @@ class Book(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Vehicle(PolymorphicModel):
+    name = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.name
+
+
+class Car(Vehicle):
+    doors = models.IntegerField(default=4)
+
+
+class Truck(Vehicle):
+    payload_tons = models.IntegerField(default=10)

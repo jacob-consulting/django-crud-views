@@ -1,4 +1,9 @@
 nav:
     - index.md
+    - list_view.md
+    - detail_view.md
+    - create_view.md
+    - update_view.md
+    - delete_view.md
     - settings.md
     - ...

@@ -37,3 +37,4 @@
 - Uses [django-object-detail](https://django-object-detail.readthedocs.io/en/latest/) for property display
 - Configure `property_display` on your detail view
 - Model fields and `@property` methods are supported
+- See [DetailView Reference](../reference/detail_view.md) for full documentation

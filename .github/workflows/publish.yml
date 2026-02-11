@@ -24,8 +24,18 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: tests/coverage.xml
 
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: pip install -r docs/requirements.txt
+      - run: mkdocs build --strict
+
   publish:
-    needs: [tests]
+    needs: [tests, docs]
     runs-on: ubuntu-latest
     environment: pypi
     permissions:

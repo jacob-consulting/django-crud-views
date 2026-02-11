@@ -195,3 +195,155 @@ def author_terry_pratchett():
     from tests.test1.app.models import Author
 
     return Author.objects.create(first_name="Terry", last_name="Pratchett")
+
+
+# --- Publisher fixtures ---
+
+@pytest.fixture
+def cv_publisher():
+    from tests.test1.app.views import cv_publisher as ret
+    return ret
+
+
+@pytest.fixture
+def publisher_penguin():
+    from tests.test1.app.models import Publisher
+    return Publisher.objects.create(name="Penguin")
+
+
+@pytest.fixture
+def publisher_harpercollins():
+    from tests.test1.app.models import Publisher
+    return Publisher.objects.create(name="HarperCollins")
+
+
+@pytest.fixture
+def user_publisher_view(cv_publisher):
+    from django.contrib.auth.models import User
+    user = User.objects.create_user(username="user_publisher_view", password="password")
+    user_viewset_permission(user, cv_publisher, "view")
+    return user
+
+
+@pytest.fixture
+def client_user_publisher_view(client, user_publisher_view) -> Client:
+    client.force_login(user_publisher_view)
+    return client
+
+
+@pytest.fixture
+def user_publisher_add(cv_publisher):
+    from django.contrib.auth.models import User
+    user = User.objects.create_user(username="user_publisher_add", password="password")
+    user_viewset_permission(user, cv_publisher, "add")
+    return user
+
+
+@pytest.fixture
+def client_user_publisher_add(client, user_publisher_add) -> Client:
+    client.force_login(user_publisher_add)
+    return client
+
+
+@pytest.fixture
+def user_publisher_change(cv_publisher):
+    from django.contrib.auth.models import User
+    user = User.objects.create_user(username="user_publisher_change", password="password")
+    user_viewset_permission(user, cv_publisher, "change")
+    return user
+
+
+@pytest.fixture
+def client_user_publisher_change(client, user_publisher_change) -> Client:
+    client.force_login(user_publisher_change)
+    return client
+
+
+@pytest.fixture
+def user_publisher_delete(cv_publisher):
+    from django.contrib.auth.models import User
+    user = User.objects.create_user(username="user_publisher_delete", password="password")
+    user_viewset_permission(user, cv_publisher, "delete")
+    return user
+
+
+@pytest.fixture
+def client_user_publisher_delete(client, user_publisher_delete) -> Client:
+    client.force_login(user_publisher_delete)
+    return client
+
+
+# --- Book fixtures ---
+
+@pytest.fixture
+def cv_book():
+    from tests.test1.app.views import cv_book as ret
+    return ret
+
+
+@pytest.fixture
+def book_hitchhiker(publisher_penguin):
+    from tests.test1.app.models import Book
+    return Book.objects.create(title="The Hitchhiker's Guide to the Galaxy", publisher=publisher_penguin)
+
+
+@pytest.fixture
+def book_other_publisher(publisher_harpercollins):
+    from tests.test1.app.models import Book
+    return Book.objects.create(title="Other Book", publisher=publisher_harpercollins)
+
+
+@pytest.fixture
+def user_book_view(cv_book):
+    from django.contrib.auth.models import User
+    user = User.objects.create_user(username="user_book_view", password="password")
+    user_viewset_permission(user, cv_book, "view")
+    return user
+
+
+@pytest.fixture
+def client_user_book_view(client, user_book_view) -> Client:
+    client.force_login(user_book_view)
+    return client
+
+
+@pytest.fixture
+def user_book_add(cv_book):
+    from django.contrib.auth.models import User
+    user = User.objects.create_user(username="user_book_add", password="password")
+    user_viewset_permission(user, cv_book, "add")
+    return user
+
+
+@pytest.fixture
+def client_user_book_add(client, user_book_add) -> Client:
+    client.force_login(user_book_add)
+    return client
+
+
+@pytest.fixture
+def user_book_change(cv_book):
+    from django.contrib.auth.models import User
+    user = User.objects.create_user(username="user_book_change", password="password")
+    user_viewset_permission(user, cv_book, "change")
+    return user
+
+
+@pytest.fixture
+def client_user_book_change(client, user_book_change) -> Client:
+    client.force_login(user_book_change)
+    return client
+
+
+@pytest.fixture
+def user_book_delete(cv_book):
+    from django.contrib.auth.models import User
+    user = User.objects.create_user(username="user_book_delete", password="password")
+    user_viewset_permission(user, cv_book, "delete")
+    return user
+
+
+@pytest.fixture
+def client_user_book_delete(client, user_book_delete) -> Client:
+    client.force_login(user_book_delete)
+    return client

@@ -9,7 +9,6 @@ from crud_views.lib.table import Table, LinkDetailColumn
 from crud_views.lib.views import DetailViewPermissionRequired, UpdateViewPermissionRequired, \
     CreateViewPermissionRequired, \
     ListViewTableMixin, DeleteViewPermissionRequired, ListViewPermissionRequired
-from crud_views.lib.views.detail import PropertyGroup
 from crud_views.lib.viewset import ViewSet
 from django.forms.models import inlineformset_factory
 from django.utils.translation import gettext as _
@@ -61,15 +60,16 @@ class QuestionDetailView(DetailViewPermissionRequired):
     cv_viewset = cv_question
 
 
-    cv_property_groups = [
-        PropertyGroup(
-            key="properties",
-            label=_("Properties"),
-            properties=[
+    property_display = [
+        {
+            "title": _("Properties"),
+            "icon": "circle-question",
+            "description": _("Question details"),
+            "properties": [
                 "id",
-                "question",
-            ]
-        ),
+                {"path": "question", "detail": _("The question text")},
+            ],
+        },
     ]
 
 

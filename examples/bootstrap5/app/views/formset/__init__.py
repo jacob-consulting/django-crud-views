@@ -194,4 +194,11 @@ class PolyDeleteView(PolymorphicDeleteViewPermissionRequired):
 class PolyDetailView(PolymorphicDetailViewPermissionRequired):
     model = Poly
     cv_viewset = cv_poly_formset
-    cv_properties = ["id", "shared"]
+    property_display = [
+        {
+            "title": "Properties",
+            "icon": "shapes",
+            "description": "Shared polymorphic fields",
+            "properties": ["id", "shared"],
+        },
+    ]

@@ -1,6 +1,5 @@
 import django_tables2 as tables
 from crispy_forms.layout import Row
-from crud_views.lib.views.detail import PropertyGroup
 
 from app.models import Foo
 from crud_views.lib.crispy import CrispyModelForm, Column4, CrispyModelViewMixin, CrispyDeleteForm
@@ -45,17 +44,16 @@ class FooDetailView(DetailViewPermissionRequired):
     model = Foo
     cv_viewset = cv_foo
 
-    cv_properties = ["id", "name"]
-
-    cv_property_groups = [
-        PropertyGroup(
-            key="properties",
-            label="Properties",
-            properties=[
+    property_display = [
+        {
+            "title": "Properties",
+            "icon": "paw",
+            "description": "Foo attributes",
+            "properties": [
                 "id",
                 "name",
-            ]
-        ),
+            ],
+        },
     ]
 
 

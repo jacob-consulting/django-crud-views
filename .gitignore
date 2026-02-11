@@ -1,7 +1,12 @@
 .idea
 .venv
+__pycache__
+*.pyc
 db.sqlite3
 uv.lock
 /dist
 /django_crud_views.egg-info
 /PRIVATE.md
+.coverage
+coverage.xml
+.nox

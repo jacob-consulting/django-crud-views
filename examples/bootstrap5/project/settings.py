@@ -133,7 +133,6 @@ LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
 # Django ViewSet configuration
-CRUD_VIEWS_THEME = "bootstrap5"
 CRUD_VIEWS_EXTENDS = "app/crud_views.html"
 
 # crispy

@@ -81,7 +81,6 @@ def pytest_configure():
         DEFAULT_AUTO_FIELD='django.db.models.BigAutoField',
 
         # Django ViewSet configuration
-        CRUD_VIEWS_THEME="bootstrap5",
         CRUD_VIEWS_EXTENDS="app/crud_views.html",
         CRUD_VIEWS_MANAGE_VIEWS_ENABLED="yes",
 

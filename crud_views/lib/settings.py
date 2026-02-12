@@ -25,7 +25,6 @@ def from_settings(name, default=None) -> Any:
 
 class CrudViewsSettings(BaseModel):
     # basic
-    theme: str = from_settings("CRUD_VIEWS_THEME", default="plain")
     extends: str = from_settings("CRUD_VIEWS_EXTENDS", )
     manage_views_enabled: str = from_settings("CRUD_VIEWS_MANAGE_VIEWS_ENABLED",
                                               default="debug_only")  # no, yes, debug_only
@@ -97,7 +96,6 @@ class CrudViewsSettings(BaseModel):
     def dict(self) -> dict:
         return {
             "viewset": {
-                "theme": self.theme,
                 "extends": self.extends,
                 "javascript": self.javascript,
                 "css": self.css,

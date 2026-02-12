@@ -1,5 +1,10 @@
 # Django CRUD Views - Changelog
 
+## 0.1.2
+
+- Auto-detect `pk` regex from model's primary key field (`UUIDField` → UUID, `CharField`/`SlugField` → STR, integer fields → INT), removing the need to manually specify `pk=ViewSet.PK.UUID`
+- Auto-derive `model` from `cv_viewset` in `CrudView` subclasses
+
 ## 0.1.1
 
 - Added `polymorphic` extra to nox test sessions

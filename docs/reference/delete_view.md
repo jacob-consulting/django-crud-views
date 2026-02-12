@@ -11,7 +11,6 @@ from crud_views.lib.views import DeleteViewPermissionRequired, MessageMixin
 
 
 class AuthorDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequired):
-    model = Author
     form_class = CrispyDeleteForm
     cv_viewset = cv_author
     cv_message = "Deleted author »{object}«"
@@ -30,7 +29,7 @@ Both inherit from Django's `generic.DeleteView` and `CrudView`.
 
 | Attribute | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `model` | `Model` | — | The Django model to delete |
+| `model` | `Model` | from `cv_viewset` | The Django model to delete (auto-derived from ViewSet) |
 | `form_class` | `Form` | — | The form class (typically `CrispyDeleteForm`) |
 | `cv_viewset` | `ViewSet` | — | The ViewSet this view belongs to |
 | `cv_success_key` | `str` | `"list"` | ViewSet key to redirect to after success |
@@ -45,7 +44,6 @@ the object is deleted:
 from crud_views.lib.crispy import CrispyDeleteForm
 
 class AuthorDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequired):
-    model = Author
     form_class = CrispyDeleteForm
     cv_viewset = cv_author
 ```
@@ -59,7 +57,6 @@ Add `MessageMixin` to show a success message after deletion:
 
 ```python
 class AuthorDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequired):
-    model = Author
     form_class = CrispyDeleteForm
     cv_viewset = cv_author
     cv_message = "Deleted author »{object}«"

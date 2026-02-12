@@ -76,7 +76,6 @@ class AuthorTable(Table):
 
     
 class AuthorListView(ListViewTableMixin, ListViewPermissionRequired):
-    model = Author
     table_class = AuthorTable   # set the table class
     vs = vs_author  # this will attach your list view to the ViewSet
 ```

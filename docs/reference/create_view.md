@@ -34,7 +34,6 @@ class AuthorCreateForm(CrispyModelForm):
 
 
 class AuthorCreateView(CrispyModelViewMixin, MessageMixin, CreateViewPermissionRequired):
-    model = Author
     form_class = AuthorCreateForm
     cv_viewset = cv_author
     cv_message = "Created author »{object}«"
@@ -53,7 +52,7 @@ Both inherit from Django's `generic.CreateView` and `CrudView`.
 
 | Attribute | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `model` | `Model` | — | The Django model to create |
+| `model` | `Model` | from `cv_viewset` | The Django model to create (auto-derived from ViewSet) |
 | `form_class` | `Form` | — | The form class for the create form |
 | `cv_viewset` | `ViewSet` | — | The ViewSet this view belongs to |
 | `cv_success_key` | `str` | `"list"` | ViewSet key to redirect to after success |
@@ -97,7 +96,6 @@ Add `MessageMixin` to show a success message after creation:
 
 ```python
 class AuthorCreateView(CrispyModelViewMixin, MessageMixin, CreateViewPermissionRequired):
-    model = Author
     form_class = AuthorCreateForm
     cv_viewset = cv_author
     cv_message = "Created author »{object}«"
@@ -114,7 +112,6 @@ set the parent reference:
 from crud_views.lib.views import CreateViewParentMixin
 
 class BookCreateView(CrispyModelViewMixin, MessageMixin, CreateViewParentMixin, CreateViewPermissionRequired):
-    model = Book
     form_class = BookCreateForm
     cv_viewset = cv_book
 ```

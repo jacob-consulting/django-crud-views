@@ -41,7 +41,6 @@ class AuthorTable(Table):
 
 
 class AuthorListView(ListViewTableMixin, ListViewPermissionRequired):
-    model = Author
     table_class = AuthorTable
 
     cv_viewset = cv_author
@@ -52,7 +51,6 @@ class AuthorListView(ListViewTableMixin, ListViewPermissionRequired):
 
 
 class AuthorDetailView(DetailViewPermissionRequired):
-    model = Author
     cv_viewset = cv_author
 
     property_display = [
@@ -80,30 +78,25 @@ class AuthorForm(CrispyModelForm):
 
 
 class AuthorCreateView(CrispyModelViewMixin, CreateViewPermissionRequired):
-    model = Author
     form_class = AuthorForm
     cv_viewset = cv_author
 
 
 class AuthorUpdateView(CrispyModelViewMixin, UpdateViewPermissionRequired):
-    model = Author
     form_class = AuthorForm
     cv_viewset = cv_author
 
 
 class AuthorDeleteView(CrispyModelViewMixin, DeleteViewPermissionRequired):
-    model = Author
     form_class = CrispyDeleteForm
     cv_viewset = cv_author
 
 
 class AuthorUpView(OrderedUpViewPermissionRequired):
-    model = Author
     cv_viewset = cv_author
 
 
 class AuthorDownView(OrderedUpDownPermissionRequired):
-    model = Author
     cv_viewset = cv_author
 
 
@@ -133,7 +126,6 @@ class PublisherFilter(django_filters.FilterSet):
 
 
 class PublisherListView(ListViewTableMixin, ListViewTableFilterMixin, ListViewPermissionRequired):
-    model = Publisher
     table_class = PublisherTable
     filterset_class = PublisherFilter
     formhelper_class = PublisherFilterFormHelper
@@ -142,7 +134,6 @@ class PublisherListView(ListViewTableMixin, ListViewTableFilterMixin, ListViewPe
 
 
 class PublisherDetailView(DetailViewPermissionRequired):
-    model = Publisher
     cv_viewset = cv_publisher
     property_display = [
         {
@@ -164,19 +155,16 @@ class PublisherForm(CrispyModelForm):
 
 
 class PublisherCreateView(CrispyModelViewMixin, MessageMixin, CreateViewPermissionRequired):
-    model = Publisher
     form_class = PublisherForm
     cv_viewset = cv_publisher
 
 
 class PublisherUpdateView(CrispyModelViewMixin, MessageMixin, UpdateViewPermissionRequired):
-    model = Publisher
     form_class = PublisherForm
     cv_viewset = cv_publisher
 
 
 class PublisherDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequired):
-    model = Publisher
     form_class = CrispyDeleteForm
     cv_viewset = cv_publisher
 
@@ -196,14 +184,12 @@ class BookTable(Table):
 
 
 class BookListView(ListViewTableMixin, ListViewPermissionRequired):
-    model = Book
     table_class = BookTable
     cv_viewset = cv_book
     cv_list_actions = ["detail", "update", "delete"]
 
 
 class BookDetailView(DetailViewPermissionRequired):
-    model = Book
     cv_viewset = cv_book
     property_display = [
         {
@@ -225,19 +211,16 @@ class BookForm(CrispyModelForm):
 
 
 class BookCreateView(CrispyModelViewMixin, CreateViewParentMixin, CreateViewPermissionRequired):
-    model = Book
     form_class = BookForm
     cv_viewset = cv_book
 
 
 class BookUpdateView(CrispyModelViewMixin, UpdateViewPermissionRequired):
-    model = Book
     form_class = BookForm
     cv_viewset = cv_book
 
 
 class BookDeleteView(CrispyModelViewMixin, DeleteViewPermissionRequired):
-    model = Book
     form_class = CrispyDeleteForm
     cv_viewset = cv_book
 
@@ -256,7 +239,6 @@ class VehicleTable(Table):
 
 
 class VehicleListView(ListViewTableMixin, ListViewPermissionRequired):
-    model = Vehicle
     table_class = VehicleTable
     cv_viewset = cv_vehicle
     cv_list_actions = ["detail", "update", "delete"]
@@ -287,13 +269,11 @@ class CrispyVehicleContentTypeForm(CrispyForm, PolymorphicContentTypeForm):
 
 
 class VehicleCreateSelectView(CrispyModelViewMixin, PolymorphicCreateSelectViewPermissionRequired):
-    model = Vehicle
     form_class = CrispyVehicleContentTypeForm
     cv_viewset = cv_vehicle
 
 
 class VehicleCreateView(CrispyModelViewMixin, PolymorphicCreateViewPermissionRequired):
-    model = Vehicle
     cv_viewset = cv_vehicle
     cv_context_actions = ["home"]
     polymorphic_forms = {
@@ -303,7 +283,6 @@ class VehicleCreateView(CrispyModelViewMixin, PolymorphicCreateViewPermissionReq
 
 
 class VehicleUpdateView(CrispyModelViewMixin, PolymorphicUpdateViewPermissionRequired):
-    model = Vehicle
     cv_viewset = cv_vehicle
     polymorphic_forms = {
         Car: CarForm,
@@ -312,13 +291,11 @@ class VehicleUpdateView(CrispyModelViewMixin, PolymorphicUpdateViewPermissionReq
 
 
 class VehicleDeleteView(CrispyModelViewMixin, PolymorphicDeleteViewPermissionRequired):
-    model = Vehicle
     form_class = CrispyDeleteForm
     cv_viewset = cv_vehicle
 
 
 class VehicleDetailView(PolymorphicDetailViewPermissionRequired):
-    model = Vehicle
     cv_viewset = cv_vehicle
     property_display = [
         {

@@ -60,10 +60,6 @@ class CrudView(metaclass=CrudViewMetaClass):
     cv_icon_action: str | None = None  # font awesome icon
     cv_icon_header: str | None = None  # font awesome icon
 
-    # @classproperty
-    # def model(self):
-    #     return self.cv_viewset.model
-
     @classmethod
     def checks(cls) -> Iterable[Check]:
         """

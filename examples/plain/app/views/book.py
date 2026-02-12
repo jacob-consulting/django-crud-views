@@ -4,12 +4,11 @@ from app.models import Book
 from crud_views.lib.table import Table, UUIDLinkDetailColumn
 from crud_views.lib.views import DetailViewPermissionRequired, UpdateViewPermissionRequired, CreateViewPermissionRequired, \
     ListViewTableMixin, DeleteViewPermissionRequired, ListViewPermissionRequired
-from crud_views.lib.viewset import ViewSet, ParentViewSet, path_regs
+from crud_views.lib.viewset import ViewSet, ParentViewSet
 
 cv_book = ViewSet(
     model=Book,
     name="book",
-    pk=path_regs.UUID,
     parent=ParentViewSet(name="author"),
 )
 

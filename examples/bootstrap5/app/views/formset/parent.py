@@ -15,7 +15,6 @@ from crud_views.lib.viewset import ViewSet
 cv_poly_parent_formset = ViewSet(
     model=Parent,
     name="parent",
-    pk=ViewSet.PK.UUID,
     icon_header="fa-solid fa-user-group"
 )
 

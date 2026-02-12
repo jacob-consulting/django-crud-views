@@ -14,12 +14,11 @@ from crud_views.lib.polymorphic_views.delete import PolymorphicDeleteViewPermiss
 from crud_views.lib.table import Table
 from crud_views.lib.views import ListViewPermissionRequired
 from crud_views.lib.views import ListViewTableMixin
-from crud_views.lib.viewset import ViewSet, path_regs
+from crud_views.lib.viewset import ViewSet
 
 cv_poly = ViewSet(
     model=Poly,
     name="poly",
-    pk=ViewSet.PK.UUID,
     icon_header="fa-solid fa-sun"
 )
 

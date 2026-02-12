@@ -27,7 +27,6 @@ from crud_views.lib.viewset import ViewSet
 cv_author = ViewSet(
     model=Author,
     name="author",
-    pk=ViewSet.PK.UUID,
     icon_header="fa-regular fa-user"
 )
 

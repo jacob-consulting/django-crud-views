@@ -27,13 +27,13 @@ class Author(models.Model):
 Next create a ViewSet:
 
 ```python
-from crud_views.lib.viewset import ViewSet, path_regs
+from crud_views.lib.viewset import ViewSet
 from .models import Author
 
 vs_author = ViewSet(
     model=Author,
     name="author",
-    pk=path_regs.UUID,  # regexp for the primary key in the URL-routing  (defaults to integer)
+    # pk is auto-detected from the model's primary key field (UUIDField → UUID regex, otherwise integer)
     icon_header="fa-regular fa-user"  # when using boostrap5 with font-awsome
 )
 ```

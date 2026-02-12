@@ -20,7 +20,7 @@ from crud_views.lib.polymorphic_views.create_select import PolymorphicContentTyp
 from crud_views.lib.polymorphic_views.delete import PolymorphicDeleteViewPermissionRequired
 from crud_views.lib.table import Table, UUIDLinkDetailColumn, ActionColumn
 from crud_views.lib.views import ListViewPermissionRequired, ListViewTableMixin, CreateViewParentMixin
-from crud_views.lib.viewset import ViewSet, path_regs, ParentViewSet
+from crud_views.lib.viewset import ViewSet, ParentViewSet
 from .answer import PolyAnswerFormSet
 from .one import PolyOneForm
 from .three import PolyThreeForm
@@ -29,7 +29,6 @@ from .two import PolyTwoForm
 cv_poly_formset = ViewSet(
     model=Poly,
     name="poly",
-    pk=ViewSet.PK.UUID,
     icon_header="fa-solid fa-sun",
     parent=ParentViewSet(
         name="parent",

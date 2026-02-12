@@ -17,7 +17,6 @@ from .models import Author
 cv_author = ViewSet(
     model=Author,
     name="author",
-    pk=ViewSet.PK.UUID,
     icon_header="fa-regular fa-user",
 )
 
@@ -125,7 +124,6 @@ from crud_views.lib.viewset import ViewSet, ParentViewSet
 cv_book = ViewSet(
     model=Book,
     name="book",
-    pk=ViewSet.PK.UUID,
     parent=ParentViewSet(name="author"),
 )
 ```

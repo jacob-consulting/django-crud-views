@@ -21,14 +21,13 @@ from crud_views.lib.polymorphic_views import (
 )
 from crud_views.lib.polymorphic_views.create_select import PolymorphicContentTypeForm
 from crud_views.lib.polymorphic_views.delete import PolymorphicDeleteViewPermissionRequired
-from crud_views.lib.viewset import ViewSet, ParentViewSet, path_regs
+from crud_views.lib.viewset import ViewSet, ParentViewSet
 from crud_views.lib.crispy import Column4, Column6
 from crispy_forms.layout import Row, Layout
 
 cv_author = ViewSet(
     model=Author,
     name="author",
-    pk=ViewSet.PK.UUID,
     icon_header="fa-regular fa-user"
 )
 

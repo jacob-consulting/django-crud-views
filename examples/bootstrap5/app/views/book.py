@@ -12,7 +12,6 @@ from crud_views.lib.viewset import ViewSet, ParentViewSet
 cv_book = ViewSet(
     model=Book,
     name="book",
-    pk=ViewSet.PK.UUID,
     parent=ParentViewSet(name="author"),
     icon_header="fa-regular fa-address-book"  # <i class="fa-regular fa-address-book"></i>
 )

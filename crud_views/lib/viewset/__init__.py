@@ -72,7 +72,7 @@ class ViewSet(BaseModel):
     name: str
     prefix: str | None = None
     app: str | None = None
-    pk: str = PK.INT     # todo: better name
+    pk: str | None = None  # auto-detected from model if not set
     pk_name: str = "pk"
     context_buttons: List[ContextButton] = Field(default_factory=context_buttons_default)
     parent: ParentViewSet | None = None
@@ -89,6 +89,18 @@ class ViewSet(BaseModel):
 
     @model_validator(mode='after')
     def register(self) -> Self:
+        if self.pk is None:
+            from django.db import models
+            pk_field_map = {
+                models.UUIDField: self.PK.UUID,
+                models.AutoField: self.PK.INT,
+                models.BigAutoField: self.PK.INT,
+                models.SmallAutoField: self.PK.INT,
+                models.CharField: self.PK.STR,
+                models.SlugField: self.PK.STR,
+            }
+            self.pk = pk_field_map.get(type(self.model._meta.pk), self.PK.INT)
+
         with _REGISTRY_LOCK:
             _REGISTRY[self.name] = self
 

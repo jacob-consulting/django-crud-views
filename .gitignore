@@ -11,3 +11,4 @@ uv.lock
 coverage.xml
 .nox
 /insights
+TASKS.md

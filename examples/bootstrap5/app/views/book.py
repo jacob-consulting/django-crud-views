@@ -43,7 +43,6 @@ class BookTable(Table):
 
 
 class BookListView(ListViewTableMixin, ListViewPermissionRequired):
-    model = Book
     cv_viewset = cv_book
     # cv_list_actions = ["detail", "update", "delete"]
 
@@ -51,7 +50,6 @@ class BookListView(ListViewTableMixin, ListViewPermissionRequired):
 
 
 class BookDetailView(DetailViewPermissionRequired):
-    model = Book
     cv_viewset = cv_book
 
     property_display = [
@@ -72,18 +70,15 @@ class BookDetailView(DetailViewPermissionRequired):
 
 
 class BookUpdateView(CrispyModelViewMixin, MessageMixin, UpdateViewPermissionRequired):
-    model = Book
     form_class = BookUpdateForm
     cv_viewset = cv_book
 
 
 class BookCreateView(CrispyModelViewMixin, MessageMixin, CreateViewParentMixin, CreateViewPermissionRequired):
-    model = Book
     form_class = BookCreateForm
     cv_viewset = cv_book
 
 
 class BookDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequired):
-    model = Book
     form_class = CrispyDeleteForm
     cv_viewset = cv_book

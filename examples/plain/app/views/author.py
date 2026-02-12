@@ -36,7 +36,6 @@ class AuthorTable(Table):
 
 
 class AuthorListView(ListViewTableMixin, ListViewTableFilterMixin, ListViewPermissionRequired):
-    model = Author
     filterset_class = AuthorFilter
 
     cv_viewset = cv_author
@@ -46,7 +45,6 @@ class AuthorListView(ListViewTableMixin, ListViewTableFilterMixin, ListViewPermi
 
 
 class AuthorDetailView(DetailViewPermissionRequired):
-    model = Author
     cv_viewset = cv_author
     property_display = [
         {
@@ -63,32 +61,27 @@ class AuthorDetailView(DetailViewPermissionRequired):
 
 
 class AuthorUpdateView(MessageMixin, UpdateViewPermissionRequired):
-    model = Author
     fields = ["first_name", "last_name", "pseudonym"]
     cv_viewset = cv_author
     cv_message = "Updated author »{object}«"
 
 
 class AuthorCreateView(MessageMixin, CreateViewPermissionRequired):
-    model = Author
     fields = ["first_name", "last_name", "pseudonym"]
     cv_viewset = cv_author
     cv_message = "Created author »{object}«"
 
 
 class AuthorDeleteView(MessageMixin, DeleteViewPermissionRequired):
-    model = Author
     cv_viewset = cv_author
     cv_message = "Deleted author »{object}«"
 
 
 class AuthorUpView(MessageMixin, OrderedUpViewPermissionRequired):
-    model = Author
     cv_viewset = cv_author
     cv_message = "Successfully moved author »{object}« up"
 
 
 class AuthorDownView(MessageMixin, OrderedUpDownPermissionRequired):
-    model = Author
     cv_viewset = cv_author
     cv_message = "Successfully moved author »{object}« down"

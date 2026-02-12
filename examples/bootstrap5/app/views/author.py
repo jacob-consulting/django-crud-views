@@ -83,9 +83,6 @@ class AuthorTable(Table):
 class AuthorListView(ListViewTableMixin,
                      ListViewTableFilterMixin,
                      ListViewPermissionRequired):
-    # generic view config
-    model = Author
-
     # table config
     table_class = AuthorTable
 
@@ -99,28 +96,24 @@ class AuthorListView(ListViewTableMixin,
 
 
 class AuthorCreateView(CrispyModelViewMixin, MessageMixin, CreateViewPermissionRequired):
-    model = Author
     form_class = AuthorCreateForm
     cv_viewset = cv_author
     cv_message = "Created author »{object}«"
 
 
 class AuthorUpdateView(CrispyModelViewMixin, MessageMixin, UpdateViewPermissionRequired):
-    model = Author
     form_class = AuthorUpdateForm
     cv_viewset = cv_author
     cv_message = "Updated author »{object}«"
 
 
 class AuthorDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequired):
-    model = Author
     form_class = CrispyDeleteForm
     cv_viewset = cv_author
     cv_message = "Deleted author »{object}«"
 
 
 class AuthorDetailView(DetailViewPermissionRequired):
-    model = Author
     cv_viewset = cv_author
 
     property_display = [
@@ -150,13 +143,11 @@ class AuthorDetailView(DetailViewPermissionRequired):
 
 
 class AuthorUpView(MessageMixin, OrderedUpViewPermissionRequired):
-    model = Author
     cv_viewset = cv_author
     cv_message = "Successfully moved author »{object}« up"
 
 
 class AuthorDownView(MessageMixin, OrderedUpDownPermissionRequired):
-    model = Author
     cv_viewset = cv_author
     cv_message = "Successfully moved author »{object}« down"
 
@@ -185,7 +176,6 @@ class AuthorContactForm(CrispyModelForm):
 
 
 class AuthorContactView(MessageMixin, CrispyModelViewMixin, CustomFormViewPermissionRequired):
-    model = Author
     cv_key = "contact"
     cv_path = "contact"
     cv_icon_action = "fa-solid fa-envelope"

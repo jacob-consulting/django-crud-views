@@ -21,7 +21,6 @@ class AuthorCreateForm(CrispyModelForm):
 
     
 class AuthorCreateView(CrispyModelViewMixin, MessageMixin, CreateViewPermissionRequired):
-    model = Author
     form_class = AuthorCreateForm
     vs = vs_author
 ```

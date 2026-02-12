@@ -31,7 +31,6 @@ class AuthorTable(Table):
 
 
 class AuthorListView(ListViewTableMixin, ListViewPermissionRequired):
-    model = Author
     table_class = AuthorTable
     cv_viewset = cv_author
 ```
@@ -49,7 +48,7 @@ Both inherit from Django's `generic.ListView` and `CrudView`.
 
 | Attribute | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `model` | `Model` | — | The Django model to list |
+| `model` | `Model` | from `cv_viewset` | The Django model to list (auto-derived from ViewSet) |
 | `cv_viewset` | `ViewSet` | — | The ViewSet this view belongs to |
 | `cv_list_actions` | `list[str]` | `["detail", "update", "delete"]` | Actions shown per row in the table |
 | `cv_context_actions` | `list[str]` | `["parent", "filter", "create"]` | Actions shown in the header area |
@@ -61,7 +60,6 @@ Control which action buttons appear per row:
 
 ```python
 class AuthorListView(ListViewTableMixin, ListViewPermissionRequired):
-    model = Author
     table_class = AuthorTable
     cv_viewset = cv_author
     cv_list_actions = ["detail", "update", "delete", "up", "down"]
@@ -130,7 +128,6 @@ class AuthorFilter(django_filters.FilterSet):
 class AuthorListView(ListViewTableMixin,
                      ListViewTableFilterMixin,
                      ListViewPermissionRequired):
-    model = Author
     table_class = AuthorTable
     cv_viewset = cv_author
 

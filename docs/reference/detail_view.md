@@ -20,7 +20,6 @@ cv_author = ViewSet(
 
 
 class AuthorDetailView(DetailViewPermissionRequired):
-    model = Author
     cv_viewset = cv_author
 
     property_display = [
@@ -212,7 +211,6 @@ cv_author = ViewSet(
 
 
 class AuthorDetailView(DetailViewPermissionRequired):
-    model = Author
     cv_viewset = cv_author
 
     property_display = [

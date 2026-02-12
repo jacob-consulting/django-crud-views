@@ -28,4 +28,8 @@ class CrudViewMetaClass(_base_metaclass):
 
             # register view
             cv_viewset.register_view_class(key, obj)  # noqa
+
+            # auto-set model from viewset if not explicitly provided
+            if "model" not in attrs:
+                obj.model = cv_viewset.model
         return obj

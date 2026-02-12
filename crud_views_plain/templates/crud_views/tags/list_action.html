@@ -1,0 +1,13 @@
+{% if cv_url %}
+    {% if  cv_list_action_method == "get" %}
+        <a href="{{  cv_url }}" title="{{ cv_action_label }}">{{  cv_action_short_label }}</a>
+    {% endif %}
+    {% if cv_list_action_method == "post" %}
+        <form action="{{ cv_url }}" method="post" style="display:inline">
+            {% csrf_token %}
+            <a href="javascript:{}"
+               onclick="this.closest('form').submit();return false;"
+               title="{{ cv_action_label }}">{{ cv_action_short_label }}</a>
+        </form>
+    {% endif %}
+{% endif %}

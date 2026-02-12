@@ -242,7 +242,6 @@ INSTALLED_APPS = [
     # ...
     "django_object_detail",
     "crud_views",
-    "crud_views_bootstrap5",
     # ...
 ]
 

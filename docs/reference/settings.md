@@ -4,7 +4,6 @@
 
 | Key                  | Description                                              | Type  | Default      |
 |----------------------|----------------------------------------------------------|-------|--------------|
-| THEME                |                                                          | `str` | `plain`      |
 | EXTENDS              |                                                          | `str` | `None`       |
 | MANAGE_VIEWS_ENABLED | Show manage view button, values are: `yes,no,debug_only` | `str` | `debug_only` |
 

@@ -1,0 +1,5 @@
+{% load crud_views %}
+
+{% for key in view.cv_list_actions %}
+    {% cv_list_action key record %}
+{% endfor %}

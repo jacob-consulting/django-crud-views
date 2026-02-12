@@ -1,0 +1,8 @@
+{% load crud_views %}
+
+{% if view.cv_context_actions %}
+    {% for key in view.cv_context_actions %}
+        {% cv_context_action key object %}
+    {% endfor %}
+    <br>
+{% endif %}

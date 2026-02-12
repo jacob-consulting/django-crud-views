@@ -1,5 +1,11 @@
 {% load crud_views %}
 
 {% for key in view.cv_list_actions %}
-    {% cv_list_action key record %}
+    {% cv_list_action_form key record %}
 {% endfor %}
+
+<div class="btn-group btn-group-xs" role="group" aria-label="Actions" cv-list-container="true">
+    {% for key in view.cv_list_actions %}
+        {% cv_list_action key record %}
+    {% endfor %}
+</div>

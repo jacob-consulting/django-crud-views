@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     'ordered_model',
     'django_tables2',
     "django_object_detail",
-    "crud_views_bootstrap5.apps.CrudViewsBootstrap5Config",
     "crud_views.apps.CrudViewsConfig",
     'app.apps.ApplicationConfig',
 ]

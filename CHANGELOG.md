@@ -1,5 +1,11 @@
 # Django CRUD Views - Changelog
 
+## 0.1.3
+
+- Made Bootstrap 5 the default theme — templates in `crud_views/` now ship with Bootstrap 5 styling out of the box
+- Moved plain (unstyled) templates to a new `crud_views_plain` override package
+- Removed `CRUD_VIEWS_THEME` setting (no longer needed; theme is determined by installed apps)
+
 ## 0.1.2
 
 - Auto-detect `pk` regex from model's primary key field (`UUIDField` → UUID, `CharField`/`SlugField` → STR, integer fields → INT), removing the need to manually specify `pk=ViewSet.PK.UUID`

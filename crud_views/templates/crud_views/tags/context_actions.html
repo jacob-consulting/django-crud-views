@@ -1,8 +1,11 @@
 {% load crud_views %}
 
 {% if view.cv_context_actions %}
-    {% for key in view.cv_context_actions %}
-        {% cv_context_action key object %}
-    {% endfor %}
-    <br>
+
+    <div class="btn-group btn-group-lg" role="group" aria-label="Actions" cv-context-container="true">
+        {% for key in view.cv_context_actions %}
+            {% cv_context_action key object %}
+        {% endfor %}
+    </div>
+
 {% endif %}

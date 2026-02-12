@@ -94,7 +94,7 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
     packages = [
         "crud_views",
-        "crud_views_bootstrap5"
+        "crud_views_plain"
     ]
 
 # todo: polymorphic-minimal
@@ -103,7 +103,7 @@ build-backend = "hatchling.build"
 addopts = "--strict-markers"
 
 [tool.coverage.run]
-source = ["crud_views", "crud_views_bootstrap5"]
+source = ["crud_views", "crud_views_plain"]
 
 [tool.coverage.report]
 show_missing = true
@@ -126,7 +126,7 @@ search = '__version__ = "{current_version}"'
 replace = '__version__ = "{new_version}"'
 
 [[tool.bumpversion.files]]
-filename = "crud_views_bootstrap5/__init__.py"
+filename = "crud_views_plain/__init__.py"
 search = '__version__ = "{current_version}"'
 replace = '__version__ = "{new_version}"'
 

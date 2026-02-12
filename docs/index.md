@@ -29,8 +29,8 @@ you're building a small project or a large application, Django CRUD Views can he
 - **CrudView**s are predefined for CRUD operations: list, create, update, delete, detail, up/down
 - a **ViewSet** generates all urlpatterns for its **CrudView**s
 - Themes are pluggable, so you can easily customize the look and feel to your needs, includes themes
-    - `plain` no CSS, minimal HTML and JavaScript
-    - `bootstrap5` with Bootstrap 5
+    - `bootstrap5` with Bootstrap 5 (default)
+    - `plain` no CSS, minimal HTML and JavaScript (install `crud_views_plain` to override)
 - Django system checks for configurations to fail early on startup
 
 ## What it is not

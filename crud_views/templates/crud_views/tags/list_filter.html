@@ -1,12 +1,23 @@
+{% load crispy_forms_tags %}
 {% load static %}
+{% load crud_views %}
 
-<form id="filter-form" method="get">
-    <table>
-        {{ filter.form.as_table }}
-    </table>
-    <input type="submit" value="Filter" id="filter-button"/>
-    <input type="reset" value="Reset" id="filter-button-reset"/>
-    <input type="text" name="sort" value="{{ request.GET.sort }}" hidden>
-</form>
-
-<script type="application/javascript" src="{% static viewset.javascript.list_filter %}"></script>
+<div class="collapse{% if cv_filter_expanded %} show{% endif %}" id="filter-collapse">
+    <div class="card">
+        <div class="card-header">
+            {% block cv_filter_header_icon %}
+                {% cv_filter_icon %}
+            {% endblock cv_filter_header_icon %}
+            {% block cv_filter_header %}
+                {% cv_filter_header %}
+            {% endblock cv_filter_header %}
+        </div>
+        <div class="card-body">
+            {% block cv_content_filter %}
+                <form id="filter-form" method="get">
+                    {% crispy filter.form filter.form.helper %}
+                </form>
+            {% endblock cv_content_filter %}
+        </div>
+    </div>
+</div>

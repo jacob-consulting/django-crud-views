@@ -5,69 +5,67 @@
 
 {% block cv_content %}
 
-    <h3>ViewSet</h3>
+    <h4>Properties</h4>
 
-    <table>
+    <table class="table table-striped">
+
         <tr>
-            <th>Key</th>
-            <th>Value</th>
-        </tr>
-        <tr>
-            <td>
+            <th scope="col">
                 Name
-            </td>
+            </th>
             <td>
                 {{ cv.name }}
             </td>
         </tr>
         <tr>
-            <td>
+            <th scope="col">
                 Prefix
-            </td>
+            </th>
             <td>
                 {{ cv.prefix }}
             </td>
         </tr>
         <tr>
-            <td>
+            <th scope="col">
                 app
-            </td>
+            </th>
             <td>
                 {{ cv.app }}
             </td>
         </tr>
         <tr>
-            <td>
+            <th scope="col">
                 pk
-            </td>
+            </th>
             <td>
                 {{ cv.pk }}
             </td>
         </tr>
         <tr>
-            <td>
+            <th scope="col">
                 pk_name
-            </td>
+            </th>
             <td>
                 {{ cv.pk_name }}
             </td>
         </tr>
         <tr>
-            <td>
+            <th scope="col">
                 parent
-            </td>
+            </th>
             <td>
                 {{ cv.parent }}
             </td>
         </tr>
     </table>
 
-    <h3>ViewSet Permissions</h3>
-    <table>
+    <h4>Permissions</h4>
+
+    <table class="table table-striped">
         <tr>
-            <th>Permission</th>
-            <th>Django Permission</th>
-            <th>Access</th>
+            <th scope="col">Permission</th>
+            <th scope="col">Django Permission</th>
+            <th scope="col">Access</th>
         </tr>
         {% for row in data %}
             <tr>
@@ -84,8 +82,7 @@
         {% endfor %}
     </table>
 
-    <br>
-    <hr><br>
+    <br><hr><br>
 
     <h3>Views</h3>
 
@@ -95,11 +92,11 @@
 
         <h4>{{ view_key }}</h4>
 
-        <table>
+        <table class="table table-striped">
             {% for section, section_data in view.items %}
 
                 <tr>
-                    <th colspan="2">{{ section }}</th>
+                    <th scope="col" colspan="2">{{ section }}</th>
                 </tr>
 
                 {% for key, value in section_data.items %}
@@ -114,7 +111,6 @@
         <br>
 
     {% endfor %}
-
 
 {% endblock cv_content %}
 

@@ -1,7 +1,7 @@
-{% load crud_views %}
+{% load crispy_forms_tags %}
 
-<table>
-    {{ form.as_table }}
-</table>
-
-{% cv_submit_button %} {% cv_cancel_button %}
+{% if form.helper %}
+    {% crispy form form.helper %}
+{% else %}
+    {% crispy form %}
+{% endif %}

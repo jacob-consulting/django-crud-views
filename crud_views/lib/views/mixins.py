@@ -114,6 +114,7 @@ class MessageMixin:
                                    self.cv_message_template_code, )
 
     def cv_form_valid_hook(self, context: dict):
+        super().cv_form_valid_hook(context) # noqa
         message = self.cv_get_message()
         if message:
             messages.success(self.request, message)

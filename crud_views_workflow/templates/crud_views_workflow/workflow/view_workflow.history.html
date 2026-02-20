@@ -1,0 +1,44 @@
+{% load i18n %}
+
+{% if object.workflow_data %}
+    <h5>{% translate "Workflow History" %}</h5>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">{% translate "Transition" %}</th>
+            <th scope="col">{% translate "Actor" %}</th>
+            <th scope="col">{% translate "Old state" %}</th>
+            <th scope="col">{% translate "New state" %}</th>
+            <th scope="col">{% translate "Comment" %}</th>
+            <th scope="col">{% translate "Timestamp" %}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for wf in object.workflow_data %}
+            <tr>
+                <td class="col-1">
+                    {{ wf.transition_label }}
+                </td>
+                <td class="col-1">
+                    {{ wf.user.get_full_name }}
+                </td>
+                <td class="col-1">
+                    {{ wf.state_old_badge }}
+                </td>
+                <td class="col-1">
+                    {{ wf.state_new_badge }}
+                </td>
+                <td class="col-3">
+                    {{ wf.comment|default:"-" }}
+                </td>
+                <td class="col-1">
+                    {{ wf.timestamp }}
+                </td>
+            </tr>
+        {% endfor %}
+
+        </tbody>
+    </table>
+
+{% endif %}

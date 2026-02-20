@@ -1,5 +1,8 @@
 # Django CRUD Views - Changelog
 
+## 0.2.1
+- short app label `cvw` for app `crud_views_workflow`
+
 ## 0.2.0
 
 - Added `crud_views_workflow` package: FSM-based workflow views built on `django-fsm-2`

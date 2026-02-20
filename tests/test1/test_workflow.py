@@ -5,7 +5,7 @@ Tests for crud_views_workflow: WorkflowMixin, WorkflowView, WorkflowForm.
 import pytest
 from django.test.client import Client
 
-from tests.test1.app.models import Campaign
+from tests.test1.app.models import Campaign, CampaignState
 from crud_views_workflow.models import WorkflowInfo
 
 
@@ -30,10 +30,10 @@ def test_state_name_success(campaign_success):
 
 @pytest.mark.django_db
 def test_get_state_name(campaign_new):
-    assert campaign_new.get_state_name(Campaign.STATE.NEW) == "New"
-    assert campaign_new.get_state_name(Campaign.STATE.ACTIVE) == "Active"
-    assert campaign_new.get_state_name(Campaign.STATE.SUCCESS) == "Success"
-    assert campaign_new.get_state_name(Campaign.STATE.CANCELED) == "Cancelled"
+    assert campaign_new.get_state_name(CampaignState.NEW) == "New"
+    assert campaign_new.get_state_name(CampaignState.ACTIVE) == "Active"
+    assert campaign_new.get_state_name(CampaignState.SUCCESS) == "Success"
+    assert campaign_new.get_state_name(CampaignState.CANCELED) == "Cancelled"
 
 
 @pytest.mark.django_db
@@ -46,7 +46,7 @@ def test_state_badge_new(campaign_new):
 
 @pytest.mark.django_db
 def test_get_state_badge_active(campaign_new):
-    badge = campaign_new.get_state_badge(Campaign.STATE.ACTIVE)
+    badge = campaign_new.get_state_badge(CampaignState.ACTIVE)
     assert "Active" in badge
     assert "info" in badge  # STATE_BADGES[ACTIVE] = "info"
 
@@ -54,7 +54,7 @@ def test_get_state_badge_active(campaign_new):
 @pytest.mark.django_db
 def test_get_state_badge_unknown_returns_name(campaign_new):
     # State not in STATE_BADGES falls back to plain name
-    result = campaign_new.get_state_badge(Campaign.STATE.ERROR)
+    result = campaign_new.get_state_badge(CampaignState.ERROR)
     assert "Error" in result
 
 
@@ -205,7 +205,7 @@ def test_workflow_view_post_activate(client_user_campaign_change: Client, campai
     })
     assert response.status_code == 302
     campaign_new.refresh_from_db()
-    assert campaign_new.state == Campaign.STATE.ACTIVE
+    assert campaign_new.state == CampaignState.ACTIVE
 
 
 @pytest.mark.django_db
@@ -218,8 +218,8 @@ def test_workflow_view_post_creates_workflow_info(client_user_campaign_change: C
     assert WorkflowInfo.objects.filter(
         workflow_object_id=pk,
         transition="wf_activate",
-        state_old=Campaign.STATE.NEW,
-        state_new=Campaign.STATE.ACTIVE,
+        state_old=CampaignState.NEW,
+        state_new=CampaignState.ACTIVE,
     ).exists()
 
 
@@ -233,7 +233,7 @@ def test_workflow_view_post_required_comment_missing(client_user_campaign_change
     })
     assert response.status_code == 200  # form invalid, re-render
     campaign_new.refresh_from_db()
-    assert campaign_new.state == Campaign.STATE.NEW  # state unchanged
+    assert campaign_new.state == CampaignState.NEW  # state unchanged
 
 
 @pytest.mark.django_db
@@ -245,7 +245,7 @@ def test_workflow_view_post_required_comment_provided(client_user_campaign_chang
     })
     assert response.status_code == 302
     campaign_new.refresh_from_db()
-    assert campaign_new.state == Campaign.STATE.CANCELED
+    assert campaign_new.state == CampaignState.CANCELED
     info = WorkflowInfo.objects.get(workflow_object_id=pk, transition="wf_cancel_new")
     assert info.comment == "Need to cancel this campaign"
 
@@ -259,7 +259,7 @@ def test_workflow_view_post_optional_comment_without(client_user_campaign_change
     })
     assert response.status_code == 302
     campaign_active.refresh_from_db()
-    assert campaign_active.state == Campaign.STATE.SUCCESS
+    assert campaign_active.state == CampaignState.SUCCESS
 
 
 @pytest.mark.django_db
@@ -271,7 +271,7 @@ def test_workflow_view_post_optional_comment_with(client_user_campaign_change: C
     })
     assert response.status_code == 302
     campaign_active.refresh_from_db()
-    assert campaign_active.state == Campaign.STATE.SUCCESS
+    assert campaign_active.state == CampaignState.SUCCESS
     info = WorkflowInfo.objects.get(workflow_object_id=pk, transition="wf_done")
     assert info.comment == "Campaign completed successfully"
 
@@ -287,7 +287,7 @@ def test_workflow_view_post_unavailable_transition_form_error(client_user_campai
     # form validation rejects the choice; view re-renders the form
     assert response.status_code == 200
     campaign_new.refresh_from_db()
-    assert campaign_new.state == Campaign.STATE.NEW  # state unchanged
+    assert campaign_new.state == CampaignState.NEW  # state unchanged
 
 
 @pytest.mark.django_db
@@ -307,18 +307,18 @@ def test_workflow_history_after_multiple_transitions(client_user_campaign_change
     })
 
     campaign_new.refresh_from_db()
-    assert campaign_new.state == Campaign.STATE.SUCCESS
+    assert campaign_new.state == CampaignState.SUCCESS
 
     assert WorkflowInfo.objects.filter(workflow_object_id=pk).count() == 2
 
     history = campaign_new.workflow_data
     assert len(history) == 2
     assert history[0]["transition"] == "wf_activate"
-    assert history[0]["state_old"] == Campaign.STATE.NEW
-    assert history[0]["state_new"] == Campaign.STATE.ACTIVE
+    assert history[0]["state_old"] == CampaignState.NEW
+    assert history[0]["state_new"] == CampaignState.ACTIVE
     assert history[1]["transition"] == "wf_done"
-    assert history[1]["state_old"] == Campaign.STATE.ACTIVE
-    assert history[1]["state_new"] == Campaign.STATE.SUCCESS
+    assert history[1]["state_old"] == CampaignState.ACTIVE
+    assert history[1]["state_new"] == CampaignState.SUCCESS
     assert history[1]["comment"] == "All done"
 
 

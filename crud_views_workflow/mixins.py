@@ -13,25 +13,6 @@ from crud_views_workflow.models import WorkflowInfo
 class WorkflowMixin:
     """
     Mixin for state workflow models
-
-    Requires the following class attributes:
-
-        class STATE:
-            NEW = "new"
-            CREATED = "created"
-
-        STATE_CHOICES = (
-            (STATE.NEW, _("New")),
-            (STATE.CREATED, _("Created")),
-        )
-
-        STATE_BADGES = {
-            # neutral
-            STATE.NEW: "info",
-            STATE.CREATED: "info",
-        }
-
-        STATE_BADGES_DEFAULT = "info"
     """
 
     STATE_BADGES_DEFAULT = "info"
@@ -45,10 +26,10 @@ class WorkflowMixin:
         self.state_version += 1  # noqa
 
     def get_state_name(self, state) -> str:
-        assert self.STATE_CHOICES, "STATE_CHOICES must be defined"  # noqa
+        assert self.STATE_ENUM, "STATE_ENUM must be defined"  # noqa
         if not state:
             return ""
-        return dict(self.STATE_CHOICES)[state]  # noqa
+        return dict(self.STATE_ENUM.choices)[state]  # noqa
 
     @property
     def state_name(self) -> str:

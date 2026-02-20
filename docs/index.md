@@ -41,4 +41,4 @@ you're building a small project or a large application, Django CRUD Views can he
 
 # Version
 
-Current version: 0.1.3
+Current version: 0.2.0

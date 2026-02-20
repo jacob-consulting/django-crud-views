@@ -30,6 +30,8 @@ def pytest_configure():
             'django_tables2',
             "django_object_detail",
             "crud_views.apps.CrudViewsConfig",
+            'django_fsm',
+            'crud_views_workflow.apps.CrudViewsWorkflowConfig',
             'tests.test1.app',
         ],
 
@@ -422,4 +424,75 @@ def user_vehicle_delete(cv_vehicle):
 @pytest.fixture
 def client_user_vehicle_delete(client, user_vehicle_delete) -> Client:
     client.force_login(user_vehicle_delete)
+    return client
+
+
+# --- Campaign (workflow) fixtures ---
+
+@pytest.fixture
+def cv_campaign():
+    from tests.test1.app.views import cv_campaign as ret
+    return ret
+
+
+@pytest.fixture
+def campaign_new():
+    from tests.test1.app.models import Campaign
+    return Campaign.objects.create(name="Test Campaign")
+
+
+@pytest.fixture
+def campaign_active():
+    from tests.test1.app.models import Campaign
+    campaign = Campaign.objects.create(name="Active Campaign")
+    campaign.wf_activate(by=None)
+    campaign.save()
+    return campaign
+
+
+@pytest.fixture
+def campaign_success():
+    from tests.test1.app.models import Campaign
+    campaign = Campaign.objects.create(name="Success Campaign")
+    campaign.wf_activate(by=None)
+    campaign.save()
+    campaign.wf_done(by=None)
+    campaign.save()
+    return campaign
+
+
+@pytest.fixture
+def campaign_canceled():
+    from tests.test1.app.models import Campaign
+    campaign = Campaign.objects.create(name="Canceled Campaign")
+    campaign.wf_cancel_new(by=None, comment="Canceled in test")
+    campaign.save()
+    return campaign
+
+
+@pytest.fixture
+def user_campaign_change(cv_campaign):
+    from django.contrib.auth.models import User
+    user = User.objects.create_user(username="user_campaign_change", password="password")
+    user_viewset_permission(user, cv_campaign, "change")
+    return user
+
+
+@pytest.fixture
+def client_user_campaign_change(client, user_campaign_change) -> Client:
+    client.force_login(user_campaign_change)
+    return client
+
+
+@pytest.fixture
+def user_campaign_view(cv_campaign):
+    from django.contrib.auth.models import User
+    user = User.objects.create_user(username="user_campaign_view", password="password")
+    user_viewset_permission(user, cv_campaign, "view")
+    return user
+
+
+@pytest.fixture
+def client_user_campaign_view(client, user_campaign_view) -> Client:
+    client.force_login(user_campaign_view)
     return client

@@ -4,7 +4,7 @@ import django_filters
 
 from django.forms import modelform_factory
 
-from tests.test1.app.models import Author, Publisher, Book, Vehicle, Car, Truck
+from tests.test1.app.models import Author, Publisher, Book, Vehicle, Car, Truck, Campaign
 from crud_views.lib.crispy import CrispyModelViewMixin, CrispyDeleteForm, CrispyModelForm
 from crud_views.lib.crispy.form import CrispyForm
 from crud_views.lib.table import Table, UUIDLinkDetailColumn, LinkDetailColumn
@@ -22,6 +22,8 @@ from crud_views.lib.polymorphic_views import (
 from crud_views.lib.polymorphic_views.create_select import PolymorphicContentTypeForm
 from crud_views.lib.polymorphic_views.delete import PolymorphicDeleteViewPermissionRequired
 from crud_views.lib.viewset import ViewSet, ParentViewSet
+from crud_views_workflow.forms import WorkflowForm
+from crud_views_workflow.views import WorkflowView
 from crud_views.lib.crispy import Column4, Column6
 from crispy_forms.layout import Row, Layout
 
@@ -302,3 +304,44 @@ class VehicleDetailView(PolymorphicDetailViewPermissionRequired):
             "properties": ["name"],
         },
     ]
+
+
+# --- Campaign (workflow) ---
+
+cv_campaign = ViewSet(
+    model=Campaign,
+    name="campaign",
+)
+
+
+class CampaignTable(Table):
+    id = LinkDetailColumn()
+    name = tables.Column()
+    state = tables.Column(accessor="state_badge")
+
+
+class CampaignListView(ListViewTableMixin, ListViewPermissionRequired):
+    cv_viewset = cv_campaign
+    cv_list_actions = ["detail", "workflow", "update", "delete"]
+    table_class = CampaignTable
+
+
+class CampaignDetailView(DetailViewPermissionRequired):
+    cv_viewset = cv_campaign
+    property_display = [
+        {
+            "title": "Attributes",
+            "properties": ["name", "state"],
+        },
+    ]
+
+
+class CampaignWorkflowForm(WorkflowForm):
+    class Meta(WorkflowForm.Meta):
+        model = Campaign
+
+
+class CampaignWorkflowView(CrispyModelViewMixin, MessageMixin, WorkflowView):
+    cv_context_actions = ["list", "detail", "workflow"]
+    cv_viewset = cv_campaign
+    form_class = CampaignWorkflowForm

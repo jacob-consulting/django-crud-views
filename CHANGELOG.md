@@ -1,5 +1,19 @@
 # Django CRUD Views - Changelog
 
+## 0.2.0
+
+- Added `crud_views_workflow` package: FSM-based workflow views built on `django-fsm-2`
+  - `WorkflowMixin` for models — state badges, transition helpers, audit history via `WorkflowInfo`
+  - `WorkflowView` — renders available transitions as a radio-select form with optional/required comment support
+  - `WorkflowForm` — crispy-forms form with dynamic choices and per-transition comment validation
+  - `WorkflowInfo` model — generic foreign key audit log recording every state transition, actor, comment and timestamp
+  - `Comment.NONE / OPTIONAL / REQUIRED` per-transition comment requirement declared via `@transition(custom={...})`
+  - `on_transition` hook for post-transition side effects
+  - Campaign example added to the bootstrap5 example app
+- Added unit tests for `crud_views_workflow` (38 tests covering mixin, view, and form behaviour)
+- Added `WorkflowView` reference documentation
+- Updated nox test matrix to install the `workflow` extra
+
 ## 0.1.3
 
 - Made Bootstrap 5 the default theme — templates in `crud_views/` now ship with Bootstrap 5 styling out of the box

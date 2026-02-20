@@ -45,38 +45,32 @@ from django_fsm import FSMField, transition
 from crud_views_workflow.mixins import WorkflowMixin
 
 
+class CampaignState(models.TextChoices):
+    NEW = "new", _("New")
+    ACTIVE = "active", _("Active")
+    SUCCESS = "success", _("Success")
+    CANCELED = "canceled", _("Cancelled")
+    ERROR = "error", _("Error")
+
+
 class Campaign(WorkflowMixin, models.Model):
-    class STATE:
-        NEW = "new"
-        ACTIVE = "active"
-        SUCCESS = "success"
-        CANCELED = "canceled"
-        ERROR = "error"
-
-    STATE_CHOICES = (
-        (STATE.NEW, _("New")),
-        (STATE.ACTIVE, _("Active")),
-        (STATE.SUCCESS, _("Success")),
-        (STATE.CANCELED, _("Cancelled")),
-        (STATE.ERROR, _("Error")),
-    )
-
+    STATE_ENUM = CampaignState
     STATE_BADGES = {
-        STATE.NEW: "light",
-        STATE.ACTIVE: "info",
-        STATE.SUCCESS: "primary",
-        STATE.CANCELED: "warning",
-        STATE.ERROR: "danger",
+        CampaignState.NEW: "light",
+        CampaignState.ACTIVE: "info",
+        CampaignState.SUCCESS: "primary",
+        CampaignState.CANCELED: "warning",
+        CampaignState.ERROR: "danger",
     }
 
     name = models.CharField(max_length=128)
-    state = FSMField(default=STATE.NEW, choices=STATE_CHOICES)
+    state = FSMField(default=CampaignState.NEW, choices=CampaignState.choices)
 
     @transition(
         field=state,
-        source=STATE.NEW,
-        target=STATE.ACTIVE,
-        on_error=STATE.ERROR,
+        source=CampaignState.NEW,
+        target=CampaignState.ACTIVE,
+        on_error=CampaignState.ERROR,
         custom={"label": _("Activate"), "comment": WorkflowMixin.Comment.NONE},
     )
     def wf_activate(self, request=None, by=None, comment=None):
@@ -84,9 +78,9 @@ class Campaign(WorkflowMixin, models.Model):
 
     @transition(
         field=state,
-        source=STATE.ACTIVE,
-        target=STATE.SUCCESS,
-        on_error=STATE.ERROR,
+        source=CampaignState.ACTIVE,
+        target=CampaignState.SUCCESS,
+        on_error=CampaignState.ERROR,
         custom={"label": _("Done"), "comment": WorkflowMixin.Comment.OPTIONAL},
     )
     def wf_done(self, request=None, by=None, comment=None):
@@ -94,9 +88,9 @@ class Campaign(WorkflowMixin, models.Model):
 
     @transition(
         field=state,
-        source=STATE.NEW,
-        target=STATE.CANCELED,
-        on_error=STATE.ERROR,
+        source=CampaignState.NEW,
+        target=CampaignState.CANCELED,
+        on_error=CampaignState.ERROR,
         custom={"label": _("Cancel"), "comment": WorkflowMixin.Comment.REQUIRED},
     )
     def wf_cancel_new(self, request=None, by=None, comment=None):
@@ -155,8 +149,7 @@ To restrict access by permission, add `CrudViewPermissionRequiredMixin` or combi
 
 | Attribute | Description |
 |-----------|-------------|
-| `STATE` | Inner class with state constants (e.g. `STATE.NEW = "new"`) |
-| `STATE_CHOICES` | Tuple of `(value, label)` pairs for the `FSMField` |
+| `STATE_ENUM` | A `models.TextChoices` subclass defining all state values and labels |
 | `STATE_BADGES` | Dict mapping state values to Bootstrap badge class names |
 
 ### Properties and methods
@@ -182,8 +175,8 @@ Each transition declares its comment requirement via the `custom` dict on the `@
 ```python
 @transition(
     field=state,
-    source=STATE.NEW,
-    target=STATE.CANCELED,
+    source=CampaignState.NEW,
+    target=CampaignState.CANCELED,
     custom={"label": _("Cancel"), "comment": WorkflowMixin.Comment.REQUIRED},
 )
 def wf_cancel_new(self, ...):

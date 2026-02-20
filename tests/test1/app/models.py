@@ -1,6 +1,7 @@
 import uuid
 
 from django.db import models
+from django.utils.translation import gettext as _
 from django_fsm import FSMField, transition
 from ordered_model.models import OrderedModel
 from polymorphic.models import PolymorphicModel
@@ -37,41 +38,35 @@ class Book(models.Model):
         return self.title
 
 
+class CampaignState(models.TextChoices):
+    NEW = "new", _("New")
+    ACTIVE = "active", _("Active")
+    SUCCESS = "success", _("Success")
+    CANCELED = "canceled", _("Cancelled")
+    ERROR = "error", _("Error")
+
+
 class Campaign(WorkflowMixin, models.Model):
-    class STATE:
-        NEW = "new"
-        ACTIVE = "active"
-        SUCCESS = "success"
-        CANCELED = "canceled"
-        ERROR = "error"
-
-    STATE_CHOICES = (
-        (STATE.NEW, "New"),
-        (STATE.ACTIVE, "Active"),
-        (STATE.SUCCESS, "Success"),
-        (STATE.CANCELED, "Cancelled"),
-        (STATE.ERROR, "Error"),
-    )
-
+    STATE_ENUM = CampaignState
     STATE_BADGES = {
-        STATE.NEW: "light",
-        STATE.ACTIVE: "info",
-        STATE.SUCCESS: "primary",
-        STATE.CANCELED: "warning",
-        STATE.ERROR: "danger",
+        CampaignState.NEW: "light",
+        CampaignState.ACTIVE: "info",
+        CampaignState.SUCCESS: "primary",
+        CampaignState.CANCELED: "warning",
+        CampaignState.ERROR: "danger",
     }
 
     name = models.CharField(max_length=128)
-    state = FSMField(default=STATE.NEW, choices=STATE_CHOICES)
+    state = FSMField(default=CampaignState.NEW, choices=CampaignState.choices)
 
     def __str__(self):
         return self.name
 
     @transition(
         field=state,
-        source=STATE.NEW,
-        target=STATE.ACTIVE,
-        on_error=STATE.ERROR,
+        source=CampaignState.NEW,
+        target=CampaignState.ACTIVE,
+        on_error=CampaignState.ERROR,
         custom={"label": "Activate", "comment": WorkflowMixin.Comment.NONE},
     )
     def wf_activate(self, request=None, by=None, comment=None):
@@ -79,9 +74,9 @@ class Campaign(WorkflowMixin, models.Model):
 
     @transition(
         field=state,
-        source=STATE.ACTIVE,
-        target=STATE.SUCCESS,
-        on_error=STATE.ERROR,
+        source=CampaignState.ACTIVE,
+        target=CampaignState.SUCCESS,
+        on_error=CampaignState.ERROR,
         custom={"label": "Done", "comment": WorkflowMixin.Comment.OPTIONAL},
     )
     def wf_done(self, request=None, by=None, comment=None):
@@ -89,9 +84,9 @@ class Campaign(WorkflowMixin, models.Model):
 
     @transition(
         field=state,
-        source=STATE.NEW,
-        target=STATE.CANCELED,
-        on_error=STATE.ERROR,
+        source=CampaignState.NEW,
+        target=CampaignState.CANCELED,
+        on_error=CampaignState.ERROR,
         custom={"label": "Cancel", "comment": WorkflowMixin.Comment.REQUIRED},
     )
     def wf_cancel_new(self, request=None, by=None, comment=None):
@@ -99,9 +94,9 @@ class Campaign(WorkflowMixin, models.Model):
 
     @transition(
         field=state,
-        source=STATE.ACTIVE,
-        target=STATE.CANCELED,
-        on_error=STATE.ERROR,
+        source=CampaignState.ACTIVE,
+        target=CampaignState.CANCELED,
+        on_error=CampaignState.ERROR,
         custom={"label": "Cancel", "comment": WorkflowMixin.Comment.REQUIRED},
     )
     def wf_cancel_active(self, request=None, by=None, comment=None):

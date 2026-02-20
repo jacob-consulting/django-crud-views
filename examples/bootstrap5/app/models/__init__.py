@@ -2,7 +2,8 @@ import uuid
 
 from django.db import models
 from ordered_model.models import OrderedModel
-from polymorphic.models import PolymorphicModel
+
+from .campaign import Campaign
 
 
 class Author(OrderedModel):

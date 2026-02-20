@@ -18,6 +18,7 @@ from app.views.group_members import cv_person
 from app.views.formset import cv_poly_formset
 from app.views.formset.parent import cv_poly_parent_formset
 from app.views.formset.question import cv_question
+from app.views.campaign import cv_campaign
 
 
 class CrispyAuthenticationForm(AuthenticationForm):
@@ -40,6 +41,7 @@ urlpatterns += (
         cv_foo.urlpatterns +
         cv_bar.urlpatterns +
         cv_baz.urlpatterns +
+        cv_campaign.urlpatterns +
         cv_poly.urlpatterns +
         cv_detail.urlpatterns +
         cv_group.urlpatterns +

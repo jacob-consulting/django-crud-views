@@ -59,6 +59,11 @@ bootstrap5 = [
     "crispy-bootstrap5 (>=2023.10)",
 ]
 
+workflow = [
+    "django-fsm-2>=4.0.0",
+    "django-fsm-2-admin>=2.0.1",
+]
+
 polymorphic = [
     "django-polymorphic (>=3.1.0)",
     "setuptools"
@@ -94,7 +99,8 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
     packages = [
         "crud_views",
-        "crud_views_plain"
+        "crud_views_plain",
+        "crud_views_workflow"
     ]
 
 # todo: polymorphic-minimal

@@ -14,4 +14,4 @@ def tests(session, django):
     session.install(".[bootstrap5,polymorphic,workflow,test]")
 
     with session.chdir("./tests"):
-        session.run("pytest", "--cov", "--cov-report=term-missing", *session.posargs)
+        session.run("pytest", "-n", "auto", "--cov", "--cov-report=term-missing", *session.posargs)

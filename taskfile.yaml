@@ -43,6 +43,6 @@ tasks:
 
   test:
     cmds:
-      - uv run nox
+      - uv run nox -p
       - rm -rf .nox
     silent: true

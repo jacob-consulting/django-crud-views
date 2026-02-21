@@ -1,5 +1,20 @@
 # Django CRUD Views - Changelog
 
+## 0.3.0
+
+- Added `crud_views_polymorphic` package — polymorphic CRUD views built on `django-polymorphic`
+  - `PolymorphicCreateSelectView` / `PolymorphicCreateSelectViewPermissionRequired` — two-step create flow: select subtype then fill subtype form
+  - `PolymorphicCreateView`, `PolymorphicUpdateView`, `PolymorphicDetailView`, `PolymorphicDeleteView` and their `PermissionRequired` variants
+  - `cv_polymorphic_exclude` / `cv_polymorphic_include` to filter available subtypes; system check `E220` enforces mutual exclusivity
+  - Added `PolymorphicView` reference documentation
+- `crud_views_workflow` restructured into `lib/` subpackage; `WorkflowComment` extracted as top-level enum (`crud_views_workflow.lib.enums`)
+- Added `WorkflowViewPermissionRequired` — enforces `change` permission on workflow views
+- Added `WorkflowView.checks()` — validates `form_class`, transition/comment labels, `WorkflowMixin` on model, and required model attributes `STATE_ENUM` / `STATE_BADGES` (checks E230–E235)
+- Added `cv_property_display` class attribute to `DetailView` for declarative property group configuration
+- Restructured `pyproject.toml`: bootstrap5 deps moved to core dependencies; `workflow`, `polymorphic`, and `all` optional extras added
+- Added ruff as formatter and linter, replacing black; ruff pre-commit hook added
+- Added `pytest-xdist` for parallel test execution (`-n auto`); nox sessions run in parallel (`-p`)
+
 ## 0.2.1
 - short app label `cvw` for app `crud_views_workflow`
 

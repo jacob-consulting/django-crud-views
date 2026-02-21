@@ -1,5 +1,10 @@
 # Django CRUD Views - Changelog
 
+## 0.3.2
+
+- Changed `WorkflowInfo.workflow_object_id` (PositiveBigIntegerField) to `workflow_object_pk` (CharField, max_length=255) to support UUID, integer, and string primary keys
+- Added compound index on `(workflow_object_pk, workflow_object_content_type)` for efficient history lookups
+
 ## 0.3.1
 
 - Fixed bug in `WorkflowMixin` using `model.id` instead of `model.pk`

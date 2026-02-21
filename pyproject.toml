@@ -30,10 +30,26 @@ dependencies = [
     "django-filter (>=21.1)",
     "typing-extensions (>=4.7.1)",
     "django-ordered-model (>=3.4.3)",
-    "django-object-detail (>=0.1.7)"
+    "django-object-detail (>=0.1.7)",
+    "django-bootstrap5 (>=21.3)",
+    "django-crispy-forms (>=2.0)",
+    "crispy-bootstrap5 (>=2023.10)",
 ]
 
 [project.optional-dependencies]
+
+workflow = [
+    "django-fsm-2>=4.0.0",
+    "django-fsm-2-admin>=2.0.1",
+]
+
+polymorphic = [
+    "django-polymorphic (>=3.1.0)",
+]
+
+all = [
+    "django-crud-views[workflow,polymorphic]"
+]
 
 dev = [
     "black",
@@ -53,38 +69,6 @@ test = [
     "lxml",
 ]
 
-bootstrap5 = [
-    "django-bootstrap5 (>=21.3)",
-    "django-crispy-forms (>=2.0)",
-    "crispy-bootstrap5 (>=2023.10)",
-]
-
-workflow = [
-    "django-fsm-2>=4.0.0",
-    "django-fsm-2-admin>=2.0.1",
-]
-
-polymorphic = [
-    "django-polymorphic (>=3.1.0)",
-    "setuptools"
-]
-
-minimal = [
-    "django (==4.2.0)",
-    "pydantic (==2.2.1)",
-    "python-box (==6.0.2)",
-    "django-tables2 (==2.5.3)",
-    "django-filter (==21.1)",
-    "typing-extensions (==4.7.1)",
-    "django-ordered-model (==3.4.3)"
-]
-
-bootstrap5minimal = [
-    "django-bootstrap5 (==21.3)",
-    "django-crispy-forms (==2.0)",
-    "crispy-bootstrap5 (==2023.10)",
-]
-
 [project.urls]
 Homepage = "https://github.com/jacob-consulting/django-crud-views"
 Documentation = "https://django-crud-views.readthedocs.io/en/latest/"
@@ -97,12 +81,12 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-    packages = [
-        "crud_views",
-        "crud_views_plain",
-        "crud_views_workflow",
-        "crud_views_polymorphic"
-    ]
+packages = [
+    "crud_views",
+    "crud_views_plain",
+    "crud_views_workflow",
+    "crud_views_polymorphic"
+]
 
 # todo: polymorphic-minimal
 
@@ -110,7 +94,7 @@ build-backend = "hatchling.build"
 addopts = "--strict-markers"
 
 [tool.coverage.run]
-source = ["crud_views", "crud_views_plain"]
+source = ["crud_views", "crud_views_plain", "crud_views_polymorphic", "crud_views_workflow"]
 
 [tool.coverage.report]
 show_missing = true

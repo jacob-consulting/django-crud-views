@@ -17,12 +17,7 @@ tasks:
 
   dev-install:
     cmds:
-      - uv pip install --upgrade .[bootstrap5,polymorphic,workflow,dev,test]
-    silent: true
-
-  dev-install-minimal:
-    cmds:
-      - uv pip install --upgrade .[minimal,bootstrap5minimal,polymorphic,dev,test]
+      - uv pip install --upgrade .[polymorphic,workflow,dev,test]
     silent: true
 
   build:

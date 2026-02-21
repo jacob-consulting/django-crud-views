@@ -2,7 +2,6 @@ import pytest
 from django.test.client import Client
 
 from tests.lib.helper.boostrap5 import Table
-from tests.test1.app.models import Publisher
 
 
 @pytest.mark.django_db

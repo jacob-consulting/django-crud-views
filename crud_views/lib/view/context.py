@@ -1,4 +1,7 @@
-from typing import Dict, Any
+from typing import Dict, Any, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from crud_views.lib.view.base import CrudView
 
 from django.db.models import Model
 from pydantic import BaseModel, field_validator

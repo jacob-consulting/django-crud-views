@@ -20,7 +20,13 @@ from .path_regs import PrimaryKeys
 from .. import check
 from ..check import CheckAttributeReg, Check
 from ..settings import crud_views_settings
-from ..view import ContextButton, ParentContextButton, CrudView, ViewContext, CrudViewPermissionRequiredMixin
+from ..view import (
+    ContextButton,
+    ParentContextButton,
+    CrudView,
+    ViewContext,
+    CrudViewPermissionRequiredMixin as CrudViewPermissionRequiredMixin,
+)
 from ..view.buttons import FilterContextButton
 from ..views.manage import ManageView
 

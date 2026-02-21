@@ -80,13 +80,13 @@ def cv_cancel_button(context, obj=None):
 
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/button_submit.html", takes_context=True)
 def cv_submit_button(context, obj=None):
-    view: CrudView = cv_get_view(context)
+    cv_get_view(context)
     return {}
 
 
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/button_delete.html", takes_context=True)
 def cv_delete_button(context, obj=None):
-    view: CrudView = cv_get_view(context)
+    cv_get_view(context)
     return {}
 
 

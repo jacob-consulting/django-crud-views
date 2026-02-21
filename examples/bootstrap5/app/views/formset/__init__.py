@@ -22,7 +22,7 @@ from crud_views_polymorphic.lib import (
 )
 from crud_views_polymorphic.lib.create_select import PolymorphicContentTypeForm
 from crud_views_polymorphic.lib.delete import PolymorphicDeleteViewPermissionRequired
-from crud_views.lib.table import Table, UUIDLinkDetailColumn, ActionColumn
+from crud_views.lib.table import Table, UUIDLinkDetailColumn
 from crud_views.lib.views import ListViewPermissionRequired, ListViewTableMixin, CreateViewParentMixin
 from crud_views.lib.viewset import ViewSet, ParentViewSet
 from .answer import PolyAnswerFormSet

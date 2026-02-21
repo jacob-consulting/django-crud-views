@@ -127,10 +127,6 @@ class XFormSet(BaseModel, arbitrary_types_allowed=True):
         return self.formset.title
 
     @property
-    def key(self) -> str:
-        return self.formset.key
-
-    @property
     def has_pre_col(self) -> bool:
         return self.level > 0
 

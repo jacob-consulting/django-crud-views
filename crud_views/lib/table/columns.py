@@ -2,7 +2,7 @@ import django_tables2 as tables
 from django_tables2 import Column
 
 from crud_views.lib.exceptions import ViewSetKeyFoundError, ignore_exception
-from crud_views.lib.table.attrs import ColAttr, ColumnAttrs
+from crud_views.lib.table.attrs import ColAttr
 
 from crud_views.lib.viewset import ViewSet
 

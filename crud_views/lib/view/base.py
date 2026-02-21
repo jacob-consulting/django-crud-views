@@ -1,5 +1,10 @@
+from __future__ import annotations
+
 from functools import cached_property
-from typing import Dict, List, Type, Any, Iterable, Tuple
+from typing import Dict, List, Type, Any, Iterable, Tuple, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from crud_views.lib.viewset import ViewSet
 
 from crud_views.lib import check
 from crud_views.lib.check import Check, CheckAttributeReg, CheckAttribute, CheckTemplateOrCode

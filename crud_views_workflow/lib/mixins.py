@@ -103,7 +103,7 @@ class WorkflowMixin:
         return self.workflow_get_transition_label_map[name]
 
     def workflow_get_form_kwargs(self, user):
-        kwargs, choices, initial, transition_comments = dict(), [], [], dict()
+        kwargs, choices, _initial, transition_comments = dict(), [], [], dict()
         for value, label, comment in self.workflow_get_possible_transitions(user):
             choices.append((value, label))
             transition_comments[value] = comment

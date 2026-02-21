@@ -14,7 +14,7 @@ class TableWithViewContext(tables.Table):
     ca: Type[ColAttr] = ColAttr
 
     def __init__(self, *args, **kwargs):
-        if not "view" in kwargs:
+        if "view" not in kwargs:
             raise ValueError(f"view not set in {self.__class__}")
         view = kwargs.pop("view")
         super().__init__(*args, **kwargs)

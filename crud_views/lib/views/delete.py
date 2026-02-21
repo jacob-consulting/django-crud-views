@@ -1,5 +1,4 @@
 from crud_views.lib.views.mixins import CrudViewProcessFormMixin
-from django.utils.translation import gettext_lazy as _
 from django.views import generic
 
 from crud_views.lib.settings import crud_views_settings

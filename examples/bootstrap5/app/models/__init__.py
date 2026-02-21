@@ -3,7 +3,7 @@ import uuid
 from django.db import models
 from ordered_model.models import OrderedModel
 
-from .campaign import Campaign
+from .campaign import Campaign as Campaign
 
 
 class Author(OrderedModel):

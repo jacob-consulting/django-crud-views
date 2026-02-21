@@ -3,7 +3,7 @@ from django.test.client import Client
 
 from crud_views.lib.viewset import ViewSet
 from tests.lib.helper.boostrap5 import Table
-from tests.test1.app.models import Book, Publisher
+from tests.test1.app.models import Book
 
 
 @pytest.mark.django_db

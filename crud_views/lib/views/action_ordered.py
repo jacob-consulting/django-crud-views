@@ -1,8 +1,5 @@
-from django.utils.translation import gettext_lazy as _
-
 from crud_views.lib.view import CrudViewPermissionRequiredMixin
 from .action import ActionView
-from ..settings import crud_views_settings
 
 
 class OrderedCheckBase:

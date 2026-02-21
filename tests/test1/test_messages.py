@@ -4,7 +4,6 @@ from django.contrib.messages import get_messages
 from django.test.client import Client
 
 from tests.lib.helper.user import user_viewset_permission
-from tests.test1.app.models import Publisher
 
 
 @pytest.fixture

@@ -90,8 +90,6 @@ packages = [
     "crud_views_polymorphic"
 ]
 
-# todo: polymorphic-minimal
-
 [tool.ruff]
 line-length = 120
 

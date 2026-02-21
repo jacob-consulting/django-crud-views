@@ -37,8 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'ordered_model',
     'django_tables2',
+    'polymorphic',
     'crud_views_plain.apps.CrudViewsPlainConfig',
     'crud_views.apps.CrudViewsConfig',
+    'crud_views_polymorphic.apps.CrudViewsPolymorphicConfig',
     'app.apps.ApplicationConfig',
 ]
 

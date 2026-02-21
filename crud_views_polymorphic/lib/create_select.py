@@ -9,7 +9,7 @@ from polymorphic.models import PolymorphicModel
 from crud_views.lib.check import CheckEitherAttribute, Check
 from crud_views.lib.view import CrudView, CrudViewPermissionRequiredMixin
 from crud_views.lib.settings import crud_views_settings
-from crud_views.lib.polymorphic_views.utils import get_polymorphic_child_models_content_types
+from .utils import get_polymorphic_child_models_content_types
 
 
 class PolymorphicContentTypeForm(forms.Form):
@@ -29,7 +29,6 @@ class PolymorphicCreateSelectView(CrudView, generic.FormView):
     cv_path = "create/select"
     cv_success_key = "list"
     cv_context_actions = crud_views_settings.create_select_context_actions
-    # todo: check, only one can be set
     cv_polymorphic_exclude: List[Type[PolymorphicModel]] | None = None
     cv_polymorphic_include: List[Type[PolymorphicModel]] | None = None
 
@@ -41,12 +40,8 @@ class PolymorphicCreateSelectView(CrudView, generic.FormView):
 
     cv_icon_action = "fa-regular fa-square-plus"
 
-    #
     @classmethod
     def checks(cls) -> Iterable[Check]:
-        """
-        Iterator of checks for the view
-        """
         yield from super().checks()
         yield CheckEitherAttribute(context=cls, id="E220",
                                    attribute1="cv_polymorphic_exclude",
@@ -62,8 +57,7 @@ class PolymorphicCreateSelectView(CrudView, generic.FormView):
             content_types = {k: v for k, v in content_types.items() if k in self.cv_polymorphic_include}
         polymorphic_ctype_choices = [(ct.id, ct.name) for ct in content_types.values()]
         form_kwargs = self.get_form_kwargs()
-        form = form_class(polymorphic_ctype_choices=polymorphic_ctype_choices, **form_kwargs)
-        return form
+        return form_class(polymorphic_ctype_choices=polymorphic_ctype_choices, **form_kwargs)
 
     def form_valid(self, form):
         polymorphic_ctype_id = form.cleaned_data["polymorphic_ctype_id"]

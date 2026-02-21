@@ -1,7 +1,7 @@
 from crud_views.lib.view import CrudViewPermissionRequiredMixin
+from crud_views.lib.views import CreateView
+from crud_views.lib.viewset import path_regs, PrimaryKeys
 from .utils import PolymorphicCrudViewMixin
-from ..views import CreateView
-from ..viewset import path_regs, PrimaryKeys
 
 
 class PolymorphicCreateView(PolymorphicCrudViewMixin, CreateView):

@@ -32,6 +32,7 @@ def pytest_configure():
             "crud_views.apps.CrudViewsConfig",
             'django_fsm',
             'crud_views_workflow.apps.CrudViewsWorkflowConfig',
+            'crud_views_polymorphic.apps.CrudViewsPolymorphicConfig',
             'tests.test1.app',
         ],
 

@@ -40,7 +40,7 @@ class Action:
     def __str__(self):
         try:
             key = self.key
-        except:
+        except Exception:
             key = "KEY-ERROR"
         return f"action({key}:{self.index}:{self.text})"
 

@@ -4,7 +4,6 @@ from pydantic import BaseModel
 
 from .context import ViewContext
 from ..settings import crud_views_settings
-from ..exceptions import CrudViewError
 
 User = get_user_model()
 

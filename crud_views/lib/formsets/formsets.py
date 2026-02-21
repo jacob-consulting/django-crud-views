@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 from collections import OrderedDict
-from typing import Any, OrderedDict as OrderedDictType, List, Iterable, Tuple, ForwardRef, Literal
+from typing import Any, OrderedDict as OrderedDictType, List, Iterable, Tuple
 from typing import Dict, Type, Self
 
 from crud_views.lib.view import CrudView
@@ -13,9 +13,7 @@ from django.http.request import HttpRequest
 from django.template.loader import render_to_string
 from ordered_model.models import OrderedModel
 from pydantic import BaseModel, Field, model_validator
-from enum import Enum, IntEnum
-
-from pydantic import BaseModel, ValidationError
+from enum import Enum
 
 from .x import XForm, XFormSet
 

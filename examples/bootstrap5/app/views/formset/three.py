@@ -2,11 +2,10 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Row
 from django.forms import modelform_factory
 
-from app.models.poly import PolyTwo, PolyThree
+from app.models.poly import PolyThree
 from crud_views.lib.crispy import Column6
 from crud_views.lib.crispy.form import CrispyForm
 
-from crud_views.lib.formsets import Formsets
 
 _PolyThreeForm = modelform_factory(
     PolyThree,

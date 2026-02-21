@@ -1,7 +1,7 @@
 from django.utils.translation import gettext as _
 from django.views import generic
 
-from crud_views.lib.view import CrudView, CrudViewPermissionRequiredMixin, ViewContext
+from crud_views.lib.view import CrudView, CrudViewPermissionRequiredMixin
 from crud_views.lib.settings import crud_views_settings
 
 # crispy may not be installed

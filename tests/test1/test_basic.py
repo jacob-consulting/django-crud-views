@@ -30,8 +30,6 @@ def test_debug_view(user_author_view: User, cv_author, author_douglas_adams, aut
         #    for action in header.actions:
         #        print(action.text, action.href)
 
-    x = 1
-
 
 @pytest.mark.skip(reason="disabled")
 def test_fail():

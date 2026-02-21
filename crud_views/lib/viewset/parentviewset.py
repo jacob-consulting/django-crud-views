@@ -1,5 +1,8 @@
 import re
-from typing import Any
+from typing import Any, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from crud_views.lib.viewset import ViewSet
 
 from pydantic import BaseModel, field_validator
 

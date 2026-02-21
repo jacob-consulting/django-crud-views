@@ -10,6 +10,4 @@ class Command(BaseCommand):
 
         person = Person.objects.filter(group__id=1).first()
 
-        x = person.membership_set.all()
-
-        x = 1
+        person.membership_set.all()

@@ -173,7 +173,7 @@ class CheckTemplateOrCode(Check):
         if template:
             try:
                 get_template(template)
-            except TemplateDoesNotExist as exc:
+            except TemplateDoesNotExist:
                 msg = self.msg_template_not_found.format(template=template, context=self.context)
                 yield Error(id=self.get_id(), msg=msg)
 

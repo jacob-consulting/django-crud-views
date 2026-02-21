@@ -1,8 +1,6 @@
 import pytest
 from django.test.client import Client
 
-from tests.test1.app.models import Author
-
 
 @pytest.mark.django_db
 def test_anonymous_redirected(client: Client, cv_author, author_douglas_adams):

@@ -71,7 +71,7 @@ class CrudViewsSettings(BaseModel):
         def check_template(t):
             try:
                 get_template(t)
-            except TemplateDoesNotExist as exc:
+            except TemplateDoesNotExist:
                 self._check_messages.append(Error(id="E100", msg=f"template {t} not found"))
 
         check_template(self.extends)
@@ -80,7 +80,7 @@ class CrudViewsSettings(BaseModel):
 
     @property
     def theme_path(self) -> str:
-        return f"crud_views"
+        return "crud_views"
 
     def get_js(self, path: str) -> str:
         return f"{self.theme_path}/js/{path}"

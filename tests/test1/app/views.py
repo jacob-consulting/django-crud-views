@@ -15,12 +15,12 @@ from crud_views.lib.views import (
     OrderedUpViewPermissionRequired, OrderedUpDownPermissionRequired
 )
 from crud_views.lib.views.list import ListViewFilterFormHelper
-from crud_views.lib.polymorphic_views import (
+from crud_views_polymorphic.lib import (
     PolymorphicCreateViewPermissionRequired, PolymorphicCreateSelectViewPermissionRequired,
     PolymorphicUpdateViewPermissionRequired, PolymorphicDetailViewPermissionRequired
 )
-from crud_views.lib.polymorphic_views.create_select import PolymorphicContentTypeForm
-from crud_views.lib.polymorphic_views.delete import PolymorphicDeleteViewPermissionRequired
+from crud_views_polymorphic.lib.create_select import PolymorphicContentTypeForm
+from crud_views_polymorphic.lib.delete import PolymorphicDeleteViewPermissionRequired
 from crud_views.lib.viewset import ViewSet, ParentViewSet
 from crud_views_workflow.lib.forms import WorkflowForm
 from crud_views_workflow.lib.views import WorkflowViewPermissionRequired

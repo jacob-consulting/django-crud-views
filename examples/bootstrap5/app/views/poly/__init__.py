@@ -7,10 +7,12 @@ from app.views.poly.one import PolyOneForm
 from app.views.poly.two import PolyTwoForm
 from crud_views.lib.crispy import Column4, CrispyModelViewMixin
 from crud_views.lib.crispy.form import CrispyForm
-from crud_views.lib.polymorphic_views import PolymorphicCreateSelectView, PolymorphicCreateViewPermissionRequired, \
-    PolymorphicUpdateViewPermissionRequired, PolymorphicDetailViewPermissionRequired
-from crud_views.lib.polymorphic_views.create_select import PolymorphicContentTypeForm
-from crud_views.lib.polymorphic_views.delete import PolymorphicDeleteViewPermissionRequired
+from crud_views_polymorphic.lib import (
+    PolymorphicCreateSelectView, PolymorphicCreateViewPermissionRequired,
+    PolymorphicUpdateViewPermissionRequired, PolymorphicDetailViewPermissionRequired,
+)
+from crud_views_polymorphic.lib.create_select import PolymorphicContentTypeForm
+from crud_views_polymorphic.lib.delete import PolymorphicDeleteViewPermissionRequired
 from crud_views.lib.table import Table
 from crud_views.lib.views import ListViewPermissionRequired
 from crud_views.lib.views import ListViewTableMixin

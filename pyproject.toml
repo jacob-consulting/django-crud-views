@@ -100,7 +100,8 @@ build-backend = "hatchling.build"
     packages = [
         "crud_views",
         "crud_views_plain",
-        "crud_views_workflow"
+        "crud_views_workflow",
+        "crud_views_polymorphic"
     ]
 
 # todo: polymorphic-minimal

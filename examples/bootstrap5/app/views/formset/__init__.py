@@ -14,10 +14,12 @@ from crud_views.lib.crispy import Column4, CrispyModelViewMixin, Column8
 from crud_views.lib.crispy.form import CrispyForm, CrispyModelForm
 from crud_views.lib.formsets import FormSet, FormSets, InlineFormSet
 from crud_views.lib.formsets.mixins import PolymorphicFormSetMixin
-from crud_views.lib.polymorphic_views import PolymorphicCreateSelectView, PolymorphicCreateViewPermissionRequired, \
-    PolymorphicUpdateViewPermissionRequired, PolymorphicDetailViewPermissionRequired
-from crud_views.lib.polymorphic_views.create_select import PolymorphicContentTypeForm
-from crud_views.lib.polymorphic_views.delete import PolymorphicDeleteViewPermissionRequired
+from crud_views_polymorphic.lib import (
+    PolymorphicCreateSelectView, PolymorphicCreateViewPermissionRequired,
+    PolymorphicUpdateViewPermissionRequired, PolymorphicDetailViewPermissionRequired,
+)
+from crud_views_polymorphic.lib.create_select import PolymorphicContentTypeForm
+from crud_views_polymorphic.lib.delete import PolymorphicDeleteViewPermissionRequired
 from crud_views.lib.table import Table, UUIDLinkDetailColumn, ActionColumn
 from crud_views.lib.views import ListViewPermissionRequired, ListViewTableMixin, CreateViewParentMixin
 from crud_views.lib.viewset import ViewSet, ParentViewSet

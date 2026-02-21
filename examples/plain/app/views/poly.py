@@ -2,10 +2,12 @@ import django_tables2 as tables
 from django.forms import modelform_factory
 
 from app.models import Poly, PolyOne, PolyTwo
-from crud_views.lib.polymorphic_views import PolymorphicCreateSelectView, PolymorphicCreateViewPermissionRequired, \
-    PolymorphicUpdateViewPermissionRequired, PolymorphicDetailViewPermissionRequired
+from crud_views_polymorphic.lib import (
+    PolymorphicCreateSelectView, PolymorphicCreateViewPermissionRequired,
+    PolymorphicUpdateViewPermissionRequired, PolymorphicDetailViewPermissionRequired,
+)
+from crud_views_polymorphic.lib.delete import PolymorphicDeleteViewPermissionRequired
 from crud_views.lib.views import ListViewPermissionRequired
-from crud_views.lib.polymorphic_views.delete import PolymorphicDeleteViewPermissionRequired
 from crud_views.lib.table import Table
 from crud_views.lib.views import ListViewTableMixin
 from crud_views.lib.viewset import ViewSet

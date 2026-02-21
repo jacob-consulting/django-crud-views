@@ -43,8 +43,10 @@ INSTALLED_APPS = [
     "django_fsm",
     "django_tables2",
     "django_object_detail",
+    "polymorphic",
     "crud_views.apps.CrudViewsConfig",
     "crud_views_workflow.apps.CrudViewsWorkflowConfig",
+    "crud_views_polymorphic.apps.CrudViewsPolymorphicConfig",
     "app.apps.ApplicationConfig",
 ]
 

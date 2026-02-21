@@ -1,5 +1,11 @@
 # Django CRUD Views - Changelog
 
+## 0.3.1
+
+- Fixed bug in `WorkflowMixin` using `model.id` instead of `model.pk`
+- Added ruff lint GitHub Actions workflow; publish now depends on lint passing
+- Added lint badge to README
+
 ## 0.3.0
 
 - Added `crud_views_polymorphic` package — polymorphic CRUD views built on `django-polymorphic`

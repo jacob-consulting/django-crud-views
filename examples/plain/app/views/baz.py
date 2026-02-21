@@ -28,7 +28,7 @@ class BazListView(ListViewTableMixin, ListViewPermissionRequired):
 class BazDetailView(DetailViewPermissionRequired):
     model = Baz
     cv_viewset = cv_baz
-    property_display = [
+    cv_property_display = [
         {
             "title": "Properties",
             "properties": ["id", "name"],

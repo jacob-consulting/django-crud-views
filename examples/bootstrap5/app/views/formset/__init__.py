@@ -193,7 +193,7 @@ class PolyDeleteView(PolymorphicDeleteViewPermissionRequired):
 class PolyDetailView(PolymorphicDetailViewPermissionRequired):
     model = Poly
     cv_viewset = cv_poly_formset
-    property_display = [
+    cv_property_display = [
         {
             "title": "Properties",
             "icon": "shapes",

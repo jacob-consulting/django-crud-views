@@ -88,7 +88,7 @@ class PersonDetailView(DetailViewPermissionRequired):
     model = Person
     cv_viewset = cv_person
 
-    property_display = [
+    cv_property_display = [
         {
             "title": _("Attributes"),
             "icon": "user",

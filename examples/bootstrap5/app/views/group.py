@@ -82,7 +82,7 @@ class GroupDetailView(DetailViewPermissionRequired):
     model = Group
     cv_viewset = cv_group
 
-    property_display = [
+    cv_property_display = [
         {
             "title": _("Attributes"),
             "icon": "users",

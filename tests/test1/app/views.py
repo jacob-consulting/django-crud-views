@@ -54,7 +54,7 @@ class AuthorListView(ListViewTableMixin, ListViewPermissionRequired):
 class AuthorDetailView(DetailViewPermissionRequired):
     cv_viewset = cv_author
 
-    property_display = [
+    cv_property_display = [
         {
             "title": "Attributes",
             "properties": [
@@ -136,7 +136,7 @@ class PublisherListView(ListViewTableMixin, ListViewTableFilterMixin, ListViewPe
 
 class PublisherDetailView(DetailViewPermissionRequired):
     cv_viewset = cv_publisher
-    property_display = [
+    cv_property_display = [
         {
             "title": "Attributes",
             "properties": ["name"],
@@ -192,7 +192,7 @@ class BookListView(ListViewTableMixin, ListViewPermissionRequired):
 
 class BookDetailView(DetailViewPermissionRequired):
     cv_viewset = cv_book
-    property_display = [
+    cv_property_display = [
         {
             "title": "Attributes",
             "properties": ["title"],
@@ -298,7 +298,7 @@ class VehicleDeleteView(CrispyModelViewMixin, PolymorphicDeleteViewPermissionReq
 
 class VehicleDetailView(PolymorphicDetailViewPermissionRequired):
     cv_viewset = cv_vehicle
-    property_display = [
+    cv_property_display = [
         {
             "title": "Attributes",
             "properties": ["name"],
@@ -328,7 +328,7 @@ class CampaignListView(ListViewTableMixin, ListViewPermissionRequired):
 
 class CampaignDetailView(DetailViewPermissionRequired):
     cv_viewset = cv_campaign
-    property_display = [
+    cv_property_display = [
         {
             "title": "Attributes",
             "properties": ["name", "state"],

@@ -91,7 +91,7 @@ class DetailDetailView(DetailViewPermissionRequired):
     model = Detail
     cv_viewset = cv_detail
 
-    property_display = [
+    cv_property_display = [
         {
             "title": _("Attributes"),
             "icon": "list",

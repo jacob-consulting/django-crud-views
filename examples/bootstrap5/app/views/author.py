@@ -115,7 +115,7 @@ class AuthorDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionR
 class AuthorDetailView(DetailViewPermissionRequired):
     cv_viewset = cv_author
 
-    property_display = [
+    cv_property_display = [
         {
             "title": _("Attributes"),
             "icon": "tag",

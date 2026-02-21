@@ -44,7 +44,7 @@ class FooDetailView(DetailViewPermissionRequired):
     model = Foo
     cv_viewset = cv_foo
 
-    property_display = [
+    cv_property_display = [
         {
             "title": "Properties",
             "icon": "paw",

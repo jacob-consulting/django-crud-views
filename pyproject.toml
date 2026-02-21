@@ -66,6 +66,7 @@ test = [
     "pytest-random-order",
     "pytest-mock",
     "pytest-django",
+    "pytest-xdist",
     "lxml",
 ]
 

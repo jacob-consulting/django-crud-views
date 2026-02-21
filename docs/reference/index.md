@@ -8,6 +8,7 @@
 - [UpdateView](update_view.md) — update existing model instances with forms
 - [DeleteView](delete_view.md) — delete model instances with confirmation
 - [WorkflowView](workflow_view.md) — execute FSM state-machine transitions with audit history
+- [PolymorphicView](polymorphic_view.md) — CRUD views for django-polymorphic models
 
 ## Configuration
 

@@ -15,5 +15,10 @@ class WorkflowInfo(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     data = models.JSONField(default=dict, blank=True, null=True)
     workflow_object_content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    workflow_object_id = models.PositiveBigIntegerField()
-    workflow_object = GenericForeignKey("workflow_object_content_type", "workflow_object_id")
+    workflow_object_pk = models.CharField(max_length=255)
+    workflow_object = GenericForeignKey("workflow_object_content_type", "workflow_object_pk")
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["workflow_object_pk", "workflow_object_content_type"]),
+        ]

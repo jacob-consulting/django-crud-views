@@ -125,7 +125,7 @@ class WorkflowView(CustomFormView):
                 comment=comment,
                 user=user,
                 data=data,
-                workflow_object_id=self.object.id,
+                workflow_object_pk=str(self.object.pk),
                 workflow_object_content_type=ContentType.objects.get_for_model(self.object),
             )
 

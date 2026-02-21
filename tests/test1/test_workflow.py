@@ -264,7 +264,7 @@ def test_workflow_view_post_creates_workflow_info(client_user_campaign_change: C
         },
     )
     assert WorkflowInfo.objects.filter(
-        workflow_object_id=pk,
+        workflow_object_pk=str(pk),
         transition="wf_activate",
         state_old=CampaignState.NEW,
         state_new=CampaignState.ACTIVE,
@@ -300,7 +300,7 @@ def test_workflow_view_post_required_comment_provided(client_user_campaign_chang
     assert response.status_code == 302
     campaign_new.refresh_from_db()
     assert campaign_new.state == CampaignState.CANCELED
-    info = WorkflowInfo.objects.get(workflow_object_id=pk, transition="wf_cancel_new")
+    info = WorkflowInfo.objects.get(workflow_object_pk=str(pk), transition="wf_cancel_new")
     assert info.comment == "Need to cancel this campaign"
 
 
@@ -332,7 +332,7 @@ def test_workflow_view_post_optional_comment_with(client_user_campaign_change: C
     assert response.status_code == 302
     campaign_active.refresh_from_db()
     assert campaign_active.state == CampaignState.SUCCESS
-    info = WorkflowInfo.objects.get(workflow_object_id=pk, transition="wf_done")
+    info = WorkflowInfo.objects.get(workflow_object_pk=str(pk), transition="wf_done")
     assert info.comment == "Campaign completed successfully"
 
 
@@ -378,7 +378,7 @@ def test_workflow_history_after_multiple_transitions(client_user_campaign_change
     campaign_new.refresh_from_db()
     assert campaign_new.state == CampaignState.SUCCESS
 
-    assert WorkflowInfo.objects.filter(workflow_object_id=pk).count() == 2
+    assert WorkflowInfo.objects.filter(workflow_object_pk=str(pk)).count() == 2
 
     history = campaign_new.workflow_data
     assert len(history) == 2
@@ -416,7 +416,7 @@ def test_workflow_history_records_user(client_user_campaign_change: Client, camp
             "comment": "",
         },
     )
-    info = WorkflowInfo.objects.get(workflow_object_id=pk, transition="wf_activate")
+    info = WorkflowInfo.objects.get(workflow_object_pk=str(pk), transition="wf_activate")
     assert info.user == user_campaign_change
 
 
@@ -431,7 +431,7 @@ def test_workflow_info_null_comment_when_empty(client_user_campaign_change: Clie
             "comment": "",
         },
     )
-    info = WorkflowInfo.objects.get(workflow_object_id=pk, transition="wf_activate")
+    info = WorkflowInfo.objects.get(workflow_object_pk=str(pk), transition="wf_activate")
     assert info.comment is None
 
 

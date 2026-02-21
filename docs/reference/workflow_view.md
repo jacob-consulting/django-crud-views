@@ -252,7 +252,11 @@ Every successful transition creates a `WorkflowInfo` record:
 | `user` | The `User` who triggered the transition |
 | `timestamp` | Date/time of the transition |
 | `data` | Optional JSON data returned by the transition method |
-| `workflow_object` | Generic FK to the transitioned object |
+| `workflow_object_pk` | `CharField(max_length=255)` — the PK of the transitioned object (supports UUID, int, and string PKs) |
+| `workflow_object_content_type` | FK to `ContentType` of the transitioned object |
+| `workflow_object` | Generic FK combining `workflow_object_content_type` and `workflow_object_pk` |
+
+An index on `(workflow_object_pk, workflow_object_content_type)` is defined for efficient history lookups.
 
 Access the history via `WorkflowMixin.workflow_data`, which returns a list of dicts enriched
 with badge HTML and human-readable labels.

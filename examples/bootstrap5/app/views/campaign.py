@@ -52,7 +52,7 @@ class CampaignDetailView(DetailViewPermissionRequired):
     cv_viewset = cv_campaign
     cv_context_actions = ["home", "detail", "update", "workflow", "delete"]
 
-    property_display = [
+    cv_property_display = [
         {
             "title": "Properties",
             "icon": "megaphone",

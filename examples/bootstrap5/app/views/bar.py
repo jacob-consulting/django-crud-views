@@ -44,7 +44,7 @@ class BarListView(ListViewTableMixin, ListViewPermissionRequired):
 class BarDetailView(DetailViewPermissionRequired):
     model = Bar
     cv_viewset = cv_bar
-    property_display = [
+    cv_property_display = [
         {
             "title": "Properties",
             "icon": "bone",

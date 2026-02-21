@@ -45,7 +45,7 @@ class AuthorListView(ListViewTableMixin, ListViewTableFilterMixin, ListViewPermi
 
 class AuthorDetailView(DetailViewPermissionRequired):
     cv_viewset = cv_author
-    property_display = [
+    cv_property_display = [
         {
             "title": "Attributes",
             "properties": [

@@ -51,7 +51,7 @@ class BookListView(ListViewTableMixin, ListViewPermissionRequired):
 class BookDetailView(DetailViewPermissionRequired):
     cv_viewset = cv_book
 
-    property_display = [
+    cv_property_display = [
         {
             "title": "Attributes",
             "icon": "book-open",

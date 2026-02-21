@@ -60,7 +60,7 @@ class QuestionDetailView(DetailViewPermissionRequired):
     cv_viewset = cv_question
 
 
-    property_display = [
+    cv_property_display = [
         {
             "title": _("Properties"),
             "icon": "circle-question",

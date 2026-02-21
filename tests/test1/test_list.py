@@ -14,7 +14,9 @@ def test_list_empty(client_user_author_view: Client, cv_author):
 
 
 @pytest.mark.django_db
-def test_list_multiple_authors(client_user_author_view: Client, cv_author, author_douglas_adams, author_terry_pratchett):
+def test_list_multiple_authors(
+    client_user_author_view: Client, cv_author, author_douglas_adams, author_terry_pratchett
+):
     response = client_user_author_view.get("/author/")
     assert response.status_code == 200
 

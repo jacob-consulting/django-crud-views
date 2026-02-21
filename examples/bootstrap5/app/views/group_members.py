@@ -14,7 +14,8 @@ from crud_views.lib.views import (
     MessageMixin,
     ListViewTableMixin,
     ListViewPermissionRequired,
-    DeleteViewPermissionRequired, CreateViewParentMixin
+    DeleteViewPermissionRequired,
+    CreateViewParentMixin,
 )
 from crud_views.lib.viewset import ViewSet, ParentViewSet
 
@@ -25,7 +26,7 @@ cv_person = ViewSet(
     parent=ParentViewSet(
         name="group",
         many_to_many_through_attribute="members",
-    )
+    ),
 )
 
 
@@ -51,9 +52,12 @@ class PersonListView(ListViewTableMixin, ListViewPermissionRequired):
     model = Person
 
     cv_viewset = cv_person
-    cv_list_actions = ["detail", "update", "delete",
-                       # "redirect_child"
-                       ]
+    cv_list_actions = [
+        "detail",
+        "update",
+        "delete",
+        # "redirect_child"
+    ]
 
     table_class = PersonTable
 

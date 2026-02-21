@@ -18,12 +18,8 @@ _PolyTwoForm = modelform_factory(
 
 
 class PolyTwoForm(CrispyForm, _PolyTwoForm):
-
     def get_layout_fields(self):
-        return [
-            Row(Column6("shared"), Column6("two")),
-            Row(Formsets())
-        ]
+        return [Row(Column6("shared"), Column6("two")), Row(Formsets())]
 
     @property
     def helper(self) -> FormHelper:

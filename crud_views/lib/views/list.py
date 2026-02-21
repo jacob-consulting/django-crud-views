@@ -48,9 +48,11 @@ class ListView(CrudView, generic.ListView):
         """
         Get the filter header label
         """
-        return self.render_snippet(self.cv_get_meta(),
-                                   self.cv_filter_header_template,
-                                   self.cv_filter_header_template_code, )
+        return self.render_snippet(
+            self.cv_get_meta(),
+            self.cv_filter_header_template,
+            self.cv_filter_header_template_code,
+        )
 
 
 class ListViewPermissionRequired(CrudViewPermissionRequiredMixin, ListView):
@@ -61,21 +63,28 @@ class ListViewFilterFormHelper(FormHelper):
     """
     Form helper for the filter form
     """
-    form_method = 'GET'  # filter parameters are always GET
+
+    form_method = "GET"  # filter parameters are always GET
     form_tag = False  # todo really?, just add hidden stuff
 
     def __init__(self, request, form=None):
         super().__init__(form)
 
         # add filter control buttons
-        self.add_input(layout.Submit('submit', 'Apply Filter', css_id="filter-button"), )
-        self.add_input(layout.Reset(
-            'reset',
-            _('Reset Filter'),
-            css_id="filter-button-reset",
-            css_class=crud_views_settings.filter_reset_button_css_class
-        ))
+        self.add_input(
+            layout.Submit("submit", "Apply Filter", css_id="filter-button"),
+        )
+        self.add_input(
+            layout.Reset(
+                "reset",
+                _("Reset Filter"),
+                css_id="filter-button-reset",
+                css_class=crud_views_settings.filter_reset_button_css_class,
+            )
+        )
 
         # add hidden fields with control values
         sort = request.GET.get("sort") or ""
-        self.add_input(layout.Hidden('sort', sort), )
+        self.add_input(
+            layout.Hidden("sort", sort),
+        )

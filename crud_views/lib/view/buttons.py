@@ -13,6 +13,7 @@ class ContextButton(BaseModel):
     """
     A context button is a button that is rendered in the context of a CrudView
     """
+
     key: str
     key_target: str | None = None
     label_template: str | None = None
@@ -26,10 +27,7 @@ class ContextButton(BaseModel):
 
     def get_context(self, context: ViewContext) -> dict:
 
-        dict_kwargs = dict(
-            cv_access=False,
-            cv_url=context.view.cv_get_url(key=self.key_target, obj=context.object)
-        )
+        dict_kwargs = dict(cv_access=False, cv_url=context.view.cv_get_url(key=self.key_target, obj=context.object))
 
         # get target view class
         cls = context.view.cv_get_cls_assert_object(self.key_target, context.object)
@@ -67,10 +65,7 @@ class ParentContextButton(ContextButton):
         parent = context.view.cv_viewset.parent
         cls = parent.viewset.get_view_class(self.key_target)
 
-        dict_kwargs = dict(
-            cv_access=False,
-            cv_icon_action=cls.cv_viewset.icon_header
-        )
+        dict_kwargs = dict(cv_access=False, cv_icon_action=cls.cv_viewset.icon_header)
 
         # parent url kwargs
         kwargs = dict()
@@ -86,9 +81,7 @@ class ParentContextButton(ContextButton):
         cv_url = reverse(router_name, kwargs=kwargs)
 
         # get the url for the target key
-        dict_kwargs.update(
-            cv_url=cv_url
-        )
+        dict_kwargs.update(cv_url=cv_url)
 
         # check permission
         if cls.cv_has_access(context.view.request.user, context.object):
@@ -110,13 +103,11 @@ class FilterContextButton(ContextButton):
     def get_context(self, context: ViewContext) -> dict:
         from ..views import ListViewTableFilterMixin
 
-        dict_kwargs = dict(
-            cv_access=False
-        )
+        dict_kwargs = dict(cv_access=False)
 
         # if view has no filter, no button is shown
         if not isinstance(context.view, ListViewTableFilterMixin):
-           return dict_kwargs
+            return dict_kwargs
 
         # todo, check permission
 

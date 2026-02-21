@@ -39,9 +39,7 @@ def client_publisher_delete_view(client, cv_publisher) -> Client:
 
 @pytest.mark.django_db
 def test_create_message(client_publisher_add_view: Client, cv_publisher):
-    response = client_publisher_add_view.post(
-        "/publisher/create/", {"name": "Penguin"}, follow=True
-    )
+    response = client_publisher_add_view.post("/publisher/create/", {"name": "Penguin"}, follow=True)
     assert response.status_code == 200
 
     messages = list(get_messages(response.wsgi_request))
@@ -53,9 +51,7 @@ def test_create_message(client_publisher_add_view: Client, cv_publisher):
 @pytest.mark.django_db
 def test_update_message(client_publisher_change_view: Client, cv_publisher, publisher_penguin):
     pk = publisher_penguin.pk
-    response = client_publisher_change_view.post(
-        f"/publisher/{pk}/update/", {"name": "Penguin Classics"}, follow=True
-    )
+    response = client_publisher_change_view.post(f"/publisher/{pk}/update/", {"name": "Penguin Classics"}, follow=True)
     assert response.status_code == 200
 
     messages = list(get_messages(response.wsgi_request))
@@ -67,9 +63,7 @@ def test_update_message(client_publisher_change_view: Client, cv_publisher, publ
 @pytest.mark.django_db
 def test_delete_message(client_publisher_delete_view: Client, cv_publisher, publisher_penguin):
     pk = publisher_penguin.pk
-    response = client_publisher_delete_view.post(
-        f"/publisher/{pk}/delete/", {"confirm": True}, follow=True
-    )
+    response = client_publisher_delete_view.post(f"/publisher/{pk}/delete/", {"confirm": True}, follow=True)
     assert response.status_code == 200
 
     messages = list(get_messages(response.wsgi_request))

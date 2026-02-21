@@ -36,5 +36,6 @@ class ActionView(CrudView, SingleObjectMixin, generic.View):
         """
         pass
 
+
 class ActionViewPermissionRequired(CrudViewPermissionRequiredMixin, ActionView):  # this file
     cv_permission = "change"

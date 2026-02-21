@@ -1,6 +1,7 @@
 """
 Tests for DetailView.cv_property_display and checks().
 """
+
 from django_object_detail import PropertyConfig
 
 
@@ -15,6 +16,7 @@ def _error_ids(view_cls):
 # ---------------------------------------------------------------------------
 # cv_property_display property adapter
 # ---------------------------------------------------------------------------
+
 
 def test_property_display_returns_cv_property_display():
     """property_display property returns cv_property_display."""
@@ -43,21 +45,25 @@ def test_property_display_none_when_not_set():
 # checks(): happy path
 # ---------------------------------------------------------------------------
 
+
 def test_detail_view_checks_pass():
     """A correctly configured DetailView produces no check errors."""
     from tests.test1.app.views import AuthorDetailView
+
     assert _errors(AuthorDetailView) == []
 
 
 def test_detail_view_checks_pass_with_property_config():
     """cv_property_display containing PropertyConfig objects passes checks."""
     from tests.test1.app.views import CampaignDetailView
+
     assert _errors(CampaignDetailView) == []
 
 
 # ---------------------------------------------------------------------------
 # checks(): E240 — cv_property_display missing / None
 # ---------------------------------------------------------------------------
+
 
 def test_detail_view_checks_missing_cv_property_display():
     """cv_property_display=None yields E240."""
@@ -75,6 +81,7 @@ def test_detail_view_checks_missing_cv_property_display():
 # checks(): E241 — not a list
 # ---------------------------------------------------------------------------
 
+
 def test_detail_view_checks_not_a_list():
     """cv_property_display that is not a list yields E241."""
     from crud_views.lib.views.detail import DetailView
@@ -90,6 +97,7 @@ def test_detail_view_checks_not_a_list():
 # ---------------------------------------------------------------------------
 # checks(): E242 — group missing 'title'
 # ---------------------------------------------------------------------------
+
 
 def test_detail_view_checks_group_missing_title():
     """A group dict without 'title' yields E242."""
@@ -107,6 +115,7 @@ def test_detail_view_checks_group_missing_title():
 # checks(): E243 — group missing 'properties'
 # ---------------------------------------------------------------------------
 
+
 def test_detail_view_checks_group_missing_properties():
     """A group dict without 'properties' yields E243."""
     from crud_views.lib.views.detail import DetailView
@@ -122,6 +131,7 @@ def test_detail_view_checks_group_missing_properties():
 # ---------------------------------------------------------------------------
 # checks(): E244 — 'properties' not a list
 # ---------------------------------------------------------------------------
+
 
 def test_detail_view_checks_properties_not_a_list():
     """'properties' that is not a list yields E244."""
@@ -139,6 +149,7 @@ def test_detail_view_checks_properties_not_a_list():
 # checks(): E245 — invalid property type
 # ---------------------------------------------------------------------------
 
+
 def test_detail_view_checks_invalid_property_type():
     """A property that is not str, dict, or PropertyConfig yields E245."""
     from crud_views.lib.views.detail import DetailView
@@ -154,6 +165,7 @@ def test_detail_view_checks_invalid_property_type():
 # ---------------------------------------------------------------------------
 # checks(): valid variants accepted
 # ---------------------------------------------------------------------------
+
 
 def test_detail_view_checks_string_property_accepted():
     """Plain string properties pass E245."""

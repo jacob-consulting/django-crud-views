@@ -36,17 +36,17 @@ urlpatterns = [
 ]
 
 urlpatterns += (
-        cv_author.urlpatterns +
-        cv_book.urlpatterns +
-        cv_foo.urlpatterns +
-        cv_bar.urlpatterns +
-        cv_baz.urlpatterns +
-        cv_campaign.urlpatterns +
-        cv_poly.urlpatterns +
-        cv_detail.urlpatterns +
-        cv_group.urlpatterns +
-        cv_person.urlpatterns +
-        cv_poly_formset.urlpatterns +
-        cv_poly_parent_formset.urlpatterns +
-        cv_question.urlpatterns
+    cv_author.urlpatterns
+    + cv_book.urlpatterns
+    + cv_foo.urlpatterns
+    + cv_bar.urlpatterns
+    + cv_baz.urlpatterns
+    + cv_campaign.urlpatterns
+    + cv_poly.urlpatterns
+    + cv_detail.urlpatterns
+    + cv_group.urlpatterns
+    + cv_person.urlpatterns
+    + cv_poly_formset.urlpatterns
+    + cv_poly_parent_formset.urlpatterns
+    + cv_question.urlpatterns
 )

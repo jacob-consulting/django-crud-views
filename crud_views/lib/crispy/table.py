@@ -47,5 +47,3 @@ class Column11(Column):
 
 class Column12(Column):
     css_class = "col-md-12"
-
-

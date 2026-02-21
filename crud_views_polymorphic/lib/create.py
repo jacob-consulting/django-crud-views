@@ -5,7 +5,6 @@ from .utils import PolymorphicCrudViewMixin
 
 
 class PolymorphicCreateView(PolymorphicCrudViewMixin, CreateView):
-
     @classmethod
     def cv_path_contribute(cls) -> str:
         """

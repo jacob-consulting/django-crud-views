@@ -8,15 +8,14 @@ from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import CrudView, CrudViewPermissionRequiredMixin
 
 
-class CustomFormView(CrudViewProcessFormMixin, CrudView,
-                     FormMixin,
-                     DetailView):
+class CustomFormView(CrudViewProcessFormMixin, CrudView, FormMixin, DetailView):
     """
     Object based view with custom form.
     Note: you have to set:
         - cv_key
         - cv_path
     """
+
     template_name = "crud_views/view_custom_form.html"
     cv_context_actions = crud_views_settings.detail_context_actions
 
@@ -37,16 +36,14 @@ class CustomFormViewPermissionRequired(CrudViewPermissionRequiredMixin, CustomFo
     cv_permission = "view"
 
 
-class CustomFormNoObjectView(CrudViewProcessFormMixin, CrudView,
-                             FormMixin,
-                             TemplateResponseMixin,
-                             View):
+class CustomFormNoObjectView(CrudViewProcessFormMixin, CrudView, FormMixin, TemplateResponseMixin, View):
     """
     Non object based view with custom form.
     Note: you have to set:
         - cv_key
         - cv_path
     """
+
     template_name = "crud_views/view_custom_form.html"
     cv_context_actions = crud_views_settings.detail_context_actions
 

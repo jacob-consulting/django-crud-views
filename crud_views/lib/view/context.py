@@ -10,10 +10,11 @@ class ViewContext(BaseModel, arbitrary_types_allowed=True):
         - views
         - object
     """
-    view: 'CrudView'
+
+    view: "CrudView"
     object: Model | None = None
 
-    @field_validator('object', mode='before')
+    @field_validator("object", mode="before")
     @classmethod
     def validate_object(cls, value: Any) -> Any:
         """
@@ -25,9 +26,7 @@ class ViewContext(BaseModel, arbitrary_types_allowed=True):
             return value
 
     def to_dict(self) -> Dict[str, Any]:
-        return {
-            "object": self.object
-        }
+        return {"object": self.object}
 
     @property
     def router_name(self) -> str:

@@ -6,6 +6,7 @@ from tests.test1.app.models import Publisher
 
 # --- Create: validation errors ---
 
+
 @pytest.mark.django_db
 def test_create_missing_required_field(client_user_publisher_add: Client, cv_publisher):
     """POST with empty required field should re-render the form (200), not redirect."""
@@ -35,6 +36,7 @@ def test_create_missing_field_entirely(client_user_publisher_add: Client, cv_pub
 
 # --- Update: validation errors ---
 
+
 @pytest.mark.django_db
 def test_update_blank_required_field(client_user_publisher_change: Client, cv_publisher, publisher_penguin):
     """POST update with empty required field should re-render the form."""
@@ -53,6 +55,7 @@ def test_update_blank_required_field(client_user_publisher_change: Client, cv_pu
 
 # --- Delete: confirm checkbox ---
 
+
 @pytest.mark.django_db
 def test_delete_without_confirm(client_user_publisher_delete: Client, cv_publisher, publisher_penguin):
     """POST delete without confirm checkbox should re-render the form."""
@@ -68,6 +71,7 @@ def test_delete_without_confirm(client_user_publisher_delete: Client, cv_publish
 
 
 # --- CSRF ---
+
 
 @pytest.mark.django_db
 def test_csrf_enforced_on_create(cv_publisher, user_publisher_add):
@@ -109,6 +113,7 @@ def test_csrf_enforced_on_delete(cv_publisher, user_publisher_delete, publisher_
 
 
 # --- Form re-render preserves input ---
+
 
 @pytest.mark.django_db
 def test_create_rerender_preserves_input(client_user_publisher_add: Client, cv_publisher):

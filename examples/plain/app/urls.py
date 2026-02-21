@@ -16,8 +16,10 @@ urlpatterns = [
 ]
 
 urlpatterns += (
-        cv_author.urlpatterns +
-        cv_book.urlpatterns +
-        cv_baz.urlpatterns + cv_bar.urlpatterns + cv_foo.urlpatterns +
-        cv_poly.urlpatterns
+    cv_author.urlpatterns
+    + cv_book.urlpatterns
+    + cv_baz.urlpatterns
+    + cv_bar.urlpatterns
+    + cv_foo.urlpatterns
+    + cv_poly.urlpatterns
 )

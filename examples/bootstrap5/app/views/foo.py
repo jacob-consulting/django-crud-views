@@ -4,15 +4,17 @@ from crispy_forms.layout import Row
 from app.models import Foo
 from crud_views.lib.crispy import CrispyModelForm, Column4, CrispyModelViewMixin, CrispyDeleteForm
 from crud_views.lib.table import Table, LinkChildColumn, LinkDetailColumn
-from crud_views.lib.views import DetailViewPermissionRequired, UpdateViewPermissionRequired, CreateViewPermissionRequired, \
-    ListViewTableMixin, DeleteViewPermissionRequired, ListViewPermissionRequired
+from crud_views.lib.views import (
+    DetailViewPermissionRequired,
+    UpdateViewPermissionRequired,
+    CreateViewPermissionRequired,
+    ListViewTableMixin,
+    DeleteViewPermissionRequired,
+    ListViewPermissionRequired,
+)
 from crud_views.lib.viewset import ViewSet
 
-cv_foo = ViewSet(
-    model=Foo,
-    name="foo",
-    icon_header="fa-solid fa-paw"
-)
+cv_foo = ViewSet(model=Foo, name="foo", icon_header="fa-solid fa-paw")
 
 
 class FooForm(CrispyModelForm):
@@ -30,7 +32,6 @@ class FooTable(Table):
     id = LinkDetailColumn()
     name = tables.Column()
     bar = LinkChildColumn(name="bar", verbose_name="Bar", empty_values=())
-
 
 
 class FooListView(ListViewTableMixin, ListViewPermissionRequired):

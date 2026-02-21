@@ -9,7 +9,8 @@ class Tags(DjangoTags):
     """Do this if none of the existing tags work for you:
     https://docs.djangoproject.com/en/1.8/ref/checks/#builtin-tags
     """
-    my_new_tag = 'my_new_tag'
+
+    my_new_tag = "my_new_tag"
 
 
 @register(Tags.my_new_tag)

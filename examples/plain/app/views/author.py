@@ -3,9 +3,18 @@ import django_tables2 as tables
 
 from app.models import Author
 from crud_views.lib.table import Table, LinkChildColumn, UUIDLinkDetailColumn
-from crud_views.lib.views import DetailViewPermissionRequired, UpdateViewPermissionRequired, CreateViewPermissionRequired, \
-    MessageMixin, ListViewTableMixin, ListViewTableFilterMixin, ListViewPermissionRequired, \
-    OrderedUpViewPermissionRequired, OrderedUpDownPermissionRequired, DeleteViewPermissionRequired
+from crud_views.lib.views import (
+    DetailViewPermissionRequired,
+    UpdateViewPermissionRequired,
+    CreateViewPermissionRequired,
+    MessageMixin,
+    ListViewTableMixin,
+    ListViewTableFilterMixin,
+    ListViewPermissionRequired,
+    OrderedUpViewPermissionRequired,
+    OrderedUpDownPermissionRequired,
+    DeleteViewPermissionRequired,
+)
 from crud_views.lib.viewset import ViewSet
 
 cv_author = ViewSet(
@@ -15,8 +24,8 @@ cv_author = ViewSet(
 
 
 class AuthorFilter(django_filters.FilterSet):
-    first_name = django_filters.CharFilter(lookup_expr='icontains')
-    last_name = django_filters.CharFilter(lookup_expr='icontains')
+    first_name = django_filters.CharFilter(lookup_expr="icontains")
+    last_name = django_filters.CharFilter(lookup_expr="icontains")
 
     class Meta:
         model = Author

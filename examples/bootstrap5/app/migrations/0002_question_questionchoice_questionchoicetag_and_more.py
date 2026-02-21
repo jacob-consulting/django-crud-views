@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("app", "0001_initial"),
     ]
@@ -47,22 +46,16 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "order",
-                    models.PositiveIntegerField(
-                        db_index=True, editable=False, verbose_name="order"
-                    ),
+                    models.PositiveIntegerField(db_index=True, editable=False, verbose_name="order"),
                 ),
                 (
                     "choice",
-                    models.CharField(
-                        max_length=100, validators=[app.models.questions.validate_alpha]
-                    ),
+                    models.CharField(max_length=100, validators=[app.models.questions.validate_alpha]),
                 ),
                 ("help_text", models.CharField(blank=True, max_length=100, null=True)),
                 (
                     "question",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to="app.question"
-                    ),
+                    models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="app.question"),
                 ),
             ],
             options={
@@ -84,9 +77,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "order",
-                    models.PositiveIntegerField(
-                        db_index=True, editable=False, verbose_name="order"
-                    ),
+                    models.PositiveIntegerField(db_index=True, editable=False, verbose_name="order"),
                 ),
                 ("tag", models.CharField(max_length=100)),
                 (
@@ -116,9 +107,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "order",
-                    models.PositiveIntegerField(
-                        db_index=True, editable=False, verbose_name="order"
-                    ),
+                    models.PositiveIntegerField(db_index=True, editable=False, verbose_name="order"),
                 ),
                 ("annotation", models.CharField(max_length=100)),
                 (
@@ -149,9 +138,7 @@ class Migration(migrations.Migration):
                 ("tag", models.CharField(max_length=100)),
                 (
                     "question",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to="app.question"
-                    ),
+                    models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="app.question"),
                 ),
             ],
         ),

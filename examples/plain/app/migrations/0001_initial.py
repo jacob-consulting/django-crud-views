@@ -6,70 +6,68 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Author',
+            name="Author",
             fields=[
-                ('order', models.PositiveIntegerField(db_index=True, editable=False, verbose_name='order')),
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('first_name', models.CharField(max_length=100)),
-                ('last_name', models.CharField(max_length=100)),
-                ('pseudonym', models.CharField(blank=True, max_length=100, null=True)),
-                ('created_dt', models.DateTimeField(auto_now_add=True)),
-                ('modified_dt', models.DateTimeField(auto_now=True)),
+                ("order", models.PositiveIntegerField(db_index=True, editable=False, verbose_name="order")),
+                ("id", models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
+                ("first_name", models.CharField(max_length=100)),
+                ("last_name", models.CharField(max_length=100)),
+                ("pseudonym", models.CharField(blank=True, max_length=100, null=True)),
+                ("created_dt", models.DateTimeField(auto_now_add=True)),
+                ("modified_dt", models.DateTimeField(auto_now=True)),
             ],
             options={
-                'ordering': ('order',),
-                'abstract': False,
+                "ordering": ("order",),
+                "abstract": False,
             },
         ),
         migrations.CreateModel(
-            name='Bar',
+            name="Bar",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("name", models.CharField(max_length=100)),
             ],
         ),
         migrations.CreateModel(
-            name='Foo',
+            name="Foo",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("name", models.CharField(max_length=100)),
             ],
         ),
         migrations.CreateModel(
-            name='Baz',
+            name="Baz",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-                ('bar', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='app.bar')),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("name", models.CharField(max_length=100)),
+                ("bar", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="app.bar")),
             ],
         ),
         migrations.CreateModel(
-            name='Book',
+            name="Book",
             fields=[
-                ('order', models.PositiveIntegerField(db_index=True, editable=False, verbose_name='order')),
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('title', models.CharField(max_length=100)),
-                ('price', models.DecimalField(decimal_places=2, max_digits=10)),
-                ('created_dt', models.DateTimeField(auto_now_add=True)),
-                ('modified_dt', models.DateTimeField(auto_now=True)),
-                ('author', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='app.author')),
+                ("order", models.PositiveIntegerField(db_index=True, editable=False, verbose_name="order")),
+                ("id", models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
+                ("title", models.CharField(max_length=100)),
+                ("price", models.DecimalField(decimal_places=2, max_digits=10)),
+                ("created_dt", models.DateTimeField(auto_now_add=True)),
+                ("modified_dt", models.DateTimeField(auto_now=True)),
+                ("author", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="app.author")),
             ],
             options={
-                'ordering': ('order',),
-                'abstract': False,
+                "ordering": ("order",),
+                "abstract": False,
             },
         ),
         migrations.AddField(
-            model_name='bar',
-            name='foo',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='app.foo'),
+            model_name="bar",
+            name="foo",
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="app.foo"),
         ),
     ]

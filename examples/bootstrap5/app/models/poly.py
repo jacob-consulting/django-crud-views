@@ -7,6 +7,7 @@ from polymorphic.models import PolymorphicModel
 
 # TODO: from ordered_model.models import OrderedModel
 
+
 class Parent(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
@@ -64,8 +65,4 @@ class PolyParent(models.Model):
     date_joined = models.DateField()
 
     class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=["poly", "parent"], name="unique_poly_parent"
-            )
-        ]
+        constraints = [models.UniqueConstraint(fields=["poly", "parent"], name="unique_poly_parent")]

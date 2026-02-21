@@ -5,7 +5,6 @@ from lxml.html import Element
 
 
 class Header:
-
     def __init__(self, element: Element):
         self.element = element
 
@@ -78,7 +77,6 @@ class Action:
 
 
 class Column:
-
     def __init__(self, index: int, row: "Row", element: Element, action_index: int):
         self.index = index
         self.row = row
@@ -132,7 +130,6 @@ class Row:
 
 
 class Table:
-
     def __init__(self, response):
         self.content = response.content.decode("utf-8").strip()
         self.html = html.fromstring(self.content)

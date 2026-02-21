@@ -9,9 +9,11 @@ class Formsets(LayoutObject):
 
     def render(self, form, context, **kwargs):
         formsets = context.get("formsets")
-        context.update({
-            "formsets": formsets,
-        })
+        context.update(
+            {
+                "formsets": formsets,
+            }
+        )
         return render_to_string(self.template, context.flatten())
 
 
@@ -22,8 +24,5 @@ class FormControl(LayoutObject):
         self.formset = formset
 
     def render(self, form, context, **kwargs):
-        context.update({
-            "form": form,
-            "formset": self.formset
-        })
+        context.update({"form": form, "formset": self.formset})
         return render_to_string(self.template, context.flatten())

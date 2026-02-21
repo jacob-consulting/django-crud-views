@@ -1,5 +1,9 @@
-from .action_ordered import OrderedUpView, OrderedDownView, OrderedUpViewPermissionRequired, \
-    OrderedUpDownPermissionRequired
+from .action_ordered import (
+    OrderedUpView,
+    OrderedDownView,
+    OrderedUpViewPermissionRequired,
+    OrderedUpDownPermissionRequired,
+)
 from .child import RedirectChildView
 from .delete import DeleteView, DeleteViewPermissionRequired
 from .list import ListView, ListViewPermissionRequired

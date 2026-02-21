@@ -7,14 +7,11 @@ from django.template.loader import get_template
 from pydantic import BaseModel
 
 REGS = {
-    "name": {
-        "reg": re.compile(r"^[a-z_]+$"),
-        "msg": "must be lowercase alpha with underscores"
-    },
+    "name": {"reg": re.compile(r"^[a-z_]+$"), "msg": "must be lowercase alpha with underscores"},
     "path": {
         "reg": re.compile(r"^$|^[a-z0-9_-]+(?:/[a-z0-9_-]+)*$"),
-        "msg": "must be lowercase alpha with underscores and dashes and must not start or end with a slash"
-    }
+        "msg": "must be lowercase alpha with underscores and dashes and must not start or end with a slash",
+    },
 }
 
 
@@ -22,6 +19,7 @@ class Check(BaseModel):
     """
     Base class for checks
     """
+
     context: Type | object
     id: str
     msg: str | None = None
@@ -51,6 +49,7 @@ class CheckAttribute(Check):
     """
     Check for attribute
     """
+
     id: str = "E100"
     attribute: str | None = None
     nullable: bool = False
@@ -82,6 +81,7 @@ class CheckAttributeReg(CheckAttribute):
     """
     Check attribute against regex
     """
+
     reg: re.Pattern
     msg: str = "Attribute »{attribute}» value »{value}» does not match regex »{reg}» at »{context}»"
 
@@ -102,6 +102,7 @@ class CheckEitherAttribute(Check):
     """
     Check for either attribute
     """
+
     attribute1: str | None = None
     attribute2: str | None = None
     allow_none: bool = False
@@ -130,20 +131,25 @@ class CheckEitherAttribute(Check):
         # yield from super().messages()
 
         if not self.value1 and not self.value2 and not self.allow_none:
-            yield Error(id=self.get_id(),
-                        msg=self.get_message(
-                            "Neither attribute »{attribute1}» nor attribute »{attribute2}» are set at »{context}»"))
+            yield Error(
+                id=self.get_id(),
+                msg=self.get_message(
+                    "Neither attribute »{attribute1}» nor attribute »{attribute2}» are set at »{context}»"
+                ),
+            )
 
         elif self.value1 and self.value2:
-            yield Error(id=self.get_id(),
-                        msg=self.get_message(
-                            "Both attributes »{attribute1}» and »{attribute2}» are set at »{context}»"))
+            yield Error(
+                id=self.get_id(),
+                msg=self.get_message("Both attributes »{attribute1}» and »{attribute2}» are set at »{context}»"),
+            )
 
 
 class CheckTemplateOrCode(Check):
     """
     Check for template or template_code
     """
+
     id: str = "E110"
     attribute: str | None = None
     msg_none: str = "Neither »{attr_template}» nor »{attr_code}» defined at »{context}»"

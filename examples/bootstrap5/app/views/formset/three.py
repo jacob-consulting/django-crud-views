@@ -18,11 +18,8 @@ _PolyThreeForm = modelform_factory(
 
 
 class PolyThreeForm(CrispyForm, _PolyThreeForm):
-
     def get_layout_fields(self):
-        return [
-            Row(Column6("shared"), Column6("three"))
-        ]
+        return [Row(Column6("shared"), Column6("three"))]
 
     @property
     def helper(self) -> FormHelper:

@@ -45,26 +45,17 @@ class CrispyFormMixin:
         fields = self.get_layout_fields()
         if not isinstance(fields, (list, tuple)):
             fields = [fields]
-        helper.layout = Layout(
-            *fields,
-            self.get_form_actions()
-        )
+        helper.layout = Layout(*fields, self.get_form_actions())
         return helper
 
     def get_layout_fields(self) -> LayoutObject | BaseInput | List[LayoutObject | BaseInput]:
         raise NotImplementedError
 
     def get_form_actions(self) -> FormActions:
-        return FormActions(
-            self.get_submit_button(),
-            self.get_cancel_button()
-        )
+        return FormActions(self.get_submit_button(), self.get_cancel_button())
 
     def get_submit_button_kwargs(self) -> dict:
-        return {
-            "name": "submit",
-            "value": self.submit_label
-        }
+        return {"name": "submit", "value": self.submit_label}
 
     def get_submit_button(self) -> Submit:
         """
@@ -83,7 +74,7 @@ class CrispyFormMixin:
             "name": "reset",
             "value": context["cv_action_label"],
             "onclick": onclick,
-            "css_class": "btn btn-secondary"
+            "css_class": "btn btn-secondary",
         }
 
     def get_cancel_button(self) -> Button:
@@ -95,6 +86,7 @@ class CrispyModelForm(CrispyFormMixin, ModelForm):
     Base class for ModelForm with crispy forms.
     This form takes the current viewset view as an argument and uses it to generate the cancel button.
     """
+
     pass
 
 
@@ -103,6 +95,7 @@ class CrispyForm(CrispyFormMixin, Form):
     Base class for Form with crispy forms.
     This form takes the current viewset view as an argument and uses it to generate the cancel button.
     """
+
     pass
 
 
@@ -110,19 +103,18 @@ class CrispyDeleteForm(CrispyForm):
     """
     Default delete from with confirmation
     """
+
     confirm = BooleanField(label=_("Confirm deletion"))
 
     @property
     def helper(self):
         helper = FormHelper()
         helper.layout = Layout(
-            Row(
-                Column4("confirm")
-            ),
+            Row(Column4("confirm")),
             FormActions(
                 Submit("delete", "Delete"),
                 self.get_cancel_button(),
-            )
+            ),
         )
         return helper
 

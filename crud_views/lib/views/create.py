@@ -38,9 +38,7 @@ class CreateViewPermissionRequired(CrudViewPermissionRequiredMixin, CreateView):
     cv_permission = "add"
 
 
-
 class CreateViewParentMixin:
-
     def cv_form_valid(self, context: dict):
         """
         Handle valid form
@@ -50,7 +48,6 @@ class CreateViewParentMixin:
         parent_object = self.cv_get_parent_object()
 
         if self.cv_viewset.parent.many_to_many_through_attribute:
-
             # this saves the object first
             super().cv_form_valid(context)
 

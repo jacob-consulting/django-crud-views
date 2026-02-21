@@ -109,12 +109,14 @@ class MessageMixin:
         yield CheckTemplateOrCode(context=cls, attribute="cv_message_template")
 
     def cv_get_message(self, attribute: str = "cv_message") -> str | None:
-        return self.render_snippet(self.cv_get_meta(),
-                                   self.cv_message_template,
-                                   self.cv_message_template_code, )
+        return self.render_snippet(
+            self.cv_get_meta(),
+            self.cv_message_template,
+            self.cv_message_template_code,
+        )
 
     def cv_form_valid_hook(self, context: dict):
-        super().cv_form_valid_hook(context) # noqa
+        super().cv_form_valid_hook(context)  # noqa
         message = self.cv_get_message()
         if message:
             messages.success(self.request, message)
@@ -134,6 +136,7 @@ class ListViewTableMixin(SingleTableMixin):
     """
     Mixin for ListView to render tables with django-tables2
     """
+
     template_name = "crud_views/view_list_table.html"
 
     table: SingleTableMixin = None
@@ -208,10 +211,9 @@ class ListViewTableFilterMixin(FilterView):
             return super().get(request, *args, **kwargs)
 
         with SessionData.from_view(self) as sd:
-
             # get stored query string and request query string
             stored_query_string = sd.get(self.cv_session_key_querystring, "")
-            query_string = self.request.META['QUERY_STRING']
+            query_string = self.request.META["QUERY_STRING"]
 
             # reset filter ?
             qs = parse_qs(query_string)  # todo: is this correct? looks strange with that lists
@@ -233,7 +235,7 @@ class ListViewTableFilterMixin(FilterView):
 
             # no query string, but data in session, restore query string
             if len(query_string) == 0 and len(stored_query_string):
-                redirect_to = self.request.path + '?' + stored_query_string
+                redirect_to = self.request.path + "?" + stored_query_string
                 return HttpResponseRedirect(redirect_to)
 
         return super().get(request, *args, **kwargs)

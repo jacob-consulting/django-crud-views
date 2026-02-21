@@ -6,47 +6,75 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('app', '0001_initial'),
-        ('contenttypes', '0002_remove_content_type_name'),
+        ("app", "0001_initial"),
+        ("contenttypes", "0002_remove_content_type_name"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Poly',
+            name="Poly",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('shared', models.CharField(max_length=100)),
-                ('polymorphic_ctype', models.ForeignKey(editable=False, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='polymorphic_%(app_label)s.%(class)s_set+', to='contenttypes.contenttype')),
+                ("id", models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
+                ("shared", models.CharField(max_length=100)),
+                (
+                    "polymorphic_ctype",
+                    models.ForeignKey(
+                        editable=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="polymorphic_%(app_label)s.%(class)s_set+",
+                        to="contenttypes.contenttype",
+                    ),
+                ),
             ],
             options={
-                'abstract': False,
-                'base_manager_name': 'objects',
+                "abstract": False,
+                "base_manager_name": "objects",
             },
         ),
         migrations.CreateModel(
-            name='PolyOne',
+            name="PolyOne",
             fields=[
-                ('poly_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='app.poly')),
-                ('one', models.CharField(max_length=100)),
+                (
+                    "poly_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="app.poly",
+                    ),
+                ),
+                ("one", models.CharField(max_length=100)),
             ],
             options={
-                'abstract': False,
-                'base_manager_name': 'objects',
+                "abstract": False,
+                "base_manager_name": "objects",
             },
-            bases=('app.poly',),
+            bases=("app.poly",),
         ),
         migrations.CreateModel(
-            name='PolyTwo',
+            name="PolyTwo",
             fields=[
-                ('poly_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='app.poly')),
-                ('two', models.CharField(max_length=100)),
+                (
+                    "poly_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="app.poly",
+                    ),
+                ),
+                ("two", models.CharField(max_length=100)),
             ],
             options={
-                'abstract': False,
-                'base_manager_name': 'objects',
+                "abstract": False,
+                "base_manager_name": "objects",
             },
-            bases=('app.poly',),
+            bases=("app.poly",),
         ),
     ]

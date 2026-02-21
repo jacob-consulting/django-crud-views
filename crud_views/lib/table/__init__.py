@@ -1,6 +1,12 @@
 from .table import Table, TableWithViewContext
-from .columns import ActionColumn, LinkChildColumn, LinkDetailColumnMixin, LinkDetailColumn, UUIDColumn, \
-    UUIDLinkDetailColumn
+from .columns import (
+    ActionColumn,
+    LinkChildColumn,
+    LinkDetailColumnMixin,
+    LinkDetailColumn,
+    UUIDColumn,
+    UUIDLinkDetailColumn,
+)
 
 __all__ = [
     "Table",
@@ -10,5 +16,5 @@ __all__ = [
     "LinkDetailColumnMixin",
     "LinkDetailColumn",
     "UUIDColumn",
-    "UUIDLinkDetailColumn"
+    "UUIDLinkDetailColumn",
 ]

@@ -13,16 +13,12 @@ register = template.Library()
 
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/shared/css.html", takes_context=True)
 def cv_css(context):
-    return {
-        "css": crud_views_settings.css
-    }
+    return {"css": crud_views_settings.css}
 
 
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/shared/js.html", takes_context=True)
 def cv_js(context):
-    return {
-        "js": crud_views_settings.javascript
-    }
+    return {"js": crud_views_settings.javascript}
 
 
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/shared/csrftoken.html", takes_context=True)
@@ -72,11 +68,7 @@ def cv_context_action(context, key, obj=None):
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/context_actions.html", takes_context=True)
 def cv_context_actions(context, obj=None):
     view: CrudView = cv_get_view(context)
-    return {
-        "view": view,
-        "request": context["request"],
-        "object": obj
-    }
+    return {"view": view, "request": context["request"], "object": obj}
 
 
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/button_cancel.html", takes_context=True)

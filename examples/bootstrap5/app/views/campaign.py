@@ -7,18 +7,20 @@ from django_object_detail import PropertyConfig
 from app.models.campaign import Campaign
 from crud_views.lib.crispy import CrispyModelForm, Column4, CrispyModelViewMixin, CrispyDeleteForm
 from crud_views.lib.table import Table, LinkDetailColumn
-from crud_views.lib.views import DetailViewPermissionRequired, UpdateViewPermissionRequired, \
-    CreateViewPermissionRequired, \
-    ListViewTableMixin, DeleteViewPermissionRequired, ListViewPermissionRequired, MessageMixin
+from crud_views.lib.views import (
+    DetailViewPermissionRequired,
+    UpdateViewPermissionRequired,
+    CreateViewPermissionRequired,
+    ListViewTableMixin,
+    DeleteViewPermissionRequired,
+    ListViewPermissionRequired,
+    MessageMixin,
+)
 from crud_views.lib.viewset import ViewSet
 from crud_views_workflow.lib.forms import WorkflowForm
 from crud_views_workflow.lib.views import WorkflowViewPermissionRequired
 
-cv_campaign = ViewSet(
-    model=Campaign,
-    name="campaign",
-    icon_header="fa-solid fa-bullhorn"
-)
+cv_campaign = ViewSet(model=Campaign, name="campaign", icon_header="fa-solid fa-bullhorn")
 
 
 class CampaignForm(CrispyModelForm):

@@ -12,15 +12,12 @@ from crud_views.lib.views import (
     MessageMixin,
     ListViewTableMixin,
     ListViewPermissionRequired,
-    DeleteViewPermissionRequired, RedirectChildView
+    DeleteViewPermissionRequired,
+    RedirectChildView,
 )
 from crud_views.lib.viewset import ViewSet
 
-cv_group = ViewSet(
-    model=Group,
-    name="group",
-    icon_header="fa-solid fa-user-group"
-)
+cv_group = ViewSet(model=Group, name="group", icon_header="fa-solid fa-user-group")
 
 
 class GroupCreateForm(CrispyModelForm):
@@ -38,6 +35,7 @@ class GroupUpdateForm(GroupCreateForm):
     """
     Update form has the same fields as the create form
     """
+
     submit_label = _("Update")
 
 
@@ -50,9 +48,7 @@ class GroupListView(ListViewTableMixin, ListViewPermissionRequired):
     model = Group
 
     cv_viewset = cv_group
-    cv_list_actions = ["detail", "update", "delete",
-                       "redirect_child"
-                       ]
+    cv_list_actions = ["detail", "update", "delete", "redirect_child"]
 
     table_class = GroupTable
 

@@ -9,7 +9,8 @@ from django.template.loader import get_template
 from pydantic import BaseModel, PrivateAttr
 
 
-class Default: pass
+class Default:
+    pass
 
 
 _messages = []
@@ -25,9 +26,12 @@ def from_settings(name, default=None) -> Any:
 
 class CrudViewsSettings(BaseModel):
     # basic
-    extends: str = from_settings("CRUD_VIEWS_EXTENDS", )
-    manage_views_enabled: str = from_settings("CRUD_VIEWS_MANAGE_VIEWS_ENABLED",
-                                              default="debug_only")  # no, yes, debug_only
+    extends: str = from_settings(
+        "CRUD_VIEWS_EXTENDS",
+    )
+    manage_views_enabled: str = from_settings(
+        "CRUD_VIEWS_MANAGE_VIEWS_ENABLED", default="debug_only"
+    )  # no, yes, debug_only
 
     # session
     session_data_key: str = from_settings("CRUD_VIEWS_SESSION_DATA_KEY", "viewset")
@@ -35,23 +39,29 @@ class CrudViewsSettings(BaseModel):
     # filter
     filter_persistence: bool = from_settings("CRUD_VIEWS_FILTER_PERSISTENCE", default=True)
     filter_icon: str = from_settings("CRUD_VIEWS_FILTER_ICON", default="fa-solid fa-filter")
-    filter_reset_button_css_class: str = from_settings("CRUD_VIEWS_FILTER_RESET_BUTTON_CSS_CLASS",
-                                                       default="btn btn-secondary")
+    filter_reset_button_css_class: str = from_settings(
+        "CRUD_VIEWS_FILTER_RESET_BUTTON_CSS_CLASS", default="btn btn-secondary"
+    )
 
     # view defaults
     list_actions: List[str] = from_settings("CRUD_VIEWS_LIST_ACTIONS", default=["detail", "update", "delete"])
-    list_context_actions: List[str] = from_settings("CRUD_VIEWS_LIST_CONTEXT_ACTIONS",
-                                                    default=["parent", "list", "filter", "create"])
-    detail_context_actions: List[str] = from_settings("CRUD_VIEWS_DETAIL_CONTEXT_ACTIONS",
-                                                      default=["home", "detail", "update", "delete"])
+    list_context_actions: List[str] = from_settings(
+        "CRUD_VIEWS_LIST_CONTEXT_ACTIONS", default=["parent", "list", "filter", "create"]
+    )
+    detail_context_actions: List[str] = from_settings(
+        "CRUD_VIEWS_DETAIL_CONTEXT_ACTIONS", default=["home", "detail", "update", "delete"]
+    )
     create_context_actions: List[str] = from_settings("CRUD_VIEWS_CREATE_CONTEXT_ACTIONS", default=["home", "create"])
-    update_context_actions: List[str] = from_settings("CRUD_VIEWS_UPDATE_CONTEXT_ACTIONS",
-                                                      default=["home", "detail", "update", "delete"])
-    delete_context_actions: List[str] = from_settings("CRUD_VIEWS_DELETE_CONTEXT_ACTIONS",
-                                                      default=["home", "detail", "update", "delete"])
+    update_context_actions: List[str] = from_settings(
+        "CRUD_VIEWS_UPDATE_CONTEXT_ACTIONS", default=["home", "detail", "update", "delete"]
+    )
+    delete_context_actions: List[str] = from_settings(
+        "CRUD_VIEWS_DELETE_CONTEXT_ACTIONS", default=["home", "detail", "update", "delete"]
+    )
     manage_context_actions: List[str] = from_settings("CRUD_VIEWS_MANAGE_CONTEXT_ACTIONS", default=["home"])
-    create_select_context_actions: List[str] = from_settings("CRUD_VIEWS_CREATE_SELECT_CONTEXT_ACTIONS",
-                                                             default=["home", "create_select"])
+    create_select_context_actions: List[str] = from_settings(
+        "CRUD_VIEWS_CREATE_SELECT_CONTEXT_ACTIONS", default=["home", "create_select"]
+    )
 
     _check_messages: List[CheckMessage] = PrivateAttr(default_factory=default_list)
 
@@ -79,18 +89,22 @@ class CrudViewsSettings(BaseModel):
         return f"{self.theme_path}/css/{path}"
 
     def javascript(self) -> dict:
-        return Box({
-            "viewset": self.get_js("viewset.js"),
-            "formset": self.get_js("formset.js"),
-            "list_filter": self.get_js("list.filter.js"),
-        })
+        return Box(
+            {
+                "viewset": self.get_js("viewset.js"),
+                "formset": self.get_js("formset.js"),
+                "list_filter": self.get_js("list.filter.js"),
+            }
+        )
 
     @cached_property
     def css(self) -> dict:
-        return Box({
-            "property": self.get_css("property.css"),
-            "table": self.get_css("table.css"),
-        })
+        return Box(
+            {
+                "property": self.get_css("property.css"),
+                "table": self.get_css("table.css"),
+            }
+        )
 
     @cached_property
     def dict(self) -> dict:

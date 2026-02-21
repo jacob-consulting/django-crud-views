@@ -42,7 +42,8 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django_fsm import FSMField, transition
 
-from crud_views_workflow.mixins import WorkflowMixin
+from crud_views_workflow.lib.enums import WorkflowComment
+from crud_views_workflow.lib.mixins import WorkflowMixin
 
 
 class CampaignState(models.TextChoices):
@@ -71,7 +72,7 @@ class Campaign(WorkflowMixin, models.Model):
         source=CampaignState.NEW,
         target=CampaignState.ACTIVE,
         on_error=CampaignState.ERROR,
-        custom={"label": _("Activate"), "comment": WorkflowMixin.Comment.NONE},
+        custom={"label": _("Activate"), "comment": WorkflowComment.NONE},
     )
     def wf_activate(self, request=None, by=None, comment=None):
         pass
@@ -81,7 +82,7 @@ class Campaign(WorkflowMixin, models.Model):
         source=CampaignState.ACTIVE,
         target=CampaignState.SUCCESS,
         on_error=CampaignState.ERROR,
-        custom={"label": _("Done"), "comment": WorkflowMixin.Comment.OPTIONAL},
+        custom={"label": _("Done"), "comment": WorkflowComment.OPTIONAL},
     )
     def wf_done(self, request=None, by=None, comment=None):
         pass
@@ -91,7 +92,7 @@ class Campaign(WorkflowMixin, models.Model):
         source=CampaignState.NEW,
         target=CampaignState.CANCELED,
         on_error=CampaignState.ERROR,
-        custom={"label": _("Cancel"), "comment": WorkflowMixin.Comment.REQUIRED},
+        custom={"label": _("Cancel"), "comment": WorkflowComment.REQUIRED},
     )
     def wf_cancel_new(self, request=None, by=None, comment=None):
         pass
@@ -103,8 +104,8 @@ class Campaign(WorkflowMixin, models.Model):
 from crud_views.lib.crispy import CrispyModelViewMixin
 from crud_views.lib.views import MessageMixin
 from crud_views.lib.viewset import ViewSet
-from crud_views_workflow.forms import WorkflowForm
-from crud_views_workflow.views import WorkflowView
+from crud_views_workflow.lib.forms import WorkflowForm
+from crud_views_workflow.lib.views import WorkflowView
 from .models import Campaign
 
 cv_campaign = ViewSet(model=Campaign, name="campaign")
@@ -132,14 +133,26 @@ urlpatterns = cv_campaign.urlpatterns
 
 | Class | Description |
 |-------|-------------|
-| `WorkflowView` | Base workflow view without explicit permission check |
+| `WorkflowView` | Base workflow view without permission check |
+| `WorkflowViewPermissionRequired` | Workflow view requiring `change` permission |
 
-`WorkflowView` inherits from `CustomFormView` (which is a `DetailView` with form handling).
-It fetches the object from the URL `pk` parameter, renders the transition form, and processes
-the selected transition on POST.
+Both inherit from `CustomFormView` (a `DetailView` with form handling). They fetch the object
+from the URL `pk` parameter, render the transition form, and process the selected transition on POST.
 
-To restrict access by permission, add `CrudViewPermissionRequiredMixin` or combine with
-`LoginRequiredMixin` as needed.
+`WorkflowViewPermissionRequired` adds `CrudViewPermissionRequiredMixin` with `cv_permission = "change"`.
+Authenticated users without the required permission receive a 403; anonymous users are redirected to
+the login page.
+
+Use `WorkflowViewPermissionRequired` for production views:
+
+```python
+from crud_views_workflow.lib.views import WorkflowViewPermissionRequired
+
+class CampaignWorkflowView(CrispyModelViewMixin, MessageMixin, WorkflowViewPermissionRequired):
+    cv_context_actions = ["list", "detail", "workflow"]
+    cv_viewset = cv_campaign
+    form_class = CampaignWorkflowForm
+```
 
 ## WorkflowMixin
 
@@ -151,6 +164,12 @@ To restrict access by permission, add `CrudViewPermissionRequiredMixin` or combi
 |-----------|-------------|
 | `STATE_ENUM` | A `models.TextChoices` subclass defining all state values and labels |
 | `STATE_BADGES` | Dict mapping state values to Bootstrap badge class names |
+
+### Optional class attributes
+
+| Attribute | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `COMMENT_DEFAULT` | `WorkflowComment` | `WorkflowComment.NONE` | Fallback comment requirement for transitions that omit `comment` from their `custom` dict |
 
 ### Properties and methods
 
@@ -168,16 +187,19 @@ To restrict access by permission, add `CrudViewPermissionRequiredMixin` or combi
 | `workflow_get_transition_label_map` | Cached dict of all transition names to labels |
 | `workflow_get_form_kwargs(user)` | Builds kwargs for `WorkflowForm` (choices, transition_comments) |
 
-### Comment.NONE / OPTIONAL / REQUIRED
+### WorkflowComment
 
-Each transition declares its comment requirement via the `custom` dict on the `@transition` decorator:
+Each transition declares its comment requirement via the `custom` dict on the `@transition` decorator.
+Import `WorkflowComment` from `crud_views_workflow.lib.enums`:
 
 ```python
+from crud_views_workflow.lib.enums import WorkflowComment
+
 @transition(
     field=state,
     source=CampaignState.NEW,
     target=CampaignState.CANCELED,
-    custom={"label": _("Cancel"), "comment": WorkflowMixin.Comment.REQUIRED},
+    custom={"label": _("Cancel"), "comment": WorkflowComment.REQUIRED},
 )
 def wf_cancel_new(self, ...):
     ...
@@ -185,9 +207,18 @@ def wf_cancel_new(self, ...):
 
 | Value | Behaviour |
 |-------|-----------|
-| `Comment.NONE` | Comment field is hidden |
-| `Comment.OPTIONAL` | Comment field is shown but not required |
-| `Comment.REQUIRED` | Comment field is shown and must be filled |
+| `WorkflowComment.NONE` | Comment field is hidden |
+| `WorkflowComment.OPTIONAL` | Comment field is shown but not required |
+| `WorkflowComment.REQUIRED` | Comment field is shown and must be filled |
+
+When a transition does not include `comment` in its `custom` dict, `WorkflowMixin.COMMENT_DEFAULT`
+is used as the fallback. Override it on your model class to change the default for all such transitions:
+
+```python
+class Campaign(WorkflowMixin, models.Model):
+    COMMENT_DEFAULT = WorkflowComment.OPTIONAL
+    ...
+```
 
 ## WorkflowForm
 
@@ -232,13 +263,13 @@ with badge HTML and human-readable labels.
 |-----------|------|---------|-------------|
 | `cv_key` | `str` | `"workflow"` | ViewSet key for this view |
 | `cv_path` | `str` | `"workflow"` | URL path segment (e.g. `/<pk>/workflow/`) |
-| `template_name` | `str` | `"crud_views_workflow/workflow/view_workflow.html"` | Template |
+| `template_name` | `str` | `"crud_views_workflow/view_workflow.html"` | Template |
 | `form_class` | `Form` | — | Must be set to a `WorkflowForm` subclass |
 | `cv_viewset` | `ViewSet` | — | The ViewSet this view belongs to |
-| `transition_label` | `str` | `"Select a possible workflow action to take"` | Transition field label |
-| `transition_help_text` | `str` | `None` | Transition field help text |
-| `comment_label` | `str` | `"Please provide a comment for your workflow step"` | Comment field label |
-| `comment_help_text` | `str` | `None` | Comment field help text |
+| `cv_transition_label` | `str` | `"Select a possible workflow action to take"` | Transition field label |
+| `cv_transition_help_text` | `str` | `None` | Transition field help text |
+| `cv_comment_label` | `str` | `"Please provide a comment for your workflow step"` | Comment field label |
+| `cv_comment_help_text` | `str` | `None` | Comment field help text |
 
 ### `on_transition` hook
 

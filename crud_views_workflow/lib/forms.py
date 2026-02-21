@@ -6,7 +6,7 @@ from django.forms.widgets import Textarea
 from django.utils.translation import gettext_lazy as _
 
 from crud_views.lib.crispy import CrispyForm, Column8
-from crud_views_workflow.views import WorkflowComment
+from .enums import WorkflowComment
 
 
 class WorkflowForm(CrispyForm):

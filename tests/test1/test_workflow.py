@@ -165,11 +165,49 @@ def test_workflow_get_form_kwargs_labels(campaign_new, user_campaign_change):
 
 @pytest.mark.django_db
 def test_workflow_get_form_kwargs_comment_types(campaign_new, user_campaign_change):
-    from crud_views_workflow.mixins import WorkflowMixin
+    from crud_views_workflow.lib.enums import WorkflowComment
     kwargs = campaign_new.workflow_get_form_kwargs(user_campaign_change)
     tc = kwargs["transition_comments"]
-    assert tc["wf_activate"] == WorkflowMixin.Comment.NONE
-    assert tc["wf_cancel_new"] == WorkflowMixin.Comment.REQUIRED
+    assert tc["wf_activate"] == WorkflowComment.NONE
+    assert tc["wf_cancel_new"] == WorkflowComment.REQUIRED
+
+
+def test_comment_default_is_none():
+    """COMMENT_DEFAULT defaults to WorkflowComment.NONE."""
+    from crud_views_workflow.lib.enums import WorkflowComment
+    from crud_views_workflow.lib.mixins import WorkflowMixin
+    assert WorkflowMixin.COMMENT_DEFAULT == WorkflowComment.NONE
+
+
+@pytest.mark.django_db
+def test_comment_default_fallback(campaign_new, user_campaign_change):
+    """COMMENT_DEFAULT is used when a transition omits 'comment' from custom."""
+    from unittest.mock import MagicMock, patch
+    from crud_views_workflow.lib.enums import WorkflowComment
+
+    mock_transition = MagicMock()
+    mock_transition.name = "wf_test"
+    mock_transition.custom = {"label": "Test"}  # no 'comment' key
+
+    with patch.object(campaign_new, 'get_available_user_state_transitions', return_value=[mock_transition]):
+        transitions = campaign_new.workflow_get_possible_transitions(user_campaign_change)
+        assert transitions[0][2] == WorkflowComment.NONE  # default
+
+
+@pytest.mark.django_db
+def test_comment_default_override(campaign_new, user_campaign_change):
+    """Overriding COMMENT_DEFAULT changes the fallback for transitions without an explicit comment."""
+    from unittest.mock import MagicMock, patch
+    from crud_views_workflow.lib.enums import WorkflowComment
+
+    mock_transition = MagicMock()
+    mock_transition.name = "wf_test"
+    mock_transition.custom = {"label": "Test"}  # no 'comment' key
+
+    campaign_new.COMMENT_DEFAULT = WorkflowComment.OPTIONAL
+    with patch.object(campaign_new, 'get_available_user_state_transitions', return_value=[mock_transition]):
+        transitions = campaign_new.workflow_get_possible_transitions(user_campaign_change)
+        assert transitions[0][2] == WorkflowComment.OPTIONAL
 
 
 # ---------------------------------------------------------------------------
@@ -362,3 +400,41 @@ def test_workflow_view_get_contains_campaign_name(client_user_campaign_change: C
     response = client_user_campaign_change.get(f"/campaign/{campaign_new.pk}/workflow/")
     assert response.status_code == 200
     assert campaign_new.name.encode() in response.content
+
+
+# ---------------------------------------------------------------------------
+# WorkflowViewPermissionRequired: access control tests
+# ---------------------------------------------------------------------------
+
+@pytest.mark.django_db
+def test_workflow_permission_required_allows_change_user(client_user_campaign_change: Client, campaign_new):
+    """User with change permission can access the workflow view."""
+    response = client_user_campaign_change.get(f"/campaign/{campaign_new.pk}/workflow/")
+    assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_workflow_permission_required_denies_view_only_user(client_user_campaign_view: Client, campaign_new):
+    """User with only view permission is denied access (403)."""
+    response = client_user_campaign_view.get(f"/campaign/{campaign_new.pk}/workflow/")
+    assert response.status_code == 403
+
+
+@pytest.mark.django_db
+def test_workflow_permission_required_denies_post_view_only_user(client_user_campaign_view: Client, campaign_new):
+    """User with only view permission cannot POST a transition (403)."""
+    response = client_user_campaign_view.post(f"/campaign/{campaign_new.pk}/workflow/", {
+        "transition": "wf_activate",
+        "comment": "",
+    })
+    assert response.status_code == 403
+    campaign_new.refresh_from_db()
+    assert campaign_new.state == CampaignState.NEW  # state unchanged
+
+
+@pytest.mark.django_db
+def test_workflow_permission_required_redirects_anonymous(client: Client, campaign_new):
+    """Anonymous user is redirected to the login page."""
+    response = client.get(f"/campaign/{campaign_new.pk}/workflow/")
+    assert response.status_code == 302
+    assert "/login" in response["Location"]

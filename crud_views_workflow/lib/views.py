@@ -1,18 +1,11 @@
-from enum import IntEnum
-
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import SuspiciousOperation
 from django.db import transaction
 from django.utils.translation import gettext_lazy as _
 
+from crud_views.lib.view import CrudViewPermissionRequiredMixin
 from crud_views.lib.views.form import CustomFormView
-from .models import WorkflowInfo
-
-
-class WorkflowComment(IntEnum):
-    NONE = 0
-    OPTIONAL = 1
-    REQUIRED = 2
+from ..models import WorkflowInfo
 
 
 class WorkflowView(CustomFormView):
@@ -26,7 +19,7 @@ class WorkflowView(CustomFormView):
     cv_key = "workflow"
     cv_path = "workflow"
 
-    template_name = "crud_views_workflow/workflow/view_workflow.html"
+    template_name = "crud_views_workflow/view_workflow.html"
 
     cv_icon_header = "fa-solid fa-diagram-project"
     cv_icon_action = "fa-solid fa-diagram-project"
@@ -36,17 +29,20 @@ class WorkflowView(CustomFormView):
     cv_action_label_template_code = _("Process workflow")
     cv_action_short_label_template_code = _("Process workflow")
 
-    transition_label = _("Select a possible workflow action to take")
-    transition_help_text = None
-    comment_label = _("Please provide a comment for your workflow step")
-    comment_help_text = None
+    cv_transition_label = _("Select a possible workflow action to take")
+    cv_transition_help_text = None
+    cv_comment_label = _("Please provide a comment for your workflow step")
+    cv_comment_help_text = None
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
-        form.fields["transition"].label = self.transition_label
-        form.fields["transition"].help_text = self.transition_help_text
-        form.fields["comment"].label = self.comment_label
-        form.fields["comment"].help_text = self.comment_help_text
+
+        # apply custom labels and help texts
+        form.fields["transition"].label = self.cv_transition_label
+        form.fields["transition"].help_text = self.cv_transition_help_text
+        form.fields["comment"].label = self.cv_comment_label
+        form.fields["comment"].help_text = self.cv_comment_help_text
+
         return form
 
     def get_form_kwargs(self):
@@ -59,6 +55,7 @@ class WorkflowView(CustomFormView):
         context["has_workflow_choices"] = self.object.workflow_has_any_possible_transition(self.request.user)
         return context
 
+    # todo: cv_form_valid instead of cv_form_valid_hook?
     def cv_form_valid_hook(self, context: dict):
         """
         Process workflow transition
@@ -79,6 +76,7 @@ class WorkflowView(CustomFormView):
         wf_method = getattr(self.object, transition, None)
         assert callable(wf_method), f"Invalid transition {transition}"
 
+        # todo: configurable
         with transaction.atomic():
 
             # get old state
@@ -111,6 +109,11 @@ class WorkflowView(CustomFormView):
 
     def on_transition(self, info, transition, state_old, state_new, comment, user, data):
         """
-        You may override this to do additional stuff after a transition
+        Override this to do additional stuff after a transition
         """
         pass
+
+
+class WorkflowViewPermissionRequired(CrudViewPermissionRequiredMixin, WorkflowView):
+    cv_permission = "change"
+   

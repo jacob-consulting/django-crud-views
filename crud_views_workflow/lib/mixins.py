@@ -1,26 +1,24 @@
-from enum import IntEnum
+from enum import Enum
 from functools import cached_property
-from typing import Dict, Any
-from typing import List
+from typing import Dict, Any, List
 
 from django.contrib.contenttypes.models import ContentType
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 
-from crud_views_workflow.models import WorkflowInfo
+from ..models import WorkflowInfo
+from .enums import WorkflowComment
 
 
 class WorkflowMixin:
     """
-    Mixin for state workflow models
+    Mixin for workflow models with a django-fsm state field
     """
 
-    STATE_BADGES_DEFAULT = "info"
-
-    class Comment(IntEnum):
-        NONE = 0
-        OPTIONAL = 1
-        REQUIRED = 2
+    STATE_ENUM: Enum = None
+    STATE_BADGES: dict = None
+    STATE_BADGES_DEFAULT:str = "info"
+    COMMENT_DEFAULT: WorkflowComment = WorkflowComment.NONE
 
     def state_increment(self):
         self.state_version += 1  # noqa
@@ -41,7 +39,7 @@ class WorkflowMixin:
         name = self.get_state_name(state)
         if state in self.STATE_BADGES:  # noqa
             klass = self.STATE_BADGES.get(state, self.STATE_BADGES_DEFAULT)  # noqa
-            html = render_to_string("crud_views_workflow/workflow/badge.html", {
+            html = render_to_string("crud_views_workflow/badge.html", {
                 "state": state,
                 "name": name,
                 "class": klass
@@ -85,7 +83,7 @@ class WorkflowMixin:
         actions = []
         for transition in self.get_available_user_state_transitions(user):  # noqa
             label = transition.custom.get('label', transition.name)
-            comment = transition.custom.get('comment', WorkflowMixin.Comment.NONE)
+            comment = transition.custom.get('comment', self.COMMENT_DEFAULT)
             actions.append((transition.name, label, comment))
         return actions
 

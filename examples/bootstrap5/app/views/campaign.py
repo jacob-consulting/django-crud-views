@@ -11,8 +11,8 @@ from crud_views.lib.views import DetailViewPermissionRequired, UpdateViewPermiss
     CreateViewPermissionRequired, \
     ListViewTableMixin, DeleteViewPermissionRequired, ListViewPermissionRequired, MessageMixin
 from crud_views.lib.viewset import ViewSet
-from crud_views_workflow.forms import WorkflowForm
-from crud_views_workflow.views import WorkflowView
+from crud_views_workflow.lib.forms import WorkflowForm
+from crud_views_workflow.lib.views import WorkflowViewPermissionRequired
 
 cv_campaign = ViewSet(
     model=Campaign,
@@ -50,6 +50,7 @@ class CampaignListView(ListViewTableMixin, ListViewPermissionRequired):
 
 class CampaignDetailView(DetailViewPermissionRequired):
     cv_viewset = cv_campaign
+    cv_context_actions = ["home", "detail", "update", "workflow", "delete"]
 
     property_display = [
         {
@@ -66,6 +67,7 @@ class CampaignDetailView(DetailViewPermissionRequired):
 
 
 class CampaignUpdateView(CrispyModelViewMixin, MessageMixin, UpdateViewPermissionRequired):
+    cv_context_actions = ["home", "detail", "update", "workflow", "delete"]
     form_class = CampaignUpdateForm
     cv_viewset = cv_campaign
 
@@ -76,6 +78,7 @@ class CampaignCreateView(CrispyModelViewMixin, MessageMixin, CreateViewPermissio
 
 
 class CampaignDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequired):
+    cv_context_actions = ["home", "detail", "update", "workflow", "delete"]
     form_class = CrispyDeleteForm
     cv_viewset = cv_campaign
 
@@ -85,7 +88,7 @@ class CampaignWorkflowForm(WorkflowForm):
         model = Campaign
 
 
-class CampaignWorkflowView(CrispyModelViewMixin, MessageMixin, WorkflowView):
-    cv_context_actions = ["list", "detail", "workflow"]
+class CampaignWorkflowView(CrispyModelViewMixin, MessageMixin, WorkflowViewPermissionRequired):
+    cv_context_actions = ["list", "detail", "edit", "workflow"]
     cv_viewset = cv_campaign
     form_class = CampaignWorkflowForm

@@ -1,14 +1,18 @@
 {% load i18n %}
+{% load crispy_forms_tags %}
 {% load crud_views %}
+
 
 {% if has_workflow_choices %}
     <h5>{% translate "Workflow Action" %}</h5>
     <form class="cv-form" method="post" novalidate>
         {% csrf_token %}
 
+        <!-- non_form_errors is used to display errors that are not associated with a particular field -->
         {{ form.non_form_errors }}
 
-        {% cv_render_form %}
+        <!-- the form itself with crispy -->
+        {% crispy form form.helper %}
     </form>
 {% else %}
     {% translate "There are no workflow steps available from the current state." %}

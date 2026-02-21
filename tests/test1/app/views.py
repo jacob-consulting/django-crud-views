@@ -10,7 +10,7 @@ from crud_views.lib.crispy.form import CrispyForm
 from crud_views.lib.table import Table, UUIDLinkDetailColumn, LinkDetailColumn
 from crud_views.lib.views import (
     ListViewTableMixin, ListViewTableFilterMixin, MessageMixin,
-    ListViewPermissionRequired, DeleteViewPermissionRequired, ListView, DeleteView, CreateViewPermissionRequired,
+    ListViewPermissionRequired, DeleteViewPermissionRequired, CreateViewPermissionRequired,
     UpdateViewPermissionRequired, DetailViewPermissionRequired, CreateViewParentMixin,
     OrderedUpViewPermissionRequired, OrderedUpDownPermissionRequired
 )
@@ -22,8 +22,8 @@ from crud_views.lib.polymorphic_views import (
 from crud_views.lib.polymorphic_views.create_select import PolymorphicContentTypeForm
 from crud_views.lib.polymorphic_views.delete import PolymorphicDeleteViewPermissionRequired
 from crud_views.lib.viewset import ViewSet, ParentViewSet
-from crud_views_workflow.forms import WorkflowForm
-from crud_views_workflow.views import WorkflowView
+from crud_views_workflow.lib.forms import WorkflowForm
+from crud_views_workflow.lib.views import WorkflowViewPermissionRequired
 from crud_views.lib.crispy import Column4, Column6
 from crispy_forms.layout import Row, Layout
 
@@ -341,7 +341,7 @@ class CampaignWorkflowForm(WorkflowForm):
         model = Campaign
 
 
-class CampaignWorkflowView(CrispyModelViewMixin, MessageMixin, WorkflowView):
+class CampaignWorkflowView(CrispyModelViewMixin, MessageMixin, WorkflowViewPermissionRequired):
     cv_context_actions = ["list", "detail", "workflow"]
     cv_viewset = cv_campaign
     form_class = CampaignWorkflowForm

@@ -6,7 +6,8 @@ from django_fsm import FSMField, transition
 from ordered_model.models import OrderedModel
 from polymorphic.models import PolymorphicModel
 
-from crud_views_workflow.mixins import WorkflowMixin
+from crud_views_workflow.lib.enums import WorkflowComment
+from crud_views_workflow.lib.mixins import WorkflowMixin
 
 
 class Author(OrderedModel):
@@ -67,7 +68,7 @@ class Campaign(WorkflowMixin, models.Model):
         source=CampaignState.NEW,
         target=CampaignState.ACTIVE,
         on_error=CampaignState.ERROR,
-        custom={"label": "Activate", "comment": WorkflowMixin.Comment.NONE},
+        custom={"label": "Activate", "comment": WorkflowComment.NONE},
     )
     def wf_activate(self, request=None, by=None, comment=None):
         pass
@@ -77,7 +78,7 @@ class Campaign(WorkflowMixin, models.Model):
         source=CampaignState.ACTIVE,
         target=CampaignState.SUCCESS,
         on_error=CampaignState.ERROR,
-        custom={"label": "Done", "comment": WorkflowMixin.Comment.OPTIONAL},
+        custom={"label": "Done", "comment": WorkflowComment.OPTIONAL},
     )
     def wf_done(self, request=None, by=None, comment=None):
         pass
@@ -87,7 +88,7 @@ class Campaign(WorkflowMixin, models.Model):
         source=CampaignState.NEW,
         target=CampaignState.CANCELED,
         on_error=CampaignState.ERROR,
-        custom={"label": "Cancel", "comment": WorkflowMixin.Comment.REQUIRED},
+        custom={"label": "Cancel", "comment": WorkflowComment.REQUIRED},
     )
     def wf_cancel_new(self, request=None, by=None, comment=None):
         pass
@@ -97,7 +98,7 @@ class Campaign(WorkflowMixin, models.Model):
         source=CampaignState.ACTIVE,
         target=CampaignState.CANCELED,
         on_error=CampaignState.ERROR,
-        custom={"label": "Cancel", "comment": WorkflowMixin.Comment.REQUIRED},
+        custom={"label": "Cancel", "comment": WorkflowComment.REQUIRED},
     )
     def wf_cancel_active(self, request=None, by=None, comment=None):
         pass

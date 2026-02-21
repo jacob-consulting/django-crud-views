@@ -2,7 +2,8 @@ from django.db import models
 from django.utils.translation import gettext as _
 from django_fsm import FSMField, transition
 
-from crud_views_workflow.mixins import WorkflowMixin
+from crud_views_workflow.lib.enums import WorkflowComment
+from crud_views_workflow.lib.mixins import WorkflowMixin
 
 
 class CampaignState(models.TextChoices):
@@ -37,7 +38,7 @@ class Campaign(WorkflowMixin, models.Model):
         source=CampaignState.NEW,
         target=CampaignState.ACTIVE,
         on_error=CampaignState.ERROR,
-        custom={"label": _("Activate"), "comment": WorkflowMixin.Comment.NONE},
+        custom={"label": _("Activate"), "comment": WorkflowComment.NONE},
     )
     def wf_activate(self, request=None, by=None, comment=None):
         pass
@@ -47,7 +48,7 @@ class Campaign(WorkflowMixin, models.Model):
         source=CampaignState.ACTIVE,
         target=CampaignState.SUCCESS,
         on_error=CampaignState.ERROR,
-        custom={"label": _("Done"), "comment": WorkflowMixin.Comment.OPTIONAL},
+        custom={"label": _("Done"), "comment": WorkflowComment.OPTIONAL},
     )
     def wf_done(self, request=None, by=None, comment=None):
         pass
@@ -57,7 +58,7 @@ class Campaign(WorkflowMixin, models.Model):
         source=CampaignState.NEW,
         target=CampaignState.CANCELED,
         on_error=CampaignState.ERROR,
-        custom={"label": _("Cancel"), "comment": WorkflowMixin.Comment.REQUIRED},
+        custom={"label": _("Cancel"), "comment": WorkflowComment.REQUIRED},
     )
     def wf_cancel_new(self, request=None, by=None, comment=None):
         pass
@@ -67,7 +68,7 @@ class Campaign(WorkflowMixin, models.Model):
         source=CampaignState.ACTIVE,
         target=CampaignState.CANCELED,
         on_error=CampaignState.ERROR,
-        custom={"label": _("Cancel"), "comment": WorkflowMixin.Comment.REQUIRED},
+        custom={"label": _("Cancel"), "comment": WorkflowComment.REQUIRED},
     )
     def wf_cancel_active(self, request=None, by=None, comment=None):
         pass

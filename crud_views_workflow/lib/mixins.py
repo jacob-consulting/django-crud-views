@@ -54,7 +54,7 @@ class WorkflowMixin:
 
     def get_workflow_info_queryset(self):
         return WorkflowInfo.objects.filter(
-            workflow_object_id=self.id,  # noqa
+            workflow_object_id=self.pk,  # noqa
             workflow_object_content_type=ContentType.objects.get_for_model(self),
         ).order_by("timestamp")  # noqa
 

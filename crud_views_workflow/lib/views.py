@@ -1,11 +1,15 @@
+from typing import Iterable
+
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import SuspiciousOperation
 from django.db import transaction
 from django.utils.translation import gettext_lazy as _
 
+from crud_views.lib.check import Check, CheckAttribute, CheckExpression
 from crud_views.lib.view import CrudViewPermissionRequiredMixin
 from crud_views.lib.views.form import CustomFormView
 from ..models import WorkflowInfo
+from .mixins import WorkflowMixin
 
 
 class WorkflowView(CustomFormView):
@@ -33,6 +37,28 @@ class WorkflowView(CustomFormView):
     cv_transition_help_text = None
     cv_comment_label = _("Please provide a comment for your workflow step")
     cv_comment_help_text = None
+
+    @classmethod
+    def checks(cls) -> Iterable[Check]:
+        yield from super().checks()
+        # form_class must be set to a WorkflowForm subclass
+        yield CheckAttribute(context=cls, id="E230", attribute="form_class")
+        # workflow-specific label attributes must not be None
+        yield CheckAttribute(context=cls, id="E231", attribute="cv_transition_label")
+        yield CheckAttribute(context=cls, id="E232", attribute="cv_comment_label")
+        # the model associated with this view must extend WorkflowMixin
+        if cls.cv_viewset is not None:
+            model = cls.cv_viewset.model
+            yield CheckExpression(
+                context=cls,
+                id="E233",
+                expression=issubclass(model, WorkflowMixin),
+                msg=f"Model »{model.__name__}» must extend WorkflowMixin",
+            )
+            # required WorkflowMixin class attributes must be set on the model
+            if issubclass(model, WorkflowMixin):
+                yield CheckAttribute(context=model, id="E234", attribute="STATE_ENUM")
+                yield CheckAttribute(context=model, id="E235", attribute="STATE_BADGES")
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)

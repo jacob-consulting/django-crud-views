@@ -438,3 +438,129 @@ def test_workflow_permission_required_redirects_anonymous(client: Client, campai
     response = client.get(f"/campaign/{campaign_new.pk}/workflow/")
     assert response.status_code == 302
     assert "/login" in response["Location"]
+
+
+# ---------------------------------------------------------------------------
+# WorkflowView.checks() system checks
+# ---------------------------------------------------------------------------
+
+def _errors(view_cls):
+    """Collect all error messages from a view's checks()."""
+    return [msg for chk in view_cls.checks() for msg in chk.messages()]
+
+
+def _error_ids(view_cls):
+    return {e.id for e in _errors(view_cls)}
+
+
+def test_workflow_view_checks_pass():
+    """A correctly configured WorkflowView produces no check errors."""
+    from tests.test1.app.views import CampaignWorkflowView
+    assert _errors(CampaignWorkflowView) == []
+
+
+def test_workflow_view_checks_missing_form_class():
+    """Missing form_class yields E230."""
+    from crud_views_workflow.lib.views import WorkflowView
+
+    class NoFormView(WorkflowView):
+        cv_key = "wf"
+        cv_path = "wf"
+        # form_class deliberately left as None (the WorkflowView default)
+
+    assert "viewset.E230" in _error_ids(NoFormView)
+
+
+def test_workflow_view_checks_transition_label_none():
+    """cv_transition_label=None yields E231."""
+    from crud_views_workflow.lib.views import WorkflowView
+    from crud_views_workflow.lib.forms import WorkflowForm
+
+    class NoLabelView(WorkflowView):
+        cv_key = "wf"
+        cv_path = "wf"
+        form_class = WorkflowForm
+        cv_transition_label = None
+
+    assert "viewset.E231" in _error_ids(NoLabelView)
+
+
+def test_workflow_view_checks_comment_label_none():
+    """cv_comment_label=None yields E232."""
+    from crud_views_workflow.lib.views import WorkflowView
+    from crud_views_workflow.lib.forms import WorkflowForm
+
+    class NoCommentLabelView(WorkflowView):
+        cv_key = "wf"
+        cv_path = "wf"
+        form_class = WorkflowForm
+        cv_comment_label = None
+
+    assert "viewset.E232" in _error_ids(NoCommentLabelView)
+
+
+def test_workflow_view_checks_model_not_mixin():
+    """Model that does not extend WorkflowMixin yields E233."""
+    from unittest.mock import MagicMock
+    from crud_views_workflow.lib.views import WorkflowView
+    from crud_views_workflow.lib.forms import WorkflowForm
+
+    class PlainModel:
+        pass
+
+    class BadModelView(WorkflowView):
+        cv_key = "wf"
+        cv_path = "wf"
+        form_class = WorkflowForm
+
+    mock_viewset = MagicMock()
+    mock_viewset.model = PlainModel
+    BadModelView.cv_viewset = mock_viewset
+
+    assert "viewset.E233" in _error_ids(BadModelView)
+
+
+def test_workflow_view_checks_model_missing_state_enum():
+    """WorkflowMixin model without STATE_ENUM set yields E234."""
+    from unittest.mock import MagicMock
+    from crud_views_workflow.lib.views import WorkflowView
+    from crud_views_workflow.lib.forms import WorkflowForm
+    from crud_views_workflow.lib.mixins import WorkflowMixin
+
+    class NoEnumModel(WorkflowMixin):
+        STATE_ENUM = None
+        STATE_BADGES = {"active": "info"}
+
+    class NoEnumView(WorkflowView):
+        cv_key = "wf"
+        cv_path = "wf"
+        form_class = WorkflowForm
+
+    mock_viewset = MagicMock()
+    mock_viewset.model = NoEnumModel
+    NoEnumView.cv_viewset = mock_viewset
+
+    assert "viewset.E234" in _error_ids(NoEnumView)
+
+
+def test_workflow_view_checks_model_missing_state_badges():
+    """WorkflowMixin model without STATE_BADGES set yields E235."""
+    from unittest.mock import MagicMock
+    from crud_views_workflow.lib.views import WorkflowView
+    from crud_views_workflow.lib.forms import WorkflowForm
+    from crud_views_workflow.lib.mixins import WorkflowMixin
+
+    class NoBadgesModel(WorkflowMixin):
+        STATE_ENUM = object()
+        STATE_BADGES = None
+
+    class NoBadgesView(WorkflowView):
+        cv_key = "wf"
+        cv_path = "wf"
+        form_class = WorkflowForm
+
+    mock_viewset = MagicMock()
+    mock_viewset.model = NoBadgesModel
+    NoBadgesView.cv_viewset = mock_viewset
+
+    assert "viewset.E235" in _error_ids(NoBadgesView)

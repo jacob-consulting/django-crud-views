@@ -18,17 +18,14 @@ from crud_views.lib.views import (
     ListViewPermissionRequired,
     OrderedUpViewPermissionRequired,
     OrderedUpDownPermissionRequired,
-    DeleteViewPermissionRequired, RedirectChildView
+    DeleteViewPermissionRequired,
+    RedirectChildView,
 )
 from crud_views.lib.views.form import CustomFormViewPermissionRequired
 from crud_views.lib.views.list import ListViewFilterFormHelper
 from crud_views.lib.viewset import ViewSet
 
-cv_author = ViewSet(
-    model=Author,
-    name="author",
-    icon_header="fa-regular fa-user"
-)
+cv_author = ViewSet(model=Author, name="author", icon_header="fa-regular fa-user")
 
 
 class AuthorCreateForm(CrispyModelForm):
@@ -46,20 +43,19 @@ class AuthorUpdateForm(AuthorCreateForm):
     """
     Update form has the same fields as the create form
     """
+
     submit_label = _("Update")
 
 
 class AuthorFilterFormHelper(ListViewFilterFormHelper):
     layout = Layout(
-        Row(
-            Column4("first_name"), Column4("last_name")
-        ),
+        Row(Column4("first_name"), Column4("last_name")),
     )
 
 
 class AuthorFilter(django_filters.FilterSet):
-    first_name = django_filters.CharFilter(lookup_expr='icontains')
-    last_name = django_filters.CharFilter(lookup_expr='icontains')
+    first_name = django_filters.CharFilter(lookup_expr="icontains")
+    last_name = django_filters.CharFilter(lookup_expr="icontains")
 
     class Meta:
         model = Author
@@ -79,9 +75,7 @@ class AuthorTable(Table):
     modified_dt = NaturalTimeColumn()
 
 
-class AuthorListView(ListViewTableMixin,
-                     ListViewTableFilterMixin,
-                     ListViewPermissionRequired):
+class AuthorListView(ListViewTableMixin, ListViewTableFilterMixin, ListViewPermissionRequired):
     # table config
     table_class = AuthorTable
 

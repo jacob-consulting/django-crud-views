@@ -13,6 +13,7 @@ from crud_views_workflow.models import WorkflowInfo
 # WorkflowMixin model-layer tests
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.django_db
 def test_state_name_new(campaign_new):
     assert campaign_new.state_name == "New"
@@ -166,6 +167,7 @@ def test_workflow_get_form_kwargs_labels(campaign_new, user_campaign_change):
 @pytest.mark.django_db
 def test_workflow_get_form_kwargs_comment_types(campaign_new, user_campaign_change):
     from crud_views_workflow.lib.enums import WorkflowComment
+
     kwargs = campaign_new.workflow_get_form_kwargs(user_campaign_change)
     tc = kwargs["transition_comments"]
     assert tc["wf_activate"] == WorkflowComment.NONE
@@ -176,6 +178,7 @@ def test_comment_default_is_none():
     """COMMENT_DEFAULT defaults to WorkflowComment.NONE."""
     from crud_views_workflow.lib.enums import WorkflowComment
     from crud_views_workflow.lib.mixins import WorkflowMixin
+
     assert WorkflowMixin.COMMENT_DEFAULT == WorkflowComment.NONE
 
 
@@ -189,7 +192,7 @@ def test_comment_default_fallback(campaign_new, user_campaign_change):
     mock_transition.name = "wf_test"
     mock_transition.custom = {"label": "Test"}  # no 'comment' key
 
-    with patch.object(campaign_new, 'get_available_user_state_transitions', return_value=[mock_transition]):
+    with patch.object(campaign_new, "get_available_user_state_transitions", return_value=[mock_transition]):
         transitions = campaign_new.workflow_get_possible_transitions(user_campaign_change)
         assert transitions[0][2] == WorkflowComment.NONE  # default
 
@@ -205,7 +208,7 @@ def test_comment_default_override(campaign_new, user_campaign_change):
     mock_transition.custom = {"label": "Test"}  # no 'comment' key
 
     campaign_new.COMMENT_DEFAULT = WorkflowComment.OPTIONAL
-    with patch.object(campaign_new, 'get_available_user_state_transitions', return_value=[mock_transition]):
+    with patch.object(campaign_new, "get_available_user_state_transitions", return_value=[mock_transition]):
         transitions = campaign_new.workflow_get_possible_transitions(user_campaign_change)
         assert transitions[0][2] == WorkflowComment.OPTIONAL
 
@@ -213,6 +216,7 @@ def test_comment_default_override(campaign_new, user_campaign_change):
 # ---------------------------------------------------------------------------
 # WorkflowView HTTP tests
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.django_db
 def test_workflow_view_get(client_user_campaign_change: Client, campaign_new):
@@ -237,10 +241,13 @@ def test_workflow_view_get_terminal_state_no_choices(client_user_campaign_change
 @pytest.mark.django_db
 def test_workflow_view_post_activate(client_user_campaign_change: Client, campaign_new):
     pk = campaign_new.pk
-    response = client_user_campaign_change.post(f"/campaign/{pk}/workflow/", {
-        "transition": "wf_activate",
-        "comment": "",
-    })
+    response = client_user_campaign_change.post(
+        f"/campaign/{pk}/workflow/",
+        {
+            "transition": "wf_activate",
+            "comment": "",
+        },
+    )
     assert response.status_code == 302
     campaign_new.refresh_from_db()
     assert campaign_new.state == CampaignState.ACTIVE
@@ -249,10 +256,13 @@ def test_workflow_view_post_activate(client_user_campaign_change: Client, campai
 @pytest.mark.django_db
 def test_workflow_view_post_creates_workflow_info(client_user_campaign_change: Client, campaign_new):
     pk = campaign_new.pk
-    client_user_campaign_change.post(f"/campaign/{pk}/workflow/", {
-        "transition": "wf_activate",
-        "comment": "",
-    })
+    client_user_campaign_change.post(
+        f"/campaign/{pk}/workflow/",
+        {
+            "transition": "wf_activate",
+            "comment": "",
+        },
+    )
     assert WorkflowInfo.objects.filter(
         workflow_object_id=pk,
         transition="wf_activate",
@@ -265,10 +275,13 @@ def test_workflow_view_post_creates_workflow_info(client_user_campaign_change: C
 def test_workflow_view_post_required_comment_missing(client_user_campaign_change: Client, campaign_new):
     """POST with required-comment transition but empty comment → form error, state unchanged."""
     pk = campaign_new.pk
-    response = client_user_campaign_change.post(f"/campaign/{pk}/workflow/", {
-        "transition": "wf_cancel_new",
-        "comment": "",
-    })
+    response = client_user_campaign_change.post(
+        f"/campaign/{pk}/workflow/",
+        {
+            "transition": "wf_cancel_new",
+            "comment": "",
+        },
+    )
     assert response.status_code == 200  # form invalid, re-render
     campaign_new.refresh_from_db()
     assert campaign_new.state == CampaignState.NEW  # state unchanged
@@ -277,10 +290,13 @@ def test_workflow_view_post_required_comment_missing(client_user_campaign_change
 @pytest.mark.django_db
 def test_workflow_view_post_required_comment_provided(client_user_campaign_change: Client, campaign_new):
     pk = campaign_new.pk
-    response = client_user_campaign_change.post(f"/campaign/{pk}/workflow/", {
-        "transition": "wf_cancel_new",
-        "comment": "Need to cancel this campaign",
-    })
+    response = client_user_campaign_change.post(
+        f"/campaign/{pk}/workflow/",
+        {
+            "transition": "wf_cancel_new",
+            "comment": "Need to cancel this campaign",
+        },
+    )
     assert response.status_code == 302
     campaign_new.refresh_from_db()
     assert campaign_new.state == CampaignState.CANCELED
@@ -291,10 +307,13 @@ def test_workflow_view_post_required_comment_provided(client_user_campaign_chang
 @pytest.mark.django_db
 def test_workflow_view_post_optional_comment_without(client_user_campaign_change: Client, campaign_active):
     pk = campaign_active.pk
-    response = client_user_campaign_change.post(f"/campaign/{pk}/workflow/", {
-        "transition": "wf_done",
-        "comment": "",
-    })
+    response = client_user_campaign_change.post(
+        f"/campaign/{pk}/workflow/",
+        {
+            "transition": "wf_done",
+            "comment": "",
+        },
+    )
     assert response.status_code == 302
     campaign_active.refresh_from_db()
     assert campaign_active.state == CampaignState.SUCCESS
@@ -303,10 +322,13 @@ def test_workflow_view_post_optional_comment_without(client_user_campaign_change
 @pytest.mark.django_db
 def test_workflow_view_post_optional_comment_with(client_user_campaign_change: Client, campaign_active):
     pk = campaign_active.pk
-    response = client_user_campaign_change.post(f"/campaign/{pk}/workflow/", {
-        "transition": "wf_done",
-        "comment": "Campaign completed successfully",
-    })
+    response = client_user_campaign_change.post(
+        f"/campaign/{pk}/workflow/",
+        {
+            "transition": "wf_done",
+            "comment": "Campaign completed successfully",
+        },
+    )
     assert response.status_code == 302
     campaign_active.refresh_from_db()
     assert campaign_active.state == CampaignState.SUCCESS
@@ -318,10 +340,13 @@ def test_workflow_view_post_optional_comment_with(client_user_campaign_change: C
 def test_workflow_view_post_unavailable_transition_form_error(client_user_campaign_change: Client, campaign_new):
     """Submitting a transition not available for the current state is rejected by form validation."""
     pk = campaign_new.pk
-    response = client_user_campaign_change.post(f"/campaign/{pk}/workflow/", {
-        "transition": "wf_done",  # only available from ACTIVE, not NEW
-        "comment": "",
-    })
+    response = client_user_campaign_change.post(
+        f"/campaign/{pk}/workflow/",
+        {
+            "transition": "wf_done",  # only available from ACTIVE, not NEW
+            "comment": "",
+        },
+    )
     # form validation rejects the choice; view re-renders the form
     assert response.status_code == 200
     campaign_new.refresh_from_db()
@@ -333,16 +358,22 @@ def test_workflow_history_after_multiple_transitions(client_user_campaign_change
     pk = campaign_new.pk
 
     # Transition 1: Activate
-    client_user_campaign_change.post(f"/campaign/{pk}/workflow/", {
-        "transition": "wf_activate",
-        "comment": "",
-    })
+    client_user_campaign_change.post(
+        f"/campaign/{pk}/workflow/",
+        {
+            "transition": "wf_activate",
+            "comment": "",
+        },
+    )
 
     # Transition 2: Done (with comment)
-    client_user_campaign_change.post(f"/campaign/{pk}/workflow/", {
-        "transition": "wf_done",
-        "comment": "All done",
-    })
+    client_user_campaign_change.post(
+        f"/campaign/{pk}/workflow/",
+        {
+            "transition": "wf_done",
+            "comment": "All done",
+        },
+    )
 
     campaign_new.refresh_from_db()
     assert campaign_new.state == CampaignState.SUCCESS
@@ -363,10 +394,13 @@ def test_workflow_history_after_multiple_transitions(client_user_campaign_change
 @pytest.mark.django_db
 def test_workflow_history_transition_labels(client_user_campaign_change: Client, campaign_new):
     pk = campaign_new.pk
-    client_user_campaign_change.post(f"/campaign/{pk}/workflow/", {
-        "transition": "wf_activate",
-        "comment": "",
-    })
+    client_user_campaign_change.post(
+        f"/campaign/{pk}/workflow/",
+        {
+            "transition": "wf_activate",
+            "comment": "",
+        },
+    )
     campaign_new.refresh_from_db()
     history = campaign_new.workflow_data
     assert history[0]["transition_label"] == "Activate"
@@ -375,10 +409,13 @@ def test_workflow_history_transition_labels(client_user_campaign_change: Client,
 @pytest.mark.django_db
 def test_workflow_history_records_user(client_user_campaign_change: Client, campaign_new, user_campaign_change):
     pk = campaign_new.pk
-    client_user_campaign_change.post(f"/campaign/{pk}/workflow/", {
-        "transition": "wf_activate",
-        "comment": "",
-    })
+    client_user_campaign_change.post(
+        f"/campaign/{pk}/workflow/",
+        {
+            "transition": "wf_activate",
+            "comment": "",
+        },
+    )
     info = WorkflowInfo.objects.get(workflow_object_id=pk, transition="wf_activate")
     assert info.user == user_campaign_change
 
@@ -387,10 +424,13 @@ def test_workflow_history_records_user(client_user_campaign_change: Client, camp
 def test_workflow_info_null_comment_when_empty(client_user_campaign_change: Client, campaign_new):
     """A blank comment is stored as NULL in WorkflowInfo."""
     pk = campaign_new.pk
-    client_user_campaign_change.post(f"/campaign/{pk}/workflow/", {
-        "transition": "wf_activate",
-        "comment": "",
-    })
+    client_user_campaign_change.post(
+        f"/campaign/{pk}/workflow/",
+        {
+            "transition": "wf_activate",
+            "comment": "",
+        },
+    )
     info = WorkflowInfo.objects.get(workflow_object_id=pk, transition="wf_activate")
     assert info.comment is None
 
@@ -405,6 +445,7 @@ def test_workflow_view_get_contains_campaign_name(client_user_campaign_change: C
 # ---------------------------------------------------------------------------
 # WorkflowViewPermissionRequired: access control tests
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.django_db
 def test_workflow_permission_required_allows_change_user(client_user_campaign_change: Client, campaign_new):
@@ -423,10 +464,13 @@ def test_workflow_permission_required_denies_view_only_user(client_user_campaign
 @pytest.mark.django_db
 def test_workflow_permission_required_denies_post_view_only_user(client_user_campaign_view: Client, campaign_new):
     """User with only view permission cannot POST a transition (403)."""
-    response = client_user_campaign_view.post(f"/campaign/{campaign_new.pk}/workflow/", {
-        "transition": "wf_activate",
-        "comment": "",
-    })
+    response = client_user_campaign_view.post(
+        f"/campaign/{campaign_new.pk}/workflow/",
+        {
+            "transition": "wf_activate",
+            "comment": "",
+        },
+    )
     assert response.status_code == 403
     campaign_new.refresh_from_db()
     assert campaign_new.state == CampaignState.NEW  # state unchanged
@@ -444,6 +488,7 @@ def test_workflow_permission_required_redirects_anonymous(client: Client, campai
 # WorkflowView.checks() system checks
 # ---------------------------------------------------------------------------
 
+
 def _errors(view_cls):
     """Collect all error messages from a view's checks()."""
     return [msg for chk in view_cls.checks() for msg in chk.messages()]
@@ -456,6 +501,7 @@ def _error_ids(view_cls):
 def test_workflow_view_checks_pass():
     """A correctly configured WorkflowView produces no check errors."""
     from tests.test1.app.views import CampaignWorkflowView
+
     assert _errors(CampaignWorkflowView) == []
 
 

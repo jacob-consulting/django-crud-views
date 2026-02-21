@@ -10,8 +10,12 @@ REG_ATTRIBUTE = re.compile(r"[a-z][a-z_]*")
 class ParentViewSet(BaseModel):
     name: str  # the name of the parent ViewSet
     attribute: str | None = None  # the model attribute with the ForeignKey to the parent model
-    pk_name: str | None = None  # the name of the primary key in the url pattern with _pk suffix, defaults to parent ViewSet name plus "_pk"
-    many_to_many_through_attribute: str | None = None  # the name of the parent's manay to many attribute that points to the child
+    pk_name: str | None = (
+        None  # the name of the primary key in the url pattern with _pk suffix, defaults to parent ViewSet name plus "_pk"
+    )
+    many_to_many_through_attribute: str | None = (
+        None  # the name of the parent's manay to many attribute that points to the child
+    )
 
     @field_validator("attribute", mode="plain")  # noqa
     @classmethod
@@ -38,7 +42,7 @@ class ParentViewSet(BaseModel):
         return value
 
     @property
-    def viewset(self) -> 'ViewSet':
+    def viewset(self) -> "ViewSet":
         """
         Get parent ViewSet from registry
         """

@@ -9,6 +9,7 @@ class OrderedCheckBase:
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         from ordered_model.models import OrderedModel
+
         # todo: move to system checks
         if not issubclass(self.model, OrderedModel):
             raise ValueError(f"{self.model} is not a subclass of OrderedModel")

@@ -6,7 +6,6 @@ import django_fsm
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("app", "0003_alter_polyanswer_options_and_more"),
     ]

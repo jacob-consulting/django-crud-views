@@ -41,9 +41,12 @@ def test_create_publisher(client_user_publisher_add: Client, cv_publisher):
     response = client_user_publisher_add.get("/publisher/create/")
     assert response.status_code == 200
 
-    response = client_user_publisher_add.post("/publisher/create/", {
-        "name": "Penguin Random House",
-    })
+    response = client_user_publisher_add.post(
+        "/publisher/create/",
+        {
+            "name": "Penguin Random House",
+        },
+    )
     assert response.status_code == 302
     assert response.url == "/publisher/"
 
@@ -57,9 +60,12 @@ def test_update_publisher(client_user_publisher_change: Client, cv_publisher, pu
     response = client_user_publisher_change.get(f"/publisher/{pk}/update/")
     assert response.status_code == 200
 
-    response = client_user_publisher_change.post(f"/publisher/{pk}/update/", {
-        "name": "Penguin Classics",
-    })
+    response = client_user_publisher_change.post(
+        f"/publisher/{pk}/update/",
+        {
+            "name": "Penguin Classics",
+        },
+    )
     assert response.status_code == 302
     assert response.url == "/publisher/"
 

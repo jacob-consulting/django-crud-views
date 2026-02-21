@@ -49,8 +49,9 @@ class FormSet(BaseModel, arbitrary_types_allowed=True):
 
         if self.klass.can_order:
             if not issubclass(self.klass.model, OrderedModel):
-                raise ValidationError(f"FormSet '{self.key}' model not a subclass of OrderedModel "
-                                      f"but formset.can_order is True")
+                raise ValidationError(
+                    f"FormSet '{self.key}' model not a subclass of OrderedModel but formset.can_order is True"
+                )
 
         if not issubclass(self.klass, BaseInlineFormSet):
             raise ValidationError(f"FormSet '{self.key}' klass not a subclass of BaseInlineFormSet")
@@ -79,13 +80,15 @@ class FormSet(BaseModel, arbitrary_types_allowed=True):
             return [self.original_key]
         return self.parent.hierarchy + [self.original_key]
 
-    def init(self,
-             request: HttpRequest,
-             forms: List[BaseForm],
-             index: int = 0,
-             parent: XForm | None = None,
-             parent_prefix: str | None = None,
-             level: int = 0) -> Iterable[XFormSet]:
+    def init(
+        self,
+        request: HttpRequest,
+        forms: List[BaseForm],
+        index: int = 0,
+        parent: XForm | None = None,
+        parent_prefix: str | None = None,
+        level: int = 0,
+    ) -> Iterable[XFormSet]:
         """
         Initialize the formset and all its children.
         This will be called recursively for all children.
@@ -101,7 +104,6 @@ class FormSet(BaseModel, arbitrary_types_allowed=True):
         parent_prefix_ = f"{parent_prefix}-" if parent_prefix else ""
 
         for i, form in enumerate(forms):
-
             prefix_key = f"{parent_prefix_}{form.instance.pk}-{index}"
             prefix = f"{self.key}-{prefix_key}"
 
@@ -123,7 +125,7 @@ class FormSet(BaseModel, arbitrary_types_allowed=True):
                 instance=formset_instance,
                 formset=self,
                 parent=parent,
-                management_form=formset_instance.management_form
+                management_form=formset_instance.management_form,
             )
 
             for formset_instance_form_index, formset_instance_form in enumerate(formset_instance.forms):
@@ -132,7 +134,7 @@ class FormSet(BaseModel, arbitrary_types_allowed=True):
                     level=level,
                     prefix_key=formset_instance_form_prefix_key,
                     form=formset_instance_form,
-                    parent=x_formset
+                    parent=x_formset,
                 )
                 x_formset.forms.append(x_form)
 
@@ -143,20 +145,21 @@ class FormSet(BaseModel, arbitrary_types_allowed=True):
                         level=level + 1,
                         parent=x_form,
                         parent_prefix=formset_instance_form_prefix_key,
-                        index=index
+                        index=index,
                     )
                     x_form.formsets.extend(list(x_formsets))
 
             yield x_formset
 
-    def template(self,
-                 pk: int | None,
-                 index: int,
-                 force_form_index: int | None = None,
-                 parent_prefix: str | None = None,
-                 level: int = 0,
-                 parent: XForm | None = None
-                 ) -> Iterable[XFormSet]:
+    def template(
+        self,
+        pk: int | None,
+        index: int,
+        force_form_index: int | None = None,
+        parent_prefix: str | None = None,
+        level: int = 0,
+        parent: XForm | None = None,
+    ) -> Iterable[XFormSet]:
         """
         Similar to init, but this will be called to render the template.
         Yes, it's similar to init but not the same.
@@ -168,10 +171,7 @@ class FormSet(BaseModel, arbitrary_types_allowed=True):
         prefix_key = f"{parent_prefix_}{pk}-{index}"
         prefix = f"{self.key}-{prefix_key}"
 
-        kwargs = {
-            "formset": self,
-            "prefix": prefix
-        }
+        kwargs = {"formset": self, "prefix": prefix}
         formset_instance = self.klass(**kwargs)
 
         x_formset = XFormSet(
@@ -181,7 +181,7 @@ class FormSet(BaseModel, arbitrary_types_allowed=True):
             formset=self,
             parent=parent,
             management_form=formset_instance.management_form,
-            start_at_rows=True if level == 0 else False
+            start_at_rows=True if level == 0 else False,
         )
 
         # get the forms
@@ -199,7 +199,6 @@ class FormSet(BaseModel, arbitrary_types_allowed=True):
             # todo: limit number of formset_instance.forms to 1 ?
 
         for formset_instance_form_index, formset_instance_form in enumerate(forms):
-
             # force the form index on level 0
             form_index = force_form_index if level == 0 else formset_instance_form_index
             formset_instance_form_prefix_key = f"{prefix_key}-{form_index}"
@@ -210,7 +209,7 @@ class FormSet(BaseModel, arbitrary_types_allowed=True):
                 form=formset_instance_form,
                 formset=self,
                 # instance=formset_instance,
-                parent=x_formset
+                parent=x_formset,
             )
             x_formset.forms.append(x_form)
 
@@ -252,7 +251,7 @@ class FormSets(BaseModel, arbitrary_types_allowed=True):
     js_data: dict = Field(default_factory=lambda: dict())
     scripts: bool = True
 
-    @model_validator(mode='before')
+    @model_validator(mode="before")
     @classmethod
     def check_keys(cls, data: Any) -> Any:
         formsets = data.get("formsets", dict())
@@ -261,7 +260,7 @@ class FormSets(BaseModel, arbitrary_types_allowed=True):
                 raise ValueError(f"Formset key must contain only lowercase letters and slashes, got {key}")
         return data
 
-    @model_validator(mode='after')
+    @model_validator(mode="after")
     def apply_hierarchy(self) -> Self:
         # todo: check this
         def apply_key(formset: FormSet, key: str, original_key: str, parent: FormSet | None = None):

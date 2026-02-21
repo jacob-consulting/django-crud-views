@@ -3,7 +3,7 @@ import nox
 DJANGO_VERSIONS = ["4.2", "5.2", "6.0"]
 
 
-@nox.session(python=["3.12", "3.13", "3.14"], venv_backend='uv')
+@nox.session(python=["3.12", "3.13", "3.14"], venv_backend="uv")
 @nox.parametrize("django", DJANGO_VERSIONS)
 def tests(session, django):
     # Django 4.2 does not support Python 3.14

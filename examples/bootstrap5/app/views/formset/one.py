@@ -18,12 +18,8 @@ _PolyOneForm = modelform_factory(
 
 
 class PolyOneForm(CrispyForm, _PolyOneForm):
-
     def get_layout_fields(self):
-        return [
-            Row(Column6("shared"), Column6("one")),
-            Row(Formsets())
-        ]
+        return [Row(Column6("shared"), Column6("one")), Row(Formsets())]
 
     @property
     def helper(self) -> FormHelper:

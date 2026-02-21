@@ -20,6 +20,11 @@ tasks:
       - uv pip install --upgrade .[polymorphic,workflow,dev,test]
     silent: true
 
+  format:
+    cmds:
+      - uv run ruff format .
+    silent: true
+
   build:
     cmds:
       - uv build

@@ -10,6 +10,7 @@ class TableWithViewContext(tables.Table):
     """
     Table with view context
     """
+
     ca: Type[ColAttr] = ColAttr
 
     def __init__(self, *args, **kwargs):
@@ -24,6 +25,7 @@ class Table(TableWithViewContext):
     """
     Table with action column
     """
+
     actions = ActionColumn()
 
     def __init__(self, *args, **kwargs):

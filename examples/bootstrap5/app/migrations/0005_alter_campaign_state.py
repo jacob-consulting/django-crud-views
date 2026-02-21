@@ -5,7 +5,6 @@ import django_fsm
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("app", "0004_campaign"),
     ]

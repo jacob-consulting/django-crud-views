@@ -4,17 +4,18 @@ from crispy_forms.layout import Row
 from app.models import Bar
 from crud_views.lib.crispy import CrispyModelForm, Column4, CrispyModelViewMixin, CrispyDeleteForm
 from crud_views.lib.table import Table, LinkChildColumn, LinkDetailColumn
-from crud_views.lib.views import DetailViewPermissionRequired, UpdateViewPermissionRequired, \
-    CreateViewPermissionRequired, \
-    ListViewTableMixin, DeleteViewPermissionRequired, ListViewPermissionRequired, CreateViewParentMixin
+from crud_views.lib.views import (
+    DetailViewPermissionRequired,
+    UpdateViewPermissionRequired,
+    CreateViewPermissionRequired,
+    ListViewTableMixin,
+    DeleteViewPermissionRequired,
+    ListViewPermissionRequired,
+    CreateViewParentMixin,
+)
 from crud_views.lib.viewset import ViewSet, ParentViewSet
 
-cv_bar = ViewSet(
-    model=Bar,
-    name="bar",
-    parent=ParentViewSet(name="foo"),
-    icon_header="fa-solid fa-bone"
-)
+cv_bar = ViewSet(model=Bar, name="bar", parent=ParentViewSet(name="foo"), icon_header="fa-solid fa-bone")
 
 
 class BarForm(CrispyModelForm):

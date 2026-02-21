@@ -104,7 +104,6 @@ class WorkflowView(CustomFormView):
 
         # todo: configurable
         with transaction.atomic():
-
             # get old state
             state_old = self.object.state
 
@@ -142,4 +141,3 @@ class WorkflowView(CustomFormView):
 
 class WorkflowViewPermissionRequired(CrudViewPermissionRequiredMixin, WorkflowView):
     cv_permission = "change"
-   

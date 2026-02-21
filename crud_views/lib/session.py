@@ -35,6 +35,7 @@ class SessionData(BaseModel):
     Session data for django-viewset.
     Data ist stored in a hierarchy: app -> viewset -> view -> data
     """
+
     view: Any = None
     apps: Dict[str, ViewSetData] = Field(default_factory=default_dict)  # app ViewSetData
 
@@ -71,7 +72,11 @@ class SessionData(BaseModel):
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        serialized_data = self.model_dump(exclude={"view",})
+        serialized_data = self.model_dump(
+            exclude={
+                "view",
+            }
+        )
         self.view.request.session[crud_views_settings.session_data_key] = serialized_data
 
     def __setitem__(self, key: str, value: Any):

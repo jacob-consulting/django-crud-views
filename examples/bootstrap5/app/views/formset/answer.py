@@ -1,7 +1,10 @@
 from crispy_forms.layout import Row
 from crud_views.lib.crispy import Column4, Column8
-from polymorphic.formsets import polymorphic_inlineformset_factory, PolymorphicFormSetChild, \
-    BasePolymorphicInlineFormSet
+from polymorphic.formsets import (
+    polymorphic_inlineformset_factory,
+    PolymorphicFormSetChild,
+    BasePolymorphicInlineFormSet,
+)
 
 from app.models.poly import Poly, PolyAnswer, PolyAnswerText, PolyAnswerNumber
 from crud_views.lib.formsets.inline_formset import CrispyInlineModelForm
@@ -26,7 +29,8 @@ PolyAnswerTextFormSetChild = PolymorphicFormSetChild(
     localized_fields=None,
     labels=None,
     help_texts=None,
-    error_messages=None)
+    error_messages=None,
+)
 
 
 class PolyAnswerNumberForm(CrispyInlineModelForm):
@@ -34,7 +38,8 @@ class PolyAnswerNumberForm(CrispyInlineModelForm):
         model = PolyAnswerNumber
         fields = [
             # "id",
-            "answer", "number"
+            "answer",
+            "number",
         ]
 
     def get_layout_fields(self):
@@ -51,7 +56,8 @@ PolyAnswerNumberFormSetChild = PolymorphicFormSetChild(
     localized_fields=None,
     labels=None,
     help_texts=None,
-    error_messages=None)
+    error_messages=None,
+)
 
 
 # todo: move this to module
@@ -66,12 +72,9 @@ PolyAnswerFormSet = polymorphic_inlineformset_factory(
     parent_model=Poly,
     model=PolyAnswer,
     formset=PolymorphicInlineFormSet,
-    formset_children=[
-        PolyAnswerTextFormSetChild,
-        PolyAnswerNumberFormSetChild
-    ],
+    formset_children=[PolyAnswerTextFormSetChild, PolyAnswerNumberFormSetChild],
     fields="__all__",
-    extra=0,    # polymorphic inlines cannot be created currently
+    extra=0,  # polymorphic inlines cannot be created currently
     can_delete=False,
     can_order=False,
 )

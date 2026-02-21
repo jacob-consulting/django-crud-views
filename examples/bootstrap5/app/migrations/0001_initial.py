@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -19,9 +18,7 @@ class Migration(migrations.Migration):
             fields=[
                 (
                     "order",
-                    models.PositiveIntegerField(
-                        db_index=True, editable=False, verbose_name="order"
-                    ),
+                    models.PositiveIntegerField(db_index=True, editable=False, verbose_name="order"),
                 ),
                 (
                     "id",
@@ -168,9 +165,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "poly",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to="app.poly"
-                    ),
+                    models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="app.poly"),
                 ),
                 (
                     "polymorphic_ctype",
@@ -202,9 +197,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "order",
-                    models.PositiveIntegerField(
-                        db_index=True, editable=False, verbose_name="order"
-                    ),
+                    models.PositiveIntegerField(db_index=True, editable=False, verbose_name="order"),
                 ),
                 ("choice", models.CharField(max_length=100)),
             ],
@@ -228,9 +221,7 @@ class Migration(migrations.Migration):
                 ("name", models.CharField(max_length=100)),
                 (
                     "bar",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to="app.bar"
-                    ),
+                    models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="app.bar"),
                 ),
             ],
         ),
@@ -239,9 +230,7 @@ class Migration(migrations.Migration):
             fields=[
                 (
                     "order",
-                    models.PositiveIntegerField(
-                        db_index=True, editable=False, verbose_name="order"
-                    ),
+                    models.PositiveIntegerField(db_index=True, editable=False, verbose_name="order"),
                 ),
                 (
                     "id",
@@ -258,9 +247,7 @@ class Migration(migrations.Migration):
                 ("modified_dt", models.DateTimeField(auto_now=True)),
                 (
                     "author",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to="app.author"
-                    ),
+                    models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="app.author"),
                 ),
             ],
             options={
@@ -273,9 +260,7 @@ class Migration(migrations.Migration):
             fields=[
                 (
                     "order",
-                    models.PositiveIntegerField(
-                        db_index=True, editable=False, verbose_name="order"
-                    ),
+                    models.PositiveIntegerField(db_index=True, editable=False, verbose_name="order"),
                 ),
                 (
                     "id",
@@ -292,15 +277,11 @@ class Migration(migrations.Migration):
                 ("text", models.TextField(verbose_name="Multiline Text")),
                 (
                     "boolean",
-                    models.BooleanField(
-                        default=None, null=True, verbose_name="A boolean value"
-                    ),
+                    models.BooleanField(default=None, null=True, verbose_name="A boolean value"),
                 ),
                 (
                     "boolean_two",
-                    models.BooleanField(
-                        default=None, null=True, verbose_name="Another boolean value"
-                    ),
+                    models.BooleanField(default=None, null=True, verbose_name="Another boolean value"),
                 ),
                 ("date", models.DateField(verbose_name="A date field")),
                 (
@@ -332,9 +313,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="bar",
             name="foo",
-            field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE, to="app.foo"
-            ),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="app.foo"),
         ),
         migrations.CreateModel(
             name="Membership",
@@ -352,24 +331,18 @@ class Migration(migrations.Migration):
                 ("invite_reason", models.CharField(max_length=64)),
                 (
                     "group",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to="app.group"
-                    ),
+                    models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="app.group"),
                 ),
                 (
                     "person",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to="app.person"
-                    ),
+                    models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="app.person"),
                 ),
             ],
         ),
         migrations.AddField(
             model_name="group",
             name="members",
-            field=models.ManyToManyField(
-                related_name="group", through="app.Membership", to="app.person"
-            ),
+            field=models.ManyToManyField(related_name="group", through="app.Membership", to="app.person"),
         ),
         migrations.CreateModel(
             name="PolyOne",
@@ -498,42 +471,30 @@ class Migration(migrations.Migration):
                 ("date_joined", models.DateField()),
                 (
                     "parent",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to="app.parent"
-                    ),
+                    models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="app.parent"),
                 ),
                 (
                     "poly",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to="app.poly"
-                    ),
+                    models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="app.poly"),
                 ),
             ],
         ),
         migrations.AddField(
             model_name="parent",
             name="polys",
-            field=models.ManyToManyField(
-                related_name="parents", through="app.PolyParent", to="app.poly"
-            ),
+            field=models.ManyToManyField(related_name="parents", through="app.PolyParent", to="app.poly"),
         ),
         migrations.AddConstraint(
             model_name="membership",
-            constraint=models.UniqueConstraint(
-                fields=("person", "group"), name="unique_person_group"
-            ),
+            constraint=models.UniqueConstraint(fields=("person", "group"), name="unique_person_group"),
         ),
         migrations.AddField(
             model_name="polytwochoice",
             name="poly",
-            field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE, to="app.polytwo"
-            ),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="app.polytwo"),
         ),
         migrations.AddConstraint(
             model_name="polyparent",
-            constraint=models.UniqueConstraint(
-                fields=("poly", "parent"), name="unique_poly_parent"
-            ),
+            constraint=models.UniqueConstraint(fields=("poly", "parent"), name="unique_poly_parent"),
         ),
     ]

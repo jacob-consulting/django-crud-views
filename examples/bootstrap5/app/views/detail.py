@@ -12,15 +12,11 @@ from crud_views.lib.views import (
     MessageMixin,
     ListViewTableMixin,
     ListViewPermissionRequired,
-    DeleteViewPermissionRequired
+    DeleteViewPermissionRequired,
 )
 from crud_views.lib.viewset import ViewSet
 
-cv_detail = ViewSet(
-    model=Detail,
-    name="detail",
-    icon_header="fa-solid fa-circle-info"
-)
+cv_detail = ViewSet(model=Detail, name="detail", icon_header="fa-solid fa-circle-info")
 
 
 class DetailForm(CrispyModelForm):
@@ -30,26 +26,11 @@ class DetailForm(CrispyModelForm):
 
     def get_layout_fields(self):
         return [
-            Fieldset("Numbers",
-                     Row(
-                         Column4("integer"), Column4("number")
-                     )),
-            Fieldset("Texts",
-                     Row(
-                         Column4("char"), Column8("text")
-                     )),
-            Fieldset("Booleans",
-                     Row(
-                         Column4("boolean"), Column4("boolean_two")
-                     )),
-            Fieldset("Date an time",
-                     Row(
-                         Column4("date"), Column4("date_time")
-                     )),
-            Fieldset("References",
-                     Row(
-                         Column4("author"), Column4("foo")
-                     )),
+            Fieldset("Numbers", Row(Column4("integer"), Column4("number"))),
+            Fieldset("Texts", Row(Column4("char"), Column8("text"))),
+            Fieldset("Booleans", Row(Column4("boolean"), Column4("boolean_two"))),
+            Fieldset("Date an time", Row(Column4("date"), Column4("date_time"))),
+            Fieldset("References", Row(Column4("author"), Column4("foo"))),
         ]
 
 

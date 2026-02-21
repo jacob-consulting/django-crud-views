@@ -2,14 +2,21 @@ import django_tables2 as tables
 
 from app.models import Foo
 from crud_views.lib.table import Table, LinkChildColumn, LinkDetailColumn
-from crud_views.lib.views import DetailViewPermissionRequired, UpdateViewPermissionRequired, CreateViewPermissionRequired, \
-    ListViewTableMixin, DeleteViewPermissionRequired, ListViewPermissionRequired
+from crud_views.lib.views import (
+    DetailViewPermissionRequired,
+    UpdateViewPermissionRequired,
+    CreateViewPermissionRequired,
+    ListViewTableMixin,
+    DeleteViewPermissionRequired,
+    ListViewPermissionRequired,
+)
 from crud_views.lib.viewset import ViewSet
 
 cv_foo = ViewSet(
     model=Foo,
     name="foo",
 )
+
 
 class FooTable(Table):
     id = LinkDetailColumn()

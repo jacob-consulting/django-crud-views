@@ -47,9 +47,12 @@ def test_child_list_books(client_user_book_view: Client, cv_book, publisher_peng
 
 @pytest.mark.django_db
 def test_child_list_filters_by_parent(
-    client_user_book_view: Client, cv_book,
-    publisher_penguin, publisher_harpercollins,
-    book_hitchhiker, book_other_publisher
+    client_user_book_view: Client,
+    cv_book,
+    publisher_penguin,
+    publisher_harpercollins,
+    book_hitchhiker,
+    book_other_publisher,
 ):
     # List books under Penguin — should only see Hitchhiker
     url = f"/publisher/{publisher_penguin.pk}/book/"

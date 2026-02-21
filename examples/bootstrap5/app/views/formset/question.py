@@ -6,9 +6,14 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Row, LayoutObject
 from crud_views.lib.crispy import CrispyModelForm, Column4, CrispyModelViewMixin, CrispyDeleteForm, Column8
 from crud_views.lib.table import Table, LinkDetailColumn
-from crud_views.lib.views import DetailViewPermissionRequired, UpdateViewPermissionRequired, \
-    CreateViewPermissionRequired, \
-    ListViewTableMixin, DeleteViewPermissionRequired, ListViewPermissionRequired
+from crud_views.lib.views import (
+    DetailViewPermissionRequired,
+    UpdateViewPermissionRequired,
+    CreateViewPermissionRequired,
+    ListViewTableMixin,
+    DeleteViewPermissionRequired,
+    ListViewPermissionRequired,
+)
 from crud_views.lib.viewset import ViewSet
 from django.forms.models import inlineformset_factory
 from django.utils.translation import gettext as _
@@ -16,11 +21,7 @@ from django.utils.translation import gettext as _
 from app.models.questions import Question, QuestionChoice, QuestionTag, QuestionChoiceTag, QuestionChoiceTagAnnotation
 from crud_views.lib.formsets import FormSets, FormSet, FormSetMixin, InlineFormSet, Formsets
 
-cv_question = ViewSet(
-    model=Question,
-    name="question",
-    icon_header="fa-solid fa-question"
-)
+cv_question = ViewSet(model=Question, name="question", icon_header="fa-solid fa-question")
 
 EXTRA = 1
 
@@ -31,10 +32,7 @@ class QuestionForm(CrispyModelForm):
         fields = ["question"]
 
     def get_layout_fields(self):
-        return [
-            Row(Column4("question")),
-            Formsets()
-        ]
+        return [Row(Column4("question")), Formsets()]
 
     @property
     def helper(self) -> FormHelper:
@@ -59,7 +57,6 @@ class QuestionDetailView(DetailViewPermissionRequired):
     model = Question
     cv_viewset = cv_question
 
-
     cv_property_display = [
         {
             "title": _("Properties"),
@@ -77,19 +74,14 @@ class QuestionChoiceForm(CrispyModelForm):
     class Meta:
         model = QuestionChoice
         fields = [
-            "choice", "help_text",
+            "choice",
+            "help_text",
         ]
 
 
 class ChoiceInlineFormSet(InlineFormSet):
-
     def get_helper_layout_fields(self) -> List[LayoutObject]:
-        return [
-            Row(
-                Column4("choice"), Column4("help_text"),
-                self.form_control_col4
-            )
-        ]
+        return [Row(Column4("choice"), Column4("help_text"), self.form_control_col4)]
 
 
 ChoiceFormSet = inlineformset_factory(
@@ -98,7 +90,8 @@ ChoiceFormSet = inlineformset_factory(
     formset=ChoiceInlineFormSet,
     form=QuestionChoiceForm,
     fields=[
-        "choice", "help_text",  # "order",
+        "choice",
+        "help_text",  # "order",
     ],
     extra=EXTRA,
     # this adds fields to the form
@@ -115,14 +108,8 @@ class QuestionTagForm(CrispyModelForm):
 
 
 class QuestionTagInlineFormSet(InlineFormSet):
-
     def get_helper_layout_fields(self) -> List[LayoutObject]:
-        return [
-            Row(
-                Column8("tag"),
-                self.form_control_col4
-            )
-        ]
+        return [Row(Column8("tag"), self.form_control_col4)]
 
 
 QuestionTagFormSet = inlineformset_factory(
@@ -142,18 +129,14 @@ QuestionTagFormSet = inlineformset_factory(
 class QuestionChoiceTagForm(CrispyModelForm):
     class Meta:
         model = QuestionChoiceTag
-        fields = ["tag", ]
+        fields = [
+            "tag",
+        ]
 
 
 class QuestionChoiceTagInlineFormSet(InlineFormSet):
-
     def get_helper_layout_fields(self) -> List[LayoutObject]:
-        return [
-            Row(
-                Column8("tag"),
-                self.form_control_col4
-            )
-        ]
+        return [Row(Column8("tag"), self.form_control_col4)]
 
 
 QuestionChoiceTagFormSet = inlineformset_factory(
@@ -171,14 +154,8 @@ QuestionChoiceTagFormSet = inlineformset_factory(
 
 
 class QuestionChoiceTagAnnotationInlineFormSet(InlineFormSet):
-
     def get_helper_layout_fields(self) -> List[LayoutObject]:
-        return [
-            Row(
-                Column8("annotation"),
-                self.form_control_col4
-            )
-        ]
+        return [Row(Column8("annotation"), self.form_control_col4)]
 
 
 QuestionChoiceTagAnnotationFormSet = inlineformset_factory(
@@ -214,16 +191,16 @@ cv_formsets: FormSets = FormSets(
                             fields=["annotation"],
                             pk_field="id",
                         )
-                    )
+                    ),
                 )
-            )
+            ),
         ),
         tags=FormSet(
             title=_("Tags"),
             klass=QuestionTagFormSet,
             fields=["tag"],
             pk_field="id",
-        )
+        ),
     )
 )
 

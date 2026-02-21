@@ -73,10 +73,7 @@ def test_create_select_shows_form(client_user_vehicle_add: Client, cv_vehicle):
 def test_create_select_redirects_to_create(client_user_vehicle_add: Client, cv_vehicle):
     """Submitting create-select should redirect to the polymorphic create view."""
     car_ct = ContentType.objects.get_for_model(Car)
-    response = client_user_vehicle_add.post(
-        "/vehicle/create/select/",
-        {"polymorphic_ctype_id": car_ct.id}
-    )
+    response = client_user_vehicle_add.post("/vehicle/create/select/", {"polymorphic_ctype_id": car_ct.id})
     assert response.status_code == 302
     assert f"/vehicle/create//ct/{car_ct.id}/" in response.url
 
@@ -91,10 +88,7 @@ def test_create_car(client_user_vehicle_add: Client, cv_vehicle):
     assert response.status_code == 200
 
     # POST the form
-    response = client_user_vehicle_add.post(
-        f"/vehicle/create//ct/{car_ct.id}/",
-        {"name": "Coupe", "doors": 2}
-    )
+    response = client_user_vehicle_add.post(f"/vehicle/create//ct/{car_ct.id}/", {"name": "Coupe", "doors": 2})
     assert response.status_code == 302
 
     car = Car.objects.get(name="Coupe")
@@ -109,8 +103,7 @@ def test_create_truck(client_user_vehicle_add: Client, cv_vehicle):
     truck_ct = ContentType.objects.get_for_model(Truck)
 
     response = client_user_vehicle_add.post(
-        f"/vehicle/create//ct/{truck_ct.id}/",
-        {"name": "Pickup", "payload_tons": 5}
+        f"/vehicle/create//ct/{truck_ct.id}/", {"name": "Pickup", "payload_tons": 5}
     )
     assert response.status_code == 302
 
@@ -124,10 +117,7 @@ def test_update_car(client_user_vehicle_change: Client, cv_vehicle, car_sedan):
     response = client_user_vehicle_change.get(f"/vehicle/{car_sedan.pk}/update/")
     assert response.status_code == 200
 
-    response = client_user_vehicle_change.post(
-        f"/vehicle/{car_sedan.pk}/update/",
-        {"name": "Sports Car", "doors": 2}
-    )
+    response = client_user_vehicle_change.post(f"/vehicle/{car_sedan.pk}/update/", {"name": "Sports Car", "doors": 2})
     assert response.status_code == 302
 
     car_sedan.refresh_from_db()
@@ -139,8 +129,7 @@ def test_update_car(client_user_vehicle_change: Client, cv_vehicle, car_sedan):
 def test_update_truck(client_user_vehicle_change: Client, cv_vehicle, truck_semi):
     """Updating a Truck through the polymorphic update view."""
     response = client_user_vehicle_change.post(
-        f"/vehicle/{truck_semi.pk}/update/",
-        {"name": "Big Rig", "payload_tons": 30}
+        f"/vehicle/{truck_semi.pk}/update/", {"name": "Big Rig", "payload_tons": 30}
     )
     assert response.status_code == 302
 

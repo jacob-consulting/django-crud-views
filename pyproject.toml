@@ -52,7 +52,7 @@ all = [
 ]
 
 dev = [
-    "black",
+    "ruff",
     "bump-my-version",
     "mkdocs (>=1.6.1)",
     "mkdocs-awesome-pages-plugin (>=2.10.1)",
@@ -90,6 +90,13 @@ packages = [
 ]
 
 # todo: polymorphic-minimal
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
 
 [tool.pytest.ini_options]
 addopts = "--strict-markers"

@@ -27,11 +27,14 @@ class CrudView(metaclass=CrudViewMetaClass):
     """
     A view that is part of a ViewSet
     """
-    cv_viewset: 'ViewSet' = None
+
+    cv_viewset: "ViewSet" = None
     cv_key: str = None  # the key to register the view (i.e. detail, list, create, update, delete)
     cv_path: str = None  # i.e. detail, update or "" for list views
     cv_object: bool = True  # view has object context (only list views do not have object context)
-    cv_backend_only: bool = False  # views is only available in the backend, so i.e. title and paragraph templates are not required
+    cv_backend_only: bool = (
+        False  # views is only available in the backend, so i.e. title and paragraph templates are not required
+    )
     cv_list_actions: List[str] | None = None  # actions for the list view
     cv_list_action_method: str = "get"  # method to call for list actions
     cv_context_actions: List[str] | None = None  # context actions for the view (top right)
@@ -80,7 +83,7 @@ class CrudView(metaclass=CrudViewMetaClass):
                 "cv_header_template",
                 "cv_paragraph_template",
                 "cv_action_label_template",
-                "cv_action_short_label_template"
+                "cv_action_short_label_template",
             ]:
                 yield CheckTemplateOrCode(context=cls, attribute=attribute)
 
@@ -129,27 +132,35 @@ class CrudView(metaclass=CrudViewMetaClass):
 
     @property
     def cv_header(self) -> str:
-        return self.render_snippet(self.cv_get_meta(),
-                                   self.cv_header_template,
-                                   self.cv_header_template_code, )
+        return self.render_snippet(
+            self.cv_get_meta(),
+            self.cv_header_template,
+            self.cv_header_template_code,
+        )
 
     @property
     def cv_paragraph(self) -> str:
-        return self.render_snippet(self.cv_get_meta(),
-                                   self.cv_paragraph_template,
-                                   self.cv_paragraph_template_code, )
+        return self.render_snippet(
+            self.cv_get_meta(),
+            self.cv_paragraph_template,
+            self.cv_paragraph_template_code,
+        )
 
     @classmethod
     def cv_get_action_label(cls, context: ViewContext) -> str:
-        return cls.render_snippet(cls.cv_viewset.get_meta(context),
-                                  cls.cv_action_label_template,
-                                  cls.cv_action_label_template_code, )
+        return cls.render_snippet(
+            cls.cv_viewset.get_meta(context),
+            cls.cv_action_label_template,
+            cls.cv_action_label_template_code,
+        )
 
     @classmethod
     def cv_get_action_short_label(cls, context: ViewContext) -> str:
-        return cls.render_snippet(cls.cv_viewset.get_meta(context),
-                                  cls.cv_action_short_label_template,
-                                  cls.cv_action_short_label_template_code, )
+        return cls.render_snippet(
+            cls.cv_viewset.get_meta(context),
+            cls.cv_action_short_label_template,
+            cls.cv_action_short_label_template_code,
+        )
 
     @classmethod
     def cv_get_dict(cls, context: ViewContext, **extra) -> Dict[str, Any]:
@@ -201,8 +212,9 @@ class CrudView(metaclass=CrudViewMetaClass):
     def cv_get_url_extra_kwargs(cls) -> dict:
         return dict()
 
-    def cv_get_router_and_args(self, key: str | None = None, obj=None, extra_kwargs: dict | None = None) -> Tuple[
-        str, tuple, dict]:
+    def cv_get_router_and_args(
+        self, key: str | None = None, obj=None, extra_kwargs: dict | None = None
+    ) -> Tuple[str, tuple, dict]:
         """
         Get the router name, args, kwargs url for a sibling defined by a key
         """
@@ -265,8 +277,7 @@ class CrudView(metaclass=CrudViewMetaClass):
                 return cb
         return None
 
-    def cv_get_oid(self, key: str,
-                   obj: Model | None = None) -> str | None:
+    def cv_get_oid(self, key: str, obj: Model | None = None) -> str | None:
         """
         get unique object id
         """
@@ -275,11 +286,9 @@ class CrudView(metaclass=CrudViewMetaClass):
         pk = str(obj.pk).replace("-", "").replace(" ", "")
         return f"{self.cv_viewset.name}_{key}_{pk}"
 
-    def cv_get_context(self,
-                       key: str | None = None,
-                       obj: Model | None = None,
-                       user: User | None = None,
-                       request=None) -> Dict[str, Any]:
+    def cv_get_context(
+        self, key: str | None = None, obj: Model | None = None, user: User | None = None, request=None
+    ) -> Dict[str, Any]:
         """
         Get template context for this view for a key and an optional object
         """
@@ -318,18 +327,12 @@ class CrudView(metaclass=CrudViewMetaClass):
 
         return data
 
-    def get_cancel_button_context(self,
-                                  obj: Model | None = None,
-                                  user: User | None = None,
-                                  request=None) -> dict:
+    def get_cancel_button_context(self, obj: Model | None = None, user: User | None = None, request=None) -> dict:
         """
         Get the context for the cancel button
         """
         url = self.cv_get_url(key=self.cv_cancel_key, obj=obj)
-        return dict(
-            cv_url=url,
-            cv_action_label=_("Cancel")
-        )
+        return dict(cv_url=url, cv_action_label=_("Cancel"))
 
     def cv_get_child_url(self, name: str, key: str, obj: Model | None = None) -> str:
         """

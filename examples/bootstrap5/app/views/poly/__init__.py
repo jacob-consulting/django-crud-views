@@ -8,8 +8,10 @@ from app.views.poly.two import PolyTwoForm
 from crud_views.lib.crispy import Column4, CrispyModelViewMixin
 from crud_views.lib.crispy.form import CrispyForm
 from crud_views_polymorphic.lib import (
-    PolymorphicCreateSelectView, PolymorphicCreateViewPermissionRequired,
-    PolymorphicUpdateViewPermissionRequired, PolymorphicDetailViewPermissionRequired,
+    PolymorphicCreateSelectView,
+    PolymorphicCreateViewPermissionRequired,
+    PolymorphicUpdateViewPermissionRequired,
+    PolymorphicDetailViewPermissionRequired,
 )
 from crud_views_polymorphic.lib.create_select import PolymorphicContentTypeForm
 from crud_views_polymorphic.lib.delete import PolymorphicDeleteViewPermissionRequired
@@ -18,11 +20,7 @@ from crud_views.lib.views import ListViewPermissionRequired
 from crud_views.lib.views import ListViewTableMixin
 from crud_views.lib.viewset import ViewSet
 
-cv_poly = ViewSet(
-    model=Poly,
-    name="poly",
-    icon_header="fa-solid fa-sun"
-)
+cv_poly = ViewSet(model=Poly, name="poly", icon_header="fa-solid fa-sun")
 
 
 class PolyTable(Table):
@@ -34,12 +32,10 @@ class PolyListView(ListViewTableMixin, ListViewPermissionRequired):
     model = Poly
     table_class = PolyTable
     cv_viewset = cv_poly
-    cv_list_actions = [
-        "detail",
-        "update",
-        "delete"
+    cv_list_actions = ["detail", "update", "delete"]
+    cv_context_actions = [
+        "create_select",
     ]
-    cv_context_actions = ["create_select", ]
 
 
 class CrispyPolymorphicContentTypeForm(CrispyForm, PolymorphicContentTypeForm):
@@ -59,19 +55,13 @@ class PolyCreateView(CrispyModelViewMixin, PolymorphicCreateViewPermissionRequir
     model = Poly
     cv_viewset = cv_poly
     cv_context_actions = ["home"]
-    polymorphic_forms = {
-        PolyOne: PolyOneForm,
-        PolyTwo: PolyTwoForm
-    }
+    polymorphic_forms = {PolyOne: PolyOneForm, PolyTwo: PolyTwoForm}
 
 
 class PolyUpdateView(CrispyModelViewMixin, PolymorphicUpdateViewPermissionRequired):
     model = Poly
     cv_viewset = cv_poly
-    polymorphic_forms = {
-        PolyOne: PolyOneForm,
-        PolyTwo: PolyTwoForm
-    }
+    polymorphic_forms = {PolyOne: PolyOneForm, PolyTwo: PolyTwoForm}
 
 
 class PolyDeleteView(PolymorphicDeleteViewPermissionRequired):

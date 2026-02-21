@@ -70,4 +70,6 @@ class ColAttr:
     w100: ColumnAttrs = ColumnAttrs.td_class("cv-col-100")
 
     # extra
-    action: ColumnAttrs = ColumnAttrs.th_class("d-flex justify-content-end") | ColumnAttrs.td_class("d-flex justify-content-end")
+    action: ColumnAttrs = ColumnAttrs.th_class("d-flex justify-content-end") | ColumnAttrs.td_class(
+        "d-flex justify-content-end"
+    )

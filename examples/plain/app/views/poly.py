@@ -3,8 +3,10 @@ from django.forms import modelform_factory
 
 from app.models import Poly, PolyOne, PolyTwo
 from crud_views_polymorphic.lib import (
-    PolymorphicCreateSelectView, PolymorphicCreateViewPermissionRequired,
-    PolymorphicUpdateViewPermissionRequired, PolymorphicDetailViewPermissionRequired,
+    PolymorphicCreateSelectView,
+    PolymorphicCreateViewPermissionRequired,
+    PolymorphicUpdateViewPermissionRequired,
+    PolymorphicDetailViewPermissionRequired,
 )
 from crud_views_polymorphic.lib.delete import PolymorphicDeleteViewPermissionRequired
 from crud_views.lib.views import ListViewPermissionRequired
@@ -27,12 +29,10 @@ class PolyListView(ListViewTableMixin, ListViewPermissionRequired):
     model = Poly
     table_class = PolyTable
     cv_viewset = cv_poly
-    cv_list_actions = [
-        "detail",
-        "update",
-        "delete"
+    cv_list_actions = ["detail", "update", "delete"]
+    cv_context_actions = [
+        "create_select",
     ]
-    cv_context_actions = ["create_select", ]
 
 
 class PolyCreateSelectView(PolymorphicCreateSelectView):
@@ -61,10 +61,7 @@ PolyTwoFormCreate = modelform_factory(
 class PolyCreateView(PolymorphicCreateViewPermissionRequired):
     model = Poly
     cv_viewset = cv_poly
-    polymorphic_forms = {
-        PolyOne: PolyOneFormCreate,
-        PolyTwo: PolyTwoFormCreate
-    }
+    polymorphic_forms = {PolyOne: PolyOneFormCreate, PolyTwo: PolyTwoFormCreate}
 
 
 PolyOneFormUpdate = modelform_factory(
@@ -87,10 +84,7 @@ PolyTwoFormUpdate = modelform_factory(
 class PolyUpdateView(PolymorphicUpdateViewPermissionRequired):
     model = Poly
     cv_viewset = cv_poly
-    polymorphic_forms = {
-        PolyOne: PolyOneFormUpdate,
-        PolyTwo: PolyTwoFormUpdate
-    }
+    polymorphic_forms = {PolyOne: PolyOneFormUpdate, PolyTwo: PolyTwoFormUpdate}
 
 
 class PolyDeleteView(PolymorphicDeleteViewPermissionRequired):
@@ -107,4 +101,3 @@ class PolyDetailView(PolymorphicDetailViewPermissionRequired):
             "properties": ["id", "shared"],
         },
     ]
-

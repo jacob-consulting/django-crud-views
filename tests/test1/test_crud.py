@@ -11,11 +11,14 @@ def test_create_author(client_user_author_add: Client, cv_author):
     assert response.status_code == 200
 
     # POST valid data
-    response = client_user_author_add.post("/author/create/", {
-        "first_name": "Isaac",
-        "last_name": "Asimov",
-        "pseudonym": "",
-    })
+    response = client_user_author_add.post(
+        "/author/create/",
+        {
+            "first_name": "Isaac",
+            "last_name": "Asimov",
+            "pseudonym": "",
+        },
+    )
     assert response.status_code == 302
     assert response.url == "/author/"
 
@@ -32,11 +35,14 @@ def test_update_author(client_user_author_change: Client, cv_author, author_doug
     assert response.status_code == 200
 
     # POST updated data
-    response = client_user_author_change.post(f"/author/{pk}/update/", {
-        "first_name": "Douglas",
-        "last_name": "Adams",
-        "pseudonym": "DNA",
-    })
+    response = client_user_author_change.post(
+        f"/author/{pk}/update/",
+        {
+            "first_name": "Douglas",
+            "last_name": "Adams",
+            "pseudonym": "DNA",
+        },
+    )
     assert response.status_code == 302
     assert response.url == "/author/"
 

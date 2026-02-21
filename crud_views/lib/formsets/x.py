@@ -27,12 +27,12 @@ class XForm(BaseModel, arbitrary_types_allowed=True):
 
     @property
     def key(self) -> str:
-        """ return the formset key from the parent formset """
+        """return the formset key from the parent formset"""
         return self.parent.key
 
     @property
     def prefix(self) -> str:
-        """ return the form prefix """
+        """return the form prefix"""
         return self.form.prefix
 
     @property
@@ -42,7 +42,7 @@ class XForm(BaseModel, arbitrary_types_allowed=True):
             prefix=self.prefix,
             prefix_key=self.prefix_key,
             formset_prefix=self.parent.prefix,
-            pk=str(self.parent.pk)
+            pk=str(self.parent.pk),
         )
 
     @property
@@ -89,17 +89,17 @@ class XFormSet(BaseModel, arbitrary_types_allowed=True):
 
     @property
     def key(self) -> str:
-        """ return the formset key """
+        """return the formset key"""
         return self.formset.key
 
     @property
     def pk(self) -> str:
-        """ return the formset key """
+        """return the formset key"""
         return self.formset.pk
 
     @property
     def prefix(self) -> str:
-        """ return the formset prefix KEY-SUFFIX """
+        """return the formset prefix KEY-SUFFIX"""
         return f"{self.key}-{self.prefix_key}"
 
     @property
@@ -200,7 +200,6 @@ class XFormSet(BaseModel, arbitrary_types_allowed=True):
 
         # process forms to delete
         for form in delete_forms:
-
             # get x-form to process nested forms
             x_form = get_x_form(form)
 
@@ -229,7 +228,7 @@ class XFormSet(BaseModel, arbitrary_types_allowed=True):
 
             # update order
             if can_order:
-                order_value = form.cleaned_data.get('ORDER')
+                order_value = form.cleaned_data.get("ORDER")
                 if order_value is not None:
                     instance.order = order_value
 

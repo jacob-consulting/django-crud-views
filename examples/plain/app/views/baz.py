@@ -2,15 +2,17 @@ import django_tables2 as tables
 
 from app.models import Baz
 from crud_views.lib.table import Table, LinkDetailColumn
-from crud_views.lib.views import DetailViewPermissionRequired, UpdateViewPermissionRequired, CreateViewPermissionRequired, \
-    ListViewTableMixin, DeleteViewPermissionRequired, ListViewPermissionRequired
+from crud_views.lib.views import (
+    DetailViewPermissionRequired,
+    UpdateViewPermissionRequired,
+    CreateViewPermissionRequired,
+    ListViewTableMixin,
+    DeleteViewPermissionRequired,
+    ListViewPermissionRequired,
+)
 from crud_views.lib.viewset import ViewSet, ParentViewSet
 
-cv_baz = ViewSet(
-    model=Baz,
-    name="baz",
-    parent=ParentViewSet(name="bar")
-)
+cv_baz = ViewSet(model=Baz, name="baz", parent=ParentViewSet(name="bar"))
 
 
 class BazTable(Table):

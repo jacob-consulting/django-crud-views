@@ -41,7 +41,8 @@ class DetailView(ObjectDetailMixin, CrudView, generic.DetailView):
         pd = cls.cv_property_display
         if pd is not None:
             yield CheckExpression(
-                context=cls, id="E241",
+                context=cls,
+                id="E241",
                 expression=isinstance(pd, list),
                 msg="cv_property_display must be a list",
             )
@@ -50,26 +51,30 @@ class DetailView(ObjectDetailMixin, CrudView, generic.DetailView):
                     if isinstance(group, PropertyGroupConfig):
                         continue
                     yield CheckExpression(
-                        context=cls, id="E242",
+                        context=cls,
+                        id="E242",
                         expression=isinstance(group, dict) and "title" in group,
                         msg=f"cv_property_display[{i}] must be a dict with a 'title' key",
                     )
                     yield CheckExpression(
-                        context=cls, id="E243",
+                        context=cls,
+                        id="E243",
                         expression=isinstance(group, dict) and "properties" in group,
                         msg=f"cv_property_display[{i}] must be a dict with a 'properties' key",
                     )
                     if isinstance(group, dict) and "properties" in group:
                         props = group["properties"]
                         yield CheckExpression(
-                            context=cls, id="E244",
+                            context=cls,
+                            id="E244",
                             expression=isinstance(props, list),
                             msg=f"cv_property_display[{i}]['properties'] must be a list",
                         )
                         if isinstance(props, list):
                             for j, prop in enumerate(props):
                                 yield CheckExpression(
-                                    context=cls, id="E245",
+                                    context=cls,
+                                    id="E245",
                                     expression=isinstance(prop, (str, dict, PropertyConfig)),
                                     msg=f"cv_property_display[{i}]['properties'][{j}] must be a str, dict, or PropertyConfig",
                                 )

@@ -43,10 +43,13 @@ class PolymorphicCreateSelectView(CrudView, generic.FormView):
     @classmethod
     def checks(cls) -> Iterable[Check]:
         yield from super().checks()
-        yield CheckEitherAttribute(context=cls, id="E220",
-                                   attribute1="cv_polymorphic_exclude",
-                                   attribute2="cv_polymorphic_include",
-                                   allow_none=True)
+        yield CheckEitherAttribute(
+            context=cls,
+            id="E220",
+            attribute1="cv_polymorphic_exclude",
+            attribute2="cv_polymorphic_include",
+            allow_none=True,
+        )
 
     def get_form(self, form_class=None):
         form_class = form_class if form_class else self.get_form_class()
@@ -66,6 +69,5 @@ class PolymorphicCreateSelectView(CrudView, generic.FormView):
         return HttpResponseRedirect(url)
 
 
-class PolymorphicCreateSelectViewPermissionRequired(CrudViewPermissionRequiredMixin,
-                                                    PolymorphicCreateSelectView):
+class PolymorphicCreateSelectViewPermissionRequired(CrudViewPermissionRequiredMixin, PolymorphicCreateSelectView):
     cv_permission = "add"

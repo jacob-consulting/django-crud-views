@@ -87,8 +87,9 @@ class Detail(OrderedModel):
     boolean_two = models.BooleanField(null=True, default=None, verbose_name="Another boolean value")
     date = models.DateField(verbose_name="A date field")
     date_time = models.DateTimeField(verbose_name="A date field with time")
-    author = models.ForeignKey(Author, verbose_name="A foreign key field", on_delete=models.SET_NULL, blank=True,
-                               null=True)
+    author = models.ForeignKey(
+        Author, verbose_name="A foreign key field", on_delete=models.SET_NULL, blank=True, null=True
+    )
     foo = models.ManyToManyField(Foo, verbose_name="Foo selected")
     created_dt = models.DateTimeField(auto_now_add=True)
     modified_dt = models.DateTimeField(auto_now=True)
@@ -102,6 +103,7 @@ class Detail(OrderedModel):
 
 
 #########################
+
 
 class Person(models.Model):
     name = models.CharField(max_length=128)
@@ -125,8 +127,4 @@ class Membership(models.Model):
     invite_reason = models.CharField(max_length=64)
 
     class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=["person", "group"], name="unique_person_group"
-            )
-        ]
+        constraints = [models.UniqueConstraint(fields=["person", "group"], name="unique_person_group")]

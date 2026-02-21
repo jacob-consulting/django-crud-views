@@ -15,26 +15,28 @@ from .layout import FormControl
 
 class InlineFormSet(BaseInlineFormSet):
     def __init__(
-            self,
-            formset: FormSet,
-            parent_form: BaseForm | None = None,
-            data=None,
-            files=None,
-            instance=None,
-            save_as_new=False,
-            prefix=None,
-            queryset=None,
-            **kwargs,
+        self,
+        formset: FormSet,
+        parent_form: BaseForm | None = None,
+        data=None,
+        files=None,
+        instance=None,
+        save_as_new=False,
+        prefix=None,
+        queryset=None,
+        **kwargs,
     ):
         self.formset = formset
         self.parent_form = parent_form
-        super().__init__(data=data,
-                         files=files,
-                         instance=instance,
-                         save_as_new=save_as_new,
-                         prefix=prefix,
-                         queryset=queryset,
-                         **kwargs)
+        super().__init__(
+            data=data,
+            files=files,
+            instance=instance,
+            save_as_new=save_as_new,
+            prefix=prefix,
+            queryset=queryset,
+            **kwargs,
+        )
 
     def __str__(self):
         parent = self.formset.parent.key if self.formset.parent else None
@@ -113,10 +115,7 @@ class InlineFormSet(BaseInlineFormSet):
         if self.parent_form:
             if self.has_any_form_with_data:
                 if self.is_empty_form(self.parent_form):
-                    self.parent_form.add_error(
-                        field=None,
-                        error="Child TODO requires at least one TODO set"
-                    )
+                    self.parent_form.add_error(field=None, error="Child TODO requires at least one TODO set")
                     raise ValidationError("Parent form is required")
 
 
@@ -146,4 +145,5 @@ class CrispyInlineModelForm(CrispyInlineFormMixin, ModelForm):
     """
     This is needed for polymorphic inline formsets.
     """
+
     pass

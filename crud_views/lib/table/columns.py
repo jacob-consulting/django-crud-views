@@ -12,7 +12,6 @@ class ViewAwareColumnMixin:
 
 
 class ActionColumn(tables.TemplateColumn):
-
     def __init__(self, **extra):
         if "orderable" not in extra:
             extra["orderable"] = False
@@ -28,7 +27,6 @@ class ActionColumn(tables.TemplateColumn):
 
 
 class LinkChildColumn(tables.TemplateColumn):
-
     def __init__(self, name: str, key: str = "list", **extra):
         self.name = name
         self.key = key
@@ -42,9 +40,7 @@ class LinkChildColumn(tables.TemplateColumn):
 
         viewset = ViewSet.get_viewset(self.name)
         data = viewset.get_meta(table.view.cv_get_view_context())
-        data.update({
-            "url": table.view.cv_get_child_url(self.name, self.key, record)
-        })
+        data.update({"url": table.view.cv_get_child_url(self.name, self.key, record)})
         self.extra_context.update(data)
         return super().render(record, table, value, bound_column, **kwargs)
 
@@ -60,7 +56,6 @@ class LinkDetailColumn(LinkDetailColumnMixin, Column):
 
 
 class UUIDColumn(tables.TemplateColumn):
-
     def __init__(self, template_name="crud_views/columns/uuid.html", **extra):
         if "orderable" not in extra:
             extra["orderable"] = True
@@ -77,7 +72,6 @@ class UUIDLinkDetailColumn(LinkDetailColumnMixin, UUIDColumn):
 
 
 class NaturalTimeColumn(tables.TemplateColumn):
-
     def __init__(self, template_code=None, template_name="crud_views/columns/naturaltime.html", **extra):
         from .table import Table
 
@@ -88,7 +82,6 @@ class NaturalTimeColumn(tables.TemplateColumn):
 
 
 class NaturalDayColumn(tables.TemplateColumn):
-
     def __init__(self, template_code=None, template_name="crud_views/columns/naturalday.html", **extra):
         from .table import Table
 

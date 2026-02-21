@@ -87,10 +87,11 @@ class ViewSet(BaseModel):
     def __str__(self):
         return f"{self.name}"
 
-    @model_validator(mode='after')
+    @model_validator(mode="after")
     def register(self) -> Self:
         if self.pk is None:
             from django.db import models
+
             pk_field_map = {
                 models.UUIDField: self.PK.UUID,
                 models.AutoField: self.PK.INT,
@@ -106,6 +107,7 @@ class ViewSet(BaseModel):
 
         switch = crud_views_settings.manage_views_enabled
         if switch == "yes" or switch == "debug_only" and settings.DEBUG:
+
             class AutoManageView(ManageView):
                 model = self.model
                 cv_viewset = self
@@ -143,8 +145,7 @@ class ViewSet(BaseModel):
         for view in self._views.values():
             yield from view.checks()
 
-
-    @model_validator(mode='after')
+    @model_validator(mode="after")
     def model_validator_after(self) -> Self:
         if self.prefix is None:
             self.prefix = self.name
@@ -205,7 +206,6 @@ class ViewSet(BaseModel):
             parent = self.parent
             attribute = None
             while parent is not None:
-
                 # parent args
                 pk_name = parent.get_pk_name()
                 if attribute is None:
@@ -326,7 +326,7 @@ class ViewSet(BaseModel):
             path_contribute = view_class.cv_path_contribute()
 
             # args for re_path
-            route = fr"^{path_parent}{path_prefix}{path_pk}{path_view}{path_contribute}$"
+            route = rf"^{path_parent}{path_prefix}{path_pk}{path_view}{path_contribute}$"
             view = view_class.as_view()  # noqa
             name = self.get_router_name(key)
 
@@ -370,11 +370,13 @@ class ViewSet(BaseModel):
             "viewset": self,
             "cv": self,
             "verbose_name": meta.verbose_name.capitalize(),
-            "verbose_name_plural": meta.verbose_name_plural.capitalize()
+            "verbose_name_plural": meta.verbose_name_plural.capitalize(),
         }
-        data.update({
-            "verbose_name_translate": _(data["verbose_name"]),
-            "verbose_name_plural_translate": _(data["verbose_name_plural"])
-        })
+        data.update(
+            {
+                "verbose_name_translate": _(data["verbose_name"]),
+                "verbose_name_plural_translate": _(data["verbose_name_plural"]),
+            }
+        )
         data.update(context.to_dict())
         return data

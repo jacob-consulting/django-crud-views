@@ -17,7 +17,7 @@ class WorkflowForm(CrispyForm):
     class Meta:
         fields = ["transition", "comment"]
 
-    submit_label: str = _('Process Workflow Step')
+    submit_label: str = _("Process Workflow Step")
 
     transition = ChoiceField(
         choices=tuple(),
@@ -30,10 +30,12 @@ class WorkflowForm(CrispyForm):
         label="LABEL-PLACEHOLDER",
         help_text="HELP-PLACEHOLDER",
         required=False,  # will be set dynamically
-        widget=Textarea(attrs={
-            "rows": 4,
-            "placeholder": _("Add your comment…"),
-        }),
+        widget=Textarea(
+            attrs={
+                "rows": 4,
+                "placeholder": _("Add your comment…"),
+            }
+        ),
     )
 
     def get_layout_fields(self):
@@ -42,12 +44,13 @@ class WorkflowForm(CrispyForm):
     def __init__(self, *args, choices: List[tuple[str, str]], transition_comments: dict, **kwargs):
         super().__init__(*args, **kwargs)
         self.transition_comments = transition_comments
-        self.transition_comment = max(
-            transition_comments.values()) if transition_comments.values() else WorkflowComment.NONE
+        self.transition_comment = (
+            max(transition_comments.values()) if transition_comments.values() else WorkflowComment.NONE
+        )
 
         # hide the comment field if not required
         if self.transition_comment == WorkflowComment.NONE:
-            field_comment = self.fields['comment']
+            field_comment = self.fields["comment"]
             field_comment.widget = field_comment.hidden_widget()
 
         transition = self.fields["transition"]

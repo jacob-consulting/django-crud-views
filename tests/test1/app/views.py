@@ -9,15 +9,24 @@ from crud_views.lib.crispy import CrispyModelViewMixin, CrispyDeleteForm, Crispy
 from crud_views.lib.crispy.form import CrispyForm
 from crud_views.lib.table import Table, UUIDLinkDetailColumn, LinkDetailColumn
 from crud_views.lib.views import (
-    ListViewTableMixin, ListViewTableFilterMixin, MessageMixin,
-    ListViewPermissionRequired, DeleteViewPermissionRequired, CreateViewPermissionRequired,
-    UpdateViewPermissionRequired, DetailViewPermissionRequired, CreateViewParentMixin,
-    OrderedUpViewPermissionRequired, OrderedUpDownPermissionRequired
+    ListViewTableMixin,
+    ListViewTableFilterMixin,
+    MessageMixin,
+    ListViewPermissionRequired,
+    DeleteViewPermissionRequired,
+    CreateViewPermissionRequired,
+    UpdateViewPermissionRequired,
+    DetailViewPermissionRequired,
+    CreateViewParentMixin,
+    OrderedUpViewPermissionRequired,
+    OrderedUpDownPermissionRequired,
 )
 from crud_views.lib.views.list import ListViewFilterFormHelper
 from crud_views_polymorphic.lib import (
-    PolymorphicCreateViewPermissionRequired, PolymorphicCreateSelectViewPermissionRequired,
-    PolymorphicUpdateViewPermissionRequired, PolymorphicDetailViewPermissionRequired
+    PolymorphicCreateViewPermissionRequired,
+    PolymorphicCreateSelectViewPermissionRequired,
+    PolymorphicUpdateViewPermissionRequired,
+    PolymorphicDetailViewPermissionRequired,
 )
 from crud_views_polymorphic.lib.create_select import PolymorphicContentTypeForm
 from crud_views_polymorphic.lib.delete import PolymorphicDeleteViewPermissionRequired
@@ -27,11 +36,7 @@ from crud_views_workflow.lib.views import WorkflowViewPermissionRequired
 from crud_views.lib.crispy import Column4, Column6
 from crispy_forms.layout import Row, Layout
 
-cv_author = ViewSet(
-    model=Author,
-    name="author",
-    icon_header="fa-regular fa-user"
-)
+cv_author = ViewSet(model=Author, name="author", icon_header="fa-regular fa-user")
 
 
 class AuthorTable(Table):
@@ -47,7 +52,8 @@ class AuthorListView(ListViewTableMixin, ListViewPermissionRequired):
     cv_viewset = cv_author
     cv_list_actions = [
         "detail",
-        "update", "delete",  # "up", "down", "redirect_child"
+        "update",
+        "delete",  # "up", "down", "redirect_child"
     ]
 
 
@@ -119,7 +125,7 @@ class PublisherFilterFormHelper(ListViewFilterFormHelper):
 
 
 class PublisherFilter(django_filters.FilterSet):
-    name = django_filters.CharFilter(lookup_expr='icontains')
+    name = django_filters.CharFilter(lookup_expr="icontains")
 
     class Meta:
         model = Publisher

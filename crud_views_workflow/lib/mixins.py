@@ -17,7 +17,7 @@ class WorkflowMixin:
 
     STATE_ENUM: Enum = None
     STATE_BADGES: dict = None
-    STATE_BADGES_DEFAULT:str = "info"
+    STATE_BADGES_DEFAULT: str = "info"
     COMMENT_DEFAULT: WorkflowComment = WorkflowComment.NONE
 
     def state_increment(self):
@@ -39,11 +39,7 @@ class WorkflowMixin:
         name = self.get_state_name(state)
         if state in self.STATE_BADGES:  # noqa
             klass = self.STATE_BADGES.get(state, self.STATE_BADGES_DEFAULT)  # noqa
-            html = render_to_string("crud_views_workflow/badge.html", {
-                "state": state,
-                "name": name,
-                "class": klass
-            })
+            html = render_to_string("crud_views_workflow/badge.html", {"state": state, "name": name, "class": klass})
             return mark_safe(html)
         else:
             return name
@@ -59,31 +55,34 @@ class WorkflowMixin:
     def get_workflow_info_queryset(self):
         return WorkflowInfo.objects.filter(
             workflow_object_id=self.id,  # noqa
-            workflow_object_content_type=ContentType.objects.get_for_model(self)).order_by("timestamp")  # noqa
+            workflow_object_content_type=ContentType.objects.get_for_model(self),
+        ).order_by("timestamp")  # noqa
 
     @property
     def workflow_data(self) -> List[Dict]:
         items = []
         queryset = self.get_workflow_info_queryset()
         for info in queryset:
-            items.append(dict(
-                timestamp=info.timestamp,
-                user=info.user,
-                state_old=info.state_old,
-                state_new=info.state_new,
-                state_old_badge=self.get_state_badge(info.state_old),
-                state_new_badge=self.get_state_badge(info.state_new),
-                transition=info.transition,
-                transition_label=self.workflow_get_transition_label(info.transition),
-                comment=info.comment
-            ))
+            items.append(
+                dict(
+                    timestamp=info.timestamp,
+                    user=info.user,
+                    state_old=info.state_old,
+                    state_new=info.state_new,
+                    state_old_badge=self.get_state_badge(info.state_old),
+                    state_new_badge=self.get_state_badge(info.state_new),
+                    transition=info.transition,
+                    transition_label=self.workflow_get_transition_label(info.transition),
+                    comment=info.comment,
+                )
+            )
         return items
 
     def workflow_get_possible_transitions(self, user) -> List[tuple[Any, Any, Any]]:
         actions = []
         for transition in self.get_available_user_state_transitions(user):  # noqa
-            label = transition.custom.get('label', transition.name)
-            comment = transition.custom.get('comment', self.COMMENT_DEFAULT)
+            label = transition.custom.get("label", transition.name)
+            comment = transition.custom.get("comment", self.COMMENT_DEFAULT)
             actions.append((transition.name, label, comment))
         return actions
 
@@ -98,7 +97,7 @@ class WorkflowMixin:
 
     @cached_property
     def workflow_get_transition_label_map(self) -> Dict[str, str]:
-        return {t.name: t.custom.get('label', t.name) for t in self.get_all_state_transitions()}
+        return {t.name: t.custom.get("label", t.name) for t in self.get_all_state_transitions()}
 
     def workflow_get_transition_label(self, name) -> str:
         return self.workflow_get_transition_label_map[name]

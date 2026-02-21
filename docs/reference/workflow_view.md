@@ -271,6 +271,26 @@ with badge HTML and human-readable labels.
 | `cv_comment_label` | `str` | `"Please provide a comment for your workflow step"` | Comment field label |
 | `cv_comment_help_text` | `str` | `None` | Comment field help text |
 
+## System checks
+
+`WorkflowView` participates in the crud-views check framework. Checks are run via
+`ViewSet.checks()` for every registered view and report configuration errors early.
+
+`WorkflowView.checks()` inherits all parent checks (e.g. `cv_key`, `cv_path`, template
+attributes from `CrudView`) and adds:
+
+| ID | What is checked |
+|----|----------------|
+| `E230` | `form_class` is set (not `None`) |
+| `E231` | `cv_transition_label` is not `None` |
+| `E232` | `cv_comment_label` is not `None` |
+| `E233` | The model associated with `cv_viewset` extends `WorkflowMixin` |
+| `E234` | `STATE_ENUM` is set on the model |
+| `E235` | `STATE_BADGES` is set on the model |
+
+`WorkflowViewPermissionRequired` additionally inherits the `E202` check for `cv_permission`
+from `CrudViewPermissionRequiredMixin`.
+
 ### `on_transition` hook
 
 Override `on_transition` to run custom logic after a successful transition:

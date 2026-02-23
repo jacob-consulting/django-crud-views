@@ -53,10 +53,13 @@ def test_get_state_badge_active(campaign_new):
 
 
 @pytest.mark.django_db
-def test_get_state_badge_unknown_returns_name(campaign_new):
-    # State not in STATE_BADGES falls back to plain name
+def test_get_state_badge_unknown_uses_default(campaign_new):
+    # State not in STATE_BADGES falls back to STATE_BADGES_DEFAULT badge class
+    campaign_new.STATE_BADGES = {CampaignState.NEW: "light"}  # ERROR intentionally missing
     result = campaign_new.get_state_badge(CampaignState.ERROR)
     assert "Error" in result
+    assert "badge" in result  # still renders a badge, not plain text
+    assert "info" in result  # STATE_BADGES_DEFAULT = "info"
 
 
 @pytest.mark.django_db

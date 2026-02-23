@@ -38,6 +38,6 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            bases=(crud_views_workflow.lib.mixins.WorkflowMixin, models.Model),
+            bases=(crud_views_workflow.lib.mixins.WorkflowModelMixin, models.Model),
         ),
     ]

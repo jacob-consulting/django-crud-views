@@ -4,7 +4,7 @@ from django_fsm import FSMField, transition
 
 from crud_views_workflow.lib.enums import WorkflowComment
 from crud_views_workflow.lib.enums import BadgeEnum
-from crud_views_workflow.lib.mixins import WorkflowMixin
+from crud_views_workflow.lib.mixins import WorkflowModelMixin
 
 
 class CampaignState(models.TextChoices):
@@ -15,7 +15,7 @@ class CampaignState(models.TextChoices):
     ERROR = "error", _("Error")
 
 
-class Campaign(WorkflowMixin, models.Model):
+class Campaign(WorkflowModelMixin, models.Model):
     STATE_CHOICES = CampaignState
     STATE_BADGES = {
         CampaignState.NEW: BadgeEnum.LIGHT,

@@ -35,7 +35,7 @@ python manage.py migrate
 
 ### 1. Define the model
 
-Mix `WorkflowMixin` into your model and define FSM transitions using django-fsm-2:
+Mix `WorkflowModelMixin` into your model and define FSM transitions using django-fsm-2:
 
 ```python
 from django.db import models
@@ -44,7 +44,7 @@ from django_fsm import FSMField, transition
 
 from crud_views_workflow.lib.enums import WorkflowComment
 from crud_views_workflow.lib.enums import BadgeEnum
-from crud_views_workflow.lib.mixins import WorkflowMixin
+from crud_views_workflow.lib.mixins import WorkflowModelMixin
 
 
 class CampaignState(models.TextChoices):
@@ -55,7 +55,7 @@ class CampaignState(models.TextChoices):
     ERROR = "error", _("Error")
 
 
-class Campaign(WorkflowMixin, models.Model):
+class Campaign(WorkflowModelMixin, models.Model):
     STATE_CHOICES = CampaignState
     STATE_BADGES = {
         CampaignState.NEW: BadgeEnum.LIGHT,
@@ -155,9 +155,9 @@ class CampaignWorkflowView(CrispyModelViewMixin, MessageMixin, WorkflowViewPermi
     form_class = CampaignWorkflowForm
 ```
 
-## WorkflowMixin
+## WorkflowModelMixin
 
-`WorkflowMixin` is a model mixin that provides workflow-related properties and helpers.
+`WorkflowModelMixin` is a model mixin that provides workflow-related properties and helpers.
 
 ### Required class attributes
 
@@ -213,22 +213,22 @@ def wf_cancel_new(self, ...):
 | `WorkflowComment.OPTIONAL` | Comment field is shown but not required |
 | `WorkflowComment.REQUIRED` | Comment field is shown and must be filled |
 
-When a transition does not include `comment` in its `custom` dict, `WorkflowMixin.COMMENT_DEFAULT`
+When a transition does not include `comment` in its `custom` dict, `WorkflowModelMixin.COMMENT_DEFAULT`
 is used as the fallback. Override it on your model class to change the default for all such transitions:
 
 ```python
-class Campaign(WorkflowMixin, models.Model):
+class Campaign(WorkflowModelMixin, models.Model):
     COMMENT_DEFAULT = WorkflowComment.OPTIONAL
     ...
 ```
 
 ### BadgeEnum
 
-`BadgeEnum` is a `StrEnum` covering all Bootstrap contextual colours. Import it alongside `WorkflowMixin`:
+`BadgeEnum` is a `StrEnum` covering all Bootstrap contextual colours. Import it alongside `WorkflowModelMixin`:
 
 ```python
 from crud_views_workflow.lib.enums import BadgeEnum
-from crud_views_workflow.lib.mixins import WorkflowMixin
+from crud_views_workflow.lib.mixins import WorkflowModelMixin
 ```
 
 | Value | Bootstrap class |
@@ -282,7 +282,7 @@ Every successful transition creates a `WorkflowInfo` record:
 
 An index on `(workflow_object_pk, workflow_object_content_type)` is defined for efficient history lookups.
 
-Access the history via `WorkflowMixin.workflow_data`, which returns a list of dicts enriched
+Access the history via `WorkflowModelMixin.workflow_data`, which returns a list of dicts enriched
 with badge HTML and human-readable labels.
 
 ## WorkflowView configuration
@@ -312,7 +312,7 @@ attributes from `CrudView`) and adds:
 | `E230` | `form_class` is set (not `None`) |
 | `E231` | `cv_transition_label` is not `None` |
 | `E232` | `cv_comment_label` is not `None` |
-| `E233` | The model associated with `cv_viewset` extends `WorkflowMixin` |
+| `E233` | The model associated with `cv_viewset` extends `WorkflowModelMixin` |
 | `E234` | `STATE_CHOICES` is set on the model |
 | `E235` | `STATE_BADGES` is set on the model |
 

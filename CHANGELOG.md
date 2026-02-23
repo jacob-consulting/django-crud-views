@@ -1,5 +1,11 @@
 # Django CRUD Views - Changelog
 
+## 0.3.3
+
+- Added `BadgeEnum` (`StrEnum`) covering all Bootstrap contextual colours; use as values in `STATE_BADGES`
+- Renamed `WorkflowMixin.STATE_ENUM` → `STATE_CHOICES` and `STATE_BADGES_DEFAULT` → `STATE_BADGE_DEFAULT`
+- Fixed `WorkflowMixin.get_state_badge` to render a badge with `STATE_BADGE_DEFAULT` for states absent from `STATE_BADGES` (previously returned plain text)
+
 ## 0.3.2
 
 - Changed `WorkflowInfo.workflow_object_id` (PositiveBigIntegerField) to `workflow_object_pk` (CharField, max_length=255) to support UUID, integer, and string primary keys

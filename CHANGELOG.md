@@ -1,5 +1,10 @@
 # Django CRUD Views - Changelog
 
+## 0.3.4
+
+- Moved `BadgeEnum` from `crud_views_workflow.lib.mixins` to `crud_views_workflow.lib.enums`
+- Renamed `WorkflowMixin` to `WorkflowModelMixin`
+
 ## 0.3.3
 
 - Added `BadgeEnum` (`StrEnum`) covering all Bootstrap contextual colours; use as values in `STATE_BADGES`

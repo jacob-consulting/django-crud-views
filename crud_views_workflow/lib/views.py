@@ -17,8 +17,6 @@ class WorkflowView(CustomFormView):
     Base view for workflow transitions using the WorkflowForm
     """
 
-    STATE_BADGES_DEFAULT = "info"
-
     form_class = None
     cv_key = "workflow"
     cv_path = "workflow"
@@ -57,7 +55,7 @@ class WorkflowView(CustomFormView):
             )
             # required WorkflowMixin class attributes must be set on the model
             if issubclass(model, WorkflowMixin):
-                yield CheckAttribute(context=model, id="E234", attribute="STATE_ENUM")
+                yield CheckAttribute(context=model, id="E234", attribute="STATE_CHOICES")
                 yield CheckAttribute(context=model, id="E235", attribute="STATE_BADGES")
 
     def get_form(self, form_class=None):

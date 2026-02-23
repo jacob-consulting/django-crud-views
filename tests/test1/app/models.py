@@ -7,7 +7,7 @@ from ordered_model.models import OrderedModel
 from polymorphic.models import PolymorphicModel
 
 from crud_views_workflow.lib.enums import WorkflowComment
-from crud_views_workflow.lib.mixins import WorkflowMixin
+from crud_views_workflow.lib.mixins import BadgeEnum, WorkflowMixin
 
 
 class Author(OrderedModel):
@@ -54,13 +54,13 @@ class CampaignState(models.TextChoices):
 
 
 class Campaign(WorkflowMixin, models.Model):
-    STATE_ENUM = CampaignState
+    STATE_CHOICES = CampaignState
     STATE_BADGES = {
-        CampaignState.NEW: "light",
-        CampaignState.ACTIVE: "info",
-        CampaignState.SUCCESS: "primary",
-        CampaignState.CANCELED: "warning",
-        CampaignState.ERROR: "danger",
+        CampaignState.NEW: BadgeEnum.LIGHT,
+        CampaignState.ACTIVE: BadgeEnum.INFO,
+        CampaignState.SUCCESS: BadgeEnum.PRIMARY,
+        CampaignState.CANCELED: BadgeEnum.WARNING,
+        CampaignState.ERROR: BadgeEnum.DANGER,
     }
 
     name = models.CharField(max_length=128)

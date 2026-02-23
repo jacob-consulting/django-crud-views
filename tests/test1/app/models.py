@@ -7,7 +7,8 @@ from ordered_model.models import OrderedModel
 from polymorphic.models import PolymorphicModel
 
 from crud_views_workflow.lib.enums import WorkflowComment
-from crud_views_workflow.lib.mixins import BadgeEnum, WorkflowMixin
+from crud_views_workflow.lib.enums import BadgeEnum
+from crud_views_workflow.lib.mixins import WorkflowMixin
 
 
 class Author(OrderedModel):

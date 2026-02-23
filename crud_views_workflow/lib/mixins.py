@@ -1,4 +1,3 @@
-from enum import StrEnum
 from functools import cached_property
 from typing import Dict, Any, List
 
@@ -8,23 +7,7 @@ from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 
 from ..models import WorkflowInfo
-from .enums import WorkflowComment
-
-
-class BadgeEnum(StrEnum):
-    """
-    Bootstrap colors
-    """
-
-    PRIMARY = "primary"
-    SECONDARY = "secondary"
-    SUCCESS = "success"
-    DANGER = "danger"
-    WARNING = "warning"
-    INFO = "info"
-    LIGHT = "light"
-    DARK = "dark"
-
+from .enums import BadgeEnum, WorkflowComment
 
 TState = str
 

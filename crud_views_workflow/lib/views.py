@@ -9,7 +9,7 @@ from crud_views.lib.check import Check, CheckAttribute, CheckExpression
 from crud_views.lib.view import CrudViewPermissionRequiredMixin
 from crud_views.lib.views.form import CustomFormView
 from ..models import WorkflowInfo
-from .mixins import WorkflowMixin
+from .mixins import WorkflowModelMixin
 
 
 class WorkflowView(CustomFormView):
@@ -44,17 +44,17 @@ class WorkflowView(CustomFormView):
         # workflow-specific label attributes must not be None
         yield CheckAttribute(context=cls, id="E231", attribute="cv_transition_label")
         yield CheckAttribute(context=cls, id="E232", attribute="cv_comment_label")
-        # the model associated with this view must extend WorkflowMixin
+        # the model associated with this view must extend WorkflowModelMixin
         if cls.cv_viewset is not None:
             model = cls.cv_viewset.model
             yield CheckExpression(
                 context=cls,
                 id="E233",
-                expression=issubclass(model, WorkflowMixin),
-                msg=f"Model »{model.__name__}» must extend WorkflowMixin",
+                expression=issubclass(model, WorkflowModelMixin),
+                msg=f"Model »{model.__name__}» must extend WorkflowModelMixin",
             )
-            # required WorkflowMixin class attributes must be set on the model
-            if issubclass(model, WorkflowMixin):
+            # required WorkflowModelMixin class attributes must be set on the model
+            if issubclass(model, WorkflowModelMixin):
                 yield CheckAttribute(context=model, id="E234", attribute="STATE_CHOICES")
                 yield CheckAttribute(context=model, id="E235", attribute="STATE_BADGES")
 

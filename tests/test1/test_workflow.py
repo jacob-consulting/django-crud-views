@@ -1,5 +1,5 @@
 """
-Tests for crud_views_workflow: WorkflowMixin, WorkflowView, WorkflowForm.
+Tests for crud_views_workflow: WorkflowModelMixin, WorkflowView, WorkflowForm.
 """
 
 import pytest
@@ -11,7 +11,7 @@ from crud_views_workflow.models import WorkflowInfo
 
 
 # ---------------------------------------------------------------------------
-# WorkflowMixin model-layer tests
+# WorkflowModelMixin model-layer tests
 # ---------------------------------------------------------------------------
 
 
@@ -181,9 +181,9 @@ def test_workflow_get_form_kwargs_comment_types(campaign_new, user_campaign_chan
 def test_comment_default_is_none():
     """COMMENT_DEFAULT defaults to WorkflowComment.NONE."""
     from crud_views_workflow.lib.enums import WorkflowComment
-    from crud_views_workflow.lib.mixins import WorkflowMixin
+    from crud_views_workflow.lib.mixins import WorkflowModelMixin
 
-    assert WorkflowMixin.COMMENT_DEFAULT == WorkflowComment.NONE
+    assert WorkflowModelMixin.COMMENT_DEFAULT == WorkflowComment.NONE
 
 
 @pytest.mark.django_db
@@ -550,7 +550,7 @@ def test_workflow_view_checks_comment_label_none():
 
 
 def test_workflow_view_checks_model_not_mixin():
-    """Model that does not extend WorkflowMixin yields E233."""
+    """Model that does not extend WorkflowModelMixin yields E233."""
     from unittest.mock import MagicMock
     from crud_views_workflow.lib.views import WorkflowView
     from crud_views_workflow.lib.forms import WorkflowForm
@@ -571,13 +571,13 @@ def test_workflow_view_checks_model_not_mixin():
 
 
 def test_workflow_view_checks_model_missing_state_choices():
-    """WorkflowMixin model without STATE_CHOICES set yields E234."""
+    """WorkflowModelMixin model without STATE_CHOICES set yields E234."""
     from unittest.mock import MagicMock
     from crud_views_workflow.lib.views import WorkflowView
     from crud_views_workflow.lib.forms import WorkflowForm
-    from crud_views_workflow.lib.mixins import WorkflowMixin
+    from crud_views_workflow.lib.mixins import WorkflowModelMixin
 
-    class NoChoicesModel(WorkflowMixin):
+    class NoChoicesModel(WorkflowModelMixin):
         STATE_CHOICES = None
         STATE_BADGES = {"active": BadgeEnum.INFO}
 
@@ -594,13 +594,13 @@ def test_workflow_view_checks_model_missing_state_choices():
 
 
 def test_workflow_view_checks_model_missing_state_badges():
-    """WorkflowMixin model without STATE_BADGES set yields E235."""
+    """WorkflowModelMixin model without STATE_BADGES set yields E235."""
     from unittest.mock import MagicMock
     from crud_views_workflow.lib.views import WorkflowView
     from crud_views_workflow.lib.forms import WorkflowForm
-    from crud_views_workflow.lib.mixins import WorkflowMixin
+    from crud_views_workflow.lib.mixins import WorkflowModelMixin
 
-    class NoBadgesModel(WorkflowMixin):
+    class NoBadgesModel(WorkflowModelMixin):
         STATE_CHOICES = object()
         STATE_BADGES = None
 

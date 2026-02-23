@@ -12,7 +12,7 @@ from .enums import BadgeEnum, WorkflowComment
 TState = str
 
 
-class WorkflowMixin:
+class WorkflowModelMixin:
     """
     Mixin for workflow models with a django-fsm state field
     """

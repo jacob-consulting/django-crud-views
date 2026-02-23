@@ -35,14 +35,11 @@ class WorkflowMixin:
         return self.get_state_name(self.state)  # noqa
 
     def get_state_badge(self, state) -> str:
-        assert self.STATE_BADGES, "STATE_BADGES must be defined"  # noqa
+        assert self.STATE_BADGES is not None, "STATE_BADGES must be defined"  # noqa
         name = self.get_state_name(state)
-        if state in self.STATE_BADGES:  # noqa
-            klass = self.STATE_BADGES.get(state, self.STATE_BADGES_DEFAULT)  # noqa
-            html = render_to_string("crud_views_workflow/badge.html", {"state": state, "name": name, "class": klass})
-            return mark_safe(html)
-        else:
-            return name
+        klass = self.STATE_BADGES.get(state, self.STATE_BADGES_DEFAULT)  # noqa
+        html = render_to_string("crud_views_workflow/badge.html", {"state": state, "name": name, "class": klass})
+        return mark_safe(html)
 
     @property
     def state_badge(self) -> str:

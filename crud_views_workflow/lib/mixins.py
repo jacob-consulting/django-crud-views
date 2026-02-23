@@ -26,7 +26,7 @@ class BadgeEnum(StrEnum):
     DARK = "dark"
 
 
-TTransition = str
+TState = str
 
 
 class WorkflowMixin:
@@ -35,7 +35,7 @@ class WorkflowMixin:
     """
 
     STATE_CHOICES: Choices = None  # i.e. models.TextChoice
-    STATE_BADGES: Dict[TTransition, BadgeEnum] | None = None
+    STATE_BADGES: Dict[TState, BadgeEnum] | None = None
     STATE_BADGE_DEFAULT: BadgeEnum = BadgeEnum.INFO
     COMMENT_DEFAULT: WorkflowComment = WorkflowComment.NONE
 

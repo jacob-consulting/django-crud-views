@@ -1,8 +1,9 @@
-from enum import Enum
+from enum import StrEnum
 from functools import cached_property
 from typing import Dict, Any, List
 
 from django.contrib.contenttypes.models import ContentType
+from django.db.models import Choices
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 
@@ -10,24 +11,42 @@ from ..models import WorkflowInfo
 from .enums import WorkflowComment
 
 
+class BadgeEnum(StrEnum):
+    """
+    Bootstrap colors
+    """
+
+    PRIMARY = "primary"
+    SECONDARY = "secondary"
+    SUCCESS = "success"
+    DANGER = "danger"
+    WARNING = "warning"
+    INFO = "info"
+    LIGHT = "light"
+    DARK = "dark"
+
+
+TState = str
+
+
 class WorkflowMixin:
     """
     Mixin for workflow models with a django-fsm state field
     """
 
-    STATE_ENUM: Enum = None
-    STATE_BADGES: dict = None
-    STATE_BADGES_DEFAULT: str = "info"
+    STATE_CHOICES: Choices = None  # i.e. models.TextChoice
+    STATE_BADGES: Dict[TState, BadgeEnum] | None = None
+    STATE_BADGE_DEFAULT: BadgeEnum = BadgeEnum.INFO
     COMMENT_DEFAULT: WorkflowComment = WorkflowComment.NONE
 
     def state_increment(self):
         self.state_version += 1  # noqa
 
     def get_state_name(self, state) -> str:
-        assert self.STATE_ENUM, "STATE_ENUM must be defined"  # noqa
+        assert self.STATE_CHOICES, "STATE_CHOICES must be defined"  # noqa
         if not state:
             return ""
-        return dict(self.STATE_ENUM.choices)[state]  # noqa
+        return dict(self.STATE_CHOICES.choices)[state]  # noqa
 
     @property
     def state_name(self) -> str:
@@ -35,14 +54,11 @@ class WorkflowMixin:
         return self.get_state_name(self.state)  # noqa
 
     def get_state_badge(self, state) -> str:
-        assert self.STATE_BADGES, "STATE_BADGES must be defined"  # noqa
+        assert self.STATE_BADGES is not None, "STATE_BADGES must be defined"  # noqa
         name = self.get_state_name(state)
-        if state in self.STATE_BADGES:  # noqa
-            klass = self.STATE_BADGES.get(state, self.STATE_BADGES_DEFAULT)  # noqa
-            html = render_to_string("crud_views_workflow/badge.html", {"state": state, "name": name, "class": klass})
-            return mark_safe(html)
-        else:
-            return name
+        klass = self.STATE_BADGES.get(state, self.STATE_BADGE_DEFAULT)  # noqa
+        html = render_to_string("crud_views_workflow/badge.html", {"state": state, "name": name, "class": klass})
+        return mark_safe(html)
 
     @property
     def state_badge(self) -> str:

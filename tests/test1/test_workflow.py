@@ -6,6 +6,7 @@ import pytest
 from django.test.client import Client
 
 from tests.test1.app.models import Campaign, CampaignState
+from crud_views_workflow.lib.mixins import BadgeEnum
 from crud_views_workflow.models import WorkflowInfo
 
 
@@ -42,21 +43,24 @@ def test_state_badge_new(campaign_new):
     badge = campaign_new.state_badge
     assert "New" in badge
     assert "badge" in badge
-    assert "light" in badge  # STATE_BADGES[NEW] = "light"
+    assert "light" in badge  # STATE_BADGES[NEW] = BadgeEnum.LIGHT
 
 
 @pytest.mark.django_db
 def test_get_state_badge_active(campaign_new):
     badge = campaign_new.get_state_badge(CampaignState.ACTIVE)
     assert "Active" in badge
-    assert "info" in badge  # STATE_BADGES[ACTIVE] = "info"
+    assert "info" in badge  # STATE_BADGES[ACTIVE] = BadgeEnum.INFO
 
 
 @pytest.mark.django_db
-def test_get_state_badge_unknown_returns_name(campaign_new):
-    # State not in STATE_BADGES falls back to plain name
+def test_get_state_badge_unknown_uses_default(campaign_new):
+    # State not in STATE_BADGES falls back to STATE_BADGE_DEFAULT badge class
+    campaign_new.STATE_BADGES = {CampaignState.NEW: BadgeEnum.LIGHT}  # ERROR intentionally missing
     result = campaign_new.get_state_badge(CampaignState.ERROR)
     assert "Error" in result
+    assert "badge" in result  # still renders a badge, not plain text
+    assert "info" in result  # STATE_BADGE_DEFAULT = BadgeEnum.INFO
 
 
 @pytest.mark.django_db
@@ -566,27 +570,27 @@ def test_workflow_view_checks_model_not_mixin():
     assert "viewset.E233" in _error_ids(BadModelView)
 
 
-def test_workflow_view_checks_model_missing_state_enum():
-    """WorkflowMixin model without STATE_ENUM set yields E234."""
+def test_workflow_view_checks_model_missing_state_choices():
+    """WorkflowMixin model without STATE_CHOICES set yields E234."""
     from unittest.mock import MagicMock
     from crud_views_workflow.lib.views import WorkflowView
     from crud_views_workflow.lib.forms import WorkflowForm
     from crud_views_workflow.lib.mixins import WorkflowMixin
 
-    class NoEnumModel(WorkflowMixin):
-        STATE_ENUM = None
-        STATE_BADGES = {"active": "info"}
+    class NoChoicesModel(WorkflowMixin):
+        STATE_CHOICES = None
+        STATE_BADGES = {"active": BadgeEnum.INFO}
 
-    class NoEnumView(WorkflowView):
+    class NoChoicesView(WorkflowView):
         cv_key = "wf"
         cv_path = "wf"
         form_class = WorkflowForm
 
     mock_viewset = MagicMock()
-    mock_viewset.model = NoEnumModel
-    NoEnumView.cv_viewset = mock_viewset
+    mock_viewset.model = NoChoicesModel
+    NoChoicesView.cv_viewset = mock_viewset
 
-    assert "viewset.E234" in _error_ids(NoEnumView)
+    assert "viewset.E234" in _error_ids(NoChoicesView)
 
 
 def test_workflow_view_checks_model_missing_state_badges():
@@ -597,7 +601,7 @@ def test_workflow_view_checks_model_missing_state_badges():
     from crud_views_workflow.lib.mixins import WorkflowMixin
 
     class NoBadgesModel(WorkflowMixin):
-        STATE_ENUM = object()
+        STATE_CHOICES = object()
         STATE_BADGES = None
 
     class NoBadgesView(WorkflowView):

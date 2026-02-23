@@ -43,7 +43,7 @@ from django.utils.translation import gettext_lazy as _
 from django_fsm import FSMField, transition
 
 from crud_views_workflow.lib.enums import WorkflowComment
-from crud_views_workflow.lib.mixins import WorkflowMixin
+from crud_views_workflow.lib.mixins import BadgeEnum, WorkflowMixin
 
 
 class CampaignState(models.TextChoices):
@@ -55,13 +55,13 @@ class CampaignState(models.TextChoices):
 
 
 class Campaign(WorkflowMixin, models.Model):
-    STATE_ENUM = CampaignState
+    STATE_CHOICES = CampaignState
     STATE_BADGES = {
-        CampaignState.NEW: "light",
-        CampaignState.ACTIVE: "info",
-        CampaignState.SUCCESS: "primary",
-        CampaignState.CANCELED: "warning",
-        CampaignState.ERROR: "danger",
+        CampaignState.NEW: BadgeEnum.LIGHT,
+        CampaignState.ACTIVE: BadgeEnum.INFO,
+        CampaignState.SUCCESS: BadgeEnum.PRIMARY,
+        CampaignState.CANCELED: BadgeEnum.WARNING,
+        CampaignState.ERROR: BadgeEnum.DANGER,
     }
 
     name = models.CharField(max_length=128)
@@ -162,13 +162,14 @@ class CampaignWorkflowView(CrispyModelViewMixin, MessageMixin, WorkflowViewPermi
 
 | Attribute | Description |
 |-----------|-------------|
-| `STATE_ENUM` | A `models.TextChoices` subclass defining all state values and labels |
-| `STATE_BADGES` | Dict mapping state values to Bootstrap badge class names |
+| `STATE_CHOICES` | A `models.TextChoices` subclass defining all state values and labels |
+| `STATE_BADGES` | Dict mapping state values to `BadgeEnum` badge colours |
 
 ### Optional class attributes
 
 | Attribute | Type | Default | Description |
 |-----------|------|---------|-------------|
+| `STATE_BADGE_DEFAULT` | `BadgeEnum` | `BadgeEnum.INFO` | Badge colour used for states not present in `STATE_BADGES` |
 | `COMMENT_DEFAULT` | `WorkflowComment` | `WorkflowComment.NONE` | Fallback comment requirement for transitions that omit `comment` from their `custom` dict |
 
 ### Properties and methods
@@ -219,6 +220,27 @@ class Campaign(WorkflowMixin, models.Model):
     COMMENT_DEFAULT = WorkflowComment.OPTIONAL
     ...
 ```
+
+### BadgeEnum
+
+`BadgeEnum` is a `StrEnum` covering all Bootstrap contextual colours. Import it alongside `WorkflowMixin`:
+
+```python
+from crud_views_workflow.lib.mixins import BadgeEnum, WorkflowMixin
+```
+
+| Value | Bootstrap class |
+|-------|----------------|
+| `BadgeEnum.PRIMARY` | `primary` |
+| `BadgeEnum.SECONDARY` | `secondary` |
+| `BadgeEnum.SUCCESS` | `success` |
+| `BadgeEnum.DANGER` | `danger` |
+| `BadgeEnum.WARNING` | `warning` |
+| `BadgeEnum.INFO` | `info` |
+| `BadgeEnum.LIGHT` | `light` |
+| `BadgeEnum.DARK` | `dark` |
+
+States not listed in `STATE_BADGES` fall back to `STATE_BADGE_DEFAULT` (default: `BadgeEnum.INFO`).
 
 ## WorkflowForm
 
@@ -289,7 +311,7 @@ attributes from `CrudView`) and adds:
 | `E231` | `cv_transition_label` is not `None` |
 | `E232` | `cv_comment_label` is not `None` |
 | `E233` | The model associated with `cv_viewset` extends `WorkflowMixin` |
-| `E234` | `STATE_ENUM` is set on the model |
+| `E234` | `STATE_CHOICES` is set on the model |
 | `E235` | `STATE_BADGES` is set on the model |
 
 `WorkflowViewPermissionRequired` additionally inherits the `E202` check for `cv_permission`

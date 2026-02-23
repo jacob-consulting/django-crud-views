@@ -3,7 +3,7 @@ from django.utils.translation import gettext as _
 from django_fsm import FSMField, transition
 
 from crud_views_workflow.lib.enums import WorkflowComment
-from crud_views_workflow.lib.mixins import WorkflowMixin
+from crud_views_workflow.lib.mixins import BadgeEnum, WorkflowMixin
 
 
 class CampaignState(models.TextChoices):
@@ -15,13 +15,13 @@ class CampaignState(models.TextChoices):
 
 
 class Campaign(WorkflowMixin, models.Model):
-    STATE_ENUM = CampaignState
+    STATE_CHOICES = CampaignState
     STATE_BADGES = {
-        CampaignState.NEW: "light",
-        CampaignState.ACTIVE: "info",
-        CampaignState.SUCCESS: "primary",
-        CampaignState.CANCELED: "warning",
-        CampaignState.ERROR: "danger",
+        CampaignState.NEW: BadgeEnum.LIGHT,
+        CampaignState.ACTIVE: BadgeEnum.INFO,
+        CampaignState.SUCCESS: BadgeEnum.PRIMARY,
+        CampaignState.CANCELED: BadgeEnum.WARNING,
+        CampaignState.ERROR: BadgeEnum.DANGER,
     }
 
     TRANSITION_COMMENT_OPTIONAL = 1

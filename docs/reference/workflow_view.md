@@ -43,7 +43,8 @@ from django.utils.translation import gettext_lazy as _
 from django_fsm import FSMField, transition
 
 from crud_views_workflow.lib.enums import WorkflowComment
-from crud_views_workflow.lib.mixins import BadgeEnum, WorkflowMixin
+from crud_views_workflow.lib.enums import BadgeEnum
+from crud_views_workflow.lib.mixins import WorkflowMixin
 
 
 class CampaignState(models.TextChoices):
@@ -226,7 +227,8 @@ class Campaign(WorkflowMixin, models.Model):
 `BadgeEnum` is a `StrEnum` covering all Bootstrap contextual colours. Import it alongside `WorkflowMixin`:
 
 ```python
-from crud_views_workflow.lib.mixins import BadgeEnum, WorkflowMixin
+from crud_views_workflow.lib.enums import BadgeEnum
+from crud_views_workflow.lib.mixins import WorkflowMixin
 ```
 
 | Value | Bootstrap class |

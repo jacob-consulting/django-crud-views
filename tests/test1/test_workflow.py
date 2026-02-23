@@ -6,7 +6,7 @@ import pytest
 from django.test.client import Client
 
 from tests.test1.app.models import Campaign, CampaignState
-from crud_views_workflow.lib.mixins import BadgeEnum
+from crud_views_workflow.lib.enums import BadgeEnum
 from crud_views_workflow.models import WorkflowInfo
 
 

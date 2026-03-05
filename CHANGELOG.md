@@ -1,5 +1,10 @@
 # Django CRUD Views - Changelog
 
+## 0.3.5
+
+- Moved `django-ordered-model` to optional dependency group `ordered` (`pip install django-crud-views[ordered]`)
+- Added `docs/reference/ordered_view.md` documenting the ordered views
+
 ## 0.3.4
 
 - Moved `BadgeEnum` from `crud_views_workflow.lib.mixins` to `crud_views_workflow.lib.enums`

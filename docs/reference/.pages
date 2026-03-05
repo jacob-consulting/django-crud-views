@@ -7,5 +7,6 @@ nav:
     - delete_view.md
     - workflow_view.md
     - polymorphic_view.md
+    - ordered_view.md
     - settings.md
     - ...

@@ -1,5 +1,10 @@
 # Django CRUD Views - Changelog
 
+## 0.3.6
+
+- Added `docs/reference/custom_form_view.md` documenting `CustomFormView`, `CustomFormViewPermissionRequired`, `CustomFormNoObjectView`, and `CrispyModelViewMixin`
+- Added unit tests for `CustomFormView` / `CustomFormViewPermissionRequired` and `CrispyModelViewMixin`
+
 ## 0.3.5
 
 - Moved `django-ordered-model` to optional dependency group `ordered` (`pip install django-crud-views[ordered]`)

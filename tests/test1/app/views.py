@@ -21,6 +21,7 @@ from crud_views.lib.views import (
     OrderedUpViewPermissionRequired,
     OrderedUpDownPermissionRequired,
 )
+from crud_views.lib.views.form import CustomFormViewPermissionRequired
 from crud_views.lib.views.list import ListViewFilterFormHelper
 from crud_views_polymorphic.lib import (
     PolymorphicCreateViewPermissionRequired,
@@ -105,6 +106,35 @@ class AuthorUpView(OrderedUpViewPermissionRequired):
 
 class AuthorDownView(OrderedUpDownPermissionRequired):
     cv_viewset = cv_author
+
+
+class AuthorContactForm(CrispyModelForm):
+    from django.forms.fields import CharField as _CharField
+
+    subject = _CharField(label="Subject", required=True)
+    body = _CharField(label="Body", required=True)
+
+    class Meta:
+        model = Author
+        fields = ["subject", "body"]
+
+    def get_layout_fields(self):
+        from crud_views.lib.crispy import Column12
+
+        return Column12("subject"), Column12("body")
+
+
+class AuthorContactView(CrispyModelViewMixin, MessageMixin, CustomFormViewPermissionRequired):
+    cv_key = "contact"
+    cv_path = "contact"
+    cv_viewset = cv_author
+    form_class = AuthorContactForm
+    cv_message_template_code = "Contacted author »{object}«"
+    cv_header_template_code = "Contact Author"
+    cv_paragraph_template_code = "Send a message to the Author"
+
+    def cv_form_valid(self, context):
+        pass
 
 
 # --- Publisher (INT PK) ---

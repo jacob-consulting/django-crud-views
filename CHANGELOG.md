@@ -1,5 +1,9 @@
 # Django CRUD Views - Changelog
 
+## 0.3.8
+
+- Improved bootstrap5 example: `book_count` is now resolved via the view-callable fallback (view method) while `full_name` is annotated as coming from the model, making the distinction clear
+
 ## 0.3.7
 
 - Added documentation and examples for the django-object-detail View-Callable Fallback feature: view methods are called when a `cv_property_display` path is not found on the model instance

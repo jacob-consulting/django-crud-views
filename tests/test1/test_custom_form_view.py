@@ -5,8 +5,6 @@ Tests for CustomFormView / CustomFormViewPermissionRequired and CrispyModelViewM
 import pytest
 from django.test.client import Client
 
-from tests.test1.app.models import Author
-
 
 # ---------------------------------------------------------------------------
 # CustomFormView (object-based) — GET / POST

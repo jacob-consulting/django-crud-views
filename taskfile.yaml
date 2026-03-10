@@ -25,6 +25,11 @@ tasks:
       - uv run ruff format .
     silent: true
 
+  check:
+    cmds:
+      - uv run ruff check --fix .
+    silent: true
+
   build:
     cmds:
       - uv build

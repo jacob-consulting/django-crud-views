@@ -17,7 +17,7 @@ tasks:
 
   dev-install:
     cmds:
-      - uv pip install --upgrade .[polymorphic,workflow,dev,test]
+      - uv pip install --upgrade .[ordered,polymorphic,workflow,dev,test]
     silent: true
 
   format:

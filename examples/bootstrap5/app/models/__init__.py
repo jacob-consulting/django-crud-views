@@ -33,10 +33,6 @@ class Author(OrderedModel):
     def full_name(self):
         return f"{self.first_name} {self.last_name}"
 
-    @property
-    def book_count(self):
-        return self.book_set.count()
-
 
 class Book(OrderedModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

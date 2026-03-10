@@ -84,6 +84,46 @@ property_display = [
 | `link`     | URL name string or `LinkConfig` for clickable values      |
 | `badge`    | Color string or `BadgeConfig` for badge rendering         |
 
+### View-Callable Fallback
+
+When a path in `cv_property_display` is **not found on the model instance**, django-object-detail
+falls back to calling `view.<path>(instance)`. This lets you compute display values using
+view-level context — such as `self.request`, URL kwargs, or business logic that doesn't belong
+on the model.
+
+Define a method with the same name as the path directly on the detail view class:
+
+```python
+class AuthorDetailView(DetailViewPermissionRequired):
+    cv_viewset = cv_author
+
+    cv_property_display = [
+        {
+            "title": "Attributes",
+            "properties": [
+                {"path": "full_name", "detail": "Computed from first and last name"},
+                {"path": "book_count", "detail": "Total books by this author"},
+            ],
+        },
+    ]
+
+    # Called because 'full_name' does not exist on Author
+    def full_name(self, instance):
+        return f"{instance.first_name} {instance.last_name}"
+
+    # Called because 'book_count' does not exist on Author
+    def book_count(self, instance):
+        return instance.book_set.count()
+```
+
+**Key rules:**
+
+- The method signature must be `(self, instance) -> value`
+- **Model takes priority**: if a path exists on the model (even as `None`), the view method is
+  never called
+- Non-callable view attributes resolve to `None`
+- Works with all property entry forms: plain string, dict, `PropertyConfig` / `x()`
+
 ### FK and M2M Traversal
 
 Use `__` to traverse relationships:

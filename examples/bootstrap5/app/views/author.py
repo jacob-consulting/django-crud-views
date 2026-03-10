@@ -134,6 +134,15 @@ class AuthorDetailView(DetailViewPermissionRequired):
         },
     ]
 
+    # View-Callable Fallback: methods called when the path is not found on the model instance.
+    # Signature: (self, instance) -> value
+
+    def full_name(self, instance):
+        return f"{instance.first_name} {instance.last_name}"
+
+    def book_count(self, instance):
+        return instance.book_set.count()
+
 
 class AuthorUpView(MessageMixin, OrderedUpViewPermissionRequired):
     cv_viewset = cv_author

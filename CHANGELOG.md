@@ -1,5 +1,9 @@
 # Django CRUD Views - Changelog
 
+## 0.3.7
+
+- Added documentation and examples for the django-object-detail View-Callable Fallback feature: view methods are called when a `cv_property_display` path is not found on the model instance
+
 ## 0.3.6
 
 - Added `docs/reference/custom_form_view.md` documenting `CustomFormView`, `CustomFormViewPermissionRequired`, `CustomFormNoObjectView`, and `CrispyModelViewMixin`

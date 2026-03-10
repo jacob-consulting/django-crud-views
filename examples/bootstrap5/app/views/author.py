@@ -116,7 +116,7 @@ class AuthorDetailView(DetailViewPermissionRequired):
             "description": _("Core author information"),
             "properties": [
                 "xyz",
-                {"path": "full_name", "detail": _("Computed from first and last name")},
+                {"path": "full_name", "detail": _("Computed from first and last name (from model)")},
                 "first_name",
                 "last_name",
             ],
@@ -128,7 +128,7 @@ class AuthorDetailView(DetailViewPermissionRequired):
             "properties": [
                 {"path": "id", "title": "UUID", "detail": _("Unique identifier")},
                 "pseudonym",
-                {"path": "book_count", "detail": _("Total number of books by this author")},
+                {"path": "book_count", "detail": _("Total number of books by this author (from view)")},
                 "abc",
             ],
         },
@@ -136,9 +136,6 @@ class AuthorDetailView(DetailViewPermissionRequired):
 
     # View-Callable Fallback: methods called when the path is not found on the model instance.
     # Signature: (self, instance) -> value
-
-    def full_name(self, instance):
-        return f"{instance.first_name} {instance.last_name}"
 
     def book_count(self, instance):
         return instance.book_set.count()

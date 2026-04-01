@@ -16,6 +16,10 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#: lib/table/table.py:30
+msgid "Actions"
+msgstr "Aktionen"
+
 #: lib/crispy/form.py:36 templates/crud_views/tags/button_submit.html:3
 msgid "Save"
 msgstr "Speichern"

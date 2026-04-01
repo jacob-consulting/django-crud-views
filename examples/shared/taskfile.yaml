@@ -37,3 +37,9 @@ tasks:
   run:
     cmds:
       - uv run manage.py runserver 0.0.0.0:8000
+
+  de-make:
+    cmd: uv run manage.py makemessages -l de
+
+  de-compile:
+    cmd: uv run manage.py compilemessages

@@ -45,7 +45,13 @@ class ColumnAttrs(UserDict):
         return ColumnAttrs(merged)
 
 
-class ColAttr:
+class ColAttrMeta(type):
+    def __getattribute__(cls, name):
+        # print(f"accessing {name}")
+        return super().__getattribute__(name)
+
+
+class ColAttr(metaclass=ColAttrMeta):
     # td width
     ID: ColumnAttrs = ColumnAttrs.td_class("cv-col-id")
     w5: ColumnAttrs = ColumnAttrs.td_class("cv-col-5")

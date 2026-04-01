@@ -3,6 +3,7 @@ import django_tables2 as tables
 
 from app.models import Author
 from crud_views.lib.table import Table, LinkChildColumn, UUIDLinkDetailColumn
+from crud_views.lib.table.attrs import ColAttr
 from crud_views.lib.views import (
     DetailViewPermissionRequired,
     UpdateViewPermissionRequired,
@@ -36,11 +37,11 @@ class AuthorFilter(django_filters.FilterSet):
 
 
 class AuthorTable(Table):
-    id = UUIDLinkDetailColumn(attrs=Table.col_attr.wID)
-    first_name = tables.Column(attrs=Table.col_attr.w20)
-    last_name = tables.Column(attrs=Table.col_attr.w30)
-    pseudonym = tables.Column(attrs=Table.col_attr.w20)
-    books = LinkChildColumn(name="book", verbose_name="Books", attrs=Table.col_attr.w10)
+    id = UUIDLinkDetailColumn(attrs=ColAttr.ID)
+    first_name = tables.Column(attrs=ColAttr.w20)
+    last_name = tables.Column(attrs=ColAttr.w30)
+    pseudonym = tables.Column(attrs=ColAttr.w20)
+    books = LinkChildColumn(name="book", verbose_name="Books", attrs=ColAttr.w10)
 
 
 class AuthorListView(ListViewTableMixin, ListViewTableFilterMixin, ListViewPermissionRequired):

@@ -1,6 +1,6 @@
 import django_tables2 as tables
 from crispy_forms.layout import Row
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 
 from app.models.poly import Parent
 from crud_views.lib.crispy import CrispyModelViewMixin, CrispyDeleteForm, CrispyModelForm, Column4

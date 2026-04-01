@@ -1,0 +1,328 @@
+# German translations for django-crud-views.
+# Copyright (C) 2024
+# This file is distributed under the same license as the django-crud-views package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: django-crud-views\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-01 14:54+0000\n"
+"PO-Revision-Date: 2026-04-01 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: German\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: lib/table/table.py:30
+msgid "Actions"
+msgstr "Aktionen"
+
+#: lib/crispy/form.py:36 templates/crud_views/tags/button_submit.html:3
+msgid "Save"
+msgstr "Speichern"
+
+#: lib/crispy/form.py:107
+msgid "Confirm deletion"
+msgstr "Löschen bestätigen"
+
+#: lib/view/base.py:340
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: lib/views/list.py:75
+msgid "Apply Filter"
+msgstr "Filter anwenden"
+
+#: lib/views/list.py:80
+msgid "Reset Filter"
+msgstr "Filter zurücksetzen"
+
+#: templates/crud_views/columns/child.html:4
+msgid "Goto"
+msgstr "Weiter"
+
+#: templates/crud_views/snippets/action/child.html:3
+#, python-format
+msgid ""
+"\n"
+"    Goto child of %(verbose_name_translate)s\n"
+msgstr ""
+"\n"
+"    Zu Kindelementen von %(verbose_name_translate)s\n"
+
+#: templates/crud_views/snippets/action/create.html:3
+#: templates/crud_views/snippets/action/create_select.html:3
+#: templates/crud_views/snippets/paragraph/create.html:3
+#: templates/crud_views/snippets/paragraph/create_select.html:3
+#, python-format
+msgid ""
+"\n"
+"    Create new %(verbose_name_translate)s\n"
+msgstr ""
+"\n"
+"    Neues %(verbose_name_translate)s erstellen\n"
+
+#: templates/crud_views/snippets/action/delete.html:3
+#, python-format
+msgid ""
+"\n"
+"    Delete %(verbose_name_translate)s »%(object)s«\n"
+msgstr ""
+"\n"
+"    %(verbose_name_translate)s »%(object)s« löschen\n"
+
+#: templates/crud_views/snippets/action/detail.html:3
+#, python-format
+msgid ""
+"\n"
+"    Show %(verbose_name_translate)s »%(object)s« detail.\n"
+msgstr ""
+"\n"
+"    %(verbose_name_translate)s »%(object)s« anzeigen.\n"
+
+#: templates/crud_views/snippets/action/down.html:3
+#, python-format
+msgid ""
+"\n"
+"    Move %(verbose_name_translate)s down\n"
+msgstr ""
+"\n"
+"    %(verbose_name_translate)s nach unten verschieben\n"
+
+#: templates/crud_views/snippets/action/list.html:3
+#: templates/crud_views/snippets/paragraph/list.html:3
+#, python-format
+msgid ""
+"\n"
+"    List of all %(verbose_name_plural_translate)s\n"
+msgstr ""
+"\n"
+"    Alle %(verbose_name_plural_translate)s\n"
+
+#: templates/crud_views/snippets/action/manage.html:3
+#, python-format
+msgid ""
+"\n"
+"    ViewSet %(viewset)s%(viewset.name)s details.\n"
+msgstr ""
+"\n"
+"    ViewSet %(viewset)s%(viewset.name)s Details.\n"
+
+#: templates/crud_views/snippets/action/up.html:3
+#, python-format
+msgid ""
+"\n"
+"    Move %(verbose_name_translate)s up\n"
+msgstr ""
+"\n"
+"    %(verbose_name_translate)s nach oben verschieben\n"
+
+#: templates/crud_views/snippets/action/update.html:3
+#, python-format
+msgid ""
+"\n"
+"    Update %(verbose_name_translate)s »%(object)s«\n"
+msgstr ""
+"\n"
+"    %(verbose_name_translate)s »%(object)s« bearbeiten\n"
+
+#: templates/crud_views/snippets/action_short/child.html:3
+#: templates/crud_views/snippets/header/create.html:3
+#: templates/crud_views/snippets/header/delete.html:3
+#: templates/crud_views/snippets/header/detail.html:3
+#: templates/crud_views/snippets/header/update.html:3
+#, python-format
+msgid ""
+"\n"
+"    %(verbose_name_translate)s\n"
+msgstr ""
+
+#: templates/crud_views/snippets/action_short/create.html:3
+#: templates/crud_views/snippets/action_short/create_select.html:3
+msgid ""
+"\n"
+"    Create\n"
+msgstr ""
+"\n"
+"    Erstellen\n"
+
+#: templates/crud_views/snippets/action_short/delete.html:3
+msgid ""
+"\n"
+"    Delete\n"
+msgstr ""
+"\n"
+"    Löschen\n"
+
+#: templates/crud_views/snippets/action_short/detail.html:3
+msgid ""
+"\n"
+"    Detail\n"
+msgstr ""
+"\n"
+"    Details\n"
+
+#: templates/crud_views/snippets/action_short/down.html:3
+msgid ""
+"\n"
+"    Down\n"
+msgstr ""
+"\n"
+"    Runter\n"
+
+#: templates/crud_views/snippets/action_short/list.html:3
+msgid ""
+"\n"
+"    List\n"
+msgstr ""
+"\n"
+"    Liste\n"
+
+#: templates/crud_views/snippets/action_short/manage.html:3
+msgid ""
+"\n"
+"    Manage\n"
+msgstr ""
+"\n"
+"    Verwalten\n"
+
+#: templates/crud_views/snippets/action_short/up.html:3
+msgid ""
+"\n"
+"    Up\n"
+msgstr ""
+"\n"
+"    Rauf\n"
+
+#: templates/crud_views/snippets/action_short/update.html:3
+msgid ""
+"\n"
+"    Update\n"
+msgstr ""
+"\n"
+"    Bearbeiten\n"
+
+#: templates/crud_views/snippets/header/create_select.html:3
+#, python-format
+msgid ""
+"\n"
+"    Select type of %(verbose_name_translate)s to create\n"
+msgstr ""
+"\n"
+"    Typ von %(verbose_name_translate)s zum Erstellen auswählen\n"
+
+#: templates/crud_views/snippets/header/filter.html:3
+#, python-format
+msgid ""
+"\n"
+"    Filter %(verbose_name_plural_translate)s\n"
+msgstr ""
+"\n"
+"    %(verbose_name_plural_translate)s filtern\n"
+
+#: templates/crud_views/snippets/header/list.html:3
+#, python-format
+msgid ""
+"\n"
+"    %(verbose_name_plural_translate)s\n"
+msgstr ""
+
+#: templates/crud_views/snippets/header/manage.html:3
+msgid ""
+"\n"
+"    ViewSet Management\n"
+msgstr ""
+"\n"
+"    ViewSet-Verwaltung\n"
+
+#: templates/crud_views/snippets/message/create.html:3
+#, python-format
+msgid ""
+"\n"
+"    Created %(verbose_name_translate)s »%(object)s«\n"
+msgstr ""
+"\n"
+"    %(verbose_name_translate)s »%(object)s« erstellt\n"
+
+#: templates/crud_views/snippets/message/delete.html:3
+#, python-format
+msgid ""
+"\n"
+"    Deleted %(verbose_name_translate)s »%(object)s«\n"
+msgstr ""
+"\n"
+"    %(verbose_name_translate)s »%(object)s« gelöscht\n"
+
+#: templates/crud_views/snippets/message/down.html:3
+#, python-format
+msgid ""
+"\n"
+"    Moved %(verbose_name_translate)s »%(object)s« down\n"
+msgstr ""
+"\n"
+"    %(verbose_name_translate)s »%(object)s« nach unten verschoben\n"
+
+#: templates/crud_views/snippets/message/up.html:3
+#, python-format
+msgid ""
+"\n"
+"    Moved %(verbose_name_translate)s »%(object)s« up\n"
+msgstr ""
+"\n"
+"    %(verbose_name_translate)s »%(object)s« nach oben verschoben\n"
+
+#: templates/crud_views/snippets/message/update.html:3
+#, python-format
+msgid ""
+"\n"
+"    Updated %(verbose_name_translate)s »%(object)s«\n"
+msgstr ""
+"\n"
+"    %(verbose_name_translate)s »%(object)s« aktualisiert\n"
+
+#: templates/crud_views/snippets/paragraph/delete.html:3
+#, python-format
+msgid ""
+"\n"
+"    Delete %(verbose_name_translate)s »<b>%(object)s</b>«\n"
+msgstr ""
+"\n"
+"    %(verbose_name_translate)s »<b>%(object)s</b>« löschen\n"
+
+#: templates/crud_views/snippets/paragraph/detail.html:3
+#, python-format
+msgid ""
+"\n"
+"    %(verbose_name_translate)s »<b>%(object)s</b>« detail.\n"
+msgstr ""
+"\n"
+"    %(verbose_name_translate)s »<b>%(object)s</b>« anzeigen.\n"
+
+#: templates/crud_views/snippets/paragraph/manage.html:3
+#, python-format
+msgid ""
+"\n"
+"    Manage details of ViewSet »<b>%(cv)s</b>«\n"
+msgstr ""
+"\n"
+"    Details des ViewSets »<b>%(cv)s</b>« verwalten\n"
+
+#: templates/crud_views/snippets/paragraph/update.html:3
+#, python-format
+msgid ""
+"\n"
+"    Update %(verbose_name_translate)s »<b>%(object)s</b>«\n"
+msgstr ""
+"\n"
+"    %(verbose_name_translate)s »<b>%(object)s</b>« bearbeiten\n"
+
+#: templates/crud_views/table/bootstrap5.html:69
+msgid "previous"
+msgstr "zurück"
+
+#: templates/crud_views/table/bootstrap5.html:89
+msgid "next"
+msgstr "weiter"

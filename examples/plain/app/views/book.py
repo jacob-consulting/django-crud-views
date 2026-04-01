@@ -36,6 +36,8 @@ class BookListView(ListViewTableMixin, ListViewPermissionRequired):
 class BookDetailView(DetailViewPermissionRequired):
     cv_viewset = cv_book
 
+    cv_property_display = []
+
 
 class BookUpdateView(UpdateViewPermissionRequired):
     fields = ["title", "price"]

@@ -2,7 +2,7 @@ import django_filters
 import django_tables2 as tables
 from crispy_forms.layout import Layout, Row
 from django.forms.fields import CharField
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 
 from app.models import Author
 from crud_views.lib.crispy import Column4, CrispyModelForm, CrispyModelViewMixin, CrispyDeleteForm, Column12
@@ -67,12 +67,12 @@ class AuthorFilter(django_filters.FilterSet):
 
 class AuthorTable(Table):
     id = UUIDLinkDetailColumn(attrs=Table.ca.ID)
-    first_name = tables.Column()
-    last_name = tables.Column()
-    pseudonym = tables.Column(attrs=Table.ca.w20)
-    books = LinkChildColumn(name="book", verbose_name="Books", attrs=Table.ca.w10)
-    created_dt = NaturalDayColumn()
-    modified_dt = NaturalTimeColumn()
+    first_name = tables.Column(verbose_name=_("First Name"))
+    last_name = tables.Column(verbose_name=_("Last Name"))
+    pseudonym = tables.Column(verbose_name=_("Pseudonym"), attrs=Table.ca.w20)
+    books = LinkChildColumn(name="book", verbose_name=_("Books"), attrs=Table.ca.w10)
+    created_dt = NaturalDayColumn(verbose_name=_("Created"))
+    modified_dt = NaturalTimeColumn(verbose_name=_("Modified"))
 
 
 class AuthorListView(ListViewTableMixin, ListViewTableFilterMixin, ListViewPermissionRequired):

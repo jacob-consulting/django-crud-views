@@ -1,6 +1,7 @@
 from typing import Type
 
 import django_tables2 as tables
+from django.utils.translation import gettext_lazy as _
 
 from .attrs import ColAttr
 from .columns import ActionColumn
@@ -26,7 +27,7 @@ class Table(TableWithViewContext):
     Table with action column
     """
 
-    actions = ActionColumn()
+    actions = ActionColumn(verbose_name=_("Actions"))
 
     def __init__(self, *args, **kwargs):
         if "sequence" not in kwargs:

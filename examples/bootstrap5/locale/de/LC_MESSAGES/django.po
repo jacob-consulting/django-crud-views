@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: django-crud-views bootstrap5 example\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-01 16:36+0000\n"
+"POT-Creation-Date: 2026-04-01 17:12+0000\n"
 "PO-Revision-Date: 2026-04-01 00:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: German\n"
@@ -59,6 +59,30 @@ msgstr "Erstellen"
 #: app/views/author.py:47 app/views/group.py:39
 msgid "Update"
 msgstr "Aktualisieren"
+
+#: app/views/author.py:70
+msgid "First Name"
+msgstr "Vorname"
+
+#: app/views/author.py:71
+msgid "Last Name"
+msgstr "Nachname"
+
+#: app/views/author.py:72
+msgid "Pseudonym"
+msgstr "Pseudonym"
+
+#: app/views/author.py:73
+msgid "Books"
+msgstr "Bücher"
+
+#: app/views/author.py:74
+msgid "Created"
+msgstr "Erstellt"
+
+#: app/views/author.py:75
+msgid "Modified"
+msgstr "Geändert"
 
 #: app/views/author.py:114 app/views/detail.py:77 app/views/group.py:83
 #: app/views/group_members.py:97

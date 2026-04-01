@@ -53,7 +53,8 @@
             {% get_current_language as CURRENT_LANGUAGE %}
             <div class="nav-item dropdown me-2">
                 <button class="btn btn-outline-light btn-sm dropdown-toggle" type="button"
-                        data-bs-toggle="dropdown" aria-expanded="false">
+                        data-bs-toggle="dropdown" aria-expanded="false"
+                        aria-label="{% trans 'Change language' %}">
                     <i class="fa-solid fa-globe"></i> {{ CURRENT_LANGUAGE|upper }}
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
@@ -78,7 +79,7 @@
                     <button class="btn btn-outline-success" type="submit">Log Out</button>
                 </form>
             {% else %}
-                <form class="d-flex" action="{% url 'login' %}" method="pet">
+                <form class="d-flex" action="{% url 'login' %}" method="post">
                     <button class="btn btn-outline-success" type="submit">Log In</button>
                 </form>
             {% endif %}

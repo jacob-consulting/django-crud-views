@@ -12,3 +12,4 @@ coverage.xml
 .nox
 /insights
 TASKS.md
+.worktrees

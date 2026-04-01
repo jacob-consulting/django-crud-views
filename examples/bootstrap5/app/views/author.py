@@ -143,12 +143,12 @@ class AuthorDetailView(DetailViewPermissionRequired):
 
 class AuthorUpView(MessageMixin, OrderedUpViewPermissionRequired):
     cv_viewset = cv_author
-    cv_message = "Successfully moved author »{object}« up"
+    cv_message = _("Successfully moved author »{object}« up")
 
 
 class AuthorDownView(MessageMixin, OrderedUpDownPermissionRequired):
     cv_viewset = cv_author
-    cv_message = "Successfully moved author »{object}« down"
+    cv_message = _("Successfully moved author »{object}« down")
 
 
 class RedirectBooksView(RedirectChildView):
@@ -163,8 +163,8 @@ class RedirectBooksView(RedirectChildView):
 class AuthorContactForm(CrispyModelForm):
     submit_label = _("Send")
 
-    subject = CharField(label="Subject", required=True)
-    body = CharField(label="Body", required=True)
+    subject = CharField(label=_("Subject"), required=True)
+    body = CharField(label=_("Body"), required=True)
 
     class Meta:
         model = Author
@@ -181,7 +181,7 @@ class AuthorContactView(MessageMixin, CrispyModelViewMixin, CustomFormViewPermis
     cv_viewset = cv_author
     form_class = AuthorContactForm
 
-    cv_message_template_code = "Successfully contacted author »{object}«"
+    cv_message_template_code = _("Successfully contacted author »{object}«")
 
     cv_context_actions = ["parent", "detail", "update", "delete", "contact"]
     cv_header_template_code = _("Contact Author")

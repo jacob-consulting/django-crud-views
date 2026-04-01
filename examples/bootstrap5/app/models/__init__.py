@@ -1,6 +1,7 @@
 import uuid
 
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 from ordered_model.models import OrderedModel
 
 from .campaign import Campaign as Campaign
@@ -15,8 +16,8 @@ class Author(OrderedModel):
     modified_dt = models.DateTimeField(auto_now=True)
 
     class Meta(OrderedModel.Meta):
-        verbose_name = "Autor"
-        verbose_name_plural = "Autoren"
+        verbose_name = _("Author")
+        verbose_name_plural = _("Authors")
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
@@ -41,6 +42,10 @@ class Book(OrderedModel):
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     created_dt = models.DateTimeField(auto_now_add=True)
     modified_dt = models.DateTimeField(auto_now=True)
+
+    class Meta(OrderedModel.Meta):
+        verbose_name = _("Book")
+        verbose_name_plural = _("Books")
 
     def __str__(self):
         return f"{self.title} by {self.author}"

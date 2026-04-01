@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: django-crud-views bootstrap5 example\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-01 17:12+0000\n"
+"POT-Creation-Date: 2026-04-01 17:53+0000\n"
 "PO-Revision-Date: 2026-04-01 00:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: German\n"
@@ -15,6 +15,26 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: app/models/__init__.py:19
+#, fuzzy
+#| msgid "Contact Author"
+msgid "Author"
+msgstr "Autor"
+
+#: app/models/__init__.py:20
+msgid "Authors"
+msgstr "Autoren"
+
+#: app/models/__init__.py:47
+#, fuzzy
+#| msgid "Books"
+msgid "Book"
+msgstr "Buch"
+
+#: app/models/__init__.py:48 app/views/author.py:73
+msgid "Books"
+msgstr "Bücher"
 
 #: app/models/campaign.py:11
 msgid "New"
@@ -72,10 +92,6 @@ msgstr "Nachname"
 msgid "Pseudonym"
 msgstr "Pseudonym"
 
-#: app/views/author.py:73
-msgid "Books"
-msgstr "Bücher"
-
 #: app/views/author.py:74
 msgid "Created"
 msgstr "Erstellt"
@@ -113,6 +129,16 @@ msgstr "Eindeutiger Bezeichner"
 msgid "Total number of books by this author (from view)"
 msgstr "Gesamtanzahl der Bücher dieses Autors (aus der Ansicht)"
 
+#: app/views/author.py:146
+#, python-brace-format
+msgid "Successfully moved author »{object}« up"
+msgstr "Autor »{object}« erfolgreich nach oben verschoben"
+
+#: app/views/author.py:151
+#, python-brace-format
+msgid "Successfully moved author »{object}« down"
+msgstr "Autor »{object}« erfolgreich nach unten verschoben"
+
 #: app/views/author.py:155
 msgid "Goto Books"
 msgstr "Zu den Büchern"
@@ -120,6 +146,19 @@ msgstr "Zu den Büchern"
 #: app/views/author.py:164
 msgid "Send"
 msgstr "Senden"
+
+#: app/views/author.py:166
+msgid "Subject"
+msgstr "Betreff"
+
+#: app/views/author.py:167
+msgid "Body"
+msgstr "Nachricht"
+
+#: app/views/author.py:184
+#, python-brace-format
+msgid "Successfully contacted author »{object}«"
+msgstr "Autor »{object}« erfolgreich kontaktiert"
 
 #: app/views/author.py:187 app/views/author.py:189
 msgid "Contact Author"

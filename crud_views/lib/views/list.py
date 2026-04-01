@@ -72,7 +72,7 @@ class ListViewFilterFormHelper(FormHelper):
 
         # add filter control buttons
         self.add_input(
-            layout.Submit("submit", "Apply Filter", css_id="filter-button"),
+            layout.Submit("submit", _("Apply Filter"), css_id="filter-button"),
         )
         self.add_input(
             layout.Reset(

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: django-crud-views bootstrap5 example\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-01 14:51+0000\n"
+"POT-Creation-Date: 2026-04-01 16:36+0000\n"
 "PO-Revision-Date: 2026-04-01 00:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: German\n"
@@ -47,6 +47,10 @@ msgstr "Fertig"
 #: app/models/campaign.py:62 app/models/campaign.py:72
 msgid "Cancel"
 msgstr "Abbrechen"
+
+#: app/templates/app/nav.html:57
+msgid "Change language"
+msgstr "Sprache ändern"
 
 #: app/views/author.py:32 app/views/group.py:24
 msgid "Create"
@@ -185,10 +189,10 @@ msgstr "Beitrittsdatum"
 msgid "Member details"
 msgstr "Mitgliederdetails"
 
-#: project/settings.py:121
+#: project/settings.py:122
 msgid "English"
 msgstr "Englisch"
 
-#: project/settings.py:122
+#: project/settings.py:123
 msgid "German"
 msgstr "Deutsch"

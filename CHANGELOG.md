@@ -1,5 +1,17 @@
 # Django CRUD Views - Changelog
 
+## 0.3.9
+
+- Completed German i18n coverage for bootstrap5 example: wrapped all untranslated strings in views (`bar`, `baz`, `foo`, `book`, `campaign`, `detail`, `group`, `group_members`, `author`) with `gettext_lazy`
+- Fixed `gettext` → `gettext_lazy` in `detail.py`, `group.py`, `group_members.py` for correct runtime translation of class-level strings
+- Fixed wrong entity name in `group.py` cv_messages ("author" → "group")
+- Added missing German translations for singular verbose names (`Author`, `Book`) and nav strings
+- Cleaned up all fuzzy entries in `crud_views` and `bootstrap5` German `.po` files; corrected bad fuzzy suggestions
+- Updated `crud_views` templates: translation strings changed from multiline to single-line `msgid` format
+- Added `settings_i18n.py` — minimal Django settings file for running `makemessages`/`compilemessages` without a full project settings module
+- Added taskfile tasks: `msg-make-crud_views`, `msg-comp-crud_views`, `msg-make-example`, `msg-comp-example`
+- Updated i18n developer documentation with taskfile commands and fuzzy flag guidance
+
 ## 0.3.8
 
 - Improved bootstrap5 example: `book_count` is now resolved via the view-callable fallback (view method) while `full_name` is annotated as coming from the model, making the distinction clear

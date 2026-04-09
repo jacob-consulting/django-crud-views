@@ -21,9 +21,9 @@ class ActionColumn(tables.TemplateColumn):
             extra["attrs"] = ColAttr.action
         super().__init__(**extra)
 
-    def render(self, record, table, value, bound_column, **kwargs):
+    def render(self, table, **kwargs):
         self.extra_context["view"] = table.view
-        return super().render(record, table, value, bound_column, **kwargs)
+        return super().render(table=table, **kwargs)
 
 
 class LinkChildColumn(tables.TemplateColumn):
@@ -36,13 +36,13 @@ class LinkChildColumn(tables.TemplateColumn):
             extra["template_name"] = "crud_views/columns/child.html"
         super().__init__(**extra)
 
-    def render(self, record, table, value, bound_column, **kwargs):
+    def render(self, table, record, **kwargs):
 
         viewset = ViewSet.get_viewset(self.name)
         data = viewset.get_meta(table.view.cv_get_view_context())
         data.update({"url": table.view.cv_get_child_url(self.name, self.key, record)})
         self.extra_context.update(data)
-        return super().render(record, table, value, bound_column, **kwargs)
+        return super().render(table=table, record=record, **kwargs)
 
 
 class LinkDetailColumnMixin:
@@ -61,10 +61,10 @@ class UUIDColumn(tables.TemplateColumn):
             extra["orderable"] = True
         super().__init__(template_name=template_name, **extra)
 
-    def render(self, record, table, value, bound_column, **kwargs):
+    def render(self, table, value, **kwargs):
         self.extra_context["view"] = table.view
         self.extra_context["uuid_short"] = str(value).split("-")[0]
-        return super().render(record, table, value, bound_column, **kwargs)
+        return super().render(table=table, value=value, **kwargs)
 
 
 class UUIDLinkDetailColumn(LinkDetailColumnMixin, UUIDColumn):

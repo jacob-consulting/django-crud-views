@@ -1,5 +1,6 @@
 import django_tables2 as tables
 from crispy_forms.layout import Row
+from django.utils.translation import gettext_lazy as _
 
 from app.models import Baz
 from crud_views.lib.crispy import CrispyModelForm, Column4, CrispyModelViewMixin, CrispyDeleteForm
@@ -19,7 +20,7 @@ cv_baz = ViewSet(model=Baz, name="baz", parent=ParentViewSet(name="bar"), icon_h
 
 
 class BazForm(CrispyModelForm):
-    submit_label = "Create"
+    submit_label = _("Create")
 
     class Meta:
         model = Baz
@@ -49,9 +50,9 @@ class BazDetailView(DetailViewPermissionRequired):
     cv_viewset = cv_baz
     cv_property_display = [
         {
-            "title": "Properties",
+            "title": _("Properties"),
             "icon": "dog",
-            "description": "Baz attributes",
+            "description": _("Baz attributes"),
             "properties": [
                 "id",
                 "name",

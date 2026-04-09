@@ -1,6 +1,6 @@
 import django_tables2 as tables
 from crispy_forms.layout import Row
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 
 from app.models import Group
 from crud_views.lib.crispy import Column4, CrispyModelForm, CrispyModelViewMixin, CrispyDeleteForm
@@ -57,21 +57,21 @@ class GroupCreateView(CrispyModelViewMixin, MessageMixin, CreateViewPermissionRe
     model = Group
     form_class = GroupCreateForm
     cv_viewset = cv_group
-    cv_message = "Created author »{object}«"
+    cv_message = _("Created group »{object}«")
 
 
 class GroupUpdateView(CrispyModelViewMixin, MessageMixin, UpdateViewPermissionRequired):
     model = Group
     form_class = GroupUpdateForm
     cv_viewset = cv_group
-    cv_message = "Updated author »{object}«"
+    cv_message = _("Updated group »{object}«")
 
 
 class GroupDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequired):
     model = Group
     form_class = CrispyDeleteForm
     cv_viewset = cv_group
-    cv_message = "Deleted author »{object}«"
+    cv_message = _("Deleted group »{object}«")
 
 
 class GroupDetailView(DetailViewPermissionRequired):

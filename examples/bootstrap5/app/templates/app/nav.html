@@ -14,22 +14,22 @@
                     <a class="nav-link active" aria-current="page" href="{% url "index" %}">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url "author-list" %}">Author</a>
+                    <a class="nav-link" href="{% url "author-list" %}">{% translate "Author" %}</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url "foo-list" %}">Foo</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url "campaign-list" %}">Campaign</a>
+                    <a class="nav-link" href="{% url "campaign-list" %}">{% translate "Campaign" %}</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url "poly-list" %}">Poly</a>
+                    <a class="nav-link" href="{% url "poly-list" %}">{% translate "Poly" %}</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url "detail-list" %}">Detail</a>
+                    <a class="nav-link" href="{% url "detail-list" %}">{% translate "Detail" %}</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url "group-list" %}">Group</a>
+                    <a class="nav-link" href="{% url "group-list" %}">{% translate "Group" %}</a>
                 </li>
 
                 <li class="nav-item dropdown">
@@ -38,8 +38,8 @@
                         Formsets
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{% url "question-list" %}">Question</a></li>
-                        <li><a class="dropdown-item" href="{% url "parent-list" %}">Poly Parent</a></li>
+                        <li><a class="dropdown-item" href="{% url "question-list" %}">{% translate "Question" %}</a></li>
+                        <li><a class="dropdown-item" href="{% url "parent-list" %}">{% translate "Poly Parent" %}</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
@@ -47,7 +47,7 @@
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link disabled" aria-disabled="true">Disabled</a>
+                    <a class="nav-link disabled" aria-disabled="true">{% translate "Disabled" %}</a>
                 </li>
             </ul>
             {% get_current_language as CURRENT_LANGUAGE %}
@@ -76,11 +76,11 @@
             {% if request.user.is_authenticated %}
                 <form class="d-flex" action="{% url 'logout' %}" method="post">
                     {% csrf_token %}
-                    <button class="btn btn-outline-success" type="submit">Log Out</button>
+                    <button class="btn btn-outline-success" type="submit">{% translate "Log Out" %}</button>
                 </form>
             {% else %}
                 <form class="d-flex" action="{% url 'login' %}" method="post">
-                    <button class="btn btn-outline-success" type="submit">Log In</button>
+                    <button class="btn btn-outline-success" type="submit">{% translate "Log In" %}</button>
                 </form>
             {% endif %}
         </div>

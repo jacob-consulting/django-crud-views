@@ -9,11 +9,11 @@ from .campaign import Campaign as Campaign
 
 class Author(OrderedModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    first_name = models.CharField(max_length=100, verbose_name="Vorname")
-    last_name = models.CharField(max_length=100)
-    pseudonym = models.CharField(max_length=100, blank=True, null=True)
-    created_dt = models.DateTimeField(auto_now_add=True)
-    modified_dt = models.DateTimeField(auto_now=True)
+    first_name = models.CharField(max_length=100, verbose_name=_("First name"))
+    last_name = models.CharField(max_length=100, verbose_name=_("Last name"))
+    pseudonym = models.CharField(max_length=100, blank=True, null=True, verbose_name=_("Pseudonym"))
+    created_dt = models.DateTimeField(auto_now_add=True, verbose_name=_("Created"))
+    modified_dt = models.DateTimeField(auto_now=True, verbose_name=_("Modified"))
 
     class Meta(OrderedModel.Meta):
         verbose_name = _("Author")
@@ -37,11 +37,11 @@ class Author(OrderedModel):
 
 class Book(OrderedModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    title = models.CharField(max_length=100)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    author = models.ForeignKey(Author, on_delete=models.CASCADE)
-    created_dt = models.DateTimeField(auto_now_add=True)
-    modified_dt = models.DateTimeField(auto_now=True)
+    title = models.CharField(max_length=100, verbose_name=_("Titel"))
+    price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_("Price"))
+    author = models.ForeignKey(Author, on_delete=models.CASCADE, verbose_name=_("Author"))
+    created_dt = models.DateTimeField(auto_now_add=True, verbose_name=_("Created"))
+    modified_dt = models.DateTimeField(auto_now=True, verbose_name=_("Modified"))
 
     class Meta(OrderedModel.Meta):
         verbose_name = _("Book")
@@ -52,7 +52,7 @@ class Book(OrderedModel):
 
 
 class Foo(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, verbose_name=_("Name"))
 
     def __str__(self):
         return f"{self.name}"
@@ -60,7 +60,7 @@ class Foo(models.Model):
 
 class Bar(models.Model):
     foo = models.ForeignKey(Foo, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, verbose_name=_("Name"))
 
     def __str__(self):
         return f"{self.name}"
@@ -68,7 +68,7 @@ class Bar(models.Model):
 
 class Baz(models.Model):
     bar = models.ForeignKey(Bar, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, verbose_name=_("Name"))
 
     def __str__(self):
         return f"{self.name}"
@@ -76,18 +76,18 @@ class Baz(models.Model):
 
 class Detail(OrderedModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    integer = models.IntegerField(verbose_name="An integer field")
-    number = models.FloatField(verbose_name="A float field")
-    char = models.CharField(max_length=100, verbose_name="Text field")
-    text = models.TextField(verbose_name="Multiline Text")
-    boolean = models.BooleanField(null=True, default=None, verbose_name="A boolean value")
-    boolean_two = models.BooleanField(null=True, default=None, verbose_name="Another boolean value")
-    date = models.DateField(verbose_name="A date field")
-    date_time = models.DateTimeField(verbose_name="A date field with time")
+    integer = models.IntegerField(verbose_name=_("An integer field"))
+    number = models.FloatField(verbose_name=_("A float field"))
+    char = models.CharField(max_length=100, verbose_name=_("Text field"))
+    text = models.TextField(verbose_name=_("Multiline Text"))
+    boolean = models.BooleanField(null=True, default=None, verbose_name=_("A boolean value"))
+    boolean_two = models.BooleanField(null=True, default=None, verbose_name=_("Another boolean value"))
+    date = models.DateField(verbose_name=_("A date field"))
+    date_time = models.DateTimeField(verbose_name=_("A date field with time"))
     author = models.ForeignKey(
-        Author, verbose_name="A foreign key field", on_delete=models.SET_NULL, blank=True, null=True
+        Author, verbose_name=_("A foreign key field"), on_delete=models.SET_NULL, blank=True, null=True
     )
-    foo = models.ManyToManyField(Foo, verbose_name="Foo selected")
+    foo = models.ManyToManyField(Foo, verbose_name=_("Foo selected"))
     created_dt = models.DateTimeField(auto_now_add=True)
     modified_dt = models.DateTimeField(auto_now=True)
 
@@ -103,14 +103,14 @@ class Detail(OrderedModel):
 
 
 class Person(models.Model):
-    name = models.CharField(max_length=128)
+    name = models.CharField(max_length=128, verbose_name=_("Name"))
 
     def __str__(self):
         return self.name
 
 
 class Group(models.Model):
-    name = models.CharField(max_length=128)
+    name = models.CharField(max_length=128, verbose_name=_("Name"))
     members = models.ManyToManyField(Person, through="Membership", related_name="group")
 
     def __str__(self):
@@ -120,8 +120,8 @@ class Group(models.Model):
 class Membership(models.Model):
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
-    date_joined = models.DateField()
-    invite_reason = models.CharField(max_length=64)
+    date_joined = models.DateField(verbose_name=_("Date joined"))
+    invite_reason = models.CharField(max_length=64, verbose_name=_("Invite reason"))
 
     class Meta:
         constraints = [models.UniqueConstraint(fields=["person", "group"], name="unique_person_group")]

@@ -2,7 +2,7 @@ from datetime import date
 
 import django_tables2 as tables
 from crispy_forms.layout import Row
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 
 from app.models import Person
 from crud_views.lib.crispy import Column4, CrispyModelForm, CrispyModelViewMixin, CrispyDeleteForm
@@ -66,7 +66,7 @@ class PersonCreateView(CrispyModelViewMixin, MessageMixin, CreateViewParentMixin
     model = Person
     form_class = PersonForm
     cv_viewset = cv_person
-    cv_message = "Created person »{object}«"
+    cv_message = _("Created person »{object}«")
 
     def cv_parent_many_to_many_through_defaults(self, instance, parent_instance, m2m) -> dict:
         defaults = super().cv_parent_many_to_many_through_defaults(instance, parent_instance, m2m)
@@ -78,14 +78,14 @@ class PersonUpdateView(CrispyModelViewMixin, MessageMixin, UpdateViewPermissionR
     model = Person
     form_class = PersonForm
     cv_viewset = cv_person
-    cv_message = "Updated person »{object}«"
+    cv_message = _("Updated person »{object}«")
 
 
 class PersonDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequired):
     model = Person
     form_class = CrispyDeleteForm
     cv_viewset = cv_person
-    cv_message = "Deleted person »{object}«"
+    cv_message = _("Deleted person »{object}«")
 
 
 class PersonDetailView(DetailViewPermissionRequired):

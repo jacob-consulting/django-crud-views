@@ -1,3 +1,4 @@
+from django.utils.translation import gettext_lazy as _
 import django_tables2 as tables
 from crispy_forms.layout import Row
 
@@ -25,7 +26,7 @@ cv_book = ViewSet(
 
 
 class BookCreateForm(CrispyModelForm):
-    submit_label = "Create"
+    submit_label = _("Create")
 
     class Meta:
         model = Book
@@ -60,13 +61,13 @@ class BookDetailView(DetailViewPermissionRequired):
 
     cv_property_display = [
         {
-            "title": "Attributes",
+            "title": _("Attributes"),
             "icon": "book-open",
-            "description": "Book details and metadata",
+            "description": _("Book details and metadata"),
             "properties": [
                 "id",
                 "title",
-                {"path": "price", "detail": "Retail price in EUR"},
+                {"path": "price", "detail": _("Retail price in EUR")},
                 "author",
                 "created_dt",
                 "modified_dt",

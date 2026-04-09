@@ -56,3 +56,19 @@ tasks:
       - uv run nox -p
       - rm -rf .nox
     silent: true
+
+  msg-make-crud_views:
+    dir: crud_views
+    cmd: python -m django makemessages -l de --settings=settings_i18n
+
+  msg-comp-crud_views:
+    dir: crud_views
+    cmd: python -m django compilemessages --settings=settings_i18n
+
+  msg-make-example:
+    dir: examples/bootstrap5
+    cmd: python manage.py makemessages -l de
+
+  msg-comp-example:
+    dir: examples/bootstrap5
+    cmd: python manage.py compilemessages -l de

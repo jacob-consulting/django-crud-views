@@ -24,7 +24,7 @@ cv_campaign = ViewSet(model=Campaign, name="campaign", icon_header="fa-solid fa-
 
 
 class CampaignForm(CrispyModelForm):
-    submit_label = "Create"
+    submit_label = _("Create")
 
     class Meta:
         model = Campaign
@@ -35,7 +35,7 @@ class CampaignForm(CrispyModelForm):
 
 
 class CampaignUpdateForm(CampaignForm):
-    submit_label = "Update"
+    submit_label = _("Update")
 
 
 class CampaignTable(Table):
@@ -56,13 +56,13 @@ class CampaignDetailView(DetailViewPermissionRequired):
 
     cv_property_display = [
         {
-            "title": "Properties",
+            "title": _("Properties"),
             "icon": "megaphone",
-            "description": "Campaign attributes",
+            "description": _("Campaign attributes"),
             "properties": [
                 "id",
                 "name",
-                PropertyConfig(path="state_badge", title=_("State"), detail="Campaign workflow state"),
+                PropertyConfig(path="state_badge", title=_("State"), detail=_("Campaign workflow state")),
             ],
         },
     ]

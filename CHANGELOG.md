@@ -1,5 +1,9 @@
 # Django CRUD Views - Changelog
 
+## 0.3.10
+
+- Fixed `TemplateColumn.render()` signature in `ActionColumn`, `LinkChildColumn`, and `UUIDColumn` to be compatible with django-tables2 2.9.x, which changed the method signature from positional `(record, table, value, bound_column, **kwargs)` to `(table, **kwargs)`
+
 ## 0.3.9
 
 - Completed German i18n coverage for bootstrap5 example: wrapped all untranslated strings in views (`bar`, `baz`, `foo`, `book`, `campaign`, `detail`, `group`, `group_members`, `author`) with `gettext_lazy`

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: django-crud-views bootstrap5 example\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-01 17:53+0000\n"
+"POT-Creation-Date: 2026-04-09 15:21+0000\n"
 "PO-Revision-Date: 2026-04-01 00:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: German\n"
@@ -16,9 +16,28 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: app/models/__init__.py:19
-#, fuzzy
-#| msgid "Contact Author"
+#: app/models/__init__.py:12
+msgid "First name"
+msgstr "Vorname"
+
+#: app/models/__init__.py:13
+msgid "Last name"
+msgstr "Nachname"
+
+#: app/models/__init__.py:14 app/views/author.py:72
+msgid "Pseudonym"
+msgstr "Pseudonym"
+
+#: app/models/__init__.py:15 app/models/__init__.py:43 app/views/author.py:74
+msgid "Created"
+msgstr "Erstellt"
+
+#: app/models/__init__.py:16 app/models/__init__.py:44 app/views/author.py:75
+msgid "Modified"
+msgstr "Geändert"
+
+#: app/models/__init__.py:19 app/models/__init__.py:42
+#: app/templates/app/nav.html:17
 msgid "Author"
 msgstr "Autor"
 
@@ -26,15 +45,75 @@ msgstr "Autor"
 msgid "Authors"
 msgstr "Autoren"
 
+#: app/models/__init__.py:40
+msgid "Titel"
+msgstr "Titel"
+
+#: app/models/__init__.py:41
+msgid "Price"
+msgstr "Preis"
+
 #: app/models/__init__.py:47
-#, fuzzy
-#| msgid "Books"
 msgid "Book"
 msgstr "Buch"
 
 #: app/models/__init__.py:48 app/views/author.py:73
 msgid "Books"
 msgstr "Bücher"
+
+#: app/models/__init__.py:55 app/models/__init__.py:63
+#: app/models/__init__.py:71 app/models/__init__.py:106
+#: app/models/__init__.py:113
+msgid "Name"
+msgstr "Name"
+
+#: app/models/__init__.py:79
+msgid "An integer field"
+msgstr "Ein Ganzzahlfeld"
+
+#: app/models/__init__.py:80
+msgid "A float field"
+msgstr "Ein Fließkommafeld"
+
+#: app/models/__init__.py:81
+msgid "Text field"
+msgstr "Textfeld"
+
+#: app/models/__init__.py:82
+msgid "Multiline Text"
+msgstr "Mehrzeiliger Text"
+
+#: app/models/__init__.py:83
+msgid "A boolean value"
+msgstr "Ein boolescher Wert"
+
+#: app/models/__init__.py:84
+msgid "Another boolean value"
+msgstr "Noch ein boolescher Wert"
+
+#: app/models/__init__.py:85
+msgid "A date field"
+msgstr "Ein Datumsfeld"
+
+#: app/models/__init__.py:86
+msgid "A date field with time"
+msgstr "Ein Datumsfeld mit Uhrzeit"
+
+#: app/models/__init__.py:88
+msgid "A foreign key field"
+msgstr "Ein Fremdschlüsselfeld"
+
+#: app/models/__init__.py:90
+msgid "Foo selected"
+msgstr "Foo Ausgewählt"
+
+#: app/models/__init__.py:123 app/views/group_members.py:45
+msgid "Date joined"
+msgstr "Beitrittsdatum"
+
+#: app/models/__init__.py:124
+msgid "Invite reason"
+msgstr "Grund der Einladung"
 
 #: app/models/campaign.py:11
 msgid "New"
@@ -68,15 +147,53 @@ msgstr "Fertig"
 msgid "Cancel"
 msgstr "Abbrechen"
 
+#: app/templates/app/nav.html:23
+msgid "Campaign"
+msgstr "Kampagne"
+
+#: app/templates/app/nav.html:26
+msgid "Poly"
+msgstr "Poly"
+
+#: app/templates/app/nav.html:29
+msgid "Detail"
+msgstr "Detail"
+
+#: app/templates/app/nav.html:32
+msgid "Group"
+msgstr "Gruppe"
+
+#: app/templates/app/nav.html:41
+msgid "Question"
+msgstr "Frage"
+
+#: app/templates/app/nav.html:42
+msgid "Poly Parent"
+msgstr "Poly Elternteil"
+
+#: app/templates/app/nav.html:50
+msgid "Disabled"
+msgstr "Deaktiviert"
+
 #: app/templates/app/nav.html:57
 msgid "Change language"
 msgstr "Sprache ändern"
 
-#: app/views/author.py:32 app/views/group.py:24
+#: app/templates/app/nav.html:79
+msgid "Log Out"
+msgstr "Abmelden"
+
+#: app/templates/app/nav.html:83
+msgid "Log In"
+msgstr "Anmelden"
+
+#: app/views/author.py:32 app/views/bar.py:23 app/views/baz.py:23
+#: app/views/book.py:29 app/views/campaign.py:27 app/views/foo.py:22
+#: app/views/group.py:24
 msgid "Create"
 msgstr "Erstellen"
 
-#: app/views/author.py:47 app/views/group.py:39
+#: app/views/author.py:47 app/views/campaign.py:38 app/views/group.py:39
 msgid "Update"
 msgstr "Aktualisieren"
 
@@ -88,20 +205,23 @@ msgstr "Vorname"
 msgid "Last Name"
 msgstr "Nachname"
 
-#: app/views/author.py:72
-msgid "Pseudonym"
-msgstr "Pseudonym"
+#: app/views/author.py:94
+#, python-brace-format
+msgid "Created author »{object}«"
+msgstr "Autor »{object}« erstellt"
 
-#: app/views/author.py:74
-msgid "Created"
-msgstr "Erstellt"
+#: app/views/author.py:100
+#, python-brace-format
+msgid "Updated author »{object}«"
+msgstr "Autor »{object}« aktualisiert"
 
-#: app/views/author.py:75
-msgid "Modified"
-msgstr "Geändert"
+#: app/views/author.py:106
+#, python-brace-format
+msgid "Deleted author »{object}«"
+msgstr "Autor »{object}« gelöscht"
 
-#: app/views/author.py:114 app/views/detail.py:77 app/views/group.py:83
-#: app/views/group_members.py:97
+#: app/views/author.py:114 app/views/book.py:64 app/views/detail.py:77
+#: app/views/group.py:83 app/views/group_members.py:97
 msgid "Attributes"
 msgstr "Attribute"
 
@@ -156,9 +276,8 @@ msgid "Body"
 msgstr "Nachricht"
 
 #: app/views/author.py:184
-#, python-brace-format
-msgid "Successfully contacted author »{object}«"
-msgstr "Autor »{object}« erfolgreich kontaktiert"
+msgid "Successfully contacted author <strong>{{ object }}</strong>"
+msgstr "Autor <strong>{{ object }}</strong> erfolgreich kontaktiert"
 
 #: app/views/author.py:187 app/views/author.py:189
 msgid "Contact Author"
@@ -172,9 +291,77 @@ msgstr "Eine Nachricht an den Autor senden"
 msgid "Contact Author Short"
 msgstr "Autor kontakt."
 
+#: app/views/bar.py:36
+msgid "Baz"
+msgstr "Baz"
+
+#: app/views/bar.py:51 app/views/baz.py:53 app/views/campaign.py:59
+#: app/views/foo.py:51 app/views/formset/question.py:62
+msgid "Properties"
+msgstr "Eigenschaften"
+
+#: app/views/bar.py:53
+msgid "Bar attributes"
+msgstr "Bar-Attribute"
+
+#: app/views/baz.py:55
+msgid "Baz attributes"
+msgstr "Baz-Attribute"
+
+#: app/views/book.py:66
+msgid "Book details and metadata"
+msgstr "Buchdetails und Metadaten"
+
+#: app/views/book.py:70
+msgid "Retail price in EUR"
+msgstr "Verkaufspreis in EUR"
+
+#: app/views/campaign.py:61
+msgid "Campaign attributes"
+msgstr "Kampagnen-Attribute"
+
 #: app/views/campaign.py:65
 msgid "State"
 msgstr "Status"
+
+#: app/views/campaign.py:65
+msgid "Campaign workflow state"
+msgstr "Kampagnen-Workflow-Status"
+
+#: app/views/detail.py:29
+msgid "Numbers"
+msgstr "Zahlen"
+
+#: app/views/detail.py:30
+msgid "Texts"
+msgstr "Texte"
+
+#: app/views/detail.py:31
+msgid "Booleans"
+msgstr "Booleans"
+
+#: app/views/detail.py:32
+msgid "Date and time"
+msgstr "Datum und Uhrzeit"
+
+#: app/views/detail.py:33
+msgid "References"
+msgstr "Referenzen"
+
+#: app/views/detail.py:54
+#, python-brace-format
+msgid "Created detail »{object}«"
+msgstr "Detail »{object}« erstellt"
+
+#: app/views/detail.py:61
+#, python-brace-format
+msgid "Updated detail »{object}«"
+msgstr "Detail »{object}« aktualisiert"
+
+#: app/views/detail.py:68
+#, python-brace-format
+msgid "Deleted detail »{object}«"
+msgstr "Detail »{object}« gelöscht"
 
 #: app/views/detail.py:79
 msgid "All field types supported by the detail view"
@@ -204,6 +391,14 @@ msgstr "Zeitstempel der letzten Änderung"
 msgid "Computed from a model property"
 msgstr "Aus einer Modelleigenschaft berechnet"
 
+#: app/views/foo.py:35
+msgid "Bar"
+msgstr "Bar"
+
+#: app/views/foo.py:53
+msgid "Foo attributes"
+msgstr "Foo-Attribute"
+
 #: app/views/formset/__init__.py:126 app/views/poly/__init__.py:42
 msgid "Select"
 msgstr "Auswählen"
@@ -211,10 +406,6 @@ msgstr "Auswählen"
 #: app/views/formset/parent.py:65
 msgid "Manage Poly"
 msgstr "Poly verwalten"
-
-#: app/views/formset/question.py:62
-msgid "Properties"
-msgstr "Eigenschaften"
 
 #: app/views/formset/question.py:64
 msgid "Question details"
@@ -236,6 +427,21 @@ msgstr "Schlagwörter"
 msgid "Annotations"
 msgstr "Anmerkungen"
 
+#: app/views/group.py:60
+#, python-brace-format
+msgid "Created group »{object}«"
+msgstr "Gruppe »{object}« erstellt"
+
+#: app/views/group.py:67
+#, python-brace-format
+msgid "Updated group »{object}«"
+msgstr "Gruppe »{object}« aktualisiert"
+
+#: app/views/group.py:74
+#, python-brace-format
+msgid "Deleted group »{object}«"
+msgstr "Gruppe »{object}« gelöscht"
+
 #: app/views/group.py:85
 msgid "Group identification"
 msgstr "Gruppenkennung"
@@ -244,9 +450,20 @@ msgstr "Gruppenkennung"
 msgid "Manage Members"
 msgstr "Mitglieder verwalten"
 
-#: app/views/group_members.py:45
-msgid "Date joined"
-msgstr "Beitrittsdatum"
+#: app/views/group_members.py:69
+#, python-brace-format
+msgid "Created person »{object}«"
+msgstr "Person »{object}« erstellt"
+
+#: app/views/group_members.py:81
+#, python-brace-format
+msgid "Updated person »{object}«"
+msgstr "Person »{object}« aktualisiert"
+
+#: app/views/group_members.py:88
+#, python-brace-format
+msgid "Deleted person »{object}«"
+msgstr "Person »{object}« gelöscht"
 
 #: app/views/group_members.py:99
 msgid "Member details"

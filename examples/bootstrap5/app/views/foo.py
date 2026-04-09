@@ -1,5 +1,6 @@
 import django_tables2 as tables
 from crispy_forms.layout import Row
+from django.utils.translation import gettext_lazy as _
 
 from app.models import Foo
 from crud_views.lib.crispy import CrispyModelForm, Column4, CrispyModelViewMixin, CrispyDeleteForm
@@ -18,7 +19,7 @@ cv_foo = ViewSet(model=Foo, name="foo", icon_header="fa-solid fa-paw")
 
 
 class FooForm(CrispyModelForm):
-    submit_label = "Create"
+    submit_label = _("Create")
 
     class Meta:
         model = Foo
@@ -31,7 +32,7 @@ class FooForm(CrispyModelForm):
 class FooTable(Table):
     id = LinkDetailColumn()
     name = tables.Column()
-    bar = LinkChildColumn(name="bar", verbose_name="Bar", empty_values=())
+    bar = LinkChildColumn(name="bar", verbose_name=_("Bar"), empty_values=())
 
 
 class FooListView(ListViewTableMixin, ListViewPermissionRequired):
@@ -47,9 +48,9 @@ class FooDetailView(DetailViewPermissionRequired):
 
     cv_property_display = [
         {
-            "title": "Properties",
+            "title": _("Properties"),
             "icon": "paw",
-            "description": "Foo attributes",
+            "description": _("Foo attributes"),
             "properties": [
                 "id",
                 "name",

@@ -41,7 +41,7 @@ class AuthorCreateForm(CrispyModelForm):
 
 class AuthorUpdateForm(AuthorCreateForm):
     """
-    Update form has the same fields as the create form
+    Update form has the same fields as the creation form
     """
 
     submit_label = _("Update")
@@ -91,19 +91,19 @@ class AuthorListView(ListViewTableMixin, ListViewTableFilterMixin, ListViewPermi
 class AuthorCreateView(CrispyModelViewMixin, MessageMixin, CreateViewPermissionRequired):
     form_class = AuthorCreateForm
     cv_viewset = cv_author
-    cv_message = "Created author »{object}«"
+    cv_message = _("Created author »{object}«")
 
 
 class AuthorUpdateView(CrispyModelViewMixin, MessageMixin, UpdateViewPermissionRequired):
     form_class = AuthorUpdateForm
     cv_viewset = cv_author
-    cv_message = "Updated author »{object}«"
+    cv_message = _("Updated author »{object}«")
 
 
 class AuthorDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequired):
     form_class = CrispyDeleteForm
     cv_viewset = cv_author
-    cv_message = "Deleted author »{object}«"
+    cv_message = _("Deleted author »{object}«")
 
 
 class AuthorDetailView(DetailViewPermissionRequired):
@@ -181,7 +181,7 @@ class AuthorContactView(MessageMixin, CrispyModelViewMixin, CustomFormViewPermis
     cv_viewset = cv_author
     form_class = AuthorContactForm
 
-    cv_message_template_code = _("Successfully contacted author »{object}«")
+    cv_message_template_code = _("Successfully contacted author <strong>{{ object }}</strong>")
 
     cv_context_actions = ["parent", "detail", "update", "delete", "contact"]
     cv_header_template_code = _("Contact Author")

@@ -1,6 +1,6 @@
 import django_tables2 as tables
 from crispy_forms.layout import Row, Fieldset
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 
 from app.models import Author, Detail
 from crud_views.lib.crispy import Column4, CrispyModelForm, CrispyModelViewMixin, CrispyDeleteForm, Column8
@@ -26,11 +26,11 @@ class DetailForm(CrispyModelForm):
 
     def get_layout_fields(self):
         return [
-            Fieldset("Numbers", Row(Column4("integer"), Column4("number"))),
-            Fieldset("Texts", Row(Column4("char"), Column8("text"))),
-            Fieldset("Booleans", Row(Column4("boolean"), Column4("boolean_two"))),
-            Fieldset("Date an time", Row(Column4("date"), Column4("date_time"))),
-            Fieldset("References", Row(Column4("author"), Column4("foo"))),
+            Fieldset(_("Numbers"), Row(Column4("integer"), Column4("number"))),
+            Fieldset(_("Texts"), Row(Column4("char"), Column8("text"))),
+            Fieldset(_("Booleans"), Row(Column4("boolean"), Column4("boolean_two"))),
+            Fieldset(_("Date and time"), Row(Column4("date"), Column4("date_time"))),
+            Fieldset(_("References"), Row(Column4("author"), Column4("foo"))),
         ]
 
 
@@ -51,21 +51,21 @@ class DetailCreateView(CrispyModelViewMixin, MessageMixin, CreateViewPermissionR
     model = Author
     form_class = DetailForm
     cv_viewset = cv_detail
-    cv_message = "Created detail »{object}«"
+    cv_message = _("Created detail »{object}«")
 
 
 class DetailUpdateView(CrispyModelViewMixin, MessageMixin, UpdateViewPermissionRequired):
     model = Detail
     form_class = DetailForm
     cv_viewset = cv_detail
-    cv_message = "Updated detail »{object}«"
+    cv_message = _("Updated detail »{object}«")
 
 
 class DetailDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequired):
     model = Detail
     form_class = CrispyDeleteForm
     cv_viewset = cv_detail
-    cv_message = "Deleted detail »{object}«"
+    cv_message = _("Deleted detail »{object}«")
 
 
 class DetailDetailView(DetailViewPermissionRequired):

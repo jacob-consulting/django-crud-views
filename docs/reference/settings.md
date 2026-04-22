@@ -47,6 +47,18 @@ Default list actions for list view.
 |--------------|---------------|-------------|--------------------------|
 | LIST_ACTIONS | Global switch | `List[str]` | `detail, update, delete` |
 
+## django-tables2 compatibility
+
+The list view table template `crud_views/templates/crud_views/table/bootstrap5.html` requires **django-tables2 ≥ 3.0**.
+
+django-tables2 3.0 renamed the `{% querystring %}` template tag to `{% querystring_replace %}`. The updated template uses the new tag name and is therefore **not compatible with django-tables2 < 3.0**.
+
+If you need to use django-tables2 < 3.0, switch to the legacy template via the `DJANGO_TABLES2_TEMPLATE` setting:
+
+```python
+DJANGO_TABLES2_TEMPLATE = "crud_views/table/bootstrap5_lt3.html"
+```
+
 ## django-object-detail
 
 Settings for the [django-object-detail](https://django-object-detail.readthedocs.io/en/latest/) package used by the [DetailView](detail_view.md). These are standard Django settings (not prefixed with `CRUD_VIEWS_`).

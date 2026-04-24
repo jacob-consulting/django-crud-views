@@ -49,6 +49,8 @@ INSTALLED_APPS = [
     "crud_views.apps.CrudViewsConfig",
     "crud_views_workflow.apps.CrudViewsWorkflowConfig",
     "crud_views_polymorphic.apps.CrudViewsPolymorphicConfig",
+    "guardian",
+    "crud_views_guardian.apps.CrudViewsGuardianConfig",
     "app.apps.ApplicationConfig",
 ]
 
@@ -166,3 +168,9 @@ OBJECT_DETAIL_TEMPLATE_PACK_LAYOUT = "split-card"
 OBJECT_DETAIL_TEMPLATE_PACK_TYPES = "default"
 OBJECT_DETAIL_ICONS_LIBRARY = "fontawesome"
 OBJECT_DETAIL_ICONS_TYPE = "solid"  # or "regular", "light", "thin", "duotone"
+
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "guardian.backends.ObjectPermissionBackend",
+]
+ANONYMOUS_USER_NAME = None

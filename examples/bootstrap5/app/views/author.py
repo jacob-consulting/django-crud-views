@@ -24,8 +24,16 @@ from crud_views.lib.views import (
 from crud_views.lib.views.form import CustomFormViewPermissionRequired
 from crud_views.lib.views.list import ListViewFilterFormHelper
 from crud_views.lib.viewset import ViewSet
+from crud_views_guardian.lib.viewset import GuardianViewSet
+from crud_views_guardian.lib.views import (
+    GuardianListViewPermissionRequired,
+    GuardianDetailViewPermissionRequired,
+    GuardianCreateViewPermissionRequired,
+    GuardianUpdateViewPermissionRequired,
+    GuardianDeleteViewPermissionRequired,
+)
 
-cv_author = ViewSet(model=Author, name="author", icon_header="fa-regular fa-user")
+cv_author = GuardianViewSet(model=Author, name="author", icon_header="fa-regular fa-user")
 
 
 class AuthorCreateForm(CrispyModelForm):
@@ -75,7 +83,7 @@ class AuthorTable(Table):
     modified_dt = NaturalTimeColumn(verbose_name=_("Modified"))
 
 
-class AuthorListView(ListViewTableMixin, ListViewTableFilterMixin, ListViewPermissionRequired):
+class AuthorListView(ListViewTableMixin, ListViewTableFilterMixin, GuardianListViewPermissionRequired):
     # table config
     table_class = AuthorTable
 
@@ -88,25 +96,25 @@ class AuthorListView(ListViewTableMixin, ListViewTableFilterMixin, ListViewPermi
     cv_list_actions = ["detail", "update", "delete", "up", "down", "redirect_child", "contact"]
 
 
-class AuthorCreateView(CrispyModelViewMixin, MessageMixin, CreateViewPermissionRequired):
+class AuthorCreateView(CrispyModelViewMixin, MessageMixin, GuardianCreateViewPermissionRequired):
     form_class = AuthorCreateForm
     cv_viewset = cv_author
     cv_message = _("Created author »{object}«")
 
 
-class AuthorUpdateView(CrispyModelViewMixin, MessageMixin, UpdateViewPermissionRequired):
+class AuthorUpdateView(CrispyModelViewMixin, MessageMixin, GuardianUpdateViewPermissionRequired):
     form_class = AuthorUpdateForm
     cv_viewset = cv_author
     cv_message = _("Updated author »{object}«")
 
 
-class AuthorDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequired):
+class AuthorDeleteView(CrispyModelViewMixin, MessageMixin, GuardianDeleteViewPermissionRequired):
     form_class = CrispyDeleteForm
     cv_viewset = cv_author
     cv_message = _("Deleted author »{object}«")
 
 
-class AuthorDetailView(DetailViewPermissionRequired):
+class AuthorDetailView(GuardianDetailViewPermissionRequired):
     cv_viewset = cv_author
 
     cv_property_display = [

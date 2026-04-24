@@ -16,12 +16,22 @@ from crud_views.lib.views import (
     MessageMixin,
 )
 from crud_views.lib.viewset import ViewSet, ParentViewSet
+from crud_views_guardian.lib.viewset import GuardianViewSet
+from crud_views_guardian.lib.views import (
+    GuardianListViewPermissionRequired,
+    GuardianDetailViewPermissionRequired,
+    GuardianCreateViewPermissionRequired,
+    GuardianUpdateViewPermissionRequired,
+    GuardianDeleteViewPermissionRequired,
+)
 
-cv_book = ViewSet(
+cv_book = GuardianViewSet(
     model=Book,
     name="book",
     parent=ParentViewSet(name="author"),
-    icon_header="fa-regular fa-address-book",  # <i class="fa-regular fa-address-book"></i>
+    icon_header="fa-regular fa-address-book",
+    cv_guardian_parent_permission="view",
+    cv_guardian_parent_create_permission="change",
 )
 
 
@@ -49,14 +59,14 @@ class BookTable(Table):
     author = tables.Column()
 
 
-class BookListView(ListViewTableMixin, ListViewPermissionRequired):
+class BookListView(ListViewTableMixin, GuardianListViewPermissionRequired):
     cv_viewset = cv_book
     # cv_list_actions = ["detail", "update", "delete"]
 
     table_class = BookTable
 
 
-class BookDetailView(DetailViewPermissionRequired):
+class BookDetailView(GuardianDetailViewPermissionRequired):
     cv_viewset = cv_book
 
     cv_property_display = [
@@ -76,16 +86,16 @@ class BookDetailView(DetailViewPermissionRequired):
     ]
 
 
-class BookUpdateView(CrispyModelViewMixin, MessageMixin, UpdateViewPermissionRequired):
+class BookUpdateView(CrispyModelViewMixin, MessageMixin, GuardianUpdateViewPermissionRequired):
     form_class = BookUpdateForm
     cv_viewset = cv_book
 
 
-class BookCreateView(CrispyModelViewMixin, MessageMixin, CreateViewParentMixin, CreateViewPermissionRequired):
+class BookCreateView(CrispyModelViewMixin, MessageMixin, CreateViewParentMixin, GuardianCreateViewPermissionRequired):
     form_class = BookCreateForm
     cv_viewset = cv_book
 
 
-class BookDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequired):
+class BookDeleteView(CrispyModelViewMixin, MessageMixin, GuardianDeleteViewPermissionRequired):
     form_class = CrispyDeleteForm
     cv_viewset = cv_book

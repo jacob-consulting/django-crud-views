@@ -32,6 +32,8 @@ def pytest_configure():
             "django_fsm",
             "crud_views_workflow.apps.CrudViewsWorkflowConfig",
             "crud_views_polymorphic.apps.CrudViewsPolymorphicConfig",
+            "guardian",
+            "crud_views_guardian.apps.CrudViewsGuardianConfig",
             "tests.test1.app",
         ],
         MIDDLEWARE=[
@@ -73,6 +75,11 @@ def pytest_configure():
         USE_TZ=True,
         STATIC_URL="static/",
         DEFAULT_AUTO_FIELD="django.db.models.BigAutoField",
+        AUTHENTICATION_BACKENDS=[
+            "django.contrib.auth.backends.ModelBackend",
+            "guardian.backends.ObjectPermissionBackend",
+        ],
+        ANONYMOUS_USER_NAME=None,
         # Django ViewSet configuration
         CRUD_VIEWS_EXTENDS="app/crud_views.html",
         CRUD_VIEWS_MANAGE_VIEWS_ENABLED="yes",
@@ -493,6 +500,51 @@ def campaign_canceled():
     campaign.wf_cancel_new(by=None, comment="Canceled in test")
     campaign.save()
     return campaign
+
+
+# --- Guardian fixtures ---
+
+
+@pytest.fixture
+def cv_guardian_author():
+    from tests.test1.app.views import cv_guardian_author as ret
+
+    return ret
+
+
+@pytest.fixture
+def cv_guardian_book():
+    from tests.test1.app.views import cv_guardian_book as ret
+
+    return ret
+
+
+@pytest.fixture
+def author_b():
+    from tests.test1.app.models import Author
+
+    return Author.objects.create(first_name="Terry", last_name="Pratchett")
+
+
+@pytest.fixture
+def book_under_author_douglas(db):
+    from tests.test1.app.models import Book, Publisher
+
+    pub = Publisher.objects.create(name="Pan Books")
+    return Book.objects.create(title="Hitchhiker's Guide", publisher=pub)
+
+
+@pytest.fixture
+def user_guardian(db):
+    from django.contrib.auth.models import User
+
+    return User.objects.create_user(username="user_guardian", password="password")
+
+
+@pytest.fixture
+def client_guardian(client, user_guardian):
+    client.force_login(user_guardian)
+    return client
 
 
 @pytest.fixture

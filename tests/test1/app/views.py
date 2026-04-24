@@ -32,6 +32,14 @@ from crud_views_polymorphic.lib import (
 from crud_views_polymorphic.lib.create_select import PolymorphicContentTypeForm
 from crud_views_polymorphic.lib.delete import PolymorphicDeleteViewPermissionRequired
 from crud_views.lib.viewset import ViewSet, ParentViewSet
+from crud_views_guardian.lib.viewset import GuardianViewSet
+from crud_views_guardian.lib.views import (
+    GuardianListViewPermissionRequired,
+    GuardianDetailViewPermissionRequired,
+    GuardianUpdateViewPermissionRequired,
+    GuardianDeleteViewPermissionRequired,
+    GuardianCreateViewPermissionRequired,
+)
 from crud_views_workflow.lib.forms import WorkflowForm
 from crud_views_workflow.lib.views import WorkflowViewPermissionRequired
 from crud_views.lib.crispy import Column4, Column6
@@ -381,3 +389,72 @@ class CampaignWorkflowView(CrispyModelViewMixin, MessageMixin, WorkflowViewPermi
     cv_context_actions = ["list", "detail", "workflow"]
     cv_viewset = cv_campaign
     form_class = CampaignWorkflowForm
+
+
+# Guardian viewsets for guardian integration tests
+
+cv_guardian_author = GuardianViewSet(
+    model=Author,
+    name="guardian_author",
+    icon_header="fa-regular fa-user",
+)
+
+
+class GuardianAuthorListView(ListViewTableMixin, GuardianListViewPermissionRequired):
+    table_class = AuthorTable
+    cv_viewset = cv_guardian_author
+    cv_list_actions = ["detail", "update", "delete"]
+
+
+class GuardianAuthorDetailView(GuardianDetailViewPermissionRequired):
+    cv_viewset = cv_guardian_author
+
+
+class GuardianAuthorCreateView(CrispyModelViewMixin, GuardianCreateViewPermissionRequired):
+    form_class = AuthorForm
+    cv_viewset = cv_guardian_author
+
+
+class GuardianAuthorUpdateView(CrispyModelViewMixin, GuardianUpdateViewPermissionRequired):
+    form_class = AuthorForm
+    cv_viewset = cv_guardian_author
+
+
+class GuardianAuthorDeleteView(CrispyModelViewMixin, GuardianDeleteViewPermissionRequired):
+    form_class = CrispyDeleteForm
+    cv_viewset = cv_guardian_author
+
+
+cv_guardian_book = GuardianViewSet(
+    model=Book,
+    name="guardian_book",
+    parent=ParentViewSet(name="guardian_author"),
+    icon_header="fa-regular fa-address-book",
+    cv_guardian_parent_permission="view",
+    cv_guardian_parent_create_permission="change",
+)
+
+
+class GuardianBookListView(ListViewTableMixin, GuardianListViewPermissionRequired):
+    table_class = BookTable
+    cv_viewset = cv_guardian_book
+    cv_list_actions = ["detail", "update", "delete"]
+
+
+class GuardianBookDetailView(GuardianDetailViewPermissionRequired):
+    cv_viewset = cv_guardian_book
+
+
+class GuardianBookCreateView(CrispyModelViewMixin, CreateViewParentMixin, GuardianCreateViewPermissionRequired):
+    form_class = BookForm
+    cv_viewset = cv_guardian_book
+
+
+class GuardianBookUpdateView(CrispyModelViewMixin, GuardianUpdateViewPermissionRequired):
+    form_class = BookForm
+    cv_viewset = cv_guardian_book
+
+
+class GuardianBookDeleteView(CrispyModelViewMixin, GuardianDeleteViewPermissionRequired):
+    form_class = CrispyDeleteForm
+    cv_viewset = cv_guardian_book

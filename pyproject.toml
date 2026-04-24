@@ -50,6 +50,10 @@ ordered = [
     "django-ordered-model (>=3.4.3)"
 ]
 
+guardian = [
+    "django-guardian>=2.4",
+]
+
 all = [
     "django-crud-views[workflow,polymorphic,ordered]"
 ]
@@ -72,6 +76,7 @@ test = [
     "pytest-django",
     "pytest-xdist",
     "lxml",
+    "django-guardian>=2.4",
 ]
 
 [project.urls]

@@ -513,6 +513,13 @@ def cv_guardian_author():
 
 
 @pytest.fixture
+def cv_guardian_publisher():
+    from tests.test1.app.views import cv_guardian_publisher as ret
+
+    return ret
+
+
+@pytest.fixture
 def cv_guardian_book():
     from tests.test1.app.views import cv_guardian_book as ret
 
@@ -527,11 +534,24 @@ def author_b():
 
 
 @pytest.fixture
-def book_under_author_douglas(db):
-    from tests.test1.app.models import Book, Publisher
+def publisher_a():
+    from tests.test1.app.models import Publisher
 
-    pub = Publisher.objects.create(name="Pan Books")
-    return Book.objects.create(title="Hitchhiker's Guide", publisher=pub)
+    return Publisher.objects.create(name="Pan Books")
+
+
+@pytest.fixture
+def publisher_b():
+    from tests.test1.app.models import Publisher
+
+    return Publisher.objects.create(name="Gollancz")
+
+
+@pytest.fixture
+def book_under_publisher_a(publisher_a):
+    from tests.test1.app.models import Book
+
+    return Book.objects.create(title="Hitchhiker's Guide", publisher=publisher_a)
 
 
 @pytest.fixture

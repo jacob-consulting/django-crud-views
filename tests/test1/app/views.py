@@ -425,10 +425,42 @@ class GuardianAuthorDeleteView(CrispyModelViewMixin, GuardianDeleteViewPermissio
     cv_viewset = cv_guardian_author
 
 
+cv_guardian_publisher = GuardianViewSet(
+    model=Publisher,
+    name="guardian_publisher",
+    icon_header="fa-regular fa-building",
+)
+
+
+class GuardianPublisherListView(ListViewTableMixin, GuardianListViewPermissionRequired):
+    table_class = PublisherTable
+    cv_viewset = cv_guardian_publisher
+    cv_list_actions = ["detail", "update", "delete"]
+
+
+class GuardianPublisherDetailView(GuardianDetailViewPermissionRequired):
+    cv_viewset = cv_guardian_publisher
+
+
+class GuardianPublisherCreateView(CrispyModelViewMixin, GuardianCreateViewPermissionRequired):
+    form_class = PublisherForm
+    cv_viewset = cv_guardian_publisher
+
+
+class GuardianPublisherUpdateView(CrispyModelViewMixin, GuardianUpdateViewPermissionRequired):
+    form_class = PublisherForm
+    cv_viewset = cv_guardian_publisher
+
+
+class GuardianPublisherDeleteView(CrispyModelViewMixin, GuardianDeleteViewPermissionRequired):
+    form_class = CrispyDeleteForm
+    cv_viewset = cv_guardian_publisher
+
+
 cv_guardian_book = GuardianViewSet(
     model=Book,
     name="guardian_book",
-    parent=ParentViewSet(name="guardian_author"),
+    parent=ParentViewSet(name="guardian_publisher"),
     icon_header="fa-regular fa-address-book",
     cv_guardian_parent_permission="view",
     cv_guardian_parent_create_permission="change",

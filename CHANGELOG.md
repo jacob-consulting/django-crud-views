@@ -1,5 +1,9 @@
 # Django CRUD Views - Changelog
 
+## 0.3.12
+
+- Fixed `view_delete.content.html` rendering the raw `{{ object }}` string above the delete confirmation form
+
 ## 0.3.11
 
 - Fixed `TemplateSyntaxError` caused by the `{% querystring %}` template tag being renamed to `{% querystring_replace %}` in django-tables2 3.0. Updated `crud_views/templates/crud_views/table/bootstrap5.html` to use the new tag name. The old template is preserved as `bootstrap5_lt3.html` for use with django-tables2 < 3.0.

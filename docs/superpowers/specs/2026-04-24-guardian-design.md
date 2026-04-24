@@ -71,9 +71,10 @@ Also overrides `cv_has_access(user, obj=None)`:
 - When `obj` is provided: checks per-object permission (respecting `cv_guardian_accept_global_perms`) → drives per-row action button visibility
 - When `obj=None`: returns `False` conservatively (no object context, can't determine access)
 
-> **Implementation note:** Confirm that the list row action rendering call site passes the row object
-> to `cv_has_access`. If it does not, per-row buttons will always be hidden. May require a follow-up
-> change to the list template or table column rendering.
+> **Confirmed:** The row object is already passed to `cv_has_access` by the existing infrastructure.
+> `ActionColumn` receives `record` from django-tables2 → template passes it to `{% cv_list_action key record %}`
+> → `cv_get_context()` calls `cls.cv_has_access(user, obj)` at `crud_views/lib/view/base.py:325`.
+> Context action buttons on object pages also pass `context.object`. No template changes are required.
 
 ```python
 from guardian.core import ObjectPermissionChecker

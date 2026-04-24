@@ -10,7 +10,7 @@
 
 Add optional per-object permission support to django-crud-views using django-guardian. The integration lives in a new `crud_views_guardian` sub-package, following the same pattern as `crud_views_polymorphic` and `crud_views_workflow`. Users opt in by swapping `ViewSet` → `GuardianViewSet` and `*ViewPermissionRequired` → `Guardian*ViewPermissionRequired`.
 
-**Strict mode:** No model-level fallback for object-level checks. A user with the global `view_author` Django permission but no per-object grant is denied access to individual author instances. The sole exception is top-level create views, where no target object exists yet (see §Create Views).
+**Default strict mode:** Per-object checks default to `accept_global_perms=False` — a user with the global `view_author` Django permission but no per-object grant is denied access to individual author instances. This is configurable per view via `cv_guardian_accept_global_perms = True` to allow model-level fallback where needed. The sole exception is top-level create views, where no target object exists yet (see §Create Views).
 
 ---
 
@@ -63,16 +63,12 @@ Then `python manage.py migrate` to create guardian's `UserObjectPermission` / `G
 
 ### `GuardianObjectPermissionMixin`
 
-Used by single-object views (Detail, Update, Delete, Action). Hooks into `get_object()` — after the object is loaded, checks `user.has_perm(perm, obj)`. Raises 403 on denial.
+Used by single-object views (Detail, Update, Delete, Action). Hooks into `get_object()` — after the object is loaded, checks per-object permission. Raises 403 on denial.
 
-> **Implementation note:** `user.has_perm(perm, obj)` delegates to `ObjectPermissionBackend`, which
-> by default also checks model-level permissions. To enforce strict mode, use
-> `guardian.shortcuts.get_objects_for_user` with `accept_global_perms=False`, or use
-> `guardian.core.ObjectPermissionChecker` directly. Verify guardian's actual behaviour during
-> implementation and ensure no model-level fallback occurs.
+`cv_guardian_accept_global_perms = False` (default) uses `ObjectPermissionChecker` which checks object-level permissions only, with no model-level fallback. Set to `True` to use `user.has_perm(perm, obj)` which includes model-level fallback via guardian's `ObjectPermissionBackend`.
 
 Also overrides `cv_has_access(user, obj=None)`:
-- When `obj` is provided: checks `user.has_perm(perm, obj)` → drives per-row action button visibility
+- When `obj` is provided: checks per-object permission (respecting `cv_guardian_accept_global_perms`) → drives per-row action button visibility
 - When `obj=None`: returns `False` conservatively (no object context, can't determine access)
 
 > **Implementation note:** Confirm that the list row action rendering call site passes the row object
@@ -80,11 +76,21 @@ Also overrides `cv_has_access(user, obj=None)`:
 > change to the list template or table column rendering.
 
 ```python
+from guardian.core import ObjectPermissionChecker
+
 class GuardianObjectPermissionMixin:
+    cv_guardian_accept_global_perms: bool = False
+
+    def _check_object_perm(self, user, perm: str, obj) -> bool:
+        if self.cv_guardian_accept_global_perms:
+            return user.has_perm(perm, obj)
+        checker = ObjectPermissionChecker(user)
+        return checker.has_perm(perm.split('.')[1], obj)
+
     def get_object(self):
         obj = super().get_object()
         perm = self.cv_viewset.permissions.get(self.cv_permission)
-        if not self.request.user.has_perm(perm, obj):
+        if not self._check_object_perm(self.request.user, perm, obj):
             raise PermissionDenied
         return obj
 
@@ -92,23 +98,28 @@ class GuardianObjectPermissionMixin:
     def cv_has_access(cls, user, obj=None):
         perm = cls.cv_viewset.permissions.get(cls.cv_permission)
         if obj is not None:
-            return user.has_perm(perm, obj)
+            if cls.cv_guardian_accept_global_perms:
+                return user.has_perm(perm, obj)
+            checker = ObjectPermissionChecker(user)
+            return checker.has_perm(perm.split('.')[1], obj)
         return False
 ```
 
 ### `GuardianQuerysetMixin`
 
-Used by list views. Replaces `get_queryset()` with a guardian-filtered version using `get_objects_for_user`. `accept_global_perms=False` enforces strict mode — only objects with an explicit per-object grant are returned.
+Used by list views. Replaces `get_queryset()` with a guardian-filtered version using `get_objects_for_user`. Defaults to `accept_global_perms=False` (strict) — only objects with an explicit per-object grant are returned. Set `cv_guardian_accept_global_perms = True` to also include objects the user can access via model-level permission.
 
 ```python
 class GuardianQuerysetMixin:
+    cv_guardian_accept_global_perms: bool = False
+
     def get_queryset(self):
         from guardian.shortcuts import get_objects_for_user
         qs = super().get_queryset()
         perm = self.cv_viewset.permissions.get(self.cv_permission)
         return get_objects_for_user(
             self.request.user, perm, qs,
-            accept_global_perms=False,
+            accept_global_perms=self.cv_guardian_accept_global_perms,
             use_groups=True,
         )
 ```

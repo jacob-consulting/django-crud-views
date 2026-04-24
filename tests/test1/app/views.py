@@ -460,7 +460,7 @@ class GuardianPublisherDeleteView(CrispyModelViewMixin, GuardianDeleteViewPermis
 cv_guardian_book = GuardianViewSet(
     model=Book,
     name="guardian_book",
-    parent=ParentViewSet(name="guardian_publisher"),
+    parent=ParentViewSet(name="guardian_publisher", attribute="publisher"),
     icon_header="fa-regular fa-address-book",
     cv_guardian_parent_permission="view",
     cv_guardian_parent_create_permission="change",

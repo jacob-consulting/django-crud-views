@@ -15,13 +15,22 @@ class GuardianObjectPermissionMixin:
 
     Also overrides cv_has_access() so per-row action buttons in list views
     reflect per-object access correctly.
+
+    Overrides has_permission() to always return True — model-level permission is
+    not required; all access control is delegated to get_object().
     """
 
     cv_guardian_accept_global_perms: bool = False
 
+    def has_permission(self):
+        return True
+
     def _check_object_perm(self, user, perm: str, obj) -> bool:
         if self.cv_guardian_accept_global_perms:
-            return user.has_perm(perm, obj)
+            # Check model-level perm first (without obj — ModelBackend returns empty
+            # set when obj is passed, so we must call has_perm without obj here).
+            if user.has_perm(perm):
+                return True
         from guardian.core import ObjectPermissionChecker
 
         checker = ObjectPermissionChecker(user)
@@ -39,7 +48,10 @@ class GuardianObjectPermissionMixin:
         perm = cls.cv_viewset.permissions.get(cls.cv_permission)
         if obj is not None:
             if cls.cv_guardian_accept_global_perms:
-                return user.has_perm(perm, obj)
+                # Model-level perm must be checked without obj (ModelBackend ignores
+                # obj and returns empty set when obj is passed).
+                if user.has_perm(perm):
+                    return True
             from guardian.core import ObjectPermissionChecker
 
             checker = ObjectPermissionChecker(user)
@@ -57,9 +69,15 @@ class GuardianQuerysetMixin:
     cv_guardian_accept_global_perms = False (default): strict — only objects
     with an explicit per-object grant are returned.
     Set to True to also include objects accessible via model-level permission.
+
+    Overrides has_permission() to always return True — queryset filtering is
+    the sole access control mechanism for list views.
     """
 
     cv_guardian_accept_global_perms: bool = False
+
+    def has_permission(self):
+        return True
 
     def get_queryset(self):
         from guardian.shortcuts import get_objects_for_user
@@ -86,7 +104,16 @@ class GuardianParentPermissionMixin:
     Reads cv_guardian_parent_permission / cv_guardian_parent_create_permission
     from the child GuardianViewSet. Respects cv_guardian_accept_global_perms
     from the combined view class.
+
+    When a parent viewset is present, overrides has_permission() to return True
+    so that Django's model-level PermissionRequiredMixin is bypassed; the parent
+    object-level check in dispatch() is the sole gatekeeper.
     """
+
+    def has_permission(self):
+        if self.cv_viewset.parent is not None:
+            return True
+        return super().has_permission()
 
     def dispatch(self, request, *args, **kwargs):
         parent_vs = self.cv_viewset.parent

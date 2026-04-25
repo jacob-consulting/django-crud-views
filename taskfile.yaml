@@ -57,6 +57,12 @@ tasks:
       - rm -rf .nox
     silent: true
 
+  install-skill-claude:
+    cmds:
+      - rm -rf ~/.claude/skills/django-crud-views
+      - cp -r skills/django-crud-views ~/.claude/skills/
+    silent: true
+
   msg-make-crud_views:
     dir: crud_views
     cmd: python -m django makemessages -l de --settings=settings_i18n

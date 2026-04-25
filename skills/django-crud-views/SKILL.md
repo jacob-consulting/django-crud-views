@@ -1,6 +1,6 @@
 ---
 name: django-crud-views
-description: "Build Django CRUD interfaces using the django-crud-views package. Use when creating, reading, updating, or deleting model records with class-based views; when wiring up ViewSets, ListViews, DetailViews, CreateViews, UpdateViews, or DeleteViews; when configuring tables with django-tables2, filters with django-filter, or forms with django-crispy-forms; when implementing nested/child resources with ParentViewSet; when adding permission-required views; when integrating django-fsm state machine transitions with WorkflowView or WorkflowViewPermissionRequired; when adding workflow audit history to models with WorkflowModelMixin; when using formsets with FormSetMixin; when working with polymorphic models; when adding per-object permissions with django-guardian via GuardianViewSet and Guardian*ViewPermissionRequired; or any time the codebase imports from crud_views.lib, crud_views_workflow, crud_views_polymorphic, or crud_views_guardian."
+description: "Use when working with the django-crud-views package: wiring up ViewSets, ListViews, DetailViews, CreateViews, UpdateViews, or DeleteViews; implementing nested resources with ParentViewSet; configuring django-tables2, django-filter, or crispy-forms; using WorkflowView, FormSetMixin, polymorphic models, or Guardian per-object permissions; or when the codebase imports from crud_views.lib, crud_views_workflow, crud_views_polymorphic, or crud_views_guardian."
 ---
 
 # django-crud-views
@@ -13,129 +13,46 @@ Full API reference: see [references/api-reference.md](references/api-reference.m
 
 ---
 
-## Quick Start — Simple CRUD
+## Quick Reference
 
-### 1. Define the ViewSet
+| View class | Use for |
+|---|---|
+| `ListViewPermissionRequired` | Paginated list with table |
+| `DetailViewPermissionRequired` | Single-object display with property groups |
+| `CreateViewPermissionRequired` | New object form |
+| `UpdateViewPermissionRequired` | Edit object form |
+| `DeleteViewPermissionRequired` | Confirm-delete form |
+| `CustomFormViewPermissionRequired` | Custom form attached to an existing object |
+| `ActionViewPermissionRequired` | One-click action on an existing object |
+| `WorkflowViewPermissionRequired` | FSM state transitions with audit log |
+
+Mixins always go **before** the base view class in MRO: `CrispyModelViewMixin, MessageMixin, CreateViewPermissionRequired`.
+
+---
+
+## Minimal Pattern
 
 ```python
-# views/author.py
 from crud_views.lib.viewset import ViewSet
-from .models import Author
-
-cv_author = ViewSet(model=Author, name="author", icon_header="fa-regular fa-user")
-```
-
-### 2. Add URL patterns
-
-```python
-# urls.py
-from app.views.author import cv_author
-
-urlpatterns += cv_author.urlpatterns
-```
-
-### 3. List view with table
-
-```python
-import django_tables2 as tables
+from crud_views.lib.views import ListViewPermissionRequired, ListViewTableMixin
 from crud_views.lib.table import Table, UUIDLinkDetailColumn
-from crud_views.lib.table.columns import NaturalDayColumn, NaturalTimeColumn
-from crud_views.lib.views import ListViewTableMixin, ListViewPermissionRequired
+
+cv_author = ViewSet(model=Author, name="author")
 
 class AuthorTable(Table):
     id = UUIDLinkDetailColumn()
-    first_name = tables.Column()
-    last_name = tables.Column()
-    created_dt = NaturalDayColumn()
 
 class AuthorListView(ListViewTableMixin, ListViewPermissionRequired):
+    cv_viewset = cv_author
     table_class = AuthorTable
-    cv_viewset = cv_author
-    cv_list_actions = ["detail", "update", "delete"]  # per-row buttons
 ```
-
-### 4. Create / Update views
 
 ```python
-from crispy_forms.layout import Row
-from crud_views.lib.crispy import Column4, CrispyModelForm, CrispyModelViewMixin
-from crud_views.lib.views import CreateViewPermissionRequired, UpdateViewPermissionRequired, MessageMixin
-
-class AuthorCreateForm(CrispyModelForm):
-    submit_label = "Create"
-    class Meta:
-        model = Author
-        fields = ["first_name", "last_name", "pseudonym"]
-    def get_layout_fields(self):
-        return Row(Column4("first_name"), Column4("last_name"), Column4("pseudonym"))
-
-class AuthorUpdateForm(AuthorCreateForm):
-    submit_label = "Update"
-
-class AuthorCreateView(CrispyModelViewMixin, MessageMixin, CreateViewPermissionRequired):
-    form_class = AuthorCreateForm
-    cv_viewset = cv_author
-    cv_message = "Created author »{object}«"
-
-class AuthorUpdateView(CrispyModelViewMixin, MessageMixin, UpdateViewPermissionRequired):
-    form_class = AuthorUpdateForm
-    cv_viewset = cv_author
-    cv_message = "Updated author »{object}«"
+# urls.py
+urlpatterns += cv_author.urlpatterns
 ```
 
-### 5. Delete view
-
-```python
-from crud_views.lib.crispy import CrispyDeleteForm
-from crud_views.lib.views import DeleteViewPermissionRequired
-
-class AuthorDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequired):
-    form_class = CrispyDeleteForm
-    cv_viewset = cv_author
-    cv_message = "Deleted author »{object}«"
-```
-
-### 6. Detail view
-
-```python
-from crud_views.lib.views import DetailViewPermissionRequired
-
-class AuthorDetailView(DetailViewPermissionRequired):
-    cv_viewset = cv_author
-
-    property_display = [
-        {
-            "title": "Attributes",
-            "icon": "tag",
-            "description": "Core author information",
-            "properties": [
-                "first_name",
-                "last_name",
-                {"path": "full_name", "detail": "Computed from first and last name"},
-                {"path": "id", "title": "UUID"},
-            ],
-        },
-    ]
-```
-
-Each entry in `properties` can be a plain string (field or `@property` name), a dict, or an `x()` helper
-from `django_object_detail`. Dict keys: `path` (required), `title`, `detail` (tooltip), `type`, `template`,
-`link`, `badge`. Use `__` for FK/M2M traversal: `"author__email"`, `"tags"`.
-
-Configure django-object-detail in settings:
-
-```python
-INSTALLED_APPS = [..., "django_object_detail", "crud_views", ...]
-
-# Layout pack: "split-card" (default), "accordion", "tabs-vertical", "card-rows",
-#              "striped-rows", "table-inline", "list-group-3col"
-OBJECT_DETAIL_TEMPLATE_PACK_LAYOUT = "split-card"
-OBJECT_DETAIL_TEMPLATE_PACK_TYPES = "default"
-
-# Icon library: "fontawesome" or "bootstrap" (default)
-OBJECT_DETAIL_ICONS_LIBRARY = "fontawesome"
-OBJECT_DETAIL_ICONS_TYPE = "solid"  # or "regular", "light", "thin", "duotone"
-```
+Full step-by-step: see [references/quickstart.md](references/quickstart.md)
 
 ---
 
@@ -255,8 +172,26 @@ Use `CustomFormNoObjectViewPermissionRequired` for forms not tied to a specific 
 
 ## Custom Action View
 
-Subclass `ActionViewPermissionRequired` and implement `action(context)`. Register with a unique `cv_key` and
-`cv_path`. Add that key to `cv_list_actions` on the list view to show a per-row button.
+Performs a one-click action on an existing object. Implement `action(context)`. Register with a unique `cv_key`
+and `cv_path`. Add that key to `cv_list_actions` on the list view to show a per-row button.
+
+```python
+from crud_views.lib.views import ActionViewPermissionRequired, MessageMixin
+
+class AuthorArchiveView(MessageMixin, ActionViewPermissionRequired):
+    cv_key = "archive"
+    cv_path = "archive"
+    cv_icon_action = "fa-solid fa-box-archive"
+    cv_viewset = cv_author
+    cv_message = "Archived »{object}«"
+
+    def action(self, context):
+        obj = context.object
+        obj.is_archived = True
+        obj.save()
+
+# In list view: cv_list_actions = ["detail", "update", "delete", "archive"]
+```
 
 ---
 
@@ -490,3 +425,16 @@ cv_book = GuardianViewSet(
 ```
 
 Setting either to `None` disables the parent check for that view type.
+
+---
+
+## Common Mistakes
+
+| Mistake | Fix |
+|---|---|
+| Mixin after base view class | Mixins must come **before**: `CrispyModelViewMixin, MessageMixin, CreateViewPermissionRequired` |
+| Child viewset URLs missing | Every viewset needs `urlpatterns += cv_book.urlpatterns` separately |
+| FK not auto-assigned on child create | Add `CreateViewParentMixin` to the child create view |
+| Polymorphic list uses `"create"` | Use `cv_context_actions = ["create_select"]` instead |
+| Guardian: model-level perms not working | Set `cv_guardian_accept_global_perms = True` on the view |
+| Guardian: users see no objects | Check `assign_perm` was called — strict mode ignores model-level grants by default |

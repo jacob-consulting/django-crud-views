@@ -1,6 +1,6 @@
 ---
 name: django-crud-views
-description: "Build Django CRUD interfaces using the django-crud-views package. Use when creating, reading, updating, or deleting model records with class-based views; when wiring up ViewSets, ListViews, DetailViews, CreateViews, UpdateViews, or DeleteViews; when configuring tables with django-tables2, filters with django-filter, or forms with django-crispy-forms; when implementing nested/child resources with ParentViewSet; when adding permission-required views; when integrating django-fsm state machine transitions with WorkflowView or WorkflowViewPermissionRequired; when adding workflow audit history to models with WorkflowModelMixin; when using formsets with FormSetMixin; when working with polymorphic models; or any time the codebase imports from crud_views.lib, crud_views_workflow, or crud_views_polymorphic."
+description: "Build Django CRUD interfaces using the django-crud-views package. Use when creating, reading, updating, or deleting model records with class-based views; when wiring up ViewSets, ListViews, DetailViews, CreateViews, UpdateViews, or DeleteViews; when configuring tables with django-tables2, filters with django-filter, or forms with django-crispy-forms; when implementing nested/child resources with ParentViewSet; when adding permission-required views; when integrating django-fsm state machine transitions with WorkflowView or WorkflowViewPermissionRequired; when adding workflow audit history to models with WorkflowModelMixin; when using formsets with FormSetMixin; when working with polymorphic models; when adding per-object permissions with django-guardian via GuardianViewSet and Guardian*ViewPermissionRequired; or any time the codebase imports from crud_views.lib, crud_views_workflow, crud_views_polymorphic, or crud_views_guardian."
 ---
 
 # django-crud-views
@@ -425,3 +425,68 @@ class CampaignWorkflowView(CrispyModelViewMixin, MessageMixin, WorkflowViewPermi
 WorkflowComment values: `NONE` (hidden), `OPTIONAL` (shown, not required), `REQUIRED` (shown, mandatory).
 
 Install: `pip install django-crud-views[workflow]`, add `"crud_views_workflow.apps.CrudViewsWorkflowConfig"` to `INSTALLED_APPS`, run `migrate`.
+
+---
+
+## Per-Object Permissions (`crud_views_guardian`)
+
+Integrates [django-guardian](https://django-guardian.readthedocs.io/) for per-object permission checking and queryset filtering. Swap `ViewSet` → `GuardianViewSet` and `*ViewPermissionRequired` → `Guardian*ViewPermissionRequired`.
+
+Install: `pip install django-crud-views[guardian]`, add `"guardian"` and `"crud_views_guardian.apps.CrudViewsGuardianConfig"` to `INSTALLED_APPS`, add `"guardian.backends.ObjectPermissionBackend"` to `AUTHENTICATION_BACKENDS`, set `ANONYMOUS_USER_NAME = None`, run `migrate`.
+
+```python
+from crud_views_guardian.lib.viewset import GuardianViewSet
+from crud_views_guardian.lib.views import (
+    GuardianListViewPermissionRequired,
+    GuardianDetailViewPermissionRequired,
+    GuardianCreateViewPermissionRequired,
+    GuardianUpdateViewPermissionRequired,
+    GuardianDeleteViewPermissionRequired,
+)
+
+cv_author = GuardianViewSet(model=Author, name="author")
+
+class AuthorListView(ListViewTableMixin, GuardianListViewPermissionRequired):
+    cv_viewset = cv_author
+
+class AuthorDetailView(GuardianDetailViewPermissionRequired):
+    cv_viewset = cv_author
+```
+
+### Assigning permissions
+
+```python
+cv_author.assign_perm("view", user, author_instance)   # grant
+cv_author.remove_perm("view", user, author_instance)   # revoke
+cv_author.assign_perm("change", group, author_instance)
+qs = cv_author.get_objects_for_user(user, "view")
+```
+
+### Strict mode (default)
+
+`cv_guardian_accept_global_perms = False` by default — model-level Django permissions are **not** a fallback. Only explicit per-object grants count. Override per view:
+
+```python
+class AuthorDetailView(GuardianDetailViewPermissionRequired):
+    cv_viewset = cv_author
+    cv_guardian_accept_global_perms = True  # allow model-level perms as fallback
+```
+
+### Create views
+
+- **Top-level creates** (no parent): standard model-level `add_<model>` permission is checked.
+- **Child creates** (with parent viewset): guardian checks per-object permission on the parent using `cv_guardian_parent_create_permission`.
+
+### Parent viewsets
+
+```python
+cv_book = GuardianViewSet(
+    model=Book,
+    name="book",
+    parent=ParentViewSet(name="author"),
+    cv_guardian_parent_permission="view",           # for list/detail/update/delete
+    cv_guardian_parent_create_permission="change",  # for create (None = use above)
+)
+```
+
+Setting either to `None` disables the parent check for that view type.

@@ -250,22 +250,21 @@ def test_list_cv_has_access_no_object_returns_true(user_guardian):
 
 @pytest.mark.django_db
 def test_list_cv_has_access_with_object_returns_true(user_guardian, author_douglas_adams):
-    """List cv_has_access returns True even with an object (e.g. parent-button wrong-type case)."""
+    """List cv_has_access returns True even with a non-None obj — buttons always visible."""
     from tests.test1.app.views import GuardianAuthorListView
 
     assert GuardianAuthorListView.cv_has_access(user_guardian, author_douglas_adams) is True
 
 
 @pytest.mark.django_db
-def test_non_guardian_cv_has_access_with_model_perm(client, cv_guardian_author, author_douglas_adams):
+def test_non_guardian_cv_has_access_with_model_perm(author_douglas_adams):
     """Non-guardian cv_has_access returns True when user has model-level perm (base.py revert check)."""
     from django.contrib.auth.models import User
     from tests.lib.helper.user import user_viewset_permission
-    from tests.test1.app.views import AuthorDetailView
+    from tests.test1.app.views import AuthorDetailView, cv_author
 
     user = User.objects.create_user(username="model_perm_user", password="password")
-    user_viewset_permission(user, cv_guardian_author, "view")
+    user_viewset_permission(user, cv_author, "view")
     user = User.objects.get(pk=user.pk)
 
-    pk = author_douglas_adams.pk
     assert AuthorDetailView.cv_has_access(user, author_douglas_adams) is True

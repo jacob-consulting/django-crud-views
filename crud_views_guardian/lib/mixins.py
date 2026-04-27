@@ -72,11 +72,20 @@ class GuardianQuerysetMixin:
 
     Overrides has_permission() to always return True — queryset filtering is
     the sole access control mechanism for list views.
+
+    Overrides cv_has_access() to always return True — the list page is always
+    accessible; queryset filtering is the sole gate. This ensures "list" and
+    "parent" context action buttons are always visible regardless of whether
+    an object is provided.
     """
 
     cv_guardian_accept_global_perms: bool = False
 
     def has_permission(self):
+        return True
+
+    @classmethod
+    def cv_has_access(cls, user, obj=None):
         return True
 
     def get_queryset(self):

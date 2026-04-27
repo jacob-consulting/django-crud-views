@@ -268,3 +268,68 @@ def test_non_guardian_cv_has_access_with_model_perm(author_douglas_adams):
     user = User.objects.get(pk=user.pk)
 
     assert AuthorDetailView.cv_has_access(user, author_douglas_adams) is True
+
+
+# ── cv_has_access for create views ────────────────────────────────────────────
+
+
+@pytest.mark.django_db
+def test_create_cv_has_access_top_level_with_add_perm(user_guardian, cv_guardian_author):
+    """Top-level create: True when user has model-level add perm."""
+    from django.contrib.auth.models import User
+    from tests.lib.helper.user import user_viewset_permission
+    from tests.test1.app.views import GuardianAuthorCreateView
+
+    user_viewset_permission(user_guardian, cv_guardian_author, "add")
+    user_guardian = User.objects.get(pk=user_guardian.pk)
+    assert GuardianAuthorCreateView.cv_has_access(user_guardian) is True
+
+
+@pytest.mark.django_db
+def test_create_cv_has_access_top_level_without_add_perm(user_guardian):
+    """Top-level create: False when user has no model-level add perm."""
+    from tests.test1.app.views import GuardianAuthorCreateView
+
+    assert GuardianAuthorCreateView.cv_has_access(user_guardian) is False
+
+
+@pytest.mark.django_db
+def test_create_cv_has_access_child_no_object_with_parent_perm(user_guardian, cv_guardian_publisher, publisher_a):
+    """Child create, obj=None: True even when user has parent perm (list-page case)."""
+    from tests.test1.app.views import GuardianBookCreateView
+
+    user_guardian_object_perm(user_guardian, cv_guardian_publisher, "change", publisher_a)
+    assert GuardianBookCreateView.cv_has_access(user_guardian, None) is True
+
+
+@pytest.mark.django_db
+def test_create_cv_has_access_child_no_object_without_parent_perm(user_guardian):
+    """Child create, obj=None: True even when user has no parent perm (dispatch enforces)."""
+    from tests.test1.app.views import GuardianBookCreateView
+
+    assert GuardianBookCreateView.cv_has_access(user_guardian, None) is True
+
+
+@pytest.mark.django_db
+def test_create_cv_has_access_child_with_parent_obj_and_perm(user_guardian, cv_guardian_publisher, publisher_a):
+    """Child create, obj=parent instance: True when user has change perm on that parent."""
+    from tests.test1.app.views import GuardianBookCreateView
+
+    user_guardian_object_perm(user_guardian, cv_guardian_publisher, "change", publisher_a)
+    assert GuardianBookCreateView.cv_has_access(user_guardian, publisher_a) is True
+
+
+@pytest.mark.django_db
+def test_create_cv_has_access_child_with_parent_obj_without_perm(user_guardian, publisher_a):
+    """Child create, obj=parent instance: False when user has no change perm on that parent."""
+    from tests.test1.app.views import GuardianBookCreateView
+
+    assert GuardianBookCreateView.cv_has_access(user_guardian, publisher_a) is False
+
+
+@pytest.mark.django_db
+def test_create_cv_has_access_child_wrong_type_obj(user_guardian, book_under_publisher_a):
+    """Child create, obj=wrong model type: True (fallback — cannot determine access)."""
+    from tests.test1.app.views import GuardianBookCreateView
+
+    assert GuardianBookCreateView.cv_has_access(user_guardian, book_under_publisher_a) is True

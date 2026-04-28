@@ -1,4 +1,5 @@
 from django.core.exceptions import PermissionDenied
+from django.http import Http404
 from django.shortcuts import get_object_or_404
 
 
@@ -21,8 +22,15 @@ class GuardianObjectPermissionMixin:
     """
 
     cv_guardian_accept_global_perms: bool = False
+    cv_guardian_anonymous_behavior: str = "redirect"
 
     def has_permission(self):
+        if not self.request.user.is_authenticated:
+            if self.cv_guardian_anonymous_behavior == "404":
+                raise Http404
+            if self.cv_guardian_anonymous_behavior == "403":
+                raise PermissionDenied
+            return False  # triggers Django's handle_no_permission() → redirect to login
         return True
 
     def _check_object_perm(self, user, perm: str, obj) -> bool:
@@ -80,8 +88,15 @@ class GuardianQuerysetMixin:
     """
 
     cv_guardian_accept_global_perms: bool = False
+    cv_guardian_anonymous_behavior: str = "redirect"
 
     def has_permission(self):
+        if not self.request.user.is_authenticated:
+            if self.cv_guardian_anonymous_behavior == "404":
+                raise Http404
+            if self.cv_guardian_anonymous_behavior == "403":
+                raise PermissionDenied
+            return False  # triggers Django's handle_no_permission() → redirect to login
         return True
 
     @classmethod
@@ -125,6 +140,13 @@ class GuardianParentPermissionMixin:
         return super().has_permission()
 
     def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            behavior = getattr(self, "cv_guardian_anonymous_behavior", "redirect")
+            if behavior == "404":
+                raise Http404
+            if behavior == "403":
+                raise PermissionDenied
+            return self.handle_no_permission()  # redirect to login
         parent_vs = self.cv_viewset.parent
         if parent_vs is not None:
             is_create = getattr(self, "cv_permission", None) == "add"

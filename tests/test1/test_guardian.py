@@ -393,3 +393,42 @@ def test_guardian_manage_views_have_mixin_info(client_guardian, cv_guardian_auth
     assert "QuerysetMixin" in views["list"]["base"]["guardian_mixin"]
     assert "guardian_mixin" in views["detail"]["base"]
     assert "ObjectPermissionMixin" in views["detail"]["base"]["guardian_mixin"]
+
+
+# ── Anonymous user behavior ───────────────────────────────────────────────────
+
+
+@pytest.mark.django_db
+def test_guardian_anonymous_list_redirects(client, cv_guardian_author):
+    """Anonymous user on list view gets redirect to login (not 500)."""
+    response = client.get("/guardian_author/")
+    assert response.status_code == 302
+    assert "/accounts/login/" in response["Location"]
+
+
+@pytest.mark.django_db
+def test_guardian_anonymous_detail_redirects(client, cv_guardian_author, author_douglas_adams):
+    """Anonymous user on detail view gets redirect to login (not 500)."""
+    pk = author_douglas_adams.pk
+    response = client.get(f"/guardian_author/{pk}/detail/")
+    assert response.status_code == 302
+    assert "/accounts/login/" in response["Location"]
+
+
+@pytest.mark.django_db
+def test_guardian_anonymous_child_list_redirects(client, cv_guardian_publisher, publisher_a):
+    """Anonymous user on child list view gets redirect to login (not 500)."""
+    pk = publisher_a.pk
+    response = client.get(f"/guardian_publisher/{pk}/guardian_book/")
+    assert response.status_code == 302
+    assert "/accounts/login/" in response["Location"]
+
+
+@pytest.mark.django_db
+def test_guardian_anonymous_behavior_404(client, cv_guardian_author, monkeypatch):
+    """cv_guardian_anonymous_behavior='404' returns 404 for anonymous users."""
+    from crud_views_guardian.lib.mixins import GuardianQuerysetMixin
+
+    monkeypatch.setattr(GuardianQuerysetMixin, "cv_guardian_anonymous_behavior", "404")
+    response = client.get("/guardian_author/")
+    assert response.status_code == 404

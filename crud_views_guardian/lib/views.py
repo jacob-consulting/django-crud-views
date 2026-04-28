@@ -111,9 +111,19 @@ class GuardianManageView(ManageView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        parent = self.cv_viewset.parent
+        if parent is not None:
+            parent_vs = parent.viewset
+            perm_key = self.cv_viewset.cv_guardian_parent_permission or "view"
+            perm_codename = parent_vs.permissions.get(perm_key, perm_key).split(".")[-1]
+            parent_viewset_info = f"{parent_vs.name} ({perm_codename} → guardian)"
+        else:
+            parent_viewset_info = None
         context["guardian_config"] = {
             "cv_guardian_parent_permission": self.cv_viewset.cv_guardian_parent_permission,
             "cv_guardian_parent_create_permission": self.cv_viewset.cv_guardian_parent_create_permission,
+            "cv_guardian_accept_global_perms": getattr(self.cv_viewset, "cv_guardian_accept_global_perms", False),
+            "parent_viewset": parent_viewset_info,
         }
         return context
 

@@ -34,6 +34,8 @@ class CrudViewsSettings(BaseModel):
     )  # no, yes, debug_only
     manage_group: str = from_settings("CRUD_VIEWS_MANAGE_GROUP", default="CRUD_VIEWS_MANAGE")
     manage_show_users: bool = from_settings("CRUD_VIEWS_MANAGE_SHOW_USERS", default=False)
+    manage_view_class: str | None = from_settings("CRUD_VIEWS_MANAGE_VIEW_CLASS", default=None)
+    guardian_manage_view_class: str | None = from_settings("CRUD_VIEWS_GUARDIAN_MANAGE_VIEW_CLASS", default=None)
 
     # session
     session_data_key: str = from_settings("CRUD_VIEWS_SESSION_DATA_KEY", "viewset")

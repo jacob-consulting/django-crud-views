@@ -6,6 +6,8 @@
 |----------------------|----------------------------------------------------------|-------|--------------|
 | EXTENDS              |                                                          | `str` | `None`       |
 | MANAGE_VIEWS_ENABLED | Show manage view button, values are: `yes,no,debug_only` | `str` | `debug_only` |
+| CRUD_VIEWS_MANAGE_GROUP | Django group name that grants manage view access regardless of MANAGE_VIEWS_ENABLED | `str` | `CRUD_VIEWS_MANAGE` |
+| CRUD_VIEWS_MANAGE_SHOW_USERS | Whether to show a Users column in the Permission Holders section of ManageView | `bool` | `False` |
 
 ## Session
 

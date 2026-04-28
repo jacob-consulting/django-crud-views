@@ -145,3 +145,21 @@ python manage.py setup_guardian_demo
 
 This creates `editor` (full access) and `reader` (view only) users with
 per-object permissions assigned to all existing objects.
+
+## GuardianManageView
+
+When `CRUD_VIEWS_MANAGE_VIEWS_ENABLED` is enabled (or a user is in the `CRUD_VIEWS_MANAGE` group), guardian-enabled viewsets show an enhanced manage page at `/<prefix>/manage/`.
+
+In addition to the standard ManageView content, GuardianManageView adds:
+
+**Guardian Configuration** — a table showing:
+- `cv_guardian_parent_permission` — permission key checked on parent object for child views
+- `cv_guardian_parent_create_permission` — permission key for child create views (falls back to `cv_guardian_parent_permission` if None)
+- `cv_guardian_accept_global_perms` — whether model-level permissions are accepted as a fallback
+- `parent_viewset` — parent viewset name and the permission used to grant access
+
+**Permission Holders** — extends the standard group listing with an "Objects (guardian)" column showing how many objects each group has per-object access to.
+
+**Views table** — each registered view shows a `guardian_mixin` row listing which guardian mixins are active (`ObjectPermissionMixin`, `QuerysetMixin`, `ParentMixin`).
+
+GuardianManageView is wired automatically by `GuardianViewSet.register()` — no manual configuration required.

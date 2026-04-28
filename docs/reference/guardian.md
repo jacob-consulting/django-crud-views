@@ -163,3 +163,34 @@ In addition to the standard ManageView content, GuardianManageView adds:
 **Views table** — each registered view shows a `guardian_mixin` row listing which guardian mixins are active (`ObjectPermissionMixin`, `QuerysetMixin`, `ParentMixin`).
 
 GuardianManageView is wired automatically by `GuardianViewSet.register()` — no manual configuration required.
+
+### Customizing the Manage View Class
+
+To use a custom manage view class for a specific viewset, set `manage_view_class` to a dotted import path:
+
+```python
+from crud_views_guardian.lib.viewset import GuardianViewSet
+
+class MyCustomGuardianManageView(GuardianManageView):
+    template_name = "myapp/custom_guardian_manage.html"
+
+cv_author = GuardianViewSet(
+    model=Author,
+    name="author",
+    manage_view_class="myapp.views.MyCustomGuardianManageView",
+)
+```
+
+To apply a custom class globally to all guardian viewsets, set in `settings.py`:
+
+```python
+CRUD_VIEWS_GUARDIAN_MANAGE_VIEW_CLASS = "myapp.views.MyCustomGuardianManageView"
+```
+
+The per-viewset `manage_view_class` field takes priority over the global setting.
+
+For plain `ViewSet` (non-guardian), the equivalent is:
+
+```python
+CRUD_VIEWS_MANAGE_VIEW_CLASS = "myapp.views.MyCustomManageView"
+```

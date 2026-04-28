@@ -233,3 +233,25 @@ def test_get_manage_view_class_field_wins_over_setting(cv_author, monkeypatch):
     result = cv_author.get_manage_view_class()
     assert result is CustomManageViewForTest
     assert result is not ManageView
+
+
+@pytest.mark.django_db
+def test_register_uses_custom_manage_view_class():
+    """ViewSet.register() wires up the class specified by manage_view_class."""
+    import uuid
+    from crud_views.lib.viewset import ViewSet, _REGISTRY, _REGISTRY_LOCK
+    from tests.test1.app.models import Author
+    from tests.test1.app.views import CustomManageViewForTest
+
+    name = f"test_custom_{uuid.uuid4().hex[:8]}"
+    try:
+        vs = ViewSet(
+            model=Author,
+            name=name,
+            manage_view_class="tests.test1.app.views.CustomManageViewForTest",
+        )
+        manage_class = vs.get_all_views()["manage"]
+        assert issubclass(manage_class, CustomManageViewForTest)
+    finally:
+        with _REGISTRY_LOCK:
+            _REGISTRY.pop(name, None)

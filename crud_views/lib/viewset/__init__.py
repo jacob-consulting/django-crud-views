@@ -111,9 +111,8 @@ class ViewSet(BaseModel):
         with _REGISTRY_LOCK:
             _REGISTRY[self.name] = self
 
-        class AutoManageView(ManageView):
-            model = self.model
-            cv_viewset = self
+        base = self.get_manage_view_class()
+        AutoManageView = type("AutoManageView", (base,), {"model": self.model, "cv_viewset": self})
 
         return self
 

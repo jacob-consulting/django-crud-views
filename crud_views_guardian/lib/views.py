@@ -13,6 +13,12 @@ from crud_views_guardian.lib.mixins import (
     GuardianParentPermissionMixin,
 )
 
+GUARDIAN_MIXINS = [
+    (GuardianObjectPermissionMixin, "ObjectPermissionMixin"),
+    (GuardianQuerysetMixin, "QuerysetMixin"),
+    (GuardianParentPermissionMixin, "ParentMixin"),
+]
+
 
 class GuardianDetailViewPermissionRequired(
     GuardianParentPermissionMixin, GuardianObjectPermissionMixin, DetailViewPermissionRequired
@@ -114,15 +120,21 @@ class GuardianManageView(ManageView):
         parent = self.cv_viewset.parent
         if parent is not None:
             parent_vs = parent.viewset
-            perm_key = self.cv_viewset.cv_guardian_parent_permission or "view"
-            perm_codename = parent_vs.permissions.get(perm_key, perm_key).split(".")[-1]
-            parent_viewset_info = f"{parent_vs.name} ({perm_codename} → guardian)"
+            perm_key = self.cv_viewset.cv_guardian_parent_permission
+            perm_codename = (
+                parent_vs.permissions.get(perm_key, perm_key).split(".")[-1] if perm_key is not None else None
+            )
+            parent_viewset_info = (
+                f"{parent_vs.name} ({perm_codename} → guardian)"
+                if perm_codename is not None
+                else f"{parent_vs.name} (no permission)"
+            )
         else:
             parent_viewset_info = None
         context["guardian_config"] = {
             "cv_guardian_parent_permission": self.cv_viewset.cv_guardian_parent_permission,
             "cv_guardian_parent_create_permission": self.cv_viewset.cv_guardian_parent_create_permission,
-            "cv_guardian_accept_global_perms": getattr(self.cv_viewset, "cv_guardian_accept_global_perms", False),
+            "cv_guardian_accept_global_perms": self.cv_viewset.cv_guardian_accept_global_perms,
             "parent_viewset": parent_viewset_info,
         }
         return context
@@ -162,17 +174,6 @@ class GuardianManageView(ManageView):
         return sorted(holders.values(), key=lambda r: (r["group"], r["permission"]))
 
     def get_view_data(self):
-        from crud_views_guardian.lib.mixins import (
-            GuardianObjectPermissionMixin,
-            GuardianQuerysetMixin,
-            GuardianParentPermissionMixin,
-        )
-
-        GUARDIAN_MIXINS = [
-            (GuardianObjectPermissionMixin, "ObjectPermissionMixin"),
-            (GuardianQuerysetMixin, "QuerysetMixin"),
-            (GuardianParentPermissionMixin, "ParentMixin"),
-        ]
         data = super().get_view_data()
         for key, view_data in data.items():
             view_class = self.cv_viewset.get_all_views()[key]

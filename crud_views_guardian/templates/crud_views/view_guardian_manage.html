@@ -1,0 +1,19 @@
+{% extends "crud_views/view_manage.html" %}
+
+{% block guardian_config %}
+<h4>Guardian Configuration</h4>
+<table class="table table-striped">
+    <tr>
+        <th scope="col">Setting</th>
+        <th scope="col">Value</th>
+    </tr>
+    <tr>
+        <td>cv_guardian_parent_permission</td>
+        <td>{{ guardian_config.cv_guardian_parent_permission }}</td>
+    </tr>
+    <tr>
+        <td>cv_guardian_parent_create_permission</td>
+        <td>{{ guardian_config.cv_guardian_parent_create_permission }}</td>
+    </tr>
+</table>
+{% endblock guardian_config %}

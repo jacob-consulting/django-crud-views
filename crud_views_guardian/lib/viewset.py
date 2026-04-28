@@ -1,3 +1,6 @@
+from pydantic import model_validator
+from typing_extensions import Self
+
 from crud_views.lib.viewset import ViewSet
 
 
@@ -15,6 +18,21 @@ class GuardianViewSet(ViewSet):
 
     cv_guardian_parent_permission: str | None = "view"
     cv_guardian_parent_create_permission: str | None = None
+
+    @model_validator(mode="after")
+    def register(self) -> Self:
+        result = super().register()
+        from crud_views_guardian.lib.views import GuardianManageView
+
+        # Remove the base ManageView that super().register() just added so that the metaclass
+        # can call register_view_class() without hitting the "already registered" guard.
+        del self._views["manage"]
+
+        class AutoManageView(GuardianManageView):
+            model = self.model
+            cv_viewset = self
+
+        return result
 
     def assign_perm(self, perm: str, user_or_group, obj) -> None:
         """Assign per-object permission using a short key ("view", "change", etc.)."""

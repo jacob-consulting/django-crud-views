@@ -6,6 +6,7 @@ from crud_views.lib.views import (
     ListViewPermissionRequired,
     ActionViewPermissionRequired,
 )
+from crud_views.lib.views.manage import ManageView
 from crud_views_guardian.lib.mixins import (
     GuardianObjectPermissionMixin,
     GuardianQuerysetMixin,
@@ -103,3 +104,68 @@ class GuardianCreateViewPermissionRequired(GuardianParentPermissionMixin, Create
             return ObjectPermissionChecker(user).has_perm(perm.split(".")[1], obj)
 
         return True
+
+
+class GuardianManageView(ManageView):
+    template_name = "crud_views/view_guardian_manage.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["guardian_config"] = {
+            "cv_guardian_parent_permission": self.cv_viewset.cv_guardian_parent_permission,
+            "cv_guardian_parent_create_permission": self.cv_viewset.cv_guardian_parent_create_permission,
+        }
+        return context
+
+    def get_permission_holders(self):
+        from django.contrib.contenttypes.models import ContentType
+        from guardian.models import GroupObjectPermission
+        from django.db.models import Count
+
+        holders = {(r["group"], r["permission"]): r for r in super().get_permission_holders()}
+
+        ct = ContentType.objects.get_for_model(self.cv_viewset.model)
+        codename_to_key = {perm.split(".")[1]: key for key, perm in self.cv_viewset.permissions.items()}
+
+        qs = (
+            GroupObjectPermission.objects.filter(permission__content_type=ct)
+            .values("group__name", "permission__codename")
+            .annotate(object_count=Count("object_pk", distinct=True))
+        )
+        for row in qs:
+            group_name = row["group__name"]
+            perm_key = codename_to_key.get(row["permission__codename"])
+            if perm_key is None:
+                continue
+            k = (group_name, perm_key)
+            if k in holders:
+                holders[k]["object_count"] = row["object_count"]
+            else:
+                holders[k] = {
+                    "group": group_name,
+                    "permission": perm_key,
+                    "has_model_perm": False,
+                    "object_count": row["object_count"],
+                    "users": [],
+                }
+
+        return sorted(holders.values(), key=lambda r: (r["group"], r["permission"]))
+
+    def get_view_data(self):
+        from crud_views_guardian.lib.mixins import (
+            GuardianObjectPermissionMixin,
+            GuardianQuerysetMixin,
+            GuardianParentPermissionMixin,
+        )
+
+        GUARDIAN_MIXINS = [
+            (GuardianObjectPermissionMixin, "ObjectPermissionMixin"),
+            (GuardianQuerysetMixin, "QuerysetMixin"),
+            (GuardianParentPermissionMixin, "ParentMixin"),
+        ]
+        data = super().get_view_data()
+        for key, view_data in data.items():
+            view_class = self.cv_viewset.get_all_views()[key]
+            labels = [label for cls, label in GUARDIAN_MIXINS if issubclass(view_class, cls)]
+            view_data["base"]["guardian_mixin"] = " + ".join(labels) if labels else "—"
+        return data

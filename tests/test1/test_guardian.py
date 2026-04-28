@@ -451,3 +451,76 @@ def test_guardian_anonymous_behavior_403(client, cv_guardian_publisher, publishe
     pk = publisher_a.pk
     response = client.get(f"/guardian_publisher/{pk}/guardian_book/")
     assert response.status_code == 403
+
+
+# ── manage_view_class customization ───────────────────────────────────────────
+
+
+def test_guardian_get_manage_view_class_default(cv_guardian_author):
+    """Default: GuardianViewSet.get_manage_view_class() returns GuardianManageView."""
+    from crud_views_guardian.lib.views import GuardianManageView
+
+    assert cv_guardian_author.get_manage_view_class() is GuardianManageView
+
+
+def test_guardian_get_manage_view_class_global_setting(cv_guardian_author, monkeypatch):
+    """Global guardian setting: get_manage_view_class() returns the named class."""
+    from crud_views.lib.settings import crud_views_settings
+
+    monkeypatch.setattr(
+        crud_views_settings, "guardian_manage_view_class", "tests.test1.app.views.CustomGuardianManageViewForTest"
+    )
+    from tests.test1.app.views import CustomGuardianManageViewForTest
+
+    assert cv_guardian_author.get_manage_view_class() is CustomGuardianManageViewForTest
+
+
+def test_guardian_get_manage_view_class_per_viewset_field(cv_guardian_author, monkeypatch):
+    """Per-viewset field on GuardianViewSet: get_manage_view_class() returns the named class."""
+    monkeypatch.setattr(
+        cv_guardian_author, "manage_view_class", "tests.test1.app.views.CustomGuardianManageViewForTest"
+    )
+    from tests.test1.app.views import CustomGuardianManageViewForTest
+
+    assert cv_guardian_author.get_manage_view_class() is CustomGuardianManageViewForTest
+
+
+def test_guardian_get_manage_view_class_field_wins_over_setting(cv_guardian_author, monkeypatch):
+    """Priority: per-viewset field beats guardian global setting."""
+    from crud_views.lib.settings import crud_views_settings
+    from crud_views_guardian.lib.views import GuardianManageView
+
+    monkeypatch.setattr(
+        crud_views_settings, "guardian_manage_view_class", "crud_views_guardian.lib.views.GuardianManageView"
+    )
+    monkeypatch.setattr(
+        cv_guardian_author, "manage_view_class", "tests.test1.app.views.CustomGuardianManageViewForTest"
+    )
+    from tests.test1.app.views import CustomGuardianManageViewForTest
+
+    result = cv_guardian_author.get_manage_view_class()
+    assert result is CustomGuardianManageViewForTest
+    assert result is not GuardianManageView
+
+
+@pytest.mark.django_db
+def test_guardian_register_uses_custom_manage_view_class():
+    """GuardianViewSet.register() wires up the class specified by manage_view_class."""
+    import uuid
+    from crud_views.lib.viewset import _REGISTRY, _REGISTRY_LOCK
+    from crud_views_guardian.lib.viewset import GuardianViewSet
+    from tests.test1.app.models import Author
+    from tests.test1.app.views import CustomGuardianManageViewForTest
+
+    name = f"test_gv_custom_{uuid.uuid4().hex[:8]}"
+    try:
+        vs = GuardianViewSet(
+            model=Author,
+            name=name,
+            manage_view_class="tests.test1.app.views.CustomGuardianManageViewForTest",
+        )
+        manage_class = vs.get_all_views()["manage"]
+        assert issubclass(manage_class, CustomGuardianManageViewForTest)
+    finally:
+        with _REGISTRY_LOCK:
+            _REGISTRY.pop(name, None)

@@ -28,10 +28,40 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
     cv_icon_header = "fa-solid fa-gear"
 
     def has_permission(self):
-        """
-        Currently manage views are only attached to ViewSets via a global switch in settings
-        """
-        return True
+        if crud_views_settings.manage_views_enabled == "yes":
+            return True
+        from django.conf import settings as django_settings
+
+        if crud_views_settings.manage_views_enabled == "debug_only" and django_settings.DEBUG:
+            return True
+        return self.request.user.groups.filter(name=crud_views_settings.manage_group).exists()
+
+    def get_permission_holders(self):
+        from django.contrib.auth.models import Group
+        from django.contrib.auth import get_user_model
+
+        User = get_user_model()
+        rows = []
+        for key, perm in self.cv_viewset.permissions.items():
+            codename = perm.split(".")[1]
+            users = []
+            if crud_views_settings.manage_show_users:
+                users = list(
+                    User.objects.filter(user_permissions__codename=codename)
+                    .values_list("username", flat=True)
+                    .order_by("username")
+                )
+            for group in Group.objects.filter(permissions__codename=codename).order_by("name"):
+                rows.append(
+                    {
+                        "group": group.name,
+                        "permission": key,
+                        "has_model_perm": True,
+                        "object_count": None,
+                        "users": users,
+                    }
+                )
+        return rows
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -40,7 +70,16 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
         for short, long in permissions.items():
             rows.append(dict(viewset=short, django=long, has_permission=self.request.user.has_perm(long)))
         views = self.get_view_data()
-        context.update({"cv": self.cv_viewset, "data": rows, "views": views})
+        permission_holders = self.get_permission_holders()
+        context.update(
+            {
+                "cv": self.cv_viewset,
+                "data": rows,
+                "views": views,
+                "permission_holders": permission_holders,
+                "show_users": crud_views_settings.manage_show_users,
+            }
+        )
         return context
 
     def get_view_data(self):

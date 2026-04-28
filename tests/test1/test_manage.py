@@ -107,3 +107,66 @@ def test_manage_registered_on_all_viewsets(cv_author, cv_publisher, cv_book):
     assert cv_author.has_view("manage")
     assert cv_publisher.has_view("manage")
     assert cv_book.has_view("manage")
+
+
+# ── Group-based access and permission holders ──────────────────────────────────
+
+
+@pytest.mark.django_db
+def test_manage_accessible_via_crud_views_manage_group(client, cv_author, monkeypatch):
+    """User in CRUD_VIEWS_MANAGE group can access manage view even when setting is 'no'."""
+    from django.contrib.auth.models import User, Group
+    from crud_views.lib.settings import crud_views_settings
+
+    monkeypatch.setattr(crud_views_settings, "manage_views_enabled", "no")
+
+    group = Group.objects.create(name="CRUD_VIEWS_MANAGE")
+    user = User.objects.create_user(username="manage_user", password="password")
+    user.groups.add(group)
+    client.force_login(user)
+
+    response = client.get("/author/manage/")
+    assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_manage_blocked_without_group_or_setting(client, cv_author, monkeypatch):
+    """Authenticated user without CRUD_VIEWS_MANAGE group gets 403 when setting is 'no'."""
+    from django.contrib.auth.models import User
+    from crud_views.lib.settings import crud_views_settings
+
+    monkeypatch.setattr(crud_views_settings, "manage_views_enabled", "no")
+
+    user = User.objects.create_user(username="plain_user", password="password")
+    client.force_login(user)
+
+    response = client.get("/author/manage/")
+    assert response.status_code == 403
+
+
+@pytest.mark.django_db
+def test_manage_context_has_permission_holders(client_user_author_view, cv_author):
+    """Manage view context includes permission_holders list."""
+    response = client_user_author_view.get("/author/manage/")
+    assert "permission_holders" in response.context
+    assert isinstance(response.context["permission_holders"], list)
+
+
+@pytest.mark.django_db
+def test_manage_permission_holders_shows_groups(client_user_author_view, cv_author):
+    """Groups with model-level permissions appear in permission_holders."""
+    from django.contrib.auth.models import Group, Permission
+    from django.contrib.contenttypes.models import ContentType
+    from tests.test1.app.models import Author
+
+    ct = ContentType.objects.get_for_model(Author)
+    perm = Permission.objects.get(content_type=ct, codename="view_author")
+    group = Group.objects.create(name="viewers")
+    group.permissions.add(perm)
+
+    response = client_user_author_view.get("/author/manage/")
+    holders = response.context["permission_holders"]
+
+    viewer_rows = [r for r in holders if r["group"] == "viewers" and r["permission"] == "view"]
+    assert len(viewer_rows) == 1
+    assert viewer_rows[0]["has_model_perm"] is True

@@ -2,18 +2,54 @@
 
 {% block guardian_config %}
 <h4>Guardian Configuration</h4>
+<div class="alert alert-warning">
+    <table class="table table-striped mb-0">
+        <tr>
+            <th scope="col">Setting</th>
+            <th scope="col">Value</th>
+        </tr>
+        <tr>
+            <td>cv_guardian_parent_permission</td>
+            <td>{{ guardian_config.cv_guardian_parent_permission }}</td>
+        </tr>
+        <tr>
+            <td>cv_guardian_parent_create_permission</td>
+            <td>{{ guardian_config.cv_guardian_parent_create_permission }}</td>
+        </tr>
+        <tr>
+            <td>cv_guardian_accept_global_perms</td>
+            <td>{{ guardian_config.cv_guardian_accept_global_perms }}</td>
+        </tr>
+        <tr>
+            <td>parent_viewset</td>
+            <td>{{ guardian_config.parent_viewset }}</td>
+        </tr>
+    </table>
+</div>
+{% endblock guardian_config %}
+
+{% block permission_holders %}
+<h4>Permission Holders</h4>
+{% if permission_holders %}
 <table class="table table-striped">
     <tr>
-        <th scope="col">Setting</th>
-        <th scope="col">Value</th>
+        <th scope="col">Group</th>
+        <th scope="col">Permission</th>
+        <th scope="col">Model-level</th>
+        <th scope="col">Objects (guardian)</th>
+        {% if show_users %}<th scope="col">Users</th>{% endif %}
     </tr>
+    {% for row in permission_holders %}
     <tr>
-        <td>cv_guardian_parent_permission</td>
-        <td>{{ guardian_config.cv_guardian_parent_permission }}</td>
+        <td>{{ row.group }}</td>
+        <td>{{ row.permission }}</td>
+        <td>{% if row.has_model_perm %}✓{% else %}—{% endif %}</td>
+        <td>{% if row.object_count != None %}{{ row.object_count }} objects{% else %}—{% endif %}</td>
+        {% if show_users %}<td>{{ row.users|join:", " }}</td>{% endif %}
     </tr>
-    <tr>
-        <td>cv_guardian_parent_create_permission</td>
-        <td>{{ guardian_config.cv_guardian_parent_create_permission }}</td>
-    </tr>
+    {% endfor %}
 </table>
-{% endblock guardian_config %}
+{% else %}
+<p>No permission holders found.</p>
+{% endif %}
+{% endblock permission_holders %}

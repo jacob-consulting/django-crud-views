@@ -333,3 +333,58 @@ def test_create_cv_has_access_child_wrong_type_obj(user_guardian, book_under_pub
     from tests.test1.app.views import GuardianBookCreateView
 
     assert GuardianBookCreateView.cv_has_access(user_guardian, book_under_publisher_a) is True
+
+
+# ── GuardianManageView ────────────────────────────────────────────────────────
+
+
+@pytest.mark.django_db
+def test_guardian_manage_view_registered(cv_guardian_author):
+    """GuardianManageView should be auto-registered on guardian viewsets."""
+    from crud_views_guardian.lib.views import GuardianManageView
+
+    assert cv_guardian_author.has_view("manage")
+    assert issubclass(cv_guardian_author.get_all_views()["manage"], GuardianManageView)
+
+
+@pytest.mark.django_db
+def test_guardian_manage_context_has_guardian_config(client_guardian, cv_guardian_author):
+    """GuardianManageView context includes guardian_config dict."""
+    response = client_guardian.get("/guardian_author/manage/")
+    assert response.status_code == 200
+    assert "guardian_config" in response.context
+    config = response.context["guardian_config"]
+    assert "cv_guardian_parent_permission" in config
+    assert "cv_guardian_parent_create_permission" in config
+
+
+@pytest.mark.django_db
+def test_guardian_manage_permission_holders_has_object_count(client_guardian, cv_guardian_author):
+    """Permission holders includes guardian object count after assigning per-object group perm."""
+    from django.contrib.auth.models import Group
+    from guardian.shortcuts import assign_perm
+    from tests.test1.app.models import Author
+
+    group = Group.objects.create(name="editors")
+    author = Author.objects.create(first_name="Test", last_name="Author")
+    assign_perm("app.change_author", group, author)
+
+    response = client_guardian.get("/guardian_author/manage/")
+    holders = response.context["permission_holders"]
+
+    editor_rows = [r for r in holders if r["group"] == "editors" and r["permission"] == "change"]
+    assert len(editor_rows) == 1
+    assert editor_rows[0]["object_count"] == 1
+    assert editor_rows[0]["has_model_perm"] is False
+
+
+@pytest.mark.django_db
+def test_guardian_manage_views_have_mixin_info(client_guardian, cv_guardian_author):
+    """Each view in context includes guardian_mixin info derived from MRO."""
+    response = client_guardian.get("/guardian_author/manage/")
+    views = response.context["views"]
+    assert "list" in views
+    assert "guardian_mixin" in views["list"]["base"]
+    assert "QuerysetMixin" in views["list"]["base"]["guardian_mixin"]
+    assert "guardian_mixin" in views["detail"]["base"]
+    assert "ObjectPermissionMixin" in views["detail"]["base"]["guardian_mixin"]

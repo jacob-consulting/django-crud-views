@@ -432,3 +432,22 @@ def test_guardian_anonymous_behavior_404(client, cv_guardian_author, monkeypatch
     monkeypatch.setattr(GuardianQuerysetMixin, "cv_guardian_anonymous_behavior", "404")
     response = client.get("/guardian_author/")
     assert response.status_code == 404
+
+
+@pytest.mark.django_db
+def test_guardian_anonymous_create_redirects(client, cv_guardian_author):
+    """Anonymous user on top-level create view gets redirect to login (not 500)."""
+    response = client.get("/guardian_author/create/")
+    assert response.status_code == 302
+    assert "/accounts/login/" in response["Location"]
+
+
+@pytest.mark.django_db
+def test_guardian_anonymous_behavior_403(client, cv_guardian_publisher, publisher_a, monkeypatch):
+    """cv_guardian_anonymous_behavior='403' returns 403 for anonymous users on child list (dispatch path)."""
+    from tests.test1.app.views import GuardianBookListView
+
+    monkeypatch.setattr(GuardianBookListView, "cv_guardian_anonymous_behavior", "403")
+    pk = publisher_a.pk
+    response = client.get(f"/guardian_publisher/{pk}/guardian_book/")
+    assert response.status_code == 403

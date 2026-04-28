@@ -3,7 +3,6 @@ from collections import OrderedDict
 from functools import cached_property
 from typing import Dict, List, Type, Any, Iterable, ClassVar
 
-from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
@@ -111,12 +110,9 @@ class ViewSet(BaseModel):
         with _REGISTRY_LOCK:
             _REGISTRY[self.name] = self
 
-        switch = crud_views_settings.manage_views_enabled
-        if switch == "yes" or switch == "debug_only" and settings.DEBUG:
-
-            class AutoManageView(ManageView):
-                model = self.model
-                cv_viewset = self
+        class AutoManageView(ManageView):
+            model = self.model
+            cv_viewset = self
 
         return self
 

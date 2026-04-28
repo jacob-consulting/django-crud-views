@@ -43,3 +43,6 @@ tasks:
 
   compilemessages:
     cmd: uv run manage.py compilemessages
+
+  setup_guardian_demo:
+    cmd: uv run manage.py setup_guardian_demo

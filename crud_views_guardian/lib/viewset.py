@@ -18,6 +18,7 @@ class GuardianViewSet(ViewSet):
 
     cv_guardian_parent_permission: str | None = "view"
     cv_guardian_parent_create_permission: str | None = None
+    cv_guardian_accept_global_perms: bool = False
 
     @model_validator(mode="after")
     def register(self) -> Self:

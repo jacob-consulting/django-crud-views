@@ -356,6 +356,11 @@ def test_guardian_manage_context_has_guardian_config(client_guardian, cv_guardia
     config = response.context["guardian_config"]
     assert "cv_guardian_parent_permission" in config
     assert "cv_guardian_parent_create_permission" in config
+    assert "cv_guardian_accept_global_perms" in config
+    assert config["cv_guardian_accept_global_perms"] is False
+    assert "parent_viewset" in config
+    # cv_guardian_author has no parent, so parent_viewset should be None
+    assert config["parent_viewset"] is None
 
 
 @pytest.mark.django_db

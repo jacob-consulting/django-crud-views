@@ -34,6 +34,8 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
 
         if crud_views_settings.manage_views_enabled == "debug_only" and django_settings.DEBUG:
             return True
+        if not self.request.user.is_authenticated:
+            return False
         return self.request.user.groups.filter(name=crud_views_settings.manage_group).exists()
 
     def get_permission_holders(self):
@@ -43,15 +45,21 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
         User = get_user_model()
         rows = []
         for key, perm in self.cv_viewset.permissions.items():
-            codename = perm.split(".")[1]
+            app_label, codename = perm.split(".")
             users = []
             if crud_views_settings.manage_show_users:
                 users = list(
-                    User.objects.filter(user_permissions__codename=codename)
+                    User.objects.filter(
+                        user_permissions__codename=codename,
+                        user_permissions__content_type__app_label=app_label,
+                    )
                     .values_list("username", flat=True)
                     .order_by("username")
                 )
-            for group in Group.objects.filter(permissions__codename=codename).order_by("name"):
+            for group in Group.objects.filter(
+                permissions__codename=codename,
+                permissions__content_type__app_label=app_label,
+            ).order_by("name"):
                 rows.append(
                     {
                         "group": group.name,

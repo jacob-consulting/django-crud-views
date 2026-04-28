@@ -145,6 +145,16 @@ def test_manage_blocked_without_group_or_setting(client, cv_author, monkeypatch)
 
 
 @pytest.mark.django_db
+def test_manage_anonymous_user_redirected(client, cv_author, monkeypatch):
+    """Anonymous user gets a redirect (not 500) when manage_views_enabled is 'no'."""
+    from crud_views.lib.settings import crud_views_settings
+
+    monkeypatch.setattr(crud_views_settings, "manage_views_enabled", "no")
+    response = client.get("/author/manage/")
+    assert response.status_code == 302
+
+
+@pytest.mark.django_db
 def test_manage_context_has_permission_holders(client_user_author_view, cv_author):
     """Manage view context includes permission_holders list."""
     response = client_user_author_view.get("/author/manage/")

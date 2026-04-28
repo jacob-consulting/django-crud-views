@@ -194,3 +194,42 @@ def test_settings_guardian_manage_view_class_default():
     from crud_views.lib.settings import crud_views_settings
 
     assert crud_views_settings.guardian_manage_view_class is None
+
+
+def test_get_manage_view_class_default(cv_author):
+    """Default: get_manage_view_class() returns ManageView."""
+    from crud_views.lib.views.manage import ManageView
+
+    assert cv_author.get_manage_view_class() is ManageView
+
+
+def test_get_manage_view_class_global_setting(cv_author, monkeypatch):
+    """Global setting: get_manage_view_class() returns the class named by the setting."""
+    from crud_views.lib.settings import crud_views_settings
+
+    monkeypatch.setattr(crud_views_settings, "manage_view_class", "tests.test1.app.views.CustomManageViewForTest")
+    from tests.test1.app.views import CustomManageViewForTest
+
+    assert cv_author.get_manage_view_class() is CustomManageViewForTest
+
+
+def test_get_manage_view_class_per_viewset_field(cv_author, monkeypatch):
+    """Per-viewset field: get_manage_view_class() returns the class named by the field."""
+    monkeypatch.setattr(cv_author, "manage_view_class", "tests.test1.app.views.CustomManageViewForTest")
+    from tests.test1.app.views import CustomManageViewForTest
+
+    assert cv_author.get_manage_view_class() is CustomManageViewForTest
+
+
+def test_get_manage_view_class_field_wins_over_setting(cv_author, monkeypatch):
+    """Priority: per-viewset field beats global setting."""
+    from crud_views.lib.settings import crud_views_settings
+    from crud_views.lib.views.manage import ManageView
+
+    monkeypatch.setattr(crud_views_settings, "manage_view_class", "crud_views.lib.views.manage.ManageView")
+    monkeypatch.setattr(cv_author, "manage_view_class", "tests.test1.app.views.CustomManageViewForTest")
+    from tests.test1.app.views import CustomManageViewForTest
+
+    result = cv_author.get_manage_view_class()
+    assert result is CustomManageViewForTest
+    assert result is not ManageView

@@ -83,6 +83,7 @@ class ViewSet(BaseModel):
     parent: ParentViewSet | None = None
     ordering: str | None = None
     icon_header: str | None = None
+    manage_view_class: str | None = None
 
     _views: Dict[str, Type[CrudView]] = PrivateAttr(default_factory=empty_dict)  # noqa
 
@@ -241,6 +242,14 @@ class ViewSet(BaseModel):
             if isinstance(view_class.cv_context_actions, list):
                 if "manage" not in view_class.cv_context_actions and view_class.cv_key != "manage":
                     view_class.cv_context_actions.append("manage")
+
+    def get_manage_view_class(self) -> Type[CrudView]:
+        from django.utils.module_loading import import_string
+
+        dotted = self.manage_view_class or crud_views_settings.manage_view_class
+        if dotted:
+            return import_string(dotted)
+        return ManageView
 
     def is_view_registered(self, key: str) -> bool:
         return key in self._views

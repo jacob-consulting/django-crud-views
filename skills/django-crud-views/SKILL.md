@@ -201,6 +201,8 @@ class AuthorArchiveView(MessageMixin, ActionViewPermissionRequired):
 CRUD_VIEWS = {
     "EXTENDS": "base.html",                    # required: base template
     "MANAGE_VIEWS_ENABLED": "debug_only",      # "yes" | "no" | "debug_only"
+    "CRUD_VIEWS_MANAGE_GROUP": "CRUD_VIEWS_MANAGE",  # group name granting manage access
+    "CRUD_VIEWS_MANAGE_SHOW_USERS": False,      # show Users column in Permission Holders
     "SESSION_DATA_KEY": "viewset",
     "FILTER_PERSISTENCE": True,
     "FILTER_ICON": "fa-solid fa-filter",
@@ -215,6 +217,8 @@ CRUD_VIEWS = {
 ```
 
 See [references/api-reference.md](references/api-reference.md) for full settings and all ViewSet/view attributes.
+
+Access is controlled by CRUD_VIEWS_MANAGE_VIEWS_ENABLED ("yes"/"debug_only"/"no") OR by adding users to the CRUD_VIEWS_MANAGE Django group (configurable via CRUD_VIEWS_MANAGE_GROUP setting). The group approach lets you grant selective access without changing deployment settings.
 
 ---
 
@@ -425,6 +429,10 @@ cv_book = GuardianViewSet(
 ```
 
 Setting either to `None` disables the parent check for that view type.
+
+### GuardianManageView
+
+GuardianManageView: auto-wired by `GuardianViewSet.register()`. Extends ManageView with a Guardian Configuration section, per-object permission holder counts (Group → Permission → N objects), and a Guardian Mixin column in the Views table. No manual configuration required — just enable manage views or add users to CRUD_VIEWS_MANAGE group.
 
 ---
 

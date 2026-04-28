@@ -104,7 +104,7 @@ Add a brief entry to the `django-crud-views` skill under the manage view and gua
 | `crud_views/lib/settings.py` | Add `manage_view_class` and `guardian_manage_view_class` settings |
 | `crud_views/lib/viewset/__init__.py` | Add `manage_view_class` field; add `get_manage_view_class()`; update `register()` |
 | `crud_views_guardian/lib/viewset.py` | Override `get_manage_view_class()`; update `register()` |
-| `tests/test1/test_viewset.py` (or nearest) | Add plain viewset tests |
+| `tests/test1/test_manage.py` | Add plain viewset tests |
 | `tests/test1/test_guardian.py` | Add guardian tests |
 | `docs/` | Add manage view customization subsection |
 | `.claude/plugins/*/django-crud-views/skill.md` | Update skill |

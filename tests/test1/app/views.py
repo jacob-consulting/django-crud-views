@@ -22,6 +22,7 @@ from crud_views.lib.views import (
     OrderedUpDownPermissionRequired,
 )
 from crud_views.lib.views.form import CustomFormViewPermissionRequired
+from crud_views.lib.views.manage import ManageView
 from crud_views.lib.views.list import ListViewFilterFormHelper
 from crud_views_polymorphic.lib import (
     PolymorphicCreateViewPermissionRequired,
@@ -490,3 +491,18 @@ class GuardianBookUpdateView(CrispyModelViewMixin, GuardianUpdateViewPermissionR
 class GuardianBookDeleteView(CrispyModelViewMixin, GuardianDeleteViewPermissionRequired):
     form_class = CrispyDeleteForm
     cv_viewset = cv_guardian_book
+
+
+# ── Test helpers ──────────────────────────────────────────────────────────────
+
+
+class CustomManageViewForTest(ManageView):
+    """Importable subclass used by test_manage.py to verify manage_view_class."""
+
+    pass
+
+
+class CustomGuardianManageViewForTest(ManageView):
+    """Importable subclass used by test_guardian.py to verify manage_view_class on GuardianViewSet."""
+
+    pass

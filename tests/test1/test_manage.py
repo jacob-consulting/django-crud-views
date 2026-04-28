@@ -180,3 +180,17 @@ def test_manage_permission_holders_shows_groups(client_user_author_view, cv_auth
     viewer_rows = [r for r in holders if r["group"] == "viewers" and r["permission"] == "view"]
     assert len(viewer_rows) == 1
     assert viewer_rows[0]["has_model_perm"] is True
+
+
+def test_settings_manage_view_class_default():
+    """manage_view_class setting should default to None."""
+    from crud_views.lib.settings import crud_views_settings
+
+    assert crud_views_settings.manage_view_class is None
+
+
+def test_settings_guardian_manage_view_class_default():
+    """guardian_manage_view_class setting should default to None."""
+    from crud_views.lib.settings import crud_views_settings
+
+    assert crud_views_settings.guardian_manage_view_class is None

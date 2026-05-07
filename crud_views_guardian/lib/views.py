@@ -78,6 +78,7 @@ class GuardianCreateViewPermissionRequired(GuardianParentPermissionMixin, Create
             rendering_view: the view instance that is rendering the button
                 (e.g. NetzwerkMemberListView) — provides access to
                 rendering_view.request, rendering_view.kwargs, etc.
+                Not used by the default implementation; available for subclass overrides.
             parent_obj: the resolved parent model instance, or None if resolution
                 failed (returns False in that case)
         """
@@ -88,6 +89,9 @@ class GuardianCreateViewPermissionRequired(GuardianParentPermissionMixin, Create
             or getattr(cls.cv_viewset, "cv_guardian_parent_permission", "view")
         )
         perm = cls.cv_viewset.parent.viewset.permissions.get(perm_key)
+        accept_global = getattr(cls, "cv_guardian_accept_global_perms", False)
+        if accept_global and user.has_perm(perm):
+            return True
         from guardian.core import ObjectPermissionChecker
 
         return ObjectPermissionChecker(user).has_perm(perm.split(".")[1], parent_obj)

@@ -8,6 +8,7 @@ nav:
     - custom_form_view.md
     - workflow_view.md
     - polymorphic_view.md
+    - context_buttons.md
     - guardian.md
     - ordered_view.md
     - settings.md

@@ -1,6 +1,6 @@
 from .context import ViewContext
 from .base import CrudView, CrudViewPermissionRequiredMixin
-from .buttons import ContextButton, ParentContextButton
+from .buttons import ContextButton, ParentContextButton, ChildContextButton
 
 __all__ = [
     "CrudView",
@@ -8,4 +8,5 @@ __all__ = [
     "ViewContext",
     "ContextButton",
     "ParentContextButton",
+    "ChildContextButton",
 ]

@@ -415,7 +415,7 @@ def test_cv_get_context_non_create_key_not_affected(user_guardian, cv_guardian_p
     ctx = view.cv_get_context(key="list", obj=None, user=user_guardian)
     # cv_access is determined by normal cv_has_access, not our override
     # GuardianListView has list access for this user so result should be True
-    assert "cv_access" in ctx
+    assert ctx["cv_access"] is True
 
 
 @pytest.mark.django_db

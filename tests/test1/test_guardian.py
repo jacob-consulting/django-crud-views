@@ -295,10 +295,12 @@ def test_create_cv_has_access_top_level_without_add_perm(user_guardian):
 
 @pytest.mark.django_db
 def test_create_cv_has_access_child_no_object_with_parent_perm(user_guardian, cv_guardian_publisher, publisher_a):
-    """Child create, obj=None: False — parent obj is not available so access cannot be confirmed."""
+    """Child create, obj=None: False regardless of parent perm — parent obj is not available so access cannot be confirmed."""
     from tests.test1.app.views import GuardianBookCreateView
 
     user_guardian_object_perm(user_guardian, cv_guardian_publisher, "change", publisher_a)
+    # Permission state does not matter here: this branch returns False unconditionally.
+    # The rendering list view (GuardianQuerysetMixin.cv_get_context) handles the real check.
     assert GuardianBookCreateView.cv_has_access(user_guardian, None) is False
 
 

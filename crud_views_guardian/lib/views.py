@@ -92,7 +92,7 @@ class GuardianCreateViewPermissionRequired(GuardianParentPermissionMixin, Create
             return super().cv_has_access(user, obj)
 
         if obj is None:
-            return False  # was: return True — GuardianQuerysetMixin.cv_get_context handles the real check
+            return False  # safe fallback — GuardianQuerysetMixin.cv_get_context handles the real check
 
         parent_vs = cls.cv_viewset.parent.viewset
         if isinstance(obj, parent_vs.model):

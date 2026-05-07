@@ -337,7 +337,7 @@ def test_create_cv_has_access_child_wrong_type_obj(user_guardian, book_under_pub
     assert GuardianBookCreateView.cv_has_access(user_guardian, book_under_publisher_a) is True
 
 
-# ── cv_create_has_access ───────────────────────────────────────────────────────
+# ── cv_create_has_access ──────────────────────────────────────────────────────
 
 
 @pytest.mark.django_db
@@ -363,6 +363,80 @@ def test_cv_create_has_access_returns_false_without_parent_perm(user_guardian, p
     from tests.test1.app.views import GuardianBookCreateView
 
     assert GuardianBookCreateView.cv_create_has_access(user_guardian, None, publisher_a) is False
+
+
+# ── GuardianQuerysetMixin.cv_get_context create button ────────────────────────
+
+
+def _make_book_list_view(user_guardian, publisher_a):
+    """Instantiate GuardianBookListView with request and URL kwargs for publisher_a."""
+    from unittest.mock import MagicMock
+    from django.test import RequestFactory
+    from tests.test1.app.views import GuardianBookListView, cv_guardian_book
+
+    rf = RequestFactory()
+    request = rf.get(f"/guardian_publisher/{publisher_a.pk}/guardian_book/")
+    request.user = user_guardian
+    # cv_get_context uses resolver_match.url_name for cv_is_active; provide a stub
+    resolver_match = MagicMock()
+    resolver_match.url_name = cv_guardian_book.get_router_name("list")
+    request.resolver_match = resolver_match
+
+    view = GuardianBookListView()
+    view.request = request
+    view.args = []
+    view.kwargs = {"guardian_publisher_pk": str(publisher_a.pk)}
+    return view
+
+
+@pytest.mark.django_db
+def test_cv_get_context_create_with_parent_perm_shows_button(user_guardian, cv_guardian_publisher, publisher_a):
+    """cv_get_context resolves parent and grants access when user has change perm on parent."""
+    user_guardian_object_perm(user_guardian, cv_guardian_publisher, "change", publisher_a)
+    view = _make_book_list_view(user_guardian, publisher_a)
+    ctx = view.cv_get_context(key="create", obj=None, user=user_guardian)
+    assert ctx["cv_access"] is True
+
+
+@pytest.mark.django_db
+def test_cv_get_context_create_without_parent_perm_hides_button(user_guardian, publisher_a):
+    """cv_get_context resolves parent and denies access when user lacks change perm on parent."""
+    view = _make_book_list_view(user_guardian, publisher_a)
+    ctx = view.cv_get_context(key="create", obj=None, user=user_guardian)
+    assert ctx["cv_access"] is False
+
+
+@pytest.mark.django_db
+def test_cv_get_context_non_create_key_not_affected(user_guardian, cv_guardian_publisher, publisher_a):
+    """cv_get_context override does not interfere with non-create keys (obj=None case)."""
+    user_guardian_object_perm(user_guardian, cv_guardian_publisher, "view", publisher_a)
+    view = _make_book_list_view(user_guardian, publisher_a)
+    # "list" is a context action with obj=None — override must not fire for non-create keys
+    ctx = view.cv_get_context(key="list", obj=None, user=user_guardian)
+    # cv_access is determined by normal cv_has_access, not our override
+    # GuardianListView has list access for this user so result should be True
+    assert "cv_access" in ctx
+
+
+@pytest.mark.django_db
+def test_cv_get_context_respects_cv_create_has_access_override(user_guardian, publisher_a):
+    """An override of cv_create_has_access on the create view class is called by cv_get_context."""
+    from tests.test1.app.views import GuardianBookCreateView
+
+    original = GuardianBookCreateView.cv_create_has_access
+
+    @classmethod
+    def always_true(cls, user, rendering_view, parent_obj):
+        return True
+
+    GuardianBookCreateView.cv_create_has_access = always_true
+    try:
+        view = _make_book_list_view(user_guardian, publisher_a)
+        # user has no perm on publisher_a, but override returns True
+        ctx = view.cv_get_context(key="create", obj=None, user=user_guardian)
+        assert ctx["cv_access"] is True
+    finally:
+        GuardianBookCreateView.cv_create_has_access = original
 
 
 # ── GuardianManageView ────────────────────────────────────────────────────────

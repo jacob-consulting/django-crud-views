@@ -103,6 +103,38 @@ class GuardianQuerysetMixin:
     def cv_has_access(cls, user, obj=None):
         return True
 
+    def cv_get_context(self, key=None, obj=None, user=None, request=None):
+        """
+        Override to fix create button visibility for child viewsets under guardian.
+
+        cv_has_access() is a classmethod with no access to the request or URL
+        kwargs. When a create context action is rendered from a list page, obj=None
+        and the parent object cannot be determined inside cv_has_access() alone.
+
+        This override detects that situation (obj=None, target is a child create
+        view, viewset has a parent), resolves the parent object from self.kwargs
+        using the existing cv_get_parent_object() helper, and delegates to
+        target_cls.cv_create_has_access() with the resolved parent. The result
+        replaces cv_access in the already-built context dict — no other context
+        fields are affected.
+        """
+        ctx = super().cv_get_context(key=key, obj=obj, user=user, request=request)
+
+        if obj is None and key is not None and self.cv_viewset.has_parent:
+            if self.cv_viewset.is_view_registered(key):
+                target_cls = self.cv_viewset.get_view_class(key)
+            else:
+                target_cls = None
+            if target_cls and getattr(target_cls, "cv_permission", None) == "add":
+                if hasattr(target_cls, "cv_create_has_access"):
+                    try:
+                        parent_obj = self.cv_get_parent_object()
+                    except Exception:
+                        parent_obj = None
+                    ctx["cv_access"] = target_cls.cv_create_has_access(user, self, parent_obj)
+
+        return ctx
+
     def get_queryset(self):
         from guardian.shortcuts import get_objects_for_user
 

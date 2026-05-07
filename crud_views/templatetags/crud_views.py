@@ -60,6 +60,7 @@ def cv_list_action_form(context, key, obj=None):
 @register.simple_tag(takes_context=True)
 @ignore_exception(ViewSetKeyFoundError, default_value="")
 def cv_context_action(context, key, obj=None):
+    obj = None if not obj else obj  # fix empty string from template
     ctx = cv_get_context(context=context, key=key, obj=obj)
     template = ctx.get("cv_template", f"{crud_views_settings.theme_path}/tags/context_action.html")
     return render_to_string(template, context=ctx, request=context["request"])

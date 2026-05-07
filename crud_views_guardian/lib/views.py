@@ -124,6 +124,8 @@ class GuardianCreateViewPermissionRequired(GuardianParentPermissionMixin, Create
             (unexpected; wrong type passed by some other render path), falls back
             to True — cannot determine access without the right object type.
         """
+        assert not isinstance(user, str)
+
         if cls.cv_viewset.parent is None:
             return super().cv_has_access(user, obj)
 

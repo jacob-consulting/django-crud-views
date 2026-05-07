@@ -118,6 +118,8 @@ class GuardianQuerysetMixin:
         replaces cv_access in the already-built context dict — no other context
         fields are affected.
         """
+        assert not isinstance(user, str)
+
         ctx = super().cv_get_context(key=key, obj=obj, user=user, request=request)
 
         if obj is None and key is not None and self.cv_viewset.has_parent:

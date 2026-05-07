@@ -104,6 +104,50 @@ checks per-object permission on the parent using
 `cv_guardian_parent_create_permission`. No model-level check is made on the
 child model.
 
+Child create views **must** use `GuardianCreateViewPermissionRequired` (not
+plain `CreateViewPermissionRequired`). Using the plain variant causes the
+create button to always be hidden (falls back to a model-level `add_<model>`
+check that guardian users typically don't have) and prevents the form page
+from loading.
+
+### Create button visibility for child viewsets
+
+`cv_has_access` is a classmethod with no access to the request or URL kwargs.
+When the create button is rendered from a child list page, `obj=None`, so the
+parent cannot be looked up inside `cv_has_access` alone.
+
+`GuardianListViewPermissionRequired` resolves this: its `cv_get_context`
+override detects the child create case, fetches the parent object from the
+URL kwargs via `cv_get_parent_object()`, and calls `cv_create_has_access` on
+the create view class with the resolved parent.
+
+The default `cv_create_has_access` checks `cv_guardian_parent_create_permission`
+on the parent via guardian's `ObjectPermissionChecker`. Override it on the
+create view class for custom logic:
+
+```python
+class BookCreateView(CreateViewParentMixin, GuardianCreateViewPermissionRequired):
+    cv_viewset = cv_book
+    form_class = BookCreateForm
+
+    @classmethod
+    def cv_create_has_access(cls, user, rendering_view, parent_obj):
+        """
+        rendering_view: the list view instance (has .request, .kwargs, etc.)
+        parent_obj: resolved parent model instance, or None if lookup failed
+        """
+        if parent_obj is None:
+            return False
+        # custom logic, e.g. check role membership beyond the standard perm
+        from guardian.core import ObjectPermissionChecker
+        return ObjectPermissionChecker(user).has_perm("change_publisher", parent_obj)
+```
+
+When `cv_create_has_access` is not overridden, the default implementation
+uses `cv_guardian_parent_create_permission` (falling back to
+`cv_guardian_parent_permission`) — no extra configuration needed for the
+standard case.
+
 ## Parent Viewsets
 
 When a child viewset has `parent=ParentViewSet(...)`, guardian checks permission

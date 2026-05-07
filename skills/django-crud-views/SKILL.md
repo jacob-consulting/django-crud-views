@@ -414,7 +414,27 @@ class AuthorDetailView(GuardianDetailViewPermissionRequired):
 ### Create views
 
 - **Top-level creates** (no parent): standard model-level `add_<model>` permission is checked.
-- **Child creates** (with parent viewset): guardian checks per-object permission on the parent using `cv_guardian_parent_create_permission`.
+- **Child creates** (with parent viewset): guardian checks per-object permission on the parent using `cv_guardian_parent_create_permission`. Child create views **must** use `GuardianCreateViewPermissionRequired` — using plain `CreateViewPermissionRequired` hides the button permanently and blocks the form page.
+
+### Child create button visibility
+
+`cv_has_access` is a classmethod — it has no access to request or URL kwargs. When the "create" button is rendered from a child list page, `obj=None` and the parent cannot be determined inside `cv_has_access` alone.
+
+`GuardianListViewPermissionRequired` solves this: its `cv_get_context` override resolves the parent from the URL via `cv_get_parent_object()` and calls `cv_create_has_access(user, rendering_view, parent_obj)` on the create view class. The default implementation checks `cv_guardian_parent_create_permission` on the parent. Override `cv_create_has_access` on the create view class for custom logic (e.g. role-based checks that go beyond a single guardian perm):
+
+```python
+class BookCreateView(CreateViewParentMixin, GuardianCreateViewPermissionRequired):
+    cv_viewset = cv_book
+    form_class = BookCreateForm
+
+    @classmethod
+    def cv_create_has_access(cls, user, rendering_view, parent_obj):
+        # rendering_view is the list view instance — has .request, .kwargs, etc.
+        if parent_obj is None:
+            return False
+        from guardian.core import ObjectPermissionChecker
+        return ObjectPermissionChecker(user).has_perm("change_publisher", parent_obj)
+```
 
 ### Parent viewsets
 
@@ -447,3 +467,5 @@ To customise the manage view class for a specific viewset, pass `manage_view_cla
 | Polymorphic list uses `"create"` | Use `cv_context_actions = ["create_select"]` instead |
 | Guardian: model-level perms not working | Set `cv_guardian_accept_global_perms = True` on the view |
 | Guardian: users see no objects | Check `assign_perm` was called — strict mode ignores model-level grants by default |
+| Guardian child create: button always hidden | Child create view uses `CreateViewPermissionRequired` instead of `GuardianCreateViewPermissionRequired` |
+| Guardian child create: button always visible | `GuardianCreateViewPermissionRequired` is used but `cv_guardian_parent_create_permission` is not set on the viewset |

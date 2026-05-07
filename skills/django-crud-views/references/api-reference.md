@@ -4,13 +4,14 @@
 1. [ViewSet](#viewset)
 2. [ParentViewSet](#parentviewset)
 3. [View Classes](#view-classes)
-4. [Mixins](#mixins)
-5. [Table & Columns](#table--columns)
-6. [Forms & Crispy](#forms--crispy)
-7. [Filtering](#filtering)
-8. [Formsets](#formsets)
-9. [Settings](#settings)
-10. [Import Paths Cheatsheet](#import-paths-cheatsheet)
+4. [Context Buttons](#context-buttons)
+5. [Mixins](#mixins)
+6. [Table & Columns](#table--columns)
+7. [Forms & Crispy](#forms--crispy)
+8. [Filtering](#filtering)
+9. [Formsets](#formsets)
+10. [Settings](#settings)
+11. [Import Paths Cheatsheet](#import-paths-cheatsheet)
 
 ---
 
@@ -226,6 +227,69 @@ class RedirectBooksView(RedirectChildView):
 ```
 
 Add `"redirect_child"` (or the specific cv_key) to `cv_list_actions`.
+
+---
+
+## Context Buttons
+
+Context buttons appear in the `cv_context_actions` area (typically top-right of a view). The ViewSet's `context_buttons` list controls which custom buttons are available. Default buttons: `home` (link to list), `parent` (link to parent viewset), `filter` (toggle filter form).
+
+```python
+from crud_views.lib.viewset import context_buttons_default
+from crud_views.lib.view import ContextButton, ParentContextButton, ChildContextButton
+```
+
+### ContextButton
+
+Base class. Links to a sibling view within the same viewset.
+
+```python
+ContextButton(
+    key="my_button",               # action key referenced in cv_context_actions
+    key_target="detail",           # target view key within the same viewset
+    label_template=None,           # path to a Django template for the label
+    label_template_code=None,      # inline Django template string for the label
+)
+```
+
+### ParentContextButton
+
+Links up to the parent viewset's list view. Included by default via `context_buttons_default()`.
+
+```python
+ParentContextButton(key="parent", key_target="list")
+```
+
+### ChildContextButton
+
+Links down to a child viewset (e.g. from author detail to books list). The inverse of `ParentContextButton`.
+
+```python
+ChildContextButton(
+    key="books",                   # action key referenced in cv_context_actions
+    child_name="book",             # name of the child viewset
+    child_key="list",              # target view key in the child viewset (default: "list")
+    label_template_code="Books",   # optional: inline Django template string for the label
+)
+```
+
+Uses `cv_get_child_url()` for URL resolution and the child view's `cv_has_access()` for permission checks. For Guardian-based views, the parent object is passed to `cv_has_access()` for object-level permission checks.
+
+**Usage:**
+
+```python
+cv_author = ViewSet(
+    model=Author,
+    name="author",
+    context_buttons=context_buttons_default() + [
+        ChildContextButton(key="books", child_name="book", label_template_code="Books"),
+    ],
+)
+
+class AuthorDetailView(DetailViewPermissionRequired):
+    cv_viewset = cv_author
+    cv_context_actions = ["update", "delete", "books"]
+```
 
 ---
 
@@ -489,7 +553,10 @@ OBJECT_DETAIL_ICONS_TYPE = "regular"                # "solid" | "regular" (FA on
 
 ```python
 # ViewSet
-from crud_views.lib.viewset import ViewSet, ParentViewSet
+from crud_views.lib.viewset import ViewSet, ParentViewSet, context_buttons_default
+
+# Context Buttons
+from crud_views.lib.view import ContextButton, ParentContextButton, ChildContextButton
 
 # Views
 from crud_views.lib.views import (

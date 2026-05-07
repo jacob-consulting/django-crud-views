@@ -10,6 +10,10 @@
 - [WorkflowView](workflow_view.md) — execute FSM state-machine transitions with audit history
 - [PolymorphicView](polymorphic_view.md) — CRUD views for django-polymorphic models
 
+## ViewSet
+
+- [Context Buttons](context_buttons.md) — context action buttons for navigation within and across viewsets
+
 ## Configuration
 
 - [Settings](settings.md) — all available settings for django-crud-views

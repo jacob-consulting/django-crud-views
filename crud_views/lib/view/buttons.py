@@ -22,7 +22,7 @@ class ContextButton(BaseModel):
         if self.label_template:
             return context.view.render_snippet(data, self.label_template)
         elif self.label_template_code:
-            return context.render_snippet(data, template_code=self.label_template_code)
+            return context.view.render_snippet(data, template_code=self.label_template_code)
 
     def get_context(self, context: ViewContext) -> dict:
 
@@ -89,6 +89,41 @@ class ParentContextButton(ContextButton):
             )
 
         data = cls.cv_get_dict(context=context, **dict_kwargs)
+        return data
+
+
+class ChildContextButton(ContextButton):
+    """
+    A context button that links to a child viewset (e.g. from parent detail to child list).
+    """
+
+    child_name: str
+    child_key: str = "list"
+
+    def get_context(self, context: ViewContext) -> dict:
+        if context.object is None:
+            return dict()
+
+        child_vs = context.view.cv_viewset.get_viewset(self.child_name)
+        cls = child_vs.get_view_class(self.child_key)
+
+        url = context.view.cv_get_child_url(self.child_name, self.child_key, context.object)
+
+        dict_kwargs = dict(
+            cv_access=False,
+            cv_url=url,
+            cv_icon_action=child_vs.icon_header,
+        )
+
+        if cls.cv_has_access(context.view.request.user, context.object):
+            dict_kwargs.update(cv_access=True)
+
+        data = cls.cv_get_dict(context=context, **dict_kwargs)
+
+        cv_action_label = self.render_label(data, context)
+        if cv_action_label:
+            data["cv_action_label"] = cv_action_label
+
         return data
 
 

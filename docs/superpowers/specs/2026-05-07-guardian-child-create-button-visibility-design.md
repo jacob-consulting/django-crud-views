@@ -68,7 +68,10 @@ def cv_get_context(self, key=None, obj=None, user=None, request=None):
     ctx = super().cv_get_context(key=key, obj=obj, user=user, request=request)
 
     if obj is None and key is not None and self.cv_viewset.has_parent:
-        target_cls = self.cv_viewset.get_view_class(key, raise_not_found=False)
+        if self.cv_viewset.is_view_registered(key):
+            target_cls = self.cv_viewset.get_view_class(key)
+        else:
+            target_cls = None
         if target_cls and getattr(target_cls, 'cv_permission', None) == 'add':
             if hasattr(target_cls, 'cv_create_has_access'):
                 try:

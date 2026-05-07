@@ -71,12 +71,10 @@ class GuardianCreateViewPermissionRequired(GuardianParentPermissionMixin, Create
             model-level grant; there is no parent object to check against.
 
         Case 2 — Child create, no object (obj=None, e.g. book list page):
-            Returns True unconditionally. The list page has no single object, so
-            we cannot check the parent permission here. The real enforcement
-            happens in dispatch() via GuardianParentPermissionMixin, which checks
-            the parent object permission and raises 403 if denied. A user without
-            the required grant will be stopped on click — the button showing is
-            correct UX.
+            Returns False. GuardianQuerysetMixin.cv_get_context() handles the
+            real check by resolving the parent from URL kwargs and calling
+            cv_create_has_access(). This is a safe fallback for any call path
+            that bypasses the list view override.
 
         Case 3 — Child create, parent object available (e.g. author detail page):
             When obj is an instance of the parent model, checks
@@ -94,7 +92,7 @@ class GuardianCreateViewPermissionRequired(GuardianParentPermissionMixin, Create
             return super().cv_has_access(user, obj)
 
         if obj is None:
-            return True
+            return False  # was: return True — GuardianQuerysetMixin.cv_get_context handles the real check
 
         parent_vs = cls.cv_viewset.parent.viewset
         if isinstance(obj, parent_vs.model):

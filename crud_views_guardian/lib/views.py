@@ -61,6 +61,38 @@ class GuardianCreateViewPermissionRequired(GuardianParentPermissionMixin, Create
     """
 
     @classmethod
+    def cv_create_has_access(cls, user, rendering_view, parent_obj):
+        """
+        Determine whether the create button should be visible for this child viewset.
+
+        Called by GuardianQuerysetMixin.cv_get_context() when rendering the create
+        context action from a list view where obj=None. The list view resolves the
+        parent object from its URL kwargs and passes it here.
+
+        Default implementation checks cv_guardian_parent_create_permission (falling
+        back to cv_guardian_parent_permission) on the parent object via guardian's
+        ObjectPermissionChecker. Override in subclasses for custom logic.
+
+        Args:
+            user: the requesting user
+            rendering_view: the view instance that is rendering the button
+                (e.g. NetzwerkMemberListView) — provides access to
+                rendering_view.request, rendering_view.kwargs, etc.
+            parent_obj: the resolved parent model instance, or None if resolution
+                failed (returns False in that case)
+        """
+        if parent_obj is None:
+            return False
+        perm_key = (
+            getattr(cls.cv_viewset, "cv_guardian_parent_create_permission", None)
+            or getattr(cls.cv_viewset, "cv_guardian_parent_permission", "view")
+        )
+        perm = cls.cv_viewset.parent.viewset.permissions.get(perm_key)
+        from guardian.core import ObjectPermissionChecker
+
+        return ObjectPermissionChecker(user).has_perm(perm.split(".")[1], parent_obj)
+
+    @classmethod
     def cv_has_access(cls, user, obj=None):
         """
         Three-case permission check for create button visibility.

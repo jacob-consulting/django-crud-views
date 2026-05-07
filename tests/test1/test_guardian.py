@@ -337,6 +337,34 @@ def test_create_cv_has_access_child_wrong_type_obj(user_guardian, book_under_pub
     assert GuardianBookCreateView.cv_has_access(user_guardian, book_under_publisher_a) is True
 
 
+# ── cv_create_has_access ───────────────────────────────────────────────────────
+
+
+@pytest.mark.django_db
+def test_cv_create_has_access_returns_false_when_parent_obj_is_none(user_guardian):
+    """Default cv_create_has_access returns False when parent_obj is None."""
+    from tests.test1.app.views import GuardianBookCreateView
+
+    assert GuardianBookCreateView.cv_create_has_access(user_guardian, None, None) is False
+
+
+@pytest.mark.django_db
+def test_cv_create_has_access_returns_true_with_parent_perm(user_guardian, cv_guardian_publisher, publisher_a):
+    """Default cv_create_has_access returns True when user has required guardian perm on parent."""
+    from tests.test1.app.views import GuardianBookCreateView
+
+    user_guardian_object_perm(user_guardian, cv_guardian_publisher, "change", publisher_a)
+    assert GuardianBookCreateView.cv_create_has_access(user_guardian, None, publisher_a) is True
+
+
+@pytest.mark.django_db
+def test_cv_create_has_access_returns_false_without_parent_perm(user_guardian, publisher_a):
+    """Default cv_create_has_access returns False when user lacks required guardian perm on parent."""
+    from tests.test1.app.views import GuardianBookCreateView
+
+    assert GuardianBookCreateView.cv_create_has_access(user_guardian, None, publisher_a) is False
+
+
 # ── GuardianManageView ────────────────────────────────────────────────────────
 
 

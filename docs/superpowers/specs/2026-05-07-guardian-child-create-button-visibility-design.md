@@ -27,6 +27,25 @@ A new classmethod on `GuardianCreateViewPermissionRequired` with a default imple
 ```python
 @classmethod
 def cv_create_has_access(cls, user, rendering_view, parent_obj):
+    """
+    Determine whether the create button should be visible for this child viewset.
+
+    Called by GuardianQuerysetMixin.cv_get_context() when rendering the create
+    context action from a list view where obj=None. The list view resolves the
+    parent object from its URL kwargs and passes it here.
+
+    Default implementation checks cv_guardian_parent_create_permission (falling
+    back to cv_guardian_parent_permission) on the parent object via guardian's
+    ObjectPermissionChecker. Override in subclasses for custom logic.
+
+    Args:
+        user: the requesting user
+        rendering_view: the view instance that is rendering the button
+            (e.g. NetzwerkMemberListView) — provides access to
+            rendering_view.request, rendering_view.kwargs, etc.
+        parent_obj: the resolved parent model instance, or None if resolution
+            failed (returns False in that case)
+    """
     if parent_obj is None:
         return False
     perm_key = (
@@ -65,6 +84,20 @@ Callable lives on the **create view class** (not the viewset) because:
 
 ```python
 def cv_get_context(self, key=None, obj=None, user=None, request=None):
+    """
+    Override to fix create button visibility for child viewsets under guardian.
+
+    cv_has_access() is a classmethod with no access to the request or URL
+    kwargs. When a create context action is rendered from a list page, obj=None
+    and the parent object cannot be determined inside cv_has_access() alone.
+
+    This override detects that situation (obj=None, target is a child create
+    view, viewset has a parent), resolves the parent object from self.kwargs
+    using the existing cv_get_parent_object() helper, and delegates to
+    target_cls.cv_create_has_access() with the resolved parent. The result
+    replaces cv_access in the already-built context dict — no other context
+    fields are affected.
+    """
     ctx = super().cv_get_context(key=key, obj=obj, user=user, request=request)
 
     if obj is None and key is not None and self.cv_viewset.has_parent:

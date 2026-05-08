@@ -98,11 +98,25 @@ def cv_header_icon(context):
     return {"icon": icon}
 
 
+@register.simple_tag(takes_context=True)
+def cv_header_icon_class(context):
+    view: CrudView = cv_get_view(context)
+    icon = view.cv_get_header_icon()
+    return icon
+
+
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/icon.html", takes_context=True)
 def cv_filter_icon(context):
     view: CrudView = cv_get_view(context)
     icon = view.cv_get_filter_icon()  # noqa
     return {"icon": icon}
+
+
+@register.simple_tag(takes_context=True)
+def cv_filter_icon_class(context):
+    view: CrudView = cv_get_view(context)
+    icon = view.cv_get_filter_icon()  # noqa
+    return icon
 
 
 @register.simple_tag(takes_context=True)

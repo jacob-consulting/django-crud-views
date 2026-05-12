@@ -67,9 +67,10 @@ class ListViewFilterFormHelper(FormHelper):
     form_method = "GET"  # filter parameters are always GET
     form_tag = False  # todo really?, just add hidden stuff
 
-    def __init__(self, request, form=None):
+    def __init__(self, view, request, form=None):
         super().__init__(form)
 
+        self.view = view
         # add filter control buttons
         self.add_input(
             layout.Submit("submit", _("Apply Filter"), css_id="filter-button"),

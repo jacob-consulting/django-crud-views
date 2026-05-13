@@ -110,3 +110,56 @@ Uses `guardian.shortcuts.get_objects_for_user` for bulk queryset filtering — o
 ### Implementation Location
 
 A new `GuardianDeleteRelatedObjectsMixin` in `crud_views_guardian/lib/views.py`, composed into `GuardianDeleteViewPermissionRequired`.
+
+## Documentation
+
+Update the existing mkdocs documentation to cover the new features.
+
+### `docs/reference/delete_view.md`
+
+Add sections for:
+
+- **Cascading Deletes Display** — explain `cv_show_related_objects` and `cv_link_related_objects` attributes, with a code example showing opt-in usage
+- **Delete Protection** — explain `cv_check_delete_protection()` hook with a code example showing custom business logic (e.g., preventing deletion of a publisher with active contracts), and mention that form `clean()` is also respected
+- **Configuration table** — add the new `cv_show_related_objects` and `cv_link_related_objects` attributes to the existing configuration table
+- **Template Customization** — document the included templates (`crud_views/snippets/delete/related_objects.html`, `crud_views/snippets/delete/related_objects_tree.html`) and how projects can override them
+
+### `docs/reference/guardian.md`
+
+Add a section for:
+
+- **Cascading Deletes with Per-Object Permissions** — explain that `GuardianDeleteViewPermissionRequired` uses per-object `view` permission checks when filtering related objects, with bulk queryset filtering for performance. Note that objects the user lacks permission to view are shown as aggregated counts.
+
+## Skill Update
+
+### `skills/django-crud-views/references/api-reference.md`
+
+Update the existing DeleteView section to include:
+
+- `cv_show_related_objects` and `cv_link_related_objects` attributes in the code example
+- `cv_check_delete_protection()` method signature and brief description
+- Mention of the cascading deletes feature in the `CrispyDeleteForm` description
+
+## Unit Tests
+
+### `tests/test1/` — crud_views tests
+
+Add a new test file `tests/test1/test_delete.py` covering:
+
+- **Related objects display (off by default):** GET the delete page for a Publisher with Books — verify the response does NOT contain related object information when `cv_show_related_objects` is `False` (default)
+- **Related objects display (opt-in):** create a DeleteView variant with `cv_show_related_objects = True`, GET the delete page for a Publisher with Books — verify the response contains the related Book objects in the context (`related_objects`, `related_summary`)
+- **Related objects linking:** create a DeleteView variant with both `cv_show_related_objects = True` and `cv_link_related_objects = True` — verify the response contains links to related objects that have registered ViewSets with detail views
+- **Protected objects display:** add a new test model (or a new FK on an existing test model) with `on_delete=PROTECT` pointing to Publisher, enable `cv_show_related_objects` — verify the response contains protected object warnings in the context and that the template renders a warning
+- **Permission filtering:** test that a user without `view` permission on the related model sees counts ("3 Book objects") instead of individual object details
+- **Delete protection (view hook):** create a DeleteView with `cv_check_delete_protection()` returning error messages — POST the delete form and verify the object is NOT deleted and the errors appear as non-field errors
+- **Delete protection (form clean):** create a custom form with `clean()` raising `ValidationError` — POST the delete form and verify the object is NOT deleted
+- **Successful delete still works:** verify that with `cv_show_related_objects = True`, a POST with confirmed checkbox still deletes the object and its CASCADE relations
+
+Test views and ViewSets needed for these tests should be defined in `tests/test1/app/views.py` (or inline in the test file if simpler). The Publisher → Book relationship already exists with `on_delete=CASCADE` and can be reused.
+
+### `tests/test1/` — crud_views_guardian tests
+
+Add delete-specific tests to `tests/test1/test_guardian.py` (or a new `tests/test1/test_guardian_delete.py`) covering:
+
+- **Guardian per-object filtering:** create a Guardian DeleteView with `cv_show_related_objects = True` — assign `view` permission on some related objects but not others — verify the user sees details for permitted objects and counts for restricted ones
+- **Guardian bulk filtering performance:** verify that the guardian variant uses queryset-based filtering (not per-object checks) by confirming the related objects context is correct with a reasonable number of related objects

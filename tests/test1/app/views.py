@@ -493,6 +493,47 @@ class GuardianBookDeleteView(CrispyModelViewMixin, GuardianDeleteViewPermissionR
     cv_viewset = cv_guardian_book
 
 
+# --- Publisher Cascade (INT PK, cv_show_related_objects=True) ---
+
+cv_publisher_cascade = ViewSet(
+    model=Publisher,
+    name="publisher_cascade",
+)
+
+
+class PublisherCascadeListView(ListViewTableMixin, ListViewPermissionRequired):
+    table_class = PublisherTable
+    cv_viewset = cv_publisher_cascade
+
+
+class PublisherCascadeDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequired):
+    form_class = CrispyDeleteForm
+    cv_viewset = cv_publisher_cascade
+    cv_show_related_objects = True
+
+
+# --- Publisher Protected (INT PK, cv_check_delete_protection hook) ---
+
+cv_publisher_protected = ViewSet(
+    model=Publisher,
+    name="publisher_protected",
+)
+
+
+class PublisherProtectedListView(ListViewTableMixin, ListViewPermissionRequired):
+    table_class = PublisherTable
+    cv_viewset = cv_publisher_protected
+
+
+class PublisherProtectedDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequired):
+    form_class = CrispyDeleteForm
+    cv_viewset = cv_publisher_protected
+    cv_show_related_objects = True
+
+    def cv_check_delete_protection(self) -> list[str]:
+        return ["Cannot delete this publisher."]
+
+
 # ── Test helpers ──────────────────────────────────────────────────────────────
 
 

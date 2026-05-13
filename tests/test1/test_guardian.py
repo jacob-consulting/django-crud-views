@@ -1,5 +1,4 @@
 import pytest
-from django.test.client import Client
 
 from tests.lib.helper.guardian import user_guardian_object_perm
 

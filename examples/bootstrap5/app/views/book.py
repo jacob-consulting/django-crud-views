@@ -6,16 +6,11 @@ from app.models import Book
 from crud_views.lib.crispy import CrispyModelForm, Column4, Column2, CrispyModelViewMixin, CrispyDeleteForm
 from crud_views.lib.table import Table, UUIDLinkDetailColumn
 from crud_views.lib.views import (
-    DetailViewPermissionRequired,
-    UpdateViewPermissionRequired,
-    CreateViewPermissionRequired,
     ListViewTableMixin,
-    DeleteViewPermissionRequired,
-    ListViewPermissionRequired,
     CreateViewParentMixin,
     MessageMixin,
 )
-from crud_views.lib.viewset import ViewSet, ParentViewSet
+from crud_views.lib.viewset import ParentViewSet
 from crud_views_guardian.lib.viewset import GuardianViewSet
 from crud_views_guardian.lib.views import (
     GuardianListViewPermissionRequired,

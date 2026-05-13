@@ -46,6 +46,17 @@ class Book(models.Model):
         return self.title
 
 
+class Contract(models.Model):
+    publisher = models.ForeignKey(Publisher, on_delete=models.PROTECT, related_name="contracts")
+    title = models.CharField(max_length=200)
+
+    class Meta:
+        ordering = ["title"]
+
+    def __str__(self):
+        return self.title
+
+
 class CampaignState(models.TextChoices):
     NEW = "new", _("New")
     ACTIVE = "active", _("Active")

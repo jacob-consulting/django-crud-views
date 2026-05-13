@@ -4,6 +4,7 @@ from crud_views.lib.views import (
     DeleteViewPermissionRequired,
     CreateViewPermissionRequired,
     ListViewPermissionRequired,
+    CardListViewPermissionRequired,
     ActionViewPermissionRequired,
 )
 from crud_views.lib.views.manage import ManageView
@@ -93,6 +94,12 @@ class GuardianActionViewPermissionRequired(
 
 class GuardianListViewPermissionRequired(
     GuardianParentPermissionMixin, GuardianQuerysetMixin, ListViewPermissionRequired
+):
+    pass
+
+
+class GuardianCardListViewPermissionRequired(
+    GuardianParentPermissionMixin, GuardianQuerysetMixin, CardListViewPermissionRequired
 ):
     pass
 

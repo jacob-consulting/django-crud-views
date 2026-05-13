@@ -9,6 +9,7 @@ from tests.test1.app.views import (
     cv_guardian_book,
     cv_publisher_cascade,
     cv_publisher_protected,
+    cv_publisher_form_protected,
 )
 
 urlpatterns = []
@@ -22,3 +23,4 @@ urlpatterns += cv_guardian_publisher.urlpatterns
 urlpatterns += cv_guardian_book.urlpatterns
 urlpatterns += cv_publisher_cascade.urlpatterns
 urlpatterns += cv_publisher_protected.urlpatterns
+urlpatterns += cv_publisher_form_protected.urlpatterns

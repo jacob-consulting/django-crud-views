@@ -4,6 +4,8 @@ import django_filters
 
 from django.forms import modelform_factory
 
+from django.core.exceptions import ValidationError
+
 from tests.test1.app.models import Author, Publisher, Book, Vehicle, Car, Truck, Campaign
 from crud_views.lib.crispy import CrispyModelViewMixin, CrispyDeleteForm, CrispyModelForm
 from crud_views.lib.crispy.form import CrispyForm
@@ -532,6 +534,31 @@ class PublisherProtectedDeleteView(CrispyModelViewMixin, MessageMixin, DeleteVie
 
     def cv_check_delete_protection(self) -> list[str]:
         return ["Cannot delete this publisher."]
+
+
+# --- Publisher Form Protected (INT PK, form clean() blocks deletion) ---
+
+cv_publisher_form_protected = ViewSet(
+    model=Publisher,
+    name="publisher_form_protected",
+)
+
+
+class ProtectedDeleteForm(CrispyDeleteForm):
+    def clean(self):
+        cleaned_data = super().clean()
+        raise ValidationError("Form-level protection: cannot delete.")
+        return cleaned_data
+
+
+class PublisherFormProtectedDeleteView(CrispyModelViewMixin, DeleteViewPermissionRequired):
+    form_class = ProtectedDeleteForm
+    cv_viewset = cv_publisher_form_protected
+
+
+class PublisherFormProtectedListView(ListViewTableMixin, ListViewPermissionRequired):
+    table_class = PublisherTable
+    cv_viewset = cv_publisher_form_protected
 
 
 # ── Test helpers ──────────────────────────────────────────────────────────────

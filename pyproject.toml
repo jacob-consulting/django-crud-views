@@ -76,6 +76,7 @@ test = [
     "pytest-django",
     "pytest-xdist",
     "lxml",
+    "cssselect",
     "django-guardian>=2.4",
 ]
 

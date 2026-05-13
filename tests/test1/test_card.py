@@ -1,0 +1,100 @@
+import pytest
+from django.test.client import Client
+from lxml import html
+
+
+@pytest.mark.django_db
+def test_card_list_empty(client_user_author_view: Client, cv_author):
+    response = client_user_author_view.get("/author/card/")
+    assert response.status_code == 200
+    doc = html.fromstring(response.content)
+    # Object cards have class "card mb-3"; the page wrapper card has only "card"
+    cards = doc.cssselect(".card.mb-3")
+    assert len(cards) == 0
+    assert "No items found." in response.content.decode()
+
+
+@pytest.mark.django_db
+def test_card_list_renders_objects(
+    client_user_author_view: Client, cv_author, author_douglas_adams, author_terry_pratchett
+):
+    response = client_user_author_view.get("/author/card/")
+    assert response.status_code == 200
+    doc = html.fromstring(response.content)
+    # Object cards have class "card mb-3"; the page wrapper card has only "card"
+    cards = doc.cssselect(".card.mb-3")
+    assert len(cards) == 2
+    titles = [card.cssselect(".card-title")[0].text_content().strip() for card in cards]
+    assert "Douglas Adams" in titles
+    assert "Terry Pratchett" in titles
+
+
+@pytest.fixture
+def user_author_all_perms(cv_author):
+    from django.contrib.auth.models import User
+    from tests.lib.helper.user import user_viewset_permission
+
+    user = User.objects.create_user(username="user_author_all_perms", password="password")
+    user_viewset_permission(user, cv_author, "view")
+    user_viewset_permission(user, cv_author, "change")
+    user_viewset_permission(user, cv_author, "delete")
+    return user
+
+
+@pytest.fixture
+def client_user_author_all_perms(client, user_author_all_perms) -> Client:
+    client.force_login(user_author_all_perms)
+    return client
+
+
+@pytest.mark.django_db
+def test_card_actions_render(client_user_author_all_perms: Client, cv_author, author_douglas_adams):
+    response = client_user_author_all_perms.get("/author/card/")
+    assert response.status_code == 200
+    doc = html.fromstring(response.content)
+    # Object cards have class "card mb-3"; the page wrapper card has only "card"
+    card = doc.cssselect(".card.mb-3")[0]
+    actions = card.cssselect("a.btn")
+    assert len(actions) == 3
+
+    # "Details" button — primary, flex
+    detail_btn = actions[0]
+    assert "Details" in detail_btn.text_content()
+    assert "btn-primary" in detail_btn.get("class")
+    assert "flex-grow-1" in detail_btn.get("class")
+    pk = author_douglas_adams.pk
+    assert f"/author/{pk}/detail/" in detail_btn.get("href")
+
+    # "Edit" button — secondary (default)
+    edit_btn = actions[1]
+    assert "Edit" in edit_btn.text_content()
+    assert "btn-secondary" in edit_btn.get("class")
+
+    # Delete button — icon-only, tertiary
+    delete_btn = actions[2]
+    assert "btn-outline-secondary" in delete_btn.get("class")
+    assert delete_btn.get("title") is not None
+
+
+@pytest.mark.django_db
+def test_card_action_no_access(client_user_author_view: Client, cv_author, author_douglas_adams):
+    """User with only view permission should not see update/delete action buttons."""
+    response = client_user_author_view.get("/author/card/")
+    assert response.status_code == 200
+    doc = html.fromstring(response.content)
+    # Object cards have class "card mb-3"; the page wrapper card has only "card"
+    card = doc.cssselect(".card.mb-3")[0]
+    actions = card.cssselect("a.btn")
+    # user_author_view only has view permission, so update and delete buttons should not render
+    hrefs = [a.get("href") for a in actions]
+    pk = author_douglas_adams.pk
+    assert any(f"/author/{pk}/detail/" in h for h in hrefs)
+    assert not any("/update/" in h for h in hrefs)
+    assert not any("/delete/" in h for h in hrefs)
+
+
+@pytest.mark.django_db
+def test_card_list_permission_denied(client_user_a: Client, cv_author):
+    """User without view permission gets 403."""
+    response = client_user_a.get("/author/card/")
+    assert response.status_code == 403

@@ -20,6 +20,9 @@
                 {% endfor %}
             </ul>
         </div>
-        {% include "crud_views/snippets/delete/related_objects_tree.html" with items=related_objects %}
+        <div class="alert alert-warning">
+            <strong>{% translate "Details about the related objects to be deleted:" %}</strong>
+            {% include "crud_views/snippets/delete/related_objects_tree.html" with items=related_objects %}
+        </div>
     {% endif %}
 </div>

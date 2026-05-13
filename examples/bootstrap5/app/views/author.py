@@ -9,21 +9,15 @@ from crud_views.lib.crispy import Column4, CrispyModelForm, CrispyModelViewMixin
 from crud_views.lib.table import Table, LinkChildColumn, UUIDLinkDetailColumn
 from crud_views.lib.table.columns import NaturalTimeColumn, NaturalDayColumn
 from crud_views.lib.views import (
-    DetailViewPermissionRequired,
-    UpdateViewPermissionRequired,
-    CreateViewPermissionRequired,
     MessageMixin,
     ListViewTableMixin,
     ListViewTableFilterMixin,
-    ListViewPermissionRequired,
     OrderedUpViewPermissionRequired,
     OrderedUpDownPermissionRequired,
-    DeleteViewPermissionRequired,
     RedirectChildView,
 )
 from crud_views.lib.views.form import CustomFormViewPermissionRequired
 from crud_views.lib.views.list import ListViewFilterFormHelper
-from crud_views.lib.viewset import ViewSet
 from crud_views_guardian.lib.viewset import GuardianViewSet
 from crud_views_guardian.lib.views import (
     GuardianListViewPermissionRequired,

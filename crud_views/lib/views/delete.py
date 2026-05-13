@@ -55,6 +55,56 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, generic.DeleteView):
 
         return RelatedObjects(tree=tree, summary=dict(summary), protected=list(collector.protected))
 
+    def cv_get_related_object_url(self, obj) -> str | None:
+        from crud_views.lib.viewset import _REGISTRY
+
+        model = type(obj)
+        for viewset in _REGISTRY.values():
+            if viewset.model == model and viewset.is_view_registered("detail"):
+                try:
+                    from django.urls import reverse
+
+                    router_name = viewset.get_router_name("detail")
+                    kwargs = {viewset.pk_name: obj.pk}
+                    if viewset.parent:
+                        parent_attr = viewset.parent.get_attribute()
+                        parent_obj = getattr(obj, parent_attr, None)
+                        if parent_obj:
+                            kwargs[viewset.parent.get_pk_name()] = parent_obj.pk
+                    return reverse(router_name, kwargs=kwargs)
+                except Exception:
+                    return None
+        return None
+
+    @staticmethod
+    def _walk_nested(items):
+        for item in items:
+            if isinstance(item, (list, tuple)):
+                yield from DeleteView._walk_nested(item)
+            elif item is not None and hasattr(item, "_meta"):
+                yield item
+
+    def _build_display_tree(self, items, urls):
+        result = []
+        i = 0
+        while i < len(items):
+            item = items[i]
+            if isinstance(item, (list, tuple)):
+                # Nested list without preceding instance -- flatten
+                result.extend(self._build_display_tree(item, urls))
+                i += 1
+            else:
+                # Model instance or None
+                children = []
+                if i + 1 < len(items) and isinstance(items[i + 1], (list, tuple)):
+                    children = self._build_display_tree(items[i + 1], urls)
+                    i += 2
+                else:
+                    i += 1
+                url = urls.get(id(item)) if item is not None else None
+                result.append({"obj": item, "url": url, "children": children})
+        return result
+
     def cv_filter_related_objects(self, user, related: RelatedObjects) -> RelatedObjects:
         permission_cache = {}
 
@@ -87,9 +137,17 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, generic.DeleteView):
         if self.cv_show_related_objects:
             related = self.cv_get_related_objects()
             related = self.cv_filter_related_objects(self.request.user, related)
-            context["related_objects"] = related.tree
             context["related_summary"] = related.summary
             context["protected_objects"] = related.protected
+
+            urls = {}
+            if self.cv_link_related_objects:
+                for obj in self._walk_nested(related.tree):
+                    url = self.cv_get_related_object_url(obj)
+                    if url:
+                        urls[id(obj)] = url
+
+            context["related_objects"] = self._build_display_tree(related.tree, urls)
         return context
 
     def cv_check_delete_protection(self) -> list[str]:

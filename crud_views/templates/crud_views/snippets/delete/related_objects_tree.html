@@ -1,13 +1,16 @@
-{% load crud_views %}
-
 <ul>
-    {% for item in items %}
-        {% if item|cv_is_list %}
-            {% include "crud_views/snippets/delete/related_objects_tree.html" with items=item %}
-        {% elif item is None %}
-            <li><em>(restricted)</em></li>
+{% for node in items %}
+    <li>
+        {% if node.obj is None %}
+            <em>(restricted)</em>
+        {% elif node.url %}
+            <a href="{{ node.url }}">{{ node.obj }}</a>
         {% else %}
-            <li>{{ item }}</li>
+            {{ node.obj }}
         {% endif %}
-    {% endfor %}
+        {% if node.children %}
+            {% include "crud_views/snippets/delete/related_objects_tree.html" with items=node.children %}
+        {% endif %}
+    </li>
+{% endfor %}
 </ul>

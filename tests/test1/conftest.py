@@ -595,3 +595,53 @@ def user_campaign_view(cv_campaign):
 def client_user_campaign_view(client, user_campaign_view) -> Client:
     client.force_login(user_campaign_view)
     return client
+
+
+# --- Publisher Cascade fixtures ---
+
+
+@pytest.fixture
+def cv_publisher_cascade():
+    from tests.test1.app.views import cv_publisher_cascade as ret
+
+    return ret
+
+
+@pytest.fixture
+def user_publisher_cascade_delete(cv_publisher_cascade):
+    from django.contrib.auth.models import User
+
+    user = User.objects.create_user(username="user_publisher_cascade_delete", password="password")
+    user_viewset_permission(user, cv_publisher_cascade, "delete")
+    return user
+
+
+@pytest.fixture
+def client_user_publisher_cascade_delete(client, user_publisher_cascade_delete) -> Client:
+    client.force_login(user_publisher_cascade_delete)
+    return client
+
+
+# --- Publisher Protected fixtures ---
+
+
+@pytest.fixture
+def cv_publisher_protected():
+    from tests.test1.app.views import cv_publisher_protected as ret
+
+    return ret
+
+
+@pytest.fixture
+def user_publisher_protected_delete(cv_publisher_protected):
+    from django.contrib.auth.models import User
+
+    user = User.objects.create_user(username="user_publisher_protected_delete", password="password")
+    user_viewset_permission(user, cv_publisher_protected, "delete")
+    return user
+
+
+@pytest.fixture
+def client_user_publisher_protected_delete(client, user_publisher_protected_delete) -> Client:
+    client.force_login(user_publisher_protected_delete)
+    return client

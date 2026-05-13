@@ -1,0 +1,13 @@
+{% load crud_views %}
+
+<div class="row">
+    {% for object in object_list %}
+    <div class="col-md-6">
+        {% cv_card object %}
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <p class="text-muted">No items found.</p>
+    </div>
+    {% endfor %}
+</div>

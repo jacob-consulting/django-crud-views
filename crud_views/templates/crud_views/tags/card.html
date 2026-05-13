@@ -1,0 +1,12 @@
+{% load crud_views %}
+
+<div class="card mb-3">
+    <div class="card-body">
+        <h5 class="card-title">{{ object }}</h5>
+        <div class="d-flex gap-2">
+            {% for action in view.cv_card_actions %}
+                {% cv_card_action action object %}
+            {% endfor %}
+        </div>
+    </div>
+</div>

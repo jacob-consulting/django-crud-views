@@ -1,0 +1,11 @@
+{% extends cv_extends %}
+
+{% load crud_views %}
+
+{% block cv_filter %}
+    {% include "crud_views/view_list_table.filter.html" %}
+{% endblock cv_filter %}
+
+{% block cv_content %}
+    {% include "crud_views/view_card.content.html" %}
+{% endblock cv_content %}

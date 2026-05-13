@@ -1,0 +1,7 @@
+{% if cv_access %}
+<a href="{{ cv_url }}"
+   class="btn btn-{% if cv_variant == 'primary' %}primary{% elif cv_variant == 'tertiary' %}outline-secondary{% else %}secondary{% endif %} btn-sm{% if cv_flex %} flex-grow-1{% endif %}"
+   {% if cv_no_label %}title="{{ cv_label }}"{% endif %}>
+   {% if cv_no_label %}<i class="{{ cv_icon_action }}"></i>{% else %}<span>{{ cv_label }}</span>{% endif %}
+</a>
+{% endif %}

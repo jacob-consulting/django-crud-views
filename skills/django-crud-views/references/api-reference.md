@@ -148,7 +148,17 @@ class MyDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequi
     form_class = CrispyDeleteForm   # built-in confirmation form
     cv_message = "Deleted »{object}«"
     cv_success_key = "list"
+    cv_show_related_objects = True     # opt-in: show cascading deletes
+    cv_link_related_objects = False    # opt-in: link to detail views
+
+    def cv_check_delete_protection(self) -> list[str]:
+        """Return error messages to prevent deletion. Empty list = allowed."""
+        if self.object.has_active_contracts():
+            return ["Cannot delete: active contracts exist."]
+        return []
 ```
+
+`CrispyDeleteForm` provides a confirmation checkbox. Set `cv_show_related_objects = True` to display related objects that will be cascade-deleted. Override `cv_check_delete_protection()` for custom business logic.
 
 ### CustomFormView / CustomFormViewPermissionRequired
 

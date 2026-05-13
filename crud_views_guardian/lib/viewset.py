@@ -39,7 +39,7 @@ class GuardianViewSet(ViewSet):
         del self._views["manage"]
 
         base = self.get_manage_view_class()
-        AutoManageView = type("AutoManageView", (base,), {"model": self.model, "cv_viewset": self})
+        _AutoManageView = type("AutoManageView", (base,), {"model": self.model, "cv_viewset": self})  # noqa: F841
 
         return result
 

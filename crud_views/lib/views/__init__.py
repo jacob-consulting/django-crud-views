@@ -12,6 +12,7 @@ from .create import CreateView, CreateViewPermissionRequired, CreateViewParentMi
 from .mixins import MessageMixin, ListViewTableMixin, ListViewTableFilterMixin
 from .update import UpdateView, UpdateViewPermissionRequired
 from .action import ActionView, ActionViewPermissionRequired
+from .card import CardListView, CardListViewPermissionRequired
 
 __all__ = [
     # basic crud views
@@ -33,6 +34,9 @@ __all__ = [
     "OrderedUpViewPermissionRequired",
     "OrderedDownView",
     "OrderedUpDownPermissionRequired",
+    # card
+    "CardListView",
+    "CardListViewPermissionRequired",
     # child
     "RedirectChildView",
     # mixins

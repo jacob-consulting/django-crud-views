@@ -495,6 +495,26 @@ class GuardianBookDeleteView(CrispyModelViewMixin, GuardianDeleteViewPermissionR
     cv_viewset = cv_guardian_book
 
 
+# --- Guardian Publisher Cascade (INT PK, Guardian + cv_show_related_objects=True) ---
+
+cv_guardian_publisher_cascade = GuardianViewSet(
+    model=Publisher,
+    name="guardian_publisher_cascade",
+    icon_header="fa-regular fa-building",
+)
+
+
+class GuardianPublisherCascadeListView(ListViewTableMixin, GuardianListViewPermissionRequired):
+    table_class = PublisherTable
+    cv_viewset = cv_guardian_publisher_cascade
+
+
+class GuardianPublisherCascadeDeleteView(CrispyModelViewMixin, GuardianDeleteViewPermissionRequired):
+    form_class = CrispyDeleteForm
+    cv_viewset = cv_guardian_publisher_cascade
+    cv_show_related_objects = True
+
+
 # --- Publisher Cascade (INT PK, cv_show_related_objects=True) ---
 
 cv_publisher_cascade = ViewSet(
@@ -559,6 +579,26 @@ class PublisherFormProtectedDeleteView(CrispyModelViewMixin, DeleteViewPermissio
 class PublisherFormProtectedListView(ListViewTableMixin, ListViewPermissionRequired):
     table_class = PublisherTable
     cv_viewset = cv_publisher_form_protected
+
+
+# --- Publisher Linked (INT PK, cv_link_related_objects=True) ---
+
+cv_publisher_linked = ViewSet(
+    model=Publisher,
+    name="publisher_linked",
+)
+
+
+class PublisherLinkedListView(ListViewTableMixin, ListViewPermissionRequired):
+    table_class = PublisherTable
+    cv_viewset = cv_publisher_linked
+
+
+class PublisherLinkedDeleteView(CrispyModelViewMixin, DeleteViewPermissionRequired):
+    form_class = CrispyDeleteForm
+    cv_viewset = cv_publisher_linked
+    cv_show_related_objects = True
+    cv_link_related_objects = True
 
 
 # ── Test helpers ──────────────────────────────────────────────────────────────

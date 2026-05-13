@@ -177,6 +177,24 @@ from guardian.shortcuts import assign_perm
 assign_perm(cv_author.permissions["view"], group, author_instance)
 ```
 
+## Cascading Deletes with Per-Object Permissions
+
+When `cv_show_related_objects = True` on a Guardian delete view, the related objects
+list is filtered using per-object `view` permissions instead of model-level permissions:
+
+- Objects the user has per-object `view` permission for: shown with full details
+- Objects the user lacks per-object `view` permission for: shown as aggregated counts
+
+```python
+class PublisherDeleteView(CrispyModelViewMixin, GuardianDeleteViewPermissionRequired):
+    form_class = CrispyDeleteForm
+    cv_viewset = cv_publisher
+    cv_show_related_objects = True
+```
+
+Performance: uses `guardian.shortcuts.get_objects_for_user` for bulk queryset filtering —
+one query per related model, not one per object.
+
 ## Working Example
 
 See `examples/bootstrap5/` for a complete working example. After running

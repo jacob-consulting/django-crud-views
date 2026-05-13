@@ -143,7 +143,7 @@ class FilterContextButton(ContextButton):
         if not isinstance(context.view, ListViewTableFilterMixin):
             return dict_kwargs
 
-        # todo, check permission
+        # todo, check permission ?
 
         list_url = context.view.cv_get_url(key=context.view.cv_key)
 
@@ -154,13 +154,8 @@ class FilterContextButton(ContextButton):
         if cv_action_label:
             data["cv_action_label"] = cv_action_label
 
-        data["cv_icon_action"] = "fa-solid fa-filter"
-        # "fa-solid fa-filter-circle-xmark"
-        # data["cv_url"] = "#filter-collapse"
+        data["cv_icon_action"] = crud_views_settings.filter_icon
         data["cv_url"] = list_url
-
         data["cv_template"] = f"{crud_views_settings.theme_path}/tags/context_action_filter.html"
-
-        # data["cv_url"] = "javascript:alert(1);return false;"
 
         return data

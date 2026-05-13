@@ -168,7 +168,7 @@ class ListViewTableFilterMixin(FilterView):
         kwargs = self.get_filterset_kwargs(filterset_class)
         filterset = filterset_class(**kwargs)
         if self.formhelper_class:
-            filterset.form.helper = self.formhelper_class(request=self.request)
+            filterset.form.helper = self.formhelper_class(request=self.request, view=self)
         return filterset
 
     def get_context_data(self, **kwargs):

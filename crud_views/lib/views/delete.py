@@ -134,6 +134,9 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, generic.DeleteView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        errors = self.cv_check_delete_protection()
+        if errors:
+            context["delete_protection_errors"] = errors
         if self.cv_show_related_objects:
             related = self.cv_get_related_objects()
             related = self.cv_filter_related_objects(self.request.user, related)

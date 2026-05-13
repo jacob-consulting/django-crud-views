@@ -1,6 +1,6 @@
 {% load crud_views %}
 
-{% if related_summary %}
+{% if related_summary or protected_objects %}
     {% include "crud_views/snippets/delete/related_objects.html" %}
 {% endif %}
 

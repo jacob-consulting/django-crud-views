@@ -8,10 +8,12 @@ from app.models import Author
 from crud_views.lib.crispy import Column4, CrispyModelForm, CrispyModelViewMixin, CrispyDeleteForm, Column12
 from crud_views.lib.table import Table, LinkChildColumn, UUIDLinkDetailColumn
 from crud_views.lib.table.columns import NaturalTimeColumn, NaturalDayColumn
+from crud_views.lib.view import CardAction
 from crud_views.lib.views import (
     MessageMixin,
     ListViewTableMixin,
     ListViewTableFilterMixin,
+    CardListViewPermissionRequired,
     OrderedUpViewPermissionRequired,
     OrderedUpDownPermissionRequired,
     RedirectChildView,
@@ -88,6 +90,17 @@ class AuthorListView(ListViewTableMixin, ListViewTableFilterMixin, GuardianListV
     # viewset config
     cv_viewset = cv_author
     cv_list_actions = ["detail", "update", "delete", "up", "down", "redirect_child", "contact"]
+
+
+class AuthorCardListView(ListViewTableFilterMixin, CardListViewPermissionRequired):
+    cv_viewset = cv_author
+    filterset_class = AuthorFilter
+    formhelper_class = AuthorFilterFormHelper
+    cv_card_actions = [
+        CardAction(key="detail", label="Details", variant="primary", flex=True),
+        CardAction(key="update", label="Edit"),
+        CardAction(key="delete", no_label=True, variant="tertiary"),
+    ]
 
 
 class AuthorCreateView(CrispyModelViewMixin, MessageMixin, GuardianCreateViewPermissionRequired):

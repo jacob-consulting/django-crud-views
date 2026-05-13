@@ -56,6 +56,52 @@ Full step-by-step: see [references/quickstart.md](references/quickstart.md)
 
 ---
 
+## DeleteView: Cascading Deletes & Delete Protection
+
+### Cascading Deletes Display
+
+Show users what related objects will be cascade-deleted (like Django Admin). Opt-in via `cv_show_related_objects`:
+
+```python
+class PublisherDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequired):
+    form_class = CrispyDeleteForm
+    cv_viewset = cv_publisher
+    cv_show_related_objects = True       # show cascade-deleted objects
+    cv_link_related_objects = True       # link related objects to their detail views
+```
+
+When enabled, the delete confirmation page shows a summary by type/count, a nested tree of related objects, and warnings for `PROTECT` relationships. Links are only rendered for models with a registered ViewSet that has a `detail` view.
+
+### Delete Protection
+
+**View hook** — override `cv_check_delete_protection()` to return error messages:
+
+```python
+class PublisherDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequired):
+    form_class = CrispyDeleteForm
+    cv_viewset = cv_publisher
+
+    def cv_check_delete_protection(self) -> list[str]:
+        if self.object.books.filter(is_published=True).exists():
+            return ["Cannot delete a publisher with published books."]
+        return []
+```
+
+**Form hook** — alternatively, use standard Django form validation in a `CrispyDeleteForm` subclass:
+
+```python
+class ProtectedDeleteForm(CrispyDeleteForm):
+    def clean(self):
+        cleaned_data = super().clean()
+        if some_condition:
+            raise ValidationError("Cannot delete.")
+        return cleaned_data
+```
+
+Execution order: form validates → `cv_check_delete_protection()` → errors re-render form or object is deleted.
+
+---
+
 ## Nested Resources (Child ViewSet)
 
 Add `parent=ParentViewSet(name="author")` to the child ViewSet. Use `CreateViewParentMixin` on the child's create
@@ -483,6 +529,19 @@ cv_book = GuardianViewSet(
 
 Setting either to `None` disables the parent check for that view type.
 
+### Cascading Deletes with Per-Object Permissions
+
+When `cv_show_related_objects = True` on a Guardian delete view, related objects are filtered using per-object `view` permissions (via `guardian.shortcuts.get_objects_for_user`) instead of model-level permissions:
+
+```python
+class PublisherDeleteView(CrispyModelViewMixin, GuardianDeleteViewPermissionRequired):
+    form_class = CrispyDeleteForm
+    cv_viewset = cv_publisher
+    cv_show_related_objects = True
+```
+
+Objects the user has per-object `view` permission for are shown with full details; others appear as aggregated counts.
+
 ### GuardianManageView
 
 GuardianManageView: auto-wired by `GuardianViewSet.register()`. Extends ManageView with a Guardian Configuration section, per-object permission holder counts (Group → Permission → N objects), and a Guardian Mixin column in the Views table. No manual configuration required — just enable manage views or add users to CRUD_VIEWS_MANAGE group.
@@ -502,3 +561,5 @@ To customise the manage view class for a specific viewset, pass `manage_view_cla
 | Guardian: users see no objects | Check `assign_perm` was called — strict mode ignores model-level grants by default |
 | Guardian child create: button always hidden | Child create view uses `CreateViewPermissionRequired` instead of `GuardianCreateViewPermissionRequired` |
 | Guardian child create: button always visible | `GuardianCreateViewPermissionRequired` is used but `cv_guardian_parent_create_permission` is not set on the viewset |
+| Cascading deletes not showing | Set `cv_show_related_objects = True` on the delete view (opt-in, off by default) |
+| Related object links not rendering | Set `cv_link_related_objects = True` and ensure the related model has a ViewSet with a `detail` view |

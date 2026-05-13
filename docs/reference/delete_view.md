@@ -140,11 +140,13 @@ class PublisherDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissi
         return []
 ```
 
-When the method returns errors, the form is re-rendered with those errors as non-field errors. The object is not deleted.
+When the method returns errors, the delete confirmation form is **not shown at all**. Instead, the user sees the error messages in an alert. This runs on GET, so the user immediately knows the object cannot be deleted.
+
+The check also runs on POST as defense in depth — if a protection error is returned, the object is not deleted.
 
 ### Form Hook
 
-Alternatively, use standard Django form validation:
+For validation that should happen at submit time, use standard Django form validation:
 
 ```python
 class ProtectedDeleteForm(CrispyDeleteForm):
@@ -156,9 +158,10 @@ class ProtectedDeleteForm(CrispyDeleteForm):
         return cleaned_data
 ```
 
-Both hooks are respected. The execution order is:
+### Execution Order
 
-1. Form validates (checkbox confirmed, `clean()` passes)
-2. View calls `cv_check_delete_protection()`
-3. If errors from either, form re-renders with non-field errors
-4. If no errors, object is deleted
+1. **GET**: `cv_check_delete_protection()` runs — if errors, show errors instead of form
+2. **POST**: Form validates (checkbox confirmed, `clean()` passes)
+3. **POST**: `cv_check_delete_protection()` runs again (defense in depth)
+4. If errors from either, form re-renders with non-field errors
+5. If no errors, object is deleted

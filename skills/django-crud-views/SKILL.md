@@ -74,7 +74,7 @@ When enabled, the delete confirmation page shows a summary by type/count, a nest
 
 ### Delete Protection
 
-**View hook** — override `cv_check_delete_protection()` to return error messages:
+**View hook** — override `cv_check_delete_protection()` to return error messages. Runs on GET — the delete form is **not shown at all** when errors exist:
 
 ```python
 class PublisherDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequired):
@@ -87,7 +87,7 @@ class PublisherDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissi
         return []
 ```
 
-**Form hook** — alternatively, use standard Django form validation in a `CrispyDeleteForm` subclass:
+**Form hook** — for submit-time validation, use standard Django form validation in a `CrispyDeleteForm` subclass:
 
 ```python
 class ProtectedDeleteForm(CrispyDeleteForm):
@@ -98,7 +98,7 @@ class ProtectedDeleteForm(CrispyDeleteForm):
         return cleaned_data
 ```
 
-Execution order: form validates → `cv_check_delete_protection()` → errors re-render form or object is deleted.
+Execution order: GET checks `cv_check_delete_protection()` (hides form if errors) → POST validates form → POST re-checks `cv_check_delete_protection()` (defense in depth) → delete or re-render.
 
 ---
 

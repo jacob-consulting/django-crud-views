@@ -1,13 +1,24 @@
-{% load crud_views %}
+{% load crud_views i18n %}
 
-{% if related_summary or protected_objects %}
-    {% include "crud_views/snippets/delete/related_objects.html" %}
+{% if delete_protection_errors %}
+    <div class="alert alert-danger">
+        <strong>{% translate "This object cannot be deleted:" %}</strong>
+        <ul class="mb-0 mt-2">
+            {% for error in delete_protection_errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% else %}
+    {% if related_summary or protected_objects %}
+        {% include "crud_views/snippets/delete/related_objects.html" %}
+    {% endif %}
+
+    <form class="cv-form" method="post" novalidate>
+        {% csrf_token %}
+
+        {{ form.non_form_errors }}
+
+        {% cv_render_form %}
+    </form>
 {% endif %}
-
-<form class="cv-form" method="post" novalidate>
-    {% csrf_token %}
-
-    {{ form.non_form_errors }}
-
-    {% cv_render_form %}
-</form>

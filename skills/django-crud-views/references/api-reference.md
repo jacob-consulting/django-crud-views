@@ -158,7 +158,7 @@ class MyDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequi
         return []
 ```
 
-`CrispyDeleteForm` provides a confirmation checkbox. Set `cv_show_related_objects = True` to display related objects that will be cascade-deleted. Override `cv_check_delete_protection()` for custom business logic.
+`CrispyDeleteForm` provides a confirmation checkbox. Set `cv_show_related_objects = True` to display related objects that will be cascade-deleted. Override `cv_check_delete_protection()` for custom business logic — when it returns errors, the delete form is hidden and the errors are shown instead (runs on GET).
 
 ### CustomFormView / CustomFormViewPermissionRequired
 

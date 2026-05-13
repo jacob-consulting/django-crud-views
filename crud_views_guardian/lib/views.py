@@ -32,8 +32,55 @@ class GuardianUpdateViewPermissionRequired(
     pass
 
 
+class GuardianDeleteRelatedObjectsMixin:
+    """Filter cascade-delete related objects by per-object view permissions via django-guardian."""
+
+    def cv_filter_related_objects(self, user, related):
+        from guardian.shortcuts import get_objects_for_user
+
+        from crud_views.lib.views.delete import RelatedObjects
+
+        if not related.tree:
+            return related
+
+        permitted_pks = {}
+        accept_global = getattr(self, "cv_guardian_accept_global_perms", False)
+
+        def get_permitted_pks(model):
+            if model not in permitted_pks:
+                opts = model._meta
+                perm = f"{opts.app_label}.view_{opts.model_name}"
+                qs = get_objects_for_user(user, perm, klass=model, accept_global_perms=accept_global)
+                permitted_pks[model] = set(qs.values_list("pk", flat=True))
+            return permitted_pks[model]
+
+        def _filter_tree(items):
+            result = []
+            for item in items:
+                if isinstance(item, list):
+                    result.append(_filter_tree(item))
+                elif item is not None and hasattr(item, "_meta"):
+                    pks = get_permitted_pks(item._meta.model)
+                    if item.pk in pks:
+                        result.append(item)
+                    else:
+                        result.append(None)
+                else:
+                    result.append(item)
+            return result
+
+        return RelatedObjects(
+            tree=_filter_tree(related.tree),
+            summary=related.summary,
+            protected=related.protected,
+        )
+
+
 class GuardianDeleteViewPermissionRequired(
-    GuardianParentPermissionMixin, GuardianObjectPermissionMixin, DeleteViewPermissionRequired
+    GuardianDeleteRelatedObjectsMixin,
+    GuardianParentPermissionMixin,
+    GuardianObjectPermissionMixin,
+    DeleteViewPermissionRequired,
 ):
     pass
 
@@ -84,9 +131,8 @@ class GuardianCreateViewPermissionRequired(GuardianParentPermissionMixin, Create
         """
         if parent_obj is None:
             return False
-        perm_key = (
-            getattr(cls.cv_viewset, "cv_guardian_parent_create_permission", None)
-            or getattr(cls.cv_viewset, "cv_guardian_parent_permission", "view")
+        perm_key = getattr(cls.cv_viewset, "cv_guardian_parent_create_permission", None) or getattr(
+            cls.cv_viewset, "cv_guardian_parent_permission", "view"
         )
         perm = cls.cv_viewset.parent.viewset.permissions.get(perm_key)
         accept_global = getattr(cls, "cv_guardian_accept_global_perms", False)

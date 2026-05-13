@@ -45,8 +45,6 @@ def test_related_objects_rendered_in_template(
 
     Book.objects.create(title="Hitchhiker's Guide", publisher=publisher_penguin)
 
-    # Grant view permissions so objects are visible in the tree
-    user = client_user_publisher_cascade_delete.session
     from django.contrib.auth.models import User
 
     user_obj = User.objects.get(username="user_publisher_cascade_delete")
@@ -161,17 +159,104 @@ def test_delete_protection_form_clean(publisher_penguin):
 
 
 @pytest.mark.django_db
-def test_successful_cascade_delete(
-    client_user_publisher_cascade_delete, cv_publisher_cascade, publisher_penguin
-):
+def test_successful_cascade_delete(client_user_publisher_cascade_delete, cv_publisher_cascade, publisher_penguin):
     """With cv_show_related_objects=True, POST still deletes object and cascaded relations."""
     from tests.test1.app.models import Book, Publisher
 
     book = Book.objects.create(title="Doomed Book", publisher=publisher_penguin)
     pk = publisher_penguin.pk
-    response = client_user_publisher_cascade_delete.post(
-        f"/publisher_cascade/{pk}/delete/", {"confirm": True}
-    )
+    response = client_user_publisher_cascade_delete.post(f"/publisher_cascade/{pk}/delete/", {"confirm": True})
     assert response.status_code == 302
     assert not Publisher.objects.filter(pk=pk).exists()
     assert not Book.objects.filter(pk=book.pk).exists()
+
+
+@pytest.mark.django_db
+def test_related_objects_linking(publisher_penguin):
+    """With cv_link_related_objects=True, related objects with ViewSets are rendered as links."""
+    from django.contrib.auth.models import Permission, User
+
+    from tests.test1.app.models import Book
+    from tests.test1.app.views import cv_publisher_linked
+
+    Book.objects.create(title="Linked Book", publisher=publisher_penguin)
+
+    user = User.objects.create_user(username="user_link_test", password="password")
+    user_viewset_permission(user, cv_publisher_linked, "delete")
+    # Grant view permissions so related objects are visible
+    for codename in ("view_publisher", "view_book"):
+        perm = Permission.objects.get(codename=codename)
+        user.user_permissions.add(perm)
+
+    client = Client()
+    client.force_login(user)
+
+    pk = publisher_penguin.pk
+    response = client.get(f"/publisher_linked/{pk}/delete/")
+    assert response.status_code == 200
+    content = response.content.decode()
+    # Related book should be rendered as a clickable link
+    import re
+
+    assert re.search(r"<a\s[^>]*>Linked Book</a>", content)
+
+
+@pytest.mark.django_db
+def test_related_objects_linking_context_has_dict_tree(publisher_penguin):
+    """With cv_link_related_objects=True, context['related_objects'] is a list of dicts with url keys."""
+    from django.contrib.auth.models import Permission, User
+
+    from tests.test1.app.models import Book
+    from tests.test1.app.views import cv_publisher_linked
+
+    Book.objects.create(title="Context Book", publisher=publisher_penguin)
+
+    user = User.objects.create_user(username="user_link_ctx_test", password="password")
+    user_viewset_permission(user, cv_publisher_linked, "delete")
+    for codename in ("view_publisher", "view_book"):
+        perm = Permission.objects.get(codename=codename)
+        user.user_permissions.add(perm)
+
+    client = Client()
+    client.force_login(user)
+
+    pk = publisher_penguin.pk
+    response = client.get(f"/publisher_linked/{pk}/delete/")
+    assert response.status_code == 200
+
+    related_objects = response.context["related_objects"]
+    assert isinstance(related_objects, list)
+    assert len(related_objects) > 0
+    # Each node should be a dict with obj, url, children keys
+    node = related_objects[0]
+    assert "obj" in node
+    assert "url" in node
+    assert "children" in node
+
+
+@pytest.mark.django_db
+def test_related_objects_no_linking_when_disabled(
+    client_user_publisher_cascade_delete, cv_publisher_cascade, publisher_penguin
+):
+    """With cv_link_related_objects=False (default), related objects are NOT rendered as links."""
+    from django.contrib.auth.models import Permission, User
+
+    from tests.test1.app.models import Book
+
+    Book.objects.create(title="Unlinked Book", publisher=publisher_penguin)
+
+    # Grant view permissions so objects are visible in the tree
+    user_obj = User.objects.get(username="user_publisher_cascade_delete")
+    for codename in ("view_publisher", "view_book"):
+        perm = Permission.objects.get(codename=codename)
+        user_obj.user_permissions.add(perm)
+
+    pk = publisher_penguin.pk
+    response = client_user_publisher_cascade_delete.get(f"/publisher_cascade/{pk}/delete/")
+    assert response.status_code == 200
+    content = response.content.decode()
+    assert "Unlinked Book" in content
+    # The related object text should NOT appear inside an <a> tag
+    import re
+
+    assert not re.search(r"<a\s[^>]*>Unlinked Book</a>", content)

@@ -24,6 +24,7 @@ Full API reference: see [references/api-reference.md](references/api-reference.m
 | `DeleteViewPermissionRequired` | Confirm-delete form |
 | `CustomFormViewPermissionRequired` | Custom form attached to an existing object |
 | `ActionViewPermissionRequired` | One-click action on an existing object |
+| `CardListViewPermissionRequired` | Card grid with action buttons |
 | `WorkflowViewPermissionRequired` | FSM state transitions with audit log |
 
 Mixins always go **before** the base view class in MRO: `CrispyModelViewMixin, MessageMixin, CreateViewPermissionRequired`.
@@ -53,6 +54,62 @@ urlpatterns += cv_author.urlpatterns
 ```
 
 Full step-by-step: see [references/quickstart.md](references/quickstart.md)
+
+---
+
+## CardListView
+
+Render objects as cards instead of table rows. Uses `CardAction` for per-button config and `cv_card_template` for
+per-view card body overrides.
+
+```python
+from crud_views.lib.view import CardAction
+from crud_views.lib.views import CardListViewPermissionRequired, ListViewTableFilterMixin
+
+class AuthorCardListView(ListViewTableFilterMixin, CardListViewPermissionRequired):
+    cv_viewset = cv_author
+    filterset_class = AuthorFilter
+    formhelper_class = AuthorFilterFormHelper
+    cv_card_actions = [
+        CardAction(key="detail", label="Details", variant="primary", flex=True),
+        CardAction(key="update", label="Edit"),
+        CardAction(key="delete", no_label=True, variant="tertiary"),
+    ]
+```
+
+URLs auto-register at `/<prefix>/card/`. `cv_card_actions` declares per-button rendering: `key` maps to a view in the
+ViewSet, `label` overrides the default short label, `variant` sets the button style (`primary`/`secondary`/`tertiary`),
+`flex` makes the button fill available space, and `no_label` renders an icon-only button.
+
+### Custom Card Template
+
+Override `cv_card_template` for model-specific card content:
+
+```python
+class ProjektCardListView(CardListViewPermissionRequired):
+    cv_viewset = cv_projekt
+    cv_card_template = "myapp/tags/projekt_card.html"
+    cv_card_actions = [...]
+```
+
+The template receives `object`, `view`, and `request`. Use `{% cv_card_action action object %}` for buttons:
+
+```html
+{% load crud_views %}
+<div class="card mb-3">
+    <div class="card-body">
+        <h5 class="card-title">{{ object.name }}</h5>
+        <p>{{ object.description|truncatewords:20 }}</p>
+        <div class="d-flex gap-2">
+            {% for action in view.cv_card_actions %}
+                {% cv_card_action action object %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+```
+
+Guardian variant: `GuardianCardListViewPermissionRequired` filters the queryset by per-object view permissions.
 
 ---
 

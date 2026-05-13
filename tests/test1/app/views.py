@@ -22,7 +22,9 @@ from crud_views.lib.views import (
     CreateViewParentMixin,
     OrderedUpViewPermissionRequired,
     OrderedUpDownPermissionRequired,
+    CardListViewPermissionRequired,
 )
+from crud_views.lib.view import CardAction
 from crud_views.lib.views.form import CustomFormViewPermissionRequired
 from crud_views.lib.views.manage import ManageView
 from crud_views.lib.views.list import ListViewFilterFormHelper
@@ -42,6 +44,7 @@ from crud_views_guardian.lib.views import (
     GuardianUpdateViewPermissionRequired,
     GuardianDeleteViewPermissionRequired,
     GuardianCreateViewPermissionRequired,
+    GuardianCardListViewPermissionRequired,
 )
 from crud_views_workflow.lib.forms import WorkflowForm
 from crud_views_workflow.lib.views import WorkflowViewPermissionRequired
@@ -66,6 +69,15 @@ class AuthorListView(ListViewTableMixin, ListViewPermissionRequired):
         "detail",
         "update",
         "delete",  # "up", "down", "redirect_child"
+    ]
+
+
+class AuthorCardListView(CardListViewPermissionRequired):
+    cv_viewset = cv_author
+    cv_card_actions = [
+        CardAction(key="detail", label="Details", variant="primary", flex=True),
+        CardAction(key="update", label="Edit"),
+        CardAction(key="delete", no_label=True, variant="tertiary"),
     ]
 
 
@@ -426,6 +438,14 @@ class GuardianAuthorUpdateView(CrispyModelViewMixin, GuardianUpdateViewPermissio
 class GuardianAuthorDeleteView(CrispyModelViewMixin, GuardianDeleteViewPermissionRequired):
     form_class = CrispyDeleteForm
     cv_viewset = cv_guardian_author
+
+
+class GuardianAuthorCardListView(GuardianCardListViewPermissionRequired):
+    cv_viewset = cv_guardian_author
+    cv_card_actions = [
+        CardAction(key="detail", label="Details", variant="primary", flex=True),
+        CardAction(key="update", label="Edit"),
+    ]
 
 
 cv_guardian_publisher = GuardianViewSet(

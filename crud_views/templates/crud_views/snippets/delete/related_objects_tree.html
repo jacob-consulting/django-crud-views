@@ -1,0 +1,13 @@
+{% load crud_views %}
+
+<ul>
+    {% for item in items %}
+        {% if item|cv_is_list %}
+            {% include "crud_views/snippets/delete/related_objects_tree.html" with items=item %}
+        {% elif item is None %}
+            <li><em>(restricted)</em></li>
+        {% else %}
+            <li>{{ item }}</li>
+        {% endif %}
+    {% endfor %}
+</ul>

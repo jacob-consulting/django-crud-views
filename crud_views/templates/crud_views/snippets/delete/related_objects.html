@@ -1,0 +1,25 @@
+{% load i18n %}
+
+<div class="cv-related-objects mb-3">
+    {% if protected_objects %}
+        <div class="alert alert-danger">
+            <strong>{% translate "Deletion is blocked by protected relationships:" %}</strong>
+            <ul class="mb-0 mt-2">
+                {% for obj in protected_objects %}
+                    <li>{{ obj }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+    {% if related_summary %}
+        <div class="alert alert-warning">
+            <strong>{% translate "The following related objects will also be deleted:" %}</strong>
+            <ul class="mb-0 mt-2">
+                {% for model_name, count in related_summary.items %}
+                    <li>{{ model_name }}: {{ count }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% include "crud_views/snippets/delete/related_objects_tree.html" with items=related_objects %}
+    {% endif %}
+</div>

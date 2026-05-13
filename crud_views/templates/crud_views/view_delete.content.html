@@ -1,5 +1,9 @@
 {% load crud_views %}
 
+{% if related_summary %}
+    {% include "crud_views/snippets/delete/related_objects.html" %}
+{% endif %}
+
 <form class="cv-form" method="post" novalidate>
     {% csrf_token %}
 

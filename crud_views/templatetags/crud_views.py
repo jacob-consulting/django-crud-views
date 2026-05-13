@@ -155,3 +155,8 @@ def cv_is_false(arg):
 @register.filter
 def cv_is_true(arg):
     return arg is True
+
+
+@register.filter
+def cv_is_list(arg):
+    return isinstance(arg, (list, tuple))

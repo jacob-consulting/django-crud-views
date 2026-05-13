@@ -106,6 +106,8 @@ class AuthorDeleteView(CrispyModelViewMixin, MessageMixin, GuardianDeleteViewPer
     form_class = CrispyDeleteForm
     cv_viewset = cv_author
     cv_message = _("Deleted author »{object}«")
+    cv_show_related_objects = True
+    cv_link_related_objects = True
 
 
 class AuthorDetailView(GuardianDetailViewPermissionRequired):

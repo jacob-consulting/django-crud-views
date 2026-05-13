@@ -76,3 +76,5 @@ class BarDeleteView(CrispyModelViewMixin, DeleteViewPermissionRequired):
     model = Bar
     form_class = CrispyDeleteForm
     cv_viewset = cv_bar
+    cv_show_related_objects = True
+    cv_link_related_objects = True

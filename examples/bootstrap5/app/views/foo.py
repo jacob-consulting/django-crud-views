@@ -75,3 +75,5 @@ class FooDeleteView(CrispyModelViewMixin, DeleteViewPermissionRequired):
     model = Foo
     form_class = CrispyDeleteForm
     cv_viewset = cv_foo
+    cv_show_related_objects = True
+    cv_link_related_objects = True

@@ -94,3 +94,4 @@ class BookCreateView(CrispyModelViewMixin, MessageMixin, CreateViewParentMixin, 
 class BookDeleteView(CrispyModelViewMixin, MessageMixin, GuardianDeleteViewPermissionRequired):
     form_class = CrispyDeleteForm
     cv_viewset = cv_book
+    cv_show_related_objects = True

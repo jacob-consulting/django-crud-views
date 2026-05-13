@@ -1,6 +1,7 @@
 from django import template
 from django.contrib.auth import get_user_model
-from django.template.loader import render_to_string
+from django.template.loader import get_template, render_to_string
+from django.utils.safestring import mark_safe
 
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.exceptions import ViewSetKeyFoundError, ignore_exception
@@ -160,3 +161,42 @@ def cv_is_true(arg):
 @register.filter
 def cv_is_list(arg):
     return isinstance(arg, (list, tuple))
+
+
+@register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/card_action.html", takes_context=True)
+def cv_card_action(context, action, obj=None):
+    view = cv_get_view(context)
+    user = context["request"].user
+
+    cls = view.cv_viewset.get_view_class(action.key)
+    access = cls.cv_has_access(user, obj)
+
+    if not access:
+        return {"cv_access": False}
+
+    url = view.cv_get_url(action.key, obj=obj)
+
+    if action.label:
+        label = action.label
+    else:
+        view_context = view.cv_get_view_context(object=obj)
+        label = cls.cv_get_action_short_label(context=view_context)
+
+    return {
+        "cv_access": True,
+        "cv_url": url,
+        "cv_label": label,
+        "cv_icon_action": cls.cv_icon_action,
+        "cv_variant": action.variant,
+        "cv_flex": action.flex,
+        "cv_no_label": action.no_label,
+    }
+
+
+@register.simple_tag(takes_context=True)
+def cv_card(context, obj):
+    view = cv_get_view(context)
+    template_name = getattr(view, "cv_card_template", "crud_views/tags/card.html")
+    t = get_template(template_name)
+    card_context = {"object": obj, "view": view, "request": context["request"]}
+    return mark_safe(t.render(card_context))

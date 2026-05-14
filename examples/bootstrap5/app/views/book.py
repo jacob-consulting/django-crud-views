@@ -75,6 +75,8 @@ class BookCardListView(ListViewTableFilterMixin, GuardianCardListViewPermissionR
 
 class BookDetailView(GuardianDetailViewPermissionRequired):
     cv_viewset = cv_book
+    cv_context_actions = ["card", "detail", "update", "delete"]
+    cv_cancel_key = "card"
 
     cv_property_display = [
         {
@@ -96,14 +98,23 @@ class BookDetailView(GuardianDetailViewPermissionRequired):
 class BookUpdateView(CrispyModelViewMixin, MessageMixin, GuardianUpdateViewPermissionRequired):
     form_class = BookUpdateForm
     cv_viewset = cv_book
+    cv_context_actions = ["card", "detail", "update", "delete"]
+    cv_success_key = "card"
+    cv_cancel_key = "card"
 
 
 class BookCreateView(CrispyModelViewMixin, MessageMixin, CreateViewParentMixin, GuardianCreateViewPermissionRequired):
     form_class = BookCreateForm
     cv_viewset = cv_book
+    cv_context_actions = ["card", "create"]
+    cv_success_key = "card"
+    cv_cancel_key = "card"
 
 
 class BookDeleteView(CrispyModelViewMixin, MessageMixin, GuardianDeleteViewPermissionRequired):
     form_class = CrispyDeleteForm
     cv_viewset = cv_book
+    cv_context_actions = ["card", "detail", "update", "delete"]
+    cv_success_key = "card"
+    cv_cancel_key = "card"
     cv_show_related_objects = True

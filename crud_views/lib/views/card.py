@@ -25,7 +25,7 @@ class CardListView(CrudView, generic.ListView):
     cv_filter_header_template_code: str | None = None
 
     # icons
-    cv_icon_action = "fa-regular fa-grip"
+    cv_icon_action = "fa-solid fa-rectangle-list"
 
     @staticmethod
     def cv_get_filter_icon() -> str:

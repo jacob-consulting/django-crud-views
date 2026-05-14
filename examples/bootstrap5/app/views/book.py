@@ -1,19 +1,20 @@
+import django_filters
+from crispy_forms.layout import Row, Layout
 from django.utils.translation import gettext_lazy as _
-import django_tables2 as tables
-from crispy_forms.layout import Row
 
 from app.models import Book
 from crud_views.lib.crispy import CrispyModelForm, Column4, Column2, CrispyModelViewMixin, CrispyDeleteForm
-from crud_views.lib.table import Table, UUIDLinkDetailColumn
+from crud_views.lib.view import CardAction
 from crud_views.lib.views import (
-    ListViewTableMixin,
+    ListViewTableFilterMixin,
     CreateViewParentMixin,
     MessageMixin,
 )
+from crud_views.lib.views.list import ListViewFilterFormHelper
 from crud_views.lib.viewset import ParentViewSet
 from crud_views_guardian.lib.viewset import GuardianViewSet
 from crud_views_guardian.lib.views import (
-    GuardianListViewPermissionRequired,
+    GuardianCardListViewPermissionRequired,
     GuardianDetailViewPermissionRequired,
     GuardianCreateViewPermissionRequired,
     GuardianUpdateViewPermissionRequired,
@@ -47,18 +48,29 @@ class BookUpdateForm(BookCreateForm):
     """
 
 
-class BookTable(Table):
-    id = UUIDLinkDetailColumn()
-    title = tables.Column()
-    price = tables.Column()
-    author = tables.Column()
+class BookFilterFormHelper(ListViewFilterFormHelper):
+    layout = Layout(
+        Row(Column4("title")),
+    )
 
 
-class BookListView(ListViewTableMixin, GuardianListViewPermissionRequired):
+class BookFilter(django_filters.FilterSet):
+    title = django_filters.CharFilter(lookup_expr="icontains")
+
+    class Meta:
+        model = Book
+        fields = ["title"]
+
+
+class BookCardListView(ListViewTableFilterMixin, GuardianCardListViewPermissionRequired):
     cv_viewset = cv_book
-    # cv_list_actions = ["detail", "update", "delete"]
-
-    table_class = BookTable
+    filterset_class = BookFilter
+    formhelper_class = BookFilterFormHelper
+    cv_card_actions = [
+        CardAction(key="detail", label="Details", variant="primary", flex=True),
+        CardAction(key="update", label="Edit"),
+        CardAction(key="delete", no_label=True, variant="tertiary"),
+    ]
 
 
 class BookDetailView(GuardianDetailViewPermissionRequired):

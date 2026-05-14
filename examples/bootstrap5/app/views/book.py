@@ -64,6 +64,7 @@ class BookFilter(django_filters.FilterSet):
 
 class BookCardListView(ListViewTableFilterMixin, GuardianCardListViewPermissionRequired):
     cv_viewset = cv_book
+    cv_path = ""
     filterset_class = BookFilter
     formhelper_class = BookFilterFormHelper
     cv_card_actions = [

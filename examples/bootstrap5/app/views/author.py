@@ -90,6 +90,7 @@ class AuthorListView(ListViewTableMixin, ListViewTableFilterMixin, GuardianListV
     # viewset config
     cv_viewset = cv_author
     cv_list_actions = ["detail", "update", "delete", "up", "down", "redirect_child", "contact"]
+    cv_context_actions = ["card"] + GuardianListViewPermissionRequired.cv_context_actions
 
 
 class AuthorCardListView(ListViewTableFilterMixin, CardListViewPermissionRequired):

@@ -8,12 +8,10 @@ from app.models import Author
 from crud_views.lib.crispy import Column4, CrispyModelForm, CrispyModelViewMixin, CrispyDeleteForm, Column12
 from crud_views.lib.table import Table, LinkChildColumn, UUIDLinkDetailColumn
 from crud_views.lib.table.columns import NaturalTimeColumn, NaturalDayColumn
-from crud_views.lib.view import CardAction
 from crud_views.lib.views import (
     MessageMixin,
     ListViewTableMixin,
     ListViewTableFilterMixin,
-    CardListViewPermissionRequired,
     OrderedUpViewPermissionRequired,
     OrderedUpDownPermissionRequired,
     RedirectChildView,
@@ -74,7 +72,7 @@ class AuthorTable(Table):
     first_name = tables.Column(verbose_name=_("First Name"))
     last_name = tables.Column(verbose_name=_("Last Name"))
     pseudonym = tables.Column(verbose_name=_("Pseudonym"), attrs=Table.ca.w20)
-    books = LinkChildColumn(name="book", verbose_name=_("Books"), attrs=Table.ca.w10)
+    books = LinkChildColumn(name="book", key="card", verbose_name=_("Books"), attrs=Table.ca.w10)
     created_dt = NaturalDayColumn(verbose_name=_("Created"))
     modified_dt = NaturalTimeColumn(verbose_name=_("Modified"))
 
@@ -90,18 +88,7 @@ class AuthorListView(ListViewTableMixin, ListViewTableFilterMixin, GuardianListV
     # viewset config
     cv_viewset = cv_author
     cv_list_actions = ["detail", "update", "delete", "up", "down", "redirect_child", "contact"]
-    cv_context_actions = ["card"] + GuardianListViewPermissionRequired.cv_context_actions
-
-
-class AuthorCardListView(ListViewTableFilterMixin, CardListViewPermissionRequired):
-    cv_viewset = cv_author
-    filterset_class = AuthorFilter
-    formhelper_class = AuthorFilterFormHelper
-    cv_card_actions = [
-        CardAction(key="detail", label="Details", variant="primary", flex=True),
-        CardAction(key="update", label="Edit"),
-        CardAction(key="delete", no_label=True, variant="tertiary"),
-    ]
+    cv_context_actions = GuardianListViewPermissionRequired.cv_context_actions
 
 
 class AuthorCreateView(CrispyModelViewMixin, MessageMixin, GuardianCreateViewPermissionRequired):
@@ -172,7 +159,7 @@ class AuthorDownView(MessageMixin, OrderedUpDownPermissionRequired):
 class RedirectBooksView(RedirectChildView):
     cv_action_label = _("Goto Books")
     cv_redirect = "book"
-    cv_redirect_key = "list"
+    cv_redirect_key = "card"
     cv_icon_action = "fa-regular fa-address-book"
 
     cv_viewset = cv_author

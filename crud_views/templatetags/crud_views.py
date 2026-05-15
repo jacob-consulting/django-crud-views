@@ -166,8 +166,22 @@ def cv_is_list(arg):
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/card_action.html", takes_context=True)
 def cv_card_action(context, action, obj=None):
     view = cv_get_view(context)
-    user = context["request"].user
 
+    if action.child_name:
+        url = view.cv_get_child_url(action.child_name, action.child_key, obj)
+        child_viewset = view.cv_viewset.get_viewset(action.child_name)
+        child_cls = child_viewset.get_view_class(action.child_key)
+        return {
+            "cv_access": True,
+            "cv_url": url,
+            "cv_label": action.label,
+            "cv_icon_action": child_cls.cv_icon_action,
+            "cv_variant": action.variant,
+            "cv_flex": action.flex,
+            "cv_no_label": action.no_label,
+        }
+
+    user = context["request"].user
     cls = view.cv_viewset.get_view_class(action.key)
     access = cls.cv_has_access(user, obj)
 
@@ -191,6 +205,16 @@ def cv_card_action(context, action, obj=None):
         "cv_flex": action.flex,
         "cv_no_label": action.no_label,
     }
+
+
+@register.simple_tag(takes_context=True)
+def cv_user_in_group(context, group):
+    if group is None:
+        return False
+    user = context["request"].user
+    if not user.is_authenticated:
+        return False
+    return group.user_set.filter(pk=user.pk).exists()
 
 
 @register.simple_tag(takes_context=True)

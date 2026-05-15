@@ -221,6 +221,47 @@ class MyDownView(MessageMixin, OrderedUpDownPermissionRequired):
 Add `"up"` and `"down"` to `cv_list_actions` in the list view.
 Model must extend `OrderedModel` and `ordered_model` must be in `INSTALLED_APPS`.
 
+### CardListView / CardListViewPermissionRequired
+
+```python
+from crud_views.lib.view import CardAction
+from crud_views.lib.views import CardListViewPermissionRequired, ListViewTableFilterMixin
+
+class AuthorCardListView(ListViewTableFilterMixin, CardListViewPermissionRequired):
+    cv_viewset = cv_author
+    cv_card_template = "myapp/cards/author.html"     # custom card body template
+    cv_card_container_class = "col-md-12"             # full-width (default: "col-md-6")
+    filterset_class = AuthorFilter
+    formhelper_class = AuthorFilterFormHelper
+    cv_card_actions = [
+        CardAction(key="detail", label="Details", variant="primary", flex=True),
+        CardAction(key="update", label="Edit"),
+        CardAction(key="delete", no_label=True, variant="tertiary"),
+        # Child viewset link (like LinkChildColumn for tables):
+        CardAction(child_name="book", child_key="card", label="Books"),
+    ]
+```
+
+CardAction fields: `key` (view key in same viewset), `label`, `no_label` (icon-only), `variant` (`"primary"` / `"secondary"` / `"tertiary"`), `flex` (flex-grow-1), `child_name` (child viewset name), `child_key` (child view key, default `"list"`).
+
+Custom card template receives `object`, `view`, `request` in context. Use `{% cv_card_action action object %}` to render action buttons:
+
+```html
+{% load crud_views %}
+<div class="card mb-3">
+    <div class="card-body">
+        <h5 class="card-title">{{ object }}</h5>
+        <div class="d-flex gap-2">
+            {% for action in view.cv_card_actions %}
+                {% cv_card_action action object %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+```
+
+Guardian variant: `GuardianCardListViewPermissionRequired` from `crud_views_guardian.lib.views`.
+
 ### RedirectChildView
 
 Adds a per-row button that links to a child viewset's list:
@@ -567,6 +608,11 @@ from crud_views.lib.viewset import ViewSet, ParentViewSet, context_buttons_defau
 
 # Context Buttons
 from crud_views.lib.view import ContextButton, ParentContextButton, ChildContextButton
+
+# Card Views
+from crud_views.lib.view import CardAction
+from crud_views.lib.views import CardListView, CardListViewPermissionRequired
+from crud_views_guardian.lib.views import GuardianCardListViewPermissionRequired
 
 # Views
 from crud_views.lib.views import (

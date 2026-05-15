@@ -1,0 +1,8 @@
+{% extends cv_extends %}
+
+{% block cv_content %}
+<div class="author-custom-detail">
+    <h2>{{ object.first_name }} {{ object.last_name }}</h2>
+    <p class="pseudonym">{{ object.pseudonym|default:"—" }}</p>
+</div>
+{% endblock cv_content %}

@@ -1,6 +1,7 @@
 from tests.test1.app.views import (
     cv_author,
     cv_author_wide_card,
+    cv_author_custom_detail,
     cv_publisher,
     cv_book,
     cv_vehicle,
@@ -18,6 +19,7 @@ from tests.test1.app.views import (
 urlpatterns = []
 urlpatterns += cv_author.urlpatterns
 urlpatterns += cv_author_wide_card.urlpatterns
+urlpatterns += cv_author_custom_detail.urlpatterns
 urlpatterns += cv_publisher.urlpatterns
 urlpatterns += cv_book.urlpatterns
 urlpatterns += cv_vehicle.urlpatterns

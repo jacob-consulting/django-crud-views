@@ -2,6 +2,42 @@ import pytest
 from django.test.client import Client
 from lxml import html
 
+from crud_views.lib.view import CardAction
+from tests.lib.helper.user import user_viewset_permission
+
+
+def test_card_action_requires_key_or_child_name():
+    """CardAction must have either key or child_name set."""
+    import pytest
+    from pydantic import ValidationError
+
+    with pytest.raises(ValidationError):
+        CardAction()
+
+    with pytest.raises(ValidationError):
+        CardAction(key="", child_name=None)
+
+
+def test_card_action_key_only():
+    action = CardAction(key="detail", label="Details")
+    assert action.key == "detail"
+    assert action.child_name is None
+    assert action.child_key == "list"
+
+
+def test_card_action_child_only():
+    action = CardAction(child_name="book", child_key="card", label="Books")
+    assert action.key == ""
+    assert action.child_name == "book"
+    assert action.child_key == "card"
+
+
+def test_card_action_both_key_and_child():
+    """Having both key and child_name is allowed — child_name takes priority in tag."""
+    action = CardAction(key="detail", child_name="book", label="Books")
+    assert action.key == "detail"
+    assert action.child_name == "book"
+
 
 @pytest.mark.django_db
 def test_card_list_empty(client_user_author_view: Client, cv_author):
@@ -144,3 +180,59 @@ def test_card_container_class_custom(client_user_author_wide_card: Client, cv_au
     # Verify the default class is NOT present
     default_containers = doc.cssselect(".row > .col-md-6")
     assert len(default_containers) == 0
+
+
+@pytest.fixture
+def user_publisher_card_view(cv_publisher, cv_book):
+    from django.contrib.auth.models import User
+
+    user = User.objects.create_user(username="user_pub_card", password="password")
+    user_viewset_permission(user, cv_publisher, "view")
+    user_viewset_permission(user, cv_book, "view")
+    return user
+
+
+@pytest.fixture
+def client_user_publisher_card(client, user_publisher_card_view) -> Client:
+    client.force_login(user_publisher_card_view)
+    return client
+
+
+@pytest.mark.django_db
+def test_card_child_action_renders_url(
+    client_user_publisher_card: Client, cv_publisher, cv_book, publisher_penguin
+):
+    """CardAction with child_name renders a link to the child viewset."""
+    response = client_user_publisher_card.get("/publisher/card/")
+    assert response.status_code == 200
+    doc = html.fromstring(response.content)
+    card = doc.cssselect(".card.mb-3")[0]
+    actions = card.cssselect("a.btn")
+    assert len(actions) == 2
+
+    books_btn = actions[1]
+    assert "Books" in books_btn.text_content()
+    pk = publisher_penguin.pk
+    assert f"/publisher/{pk}/book/" in books_btn.get("href")
+
+
+@pytest.mark.django_db
+def test_card_child_action_always_renders(
+    cv_publisher, publisher_penguin
+):
+    """Child actions render even without explicit child view permission."""
+    from django.contrib.auth.models import User
+
+    user = User.objects.create_user(username="user_pub_no_book", password="password")
+    user_viewset_permission(user, cv_publisher, "view")
+    client = Client()
+    client.force_login(user)
+
+    response = client.get("/publisher/card/")
+    assert response.status_code == 200
+    doc = html.fromstring(response.content)
+    card = doc.cssselect(".card.mb-3")[0]
+    actions = card.cssselect("a.btn")
+    assert len(actions) == 2
+    books_btn = actions[1]
+    assert "Books" in books_btn.text_content()

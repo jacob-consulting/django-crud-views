@@ -85,6 +85,11 @@ ViewSet, `label` overrides the default short label, `variant` sets the button st
 
 Override `cv_card_container_class` to control the Bootstrap grid width of each card wrapper. Default is `"col-md-6"` (two cards per row). Set to `"col-md-12"` for full-width or `"col-md-4"` for three per row.
 
+### List Key Fallback
+
+ViewSets with only a `CardListView` (no `ListView`) automatically resolve `"list"` keys to `"card"`. No need to
+override `cv_success_key` or `cv_cancel_key` on sibling views.
+
 ### Custom Card Template
 
 Override `cv_card_template` for model-specific card content:

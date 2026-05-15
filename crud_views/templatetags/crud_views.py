@@ -208,6 +208,16 @@ def cv_card_action(context, action, obj=None):
 
 
 @register.simple_tag(takes_context=True)
+def cv_user_in_group(context, group):
+    if group is None:
+        return False
+    user = context["request"].user
+    if not user.is_authenticated:
+        return False
+    return group.user_set.filter(pk=user.pk).exists()
+
+
+@register.simple_tag(takes_context=True)
 def cv_card(context, obj):
     view = cv_get_view(context)
     template_name = getattr(view, "cv_card_template", "crud_views/tags/card.html")

@@ -254,6 +254,8 @@ class ViewSet(BaseModel):
         return key in self._views
 
     def get_view_class(self, key: str) -> Type[CrudView]:
+        if not self.is_view_registered(key) and key == "list" and self.is_view_registered("card"):
+            return self._views["card"]
         cv_raise(self.is_view_registered(key), f"key {key} not registered at {self}", ViewSetKeyFoundError)
         return self._views[key]
 
@@ -261,6 +263,8 @@ class ViewSet(BaseModel):
         """
         The router name
         """
+        if not self.is_view_registered(key) and key == "list" and self.is_view_registered("card"):
+            key = "card"
         app = f"{self.app}:" if self.app else ""
         return f"{app}{self.name}-{key}"
 

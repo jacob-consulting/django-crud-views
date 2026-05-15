@@ -98,3 +98,49 @@ def test_card_list_permission_denied(client_user_a: Client, cv_author):
     """User without view permission gets 403."""
     response = client_user_a.get("/author/card/")
     assert response.status_code == 403
+
+
+@pytest.mark.django_db
+def test_card_container_class_default(client_user_author_view: Client, cv_author, author_douglas_adams):
+    """Default card container uses col-md-6."""
+    response = client_user_author_view.get("/author/card/")
+    assert response.status_code == 200
+    doc = html.fromstring(response.content)
+    containers = doc.cssselect(".row > .col-md-6")
+    assert len(containers) == 1
+
+
+@pytest.fixture
+def cv_author_wide_card():
+    from tests.test1.app.views import cv_author_wide_card as ret
+
+    return ret
+
+
+@pytest.fixture
+def user_author_wide_card_view(cv_author_wide_card):
+    from django.contrib.auth.models import User
+    from tests.lib.helper.user import user_viewset_permission
+
+    user = User.objects.create_user(username="user_wide_card", password="password")
+    user_viewset_permission(user, cv_author_wide_card, "view")
+    return user
+
+
+@pytest.fixture
+def client_user_author_wide_card(client, user_author_wide_card_view) -> Client:
+    client.force_login(user_author_wide_card_view)
+    return client
+
+
+@pytest.mark.django_db
+def test_card_container_class_custom(client_user_author_wide_card: Client, cv_author_wide_card, author_douglas_adams):
+    """Custom cv_card_container_class renders in the template."""
+    response = client_user_author_wide_card.get("/author_wide_card/card/")
+    assert response.status_code == 200
+    doc = html.fromstring(response.content)
+    containers = doc.cssselect(".row > .col-md-12")
+    assert len(containers) == 1
+    # Verify the default class is NOT present
+    default_containers = doc.cssselect(".row > .col-md-6")
+    assert len(default_containers) == 0

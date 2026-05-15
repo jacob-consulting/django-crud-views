@@ -160,6 +160,23 @@ class AuthorContactView(CrispyModelViewMixin, MessageMixin, CustomFormViewPermis
         pass
 
 
+# --- Author Wide Card (custom cv_card_container_class) ---
+
+cv_author_wide_card = ViewSet(model=Author, name="author_wide_card")
+
+
+class AuthorWideCardListView(CardListViewPermissionRequired):
+    cv_viewset = cv_author_wide_card
+    cv_card_container_class = "col-md-12"
+    cv_card_actions = [
+        CardAction(key="detail", label="Details", variant="primary", flex=True),
+    ]
+
+
+class AuthorWideCardDetailView(DetailViewPermissionRequired):
+    cv_viewset = cv_author_wide_card
+
+
 # --- Publisher (INT PK) ---
 
 cv_publisher = ViewSet(

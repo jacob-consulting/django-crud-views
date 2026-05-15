@@ -60,7 +60,9 @@ def test_related_objects_rendered_in_template(
 
 
 @pytest.mark.django_db
-def test_delete_protection_shown_on_get(client_user_publisher_protected_delete, cv_publisher_protected, publisher_penguin):
+def test_delete_protection_shown_on_get(
+    client_user_publisher_protected_delete, cv_publisher_protected, publisher_penguin
+):
     """GET on a protected object shows errors instead of the delete form."""
     pk = publisher_penguin.pk
     response = client_user_publisher_protected_delete.get(f"/publisher_protected/{pk}/delete/")
@@ -68,11 +70,13 @@ def test_delete_protection_shown_on_get(client_user_publisher_protected_delete, 
     content = response.content.decode()
     assert "Cannot delete" in content
     assert "delete_protection_errors" in response.context
-    assert '<form' not in content
+    assert "<form" not in content
 
 
 @pytest.mark.django_db
-def test_delete_protection_post_still_blocks(client_user_publisher_protected_delete, cv_publisher_protected, publisher_penguin):
+def test_delete_protection_post_still_blocks(
+    client_user_publisher_protected_delete, cv_publisher_protected, publisher_penguin
+):
     """POST on a protected object still prevents deletion (defense in depth)."""
     pk = publisher_penguin.pk
     response = client_user_publisher_protected_delete.post(f"/publisher_protected/{pk}/delete/", {"confirm": True})

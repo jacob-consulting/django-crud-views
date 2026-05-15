@@ -55,7 +55,9 @@ class BookReviewDetailView(GuardianDetailViewPermissionRequired):
     cv_context_actions = ["card", "detail", "update", "delete"]
 
 
-class BookReviewCreateView(CrispyModelViewMixin, MessageMixin, CreateViewParentMixin, GuardianCreateViewPermissionRequired):
+class BookReviewCreateView(
+    CrispyModelViewMixin, MessageMixin, CreateViewParentMixin, GuardianCreateViewPermissionRequired
+):
     form_class = BookReviewForm
     cv_viewset = cv_book_review
 

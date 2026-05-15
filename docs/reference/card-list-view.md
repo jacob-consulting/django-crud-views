@@ -38,6 +38,23 @@ URLs auto-register at `/<prefix>/card/`.
 | `variant` | `str` | `"secondary"` | Button style: `"primary"`, `"secondary"`, `"tertiary"` |
 | `flex` | `bool` | `False` | If True, button gets `flex-grow-1` |
 
+## Card Container Class
+
+Control the Bootstrap grid class on each card's wrapper `<div>`. Defaults to `col-md-6` (two cards per row).
+
+```python
+class ProjectCardListView(CardListViewPermissionRequired):
+    cv_viewset = cv_project
+    cv_card_container_class = "col-md-12"  # full-width cards
+    cv_card_actions = [...]
+```
+
+| Value | Layout |
+|---|---|
+| `col-md-4` | Three cards per row |
+| `col-md-6` | Two cards per row (default) |
+| `col-md-12` | One card per row |
+
 ## Custom Card Template
 
 Override `cv_card_template` to render model-specific content:

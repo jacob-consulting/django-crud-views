@@ -27,7 +27,9 @@ def client_user_author_custom_detail(client, user_author_custom_detail_view) -> 
 
 
 @pytest.mark.django_db
-def test_detail_custom_view_renders(client_user_author_custom_detail: Client, cv_author_custom_detail, author_douglas_adams):
+def test_detail_custom_view_renders(
+    client_user_author_custom_detail: Client, cv_author_custom_detail, author_douglas_adams
+):
     """DetailCustomView renders the custom template with object context."""
     pk = author_douglas_adams.pk
     response = client_user_author_custom_detail.get(f"/author_custom_detail/{pk}/detail/")

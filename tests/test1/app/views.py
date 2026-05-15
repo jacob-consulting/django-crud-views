@@ -177,6 +177,11 @@ class AuthorWideCardDetailView(DetailViewPermissionRequired):
     cv_viewset = cv_author_wide_card
 
 
+class AuthorWideCardCreateView(CrispyModelViewMixin, CreateViewPermissionRequired):
+    form_class = AuthorForm
+    cv_viewset = cv_author_wide_card
+
+
 # --- Publisher (INT PK) ---
 
 cv_publisher = ViewSet(

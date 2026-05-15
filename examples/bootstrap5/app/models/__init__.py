@@ -51,6 +51,21 @@ class Book(OrderedModel):
         return f"{self.title} by {self.author}"
 
 
+class BookReview(models.Model):
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name="reviews")
+    reviewer = models.CharField(max_length=100, verbose_name=_("Reviewer"))
+    text = models.TextField(verbose_name=_("Review Text"))
+    rating = models.IntegerField(verbose_name=_("Rating"))
+
+    class Meta:
+        verbose_name = _("Book Review")
+        verbose_name_plural = _("Book Reviews")
+        ordering = ["-rating"]
+
+    def __str__(self):
+        return f"Review by {self.reviewer}"
+
+
 class Foo(models.Model):
     name = models.CharField(max_length=100, verbose_name=_("Name"))
 

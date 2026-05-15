@@ -57,6 +57,28 @@ Full step-by-step: see [references/quickstart.md](references/quickstart.md)
 
 ---
 
+## DetailCustomView
+
+Detail view without `ObjectDetailMixin` — full custom template control. Same `cv_key = "detail"` and
+`cv_path = "detail"` as `DetailView`. Use when you need complete layout control instead of structured
+`cv_property_display` groups.
+
+```python
+from crud_views.lib.views import DetailCustomViewPermissionRequired
+
+class BookDetailView(DetailCustomViewPermissionRequired):
+    cv_viewset = cv_book
+    template_name = "myapp/book_detail.html"
+```
+
+Template receives `object`, `view`, and `cv_extends`. Extend `cv_extends` and fill `{% block cv_content %}`.
+
+Guardian variant: `GuardianDetailCustomViewPermissionRequired`.
+
+`DetailCustomView` is the base class for `DetailView` — both share icons, snippets, and context actions.
+
+---
+
 ## CardListView
 
 Render objects as cards instead of table rows. Uses `CardAction` for per-button config and `cv_card_template` for

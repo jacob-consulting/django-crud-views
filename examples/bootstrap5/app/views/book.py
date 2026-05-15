@@ -15,7 +15,7 @@ from crud_views.lib.viewset import ParentViewSet
 from crud_views_guardian.lib.viewset import GuardianViewSet
 from crud_views_guardian.lib.views import (
     GuardianCardListViewPermissionRequired,
-    GuardianDetailViewPermissionRequired,
+    GuardianDetailCustomViewPermissionRequired,
     GuardianCreateViewPermissionRequired,
     GuardianUpdateViewPermissionRequired,
     GuardianDeleteViewPermissionRequired,
@@ -74,26 +74,11 @@ class BookCardListView(ListViewTableFilterMixin, GuardianCardListViewPermissionR
     ]
 
 
-class BookDetailView(GuardianDetailViewPermissionRequired):
+class BookDetailView(GuardianDetailCustomViewPermissionRequired):
     cv_viewset = cv_book
     cv_context_actions = ["card", "detail", "update", "delete"]
     cv_cancel_key = "card"
-
-    cv_property_display = [
-        {
-            "title": _("Attributes"),
-            "icon": "book-open",
-            "description": _("Book details and metadata"),
-            "properties": [
-                "id",
-                "title",
-                {"path": "price", "detail": _("Retail price in EUR")},
-                "author",
-                "created_dt",
-                "modified_dt",
-            ],
-        },
-    ]
+    template_name = "app/book_detail.html"
 
 
 class BookUpdateView(CrispyModelViewMixin, MessageMixin, GuardianUpdateViewPermissionRequired):

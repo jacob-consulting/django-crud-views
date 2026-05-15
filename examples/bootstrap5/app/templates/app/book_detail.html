@@ -1,0 +1,32 @@
+{% extends cv_extends %}
+
+{% load i18n %}
+
+{% block cv_content %}
+<div class="row">
+    <div class="col-md-8">
+        <table class="table">
+            <tr>
+                <th>{% translate "Title" %}</th>
+                <td>{{ object.title }}</td>
+            </tr>
+            <tr>
+                <th>{% translate "Price" %}</th>
+                <td>{{ object.price }} €</td>
+            </tr>
+            <tr>
+                <th>{% translate "Author" %}</th>
+                <td>{{ object.author }}</td>
+            </tr>
+            <tr>
+                <th>{% translate "Created" %}</th>
+                <td>{{ object.created_dt }}</td>
+            </tr>
+            <tr>
+                <th>{% translate "Modified" %}</th>
+                <td>{{ object.modified_dt }}</td>
+            </tr>
+        </table>
+    </div>
+</div>
+{% endblock cv_content %}

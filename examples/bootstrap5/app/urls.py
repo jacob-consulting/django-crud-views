@@ -8,6 +8,7 @@ from django.urls import path
 from app.views import IndexView
 from app.views.author import cv_author
 from app.views.book import cv_book
+from app.views.book_review import cv_book_review
 from app.views.foo import cv_foo
 from app.views.bar import cv_bar
 from app.views.baz import cv_baz
@@ -38,6 +39,7 @@ urlpatterns = [
 urlpatterns += (
     cv_author.urlpatterns
     + cv_book.urlpatterns
+    + cv_book_review.urlpatterns
     + cv_foo.urlpatterns
     + cv_bar.urlpatterns
     + cv_baz.urlpatterns

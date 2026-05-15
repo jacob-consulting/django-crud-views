@@ -69,6 +69,7 @@ class BookCardListView(ListViewTableFilterMixin, GuardianCardListViewPermissionR
     formhelper_class = BookFilterFormHelper
     cv_card_actions = [
         CardAction(key="detail", label="Details", variant="primary", flex=True),
+        CardAction(child_name="book_review", child_key="card", label="Reviews"),
         CardAction(key="update", label="Edit"),
         CardAction(key="delete", no_label=True, variant="tertiary"),
     ]

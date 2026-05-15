@@ -266,6 +266,14 @@ class PublisherDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissi
     cv_viewset = cv_publisher
 
 
+class PublisherCardListView(CardListViewPermissionRequired):
+    cv_viewset = cv_publisher
+    cv_card_actions = [
+        CardAction(key="detail", label="Details", variant="primary", flex=True),
+        CardAction(child_name="book", child_key="list", label="Books"),
+    ]
+
+
 # --- Book (INT PK, child of Publisher) ---
 
 cv_book = ViewSet(

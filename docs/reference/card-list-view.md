@@ -37,6 +37,8 @@ URLs auto-register at `/<prefix>/card/`.
 | `no_label` | `bool` | `False` | Render as icon-only button |
 | `variant` | `str` | `"secondary"` | Button style: `"primary"`, `"secondary"`, `"tertiary"` |
 | `flex` | `bool` | `False` | If True, button gets `flex-grow-1` |
+| `child_name` | `str \| None` | `None` | Child viewset name for cross-viewset links (like `LinkChildColumn`). When set, `key` is ignored for URL resolution. |
+| `child_key` | `str` | `"list"` | View key within the child viewset (e.g., `"list"`, `"card"`) |
 
 ## Card Container Class
 
@@ -54,6 +56,29 @@ class ProjectCardListView(CardListViewPermissionRequired):
 | `col-md-4` | Three cards per row |
 | `col-md-6` | Two cards per row (default) |
 | `col-md-12` | One card per row |
+
+## Child ViewSet Actions
+
+Link to a child viewset from a card button — the card equivalent of `LinkChildColumn` in tables.
+
+```python
+from crud_views.lib.view import CardAction
+
+class PublisherCardListView(CardListViewPermissionRequired):
+    cv_viewset = cv_publisher
+    cv_card_actions = [
+        CardAction(key="detail", label="Details", variant="primary", flex=True),
+        CardAction(child_name="book", child_key="card", label="Books"),
+    ]
+```
+
+Child actions always render (no permission check on the card). The target view handles its own permissions. This matches `LinkChildColumn` behavior for tables.
+
+| Field | Required | Description |
+|---|---|---|
+| `child_name` | Yes | The child viewset's `name` |
+| `child_key` | No (default `"list"`) | Which view in the child viewset to link to |
+| `label` | Yes (for child actions) | Button text — no auto-label for child actions |
 
 ## Custom Card Template
 

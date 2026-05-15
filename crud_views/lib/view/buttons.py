@@ -18,6 +18,13 @@ class ContextButton(BaseModel):
     label_template: str | None = None
     label_template_code: str | None = None
 
+    @staticmethod
+    def _resolve_container_key(viewset, key_target: str) -> str:
+        if key_target == "list" and not viewset.is_view_registered("list"):
+            if viewset.is_view_registered("card"):
+                return "card"
+        return key_target
+
     def render_label(self, data: dict, context: ViewContext) -> str:
         if self.label_template:
             return context.view.render_snippet(data, self.label_template)
@@ -25,11 +32,12 @@ class ContextButton(BaseModel):
             return context.view.render_snippet(data, template_code=self.label_template_code)
 
     def get_context(self, context: ViewContext) -> dict:
+        key_target = self._resolve_container_key(context.view.cv_viewset, self.key_target)
 
-        dict_kwargs = dict(cv_access=False, cv_url=context.view.cv_get_url(key=self.key_target, obj=context.object))
+        dict_kwargs = dict(cv_access=False, cv_url=context.view.cv_get_url(key=key_target, obj=context.object))
 
         # get target view class
-        cls = context.view.cv_get_cls_assert_object(self.key_target, context.object)
+        cls = context.view.cv_get_cls_assert_object(key_target, context.object)
 
         # check access
         if cls.cv_has_access(context.view.request.user, context.object):
@@ -62,7 +70,8 @@ class ParentContextButton(ContextButton):
 
         # get the parent view class, defined by target
         parent = context.view.cv_viewset.parent
-        cls = parent.viewset.get_view_class(self.key_target)
+        key_target = self._resolve_container_key(parent.viewset, self.key_target)
+        cls = parent.viewset.get_view_class(key_target)
 
         dict_kwargs = dict(cv_access=False, cv_icon_action=cls.cv_viewset.icon_header)
 
@@ -76,7 +85,7 @@ class ParentContextButton(ContextButton):
                 kwargs[arg] = context.view.kwargs[arg]
 
         # parent url
-        router_name = parent.viewset.get_router_name(self.key_target)
+        router_name = parent.viewset.get_router_name(key_target)
         cv_url = reverse(router_name, kwargs=kwargs)
 
         # get the url for the target key

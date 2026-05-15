@@ -124,6 +124,15 @@ class AuthorCardListView(ListViewTableFilterMixin, CardListViewPermissionRequire
     cv_card_actions = [...]
 ```
 
+## List Key Fallback
+
+When a ViewSet has a `CardListView` but no `ListView`, keys that reference `"list"`
+(such as `cv_success_key`, `cv_cancel_key`, and the default "home" context button)
+automatically fall back to `"card"`. No manual overrides needed.
+
+This means a ViewSet with only a `CardListView` works out of the box — CreateView,
+UpdateView, and DeleteView all redirect to the card view after success.
+
 ## Guardian (Per-Object Permissions)
 
 ```python

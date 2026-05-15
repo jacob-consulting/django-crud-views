@@ -182,6 +182,56 @@ def test_card_container_class_custom(client_user_author_wide_card: Client, cv_au
     assert len(default_containers) == 0
 
 
+def test_get_view_class_fallback_list_to_card(cv_author_wide_card):
+    """When 'list' is not registered but 'card' is, get_view_class('list') returns the card view."""
+    view_class = cv_author_wide_card.get_view_class("list")
+    assert view_class.cv_key == "card"
+
+
+def test_get_view_class_no_fallback_when_list_exists(cv_author):
+    """When 'list' is registered, get_view_class('list') returns the list view, not card."""
+    view_class = cv_author.get_view_class("list")
+    assert view_class.cv_key == "list"
+
+
+def test_get_view_class_raises_when_neither_list_nor_card(cv_author):
+    """When key is not registered and no fallback applies, raises ViewSetKeyFoundError."""
+    from crud_views.lib.exceptions import ViewSetKeyFoundError
+
+    with pytest.raises(ViewSetKeyFoundError):
+        cv_author.get_view_class("nonexistent")
+
+
+@pytest.fixture
+def user_author_wide_card_add(cv_author_wide_card):
+    from django.contrib.auth.models import User
+    from tests.lib.helper.user import user_viewset_permission
+
+    user = User.objects.create_user(username="user_wide_card_add", password="password")
+    user_viewset_permission(user, cv_author_wide_card, "view")
+    user_viewset_permission(user, cv_author_wide_card, "add")
+    return user
+
+
+@pytest.fixture
+def client_user_author_wide_card_add(client, user_author_wide_card_add) -> Client:
+    client.force_login(user_author_wide_card_add)
+    return client
+
+
+@pytest.mark.django_db
+def test_create_view_redirects_to_card_in_card_only_viewset(
+    client_user_author_wide_card_add: Client, cv_author_wide_card
+):
+    """CreateView in a card-only ViewSet redirects to the card view after success."""
+    response = client_user_author_wide_card_add.post(
+        "/author_wide_card/create/",
+        {"first_name": "Isaac", "last_name": "Asimov", "pseudonym": ""},
+    )
+    assert response.status_code == 302
+    assert "/author_wide_card/card/" in response.url
+
+
 @pytest.fixture
 def user_publisher_card_view(cv_publisher, cv_book):
     from django.contrib.auth.models import User

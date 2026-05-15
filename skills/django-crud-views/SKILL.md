@@ -81,6 +81,10 @@ URLs auto-register at `/<prefix>/card/`. `cv_card_actions` declares per-button r
 ViewSet, `label` overrides the default short label, `variant` sets the button style (`primary`/`secondary`/`tertiary`),
 `flex` makes the button fill available space, and `no_label` renders an icon-only button.
 
+### Card Container Class
+
+Override `cv_card_container_class` to control the Bootstrap grid width of each card wrapper. Default is `"col-md-6"` (two cards per row). Set to `"col-md-12"` for full-width or `"col-md-4"` for three per row.
+
 ### Custom Card Template
 
 Override `cv_card_template` for model-specific card content:

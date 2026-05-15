@@ -249,9 +249,7 @@ def client_user_publisher_card(client, user_publisher_card_view) -> Client:
 
 
 @pytest.mark.django_db
-def test_card_child_action_renders_url(
-    client_user_publisher_card: Client, cv_publisher, cv_book, publisher_penguin
-):
+def test_card_child_action_renders_url(client_user_publisher_card: Client, cv_publisher, cv_book, publisher_penguin):
     """CardAction with child_name renders a link to the child viewset."""
     response = client_user_publisher_card.get("/publisher/card/")
     assert response.status_code == 200
@@ -267,9 +265,7 @@ def test_card_child_action_renders_url(
 
 
 @pytest.mark.django_db
-def test_card_child_action_always_renders(
-    cv_publisher, publisher_penguin
-):
+def test_card_child_action_always_renders(cv_publisher, publisher_penguin):
     """Child actions render even without explicit child view permission."""
     from django.contrib.auth.models import User
 

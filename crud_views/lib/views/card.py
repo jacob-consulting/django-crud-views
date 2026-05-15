@@ -13,6 +13,7 @@ class CardListView(CrudView, generic.ListView):
     cv_path = "card"
     cv_object = False
     cv_card_actions: list[CardAction] = []
+    cv_card_container_class: str = "col-md-6"
     cv_card_template: str = "crud_views/tags/card.html"
     cv_context_actions = crud_views_settings.list_context_actions
 

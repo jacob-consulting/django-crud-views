@@ -2,7 +2,7 @@
 
 <div class="row">
     {% for object in object_list %}
-        <div class="col-md-6">
+        <div class="{{ view.cv_card_container_class }}">
             {% cv_card object %}
         </div>
         {% empty %}

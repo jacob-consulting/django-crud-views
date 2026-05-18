@@ -75,6 +75,8 @@
 - Fixed permission holder queries not scoped to `app_label` in ManageView
 - Fixed `ContextButton` failing on child ViewSets without a list view
 - Fixed empty string and type assertion for user in context methods
+- Fixed `BookReviewDetailView` missing `cv_property_display` configuration in bootstrap5 example
+- Added create context action to `BookReviewCardListView` in bootstrap5 example
 
 ## 0.3.12
 

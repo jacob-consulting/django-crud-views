@@ -8,9 +8,17 @@ function cvGetConfig() {
     };
 }
 
-function cv_list_action_form_submit(cv_oid) {
-    let form_name = 'cv_form_' + cv_oid,
-        form = $('#' + form_name);
-    form.submit();
-    return false;
-}
+$(document).ready(function () {
+    // list action form submit via data-cv-action="submit-form"
+    $(document).on("click", "[data-cv-action='submit-form']", function (e) {
+        e.preventDefault();
+        var targetId = $(this).attr("data-cv-target");
+        $("#" + targetId).submit();
+    });
+
+    // cancel button navigation via data-cv-cancel-url
+    $(document).on("click", "[data-cv-cancel-url]", function (e) {
+        e.preventDefault();
+        window.location.href = $(this).attr("data-cv-cancel-url");
+    });
+});

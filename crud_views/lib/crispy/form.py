@@ -65,16 +65,14 @@ class CrispyFormMixin:
 
     def get_cancel_button_kwargs(self) -> dict:
         request = self.cv_view.request
-        # get the object from the form instance or the view context object
         obj = getattr(self, "instance", getattr(self.cv_view, "object", None))
         context = self.cv_view.get_cancel_button_context(obj=obj, user=request.user, request=request)
         url = context["cv_url"]
-        onclick = f"location.href='{url}';return false;"
         return {
             "name": "reset",
             "value": context["cv_action_label"],
-            "onclick": onclick,
             "css_class": "btn btn-secondary",
+            "data_cv_cancel_url": url,
         }
 
     def get_cancel_button(self) -> Button:

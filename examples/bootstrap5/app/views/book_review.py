@@ -66,6 +66,7 @@ class BookReviewDetailView(GuardianDetailViewPermissionRequired):
         },
     ]
 
+
 class BookReviewCreateView(
     CrispyModelViewMixin, MessageMixin, CreateViewParentMixin, GuardianCreateViewPermissionRequired
 ):

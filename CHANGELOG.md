@@ -1,5 +1,81 @@
 # Django CRUD Views - Changelog
 
+## 0.4.0
+
+### New: `crud_views_guardian` — django-guardian per-object permission support
+
+- Added `crud_views_guardian` sub-package with `GuardianViewSet` and per-object permission checking via django-guardian
+- `GuardianListViewPermissionRequired`, `GuardianDetailViewPermissionRequired`, `GuardianCreateViewPermissionRequired`, `GuardianUpdateViewPermissionRequired`, `GuardianDeleteViewPermissionRequired` — drop-in replacements for standard permission-required views
+- `GuardianCardListViewPermissionRequired`, `GuardianDetailCustomViewPermissionRequired` — guardian variants for card and custom detail views
+- `GuardianManageView` — displays guardian configuration, per-object permission holders, and object counts
+- `GuardianObjectPermissionMixin`, `GuardianQuerysetMixin`, `GuardianParentPermissionMixin` — composable mixins for custom guardian views
+- `cv_guardian_anonymous_behavior` setting to redirect or deny anonymous users
+- `cv_guardian_accept_global_perms` viewset field to control whether global permissions grant access
+- Guardian-aware cascading delete display with per-object permission filtering
+
+### New: `CardListView` — card-based list view
+
+- Added `CardListView` and `CardListViewPermissionRequired` — renders objects as Bootstrap cards instead of table rows
+- `CardAction` Pydantic model for per-card button configuration with `key`, `label`, `variant`, `flex`, `no_label`, and `child_name` fields
+- `cv_card_action` supports child viewset links via `child_name` for cross-viewset card actions
+- `cv_card_template` attribute for model-specific custom card templates
+- `cv_card_container_class` attribute for configurable card grid layout (default: `col-md-6`)
+- `cv_card` and `cv_card_action` template tags for rendering cards and actions
+- Default icon changed to `fa-solid fa-rectangle-list`
+
+### New: `DetailCustomView` — custom template detail view
+
+- Extracted `DetailCustomView` as a base class for detail views with full custom template control (no `ObjectDetailMixin`)
+- Same `cv_key = "detail"` registration as `DetailView` — use when you want to write your own detail template
+- `GuardianDetailCustomViewPermissionRequired` guardian variant
+
+### New: Improved `DeleteView` — cascading deletes and delete protection
+
+- Delete confirmation page now shows all related objects that will be cascade-deleted, grouped and linked
+- `cv_check_delete_protection` runs on both GET and POST — hides the delete form when deletion is blocked by protected relations
+- Related objects display supports dict-based tree structure with linking to detail views
+- Guardian-aware: cascading delete display filters objects by per-object permissions
+
+### New: `ContextButton` improvements
+
+- Added `ChildContextButton` for linking to child viewsets from context action bars
+- `ContextButton` resolves "list" to "card" when list view is not registered (fallback)
+- `cv_user_in_group` template tag to check group membership in templates
+
+### New: `ManageView` improvements
+
+- `manage_view_class` field on `ViewSet` and `CRUD_VIEWS_MANAGE_VIEW_CLASS` setting for custom manage view subclasses
+- `CRUD_VIEWS_GUARDIAN_MANAGE_VIEW_CLASS` setting for custom guardian manage views
+- `CRUD_VIEWS_MANAGE_GROUP` setting for group-based manage view access
+- `CRUD_VIEWS_MANAGE_SHOW_USERS` setting to show user column in permission holders
+- `ManageView` always auto-registered, access controlled by `manage_views_enabled` setting
+
+### CSP compatibility
+
+- Fully compatible with strict Content Security Policy — no inline scripts, inline event handlers, inline styles, or `javascript:` URIs
+- New `{% cv_config %}` template tag replaces `{% cv_const_js %}` (backwards-compatible alias retained)
+- `{% cv_csrf_token %}` template tag removed — CSRF token read from DOM at point of use
+- All interactive behavior handled via event delegation in external `viewset.js`
+- Formset CSS animations extracted to `formset.css` static file
+- Cancel buttons use anchor `<a href>` instead of `onclick` handlers
+- Crispy forms cancel button uses `data-cv-cancel-url` attribute instead of `onclick`
+
+### Other improvements
+
+- `cv_header_icon_class` and `cv_filter_icon_class` simple template tags for icon CSS classes
+- ViewSet `get_view_class()` falls back from `list` to `card` key when list view is not registered
+- Filter form helper now receives view context
+
+### Bug fixes
+
+- Fixed guardian create button visibility — `cv_create_has_access` now correctly checks permissions
+- Fixed guardian list button visibility for per-object permission views
+- Fixed anonymous user handling in guardian views (redirect instead of 500)
+- Fixed `cv_guardian_accept_global_perms` not being respected in create access checks
+- Fixed permission holder queries not scoped to `app_label` in ManageView
+- Fixed `ContextButton` failing on child ViewSets without a list view
+- Fixed empty string and type assertion for user in context methods
+
 ## 0.3.12
 
 - Fixed `view_delete.content.html` rendering the raw `{{ object }}` string above the delete confirmation form

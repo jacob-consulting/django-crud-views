@@ -1,5 +1,7 @@
 $(document).ready(function () {
 
+    var config = cvGetConfig();
+
     // add event listener to the filter button
     $('#filter-button').click(function () {
         let expanded = $('#filter-button').attr('aria-expanded');
@@ -9,8 +11,8 @@ $(document).ready(function () {
 
     // filter reset button: reset filter but keep sort
     $('#filter-button-reset').click(function () {
-        let url = ViewSet.request.path,
-            query_string = ViewSet.request.query_string,
+        let url = config.request.path,
+            query_string = config.request.query_string,
             params = new URLSearchParams(query_string),
             reset_param = "reset_filter=true";
         if (params.has("sort")) {
@@ -29,6 +31,7 @@ $(document).ready(function () {
         let collapse = $('#filter-collapse'),
             visible = collapse.is(":visible"),
             form = $('#filter-form'),
+            csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value,
             data = {
                 filter_expanded: !visible,
             };
@@ -36,7 +39,7 @@ $(document).ready(function () {
         console.log('visible', visible);
 
         $.post({
-                url: ViewSet.request.path,
+                url: config.request.path,
                 headers: {"X-CSRFToken": csrftoken},
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify(data),

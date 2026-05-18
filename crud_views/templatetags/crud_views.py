@@ -39,13 +39,22 @@ def cv_get_context(context, key, obj=None) -> dict:
     return context
 
 
-@register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/const.js.html", takes_context=True)
-def cv_const_js(context):
+def _cv_config_context(context):
     request = context["request"]
     return {
         "request_path": request.path,
         "request_query_string": request.META.get("QUERY_STRING", ""),
     }
+
+
+@register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/cv_config.html", takes_context=True)
+def cv_const_js(context):
+    return _cv_config_context(context)
+
+
+@register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/cv_config.html", takes_context=True)
+def cv_config(context):
+    return _cv_config_context(context)
 
 
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/list_action.html", takes_context=True)

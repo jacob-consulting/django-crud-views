@@ -107,6 +107,7 @@ class CrudViewsSettings(BaseModel):
             {
                 "property": self.get_css("property.css"),
                 "table": self.get_css("table.css"),
+                "formset": self.get_css("formset.css"),
             }
         )
 

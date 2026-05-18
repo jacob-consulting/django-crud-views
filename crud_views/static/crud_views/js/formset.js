@@ -593,3 +593,8 @@ class CrudViewsFormset extends XBase {
 
 }
 
+$(function () {
+    if (document.querySelector(".cv-formset-content")) {
+        new CrudViewsFormset();
+    }
+});

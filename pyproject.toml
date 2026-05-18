@@ -23,7 +23,7 @@ classifiers = [
 ]
 requires-python = ">=3.12"
 dependencies = [
-    "django (>=4.2.0,<6)",
+    "django (>=4.2.0)",
     "pydantic (>=2.2.1)",
     "python-box (>=6.0.2)",
     "django-tables2 (>=2.5.3)",

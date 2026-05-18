@@ -3,11 +3,9 @@
         <a href="{{  cv_url }}" title="{{ cv_action_label }}">{{  cv_action_short_label }}</a>
     {% endif %}
     {% if cv_list_action_method == "post" %}
-        <form action="{{ cv_url }}" method="post" style="display:inline">
+        <form action="{{ cv_url }}" method="post" class="cv-inline">
             {% csrf_token %}
-            <a href="javascript:{}"
-               onclick="this.closest('form').submit();return false;"
-               title="{{ cv_action_label }}">{{ cv_action_short_label }}</a>
+            <button type="submit" title="{{ cv_action_label }}">{{ cv_action_short_label }}</button>
         </form>
     {% endif %}
 {% endif %}

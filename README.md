@@ -47,4 +47,4 @@ you're building a small project or a large application, Django CRUD Views can he
 - a complete page building system with navigations and lots of widgets
 
 ## Current version
-Current version: 0.3.12
+Current version: 0.4.0

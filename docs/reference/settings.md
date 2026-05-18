@@ -51,6 +51,36 @@ Default list actions for list view.
 |--------------|---------------|-------------|--------------------------|
 | LIST_ACTIONS | Global switch | `List[str]` | `detail, update, delete` |
 
+## Content Security Policy (CSP)
+
+django-crud-views is compatible with strict Content Security Policy headers. The package does not use inline scripts, inline event handlers, inline styles, or `javascript:` URIs.
+
+Projects can enforce a CSP without `unsafe-inline` for both `script-src` and `style-src` directives.
+
+### Template tags
+
+The `{% cv_config %}` template tag renders server-side request data as `data-*` attributes on a hidden DOM element. Place it in your base template where `{% cv_const_js %}` was previously used:
+
+```html
+{% load crud_views %}
+
+{% cv_config %}
+{% cv_css %}
+{% cv_js %}
+```
+
+The `{% cv_const_js %}` tag still works as a backwards-compatible alias but renders the same CSP-safe output as `{% cv_config %}`.
+
+### JavaScript architecture
+
+All interactive behavior (list action form submissions, cancel button navigation, filter toggling) is handled via event delegation in the external `viewset.js` static file. Dynamic data is passed from Django to JavaScript through `data-*` attributes:
+
+- `#cv-config` element carries `data-request-path` and `data-query-string`
+- `[data-cv-action="submit-form"]` elements trigger form submission
+- `[data-cv-cancel-url]` elements trigger navigation
+
+No nonces or hashes are required.
+
 ## django-tables2 compatibility
 
 The list view table template `crud_views/templates/crud_views/table/bootstrap5.html` requires **django-tables2 ≥ 3.0**.

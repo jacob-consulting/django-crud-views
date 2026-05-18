@@ -22,11 +22,6 @@ def cv_js(context):
     return {"js": crud_views_settings.javascript}
 
 
-@register.inclusion_tag(f"{crud_views_settings.theme_path}/shared/csrftoken.html", takes_context=True)
-def cv_csrf_token(context):
-    return {}
-
-
 def cv_get_view(context) -> CrudView:
     view: CrudView = context["view"]
     assert isinstance(view, CrudView), f"view {view} is not ViewSetAware"

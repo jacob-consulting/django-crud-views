@@ -31,7 +31,6 @@ $(document).ready(function () {
         let collapse = $('#filter-collapse'),
             visible = collapse.is(":visible"),
             form = $('#filter-form'),
-            csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value,
             data = {
                 filter_expanded: !visible,
             };
@@ -40,7 +39,7 @@ $(document).ready(function () {
 
         $.post({
                 url: config.request.path,
-                headers: {"X-CSRFToken": csrftoken},
+                headers: {"X-CSRFToken": config.csrfToken},
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify(data),
             },

@@ -1,6 +1,10 @@
 function cvGetConfig() {
     var el = document.getElementById("cv-config");
+    if (!el) {
+        throw new Error("cvGetConfig: #cv-config element not found. Make sure {% cv_config %} is in your base template.");
+    }
     return {
+        csrfToken: el.dataset.csrfToken,
         request: {
             path: el.dataset.requestPath,
             query_string: el.dataset.queryString,

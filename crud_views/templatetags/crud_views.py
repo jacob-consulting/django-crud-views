@@ -36,9 +36,12 @@ def cv_get_context(context, key, obj=None) -> dict:
 
 def _cv_config_context(context):
     request = context["request"]
+    from django.middleware.csrf import get_token
+
     return {
         "request_path": request.path,
         "request_query_string": request.META.get("QUERY_STRING", ""),
+        "csrf_token": get_token(request),
     }
 
 

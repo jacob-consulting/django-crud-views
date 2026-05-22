@@ -96,7 +96,8 @@ packages = [
     "crud_views",
     "crud_views_plain",
     "crud_views_workflow",
-    "crud_views_polymorphic"
+    "crud_views_polymorphic",
+    "crud_views_guardian",
 ]
 
 [tool.ruff]

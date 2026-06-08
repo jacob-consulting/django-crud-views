@@ -1,5 +1,33 @@
 # Django CRUD Views - Changelog
 
+## 0.5.0
+
+### Changed: `django-ordered-model` is now an optional dependency
+
+- `django-ordered-model` is no longer installed by default — install it via the `ordered` extra: `pip install django-crud-views[ordered]` (also included in the `all` extra)
+- Added `get_ordered_model` lazy-import helper so `crud_views.lib.formsets` and the ordered up/down actions import cleanly when the package is absent
+- Removed the top-level `ordered_model` import from `formsets.py`; `OrderedCheckBase` now resolves the model through `get_ordered_model`
+- New `check_ordered_model_installed` Django system check errors only when a ViewSet actually uses ordering but the `ordered` extra is not installed
+
+> **Upgrade note:** if you use ordered list actions and previously relied on `django-ordered-model` being pulled in automatically, add the `[ordered]` extra to your install.
+
+### Internal
+
+- Migrated the project to a `src/` layout (all packages moved under `src/`); the built wheel is byte-for-byte identical, so there is no change for installed users
+- CI: force the codecov action's transitive `actions/github-script` onto Node 24 to clear the Node 20 deprecation warning
+
+## 0.4.3
+
+- Added `crud_views_guardian` to the packaged views list in `pyproject.toml`
+
+## 0.4.2
+
+- Fixed CSRF token handling — the token is now added to `cvGetConfig` instead of being queried from the DOM (strict CSP compatibility)
+
+## 0.4.1
+
+- Excluded the `superpowers` folder from mkdocs navigation
+
 ## 0.4.0
 
 ### New: `crud_views_guardian` — django-guardian per-object permission support

@@ -19,3 +19,21 @@ def test_get_ordered_model_returns_none_when_absent(monkeypatch):
     monkeypatch.setitem(sys.modules, "ordered_model.models", None)
 
     assert ordered.get_ordered_model() is None
+
+
+def test_formsets_module_imports_without_ordered_model(monkeypatch):
+    """crud_views.lib.formsets.formsets must import cleanly when ordered_model is absent."""
+    import importlib
+
+    monkeypatch.setitem(sys.modules, "ordered_model", None)
+    monkeypatch.setitem(sys.modules, "ordered_model.models", None)
+
+    import crud_views.lib.formsets.formsets as formsets_mod
+
+    # Reload under the hidden-package condition; must not raise ImportError.
+    reloaded = importlib.reload(formsets_mod)
+    assert hasattr(reloaded, "FormSet")
+
+    # Restore a clean module state for other tests.
+    monkeypatch.undo()
+    importlib.reload(reloaded)

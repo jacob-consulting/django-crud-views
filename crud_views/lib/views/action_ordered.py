@@ -5,10 +5,12 @@ from .action import ActionView
 class OrderedCheckBase:
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        from ordered_model.models import OrderedModel
+        from crud_views.lib.ordered import get_ordered_model
 
-        # todo: move to system checks
-        if not issubclass(self.model, OrderedModel):
+        ordered_model = get_ordered_model()
+        # When django-ordered-model is absent, the model cannot be an OrderedModel;
+        # crud_views.checks.check_ordered_model_installed reports the missing extra at startup.
+        if ordered_model is not None and not issubclass(self.model, ordered_model):
             raise ValueError(f"{self.model} is not a subclass of OrderedModel")
 
 

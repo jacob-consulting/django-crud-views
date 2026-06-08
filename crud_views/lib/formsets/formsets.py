@@ -11,7 +11,6 @@ from django.forms.forms import BaseForm
 from django.forms.models import ModelForm, BaseInlineFormSet
 from django.http.request import HttpRequest
 from django.template.loader import render_to_string
-from ordered_model.models import OrderedModel
 from pydantic import BaseModel, Field, model_validator
 from enum import Enum
 
@@ -44,9 +43,13 @@ class FormSet(BaseModel, arbitrary_types_allowed=True):
     def validate_formset(self) -> Self:
 
         from .inline_formset import BaseInlineFormSet
+        from crud_views.lib.ordered import get_ordered_model
 
         if self.klass.can_order:
-            if not issubclass(self.klass.model, OrderedModel):
+            ordered_model = get_ordered_model()
+            # If django-ordered-model is not installed, skip the subclass check here;
+            # crud_views.checks.check_ordered_model_installed reports the missing extra at startup.
+            if ordered_model is not None and not issubclass(self.klass.model, ordered_model):
                 raise ValidationError(
                     f"FormSet '{self.key}' model not a subclass of OrderedModel but formset.can_order is True"
                 )

@@ -1,4 +1,5 @@
 import sys
+from types import SimpleNamespace
 
 import pytest
 
@@ -39,9 +40,6 @@ def test_formsets_module_imports_without_ordered_model(monkeypatch):
     importlib.reload(reloaded)
 
 
-from crud_views.lib import ordered as ordered_helper
-
-
 @pytest.mark.django_db
 def test_check_passes_when_ordered_model_installed(cv_author):
     """With the package installed and ordered views registered, the check is silent."""
@@ -64,3 +62,37 @@ def test_check_errors_when_ordered_model_absent(monkeypatch, cv_author):
     assert len(errors) == 1
     assert errors[0].id == "crud_views.E300"
     assert "ordered" in errors[0].msg
+
+
+def _fake_formset(can_order, children=None):
+    return SimpleNamespace(
+        klass=SimpleNamespace(can_order=can_order),
+        children={k: v for k, v in (children or [])},
+    )
+
+
+def test_formset_uses_ordering_direct():
+    """A formset with can_order=True is detected directly."""
+    from crud_views.checks import _formset_uses_ordering
+
+    assert _formset_uses_ordering(_fake_formset(True)) is True
+    assert _formset_uses_ordering(_fake_formset(False)) is False
+
+
+def test_formset_uses_ordering_nested_child():
+    """can_order on a nested child formset is detected via recursion."""
+    from crud_views.checks import _formset_uses_ordering
+
+    child = _fake_formset(True)
+    parent = _fake_formset(False, children=[("child", child)])
+    assert _formset_uses_ordering(parent) is True
+
+
+def test_formset_uses_ordering_deeply_nested_false():
+    """No can_order anywhere in the tree returns False."""
+    from crud_views.checks import _formset_uses_ordering
+
+    grandchild = _fake_formset(False)
+    child = _fake_formset(False, children=[("gc", grandchild)])
+    parent = _fake_formset(False, children=[("c", child)])
+    assert _formset_uses_ordering(parent) is False

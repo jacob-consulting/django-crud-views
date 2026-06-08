@@ -64,12 +64,12 @@ tasks:
     silent: true
 
   msg-make-crud_views:
-    dir: crud_views
-    cmd: python -m django makemessages -l de --settings=settings_i18n
+    dir: src/crud_views
+    cmd: PYTHONPATH=../.. python -m django makemessages -l de --settings=settings_i18n
 
   msg-comp-crud_views:
-    dir: crud_views
-    cmd: python -m django compilemessages --settings=settings_i18n
+    dir: src/crud_views
+    cmd: PYTHONPATH=../.. python -m django compilemessages --settings=settings_i18n
 
   msg-make-example:
     dir: examples/bootstrap5

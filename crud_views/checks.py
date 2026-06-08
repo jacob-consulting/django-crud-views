@@ -60,8 +60,7 @@ def check_ordered_model_installed(app_configs=None, **kwargs):
         return []
     return [
         Error(
-            "django-ordered-model is required by an ordered view or a can_order formset, "
-            "but it is not installed.",
+            "django-ordered-model is required by an ordered view or a can_order formset, but it is not installed.",
             hint="Install the optional extra: pip install django-crud-views[ordered]",
             id="crud_views.E300",
         )

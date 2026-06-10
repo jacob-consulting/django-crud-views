@@ -109,6 +109,10 @@ class ViewSet(BaseModel):
             self.pk = pk_field_map.get(type(self.model._meta.pk), self.PK.INT)
 
         with _REGISTRY_LOCK:
+            cv_raise(
+                self.name not in _REGISTRY,
+                f"ViewSet name {self.name} is already registered by {_REGISTRY.get(self.name)!r}",
+            )
             _REGISTRY[self.name] = self
 
         base = self.get_manage_view_class()

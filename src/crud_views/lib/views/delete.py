@@ -157,10 +157,7 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, generic.DeleteView):
         return []
 
     def post(self, request, *args, **kwargs):
-        try:
-            self.object = self.get_object()
-        except AttributeError:
-            self.object = None
+        self.object = self.get_object()
 
         context = self.get_context_data(**kwargs)
         self.cv_post_hook(context)

@@ -15,6 +15,7 @@ from tests.test1.app.views import (
     cv_publisher_form_protected,
     cv_publisher_linked,
 )
+from tests.test1.app.views_formset import cv_publisher_formset
 
 urlpatterns = []
 urlpatterns += cv_author.urlpatterns
@@ -32,3 +33,4 @@ urlpatterns += cv_publisher_cascade.urlpatterns
 urlpatterns += cv_publisher_protected.urlpatterns
 urlpatterns += cv_publisher_form_protected.urlpatterns
 urlpatterns += cv_publisher_linked.urlpatterns
+urlpatterns += cv_publisher_formset.urlpatterns

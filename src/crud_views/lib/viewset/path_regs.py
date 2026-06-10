@@ -5,7 +5,7 @@ class PrimaryKeys:
 
     INT: str = r"\d+"
     HEX: str = r"[0-9a-z]+"
-    UUID: str = r"[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}"
+    UUID: str = r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
     KEY: str = "[a-z_]+"
     STR: str = r"[A-Za-z0-9_\-]+"
 

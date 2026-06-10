@@ -1,3 +1,22 @@
+"""
+Render tree for (nested) inline formsets.
+
+When a view with formsets renders, the declarative FormSet hierarchy
+(crud_views.lib.formsets.formsets.FormSet) is instantiated into a tree of
+runtime nodes that the templates iterate over:
+
+- ``XFormSet`` wraps one bound/unbound Django formset instance: it knows its
+  unique prefix within the nested hierarchy, its level, layout helpers
+  (columns), and the JSON payload the JavaScript needs to add/remove rows.
+- ``XForm`` wraps one form (row) of an XFormSet and holds the child
+  XFormSets nested under that row.
+
+``FormSet.init()`` builds this tree for a request (recursively for all
+children); ``FormSet.template()`` builds a single-branch tree used to render
+the empty-row template returned by the AJAX endpoint. ``save()``/``is_valid()``
+walk the tree depth-first, handling deletes before updates.
+"""
+
 from __future__ import annotations
 
 import json
@@ -78,7 +97,7 @@ class XFormSet(BaseModel, arbitrary_types_allowed=True):
     management_form: Any
     forms: List[XForm] = Field(default_factory=lambda: list())
     parent: XForm | None = None
-    start_at_rows: bool = False  # todo: bad name, improve
+    render_rows_only: bool = False  # True for the AJAX row template: skip the fieldset wrapper
 
     def __str__(self):
         return f"XFormSet({self.prefix},{self.prefix_key},{self.level})"

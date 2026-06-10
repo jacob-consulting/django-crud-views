@@ -1,7 +1,7 @@
 {% load crispy_forms_tags %}
 {% load crud_views_formsets %}
 
-{% if not x_formset.start_at_rows %}
+{% if not x_formset.render_rows_only %}
 
     <!-- formsets: start {{ x_formset.prefix }} -->
     <div class="row">

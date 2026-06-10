@@ -1,9 +1,7 @@
-from django.contrib.auth import get_user_model
+from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
-
-User = get_user_model()
 
 
 class WorkflowInfo(models.Model):
@@ -11,7 +9,7 @@ class WorkflowInfo(models.Model):
     state_old = models.CharField(max_length=255)
     state_new = models.CharField(max_length=255)
     comment = models.TextField(null=True, blank=True)
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
     timestamp = models.DateTimeField(auto_now_add=True)
     data = models.JSONField(default=dict, blank=True, null=True)
     workflow_object_content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)

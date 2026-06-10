@@ -9,6 +9,8 @@
 
 ### Fixed
 
+- Removed all import-time `get_user_model()` calls: `WorkflowInfo.user` now references `settings.AUTH_USER_MODEL` (Django's documented pattern for swappable user models, migration-identical), templatetag modules import without the app registry, and type hints in `lib.view.base` moved under `TYPE_CHECKING`
+
 - Settings checks: a missing `CRUD_VIEWS_EXTENDS` now produces a clear "setting CRUD_VIEWS_EXTENDS is not set" check error instead of crashing; an invalid `CRUD_VIEWS_MANAGE_VIEWS_ENABLED` value is reported (`crud_views.E101`); repeated check runs no longer accumulate duplicate messages
 
 - View registration no longer mutates the context-action lists owned by the settings singleton (copy-on-write when adding the `manage` action), and it now honors `CRUD_VIEWS_MANAGE_VIEWS_ENABLED="no"` instead of an unconditional `if True`

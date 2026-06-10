@@ -5,11 +5,11 @@ from typing import Dict, List, Type, Any, Iterable, Tuple, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from crud_views.lib.viewset import ViewSet
+    from django.contrib.auth.models import AbstractUser as User
 
 from crud_views.lib import check
 from crud_views.lib.check import Check, CheckAttributeReg, CheckAttribute, CheckTemplateOrCode
 from crud_views.lib.exceptions import cv_raise, ParentViewSetError, CrudViewError
-from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.db.models import Model
 from django.shortcuts import get_object_or_404
@@ -24,8 +24,6 @@ from .buttons import ContextButton
 from .context import ViewContext
 from .meta import CrudViewMetaClass
 from ..settings import crud_views_settings
-
-User = get_user_model()
 
 
 class CrudView(metaclass=CrudViewMetaClass):

@@ -1,11 +1,8 @@
-from django.contrib.auth import get_user_model
 from django.urls import reverse
 from pydantic import BaseModel
 
 from .context import ViewContext
 from ..settings import crud_views_settings
-
-User = get_user_model()
 
 
 class ContextButton(BaseModel):

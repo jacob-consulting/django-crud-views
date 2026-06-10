@@ -1,5 +1,3 @@
-from django.contrib.auth import get_user_model
-
 from crud_views.lib.exceptions import cv_raise
 
 try:
@@ -8,8 +6,6 @@ try:
     _base_metaclass = type(FilterMixin)
 except ImportError:
     _base_metaclass = type
-
-User = get_user_model()
 
 
 class CrudViewMetaClass(_base_metaclass):

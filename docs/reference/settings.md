@@ -115,3 +115,12 @@ OBJECT_DETAIL_TEMPLATE_PACK_TYPES = "default"
 OBJECT_DETAIL_ICONS_LIBRARY = "fontawesome"
 OBJECT_DETAIL_ICONS_TYPE = "solid"
 ```
+
+## Permission caching
+
+`ViewSet` derives its permission map (`view`, `add`, `change`, `delete`, plus custom model permissions) from the `Permission` table via the `default_permissions` property. This property is a `cached_property`: the database is queried once per `ViewSet` and the result is **cached for the lifetime of the process**.
+
+Consequences:
+
+- Permissions added or renamed at runtime (e.g. via the admin) are not picked up until the process restarts.
+- The first access requires migrations to have run (the `Permission` and `ContentType` tables must exist).

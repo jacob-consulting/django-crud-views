@@ -72,6 +72,9 @@ class SessionData(BaseModel):
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        # do not persist partial state when the with-block raised
+        if exc_type is not None:
+            return False
         serialized_data = self.model_dump(
             exclude={
                 "view",

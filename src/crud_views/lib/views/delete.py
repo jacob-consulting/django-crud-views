@@ -165,7 +165,8 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, generic.DeleteView):
         context = self.get_context_data(**kwargs)
         self.cv_post_hook(context)
         if self.cv_form_is_valid(context):
-            errors = self.cv_check_delete_protection()
+            # get_context_data already ran the delete protection check
+            errors = context.get("delete_protection_errors", [])
             if errors:
                 form = context["form"]
                 for error in errors:

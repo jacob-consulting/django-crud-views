@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Added
+
+- New `CRUD_VIEWS_STRICT` setting (defaults to `DEBUG`): in strict mode, exceptions previously swallowed by `ignore_exception` (e.g. unknown view keys in `cv_context_action` template tags or table link columns) are raised so misconfigurations fail loudly during development; in non-strict mode they are logged as warnings under the `crud_views` logger hierarchy
+- Logging: swallowed/narrowed exceptions in `DeleteView.cv_get_related_object_url` and the guardian create-button parent resolution are now logged instead of silently ignored
+
 ### Fixed
 
 - Formsets: a form/x-form mismatch during nested formset save now raises `CrudViewError` instead of failing silently (the previous `assert Exception(...)` never raised)

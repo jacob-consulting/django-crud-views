@@ -55,7 +55,7 @@ guardian = [
 ]
 
 all = [
-    "django-crud-views[workflow,polymorphic,ordered]"
+    "django-crud-views[workflow,polymorphic,ordered,guardian]"
 ]
 
 dev = [
@@ -83,7 +83,7 @@ test = [
 [project.urls]
 Homepage = "https://github.com/jacob-consulting/django-crud-views"
 Documentation = "https://django-crud-views.readthedocs.io/en/latest/"
-Repository = "https://github.com:jacob-consulting/django-crud-views.git"
+Repository = "https://github.com/jacob-consulting/django-crud-views.git"
 Issues = "https://github.com/jacob-consulting/django-crud-views/issues"
 Changelog = "https://github.com/jacob-consulting/django-crud-views/blob/main/CHANGELOG.md"
 
@@ -116,6 +116,7 @@ source = ["crud_views", "crud_views_plain", "crud_views_polymorphic", "crud_view
 [tool.coverage.report]
 show_missing = true
 skip_empty = true
+fail_under = 88
 
 [tool.bumpversion]
 current_version = "0.5.0"

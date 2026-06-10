@@ -48,7 +48,7 @@ tasks:
 
   bump-patch:
     cmds:
-      - bumpver update --patch --no-fetch
+      - bump-my-version bump patch
     silent: true
 
   test:

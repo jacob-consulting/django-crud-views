@@ -39,9 +39,8 @@ class Check(BaseModel):
 
     def get_message(self, msg: str = None) -> str:
         kwargs = self.get_message_context()
-        if msg:
-            msg.format(**kwargs)
-        return self.msg.format(**kwargs)
+        template = msg if msg else self.msg
+        return template.format(**kwargs)
 
 
 # todo: check for type
@@ -107,7 +106,7 @@ class CheckEitherAttribute(Check):
     attribute2: str | None = None
     allow_none: bool = False
 
-    msg: str = "Neither »{attribute1}» not »{attribute2}» are set or are missing »{context}»"
+    msg: str = "Neither »{attribute1}» nor »{attribute2}» are set or are missing »{context}»"
 
     def get_message_context(self) -> dict:
         context = super().get_message_context()

@@ -44,6 +44,8 @@ class CustomFormNoObjectView(CrudViewProcessFormMixin, CrudView, FormMixin, Temp
         - cv_path
     """
 
+    cv_object = False
+
     template_name = "crud_views/view_custom_form.html"
     cv_context_actions = crud_views_settings.detail_context_actions
 

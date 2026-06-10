@@ -645,3 +645,30 @@ def user_publisher_protected_delete(cv_publisher_protected):
 def client_user_publisher_protected_delete(client, user_publisher_protected_delete) -> Client:
     client.force_login(user_publisher_protected_delete)
     return client
+
+
+# --- Publisher FormSet fixtures ---
+
+
+@pytest.fixture
+def cv_publisher_formset():
+    from tests.test1.app.views_formset import cv_publisher_formset as ret
+
+    return ret
+
+
+@pytest.fixture
+def user_publisher_formset(cv_publisher_formset):
+    from django.contrib.auth.models import User
+
+    user = User.objects.create_user(username="user_publisher_formset", password="password")
+    user_viewset_permission(user, cv_publisher_formset, "view")
+    user_viewset_permission(user, cv_publisher_formset, "add")
+    user_viewset_permission(user, cv_publisher_formset, "change")
+    return user
+
+
+@pytest.fixture
+def client_user_publisher_formset(client, user_publisher_formset) -> Client:
+    client.force_login(user_publisher_formset)
+    return client

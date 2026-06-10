@@ -7,6 +7,8 @@ from django.forms.forms import BaseForm
 from django.forms.formsets import BaseFormSet
 from pydantic import BaseModel, Field
 
+from crud_views.lib.exceptions import CrudViewError
+
 try:
     from polymorphic.formsets import BasePolymorphicInlineFormSet
 except ImportError:
@@ -183,7 +185,7 @@ class XFormSet(BaseModel, arbitrary_types_allowed=True):
             for x_form in self.forms:
                 if form == x_form.form:
                     return x_form
-            assert Exception("not found")
+            raise CrudViewError(f"no XForm found for form with prefix {form.prefix} at {self}")
 
         # NOTE: instance.ordered_forms DOES NOT INCLUDE DELETED FORMS ;-)
         can_order = self.formset.can_order

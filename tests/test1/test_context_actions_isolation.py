@@ -5,7 +5,6 @@ lists owned by the settings singleton (copy-on-write), and the
 CRUD_VIEWS_MANAGE_VIEWS_ENABLED instead of a literal `if True`.
 """
 
-import pytest
 
 from crud_views.lib.settings import crud_views_settings
 from tests.test1.app.models import Publisher

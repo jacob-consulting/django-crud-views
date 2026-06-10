@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Dict, Type, Iterable
 
 from crud_views.lib.check import Check, CheckAttribute
+from django.core.exceptions import BadRequest
 from django.db.models import Model
 from django.forms.models import ModelForm
 from django.http import JsonResponse
@@ -48,8 +49,21 @@ class FormSetMixinBase:
         num = request.GET.get("num")
         formset_parent_prefix_key = request.GET.get("formset_parent_prefix_key")
 
+        if num is None or not num.isdigit():
+            raise BadRequest("num must be an integer")
+
         formsets = self.cv_get_formsets()
-        data = formsets.get_template(key_path=key_path, pk=pk, num=num, parent_prefix=formset_parent_prefix_key)
+        if formsets is None:
+            raise BadRequest("view has no formsets")
+
+        # validate the key path before rendering
+        node = formsets.get(key_path[0])
+        for key in key_path[1:]:
+            node = node.children.get(key) if node else None
+        if node is None:
+            raise BadRequest(f"unknown formset template {request.GET.get('template')}")
+
+        data = formsets.get_template(key_path=key_path, pk=pk, num=int(num), parent_prefix=formset_parent_prefix_key)
         return data
 
     def cv_form_is_valid(self, context: dict) -> bool:
@@ -175,8 +189,6 @@ class PolymorphicFormSetMixin(FormSetMixinBase):
         model = self.polymorphic_model
 
         # it is okay that a model has no formsets defined
-        if model not in self.cv_polymorphic_formsets:
-            raise ValueError(f"No FormSets instance found for polymorphic model {model.__class__}")
         formsets = self.cv_polymorphic_formsets.get(model, None)
         if formsets is None:
             return None

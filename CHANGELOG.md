@@ -32,6 +32,8 @@
 
 ### Internal
 
+- Renamed `crud_views/lib/formsets/x.py` to `render_tree.py` with a module docstring explaining the XForm/XFormSet render-tree model; renamed `XFormSet.start_at_rows` to `render_rows_only` (semi-private formsets API)
+
 - New nested-formset test suite (Publisher → Book → BookNote) raising formsets coverage from 34–62% to 78–100%; total coverage 95% with a `fail_under = 88` CI gate
 - `task bump-patch` now invokes `bump-my-version` (was the unrelated `bumpver` tool); removed the nonexistent `bootstrap5` extra from `noxfile.py`
 - Moved internal planning artifacts from `docs/superpowers/` to `superpowers/` so they are no longer built into the documentation site

@@ -1,13 +1,17 @@
+import logging
 from collections import defaultdict
 from typing import NamedTuple
 
 from django.contrib.admin.utils import NestedObjects
 from django.db import router
+from django.urls import NoReverseMatch, reverse
 from django.views import generic
 
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import CrudView, CrudViewPermissionRequiredMixin
 from crud_views.lib.views.mixins import CrudViewProcessFormMixin
+
+logger = logging.getLogger(__name__)
 
 
 class RelatedObjects(NamedTuple):
@@ -62,8 +66,6 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, generic.DeleteView):
         for viewset in _REGISTRY.values():
             if viewset.model == model and viewset.is_view_registered("detail"):
                 try:
-                    from django.urls import reverse
-
                     router_name = viewset.get_router_name("detail")
                     kwargs = {viewset.pk_name: obj.pk}
                     if viewset.parent:
@@ -72,7 +74,8 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, generic.DeleteView):
                         if parent_obj:
                             kwargs[viewset.parent.get_pk_name()] = parent_obj.pk
                     return reverse(router_name, kwargs=kwargs)
-                except Exception:
+                except NoReverseMatch:
+                    logger.debug("cannot reverse detail url for %r at %s", obj, viewset, exc_info=True)
                     return None
         return None
 

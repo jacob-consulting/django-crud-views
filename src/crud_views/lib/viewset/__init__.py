@@ -3,7 +3,6 @@ from collections import OrderedDict
 from functools import cached_property
 from typing import Dict, List, Type, Any, Iterable, ClassVar
 
-from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Model, QuerySet, Q
@@ -28,8 +27,6 @@ from ..view import (
 )
 from ..view.buttons import FilterContextButton
 from ..views.manage import ManageView
-
-User = get_user_model()
 
 
 def empty_dict() -> dict:

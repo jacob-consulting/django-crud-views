@@ -1,13 +1,10 @@
 from django import template
-from django.contrib.auth import get_user_model
 from django.template.loader import get_template, render_to_string
 from django.utils.safestring import mark_safe
 
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.exceptions import ViewSetKeyFoundError, ignore_exception
 from crud_views.lib.view import CrudView
-
-User = get_user_model()
 
 register = template.Library()
 

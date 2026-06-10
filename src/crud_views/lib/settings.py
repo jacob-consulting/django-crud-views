@@ -1,23 +1,12 @@
 from functools import cached_property
-from typing import Any, List
+from typing import Any, ClassVar, List, Tuple
 
 from box import Box
 from django.conf import settings
 from django.core.checks import CheckMessage, Error
 from django.template import TemplateDoesNotExist
 from django.template.loader import get_template
-from pydantic import BaseModel, PrivateAttr
-
-
-class Default:
-    pass
-
-
-_messages = []
-
-
-def default_list(*args, **kwargs) -> Any:
-    return list()
+from pydantic import BaseModel
 
 
 def from_settings(name, default=None) -> Any:
@@ -25,13 +14,13 @@ def from_settings(name, default=None) -> Any:
 
 
 class CrudViewsSettings(BaseModel):
+    MANAGE_VIEWS_ENABLED_VALUES: ClassVar[Tuple[str, ...]] = ("no", "yes", "debug_only")
+
     # basic
-    extends: str = from_settings(
+    extends: str | None = from_settings(
         "CRUD_VIEWS_EXTENDS",
     )
-    manage_views_enabled: str = from_settings(
-        "CRUD_VIEWS_MANAGE_VIEWS_ENABLED", default="debug_only"
-    )  # no, yes, debug_only
+    manage_views_enabled: str = from_settings("CRUD_VIEWS_MANAGE_VIEWS_ENABLED", default="debug_only")
     manage_group: str = from_settings("CRUD_VIEWS_MANAGE_GROUP", default="CRUD_VIEWS_MANAGE")
     manage_show_users: bool = from_settings("CRUD_VIEWS_MANAGE_SHOW_USERS", default=False)
     manage_view_class: str | None = from_settings("CRUD_VIEWS_MANAGE_VIEW_CLASS", default=None)
@@ -67,20 +56,30 @@ class CrudViewsSettings(BaseModel):
         "CRUD_VIEWS_CREATE_SELECT_CONTEXT_ACTIONS", default=["home", "create_select"]
     )
 
-    _check_messages: List[CheckMessage] = PrivateAttr(default_factory=default_list)
-
     @property
     def check_messages(self) -> List[CheckMessage]:
+        messages: List[CheckMessage] = []
 
-        def check_template(t):
+        if not self.extends:
+            messages.append(Error(id="crud_views.E100", msg="setting CRUD_VIEWS_EXTENDS is not set"))
+        else:
             try:
-                get_template(t)
+                get_template(self.extends)
             except TemplateDoesNotExist:
-                self._check_messages.append(Error(id="E100", msg=f"template {t} not found"))
+                messages.append(Error(id="crud_views.E100", msg=f"template {self.extends} not found"))
 
-        check_template(self.extends)
+        if self.manage_views_enabled not in self.MANAGE_VIEWS_ENABLED_VALUES:
+            messages.append(
+                Error(
+                    id="crud_views.E101",
+                    msg=(
+                        f"setting CRUD_VIEWS_MANAGE_VIEWS_ENABLED must be one of "
+                        f"{self.MANAGE_VIEWS_ENABLED_VALUES}, got {self.manage_views_enabled!r}"
+                    ),
+                )
+            )
 
-        return self._check_messages
+        return messages
 
     @property
     def theme_path(self) -> str:

@@ -146,7 +146,9 @@ L1, L2, broken bump task, stale nox extra, malformed URL, docs/superpowers in th
 
 ## Phase 4 — Task Plan
 
-> **Execution status (2026-06-10):** Milestones 0, 1 and 2 COMPLETE.
+> **Execution status (2026-06-10): ALL MILESTONES COMPLETE.**
+> *Milestone 3*: 3.1 `x.py` → `render_tree.py` with module docstring, `start_at_rows` → `render_rows_only` (PR #26) · 3.3 TODO triage — 37 markers removed, 8 converted to issues #27–#34, commented-out code deleted (PR #35) · 3.4–3.6 robustness fixes (JSON 400, session-write guard, single delete-protection call), `ruff-check` in pre-commit, `docs/tbd/` removed, permission caching documented (PR #36).
+> Final suite: 318 passed, 1 skipped; total coverage 95% gated at `fail_under = 88`; `grep -rci todo src` = 0; zero High findings remain. Follow-up work lives in issues #27–#34.
 > *Milestones 0–1* (PR #20): formsets test suite + bug fixes (coverage 34–62% → 78–100%, total 95% with `fail_under = 88`), structural object resolution via `cv_object`, duplicate-ViewSet-name guard, check message fix, UUID regex widened, tooling fixes.
 > *Milestone 2*: 2.1 `CRUD_VIEWS_STRICT` setting + error-handling sweep (PR #21) · 2.2 copy-on-write context actions honoring `CRUD_VIEWS_MANAGE_VIEWS_ENABLED` (PR #22) · 2.4 settings check hardening — E100/E101, idempotent checks (PR #23) · 2.3 import-time `get_user_model()` removal, `settings.AUTH_USER_MODEL` FK (PR #24).
 > *Finding revision (M8):* the custom-user-model app-ordering failure does **not** reproduce during app loading on Django 4.2/5.2 (verified empirically); the real reproducible case was pre-`django.setup()` imports of the templatetag modules (fixed + regression-tested). `lib.view.base` remains transitively registry-dependent through Django's own `auth.mixins` import chain — out of crud_views' control.

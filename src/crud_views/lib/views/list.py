@@ -34,8 +34,6 @@ class ListView(CrudView, generic.ListView):
     # icons
     cv_icon_action = "fa-regular fa-rectangle-list"
 
-    # todo: add check for cv_filter_header_template/cv_filter_header_template_code
-
     @staticmethod
     def cv_get_filter_icon() -> str:
         """
@@ -65,7 +63,7 @@ class ListViewFilterFormHelper(FormHelper):
     """
 
     form_method = "GET"  # filter parameters are always GET
-    form_tag = False  # todo really?, just add hidden stuff
+    form_tag = False
 
     def __init__(self, view, request, form=None):
         super().__init__(form)

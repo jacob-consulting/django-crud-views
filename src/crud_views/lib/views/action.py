@@ -16,8 +16,6 @@ class ActionView(CrudView, SingleObjectMixin, generic.View):
             self.cv_action_success_hook(context)
         else:
             self.cv_action_error_hook(context)
-        # todo: evaluate result
-        # todo: message
         url = self.get_success_url()
         return HttpResponseRedirect(url)
 

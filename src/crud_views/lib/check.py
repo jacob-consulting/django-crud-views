@@ -43,7 +43,6 @@ class Check(BaseModel):
         return template.format(**kwargs)
 
 
-# todo: check for type
 class CheckAttribute(Check):
     """
     Check for attribute
@@ -71,7 +70,6 @@ class CheckAttribute(Check):
         return getattr(self.context, self.attribute)
 
     def messages(self) -> Iterable[CheckMessage]:
-        # yield from super().messages()
         if not self.exists or (self.value is None and not self.nullable):
             yield Error(id=self.get_id(), msg=self.get_message())
 
@@ -127,8 +125,6 @@ class CheckEitherAttribute(Check):
         return getattr(self.context, self.attribute2, None)
 
     def messages(self) -> Iterable[CheckMessage]:
-        # yield from super().messages()
-
         if not self.value1 and not self.value2 and not self.allow_none:
             yield Error(
                 id=self.get_id(),
@@ -182,7 +178,6 @@ class ContextActionCheck(Check):
     Checks for context action
     """
 
-    # todo: check when all apps are loaded
     msg: str = "Attribute »{attribute}» does not exist or is not set at »{context}»"
 
     def messages(self) -> Iterable[CheckMessage]:
@@ -190,9 +185,6 @@ class ContextActionCheck(Check):
         actions = self.context.cv_context_actions or list()  # noqa
         for action in actions:  # noqa
             is_view = viewset.has_view(action)
-            # is_special = action in viewset.special_keys
-            # if not (is_view or is_special):
-            #    yield Error(id=f"viewset.{self.id}", msg=f"{self.msg} at {self.context}: {action}")
             if not is_view:
                 yield Error(id=f"viewset.{self.id}", msg=f"{self.msg} at {self.context}: {action}")
 

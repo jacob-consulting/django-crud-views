@@ -9,6 +9,8 @@
 
 ### Fixed
 
+- View registration no longer mutates the context-action lists owned by the settings singleton (copy-on-write when adding the `manage` action), and it now honors `CRUD_VIEWS_MANAGE_VIEWS_ENABLED="no"` instead of an unconditional `if True`
+
 - Formsets: a form/x-form mismatch during nested formset save now raises `CrudViewError` instead of failing silently (the previous `assert Exception(...)` never raised)
 - Formsets: fixed an inner loop shadowing the `index` parameter in `FormSet.init()`/`FormSet.template()`, which corrupted prefixes when initializing multiple forms with 2+ child formsets
 - Formsets: `PolymorphicFormSetMixin.cv_get_formsets()` now returns `None` for polymorphic models without formsets, as documented, instead of raising `ValueError`

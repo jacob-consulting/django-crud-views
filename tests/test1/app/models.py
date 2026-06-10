@@ -46,6 +46,17 @@ class Book(models.Model):
         return self.title
 
 
+class BookNote(models.Model):
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name="notes")
+    note = models.CharField(max_length=200)
+
+    class Meta:
+        ordering = ["note"]
+
+    def __str__(self):
+        return self.note
+
+
 class Contract(models.Model):
     publisher = models.ForeignKey(Publisher, on_delete=models.PROTECT, related_name="contracts")
     title = models.CharField(max_length=200)

@@ -20,7 +20,7 @@ from .x import XForm, XFormSet
 class FormSet(BaseModel, arbitrary_types_allowed=True):
     class PK(str, Enum):
         INT = r"\d+"
-        UUID = r"[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}"
+        UUID = r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
 
     key: str | None = None
     original_key: str | None = None
@@ -139,14 +139,14 @@ class FormSet(BaseModel, arbitrary_types_allowed=True):
                 )
                 x_formset.forms.append(x_form)
 
-                for index, (key, child_formset) in enumerate(self.children.items()):
+                for child_index, (key, child_formset) in enumerate(self.children.items()):
                     x_formsets = child_formset.init(
                         request=request,
                         forms=[x_form.form],
                         level=level + 1,
                         parent=x_form,
                         parent_prefix=formset_instance_form_prefix_key,
-                        index=index,
+                        index=child_index,
                     )
                     x_form.formsets.extend(list(x_formsets))
 
@@ -214,10 +214,10 @@ class FormSet(BaseModel, arbitrary_types_allowed=True):
             )
             x_formset.forms.append(x_form)
 
-            for index, (key, child_formset) in enumerate(self.children.items()):
+            for child_index, (key, child_formset) in enumerate(self.children.items()):
                 x_formsets = child_formset.template(
                     pk=None,  # all sub-forms are new, so they have no pk
-                    index=index,
+                    index=child_index,
                     level=level + 1,
                     parent=x_form,
                     parent_prefix=formset_instance_form_prefix_key,

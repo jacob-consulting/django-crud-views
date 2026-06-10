@@ -14,7 +14,7 @@ from django.template.loader import render_to_string
 from pydantic import BaseModel, Field, model_validator
 from enum import Enum
 
-from .x import XForm, XFormSet
+from .render_tree import XForm, XFormSet
 
 
 class FormSet(BaseModel, arbitrary_types_allowed=True):
@@ -182,7 +182,7 @@ class FormSet(BaseModel, arbitrary_types_allowed=True):
             formset=self,
             parent=parent,
             management_form=formset_instance.management_form,
-            start_at_rows=True if level == 0 else False,
+            render_rows_only=True if level == 0 else False,
         )
 
         # get the forms

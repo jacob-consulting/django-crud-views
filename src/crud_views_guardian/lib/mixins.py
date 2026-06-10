@@ -1,6 +1,10 @@
+import logging
+
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.shortcuts import get_object_or_404
+
+logger = logging.getLogger(__name__)
 
 
 class GuardianObjectPermissionMixin:
@@ -131,7 +135,12 @@ class GuardianQuerysetMixin:
                 if hasattr(target_cls, "cv_create_has_access"):
                     try:
                         parent_obj = self.cv_get_parent_object()
-                    except Exception:
+                    except (Http404, KeyError):
+                        logger.warning(
+                            "could not resolve parent object for create button visibility at %s",
+                            self,
+                            exc_info=True,
+                        )
                         parent_obj = None
                     ctx["cv_access"] = target_cls.cv_create_has_access(user, self, parent_obj)
 

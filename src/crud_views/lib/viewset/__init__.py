@@ -240,11 +240,12 @@ class ViewSet(BaseModel):
     def register_view_class(self, key: str, view_class: Type[CrudView]):
         cv_raise(key not in self._views, f"key {key} already registered at {self}")
         self._views[key] = view_class
-        # add manage view to context
-        if True:  # todo: based on settings
-            if isinstance(view_class.cv_context_actions, list):
-                if "manage" not in view_class.cv_context_actions and view_class.cv_key != "manage":
-                    view_class.cv_context_actions.append("manage")
+        # add manage view to context actions; copy-on-write because the list may be
+        # shared with the settings singleton or sibling view classes
+        if crud_views_settings.manage_views_enabled != "no":
+            actions = view_class.cv_context_actions
+            if isinstance(actions, list) and "manage" not in actions and view_class.cv_key != "manage":
+                view_class.cv_context_actions = actions + ["manage"]
 
     def get_manage_view_class(self) -> Type[CrudView]:
         from django.utils.module_loading import import_string

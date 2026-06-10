@@ -8,7 +8,7 @@
 
 **Tech Stack:** Python 3.12+, hatchling build backend, uv, bump-my-version, Taskfile, pytest, ruff.
 
-**Reference spec:** `docs/superpowers/specs/2026-06-08-src-layout-migration-design.md`
+**Reference spec:** `superpowers/specs/2026-06-08-src-layout-migration-design.md`
 
 ---
 

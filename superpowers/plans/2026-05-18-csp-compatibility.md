@@ -8,7 +8,7 @@
 
 **Tech Stack:** Django templates, vanilla JS (jQuery already a dependency), crispy-forms layout objects.
 
-**Spec:** `docs/superpowers/specs/2026-05-18-csp-compatibility-design.md`
+**Spec:** `superpowers/specs/2026-05-18-csp-compatibility-design.md`
 
 ---
 

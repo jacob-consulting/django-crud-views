@@ -183,7 +183,10 @@ class ListViewTableFilterMixin(FilterView):
         if not self.cv_filter_persistence:
             return JsonResponse({"status": "ok", "filter_expanded": None})
 
-        data = json.loads(request.body.decode("utf-8"))
+        try:
+            data = json.loads(request.body.decode("utf-8"))
+        except (json.JSONDecodeError, UnicodeDecodeError):
+            raise BadRequest("invalid JSON body")
         filter_expanded = data.get("filter_expanded", None)
         if filter_expanded is None:
             raise BadRequest("filter_expanded not set")

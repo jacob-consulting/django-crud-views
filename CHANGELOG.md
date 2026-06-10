@@ -1,5 +1,30 @@
 # Django CRUD Views - Changelog
 
+## Unreleased
+
+### Fixed
+
+- Formsets: a form/x-form mismatch during nested formset save now raises `CrudViewError` instead of failing silently (the previous `assert Exception(...)` never raised)
+- Formsets: fixed an inner loop shadowing the `index` parameter in `FormSet.init()`/`FormSet.template()`, which corrupted prefixes when initializing multiple forms with 2+ child formsets
+- Formsets: `PolymorphicFormSetMixin.cv_get_formsets()` now returns `None` for polymorphic models without formsets, as documented, instead of raising `ValueError`
+- Formsets: the AJAX formset-template endpoint now returns 400 (Bad Request) for unknown formset keys or a non-integer `num` instead of a 500
+- System checks: custom check messages passed to `Check.get_message()` are no longer discarded; `CheckEitherAttribute` now emits its two distinct messages
+- System checks: crud_views checks are now registered under the `crud_views` tag (was a leftover placeholder tag `my_new_tag`)
+- UUID primary keys: URL patterns now accept any UUID version (previously only version-4 UUIDs matched, so uuid1/uuid7 PKs produced 404s)
+- Packaging: the `all` extra now includes `guardian`; fixed the malformed `Repository` URL in `pyproject.toml`
+
+### Changed
+
+- **Behavior change:** create/update/delete views no longer decide between create and update by swallowing `AttributeError` from `get_object()`; the object is resolved structurally via `cv_object`. A genuine error inside a custom `get_object()`/queryset now propagates instead of silently running the create path
+- `CustomFormNoObjectView` now sets `cv_object = False` explicitly
+- Registering two ViewSets under the same name now raises `ViewSetError` instead of silently overwriting the first registration
+
+### Internal
+
+- New nested-formset test suite (Publisher → Book → BookNote) raising formsets coverage from 34–62% to 78–100%; total coverage 95% with a `fail_under = 88` CI gate
+- `task bump-patch` now invokes `bump-my-version` (was the unrelated `bumpver` tool); removed the nonexistent `bootstrap5` extra from `noxfile.py`
+- Moved internal planning artifacts from `docs/superpowers/` to `superpowers/` so they are no longer built into the documentation site
+
 ## 0.5.0
 
 ### Changed: `django-ordered-model` is now an optional dependency

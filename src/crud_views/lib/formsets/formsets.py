@@ -25,8 +25,8 @@ class FormSet(BaseModel, arbitrary_types_allowed=True):
     key: str | None = None
     original_key: str | None = None
     title: str | None = None
-    fields: List[str]  # todo: get from formset klass ?
-    pk_field: str  # todo: get from formset klass ?
+    fields: List[str]
+    pk_field: str
     cv_view: CrudView | None = None
     parent: Self | None = None
     klass: Type[BaseInlineFormSet]
@@ -112,8 +112,7 @@ class FormSet(BaseModel, arbitrary_types_allowed=True):
                 "formset": self,
                 "instance": form.instance,
                 "prefix": prefix,
-                "parent_form": form if level > 0 else None,  # todo
-                # "form_kwargs": {"cv_view": None} # TODO HACK!!
+                "parent_form": form if level > 0 else None,
             }
             if request.POST:
                 kwargs["data"] = request.POST
@@ -197,7 +196,6 @@ class FormSet(BaseModel, arbitrary_types_allowed=True):
             form_prefix = form.prefix.rsplit("-", 1)[0] + f"-{force_form_index}"
             form.prefix = form_prefix
             forms = [form]
-            # todo: limit number of formset_instance.forms to 1 ?
 
         for formset_instance_form_index, formset_instance_form in enumerate(forms):
             # force the form index on level 0
@@ -209,7 +207,6 @@ class FormSet(BaseModel, arbitrary_types_allowed=True):
                 prefix_key=formset_instance_form_prefix_key,
                 form=formset_instance_form,
                 formset=self,
-                # instance=formset_instance,
                 parent=x_formset,
             )
             x_formset.forms.append(x_form)
@@ -263,7 +260,6 @@ class FormSets(BaseModel, arbitrary_types_allowed=True):
 
     @model_validator(mode="after")
     def apply_hierarchy(self) -> Self:
-        # todo: check this
         def apply_key(formset: FormSet, key: str, original_key: str, parent: FormSet | None = None):
             formset.original_key = original_key
             if formset.key is None:

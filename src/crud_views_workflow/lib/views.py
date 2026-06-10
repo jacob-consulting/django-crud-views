@@ -79,7 +79,6 @@ class WorkflowView(CustomFormView):
         context["has_workflow_choices"] = self.object.workflow_has_any_possible_transition(self.request.user)
         return context
 
-    # todo: cv_form_valid instead of cv_form_valid_hook?
     def cv_form_valid_hook(self, context: dict):
         """
         Process workflow transition
@@ -100,7 +99,6 @@ class WorkflowView(CustomFormView):
         wf_method = getattr(self.object, transition, None)
         assert callable(wf_method), f"Invalid transition {transition}"
 
-        # todo: configurable
         with transaction.atomic():
             # get old state
             state_old = self.object.state

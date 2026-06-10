@@ -20,7 +20,7 @@ class FormSetMixinBase:
         Iterator of checks for the view
         """
         yield from super().checks()
-        yield CheckAttribute(context=cls, id="E200", attribute="cv_formsets_required")  # todo check for type
+        yield CheckAttribute(context=cls, id="E200", attribute="cv_formsets_required")
 
     def get_context_data(self, **kwargs):
         """
@@ -138,26 +138,9 @@ class FormSetMixinBase:
 
         return formsets
 
-    # def cv_form_valid(self, form: ModelForm, formsets: FormSets):
-    #     """
-    #     Use a custom form_valid method to handle formsets because the form_valid method
-    #     would recreate the formsets again
-    #     """
-    #
-    #     with transaction.atomic():
-    #         # delete first
-    #         # formsets.deleted()
-    #
-    #         self.object = form.save(commit=True)
-    #         formsets.save(commit=True)
-    #
-    #     return HttpResponseRedirect(self.get_success_url())  # noqa
-
 
 class FormSetMixin(FormSetMixinBase):
     cv_formsets: FormSets
-
-    # todo: checks for cv_formsets: FormSets
 
     @classmethod
     def checks(cls) -> Iterable[Check]:
@@ -165,17 +148,15 @@ class FormSetMixin(FormSetMixinBase):
         Iterator of checks for the view
         """
         yield from super().checks()
-        yield CheckAttribute(context=cls, id="E200", attribute="cv_formsets")  # todo check for type
+        yield CheckAttribute(context=cls, id="E200", attribute="cv_formsets")
 
     def cv_get_formsets(self) -> FormSets:
         return self.cv_formsets.clone(cv_view=self)  # noqa
 
 
-# todo: rename, because this class name collides with django polymorphic
+# Naming collides with django-polymorphic's formset classes, see issue #30
 class PolymorphicFormSetMixin(FormSetMixinBase):
     cv_polymorphic_formsets: Dict[Type[Model], FormSets]
-
-    # todo: checks for cv_polymorphic_formsets
 
     @classmethod
     def checks(cls) -> Iterable[Check]:
@@ -183,7 +164,7 @@ class PolymorphicFormSetMixin(FormSetMixinBase):
         Iterator of checks for the view
         """
         yield from super().checks()
-        yield CheckAttribute(context=cls, id="E200", attribute="cv_polymorphic_formsets")  # todo check for type
+        yield CheckAttribute(context=cls, id="E200", attribute="cv_polymorphic_formsets")
 
     def cv_get_formsets(self) -> FormSets | None:
         model = self.polymorphic_model

@@ -7,5 +7,4 @@ class CrudViewsPlainConfig(AppConfig):
 
     def ready(self):
         pass
-        # todo: run checks
         # import viewset.checks  # noqa

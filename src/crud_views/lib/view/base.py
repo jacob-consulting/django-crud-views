@@ -74,11 +74,6 @@ class CrudView(metaclass=CrudViewMetaClass):
         yield CheckAttributeReg(context=cls, id="E200", attribute="cv_key", **check.REGS["name"])
         yield CheckAttributeReg(context=cls, id="E201", attribute="cv_path", **check.REGS["path"])
 
-        # todo: cv_extends test template if defined
-
-        # todo: reactivate
-        # yield ContextActionCheck(context=cls, id="E203", msg="action not defined")
-
         # templates are required for frontend views
         is_frontend = not cls.cv_backend_only
         if is_frontend:
@@ -271,10 +266,7 @@ class CrudView(metaclass=CrudViewMetaClass):
         return ViewContext(**kwargs)
 
     def cv_get_context_button(self, key: str) -> ContextButton | None:
-        # todo: first look in CrudView context_buttons
-        pass
-
-        # then look as ViewSet context_buttons
+        # view-level context buttons are not supported yet, see issue #27
         for cb in self.cv_viewset.context_buttons:
             if cb.key == key:
                 return cb
@@ -344,7 +336,6 @@ class CrudView(metaclass=CrudViewMetaClass):
         viewset = self.cv_viewset.get_viewset(name)
         if viewset.parent.name != self.cv_viewset.name:
             raise ParentViewSetError(f"ViewSet {viewset} is no child of {self.cv_viewset}")
-        # todo: check if this is a child of self.cv
         name = viewset.get_router_name(key)
         args = viewset.get_parent_url_args()
         attrs = viewset.get_parent_attributes()
@@ -409,7 +400,6 @@ class CrudViewPermissionRequiredMixin(PermissionRequiredMixin):
         Iterator of checks for the view
         """
         yield from super().checks()  # noqa
-        # todo
         yield CheckAttribute(context=cls, id="E202", attribute="cv_permission")
 
     @cached_property

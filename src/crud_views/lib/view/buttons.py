@@ -149,14 +149,12 @@ class FilterContextButton(ContextButton):
         if not isinstance(context.view, ListViewTableFilterMixin):
             return dict_kwargs
 
-        # todo, check permission ?
-
         list_url = context.view.cv_get_url(key=context.view.cv_key)
 
         data = dict()
 
         # render action label
-        cv_action_label = "Filter"  # todo, add render
+        cv_action_label = "Filter"
         if cv_action_label:
             data["cv_action_label"] = cv_action_label
 

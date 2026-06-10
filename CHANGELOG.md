@@ -9,6 +9,10 @@
 
 ### Fixed
 
+- The filter-persistence endpoint returns 400 (Bad Request) for a malformed JSON body instead of a 500
+- `SessionData` no longer writes partial state to the session when the with-block raised
+- `cv_check_delete_protection()` runs once per DELETE POST (was called twice)
+
 - Removed all import-time `get_user_model()` calls: `WorkflowInfo.user` now references `settings.AUTH_USER_MODEL` (Django's documented pattern for swappable user models, migration-identical), templatetag modules import without the app registry, and type hints in `lib.view.base` moved under `TYPE_CHECKING`
 
 - Settings checks: a missing `CRUD_VIEWS_EXTENDS` now produces a clear "setting CRUD_VIEWS_EXTENDS is not set" check error instead of crashing; an invalid `CRUD_VIEWS_MANAGE_VIEWS_ENABLED` value is reported (`crud_views.E101`); repeated check runs no longer accumulate duplicate messages
@@ -31,6 +35,9 @@
 - Registering two ViewSets under the same name now raises `ViewSetError` instead of silently overwriting the first registration
 
 ### Internal
+
+- Pre-commit now runs `ruff check` in addition to `ruff format`
+- Removed the stale `docs/tbd/` outline; documented the process-lifetime permission caching of `ViewSet.default_permissions` in the settings reference
 
 - TODO triage: all 37 inline `# todo` markers removed — meaningful ones converted to GitHub issues #27–#34, stale ones and commented-out code blocks deleted
 

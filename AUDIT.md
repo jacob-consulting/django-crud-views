@@ -146,8 +146,12 @@ L1, L2, broken bump task, stale nox extra, malformed URL, docs/superpowers in th
 
 ## Phase 4 — Task Plan
 
-> **Execution status (2026-06-10):** Milestones 0 and 1 COMPLETE — 0.1, 0.2, 1.1–1.7 — plus quick wins 2.5, 2.6, 3.2 and the superpowers half of 3.4. The formsets subsystem now has 18 dedicated tests (`tests/test1/test_formsets.py`, `test_formsets_bugs.py` on a new Publisher→Book→BookNote fixture viewset in `tests/test1/app/views_formset.py`); formsets coverage rose from 34–62% to 78–100% (`x.py` 94%, `formsets.py` 91%, `mixins.py` 83%); total coverage 95% with `fail_under = 88` gating CI. Create/update/delete object resolution is now structural via `cv_object` (`test_post_object_resolution.py`), duplicate ViewSet names raise (`test_viewset_registry.py`), and `CustomFormNoObjectView` sets `cv_object = False`. All changes documented in CHANGELOG "Unreleased". Full suite: 298 passed, 1 skipped; ruff clean.
-> **Remaining:** 2.1–2.4 (Milestone 2) · 3.1, 3.3, 3.4 (tbd-docs half), 3.5, 3.6 (Milestone 3).
+> **Execution status (2026-06-10):** Milestones 0, 1 and 2 COMPLETE.
+> *Milestones 0–1* (PR #20): formsets test suite + bug fixes (coverage 34–62% → 78–100%, total 95% with `fail_under = 88`), structural object resolution via `cv_object`, duplicate-ViewSet-name guard, check message fix, UUID regex widened, tooling fixes.
+> *Milestone 2*: 2.1 `CRUD_VIEWS_STRICT` setting + error-handling sweep (PR #21) · 2.2 copy-on-write context actions honoring `CRUD_VIEWS_MANAGE_VIEWS_ENABLED` (PR #22) · 2.4 settings check hardening — E100/E101, idempotent checks (PR #23) · 2.3 import-time `get_user_model()` removal, `settings.AUTH_USER_MODEL` FK (PR #24).
+> *Finding revision (M8):* the custom-user-model app-ordering failure does **not** reproduce during app loading on Django 4.2/5.2 (verified empirically); the real reproducible case was pre-`django.setup()` imports of the templatetag modules (fixed + regression-tested). `lib.view.base` remains transitively registry-dependent through Django's own `auth.mixins` import chain — out of crud_views' control.
+> Suite after Milestone 2: 314 passed, 1 skipped; ruff clean.
+> **Remaining (Milestone 3):** 3.1 rename `x.py` · 3.3 TODO triage · 3.4 `docs/tbd/` cleanup · 3.5 pre-commit `ruff check` + minor robustness · 3.6 permission-cache docs.
 
 ### Milestone 0 — Safety net
 

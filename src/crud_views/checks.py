@@ -1,4 +1,4 @@
-from django.core.checks import Error, Tags as DjangoTags
+from django.core.checks import Error
 from django.core.checks import register
 
 from crud_views.lib import ordered as ordered_helper
@@ -7,18 +7,12 @@ from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.views.action_ordered import OrderedDownView, OrderedUpView
 from crud_views.lib.viewset import ViewSet, _REGISTRY, _REGISTRY_LOCK
 
-
-class Tags(DjangoTags):
-    """Do this if none of the existing tags work for you:
-    https://docs.djangoproject.com/en/1.8/ref/checks/#builtin-tags
-    """
-
-    my_new_tag = "my_new_tag"
+TAG = "crud_views"
 
 
-@register(Tags.my_new_tag)
-def check_taggit_is_installed(app_configs=None, **kwargs):
-    "Check that django-taggit is installed when usying myapp."
+@register(TAG)
+def check_viewsets(app_configs=None, **kwargs):
+    """Run all ViewSet, CrudView and settings checks."""
 
     errors = crud_views_settings.check_messages
 
@@ -51,7 +45,7 @@ def _registry_needs_ordered_model() -> bool:
     return False
 
 
-@register(Tags.my_new_tag)
+@register(TAG)
 def check_ordered_model_installed(app_configs=None, **kwargs):
     """Error if an ordered view / can_order formset is used without django-ordered-model."""
     if ordered_helper.get_ordered_model() is not None:

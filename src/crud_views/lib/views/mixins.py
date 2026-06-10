@@ -26,10 +26,9 @@ class CrudViewProcessFormMixin:
         Override ProcessFormView
         """
 
-        try:
-            self.object = self.get_object()  # noqa
-        except AttributeError:
-            self.object = None  # noqa
+        # views with object context (update, object-based custom forms) resolve their
+        # object; create and no-object views run with object=None
+        self.object = self.get_object() if self.cv_object else None  # noqa
 
         context = self.get_context_data(**kwargs)
         self.cv_post_hook(context)

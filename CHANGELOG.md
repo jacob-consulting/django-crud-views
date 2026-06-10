@@ -32,6 +32,8 @@
 
 ### Internal
 
+- TODO triage: all 37 inline `# todo` markers removed — meaningful ones converted to GitHub issues #27–#34, stale ones and commented-out code blocks deleted
+
 - Renamed `crud_views/lib/formsets/x.py` to `render_tree.py` with a module docstring explaining the XForm/XFormSet render-tree model; renamed `XFormSet.start_at_rows` to `render_rows_only` (semi-private formsets API)
 
 - New nested-formset test suite (Publisher → Book → BookNote) raising formsets coverage from 34–62% to 78–100%; total coverage 95% with a `fail_under = 88` CI gate

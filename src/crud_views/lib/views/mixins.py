@@ -161,8 +161,6 @@ class ListViewTableFilterMixin(FilterView):
     cv_filter_persistence: bool = crud_views_settings.filter_persistence
     cv_session_key_querystring: str = "filter_query_string"
 
-    # todo: check cv_filter_persistence cv_session_key_querystring
-
     def get_filterset(self, filterset_class):  # noqa
         kwargs = self.get_filterset_kwargs(filterset_class)
         filterset = filterset_class(**kwargs)
@@ -174,10 +172,6 @@ class ListViewTableFilterMixin(FilterView):
         context = super().get_context_data(**kwargs)
 
         filter_expanded = SessionData.from_view(self).get("filter_expanded", False)
-        #
-        # with SessionData.from_view(self) as sd:
-        #     filter_expanded = sd["filter_expanded"]
-
         context["cv_filter_expanded"] = filter_expanded
         return context
 
@@ -215,7 +209,7 @@ class ListViewTableFilterMixin(FilterView):
             query_string = self.request.META["QUERY_STRING"]
 
             # reset filter ?
-            qs = parse_qs(query_string)  # todo: is this correct? looks strange with that lists
+            qs = parse_qs(query_string)
             reset_filter = qs.get("reset_filter", ["false"])[0] == "true"
             if reset_filter:
                 try:

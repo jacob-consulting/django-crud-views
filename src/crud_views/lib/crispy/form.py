@@ -130,6 +130,6 @@ class CrispyViewMixin:
         return kwargs
 
 
-# todo: remove this
+# Deprecated alias kept for backwards compatibility, see issue #34
 class CrispyModelViewMixin(CrispyViewMixin):
     pass

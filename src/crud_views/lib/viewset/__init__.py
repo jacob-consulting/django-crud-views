@@ -367,14 +367,12 @@ class ViewSet(BaseModel):
         content_type = ContentType.objects.get_for_model(model)
         permissions = OrderedDict()
         for permission in Permission.objects.filter(content_type=content_type):
-            # todo: model name must in codename
             action = permission.codename.split(f"_{permission.content_type.model}")[0]
             permissions[action] = f"{permission.content_type.app_label}.{permission.codename}"
         return permissions
 
     @cached_property
     def permissions(self) -> OrderedDict[str, str]:
-        # todo: move to view ?
         return self.default_permissions
 
     def get_meta(self, context: ViewContext) -> dict:

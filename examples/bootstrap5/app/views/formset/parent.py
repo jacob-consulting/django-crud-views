@@ -63,7 +63,7 @@ class ParentDeleteView(CrispyModelViewMixin, DeleteViewPermissionRequired):
 
 class RedirectPolyView(RedirectChildView):
     cv_action_label = _("Manage Poly")
-    cv_redirect = "poly"
+    cv_redirect = "poly_formset"
     cv_redirect_key = "list"
     cv_icon_action = "fa-solid fa-sun"
 

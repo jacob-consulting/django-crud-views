@@ -32,7 +32,7 @@ from .two import PolyTwoForm
 
 cv_poly_formset = ViewSet(
     model=Poly,
-    name="poly",
+    name="poly_formset",
     icon_header="fa-solid fa-sun",
     parent=ParentViewSet(
         name="parent",

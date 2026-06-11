@@ -1,24 +1,23 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="django-crud-views" type="Python.DjangoServer" factoryName="Django server">
-    <module name="django-crud-views" />
+  <configuration default="false" name="runserver" type="Python.DjangoServer" factoryName="Django server">
+    <module name="dpl-examples" />
     <option name="ENV_FILES" value="" />
     <option name="INTERPRETER_OPTIONS" value="" />
     <option name="PARENT_ENVS" value="true" />
     <envs>
       <env name="PYTHONUNBUFFERED" value="1" />
-      <env name="DJANGO_SETTINGS_MODULE" value="project.settings" />
     </envs>
     <option name="SDK_HOME" value="" />
-    <option name="SDK_NAME" value="Python 3.13 (django-crud-views)" />
-    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/examples/bootstrap5" />
+    <option name="SDK_NAME" value="uv (dpl-examples)" />
+    <option name="WORKING_DIRECTORY" value="" />
     <option name="IS_MODULE_SDK" value="false" />
     <option name="ADD_CONTENT_ROOTS" value="true" />
     <option name="ADD_SOURCE_ROOTS" value="true" />
     <option name="DEBUG_JUST_MY_CODE" value="false" />
-    <option name="RUN_TOOL" value="" />
+    <option name="RUN_TOOL" value="true" />
     <option name="launchJavascriptDebuger" value="false" />
-    <option name="port" value="9000" />
-    <option name="host" value="localhost" />
+    <option name="port" value="10000" />
+    <option name="host" value="127.0.0.1" />
     <option name="additionalOptions" value="" />
     <option name="browserUrl" value="" />
     <option name="runTestServer" value="false" />

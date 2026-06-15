@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('app', '0007_alter_author_options_alter_book_options_and_more'),
+        ("app", "0007_alter_author_options_alter_book_options_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='group',
-            name='locked',
-            field=models.BooleanField(default=False, verbose_name='Locked'),
+            model_name="group",
+            name="locked",
+            field=models.BooleanField(default=False, verbose_name="Locked"),
         ),
     ]

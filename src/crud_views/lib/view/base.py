@@ -434,6 +434,18 @@ class CrudViewPermissionRequiredMixin(PermissionRequiredMixin):
         assert perm, f"permission {self.cv_permission} not found at {self}"
         return perm
 
+    def has_permission(self):
+        if not super().has_permission():
+            return False
+        # Secondary state gate — a disabled action is denied even with permission.
+        # Note: cv_get_action_object() re-fetches the object (object views call
+        # get_object() again in the body — a deliberate extra read), and a missing
+        # pk raises Http404 here, so a bad-pk request 404s during the permission
+        # phase rather than reaching the view. Returning False yields 403 for an
+        # authenticated user (login redirect for anonymous — the pre-existing contract).
+        obj = self.cv_get_action_object()
+        return self.cv_action_enabled(self.request.user, obj)
+
     @classmethod
     def cv_has_access(cls, user: User, obj: Model | None = None) -> bool:
         perm = cls.cv_viewset.permissions.get(cls.cv_permission)

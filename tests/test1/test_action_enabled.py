@@ -102,3 +102,40 @@ def test_disabled_guardian_child_create_request_denied(
     url = reverse("guardian_book-create", kwargs={"guardian_publisher_pk": publisher_a.pk})
     assert client_guardian.get(url).status_code == 403
     assert client_guardian.post(url, data={}).status_code == 403
+
+
+@pytest.mark.django_db
+def test_guardian_child_object_action_receives_row_not_parent(
+    client_guardian,
+    user_guardian,
+    cv_guardian_publisher,
+    cv_guardian_book,
+    publisher_a,
+    book_under_publisher_a,
+    monkeypatch,
+):
+    # A guardian CHILD object view (delete) must invoke cv_action_enabled with the ROW,
+    # never the parent. GuardianParentPermissionMixin.dispatch runs for every child view,
+    # so it must NOT gate object views with the parent (get_object gates them with the row).
+    from django.urls import reverse
+    from tests.lib.helper.guardian import user_guardian_object_perm
+    from tests.test1.app.views import GuardianBookDeleteView
+
+    user_guardian_object_perm(user_guardian, cv_guardian_publisher, "view", publisher_a)
+    user_guardian_object_perm(user_guardian, cv_guardian_book, "delete", book_under_publisher_a)
+
+    seen = []
+
+    def _record(cls, user, obj=None):
+        seen.append(type(obj).__name__)
+        return True
+
+    monkeypatch.setattr(GuardianBookDeleteView, "cv_action_enabled", classmethod(_record))
+    url = reverse(
+        "guardian_book-delete",
+        kwargs={"guardian_publisher_pk": publisher_a.pk, "pk": book_under_publisher_a.pk},
+    )
+    assert client_guardian.get(url).status_code == 200
+    # The hook only ever saw the Book row — the parent Publisher was never passed.
+    assert "Book" in seen
+    assert "Publisher" not in seen

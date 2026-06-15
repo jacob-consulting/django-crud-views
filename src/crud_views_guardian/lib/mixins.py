@@ -217,8 +217,12 @@ class GuardianParentPermissionMixin:
                     has_perm = checker.has_perm(parent_perm.split(".")[1], parent_obj)
                 if not has_perm:
                     raise PermissionDenied
-                # Secondary state gate for child views — e.g. an open/locked parent disables create.
-                if not self.cv_action_enabled(request.user, parent_obj):
+                # Secondary state gate — only for no-object child views (e.g. create),
+                # whose action object IS the parent. Object child-views (detail/update/
+                # delete) carry a row and are gated in get_object() with that row, so we
+                # must NOT also gate them here with the parent (that would invoke
+                # cv_action_enabled with the wrong object type).
+                if not self.cv_object and not self.cv_action_enabled(request.user, parent_obj):
                     raise PermissionDenied
 
         return super().dispatch(request, *args, **kwargs)

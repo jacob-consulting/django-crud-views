@@ -36,6 +36,9 @@ class ContextButton(BaseModel):
         # get target view class
         cls = context.view.cv_get_cls_assert_object(key_target, context.object)
 
+        # button visibility — independent of access/permission
+        dict_kwargs["cv_action_enabled"] = cls.cv_action_enabled(context.view.request.user, context.object)
+
         # check access
         if cls.cv_has_access(context.view.request.user, context.object):
             # get the url for the target key
@@ -88,6 +91,9 @@ class ParentContextButton(ContextButton):
         # get the url for the target key
         dict_kwargs.update(cv_url=cv_url)
 
+        # button visibility — independent of access/permission
+        dict_kwargs["cv_action_enabled"] = cls.cv_action_enabled(context.view.request.user, context.object)
+
         # check permission
         if cls.cv_has_access(context.view.request.user, context.object):
             dict_kwargs.update(
@@ -120,6 +126,9 @@ class ChildContextButton(ContextButton):
             cv_url=url,
             cv_icon_action=child_vs.icon_header,
         )
+
+        # button visibility — independent of access/permission
+        dict_kwargs["cv_action_enabled"] = cls.cv_action_enabled(context.view.request.user, context.object)
 
         if cls.cv_has_access(context.view.request.user, context.object):
             dict_kwargs.update(cv_access=True)

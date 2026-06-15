@@ -177,6 +177,7 @@ def cv_card_action(context, action, obj=None):
         child_cls = child_viewset.get_view_class(action.child_key)
         return {
             "cv_access": True,
+            "cv_action_enabled": child_cls.cv_action_enabled(context["request"].user, obj),
             "cv_url": url,
             "cv_label": action.label,
             "cv_icon_action": child_cls.cv_icon_action,
@@ -188,9 +189,10 @@ def cv_card_action(context, action, obj=None):
     user = context["request"].user
     cls = view.cv_viewset.get_view_class(action.key)
     access = cls.cv_has_access(user, obj)
+    action_enabled = cls.cv_action_enabled(user, obj)
 
     if not access:
-        return {"cv_access": False}
+        return {"cv_access": False, "cv_action_enabled": action_enabled}
 
     url = view.cv_get_url(action.key, obj=obj)
 
@@ -202,6 +204,7 @@ def cv_card_action(context, action, obj=None):
 
     return {
         "cv_access": True,
+        "cv_action_enabled": action_enabled,
         "cv_url": url,
         "cv_label": label,
         "cv_icon_action": cls.cv_icon_action,

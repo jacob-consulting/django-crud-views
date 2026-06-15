@@ -1,4 +1,4 @@
-{% if cv_list_action_method == "post" %}
+{% if cv_action_enabled is not False and cv_list_action_method == "post" %}
     <form id="cv_form_{{ cv_oid }}" action="{{ cv_url }}" method="post" class="d-none">
         {% csrf_token %}
     </form>

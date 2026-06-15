@@ -53,6 +53,9 @@ class GuardianObjectPermissionMixin:
         perm = self.cv_viewset.permissions.get(self.cv_permission)
         if not self._check_object_perm(self.request.user, perm, obj):
             raise PermissionDenied
+        # Secondary state gate — deny a disabled action even with object perm.
+        if not self.cv_action_enabled(self.request.user, obj):
+            raise PermissionDenied
         return obj
 
     @classmethod
@@ -143,6 +146,7 @@ class GuardianQuerysetMixin:
                         )
                         parent_obj = None
                     ctx["cv_access"] = target_cls.cv_create_has_access(user, self, parent_obj)
+                    ctx["cv_action_enabled"] = target_cls.cv_action_enabled(user, parent_obj)
 
         return ctx
 
@@ -212,6 +216,13 @@ class GuardianParentPermissionMixin:
                     checker = ObjectPermissionChecker(request.user)
                     has_perm = checker.has_perm(parent_perm.split(".")[1], parent_obj)
                 if not has_perm:
+                    raise PermissionDenied
+                # Secondary state gate — only for no-object child views (e.g. create),
+                # whose action object IS the parent. Object child-views (detail/update/
+                # delete) carry a row and are gated in get_object() with that row, so we
+                # must NOT also gate them here with the parent (that would invoke
+                # cv_action_enabled with the wrong object type).
+                if not self.cv_object and not self.cv_action_enabled(request.user, parent_obj):
                     raise PermissionDenied
 
         return super().dispatch(request, *args, **kwargs)

@@ -165,3 +165,8 @@ class ProtectedDeleteForm(CrispyDeleteForm):
 3. **POST**: `cv_check_delete_protection()` runs again (defense in depth)
 4. If errors from either, form re-renders with non-field errors
 5. If no errors, object is deleted
+
+---
+
+> To disable an action the user *is* permitted to perform, based on object state
+> (e.g. a locked/open parent), see [Conditionally disabling an action](action_enabled.md).

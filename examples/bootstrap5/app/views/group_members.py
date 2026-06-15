@@ -68,6 +68,11 @@ class PersonCreateView(CrispyModelViewMixin, MessageMixin, CreateViewParentMixin
     cv_viewset = cv_person
     cv_message = _("Created person »{object}«")
 
+    @classmethod
+    def cv_action_enabled(cls, user, obj=None):
+        # obj is the parent Group; a locked group cannot gain members here.
+        return not (obj and obj.locked)
+
     def cv_parent_many_to_many_through_defaults(self, instance, parent_instance, m2m) -> dict:
         defaults = super().cv_parent_many_to_many_through_defaults(instance, parent_instance, m2m)
         defaults.update({"date_joined": date.today()})
@@ -86,6 +91,11 @@ class PersonDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionR
     form_class = CrispyDeleteForm
     cv_viewset = cv_person
     cv_message = _("Deleted person »{object}«")
+
+    @classmethod
+    def cv_action_enabled(cls, user, obj=None):
+        # obj is the Person row; members of a locked group cannot be removed.
+        return not (obj and obj.group.filter(locked=True).exists())
 
 
 class PersonDetailView(DetailViewPermissionRequired):

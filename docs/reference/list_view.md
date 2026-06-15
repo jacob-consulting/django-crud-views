@@ -145,3 +145,8 @@ when navigating away and back. Control this with:
 | `cv_filter_persistence` | `bool` | `True` | Store filter state in session |
 
 This can also be configured globally via the `FILTER_PERSISTENCE` setting.
+
+---
+
+> To disable an action the user *is* permitted to perform, based on object state
+> (e.g. a locked/open parent), see [Conditionally disabling an action](action_enabled.md).

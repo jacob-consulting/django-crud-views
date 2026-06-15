@@ -256,3 +256,8 @@ For plain `ViewSet` (non-guardian), the equivalent is:
 ```python
 CRUD_VIEWS_MANAGE_VIEW_CLASS = "myapp.views.MyCustomManageView"
 ```
+
+---
+
+> To disable an action the user *is* permitted to perform, based on object state
+> (e.g. a locked/open parent), see [Conditionally disabling an action](action_enabled.md).

@@ -1,3 +1,4 @@
+{% if cv_action_enabled is not False %}
 <a {% if cv_list_action_method == "get" %}
     href="{{ cv_url }}"
 {% elif cv_list_action_method == "post" %}
@@ -11,3 +12,4 @@
     cv-key="{{ cv_key }}">
     <i class="{{ cv_icon_action }}"></i>
 </a>
+{% endif %}

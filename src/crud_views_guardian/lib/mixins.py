@@ -53,6 +53,9 @@ class GuardianObjectPermissionMixin:
         perm = self.cv_viewset.permissions.get(self.cv_permission)
         if not self._check_object_perm(self.request.user, perm, obj):
             raise PermissionDenied
+        # Secondary state gate — deny a disabled action even with object perm.
+        if not self.cv_action_enabled(self.request.user, obj):
+            raise PermissionDenied
         return obj
 
     @classmethod
@@ -213,6 +216,9 @@ class GuardianParentPermissionMixin:
                     checker = ObjectPermissionChecker(request.user)
                     has_perm = checker.has_perm(parent_perm.split(".")[1], parent_obj)
                 if not has_perm:
+                    raise PermissionDenied
+                # Secondary state gate for child views — e.g. an open/locked parent disables create.
+                if not self.cv_action_enabled(request.user, parent_obj):
                     raise PermissionDenied
 
         return super().dispatch(request, *args, **kwargs)

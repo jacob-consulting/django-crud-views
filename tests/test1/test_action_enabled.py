@@ -1,6 +1,6 @@
 import pytest
 
-from tests.test1.app.views import AuthorDeleteView, BookCreateView
+from tests.test1.app.views import AuthorDeleteView
 
 
 def test_cv_action_enabled_default_true():
@@ -43,13 +43,13 @@ def test_enabled_list_action_button_present(client_user_publisher_view_delete, p
 
 
 @pytest.mark.django_db
-def test_disabled_plain_object_action_request_denied(
-    client_user_publisher_view_delete, publisher_penguin, monkeypatch
-):
+def test_disabled_plain_object_action_request_denied(client_user_publisher_view_delete, publisher_penguin, monkeypatch):
     # Plain view: a disabled delete must 403 on direct GET and POST.
     from tests.test1.app.views import PublisherDeleteView
+
     monkeypatch.setattr(
-        PublisherDeleteView, "cv_action_enabled",
+        PublisherDeleteView,
+        "cv_action_enabled",
         classmethod(lambda cls, user, obj=None: False),
     )
     pk = publisher_penguin.pk
@@ -71,9 +71,11 @@ def test_disabled_guardian_object_action_request_denied(
     # Guardian object view: enforcement rides get_object().
     from tests.lib.helper.guardian import user_guardian_object_perm
     from tests.test1.app.views import GuardianAuthorDeleteView
+
     user_guardian_object_perm(user_guardian, cv_guardian_author, "delete", author_douglas_adams)
     monkeypatch.setattr(
-        GuardianAuthorDeleteView, "cv_action_enabled",
+        GuardianAuthorDeleteView,
+        "cv_action_enabled",
         classmethod(lambda cls, user, obj=None: False),
     )
     pk = author_douglas_adams.pk
@@ -89,9 +91,11 @@ def test_disabled_guardian_child_create_request_denied(
     from django.urls import reverse
     from tests.lib.helper.guardian import user_guardian_object_perm
     from tests.test1.app.views import GuardianBookCreateView
+
     user_guardian_object_perm(user_guardian, cv_guardian_publisher, "change", publisher_a)
     monkeypatch.setattr(
-        GuardianBookCreateView, "cv_action_enabled",
+        GuardianBookCreateView,
+        "cv_action_enabled",
         classmethod(lambda cls, user, obj=None: False),
     )
     # Child-create URL is /guardian_publisher/<pk>/guardian_book/create/ (resolved via reverse).

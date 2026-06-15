@@ -143,6 +143,7 @@ class GuardianQuerysetMixin:
                         )
                         parent_obj = None
                     ctx["cv_access"] = target_cls.cv_create_has_access(user, self, parent_obj)
+                    ctx["cv_action_enabled"] = target_cls.cv_action_enabled(user, parent_obj)
 
         return ctx
 

@@ -285,6 +285,22 @@ def client_user_publisher_delete(client, user_publisher_delete) -> Client:
     return client
 
 
+@pytest.fixture
+def user_publisher_view_delete(cv_publisher):
+    from django.contrib.auth.models import User
+
+    user = User.objects.create_user(username="user_publisher_view_delete", password="password")
+    user_viewset_permission(user, cv_publisher, "view")
+    user_viewset_permission(user, cv_publisher, "delete")
+    return user
+
+
+@pytest.fixture
+def client_user_publisher_view_delete(client, user_publisher_view_delete) -> Client:
+    client.force_login(user_publisher_view_delete)
+    return client
+
+
 # --- Book fixtures ---
 
 

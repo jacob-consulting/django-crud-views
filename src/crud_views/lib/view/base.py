@@ -332,6 +332,9 @@ class CrudView(metaclass=CrudViewMetaClass):
         # set up the view context
         context = self.cv_get_view_context(object=obj)
 
+        # button visibility — independent of access/permission
+        dict_kwargs["cv_action_enabled"] = cls.cv_action_enabled(user, obj)
+
         # check access
         if cls.cv_has_access(user, obj):
             dict_kwargs.update(

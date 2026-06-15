@@ -362,6 +362,30 @@ class AuthorArchiveView(MessageMixin, ActionViewPermissionRequired):
 
 ---
 
+## Conditionally Disabling an Action
+
+`cv_has_access` answers "may this user perform this action at all?" (permission check). `cv_action_enabled` is a
+secondary state gate that runs only after `cv_has_access` has passed — it answers "is this action currently
+applicable to this specific object?" When it returns `False`, the action button is **hidden entirely** and a direct
+request to the URL returns 403 for an authenticated user. Override it as a classmethod; `obj` is the target
+instance for object views (delete/update/detail/action) or the **parent** instance for a child-create view.
+
+```python
+class PersonDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequired):
+    form_class = CrispyDeleteForm
+    cv_viewset = cv_person
+
+    @classmethod
+    def cv_action_enabled(cls, user, obj=None):
+        # obj is the Person row; members of a locked group cannot be removed.
+        return not (obj and obj.group.filter(locked=True).exists())
+```
+
+Full API: [references/api-reference.md](references/api-reference.md). Reference page with enforcement details:
+[docs/reference/action_enabled.md](../../docs/reference/action_enabled.md).
+
+---
+
 ## Settings (Django `settings.py`)
 
 ```python

@@ -107,6 +107,27 @@ class CrudView(metaclass=CrudViewMetaClass):
         return True
 
     @classmethod
+    def cv_action_enabled(cls, user: User, obj: Model | None = None) -> bool:
+        """Secondary action gate, evaluated only AFTER cv_has_access has passed.
+
+        cv_has_access answers "may you do this in principle?" (permission).
+        cv_action_enabled answers "is this action currently applicable to THIS
+        object?" (state) — e.g. an open/locked parent disables child create/delete.
+        Both must be true for the action button to render and the request to be
+        allowed. Default: always enabled.
+        """
+        return True
+
+    def cv_get_action_object(self) -> Model | None:
+        """The object an action concerns: the instance for object-views, the
+        parent for child create-views, else None. Used by request enforcement."""
+        if self.cv_object:
+            return self.get_object()
+        if self.cv_viewset.has_parent:
+            return self.cv_get_parent_object()
+        return None
+
+    @classmethod
     def render_snippet(cls, data: dict, template: str = None, template_code: str = None) -> str:
         """
         Either render the template_code or the template

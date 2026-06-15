@@ -354,6 +354,14 @@ class AuthorDetailView(DetailViewPermissionRequired):
 | `MessageMixin` | Show Django messages after actions; set `cv_message` | `crud_views.lib.views` |
 | `CreateViewParentMixin` | Auto-assign parent FK on nested create | `crud_views.lib.views` |
 
+### Access and State Hooks (CrudView)
+
+| Hook | Kind | Signature | Default | Description |
+|------|------|-----------|---------|-------------|
+| `cv_has_access` | classmethod | `(cls, user, obj=None) -> bool` | permission check | Primary gate — "may this user perform this action at all?" Overridden by permission-required view variants. |
+| `cv_action_enabled` | classmethod | `(cls, user, obj=None) -> bool` | `True` | Secondary state gate — "is this action currently applicable to this object?" Evaluated only after `cv_has_access` passes. Hides the action button entirely and returns 403 for an authenticated direct request when `False`. `obj` is the target instance for object views (update/delete/detail/action) or the **parent** instance for a child-create view; resolved by `cv_get_action_object()`. |
+| `cv_get_action_object` | method | `(self) -> Model \| None` | — | Returns `get_object()` for object views, `cv_get_parent_object()` for child-create views, else `None`. Used internally by request enforcement. |
+
 ### Form Processing Hooks (CrudViewProcessFormMixin)
 
 Override these methods on create/update/delete/custom-form views:

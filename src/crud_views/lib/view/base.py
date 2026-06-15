@@ -107,6 +107,27 @@ class CrudView(metaclass=CrudViewMetaClass):
         return True
 
     @classmethod
+    def cv_action_enabled(cls, user: User, obj: Model | None = None) -> bool:
+        """Secondary action gate, evaluated only AFTER cv_has_access has passed.
+
+        cv_has_access answers "may you do this in principle?" (permission).
+        cv_action_enabled answers "is this action currently applicable to THIS
+        object?" (state) — e.g. an open/locked parent disables child create/delete.
+        Both must be true for the action button to render and the request to be
+        allowed. Default: always enabled.
+        """
+        return True
+
+    def cv_get_action_object(self) -> Model | None:
+        """The object an action concerns: the instance for object-views, the
+        parent for child create-views, else None. Used by request enforcement."""
+        if self.cv_object:
+            return self.get_object()
+        if self.cv_viewset.has_parent:
+            return self.cv_get_parent_object()
+        return None
+
+    @classmethod
     def render_snippet(cls, data: dict, template: str = None, template_code: str = None) -> str:
         """
         Either render the template_code or the template
@@ -311,6 +332,9 @@ class CrudView(metaclass=CrudViewMetaClass):
         # set up the view context
         context = self.cv_get_view_context(object=obj)
 
+        # button visibility — independent of access/permission
+        dict_kwargs["cv_action_enabled"] = cls.cv_action_enabled(user, obj)
+
         # check access
         if cls.cv_has_access(user, obj):
             dict_kwargs.update(
@@ -409,6 +433,18 @@ class CrudViewPermissionRequiredMixin(PermissionRequiredMixin):
         perm = perms.get(self.cv_permission)
         assert perm, f"permission {self.cv_permission} not found at {self}"
         return perm
+
+    def has_permission(self):
+        if not super().has_permission():
+            return False
+        # Secondary state gate — a disabled action is denied even with permission.
+        # Note: cv_get_action_object() re-fetches the object (object views call
+        # get_object() again in the body — a deliberate extra read), and a missing
+        # pk raises Http404 here, so a bad-pk request 404s during the permission
+        # phase rather than reaching the view. Returning False yields 403 for an
+        # authenticated user (login redirect for anonymous — the pre-existing contract).
+        obj = self.cv_get_action_object()
+        return self.cv_action_enabled(self.request.user, obj)
 
     @classmethod
     def cv_has_access(cls, user: User, obj: Model | None = None) -> bool:

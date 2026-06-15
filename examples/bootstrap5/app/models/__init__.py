@@ -126,6 +126,7 @@ class Person(models.Model):
 
 class Group(models.Model):
     name = models.CharField(max_length=128, verbose_name=_("Name"))
+    locked = models.BooleanField(default=False, verbose_name=_("Locked"))
     members = models.ManyToManyField(Person, through="Membership", related_name="group")
 
     def __str__(self):

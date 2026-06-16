@@ -131,6 +131,49 @@ class MessageMixin:
         return result
 
 
+class CardOrderMixin:
+    """
+    Adds order-by + direction support to card views.
+
+    The order field is whitelisted against ``cv_order_fields`` so an arbitrary
+    GET parameter can never reach ``QuerySet.order_by()`` (no ordering injection).
+    Direction is restricted to ``asc`` / ``desc``.
+    """
+
+    cv_order_fields: list = []  # list[str | tuple[str, str]]: field name or (name, label)
+    cv_order_default: str | None = None  # e.g. "-name"; leading "-" => descending
+    cv_order_param: str = "order"
+    cv_order_dir_param: str = "dir"
+
+    def cv_get_order_field_names(self) -> list[str]:
+        return [f[0] if isinstance(f, (tuple, list)) else f for f in self.cv_order_fields]
+
+    def cv_get_order(self) -> tuple[str | None, str]:
+        """Resolve (field_name_or_None, direction) from GET, whitelisted."""
+        names = self.cv_get_order_field_names()
+        field = self.request.GET.get(self.cv_order_param) or ""
+        direction = self.request.GET.get(self.cv_order_dir_param) or "asc"
+        if direction not in ("asc", "desc"):
+            direction = "asc"
+        if field in names:
+            return field, direction
+        # not selected / not whitelisted -> fall back to default ordering
+        if self.cv_order_default:
+            default = self.cv_order_default
+            if default.startswith("-"):
+                return default[1:], "desc"
+            return default, "asc"
+        return None, direction
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        field, direction = self.cv_get_order()
+        if field:
+            prefix = "-" if direction == "desc" else ""
+            qs = qs.order_by(f"{prefix}{field}")
+        return qs
+
+
 class ListViewTableMixin(SingleTableMixin):
     """
     Mixin for ListView to render tables with django-tables2

@@ -274,6 +274,32 @@ class PublisherCardListView(CardListViewPermissionRequired):
     ]
 
 
+# --- Publisher Order Demo (card with ordering, paging, filter) ---
+
+cv_publisher_order = ViewSet(
+    model=Publisher,
+    name="publisher_order",
+)
+
+
+class PublisherOrderFilter(django_filters.FilterSet):
+    name = django_filters.CharFilter(lookup_expr="icontains")
+
+    class Meta:
+        model = Publisher
+        fields = ["name"]
+
+
+class PublisherOrderCardListView(ListViewTableFilterMixin, CardListViewPermissionRequired):
+    cv_viewset = cv_publisher_order
+    cv_order_fields = ["name", ("id", "ID")]
+    cv_order_default = "name"
+    paginate_by = 2
+    filterset_class = PublisherOrderFilter
+    formhelper_class = PublisherFilterFormHelper
+    cv_card_actions = []
+
+
 # --- Book (INT PK, child of Publisher) ---
 
 cv_book = ViewSet(

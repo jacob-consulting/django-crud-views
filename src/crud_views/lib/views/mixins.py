@@ -1,6 +1,6 @@
 import json
 from typing import Iterable
-from urllib.parse import parse_qs
+from urllib.parse import parse_qs, urlencode
 
 from django.contrib import messages
 from django.core.exceptions import BadRequest
@@ -297,9 +297,15 @@ class ListViewTableFilterMixin(FilterView):
                 except KeyError:
                     pass
                 url = self.request.path
-                sort = qs.get("sort", [None])[0]
-                if sort:
-                    url += f"?sort={sort}"
+                keep = {}
+                order_param = getattr(self, "cv_order_param", "order")
+                dir_param = getattr(self, "cv_order_dir_param", "dir")
+                for key in ("sort", order_param, dir_param):
+                    value = qs.get(key, [None])[0]
+                    if value:
+                        keep[key] = value
+                if keep:
+                    url += "?" + urlencode(keep)
                 return HttpResponseRedirect(url)
 
             # there is a query string, update data

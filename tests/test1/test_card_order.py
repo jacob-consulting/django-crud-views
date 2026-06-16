@@ -181,3 +181,29 @@ def test_card_pagination_links_preserve_order_and_filter(client_publisher_order,
         assert "order=name" in href
         assert "dir=desc" in href
         assert href.count("page=") == 1
+
+
+@pytest.mark.django_db
+def test_filter_form_carries_active_order_as_hidden(client_publisher_order, publishers):
+    response = client_publisher_order.get("/publisher_order/card/?order=name&dir=desc&name=a")
+    doc = html.fromstring(response.content)
+    hidden = {i.get("name"): i.get("value") for i in doc.cssselect("form#filter-form input[type=hidden]")}
+    assert hidden.get("order") == "name"
+    assert hidden.get("dir") == "desc"
+
+
+@pytest.mark.django_db
+def test_order_toolbar_carries_active_filter_as_hidden(client_publisher_order, publishers):
+    response = client_publisher_order.get("/publisher_order/card/?name=Alp")
+    doc = html.fromstring(response.content)
+    hidden = {i.get("name"): i.get("value") for i in doc.cssselect("#cv-card-order-form input[type=hidden]")}
+    assert hidden.get("name") == "Alp"
+
+
+@pytest.mark.django_db
+def test_reset_filter_preserves_order(client_publisher_order, publishers):
+    response = client_publisher_order.get("/publisher_order/card/?reset_filter=true&order=name&dir=desc", follow=False)
+    assert response.status_code == 302
+    assert "order=name" in response.url
+    assert "dir=desc" in response.url
+    assert "reset_filter" not in response.url

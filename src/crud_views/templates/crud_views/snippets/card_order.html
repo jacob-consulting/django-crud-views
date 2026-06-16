@@ -1,0 +1,26 @@
+{% load i18n %}
+{% if view.cv_order_fields %}
+<form method="get" id="cv-card-order-form" class="d-flex align-items-center gap-2 mb-3">
+    <label class="mb-0 me-1" for="cv-order-select">{% translate "Order by" %}</label>
+    <select name="{{ cv_order_param }}" id="cv-order-select" class="form-select form-select-sm w-auto">
+        {% for choice in cv_order_choices %}
+            <option value="{{ choice.name }}"{% if choice.selected %} selected{% endif %}>{{ choice.label }}</option>
+        {% endfor %}
+    </select>
+    <div class="btn-group btn-group-sm" role="group" aria-label="{% translate 'Sort direction' %}">
+        <button type="submit" name="{{ cv_order_dir_param }}" value="asc"
+                class="btn btn-outline-secondary{% if cv_order_dir == 'asc' %} active{% endif %}"
+                title="{% translate 'Ascending' %}">
+            <i class="fa-solid fa-arrow-up-short-wide"></i>
+        </button>
+        <button type="submit" name="{{ cv_order_dir_param }}" value="desc"
+                class="btn btn-outline-secondary{% if cv_order_dir == 'desc' %} active{% endif %}"
+                title="{% translate 'Descending' %}">
+            <i class="fa-solid fa-arrow-down-wide-short"></i>
+        </button>
+    </div>
+    {% for param in cv_order_preserved_params %}
+        <input type="hidden" name="{{ param.name }}" value="{{ param.value }}">
+    {% endfor %}
+</form>
+{% endif %}

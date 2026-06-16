@@ -118,3 +118,37 @@ def test_cv_get_order_no_field_no_default():
     view.cv_order_default = None
     view.request = SimpleNamespace(GET={})
     assert view.cv_get_order() == (None, "asc")
+
+
+@pytest.mark.django_db
+def test_card_order_toolbar_renders(client_publisher_order, publishers):
+    response = client_publisher_order.get("/publisher_order/card/")
+    assert response.status_code == 200
+    doc = html.fromstring(response.content)
+    form = doc.cssselect("form#cv-card-order-form")
+    assert len(form) == 1
+    options = doc.cssselect("#cv-card-order-form select[name=order] option")
+    values = [o.get("value") for o in options]
+    assert values == ["name", "id"]
+    labels = [o.text_content().strip() for o in options]
+    assert labels == ["Name", "ID"]
+    dir_buttons = doc.cssselect("#cv-card-order-form button[name=dir]")
+    assert {b.get("value") for b in dir_buttons} == {"asc", "desc"}
+
+
+@pytest.mark.django_db
+def test_card_order_toolbar_marks_active_direction(client_publisher_order, publishers):
+    response = client_publisher_order.get("/publisher_order/card/?order=name&dir=desc")
+    doc = html.fromstring(response.content)
+    desc_btn = doc.cssselect("#cv-card-order-form button[name=dir][value=desc]")[0]
+    asc_btn = doc.cssselect("#cv-card-order-form button[name=dir][value=asc]")[0]
+    assert "active" in desc_btn.get("class")
+    assert "active" not in asc_btn.get("class")
+
+
+@pytest.mark.django_db
+def test_card_order_toolbar_absent_without_fields(client_user_author_view, cv_author, author_douglas_adams):
+    # the plain AuthorCardListView has no cv_order_fields -> no toolbar
+    response = client_user_author_view.get("/author/card/")
+    doc = html.fromstring(response.content)
+    assert len(doc.cssselect("form#cv-card-order-form")) == 0

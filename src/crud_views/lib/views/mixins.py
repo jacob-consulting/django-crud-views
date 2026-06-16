@@ -173,6 +173,40 @@ class CardOrderMixin:
             qs = qs.order_by(f"{prefix}{field}")
         return qs
 
+    def cv_get_order_choices(self) -> list[dict]:
+        current, _ = self.cv_get_order()
+        choices = []
+        for f in self.cv_order_fields:
+            if isinstance(f, (tuple, list)):
+                name, label = f[0], f[1]
+            else:
+                name = f
+                try:
+                    label = str(self.model._meta.get_field(name).verbose_name).capitalize()
+                except Exception:  # pragma: no cover - defensive
+                    label = name
+            choices.append({"name": name, "label": label, "selected": name == current})
+        return choices
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        current, direction = self.cv_get_order()
+        context["cv_order_choices"] = self.cv_get_order_choices()
+        context["cv_order_current"] = current or ""
+        context["cv_order_dir"] = direction
+        context["cv_order_param"] = self.cv_order_param
+        context["cv_order_dir_param"] = self.cv_order_dir_param
+        # all current GET params except order/dir/page, for the toolbar's hidden inputs
+        preserved = []
+        skip = {self.cv_order_param, self.cv_order_dir_param, "page"}
+        for key in self.request.GET:
+            if key in skip:
+                continue
+            for value in self.request.GET.getlist(key):
+                preserved.append({"name": key, "value": value})
+        context["cv_order_preserved_params"] = preserved
+        return context
+
 
 class ListViewTableMixin(SingleTableMixin):
     """

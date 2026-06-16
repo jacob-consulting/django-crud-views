@@ -1,5 +1,7 @@
 {% load crud_views %}
 
+{% include "crud_views/snippets/card_order.html" %}
+
 <div class="row">
     {% for object in object_list %}
         <div class="{{ view.cv_card_container_class }}">

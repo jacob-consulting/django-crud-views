@@ -152,3 +152,32 @@ def test_card_order_toolbar_absent_without_fields(client_user_author_view, cv_au
     response = client_user_author_view.get("/author/card/")
     doc = html.fromstring(response.content)
     assert len(doc.cssselect("form#cv-card-order-form")) == 0
+
+
+@pytest.mark.django_db
+def test_card_pagination_limits_cards(client_publisher_order, publishers):
+    # 3 publishers, paginate_by=2 -> page 1 shows 2 cards
+    response = client_publisher_order.get("/publisher_order/card/?page=1")
+    doc = html.fromstring(response.content)
+    assert len(doc.cssselect(".card.mb-3")) == 2
+    assert len(doc.cssselect("nav .pagination")) == 1
+
+
+@pytest.mark.django_db
+def test_card_pagination_second_page(client_publisher_order, publishers):
+    response = client_publisher_order.get("/publisher_order/card/?page=2")
+    doc = html.fromstring(response.content)
+    assert len(doc.cssselect(".card.mb-3")) == 1  # 3rd item
+
+
+@pytest.mark.django_db
+def test_card_pagination_links_preserve_order_and_filter(client_publisher_order, publishers):
+    response = client_publisher_order.get("/publisher_order/card/?order=name&dir=desc")
+    doc = html.fromstring(response.content)
+    hrefs = [a.get("href") for a in doc.cssselect("nav .pagination a.page-link")]
+    assert hrefs, "expected page links"
+    # every page link keeps order + dir and never duplicates page
+    for href in hrefs:
+        assert "order=name" in href
+        assert "dir=desc" in href
+        assert href.count("page=") == 1

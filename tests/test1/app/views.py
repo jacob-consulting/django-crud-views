@@ -293,7 +293,7 @@ class PublisherOrderFilter(django_filters.FilterSet):
 class PublisherOrderCardListView(ListViewTableFilterMixin, CardListViewPermissionRequired):
     cv_viewset = cv_publisher_order
     cv_order_fields = ["name", ("id", "ID")]
-    cv_order_default = "name"
+    cv_order_default = "-name"
     paginate_by = 2
     filterset_class = PublisherOrderFilter
     formhelper_class = PublisherFilterFormHelper

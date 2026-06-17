@@ -41,9 +41,11 @@ and pushes exhaustive detail to the docs.
      optional workflow (FSM) and polymorphic support; Django system checks fail
      fast on misconfiguration.
 5. **Built on** — one line crediting the integrated packages, each name
-   hyperlinked to its project page: django-tables2, django-filter,
+   hyperlinked to **its own hosted documentation** (e.g. django-tables2 →
+   django-tables2.readthedocs.io): django-tables2, django-filter,
    django-crispy-forms, django-polymorphic, django-guardian,
-   django-ordered-model, django-object-detail.
+   django-ordered-model, django-object-detail. Reuse the canonical doc URLs the
+   current README already links to.
 6. **Install** — `pip install django-crud-views`, with a note on extras
    (`[guardian]`, `[ordered]`, `[all]`).
 7. **What it is not** — keep the two existing lines.
@@ -101,10 +103,13 @@ urlpatterns = cv_author.urlpatterns
   every release (`[[tool.bumpversion.files]]` for `README.md` searches
   `Current version: {current_version}`). Removing or reformatting it breaks the
   release tooling.
-- **Snippet must be copy-paste runnable** against the example models. The
-  minimal list view may require a `table_class`/mixin; verify the exact minimal
-  form against the codebase (`examples/`) before merge so the README does not
-  ship code that doesn't run.
+- **Snippet must be copy-paste runnable — hard, blocking requirement.** The
+  README must not ship code that doesn't run. The minimal list view may require
+  a `table_class`/mixin (the `examples/` always pair `ListView*` with
+  `ListViewTableMixin` + a `Table`); determine the true minimal runnable form
+  against the codebase and, if a bare list view needs a table, the snippet must
+  include it rather than imply it works without. Verify by actually wiring the
+  snippet's pattern against the example app before merge.
 - **Spec location:** `superpowers/specs/`, never under `docs/` (mkdocs-only).
 - Keep `docs/index.md` consistent in spirit, but this change targets
   `README.md` only.

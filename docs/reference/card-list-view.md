@@ -124,6 +124,12 @@ class AuthorCardListView(ListViewTableFilterMixin, CardListViewPermissionRequire
     cv_card_actions = [...]
 ```
 
+### Pinned filter
+
+`CardListView` shares `ListViewTableFilterMixin` with `ListView`, so `cv_filter_pinned = True`
+works the same way: the filter renders always-open and the toggle button is hidden. See
+[ListView → Always-visible (pinned) filter](list_view.md).
+
 ## Ordering
 
 Declare orderable fields with `cv_order_fields`. The card view then renders an

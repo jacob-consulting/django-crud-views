@@ -146,6 +146,23 @@ when navigating away and back. Control this with:
 
 This can also be configured globally via the `FILTER_PERSISTENCE` setting.
 
+### Always-visible (pinned) filter
+
+By default the filter is collapsed and opened via the filter toggle button. Set
+`cv_filter_pinned = True` on a filtered view to render the filter **always open** and
+hide the toggle button entirely:
+
+```python
+class AuthorListView(ListViewTableMixin, ListViewTableFilterMixin, ListViewPermissionRequired):
+    filterset_class = AuthorFilter
+    cv_filter_pinned = True
+```
+
+The default comes from the `CRUD_VIEWS_FILTER_PINNED` setting (default `False`). Filter
+field values are still persisted to the session when `cv_filter_persistence` is enabled;
+only the (now irrelevant) expanded/collapsed state is dropped. Applies equally to
+[CardListView](card-list-view.md).
+
 ---
 
 > To disable an action the user *is* permitted to perform, based on object state

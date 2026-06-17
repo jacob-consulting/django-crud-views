@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Added
+
+- Pinned filter: set `cv_filter_pinned = True` on a filtered `ListView`/`CardListView` (or the global `CRUD_VIEWS_FILTER_PINNED` setting, default `False`) to render the filter always-open and hide the filter toggle button. Filter field values are still persisted to the session via `cv_filter_persistence`; only the now-irrelevant expanded/collapsed state is dropped (bootstrap5 renders the filter without its collapse wrapper; the plain theme is unaffected)
+
 ## 0.6.0
 
 ### Added

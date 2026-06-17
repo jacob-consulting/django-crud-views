@@ -67,6 +67,7 @@ class BookCardListView(ListViewTableFilterMixin, GuardianCardListViewPermissionR
     cv_path = ""
     filterset_class = BookFilter
     formhelper_class = BookFilterFormHelper
+    cv_filter_pinned = True  # always-open filter, no toggle button
     cv_order_fields = ["title", ("price", "Price")]
     cv_order_default = "title"
     paginate_by = 6

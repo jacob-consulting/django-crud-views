@@ -26,6 +26,8 @@ ContextButton(
     key_target="detail",           # target view key within the same viewset
     label_template=None,           # path to a Django template for the label
     label_template_code=None,      # inline Django template string for the label
+    template=None,                 # path to a Django template for the whole button
+    template_code=None,            # inline Django template string for the whole button
 )
 ```
 
@@ -35,8 +37,15 @@ ContextButton(
 | `key_target`          | `str \| None` | `None`   | Target view key within the same viewset          |
 | `label_template`      | `str \| None` | `None`   | Path to a Django template for the button label   |
 | `label_template_code` | `str \| None` | `None`   | Inline Django template string for the label      |
+| `template`            | `str \| None` | `None`   | Path to a Django template for the whole button   |
+| `template_code`       | `str \| None` | `None`   | Inline Django template string for the whole button |
 
 Access is checked via the target view's `cv_has_access(user, obj)`.
+
+When neither `template` nor `template_code` is set, the button uses the
+`CRUD_VIEWS_CONTEXT_BUTTON_TEMPLATE` setting (default
+`crud_views/tags/context_action.html`). For placing buttons by hand in a custom layout, see
+the [FAQ](../faq.md).
 
 ## ParentContextButton
 

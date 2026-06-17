@@ -293,6 +293,22 @@ class CrudView(metaclass=CrudViewMetaClass):
                 return cb
         return None
 
+    def cv_get_context_buttons(self, keys: list[str] | None = None, obj=None) -> list[dict]:
+        """
+        Resolved, access-filtered context-button data for a custom template loop.
+        keys defaults to this view's cv_context_actions; obj defaults to the view's object.
+        """
+        keys = keys if keys is not None else (self.cv_context_actions or [])
+        if obj is None:
+            obj = getattr(self, "object", None)
+        result: list[dict] = []
+        for key in keys:
+            ctx = self.cv_get_context(key=key, obj=obj, user=self.request.user, request=self.request)
+            if not ctx or ctx.get("cv_action_enabled") is False or ctx.get("cv_access") is not True:
+                continue
+            result.append(ctx)
+        return result
+
     def cv_get_oid(self, key: str, obj: Model | None = None) -> str | None:
         """
         get unique object id
@@ -324,6 +340,7 @@ class CrudView(metaclass=CrudViewMetaClass):
             cv_oid=self.cv_get_oid(key=key, obj=obj),
             cv_url=self.cv_get_url(key=key, obj=obj),
             cv_is_active=self.cv_viewset.get_router_name(key) == context.router_name,
+            cv_template=crud_views_settings.context_button_template,
         )
 
         # get target view class

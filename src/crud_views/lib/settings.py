@@ -86,6 +86,13 @@ class CrudViewsSettings(BaseModel):
     def theme_path(self) -> str:
         return "crud_views"
 
+    @property
+    def context_button_template(self) -> str:
+        return from_settings(
+            "CRUD_VIEWS_CONTEXT_BUTTON_TEMPLATE",
+            default=f"{self.theme_path}/tags/context_action.html",
+        )
+
     def get_js(self, path: str) -> str:
         return f"{self.theme_path}/js/{path}"
 

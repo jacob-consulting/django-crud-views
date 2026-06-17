@@ -67,7 +67,10 @@ def cv_list_action_form(context, key, obj=None):
 def cv_context_action(context, key, obj=None):
     obj = None if not obj else obj  # fix empty string from template
     ctx = cv_get_context(context=context, key=key, obj=obj)
-    template = ctx.get("cv_template", f"{crud_views_settings.theme_path}/tags/context_action.html")
+    if ctx.get("cv_template_code"):
+        view = cv_get_view(context)
+        return view.render_snippet(ctx, template_code=ctx["cv_template_code"])
+    template = ctx.get("cv_template") or crud_views_settings.context_button_template
     return render_to_string(template, context=ctx, request=context["request"])
 
 

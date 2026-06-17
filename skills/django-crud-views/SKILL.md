@@ -254,6 +254,40 @@ class AuthorDetailView(DetailViewPermissionRequired):
 Access control is handled automatically via the child view's `cv_has_access()`. For Guardian-based views, this
 checks object-level permissions on the parent object.
 
+### SiblingContextButton
+
+Use `SiblingContextButton` on a **child** view to link sideways to a **sibling** collection —
+another child of the same parent. It reuses the parent PK from the current URL. Pair it with
+`ChildContextButton`: `ChildContextButton` on the parent (go down), `SiblingContextButton` on the
+children (go sideways).
+
+```python
+from crud_views.lib.view import SiblingContextButton
+from crud_views.lib.viewset import ViewSet, ParentViewSet, context_buttons_default
+
+cv_book = ViewSet(
+    model=Book,
+    name="book",
+    parent=ParentViewSet(name="author"),
+    context_buttons=context_buttons_default() + [
+        SiblingContextButton(key="articles", sibling_name="article", label_template_code="Articles"),
+    ],
+)
+
+# Then reference the key in cv_context_actions on the child's view:
+class BookListView(ListViewPermissionRequired):
+    cv_viewset = cv_book
+    cv_context_actions = ["parent", "create", "articles"]
+```
+
+`SiblingContextButton` parameters:
+- `key` — the action key referenced in `cv_context_actions`
+- `sibling_name` — registry name of the sibling viewset (must share the same parent)
+- `sibling_key` — target view key in the sibling viewset (default `"list"`)
+
+Renders nothing on a view without a parent. Access is checked model-level on the sibling
+view (no parent object is consulted).
+
 ---
 
 ## Filtering

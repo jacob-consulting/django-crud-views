@@ -14,9 +14,19 @@ from crud_views.lib.views import (
     ListViewPermissionRequired,
     CreateViewParentMixin,
 )
-from crud_views.lib.viewset import ViewSet, ParentViewSet
+from crud_views.lib.view import SiblingContextButton
+from crud_views.lib.viewset import ViewSet, ParentViewSet, context_buttons_default
 
-cv_bar = ViewSet(model=Bar, name="bar", parent=ParentViewSet(name="foo"), icon_header="fa-solid fa-bone")
+cv_bar = ViewSet(
+    model=Bar,
+    name="bar",
+    parent=ParentViewSet(name="foo"),
+    icon_header="fa-solid fa-bone",
+    context_buttons=context_buttons_default()
+    + [
+        SiblingContextButton(key="quxes", sibling_name="qux", label_template_code="Quxes"),
+    ],
+)
 
 
 class BarForm(CrispyModelForm):
@@ -41,6 +51,7 @@ class BarListView(ListViewTableMixin, ListViewPermissionRequired):
     table_class = BarTable
     cv_viewset = cv_bar
     cv_list_actions = ["detail", "update", "delete"]
+    cv_context_actions = ["parent", "filter", "create", "quxes"]
 
 
 class BarDetailView(DetailViewPermissionRequired):

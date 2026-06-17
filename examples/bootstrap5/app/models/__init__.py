@@ -89,6 +89,14 @@ class Baz(models.Model):
         return f"{self.name}"
 
 
+class Qux(models.Model):
+    foo = models.ForeignKey(Foo, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100, verbose_name=_("Name"))
+
+    def __str__(self):
+        return f"{self.name}"
+
+
 class Detail(OrderedModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     integer = models.IntegerField(verbose_name=_("An integer field"))

@@ -26,6 +26,7 @@ Settings for filter.
 | Key                           | Description                                     | Type   | Default            |
 |-------------------------------|-------------------------------------------------|--------|--------------------|
 | FILTER_PERSISTENCE            | Store filter in Django session                  | `bool` | True               |
+| CRUD_VIEWS_FILTER_PINNED      | When `True`, list/card filters render always-open and the filter toggle button is hidden. Per-view override via `cv_filter_pinned`. | `bool` | False |
 | FILTER_ICON                   | Filter icon (boostrap5 only)                    | `str`  | fa-solid fa-filter |
 | FILTER_RESET_BUTTON_CSS_CLASS | Filter reset button css flass (bootstrap5 only) | `str`  | btn btn-secondary  |
 

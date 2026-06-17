@@ -157,6 +157,51 @@ class ChildContextButton(ContextButton):
         return data
 
 
+class SiblingContextButton(ContextButton):
+    """
+    A context button on a child view that links to a sibling collection — another child of
+    the same parent — reusing the parent PK already present in the current URL.
+    """
+
+    sibling_name: str
+    sibling_key: str = "list"
+
+    def get_context(self, context: ViewContext) -> dict:
+        # only rendered on child views (those with a parent)
+        if not context.view.cv_viewset.parent:
+            return dict()
+
+        sibling_vs = context.view.cv_viewset.get_viewset(self.sibling_name)
+        sibling_key = self._resolve_container_key(sibling_vs, self.sibling_key)
+        cls = sibling_vs.get_view_class(sibling_key)
+
+        # the sibling shares the current view's parent chain, so reuse its URL args
+        kwargs = {arg: context.view.kwargs[arg] for arg in sibling_vs.get_parent_url_args()}
+        cv_url = reverse(sibling_vs.get_router_name(sibling_key), kwargs=kwargs)
+
+        dict_kwargs = dict(
+            cv_access=False,
+            cv_url=cv_url,
+            cv_icon_action=sibling_vs.icon_header,
+        )
+
+        # button visibility — independent of access/permission
+        dict_kwargs["cv_action_enabled"] = cls.cv_action_enabled(context.view.request.user, None)
+
+        if cls.cv_has_access(context.view.request.user, None):
+            dict_kwargs.update(cv_access=True)
+
+        data = cls.cv_get_dict(context=context, **dict_kwargs)
+
+        cv_action_label = self.render_label(data, context)
+        if cv_action_label:
+            data["cv_action_label"] = cv_action_label
+
+        self._inject_template(data)
+
+        return data
+
+
 class FilterContextButton(ContextButton):
     """
     A context button that

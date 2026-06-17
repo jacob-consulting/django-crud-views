@@ -71,3 +71,23 @@ def test_pinned_hides_filter_toggle_button(client_publisher_order, publishers, m
     response = client_publisher_order.get("/publisher_order/card/")
     doc = html.fromstring(response.content)
     assert not doc.cssselect("#cv-filter-toggle"), "toggle should be hidden when pinned"
+
+
+@pytest.mark.django_db
+def test_pinned_renders_filter_without_collapse(client_publisher_order, publishers, monkeypatch):
+    from lxml import html
+
+    from tests.test1.app.views import PublisherOrderCardListView
+
+    # not pinned: collapse wrapper present, filter form present
+    response = client_publisher_order.get("/publisher_order/card/")
+    doc = html.fromstring(response.content)
+    assert doc.cssselect("#filter-collapse"), "collapse wrapper expected when not pinned"
+    assert doc.cssselect("form#filter-form"), "filter form expected"
+
+    # pinned: no collapse wrapper, but filter form still rendered
+    monkeypatch.setattr(PublisherOrderCardListView, "cv_filter_pinned", True)
+    response = client_publisher_order.get("/publisher_order/card/")
+    doc = html.fromstring(response.content)
+    assert not doc.cssselect("#filter-collapse"), "collapse wrapper must be gone when pinned"
+    assert doc.cssselect("form#filter-form"), "filter form must still render when pinned"

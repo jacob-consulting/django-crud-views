@@ -2,23 +2,16 @@
 {% load static %}
 {% load crud_views %}
 
-<div class="collapse{% if cv_filter_expanded %} show{% endif %}" id="filter-collapse">
-    <div class="card">
-        <div class="card-header">
-            {% block cv_filter_header_icon %}
-                {% cv_filter_icon %}
-            {% endblock cv_filter_header_icon %}
-            {% block cv_filter_header %}
-                {% cv_filter_header %}
-            {% endblock cv_filter_header %}
-        </div>
-        <div class="card-body">
-            {% block cv_content_filter %}
-                <form id="filter-form" method="get">
-                    {% crispy filter.form filter.form.helper %}
-                </form>
-            {% endblock cv_content_filter %}
-        </div>
+{% if cv_filter_pinned %}
+    <div class="card" id="filter-pinned">
+        {% include "crud_views/tags/list_filter.inner.html" %}
     </div>
     <br>
-</div>
+{% else %}
+    <div class="collapse{% if cv_filter_expanded %} show{% endif %}" id="filter-collapse">
+        <div class="card">
+            {% include "crud_views/tags/list_filter.inner.html" %}
+        </div>
+        <br>
+    </div>
+{% endif %}

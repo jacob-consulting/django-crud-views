@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.6.0
+
 ### Added
 
 - Card views: `CardOrderMixin` adds whitelisted queryset ordering — declare sortable fields via `cv_order_fields` (`"name"` or `("name", "Label")`) and an optional `cv_order_default` (e.g. `"-name"`). Order field/direction are read from the `cv_order_param`/`cv_order_dir_param` query params and validated against the whitelist, so arbitrary `order_by` input is rejected

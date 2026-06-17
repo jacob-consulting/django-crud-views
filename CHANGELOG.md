@@ -4,6 +4,7 @@
 
 ### Added
 
+- Context button templating & manual placement: `ContextButton` now accepts `template`/`template_code` to render the whole button (not just its label, which `label_template`/`label_template_code` still cover), defaulting to the new `CRUD_VIEWS_CONTEXT_BUTTON_TEMPLATE` setting (default `crud_views/tags/context_action.html`). Place a single button anywhere with `{% cv_context_button "key" %}` (object defaults to the view's object; renders nothing when access is denied — unlike the `{% cv_context_actions %}` container, which greys it out); render a custom loop via `view.cv_get_context_buttons` (access-filtered) + `{% cv_render_context_button ctx %}`; and gate surrounding markup with the `view|cv_context_has_permission:"key"` filter
 - Pinned filter: set `cv_filter_pinned = True` on a filtered `ListView`/`CardListView` (or the global `CRUD_VIEWS_FILTER_PINNED` setting, default `False`) to render the filter always-open and hide the filter toggle button. Filter field values are still persisted to the session via `cv_filter_persistence`; only the now-irrelevant expanded/collapsed state is dropped (bootstrap5 renders the filter without its collapse wrapper; the plain theme is unaffected)
 
 ## 0.6.0

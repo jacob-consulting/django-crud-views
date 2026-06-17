@@ -1,0 +1,143 @@
+# FAQ
+
+## How to template context buttons
+
+Every [context button](reference/context_buttons.md) is rendered through a Django template.
+By default that template is the theme's `crud_views/tags/context_action.html`, configurable
+project-wide via the `CRUD_VIEWS_CONTEXT_BUTTON_TEMPLATE` setting.
+
+A `ContextButton` can override the template *for that button only* with two fields:
+
+| Field           | Type          | Description                                              |
+|-----------------|---------------|----------------------------------------------------------|
+| `template`      | `str \| None` | Path to a Django template for the whole button           |
+| `template_code` | `str \| None` | Inline Django template string for the whole button       |
+
+`template_code` takes precedence over `template`; if neither is set, the
+`CRUD_VIEWS_CONTEXT_BUTTON_TEMPLATE` default is used.
+
+!!! note
+    These template the **whole button**. The existing `label_template` /
+    `label_template_code` fields only template the button's **label** inside the default
+    button markup.
+
+The button template is rendered with the resolved button context, which includes:
+
+- `cv_url` — the target URL
+- `cv_key` — the action key
+- `cv_action_label` — the rendered label
+- `cv_icon_action` — the icon CSS class
+- `cv_access` — `True` when the user may access the target
+- `cv_action_enabled` — `False` hides the button
+- `cv_is_active` — `True` when the button points at the current view
+
+### Give a button a different shape in one view
+
+Define a variant button in the viewset with its own template, then reference it only from
+the view that needs the different shape:
+
+```python
+from crud_views.lib.viewset import ViewSet, context_buttons_default
+from crud_views.lib.view import ContextButton
+from crud_views.lib.views import DetailViewPermissionRequired, ListViewPermissionRequired
+
+cv_author = ViewSet(
+    model=Author,
+    name="author",
+    context_buttons=context_buttons_default() + [
+        # the standard edit button, plus a variant with a custom template
+        ContextButton(key="edit", key_target="update"),
+        ContextButton(
+            key="edit_detail",
+            key_target="update",
+            template_code=(
+                '<a href="{{ cv_url }}" class="btn btn-primary btn-lg" cv-key="{{ cv_key }}">'
+                '<i class="{{ cv_icon_action }}"></i> {{ cv_action_label }}</a>'
+            ),
+        ),
+    ],
+)
+
+
+class AuthorListView(ListViewPermissionRequired):
+    cv_viewset = cv_author
+    cv_context_actions = ["edit", "delete"]          # default-shaped edit button
+
+
+class AuthorDetailView(DetailViewPermissionRequired):
+    cv_viewset = cv_author
+    cv_context_actions = ["edit_detail", "delete"]   # custom-shaped edit button
+```
+
+To change the layout of *all* context buttons project-wide, override
+`crud_views/tags/context_action.html` in your project's templates, or point
+`CRUD_VIEWS_CONTEXT_BUTTON_TEMPLATE` at your own template.
+
+## I need to render a context button manually in a template
+
+Use the `cv_context_button` tag to place a single button anywhere in your own layout,
+referenced by its key:
+
+```django
+{% load crud_views %}
+
+<div class="my-toolbar">
+    {% cv_context_button "edit_detail" %}
+    {% cv_context_button "delete" %}
+</div>
+```
+
+The object defaults to the view's current object, so you don't normally pass it. To target
+a different object explicitly:
+
+```django
+{% cv_context_button "edit_detail" some_object %}
+```
+
+!!! note "Hidden when there is no access"
+    `cv_context_button` renders **nothing** when the user lacks access to the target or the
+    action is disabled. This differs from the default `{% cv_context_actions %}` container,
+    which renders inaccessible buttons as *disabled/greyed*. Reach for the manual tag when
+    you want the button to disappear entirely.
+
+### Gate surrounding markup by permission
+
+Use the `cv_context_has_permission` filter to render wrappers, headings, or separators only
+when the user may access a key:
+
+```django
+{% load crud_views %}
+
+{% if view|cv_context_has_permission:"edit_detail" %}
+    <h3>Edit</h3>
+    {% cv_context_button "edit_detail" %}
+{% endif %}
+```
+
+The filter checks access for `view`'s current object (or `None` for list-type views) and
+returns `False` for unknown keys.
+
+### Render a custom loop of buttons
+
+`view.cv_get_context_buttons` returns the resolved, **access-filtered** button contexts (so
+your loop never emits empty wrappers). Render each with `cv_render_context_button`:
+
+```django
+{% load crud_views %}
+
+{% for ctx in view.cv_get_context_buttons %}
+    <span class="my-wrap">{% cv_render_context_button ctx %}</span>
+{% endfor %}
+```
+
+By default it iterates the view's `cv_context_actions`. Pass an explicit key list from your
+own view method to control which buttons appear and in what order:
+
+```python
+class AuthorDetailView(DetailViewPermissionRequired):
+    cv_viewset = cv_author
+    cv_context_actions = ["edit_detail", "delete"]
+
+    def get_toolbar_buttons(self):
+        return self.cv_get_context_buttons(keys=["edit_detail", "delete"])
+```

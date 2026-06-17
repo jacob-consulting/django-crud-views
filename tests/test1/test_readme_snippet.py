@@ -1,8 +1,10 @@
 """Runnability gate for the README "this is all you write" snippet.
 
-Proves the minimal documented ViewSet pattern actually renders. If Variant A
-(no explicit ``table_class``) renders, the README uses it; otherwise the README
-must ship the explicit ``Table`` of Variant B.
+Locks in the minimal runnable crud-views ViewSet CRUD pattern over the ``Author``
+model and guards it against regression. The list view requires an explicit
+``Table`` subclass of ``crud_views.lib.table.Table`` together with
+``ListViewTableMixin``; a stock ``django_tables2.Table`` is rejected because
+crud-views passes a ``view=`` kwarg the stock ``Table`` does not accept.
 """
 
 import django_tables2 as tables
@@ -21,6 +23,8 @@ from crud_views.lib.views import (
     DeleteViewPermissionRequired,
 )
 
+# Registers into the global ViewSet registry at import time; the "readme" name
+# must stay unique across the test suite (duplicate names raise ViewSetError).
 cv_readme = ViewSet(model=Author, name="readme")
 
 

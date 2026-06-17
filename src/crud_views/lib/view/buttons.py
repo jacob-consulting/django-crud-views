@@ -158,6 +158,10 @@ class FilterContextButton(ContextButton):
         if not isinstance(context.view, ListViewTableFilterMixin):
             return dict_kwargs
 
+        # pinned filter is always visible -> no toggle button
+        if getattr(context.view, "cv_filter_pinned", False):
+            return dict_kwargs
+
         list_url = context.view.cv_get_url(key=context.view.cv_key)
 
         data = dict()

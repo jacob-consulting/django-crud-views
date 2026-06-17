@@ -71,6 +71,7 @@ class MyListView(ListViewTableMixin, ListViewPermissionRequired):
     cv_context_actions = ["parent", "filter", "create"]  # page-level action buttons
     paginate_by = 10
     cv_filter_persistence = True  # store filter state in session
+    cv_filter_pinned = False  # True = filter always open, toggle button hidden
 ```
 
 ### DetailView / DetailViewPermissionRequired
@@ -297,7 +298,7 @@ Add `"redirect_child"` (or the specific cv_key) to `cv_list_actions`.
 
 ## Context Buttons
 
-Context buttons appear in the `cv_context_actions` area (typically top-right of a view). The ViewSet's `context_buttons` list controls which custom buttons are available. Default buttons: `home` (link to list), `parent` (link to parent viewset), `filter` (toggle filter form).
+Context buttons appear in the `cv_context_actions` area (typically top-right of a view). The ViewSet's `context_buttons` list controls which custom buttons are available. Default buttons: `home` (link to list), `parent` (link to parent viewset), `filter` (toggle filter form; hidden when `cv_filter_pinned` is set).
 
 ```python
 from crud_views.lib.viewset import context_buttons_default
@@ -486,6 +487,8 @@ class MyListView(ListViewTableMixin, ListViewTableFilterMixin, ListViewPermissio
     filterset_class = MyFilter
     formhelper_class = MyFilterFormHelper
 ```
+
+Set `cv_filter_pinned = True` to render the filter always-open and hide the toggle button (default from the `CRUD_VIEWS_FILTER_PINNED` setting). Field-value persistence is unaffected.
 
 ---
 

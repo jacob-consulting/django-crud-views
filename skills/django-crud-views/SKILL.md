@@ -281,6 +281,8 @@ class AuthorListView(ListViewTableMixin, ListViewTableFilterMixin, ListViewPermi
     cv_viewset = cv_author
 ```
 
+To show a filter always-open with no toggle button, set `cv_filter_pinned = True` (or the `CRUD_VIEWS_FILTER_PINNED` setting).
+
 ---
 
 ## Ordered Actions (move up/down)

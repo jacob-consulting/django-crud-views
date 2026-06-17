@@ -31,6 +31,7 @@ class CrudViewsSettings(BaseModel):
 
     # filter
     filter_persistence: bool = from_settings("CRUD_VIEWS_FILTER_PERSISTENCE", default=True)
+    filter_pinned: bool = from_settings("CRUD_VIEWS_FILTER_PINNED", default=False)
     filter_icon: str = from_settings("CRUD_VIEWS_FILTER_ICON", default="fa-solid fa-filter")
     filter_reset_button_css_class: str = from_settings(
         "CRUD_VIEWS_FILTER_RESET_BUTTON_CSS_CLASS", default="btn btn-secondary"

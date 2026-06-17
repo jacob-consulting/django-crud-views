@@ -237,6 +237,7 @@ class ListViewTableFilterMixin(FilterView):
 
     cv_filter_persistence: bool = crud_views_settings.filter_persistence
     cv_session_key_querystring: str = "filter_query_string"
+    cv_filter_pinned: bool = crud_views_settings.filter_pinned
 
     def get_filterset(self, filterset_class):  # noqa
         kwargs = self.get_filterset_kwargs(filterset_class)
@@ -248,7 +249,12 @@ class ListViewTableFilterMixin(FilterView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        filter_expanded = SessionData.from_view(self).get("filter_expanded", False)
+        if self.cv_filter_pinned:
+            # pinned filter is always shown; the toggle/session-expanded state is moot
+            filter_expanded = True
+        else:
+            filter_expanded = SessionData.from_view(self).get("filter_expanded", False)
+        context["cv_filter_pinned"] = self.cv_filter_pinned
         context["cv_filter_expanded"] = filter_expanded
         return context
 

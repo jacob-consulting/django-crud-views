@@ -2,11 +2,14 @@
 
 ## Basic settings
 
+All keys below are flat, module-level Django settings (set them in `settings.py`), each
+named exactly as shown — there is no `CRUD_VIEWS = {...}` dict.
+
 | Key                  | Description                                              | Type  | Default      |
 |----------------------|----------------------------------------------------------|-------|--------------|
-| EXTENDS              |                                                          | `str` | `None`       |
-| MANAGE_VIEWS_ENABLED | Show manage view button, values are: `yes,no,debug_only` | `str` | `debug_only` |
-| CRUD_VIEWS_MANAGE_GROUP | Django group name that grants manage view access regardless of MANAGE_VIEWS_ENABLED | `str` | `CRUD_VIEWS_MANAGE` |
+| CRUD_VIEWS_EXTENDS              | Base template that crud_views templates extend (required)     | `str` | `None`       |
+| CRUD_VIEWS_MANAGE_VIEWS_ENABLED | Show manage view button, values are: `yes,no,debug_only` | `str` | `debug_only` |
+| CRUD_VIEWS_MANAGE_GROUP | Django group name that grants manage view access regardless of CRUD_VIEWS_MANAGE_VIEWS_ENABLED | `str` | `CRUD_VIEWS_MANAGE` |
 | CRUD_VIEWS_MANAGE_SHOW_USERS | Whether to show a Users column in the Permission Holders section of ManageView | `bool` | `False` |
 | CRUD_VIEWS_MANAGE_VIEW_CLASS | Dotted import path to a custom `ManageView` subclass used as the base for auto-registered manage views. When `None`, uses `ManageView`. | `str \| None` | `None` |
 | CRUD_VIEWS_GUARDIAN_MANAGE_VIEW_CLASS | Dotted import path to a custom `GuardianManageView` subclass used as the base for auto-registered guardian manage views. When `None`, uses `GuardianManageView`. | `str \| None` | `None` |
@@ -17,7 +20,7 @@ Session settings.
 
 | Key              | Description                                                | Type  | Default   |
 |------------------|------------------------------------------------------------|-------|-----------|
-| SESSION_DATA_KEY | The session key used to store data for `django-crud-views` | `str` | `viewset` |
+| CRUD_VIEWS_SESSION_DATA_KEY | The session key used to store data for `django-crud-views` | `str` | `viewset` |
 
 ## Filter
 
@@ -25,10 +28,10 @@ Settings for filter.
 
 | Key                           | Description                                     | Type   | Default            |
 |-------------------------------|-------------------------------------------------|--------|--------------------|
-| FILTER_PERSISTENCE            | Store filter in Django session                  | `bool` | True               |
-| FILTER_PINNED                 | When `True`, list/card filters render always-open and the filter toggle button is hidden. Per-view override via `cv_filter_pinned`. | `bool` | False |
-| FILTER_ICON                   | Filter icon (boostrap5 only)                    | `str`  | fa-solid fa-filter |
-| FILTER_RESET_BUTTON_CSS_CLASS | Filter reset button css flass (bootstrap5 only) | `str`  | btn btn-secondary  |
+| CRUD_VIEWS_FILTER_PERSISTENCE            | Store filter in Django session                  | `bool` | True               |
+| CRUD_VIEWS_FILTER_PINNED                 | When `True`, list/card filters render always-open and the filter toggle button is hidden. Per-view override via `cv_filter_pinned`. | `bool` | False |
+| CRUD_VIEWS_FILTER_ICON                   | Filter icon (bootstrap5 only)                    | `str`  | fa-solid fa-filter |
+| CRUD_VIEWS_FILTER_RESET_BUTTON_CSS_CLASS | Filter reset button css class (bootstrap5 only) | `str`  | btn btn-secondary  |
 
 ## View Context Actions
 
@@ -36,13 +39,13 @@ Default context actions for CRUD views.
 
 | Key                           | Description   | Type        | Default                  |
 |-------------------------------|---------------|-------------|--------------------------|
-| LIST_CONTEXT_ACTIONS          | Global switch | `List[str]` | `parent, filter, create` |
-| DETAIL_CONTEXT_ACTIONS        | Global switch | `List[str]` | `home, update, delete`   |
-| CREATE_CONTEXT_ACTIONS        | Global switch | `List[str]` | `home`                   |
-| UPDATE_CONTEXT_ACTIONS        | Global switch | `List[str]` | `home`                   |
-| DELETE_CONTEXT_ACTIONS        | Global switch | `List[str]` | `home`                   |
-| MANAGE_CONTEXT_ACTIONS        | Global switch | `List[str]` | `home`                   |
-| CREATE_SELECT_CONTEXT_ACTIONS | Global switch | `List[str]` | `home`                   |
+| CRUD_VIEWS_LIST_CONTEXT_ACTIONS          | Global switch | `List[str]` | `parent, list, filter, create` |
+| CRUD_VIEWS_DETAIL_CONTEXT_ACTIONS        | Global switch | `List[str]` | `home, detail, update, delete` |
+| CRUD_VIEWS_CREATE_CONTEXT_ACTIONS        | Global switch | `List[str]` | `home, create`                 |
+| CRUD_VIEWS_UPDATE_CONTEXT_ACTIONS        | Global switch | `List[str]` | `home, detail, update, delete` |
+| CRUD_VIEWS_DELETE_CONTEXT_ACTIONS        | Global switch | `List[str]` | `home, detail, update, delete` |
+| CRUD_VIEWS_MANAGE_CONTEXT_ACTIONS        | Global switch | `List[str]` | `home`                         |
+| CRUD_VIEWS_CREATE_SELECT_CONTEXT_ACTIONS | Global switch | `List[str]` | `home, create_select`          |
 
 ## List Actions
 
@@ -50,7 +53,7 @@ Default list actions for list view.
 
 | Key          | Description   | Type        | Default                  |
 |--------------|---------------|-------------|--------------------------|
-| LIST_ACTIONS | Global switch | `List[str]` | `detail, update, delete` |
+| CRUD_VIEWS_LIST_ACTIONS | Global switch | `List[str]` | `detail, update, delete` |
 
 ## Content Security Policy (CSP)
 

@@ -53,3 +53,21 @@ def test_pinned_view_forces_filter_expanded_context(client_publisher_order, publ
     assert response.status_code == 200
     assert response.context["cv_filter_pinned"] is True
     assert response.context["cv_filter_expanded"] is True
+
+
+@pytest.mark.django_db
+def test_pinned_hides_filter_toggle_button(client_publisher_order, publishers, monkeypatch):
+    from lxml import html
+
+    from tests.test1.app.views import PublisherOrderCardListView
+
+    # not pinned: toggle button present
+    response = client_publisher_order.get("/publisher_order/card/")
+    doc = html.fromstring(response.content)
+    assert doc.cssselect("#cv-filter-toggle"), "toggle should be present when not pinned"
+
+    # pinned: toggle button hidden
+    monkeypatch.setattr(PublisherOrderCardListView, "cv_filter_pinned", True)
+    response = client_publisher_order.get("/publisher_order/card/")
+    doc = html.fromstring(response.content)
+    assert not doc.cssselect("#cv-filter-toggle"), "toggle should be hidden when pinned"

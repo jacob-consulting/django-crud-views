@@ -4,6 +4,9 @@
 
 ### Added
 
+- Card views: `CardOrderMixin` adds whitelisted queryset ordering — declare sortable fields via `cv_order_fields` (`"name"` or `("name", "Label")`) and an optional `cv_order_default` (e.g. `"-name"`). Order field/direction are read from the `cv_order_param`/`cv_order_dir_param` query params and validated against the whitelist, so arbitrary `order_by` input is rejected
+- Card views: order-by combo + direction-toggle toolbar, and pagination controls (set `paginate_by` per view to enable). Active filter and ordering are preserved across submits, paging, and reset so all three stay in sync
+- New `cv_action_enabled(user, obj)` hook — a secondary action gate evaluated only after `cv_has_access` passes. `cv_has_access` answers "may you do this in principle?" (permission); `cv_action_enabled` answers "is this action currently applicable to *this* object?" (state) — e.g. a locked parent disables child create/delete. Both must be true for the action button to render and the request to be allowed (default: enabled). Enforced for both the plain (`has_permission`) and guardian (`get_object`/`dispatch`) permission paths; the `cv_get_action_object()` helper resolves the relevant object (the instance for object-views, the parent for child create-views). Button/companion-form guards apply across list, context, and card views in the bootstrap5 and plain themes
 - New `CRUD_VIEWS_STRICT` setting (defaults to `DEBUG`): in strict mode, exceptions previously swallowed by `ignore_exception` (e.g. unknown view keys in `cv_context_action` template tags or table link columns) are raised so misconfigurations fail loudly during development; in non-strict mode they are logged as warnings under the `crud_views` logger hierarchy
 - Logging: swallowed/narrowed exceptions in `DeleteView.cv_get_related_object_url` and the guardian create-button parent resolution are now logged instead of silently ignored
 
@@ -27,6 +30,7 @@
 - System checks: crud_views checks are now registered under the `crud_views` tag (was a leftover placeholder tag `my_new_tag`)
 - UUID primary keys: URL patterns now accept any UUID version (previously only version-4 UUIDs matched, so uuid1/uuid7 PKs produced 404s)
 - Packaging: the `all` extra now includes `guardian`; fixed the malformed `Repository` URL in `pyproject.toml`
+- Example app: fixed a bootstrap5 demo startup crash caused by a duplicate `poly` ViewSet name — the formset polymorphic ViewSet is renamed to `poly_formset` to resolve the collision
 
 ### Changed
 

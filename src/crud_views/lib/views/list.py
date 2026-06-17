@@ -82,8 +82,16 @@ class ListViewFilterFormHelper(FormHelper):
             )
         )
 
-        # add hidden fields with control values
+        # add hidden fields with control values so a filter submit does not
+        # drop the active table sort (ListView) or card order (CardView)
         sort = request.GET.get("sort") or ""
-        self.add_input(
-            layout.Hidden("sort", sort),
-        )
+        self.add_input(layout.Hidden("sort", sort))
+
+        order_param = getattr(view, "cv_order_param", "order")
+        dir_param = getattr(view, "cv_order_dir_param", "dir")
+        order = request.GET.get(order_param) or ""
+        direction = request.GET.get(dir_param) or ""
+        if order:
+            self.add_input(layout.Hidden(order_param, order))
+        if direction:
+            self.add_input(layout.Hidden(dir_param, direction))

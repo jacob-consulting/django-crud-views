@@ -152,6 +152,21 @@ def cv_render_filter(context):
     return render_to_string(f"{crud_views_settings.theme_path}/tags/list_filter.html", context.flatten())
 
 
+@register.inclusion_tag(f"{crud_views_settings.theme_path}/snippets/pagination.html", takes_context=True)
+def cv_pagination(context):
+    request = context.get("request")
+    params = request.GET.copy() if request is not None else {}
+    if hasattr(params, "pop"):
+        params.pop("page", None)
+    base_qs = params.urlencode() if hasattr(params, "urlencode") else ""
+    return {
+        "page_obj": context.get("page_obj"),
+        "paginator": context.get("paginator"),
+        "is_paginated": context.get("is_paginated", False),
+        "base_qs": base_qs,
+    }
+
+
 @register.filter
 def cv_is_false(arg):
     return arg is False

@@ -244,6 +244,20 @@ class AuthorCardListView(ListViewTableFilterMixin, CardListViewPermissionRequire
 
 CardAction fields: `key` (view key in same viewset), `label`, `no_label` (icon-only), `variant` (`"primary"` / `"secondary"` / `"tertiary"`), `flex` (flex-grow-1), `child_name` (child viewset name), `child_key` (child view key, default `"list"`).
 
+#### CardListView ordering & paging
+
+- `cv_order_fields: list[str | tuple[str, str]]` — orderable fields; renders an
+  "Order by" combo + asc/desc toggle. String = field name (label from verbose_name);
+  tuple = `(name, label)`. The chosen field is whitelisted (no `order_by` injection).
+- `cv_order_default: str | None` — default ordering when no `order` param; leading `-`
+  = descending.
+- `cv_order_param` / `cv_order_dir_param` — GET param names (default `"order"` / `"dir"`).
+- `paginate_by: int | None` — Django pagination; renders a pagination nav whose links
+  preserve the active filter + order.
+
+Filter (`ListViewTableFilterMixin`), order, and page never override each other and are
+persisted together via `cv_filter_persistence`.
+
 Custom card template receives `object`, `view`, `request` in context. Use `{% cv_card_action action object %}` to render action buttons:
 
 ```html

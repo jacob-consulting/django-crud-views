@@ -1,5 +1,5 @@
 from django.urls import reverse
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from .context import ViewContext
 from ..settings import crud_views_settings
@@ -14,6 +14,8 @@ class ContextButton(BaseModel):
     key_target: str | None = None
     label_template: str | None = None
     label_template_code: str | None = None
+    template: str | None = None
+    template_code: str | None = None
 
     @staticmethod
     def _resolve_container_key(viewset, key_target: str) -> str:
@@ -27,6 +29,14 @@ class ContextButton(BaseModel):
             return context.view.render_snippet(data, self.label_template)
         elif self.label_template_code:
             return context.view.render_snippet(data, template_code=self.label_template_code)
+
+    def _inject_template(self, data: dict) -> None:
+        if self.template_code:
+            data["cv_template_code"] = self.template_code
+        elif self.template:
+            data["cv_template"] = self.template
+        else:
+            data["cv_template"] = crud_views_settings.context_button_template
 
     def get_context(self, context: ViewContext) -> dict:
         key_target = self._resolve_container_key(context.view.cv_viewset, self.key_target)
@@ -53,6 +63,8 @@ class ContextButton(BaseModel):
         cv_action_label = self.render_label(data, context)
         if cv_action_label:
             data["cv_action_label"] = cv_action_label
+
+        self._inject_template(data)
 
         return data
 
@@ -101,6 +113,7 @@ class ParentContextButton(ContextButton):
             )
 
         data = cls.cv_get_dict(context=context, **dict_kwargs)
+        self._inject_template(data)
         return data
 
 
@@ -139,6 +152,8 @@ class ChildContextButton(ContextButton):
         if cv_action_label:
             data["cv_action_label"] = cv_action_label
 
+        self._inject_template(data)
+
         return data
 
 
@@ -148,6 +163,9 @@ class FilterContextButton(ContextButton):
     """
 
     key: str = "filter"
+    template: str | None = Field(
+        default_factory=lambda: f"{crud_views_settings.theme_path}/tags/context_action_filter.html"
+    )
 
     def get_context(self, context: ViewContext) -> dict:
         from ..views import ListViewTableFilterMixin
@@ -165,14 +183,9 @@ class FilterContextButton(ContextButton):
         list_url = context.view.cv_get_url(key=context.view.cv_key)
 
         data = dict()
-
-        # render action label
-        cv_action_label = "Filter"
-        if cv_action_label:
-            data["cv_action_label"] = cv_action_label
-
+        data["cv_action_label"] = "Filter"
         data["cv_icon_action"] = crud_views_settings.filter_icon
         data["cv_url"] = list_url
-        data["cv_template"] = f"{crud_views_settings.theme_path}/tags/context_action_filter.html"
+        self._inject_template(data)
 
         return data

@@ -1,6 +1,6 @@
 import json
 from typing import Iterable
-from urllib.parse import parse_qs
+from urllib.parse import parse_qs, urlencode
 
 from django.contrib import messages
 from django.core.exceptions import BadRequest
@@ -131,6 +131,83 @@ class MessageMixin:
         return result
 
 
+class CardOrderMixin:
+    """
+    Adds order-by + direction support to card views.
+
+    The order field is whitelisted against ``cv_order_fields`` so an arbitrary
+    GET parameter can never reach ``QuerySet.order_by()`` (no ordering injection).
+    Direction is restricted to ``asc`` / ``desc``.
+    """
+
+    cv_order_fields: list = []  # list[str | tuple[str, str]]: field name or (name, label)
+    cv_order_default: str | None = None  # e.g. "-name"; leading "-" => descending
+    cv_order_param: str = "order"
+    cv_order_dir_param: str = "dir"
+
+    def cv_get_order_field_names(self) -> list[str]:
+        return [f[0] if isinstance(f, (tuple, list)) else f for f in self.cv_order_fields]
+
+    def cv_get_order(self) -> tuple[str | None, str]:
+        """Resolve (field_name_or_None, direction) from GET, whitelisted."""
+        names = self.cv_get_order_field_names()
+        field = self.request.GET.get(self.cv_order_param) or ""
+        direction = self.request.GET.get(self.cv_order_dir_param) or "asc"
+        if direction not in ("asc", "desc"):
+            direction = "asc"
+        if field in names:
+            return field, direction
+        # not selected / not whitelisted -> fall back to default ordering
+        if self.cv_order_default:
+            default = self.cv_order_default
+            if default.startswith("-"):
+                return default[1:], "desc"
+            return default, "asc"
+        return None, direction
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        field, direction = self.cv_get_order()
+        if field:
+            prefix = "-" if direction == "desc" else ""
+            qs = qs.order_by(f"{prefix}{field}")
+        return qs
+
+    def cv_get_order_choices(self) -> list[dict]:
+        current, _ = self.cv_get_order()
+        choices = []
+        for f in self.cv_order_fields:
+            if isinstance(f, (tuple, list)):
+                name, label = f[0], f[1]
+            else:
+                name = f
+                try:
+                    label = str(self.model._meta.get_field(name).verbose_name).capitalize()
+                except Exception:  # pragma: no cover - defensive
+                    label = name
+            choices.append({"name": name, "label": label, "selected": name == current})
+        return choices
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        current, direction = self.cv_get_order()
+        context["cv_order_choices"] = self.cv_get_order_choices()
+        context["cv_order_current"] = current or ""
+        context["cv_order_dir"] = direction
+        context["cv_order_param"] = self.cv_order_param
+        context["cv_order_dir_param"] = self.cv_order_dir_param
+        # all current GET params except order/dir/page, for the toolbar's hidden inputs
+        preserved = []
+        skip = {self.cv_order_param, self.cv_order_dir_param, "page"}
+        for key in self.request.GET:
+            if key in skip:
+                continue
+            for value in self.request.GET.getlist(key):
+                preserved.append({"name": key, "value": value})
+        context["cv_order_preserved_params"] = preserved
+        return context
+
+
 class ListViewTableMixin(SingleTableMixin):
     """
     Mixin for ListView to render tables with django-tables2
@@ -220,9 +297,15 @@ class ListViewTableFilterMixin(FilterView):
                 except KeyError:
                     pass
                 url = self.request.path
-                sort = qs.get("sort", [None])[0]
-                if sort:
-                    url += f"?sort={sort}"
+                keep = {}
+                order_param = getattr(self, "cv_order_param", "order")
+                dir_param = getattr(self, "cv_order_dir_param", "dir")
+                for key in ("sort", order_param, dir_param):
+                    value = qs.get(key, [None])[0]
+                    if value:
+                        keep[key] = value
+                if keep:
+                    url += "?" + urlencode(keep)
                 return HttpResponseRedirect(url)
 
             # there is a query string, update data

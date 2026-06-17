@@ -124,6 +124,56 @@ class AuthorCardListView(ListViewTableFilterMixin, CardListViewPermissionRequire
     cv_card_actions = [...]
 ```
 
+## Ordering
+
+Declare orderable fields with `cv_order_fields`. The card view then renders an
+"Order by" combo plus an ascending/descending toggle above the grid.
+
+```python
+from crud_views.lib.views import CardListViewPermissionRequired
+
+class BookCardListView(CardListViewPermissionRequired):
+    cv_viewset = cv_book
+    cv_order_fields = ["title", ("price", "Price")]  # str or (name, label)
+    cv_order_default = "title"                        # leading "-" => descending
+    cv_card_actions = [...]
+```
+
+| Attribute | Type | Default | Description |
+|---|---|---|---|
+| `cv_order_fields` | `list[str \| tuple[str, str]]` | `[]` | Orderable fields. A string uses the model field's verbose name as the label; a `(name, label)` tuple sets an explicit label. The combo is hidden when empty. |
+| `cv_order_default` | `str \| None` | `None` | Ordering applied when no `order` parameter is present. Leading `-` means descending (e.g. `"-created"`). |
+| `cv_order_param` | `str` | `"order"` | GET parameter name for the field. Change it if a model field is literally named `order`. |
+| `cv_order_dir_param` | `str` | `"dir"` | GET parameter name for the direction (`asc`/`desc`). |
+
+The selected field is **whitelisted** against `cv_order_fields`, so an arbitrary
+`?order=` value can never reach `order_by()`. To apply a sort, pick a field and click
+the ↑ or ↓ button.
+
+## Paging
+
+Set Django's `paginate_by` to enable pagination. A Bootstrap pagination control renders
+below the grid; its links preserve the active filter and order.
+
+```python
+class BookCardListView(CardListViewPermissionRequired):
+    cv_viewset = cv_book
+    paginate_by = 12
+    cv_card_actions = [...]
+```
+
+## Filter, Order & Paging Coexistence
+
+Filter, order, and page all live in the URL query string and never clobber each other:
+
+- The order toolbar carries the active filter as hidden inputs.
+- The filter form carries the active order/direction as hidden inputs.
+- Pagination links carry both the filter and the order.
+
+When `cv_filter_persistence` is enabled (the default), the whole query string — filter
+**and** order — is stored in the session and restored on the next visit. Resetting the
+filter keeps the active order.
+
 ## List Key Fallback
 
 When a ViewSet has a `CardListView` but no `ListView`, keys that reference `"list"`

@@ -3,6 +3,7 @@ from tests.test1.app.views import (
     cv_author_wide_card,
     cv_author_custom_detail,
     cv_publisher,
+    cv_publisher_order,
     cv_book,
     cv_vehicle,
     cv_campaign,
@@ -22,6 +23,7 @@ urlpatterns += cv_author.urlpatterns
 urlpatterns += cv_author_wide_card.urlpatterns
 urlpatterns += cv_author_custom_detail.urlpatterns
 urlpatterns += cv_publisher.urlpatterns
+urlpatterns += cv_publisher_order.urlpatterns
 urlpatterns += cv_book.urlpatterns
 urlpatterns += cv_vehicle.urlpatterns
 urlpatterns += cv_campaign.urlpatterns

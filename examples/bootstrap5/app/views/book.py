@@ -67,6 +67,9 @@ class BookCardListView(ListViewTableFilterMixin, GuardianCardListViewPermissionR
     cv_path = ""
     filterset_class = BookFilter
     formhelper_class = BookFilterFormHelper
+    cv_order_fields = ["title", ("price", "Price")]
+    cv_order_default = "title"
+    paginate_by = 6
     cv_card_actions = [
         CardAction(key="detail", label="Details", variant="primary", flex=True),
         CardAction(child_name="book_review", child_key="card", label="Reviews"),

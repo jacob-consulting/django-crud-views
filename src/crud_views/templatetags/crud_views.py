@@ -211,6 +211,15 @@ def cv_is_list(arg):
     return isinstance(arg, (list, tuple))
 
 
+@register.filter
+def cv_context_has_permission(view, key) -> bool:
+    try:
+        cls = view.cv_viewset.get_view_class(key)
+    except Exception:
+        return False
+    return bool(cls.cv_has_access(view.request.user, getattr(view, "object", None)))
+
+
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/card_action.html", takes_context=True)
 def cv_card_action(context, action, obj=None):
     view = cv_get_view(context)

@@ -84,6 +84,7 @@ class AuthorListView(ListViewTableMixin, ListViewTableFilterMixin, GuardianListV
     # filter config
     filterset_class = AuthorFilter
     formhelper_class = AuthorFilterFormHelper
+    cv_filter_pinned = True  # always-open filter, no toggle button
 
     # viewset config
     cv_viewset = cv_author

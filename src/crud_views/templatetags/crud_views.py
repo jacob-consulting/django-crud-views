@@ -94,6 +94,12 @@ def cv_context_button(context, key, obj=None):
     return _render_context_button(view, ctx)
 
 
+@register.simple_tag(takes_context=True)
+def cv_render_context_button(context, ctx) -> str:
+    view = cv_get_view(context)
+    return _render_context_button(view, ctx)
+
+
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/context_actions.html", takes_context=True)
 def cv_context_actions(context, obj=None):
     view: CrudView = cv_get_view(context)

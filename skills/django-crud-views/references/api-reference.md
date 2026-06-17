@@ -302,7 +302,7 @@ Context buttons appear in the `cv_context_actions` area (typically top-right of 
 
 ```python
 from crud_views.lib.viewset import context_buttons_default
-from crud_views.lib.view import ContextButton, ParentContextButton, ChildContextButton
+from crud_views.lib.view import ContextButton, ParentContextButton, ChildContextButton, SiblingContextButton
 ```
 
 ### ContextButton
@@ -356,6 +356,21 @@ class AuthorDetailView(DetailViewPermissionRequired):
     cv_viewset = cv_author
     cv_context_actions = ["update", "delete", "books"]
 ```
+
+### SiblingContextButton
+
+On a child view, links to a sibling collection (another child of the same parent), reusing
+the parent PK from the URL.
+
+```python
+SiblingContextButton(
+    key="articles",                # action key referenced in cv_context_actions
+    sibling_name="article",        # registry name of the sibling viewset (same parent)
+    sibling_key="list",            # target view key in the sibling viewset (default: "list")
+)
+```
+
+Renders nothing on a parentless view; access checked model-level on the sibling view.
 
 ---
 

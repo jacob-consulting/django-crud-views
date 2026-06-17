@@ -120,6 +120,63 @@ class AuthorDetailView(DetailViewPermissionRequired):
 
 The `"books"` action in `cv_context_actions` renders a button linking to `/author/<pk>/book/`.
 
+## SiblingContextButton
+
+Placed on a **child** view, links sideways to a **sibling** collection — another child of the
+same parent — reusing the parent PK from the current URL. It is the composition of
+`ParentContextButton` (resolve the parent) and `ChildContextButton` (hop to a named child):
+use `ChildContextButton` on the *parent* view and `SiblingContextButton` on its *children*.
+
+```python
+from crud_views.lib.view import SiblingContextButton
+
+SiblingContextButton(
+    key="articles",                # action key referenced in cv_context_actions
+    sibling_name="article",        # registry name of the sibling viewset (same parent)
+    sibling_key="list",            # target view key in the sibling viewset (default: "list")
+    label_template_code="Articles",
+)
+```
+
+| Parameter             | Type          | Default  | Description                                       |
+|-----------------------|---------------|----------|---------------------------------------------------|
+| `key`                 | `str`         | required | Action key referenced in `cv_context_actions`     |
+| `sibling_name`        | `str`         | required | Registry name of the sibling viewset (same parent)|
+| `sibling_key`         | `str`         | `"list"` | Target view key in the sibling viewset            |
+| `label_template`      | `str \| None` | `None`   | Path to a Django template for the button label    |
+| `label_template_code` | `str \| None` | `None`   | Inline Django template string for the label       |
+
+Renders nothing when the current view has **no parent**. The URL is built from the current
+view's kwargs (the sibling shares the same parent chain), so no current object is required.
+Access is checked via the sibling view's `cv_has_access(user, None)` — model-level on the
+sibling collection; object-level/Guardian permissions keyed on the parent are not consulted.
+
+### Example
+
+Given `Author` with children `Book` and `Article`:
+
+```python
+from crud_views.lib.viewset import ViewSet, ParentViewSet, context_buttons_default
+from crud_views.lib.view import SiblingContextButton
+from crud_views.lib.views import ListViewPermissionRequired
+
+cv_book = ViewSet(
+    model=Book,
+    name="book",
+    parent=ParentViewSet(name="author"),
+    context_buttons=context_buttons_default() + [
+        SiblingContextButton(key="articles", sibling_name="article", label_template_code="Articles"),
+    ],
+)
+
+
+class BookListView(ListViewPermissionRequired):
+    cv_viewset = cv_book
+    cv_context_actions = ["parent", "create", "articles"]
+```
+
+On `/author/<author_pk>/book/`, the `"articles"` button links to `/author/<author_pk>/article/`.
+
 ## Customizing Default Buttons
 
 Override the default buttons by passing a custom list to the ViewSet:

@@ -356,6 +356,39 @@ class BookDeleteView(CrispyModelViewMixin, DeleteViewPermissionRequired):
     cv_viewset = cv_book
 
 
+# --- Contract (second child of publisher, sibling of book) ---
+
+from tests.test1.app.models import Contract  # noqa: E402
+
+cv_contract = ViewSet(
+    model=Contract,
+    name="contract",
+    parent=ParentViewSet(name="publisher"),
+    icon_header="fa-solid fa-file-contract",
+)
+
+
+class ContractTable(Table):
+    id = LinkDetailColumn()
+    title = tables.Column()
+
+
+class ContractListView(ListViewTableMixin, ListViewPermissionRequired):
+    table_class = ContractTable
+    cv_viewset = cv_contract
+    cv_list_actions = ["detail"]
+
+
+class ContractDetailView(DetailViewPermissionRequired):
+    cv_viewset = cv_contract
+    cv_property_display = [
+        {
+            "title": "Attributes",
+            "properties": ["title"],
+        },
+    ]
+
+
 # --- Vehicle (polymorphic) ---
 
 cv_vehicle = ViewSet(

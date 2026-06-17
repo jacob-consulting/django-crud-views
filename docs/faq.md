@@ -140,4 +140,34 @@ class AuthorDetailView(DetailViewPermissionRequired):
 
     def get_toolbar_buttons(self):
         return self.cv_get_context_buttons(keys=["edit_detail", "delete"])
+
+## How do I link from one child collection to a sibling collection?
+
+When you have a parent with several children (e.g. `Author` → `Book`, `Article`) and want a
+button on one child's pages that jumps to a sibling collection under the *same* parent, use
+[`SiblingContextButton`](reference/context_buttons.md#siblingcontextbutton). Place it on the
+child viewset; it reuses the parent PK from the current URL:
+
+```python
+from crud_views.lib.viewset import ViewSet, ParentViewSet, context_buttons_default
+from crud_views.lib.view import SiblingContextButton
+
+cv_book = ViewSet(
+    model=Book,
+    name="book",
+    parent=ParentViewSet(name="author"),
+    context_buttons=context_buttons_default() + [
+        SiblingContextButton(key="articles", sibling_name="article", label_template_code="Articles"),
+    ],
+)
+```
+
+```python
+class BookListView(ListViewPermissionRequired):
+    cv_viewset = cv_book
+    cv_context_actions = ["parent", "create", "articles"]
+```
+
+Use `ChildContextButton` on the parent view to go *down* to a child, and
+`SiblingContextButton` on a child view to go *sideways* to a sibling.
 ```

@@ -4,6 +4,7 @@ __pycache__
 *.pyc
 db.sqlite3
 uv.lock
+/site
 /dist
 /django_crud_views.egg-info
 /PRIVATE.md

@@ -394,23 +394,26 @@ Full API: [references/api-reference.md](references/api-reference.md). Reference 
 
 ## Settings (Django `settings.py`)
 
+Each setting is a flat, module-level Django setting prefixed with `CRUD_VIEWS_` (read via
+`getattr(settings, "CRUD_VIEWS_<NAME>", default)`). There is no `CRUD_VIEWS = {...}` dict.
+Only `CRUD_VIEWS_EXTENDS` is required; the rest show their defaults:
+
 ```python
-CRUD_VIEWS = {
-    "EXTENDS": "base.html",                    # required: base template
-    "MANAGE_VIEWS_ENABLED": "debug_only",      # "yes" | "no" | "debug_only"
-    "CRUD_VIEWS_MANAGE_GROUP": "CRUD_VIEWS_MANAGE",  # group name granting manage access
-    "CRUD_VIEWS_MANAGE_SHOW_USERS": False,      # show Users column in Permission Holders
-    "SESSION_DATA_KEY": "viewset",
-    "FILTER_PERSISTENCE": True,
-    "FILTER_ICON": "fa-solid fa-filter",
-    "FILTER_RESET_BUTTON_CSS_CLASS": "btn btn-secondary",
-    "LIST_ACTIONS": ["detail", "update", "delete"],
-    "LIST_CONTEXT_ACTIONS": ["parent", "filter", "create"],
-    "DETAIL_CONTEXT_ACTIONS": ["home", "update", "delete"],
-    "CREATE_CONTEXT_ACTIONS": ["home"],
-    "UPDATE_CONTEXT_ACTIONS": ["home"],
-    "DELETE_CONTEXT_ACTIONS": ["home"],
-}
+CRUD_VIEWS_EXTENDS = "base.html"                       # required: base template
+CRUD_VIEWS_MANAGE_VIEWS_ENABLED = "debug_only"         # "yes" | "no" | "debug_only"
+CRUD_VIEWS_MANAGE_GROUP = "CRUD_VIEWS_MANAGE"           # group name granting manage access
+CRUD_VIEWS_MANAGE_SHOW_USERS = False                   # show Users column in Permission Holders
+CRUD_VIEWS_SESSION_DATA_KEY = "viewset"
+CRUD_VIEWS_FILTER_PERSISTENCE = True                   # store filter state in session
+CRUD_VIEWS_FILTER_PINNED = False                       # True = filter always open, toggle hidden
+CRUD_VIEWS_FILTER_ICON = "fa-solid fa-filter"
+CRUD_VIEWS_FILTER_RESET_BUTTON_CSS_CLASS = "btn btn-secondary"
+CRUD_VIEWS_LIST_ACTIONS = ["detail", "update", "delete"]
+CRUD_VIEWS_LIST_CONTEXT_ACTIONS = ["parent", "list", "filter", "create"]
+CRUD_VIEWS_DETAIL_CONTEXT_ACTIONS = ["home", "detail", "update", "delete"]
+CRUD_VIEWS_CREATE_CONTEXT_ACTIONS = ["home", "create"]
+CRUD_VIEWS_UPDATE_CONTEXT_ACTIONS = ["home", "detail", "update", "delete"]
+CRUD_VIEWS_DELETE_CONTEXT_ACTIONS = ["home", "detail", "update", "delete"]
 ```
 
 See [references/api-reference.md](references/api-reference.md) for full settings and all ViewSet/view attributes.

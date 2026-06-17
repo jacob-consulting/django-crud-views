@@ -577,36 +577,37 @@ class VehicleListView(ListViewTableMixin, ListViewPermissionRequired):
 
 ## Settings
 
-All settings go under `CRUD_VIEWS` in `settings.py`:
+Settings are flat, module-level Django settings, each prefixed with `CRUD_VIEWS_`
+(read via `getattr(settings, "CRUD_VIEWS_<NAME>", default)`) — there is no `CRUD_VIEWS = {...}`
+dict. Only `CRUD_VIEWS_EXTENDS` is required; the rest show their defaults:
 
 ```python
-CRUD_VIEWS = {
-    # Required
-    "EXTENDS": "base.html",                    # base template to extend
+# Required
+CRUD_VIEWS_EXTENDS = "base.html"                       # base template to extend
 
-    # Manage view
-    "MANAGE_VIEWS_ENABLED": "debug_only",      # "yes" | "no" | "debug_only"
+# Manage view
+CRUD_VIEWS_MANAGE_VIEWS_ENABLED = "debug_only"         # "yes" | "no" | "debug_only"
 
-    # Session
-    "SESSION_DATA_KEY": "viewset",
+# Session
+CRUD_VIEWS_SESSION_DATA_KEY = "viewset"
 
-    # Filter
-    "FILTER_PERSISTENCE": True,
-    "FILTER_ICON": "fa-solid fa-filter",
-    "FILTER_RESET_BUTTON_CSS_CLASS": "btn btn-secondary",
+# Filter
+CRUD_VIEWS_FILTER_PERSISTENCE = True
+CRUD_VIEWS_FILTER_PINNED = False                       # True = filter always open, toggle hidden
+CRUD_VIEWS_FILTER_ICON = "fa-solid fa-filter"
+CRUD_VIEWS_FILTER_RESET_BUTTON_CSS_CLASS = "btn btn-secondary"
 
-    # Default per-row actions for list views
-    "LIST_ACTIONS": ["detail", "update", "delete"],
+# Default per-row actions for list views
+CRUD_VIEWS_LIST_ACTIONS = ["detail", "update", "delete"]
 
-    # Default page-level (context) actions per view type
-    "LIST_CONTEXT_ACTIONS": ["parent", "filter", "create"],
-    "DETAIL_CONTEXT_ACTIONS": ["home", "update", "delete"],
-    "CREATE_CONTEXT_ACTIONS": ["home"],
-    "UPDATE_CONTEXT_ACTIONS": ["home"],
-    "DELETE_CONTEXT_ACTIONS": ["home"],
-    "MANAGE_CONTEXT_ACTIONS": ["home"],
-    "CREATE_SELECT_CONTEXT_ACTIONS": ["home"],
-}
+# Default page-level (context) actions per view type
+CRUD_VIEWS_LIST_CONTEXT_ACTIONS = ["parent", "list", "filter", "create"]
+CRUD_VIEWS_DETAIL_CONTEXT_ACTIONS = ["home", "detail", "update", "delete"]
+CRUD_VIEWS_CREATE_CONTEXT_ACTIONS = ["home", "create"]
+CRUD_VIEWS_UPDATE_CONTEXT_ACTIONS = ["home", "detail", "update", "delete"]
+CRUD_VIEWS_DELETE_CONTEXT_ACTIONS = ["home", "detail", "update", "delete"]
+CRUD_VIEWS_MANAGE_CONTEXT_ACTIONS = ["home"]
+CRUD_VIEWS_CREATE_SELECT_CONTEXT_ACTIONS = ["home", "create_select"]
 ```
 
 ### django-object-detail settings (for DetailView)

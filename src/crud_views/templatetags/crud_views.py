@@ -31,6 +31,15 @@ def cv_get_context(context, key, obj=None) -> dict:
     return context
 
 
+def _render_context_button(view, ctx) -> str:
+    if not ctx or ctx.get("cv_action_enabled") is False or ctx.get("cv_access") is not True:
+        return ""
+    if ctx.get("cv_template_code"):
+        return view.render_snippet(ctx, template_code=ctx["cv_template_code"])
+    template = ctx.get("cv_template") or crud_views_settings.context_button_template
+    return view.render_snippet(ctx, template=template)
+
+
 def _cv_config_context(context):
     request = context["request"]
     from django.middleware.csrf import get_token
@@ -72,6 +81,17 @@ def cv_context_action(context, key, obj=None):
         return view.render_snippet(ctx, template_code=ctx["cv_template_code"])
     template = ctx.get("cv_template") or crud_views_settings.context_button_template
     return render_to_string(template, context=ctx, request=context["request"])
+
+
+@register.simple_tag(takes_context=True)
+@ignore_exception(ViewSetKeyFoundError, default_value="")
+def cv_context_button(context, key, obj=None):
+    obj = None if not obj else obj  # fix empty string from template
+    view = cv_get_view(context)
+    if obj is None:
+        obj = getattr(view, "object", None)
+    ctx = cv_get_context(context=context, key=key, obj=obj)
+    return _render_context_button(view, ctx)
 
 
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/context_actions.html", takes_context=True)

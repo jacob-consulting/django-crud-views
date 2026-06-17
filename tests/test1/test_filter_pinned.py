@@ -91,3 +91,44 @@ def test_pinned_renders_filter_without_collapse(client_publisher_order, publishe
     doc = html.fromstring(response.content)
     assert not doc.cssselect("#filter-collapse"), "collapse wrapper must be gone when pinned"
     assert doc.cssselect("form#filter-form"), "filter form must still render when pinned"
+
+
+@pytest.fixture
+def client_publisher_view(client):
+    from tests.test1.app.views import cv_publisher
+
+    user = User.objects.create_user(username="user_pinned_list", password="password")
+    user_viewset_permission(user, cv_publisher, "view")
+    client.force_login(user)
+    return client
+
+
+@pytest.mark.django_db
+def test_pinned_listview_parity(client_publisher_view, monkeypatch):
+    from lxml import html
+
+    from tests.test1.app.views import PublisherListView
+
+    monkeypatch.setattr(PublisherListView, "cv_filter_pinned", True)
+    response = client_publisher_view.get("/publisher/")
+    assert response.status_code == 200
+    doc = html.fromstring(response.content)
+    assert not doc.cssselect("#cv-filter-toggle"), "toggle hidden for pinned ListView"
+    assert not doc.cssselect("#filter-collapse"), "no collapse wrapper for pinned ListView"
+    assert doc.cssselect("form#filter-form"), "filter form rendered for pinned ListView"
+
+
+@pytest.mark.django_db
+def test_pinned_still_persists_filter_values_to_session(client_publisher_order, publishers, monkeypatch):
+    from tests.test1.app.views import PublisherOrderCardListView
+
+    monkeypatch.setattr(PublisherOrderCardListView, "cv_filter_pinned", True)
+
+    # submit a filter value -> stored in session (cv_filter_persistence defaults True)
+    response = client_publisher_order.get("/publisher_order/card/?name=Alp")
+    assert response.status_code == 200
+
+    # a bare GET restores the stored query string via redirect
+    response = client_publisher_order.get("/publisher_order/card/", follow=False)
+    assert response.status_code == 302
+    assert "name=Alp" in response.url

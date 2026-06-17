@@ -12,6 +12,7 @@ from app.views.book_review import cv_book_review
 from app.views.foo import cv_foo
 from app.views.bar import cv_bar
 from app.views.baz import cv_baz
+from app.views.qux import cv_qux
 from app.views.poly import cv_poly
 from app.views.detail import cv_detail
 from app.views.group import cv_group
@@ -43,6 +44,7 @@ urlpatterns += (
     + cv_foo.urlpatterns
     + cv_bar.urlpatterns
     + cv_baz.urlpatterns
+    + cv_qux.urlpatterns
     + cv_campaign.urlpatterns
     + cv_poly.urlpatterns
     + cv_detail.urlpatterns

@@ -37,7 +37,8 @@ from crud_views_polymorphic.lib import (
 )
 from crud_views_polymorphic.lib.create_select import PolymorphicContentTypeForm
 from crud_views_polymorphic.lib.delete import PolymorphicDeleteViewPermissionRequired
-from crud_views.lib.viewset import ViewSet, ParentViewSet
+from crud_views.lib.viewset import ViewSet, ParentViewSet, context_buttons_default
+from crud_views.lib.view import ContextButton
 from crud_views_guardian.lib.viewset import GuardianViewSet
 from crud_views_guardian.lib.views import (
     GuardianListViewPermissionRequired,
@@ -591,6 +592,10 @@ cv_guardian_book = GuardianViewSet(
     icon_header="fa-regular fa-address-book",
     cv_guardian_parent_permission="view",
     cv_guardian_parent_create_permission="change",
+    context_buttons=context_buttons_default()
+    + [
+        ContextButton(key="create_button", key_target="create"),  # key != key_target
+    ],
 )
 
 

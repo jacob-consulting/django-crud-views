@@ -438,6 +438,88 @@ def test_cv_get_context_respects_cv_create_has_access_override(user_guardian, pu
         GuardianBookCreateView.cv_create_has_access = original
 
 
+# ── ContextButton key != key_target targeting child create ────────────────────
+
+
+@pytest.mark.django_db
+def test_create_button_matches_create_with_parent_perm(user_guardian, cv_guardian_publisher, publisher_a):
+    """create_button (key != key_target) matches built-in create when parent perm is granted."""
+    user_guardian_object_perm(user_guardian, cv_guardian_publisher, "change", publisher_a)
+    view = _make_book_list_view(user_guardian, publisher_a)
+    create = view.cv_get_context(key="create", obj=None, user=user_guardian)
+    button = view.cv_get_context(key="create_button", obj=None, user=user_guardian)
+    assert create["cv_access"] is True
+    assert button["cv_access"] == create["cv_access"]
+    assert button["cv_action_enabled"] == create["cv_action_enabled"]
+
+
+@pytest.mark.django_db
+def test_create_button_matches_create_without_parent_perm(user_guardian, publisher_a):
+    """create_button is hidden, exactly like built-in create, without parent perm."""
+    view = _make_book_list_view(user_guardian, publisher_a)
+    create = view.cv_get_context(key="create", obj=None, user=user_guardian)
+    button = view.cv_get_context(key="create_button", obj=None, user=user_guardian)
+    assert create["cv_access"] is False
+    assert button["cv_access"] == create["cv_access"]
+    assert button["cv_action_enabled"] == create["cv_action_enabled"]
+
+
+@pytest.mark.django_db
+def test_create_button_unresolvable_parent_denied(user_guardian):
+    """Unresolvable parent → create_button denied, no exception raised."""
+    from unittest.mock import MagicMock
+    from django.test import RequestFactory
+    from tests.test1.app.views import GuardianBookListView, cv_guardian_book
+
+    rf = RequestFactory()
+    request = rf.get("/guardian_publisher/999999/guardian_book/")
+    request.user = user_guardian
+    resolver_match = MagicMock()
+    resolver_match.url_name = cv_guardian_book.get_router_name("list")
+    request.resolver_match = resolver_match
+
+    view = GuardianBookListView()
+    view.request = request
+    view.args = []
+    view.kwargs = {"guardian_publisher_pk": "999999"}  # no such publisher
+
+    ctx = view.cv_get_context(key="create_button", obj=None, user=user_guardian)
+    assert ctx["cv_access"] is False
+
+
+@pytest.mark.django_db
+def test_top_level_create_unchanged_by_key_target_fix(user_guardian, cv_guardian_author):
+    """Top-level (no-parent) create access is unaffected — the override's has_parent guard skips it."""
+    from unittest.mock import MagicMock
+    from django.contrib.auth.models import User
+    from django.test import RequestFactory
+    from tests.lib.helper.user import user_viewset_permission
+    from tests.test1.app.views import GuardianAuthorListView, cv_guardian_author as author_vs
+
+    rf = RequestFactory()
+    request = rf.get("/guardian_author/")
+    request.user = user_guardian
+    resolver_match = MagicMock()
+    resolver_match.url_name = author_vs.get_router_name("list")
+    request.resolver_match = resolver_match
+
+    view = GuardianAuthorListView()
+    view.request = request
+    view.args = []
+    view.kwargs = {}
+
+    # without model-level add perm → denied
+    denied = view.cv_get_context(key="create", obj=None, user=user_guardian)
+    assert denied["cv_access"] is False
+
+    # with model-level add perm → granted (refetch user to bust the perm cache)
+    user_viewset_permission(user_guardian, cv_guardian_author, "add")
+    granted_user = User.objects.get(pk=user_guardian.pk)
+    request.user = granted_user
+    granted = view.cv_get_context(key="create", obj=None, user=granted_user)
+    assert granted["cv_access"] is True
+
+
 # ── GuardianManageView ────────────────────────────────────────────────────────
 
 

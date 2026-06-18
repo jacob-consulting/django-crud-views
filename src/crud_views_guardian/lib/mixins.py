@@ -130,8 +130,13 @@ class GuardianQuerysetMixin:
         ctx = super().cv_get_context(key=key, obj=obj, user=user, request=request)
 
         if obj is None and key is not None and self.cv_viewset.has_parent:
-            if self.cv_viewset.is_view_registered(key):
-                target_cls = self.cv_viewset.get_view_class(key)
+            # A custom ContextButton may target the create view via key_target while
+            # using a different key (e.g. a second, differently-styled create button).
+            # Resolve key_target so the create-access re-derivation finds the view.
+            context_button = self.cv_get_context_button(key)
+            target_key = context_button.key_target if context_button and context_button.key_target else key
+            if self.cv_viewset.is_view_registered(target_key):
+                target_cls = self.cv_viewset.get_view_class(target_key)
             else:
                 target_cls = None
             if target_cls and getattr(target_cls, "cv_permission", None) == "add":

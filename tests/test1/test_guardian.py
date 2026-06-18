@@ -438,6 +438,62 @@ def test_cv_get_context_respects_cv_create_has_access_override(user_guardian, pu
         GuardianBookCreateView.cv_create_has_access = original
 
 
+# ── ParentContextButton targeting an object-gated parent view ─────────────────
+
+
+@pytest.mark.django_db
+def test_parent_detail_button_visible_with_parent_view_perm(user_guardian, cv_guardian_publisher, publisher_a):
+    """A ParentContextButton → parent detail is visible when the user can view the parent object."""
+    user_guardian_object_perm(user_guardian, cv_guardian_publisher, "view", publisher_a)
+    view = _make_book_list_view(user_guardian, publisher_a)
+    ctx = view.cv_get_context(key="publisher_detail", obj=None, user=user_guardian)
+    assert ctx["cv_access"] is True
+
+
+@pytest.mark.django_db
+def test_parent_detail_button_hidden_without_parent_view_perm(user_guardian, publisher_a):
+    """A ParentContextButton → parent detail is hidden when the user cannot view the parent object."""
+    view = _make_book_list_view(user_guardian, publisher_a)
+    ctx = view.cv_get_context(key="publisher_detail", obj=None, user=user_guardian)
+    assert ctx["cv_access"] is False
+
+
+@pytest.mark.django_db
+def test_default_parent_button_visible_regardless_of_object_perm(user_guardian, cv_guardian_publisher, publisher_a):
+    """Regression: the default parent→list button stays visible with and without parent view perm."""
+    view = _make_book_list_view(user_guardian, publisher_a)
+    # without perm — parent list access is unconditional
+    without = view.cv_get_context(key="parent", obj=None, user=user_guardian)
+    assert without["cv_access"] is True
+    # with perm — still visible
+    user_guardian_object_perm(user_guardian, cv_guardian_publisher, "view", publisher_a)
+    with_perm = view.cv_get_context(key="parent", obj=None, user=user_guardian)
+    assert with_perm["cv_access"] is True
+
+
+@pytest.mark.django_db
+def test_parent_detail_button_unresolvable_parent_hidden(user_guardian, publisher_a):
+    """Unresolvable parent PK → parent-detail button hidden, no exception raised."""
+    from unittest.mock import MagicMock
+    from django.test import RequestFactory
+    from tests.test1.app.views import GuardianBookListView, cv_guardian_book
+
+    rf = RequestFactory()
+    request = rf.get("/guardian_publisher/999999/guardian_book/")
+    request.user = user_guardian
+    resolver_match = MagicMock()
+    resolver_match.url_name = cv_guardian_book.get_router_name("list")
+    request.resolver_match = resolver_match
+
+    view = GuardianBookListView()
+    view.request = request
+    view.args = []
+    view.kwargs = {"guardian_publisher_pk": "999999"}  # no such publisher
+
+    ctx = view.cv_get_context(key="publisher_detail", obj=None, user=user_guardian)
+    assert ctx["cv_access"] is False
+
+
 # ── ContextButton key != key_target targeting child create ────────────────────
 
 

@@ -596,6 +596,9 @@ cv_guardian_book = GuardianViewSet(
     + [
         ContextButton(key="create_button", key_target="create"),  # key != key_target
         ParentContextButton(key="publisher_detail", key_target="detail"),  # → object-gated parent detail
+        ParentContextButton(
+            key="publisher_detail_labeled", key_target="detail", label_template_code="Publisher Home"
+        ),  # → parent detail with a custom label
     ],
 )
 

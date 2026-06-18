@@ -31,6 +31,16 @@ class ContextButton(BaseModel):
         elif self.label_template_code:
             return context.view.render_snippet(data, template_code=self.label_template_code)
 
+    def _apply_label(self, data: dict, context: ViewContext) -> None:
+        """Override the seeded default label when this button declares its own label_template[_code].
+
+        render_label() returns None when neither is set, so the target view's default label
+        (already in data) is preserved. Shared by every button subclass so none can forget it.
+        """
+        cv_action_label = self.render_label(data, context)
+        if cv_action_label:
+            data["cv_action_label"] = cv_action_label
+
     def _inject_template(self, data: dict) -> None:
         if self.template_code:
             data["cv_template_code"] = self.template_code
@@ -61,9 +71,7 @@ class ContextButton(BaseModel):
         data = cls.cv_get_dict(context=context, **dict_kwargs)
 
         # render action label
-        cv_action_label = self.render_label(data, context)
-        if cv_action_label:
-            data["cv_action_label"] = cv_action_label
+        self._apply_label(data, context)
 
         self._inject_template(data)
 
@@ -123,6 +131,9 @@ class ParentContextButton(ContextButton):
             )
 
         data = cls.cv_get_dict(context=context, **dict_kwargs)
+
+        self._apply_label(data, context)
+
         self._inject_template(data)
         return data
 
@@ -158,9 +169,7 @@ class ChildContextButton(ContextButton):
 
         data = cls.cv_get_dict(context=context, **dict_kwargs)
 
-        cv_action_label = self.render_label(data, context)
-        if cv_action_label:
-            data["cv_action_label"] = cv_action_label
+        self._apply_label(data, context)
 
         self._inject_template(data)
 
@@ -207,9 +216,7 @@ class SiblingContextButton(ContextButton):
 
         data = cls.cv_get_dict(context=context, **dict_kwargs)
 
-        cv_action_label = self.render_label(data, context)
-        if cv_action_label:
-            data["cv_action_label"] = cv_action_label
+        self._apply_label(data, context)
 
         self._inject_template(data)
 

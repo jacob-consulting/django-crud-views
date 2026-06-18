@@ -13,6 +13,7 @@
 ### Fixed
 
 - Guardian: a custom `ContextButton` whose `key` differs from its `key_target` and that targets a child viewset's `create` view is no longer always rendered as "no access" on list pages. The Guardian list mixin now resolves the button's `key_target` before re-deriving create access, so any create button (not just the built-in `"create"`) gets the parent-object permission check — enabling, e.g., a second differently-styled create button on the same page
+- `ParentContextButton`: a parent button targeting an object-permission-gated parent view (e.g. the parent's `detail`) is no longer wrongly hidden on object-less child pages (list/card). Access is now checked against the resolved **parent object** (via `cv_get_parent_object()`) rather than the current view's object, so the button reflects whether the user can access that parent — the same gate as opening the parent detail page directly. The default `parent`→list button is unaffected
 
 ## 0.6.0
 

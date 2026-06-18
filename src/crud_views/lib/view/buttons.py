@@ -1,3 +1,4 @@
+from django.http import Http404
 from django.urls import reverse
 from pydantic import BaseModel, Field
 
@@ -103,11 +104,20 @@ class ParentContextButton(ContextButton):
         # get the url for the target key
         dict_kwargs.update(cv_url=cv_url)
 
-        # button visibility — independent of access/permission
-        dict_kwargs["cv_action_enabled"] = cls.cv_action_enabled(context.view.request.user, context.object)
+        # the button links UP to the parent, so access is governed by the PARENT
+        # object — not context.object (the child instance, or None on a list page).
+        parent_obj = None
+        if hasattr(context.view, "cv_get_parent_object"):
+            try:
+                parent_obj = context.view.cv_get_parent_object()
+            except (Http404, KeyError):
+                parent_obj = None
 
-        # check permission
-        if cls.cv_has_access(context.view.request.user, context.object):
+        # button visibility — independent of access/permission
+        dict_kwargs["cv_action_enabled"] = cls.cv_action_enabled(context.view.request.user, parent_obj)
+
+        # check permission against the parent object
+        if cls.cv_has_access(context.view.request.user, parent_obj):
             dict_kwargs.update(
                 cv_access=True,
             )
@@ -161,6 +171,10 @@ class SiblingContextButton(ContextButton):
     """
     A context button on a child view that links to a sibling collection — another child of
     the same parent — reusing the parent PK already present in the current URL.
+
+    Collection-only: a sibling button has no specific sibling object in scope, so object-gated
+    sibling views (detail/update/delete) are unsupported — access is checked with obj=None,
+    which is correct only for collection targets (list/card, whose access is unconditional).
     """
 
     sibling_name: str

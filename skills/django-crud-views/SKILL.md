@@ -365,6 +365,7 @@ class AuthorDownView(OrderedUpDownPermissionRequired):
 `CustomFormView` attaches a custom form to an existing object — use for contact forms, approval actions, etc.
 
 ```python
+from crud_views.lib.views import MessageMixin
 from crud_views.lib.views.form import CustomFormViewPermissionRequired
 from crud_views.lib.crispy import CrispyModelForm, CrispyModelViewMixin, Column12
 

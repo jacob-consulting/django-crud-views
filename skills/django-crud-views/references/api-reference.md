@@ -166,6 +166,7 @@ class MyDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequi
 Object-based custom form attached to an existing model instance. Use for contact forms, approval actions, etc.
 
 ```python
+from crud_views.lib.views import MessageMixin
 from crud_views.lib.views.form import CustomFormViewPermissionRequired
 
 class MyContactView(MessageMixin, CrispyModelViewMixin, CustomFormViewPermissionRequired):

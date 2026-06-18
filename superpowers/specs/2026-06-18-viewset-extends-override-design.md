@@ -124,11 +124,31 @@ class FooListView(MySpecialBase, ListView):
 Guidance: **ViewSet `extends`** = "all views in this viewset, one line";
 **mixin** = "share a base across several viewsets, or vary it within one."
 
+### Critical caveat — the override target MUST be a real base template
+
+The crud_views view templates render `{% extends cv_extends %}`, where
+`cv_extends` resolves to the override. Therefore the template named by
+`cv_extends_template` (or ViewSet `extends`) is itself the base being extended
+and **MUST NOT** contain `{% extends cv_extends %}` (nor otherwise re-extend
+`cv_extends`). Doing so makes the template try to extend itself, raising:
+
+```
+django.template.exceptions.TemplateDoesNotExist
+```
+
+The override must point at a normal base template — one that extends your own
+site base (e.g. `{% extends "base.html" %}`) or none at all — not at the
+crud_views child template indirection. This warning must appear in both the
+reference docs and the inline skill.
+
 ## Documentation changes
 
 - `docs/reference/` — document `ViewSet.extends` and the resolution order
   (view → viewset → global) where ViewSet fields / templates are described;
   add the mixin pattern as a short note/FAQ.
+- **Include the "Critical caveat" above** as a prominent warning admonition:
+  the override template MUST NOT contain `{% extends cv_extends %}`, or
+  rendering raises `TemplateDoesNotExist`.
 - Cross-link from the existing template/`cv_extends_template` docs.
 - `CHANGELOG.md` — Unreleased entry.
 
@@ -138,6 +158,8 @@ Update `skills/django-crud-views` (`SKILL.md` and/or `references/`) to mention:
 - the `extends` field on `ViewSet`,
 - the view → viewset → global resolution order,
 - the mixin pattern,
+- the critical caveat: the override template MUST NOT contain
+  `{% extends cv_extends %}` (would raise `TemplateDoesNotExist`),
 so the skill recommends the new field when users ask about per-viewset base
 templates.
 

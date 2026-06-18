@@ -8,6 +8,7 @@ from crud_views.lib.table import Table, UUIDLinkDetailColumn
 from crud_views.lib.views import (
     ListViewTableMixin,
     ListViewPermissionRequired,
+    DetailViewPermissionRequired,
     RedirectChildView,
     CreateViewPermissionRequired,
     UpdateViewPermissionRequired,
@@ -41,6 +42,22 @@ class ParentListView(ListViewTableMixin, ListViewPermissionRequired):
     cv_list_actions = ["redirect_child", "update", "delete"]
 
     table_class = ParentTable
+
+
+class ParentDetailView(DetailViewPermissionRequired):
+    model = Parent
+    cv_viewset = cv_poly_parent_formset
+    cv_property_display = [
+        {
+            "title": _("Properties"),
+            "icon": "user-group",
+            "description": _("Parent attributes"),
+            "properties": [
+                "id",
+                "name",
+            ],
+        },
+    ]
 
 
 class ParentCreateView(CrispyModelViewMixin, CreateViewPermissionRequired):

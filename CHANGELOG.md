@@ -18,6 +18,7 @@
 - `ParentContextButton` now honors its own `label_template`/`label_template_code` like the other button types (`ContextButton`, `ChildContextButton`, `SiblingContextButton`), instead of silently rendering the target (parent) view's default action label. When no label is set it still falls back to that default. The label-rendering step is now shared via a `ContextButton._apply_label()` helper so no button subclass can omit it
 - `MessageMixin`'s error path could never fire (its `cv_get_message` ignored the requested attribute and it guarded on an undefined `cv_error_message`). The success/error message renderer now lives on `CrudView.cv_get_message(*, error=False)`, returns `None` when unconfigured instead of raising, and the dead `MessageMixin.action()` wrapper was removed.
 - bootstrap5 example: `CampaignWorkflowView` listed a non-existent `"edit"` context-action key, raising `ViewSetKeyFoundError` ("key edit not registered at campaign") and a 500 on the campaign workflow page. Corrected to `"update"`, the registered key.
+- bootstrap5 example: the `/parent/` list 500'd because `ParentTable.id` (a `UUIDLinkDetailColumn`) linked to a `detail` view the parent ViewSet never registered, raising `ViewSetKeyFoundError` ("key detail not registered at parent"). Added the missing `ParentDetailView`.
 
 ### Changed
 

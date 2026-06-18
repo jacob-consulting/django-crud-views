@@ -91,6 +91,6 @@ class CampaignWorkflowForm(WorkflowForm):
 
 
 class CampaignWorkflowView(CrispyModelViewMixin, MessageMixin, WorkflowViewPermissionRequired):
-    cv_context_actions = ["list", "detail", "edit", "workflow"]
+    cv_context_actions = ["list", "detail", "update", "workflow"]
     cv_viewset = cv_campaign
     form_class = CampaignWorkflowForm

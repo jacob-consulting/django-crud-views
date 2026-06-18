@@ -3,6 +3,7 @@ Tests for crud_views_workflow: WorkflowModelMixin, WorkflowView, WorkflowForm.
 """
 
 import pytest
+from django.contrib.messages import get_messages
 from django.test.client import Client
 
 from tests.test1.app.models import Campaign, CampaignState
@@ -255,6 +256,28 @@ def test_workflow_view_post_activate(client_user_campaign_change: Client, campai
     assert response.status_code == 302
     campaign_new.refresh_from_db()
     assert campaign_new.state == CampaignState.ACTIVE
+
+
+@pytest.mark.django_db
+def test_workflow_view_post_emits_success_message(client_user_campaign_change: Client, campaign_new):
+    """
+    A WorkflowView that mixes in MessageMixin (as CampaignWorkflowView does) emits its
+    configured success message after a transition. MessageMixin precedes WorkflowView in the
+    MRO, so its cv_form_valid_hook wraps WorkflowView's transition processing and then emits.
+    Regression guard for GitHub #52 (reported as "message never emitted" — it is emitted under
+    the documented MessageMixin opt-in, exactly like Create/Update/Delete views).
+    """
+    pk = campaign_new.pk
+    response = client_user_campaign_change.post(
+        f"/campaign/{pk}/workflow/",
+        {
+            "transition": "wf_activate",
+            "comment": "",
+        },
+    )
+    assert response.status_code == 302
+    messages = [m.message for m in get_messages(response.wsgi_request)]
+    assert f"Successfully processed workflow step on »{campaign_new}«" in messages
 
 
 @pytest.mark.django_db

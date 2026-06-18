@@ -154,7 +154,7 @@ class AuthorContactView(CrispyModelViewMixin, MessageMixin, CustomFormViewPermis
     cv_path = "contact"
     cv_viewset = cv_author
     form_class = AuthorContactForm
-    cv_message_template_code = "Contacted author »{object}«"
+    cv_message_template_code = "Contacted author »{{ object }}«"
     cv_header_template_code = "Contact Author"
     cv_paragraph_template_code = "Send a message to the Author"
 

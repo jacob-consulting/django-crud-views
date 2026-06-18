@@ -59,8 +59,10 @@ class CrudView(metaclass=CrudViewMetaClass):
     cv_action_short_label_template_code: str | None = None  # template code to render short  action label  without icons
     cv_filter_header_template: str | None = None  # template snippet to render filter header
     cv_filter_header_template_code: str | None = None  # template code to render filter header
-    cv_message_template: str | None = None  # template snippet to render messages
-    cv_message_template_code: str | None = None  # template code to render messages
+    cv_message_template: str | None = None  # success message template snippet
+    cv_message_template_code: str | None = None  # success message template code
+    cv_message_template_error: str | None = None  # error message template snippet
+    cv_message_template_error_code: str | None = None  # error message template code
 
     # icons
     cv_icon_action: str | None = None  # font awesome icon
@@ -146,6 +148,21 @@ class CrudView(metaclass=CrudViewMetaClass):
 
         # strip leading and trailing whitespaces and mark it as safe
         return mark_safe(result.strip())
+
+    def cv_get_message(self, *, error: bool = False) -> str | None:
+        """
+        Render the success (default) or error message snippet.
+        Returns None when the relevant template pair is not configured.
+        """
+        if error:
+            template = self.cv_message_template_error
+            template_code = self.cv_message_template_error_code
+        else:
+            template = self.cv_message_template
+            template_code = self.cv_message_template_code
+        if not template and not template_code:
+            return None
+        return self.render_snippet(self.cv_get_meta(), template, template_code)
 
     def cv_get_header_icon(self) -> str:
         view_icon = self.cv_icon_header

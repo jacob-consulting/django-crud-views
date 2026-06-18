@@ -16,6 +16,11 @@ def test_fields_and_pk_field_derived_from_klass():
     fs = FormSet(title="Books", klass=BookFormSet)
     assert fs.fields == ["title"]
     assert fs.pk_field == "id"
+    # derived fields exclude the parent FK and the auto pk / management fields
+    assert "publisher" not in fs.fields
+    assert "id" not in fs.fields
+    assert "ORDER" not in fs.fields
+    assert "DELETE" not in fs.fields
 
 
 def test_explicit_fields_and_pk_field_override_derivation():

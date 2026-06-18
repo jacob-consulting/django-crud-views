@@ -154,8 +154,7 @@ class FormSetMixin(FormSetMixinBase):
         return self.cv_formsets.clone(cv_view=self)  # noqa
 
 
-# Naming collides with django-polymorphic's formset classes, see issue #30
-class PolymorphicFormSetMixin(FormSetMixinBase):
+class PolymorphicFormSetsViewMixin(FormSetMixinBase):
     cv_polymorphic_formsets: Dict[Type[Model], FormSets]
 
     @classmethod

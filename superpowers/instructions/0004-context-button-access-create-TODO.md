@@ -57,6 +57,13 @@ across list / detail / sibling / child / parent render paths.
   arbitrary `rendering_view` that may have no parent / no matching URL kwargs
   (catch `Http404`/`KeyError`, fall back to denied), mirroring the current override.
 
+- **`SiblingContextButton` is NOT a "resolve the shared parent" case (correction
+  2026-06-18).** It navigates to a sibling *collection* and has no specific sibling
+  object in scope, so it can only meaningfully target collection views (`list`/`card`),
+  whose access is unconditional. The unified `cv_button_has_access` hook must do **no**
+  object resolution for sibling buttons — passing `None` is correct. Only create
+  (→ parent) and parent-detail (→ parent) need a resolved object.
+
 - **Blast radius.** This touches core button rendering for **all themes and all
   button types**, not just Guardian/create. Regression-test all 4 button types
   across base, Guardian, and plain themes.

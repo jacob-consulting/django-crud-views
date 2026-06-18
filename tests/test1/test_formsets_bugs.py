@@ -4,7 +4,7 @@ Regression tests for formsets subsystem bugs found in the 2026-06-10 audit:
 - H1: XFormSet.save() must raise when a form has no matching XForm
       (was: `assert Exception(...)` which never raises)
 - M1: FormSet.init() inner loop must not corrupt the `index` parameter
-- M2: PolymorphicFormSetMixin.cv_get_formsets() returns None for models
+- M2: PolymorphicFormSetsViewMixin.cv_get_formsets() returns None for models
       without formsets (was: contradictory ValueError)
 - M3: the formset AJAX template endpoint rejects garbage input with 400
 """
@@ -94,9 +94,9 @@ def test_init_index_parameter_not_corrupted_by_child_loop():
 
 def test_polymorphic_formsets_missing_model_returns_none():
     """M2: a polymorphic model without formsets is okay and yields None."""
-    from crud_views.lib.formsets.mixins import PolymorphicFormSetMixin
+    from crud_views.lib.formsets.mixins import PolymorphicFormSetsViewMixin
 
-    class FakeView(PolymorphicFormSetMixin):
+    class FakeView(PolymorphicFormSetsViewMixin):
         cv_polymorphic_formsets = {}
         polymorphic_model = Book
 

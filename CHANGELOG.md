@@ -19,6 +19,10 @@
 - `MessageMixin`'s error path could never fire (its `cv_get_message` ignored the requested attribute and it guarded on an undefined `cv_error_message`). The success/error message renderer now lives on `CrudView.cv_get_message(*, error=False)`, returns `None` when unconfigured instead of raising, and the dead `MessageMixin.action()` wrapper was removed.
 - bootstrap5 example: `CampaignWorkflowView` listed a non-existent `"edit"` context-action key, raising `ViewSetKeyFoundError` ("key edit not registered at campaign") and a 500 on the campaign workflow page. Corrected to `"update"`, the registered key.
 
+### Changed
+
+- Renamed `crud_views.lib.formsets.mixins.PolymorphicFormSetMixin` to `PolymorphicFormSetsViewMixin`; the old name collided with django-polymorphic's `Polymorphic*FormSet` classes. This formsets API is semi-private, so the rename ships without a deprecation shim — update any `from crud_views.lib.formsets.mixins import PolymorphicFormSetMixin` imports to the new name.
+
 ## 0.6.0
 
 ### Added

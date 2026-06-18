@@ -13,7 +13,7 @@ from app.models.poly import Poly, PolyOne, PolyTwo, PolyTwoChoice, PolyThree, Po
 from crud_views.lib.crispy import Column4, CrispyModelViewMixin, Column8
 from crud_views.lib.crispy.form import CrispyForm, CrispyModelForm
 from crud_views.lib.formsets import FormSet, FormSets, InlineFormSet
-from crud_views.lib.formsets.mixins import PolymorphicFormSetMixin
+from crud_views.lib.formsets.mixins import PolymorphicFormSetsViewMixin
 from crud_views_polymorphic.lib import (
     PolymorphicCreateSelectView,
     PolymorphicCreateViewPermissionRequired,
@@ -136,7 +136,7 @@ class PolyCreateSelectView(CrispyModelViewMixin, PolymorphicCreateSelectView):
 
 
 class PolyCreateView(
-    CrispyModelViewMixin, CreateViewParentMixin, PolymorphicFormSetMixin, PolymorphicCreateViewPermissionRequired
+    CrispyModelViewMixin, CreateViewParentMixin, PolymorphicFormSetsViewMixin, PolymorphicCreateViewPermissionRequired
 ):
     model = Poly
     cv_viewset = cv_poly_formset
@@ -161,7 +161,7 @@ class PolyCreateView(
             PolyAnswerNumber.objects.create(poly=self.object)
 
 
-class PolyUpdateView(CrispyModelViewMixin, PolymorphicFormSetMixin, PolymorphicUpdateViewPermissionRequired):
+class PolyUpdateView(CrispyModelViewMixin, PolymorphicFormSetsViewMixin, PolymorphicUpdateViewPermissionRequired):
     model = Poly
     cv_viewset = cv_poly_formset
     cv_formsets_required: bool = False

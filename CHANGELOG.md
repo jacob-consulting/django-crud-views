@@ -10,6 +10,10 @@
 - Pinned filter: set `cv_filter_pinned = True` on a filtered `ListView`/`CardListView` (or the global `CRUD_VIEWS_FILTER_PINNED` setting, default `False`) to render the filter always-open and hide the filter toggle button. Filter field values are still persisted to the session via `cv_filter_persistence`; only the now-irrelevant expanded/collapsed state is dropped (bootstrap5 renders the filter without its collapse wrapper; the plain theme is unaffected)
 - `cv_is_active` is now populated for all context buttons (previously only view-key buttons), so `{% cv_context_button %}` highlights when it points at the current page. Matched by URL router name.
 
+### Fixed
+
+- Guardian: a custom `ContextButton` whose `key` differs from its `key_target` and that targets a child viewset's `create` view is no longer always rendered as "no access" on list pages. The Guardian list mixin now resolves the button's `key_target` before re-deriving create access, so any create button (not just the built-in `"create"`) gets the parent-object permission check — enabling, e.g., a second differently-styled create button on the same page
+
 ## 0.6.0
 
 ### Added

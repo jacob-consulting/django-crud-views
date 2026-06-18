@@ -16,7 +16,7 @@ from crud_views.lib.viewset import path_regs
 from .parentviewset import ParentViewSet
 from .path_regs import PrimaryKeys
 from .. import check
-from ..check import CheckAttributeReg, Check
+from ..check import CheckAttributeReg, Check, CheckTemplate
 from ..settings import crud_views_settings
 from ..view import (
     ContextButton,
@@ -81,6 +81,7 @@ class ViewSet(BaseModel):
     ordering: str | None = None
     icon_header: str | None = None
     manage_view_class: str | None = None
+    extends: str | None = None  # base template all views in this viewset extend
 
     _views: Dict[str, Type[CrudView]] = PrivateAttr(default_factory=empty_dict)  # noqa
 
@@ -144,6 +145,7 @@ class ViewSet(BaseModel):
         """
         yield CheckAttributeReg(context=self, id="E002", attribute="name", **check.REGS["name"])
         yield CheckAttributeReg(context=self, id="E003", attribute="prefix", **check.REGS["path"])
+        yield CheckTemplate(context=self, id="E111", attribute="extends")
 
         for view in self._views.values():
             yield from view.checks()

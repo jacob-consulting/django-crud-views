@@ -8,7 +8,7 @@ if TYPE_CHECKING:
     from django.contrib.auth.models import AbstractUser as User
 
 from crud_views.lib import check
-from crud_views.lib.check import Check, CheckAttributeReg, CheckAttribute, CheckTemplateOrCode
+from crud_views.lib.check import Check, CheckAttributeReg, CheckAttribute, CheckTemplateOrCode, CheckTemplate
 from crud_views.lib.exceptions import cv_raise, ParentViewSetError, CrudViewError
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.db.models import Model
@@ -73,6 +73,7 @@ class CrudView(metaclass=CrudViewMetaClass):
         """
         yield CheckAttributeReg(context=cls, id="E200", attribute="cv_key", **check.REGS["name"])
         yield CheckAttributeReg(context=cls, id="E201", attribute="cv_path", **check.REGS["path"])
+        yield CheckTemplate(context=cls, id="E111", attribute="cv_extends_template")
 
         # templates are required for frontend views
         is_frontend = not cls.cv_backend_only
@@ -98,9 +99,11 @@ class CrudView(metaclass=CrudViewMetaClass):
         return context
 
     def cv_get_extends_template(self) -> str:
-        cv_extends = self.cv_extends_template
-        extends = cv_extends if cv_extends else crud_views_settings.extends
-        return extends
+        if self.cv_extends_template:
+            return self.cv_extends_template
+        if self.cv_viewset.extends:
+            return self.cv_viewset.extends
+        return crud_views_settings.extends
 
     @classmethod
     def cv_has_access(cls, user: User, obj: Model | None = None) -> bool:

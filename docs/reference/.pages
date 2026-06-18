@@ -12,5 +12,6 @@ nav:
     - context_buttons.md
     - guardian.md
     - ordered_view.md
+    - templates.md
     - settings.md
     - ...

@@ -201,6 +201,7 @@ class CrudView(metaclass=CrudViewMetaClass):
             cv_icon_action=cls.cv_icon_action,
             cv_icon_header=cls.cv_icon_header,
         )
+        data["cv_is_active"] = cls.cv_viewset.get_router_name(cls.cv_key) == context.router_name
         data.update(extra)
         return data
 
@@ -339,7 +340,6 @@ class CrudView(metaclass=CrudViewMetaClass):
             cv_access=False,
             cv_oid=self.cv_get_oid(key=key, obj=obj),
             cv_url=self.cv_get_url(key=key, obj=obj),
-            cv_is_active=self.cv_viewset.get_router_name(key) == context.router_name,
             cv_template=crud_views_settings.context_button_template,
         )
 

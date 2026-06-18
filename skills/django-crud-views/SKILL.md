@@ -79,6 +79,29 @@ Guardian variant: `GuardianDetailCustomViewPermissionRequired`.
 
 ---
 
+## Base template override
+
+The base template each view extends (`cv_extends` in templates) resolves:
+view `cv_extends_template` → ViewSet `extends` → global `CRUD_VIEWS_EXTENDS`.
+
+```python
+# all views in this ViewSet extend a custom base:
+cv_author = ViewSet(model=Author, name="author", extends="myapp/author_base.html")
+
+# or a single view:
+class AuthorListView(ListViewTableMixin, ListViewPermissionRequired):
+    cv_viewset = cv_author
+    cv_extends_template = "myapp/author_list_base.html"
+```
+
+**Caveat:** the override template MUST NOT contain `{% extends cv_extends %}`
+— it is itself the base being extended, so re-extending `cv_extends` makes it
+extend itself and raises `TemplateDoesNotExist`. Point it at a real base
+template instead. Misconfigured templates are caught at startup as
+`crud_views.viewset.E111`.
+
+---
+
 ## CardListView
 
 Render objects as cards instead of table rows. Uses `CardAction` for per-button config and `cv_card_template` for

@@ -25,14 +25,15 @@ class FormSet(BaseModel, arbitrary_types_allowed=True):
     key: str | None = None
     original_key: str | None = None
     title: str | None = None
-    fields: List[str]
-    pk_field: str
+    fields: List[str] | None = None
+    pk_field: str | None = None
     cv_view: CrudView | None = None
     parent: Self | None = None
     klass: Type[BaseInlineFormSet]
     children: Dict[str, Self] = Field(default_factory=lambda: OrderedDict())
     path: str | None = None
     pk: PK = PK.INT
+    form_show_labels: bool = False
 
     def __str__(self):
         return f"FormSet({self.title})"
@@ -56,6 +57,12 @@ class FormSet(BaseModel, arbitrary_types_allowed=True):
 
         if not issubclass(self.klass, BaseInlineFormSet):
             raise ValidationError(f"FormSet '{self.key}' klass not a subclass of BaseInlineFormSet")
+
+        # issue #29: derive fields/pk_field from the klass when not explicitly given
+        if self.fields is None:
+            self.fields = list(self.klass.form.base_fields.keys())
+        if self.pk_field is None:
+            self.pk_field = self.klass.model._meta.pk.name
 
         return self
 

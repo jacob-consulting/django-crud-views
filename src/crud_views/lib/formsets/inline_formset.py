@@ -54,7 +54,7 @@ class InlineFormSet(BaseInlineFormSet):
         helper.form_tag = False
         helper.disable_csrf = True
         helper.render_hidden_fields = True  # IMPORTANT: crispy needs this to render hidden fields
-        helper.form_show_labels = False
+        helper.form_show_labels = self.formset.form_show_labels
 
         fields = self.get_helper_layout_fields()
         assert isinstance(fields, list)

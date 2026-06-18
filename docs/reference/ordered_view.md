@@ -71,3 +71,10 @@ class AuthorListView(ListViewTableMixin, ListViewPermissionRequired):
 | `OrderedUpViewPermissionRequired` | Same, requires `change` permission |
 | `OrderedDownView` | Moves the instance down in order (no permission check) |
 | `OrderedUpDownPermissionRequired` | Same, requires `change` permission |
+
+## Messages
+
+The up/down views ship with default move messages (`cv_message_template` →
+`crud_views/snippets/message/up.html` / `down.html`) and emit them automatically after a
+successful move — no extra mixin required. Override `cv_message_template` /
+`cv_message_template_code` to customize, or set `cv_action_messages = False` to disable.

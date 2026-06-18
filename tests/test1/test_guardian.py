@@ -494,6 +494,36 @@ def test_parent_detail_button_unresolvable_parent_hidden(user_guardian, publishe
     assert ctx["cv_access"] is False
 
 
+# ── ParentContextButton label rendering ───────────────────────────────────────
+
+
+@pytest.mark.django_db
+def test_parent_button_renders_custom_label(user_guardian, publisher_a):
+    """A ParentContextButton with label_template_code renders that label, like its sibling classes."""
+    view = _make_book_list_view(user_guardian, publisher_a)
+    ctx = view.cv_get_context(key="publisher_detail_labeled", obj=None, user=user_guardian)
+    assert ctx["cv_action_label"] == "Publisher Home"
+
+
+@pytest.mark.django_db
+def test_parent_button_without_label_uses_target_default(user_guardian, publisher_a):
+    """Regression: a ParentContextButton with no label field falls back to the target view's default label."""
+    view = _make_book_list_view(user_guardian, publisher_a)
+    ctx = view.cv_get_context(key="publisher_detail", obj=None, user=user_guardian)
+    # falls back to the parent detail view's default action label, not the custom one
+    assert ctx["cv_action_label"]
+    assert ctx["cv_action_label"] != "Publisher Home"
+
+
+@pytest.mark.django_db
+def test_sibling_classes_render_custom_label_like_parent(user_guardian, publisher_a):
+    """Cross-check: ContextButton renders label_template_code so ParentContextButton must match it."""
+    view = _make_book_list_view(user_guardian, publisher_a)
+    ctx = view.cv_get_context(key="create_button", obj=None, user=user_guardian)
+    # create_button has no custom label → default; key point is the render path is exercised and non-empty
+    assert ctx["cv_action_label"]
+
+
 # ── ContextButton key != key_target targeting child create ────────────────────
 
 

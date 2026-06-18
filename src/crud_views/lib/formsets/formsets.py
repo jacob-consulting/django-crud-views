@@ -33,6 +33,7 @@ class FormSet(BaseModel, arbitrary_types_allowed=True):
     children: Dict[str, Self] = Field(default_factory=lambda: OrderedDict())
     path: str | None = None
     pk: PK = PK.INT
+    form_show_labels: bool = False
 
     def __str__(self):
         return f"FormSet({self.title})"

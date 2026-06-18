@@ -60,12 +60,12 @@ class AuthorUpdateForm(AuthorCreateForm):
 class AuthorCreateView(CrispyModelViewMixin, MessageMixin, CreateViewPermissionRequired):
     form_class = AuthorCreateForm
     cv_viewset = cv_author
-    cv_message = "Created author »{object}«"
+    cv_message_template_code = "Created author »{{ object }}«"
 
 class AuthorUpdateView(CrispyModelViewMixin, MessageMixin, UpdateViewPermissionRequired):
     form_class = AuthorUpdateForm
     cv_viewset = cv_author
-    cv_message = "Updated author »{object}«"
+    cv_message_template_code = "Updated author »{{ object }}«"
 ```
 
 ## 5. Delete view
@@ -77,7 +77,7 @@ from crud_views.lib.views import DeleteViewPermissionRequired
 class AuthorDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequired):
     form_class = CrispyDeleteForm
     cv_viewset = cv_author
-    cv_message = "Deleted author »{object}«"
+    cv_message_template_code = "Deleted author »{{ object }}«"
 ```
 
 ## 6. Detail view

@@ -1,4 +1,5 @@
 import pytest
+from django.contrib.messages import get_messages
 from django.test.client import Client
 
 from crud_views.lib.viewset import ViewSet
@@ -126,3 +127,23 @@ def test_ordered_get_not_allowed(client_user_author_change: Client, cv_author):
 
     response = client_user_author_change.get(f"/author/{a1.pk}/up/")
     assert response.status_code == 405
+
+
+@pytest.mark.django_db
+def test_move_up_emits_message(client_user_author_change: Client, cv_author):
+    Author.objects.create(first_name="First", last_name="Author")
+    a2 = Author.objects.create(first_name="Second", last_name="Author")
+    response = client_user_author_change.post(f"/author/{a2.pk}/up/")
+    assert response.status_code == 302
+    rendered = [m.message for m in get_messages(response.wsgi_request)]
+    assert any(str(a2) in m for m in rendered)
+
+
+@pytest.mark.django_db
+def test_move_down_emits_message(client_user_author_change: Client, cv_author):
+    a1 = Author.objects.create(first_name="First", last_name="Author")
+    Author.objects.create(first_name="Second", last_name="Author")
+    response = client_user_author_change.post(f"/author/{a1.pk}/down/")
+    assert response.status_code == 302
+    rendered = [m.message for m in get_messages(response.wsgi_request)]
+    assert any(str(a1) in m for m in rendered)

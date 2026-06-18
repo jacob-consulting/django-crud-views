@@ -94,7 +94,7 @@ class CrudViewProcessFormMixin:
 class MessageMixin:
     """
     Add messages for a view.
-    Note: the view must configure the message template and message template or code:
+    Note: the view must configure the message template or code:
             - cv_message_template
             - cv_message_template_code
     """
@@ -107,28 +107,11 @@ class MessageMixin:
         yield from super().checks()  # noqa
         yield CheckTemplateOrCode(context=cls, attribute="cv_message_template")
 
-    def cv_get_message(self, attribute: str = "cv_message") -> str | None:
-        return self.render_snippet(
-            self.cv_get_meta(),
-            self.cv_message_template,
-            self.cv_message_template_code,
-        )
-
     def cv_form_valid_hook(self, context: dict):
         super().cv_form_valid_hook(context)  # noqa
         message = self.cv_get_message()
         if message:
             messages.success(self.request, message)
-
-    def action(self, context: dict) -> bool:
-        result = super().action(context)
-        if result:
-            messages.success(self.request, self.cv_get_message())
-        elif hasattr(self, "cv_error_message"):
-            # error message is optional
-            messages.error(self.request, self.cv_get_message("cv_error_message"))
-
-        return result
 
 
 class CardOrderMixin:

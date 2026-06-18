@@ -17,6 +17,7 @@
 - `ParentContextButton`: a parent button targeting an object-permission-gated parent view (e.g. the parent's `detail`) is no longer wrongly hidden on object-less child pages (list/card). Access is now checked against the resolved **parent object** (via `cv_get_parent_object()`) rather than the current view's object, so the button reflects whether the user can access that parent — the same gate as opening the parent detail page directly. The default `parent`→list button is unaffected
 - `ParentContextButton` now honors its own `label_template`/`label_template_code` like the other button types (`ContextButton`, `ChildContextButton`, `SiblingContextButton`), instead of silently rendering the target (parent) view's default action label. When no label is set it still falls back to that default. The label-rendering step is now shared via a `ContextButton._apply_label()` helper so no button subclass can omit it
 - `MessageMixin`'s error path could never fire (its `cv_get_message` ignored the requested attribute and it guarded on an undefined `cv_error_message`). The success/error message renderer now lives on `CrudView.cv_get_message(*, error=False)`, returns `None` when unconfigured instead of raising, and the dead `MessageMixin.action()` wrapper was removed.
+- bootstrap5 example: `CampaignWorkflowView` listed a non-existent `"edit"` context-action key, raising `ViewSetKeyFoundError` ("key edit not registered at campaign") and a 500 on the campaign workflow page. Corrected to `"update"`, the registered key.
 
 ## 0.6.0
 

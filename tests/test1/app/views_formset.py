@@ -96,14 +96,10 @@ publisher_formsets: FormSets = FormSets(
         books=FormSet(
             title="Books",
             klass=BookFormSet,
-            fields=["title"],
-            pk_field="id",
             children=OrderedDict(
                 notes=FormSet(
                     title="Notes",
                     klass=BookNoteFormSet,
-                    fields=["note"],
-                    pk_field="id",
                 ),
             ),
         ),

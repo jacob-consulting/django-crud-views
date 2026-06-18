@@ -21,6 +21,7 @@
 
 ### Changed
 
+- Formsets: `FormSet.fields` and `FormSet.pk_field` are now optional and derived from the formset `klass` (the inline form's fields and the child model's primary-key name) when omitted; pass them explicitly only to override. New `FormSet.form_show_labels` (default `False`) controls crispy label rendering for inline-formset rows instead of the previously hardcoded value.
 - Renamed `crud_views.lib.formsets.mixins.PolymorphicFormSetMixin` to `PolymorphicFormSetsViewMixin`; the old name collided with django-polymorphic's `Polymorphic*FormSet` classes. This formsets API is semi-private, so the rename ships without a deprecation shim — update any `from crud_views.lib.formsets.mixins import PolymorphicFormSetMixin` imports to the new name.
 
 ## 0.6.0

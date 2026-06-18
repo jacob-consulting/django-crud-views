@@ -347,15 +347,15 @@ To show a filter always-open with no toggle button, set `cv_filter_pinned = True
 ```python
 from crud_views.lib.views import OrderedUpViewPermissionRequired, OrderedUpDownPermissionRequired
 
-class AuthorUpView(MessageMixin, OrderedUpViewPermissionRequired):
+class AuthorUpView(OrderedUpViewPermissionRequired):
     cv_viewset = cv_author
-    cv_message = "Moved »{object}« up"
 
-class AuthorDownView(MessageMixin, OrderedUpDownPermissionRequired):
+class AuthorDownView(OrderedUpDownPermissionRequired):
     cv_viewset = cv_author
-    cv_message = "Moved »{object}« down"
 
 # Add "up" and "down" to cv_list_actions in the list view
+# Move messages are emitted automatically — no MessageMixin needed.
+# Override cv_message_template_code to customize, or set cv_action_messages = False to disable.
 ```
 
 ---
@@ -366,7 +366,6 @@ class AuthorDownView(MessageMixin, OrderedUpDownPermissionRequired):
 
 ```python
 from crud_views.lib.views.form import CustomFormViewPermissionRequired
-from crud_views.lib.views import MessageMixin
 from crud_views.lib.crispy import CrispyModelForm, CrispyModelViewMixin, Column12
 
 class AuthorContactForm(CrispyModelForm):
@@ -385,7 +384,7 @@ class AuthorContactView(MessageMixin, CrispyModelViewMixin, CustomFormViewPermis
     cv_icon_action = "fa-solid fa-envelope"
     cv_viewset = cv_author
     form_class = AuthorContactForm
-    cv_message_template_code = "Successfully contacted author »{object}«"
+    cv_message_template_code = "Successfully contacted author »{{ object }}«"
     cv_context_actions = ["parent", "detail", "update", "delete", "contact"]
     cv_header_template_code = "Contact Author"
     cv_paragraph_template_code = "Send a message to the Author"
@@ -406,21 +405,25 @@ Performs a one-click action on an existing object. Implement `action(context)`. 
 and `cv_path`. Add that key to `cv_list_actions` on the list view to show a per-row button.
 
 ```python
-from crud_views.lib.views import ActionViewPermissionRequired, MessageMixin
+from crud_views.lib.views import ActionViewPermissionRequired
 
-class AuthorArchiveView(MessageMixin, ActionViewPermissionRequired):
+class AuthorArchiveView(ActionViewPermissionRequired):
     cv_key = "archive"
     cv_path = "archive"
     cv_icon_action = "fa-solid fa-box-archive"
     cv_viewset = cv_author
-    cv_message = "Archived »{object}«"
+    cv_message_template_code = "Archived »{{ object }}«"
+    cv_message_template_error_code = "Could not archive »{{ object }}«"
 
     def action(self, context):
-        obj = context.object
+        obj = context["object"]
         obj.is_archived = True
         obj.save()
+        return True  # truthy → success message; falsy → error message
 
 # In list view: cv_list_actions = ["detail", "update", "delete", "archive"]
+# MessageMixin is NOT needed — ActionView emits messages built in.
+# Disable with cv_action_messages = False or by leaving the templates unset.
 ```
 
 ---

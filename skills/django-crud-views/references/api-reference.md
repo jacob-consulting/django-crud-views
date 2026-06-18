@@ -114,7 +114,7 @@ from crud_views.lib.views import CreateViewPermissionRequired
 class MyCreateView(CrispyModelViewMixin, MessageMixin, CreateViewPermissionRequired):
     cv_viewset = cv_my
     form_class = MyCreateForm
-    cv_message = "Created »{object}«"   # {object} replaced with str(instance)
+    cv_message_template_code = "Created »{{ object }}«"   # {{ object }} replaced with str(instance)
     cv_success_key = "list"              # redirect after success (default: "list")
     cv_context_actions = ["home"]
 ```
@@ -134,7 +134,7 @@ from crud_views.lib.views import UpdateViewPermissionRequired
 class MyUpdateView(CrispyModelViewMixin, MessageMixin, UpdateViewPermissionRequired):
     cv_viewset = cv_my
     form_class = MyUpdateForm
-    cv_message = "Updated »{object}«"
+    cv_message_template_code = "Updated »{{ object }}«"
     cv_success_key = "list"
 ```
 
@@ -147,7 +147,7 @@ from crud_views.lib.crispy import CrispyDeleteForm
 class MyDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequired):
     cv_viewset = cv_my
     form_class = CrispyDeleteForm   # built-in confirmation form
-    cv_message = "Deleted »{object}«"
+    cv_message_template_code = "Deleted »{{ object }}«"
     cv_success_key = "list"
     cv_show_related_objects = True     # opt-in: show cascading deletes
     cv_link_related_objects = False    # opt-in: link to detail views
@@ -174,7 +174,7 @@ class MyContactView(MessageMixin, CrispyModelViewMixin, CustomFormViewPermission
     cv_icon_action = "fa-solid fa-envelope"
     cv_viewset = cv_my
     form_class = MyContactForm
-    cv_message_template_code = "Contacted »{object}«"
+    cv_message_template_code = "Contacted »{{ object }}«"
     cv_context_actions = ["detail", "update", "contact"]
     cv_header_template_code = "Contact"
     cv_paragraph_template_code = "Send a message"
@@ -193,34 +193,40 @@ class MyContactView(MessageMixin, CrispyModelViewMixin, CustomFormViewPermission
 ```python
 from crud_views.lib.views import ActionViewPermissionRequired
 
-class MyActionView(MessageMixin, ActionViewPermissionRequired):
+class MyActionView(ActionViewPermissionRequired):
     cv_key = "my_action"        # unique key for this view
     cv_path = "my-action"       # URL path segment
-    cv_icon_action = "fa-solid fa-bolt"
     cv_viewset = cv_my
+    cv_icon_action = "fa-solid fa-bolt"
+    cv_message_template_code = "Did the thing to »{{ object }}«"        # success message
+    cv_message_template_error_code = "Could not do the thing to »{{ object }}«"  # error message
 
     def action(self, context):
-        obj = context.object
-        # perform action on obj
-        obj.save()
+        obj = context["object"]
+        # perform action on obj; return True on success, False on failure
+        return True
 ```
+
+Messages are built in: a truthy `action()` result emits the success message, a falsy result
+emits the error message. Disable with `cv_action_messages = False` or by leaving the templates
+unset. `MessageMixin` is **not** needed for `ActionView`.
 
 ### OrderedUpView / OrderedDownView (requires django-ordered-model)
 
 ```python
 from crud_views.lib.views import OrderedUpViewPermissionRequired, OrderedUpDownPermissionRequired
 
-class MyUpView(MessageMixin, OrderedUpViewPermissionRequired):
+class MyUpView(OrderedUpViewPermissionRequired):
     cv_viewset = cv_my
-    cv_message = "Moved »{object}« up"
 
-class MyDownView(MessageMixin, OrderedUpDownPermissionRequired):
+class MyDownView(OrderedUpDownPermissionRequired):
     cv_viewset = cv_my
-    cv_message = "Moved »{object}« down"
 ```
 
-Add `"up"` and `"down"` to `cv_list_actions` in the list view.
-Model must extend `OrderedModel` and `ordered_model` must be in `INSTALLED_APPS`.
+The up/down views ship with default move messages and emit them automatically — no
+`MessageMixin` required. Override `cv_message_template_code` to customize, or set
+`cv_action_messages = False` to disable. Add `"up"` and `"down"` to `cv_list_actions` in the
+list view. Model must extend `OrderedModel` and `ordered_model` must be in `INSTALLED_APPS`.
 
 ### CardListView / CardListViewPermissionRequired
 

@@ -6,6 +6,7 @@ nav:
     - update_view.md
     - delete_view.md
     - action_enabled.md
+    - action_view.md
     - custom_form_view.md
     - workflow_view.md
     - polymorphic_view.md

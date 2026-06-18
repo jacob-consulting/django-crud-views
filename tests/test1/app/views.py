@@ -24,6 +24,7 @@ from crud_views.lib.views import (
     OrderedUpDownPermissionRequired,
     CardListViewPermissionRequired,
     DetailCustomViewPermissionRequired,
+    ActionViewPermissionRequired,
 )
 from crud_views.lib.view import CardAction
 from crud_views.lib.views.form import CustomFormViewPermissionRequired
@@ -133,6 +134,55 @@ class AuthorDownView(OrderedUpDownPermissionRequired):
     cv_viewset = cv_author
 
 
+class AuthorPingView(ActionViewPermissionRequired):
+    cv_key = "ping"
+    cv_path = "ping"
+    cv_viewset = cv_author
+    cv_backend_only = True
+    cv_message_template_code = "Pinged »{{ object }}«"
+    cv_message_template_error_code = "Ping failed for »{{ object }}«"
+
+    def action(self, context):
+        # result controllable from the request for testing both branches
+        return self.request.GET.get("fail") != "1"
+
+
+class AuthorSilentPingView(ActionViewPermissionRequired):
+    cv_key = "ping_silent"
+    cv_path = "ping-silent"
+    cv_viewset = cv_author
+    cv_backend_only = True
+
+    def action(self, context):
+        return True
+
+
+class AuthorMutedPingView(ActionViewPermissionRequired):
+    cv_key = "ping_muted"
+    cv_path = "ping-muted"
+    cv_viewset = cv_author
+    cv_backend_only = True
+    cv_action_messages = False
+    cv_message_template_code = "Should not appear"
+
+    def action(self, context):
+        return True
+
+
+class AuthorHookPingView(ActionViewPermissionRequired):
+    cv_key = "ping_hook"
+    cv_path = "ping-hook"
+    cv_viewset = cv_author
+    cv_backend_only = True
+
+    def action(self, context):
+        return True
+
+    def cv_action_success_hook(self, context):
+        self.object.pseudonym = "hooked"
+        self.object.save()
+
+
 class AuthorContactForm(CrispyModelForm):
     from django.forms.fields import CharField as _CharField
 
@@ -154,7 +204,7 @@ class AuthorContactView(CrispyModelViewMixin, MessageMixin, CustomFormViewPermis
     cv_path = "contact"
     cv_viewset = cv_author
     form_class = AuthorContactForm
-    cv_message_template_code = "Contacted author »{object}«"
+    cv_message_template_code = "Contacted author »{{ object }}«"
     cv_header_template_code = "Contact Author"
     cv_paragraph_template_code = "Send a message to the Author"
 

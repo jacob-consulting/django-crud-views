@@ -388,7 +388,7 @@ Renders nothing on a parentless view; access checked model-level on the sibling 
 | `ListViewTableMixin` | Render queryset as a django-tables2 table | `crud_views.lib.views` |
 | `ListViewTableFilterMixin` | Add django-filter filtering + session persistence | `crud_views.lib.views` |
 | `CrispyModelViewMixin` | Render form with crispy-forms | `crud_views.lib.crispy` |
-| `MessageMixin` | Show Django messages after actions; set `cv_message` | `crud_views.lib.views` |
+| `MessageMixin` | Show a Django message on form views after a successful save; set `cv_message_template` / `cv_message_template_code` (not needed for `ActionView`/ordered views, which emit messages built in) | `crud_views.lib.views` |
 | `CreateViewParentMixin` | Auto-assign parent FK on nested create | `crud_views.lib.views` |
 
 ### Access and State Hooks (CrudView)

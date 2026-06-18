@@ -173,6 +173,29 @@ class CheckTemplateOrCode(Check):
                 yield Error(id=self.get_id(), msg=msg)
 
 
+class CheckTemplate(Check):
+    """
+    Validate that an optional template attribute, if set, resolves.
+
+    Unlike CheckTemplateOrCode this emits no error when the attribute is unset —
+    it only guards against a configured-but-missing template (e.g. an overridden
+    cv_extends_template or a ViewSet extends).
+    """
+
+    id: str = "E111"
+    attribute: str  # required — getattr(context, None) would raise
+    msg_template_not_found: str = "Template »{template}» not found at »{context}»"
+
+    def messages(self) -> Iterable[CheckMessage]:
+        template = getattr(self.context, self.attribute, None)
+        if template:
+            try:
+                get_template(template)
+            except TemplateDoesNotExist:
+                msg = self.msg_template_not_found.format(template=template, context=self.context)
+                yield Error(id=self.get_id(), msg=msg)
+
+
 class ContextActionCheck(Check):
     """
     Checks for context action

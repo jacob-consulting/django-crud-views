@@ -47,6 +47,19 @@ When neither `template` nor `template_code` is set, the button uses the
 `crud_views/tags/context_action.html`). For placing buttons by hand in a custom layout, see
 the [FAQ](../faq.md).
 
+### Active state
+
+Every context button's template context includes `cv_is_active` — `True` when the button
+points at the view currently being displayed (matched by URL router name). The default button
+template uses it to add the `active` CSS class, so a button highlights on its own page:
+
+```django
+{% cv_context_button "home" %}
+```
+
+This applies to all context button types except `FilterContextButton` (a filter toggle is not a
+navigation target).
+
 ## ParentContextButton
 
 Links up to the parent viewset's list view. Included by default via `context_buttons_default()`.

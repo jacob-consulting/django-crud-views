@@ -183,7 +183,7 @@ class CheckTemplate(Check):
     """
 
     id: str = "E111"
-    attribute: str | None = None
+    attribute: str  # required — getattr(context, None) would raise
     msg_template_not_found: str = "Template »{template}» not found at »{context}»"
 
     def messages(self) -> Iterable[CheckMessage]:

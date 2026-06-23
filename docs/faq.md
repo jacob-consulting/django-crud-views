@@ -100,6 +100,25 @@ a different object explicitly:
     which renders inaccessible buttons as *disabled/greyed*. Reach for the manual tag when
     you want the button to disappear entirely.
 
+### Get the target URL only (no markup)
+
+When you build your own link/tile markup but still want the permission-gated target
+URL, use `cv_context_url`. It resolves the same context as `cv_context_button` but
+returns just the URL string — or `None` when the user lacks access or the action is
+disabled (the same visibility rule as `cv_context_button`):
+
+```django
+{% load crud_views %}
+
+{% cv_context_url "edit_detail" as edit_url %}
+{% if edit_url %}
+    <a href="{{ edit_url }}" class="my-tile">Edit</a>
+{% endif %}
+```
+
+Like `cv_context_button`, the object defaults to the view's current object; pass a
+second argument to target a different object. Unknown keys return `None`.
+
 ### Gate surrounding markup by permission
 
 Use the `cv_context_has_permission` filter to render wrappers, headings, or separators only

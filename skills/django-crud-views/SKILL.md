@@ -73,6 +73,11 @@ class BookDetailView(DetailCustomViewPermissionRequired):
 
 Template receives `object`, `view`, and `cv_extends`. Extend `cv_extends` and fill `{% block cv_content %}`.
 
+When hand-building links in the custom template, use `{% cv_context_url "key" as url %}`
+to get a permission-gated target URL (`None` when the user has no access or the action is
+disabled), then gate your markup with `{% if url %}`. Use `{% cv_context_button "key" %}`
+instead when you want the library to render the full button markup.
+
 Guardian variant: `GuardianDetailCustomViewPermissionRequired`.
 
 `DetailCustomView` is the base class for `DetailView` — both share icons, snippets, and context actions.

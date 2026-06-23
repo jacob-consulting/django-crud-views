@@ -95,6 +95,19 @@ def cv_context_button(context, key, obj=None):
 
 
 @register.simple_tag(takes_context=True)
+@ignore_exception(ViewSetKeyFoundError, default_value=None)
+def cv_context_url(context, key, obj=None):
+    obj = None if not obj else obj  # fix empty string from template
+    view = cv_get_view(context)
+    if obj is None:
+        obj = getattr(view, "object", None)
+    ctx = cv_get_context(context=context, key=key, obj=obj)
+    if not ctx or ctx.get("cv_action_enabled") is False or ctx.get("cv_access") is not True:
+        return None
+    return ctx.get("cv_url")
+
+
+@register.simple_tag(takes_context=True)
 def cv_render_context_button(context, ctx) -> str:
     view = cv_get_view(context)
     return _render_context_button(view, ctx)

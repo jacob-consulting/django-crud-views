@@ -14,7 +14,7 @@ from crud_views.lib.views import (
     ListViewPermissionRequired,
     CreateViewParentMixin,
 )
-from crud_views.lib.view import SiblingContextButton
+from crud_views.lib.view import SiblingContextButton, ChildContextButton
 from crud_views.lib.viewset import ViewSet, ParentViewSet, context_buttons_default
 
 cv_bar = ViewSet(
@@ -57,6 +57,13 @@ class BarListView(ListViewTableMixin, ListViewPermissionRequired):
 class BarDetailView(DetailViewPermissionRequired):
     model = Bar
     cv_viewset = cv_bar
+    # View-level button: declared on this view only, so it renders on the Bar
+    # detail page but not on bar's list/update/etc. Contrast with the ViewSet-level
+    # "Quxes" sibling button (cv_bar.context_buttons), which the list view shows.
+    cv_context_buttons = [
+        ChildContextButton(key="bazzes", child_name="baz", label_template_code="Bazzes"),
+    ]
+    cv_context_actions = ["home", "detail", "update", "delete", "bazzes"]
     cv_property_display = [
         {
             "title": _("Properties"),

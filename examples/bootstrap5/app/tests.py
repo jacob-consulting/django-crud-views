@@ -1,6 +1,9 @@
 """Smoke test for the view-level context button on BarDetailView (issue #27 example)."""
 
+import warnings
+
 from django.contrib.auth.models import User
+from django.core.paginator import UnorderedObjectListWarning
 from django.test import TestCase
 from django.urls import reverse
 
@@ -35,3 +38,12 @@ class ViewLevelContextButtonTest(TestCase):
         self.assertNotContains(resp, "Bazzes")
         # ...which still shows the ViewSet-level sibling button
         self.assertContains(resp, "Quxes")
+
+    def test_bar_list_pagination_is_ordered(self):
+        # Paginating an unordered queryset raises UnorderedObjectListWarning; the Bar
+        # model's Meta.ordering must keep the list view's pagination stable.
+        url = reverse(cv_bar.get_router_name("list"), kwargs={"foo_pk": self.foo.pk})
+        with warnings.catch_warnings():
+            warnings.simplefilter("error", UnorderedObjectListWarning)
+            resp = self.client.get(url)
+        self.assertEqual(resp.status_code, 200)

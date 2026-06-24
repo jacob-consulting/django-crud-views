@@ -1,6 +1,8 @@
-"""Regression: a list+detail-only ViewSet (cv_contract) must not 500 on its own
-pages because the default *_CONTEXT_ACTIONS reference unregistered create/delete
-view keys. DEBUG=True in the test settings, so CRUD_VIEWS_STRICT is on by default."""
+"""Regression: a list+detail-only ViewSet (cv_contract) must not raise
+ViewSetKeyFoundError on its own pages because the default *_CONTEXT_ACTIONS
+reference unregistered create/delete view keys. The bug only bites under strict
+mode (CRUD_VIEWS_STRICT, which defaults to DEBUG); tests run DEBUG=False, so the
+integration test forces strict mode to reproduce it."""
 
 import pytest
 from django.urls import reverse
@@ -25,27 +27,32 @@ def client_user_contract_view(client, cv_contract):
     return client
 
 
+@pytest.fixture
+def strict_mode(monkeypatch):
+    from django.conf import settings as dj_settings
+
+    monkeypatch.setattr(dj_settings, "CRUD_VIEWS_STRICT", True, raising=False)
+
+
 @pytest.mark.django_db
-def test_contract_list_renders_without_create_view(client_user_contract_view, cv_contract, publisher_penguin):
-    # cv_contract registers only list + detail; default list_context_actions
-    # includes "create" (not a registered view). Must render, not raise.
-    url = reverse(cv_contract.get_router_name("list"), kwargs={"publisher_pk": publisher_penguin.pk})
-    resp = client_user_contract_view.get(url)
+def test_pages_render_with_unregistered_default_keys_in_strict(
+    strict_mode, client_user_contract_view, cv_contract, publisher_penguin
+):
+    # list: default list_context_actions includes "create" (not registered on cv_contract)
+    list_url = reverse(cv_contract.get_router_name("list"), kwargs={"publisher_pk": publisher_penguin.pk})
+    resp = client_user_contract_view.get(list_url)
     assert resp.status_code == 200
-    # the unregistered create button is simply absent
     assert b'cv-key="create"' not in resp.content
 
-
-@pytest.mark.django_db
-def test_contract_detail_renders_without_update_delete_views(client_user_contract_view, cv_contract, publisher_penguin):
+    # detail: default detail_context_actions includes "update"/"delete" (not registered)
     from tests.test1.app.models import Contract
 
     contract = Contract.objects.create(publisher=publisher_penguin, title="ACME")
-    url = reverse(
+    detail_url = reverse(
         cv_contract.get_router_name("detail"),
         kwargs={"publisher_pk": publisher_penguin.pk, "pk": contract.pk},
     )
-    resp = client_user_contract_view.get(url)
+    resp = client_user_contract_view.get(detail_url)
     assert resp.status_code == 200
     assert b'cv-key="update"' not in resp.content
     assert b'cv-key="delete"' not in resp.content
@@ -56,7 +63,6 @@ def test_get_context_buttons_skips_unregistered_keys(client_user_contract_view, 
     url = reverse(cv_contract.get_router_name("list"), kwargs={"publisher_pk": publisher_penguin.pk})
     resp = client_user_contract_view.get(url)
     view = resp.context["view"]
-    # explicit mix of unregistered ("create") and registered ("list") keys
     keys = [b.get("cv_key") for b in view.cv_get_context_buttons(keys=["create", "list"])]
     assert "create" not in keys
     assert "list" in keys

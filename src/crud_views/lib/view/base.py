@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 
 from crud_views.lib import check
 from crud_views.lib.check import Check, CheckAttributeReg, CheckAttribute, CheckTemplateOrCode, CheckTemplate
-from crud_views.lib.exceptions import cv_raise, ParentViewSetError, CrudViewError
+from crud_views.lib.exceptions import cv_raise, ParentViewSetError, CrudViewError, ViewSetKeyFoundError
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.db.models import Model
 from django.shortcuts import get_object_or_404
@@ -328,11 +328,6 @@ class CrudView(metaclass=CrudViewMetaClass):
             obj = getattr(self, "object", None)
         result: list[dict] = []
         for key in keys:
-            # an unregistered view key that is also not a context button is not a
-            # misconfiguration here — default context-action lists legitimately
-            # reference optional views (create/delete) a ViewSet may not register.
-            if self.cv_get_context_button(key) is None and not self.cv_viewset.is_view_registered(key):
-                continue
             ctx = self.cv_get_context(key=key, obj=obj, user=self.request.user, request=self.request)
             if not ctx or ctx.get("cv_action_enabled") is False or ctx.get("cv_access") is not True:
                 continue
@@ -364,6 +359,12 @@ class CrudView(metaclass=CrudViewMetaClass):
             ctx = context_button.get_context(context)
             return ctx
 
+        # get target view class; an unregistered key is not a misconfiguration here -> skip
+        try:
+            cls = self.cv_get_cls_assert_object(key, obj)
+        except ViewSetKeyFoundError:
+            return {}
+
         # the key is a view
         dict_kwargs = dict(
             cv_access=False,
@@ -371,9 +372,6 @@ class CrudView(metaclass=CrudViewMetaClass):
             cv_url=self.cv_get_url(key=key, obj=obj),
             cv_template=crud_views_settings.context_button_template,
         )
-
-        # get target view class
-        cls = self.cv_get_cls_assert_object(key, obj)
 
         # set up the view context
         context = self.cv_get_view_context(object=obj)

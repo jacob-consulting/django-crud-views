@@ -45,7 +45,7 @@ Access is checked via the target view's `cv_has_access(user, obj)`.
 When neither `template` nor `template_code` is set, the button uses the
 `CRUD_VIEWS_CONTEXT_BUTTON_TEMPLATE` setting (default
 `crud_views/tags/context_action.html`). For placing buttons by hand in a custom layout, see
-the [FAQ](../faq.md).
+[Manual Placement (Template Tags)](#manual-placement-template-tags) below.
 
 ### Active state
 
@@ -217,6 +217,75 @@ cv_author = ViewSet(
         ChildContextButton(key="books", child_name="book"),
     ],
 )
+```
+
+## Manual Placement (Template Tags)
+
+The `cv_context_actions` attribute renders the configured buttons automatically in the view
+header. When you build a custom layout — a detail template, a dashboard tile, a card — you can
+place a single button (or just its URL) anywhere using template tags. All of them resolve the
+same context as the configured buttons, so access and the `cv_action_enabled` state are honored.
+
+| Tag / filter                              | Returns                                              |
+|-------------------------------------------|------------------------------------------------------|
+| `{% cv_context_button "key" %}`           | Rendered button markup, or **nothing** when no access |
+| `{% cv_context_url "key" as url %}`       | The target URL string, or `None` when no access      |
+| `view\|cv_context_has_permission:"key"`   | `True`/`False` — may the user access the key?        |
+
+In every case the object defaults to the view's current object; pass a second argument to
+target a different object, and unknown keys resolve to nothing/`None` rather than raising.
+
+### `cv_context_url` — get the target URL only
+
+Use `cv_context_url` when you write your own link/tile markup but still want the
+permission-gated target URL. It returns the URL string, or `None` when the user lacks access
+to the target **or** the action is disabled (`cv_action_enabled` is `False`) — the same
+visibility rule as `cv_context_button`:
+
+```django
+{% load crud_views %}
+
+{% cv_context_url "update" as edit_url %}
+{% if edit_url %}
+    <a href="{{ edit_url }}" class="my-tile">Edit</a>
+{% endif %}
+```
+
+Target a different object by passing it as the second argument:
+
+```django
+{% cv_context_url "detail" book as book_url %}
+```
+
+!!! note "`None` means hidden"
+    Because `cv_context_url` returns `None` for both "no access" and "action disabled", gating
+    your markup with `{% if url %}` makes the link disappear entirely — matching
+    `cv_context_button`, and unlike the `{% cv_context_actions %}` container, which greys
+    inaccessible buttons out instead.
+
+### `cv_context_button` — render the full button
+
+When you want the library to render the complete button markup (not just the URL), use
+`cv_context_button`. It renders **nothing** when the user lacks access or the action is
+disabled:
+
+```django
+{% load crud_views %}
+
+{% cv_context_button "update" %}
+```
+
+### `cv_context_has_permission` — gate surrounding markup
+
+To render wrappers, headings, or separators only when the user may access a key, use the
+`cv_context_has_permission` filter:
+
+```django
+{% load crud_views %}
+
+{% if view|cv_context_has_permission:"update" %}
+    <div class="toolbar">{% cv_context_button "update" %}</div>
+{% endif %}
 ```
 
 ## Import Paths

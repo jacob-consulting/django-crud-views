@@ -9,7 +9,10 @@ default set is provided by `context_buttons_default()`:
 
 - **`home`** — links to the list view of the current viewset
 - **`parent`** — links up to the parent viewset's list view (only rendered when a parent exists)
-- **`filter`** — toggles the filter form (only rendered when the view uses `ListViewTableFilterMixin`). The `filter` button's label (default `Filter`) can be customized with `label_template` / `label_template_code` like any other button.
+- **`filter`** — toggles the filter form (only rendered when the view uses `ListViewTableFilterMixin`)
+
+The `filter` button's label (default `Filter`) can be customized with `label_template` /
+`label_template_code`, like any other button.
 
 Views reference these buttons by key via `cv_context_actions`. Keys that don't match a context
 button are resolved as sibling view keys (e.g. `"update"`, `"delete"`, `"create"`).

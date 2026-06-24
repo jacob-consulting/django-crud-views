@@ -322,6 +322,9 @@ Context buttons are normally defined on the ViewSet and shared by all its views.
 button on a single view, set `cv_context_buttons` on the `CrudView`:
 
 ```python
+from crud_views.lib.view import ChildContextButton
+
+
 class BookDetailView(DetailViewPermissionRequired):
     cv_viewset = cv_book
     cv_context_actions = ["update", "delete", "reviews"]   # list the key to render it

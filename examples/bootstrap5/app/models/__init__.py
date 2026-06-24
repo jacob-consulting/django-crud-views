@@ -69,6 +69,9 @@ class BookReview(models.Model):
 class Foo(models.Model):
     name = models.CharField(max_length=100, verbose_name=_("Name"))
 
+    class Meta:
+        ordering = ["name"]
+
     def __str__(self):
         return f"{self.name}"
 
@@ -76,6 +79,9 @@ class Foo(models.Model):
 class Bar(models.Model):
     foo = models.ForeignKey(Foo, on_delete=models.CASCADE)
     name = models.CharField(max_length=100, verbose_name=_("Name"))
+
+    class Meta:
+        ordering = ["name"]
 
     def __str__(self):
         return f"{self.name}"
@@ -85,6 +91,9 @@ class Baz(models.Model):
     bar = models.ForeignKey(Bar, on_delete=models.CASCADE)
     name = models.CharField(max_length=100, verbose_name=_("Name"))
 
+    class Meta:
+        ordering = ["name"]
+
     def __str__(self):
         return f"{self.name}"
 
@@ -92,6 +101,9 @@ class Baz(models.Model):
 class Qux(models.Model):
     foo = models.ForeignKey(Foo, on_delete=models.CASCADE)
     name = models.CharField(max_length=100, verbose_name=_("Name"))
+
+    class Meta:
+        ordering = ["name"]
 
     def __str__(self):
         return f"{self.name}"

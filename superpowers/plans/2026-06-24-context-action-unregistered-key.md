@@ -1,50 +1,44 @@
-# Context Actions Must Not 500 on Unregistered View Keys Implementation Plan
+# Unify Action Rendering (skip unregistered keys, drop greyed buttons) Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** A ViewSet that registers only some CRUD views (e.g. list + detail) must render its list/detail/update pages without raising `ViewSetKeyFoundError`, including in development (`DEBUG=True`).
+**Goal:** A ViewSet that omits some CRUD views must render its pages without raising `ViewSetKeyFoundError` (incl. `DEBUG=True`), and inaccessible actions must be hidden rather than greyed-out — consistently across the context-action toolbar and list-row actions.
 
-**Architecture:** The default `*_CONTEXT_ACTIONS` settings reference view keys (`create`, `delete`, `update`) that a ViewSet may legitimately not register. The base template renders context actions via `{% cv_context_actions object %}` → the `cv_context_actions` inclusion tag → `tags/context_actions.html`, which loops `cv_context_actions` and resolves each key through `cv_get_context` → `get_view_class`, raising on an unregistered key. The fix routes the toolbar through `CrudView.cv_get_context_buttons`, adds an unregistered-key guard there, and renders the resolved list with the existing `{% cv_render_context_button %}` tag. Strict-mode raising is preserved for direct `cv_context_action` calls.
+**Architecture:** One resolver change — `CrudView.cv_get_context` returns `{}` for an unregistered key instead of raising — fixes every render path at the source (toolbar, list rows, list-row forms, context buttons, button loop). Render templates then hide inaccessible/disabled actions (drop the greyed `{% else %}` branches). `get_view_class` keeps raising (URL routing depends on it).
 
-**Tech Stack:** Django, pytest / pytest-django, django-crud-views (src layout).
+**Tech Stack:** Django, pytest / pytest-django, django-crud-views (`src/` layout), two template themes (`crud_views`, `crud_views_plain`).
 
 ## Global Constraints
 
-- Line length 120, double quotes, ruff format/check must pass (`task format`, `task check`).
-- `cv_` prefix on all CrudView attributes; existing tag/method names unchanged.
-- Tests run from `tests/` with `pytest`; settings have `DEBUG=True` (so `CRUD_VIEWS_STRICT` defaults on).
-- Single PR → CI → fix ruff → squash-merge to `main` → wait main CI; then bump `0.8.0`→`0.8.1`.
-- Both themes must stay in sync: `crud_views` and `crud_views_plain` ship parallel copies of `tags/context_actions.html`.
+- Line length 120, double quotes; `task format` and `task check` must pass.
+- `cv_` prefix on CrudView attributes; public tag names unchanged.
+- Tests run from `tests/`: `cd tests && pytest`. Django's test runner forces `DEBUG=False`, so `CRUD_VIEWS_STRICT` defaults **off** in tests — any test reproducing the dev-time bug MUST force `CRUD_VIEWS_STRICT=True` (monkeypatch).
+- Keep both themes in sync: `crud_views` and `crud_views_plain` each have `tags/context_action.html` and `tags/list_action.html`; only `crud_views` has `tags/list_action_form.html`.
+- Branch `fix/context-action-unregistered-key-strict` already holds commit `6bef1a5` (a `cv_get_context_buttons` guard + a test file). Task 1 supersedes that guard.
 
 ---
 
-### Task 1: Guard `cv_get_context_buttons` against unregistered keys + reroute the toolbar template
+### Task 1: Central resolver skip — fix the unregistered-key 500
 
 **Files:**
-- Modify: `src/crud_views/lib/view/base.py` — `cv_get_context_buttons` (~line 321)
-- Modify: `src/crud_views/templatetags/crud_views.py` — `cv_context_actions` inclusion tag (~line 116)
-- Modify: `src/crud_views/templates/crud_views/tags/context_actions.html`
-- Modify: `src/crud_views_plain/templates/crud_views/tags/context_actions.html`
-- Test: `tests/test1/test_context_action_unregistered_key.py` (create)
+- Modify: `src/crud_views/lib/view/base.py` — `cv_get_context` (~line 376) and `cv_get_context_buttons` (~line 330)
+- Modify: `src/crud_views/templatetags/crud_views.py` — `cv_context_action` (~line 77)
+- Modify: `tests/test1/test_context_action_unregistered_key.py` (exists from `6bef1a5`)
 
 **Interfaces:**
-- Consumes (existing, unchanged signatures):
-  - `CrudView.cv_get_context_button(key: str) -> ContextButton | None` (`base.py:311`)
-  - `ViewSet.is_view_registered(key: str) -> bool` (`viewset/__init__.py:257`)
-  - `CrudView.cv_get_context(key, obj, user, request) -> dict` (`base.py:346`)
-  - tag `cv_render_context_button(context, ctx) -> str` (`crud_views.py:110`)
-- Produces:
-  - `cv_get_context_buttons` now silently skips keys that are neither a context button nor a registered view (never raises `ViewSetKeyFoundError` for them).
-  - `cv_context_actions` inclusion-tag context dict gains `context_buttons: list[dict]` (resolved, access-filtered).
+- Consumes: `ViewSet.is_view_registered`, `cv_get_cls_assert_object`, `ViewSetKeyFoundError` (`crud_views.lib.exceptions`).
+- Produces: `cv_get_context(key, …)` returns `{}` for an unregistered, non-button key (never raises `ViewSetKeyFoundError`). All five tags and `cv_get_context_buttons` therefore skip such keys.
 
-- [ ] **Step 1: Write the failing test**
+- [ ] **Step 1: Add the failing strict-mode page test**
 
-Create `tests/test1/test_context_action_unregistered_key.py`:
+Replace the body of `tests/test1/test_context_action_unregistered_key.py` with (keeps the existing fixtures + unit test, adds the real RED integration test):
 
 ```python
-"""Regression: a list+detail-only ViewSet (cv_contract) must not 500 on its own
-pages because the default *_CONTEXT_ACTIONS reference unregistered create/delete
-view keys. DEBUG=True in the test settings, so CRUD_VIEWS_STRICT is on by default."""
+"""Regression: a list+detail-only ViewSet (cv_contract) must not raise
+ViewSetKeyFoundError on its own pages because the default *_CONTEXT_ACTIONS
+reference unregistered create/delete view keys. The bug only bites under strict
+mode (CRUD_VIEWS_STRICT, which defaults to DEBUG); tests run DEBUG=False, so the
+integration test forces strict mode to reproduce it."""
 
 import pytest
 from django.urls import reverse
@@ -69,190 +63,268 @@ def client_user_contract_view(client, cv_contract):
     return client
 
 
+@pytest.fixture
+def strict_mode(monkeypatch):
+    from django.conf import settings as dj_settings
+
+    monkeypatch.setattr(dj_settings, "CRUD_VIEWS_STRICT", True, raising=False)
+
+
 @pytest.mark.django_db
-def test_contract_list_renders_without_create_view(
-    client_user_contract_view, cv_contract, publisher_penguin
+def test_pages_render_with_unregistered_default_keys_in_strict(
+    strict_mode, client_user_contract_view, cv_contract, publisher_penguin
 ):
-    # cv_contract registers only list + detail; default list_context_actions
-    # includes "create" (not a registered view). Must render, not raise.
-    url = reverse(cv_contract.get_router_name("list"), kwargs={"publisher_pk": publisher_penguin.pk})
-    resp = client_user_contract_view.get(url)
+    # list: default list_context_actions includes "create" (not registered on cv_contract)
+    list_url = reverse(cv_contract.get_router_name("list"), kwargs={"publisher_pk": publisher_penguin.pk})
+    resp = client_user_contract_view.get(list_url)
     assert resp.status_code == 200
-    # the unregistered create button is simply absent
     assert b'cv-key="create"' not in resp.content
 
-
-@pytest.mark.django_db
-def test_contract_detail_renders_without_update_delete_views(
-    client_user_contract_view, cv_contract, publisher_penguin
-):
+    # detail: default detail_context_actions includes "update"/"delete" (not registered)
     from tests.test1.app.models import Contract
 
     contract = Contract.objects.create(publisher=publisher_penguin, title="ACME")
-    url = reverse(
+    detail_url = reverse(
         cv_contract.get_router_name("detail"),
         kwargs={"publisher_pk": publisher_penguin.pk, "pk": contract.pk},
     )
-    resp = client_user_contract_view.get(url)
+    resp = client_user_contract_view.get(detail_url)
     assert resp.status_code == 200
     assert b'cv-key="update"' not in resp.content
     assert b'cv-key="delete"' not in resp.content
 
 
 @pytest.mark.django_db
-def test_get_context_buttons_skips_unregistered_keys(
-    client_user_contract_view, cv_contract, publisher_penguin
-):
+def test_get_context_buttons_skips_unregistered_keys(client_user_contract_view, cv_contract, publisher_penguin):
     url = reverse(cv_contract.get_router_name("list"), kwargs={"publisher_pk": publisher_penguin.pk})
     resp = client_user_contract_view.get(url)
     view = resp.context["view"]
-    # explicit mix of unregistered ("create") and registered ("list") keys
     keys = [b.get("cv_key") for b in view.cv_get_context_buttons(keys=["create", "list"])]
     assert "create" not in keys
     assert "list" in keys
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [ ] **Step 2: Run the tests; confirm the strict test fails for the right reason**
 
 Run: `cd tests && pytest test1/test_context_action_unregistered_key.py -v`
-Expected: FAIL — `test_contract_list_renders_*` and `test_contract_detail_renders_*` error with `crud_views.lib.exceptions.ViewSetKeyFoundError: key create not registered ...` (the test client re-raises). `test_get_context_buttons_skips_unregistered_keys` cannot reach its assertions because the GET that obtains the view raises.
+Expected: `test_pages_render_with_unregistered_default_keys_in_strict` FAILS with `crud_views.lib.exceptions.ViewSetKeyFoundError: key create not registered ...` (toolbar renders via `cv_context_action`, which re-raises under forced strict). `test_get_context_buttons_skips_unregistered_keys` passes (the `6bef1a5` guard is still present at this point).
 
-- [ ] **Step 3: Add the unregistered-key guard in `cv_get_context_buttons`**
+- [ ] **Step 3: Soften `cv_get_context` to skip unregistered keys**
 
-In `src/crud_views/lib/view/base.py`, the loop in `cv_get_context_buttons` (currently starts ~line 330):
+In `src/crud_views/lib/view/base.py`, ensure `ViewSetKeyFoundError` is imported from `crud_views.lib.exceptions` (add to the existing exceptions import if absent). Replace the single resolution line in `cv_get_context`:
 
 ```python
-        result: list[dict] = []
-        for key in keys:
-            # an unregistered view key that is also not a context button is not a
-            # misconfiguration here — default context-action lists legitimately
-            # reference optional views (create/delete) a ViewSet may not register.
+        # get target view class
+        cls = self.cv_get_cls_assert_object(key, obj)
+```
+
+with:
+
+```python
+        # get target view class; an unregistered key is not a misconfiguration here -> skip
+        try:
+            cls = self.cv_get_cls_assert_object(key, obj)
+        except ViewSetKeyFoundError:
+            return {}
+```
+
+- [ ] **Step 4: Remove the now-redundant guard in `cv_get_context_buttons`**
+
+In the `cv_get_context_buttons` loop, delete the three lines added in `6bef1a5`:
+
+```python
             if self.cv_get_context_button(key) is None and not self.cv_viewset.is_view_registered(key):
                 continue
-            ctx = self.cv_get_context(key=key, obj=obj, user=self.request.user, request=self.request)
-            if not ctx or ctx.get("cv_action_enabled") is False or ctx.get("cv_access") is not True:
-                continue
-            result.append(ctx)
-        return result
 ```
 
-(Only the `if self.cv_get_context_button(...) ...: continue` line is new; the rest is unchanged.)
+(and their comment). The remaining `if not ctx or … continue` now skips unregistered keys because `cv_get_context` returns `{}`.
 
-- [ ] **Step 4: Reroute the inclusion tag through the filtered list**
+- [ ] **Step 5: Short-circuit empty context in `cv_context_action`**
 
-In `src/crud_views/templatetags/crud_views.py`, replace the `cv_context_actions` inclusion tag body (~line 116):
+In `src/crud_views/templatetags/crud_views.py`, in `cv_context_action`, after `ctx = cv_get_context(context=context, key=key, obj=obj)` add:
 
 ```python
-@register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/context_actions.html", takes_context=True)
-def cv_context_actions(context, obj=None):
-    view: CrudView = cv_get_view(context)
-    buttons = view.cv_get_context_buttons(obj=obj)
-    return {"view": view, "request": context["request"], "object": obj, "context_buttons": buttons}
+    if not ctx:
+        return ""
 ```
 
-- [ ] **Step 5: Update both `context_actions.html` templates to render the resolved list**
-
-`src/crud_views/templates/crud_views/tags/context_actions.html`:
-
-```html
-{% load crud_views %}
-
-{% if context_buttons %}
-
-    <div class="btn-group btn-group-lg" role="group" aria-label="Actions" cv-context-container="true">
-        {% for ctx in context_buttons %}
-            {% cv_render_context_button ctx %}
-        {% endfor %}
-    </div>
-
-{% endif %}
-```
-
-`src/crud_views_plain/templates/crud_views/tags/context_actions.html`:
-
-```html
-{% load crud_views %}
-
-{% if context_buttons %}
-    {% for ctx in context_buttons %}
-        {% cv_render_context_button ctx %}
-    {% endfor %}
-    <br>
-{% endif %}
-```
-
-- [ ] **Step 6: Run the new test to verify it passes**
+- [ ] **Step 6: Run the new tests; confirm pass**
 
 Run: `cd tests && pytest test1/test_context_action_unregistered_key.py -v`
-Expected: PASS (3 tests).
+Expected: 2 passed.
 
-- [ ] **Step 7: Run the full suite to confirm no regressions**
+- [ ] **Step 7: Run the full suite (greyed buttons still present — existing tests unaffected)**
 
 Run: `cd tests && pytest -q`
-Expected: all green (existing context-button tests still pass — accessible registered keys render identical markup via `cv_render_context_button`).
+Expected: all green (templates untouched in this task, so greyed-button tests still pass).
 
 - [ ] **Step 8: Lint**
 
 Run: `task format && task check`
-Expected: no changes / no errors.
+Expected: clean.
 
 - [ ] **Step 9: Commit**
 
 ```bash
-git add src/crud_views/lib/view/base.py \
-        src/crud_views/templatetags/crud_views.py \
-        src/crud_views/templates/crud_views/tags/context_actions.html \
-        src/crud_views_plain/templates/crud_views/tags/context_actions.html \
+git add src/crud_views/lib/view/base.py src/crud_views/templatetags/crud_views.py \
         tests/test1/test_context_action_unregistered_key.py
-git commit -m "fix: context actions no longer 500 on unregistered view keys (strict/DEBUG)"
+git commit -m "fix: skip unregistered keys in cv_get_context (no 500 on partial ViewSets)"
 ```
 
 ---
 
-### Task 2: Lock the strict-mode boundary for direct `cv_context_action` calls
+### Task 2: Drop greyed-out rendering — hide inaccessible actions (toolbar + rows, both themes)
 
 **Files:**
-- Test: `tests/test1/test_context_action_unregistered_key.py` (append)
+- Modify: `src/crud_views/templates/crud_views/tags/context_action.html`
+- Modify: `src/crud_views_plain/templates/crud_views/tags/context_action.html`
+- Modify: `src/crud_views/templates/crud_views/tags/list_action.html`
+- Modify: `src/crud_views_plain/templates/crud_views/tags/list_action.html`
+- Modify: `src/crud_views/templates/crud_views/tags/list_action_form.html`
+- Modify: `tests/test1/test_context_action_unregistered_key.py` (add hidden-action test)
+- Modify: `tests/test1/test_permissions.py` (`test_author_view`)
+- Possibly modify: `tests/test1/test_workflow.py`, `tests/test1/test_filter_pinned.py`, `tests/lib/helper/boostrap5.py`
 
 **Interfaces:**
-- Consumes: tag `cv_context_action(context, key, obj=None)` (`crud_views.py:74`, unchanged) — still raises `ViewSetKeyFoundError` for an unknown key under strict mode.
+- Consumes: resolved context dicts carrying `cv_access`, `cv_action_enabled`, `cv_key`, `cv_url`.
+- Produces: inaccessible/disabled actions emit no markup on either surface.
 
-This task guards against a future over-broad "fix" that suppresses errors in `cv_context_action` itself. The toolbar no longer calls it, but it remains a public tag whose strict-mode contract (fail loud on a genuinely bad key) must hold.
-
-- [ ] **Step 1: Write the test**
+- [ ] **Step 1: Add the failing hidden-action test**
 
 Append to `tests/test1/test_context_action_unregistered_key.py`:
 
 ```python
-from django.template import Context, Template
-
-from crud_views.lib.exceptions import ViewSetKeyFoundError
-
-
 @pytest.mark.django_db
-def test_direct_cv_context_action_still_raises_on_unknown_key_in_strict(
-    client_user_contract_view, cv_contract, publisher_penguin
-):
-    # DEBUG=True -> CRUD_VIEWS_STRICT on. A direct {% cv_context_action %} with a
-    # key that is neither a context button nor a registered view still fails loud.
-    url = reverse(cv_contract.get_router_name("list"), kwargs={"publisher_pk": publisher_penguin.pk})
-    resp = client_user_contract_view.get(url)
-    view = resp.context["view"]
-    tpl = Template("{% load crud_views %}{% cv_context_action 'frobnicate' %}")
-    with pytest.raises(ViewSetKeyFoundError):
-        tpl.render(Context({"view": view, "request": resp.context["request"]}))
+def test_inaccessible_actions_are_hidden(client_user_author_view, cv_author, author_douglas_adams):
+    # view-only user: create (toolbar) and update/delete (rows) must be ABSENT, not greyed/disabled
+    resp = client_user_author_view.get("/author/")
+    assert resp.status_code == 200
+    # create (toolbar) + update/delete (rows) are registered but inaccessible for this user:
+    # on main they render as greyed/disabled buttons WITH a cv-key; hidden -> the cv-key is gone.
+    assert b'cv-key="create"' not in resp.content
+    assert b'cv-key="update"' not in resp.content
+    assert b'cv-key="delete"' not in resp.content
 ```
 
-- [ ] **Step 2: Run the test to verify it passes**
+(Do NOT assert `b"disabled" not in resp.content` — pagination markup uses `disabled` and would false-positive. The `cv-key` absence is the precise hidden-vs-greyed signal.)
 
-Run: `cd tests && pytest test1/test_context_action_unregistered_key.py::test_direct_cv_context_action_still_raises_on_unknown_key_in_strict -v`
-Expected: PASS (behavior unchanged by Task 1; this locks it).
+Run: `cd tests && pytest test1/test_context_action_unregistered_key.py::test_inaccessible_actions_are_hidden -v`
+Expected: FAIL — `cv-key="create"`/`"update"`/`"delete"` are present (greyed buttons render them on `main`).
 
-- [ ] **Step 3: Commit**
+- [ ] **Step 2: Hide inaccessible context actions (both themes)**
+
+`src/crud_views/templates/crud_views/tags/context_action.html` — replace entire file:
+
+```html
+{% if cv_key and cv_action_enabled is not False and cv_access is True %}
+    <a href="{{ cv_url }}" class="btn btn-outline-primary {% if cv_is_active %}active{% endif %} btn-lg"
+       role="button"
+       title="{{ cv_action_label }}"
+       cv-key="{{ cv_key }}">
+        <i class="{{ cv_icon_action }}"></i>
+    </a>
+{% endif %}
+```
+
+`src/crud_views_plain/templates/crud_views/tags/context_action.html` — this theme has no greyed `{% else %}` branch; it currently renders the link whenever `cv_url and cv_action_enabled is not False` (i.e. even when inaccessible). Add `and cv_access is True` to that guard so inaccessible actions are hidden here too:
+
+```html
+{% if cv_url and cv_action_enabled is not False and cv_access is True %}
+    <a href="{{ cv_url }}" title="{{ cv_action_label }}">{{ cv_action_short_label }}</a>
+{% endif %}
+```
+
+- [ ] **Step 3: Hide inaccessible list-row actions (both themes)**
+
+`src/crud_views/templates/crud_views/tags/list_action.html` — replace entire file:
+
+```html
+{% if cv_action_enabled is not False and cv_access is True %}
+<a {% if cv_list_action_method == "get" %}
+    href="{{ cv_url }}"
+{% elif cv_list_action_method == "post" %}
+    href="#"
+    data-cv-action="submit-form"
+    data-cv-target="cv_form_{{ cv_oid }}"
+{% endif %}
+    class="btn btn-outline-primary btn-xs"
+    role="button"
+    title="{{ cv_action_label }}"
+    cv-key="{{ cv_key }}">
+    <i class="{{ cv_icon_action }}"></i>
+</a>
+{% endif %}
+```
+
+`src/crud_views_plain/templates/crud_views/tags/list_action.html` — add `and cv_access is True` to its opening `{% if %}` guard (it currently renders the link regardless of access).
+
+- [ ] **Step 4: Gate the hidden POST form on access**
+
+`src/crud_views/templates/crud_views/tags/list_action_form.html` — change the guard to:
+
+```html
+{% if cv_action_enabled is not False and cv_access is True and cv_list_action_method == "post" %}
+```
+
+(keep the form body unchanged).
+
+- [ ] **Step 5: Run the hidden-action test; confirm pass**
+
+Run: `cd tests && pytest test1/test_context_action_unregistered_key.py::test_inaccessible_actions_are_hidden -v`
+Expected: PASS.
+
+- [ ] **Step 6: Update `test_author_view` for hidden (not disabled) actions**
+
+In `tests/test1/test_permissions.py::test_author_view`, the view-only user now sees the `create` (toolbar) and `update`/`delete` (row) actions as **absent**. Replace the `is_disabled` assertions and the `action.href`-derived GETs with absence checks plus direct-URL 403 checks. Example for the `create`/`update`/`delete` blocks:
+
+`get_context_action`/`get_action` **raise `KeyError`** when the key is absent (confirmed in `tests/lib/helper/boostrap5.py`), so assert absence with `pytest.raises(KeyError)`:
+
+```python
+    import pytest
+    from django.urls import reverse
+
+    # create (toolbar context action) is hidden for a view-only user; endpoint still 403
+    with pytest.raises(KeyError):
+        table.get_context_action("create")
+    assert client.get(reverse(cv_author.get_router_name("create"))).status_code == 403
+
+    # update / delete (row actions) are hidden; endpoints still 403
+    with pytest.raises(KeyError):
+        row.get_action("update")
+    assert client.get(reverse(cv_author.get_router_name("update"), kwargs={"pk": author_douglas_adams.pk})).status_code == 403
+    with pytest.raises(KeyError):
+        row.get_action("delete")
+    assert client.get(reverse(cv_author.get_router_name("delete"), kwargs={"pk": author_douglas_adams.pk})).status_code == 403
+```
+
+Keep the existing `detail` assertions (the view-only user can access detail). No change to the test helper is needed (its `KeyError`-on-absence is the contract used here).
+
+- [ ] **Step 7: Re-verify the two adjacent tests**
+
+Run: `cd tests && pytest test1/test_workflow.py::test_workflow_view_get_contains_campaign_name test1/test_filter_pinned.py::test_pinned_hides_filter_toggle_button -v`
+Expected: PASS. If `test_workflow_view_get_contains_campaign_name` fails, the campaign name was being read from a now-hidden disabled button — assert it via the page header instead (the accessible `update` action / `<h*>` heading still carries `campaign_new.name`). If `test_pinned_hides_filter_toggle_button` fails, update only the selector to match the (accessible) toggle's current markup.
+
+- [ ] **Step 8: Run the full suite**
+
+Run: `cd tests && pytest -q`
+Expected: all green.
+
+- [ ] **Step 9: Lint**
+
+Run: `task format && task check`
+Expected: clean.
+
+- [ ] **Step 10: Commit**
 
 ```bash
-git add tests/test1/test_context_action_unregistered_key.py
-git commit -m "test: lock strict-mode raise for direct cv_context_action on unknown key"
+git add src/crud_views/templates/crud_views/tags/context_action.html \
+        src/crud_views_plain/templates/crud_views/tags/context_action.html \
+        src/crud_views/templates/crud_views/tags/list_action.html \
+        src/crud_views_plain/templates/crud_views/tags/list_action.html \
+        src/crud_views/templates/crud_views/tags/list_action_form.html \
+        tests/test1/test_context_action_unregistered_key.py tests/test1/test_permissions.py
+# add tests/test1/test_workflow.py tests/test1/test_filter_pinned.py tests/lib/helper/boostrap5.py if changed
+git commit -m "feat!: hide inaccessible actions instead of rendering them greyed-out (toolbar + rows)"
 ```
 
 ---
@@ -260,33 +332,33 @@ git commit -m "test: lock strict-mode raise for direct cv_context_action on unkn
 ### Task 3: Changelog entry
 
 **Files:**
-- Modify: `CHANGELOG.md` (or `docs/` changelog source — match the file the project actually promotes on release)
+- Modify: the changelog source promoted on release (locate first)
 
-**Interfaces:** none.
-
-- [ ] **Step 1: Locate the changelog and its Unreleased section**
+- [ ] **Step 1: Locate the changelog Unreleased section**
 
 Run: `ls CHANGELOG.md docs/changelog.md 2>/dev/null; grep -rn "Unreleased\|## \[" CHANGELOG.md docs/*.md 2>/dev/null | head`
-Expected: identify the file with an `Unreleased` / top section (the one promoted in prior release commits, e.g. `49062fb`).
 
-- [ ] **Step 2: Add the entry under Unreleased (Fixed)**
-
-Add a line such as:
+- [ ] **Step 2: Add Fixed + Changed entries**
 
 ```markdown
 ### Fixed
 
-- Context actions no longer raise `ViewSetKeyFoundError` (HTTP 500 in `DEBUG`) when a
-  ViewSet omits a view referenced by the default `*_CONTEXT_ACTIONS` (e.g. a list+detail-only
-  ViewSet and the default `create`/`delete` keys). Unregistered keys are now skipped; strict
-  mode still fails loud for explicit `{% cv_context_action %}` calls with unknown keys.
+- Context actions and list-row actions no longer raise `ViewSetKeyFoundError` (HTTP 500 in
+  `DEBUG`) when a ViewSet omits a view referenced by the default `*_CONTEXT_ACTIONS`
+  (e.g. a list+detail-only ViewSet and the default `create`/`delete` keys). Unregistered keys
+  are skipped.
+
+### Changed
+
+- Actions the current user cannot access are now hidden instead of rendered as greyed-out,
+  disabled buttons — applied consistently to the context-action toolbar and list-row actions.
 ```
 
 - [ ] **Step 3: Commit**
 
 ```bash
 git add CHANGELOG.md
-git commit -m "docs(changelog): note context-action unregistered-key fix"
+git commit -m "docs(changelog): note unregistered-key fix and hidden-vs-greyed action change"
 ```
 
 ---
@@ -294,16 +366,14 @@ git commit -m "docs(changelog): note context-action unregistered-key fix"
 ## Self-Review
 
 **Spec coverage:**
-- Root-cause fix (skip unregistered keys, in all modes for the toolbar path) → Task 1 (guard + reroute). ✓
-- Both theme templates updated → Task 1 Step 5. ✓
-- `cv_get_context_buttons` "access-filtered" promise honored for default lists → Task 1 (guard before access filter). ✓
-- TDD RED = list+detail-only ViewSet renders 200 under DEBUG/strict → Task 1 Steps 1–2 (`cv_contract`). ✓
-- Detail/update variant (delete/update keys) → Task 1 `test_contract_detail_renders_*`. ✓
-- Unregistered key omitted; registered key still renders → Task 1 `test_get_context_buttons_skips_unregistered_keys`. ✓
-- Strict still strict for genuine errors → Task 2. ✓
-- Access filtering unchanged → covered by existing `test_context_button_loop.py` (full suite, Task 1 Step 7). ✓
-- Single PR + 0.8.1 release → out of plan scope (handled at handoff/merge); changelog prepared in Task 3. ✓
+- Central `cv_get_context` skip (covers all render paths) → Task 1 Steps 3-5. ✓
+- Remove redundant `cv_get_context_buttons` guard → Task 1 Step 4. ✓
+- Drop greyed buttons, toolbar + rows + form, both themes → Task 2 Steps 2-4. ✓
+- RED for the 500 under forced strict → Task 1 Steps 1-2. ✓
+- RED for hidden-not-greyed → Task 2 Step 1. ✓
+- Existing-test updates (`test_author_view`, workflow, pinned) + helper → Task 2 Steps 6-7. ✓
+- Behavior-change changelog note → Task 3. ✓
 
-**Placeholder scan:** none — all code/commands concrete. CHANGELOG path is the one explicitly-discovered ambiguity; Task 3 Step 1 resolves it before editing.
+**Placeholder scan:** none. The one ambiguity (changelog file path) is resolved by Task 3 Step 1 before editing; the conditional test fixes (Task 2 Step 7) name the concrete fallback action.
 
-**Type consistency:** `cv_get_context_buttons` returns `list[dict]`; entries carry `cv_key` (asserted in tests and produced by `cv_get_dict`), `cv_access`, `cv_action_enabled`. The inclusion tag adds `context_buttons` consumed by both templates. `is_view_registered`/`cv_get_context_button` signatures match their definitions. Consistent.
+**Type consistency:** `cv_get_context` returns `Dict[str, Any]` (now possibly empty `{}`); every consumer guards on falsy `ctx` (`cv_context_action` Step 5; `cv_context_button`/`cv_context_url` already; `cv_get_context_buttons` via `if not ctx`). Template variables (`cv_access`, `cv_action_enabled`, `cv_key`, `cv_url`) match the resolved dict. `reverse(cv_author.get_router_name(<key>), …)` matches existing URL-name usage.

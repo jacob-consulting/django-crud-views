@@ -52,6 +52,7 @@ def test_list_row_actions(client_user_author_view: Client, cv_author, author_dou
     row = table.rows[0]
     action_keys = [a.key for a in row.actions]
 
+    # view-only user: only accessible (detail) action is rendered; update/delete are hidden
     assert "detail" in action_keys
-    assert "update" in action_keys
-    assert "delete" in action_keys
+    assert "update" not in action_keys
+    assert "delete" not in action_keys

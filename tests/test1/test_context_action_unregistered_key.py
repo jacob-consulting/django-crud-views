@@ -66,3 +66,15 @@ def test_get_context_buttons_skips_unregistered_keys(client_user_contract_view, 
     keys = [b.get("cv_key") for b in view.cv_get_context_buttons(keys=["create", "list"])]
     assert "create" not in keys
     assert "list" in keys
+
+
+@pytest.mark.django_db
+def test_inaccessible_actions_are_hidden(client_user_author_view, cv_author, author_douglas_adams):
+    # view-only user: create (toolbar) and update/delete (rows) must be ABSENT, not greyed/disabled
+    resp = client_user_author_view.get("/author/")
+    assert resp.status_code == 200
+    # create (toolbar) + update/delete (rows) are registered but inaccessible for this user:
+    # on main they render as greyed/disabled buttons WITH a cv-key; hidden -> the cv-key is gone.
+    assert b'cv-key="create"' not in resp.content
+    assert b'cv-key="update"' not in resp.content
+    assert b'cv-key="delete"' not in resp.content

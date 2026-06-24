@@ -1,5 +1,16 @@
 # Django CRUD Views - Changelog
 
+## Unreleased
+
+### Fixed
+
+- Context-action toolbar and list-row actions no longer raise `ViewSetKeyFoundError` (an HTTP 500 in `DEBUG`, where `CRUD_VIEWS_STRICT` defaults on) when a ViewSet omits a view that the default `*_CONTEXT_ACTIONS`/list actions reference — e.g. a list+detail-only ViewSet and the default `create`/`delete` keys. `CrudView.cv_get_context` now returns an empty context for a key that is neither a context button nor a registered view, so every render path skips it instead of raising. `ViewSet.get_view_class` still raises for unregistered keys (URL routing relies on it).
+
+### Changed
+
+- **Breaking (UX):** actions the current user cannot access are now **hidden** instead of being rendered as greyed-out, disabled buttons. This applies consistently to the context-action toolbar (`{% cv_context_actions %}`) and to list-row actions (`{% cv_list_action %}`), in both the `crud_views` and `crud_views_plain` themes. Permission-restricted users no longer see disabled buttons for actions they cannot perform.
+- `WorkflowView` paragraph now names the object it acts on (`Process workflow step on »{{ object }}«`), matching the existing success-message wording, so the object stays visible on the workflow page now that the (previously greyed) detail button is hidden.
+
 ## 0.8.0
 
 ### Added

@@ -6,6 +6,7 @@
 
 - The list table template `crud_views/table/bootstrap5.html` now works with **both django-tables2 2.x and 3.x**. It uses a new `{% cv_querystring %}` template tag that delegates to django-tables2's `{% querystring_replace %}` (≥ 3.0) or `{% querystring %}` (< 3.0), so list pages no longer raise a `TemplateSyntaxError` depending on the installed version. Custom table templates can use `{% cv_querystring %}` (after `{% load crud_views %}`) to stay version-agnostic too.
 - `WorkflowModelMixin` can now be imported before Django's app registry is ready. `crud_views_workflow/lib/mixins.py` no longer imports `ContentType` and `WorkflowInfo` at module level (they are imported lazily inside `get_workflow_info_queryset`), eliminating an `AppRegistryNotReady` error when a consumer model module imports the mixin while apps are still loading.
+- The `WorkflowInfo` model index now carries the explicit name `cvw_workflo_workflo_idx` (matching migration `0002`). Previously the index had no name, so Django auto-generated a hashed name and `makemigrations --check` perpetually proposed a `RenameIndex` migration for consumers. No new migration is required; existing databases are unaffected.
 
 ### Added
 

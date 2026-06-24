@@ -1,5 +1,11 @@
 # Django CRUD Views - Changelog
 
+## Unreleased
+
+### Added
+
+- `cv_context_url` template tag: resolves the permission-gated target URL for a context-button key — the same context resolution as `cv_context_button` — but returns just the URL string, or `None` when the user lacks access or the action is disabled (`cv_action_enabled` is `False`). Use it to build your own link/tile markup in custom templates: `{% cv_context_url "update" as edit_url %}{% if edit_url %}…{% endif %}`. The object defaults to the view's current object; pass a second argument to target another. Documented in the Context Buttons reference (new "Manual Placement (Template Tags)" section) alongside `cv_context_button` and the `cv_context_has_permission` filter.
+
 ## 0.7.0
 
 ### Added

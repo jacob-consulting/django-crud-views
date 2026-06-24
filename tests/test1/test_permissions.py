@@ -1,5 +1,6 @@
 import pytest
 from django.contrib.auth import get_user_model
+from django.urls import reverse
 
 from tests.lib.helper.boostrap5 import Table
 
@@ -24,20 +25,21 @@ def test_author_view(client_user_author_view, cv_author, author_douglas_adams):
     response = client.get(action_detail.href)
     assert response.status_code == 200
 
-    # create
-    action_create = table.get_context_action("create")
-    assert action_create.is_disabled
-    response = client.get(action_create.href)
-    assert response.status_code == 403
+    # create (toolbar context action) is hidden for a view-only user; endpoint still 403
+    with pytest.raises(KeyError):
+        table.get_context_action("create")
+    assert client.get(reverse(cv_author.get_router_name("create"))).status_code == 403
 
-    # delete
-    action_delete = row.get_action("delete")
-    assert action_delete.is_disabled
-    response = client.get(action_delete.href)
-    assert response.status_code == 403
-
-    # update
-    action_update = row.get_action("update")
-    assert action_update.is_disabled
-    response = client.get(action_update.href)
-    assert response.status_code == 403
+    # update / delete (row actions) are hidden; endpoints still 403
+    with pytest.raises(KeyError):
+        row.get_action("update")
+    assert (
+        client.get(reverse(cv_author.get_router_name("update"), kwargs={"pk": author_douglas_adams.pk})).status_code
+        == 403
+    )
+    with pytest.raises(KeyError):
+        row.get_action("delete")
+    assert (
+        client.get(reverse(cv_author.get_router_name("delete"), kwargs={"pk": author_douglas_adams.pk})).status_code
+        == 403
+    )

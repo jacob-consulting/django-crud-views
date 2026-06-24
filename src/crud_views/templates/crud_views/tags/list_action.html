@@ -1,4 +1,4 @@
-{% if cv_action_enabled is not False %}
+{% if cv_action_enabled is not False and cv_access is True %}
 <a {% if cv_list_action_method == "get" %}
     href="{{ cv_url }}"
 {% elif cv_list_action_method == "post" %}
@@ -6,7 +6,7 @@
     data-cv-action="submit-form"
     data-cv-target="cv_form_{{ cv_oid }}"
 {% endif %}
-    class="btn btn-outline-{% if cv_access is True %}primary{% else %}secondary{% endif %} btn-xs{% if cv_access is not True %} disabled{% endif %}"
+    class="btn btn-outline-primary btn-xs"
     role="button"
     title="{{ cv_action_label }}"
     cv-key="{{ cv_key }}">

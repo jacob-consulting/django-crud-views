@@ -31,8 +31,8 @@ def test_disabled_list_action_button_hidden(client_user_publisher_view_delete, p
     assert response.status_code == 200
     # Hidden entirely — neither an active NOR a greyed/disabled delete control renders.
     assert f"/publisher/{publisher_penguin.pk}/delete/" not in html
-    # The row still renders other (enabled) actions, proving only delete was dropped.
-    assert f"/publisher/{publisher_penguin.pk}/update/" in html
+    # The row still renders other accessible actions (detail), proving only delete was dropped.
+    assert f"/publisher/{publisher_penguin.pk}/detail/" in html
 
 
 @pytest.mark.django_db

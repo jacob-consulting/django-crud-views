@@ -1,5 +1,11 @@
 # Django CRUD Views - Changelog
 
+## Unreleased
+
+### Fixed
+
+- The list table template `crud_views/table/bootstrap5.html` now works with **both django-tables2 2.x and 3.x**. It uses a new `{% cv_querystring %}` template tag that delegates to django-tables2's `{% querystring_replace %}` (≥ 3.0) or `{% querystring %}` (< 3.0), so list pages no longer raise a `TemplateSyntaxError` depending on the installed version. Custom table templates can use `{% cv_querystring %}` (after `{% load crud_views %}`) to stay version-agnostic too.
+
 ## 0.9.0
 
 ### Fixed

@@ -87,15 +87,15 @@ No nonces or hashes are required.
 
 ## django-tables2 compatibility
 
-The list view table template `crud_views/templates/crud_views/table/bootstrap5.html` requires **django-tables2 ≥ 3.0**.
+The list view table template `crud_views/table/bootstrap5.html` works with **both django-tables2 2.x and 3.x**.
 
-django-tables2 3.0 renamed the `{% querystring %}` template tag to `{% querystring_replace %}`. The updated template uses the new tag name and is therefore **not compatible with django-tables2 < 3.0**.
-
-If you need to use django-tables2 < 3.0, switch to the legacy template via the `DJANGO_TABLES2_TEMPLATE` setting:
+django-tables2 3.0 renamed the `{% querystring %}` template tag to `{% querystring_replace %}` (to avoid shadowing Django 5.1's built-in `querystring` tag). To stay compatible across versions, the crud_views template uses the `{% cv_querystring %}` template tag, which delegates to whichever tag the installed django-tables2 version provides. No manual `DJANGO_TABLES2_TEMPLATE` switching is needed — just point it at the template:
 
 ```python
-DJANGO_TABLES2_TEMPLATE = "crud_views/table/bootstrap5_lt3.html"
+DJANGO_TABLES2_TEMPLATE = "crud_views/table/bootstrap5.html"
 ```
+
+If you write your own table template, use `{% cv_querystring %}` (after `{% load crud_views %}`) in place of django-tables2's `{% querystring %}` / `{% querystring_replace %}` to keep it version-agnostic.
 
 ## django-object-detail
 

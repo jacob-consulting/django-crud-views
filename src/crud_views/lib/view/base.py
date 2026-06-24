@@ -328,6 +328,11 @@ class CrudView(metaclass=CrudViewMetaClass):
             obj = getattr(self, "object", None)
         result: list[dict] = []
         for key in keys:
+            # an unregistered view key that is also not a context button is not a
+            # misconfiguration here — default context-action lists legitimately
+            # reference optional views (create/delete) a ViewSet may not register.
+            if self.cv_get_context_button(key) is None and not self.cv_viewset.is_view_registered(key):
+                continue
             ctx = self.cv_get_context(key=key, obj=obj, user=self.request.user, request=self.request)
             if not ctx or ctx.get("cv_action_enabled") is False or ctx.get("cv_access") is not True:
                 continue

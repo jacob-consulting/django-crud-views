@@ -41,6 +41,7 @@ class CrudView(metaclass=CrudViewMetaClass):
     cv_list_actions: List[str] | None = None  # actions for the list view
     cv_list_action_method: str = "get"  # method to call for list actions
     cv_context_actions: List[str] | None = None  # context actions for the view (top right)
+    cv_context_buttons: List[ContextButton] | None = None  # view-level context button definitions (issue #27)
     cv_home_key: str | None = "list"  # home url, defaults to list
     cv_success_key: str | None = "list"  # success url, defaults to list
     cv_cancel_key: str | None = "list"  # cancel url, defaults to list
@@ -308,7 +309,10 @@ class CrudView(metaclass=CrudViewMetaClass):
         return ViewContext(**kwargs)
 
     def cv_get_context_button(self, key: str) -> ContextButton | None:
-        # view-level context buttons are not supported yet, see issue #27
+        # view-level buttons take precedence over ViewSet-level buttons (issue #27)
+        for cb in self.cv_context_buttons or []:
+            if cb.key == key:
+                return cb
         for cb in self.cv_viewset.context_buttons:
             if cb.key == key:
                 return cb

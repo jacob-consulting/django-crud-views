@@ -11,6 +11,9 @@ default set is provided by `context_buttons_default()`:
 - **`parent`** — links up to the parent viewset's list view (only rendered when a parent exists)
 - **`filter`** — toggles the filter form (only rendered when the view uses `ListViewTableFilterMixin`)
 
+The `filter` button's label (default `Filter`) can be customized with `label_template` /
+`label_template_code`, like any other button.
+
 Views reference these buttons by key via `cv_context_actions`. Keys that don't match a context
 button are resolved as sibling view keys (e.g. `"update"`, `"delete"`, `"create"`).
 
@@ -218,6 +221,33 @@ cv_author = ViewSet(
     ],
 )
 ```
+
+## View-level Context Buttons
+
+By default, context buttons are defined on the **ViewSet** (`context_buttons`) and shared by
+every view in it. To define a button on a **single view**, set `cv_context_buttons` on the
+`CrudView` — a list of the same `ContextButton` types.
+
+```python
+from crud_views.lib.view import ChildContextButton
+from crud_views.lib.views import DetailViewPermissionRequired
+
+class BookDetailView(DetailViewPermissionRequired):
+    cv_viewset = cv_book
+    cv_context_actions = ["update", "delete", "reviews"]   # "reviews" listed -> it renders
+    cv_context_buttons = [                                  # defines "reviews" for this view only
+        ChildContextButton(key="reviews", child_name="review", label_template_code="Reviews"),
+    ]
+```
+
+Two rules:
+
+- **Rendering is unchanged:** a button appears only when its `key` is listed in
+  `cv_context_actions`. `cv_context_buttons` only *defines* buttons; `cv_context_actions`
+  controls what renders and in what order.
+- **View overrides ViewSet:** if a view-level button has the same `key` as a ViewSet-level
+  button, the view-level one wins for that view. Declare a same-key button in
+  `cv_context_buttons` to customize a single view without touching the ViewSet.
 
 ## Manual Placement (Template Tags)
 

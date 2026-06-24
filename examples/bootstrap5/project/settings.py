@@ -17,6 +17,11 @@ from django.utils.translation import gettext_lazy as _
 # Build paths inside the project like this: BASE_DIR / "subdir".
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Pin test discovery's top-level dir to BASE_DIR so `manage.py test app` imports
+# app sub-packages under their canonical names (avoids a duplicate ViewSet
+# registration from unittest double-importing package __init__ modules).
+TEST_RUNNER = "project.test_runner.BaseDirDiscoverRunner"
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 

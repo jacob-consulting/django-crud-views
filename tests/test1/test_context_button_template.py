@@ -1,5 +1,8 @@
 """ContextButton template / template_code fields and the settings default."""
 
+import pytest
+from django.urls import reverse
+
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view.buttons import ContextButton, FilterContextButton
 
@@ -38,3 +41,24 @@ def test_inject_template_code_wins():
 
 def test_filter_button_default_template():
     assert FilterContextButton().template == "crud_views/tags/context_action_filter.html"
+
+
+def _publisher_list_view(client, cv_publisher):
+    url = reverse(cv_publisher.get_router_name("list"))
+    resp = client.get(url)
+    assert resp.status_code == 200
+    return resp.context["view"]
+
+
+@pytest.mark.django_db
+def test_filter_button_default_label(client_user_publisher_view, cv_publisher):
+    view = _publisher_list_view(client_user_publisher_view, cv_publisher)
+    ctx = FilterContextButton().get_context(view.cv_get_view_context())
+    assert ctx["cv_action_label"] == "Filter"
+
+
+@pytest.mark.django_db
+def test_filter_button_templated_label(client_user_publisher_view, cv_publisher):
+    view = _publisher_list_view(client_user_publisher_view, cv_publisher)
+    ctx = FilterContextButton(label_template_code="Suchen").get_context(view.cv_get_view_context())
+    assert ctx["cv_action_label"] == "Suchen"

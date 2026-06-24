@@ -316,6 +316,24 @@ class BookListView(ListViewPermissionRequired):
 Renders nothing on a view without a parent. Access is checked model-level on the sibling
 view (no parent object is consulted).
 
+### View-level context buttons (cv_context_buttons)
+
+Context buttons are normally defined on the ViewSet and shared by all its views. To define a
+button on a single view, set `cv_context_buttons` on the `CrudView`:
+
+```python
+class BookDetailView(DetailViewPermissionRequired):
+    cv_viewset = cv_book
+    cv_context_actions = ["update", "delete", "reviews"]   # list the key to render it
+    cv_context_buttons = [
+        ChildContextButton(key="reviews", child_name="review", label_template_code="Reviews"),
+    ]
+```
+
+- A button renders only when its `key` is in `cv_context_actions` (definition vs. rendering
+  stay separate).
+- A view-level button overrides a ViewSet-level button with the same `key`, for that view only.
+
 ---
 
 ## Filtering

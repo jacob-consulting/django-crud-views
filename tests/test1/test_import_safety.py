@@ -32,6 +32,29 @@ def test_templatetags_import_without_app_registry():
     assert "IMPORT-OK" in result.stdout
 
 
+def test_workflow_mixins_import_without_app_registry():
+    """Regression: WorkflowModelMixin must be importable before the app registry is ready.
+
+    A consumer model module that imports WorkflowModelMixin is loaded while Django is still
+    populating apps; importing crud_views_workflow's own models at that point raised
+    AppRegistryNotReady.
+    """
+    code = textwrap.dedent(
+        """
+        from django.conf import settings
+
+        settings.configure()  # no django.setup() -- the app registry is not ready
+
+        import crud_views_workflow.lib.mixins
+
+        print("IMPORT-OK")
+        """
+    )
+    result = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+    assert "IMPORT-OK" in result.stdout
+
+
 def test_workflow_models_load_with_late_custom_user_app(tmp_path):
     """
     Contract: a custom AUTH_USER_MODEL whose app is listed *after*

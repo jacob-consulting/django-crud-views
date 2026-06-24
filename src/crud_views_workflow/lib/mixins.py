@@ -1,12 +1,10 @@
 from functools import cached_property
 from typing import Dict, Any, List
 
-from django.contrib.contenttypes.models import ContentType
 from django.db.models import Choices
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 
-from ..models import WorkflowInfo
 from .enums import BadgeEnum, WorkflowComment
 
 TState = str
@@ -52,6 +50,12 @@ class WorkflowModelMixin:
         return dict(comment=comment) if comment else dict()
 
     def get_workflow_info_queryset(self):
+        # Imported lazily so WorkflowModelMixin can be imported before the app registry is ready
+        # (a consumer model module importing this mixin loads while Django is still populating apps).
+        from django.contrib.contenttypes.models import ContentType
+
+        from ..models import WorkflowInfo
+
         return WorkflowInfo.objects.filter(
             workflow_object_pk=str(self.pk),
             workflow_object_content_type=ContentType.objects.get_for_model(self),

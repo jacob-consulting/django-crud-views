@@ -3,7 +3,7 @@ from typing import Any, ClassVar, List, Tuple
 
 from box import Box
 from django.conf import settings
-from django.core.checks import CheckMessage, Error
+from django.core.checks import CheckMessage, Error, Warning as CheckWarning
 from django.template import TemplateDoesNotExist
 from django.template.loader import get_template
 from pydantic import BaseModel
@@ -25,6 +25,8 @@ class CrudViewsSettings(BaseModel):
     manage_show_users: bool = from_settings("CRUD_VIEWS_MANAGE_SHOW_USERS", default=False)
     manage_view_class: str | None = from_settings("CRUD_VIEWS_MANAGE_VIEW_CLASS", default=None)
     guardian_manage_view_class: str | None = from_settings("CRUD_VIEWS_GUARDIAN_MANAGE_VIEW_CLASS", default=None)
+    # not a supported setting; only read to warn consumers who set it (see check_messages)
+    theme: str | None = from_settings("CRUD_VIEWS_THEME", default=None)
 
     # session
     session_data_key: str = from_settings("CRUD_VIEWS_SESSION_DATA_KEY", "viewset")
@@ -68,6 +70,19 @@ class CrudViewsSettings(BaseModel):
                 get_template(self.extends)
             except TemplateDoesNotExist:
                 messages.append(Error(id="crud_views.E100", msg=f"template {self.extends} not found"))
+
+        if self.theme is not None:
+            messages.append(
+                CheckWarning(
+                    id="crud_views.W110",
+                    msg="setting CRUD_VIEWS_THEME has no effect and is ignored",
+                    hint=(
+                        "Theming is done by overriding templates, not via a setting. Ship templates "
+                        "under the crud_views/ namespace and list your app (e.g. crud_views_plain) "
+                        "before crud_views in INSTALLED_APPS. Remove CRUD_VIEWS_THEME."
+                    ),
+                )
+            )
 
         if self.manage_views_enabled not in self.MANAGE_VIEWS_ENABLED_VALUES:
             messages.append(

@@ -379,6 +379,8 @@ SiblingContextButton(
 
 Renders nothing on a parentless view; access checked model-level on the sibling view.
 
+A single view can also define its own buttons via `cv_context_buttons` (a list of `ContextButton`s); view-level buttons override ViewSet-level ones with the same key. Buttons still render only when their key is listed in `cv_context_actions`.
+
 ---
 
 ## Mixins

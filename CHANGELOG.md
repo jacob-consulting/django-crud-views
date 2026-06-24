@@ -1,5 +1,12 @@
 # Django CRUD Views - Changelog
 
+## Unreleased
+
+### Added
+
+- View-level context buttons: set `cv_context_buttons` on a `CrudView` (a list of `ContextButton`s) to define buttons for a single view instead of the whole ViewSet. View-level buttons override ViewSet-level ones with the same `key`; they render only when the key is listed in `cv_context_actions`, matching existing button behavior.
+- `FilterContextButton` now honors `label_template` / `label_template_code`, so the filter toggle's label (default `Filter`) can be customized like any other context button.
+
 ## 0.7.1
 
 ### Added

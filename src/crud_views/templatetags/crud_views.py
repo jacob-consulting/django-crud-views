@@ -1,12 +1,18 @@
 from django import template
 from django.template.loader import get_template, render_to_string
 from django.utils.safestring import mark_safe
+from django_tables2.templatetags import django_tables2 as _dt2
 
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.exceptions import ViewSetKeyFoundError, ignore_exception
 from crud_views.lib.view import CrudView
 
 register = template.Library()
+
+# django-tables2 3.0.0 renamed the ``querystring`` tag to ``querystring_replace`` (to avoid shadowing
+# Django 5.1's built-in tag). Resolve whichever the installed version provides; both share the same
+# ``(parser, token)`` signature and pop/ignore their own tag name.
+_querystring_impl = getattr(_dt2, "querystring_replace", None) or _dt2.querystring
 
 
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/shared/css.html", takes_context=True)
@@ -113,6 +119,17 @@ def cv_context_url(context, key, obj=None):
 def cv_render_context_button(context, ctx) -> str:
     view = cv_get_view(context)
     return _render_context_button(view, ctx)
+
+
+@register.tag(name="cv_querystring")
+def cv_querystring(parser, token):
+    """Version-agnostic django-tables2 querystring tag.
+
+    Delegates to ``querystring_replace`` (django-tables2 >= 3.0) or ``querystring`` (< 3.0), so a single
+    table template renders across both versions. Both implementations pop and ignore the tag name, so
+    the token passes through unchanged.
+    """
+    return _querystring_impl(parser, token)
 
 
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/context_actions.html", takes_context=True)

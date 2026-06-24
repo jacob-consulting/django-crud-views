@@ -5,6 +5,15 @@
 ### Fixed
 
 - The list table template `crud_views/table/bootstrap5.html` now works with **both django-tables2 2.x and 3.x**. It uses a new `{% cv_querystring %}` template tag that delegates to django-tables2's `{% querystring_replace %}` (≥ 3.0) or `{% querystring %}` (< 3.0), so list pages no longer raise a `TemplateSyntaxError` depending on the installed version. Custom table templates can use `{% cv_querystring %}` (after `{% load crud_views %}`) to stay version-agnostic too.
+- `WorkflowModelMixin` can now be imported before Django's app registry is ready. `crud_views_workflow/lib/mixins.py` no longer imports `ContentType` and `WorkflowInfo` at module level (they are imported lazily inside `get_workflow_info_queryset`), eliminating an `AppRegistryNotReady` error when a consumer model module imports the mixin while apps are still loading.
+
+### Added
+
+- System-check warning `crud_views.W110`: setting `CRUD_VIEWS_THEME` has no effect (theming is done by overriding templates, not via a setting) and was previously ignored silently. Consumers who set it now get a clear warning with a hint instead of no feedback.
+
+### Docs
+
+- Documented that `{% cv_csrf_token %}` was removed in 0.4.0 (replaced by `{% cv_config %}` / `{% cv_const_js %}`), so consumers upgrading from < 0.4.0 know how to resolve the `TemplateSyntaxError`.
 
 ## 0.9.0
 

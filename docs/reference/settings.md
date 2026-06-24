@@ -75,6 +75,13 @@ The `{% cv_config %}` template tag renders server-side request data as `data-*` 
 
 The `{% cv_const_js %}` tag still works as a backwards-compatible alias but renders the same CSP-safe output as `{% cv_config %}`.
 
+!!! warning "Upgrading from < 0.4.0: `{% cv_csrf_token %}` was removed"
+
+    The `{% cv_csrf_token %}` template tag was removed in the 0.4.0 CSP refactor. If you upgrade from
+    an earlier version you will get `TemplateSyntaxError: Invalid block tag 'cv_csrf_token'`. Remove the
+    tag from your templates — CSRF/config data is now provided by `{% cv_config %}` (or its alias
+    `{% cv_const_js %}`) in your base template, as shown above.
+
 ### JavaScript architecture
 
 All interactive behavior (list action form submissions, cancel button navigation, filter toggling) is handled via event delegation in the external `viewset.js` static file. Dynamic data is passed from Django to JavaScript through `data-*` attributes:

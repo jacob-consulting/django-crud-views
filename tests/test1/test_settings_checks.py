@@ -40,3 +40,10 @@ def test_valid_settings_produce_no_messages():
     # the test project configures a valid CRUD_VIEWS_EXTENDS template
     settings_obj = CrudViewsSettings()
     assert settings_obj.check_messages == []
+
+
+def test_theme_setting_warns_it_is_ignored():
+    # CRUD_VIEWS_THEME is not a supported setting; theming is done via template-override apps
+    settings_obj = CrudViewsSettings(theme="bootstrap5")
+    messages = settings_obj.check_messages
+    assert any("CRUD_VIEWS_THEME" in m.msg for m in messages)

@@ -18,5 +18,10 @@ class WorkflowInfo(models.Model):
 
     class Meta:
         indexes = [
-            models.Index(fields=["workflow_object_pk", "workflow_object_content_type"]),
+            # Explicit name matches migration 0002 (AddIndex). Without it, Django auto-generates a
+            # hashed name that differs from the shipped migration, causing perpetual RenameIndex drift.
+            models.Index(
+                fields=["workflow_object_pk", "workflow_object_content_type"],
+                name="cvw_workflo_workflo_idx",
+            ),
         ]

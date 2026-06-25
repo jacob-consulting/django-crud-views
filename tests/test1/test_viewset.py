@@ -39,11 +39,13 @@ def test_viewset_get_router_name(cv_author: ViewSet):
 
 @pytest.mark.django_db
 def test_default_permissions_parses_action_containing_model_name():
-    """Custom permission whose codename embeds the model name parses to the full action.
+    """Custom permission whose codename contains the model name parses to the full action.
 
     Regression (#33): default_permissions split the codename on the first "_<model>"
-    occurrence, so an action that itself contains the model name (e.g. "rebook_book" for
-    model "book") was truncated to "re". It now strips "_<model>" as a suffix -> "rebook".
+    occurrence, truncating any action that contains "_<model>" before its end. For model
+    "book", a custom permission "change_book_status" was truncated to "change" -- colliding
+    with the standard "change" permission. Stripping "_<model>" only as a suffix keeps the
+    custom action intact ("change_book_status") and leaves the standard key untouched.
     """
     from django.contrib.auth.models import Permission
     from django.contrib.contenttypes.models import ContentType
@@ -51,7 +53,7 @@ def test_default_permissions_parses_action_containing_model_name():
     from tests.test1.app.models import Book
 
     ct = ContentType.objects.get_for_model(Book)  # ct.model == "book"
-    Permission.objects.create(content_type=ct, codename="rebook_book", name="Can rebook book")
+    Permission.objects.create(content_type=ct, codename="change_book_status", name="Can change book status")
 
     name = "book_perm_parsing_probe"
     viewset = ViewSet(model=Book, name=name)
@@ -60,8 +62,11 @@ def test_default_permissions_parses_action_containing_model_name():
     finally:
         _REGISTRY.pop(name, None)  # keep the global registry clean for other tests
 
-    assert "rebook" in permissions  # full action, not the truncated "re"
-    assert "re" not in permissions
-    assert permissions["rebook"] == f"{ct.app_label}.rebook_book"
+    # custom action keeps its full name instead of being truncated to "change"
+    assert "change_book_status" in permissions
+    assert permissions["change_book_status"] == f"{ct.app_label}.change_book_status"
+    # the standard "change" permission is not clobbered by the truncated custom one
+    assert permissions["change"] == f"{ct.app_label}.change_book"
+    # standard actions still parse
     for action in ("add", "change", "delete", "view"):
-        assert action in permissions  # standard actions still parse
+        assert action in permissions

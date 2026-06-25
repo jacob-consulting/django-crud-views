@@ -28,10 +28,14 @@ action key for each model permission by splitting the codename on the first occu
 action = permission.codename.split(f"_{permission.content_type.model}")[0]
 ```
 
-Django codenames have the form `{action}_{model}`, where the model name is always the
-**suffix**. Splitting on the *first* `_{model}` truncates the action whenever the model name
-also appears inside the action itself. Example — model `book`, custom permission codename
-`rebook_book`: `"rebook_book".split("_book")[0]` yields `"re"` instead of `"rebook"`.
+Django's auto-created permissions have the form `{action}_{model}`, where the model name is
+the **suffix** (`add_book`, `change_book`, …). Custom permissions (declared via
+`Meta.permissions`) carry arbitrary codenames. Splitting on the *first* `_{model}` truncates
+the action whenever `_{model}` appears before the end of the codename. Example — model `book`,
+custom permission codename `change_book_status`: `"change_book_status".split("_book")[0]` yields
+`"change"`, which silently **collides** with the standard `change` permission. (Note: a codename
+like `rebook_book` is *not* affected — `_book` occurs only at the end, so split and removesuffix
+agree.)
 
 ### Change
 
@@ -61,14 +65,19 @@ at runtime.
 
 Add a focused test (in the existing `tests/test1/` suite):
 
-- A test model carrying a custom `Meta.permissions` entry whose codename **embeds the model
-  name** (e.g. model `book` with permission codename `rebook_book`).
-- Assert the parsed action key is the full action (`rebook`), not the truncated form (`re`).
+- A custom permission whose codename contains `_{model}` **before its end** (e.g. model `book`
+  with permission codename `change_book_status`). This is the case where `split` and
+  `removesuffix` diverge — the regression test must use such a codename, or it passes on both the
+  old and new code and proves nothing.
+- Assert the parsed action key is the full action (`change_book_status`), not the truncated form
+  (`change`), and that the standard `change` key still maps to `change_book` (i.e. the truncated
+  custom action no longer collides with it).
 - Assert the standard `add` / `change` / `delete` / `view` actions still parse correctly for the
   same model (no regression on the common case).
 
-The test model definition belongs in the implementation plan; it must be a model whose
-permission codename contains its own model name as a non-suffix substring.
+The concrete test mechanism belongs in the implementation plan. It constructs a throwaway
+`ViewSet` over an existing model with a runtime-created `Permission`, rather than adding a
+dedicated model, to avoid a model-less ViewSet polluting the global registry / system checks.
 
 ## #34 — Deprecate `CrispyModelViewMixin` alias
 

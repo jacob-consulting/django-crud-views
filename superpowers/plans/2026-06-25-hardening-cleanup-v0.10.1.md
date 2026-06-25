@@ -39,11 +39,13 @@ Append to `tests/test1/test_viewset.py`:
 ```python
 @pytest.mark.django_db
 def test_default_permissions_parses_action_containing_model_name():
-    """Custom permission whose codename embeds the model name parses to the full action.
+    """Custom permission whose codename contains the model name parses to the full action.
 
     Regression (#33): default_permissions split the codename on the first "_<model>"
-    occurrence, so an action that itself contains the model name (e.g. "rebook_book" for
-    model "book") was truncated to "re". It now strips "_<model>" as a suffix -> "rebook".
+    occurrence, truncating any action that contains "_<model>" before its end. For model
+    "book", a custom permission "change_book_status" was truncated to "change" -- colliding
+    with the standard "change" permission. Stripping "_<model>" only as a suffix keeps the
+    custom action intact ("change_book_status") and leaves the standard key untouched.
     """
     from django.contrib.auth.models import Permission
     from django.contrib.contenttypes.models import ContentType
@@ -51,7 +53,7 @@ def test_default_permissions_parses_action_containing_model_name():
     from tests.test1.app.models import Book
 
     ct = ContentType.objects.get_for_model(Book)  # ct.model == "book"
-    Permission.objects.create(content_type=ct, codename="rebook_book", name="Can rebook book")
+    Permission.objects.create(content_type=ct, codename="change_book_status", name="Can change book status")
 
     name = "book_perm_parsing_probe"
     viewset = ViewSet(model=Book, name=name)
@@ -60,9 +62,12 @@ def test_default_permissions_parses_action_containing_model_name():
     finally:
         _REGISTRY.pop(name, None)  # keep the global registry clean for other tests
 
-    assert "rebook" in permissions  # full action, not the truncated "re"
-    assert "re" not in permissions
-    assert permissions["rebook"] == f"{ct.app_label}.rebook_book"
+    # custom action keeps its full name instead of being truncated to "change"
+    assert "change_book_status" in permissions
+    assert permissions["change_book_status"] == f"{ct.app_label}.change_book_status"
+    # the standard "change" permission is not clobbered by the truncated custom one
+    assert permissions["change"] == f"{ct.app_label}.change_book"
+    # standard actions still parse
     for action in ("add", "change", "delete", "view"):
         assert action in permissions  # standard actions still parse
 ```
@@ -79,7 +84,7 @@ If `import pytest` is missing, add it at the top. (`_REGISTRY` is imported local
 - [ ] **Step 2: Run test to verify it fails**
 
 Run: `cd tests && pytest test1/test_viewset.py::test_default_permissions_parses_action_containing_model_name -v`
-Expected: FAIL — `assert "rebook" in permissions` fails because the current `split("_book")[0]` yields `"re"` (so `"rebook"` is absent and `"re"` is present).
+Expected: FAIL — `assert "change_book_status" in permissions` fails because the current `split("_book")[0]` truncates the codename to `"change"` (so the full action key is absent, and it collides with the standard `change` permission).
 
 - [ ] **Step 3: Write the minimal implementation**
 
@@ -180,7 +185,7 @@ In `CHANGELOG.md`, immediately below the top `# Django CRUD Views - Changelog` h
 
 ### Fixed
 
-- `ViewSet.default_permissions` now derives each action key by stripping the trailing `_<model>` from the permission codename instead of splitting on its first occurrence. A custom permission whose action contains the model name (e.g. `rebook_book` on a `book` model) previously parsed to a truncated action (`re`); it now parses correctly (`rebook`). Standard `add`/`change`/`delete`/`view` permissions are unaffected.
+- `ViewSet.default_permissions` now derives each action key by stripping the trailing `_<model>` from the permission codename instead of splitting on its first occurrence. A custom permission whose codename contains `_<model>` before its end (e.g. `change_book_status` on a `book` model) previously parsed to a truncated action (`change`) that collided with the standard `change` permission; it now parses correctly (`change_book_status`). Standard `add`/`change`/`delete`/`view` permissions are unaffected.
 
 ### Deprecated
 

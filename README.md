@@ -97,4 +97,4 @@ Optional extras: `django-crud-views[guardian]` (per-object permissions), `django
 Full tutorial and reference: <https://django-crud-views.readthedocs.io>
 
 ## Current version
-Current version: 0.10.0
+Current version: 0.10.1

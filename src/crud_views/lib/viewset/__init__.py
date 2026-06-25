@@ -364,12 +364,20 @@ class ViewSet(BaseModel):
             - view
             - ...
             - and custom permissions defined on model
+
+        Note: this is a process-lifetime ``cached_property`` that performs database queries
+        (a ``ContentType`` lookup and a ``Permission`` query). It is evaluated once per
+        process and is not refreshed if permissions change at runtime.
         """
         model = self.model  # noqa
         content_type = ContentType.objects.get_for_model(model)
         permissions = OrderedDict()
         for permission in Permission.objects.filter(content_type=content_type):
-            action = permission.codename.split(f"_{permission.content_type.model}")[0]
+            # Django codenames are "<action>_<model>"; the model name is the suffix. Strip it
+            # as a suffix (not split on the first match) so a custom permission whose codename
+            # contains "_<model>" before its end parses fully, e.g. "change_book_status" stays
+            # "change_book_status" instead of being truncated to "change" for model "book".
+            action = permission.codename.removesuffix(f"_{permission.content_type.model}")
             permissions[action] = f"{permission.content_type.app_label}.{permission.codename}"
         return permissions
 

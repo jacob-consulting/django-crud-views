@@ -56,8 +56,8 @@ def test_default_permissions_parses_action_containing_model_name():
     Permission.objects.create(content_type=ct, codename="change_book_status", name="Can change book status")
 
     name = "book_perm_parsing_probe"
-    viewset = ViewSet(model=Book, name=name)
     try:
+        viewset = ViewSet(model=Book, name=name)
         permissions = viewset.default_permissions
     finally:
         _REGISTRY.pop(name, None)  # keep the global registry clean for other tests

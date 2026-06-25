@@ -373,9 +373,10 @@ class ViewSet(BaseModel):
         content_type = ContentType.objects.get_for_model(model)
         permissions = OrderedDict()
         for permission in Permission.objects.filter(content_type=content_type):
-            # Django codenames are "<action>_<model>"; the model name is always the suffix.
-            # Strip it as a suffix (not split on the first match) so actions that themselves
-            # contain the model name parse correctly, e.g. "rebook_book" -> "rebook".
+            # Django codenames are "<action>_<model>"; the model name is the suffix. Strip it
+            # as a suffix (not split on the first match) so a custom permission whose codename
+            # contains "_<model>" before its end parses fully, e.g. "change_book_status" stays
+            # "change_book_status" instead of being truncated to "change" for model "book".
             action = permission.codename.removesuffix(f"_{permission.content_type.model}")
             permissions[action] = f"{permission.content_type.app_label}.{permission.codename}"
         return permissions

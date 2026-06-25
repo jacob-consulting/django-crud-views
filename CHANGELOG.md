@@ -1,5 +1,15 @@
 # Django CRUD Views - Changelog
 
+## 0.10.1
+
+### Fixed
+
+- `ViewSet.default_permissions` now derives each action key by stripping the trailing `_<model>` from the permission codename instead of splitting on its first occurrence. A custom permission whose codename contains `_<model>` before its end (e.g. `change_book_status` on a `book` model) previously parsed to a truncated action (`change`) that collided with the standard `change` permission; it now parses correctly (`change_book_status`). Standard `add`/`change`/`delete`/`view` permissions are unaffected.
+
+### Deprecated
+
+- `CrispyModelViewMixin` is deprecated in favor of `CrispyViewMixin` and will be removed in a future release. The two are identical; rename imports and base classes to `CrispyViewMixin`. The alias still works in this release.
+
 ## 0.10.0
 
 ### Fixed

@@ -4,7 +4,7 @@ from typing import List
 import django_tables2 as tables
 from crispy_forms.layout import Row, LayoutObject
 from django.forms.models import inlineformset_factory
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext, gettext_lazy as _
 
 from app.models.conditional import Registration, Event, Session
 from crud_views.lib.conditional import (
@@ -136,7 +136,7 @@ SessionFormSet = inlineformset_factory(
 cv_event_formsets: FormSets = FormSets(
     formsets=OrderedDict(
         sessions=FormSet(
-            title="Sessions",
+            title=gettext("Sessions"),
             klass=SessionFormSet,
             fields=["title"],
             pk_field="id",

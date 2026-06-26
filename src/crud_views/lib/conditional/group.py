@@ -70,3 +70,12 @@ class ConditionalGroupFormMixin:
                 for name in group.fields:
                     cleaned[name] = group.empty_value_for(name)
         return cleaned
+
+
+from crud_views.lib.crispy import CrispyModelForm  # noqa: E402  (placed at end to avoid cycle)
+
+
+class ConditionalGroupModelForm(ConditionalGroupFormMixin, CrispyModelForm):
+    """CrispyModelForm with conditional field-group support."""
+
+    pass

@@ -551,6 +551,61 @@ Formsets support multi-level nesting via the `children` dict on `FormSet`.
 
 ---
 
+## Conditional Field-Groups
+
+Import all from `crud_views.lib.conditional`.
+
+### Toggle sources
+
+| Class | `inject` | Purpose |
+|---|---|---|
+| `ToggleSource` | base | Base class; override `is_on(form)` |
+| `ModelFieldToggle(name)` | `False` | Toggle backed by a real model/form field |
+| `UIFieldToggle(name)` | `True` | Toggle backed by a transient checkbox auto-injected by the mixin |
+
+### `ConditionalGroup`
+
+```python
+ConditionalGroup(
+    toggle: ToggleSource,
+    fields: list[str],               # all fields in the group
+    required: list[str] | None,      # required when on (defaults to all fields)
+    empty_values: dict[str, Any],    # override cleared value per field (default None)
+)
+```
+
+### `ConditionalGroupFormMixin` / `ConditionalGroupModelForm`
+
+| Name | Base | Notes |
+|---|---|---|
+| `ConditionalGroupFormMixin` | — | Mix in before the form base; owns `clean()` authority |
+| `ConditionalGroupModelForm` | `ConditionalGroupFormMixin, CrispyModelForm` | Ready-to-use form class |
+
+Declare `cv_conditional_groups: list[ConditionalGroup] = [...]` on the form class.
+
+### `ToggleGroup`
+
+```python
+ToggleGroup(toggle_field: str, *fields, css_class: str | None = None)
+```
+
+Crispy layout element. Renders a `<div data-cv-toggle-for="…">` wrapper that `toggle.js` shows/hides based on the toggle field's value. No custom JavaScript required.
+
+### `ConditionalFormSet`
+
+```python
+ConditionalFormSet(
+    toggle: ToggleSource,           # governs the whole formset
+    on_off: Literal["skip", "purge"] = "skip",
+)
+```
+
+Attach via `conditional=` on a first-level `FormSet`. `skip` leaves existing rows untouched when off; `purge` deletes them on save.
+
+**System checks:** `E310` (on a nested formset), `E311` (toggle field absent from parent form), `W320` (cleared field not null/blank).
+
+---
+
 ## Polymorphic Models
 
 Two-step create flow for polymorphic models. Install with `pip install django-crud-views[polymorphic]`.
@@ -704,6 +759,13 @@ import django_tables2 as tables
 
 # Formsets
 from crud_views.lib.formsets import FormSet, FormSets, FormSetMixin, InlineFormSet
+
+# Conditional field-groups / formsets
+from crud_views.lib.conditional import (
+    ToggleSource, ModelFieldToggle, UIFieldToggle,
+    ConditionalGroup, ConditionalGroupFormMixin, ConditionalGroupModelForm,
+    ToggleGroup, ConditionalFormSet,
+)
 
 # Workflow (django-crud-views[workflow])
 from crud_views_workflow.lib.mixins import WorkflowModelMixin

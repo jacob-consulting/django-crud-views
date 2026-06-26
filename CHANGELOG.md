@@ -1,5 +1,10 @@
 # Django CRUD Views - Changelog
 
+## Unreleased
+
+### Added
+- Conditional field-groups and conditional formsets: a checkbox toggle can hide a group of fields (or an entire first-level formset). When off, validation is skipped and values are cleared (formsets: `skip` keeps rows, `purge` deletes them). Enforced server-side; bundled `toggle.js` handles show/hide only. See `docs/reference/conditional.md`.
+
 ## 0.10.2
 
 ### Fixed

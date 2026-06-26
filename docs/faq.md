@@ -190,3 +190,41 @@ class BookListView(ListViewPermissionRequired):
 Use `ChildContextButton` on the parent view to go *down* to a child, and
 `SiblingContextButton` on a child view to go *sideways* to a sibling.
 ```
+
+## How do I make a group of fields required only when a checkbox is on?
+
+When a group of fields should be editable and (some of them) required only while a
+checkbox is ticked — and must **not** fail validation when the checkbox is off and the
+group is hidden — use a [conditional field-group](reference/conditional.md). The rule is
+enforced server-side, so an off group never fails validation even if its fields are
+declared required; JavaScript only hides the group.
+
+```python
+from crispy_forms.layout import Row
+from crud_views.lib.conditional import (
+    ConditionalGroupModelForm, ConditionalGroup, ToggleGroup, ModelFieldToggle,
+)
+from crud_views.lib.crispy import Column6
+
+class RegistrationForm(ConditionalGroupModelForm):
+    cv_conditional_groups = [
+        ConditionalGroup(
+            toggle=ModelFieldToggle("with_company"),  # or UIFieldToggle("...") for a non-model checkbox
+            fields=["company_name", "vat_id"],
+            required=["company_name"],                 # only this is required when on
+        ),
+    ]
+
+    class Meta:
+        model = Registration
+        fields = ["name", "with_company", "company_name", "vat_id"]
+
+    def get_layout_fields(self):
+        return [Row(Column6("name"), Column6("with_company")),
+                ToggleGroup("with_company", Row(Column6("company_name"), Column6("vat_id")))]
+```
+
+When the checkbox is off the group fields are cleared on save (they must be
+`null=True, blank=True`). To toggle an **entire first-level formset** instead of a
+field-group, use `ConditionalFormSet` — see the
+[reference page](reference/conditional.md).

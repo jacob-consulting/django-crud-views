@@ -1,8 +1,14 @@
 import pytest
+from collections import OrderedDict
+
+from crispy_forms.layout import Row
+from django.forms.models import inlineformset_factory
+from django.test import RequestFactory
 
 from crud_views.lib.conditional.formset import ConditionalFormSet
 from crud_views.lib.conditional.toggle import ModelFieldToggle
-
+from crud_views.lib.crispy import Column8, CrispyModelForm
+from crud_views.lib.formsets import FormSet, FormSets, InlineFormSet
 from tests.test1.app.models import Profile, ProfileItem
 
 pytestmark = pytest.mark.django_db
@@ -46,15 +52,6 @@ def test_skip_leaves_existing_rows_when_off(profile_with_items_skip_off):
 # Fixtures
 # ---------------------------------------------------------------------------
 
-from collections import OrderedDict
-
-from crispy_forms.layout import Row
-from django.forms.models import inlineformset_factory
-from django.test import RequestFactory
-
-from crud_views.lib.crispy import Column8, CrispyModelForm
-from crud_views.lib.formsets import FormSet, FormSets, InlineFormSet
-
 
 class _ProfileForm(CrispyModelForm):
     class Meta:
@@ -80,22 +77,33 @@ def _make(on_off, with_contact_value, profile=None, items=()):
     # Add a transient model field for the toggle on Profile via a UI toggle would
     # require a form field; here we reuse a real BooleanField "with_items".
     ItemFormSet = inlineformset_factory(
-        Profile, ProfileItem, formset=_ItemInlineFormSet, form=_ItemForm,
-        fields=["label"], extra=1, can_delete=True,
+        Profile,
+        ProfileItem,
+        formset=_ItemInlineFormSet,
+        form=_ItemForm,
+        fields=["label"],
+        extra=1,
+        can_delete=True,
     )
     formsets = FormSets(
         formsets=OrderedDict(
             items=FormSet(
-                title="Items", klass=ItemFormSet, fields=["label"], pk_field="id",
+                title="Items",
+                klass=ItemFormSet,
+                fields=["label"],
+                pk_field="id",
                 conditional=ConditionalFormSet(toggle=ModelFieldToggle("with_items"), on_off=on_off),
             )
         )
     )
     rf = RequestFactory()
     post = {
-        "name": "p", "with_items": with_contact_value,
-        "items-TOTAL_FORMS": "1", "items-INITIAL_FORMS": "0",
-        "items-MIN_NUM_FORMS": "0", "items-MAX_NUM_FORMS": "1000",
+        "name": "p",
+        "with_items": with_contact_value,
+        "items-TOTAL_FORMS": "1",
+        "items-INITIAL_FORMS": "0",
+        "items-MIN_NUM_FORMS": "0",
+        "items-MAX_NUM_FORMS": "1000",
         "items-0-label": "",  # blank required row
     }
     request = rf.post("/", data=post)

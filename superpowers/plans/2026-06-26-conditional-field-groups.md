@@ -1194,7 +1194,7 @@ Create `docs/reference/conditional.md` documenting: the two constructs, `ToggleS
 
 - [ ] **Step 5b: Add to mkdocs nav**
 
-In `mkdocs.yml`, add `- Conditional groups: reference/conditional.md` under the existing Reference section (match indentation of sibling entries).
+This project's `mkdocs.yml` has its `nav:` commented out and uses the **awesome-pages** plugin, so the real nav file is `docs/reference/.pages`. Add `Conditional groups: conditional.md` to the explicit list in `docs/reference/.pages` (before the trailing `...`). Leave `mkdocs.yml` unchanged.
 
 - [ ] **Step 5b-ii: Update the bundled skill — `SKILL.md`**
 

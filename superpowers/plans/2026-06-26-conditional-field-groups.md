@@ -628,7 +628,7 @@ def test_skip_leaves_existing_rows_when_off(profile_with_items_skip_off):
     assert ProfileItem.objects.filter(profile=profile).count() == 2
 ```
 
-Add these fixtures to `tests/test1/test_conditional_formset.py` (self-contained; they build a `FormSets` the same way the example app does):
+Add these fixtures to `tests/test1/test_conditional_formset.py` (self-contained; they build a `FormSets` the same way the example app does). **Place all of these `import` statements at the very top of the file with the other imports — not below the test functions — or ruff's E402 will fail CI. Run `ruff format` on the file before committing.**
 
 ```python
 from collections import OrderedDict
@@ -811,8 +811,9 @@ Update `save` to honor skip/purge:
                 conditional = x_formset.formset.conditional
                 if conditional is not None and conditional.on_off == "purge":
                     fs = x_formset.instance  # bound BaseInlineFormSet
-                    fk_name = fs.fk.name
-                    fs.model.objects.filter(**{fk_name: fs.instance}).delete()
+                    if fs.instance.pk:  # safety: never filter on a null parent FK
+                        fk_name = fs.fk.name
+                        fs.model.objects.filter(**{fk_name: fs.instance}).delete()
                 continue
             x_formset.save(commit=commit)
 ```

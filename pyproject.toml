@@ -1,6 +1,6 @@
 [project]
 name = "django-crud-views"
-version = "0.10.1"
+version = "0.10.2"
 description = "Django Crud Views"
 authors = [
     { name = "Alexander Jacob", email = "alexander.jacob@jacob-consulting.de" }
@@ -119,7 +119,7 @@ skip_empty = true
 fail_under = 88
 
 [tool.bumpversion]
-current_version = "0.10.1"
+current_version = "0.10.2"
 commit = true
 tag = true
 tag_name = "v{new_version}"

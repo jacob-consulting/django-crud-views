@@ -1104,6 +1104,7 @@ git commit -m "feat(conditional): system checks for groups and conditional forms
 - Modify: `src/crud_views/lib/crispy/__init__.py` (re-export for ergonomics)
 - Create: `docs/reference/conditional.md`
 - Modify: `mkdocs.yml` (nav)
+- Modify: `docs/faq.md`
 - Modify: `skills/django-crud-views/SKILL.md`
 - Modify: `skills/django-crud-views/references/api-reference.md`
 - Modify: `CHANGELOG.md`
@@ -1261,6 +1262,50 @@ from crud_views.lib.conditional import (
 )
 ```
 
+- [ ] **Step 5b-iv: Add an FAQ entry**
+
+In `docs/faq.md`, append a new question-style section (matching the existing `## How to…` format):
+
+````markdown
+## How do I make a group of fields required only when a checkbox is on?
+
+When a group of fields should be editable and (some of them) required only while a
+checkbox is ticked — and must **not** fail validation when the checkbox is off and the
+group is hidden — use a [conditional field-group](reference/conditional.md). The rule is
+enforced server-side, so an off group never fails validation even if its fields are
+declared required; JavaScript only hides the group.
+
+```python
+from crispy_forms.layout import Row
+from crud_views.lib.conditional import (
+    ConditionalGroupModelForm, ConditionalGroup, ToggleGroup, ModelFieldToggle,
+)
+from crud_views.lib.crispy import Column6
+
+class RegistrationForm(ConditionalGroupModelForm):
+    cv_conditional_groups = [
+        ConditionalGroup(
+            toggle=ModelFieldToggle("with_company"),  # or UIFieldToggle("...") for a non-model checkbox
+            fields=["company_name", "vat_id"],
+            required=["company_name"],                 # only this is required when on
+        ),
+    ]
+
+    class Meta:
+        model = Registration
+        fields = ["name", "with_company", "company_name", "vat_id"]
+
+    def get_layout_fields(self):
+        return [Row(Column6("name"), Column6("with_company")),
+                ToggleGroup("with_company", Row(Column6("company_name"), Column6("vat_id")))]
+```
+
+When the checkbox is off the group fields are cleared on save (they must be
+`null=True, blank=True`). To toggle an **entire first-level formset** instead of a
+field-group, use `ConditionalFormSet` — see the
+[reference page](reference/conditional.md).
+````
+
 - [ ] **Step 5c: Add CHANGELOG entry**
 
 In `CHANGELOG.md`, add an `Added` bullet under the next unreleased version:
@@ -1283,7 +1328,7 @@ Expected: clean.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/crud_views/lib/conditional/__init__.py src/crud_views/lib/conditional/group.py src/crud_views/lib/crispy/__init__.py docs/reference/conditional.md mkdocs.yml skills/django-crud-views/SKILL.md skills/django-crud-views/references/api-reference.md CHANGELOG.md tests/test1/test_conditional_exports.py
+git add src/crud_views/lib/conditional/__init__.py src/crud_views/lib/conditional/group.py src/crud_views/lib/crispy/__init__.py docs/reference/conditional.md mkdocs.yml docs/faq.md skills/django-crud-views/SKILL.md skills/django-crud-views/references/api-reference.md CHANGELOG.md tests/test1/test_conditional_exports.py
 git commit -m "feat(conditional): public exports, ConditionalGroupModelForm, docs, skill & changelog"
 ```
 
@@ -1621,7 +1666,7 @@ git commit -m "docs(examples): conditional field-group and conditional formset d
 - Nested formsets out of scope / unaffected → Task 4 (apply_conditional top-level only) + Task 6 E310 guard. ✓
 - Public API names match spec (`ConditionalGroup`, `ConditionalFormSet`, `ToggleGroup`, `ModelFieldToggle`, `UIFieldToggle`) → Task 7. ✓
 - Worked bootstrap5 examples, one Kind 1 (`cv_registration`) and one Kind 2 (`cv_event`/`with_sessions`) → Task 8. ✓
-- Documentation in all three places: mkdocs reference page (`docs/reference/conditional.md` + nav), bundled skill (`SKILL.md` section + `api-reference.md` + import cheatsheet), CHANGELOG → Task 7 (steps 5a, 5b, 5b-ii, 5b-iii, 5c). ✓
+- Documentation everywhere: mkdocs reference page (`docs/reference/conditional.md` + nav), FAQ entry (`docs/faq.md`), bundled skill (`SKILL.md` section + `api-reference.md` + import cheatsheet), CHANGELOG → Task 7 (steps 5a, 5b, 5b-ii, 5b-iii, 5b-iv, 5c). ✓
 
 **Type consistency:** `is_on(form)`, `field_name()`, `inject`, `cv_active`, `apply_conditional(main_form)`, `on_off ∈ {"skip","purge"}`, `required_fields`, `empty_value_for` are used identically across tasks.
 

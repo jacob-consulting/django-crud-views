@@ -21,6 +21,7 @@ from app.views.formset import cv_poly_formset
 from app.views.formset.parent import cv_poly_parent_formset
 from app.views.formset.question import cv_question
 from app.views.campaign import cv_campaign
+from app.views.conditional import cv_registration, cv_event
 
 
 class CrispyAuthenticationForm(AuthenticationForm):
@@ -53,4 +54,6 @@ urlpatterns += (
     + cv_poly_formset.urlpatterns
     + cv_poly_parent_formset.urlpatterns
     + cv_question.urlpatterns
+    + cv_registration.urlpatterns
+    + cv_event.urlpatterns
 )

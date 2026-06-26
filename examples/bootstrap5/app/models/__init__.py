@@ -5,6 +5,7 @@ from django.utils.translation import gettext_lazy as _
 from ordered_model.models import OrderedModel
 
 from .campaign import Campaign as Campaign
+from .conditional import Registration as Registration, Event as Event, Session as Session
 
 
 class Author(OrderedModel):

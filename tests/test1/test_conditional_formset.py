@@ -136,3 +136,12 @@ def profile_with_items_skip_off():
     ProfileItem.objects.create(profile=profile, label="b")
     formsets, main_form, _ = _make("skip", "", profile=profile)
     return formsets, main_form, profile
+
+
+def test_formsets_html_marks_conditional_block():
+    from django.template.loader import render_to_string
+
+    formsets, main_form, _ = _make("skip", "")
+    html = render_to_string("crud_views/formsets/formsets.html", {"formsets": formsets})
+    assert 'cv-data-toggle-field="with_items"' in html
+    assert "crud_views/js/toggle.js" in html

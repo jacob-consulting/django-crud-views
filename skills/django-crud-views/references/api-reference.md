@@ -589,7 +589,7 @@ Declare `cv_conditional_groups: list[ConditionalGroup] = [...]` on the form clas
 ToggleGroup(toggle_field: str, *fields, css_class: str | None = None)
 ```
 
-Crispy layout element. Renders a `<div data-cv-toggle-for="…">` wrapper that `toggle.js` shows/hides based on the toggle field's value. No custom JavaScript required.
+Crispy layout element. Renders a `<div cv-data-toggle-group cv-data-toggle-field="…">` wrapper that `toggle.js` shows/hides based on the toggle field's value. No custom JavaScript required.
 
 ### `ConditionalFormSet`
 

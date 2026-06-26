@@ -5,6 +5,7 @@ from typing import List
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, LayoutObject, Field, BaseInput
 from crud_views.lib.crispy import Column4, Column2
+from django.core.exceptions import ValidationError
 from django.forms import BaseForm
 from django.forms.models import BaseInlineFormSet, ModelForm
 from django.utils.translation import gettext_lazy as _
@@ -121,6 +122,7 @@ class InlineFormSet(BaseInlineFormSet):
         # row with data needs a saved parent to hold its foreign key.
         if self.parent_form and self.has_any_form_with_data and not self._parent_is_present():
             self.parent_form.add_error(None, self.cv_parent_required_error)
+            raise ValidationError(self.cv_parent_required_error)
 
     def _parent_is_present(self) -> bool:
         hook = getattr(self.parent_form, "cv_is_present", None)

@@ -7,7 +7,10 @@ Publisher -> books -> notes create/update flow.
 """
 
 import pytest
+from django.test.client import Client
 
+from tests.lib.helper.forms import field_key, form_payload
+from tests.test1.app.models import Book, BookNote, Publisher
 from tests.test1.app.views_formset import BookFormSetForm, BookNoteInlineFormSet
 
 
@@ -71,3 +74,51 @@ def test_parent_required_error_has_no_placeholder_copy():
     msg = str(BookNoteInlineFormSet.cv_parent_required_error)
     assert "TODO" not in msg
     assert msg  # non-empty
+
+
+@pytest.mark.django_db
+def test_orphan_note_on_blank_book_is_rejected(client_user_publisher_formset: Client, cv_publisher_formset):
+    """A note (grandchild) with data under a blank book row must be rejected."""
+    response = client_user_publisher_formset.get("/publisher-formset/create/")
+    payload = form_payload(response)
+    payload["name"] = "Ace Books"
+    # fill the nested note but leave the parent book row blank -> orphan
+    payload[field_key(payload, "-note")] = "orphan note"
+
+    response = client_user_publisher_formset.post("/publisher-formset/create/", payload)
+
+    assert response.status_code == 200  # re-rendered, not redirected
+    assert b"Cannot add entries here" in response.content
+    assert not Publisher.objects.filter(name="Ace Books").exists()
+    assert not BookNote.objects.exists()
+
+
+@pytest.mark.django_db
+def test_filled_book_with_note_saves(client_user_publisher_formset: Client, cv_publisher_formset):
+    """A present parent book with a child note saves cleanly."""
+    response = client_user_publisher_formset.get("/publisher-formset/create/")
+    payload = form_payload(response)
+    payload["name"] = "Tor"
+    payload[field_key(payload, "-title")] = "Mistborn"
+    payload[field_key(payload, "-note")] = "fantasy"
+
+    response = client_user_publisher_formset.post("/publisher-formset/create/", payload)
+
+    assert response.status_code == 302
+    book = Book.objects.get(title="Mistborn")
+    assert BookNote.objects.filter(book=book, note="fantasy").exists()
+
+
+@pytest.mark.django_db
+def test_all_blank_rows_no_false_positive(client_user_publisher_formset: Client, cv_publisher_formset):
+    """Blank parent row with no grandchild data must not trigger the rule."""
+    response = client_user_publisher_formset.get("/publisher-formset/create/")
+    payload = form_payload(response)
+    payload["name"] = "Empty House"
+    # leave both the book row and the note row blank
+
+    response = client_user_publisher_formset.post("/publisher-formset/create/", payload)
+
+    assert response.status_code == 302
+    publisher = Publisher.objects.get(name="Empty House")
+    assert publisher.books.count() == 0

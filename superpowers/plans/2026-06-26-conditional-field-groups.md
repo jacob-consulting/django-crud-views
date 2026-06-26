@@ -951,11 +951,9 @@ git commit -m "feat(conditional): cosmetic show/hide wiring for conditional form
 from crud_views.checks import _conditional_messages
 from crud_views.lib.conditional.formset import ConditionalFormSet
 from crud_views.lib.conditional.toggle import ModelFieldToggle
-from crud_views.lib.formsets import FormSet
 
 
 def test_nested_conditional_formset_flagged():
-    child = FormSet.__new__(FormSet)  # lightweight stub via helper below
     msgs = _conditional_messages(
         nested_conditionals=[("child", ConditionalFormSet(toggle=ModelFieldToggle("x")))],
         missing_toggles=[],
@@ -1101,7 +1099,6 @@ git commit -m "feat(conditional): system checks for groups and conditional forms
 **Files:**
 - Modify: `src/crud_views/lib/conditional/__init__.py`
 - Modify: `src/crud_views/lib/conditional/group.py` (add `ConditionalGroupModelForm`)
-- Modify: `src/crud_views/lib/crispy/__init__.py` (re-export for ergonomics)
 - Create: `docs/reference/conditional.md`
 - Modify: `mkdocs.yml` (nav)
 - Modify: `docs/faq.md`
@@ -1179,9 +1176,9 @@ __all__ = [
 ]
 ```
 
-- [ ] **Step 3c: Re-export from crispy for ergonomics**
+- [ ] **Step 3c: (Do NOT re-export from crispy)**
 
-In `src/crud_views/lib/crispy/__init__.py`, append `ConditionalGroupModelForm` and `ToggleGroup` to imports and `__all__` (only if no circular import; otherwise skip this re-export and document the canonical path `crud_views.lib.conditional`). Verify import-safety after.
+Do not add conditional names to `src/crud_views/lib/crispy/__init__.py`. `formsets.py` imports `ConditionalFormSet`, which triggers the `conditional` package `__init__` → `group` → `crud_views.lib.crispy`; if crispy also imported `conditional`, that is a guaranteed circular import. The canonical (and only) public path is `crud_views.lib.conditional`. This step is intentionally a no-op — leave `crispy/__init__.py` unchanged.
 
 - [ ] **Step 4: Run test to verify it passes**
 
@@ -1328,7 +1325,7 @@ Expected: clean.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/crud_views/lib/conditional/__init__.py src/crud_views/lib/conditional/group.py src/crud_views/lib/crispy/__init__.py docs/reference/conditional.md mkdocs.yml docs/faq.md skills/django-crud-views/SKILL.md skills/django-crud-views/references/api-reference.md CHANGELOG.md tests/test1/test_conditional_exports.py
+git add src/crud_views/lib/conditional/__init__.py src/crud_views/lib/conditional/group.py docs/reference/conditional.md mkdocs.yml docs/faq.md skills/django-crud-views/SKILL.md skills/django-crud-views/references/api-reference.md CHANGELOG.md tests/test1/test_conditional_exports.py
 git commit -m "feat(conditional): public exports, ConditionalGroupModelForm, docs, skill & changelog"
 ```
 

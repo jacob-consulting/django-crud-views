@@ -587,7 +587,7 @@ sessions=FormSet(
 
 The parent-form toggle (`with_sessions`) governs the whole formset. `on_off="skip"` (default) leaves existing rows untouched when off; `on_off="purge"` deletes them on save. Only **first-level** formsets may be conditional (nested ⇒ check error `crud_views.E310`).
 
-System checks: `E310` (conditional on nested formset), `E311` (toggle field missing from form), `W320` (cleared field not null/blank).
+System checks: `crud_views.E310` (conditional on nested formset), `crud_views.E311` (toggle field missing from form), `crud_views.W320` (cleared field not null/blank).
 
 ---
 

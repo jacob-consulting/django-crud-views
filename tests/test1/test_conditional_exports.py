@@ -9,5 +9,7 @@ def test_public_exports():
         ToggleGroup,  # noqa: F401
         ConditionalFormSet,  # noqa: F401
     )
+    from crud_views.lib.crispy import CrispyModelForm
 
     assert issubclass(ConditionalGroupModelForm, ConditionalGroupFormMixin)
+    assert issubclass(ConditionalGroupModelForm, CrispyModelForm)

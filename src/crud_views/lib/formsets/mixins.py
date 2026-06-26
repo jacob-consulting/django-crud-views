@@ -85,7 +85,10 @@ class FormSetMixinBase:
 
         # order-independent: a child formset's clean() may add_error() to a parent form,
         # which a single-pass tally would miss. See FormSets.all_valid().
-        return form_valid and formsets.all_valid()
+        # Evaluate eagerly (do not short-circuit on form_valid) so formset error state is
+        # always populated for the re-rendered page, matching the prior behavior.
+        all_formsets_valid = formsets.all_valid()
+        return form_valid and all_formsets_valid
 
     def cv_form_valid(self, context: dict):
         """

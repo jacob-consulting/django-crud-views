@@ -149,3 +149,21 @@ class Car(Vehicle):
 
 class Truck(Vehicle):
     payload_tons = models.IntegerField(default=10)
+
+
+class Profile(models.Model):
+    name = models.CharField(max_length=100)
+    with_contact = models.BooleanField(default=False)
+    email = models.CharField(max_length=100, blank=True, null=True)
+    phone = models.CharField(max_length=100, blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+
+
+class ProfileItem(models.Model):
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="items")
+    label = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.label

@@ -5,49 +5,53 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('app', '0010_alter_bar_options_alter_baz_options_and_more'),
+        ("app", "0010_alter_bar_options_alter_baz_options_and_more"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Event',
+            name="Event",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100, verbose_name='Name')),
-                ('with_sessions', models.BooleanField(default=False, verbose_name='This event has sessions')),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("name", models.CharField(max_length=100, verbose_name="Name")),
+                ("with_sessions", models.BooleanField(default=False, verbose_name="This event has sessions")),
             ],
             options={
-                'verbose_name': 'Event',
-                'verbose_name_plural': 'Events',
+                "verbose_name": "Event",
+                "verbose_name_plural": "Events",
             },
         ),
         migrations.CreateModel(
-            name='Registration',
+            name="Registration",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100, verbose_name='Name')),
-                ('with_company', models.BooleanField(default=False, verbose_name='I represent a company')),
-                ('company_name', models.CharField(blank=True, max_length=200, null=True, verbose_name='Company name')),
-                ('vat_id', models.CharField(blank=True, max_length=50, null=True, verbose_name='VAT ID')),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("name", models.CharField(max_length=100, verbose_name="Name")),
+                ("with_company", models.BooleanField(default=False, verbose_name="I represent a company")),
+                ("company_name", models.CharField(blank=True, max_length=200, null=True, verbose_name="Company name")),
+                ("vat_id", models.CharField(blank=True, max_length=50, null=True, verbose_name="VAT ID")),
             ],
             options={
-                'verbose_name': 'Registration',
-                'verbose_name_plural': 'Registrations',
+                "verbose_name": "Registration",
+                "verbose_name_plural": "Registrations",
             },
         ),
         migrations.CreateModel(
-            name='Session',
+            name="Session",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=200, verbose_name='Title')),
-                ('event', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='sessions', to='app.event')),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("title", models.CharField(max_length=200, verbose_name="Title")),
+                (
+                    "event",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name="sessions", to="app.event"
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Session',
-                'verbose_name_plural': 'Sessions',
-                'ordering': ['title'],
+                "verbose_name": "Session",
+                "verbose_name_plural": "Sessions",
+                "ordering": ["title"],
             },
         ),
     ]

@@ -629,7 +629,7 @@ ConditionalFormSet(
 
 Attach via `conditional=` on a first-level `FormSet`. `skip` leaves existing rows untouched when off; `purge` deletes them on save.
 
-**System checks:** `E310` (on a nested formset), `E311` (toggle field absent from parent form), `W320` (cleared field not null/blank).
+**System checks:** `crud_views.E310` (on a nested formset), `crud_views.E311` (toggle field absent from parent form), `crud_views.W320` (cleared field not null/blank).
 
 ---
 

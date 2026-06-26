@@ -107,7 +107,7 @@ def check_conditional(app_configs=None, **kwargs):
             groups = getattr(form_class, "cv_conditional_groups", None) if form_class else None
             if groups:
                 model = getattr(getattr(form_class, "_meta", None), "model", None)
-                declared = set(getattr(getattr(form_class, "_meta", None), "fields", []) or [])
+                declared = set(getattr(form_class, "base_fields", {}).keys())
                 for group in groups:
                     tname = group.toggle.field_name()
                     if not group.toggle.inject and tname not in declared:

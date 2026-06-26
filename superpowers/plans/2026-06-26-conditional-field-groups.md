@@ -869,6 +869,7 @@ def test_formsets_html_marks_conditional_block():
     html = render_to_string("crud_views/formsets/formsets.html", {"formsets": formsets})
     assert 'cv-data-toggle-field="with_items"' in html
     assert "crud_views/js/toggle.js" in html
+    assert "formset.js" not in html  # formset.js is loaded once globally via {% cv_js %}, not here
 ```
 
 - [ ] **Step 2: Run test to verify it fails**
@@ -907,12 +908,11 @@ Edit `src/crud_views/templates/crud_views/formsets/formsets.html`. Wrap each top
 {% endfor %}
 
 {% if formsets.scripts %}
-    <script src="{% static "crud_views/js/formset.js" %}"></script>
     <script src="{% static "crud_views/js/toggle.js" %}"></script>
 {% endif %}
 ```
 
-Note: this also corrects the pre-existing wrong path `crud_views_fieldsets/js/formset.js` → `crud_views/js/formset.js` (the actual static location). Verify the static file path with `ls src/crud_views/static/crud_views/js/`.
+IMPORTANT: `formset.js` is ALREADY loaded globally via `{% cv_js %}` (it is listed in `settings.javascript`), so the original `formsets.html` `<script src="crud_views_fieldsets/js/formset.js">` line was a dead 404 that harmlessly did nothing. Do NOT "fix its path" — that would double-load `formset.js` and double-bind its add/delete/reorder/submit handlers on every formset page. DELETE that `formset.js` line entirely and add only the `toggle.js` include (toggle.js is NOT in `cv_js`, so the template must load it for conditional formsets).
 
 - [ ] **Step 3c: toggle.js already handles `[cv-data-toggle-group]`**
 

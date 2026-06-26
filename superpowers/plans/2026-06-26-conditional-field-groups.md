@@ -438,7 +438,7 @@ def test_toggle_group_renders_marker_attributes():
     form = _LayoutForm()
     html = render_crispy_form(form, helper=form.helper)
     assert 'cv-data-toggle-field="with_contact"' in html
-    assert "cv-toggle-group" in html
+    assert "cv-data-toggle-group" in html
     assert "email" in html and "phone" in html
 
 

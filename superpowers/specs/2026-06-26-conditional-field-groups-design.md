@@ -88,7 +88,7 @@ class ConditionalGroupFormMixin:
         for group in self.cv_conditional_groups:
             if group.is_on(self):                       # toggle ON
                 for name in group.required_fields:
-                    if cleaned.get(name) in self.empty_values:
+                    if cleaned.get(name) in self.fields[name].empty_values:
                         self.add_error(name, self.fields[name].error_messages["required"])
             else:                                        # toggle OFF ⇒ logically absent
                 for name in group.fields:

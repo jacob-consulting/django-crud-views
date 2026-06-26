@@ -83,6 +83,9 @@ class FormSetMixinBase:
             else:
                 return form_valid
 
+        # Evaluate conditional formsets from the submitted main form (server authority).
+        formsets.apply_conditional(context["form"])
+
         # order-independent: a child formset's clean() may add_error() to a parent form,
         # which a single-pass tally would miss. See FormSets.all_valid().
         # Evaluate eagerly (do not short-circuit on form_valid) so formset error state is

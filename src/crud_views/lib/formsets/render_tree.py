@@ -93,6 +93,7 @@ class XFormSet(BaseModel, arbitrary_types_allowed=True):
     level: int
     prefix_key: str
     formset: Any
+    cv_active: bool = True
     instance: BaseFormSet
     management_form: Any
     forms: List[XForm] = Field(default_factory=lambda: list())

@@ -85,7 +85,20 @@ class CrispyModelForm(CrispyFormMixin, ModelForm):
     This form takes the current viewset view as an argument and uses it to generate the cancel button.
     """
 
-    pass
+    def cv_is_present(self) -> bool:
+        """Does this form represent a real, savable row?
+
+        Nested child formsets can only attach to a parent that will be saved; if
+        the parent row is blank, its children have no foreign key to point at.
+        Used by ``InlineFormSet.clean()`` to enforce parent-presence. Override to
+        encode custom criteria (e.g. "present when ``name`` is set").
+
+        A saved parent (one whose instance already has a primary key) is always
+        present — even when the user did not re-type any field.  For unsaved /
+        extra rows the method falls back to ``has_changed()``, mirroring Django's
+        notion of a blank, unchanged extra row.
+        """
+        return bool(self.instance.pk) or self.has_changed()
 
 
 class CrispyForm(CrispyFormMixin, Form):

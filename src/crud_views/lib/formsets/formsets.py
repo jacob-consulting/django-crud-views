@@ -119,6 +119,9 @@ class FormSet(BaseModel, arbitrary_types_allowed=True):
                 "formset": self,
                 "instance": form.instance,
                 "prefix": prefix,
+                # nested formsets (level > 0) carry their parent row's form so
+                # InlineFormSet.clean() can enforce parent-presence; top-level
+                # formsets attach to the view object and get None.
                 "parent_form": form if level > 0 else None,
             }
             if request.POST:

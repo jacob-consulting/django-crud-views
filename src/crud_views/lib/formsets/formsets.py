@@ -346,8 +346,9 @@ class FormSets(BaseModel, arbitrary_types_allowed=True):
                 conditional = x_formset.formset.conditional
                 if conditional is not None and conditional.on_off == "purge":
                     fs = x_formset.instance  # bound BaseInlineFormSet
-                    fk_name = fs.fk.name
-                    fs.model.objects.filter(**{fk_name: fs.instance}).delete()
+                    if fs.instance.pk:
+                        fk_name = fs.fk.name
+                        fs.model.objects.filter(**{fk_name: fs.instance}).delete()
                 continue
             x_formset.save(commit=commit)
 

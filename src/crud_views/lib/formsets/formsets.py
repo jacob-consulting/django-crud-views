@@ -307,6 +307,23 @@ class FormSets(BaseModel, arbitrary_types_allowed=True):
         for x_formset in self.x_formsets:
             yield from x_formset.is_valid()
 
+    def all_valid(self) -> bool:
+        """Return True only if every form and formset in the hierarchy is valid.
+
+        Two-phase and order-independent: a child formset's clean() may add_error() to a
+        parent form, but in a single traversal the parent's validity is collected before
+        the child's clean() runs. Phase 1 triggers every clean(); phase 2 re-derives
+        validity from the now-complete (shared) error state. Django's is_valid() runs
+        full_clean only once, so phase 2 re-runs no clean() and does no DB work, and it
+        delegates to Django's own per-formset validity (which already skips DELETE-marked
+        and empty extra forms).
+        """
+        # Phase 1: trigger every formset's clean() (where cross-form add_error happens).
+        # Discard results — collected in hierarchy order, before later cleans ran.
+        list(self.is_valid())
+        # Phase 2: re-collect; reflects errors added to any form during phase 1.
+        return all(valid for _, valid in self.is_valid())
+
     def save(self, commit: bool = True):
         for x_formset in self.x_formsets:
             x_formset.save(commit=commit)

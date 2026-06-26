@@ -49,6 +49,32 @@ def test_clears_smuggled_values_when_toggle_off():
     assert form.cleaned_data["phone"] is None
 
 
+def test_clean_skips_fields_not_on_form():
+    """group.clean() must not raise KeyError when a group field is absent from Meta.fields."""
+
+    class PartialContactForm(ConditionalGroupFormMixin, forms.ModelForm):
+        cv_conditional_groups = [
+            ConditionalGroup(
+                toggle=ModelFieldToggle("with_contact"),
+                fields=["email", "phone"],  # phone is NOT in Meta.fields
+                required=["email", "phone"],
+            ),
+        ]
+
+        class Meta:
+            model = Profile
+            fields = ["name", "with_contact", "email"]  # phone excluded
+
+    # Toggle ON — missing required field (phone) should be silently skipped
+    form_on = PartialContactForm(data={"name": "a", "with_contact": "on", "email": "x@y.z"})
+    assert form_on.is_valid() is True  # no KeyError; phone guard skipped
+
+    # Toggle OFF — clearing phone should also be silently skipped
+    form_off = PartialContactForm(data={"name": "a", "email": "x@y.z"})
+    assert form_off.is_valid() is True  # no KeyError; email cleared, phone skipped
+    assert form_off.cleaned_data["email"] is None
+
+
 def test_ui_field_toggle_is_injected_and_not_a_model_field():
     class UIForm(ConditionalGroupFormMixin, forms.ModelForm):
         cv_conditional_groups = [

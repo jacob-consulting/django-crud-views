@@ -67,7 +67,7 @@ ConditionalGroup(
 
 ### `ToggleGroup` layout
 
-`ToggleGroup(toggle_field, *fields, css_class=None)` is a Crispy layout element. It renders a `<div data-cv-toggle-for="…">` wrapper. The bundled `toggle.js` reads the toggle field's current value on page load and on change, and shows or hides the wrapper accordingly. No custom JavaScript is required.
+`ToggleGroup(toggle_field, *fields, css_class=None)` is a Crispy layout element. It renders a `<div cv-data-toggle-group cv-data-toggle-field="…">` wrapper. The bundled `toggle.js` reads the toggle field's current value on page load and on change, and shows or hides the wrapper accordingly. No custom JavaScript is required.
 
 ---
 

@@ -145,3 +145,4 @@ def test_formsets_html_marks_conditional_block():
     html = render_to_string("crud_views/formsets/formsets.html", {"formsets": formsets})
     assert 'cv-data-toggle-field="with_items"' in html
     assert "crud_views/js/toggle.js" in html
+    assert "formset.js" not in html

@@ -240,6 +240,10 @@ The feature is documented in three places, all kept consistent:
   `## Conditional Field-Groups` section in `references/api-reference.md`; and
   new entries in that file's Import Paths Cheatsheet
   (`crud_views.lib.conditional`).
+- **FAQ** (`docs/faq.md`): a question-style entry — "How do I make a group of
+  fields required only when a checkbox is on (and not fail validation when
+  hidden)?" — with the minimal `ConditionalGroupModelForm` pattern and a link
+  to the reference page.
 - **CHANGELOG.md**: an `Added` entry.
 
 ## Out of scope

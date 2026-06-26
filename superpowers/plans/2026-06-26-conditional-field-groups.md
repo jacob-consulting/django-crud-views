@@ -1187,7 +1187,7 @@ Expected: PASS
 
 - [ ] **Step 5a: Write docs reference page**
 
-Create `docs/reference/conditional.md` documenting: the two constructs, `ToggleSource` (model vs UI), the off ⇒ skip-validation + clear contract, server-authority guarantee, `on_off="skip"|"purge"` for formsets, the first-level-only scope, and a `with_choices`-style example mirroring the bootstrap5 Choices formset. Include the system-check ids (E310/E311/W320).
+Create `docs/reference/conditional.md` documenting: the two constructs, `ToggleSource` (model vs UI), the off ⇒ skip-validation + clear contract, server-authority guarantee, `on_off="skip"|"purge"` for formsets, the first-level-only scope, and the system-check ids (E310/E311/W320). Link to the runnable bootstrap5 examples added in Task 8 (`cv_registration`, `cv_event`).
 
 - [ ] **Step 5b: Add to mkdocs nav**
 
@@ -1221,6 +1221,323 @@ git commit -m "feat(conditional): public exports, ConditionalGroupModelForm, doc
 
 ---
 
+## Task 8: Worked examples in the bootstrap5 example app (Kind 1 + Kind 2)
+
+**Files:**
+- Create: `examples/bootstrap5/app/models/conditional.py`
+- Modify: `examples/bootstrap5/app/models/__init__.py` (re-export new models)
+- Create: `examples/bootstrap5/app/views/conditional.py`
+- Modify: `examples/bootstrap5/app/urls.py` (register viewsets)
+- Create: `examples/bootstrap5/app/migrations/0011_conditional_examples.py` (via makemigrations)
+
+**Interfaces:**
+- Consumes: `ConditionalGroupModelForm`, `ConditionalGroup`, `ToggleGroup`, `ModelFieldToggle`, `ConditionalFormSet` (Tasks 1–7); `ViewSet`, `FormSetMixin`, `FormSet`/`FormSets`/`InlineFormSet`, crispy columns (existing).
+- Produces: `cv_registration` (Kind 1) and `cv_event` (Kind 2) ViewSets, added to `urlpatterns`.
+
+This is a demo/wiring task — no new TDD test file; verification is `makemigrations --check`, a Django system check pass, and the dev server rendering both forms.
+
+- [ ] **Step 1: Create the example models**
+
+```python
+# examples/bootstrap5/app/models/conditional.py
+from django.db import models
+from django.utils.translation import gettext_lazy as _
+
+
+class Registration(models.Model):
+    """Kind 1: a conditional field-group governed by `with_company`."""
+
+    name = models.CharField(max_length=100, verbose_name=_("Name"))
+    with_company = models.BooleanField(default=False, verbose_name=_("I represent a company"))
+    company_name = models.CharField(max_length=200, blank=True, null=True, verbose_name=_("Company name"))
+    vat_id = models.CharField(max_length=50, blank=True, null=True, verbose_name=_("VAT ID"))
+
+    class Meta:
+        verbose_name = _("Registration")
+        verbose_name_plural = _("Registrations")
+
+    def __str__(self):
+        return self.name
+
+
+class Event(models.Model):
+    """Kind 2: a parent whose entire `sessions` formset is governed by `with_sessions`."""
+
+    name = models.CharField(max_length=100, verbose_name=_("Name"))
+    with_sessions = models.BooleanField(default=False, verbose_name=_("This event has sessions"))
+
+    class Meta:
+        verbose_name = _("Event")
+        verbose_name_plural = _("Events")
+
+    def __str__(self):
+        return self.name
+
+
+class Session(models.Model):
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="sessions")
+    title = models.CharField(max_length=200, verbose_name=_("Title"))
+
+    class Meta:
+        ordering = ["title"]
+        verbose_name = _("Session")
+        verbose_name_plural = _("Sessions")
+
+    def __str__(self):
+        return self.title
+```
+
+- [ ] **Step 2: Re-export the models**
+
+In `examples/bootstrap5/app/models/__init__.py`, add near the other imports:
+
+```python
+from .conditional import Registration as Registration, Event as Event, Session as Session
+```
+
+- [ ] **Step 3: Create the example views (both kinds)**
+
+```python
+# examples/bootstrap5/app/views/conditional.py
+from collections import OrderedDict
+from typing import List
+
+import django_tables2 as tables
+from crispy_forms.layout import Row, LayoutObject
+from django.forms.models import inlineformset_factory
+from django.utils.translation import gettext_lazy as _
+
+from app.models.conditional import Registration, Event, Session
+from crud_views.lib.conditional import (
+    ConditionalGroup,
+    ConditionalGroupModelForm,
+    ConditionalFormSet,
+    ModelFieldToggle,
+    ToggleGroup,
+)
+from crud_views.lib.crispy import Column4, Column6, Column8, CrispyModelForm, CrispyModelViewMixin, CrispyDeleteForm
+from crud_views.lib.formsets import FormSets, FormSet, FormSetMixin, InlineFormSet
+from crud_views.lib.table import Table, LinkDetailColumn
+from crud_views.lib.views import (
+    ListViewTableMixin,
+    ListViewPermissionRequired,
+    DetailViewPermissionRequired,
+    CreateViewPermissionRequired,
+    UpdateViewPermissionRequired,
+    DeleteViewPermissionRequired,
+)
+from crud_views.lib.viewset import ViewSet
+
+# ---------------- Kind 1: conditional field-group ----------------
+
+cv_registration = ViewSet(model=Registration, name="registration", icon_header="fa-solid fa-user-plus")
+
+
+class RegistrationForm(ConditionalGroupModelForm):
+    cv_conditional_groups = [
+        ConditionalGroup(
+            toggle=ModelFieldToggle("with_company"),
+            fields=["company_name", "vat_id"],
+            required=["company_name"],  # vat_id stays optional even when on
+        ),
+    ]
+
+    class Meta:
+        model = Registration
+        fields = ["name", "with_company", "company_name", "vat_id"]
+
+    def get_layout_fields(self):
+        return [
+            Row(Column6("name"), Column6("with_company")),
+            ToggleGroup("with_company", Row(Column6("company_name"), Column6("vat_id"))),
+        ]
+
+
+class RegistrationTable(Table):
+    id = LinkDetailColumn()
+    name = tables.Column()
+    with_company = tables.Column()
+
+
+class RegistrationListView(ListViewTableMixin, ListViewPermissionRequired):
+    model = Registration
+    table_class = RegistrationTable
+    cv_viewset = cv_registration
+
+
+class RegistrationDetailView(DetailViewPermissionRequired):
+    model = Registration
+    cv_viewset = cv_registration
+    cv_property_display = [
+        {
+            "title": _("Registration"),
+            "icon": "user-plus",
+            "description": _("Registration details"),
+            "properties": ["id", "name", "with_company", "company_name", "vat_id"],
+        },
+    ]
+
+
+class RegistrationCreateView(CrispyModelViewMixin, CreateViewPermissionRequired):
+    model = Registration
+    form_class = RegistrationForm
+    cv_viewset = cv_registration
+
+
+class RegistrationUpdateView(CrispyModelViewMixin, UpdateViewPermissionRequired):
+    model = Registration
+    form_class = RegistrationForm
+    cv_viewset = cv_registration
+
+
+class RegistrationDeleteView(CrispyModelViewMixin, DeleteViewPermissionRequired):
+    model = Registration
+    form_class = CrispyDeleteForm
+    cv_viewset = cv_registration
+
+
+# ---------------- Kind 2: conditional first-level formset ----------------
+
+cv_event = ViewSet(model=Event, name="event", icon_header="fa-solid fa-calendar")
+
+
+class EventForm(CrispyModelForm):
+    class Meta:
+        model = Event
+        fields = ["name", "with_sessions"]
+
+    def get_layout_fields(self):
+        from crud_views.lib.formsets import Formsets
+
+        return [Row(Column6("name"), Column6("with_sessions")), Formsets()]
+
+
+class SessionForm(CrispyModelForm):
+    class Meta:
+        model = Session
+        fields = ["title"]
+
+
+class SessionInlineFormSet(InlineFormSet):
+    def get_helper_layout_fields(self) -> List[LayoutObject]:
+        return [Row(Column8("title"), self.form_control_col4)]
+
+
+SessionFormSet = inlineformset_factory(
+    Event,
+    Session,
+    formset=SessionInlineFormSet,
+    form=SessionForm,
+    fields=["title"],
+    extra=1,
+    can_delete=True,
+    can_delete_extra=True,
+)
+
+cv_event_formsets: FormSets = FormSets(
+    formsets=OrderedDict(
+        sessions=FormSet(
+            title=_("Sessions"),
+            klass=SessionFormSet,
+            fields=["title"],
+            pk_field="id",
+            # Off => formset hidden & never validated. "skip" keeps existing rows;
+            # switch to on_off="purge" to delete them on save when toggled off.
+            conditional=ConditionalFormSet(toggle=ModelFieldToggle("with_sessions"), on_off="skip"),
+        ),
+    )
+)
+
+
+class EventTable(Table):
+    id = LinkDetailColumn()
+    name = tables.Column()
+    with_sessions = tables.Column()
+
+
+class EventListView(ListViewTableMixin, ListViewPermissionRequired):
+    model = Event
+    table_class = EventTable
+    cv_viewset = cv_event
+
+
+class EventDetailView(DetailViewPermissionRequired):
+    model = Event
+    cv_viewset = cv_event
+    cv_property_display = [
+        {
+            "title": _("Event"),
+            "icon": "calendar",
+            "description": _("Event details"),
+            "properties": ["id", "name", "with_sessions"],
+        },
+    ]
+
+
+class EventCreateView(CrispyModelViewMixin, FormSetMixin, CreateViewPermissionRequired):
+    model = Event
+    form_class = EventForm
+    cv_viewset = cv_event
+    cv_formsets: FormSets = cv_event_formsets
+
+
+class EventUpdateView(CrispyModelViewMixin, FormSetMixin, UpdateViewPermissionRequired):
+    model = Event
+    form_class = EventForm
+    cv_viewset = cv_event
+    cv_formsets: FormSets = cv_event_formsets
+
+
+class EventDeleteView(CrispyModelViewMixin, DeleteViewPermissionRequired):
+    model = Event
+    form_class = CrispyDeleteForm
+    cv_viewset = cv_event
+```
+
+Note: the example app's detail views use `cv_property_display` (a list of section dicts with `title`/`icon`/`description`/`properties`), as shown above — confirmed against `app/views/foo.py`.
+
+- [ ] **Step 4: Register the viewsets in urls**
+
+In `examples/bootstrap5/app/urls.py`, add imports and extend `urlpatterns`:
+
+```python
+from app.views.conditional import cv_registration, cv_event
+```
+```python
+    + cv_registration.urlpatterns
+    + cv_event.urlpatterns
+```
+
+- [ ] **Step 5: Make the migration**
+
+Run (from `examples/bootstrap5`, using its manage.py / settings):
+
+```bash
+cd examples/bootstrap5 && python manage.py makemigrations app
+```
+Expected: creates `app/migrations/0011_*.py` with `Registration`, `Event`, `Session`.
+
+- [ ] **Step 6: Verify migrations are complete and checks pass**
+
+Run:
+```bash
+cd examples/bootstrap5 && python manage.py makemigrations --check --dry-run && python manage.py check
+```
+Expected: "No changes detected" and system check reports no errors (E310/E311/W320 not triggered — `with_company`/`with_sessions` are real model fields on their forms, and the cleared fields are `null=True, blank=True`).
+
+- [ ] **Step 7: Smoke-test rendering (manual)**
+
+Run `cd examples/bootstrap5 && python manage.py runserver`, then load the Registration create form and the Event create form. Confirm: toggling `with_company` shows/hides the company group; toggling `with_sessions` shows/hides the Sessions formset; submitting each with the toggle off succeeds even with empty group/rows. (Cosmetic JS is a bonus; the server accepts the off-state regardless.)
+
+- [ ] **Step 8: Commit**
+
+```bash
+git add examples/bootstrap5/app/models/conditional.py examples/bootstrap5/app/models/__init__.py examples/bootstrap5/app/views/conditional.py examples/bootstrap5/app/urls.py examples/bootstrap5/app/migrations/0011_*.py
+git commit -m "docs(examples): conditional field-group and conditional formset demos (bootstrap5)"
+```
+
+---
+
 ## Self-Review (completed during plan authoring)
 
 **Spec coverage:**
@@ -1235,6 +1552,7 @@ git commit -m "feat(conditional): public exports, ConditionalGroupModelForm, doc
 - System checks (non-null clear warn, unknown toggle error, nested-formset note) → Task 6 (E310/E311/W320). ✓
 - Nested formsets out of scope / unaffected → Task 4 (apply_conditional top-level only) + Task 6 E310 guard. ✓
 - Public API names match spec (`ConditionalGroup`, `ConditionalFormSet`, `ToggleGroup`, `ModelFieldToggle`, `UIFieldToggle`) → Task 7. ✓
+- Worked bootstrap5 examples, one Kind 1 (`cv_registration`) and one Kind 2 (`cv_event`/`with_sessions`) → Task 8. ✓
 
 **Type consistency:** `is_on(form)`, `field_name()`, `inject`, `cv_active`, `apply_conditional(main_form)`, `on_off ∈ {"skip","purge"}`, `required_fields`, `empty_value_for` are used identically across tasks.
 

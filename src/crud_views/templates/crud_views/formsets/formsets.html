@@ -3,9 +3,16 @@
 
 <link rel="stylesheet" href="{% static 'crud_views/css/formset.css' %}">
 {% for x_formset in formsets.x_formsets %}
+    {% if x_formset.cv_toggle_field %}
+    <div cv-data-toggle-group cv-data-toggle-field="{{ x_formset.cv_toggle_field }}">
+        {% cv_x_formset x_formset %}
+    </div>
+    {% else %}
     {% cv_x_formset x_formset %}
+    {% endif %}
 {% endfor %}
 
 {% if formsets.scripts %}
-    <script src="{% static "crud_views_fieldsets/js/formset.js" %}"></script>
+    <script src="{% static "crud_views/js/formset.js" %}"></script>
+    <script src="{% static "crud_views/js/toggle.js" %}"></script>
 {% endif %}

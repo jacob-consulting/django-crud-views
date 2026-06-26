@@ -191,6 +191,11 @@ class XFormSet(BaseModel, arbitrary_types_allowed=True):
     def json_data(self) -> str:
         return json.dumps(self.data)
 
+    @property
+    def cv_toggle_field(self) -> str:
+        conditional = self.formset.conditional
+        return conditional.toggle.field_name() if conditional is not None else ""
+
     def is_valid(self) -> Iterable[Tuple[Any, bool]]:
         yield self, self.instance.is_valid()
         for x_form in self.forms:

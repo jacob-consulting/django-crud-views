@@ -83,13 +83,12 @@ class FormSetMixinBase:
             else:
                 return form_valid
 
-        # formsets valid?
-        formsets_valid = list(formsets.is_valid())
-        all_formsets_valid = all([v for fs, v in formsets_valid])
-
-        # form and formsets valid?
-        is_valid = all([form_valid, all_formsets_valid])
-        return is_valid
+        # order-independent: a child formset's clean() may add_error() to a parent form,
+        # which a single-pass tally would miss. See FormSets.all_valid().
+        # Evaluate eagerly (do not short-circuit on form_valid) so formset error state is
+        # always populated for the re-rendered page, matching the prior behavior.
+        all_formsets_valid = formsets.all_valid()
+        return form_valid and all_formsets_valid
 
     def cv_form_valid(self, context: dict):
         """

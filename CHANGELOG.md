@@ -8,6 +8,9 @@
   tested rule instead of an always-on placeholder. A grandchild formset with data
   is rejected when its parent row is blank (its foreign key would have nothing to
   point at). Removed the leftover `"Child TODO …"` placeholder message. (#55)
+- **Formsets:** the validity gate is now order-independent — an error added to a parent
+  form by a child formset's `clean()` reliably rejects the submission instead of slipping
+  through to `save()`. (follow-up to #55)
 
 ### Added
 

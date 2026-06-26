@@ -189,6 +189,41 @@ Reusing `checks.py`:
 - Per-row toggles in a first-level formset don't cross-talk.
 - Nested formsets explicitly unaffected (out of scope).
 
+## Examples (bootstrap5 example app)
+
+The feature ships with two worked, runnable examples in
+`examples/bootstrap5`, isolated in a dedicated `conditional` module so the
+existing Question/Choices example stays as the plain-formset reference. Both
+are wired into `app/urls.py` and backed by a new migration.
+
+### Kind 1 example — conditional field-group in a single form
+
+Model `Registration`:
+
+- `name = CharField`
+- `with_company = BooleanField(default=False)` — the toggle (persisted ⇒
+  `ModelFieldToggle("with_company")`)
+- `company_name = CharField(blank=True, null=True)` — in the group, **required
+  when on**
+- `vat_id = CharField(blank=True, null=True)` — in the group, **optional even
+  when on** (demonstrates per-field `required=[...]` granularity)
+
+The `RegistrationForm` uses `ConditionalGroupModelForm` with one
+`ConditionalGroup(toggle=ModelFieldToggle("with_company"),
+fields=["company_name", "vat_id"], required=["company_name"])` and a
+`ToggleGroup("with_company", …)` in its layout. Registered as `cv_registration`.
+
+### Kind 2 example — conditional first-level formset (the `with_choices` case)
+
+Parent `Event` with a `with_sessions = BooleanField(default=False)` toggle, and
+child `Session` (`FK(Event)`, `title`). The `sessions` first-level formset
+declares
+`conditional=ConditionalFormSet(toggle=ModelFieldToggle("with_sessions"),
+on_off="skip")` (default non-destructive; a comment shows how to switch to
+`"purge"`). Registered as `cv_event`. This mirrors the structure of the
+existing Choices formset and directly demonstrates a `with_<child>` parent
+toggle governing a whole first-level formset.
+
 ## Out of scope
 
 - Conditional groups/formsets inside **nested** (2nd-level and deeper) formsets.

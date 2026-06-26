@@ -125,6 +125,12 @@ class InlineFormSet(BaseInlineFormSet):
             raise ValidationError(self.cv_parent_required_error)
 
     def _parent_is_present(self) -> bool:
+        """Return whether the parent form counts as a present, savable row.
+
+        Delegates to the form's ``cv_is_present()`` hook when available (see
+        ``CrispyModelForm.cv_is_present``); falls back to ``not is_empty_form``
+        for plain forms that do not implement the hook.
+        """
         hook = getattr(self.parent_form, "cv_is_present", None)
         return hook() if callable(hook) else not self.is_empty_form(self.parent_form)
 

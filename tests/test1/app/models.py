@@ -154,6 +154,7 @@ class Truck(Vehicle):
 class Profile(models.Model):
     name = models.CharField(max_length=100)
     with_contact = models.BooleanField(default=False)
+    with_items = models.BooleanField(default=False)
     email = models.CharField(max_length=100, blank=True, null=True)
     phone = models.CharField(max_length=100, blank=True, null=True)
 

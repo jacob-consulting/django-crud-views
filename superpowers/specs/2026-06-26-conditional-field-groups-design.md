@@ -224,6 +224,24 @@ on_off="skip")` (default non-destructive; a comment shows how to switch to
 existing Choices formset and directly demonstrates a `with_<child>` parent
 toggle governing a whole first-level formset.
 
+## Documentation & skill
+
+The feature is documented in three places, all kept consistent:
+
+- **User docs (mkdocs)**: a new `docs/reference/conditional.md` reference page,
+  added to `mkdocs.yml` nav, covering both constructs, `ToggleSource`, the
+  off ⇒ skip-validation + clear contract, `on_off="skip"|"purge"`, the
+  first-level-only scope, the system-check ids, and links to the two example
+  ViewSets.
+- **Bundled skill** (`skills/django-crud-views/`): a new
+  "Conditional Field-Groups & Conditional FormSets" section in `SKILL.md`
+  (placed next to the Formsets section) with the minimal usage pattern for
+  both kinds and the "server-side is authoritative" caveat; a matching
+  `## Conditional Field-Groups` section in `references/api-reference.md`; and
+  new entries in that file's Import Paths Cheatsheet
+  (`crud_views.lib.conditional`).
+- **CHANGELOG.md**: an `Added` entry.
+
 ## Out of scope
 
 - Conditional groups/formsets inside **nested** (2nd-level and deeper) formsets.

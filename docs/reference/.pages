@@ -15,4 +15,5 @@ nav:
     - ordered_view.md
     - templates.md
     - settings.md
+    - Conditional groups: conditional.md
     - ...

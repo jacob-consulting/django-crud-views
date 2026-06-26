@@ -577,6 +577,55 @@ class OrderCreateView(FormSetMixin, CrispyModelViewMixin, CreateViewPermissionRe
 
 ---
 
+## Conditional Field-Groups & Conditional FormSets
+
+A checkbox toggle can hide a group of fields (or an entire **first-level** formset). When off, the group/formset is hidden client-side and — authoritatively **server-side** — skips validation and clears its data. JS is cosmetic only; the server enforces the contract on every submit (tampered/JS-off POSTs included).
+
+Import from `crud_views.lib.conditional`.
+
+**Kind 1 — field-group in a form** (`ConditionalGroupModelForm` + `ToggleGroup`):
+
+```python
+from crud_views.lib.conditional import (
+    ConditionalGroupModelForm, ConditionalGroup, ToggleGroup, ModelFieldToggle,
+)
+
+class RegistrationForm(ConditionalGroupModelForm):
+    cv_conditional_groups = [
+        ConditionalGroup(
+            toggle=ModelFieldToggle("with_company"),   # or UIFieldToggle("...") for a non-model checkbox
+            fields=["company_name", "vat_id"],
+            required=["company_name"],                  # subset required when toggle is on
+        ),
+    ]
+    class Meta:
+        model = Registration
+        fields = ["name", "with_company", "company_name", "vat_id"]
+
+    def get_layout_fields(self):
+        return [Row(Column6("name"), Column6("with_company")),
+                ToggleGroup("with_company", Row(Column6("company_name"), Column6("vat_id")))]
+```
+
+Off ⇒ group fields are cleared (must be `null=True, blank=True`, or pass `empty_values=`). On ⇒ `required` fields enforced.
+
+**Kind 2 — an entire first-level formset** (`ConditionalFormSet` on a `FormSet`):
+
+```python
+from crud_views.lib.conditional import ConditionalFormSet, ModelFieldToggle
+
+sessions=FormSet(
+    title="Sessions", klass=SessionFormSet, fields=["title"], pk_field="id",
+    conditional=ConditionalFormSet(toggle=ModelFieldToggle("with_sessions"), on_off="skip"),
+)
+```
+
+The parent-form toggle (`with_sessions`) governs the whole formset. `on_off="skip"` (default) leaves existing rows untouched when off; `on_off="purge"` deletes them on save. Only **first-level** formsets may be conditional (nested ⇒ check error `crud_views.E310`).
+
+System checks: `E310` (conditional on nested formset), `E311` (toggle field missing from form), `W320` (cleared field not null/blank).
+
+---
+
 ## Polymorphic Models (`crud_views_polymorphic`)
 
 Two-step create flow for polymorphic models (requires `django-polymorphic`).

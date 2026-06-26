@@ -1,5 +1,22 @@
 # Django CRUD Views - Changelog
 
+## 0.10.2
+
+### Fixed
+
+- **Formsets:** the parent-required validation for nested formsets is now a real,
+  tested rule instead of an always-on placeholder. A grandchild formset with data
+  is rejected when its parent row is blank (its foreign key would have nothing to
+  point at). Removed the leftover `"Child TODO …"` placeholder message. (#55)
+
+### Added
+
+- **Formsets:** two override points for parent-presence validation:
+  - `CrispyModelForm.cv_is_present()` — override on a form to define when it counts
+    as a present, savable parent row (defaults to `has_changed()`).
+  - `InlineFormSet.cv_parent_required_error` — override the message shown on the
+    blank parent row.
+
 ## 0.10.1
 
 ### Fixed

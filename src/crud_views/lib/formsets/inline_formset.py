@@ -5,15 +5,19 @@ from typing import List
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, LayoutObject, Field, BaseInput
 from crud_views.lib.crispy import Column4, Column2
-from django.core.exceptions import ValidationError
 from django.forms import BaseForm
 from django.forms.models import BaseInlineFormSet, ModelForm
+from django.utils.translation import gettext_lazy as _
 
 from .formsets import FormSet
 from .layout import FormControl
 
 
 class InlineFormSet(BaseInlineFormSet):
+    # Shown on a blank parent row when a nested child formset has data but the
+    # parent it would attach to is not present. Override per subclass to customise.
+    cv_parent_required_error = _("Cannot add entries here without filling in the parent.")
+
     def __init__(
         self,
         formset: FormSet,
@@ -112,11 +116,15 @@ class InlineFormSet(BaseInlineFormSet):
 
     def clean(self):
         super().clean()
-        if self.parent_form:
-            if self.has_any_form_with_data:
-                if self.is_empty_form(self.parent_form):
-                    self.parent_form.add_error(field=None, error="Child TODO requires at least one TODO set")
-                    raise ValidationError("Parent form is required")
+        # Only nested formsets (level > 0) receive a parent_form; top-level
+        # formsets attach to the view's object, not to a parent row. A grandchild
+        # row with data needs a saved parent to hold its foreign key.
+        if self.parent_form and self.has_any_form_with_data and not self._parent_is_present():
+            self.parent_form.add_error(None, self.cv_parent_required_error)
+
+    def _parent_is_present(self) -> bool:
+        hook = getattr(self.parent_form, "cv_is_present", None)
+        return hook() if callable(hook) else not self.is_empty_form(self.parent_form)
 
 
 class CrispyInlineFormMixin:

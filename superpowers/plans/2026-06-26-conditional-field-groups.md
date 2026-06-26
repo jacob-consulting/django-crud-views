@@ -1104,6 +1104,8 @@ git commit -m "feat(conditional): system checks for groups and conditional forms
 - Modify: `src/crud_views/lib/crispy/__init__.py` (re-export for ergonomics)
 - Create: `docs/reference/conditional.md`
 - Modify: `mkdocs.yml` (nav)
+- Modify: `skills/django-crud-views/SKILL.md`
+- Modify: `skills/django-crud-views/references/api-reference.md`
 - Modify: `CHANGELOG.md`
 - Test: `tests/test1/test_conditional_exports.py`
 
@@ -1193,6 +1195,72 @@ Create `docs/reference/conditional.md` documenting: the two constructs, `ToggleS
 
 In `mkdocs.yml`, add `- Conditional groups: reference/conditional.md` under the existing Reference section (match indentation of sibling entries).
 
+- [ ] **Step 5b-ii: Update the bundled skill — `SKILL.md`**
+
+In `skills/django-crud-views/SKILL.md`, add a new section immediately after the `## Formsets (Inline Child Records)` section:
+
+````markdown
+## Conditional Field-Groups & Conditional FormSets
+
+A checkbox toggle can hide a group of fields (or an entire **first-level** formset). When off, the group/formset is hidden client-side and — authoritatively **server-side** — skips validation and clears its data. JS is cosmetic only; the server enforces the contract on every submit (tampered/JS-off POSTs included).
+
+Import from `crud_views.lib.conditional`.
+
+**Kind 1 — field-group in a form** (`ConditionalGroupModelForm` + `ToggleGroup`):
+
+```python
+from crud_views.lib.conditional import (
+    ConditionalGroupModelForm, ConditionalGroup, ToggleGroup, ModelFieldToggle,
+)
+
+class RegistrationForm(ConditionalGroupModelForm):
+    cv_conditional_groups = [
+        ConditionalGroup(
+            toggle=ModelFieldToggle("with_company"),   # or UIFieldToggle("...") for a non-model checkbox
+            fields=["company_name", "vat_id"],
+            required=["company_name"],                  # subset required when toggle is on
+        ),
+    ]
+    class Meta:
+        model = Registration
+        fields = ["name", "with_company", "company_name", "vat_id"]
+
+    def get_layout_fields(self):
+        return [Row(Column6("name"), Column6("with_company")),
+                ToggleGroup("with_company", Row(Column6("company_name"), Column6("vat_id")))]
+```
+
+Off ⇒ group fields are cleared (must be `null=True, blank=True`, or pass `empty_values=`). On ⇒ `required` fields enforced.
+
+**Kind 2 — an entire first-level formset** (`ConditionalFormSet` on a `FormSet`):
+
+```python
+from crud_views.lib.conditional import ConditionalFormSet, ModelFieldToggle
+
+sessions=FormSet(
+    title="Sessions", klass=SessionFormSet, fields=["title"], pk_field="id",
+    conditional=ConditionalFormSet(toggle=ModelFieldToggle("with_sessions"), on_off="skip"),
+)
+```
+
+The parent-form toggle (`with_sessions`) governs the whole formset. `on_off="skip"` (default) leaves existing rows untouched when off; `on_off="purge"` deletes them on save. Only **first-level** formsets may be conditional (nested ⇒ check error `crud_views.E310`).
+
+System checks: `E310` (conditional on nested formset), `E311` (toggle field missing from form), `W320` (cleared field not null/blank).
+````
+
+- [ ] **Step 5b-iii: Update the skill API reference**
+
+In `skills/django-crud-views/references/api-reference.md`, add a `## Conditional Field-Groups` section after the `## Formsets` section documenting `ToggleSource`/`ModelFieldToggle`/`UIFieldToggle`, `ConditionalGroup` (with `fields`, `required`, `empty_values`), `ConditionalGroupFormMixin`/`ConditionalGroupModelForm`, `ToggleGroup`, and `ConditionalFormSet` (`toggle`, `on_off`). Then add to the **Import Paths Cheatsheet** at the end of that file:
+
+```python
+# Conditional field-groups / formsets
+from crud_views.lib.conditional import (
+    ToggleSource, ModelFieldToggle, UIFieldToggle,
+    ConditionalGroup, ConditionalGroupFormMixin, ConditionalGroupModelForm,
+    ToggleGroup, ConditionalFormSet,
+)
+```
+
 - [ ] **Step 5c: Add CHANGELOG entry**
 
 In `CHANGELOG.md`, add an `Added` bullet under the next unreleased version:
@@ -1215,8 +1283,8 @@ Expected: clean.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add src/crud_views/lib/conditional/__init__.py src/crud_views/lib/conditional/group.py src/crud_views/lib/crispy/__init__.py docs/reference/conditional.md mkdocs.yml CHANGELOG.md tests/test1/test_conditional_exports.py
-git commit -m "feat(conditional): public exports, ConditionalGroupModelForm, docs & changelog"
+git add src/crud_views/lib/conditional/__init__.py src/crud_views/lib/conditional/group.py src/crud_views/lib/crispy/__init__.py docs/reference/conditional.md mkdocs.yml skills/django-crud-views/SKILL.md skills/django-crud-views/references/api-reference.md CHANGELOG.md tests/test1/test_conditional_exports.py
+git commit -m "feat(conditional): public exports, ConditionalGroupModelForm, docs, skill & changelog"
 ```
 
 ---
@@ -1553,6 +1621,7 @@ git commit -m "docs(examples): conditional field-group and conditional formset d
 - Nested formsets out of scope / unaffected → Task 4 (apply_conditional top-level only) + Task 6 E310 guard. ✓
 - Public API names match spec (`ConditionalGroup`, `ConditionalFormSet`, `ToggleGroup`, `ModelFieldToggle`, `UIFieldToggle`) → Task 7. ✓
 - Worked bootstrap5 examples, one Kind 1 (`cv_registration`) and one Kind 2 (`cv_event`/`with_sessions`) → Task 8. ✓
+- Documentation in all three places: mkdocs reference page (`docs/reference/conditional.md` + nav), bundled skill (`SKILL.md` section + `api-reference.md` + import cheatsheet), CHANGELOG → Task 7 (steps 5a, 5b, 5b-ii, 5b-iii, 5c). ✓
 
 **Type consistency:** `is_on(form)`, `field_name()`, `inject`, `cv_active`, `apply_conditional(main_form)`, `on_off ∈ {"skip","purge"}`, `required_fields`, `empty_value_for` are used identically across tasks.
 

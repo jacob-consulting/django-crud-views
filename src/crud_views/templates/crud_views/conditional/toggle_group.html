@@ -1,0 +1,6 @@
+{# src/crud_views/templates/crud_views/conditional/toggle_group.html #}
+{% load static %}
+<div class="cv-toggle-group {{ cv_toggle_css }}" cv-data-toggle-group cv-data-toggle-field="{{ cv_toggle_field }}">
+    {{ cv_toggle_inner }}
+</div>
+<script src="{% static 'crud_views/js/toggle.js' %}"></script>

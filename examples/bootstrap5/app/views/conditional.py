@@ -110,6 +110,16 @@ class EventForm(CrispyModelForm):
 
         return [Row(Column6("name"), Column6("with_sessions")), Formsets()]
 
+    @property
+    def helper(self):
+        # A form rendering Formsets() must not emit its own <form> tag: the CRUD
+        # create/update template already wraps the fields in <form class="cv-form">.
+        # Without this, crispy nests a second <form>, the browser closes cv-form
+        # early, and formset.js cannot bind the add/reorder controls.
+        h = super().helper
+        h.form_tag = False
+        return h
+
 
 class SessionForm(CrispyModelForm):
     class Meta:

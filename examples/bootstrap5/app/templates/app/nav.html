@@ -31,6 +31,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{% url "group-list" %}">{% translate "Group" %}</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url "registration-list" %}">{% translate "Registration" %}</a>
+                </li>
 
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
@@ -40,6 +43,7 @@
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="{% url "question-list" %}">{% translate "Question" %}</a></li>
                         <li><a class="dropdown-item" href="{% url "parent-list" %}">{% translate "Poly Parent" %}</a></li>
+                        <li><a class="dropdown-item" href="{% url "event-list" %}">{% translate "Event" %}</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>

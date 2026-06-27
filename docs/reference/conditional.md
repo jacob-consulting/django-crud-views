@@ -123,4 +123,4 @@ The parent form must expose the toggle field (either a real model field or a `UI
 Runnable bootstrap5 examples with both kinds are provided in the test project:
 
 - `cv_registration` — field-group with `ModelFieldToggle` (`with_company` → `company_name`, `vat_id`)
-- `cv_event` — conditional first-level formset (`with_sessions` → sessions formset, `on_off="purge"`)
+- `cv_event` — conditional first-level formset (`with_sessions` → sessions formset, `on_off="skip"`)

@@ -113,7 +113,11 @@ class EventForm(CrispyModelForm):
     def get_layout_fields(self):
         from crud_views.lib.formsets import Formsets
 
-        return [Row(Column6("name"), Column6("with_sessions")), Formsets()]
+        return [
+            Row(Column6("name")),
+            Row(Column6("with_sessions")),
+            Formsets(),
+        ]
 
     @property
     def helper(self):

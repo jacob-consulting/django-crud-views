@@ -48,6 +48,59 @@ def test_skip_leaves_existing_rows_when_off(profile_with_items_skip_off):
     assert ProfileItem.objects.filter(profile=profile).count() == 2
 
 
+def test_purge_respects_commit_false(profile_with_items_purge_off):
+    # purge is a destructive write; with commit=False nothing must be deleted.
+    formsets, main_form, profile = profile_with_items_purge_off
+    assert ProfileItem.objects.filter(profile=profile).count() == 2
+    formsets.apply_conditional(main_form)
+    formsets.save(commit=False)
+    assert ProfileItem.objects.filter(profile=profile).count() == 2
+
+
+def test_purge_only_deletes_formset_queryset():
+    # A formset that narrows its queryset must purge only the rows it manages,
+    # never every child of the parent.
+    profile = Profile.objects.create(name="p", with_items=False)
+    keep = ProfileItem.objects.create(profile=profile, label="keep")
+    ProfileItem.objects.create(profile=profile, label="drop")
+
+    class _DropOnlyInlineFormSet(_ItemInlineFormSet):
+        def get_queryset(self):
+            return ProfileItem.objects.filter(profile=self.instance, label="drop")
+
+    ItemFormSet = inlineformset_factory(
+        Profile,
+        ProfileItem,
+        formset=_DropOnlyInlineFormSet,
+        form=_ItemForm,
+        fields=["label"],
+        extra=1,
+        can_delete=True,
+    )
+    formsets = FormSets(
+        formsets=OrderedDict(
+            items=FormSet(
+                title="Items",
+                klass=ItemFormSet,
+                fields=["label"],
+                pk_field="id",
+                conditional=ConditionalFormSet(toggle=ModelFieldToggle("with_items"), on_off="purge"),
+            )
+        )
+    )
+    post = {"name": "p", "with_items": ""}  # toggle off
+    request = RequestFactory().post("/", data=post)
+    main_form = _ProfileForm(cv_view=None, data=post, instance=profile)
+    main_form.is_valid()
+    formsets = formsets.clone(cv_view=None)
+    formsets.init(request=request, form=main_form, instance=profile)
+    formsets.apply_conditional(main_form)
+    formsets.save(commit=True)
+
+    remaining = list(ProfileItem.objects.filter(profile=profile))
+    assert remaining == [keep]
+
+
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
@@ -146,3 +199,48 @@ def test_formsets_html_marks_conditional_block():
     assert 'cv-data-toggle-field="with_items"' in html
     assert "crud_views/js/toggle.js" in html
     assert "formset.js" not in html
+
+
+def test_off_formset_without_management_form_does_not_crash():
+    """The browser disables an off formset's inputs, so its management-form
+    hidden fields are not submitted. The server must still init, validate and
+    render that ignored formset without raising ManagementForm errors."""
+    from django.template.loader import render_to_string
+
+    ItemFormSet = inlineformset_factory(
+        Profile,
+        ProfileItem,
+        formset=_ItemInlineFormSet,
+        form=_ItemForm,
+        fields=["label"],
+        extra=1,
+        can_delete=True,
+    )
+    formsets = FormSets(
+        formsets=OrderedDict(
+            items=FormSet(
+                title="Items",
+                klass=ItemFormSet,
+                fields=["label"],
+                pk_field="id",
+                conditional=ConditionalFormSet(toggle=ModelFieldToggle("with_items"), on_off="skip"),
+            )
+        )
+    )
+    # Toggle off and NO items-* management keys (disabled inputs are not submitted).
+    post = {"name": "p", "with_items": ""}
+    request = RequestFactory().post("/", data=post)
+    main_form = _ProfileForm(cv_view=None, data=post)
+    main_form.is_valid()
+    formsets = formsets.clone(cv_view=None)
+
+    # init must not raise even though the formset's management form is absent
+    formsets.init(request=request, form=main_form, instance=None)
+
+    formsets.apply_conditional(main_form)
+    assert all(x.cv_active is False for x in formsets.x_formsets)
+    assert formsets.all_valid() is True
+
+    # re-rendering the ignored formset must not raise either
+    html = render_to_string("crud_views/formsets/formsets.html", {"formsets": formsets})
+    assert 'cv-data-toggle-field="with_items"' in html

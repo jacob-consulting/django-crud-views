@@ -47,8 +47,13 @@ class RegistrationForm(ConditionalGroupModelForm):
 
     def get_layout_fields(self):
         return [
-            Row(Column6("name"), Column6("with_company")),
-            ToggleGroup("with_company", Row(Column6("company_name"), Column6("vat_id"))),
+            Row(Column6("name")),
+            Row(Column6("with_company")),
+            ToggleGroup(
+                "with_company",
+                Row(Column6("company_name"), Column6("vat_id")),
+                legend=_("Company details"),
+            ),
         ]
 
 

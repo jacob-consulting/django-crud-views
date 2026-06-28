@@ -7,16 +7,19 @@ from django.template.loader import render_to_string
 class ToggleGroup(LayoutObject):
     """Crispy layout wrapper for a conditional field-group.
 
-    Renders the wrapped fields inside a marker div that ``toggle.js`` keys off.
-    Cosmetic only — validation/clearing is enforced server-side by
-    ``ConditionalGroupFormMixin``.
+    Renders the wrapped fields inside a marker element that ``toggle.js`` keys
+    off. Pass ``legend=`` to render a titled ``<fieldset>`` instead of a bare
+    ``<div>``; the marker sits on the fieldset so the whole group (legend
+    included) hides when the toggle is off. Cosmetic only — validation/clearing
+    is enforced server-side by ``ConditionalGroupFormMixin``.
     """
 
     template = "crud_views/conditional/toggle_group.html"
 
-    def __init__(self, toggle_field: str, *fields, css_class: str | None = None):
+    def __init__(self, toggle_field: str, *fields, css_class: str | None = None, legend: str | None = None):
         self.toggle_field = toggle_field
         self.css_class = css_class
+        self.legend = legend
         self.inner = Layout(*fields)
 
     def render(self, form, context, **kwargs):
@@ -25,6 +28,7 @@ class ToggleGroup(LayoutObject):
             {
                 "cv_toggle_field": self.toggle_field,
                 "cv_toggle_css": self.css_class or "",
+                "cv_toggle_legend": self.legend or "",
                 "cv_toggle_inner": inner_html,
             }
         )

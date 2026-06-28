@@ -39,3 +39,42 @@ def test_toggle_group_includes_toggle_js():
     form = _LayoutForm()
     html = render_crispy_form(form, helper=form.helper)
     assert "crud_views/js/toggle.js" in html
+
+
+class _LegendLayoutForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ["name", "with_contact", "email", "phone"]
+
+    @property
+    def helper(self):
+        h = FormHelper()
+        h.layout = Layout(
+            Row(Column6("name")),
+            Row(Column6("with_contact")),
+            ToggleGroup(
+                "with_contact",
+                Row(Column6("email"), Column6("phone")),
+                legend="Contact details",
+            ),
+        )
+        return h
+
+
+def test_toggle_group_legend_renders_fieldset():
+    form = _LegendLayoutForm()
+    html = render_crispy_form(form, helper=form.helper)
+    assert "<fieldset" in html
+    assert "<legend>Contact details</legend>" in html
+    # marker lives on the fieldset so toggle.js hides the whole group
+    assert 'cv-data-toggle-field="with_contact"' in html
+    assert "cv-data-toggle-group" in html
+
+
+def test_toggle_group_without_legend_stays_a_div():
+    # backward compat: no legend => current <div> rendering, no fieldset
+    form = _LayoutForm()
+    html = render_crispy_form(form, helper=form.helper)
+    assert "<fieldset" not in html
+    assert "<legend" not in html
+    assert "cv-data-toggle-group" in html

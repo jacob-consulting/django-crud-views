@@ -161,7 +161,7 @@ cv_event_formsets: FormSets = FormSets(
             pk_field="id",
             # Off => formset hidden & never validated. "skip" keeps existing rows;
             # switch to on_off="purge" to delete them on save when toggled off.
-            conditional=ConditionalFormSet(toggle=ModelFieldToggle("with_sessions"), on_off="skip"),
+            conditional=ConditionalFormSet(toggle=ModelFieldToggle("with_sessions"), on_off="purge"),
         ),
     )
 )

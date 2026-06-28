@@ -18,7 +18,7 @@ Import everything from `crud_views.lib.conditional`.
 | `ConditionalGroup(toggle, fields, required, empty_values)` | Declares one toggled group of fields |
 | `ConditionalGroupFormMixin` | Server-side authority mixin (mix in before the form base) |
 | `ConditionalGroupModelForm` | `CrispyModelForm` with `ConditionalGroupFormMixin` pre-applied |
-| `ToggleGroup(toggle_field, *fields)` | Crispy layout element that wraps the group's fields in a JS-toggled `<div>` |
+| `ToggleGroup(toggle_field, *fields, css_class=None, legend=None)` | Crispy layout element that wraps the group's fields in a JS-toggled `<div>`, or a titled `<fieldset>` when `legend=` is given |
 
 ### Contract
 
@@ -67,7 +67,7 @@ ConditionalGroup(
 
 ### `ToggleGroup` layout
 
-`ToggleGroup(toggle_field, *fields, css_class=None)` is a Crispy layout element. It renders a `<div cv-data-toggle-group cv-data-toggle-field="…">` wrapper. The bundled `toggle.js` reads the toggle field's current value on page load and on change, and shows or hides the wrapper accordingly. No custom JavaScript is required.
+`ToggleGroup(toggle_field, *fields, css_class=None, legend=None)` is a Crispy layout element. By default it renders a `<div cv-data-toggle-group cv-data-toggle-field="…">` wrapper. Pass `legend="…"` to render a titled `<fieldset><legend>…</legend>…</fieldset>` instead; the toggle marker sits on the fieldset, so the whole group (legend included) hides when the toggle is off. The bundled `toggle.js` reads the toggle field's current value on page load and on change, and shows or hides the wrapper accordingly. No custom JavaScript is required.
 
 ---
 

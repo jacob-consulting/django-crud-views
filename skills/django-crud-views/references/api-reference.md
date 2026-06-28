@@ -586,10 +586,10 @@ Declare `cv_conditional_groups: list[ConditionalGroup] = [...]` on the form clas
 ### `ToggleGroup`
 
 ```python
-ToggleGroup(toggle_field: str, *fields, css_class: str | None = None)
+ToggleGroup(toggle_field: str, *fields, css_class: str | None = None, legend: str | None = None)
 ```
 
-Crispy layout element. Renders a `<div cv-data-toggle-group cv-data-toggle-field="…">` wrapper that `toggle.js` shows/hides based on the toggle field's value. No custom JavaScript required.
+Crispy layout element. By default renders a `<div cv-data-toggle-group cv-data-toggle-field="…">` wrapper that `toggle.js` shows/hides based on the toggle field's value. Pass `legend="…"` to render a titled `<fieldset><legend>…</legend>…</fieldset>` instead (the marker sits on the fieldset, so the whole group hides when off). No custom JavaScript required.
 
 ### `ConditionalFormSet`
 

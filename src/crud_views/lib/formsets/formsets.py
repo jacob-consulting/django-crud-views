@@ -344,11 +344,13 @@ class FormSets(BaseModel, arbitrary_types_allowed=True):
         for x_formset in self.x_formsets:
             if x_formset.cv_active is False:
                 conditional = x_formset.formset.conditional
-                if conditional is not None and conditional.on_off == "purge":
-                    fs = x_formset.instance  # bound BaseInlineFormSet
+                # purge is a destructive write — only run it when committing, and
+                # delete exactly the rows the formset manages (its queryset),
+                # never every child of the parent.
+                if commit and conditional is not None and conditional.on_off == "purge":
+                    fs = x_formset.instance  # bound model/inline formset
                     if fs.instance.pk:
-                        fk_name = fs.fk.name
-                        fs.model.objects.filter(**{fk_name: fs.instance}).delete()
+                        fs.get_queryset().delete()
                 continue
             x_formset.save(commit=commit)
 

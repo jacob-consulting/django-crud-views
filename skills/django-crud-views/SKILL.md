@@ -603,8 +603,10 @@ class RegistrationForm(ConditionalGroupModelForm):
         fields = ["name", "with_company", "company_name", "vat_id"]
 
     def get_layout_fields(self):
-        return [Row(Column6("name"), Column6("with_company")),
-                ToggleGroup("with_company", Row(Column6("company_name"), Column6("vat_id")))]
+        return [Row(Column6("name")),
+                Row(Column6("with_company")),
+                ToggleGroup("with_company", Row(Column6("company_name"), Column6("vat_id")),
+                            legend="Company details")]  # legend=… renders the group as a titled <fieldset>
 ```
 
 Off ⇒ group fields are cleared (must be `null=True, blank=True`, or pass `empty_values=`). On ⇒ `required` fields enforced.

@@ -88,7 +88,7 @@ from crud_views.lib.views import DetailViewPermissionRequired
 class AuthorDetailView(DetailViewPermissionRequired):
     cv_viewset = cv_author
 
-    property_display = [
+    cv_property_display = [
         {
             "title": "Attributes",
             "icon": "tag",

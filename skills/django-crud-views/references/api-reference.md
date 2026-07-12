@@ -81,7 +81,7 @@ from crud_views.lib.views import DetailViewPermissionRequired
 
 class MyDetailView(DetailViewPermissionRequired):
     cv_viewset = cv_my
-    property_display = [
+    cv_property_display = [
         {
             "title": "Group Title",   # required
             "icon": "tag",            # optional: short icon name (e.g. "tag", "book")

@@ -320,7 +320,7 @@ class CampaignTable(Table):
 
 class CampaignDetailView(DetailViewPermissionRequired):
     cv_viewset = cv_campaign
-    property_display = [
+    cv_property_display = [
         {
             "title": "Campaign",
             "properties": [

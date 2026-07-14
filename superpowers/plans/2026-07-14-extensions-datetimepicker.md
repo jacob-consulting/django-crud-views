@@ -20,11 +20,12 @@ this plan contains everything you need inline).
   `/home/alex/projects/alex/django-crud-views` first. This plan imports `crud_views.lib.assets`
   and `crud_views.lib.vendor` from it. Verify before starting:
   `cd /home/alex/projects/alex/django-crud-views && git log --oneline -5` should show the asset
-  registry commits (on `feat/asset-registry` or already merged to `master`). If missing: STOP and
+  registry commits (on `feat/asset-registry` or already merged to `main` — that repo's default
+  branch is `main`, not master). If missing: STOP and
   report back.
 - **Repo to CREATE:** `/home/alex/projects/alex/django-crud-views-extensions` (sibling of the core
   checkout — the relative path `../django-crud-views` in `pyproject.toml` depends on this location).
-  `git init -b master`.
+  `git init -b main` (matching the core repo's default branch).
 - **During development** the core dependency resolves via a local editable path
   (`[tool.uv.sources]`); for a real release it becomes a normal PyPI pin `>=0.11.0`.
 - **Run tests:** `uv run pytest tests/ -x -q` from the repo root (after `uv sync --extra dev`).
@@ -73,7 +74,7 @@ this plan contains everything you need inline).
 ```bash
 mkdir -p /home/alex/projects/alex/django-crud-views-extensions
 cd /home/alex/projects/alex/django-crud-views-extensions
-git init -b master
+git init -b main
 mkdir -p src/crud_views_widget_datetimepicker tests
 touch src/crud_views_widget_datetimepicker/__init__.py tests/__init__.py
 ```

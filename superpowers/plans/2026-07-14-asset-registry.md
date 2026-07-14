@@ -21,7 +21,9 @@ you do not touch it here.
 - **Layout:** `src/` layout. Package code in `src/crud_views/`, sibling theme app `src/crud_views_plain/`.
 - **Branch:** As of planning (2026-07-14) the working tree was on `feat/conditional-field-groups`
   with an untracked `cred.prompt.md` (leave that file alone). Before starting: `git status` must be
-  clean apart from untracked files, then `git switch master && git pull && git switch -c feat/asset-registry`.
+  clean apart from untracked files. The repo's default branch is `main` (not master), and the
+  work branch `feat/asset-registry` already exists at the `main` tip: `git switch feat/asset-registry`.
+  A `.superpowers/sdd/progress.md` ledger exists — check it for completed tasks before starting.
 - **Install deps (if imports fail):** `uv pip install --upgrade .[ordered,polymorphic,workflow,dev,test]`
 - **Run tests:** `uv run pytest tests/test1/ -x -q` for the suite, `uv run pytest tests/test1/test_assets.py -v`
   for the new file. The full matrix (`task test` → nox) is slow; run it once at the very end.
@@ -731,4 +733,4 @@ git commit -m "docs: document asset registry and vendor helper"
 - Run the full matrix once: `task test` (nox). Expected: PASS.
 - Do NOT bump the version — hand back to the maintainer for release (this becomes 0.11.0,
   which the extensions repo will pin as its minimum).
-- Open a PR from `feat/asset-registry` to `master`, or hand the branch back for review.
+- Open a PR from `feat/asset-registry` to `main`, or hand the branch back for review.

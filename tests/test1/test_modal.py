@@ -76,3 +76,68 @@ def test_custom_form_modal_partial(client_user_author_modal: Client, author_doug
     assert response.status_code == 200
     assert "crud_views/modal/content.html" in template_names(response)
     assert "<form" in response.content.decode()
+
+
+# ---------------------------------------------------------------------------
+# POST protocol (Task 3)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.django_db
+def test_modal_delete_success_returns_204_with_redirect(client_user_author_modal: Client, author_douglas_adams):
+    from django.contrib.messages import get_messages
+
+    from tests.test1.app.models import Author
+
+    pk = author_douglas_adams.pk
+    response = client_user_author_modal.post(f"/author_modal/{pk}/delete/", {"confirm": True}, headers=MODAL_HEADERS)
+    assert response.status_code == 204
+    assert response.headers["X-CV-Redirect"] == "/author_modal/"
+    assert not Author.objects.filter(pk=pk).exists()
+    assert len(list(get_messages(response.wsgi_request))) == 1  # MessageMixin still queues the message
+
+
+@pytest.mark.django_db
+def test_modal_delete_protection_returns_422_partial(
+    client_user_publisher_modal_protected_delete: Client, publisher_penguin
+):
+    from tests.test1.app.models import Publisher
+
+    pk = publisher_penguin.pk
+    response = client_user_publisher_modal_protected_delete.post(
+        f"/publisher_modal_protected/{pk}/delete/", {"confirm": True}, headers=MODAL_HEADERS
+    )
+    assert response.status_code == 422
+    assert "crud_views/modal/content.html" in template_names(response)
+    assert "Cannot delete this publisher." in response.content.decode()
+    assert Publisher.objects.filter(pk=pk).exists()
+
+
+@pytest.mark.django_db
+def test_modal_custom_form_invalid_returns_422(client_user_author_modal: Client, author_douglas_adams):
+    response = client_user_author_modal.post(
+        f"/author_modal/{author_douglas_adams.pk}/contact/",
+        {"subject": "", "body": ""},
+        headers=MODAL_HEADERS,
+    )
+    assert response.status_code == 422
+    assert "crud_views/modal/content.html" in template_names(response)
+
+
+@pytest.mark.django_db
+def test_modal_custom_form_valid_returns_204(client_user_author_modal: Client, author_douglas_adams):
+    response = client_user_author_modal.post(
+        f"/author_modal/{author_douglas_adams.pk}/contact/",
+        {"subject": "Hello", "body": "Nice to meet you."},
+        headers=MODAL_HEADERS,
+    )
+    assert response.status_code == 204
+    assert response.headers["X-CV-Redirect"] == "/author_modal/"
+
+
+@pytest.mark.django_db
+def test_non_modal_post_flows_unchanged(client_user_author_modal: Client, author_douglas_adams):
+    """Without the header, a cv_modal view still redirects with 302 (regression guard)."""
+    response = client_user_author_modal.post(f"/author_modal/{author_douglas_adams.pk}/delete/", {"confirm": True})
+    assert response.status_code == 302
+    assert response.url == "/author_modal/"

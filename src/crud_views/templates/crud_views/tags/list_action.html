@@ -1,5 +1,9 @@
 {% if cv_action_enabled is not False and cv_access is True %}
-<a {% if cv_list_action_method == "get" %}
+<a {% if cv_modal %}
+    href="{{ cv_url }}"
+    data-cv-modal="true"
+    data-cv-modal-size="{{ cv_modal_size }}"
+{% elif cv_list_action_method == "get" %}
     href="{{ cv_url }}"
 {% elif cv_list_action_method == "post" %}
     href="#"

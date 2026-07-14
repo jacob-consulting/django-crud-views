@@ -222,6 +222,41 @@ Execution order: GET checks `cv_check_delete_protection()` (hides form if errors
 
 ---
 
+## Modal Views
+
+Opt a view into Bootstrap 5 modal rendering: its action buttons then open the view in a modal dialog
+(fetched in place, submitted without a full page reload) instead of navigating to a full page.
+
+```python
+class AuthorDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequired):
+    form_class = CrispyDeleteForm
+    cv_viewset = cv_author
+    cv_modal = True                 # opt in
+    cv_modal_size = "modal-lg"      # optional: "" | "modal-sm" | "modal-lg" | "modal-xl"
+```
+
+**Supported view types:** `DeleteView`, `DetailView`, `CustomFormView`, `CustomFormNoObjectView` (and
+their `*PermissionRequired` and Guardian/extension variants). Setting `cv_modal = True` on any other view
+type (create, update, list, …) raises system check `viewset.E251`. An invalid `cv_modal_size` — anything
+other than the exact strings `""`, `"modal-sm"`, `"modal-lg"`, `"modal-xl"` — raises `viewset.E250`.
+
+**No template, JS, URL, or settings changes needed.** The shared modal shell is rendered by
+`{% cv_config %}` and the transport JS by `{% cv_js %}` — both already present in the Bootstrap 5 base
+template. It is the same URL: the view detects the modal request via an `X-CV-Modal: true` request header
+and returns just the modal partial (reusing the view's normal content). On POST, success answers `204` +
+an `X-CV-Redirect` header (the browser navigates — Django messages and `cv_success_key` work unchanged);
+invalid forms and delete protection re-render inside the open modal (status `422`).
+
+**Progressive enhancement:** direct links, middle-click, disabled JavaScript, and non-Bootstrap themes
+(`crud_views_plain`) all render the normal full page. `cv_modal = False` (the default) changes nothing.
+
+**Re-init hook:** after each content injection a `cv:modal:loaded` CustomEvent fires on `#cv-modal` — use
+it to initialize custom widgets inside modal content.
+
+Full reference: [docs/reference/modals.md](../../docs/reference/modals.md).
+
+---
+
 ## Nested Resources (Child ViewSet)
 
 Add `parent=ParentViewSet(name="author")` to the child ViewSet. Use `CreateViewParentMixin` on the child's create
@@ -771,3 +806,5 @@ To customise the manage view class for a specific viewset, pass `manage_view_cla
 | Guardian child create: button always visible | `GuardianCreateViewPermissionRequired` is used but `cv_guardian_parent_create_permission` is not set on the viewset |
 | Cascading deletes not showing | Set `cv_show_related_objects = True` on the delete view (opt-in, off by default) |
 | Related object links not rendering | Set `cv_link_related_objects = True` and ensure the related model has a ViewSet with a `detail` view |
+| `cv_modal` raises `viewset.E251` | Modal is phase-1 only: `DeleteView`, `DetailView`, `CustomFormView`, `CustomFormNoObjectView` (create/update/list not supported) |
+| `cv_modal_size` raises `viewset.E250` | Use an exact value: `""`, `"modal-sm"`, `"modal-lg"`, or `"modal-xl"` (not `"lg"`, `"large"`, etc.) |

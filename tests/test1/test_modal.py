@@ -190,3 +190,38 @@ def test_check_modal_supported_on_delete():
         cv_modal = True
 
     assert "viewset.E251" not in check_ids(GoodModalDeleteView)
+
+
+# ---------------------------------------------------------------------------
+# Button attributes, form action, shell (Task 5)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.django_db
+def test_list_buttons_carry_modal_attributes(client_user_author_modal: Client, author_douglas_adams):
+    response = client_user_author_modal.get("/author_modal/")
+    content = response.content.decode()
+    assert 'data-cv-modal="true"' in content
+    assert 'data-cv-modal-size="modal-lg"' in content  # AuthorModalDeleteView
+
+
+@pytest.mark.django_db
+def test_list_buttons_without_modal_have_no_attributes(client_user_author_delete: Client, author_douglas_adams):
+    response = client_user_author_delete.get("/author/")
+    assert "data-cv-modal" not in response.content.decode()
+
+
+@pytest.mark.django_db
+def test_modal_partial_form_has_explicit_action(client_user_author_modal: Client, author_douglas_adams):
+    pk = author_douglas_adams.pk
+    response = client_user_author_modal.get(f"/author_modal/{pk}/delete/", headers=MODAL_HEADERS)
+    assert f'action="/author_modal/{pk}/delete/"' in response.content.decode()
+
+
+@pytest.mark.django_db
+def test_cv_config_renders_modal_shell(client_user_author_modal: Client):
+    response = client_user_author_modal.get("/author_modal/")
+    content = response.content.decode()
+    assert 'id="cv-modal"' in content
+    assert 'id="cv-modal-dialog"' in content
+    assert 'id="cv-modal-content"' in content

@@ -1,6 +1,6 @@
 {% load crud_views %}
 
-<form class="cv-form" method="post" novalidate>
+<form class="cv-form" method="post" action="{{ request.path }}" novalidate>
     {% csrf_token %}
 
     {{ form.non_form_errors }}

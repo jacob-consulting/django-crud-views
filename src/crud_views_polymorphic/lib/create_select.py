@@ -21,6 +21,7 @@ class PolymorphicContentTypeForm(forms.Form):
 
 class PolymorphicCreateSelectView(CrudView, generic.FormView):
     template_name = "crud_views/view_create.html"
+    cv_content_template = "crud_views/view_create.content.html"
     form_class = PolymorphicContentTypeForm
 
     cv_key = "create_select"

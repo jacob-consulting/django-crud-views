@@ -8,7 +8,14 @@ if TYPE_CHECKING:
     from django.contrib.auth.models import AbstractUser as User
 
 from crud_views.lib import check
-from crud_views.lib.check import Check, CheckAttributeReg, CheckAttribute, CheckTemplateOrCode, CheckTemplate
+from crud_views.lib.check import (
+    Check,
+    CheckAttributeReg,
+    CheckAttribute,
+    CheckTemplateOrCode,
+    CheckTemplate,
+    CheckExpression,
+)
 from crud_views.lib.exceptions import cv_raise, ParentViewSetError, CrudViewError, ViewSetKeyFoundError
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.db.models import Model
@@ -16,6 +23,7 @@ from django.shortcuts import get_object_or_404
 from django.template import Context as TemplateContext, Template
 from django.template.loader import render_to_string
 from django.urls import reverse
+from django.utils.cache import patch_vary_headers
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from typing_extensions import Self
@@ -24,6 +32,11 @@ from .buttons import ContextButton
 from .context import ViewContext
 from .meta import CrudViewMetaClass
 from ..settings import crud_views_settings
+
+
+def cv_is_modal_request(request) -> bool:
+    """True when the client asked for the modal partial (X-CV-Modal header)."""
+    return request.headers.get("X-CV-Modal") == "true"
 
 
 class CrudView(metaclass=CrudViewMetaClass):
@@ -48,6 +61,12 @@ class CrudView(metaclass=CrudViewMetaClass):
     cv_parent_key: str | None = "list"  # parent key, defaults to list todo: does this make sense at all?
 
     cv_extends_template: str | None = None  # template to extend
+
+    # modal rendering (Bootstrap 5 theme; see superpowers/specs/2026-07-14-bootstrap-modals-design.md)
+    cv_modal: bool = False  # opt-in: action buttons open this view in a modal
+    cv_modal_size: str = ""  # "" | "modal-sm" | "modal-lg" | "modal-xl"
+    cv_modal_supported: bool = False  # phase gate: which view types may set cv_modal
+    cv_content_template: str | None = None  # the view's body partial, shared by full page and modal
 
     # texts and labels
     cv_header_template: str | None = None  # template snippet to render header label
@@ -89,6 +108,19 @@ class CrudView(metaclass=CrudViewMetaClass):
             ]:
                 yield CheckTemplateOrCode(context=cls, attribute=attribute)
 
+        yield CheckExpression(
+            context=cls,
+            id="E250",
+            expression=cls.cv_modal_size in ("", "modal-sm", "modal-lg", "modal-xl"),
+            msg=f"cv_modal_size must be one of '', 'modal-sm', 'modal-lg', 'modal-xl', got {cls.cv_modal_size!r}",
+        )
+        yield CheckExpression(
+            context=cls,
+            id="E251",
+            expression=not cls.cv_modal or cls.cv_modal_supported,
+            msg="cv_modal is not supported for this view type (phase 1: delete, detail and custom form views)",
+        )
+
     def get_success_url(self) -> str:
         url = self.cv_get_url(key=self.cv_success_key, obj=getattr(self, "object", None))
         return url
@@ -100,6 +132,17 @@ class CrudView(metaclass=CrudViewMetaClass):
         context = super().get_context_data(**kwargs)
         context["cv_extends"] = self.cv_get_extends_template()
         return context
+
+    def get_template_names(self):
+        if self.cv_modal and cv_is_modal_request(self.request):
+            return ["crud_views/modal/content.html"]
+        return super().get_template_names()
+
+    def dispatch(self, request, *args, **kwargs):
+        response = super().dispatch(request, *args, **kwargs)
+        if self.cv_modal:
+            patch_vary_headers(response, ["X-CV-Modal"])
+        return response
 
     def cv_get_extends_template(self) -> str:
         if self.cv_extends_template:
@@ -221,6 +264,8 @@ class CrudView(metaclass=CrudViewMetaClass):
             cv_cancel_key=cls.cv_cancel_key,
             cv_icon_action=cls.cv_icon_action,
             cv_icon_header=cls.cv_icon_header,
+            cv_modal=cls.cv_modal,
+            cv_modal_size=cls.cv_modal_size,
         )
         data["cv_is_active"] = cls.cv_viewset.get_router_name(cls.cv_key) == context.router_name
         data.update(extra)

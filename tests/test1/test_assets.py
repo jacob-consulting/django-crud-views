@@ -1,5 +1,6 @@
 import pytest
 from django.core.exceptions import ImproperlyConfigured
+from django.template import Context, Template
 
 
 @pytest.fixture
@@ -51,3 +52,47 @@ def test_resolve_url(asset_registry):
     assert asset_registry.resolve_url("//cdn.example.com/x.js") == "//cdn.example.com/x.js"
     # STATIC_URL in tests/test1/conftest.py is "static/" (normalized to "/static/" by static())
     assert asset_registry.resolve_url("crud_views/js/viewset.js") == "/static/crud_views/js/viewset.js"
+
+
+def _render(tag: str) -> str:
+    return Template("{% load crud_views %}{% " + tag + " %}").render(Context({}))
+
+
+def test_cv_js_renders_core_then_registered(asset_registry):
+    asset_registry.register_assets(
+        key="picker",
+        js=["picker/plugin.js", "https://cdn.example.com/extra.js"],
+        css=["picker/plugin.css"],
+    )
+    html = _render("cv_js")
+    # core asset still present and resolved via static()
+    assert "/static/crud_views/js/viewset.js" in html
+    # registered static path resolved, external URL verbatim
+    assert "/static/picker/plugin.js" in html
+    assert 'src="https://cdn.example.com/extra.js"' in html
+    # order: core before registered
+    assert html.index("crud_views/js/viewset.js") < html.index("picker/plugin.js")
+
+
+def test_cv_css_renders_registered(asset_registry):
+    asset_registry.register_assets(key="picker", css=["picker/plugin.css"])
+    html = _render("cv_css")
+    assert "/static/crud_views/css/property.css" in html
+    assert "/static/picker/plugin.css" in html
+    assert html.index("property.css") < html.index("picker/plugin.css")
+
+
+def test_emit_false_not_rendered(asset_registry):
+    asset_registry.register_assets(key="picker", js=["picker/plugin.js"], emit=False)
+    html = _render("cv_js")
+    assert "picker/plugin.js" not in html
+
+
+def test_empty_registry_output_unchanged(asset_registry):
+    # regression guard: with nothing registered, all core assets and nothing else
+    html = _render("cv_js")
+    assert "/static/crud_views/js/viewset.js" in html
+    assert "/static/crud_views/js/formset.js" in html
+    assert "/static/crud_views/js/list.filter.js" in html
+    assert "/static/crud_views/js/modal.js" in html
+    assert html.count("<script") == 4

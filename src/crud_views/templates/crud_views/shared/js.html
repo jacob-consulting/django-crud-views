@@ -1,4 +1,3 @@
-{% load static %}
-{% for link in js.values %}
-    <script type="application/javascript" src="{% static link %}"></script>
+{% for item in js %}
+    <script type="application/javascript" src="{{ item.url }}"></script>
 {% endfor %}

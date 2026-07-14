@@ -1,6 +1,10 @@
+from pathlib import Path
+
 import pytest
 from django.core.exceptions import ImproperlyConfigured
 from django.template import Context, Template
+
+import crud_views_plain
 
 
 @pytest.fixture
@@ -96,3 +100,22 @@ def test_empty_registry_output_unchanged(asset_registry):
     assert "/static/crud_views/js/list.filter.js" in html
     assert "/static/crud_views/js/modal.js" in html
     assert html.count("<script") == 4
+
+
+def test_plain_theme_content_templates_render_form_media():
+    """Regression guard for the plain theme's widget-media bug.
+
+    Unlike the bootstrap5 theme (whose crispy `{% crispy %}` tag auto-includes
+    `{{ form.media }}`), the plain theme's `tags/form.html` renders `{{ form.as_table }}`
+    with no crispy and no media anywhere. Its create/update content templates must therefore
+    render `{{ form.media }}` explicitly, or widget CSS/JS is silently lost.
+
+    This asserts the directive's presence directly in the plain templates: a behavioral
+    render test cannot isolate this line in the test suite, because the active theme is
+    bootstrap5 (crispy auto-includes media, contaminating any rendered output) and
+    `crud_views_plain` is intentionally not in the test project's INSTALLED_APPS.
+    """
+    base = Path(crud_views_plain.__file__).parent / "templates" / "crud_views"
+    for name in ("view_create.content.html", "view_update.content.html"):
+        source = (base / name).read_text()
+        assert "{{ form.media }}" in source, f"plain theme {name} must render {{{{ form.media }}}}"

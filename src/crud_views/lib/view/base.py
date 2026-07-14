@@ -8,7 +8,14 @@ if TYPE_CHECKING:
     from django.contrib.auth.models import AbstractUser as User
 
 from crud_views.lib import check
-from crud_views.lib.check import Check, CheckAttributeReg, CheckAttribute, CheckTemplateOrCode, CheckTemplate
+from crud_views.lib.check import (
+    Check,
+    CheckAttributeReg,
+    CheckAttribute,
+    CheckTemplateOrCode,
+    CheckTemplate,
+    CheckExpression,
+)
 from crud_views.lib.exceptions import cv_raise, ParentViewSetError, CrudViewError, ViewSetKeyFoundError
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.db.models import Model
@@ -100,6 +107,19 @@ class CrudView(metaclass=CrudViewMetaClass):
                 "cv_action_short_label_template",
             ]:
                 yield CheckTemplateOrCode(context=cls, attribute=attribute)
+
+        yield CheckExpression(
+            context=cls,
+            id="E250",
+            expression=cls.cv_modal_size in ("", "modal-sm", "modal-lg", "modal-xl"),
+            msg=f"cv_modal_size must be one of '', 'modal-sm', 'modal-lg', 'modal-xl', got {cls.cv_modal_size!r}",
+        )
+        yield CheckExpression(
+            context=cls,
+            id="E251",
+            expression=not cls.cv_modal or cls.cv_modal_supported,
+            msg="cv_modal is not supported for this view type (phase 1: delete, detail and custom form views)",
+        )
 
     def get_success_url(self) -> str:
         url = self.cv_get_url(key=self.cv_success_key, obj=getattr(self, "object", None))

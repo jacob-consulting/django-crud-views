@@ -110,10 +110,13 @@ class AuthorDeleteView(CrispyModelViewMixin, MessageMixin, GuardianDeleteViewPer
     cv_message = _("Deleted author »{object}«")
     cv_show_related_objects = True
     cv_link_related_objects = True
+    cv_modal = True
+    cv_modal_size = "modal-lg"
 
 
 class AuthorDetailView(GuardianDetailViewPermissionRequired):
     cv_viewset = cv_author
+    cv_modal = True
 
     cv_property_display = [
         {
@@ -185,6 +188,7 @@ class AuthorContactView(MessageMixin, CrispyModelViewMixin, CustomFormViewPermis
     cv_path = "contact"
     cv_icon_action = "fa-solid fa-envelope"
     cv_viewset = cv_author
+    cv_modal = True
     form_class = AuthorContactForm
 
     cv_message_template_code = _("Successfully contacted author <strong>{{ object }}</strong>")

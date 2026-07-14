@@ -7,6 +7,7 @@ from .mixins import CrudViewProcessFormMixin
 
 class CreateView(CrudViewProcessFormMixin, CrudView, generic.CreateView):
     template_name = "crud_views/view_create.html"
+    cv_content_template = "crud_views/view_create.content.html"
 
     cv_key = "create"
     cv_object = False

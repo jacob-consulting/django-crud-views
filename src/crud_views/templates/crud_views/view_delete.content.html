@@ -14,7 +14,7 @@
         {% include "crud_views/snippets/delete/related_objects.html" %}
     {% endif %}
 
-    <form class="cv-form" method="post" novalidate>
+    <form class="cv-form" method="post" action="{{ request.path }}" novalidate>
         {% csrf_token %}
 
         {{ form.non_form_errors }}

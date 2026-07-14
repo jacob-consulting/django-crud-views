@@ -2,6 +2,7 @@
     <a href="{{ cv_url }}" class="btn btn-outline-primary {% if cv_is_active %}active{% endif %} btn-lg"
        role="button"
        title="{{ cv_action_label }}"
+       {% if cv_modal %}data-cv-modal="true" data-cv-modal-size="{{ cv_modal_size }}"{% endif %}
        cv-key="{{ cv_key }}">
         <i class="{{ cv_icon_action }}"></i>
     </a>

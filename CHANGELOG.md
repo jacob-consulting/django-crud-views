@@ -1,5 +1,19 @@
 # Django CRUD Views - Changelog
 
+## Unreleased
+
+### Added
+- Asset registry: apps can contribute JS/CSS to `{% cv_js %}`/`{% cv_css %}` via
+  `crud_views.lib.assets.register_assets()` in `AppConfig.ready()`. Supports static
+  paths and external URLs, `emit=False` suppression for bundler setups, and a
+  reusable vendor helper (`crud_views.lib.vendor`) with drift checks W330/W331.
+  See `docs/reference/assets.md`.
+
+### Fixed
+- Plain theme: create and update views now render `{{ form.media }}`, so form widgets
+  that declare a `Media` class no longer lose their CSS/JS on the plain theme. The
+  bootstrap5 theme already emits widget media via crispy-forms and is unaffected.
+
 ## 0.10.2
 
 ### Fixed

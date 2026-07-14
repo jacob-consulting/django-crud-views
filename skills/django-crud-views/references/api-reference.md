@@ -303,6 +303,33 @@ Add `"redirect_child"` (or the specific cv_key) to `cv_list_actions`.
 
 ---
 
+### Modal rendering (cv_modal)
+
+Opt-in Bootstrap 5 modal rendering for a single view. Buttons that link to the view open it in a modal
+dialog (same URL, fetched via an `X-CV-Modal: true` header) instead of navigating to a full page.
+
+| Attribute | Type | Default | Notes |
+|---|---|---|---|
+| `cv_modal` | bool | `False` | Opt in. Only allowed on `DeleteView`, `DetailView`, `CustomFormView`, `CustomFormNoObjectView` (and variants) — otherwise `viewset.E251`. |
+| `cv_modal_size` | str | `""` | One of `""`, `"modal-sm"`, `"modal-lg"`, `"modal-xl"` — otherwise `viewset.E250`. |
+
+```python
+class AuthorDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequired):
+    form_class = CrispyDeleteForm
+    cv_viewset = cv_author
+    cv_modal = True
+    cv_modal_size = "modal-lg"
+```
+
+Protocol: modal GET returns the modal partial (`200`, `Vary: X-CV-Modal`); POST success returns `204` +
+`X-CV-Redirect` (browser navigates; messages/`cv_success_key` unaffected); invalid form / delete
+protection re-renders the partial with `422`. No project template, JS, URL, or settings changes are
+needed — the shell comes from `{% cv_config %}` and the transport JS from `{% cv_js %}`. Degrades to the
+full page for direct links, no-JS, and the `crud_views_plain` theme. See the `Modal Views` section in
+SKILL.md and `docs/reference/modals.md` for the full guide.
+
+---
+
 ## Context Buttons
 
 Context buttons appear in the `cv_context_actions` area (typically top-right of a view). The ViewSet's `context_buttons` list controls which custom buttons are available. Default buttons: `home` (link to list), `parent` (link to parent viewset), `filter` (toggle filter form; hidden when `cv_filter_pinned` is set).

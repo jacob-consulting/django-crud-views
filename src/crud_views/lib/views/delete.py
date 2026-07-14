@@ -22,6 +22,8 @@ class RelatedObjects(NamedTuple):
 
 class DeleteView(CrudViewProcessFormMixin, CrudView, generic.DeleteView):
     template_name = "crud_views/view_delete.html"
+    cv_content_template = "crud_views/view_delete.content.html"
+    cv_modal_supported = True
 
     cv_key = "delete"
     cv_path = "delete"

@@ -197,6 +197,7 @@ class ListViewTableMixin(SingleTableMixin):
     """
 
     template_name = "crud_views/view_list_table.html"
+    cv_content_template = "crud_views/view_list_table.content.html"
 
     table: SingleTableMixin = None
     table_class: str = None

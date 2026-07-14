@@ -1,0 +1,8 @@
+{% load crud_views i18n %}
+<div class="modal-header">
+    <h5 class="modal-title">{% cv_header_icon %} {% cv_header %}</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% translate 'Close' %}"></button>
+</div>
+<div class="modal-body">
+    {% include view.cv_content_template %}
+</div>

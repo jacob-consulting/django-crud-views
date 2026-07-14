@@ -7,6 +7,7 @@ from .mixins import CrudViewProcessFormMixin
 
 class UpdateView(CrudViewProcessFormMixin, CrudView, generic.UpdateView):
     template_name = "crud_views/view_update.html"
+    cv_content_template = "crud_views/view_update.content.html"
 
     cv_key = "update"
     cv_path = "update"

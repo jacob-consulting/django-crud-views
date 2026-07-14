@@ -688,3 +688,51 @@ def user_publisher_formset(cv_publisher_formset):
 def client_user_publisher_formset(client, user_publisher_formset) -> Client:
     client.force_login(user_publisher_formset)
     return client
+
+
+# --- Author Modal fixtures ---
+
+
+@pytest.fixture
+def cv_author_modal():
+    from tests.test1.app.views import cv_author_modal as ret
+
+    return ret
+
+
+@pytest.fixture
+def user_author_modal(cv_author_modal):
+    from django.contrib.auth.models import User
+
+    user = User.objects.create_user(username="user_author_modal", password="password")
+    user_viewset_permission(user, cv_author_modal, "view")
+    user_viewset_permission(user, cv_author_modal, "delete")
+    return user
+
+
+@pytest.fixture
+def client_user_author_modal(client, user_author_modal) -> Client:
+    client.force_login(user_author_modal)
+    return client
+
+
+@pytest.fixture
+def cv_publisher_modal_protected():
+    from tests.test1.app.views import cv_publisher_modal_protected as ret
+
+    return ret
+
+
+@pytest.fixture
+def user_publisher_modal_protected_delete(cv_publisher_modal_protected):
+    from django.contrib.auth.models import User
+
+    user = User.objects.create_user(username="user_publisher_modal_protected_delete", password="password")
+    user_viewset_permission(user, cv_publisher_modal_protected, "delete")
+    return user
+
+
+@pytest.fixture
+def client_user_publisher_modal_protected_delete(client, user_publisher_modal_protected_delete) -> Client:
+    client.force_login(user_publisher_modal_protected_delete)
+    return client

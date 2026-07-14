@@ -15,6 +15,7 @@ except ImportError:
 
 class ListView(CrudView, generic.ListView):
     template_name = "crud_views/view_list.html"
+    cv_content_template = "crud_views/view_list.content.html"
 
     cv_pk: bool = False  # does not need primary key
     cv_key = "list"

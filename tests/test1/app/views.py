@@ -3,6 +3,7 @@ import django_tables2 as tables
 import django_filters
 
 from django.forms import modelform_factory
+from django.forms.fields import CharField
 
 from django.core.exceptions import ValidationError
 
@@ -51,7 +52,7 @@ from crud_views_guardian.lib.views import (
 )
 from crud_views_workflow.lib.forms import WorkflowForm
 from crud_views_workflow.lib.views import WorkflowViewPermissionRequired
-from crud_views.lib.crispy import Column4, Column6
+from crud_views.lib.crispy import Column4, Column6, Column12
 from crispy_forms.layout import Row, Layout
 
 cv_author = ViewSet(model=Author, name="author", icon_header="fa-regular fa-user")
@@ -797,3 +798,80 @@ class CustomGuardianManageViewForTest(ManageView):
     """Importable subclass used by test_guardian.py to verify manage_view_class on GuardianViewSet."""
 
     pass
+
+
+# --- Author Modal (UUID PK, cv_modal=True on delete/detail/custom form) ---
+
+cv_author_modal = ViewSet(
+    model=Author,
+    name="author_modal",
+)
+
+
+class AuthorModalListView(ListViewTableMixin, ListViewPermissionRequired):
+    table_class = AuthorTable
+    cv_viewset = cv_author_modal
+
+
+class AuthorModalDetailView(DetailViewPermissionRequired):
+    cv_viewset = cv_author_modal
+    cv_modal = True
+    cv_property_display = [
+        {"title": "Attributes", "properties": ["first_name", "last_name"]},
+    ]
+
+
+class AuthorModalDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequired):
+    form_class = CrispyDeleteForm
+    cv_viewset = cv_author_modal
+    cv_modal = True
+    cv_modal_size = "modal-lg"
+
+
+class AuthorModalContactForm(CrispyModelForm):
+    submit_label = "Send"
+    subject = CharField(label="Subject", required=True)
+    body = CharField(label="Body", required=True)
+
+    class Meta:
+        model = Author
+        fields = ["subject", "body"]
+
+    def get_layout_fields(self):
+        return Column12("subject"), Column12("body")
+
+
+class AuthorModalContactView(MessageMixin, CrispyModelViewMixin, CustomFormViewPermissionRequired):
+    cv_key = "contact"
+    cv_path = "contact"
+    cv_viewset = cv_author_modal
+    cv_modal = True
+    form_class = AuthorModalContactForm
+    cv_icon_action = "fa-solid fa-envelope"
+    cv_message_template_code = "Contacted author"
+    cv_header_template_code = "Contact"
+    cv_paragraph_template_code = "Contact the author"
+    cv_action_label_template_code = "Contact"
+    cv_action_short_label_template_code = "Contact"
+
+
+# --- Publisher Modal Protected (INT PK, cv_modal + delete protection) ---
+
+cv_publisher_modal_protected = ViewSet(
+    model=Publisher,
+    name="publisher_modal_protected",
+)
+
+
+class PublisherModalProtectedListView(ListViewTableMixin, ListViewPermissionRequired):
+    table_class = PublisherTable
+    cv_viewset = cv_publisher_modal_protected
+
+
+class PublisherModalProtectedDeleteView(CrispyModelViewMixin, DeleteViewPermissionRequired):
+    form_class = CrispyDeleteForm
+    cv_viewset = cv_publisher_modal_protected
+    cv_modal = True
+
+    def cv_check_delete_protection(self) -> list[str]:
+        return ["Cannot delete this publisher."]

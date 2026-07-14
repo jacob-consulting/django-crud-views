@@ -1,6 +1,6 @@
 # Django CRUD Views - Changelog
 
-## Unreleased
+## 0.11.0
 
 ### Added
 - Asset registry: apps can contribute JS/CSS to `{% cv_js %}`/`{% cv_css %}` via

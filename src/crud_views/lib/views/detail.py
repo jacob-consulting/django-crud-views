@@ -11,6 +11,8 @@ from crud_views.lib.views.detail_custom import DetailCustomView
 
 class DetailView(ObjectDetailMixin, DetailCustomView):
     template_name = "crud_views/view_detail.html"
+    cv_content_template = "crud_views/view_detail.content.html"
+    cv_modal_supported = True
 
     cv_property_display: list | None = None
 

@@ -8,6 +8,7 @@ from crud_views.lib.settings import crud_views_settings
 
 class CardListView(CardOrderMixin, CrudView, generic.ListView):
     template_name = "crud_views/view_card.html"
+    cv_content_template = "crud_views/view_card.content.html"
 
     cv_pk: bool = False
     cv_key = "card"

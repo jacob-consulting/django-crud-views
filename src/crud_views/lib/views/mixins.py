@@ -4,14 +4,14 @@ from urllib.parse import parse_qs, urlencode
 
 from django.contrib import messages
 from django.core.exceptions import BadRequest
-from django.http import HttpResponseRedirect
-from django.http import JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
 
 from crud_views.lib.check import Check, CheckTemplateOrCode
 from crud_views.lib.session import SessionData
 from crud_views.lib.settings import crud_views_settings
+from crud_views.lib.view.base import cv_is_modal_request
 
 
 class CrudViewProcessFormMixin:
@@ -68,9 +68,13 @@ class CrudViewProcessFormMixin:
 
     def cv_form_invalid(self, context: dict):
         """
-        Handle invalid form
+        Handle invalid form; modal requests are answered with 422 so the client
+        can distinguish the re-rendered partial from a confirmation page.
         """
-        return self.render_to_response(context)
+        response = self.render_to_response(context)
+        if self.cv_modal and cv_is_modal_request(self.request):
+            response.status_code = 422
+        return response
 
     def cv_form_invalid_hook(self, context: dict):
         """
@@ -78,11 +82,18 @@ class CrudViewProcessFormMixin:
         """
         pass
 
-    def cv_form_valid_redirect(self, context: dict) -> HttpResponseRedirect:
+    def cv_form_valid_redirect(self, context: dict) -> HttpResponse:
         """
-        Redirect to the success url
+        Redirect to the success url.
+        Modal requests get 204 + X-CV-Redirect instead of a 302: fetch() follows
+        redirects transparently, so the client needs the target as data.
         """
-        return HttpResponseRedirect(self.get_success_url())
+        url = self.get_success_url()
+        if self.cv_modal and cv_is_modal_request(self.request):
+            response = HttpResponse(status=204)
+            response["X-CV-Redirect"] = url
+            return response
+        return HttpResponseRedirect(url)
 
     def cv_form_invalid_redirect(self, context: dict) -> HttpResponseRedirect:
         """

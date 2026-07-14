@@ -9,6 +9,7 @@ from django.views import generic
 
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import CrudView, CrudViewPermissionRequiredMixin
+from crud_views.lib.view.base import cv_is_modal_request
 from crud_views.lib.views.mixins import CrudViewProcessFormMixin
 
 logger = logging.getLogger(__name__)
@@ -173,7 +174,10 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, generic.DeleteView):
                 form = context["form"]
                 for error in errors:
                     form.add_error(None, error)
-                return self.render_to_response(context)
+                response = self.render_to_response(context)
+                if self.cv_modal and cv_is_modal_request(self.request):
+                    response.status_code = 422
+                return response
             self.cv_form_valid(context)
             self.cv_form_valid_hook(context)
             return self.cv_form_valid_redirect(context)

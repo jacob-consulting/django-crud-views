@@ -114,8 +114,16 @@ def test_plain_theme_content_templates_render_form_media():
     render test cannot isolate this line in the test suite, because the active theme is
     bootstrap5 (crispy auto-includes media, contaminating any rendered output) and
     `crud_views_plain` is intentionally not in the test project's INSTALLED_APPS.
+
+    Covers all four plain content templates that render a form via `{% cv_render_form %}`:
+    create, update, custom-form, and delete.
     """
     base = Path(crud_views_plain.__file__).parent / "templates" / "crud_views"
-    for name in ("view_create.content.html", "view_update.content.html"):
+    for name in (
+        "view_create.content.html",
+        "view_update.content.html",
+        "view_custom_form.content.html",
+        "view_delete.content.html",
+    ):
         source = (base / name).read_text()
         assert "{{ form.media }}" in source, f"plain theme {name} must render {{{{ form.media }}}}"

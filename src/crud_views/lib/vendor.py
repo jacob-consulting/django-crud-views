@@ -20,11 +20,11 @@ STAMP_NAME = ".vendored"
 
 @dataclass(frozen=True)
 class VendorSpec:
-    key: str            # registry/bundle key, e.g. "datetimepicker"
-    version: str        # pinned upstream version
-    base_url: str       # URL template containing {version}
-    files: tuple        # filenames to download
-    target: Path        # destination directory (should embed the version in its path)
+    key: str  # registry/bundle key, e.g. "datetimepicker"
+    version: str  # pinned upstream version
+    base_url: str  # URL template containing {version}
+    files: tuple  # filenames to download
+    target: Path  # destination directory (should embed the version in its path)
 
     @property
     def resolved_base_url(self) -> str:

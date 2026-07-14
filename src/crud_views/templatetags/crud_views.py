@@ -3,6 +3,7 @@ from django.template.loader import get_template, render_to_string
 from django.utils.safestring import mark_safe
 from django_tables2.templatetags import django_tables2 as _dt2
 
+from crud_views.lib import assets
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.exceptions import ViewSetKeyFoundError, ignore_exception
 from crud_views.lib.view import CrudView
@@ -17,12 +18,18 @@ _querystring_impl = getattr(_dt2, "querystring_replace", None) or _dt2.querystri
 
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/shared/css.html", takes_context=True)
 def cv_css(context):
-    return {"css": crud_views_settings.css}
+    entries = list(crud_views_settings.css.values())
+    for bundle in assets.get_registered(only_emitting=True):
+        entries.extend(bundle.css)
+    return {"css": [{"url": assets.resolve_url(entry)} for entry in entries]}
 
 
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/shared/js.html", takes_context=True)
 def cv_js(context):
-    return {"js": crud_views_settings.javascript}
+    entries = list(crud_views_settings.javascript().values())
+    for bundle in assets.get_registered(only_emitting=True):
+        entries.extend(bundle.js)
+    return {"js": [{"url": assets.resolve_url(entry)} for entry in entries]}
 
 
 def cv_get_view(context) -> CrudView:

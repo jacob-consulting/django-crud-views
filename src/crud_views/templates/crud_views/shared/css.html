@@ -1,4 +1,3 @@
-{% load static %}
-{% for link in css.values %}
-    <link rel="stylesheet" href="{% static link %}">
+{% for item in css %}
+    <link rel="stylesheet" href="{{ item.url }}">
 {% endfor %}

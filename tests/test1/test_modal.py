@@ -141,3 +141,52 @@ def test_non_modal_post_flows_unchanged(client_user_author_modal: Client, author
     response = client_user_author_modal.post(f"/author_modal/{author_douglas_adams.pk}/delete/", {"confirm": True})
     assert response.status_code == 302
     assert response.url == "/author_modal/"
+
+
+# ---------------------------------------------------------------------------
+# System checks (Task 4)
+# ---------------------------------------------------------------------------
+
+
+def check_ids(view_cls) -> list:
+    return [m.id for c in view_cls.checks() for m in c.messages()]
+
+
+def test_check_modal_size_invalid():
+    from crud_views.lib.views import DeleteView
+
+    class BadSizeDeleteView(DeleteView):
+        cv_modal = True
+        cv_modal_size = "modal-huge"
+
+    assert "viewset.E250" in check_ids(BadSizeDeleteView)
+
+
+def test_check_modal_size_valid_values():
+    from crud_views.lib.views import DeleteView
+
+    for size in ("", "modal-sm", "modal-lg", "modal-xl"):
+
+        class GoodSizeDeleteView(DeleteView):
+            cv_modal = True
+            cv_modal_size = size
+
+        assert "viewset.E250" not in check_ids(GoodSizeDeleteView)
+
+
+def test_check_modal_not_supported_on_create():
+    from crud_views.lib.views import CreateView
+
+    class BadModalCreateView(CreateView):
+        cv_modal = True
+
+    assert "viewset.E251" in check_ids(BadModalCreateView)
+
+
+def test_check_modal_supported_on_delete():
+    from crud_views.lib.views import DeleteView
+
+    class GoodModalDeleteView(DeleteView):
+        cv_modal = True
+
+    assert "viewset.E251" not in check_ids(GoodModalDeleteView)

@@ -225,3 +225,24 @@ def test_cv_config_renders_modal_shell(client_user_author_modal: Client):
     assert 'id="cv-modal"' in content
     assert 'id="cv-modal-dialog"' in content
     assert 'id="cv-modal-content"' in content
+
+
+# ---------------------------------------------------------------------------
+# modal.js registration (Task 6) — JS behavior itself is verified manually
+# in examples/bootstrap5 (see design spec, testing decision)
+# ---------------------------------------------------------------------------
+
+
+def test_modal_js_registered_and_shipped():
+    from django.contrib.staticfiles import finders
+
+    from crud_views.lib.settings import crud_views_settings
+
+    assert crud_views_settings.javascript()["modal"] == "crud_views/js/modal.js"
+    assert finders.find("crud_views/js/modal.js")
+
+
+@pytest.mark.django_db
+def test_cv_js_tag_includes_modal_js(client_user_author_modal: Client):
+    response = client_user_author_modal.get("/author_modal/")
+    assert "crud_views/js/modal.js" in response.content.decode()

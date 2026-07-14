@@ -120,6 +120,7 @@ class CrudViewsSettings(BaseModel):
                 "viewset": self.get_js("viewset.js"),
                 "formset": self.get_js("formset.js"),
                 "list_filter": self.get_js("list.filter.js"),
+                "modal": self.get_js("modal.js"),
             }
         )
 

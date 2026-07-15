@@ -736,3 +736,47 @@ def user_publisher_modal_protected_delete(cv_publisher_modal_protected):
 def client_user_publisher_modal_protected_delete(client, user_publisher_modal_protected_delete) -> Client:
     client.force_login(user_publisher_modal_protected_delete)
     return client
+
+
+# --- S3File (resource) fixtures ---
+
+
+@pytest.fixture
+def cv_s3file():
+    from tests.test1.app.resources import cv_s3file as ret
+
+    return ret
+
+
+@pytest.fixture
+def user_s3file_view(cv_s3file):
+    from django.contrib.auth.models import User
+
+    user = User.objects.create_user(username="user_s3file_view", password="password")
+
+    user_viewset_permission(user, cv_s3file, "view")
+
+    return user
+
+
+@pytest.fixture
+def client_user_s3file_view(client, user_s3file_view) -> Client:
+    client.force_login(user_s3file_view)
+    return client
+
+
+@pytest.fixture
+def user_s3file_delete(cv_s3file):
+    from django.contrib.auth.models import User
+
+    user = User.objects.create_user(username="user_s3file_delete", password="password")
+
+    user_viewset_permission(user, cv_s3file, "delete")
+
+    return user
+
+
+@pytest.fixture
+def client_user_s3file_delete(client, user_s3file_delete) -> Client:
+    client.force_login(user_s3file_delete)
+    return client

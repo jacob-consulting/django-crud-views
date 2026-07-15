@@ -4,6 +4,6 @@
        title="{{ cv_action_label }}"
        {% if cv_modal %}data-cv-modal="true" data-cv-modal-size="{{ cv_modal_size }}"{% endif %}
        cv-key="{{ cv_key }}">
-        <i class="{{ cv_icon_action }}"></i>
+        {% if cv_icon_action %}<i class="{{ cv_icon_action }}"></i>{% endif %}
     </a>
 {% endif %}

@@ -7,7 +7,10 @@ from django.template.loader import get_template
 from pydantic import BaseModel
 
 REGS = {
-    "name": {"reg": re.compile(r"^[a-z_]+$"), "msg": "must be lowercase alpha with underscores"},
+    "name": {
+        "reg": re.compile(r"^[a-z][a-z0-9_]*$"),
+        "msg": "must be lowercase alpha with underscores, digits allowed after the first character",
+    },
     "path": {
         "reg": re.compile(r"^$|^[a-z0-9_-]+(?:/[a-z0-9_-]+)*$"),
         "msg": "must be lowercase alpha with underscores and dashes and must not start or end with a slash",

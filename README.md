@@ -76,6 +76,7 @@ cross-linked, and access gated by Django's permission system.
 - **Your app, your control** — your templates, URLs and permissions; not locked inside `/admin`.
 - **Batteries included** — sortable, filterable, paginated tables, crispy forms and per-object permissions, integrated out of the box.
 - **Grows with you** — nested parent/child URLs from ForeignKeys, plus optional workflow (FSM) and polymorphic models; Django system checks catch misconfiguration at startup.
+- **Resources** — render non-ORM data (S3 listings, API results) through ViewSets: list, detail and custom actions without a Django model. See [docs](https://django-crud-views.readthedocs.io/en/latest/reference/resources/).
 
 Built on [django-tables2](https://django-tables2.readthedocs.io/en/latest/), [django-filter](https://django-filter.readthedocs.io/en/stable/), [django-crispy-forms](https://django-crispy-forms.readthedocs.io/en/latest/), [django-polymorphic](https://django-polymorphic.readthedocs.io/en/stable/), [django-guardian](https://django-guardian.readthedocs.io/), [django-ordered-model](https://github.com/django-ordered-model/django-ordered-model) and [django-object-detail](https://django-object-detail.readthedocs.io/en/latest/).
 

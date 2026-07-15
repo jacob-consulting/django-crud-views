@@ -1403,6 +1403,227 @@ git commit -m "docs: Resources — non-ORM data in ViewSets"
 
 ---
 
+### Task 8: Demo in examples/bootstrap5
+
+**Files:**
+- Modify: `examples/bootstrap5/app/models/__init__.py` (append `S3FilePermissions`)
+- Create: `examples/bootstrap5/app/migrations/00XX_s3filepermissions.py` (generated via `makemigrations`)
+- Create: `examples/bootstrap5/app/views/s3.py`
+- Create: `examples/bootstrap5/app/templates/app/s3file_detail.html`
+- Modify: `examples/bootstrap5/app/urls.py`
+- Modify: `examples/bootstrap5/app/templates/app/nav.html`
+
+**Interfaces:**
+- Consumes: everything from Tasks 1–6 (`Resource`, `ResourceViewMixin`, `resource_permissions`); example-app conventions: one module per ViewSet in `app/views/` (pattern: `app/views/foo.py`), `urls.py` imports each `cv_*` and appends `.urlpatterns`, nav links use router names `<name>-list`.
+- Produces: a browsable `/s3file/` demo in the bootstrap5 example (list, detail, delete-with-confirm, touch action) backed by an in-memory fake bucket. No changes to `examples/plain` (optional follow-up).
+
+Demo-scope notes: the fake bucket is module-level state — it resets on server restart, which is fine (and self-healing) for a demo. The example's superuser passes every permission check, so no demo-user permission seeding is needed; the permission-holder model exists to make the demo honest (and lets someone experiment with non-superuser accounts).
+
+- [ ] **Step 1: Add the permission-holder model** (append to `examples/bootstrap5/app/models/__init__.py`)
+
+```python
+class S3FilePermissions(models.Model):
+    """
+    Permission holder for the S3File Resource demo: unmanaged, no table —
+    exists only so ContentType/Permission rows are created.
+    """
+
+    class Meta:
+        managed = False
+        default_permissions = ()
+        permissions = [
+            ("view_s3file", _("Can view S3 files")),
+            ("delete_s3file", _("Can delete S3 files")),
+        ]
+```
+
+- [ ] **Step 2: Generate the migration**
+
+Run: `cd examples/bootstrap5 && uv run python manage.py makemigrations app`
+Expected: one new migration creating `S3FilePermissions` (state-only — `managed = False` means no table operations).
+Then: `uv run python manage.py migrate`
+Expected: applies cleanly; `Permission.objects.filter(codename__endswith="_s3file").count() == 2` afterwards (spot-check via `uv run python manage.py shell -c "from django.contrib.auth.models import Permission; print(Permission.objects.filter(codename__endswith='_s3file').count())"`).
+
+- [ ] **Step 3: Create `examples/bootstrap5/app/views/s3.py`**
+
+Mirror of the test-app wiring, bootstrap5-flavored (module docstring says what it demonstrates):
+
+```python
+"""
+Resource demo: a ViewSet over non-ORM data (a fake in-memory S3 bucket).
+
+Demonstrates: Resource + ResourceViewMixin, md5-hashed pks for path-like
+keys, explicit resource_permissions, delete-with-confirm via CustomFormView,
+and a form-less ActionView. The bucket resets on server restart.
+"""
+
+import hashlib
+
+import django_tables2 as tables
+
+from crud_views.lib.crispy import CrispyModelViewMixin, CrispyDeleteForm
+from crud_views.lib.resource import Resource, ResourceViewMixin
+from crud_views.lib.table import Table
+from crud_views.lib.views import (
+    ActionViewPermissionRequired,
+    DetailCustomViewPermissionRequired,
+    ListViewPermissionRequired,
+    ListViewTableMixin,
+    MessageMixin,
+)
+from crud_views.lib.views.form import CustomFormViewPermissionRequired
+from crud_views.lib.viewset import ViewSet
+from crud_views.lib.viewset.path_regs import PrimaryKeys
+
+FAKE_BUCKET = [
+    {"key": "reports/2026/q1.pdf", "size": 431_872},
+    {"key": "reports/2026/q2.pdf", "size": 512_004},
+    {"key": "images/logo.png", "size": 24_117},
+    {"key": "backups/2026-07-01.tar.gz", "size": 10_485_760},
+]
+
+
+class S3File(Resource):
+    key: str
+    size: int
+
+    class Meta:
+        verbose_name = "s3 file"
+        verbose_name_plural = "s3 files"
+        app_label = "app"
+        pk_field = "key_md5"
+        pk_type = PrimaryKeys.HEX
+
+    @property
+    def key_md5(self) -> str:
+        # S3 keys contain "/" — hash them into a URL-safe pk (docs: Resources)
+        return hashlib.md5(self.key.encode()).hexdigest()
+
+    def __str__(self) -> str:
+        return self.key
+
+    @classmethod
+    def cv_get_items(cls, request, **url_kwargs):
+        return [cls.model_validate(row) for row in FAKE_BUCKET]
+
+
+cv_s3file = ViewSet(
+    model=S3File,
+    name="s3file",
+    icon_header="fa-solid fa-cloud",
+    resource_permissions={
+        "view": "app.view_s3file",
+        "delete": "app.delete_s3file",
+    },
+)
+
+
+class S3FileTable(Table):
+    key = tables.Column()
+    size = tables.Column()
+
+
+class S3FileListView(ResourceViewMixin, ListViewTableMixin, ListViewPermissionRequired):
+    cv_viewset = cv_s3file
+    table_class = S3FileTable
+    cv_list_actions = ["detail", "delete", "touch"]
+
+
+class S3FileDetailView(ResourceViewMixin, DetailCustomViewPermissionRequired):
+    cv_viewset = cv_s3file
+    template_name = "app/s3file_detail.html"
+
+
+class S3FileDeleteView(ResourceViewMixin, CrispyModelViewMixin, MessageMixin, CustomFormViewPermissionRequired):
+    cv_key = "delete"
+    cv_path = "delete"
+    cv_viewset = cv_s3file
+    cv_permission = "delete"
+    form_class = CrispyDeleteForm
+    cv_message_template_code = "Deleted »{{ object }}«"
+    cv_header_template_code = "Delete S3 file"
+    cv_paragraph_template_code = "Confirm deletion of »{{ object }}«"
+
+    def cv_form_valid(self, context):
+        # in a real project: boto3 delete_object(Bucket=..., Key=self.object.key)
+        FAKE_BUCKET[:] = [row for row in FAKE_BUCKET if row["key"] != self.object.key]
+
+
+class S3FileTouchView(ResourceViewMixin, ActionViewPermissionRequired):
+    cv_key = "touch"
+    cv_path = "touch"
+    cv_viewset = cv_s3file
+    cv_permission = "delete"
+    cv_backend_only = True
+    cv_message_template_code = "Touched »{{ object }}«"
+    cv_message_template_error_code = "Touch failed for »{{ object }}«"
+
+    def action(self, context) -> bool:
+        # in a real project: e.g. copy_object onto itself to refresh metadata
+        return True
+```
+
+- [ ] **Step 4: Create `examples/bootstrap5/app/templates/app/s3file_detail.html`**
+
+```html
+{% extends cv_extends %}
+
+{% block cv_content %}
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">{{ object.key }}</h5>
+        <p class="card-text">{{ object.size }} bytes</p>
+    </div>
+</div>
+{% endblock cv_content %}
+```
+
+- [ ] **Step 5: Wire URLs and nav**
+
+`examples/bootstrap5/app/urls.py` — add with the other view imports:
+
+```python
+from app.views.s3 import cv_s3file
+```
+
+and append where the other `cv_*.urlpatterns` are added:
+
+```python
+urlpatterns += cv_s3file.urlpatterns
+```
+
+`examples/bootstrap5/app/templates/app/nav.html` — add a nav item next to the existing ones (e.g. after Foo):
+
+```html
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url "s3file-list" %}">S3 Files</a>
+                </li>
+```
+
+(Router name is `<viewset name>-list` — same convention as `foo-list`; confirm against `ViewSet.get_router_name` if the reverse fails.)
+
+- [ ] **Step 6: Smoke-test the example app**
+
+Run: `cd examples/bootstrap5 && uv run python manage.py check`
+Expected: no errors (in particular no E260/E262 — the demo declares both permission keys and registers no write views).
+Run: `uv run python manage.py runserver` briefly, log in as the demo superuser, and click through: `/s3file/` list (4 rows, action buttons), a detail page, the delete confirm + submit (row disappears until restart), the touch action (success message). Stop the server.
+
+- [ ] **Step 7: Full test suite still green, format, lint**
+
+Run: `cd tests && pytest`
+Run from repo root: `task format && task check`
+
+- [ ] **Step 8: Commit**
+
+```bash
+git add examples/bootstrap5/app/models/__init__.py examples/bootstrap5/app/migrations \
+        examples/bootstrap5/app/views/s3.py examples/bootstrap5/app/templates/app/s3file_detail.html \
+        examples/bootstrap5/app/urls.py examples/bootstrap5/app/templates/app/nav.html
+git commit -m "docs(example): S3 Resource demo in bootstrap5 example app"
+```
+
+---
+
 ## Out of scope (do not implement, documented as v2 in the spec)
 
 - In-memory `ResourceFilter` (spec §10.1)
@@ -1413,5 +1634,5 @@ git commit -m "docs: Resources — non-ORM data in ViewSets"
 
 - `cd tests && pytest` — full suite green (474+ existing tests + ~35 new)
 - `task check` — clean
-- `git log --oneline` — 7 feature/docs commits
+- `git log --oneline` — 8 feature/docs/example commits
 - Manual spec walk: every row of spec §3's coupling-point table has its strategy implemented (1,2,3 → Task 2; 4,5 → Task 1 shim + Task 3 session test; 6 → Task 3 mixin; 7 → Task 2; 8 → Task 5)

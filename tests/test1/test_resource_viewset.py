@@ -168,3 +168,13 @@ def test_no_new_errors_for_plain_resource_viewset(vs_t2):
     assert "viewset.E260" not in ids
     assert "viewset.E261" not in ids
     assert "viewset.E262" not in ids
+
+
+def test_e002_name_with_digits_is_valid():
+    vs = ViewSet(model=T5Item, name="t8_s3name_ok", resource_permissions=None)
+    assert "viewset.E002" not in check_error_ids(vs)
+
+
+def test_e002_name_starting_with_digit_is_invalid():
+    vs = ViewSet(model=T5Item, name="3file", resource_permissions=None)
+    assert "viewset.E002" in check_error_ids(vs)

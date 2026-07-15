@@ -80,3 +80,63 @@ def test_session_data_app_label_shim():
         model = S3File
 
     assert SessionData(view=_StubView()).app_label == "app"
+
+
+@pytest.mark.django_db
+def test_delete_get_renders_confirm_form(client_user_s3file_delete: Client, s3_bucket):
+    response = client_user_s3file_delete.get(f"/s3file/{md5('images/logo.png')}/delete/")
+    assert response.status_code == 200
+    content = response.content.decode()
+    assert "images/logo.png" in content
+    assert "<form" in content
+
+
+@pytest.mark.django_db
+def test_delete_post_removes_item_and_redirects(client_user_s3file_delete: Client, s3_bucket):
+    response = client_user_s3file_delete.post(f"/s3file/{md5('images/logo.png')}/delete/", {})
+    assert response.status_code == 302
+    assert response.url == "/s3file/"
+    assert not any(row["key"] == "images/logo.png" for row in s3_bucket)
+    assert len(s3_bucket) == 2
+
+
+@pytest.mark.django_db
+def test_delete_requires_delete_permission(client_user_s3file_view: Client, s3_bucket):
+    # view-only user: 403, bucket untouched
+    response = client_user_s3file_view.post(f"/s3file/{md5('images/logo.png')}/delete/", {})
+    assert response.status_code == 403
+    assert len(s3_bucket) == 3
+
+
+@pytest.mark.django_db
+def test_touch_action_success(client_user_s3file_delete: Client, s3_bucket):
+    from tests.test1.app import resources
+
+    resources.TOUCHED.clear()
+    response = client_user_s3file_delete.post(f"/s3file/{md5('reports/2026/q1.pdf')}/touch/", follow=True)
+    assert response.status_code == 200
+    assert resources.TOUCHED == ["reports/2026/q1.pdf"]
+    assert "Touched" in response.content.decode()
+
+
+@pytest.mark.django_db
+def test_touch_action_error_branch(client_user_s3file_delete: Client, s3_bucket):
+    from tests.test1.app import resources
+
+    resources.TOUCHED.clear()
+    response = client_user_s3file_delete.post(f"/s3file/{md5('reports/2026/q1.pdf')}/touch/?fail=1", follow=True)
+    assert response.status_code == 200
+    assert resources.TOUCHED == []
+    assert "Touch failed" in response.content.decode()
+
+
+@pytest.mark.django_db
+def test_touch_requires_delete_permission(client_user_s3file_view: Client, s3_bucket):
+    response = client_user_s3file_view.post(f"/s3file/{md5('reports/2026/q1.pdf')}/touch/")
+    assert response.status_code == 403
+
+
+@pytest.mark.django_db
+def test_touch_unknown_pk_404(client_user_s3file_delete: Client, s3_bucket):
+    response = client_user_s3file_delete.post(f"/s3file/{'0' * 32}/touch/")
+    assert response.status_code == 404

@@ -4,5 +4,5 @@
    role="button"
    title="{{ cv_action_label }}"
    cv-key="{{ cv_key }}">
-    <i class="{{ cv_icon_action }}"></i>
+    {% if cv_icon_action %}<i class="{{ cv_icon_action }}"></i>{% endif %}
 </a>

@@ -230,3 +230,27 @@ def test_list_sorting_via_querystring(client_user_s3file_view: Client):
     # descending by key: q2 before q1 — the natural bucket order (q1, q2, logo)
     # disagrees, so a silently no-oping sort fails this assertion
     assert content.index("reports/2026/q2.pdf") < content.index("reports/2026/q1.pdf")
+
+
+@pytest.mark.django_db
+def test_list_action_icons(client: Client, cv_s3file):
+    """Delete declares an icon; touch deliberately has none — the icon tag must
+    be skipped entirely for icon-less actions, never rendered as class="None".
+
+    Needs view (to see the list) AND delete (to see the delete/touch action
+    buttons, which are permission-filtered) — granted inline because the shared
+    fixtures deliberately hold exactly one permission each."""
+    from django.contrib.auth.models import User
+
+    from tests.lib.helper.user import user_viewset_permission
+
+    user = User.objects.create_user(username="user_s3file_icons", password="password")
+    user_viewset_permission(user, cv_s3file, "view")
+    user_viewset_permission(user, cv_s3file, "delete")
+    client.force_login(user)
+
+    response = client.get("/s3file/")
+    content = response.content.decode()
+    assert "fa-trash-can" in content
+    assert 'class="None"' not in content
+    assert "Touch" in content  # icon-less action button still renders its label

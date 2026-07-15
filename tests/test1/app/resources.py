@@ -97,6 +97,7 @@ class S3FileDeleteView(ResourceViewMixin, CrispyModelViewMixin, MessageMixin, Cu
     cv_viewset = cv_s3file
     cv_permission = "delete"
     form_class = S3FileDeleteConfirmForm
+    cv_icon_action = "fa-regular fa-trash-can"
     cv_action_label_template_code = "Delete"
     cv_action_short_label_template_code = "Delete"
     cv_message_template_code = "Deleted »{{ object }}«"
@@ -109,7 +110,11 @@ class S3FileDeleteView(ResourceViewMixin, CrispyModelViewMixin, MessageMixin, Cu
 
 
 class S3FileTouchView(ResourceViewMixin, ActionViewPermissionRequired):
-    """Form-less POST action with a dev hook (spec decision 3)."""
+    """Form-less POST action with a dev hook (spec decision 3).
+
+    Deliberately declares no cv_icon_action: test_list_action_icons pins that
+    icon-less actions render without an <i> tag (never class="None").
+    """
 
     cv_key = "touch"
     cv_path = "touch"

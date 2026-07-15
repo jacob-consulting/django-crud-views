@@ -294,6 +294,7 @@ class S3FileDeleteView(ResourceViewMixin, CrispyModelViewMixin, MessageMixin, Cu
     cv_viewset = cv_s3file
     cv_permission = "delete"
     form_class = CrispyDeleteForm
+    cv_icon_action = "fa-regular fa-trash-can"
     cv_action_label_template_code = "Delete"
     cv_action_short_label_template_code = "Delete"
     cv_message_template_code = "Deleted »{{ object }}«"
@@ -309,7 +310,10 @@ class S3FileDeleteView(ResourceViewMixin, CrispyModelViewMixin, MessageMixin, Cu
 `cv_action_label_template_code` and `cv_action_short_label_template_code` are
 ordinary `CrudView` attributes (not Resource-specific), but a custom-form
 action view like this one has no other source for its header/action labels —
-set them explicitly or a startup system check will flag the view.
+set them explicitly or a startup system check will flag the view. The same
+applies to `cv_icon_action`: the generic `CustomFormView`/`ActionView` bases
+declare no icon (unlike the built-in CRUD views), so set one or the action
+button renders with its tooltip label only.
 
 On success, the view redirects to `cv_success_key` (default `"list"`) — never
 back to the just-deleted object's detail page.
@@ -327,6 +331,7 @@ class S3FileTouchView(ResourceViewMixin, ActionViewPermissionRequired):
     cv_path = "touch"
     cv_viewset = cv_s3file
     cv_permission = "delete"
+    cv_icon_action = "fa-regular fa-hand-pointer"
     cv_action_label_template_code = "Touch"
     cv_action_short_label_template_code = "Touch"
     cv_message_template_code = "Touched »{{ object }}«"

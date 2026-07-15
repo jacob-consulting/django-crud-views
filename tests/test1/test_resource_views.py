@@ -110,24 +110,31 @@ def test_delete_requires_delete_permission(client_user_s3file_view: Client, s3_b
 
 @pytest.mark.django_db
 def test_touch_action_success(client_user_s3file_delete: Client, s3_bucket):
+    from django.contrib.messages import get_messages
+
     from tests.test1.app import resources
 
     resources.TOUCHED.clear()
-    response = client_user_s3file_delete.post(f"/s3file/{md5('reports/2026/q1.pdf')}/touch/", follow=True)
-    assert response.status_code == 200
+    response = client_user_s3file_delete.post(f"/s3file/{md5('reports/2026/q1.pdf')}/touch/")
+    assert response.status_code == 302
+    assert response.url == "/s3file/"
     assert resources.TOUCHED == ["reports/2026/q1.pdf"]
-    assert "Touched" in response.content.decode()
+    messages = [str(m) for m in get_messages(response.wsgi_request)]
+    assert any("Touched" in m for m in messages)
 
 
 @pytest.mark.django_db
 def test_touch_action_error_branch(client_user_s3file_delete: Client, s3_bucket):
+    from django.contrib.messages import get_messages
+
     from tests.test1.app import resources
 
     resources.TOUCHED.clear()
-    response = client_user_s3file_delete.post(f"/s3file/{md5('reports/2026/q1.pdf')}/touch/?fail=1", follow=True)
-    assert response.status_code == 200
+    response = client_user_s3file_delete.post(f"/s3file/{md5('reports/2026/q1.pdf')}/touch/?fail=1")
+    assert response.status_code == 302
     assert resources.TOUCHED == []
-    assert "Touch failed" in response.content.decode()
+    messages = [str(m) for m in get_messages(response.wsgi_request)]
+    assert any("Touch failed" in m for m in messages)
 
 
 @pytest.mark.django_db

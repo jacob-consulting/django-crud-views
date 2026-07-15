@@ -771,7 +771,6 @@ def user_s3file_delete(cv_s3file):
 
     user = User.objects.create_user(username="user_s3file_delete", password="password")
 
-    user_viewset_permission(user, cv_s3file, "view")
     user_viewset_permission(user, cv_s3file, "delete")
 
     return user

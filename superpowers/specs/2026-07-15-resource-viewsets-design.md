@@ -443,12 +443,48 @@ Padding note: strip `=` (not in `PK.STR`); `urlsafe_b64decode` needs padding res
 | Non-goal | Why | Escape hatch |
 |---|---|---|
 | Create/update views for Resources | writes ⇒ data has a home ⇒ use a (possibly unmanaged) model | `CustomFormNoObjectView` + dev hook for odd cases |
-| django-filter integration | queryset-bound | dev filters inside `cv_get_items` (request is available) |
+| django-filter integration | queryset-bound | dev filters inside `cv_get_items` (request is available); see §10.1 for the v2 idea |
 | Continuation-token pagination (large S3) | "not the tool for it" (user decision) | materialize the list; Django Paginator on lists works |
 | Resource as nesting parent | see §8.2 | v2 sketch in §8.2 |
 | Special pk types / encoders in the package | keep toolbox small | §9 documented pattern |
 | ManageView for Resources | model/session tooling | skipped at registration |
 | guardian/workflow/polymorphic integration | all deeply ORM-bound | out of scope, unaffected |
+
+### 10.1 v2 idea: simple Resource filters (in-memory, django-filter-shaped)
+
+Noted 2026-07-15 (user request). django-filter is out only because `FilterSet` is welded
+to querysets — the *concept* (declared filter fields + lookups → rendered form → predicate
+application) ports to plain Python easily, and Resources make it pleasant: rows are typed
+Pydantic instances, so `gt`/`lt` compare real `int`/`datetime` values, not strings.
+
+Sketch:
+
+```python
+class S3FileFilter(ResourceFilter):
+    key = ResourceFilter.Char(lookup="icontains")          # case-insensitive substring
+    size = ResourceFilter.Number(lookup="gt")
+    modified = ResourceFilter.Date(lookup="lt")
+
+class S3FileListView(ResourceViewMixin, ListViewTableFilterMixin, ListViewPermissionRequired):
+    filterset_class = S3FileFilter
+```
+
+Design intent:
+
+- Small lookup vocabulary only: `exact`, `icontains`, `gt`, `gte`, `lt`, `lte` — applied
+  as `getattr`-based predicates over the `cv_get_items()` list. No `Q` objects, no
+  relations, no custom lookup registration. Toolbox rules apply.
+- **Duck-type django-filter's consumed surface** (`FilterSet(data, queryset).qs` and
+  `.form`) so `ListViewTableFilterMixin`, the filter header/pinned-filter templates, and
+  the `FilterContextButton` work unchanged — `qs` returns the filtered *list*, `form` is a
+  plain Django `Form` built from the declared fields. If the mixin's integration points
+  turn out to be deeper than `.qs`/`.form`, a sibling `ResourceListViewFilterMixin` is the
+  fallback; verify against `ListViewTableFilterMixin` before choosing.
+- Filtering happens after `cv_get_items()` (post-fetch, in memory) — consistent with the
+  v1 "read them all at once" scope; anything smarter belongs in the dev's `cv_get_items`.
+
+Feasibility verdict from brainstorming: clearly possible, deliberately deferred so v1
+stays small.
 
 ## 11. Testing plan (tests/test1/)
 

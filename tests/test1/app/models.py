@@ -149,3 +149,19 @@ class Car(Vehicle):
 
 class Truck(Vehicle):
     payload_tons = models.IntegerField(default=10)
+
+
+class S3FilePermissions(models.Model):
+    """
+    Permission holder for the S3File Resource (spec §7): unmanaged, no table,
+    no default permissions — exists only so ContentType/Permission rows are
+    created for the custom permissions below.
+    """
+
+    class Meta:
+        managed = False
+        default_permissions = ()
+        permissions = [
+            ("view_s3file", "Can view S3 files"),
+            ("delete_s3file", "Can delete S3 files"),
+        ]

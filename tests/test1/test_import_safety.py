@@ -12,6 +12,7 @@ tests below cover the modules whose importability crud_views controls.
 import subprocess
 import sys
 import textwrap
+from pathlib import Path
 
 
 def test_templatetags_import_without_app_registry():
@@ -53,6 +54,18 @@ def test_workflow_mixins_import_without_app_registry():
     result = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True)
     assert result.returncode == 0, result.stderr
     assert "IMPORT-OK" in result.stdout
+
+
+def test_resource_module_imports_standalone():
+    """crud_views.lib.resource must be importable before any other crud_views module
+    (users import Resource from models.py, which loads before AppConfig.ready)."""
+    result = subprocess.run(
+        [sys.executable, "-c", "import crud_views.lib.resource"],
+        capture_output=True,
+        text=True,
+        cwd=str(Path(__file__).resolve().parents[2] / "src"),
+    )
+    assert result.returncode == 0, result.stderr
 
 
 def test_workflow_models_load_with_late_custom_user_app(tmp_path):

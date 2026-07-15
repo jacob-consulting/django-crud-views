@@ -123,3 +123,29 @@ class Resource(BaseModel):
 # __pydantic_init_subclass__ only fires for subclasses; the abstract base needs
 # its own _meta so generic code can read Resource._meta without special-casing.
 Resource._meta = ResourceOptions(Resource.Meta)
+
+
+class ResourceViewMixin:
+    """
+    Makes any crud_views view class work on a Resource. MUST be the FIRST
+    base class so its methods win the MRO:
+
+        class S3FileListView(ResourceViewMixin, ListViewPermissionRequired): ...
+
+    Overrides the two ORM entry points:
+    - get_queryset: replaces CrudView.get_queryset (which delegates to
+      ViewSet.get_queryset — ORM + parent filtering). Parent scoping is the
+      developer's job inside cv_get_items, using the parent pk url_kwargs.
+    - get_object: replaces SingleObjectMixin.get_object. Also used by the
+      permission machinery (cv_get_action_object), so a bad pk yields 404
+      during the permission phase — same contract as model views.
+    """
+
+    def get_queryset(self):
+        return self.model.cv_get_items(self.request, **self.kwargs)
+
+    def get_object(self, queryset=None):
+        pk_name = self.cv_viewset.pk_name
+        pk = self.kwargs[pk_name]
+        url_kwargs = {k: v for k, v in self.kwargs.items() if k != pk_name}
+        return self.model.cv_get_item(self.request, pk, **url_kwargs)

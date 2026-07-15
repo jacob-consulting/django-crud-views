@@ -12,6 +12,7 @@ from pydantic import BaseModel, PrivateAttr, Field, model_validator
 from typing_extensions import Self
 
 from crud_views.lib.exceptions import cv_raise, ViewSetNotFoundError, ViewSetKeyFoundError
+from crud_views.lib.resource import Resource
 from crud_views.lib.viewset import path_regs
 from .parentviewset import ParentViewSet
 from .path_regs import PrimaryKeys
@@ -70,7 +71,7 @@ class ViewSet(BaseModel):
 
     PK: ClassVar[Type[PrimaryKeys]] = PrimaryKeys
 
-    model: Type[Model]
+    model: Type[Model] | Type[Resource]
     name: str
     prefix: str | None = None
     app: str | None = None
@@ -82,6 +83,10 @@ class ViewSet(BaseModel):
     icon_header: str | None = None
     manage_view_class: str | None = None
     extends: str | None = None  # base template all views in this viewset extend
+    # Resource-based ViewSets only: explicit permission map, e.g.
+    # {"view": "storage.view_s3object", "delete": "storage.delete_s3object"}.
+    # None means: no permissions declared (only non-PermissionRequired views).
+    resource_permissions: Dict[str, str] | None = None
 
     _views: Dict[str, Type[CrudView]] = PrivateAttr(default_factory=empty_dict)  # noqa
 
@@ -91,20 +96,30 @@ class ViewSet(BaseModel):
     def __str__(self):
         return f"{self.name}"
 
+    @property
+    def is_resource(self) -> bool:
+        return issubclass(self.model, Resource)
+
     @model_validator(mode="after")
     def register(self) -> Self:
-        if self.pk is None:
-            from django.db import models
+        if not self.is_resource and self.resource_permissions is not None:
+            raise ValueError(f"resource_permissions is only allowed for Resource-based ViewSets, got it at {self!r}")
 
-            pk_field_map = {
-                models.UUIDField: self.PK.UUID,
-                models.AutoField: self.PK.INT,
-                models.BigAutoField: self.PK.INT,
-                models.SmallAutoField: self.PK.INT,
-                models.CharField: self.PK.STR,
-                models.SlugField: self.PK.STR,
-            }
-            self.pk = pk_field_map.get(type(self.model._meta.pk), self.PK.INT)
+        if self.pk is None:
+            if self.is_resource:
+                self.pk = self.model._meta.pk_type
+            else:
+                from django.db import models
+
+                pk_field_map = {
+                    models.UUIDField: self.PK.UUID,
+                    models.AutoField: self.PK.INT,
+                    models.BigAutoField: self.PK.INT,
+                    models.SmallAutoField: self.PK.INT,
+                    models.CharField: self.PK.STR,
+                    models.SlugField: self.PK.STR,
+                }
+                self.pk = pk_field_map.get(type(self.model._meta.pk), self.PK.INT)
 
         with _REGISTRY_LOCK:
             cv_raise(
@@ -113,8 +128,10 @@ class ViewSet(BaseModel):
             )
             _REGISTRY[self.name] = self
 
-        base = self.get_manage_view_class()
-        _AutoManageView = type("AutoManageView", (base,), {"model": self.model, "cv_viewset": self})  # noqa: F841
+        # ManageView is model/session tooling — not supported for Resources (spec §5.4)
+        if not self.is_resource:
+            base = self.get_manage_view_class()
+            _AutoManageView = type("AutoManageView", (base,), {"model": self.model, "cv_viewset": self})  # noqa: F841
 
         return self
 
@@ -205,6 +222,11 @@ class ViewSet(BaseModel):
         """
         Queryset with respect to parent
         """
+        cv_raise(
+            not self.is_resource,
+            f"ViewSet.get_queryset() called for Resource-based ViewSet {self!r} — "
+            f"add ResourceViewMixin as the FIRST base class of the view",
+        )
 
         q_kwargs = dict()
         if self.parent:
@@ -241,7 +263,7 @@ class ViewSet(BaseModel):
         self._views[key] = view_class
         # add manage view to context actions; copy-on-write because the list may be
         # shared with the settings singleton or sibling view classes
-        if crud_views_settings.manage_views_enabled != "no":
+        if crud_views_settings.manage_views_enabled != "no" and not self.is_resource:
             actions = view_class.cv_context_actions
             if isinstance(actions, list) and "manage" not in actions and view_class.cv_key != "manage":
                 view_class.cv_context_actions = actions + ["manage"]
@@ -369,6 +391,10 @@ class ViewSet(BaseModel):
         (a ``ContentType`` lookup and a ``Permission`` query). It is evaluated once per
         process and is not refreshed if permissions change at runtime.
         """
+        cv_raise(
+            not self.is_resource,
+            f"default_permissions must not be used for Resource-based ViewSet {self!r}; set resource_permissions",
+        )
         model = self.model  # noqa
         content_type = ContentType.objects.get_for_model(model)
         permissions = OrderedDict()
@@ -383,6 +409,8 @@ class ViewSet(BaseModel):
 
     @cached_property
     def permissions(self) -> OrderedDict[str, str]:
+        if self.is_resource:
+            return OrderedDict(self.resource_permissions or {})
         return self.default_permissions
 
     def get_meta(self, context: ViewContext) -> dict:

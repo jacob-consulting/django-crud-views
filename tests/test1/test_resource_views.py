@@ -227,5 +227,6 @@ def test_list_sorting_via_querystring(client_user_s3file_view: Client):
     response = client_user_s3file_view.get("/s3file/?sort=-key&per_page=10")
     assert response.status_code == 200
     content = response.content.decode()
-    # descending by key: reports/2026/q2.pdf sorts before images/logo.png
-    assert content.index("reports/2026/q2.pdf") < content.index("images/logo.png")
+    # descending by key: q2 before q1 — the natural bucket order (q1, q2, logo)
+    # disagrees, so a silently no-oping sort fails this assertion
+    assert content.index("reports/2026/q2.pdf") < content.index("reports/2026/q1.pdf")

@@ -17,7 +17,7 @@ from crud_views.lib.viewset import path_regs
 from .parentviewset import ParentViewSet
 from .path_regs import PrimaryKeys
 from .. import check
-from ..check import CheckAttributeReg, Check, CheckTemplate
+from ..check import CheckAttributeReg, Check, CheckTemplate, CheckExpression
 from ..settings import crud_views_settings
 from ..view import (
     ContextButton,
@@ -163,6 +163,42 @@ class ViewSet(BaseModel):
         yield CheckAttributeReg(context=self, id="E002", attribute="name", **check.REGS["name"])
         yield CheckAttributeReg(context=self, id="E003", attribute="prefix", **check.REGS["path"])
         yield CheckTemplate(context=self, id="E111", attribute="extends")
+
+        if self.is_resource:
+            from crud_views.lib.views import CreateView, DeleteView, UpdateView
+
+            for key, view in self._views.items():
+                if issubclass(view, CrudViewPermissionRequiredMixin):
+                    yield CheckExpression(
+                        context=view,
+                        id="E260",
+                        expression=view.cv_permission in self.permissions,
+                        msg=(
+                            f"cv_permission {view.cv_permission!r} of view {key!r} is not declared in "
+                            f"resource_permissions of {self!r} — add the key or use the "
+                            f"non-PermissionRequired view variant"
+                        ),
+                    )
+                yield CheckExpression(
+                    context=view,
+                    id="E262",
+                    expression=not issubclass(view, (CreateView, UpdateView, DeleteView)),
+                    msg=(
+                        f"view {key!r} is a Create/Update/Delete view — not supported for "
+                        f"Resource-based ViewSets (writes need a real model, see docs)"
+                    ),
+                )
+
+        if self.parent is not None:
+            yield CheckExpression(
+                context=self,
+                id="E261",
+                expression=not self.parent.viewset.is_resource,
+                msg=(
+                    f"parent ViewSet {self.parent.name!r} is Resource-based — Resources can only be "
+                    f"leaves in the nesting hierarchy (v1)"
+                ),
+            )
 
         for view in self._views.values():
             yield from view.checks()

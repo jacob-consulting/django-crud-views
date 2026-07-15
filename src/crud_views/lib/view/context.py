@@ -38,7 +38,7 @@ class ViewContext(BaseModel, arbitrary_types_allowed=True):
             from crud_views.lib.resource import Resource
 
             if not isinstance(value, (Model, Resource)):
-                raise TypeError(f"ViewContext.object must be a Model or Resource instance, got {type(value)!r}")
+                raise ValueError(f"ViewContext.object must be a Model or Resource instance, got {type(value)!r}")
         return value
 
     def to_dict(self) -> Dict[str, Any]:

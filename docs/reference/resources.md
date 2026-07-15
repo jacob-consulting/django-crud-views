@@ -28,6 +28,8 @@ Subclass `Resource` like a Pydantic model, with an inner `Meta` (same idiom as
 Django's model `Meta`) and a `cv_get_items` classmethod that returns all rows:
 
 ```python
+import hashlib
+
 import django_tables2 as tables
 
 from crud_views.lib.resource import Resource
@@ -43,6 +45,12 @@ class S3File(Resource):
         verbose_name = "s3 file"
         verbose_name_plural = "s3 files"
         app_label = "app"
+        pk_field = "key_md5"
+        pk_type = ViewSet.PK.HEX
+
+    @property
+    def key_md5(self) -> str:
+        return hashlib.md5(self.key.encode()).hexdigest()
 
     def __str__(self) -> str:
         return self.key
@@ -59,6 +67,10 @@ cv_s3file = ViewSet(
     name="s3file",
 )
 ```
+
+`pk_field`/`pk_type` are set here because S3 keys contain `/`, which no
+default pk regex admits — see [Primary keys](#primary-keys-for-path-like-data)
+below for the full explanation and an alternative (reversible) pattern.
 
 `Meta` fields (all optional, with Django-model-like lowercase defaults):
 
@@ -175,7 +187,10 @@ class S3FilePermissions(models.Model):
 ```
 
 `managed = False` models still get migrations — `makemigrations` picks this
-up and the migration creates only the `Permission`/`ContentType` rows.
+up, but the generated migration itself is a state-only `CreateModel` (no
+table is created). The `ContentType`/`Permission` rows are created
+separately by Django's `post_migrate` `create_permissions` signal handler,
+which runs whenever `migrate` executes.
 
 Wire it into the ViewSet:
 
@@ -406,6 +421,7 @@ with warnings.catch_warnings():
 | Resources are leaves — cannot be a nesting parent | parent-object resolution and FK-based child filtering assume an ORM-queryable parent | none in v1; register flat Resource ViewSets, or encode a path into the pk (§ [Primary keys](#primary-keys-for-path-like-data)) |
 | No `ManageView` | model/session tooling, doesn't apply | — |
 | No django-guardian / workflow / polymorphic integration | all three are deeply ORM-bound | `GuardianViewSet` rejects a Resource model with a pydantic `ValidationError` at construction time; workflow and polymorphic simply have no Resource equivalent |
+| Ordering/card mixins that call queryset methods (e.g. the ordered card-list mixin's `order_by`) | Resources are plain lists, not querysets | sort inside `cv_get_items` instead |
 
 ---
 

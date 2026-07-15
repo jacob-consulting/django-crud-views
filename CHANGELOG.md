@@ -7,6 +7,10 @@
   form-less actions). Explicit `resource_permissions`, leaf-only nesting, system checks E260–E262.
   See `docs/reference/resources.md`.
 
+### Changed
+- E002 viewset-name check now allows digits after the first character; names may no longer
+  start with an underscore.
+
 ## 0.11.0
 
 ### Added

@@ -199,3 +199,33 @@ def test_nested_list_empty_for_parent_without_files(client_user_s3file_view: Cli
     p = Publisher.objects.create(name="NoFiles")
     response = client_user_s3file_view.get(f"/publisher/{p.pk}/publisherfile/")
     assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_nested_detail_scoped_to_parent_404(client_user_s3file_view: Client, nested_bucket):
+    """A file belonging to parent A must 404 when requested via parent B's URL."""
+    from tests.test1.app.models import Publisher
+
+    p1 = Publisher.objects.create(name="Penguin")
+    p2 = Publisher.objects.create(name="HarperCollins")
+    key = f"publisher-{p1.pk}/contract.pdf"
+    nested_bucket.append({"key": key, "size": 10})
+
+    response = client_user_s3file_view.get(f"/publisher/{p2.pk}/publisherfile/{md5(key)}/detail/")
+    assert response.status_code == 404
+
+
+@pytest.mark.django_db
+def test_list_sorting_via_querystring(client_user_s3file_view: Client):
+    """django-tables2 column sorting must work on a Resource list (spec §6 caveat 2).
+
+    per_page=10 is added to the querystring (django-tables2's RequestConfig honors a
+    per_page GET override on top of the view's fixed paginate_by=2) so all 3 rows land
+    on one page — otherwise the two rows being compared straddle a page boundary and
+    the assertion below can't observe global sort order.
+    """
+    response = client_user_s3file_view.get("/s3file/?sort=-key&per_page=10")
+    assert response.status_code == 200
+    content = response.content.decode()
+    # descending by key: reports/2026/q2.pdf sorts before images/logo.png
+    assert content.index("reports/2026/q2.pdf") < content.index("images/logo.png")

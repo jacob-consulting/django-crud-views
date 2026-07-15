@@ -6,11 +6,14 @@ from django.http import Http404
 from pydantic import BaseModel
 from typing_extensions import Self
 
-from crud_views.lib.viewset.path_regs import PrimaryKeys
-
-# NOTE: this module must not import from crud_views.lib.viewset (the package
-# __init__) — viewset/__init__.py imports this module, importing back would be
-# circular. path_regs is a leaf module and safe.
+# NOTE: this module must not import anything from crud_views.lib.viewset,
+# including its "leaf" submodules — importing e.g. viewset.path_regs still
+# executes the viewset package __init__, which imports this module back
+# (ImportError: cannot import name 'Resource' from partially initialized
+# module) whenever crud_views.lib.resource is imported first (e.g. a user's
+# models.py, or a standalone script, imported before django.setup()/AppConfig
+# machinery has had a chance to import viewset first). This module must stay
+# a true leaf.
 
 
 class ResourceMeta:
@@ -23,7 +26,11 @@ class ResourceMeta:
     verbose_name_plural: str = "items"
     app_label: str = "resources"  # session-data namespace (crud_views/lib/session.py)
     pk_field: str = "pk"  # name of the attribute (field or property) identifying a row
-    pk_type: str = PrimaryKeys.STR  # URL pattern regex, see path_regs.PrimaryKeys
+    # regex for URL patterns; literal copy of viewset.path_regs.PrimaryKeys.STR —
+    # deliberately inlined: this module must stay a leaf (importing even
+    # viewset.path_regs executes the viewset package __init__, which imports
+    # this module back)
+    pk_type: str = r"[A-Za-z0-9_\-]+"
     ordering: str | None = None  # informational; sort in cv_get_items
 
 

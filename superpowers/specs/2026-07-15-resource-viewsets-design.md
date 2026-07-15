@@ -438,6 +438,30 @@ Pydantic field — the `pk` property does `getattr`, so this must be supported a
 Padding note: strip `=` (not in `PK.STR`); `urlsafe_b64decode` needs padding restored
 (`s + "=" * (-len(s) % 4)`) — put this helper in the docs example, not the package.
 
+**Alternative pattern: hash the key (user idea, 2026-07-15).** Instead of a reversible
+encoding, use a digest:
+
+```python
+class S3Object(Resource):
+    key: str
+
+    class Meta:
+        pk_field = "key_md5"
+        pk_type = ViewSet.PK.HEX   # r"[0-9a-z]+" — hexdigests fit, no padding games
+
+    @property
+    def key_md5(self) -> str:
+        return hashlib.md5(self.key.encode()).hexdigest()
+```
+
+Works with **zero extra code** because the default `cv_get_item` linear scan compares
+computed pks — no decode step exists to implement. Trade-off vs base64: the hash is
+one-way, so object resolution is permanently list-and-match; the base64 pattern keeps the
+option of overriding `cv_get_item` with a direct lookup (`head_object` on the decoded
+key). Irrelevant at "read them all at once" scale — both patterns belong in the docs page,
+dev picks. Collisions are negligible; use `sha256(...)[:16]` if keys are user-supplied and
+paranoia is warranted. Minor con: hashed URLs can't be hand-decoded when debugging.
+
 ## 10. Explicit non-goals (v1)
 
 | Non-goal | Why | Escape hatch |

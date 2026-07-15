@@ -147,3 +147,55 @@ def test_touch_requires_delete_permission(client_user_s3file_view: Client, s3_bu
 def test_touch_unknown_pk_404(client_user_s3file_delete: Client, s3_bucket):
     response = client_user_s3file_delete.post(f"/s3file/{'0' * 32}/touch/")
     assert response.status_code == 404
+
+
+@pytest.fixture
+def nested_bucket():
+    from tests.test1.app import resources
+
+    original = [dict(row) for row in resources.NESTED_BUCKET]
+    yield resources.NESTED_BUCKET
+    resources.NESTED_BUCKET[:] = original
+
+
+@pytest.mark.django_db
+def test_nested_list_scoped_to_parent(client_user_s3file_view: Client, nested_bucket):
+    from tests.test1.app.models import Publisher
+
+    p1 = Publisher.objects.create(name="Penguin")
+    p2 = Publisher.objects.create(name="HarperCollins")
+    nested_bucket.extend(
+        [
+            {"key": f"publisher-{p1.pk}/contract.pdf", "size": 10},
+            {"key": f"publisher-{p2.pk}/other.pdf", "size": 20},
+        ]
+    )
+
+    response = client_user_s3file_view.get(f"/publisher/{p1.pk}/publisherfile/")
+    assert response.status_code == 200
+    content = response.content.decode()
+    # scoped: p1's file is present, p2's is not
+    assert f"publisher-{p1.pk}/contract.pdf" in content
+    assert f"publisher-{p2.pk}/other.pdf" not in content
+
+
+@pytest.mark.django_db
+def test_nested_detail_url_contains_parent_pk(client_user_s3file_view: Client, nested_bucket):
+    from tests.test1.app.models import Publisher
+
+    p1 = Publisher.objects.create(name="Penguin")
+    key = f"publisher-{p1.pk}/contract.pdf"
+    nested_bucket.append({"key": key, "size": 10})
+
+    response = client_user_s3file_view.get(f"/publisher/{p1.pk}/publisherfile/{md5(key)}/detail/")
+    assert response.status_code == 200
+    assert key in response.content.decode()
+
+
+@pytest.mark.django_db
+def test_nested_list_empty_for_parent_without_files(client_user_s3file_view: Client, nested_bucket):
+    from tests.test1.app.models import Publisher
+
+    p = Publisher.objects.create(name="NoFiles")
+    response = client_user_s3file_view.get(f"/publisher/{p.pk}/publisherfile/")
+    assert response.status_code == 200

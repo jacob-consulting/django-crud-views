@@ -13,7 +13,7 @@ from crud_views.lib.views import (
     MessageMixin,
 )
 from crud_views.lib.views.form import CustomFormViewPermissionRequired
-from crud_views.lib.viewset import ViewSet
+from crud_views.lib.viewset import ParentViewSet, ViewSet
 from crud_views.lib.viewset.path_regs import PrimaryKeys
 
 # fake in-memory "bucket": tests mutate and reset this module-level list
@@ -127,3 +127,52 @@ class S3FileTouchView(ResourceViewMixin, ActionViewPermissionRequired):
             return False
         TOUCHED.append(self.object.key)
         return True
+
+
+# nested resource: scoped to a Publisher parent via key prefix "publisher-<pk>/"
+NESTED_BUCKET: list[dict] = []
+
+
+class PublisherFile(Resource):
+    key: str
+    size: int = 0
+
+    class Meta:
+        verbose_name = "publisher file"
+        verbose_name_plural = "publisher files"
+        app_label = "app"
+        pk_field = "key_md5"
+        pk_type = PrimaryKeys.HEX
+
+    @property
+    def key_md5(self) -> str:
+        return hashlib.md5(self.key.encode()).hexdigest()
+
+    def __str__(self) -> str:
+        return self.key
+
+    @classmethod
+    def cv_get_items(cls, request, **url_kwargs):
+        # THE nesting contract (spec §8.1): the parent pk arrives as a URL
+        # kwarg; scoping the listing is the developer's responsibility.
+        prefix = f"publisher-{url_kwargs['publisher_pk']}/"
+        return [cls.model_validate(row) for row in NESTED_BUCKET if row["key"].startswith(prefix)]
+
+
+cv_publisher_file = ViewSet(
+    model=PublisherFile,
+    name="publisherfile",
+    parent=ParentViewSet(name="publisher"),
+    resource_permissions={"view": "app.view_s3file"},
+)
+
+
+class PublisherFileListView(ResourceViewMixin, ListViewTableMixin, ListViewPermissionRequired):
+    cv_viewset = cv_publisher_file
+    table_class = S3FileTable
+    cv_list_actions = ["detail"]
+
+
+class PublisherFileDetailView(ResourceViewMixin, DetailCustomViewPermissionRequired):
+    cv_viewset = cv_publisher_file
+    template_name = "app/s3file_detail.html"

@@ -87,3 +87,10 @@ def test_resource_permissions_rejected_for_model_viewset():
 def test_viewset_get_queryset_guard(vs_t2):
     with pytest.raises(ViewSetError, match="ResourceViewMixin"):
         vs_t2.get_queryset(view=None)
+
+
+def test_guardian_viewset_rejects_resource():
+    from crud_views_guardian.lib.viewset import GuardianViewSet
+
+    with pytest.raises(ValidationError, match="does not support Resource"):
+        GuardianViewSet(model=T2Item, name="t2_guardian_resource")

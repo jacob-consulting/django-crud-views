@@ -32,6 +32,9 @@ class GuardianViewSet(ViewSet):
 
     @model_validator(mode="after")
     def register(self) -> Self:
+        if self.is_resource:
+            raise ValueError(f"GuardianViewSet does not support Resource-based ViewSets (got {self.model!r})")
+
         result = super().register()
 
         # Remove the base ManageView that super().register() just added so that the metaclass

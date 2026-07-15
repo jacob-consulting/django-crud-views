@@ -1,0 +1,10 @@
+{% extends cv_extends %}
+
+{% block cv_content %}
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">{{ object.key }}</h5>
+        <p class="card-text">{{ object.size }} bytes</p>
+    </div>
+</div>
+{% endblock cv_content %}

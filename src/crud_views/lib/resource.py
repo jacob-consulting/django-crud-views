@@ -43,6 +43,20 @@ class ResourceOptions:
             setattr(self, name, getattr(meta, name, getattr(ResourceMeta, name)))
 
 
+class _PkShim(property):
+    """Marker type for the per-subclass pk property, so descendants can detect it."""
+
+
+class _PkShimNeutralized:
+    """
+    Non-descriptor placeholder assigned onto a subclass that declares a real
+    ``pk`` field while inheriting a _PkShim from an ancestor: because it is
+    not a data descriptor, the field value in the instance __dict__ wins again.
+    """
+
+    __slots__ = ()
+
+
 class Resource(BaseModel):
     """
     Base class for non-ORM table-shaped data rendered through a ViewSet.
@@ -63,12 +77,23 @@ class Resource(BaseModel):
         # Expose object.pk like Django models. A property on the base class
         # would be a data descriptor shadowing a real "pk" field, so it is
         # attached per subclass and only when no "pk" field exists.
-        if "pk" not in cls.__pydantic_fields__:
+        if "pk" in cls.__pydantic_fields__:
+            # a real pk field: unshadow any inherited per-subclass shim so the
+            # field value in the instance __dict__ wins again
+            if any(isinstance(base.__dict__.get("pk"), _PkShim) for base in cls.__mro__[1:]):
+                cls.pk = _PkShimNeutralized()
+        else:
             pk_field = cls._meta.pk_field
-            if pk_field == "pk" and not hasattr(cls, "pk"):
-                raise TypeError(f"{cls.__name__}: Meta.pk_field is 'pk' but no 'pk' field or attribute is defined")
             if pk_field != "pk":
-                cls.pk = property(lambda self, _name=pk_field: getattr(self, _name))
+                cls.pk = _PkShim(lambda self, _name=pk_field: getattr(self, _name))
+            else:
+                # pk_field == "pk" needs a genuine pk attribute; an inherited
+                # _PkShim reads the ANCESTOR's pk_field and does not count
+                has_real_pk_attr = any(
+                    "pk" in base.__dict__ and not isinstance(base.__dict__["pk"], _PkShim) for base in cls.__mro__
+                )
+                if not has_real_pk_attr:
+                    raise TypeError(f"{cls.__name__}: Meta.pk_field is 'pk' but no 'pk' field or attribute is defined")
 
     @classmethod
     def cv_get_items(cls, request, **url_kwargs) -> List[Self]:

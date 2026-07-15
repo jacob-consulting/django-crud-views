@@ -104,3 +104,38 @@ def test_cv_get_item_raises_http404():
 def test_pydantic_validation_still_works():
     with pytest.raises(ValidationError):
         Item(key="a", size="not-an-int")
+
+
+def test_intermediate_base_pk_shim_does_not_shadow_subclass_pk_field():
+    import warnings
+
+    class IntermediateBase(Resource):
+        key: str
+
+        class Meta:
+            pk_field = "key"
+
+    with warnings.catch_warnings():
+        # pydantic warns that field "pk" shadows the inherited property; the
+        # neutralizer below is exactly what makes that shadowing safe
+        warnings.simplefilter("ignore", UserWarning)
+
+        class Concrete(IntermediateBase):
+            pk: str
+
+    obj = Concrete(key="k", pk="real-pk")
+    assert obj.pk == "real-pk"
+
+
+def test_meta_pk_field_pk_with_only_inherited_shim_raises():
+    class IntermediateBase2(Resource):
+        key: str
+
+        class Meta:
+            pk_field = "key"
+
+    with pytest.raises(TypeError, match="pk_field"):
+
+        class Sub(IntermediateBase2):
+            class Meta:
+                pk_field = "pk"

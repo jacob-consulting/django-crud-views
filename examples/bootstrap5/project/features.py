@@ -42,4 +42,11 @@ FEATURES: list[Feature] = [
         url_name="campaign-list",
         icon="fa-solid fa-bullhorn",
     ),
+    Feature(
+        app="polymorphic_demo",
+        title="Polymorphic",
+        description="One list over Car, Truck and Motorcycle with type-specific create and update forms.",
+        url_name="vehicle-list",
+        icon="fa-solid fa-car",
+    ),
 ]

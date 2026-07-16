@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "nested",
     "formsets",
     "workflow",
+    "polymorphic_demo",
 ]
 
 MIDDLEWARE = [

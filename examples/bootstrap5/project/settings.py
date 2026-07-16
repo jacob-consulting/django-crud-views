@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     # example feature apps (one per crud_views feature)
     "library",
     "nested",
+    "formsets",
 ]
 
 MIDDLEWARE = [

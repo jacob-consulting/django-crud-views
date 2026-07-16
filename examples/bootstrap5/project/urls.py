@@ -27,3 +27,4 @@ urlpatterns = [
 
 urlpatterns += [path("library/", include("library.urls"))]
 urlpatterns += [path("nested/", include("nested.urls"))]
+urlpatterns += [path("formsets/", include("formsets.urls"))]

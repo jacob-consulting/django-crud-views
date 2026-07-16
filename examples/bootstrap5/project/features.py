@@ -28,4 +28,11 @@ FEATURES: list[Feature] = [
         url_name="company-list",
         icon="fa-solid fa-sitemap",
     ),
+    Feature(
+        app="formsets",
+        title="Formsets",
+        description="Inline formsets: edit a questionnaire with its questions and choices on one page.",
+        url_name="questionnaire-list",
+        icon="fa-solid fa-list-check",
+    ),
 ]

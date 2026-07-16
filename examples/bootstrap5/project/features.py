@@ -56,4 +56,11 @@ FEATURES: list[Feature] = [
         url_name="document-list",
         icon="fa-solid fa-user-lock",
     ),
+    Feature(
+        app="resources",
+        title="Resources",
+        description="A ViewSet over non-ORM data: a fake S3 bucket listing with delete and touch actions.",
+        url_name="s3file-list",
+        icon="fa-solid fa-cloud",
+    ),
 ]

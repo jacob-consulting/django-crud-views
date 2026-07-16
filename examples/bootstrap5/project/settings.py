@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "workflow",
     "polymorphic_demo",
     "guardian_demo",
+    "resources",
 ]
 
 MIDDLEWARE = [

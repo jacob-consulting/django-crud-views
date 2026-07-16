@@ -78,8 +78,9 @@ class CrudViewsSettings(BaseModel):
                     msg="setting CRUD_VIEWS_THEME has no effect and is ignored",
                     hint=(
                         "Theming is done by overriding templates, not via a setting. Ship templates "
-                        "under the crud_views/ namespace and list your app (e.g. crud_views_plain) "
-                        "before crud_views in INSTALLED_APPS. Remove CRUD_VIEWS_THEME."
+                        "under the crud_views/ namespace and list your theme app (e.g. myapp_theme) "
+                        "before crud_views in INSTALLED_APPS (see docs/reference/theme.md). "
+                        "Remove CRUD_VIEWS_THEME."
                     ),
                 )
             )

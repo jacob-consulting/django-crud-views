@@ -1,5 +1,17 @@
 # Django CRUD Views - Changelog
 
+## 0.13.0
+
+### Removed
+- **Breaking:** the `crud_views_plain` theme app has been removed. It was unused and
+  undocumented, so there is no deprecation period. Theme pluggability is unchanged — ship your
+  own template-override theme app (see the new `docs/reference/theme.md`). `bootstrap5` remains
+  the only bundled theme.
+
+### Changed
+- The `examples/plain/` project and the `examples/shared/` directory were removed;
+  `examples/bootstrap5/` is now self-contained.
+
 ## 0.12.1
 
 ### Changed

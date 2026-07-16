@@ -14,5 +14,6 @@ nav:
     - guardian.md
     - ordered_view.md
     - templates.md
+    - theme.md
     - settings.md
     - ...

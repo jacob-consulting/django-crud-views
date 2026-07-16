@@ -29,9 +29,8 @@ you're building a small project or a large application, Django CRUD Views can he
 - **ViewSet**s can be nested with deep URLs (multiple levels) if models are related via ForeignKey
 - **CrudView**s are predefined for CRUD operations: list, create, update, delete, detail, up/down
 - a **ViewSet** generates all urlpatterns for its **CrudView**s
-- Themes are pluggable, so you can easily customize the look and feel to your needs, includes themes
-    - `bootstrap5` with Bootstrap 5 (default)
-    - `plain` no CSS, minimal HTML and JavaScript (install `crud_views_plain` to override)
+- Themes are pluggable — `bootstrap5` (Bootstrap 5) ships as the default, and you can
+  [bring your own theme](reference/theme.md) to customize the look and feel
 - Django system checks for configurations to fail early on startup
 
 ## What it is not

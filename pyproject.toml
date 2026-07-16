@@ -94,7 +94,6 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = [
     "src/crud_views",
-    "src/crud_views_plain",
     "src/crud_views_workflow",
     "src/crud_views_polymorphic",
     "src/crud_views_guardian",
@@ -111,7 +110,7 @@ indent-style = "space"
 addopts = "--strict-markers"
 
 [tool.coverage.run]
-source = ["crud_views", "crud_views_plain", "crud_views_polymorphic", "crud_views_workflow"]
+source = ["crud_views", "crud_views_polymorphic", "crud_views_workflow"]
 
 [tool.coverage.report]
 show_missing = true
@@ -131,11 +130,6 @@ replace = 'version = "{new_version}"'
 
 [[tool.bumpversion.files]]
 filename = "src/crud_views/__init__.py"
-search = '__version__ = "{current_version}"'
-replace = '__version__ = "{new_version}"'
-
-[[tool.bumpversion.files]]
-filename = "src/crud_views_plain/__init__.py"
 search = '__version__ = "{current_version}"'
 replace = '__version__ = "{new_version}"'
 

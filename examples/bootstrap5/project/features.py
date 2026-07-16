@@ -21,4 +21,11 @@ FEATURES: list[Feature] = [
         url_name="author-list",
         icon="fa-solid fa-book",
     ),
+    Feature(
+        app="nested",
+        title="Nested",
+        description="Parent/child ViewSets with nested URLs: Company → Department → Employee, plus Offices.",
+        url_name="company-list",
+        icon="fa-solid fa-sitemap",
+    ),
 ]

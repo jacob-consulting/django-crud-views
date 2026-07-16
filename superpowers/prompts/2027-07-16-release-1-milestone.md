@@ -88,3 +88,4 @@ The document should create sub milestones in the right order.
 
 It should already contain enough information for a fresh session to brainstorm a sub milestone, one after the other.
 
+Place the doc at `superpowers/notes/2027-07-16-release-1-milestone.md`

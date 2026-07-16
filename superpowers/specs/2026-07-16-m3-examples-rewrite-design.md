@@ -44,8 +44,15 @@ examples/bootstrap5/
     templatetags/          # {% source_code %} snippet tag (pygments)
     templates/project/     # base.html, home.html, snippet partial
   library/  nested/  formsets/  workflow/
-  polymorphic/  guardian/  resources/  showcase/
+  polymorphic_demo/  guardian_demo/  resources/  showcase/
 ```
+
+> **Naming amendment (2026-07-16, during planning):** the guardian and polymorphic example
+> apps are directories `guardian_demo/` and `polymorphic_demo/` — plain `guardian`/
+> `polymorphic` would collide with the installed django-guardian/django-polymorphic packages
+> (duplicate Django app label; the example project root is on `sys.path`, so the directory
+> would also shadow the site-packages module). Their URL prefixes remain `/guardian/` and
+> `/polymorphic/`, so the browsable layout matches the original design.
 
 - **Home page** (`/`): a card per feature app — name, one-line description, link.
 - **Each app is fully self-contained:** own `models.py`, `views.py`, `urls.py`,

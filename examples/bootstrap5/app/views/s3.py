@@ -10,7 +10,7 @@ import hashlib
 
 import django_tables2 as tables
 
-from crud_views.lib.crispy import CrispyModelViewMixin, CrispyDeleteForm
+from crud_views.lib.crispy import CrispyViewMixin, CrispyDeleteForm
 from crud_views.lib.resource import Resource, ResourceViewMixin
 from crud_views.lib.table import Table
 from crud_views.lib.views import (
@@ -83,7 +83,7 @@ class S3FileDetailView(ResourceViewMixin, DetailCustomViewPermissionRequired):
     template_name = "app/s3file_detail.html"
 
 
-class S3FileDeleteView(ResourceViewMixin, CrispyModelViewMixin, MessageMixin, CustomFormViewPermissionRequired):
+class S3FileDeleteView(ResourceViewMixin, CrispyViewMixin, MessageMixin, CustomFormViewPermissionRequired):
     cv_key = "delete"
     cv_path = "delete"
     cv_viewset = cv_s3file

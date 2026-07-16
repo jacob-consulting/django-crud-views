@@ -102,7 +102,7 @@ class Campaign(WorkflowModelMixin, models.Model):
 ### 2. Define the ViewSet and views
 
 ```python
-from crud_views.lib.crispy import CrispyModelViewMixin
+from crud_views.lib.crispy import CrispyViewMixin
 from crud_views.lib.views import MessageMixin
 from crud_views.lib.viewset import ViewSet
 from crud_views_workflow.lib.forms import WorkflowForm
@@ -117,7 +117,7 @@ class CampaignWorkflowForm(WorkflowForm):
         model = Campaign
 
 
-class CampaignWorkflowView(CrispyModelViewMixin, MessageMixin, WorkflowView):
+class CampaignWorkflowView(CrispyViewMixin, MessageMixin, WorkflowView):
     cv_context_actions = ["list", "detail", "workflow"]
     cv_viewset = cv_campaign
     form_class = CampaignWorkflowForm
@@ -149,7 +149,7 @@ Use `WorkflowViewPermissionRequired` for production views:
 ```python
 from crud_views_workflow.lib.views import WorkflowViewPermissionRequired
 
-class CampaignWorkflowView(CrispyModelViewMixin, MessageMixin, WorkflowViewPermissionRequired):
+class CampaignWorkflowView(CrispyViewMixin, MessageMixin, WorkflowViewPermissionRequired):
     cv_context_actions = ["list", "detail", "workflow"]
     cv_viewset = cv_campaign
     form_class = CampaignWorkflowForm
@@ -324,7 +324,7 @@ from `CrudViewPermissionRequiredMixin`.
 Override `on_transition` to run custom logic after a successful transition:
 
 ```python
-class CampaignWorkflowView(CrispyModelViewMixin, MessageMixin, WorkflowView):
+class CampaignWorkflowView(CrispyViewMixin, MessageMixin, WorkflowView):
     cv_viewset = cv_campaign
     form_class = CampaignWorkflowForm
 

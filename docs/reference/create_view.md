@@ -9,7 +9,7 @@ for form layout.
 ```python
 from crispy_forms.layout import Row
 from django.utils.translation import gettext as _
-from crud_views.lib.crispy import Column4, CrispyModelForm, CrispyModelViewMixin
+from crud_views.lib.crispy import Column4, CrispyModelForm, CrispyViewMixin
 from crud_views.lib.views import CreateViewPermissionRequired, MessageMixin
 from crud_views.lib.viewset import ViewSet
 from .models import Author
@@ -32,7 +32,7 @@ class AuthorCreateForm(CrispyModelForm):
         return Row(Column4("first_name"), Column4("last_name"), Column4("pseudonym"))
 
 
-class AuthorCreateView(CrispyModelViewMixin, MessageMixin, CreateViewPermissionRequired):
+class AuthorCreateView(CrispyViewMixin, MessageMixin, CreateViewPermissionRequired):
     form_class = AuthorCreateForm
     cv_viewset = cv_author
     cv_message = "Created author »{object}«"
@@ -94,7 +94,7 @@ class AuthorCreateForm(CrispyModelForm):
 Add `MessageMixin` to show a success message after creation:
 
 ```python
-class AuthorCreateView(CrispyModelViewMixin, MessageMixin, CreateViewPermissionRequired):
+class AuthorCreateView(CrispyViewMixin, MessageMixin, CreateViewPermissionRequired):
     form_class = AuthorCreateForm
     cv_viewset = cv_author
     cv_message = "Created author »{object}«"
@@ -110,7 +110,7 @@ set the parent reference:
 ```python
 from crud_views.lib.views import CreateViewParentMixin
 
-class BookCreateView(CrispyModelViewMixin, MessageMixin, CreateViewParentMixin, CreateViewPermissionRequired):
+class BookCreateView(CrispyViewMixin, MessageMixin, CreateViewParentMixin, CreateViewPermissionRequired):
     form_class = BookCreateForm
     cv_viewset = cv_book
 ```

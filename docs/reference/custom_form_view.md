@@ -22,7 +22,7 @@ Define a form, then a view with `cv_key` and `cv_path` set:
 ```python
 from django.forms.fields import CharField
 from django.utils.translation import gettext as _
-from crud_views.lib.crispy import Column12, CrispyModelForm, CrispyModelViewMixin
+from crud_views.lib.crispy import Column12, CrispyModelForm, CrispyViewMixin
 from crud_views.lib.views import MessageMixin
 from crud_views.lib.views.form import CustomFormViewPermissionRequired
 from crud_views.lib.viewset import ViewSet
@@ -45,7 +45,7 @@ class AuthorContactForm(CrispyModelForm):
         return Column12("subject"), Column12("body")
 
 
-class AuthorContactView(MessageMixin, CrispyModelViewMixin, CustomFormViewPermissionRequired):
+class AuthorContactView(MessageMixin, CrispyViewMixin, CustomFormViewPermissionRequired):
     cv_key = "contact"
     cv_path = "contact"
     cv_icon_action = "fa-solid fa-envelope"
@@ -96,7 +96,7 @@ After `cv_form_valid_hook`, the view redirects to `cv_success_key` (default: `"l
 Combine with `MessageMixin` to display a flash message after a successful submission:
 
 ```python
-class AuthorContactView(MessageMixin, CrispyModelViewMixin, CustomFormViewPermissionRequired):
+class AuthorContactView(MessageMixin, CrispyViewMixin, CustomFormViewPermissionRequired):
     ...
     cv_message_template_code = "Successfully contacted author »{object}«"
 ```
@@ -108,7 +108,7 @@ Use `CustomFormNoObjectView` when the form is not tied to a specific model insta
 ```python
 from crud_views.lib.views.form import CustomFormNoObjectViewPermissionRequired
 
-class SiteFeedbackView(CrispyModelViewMixin, CustomFormNoObjectViewPermissionRequired):
+class SiteFeedbackView(CrispyViewMixin, CustomFormNoObjectViewPermissionRequired):
     cv_key = "feedback"
     cv_path = "feedback"
     cv_viewset = cv_site
@@ -119,14 +119,14 @@ class SiteFeedbackView(CrispyModelViewMixin, CustomFormNoObjectViewPermissionReq
         pass
 ```
 
-## CrispyModelViewMixin
+## CrispyViewMixin
 
-`CrispyModelViewMixin` (alias of `CrispyViewMixin`) enables crispy-forms support for the view's form. When added to a view, it passes the current view instance (`cv_view`) as an extra argument when constructing the form. This allows the form to generate context-aware submit and cancel buttons.
+`CrispyViewMixin` (alias of `CrispyViewMixin`) enables crispy-forms support for the view's form. When added to a view, it passes the current view instance (`cv_view`) as an extra argument when constructing the form. This allows the form to generate context-aware submit and cancel buttons.
 
 Add it to any view that uses a `CrispyModelForm` or `CrispyForm`:
 
 ```python
-class AuthorContactView(CrispyModelViewMixin, CustomFormViewPermissionRequired):
+class AuthorContactView(CrispyViewMixin, CustomFormViewPermissionRequired):
     form_class = AuthorContactForm  # must extend CrispyModelForm or CrispyForm
     ...
 ```

@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 from django_object_detail import PropertyConfig
 
 from app.models.campaign import Campaign
-from crud_views.lib.crispy import CrispyModelForm, Column4, CrispyModelViewMixin, CrispyDeleteForm
+from crud_views.lib.crispy import CrispyModelForm, Column4, CrispyViewMixin, CrispyDeleteForm
 from crud_views.lib.table import Table, LinkDetailColumn
 from crud_views.lib.views import (
     DetailViewPermissionRequired,
@@ -68,18 +68,18 @@ class CampaignDetailView(DetailViewPermissionRequired):
     ]
 
 
-class CampaignUpdateView(CrispyModelViewMixin, MessageMixin, UpdateViewPermissionRequired):
+class CampaignUpdateView(CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
     cv_context_actions = ["home", "detail", "update", "workflow", "delete"]
     form_class = CampaignUpdateForm
     cv_viewset = cv_campaign
 
 
-class CampaignCreateView(CrispyModelViewMixin, MessageMixin, CreateViewPermissionRequired):
+class CampaignCreateView(CrispyViewMixin, MessageMixin, CreateViewPermissionRequired):
     form_class = CampaignForm
     cv_viewset = cv_campaign
 
 
-class CampaignDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequired):
+class CampaignDeleteView(CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     cv_context_actions = ["home", "detail", "update", "workflow", "delete"]
     form_class = CrispyDeleteForm
     cv_viewset = cv_campaign
@@ -90,7 +90,7 @@ class CampaignWorkflowForm(WorkflowForm):
         model = Campaign
 
 
-class CampaignWorkflowView(CrispyModelViewMixin, MessageMixin, WorkflowViewPermissionRequired):
+class CampaignWorkflowView(CrispyViewMixin, MessageMixin, WorkflowViewPermissionRequired):
     cv_context_actions = ["list", "detail", "update", "workflow"]
     cv_viewset = cv_campaign
     form_class = CampaignWorkflowForm

@@ -5,7 +5,7 @@ from django.forms.fields import CharField
 from django.utils.translation import gettext_lazy as _
 
 from app.models import Author
-from crud_views.lib.crispy import Column4, CrispyModelForm, CrispyModelViewMixin, CrispyDeleteForm, Column12
+from crud_views.lib.crispy import Column4, CrispyModelForm, CrispyViewMixin, CrispyDeleteForm, Column12
 from crud_views.lib.table import Table, LinkChildColumn, UUIDLinkDetailColumn
 from crud_views.lib.table.columns import NaturalTimeColumn, NaturalDayColumn
 from crud_views.lib.views import (
@@ -92,19 +92,19 @@ class AuthorListView(ListViewTableMixin, ListViewTableFilterMixin, GuardianListV
     cv_context_actions = GuardianListViewPermissionRequired.cv_context_actions
 
 
-class AuthorCreateView(CrispyModelViewMixin, MessageMixin, GuardianCreateViewPermissionRequired):
+class AuthorCreateView(CrispyViewMixin, MessageMixin, GuardianCreateViewPermissionRequired):
     form_class = AuthorCreateForm
     cv_viewset = cv_author
     cv_message = _("Created author »{object}«")
 
 
-class AuthorUpdateView(CrispyModelViewMixin, MessageMixin, GuardianUpdateViewPermissionRequired):
+class AuthorUpdateView(CrispyViewMixin, MessageMixin, GuardianUpdateViewPermissionRequired):
     form_class = AuthorUpdateForm
     cv_viewset = cv_author
     cv_message = _("Updated author »{object}«")
 
 
-class AuthorDeleteView(CrispyModelViewMixin, MessageMixin, GuardianDeleteViewPermissionRequired):
+class AuthorDeleteView(CrispyViewMixin, MessageMixin, GuardianDeleteViewPermissionRequired):
     form_class = CrispyDeleteForm
     cv_viewset = cv_author
     cv_message = _("Deleted author »{object}«")
@@ -183,7 +183,7 @@ class AuthorContactForm(CrispyModelForm):
         return Column12("subject"), Column12("body")
 
 
-class AuthorContactView(MessageMixin, CrispyModelViewMixin, CustomFormViewPermissionRequired):
+class AuthorContactView(MessageMixin, CrispyViewMixin, CustomFormViewPermissionRequired):
     cv_key = "contact"
     cv_path = "contact"
     cv_icon_action = "fa-solid fa-envelope"

@@ -1,5 +1,13 @@
 # Django CRUD Views - Changelog
 
+## 0.14.0
+
+### Removed
+- **Breaking:** the deprecated `CrispyModelViewMixin` alias has been removed (#34). Use
+  `CrispyViewMixin` instead — it was always the implementing class, and it works for both
+  `CrispyModelForm` and `CrispyForm` views. Migration: replace `CrispyModelViewMixin` with
+  `CrispyViewMixin` in imports and view base-class lists.
+
 ## 0.13.0
 
 ### Removed

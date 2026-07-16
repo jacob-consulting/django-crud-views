@@ -55,7 +55,7 @@ views and `self.cv_get_parent_object()` for child-create views.
 ## Example: Locked Group Disables Member Add/Remove
 
 ```python
-class PersonDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequired):
+class PersonDeleteView(CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     form_class = CrispyDeleteForm
     cv_viewset = cv_person
     cv_message = "Deleted person »{object}«"
@@ -66,7 +66,7 @@ class PersonDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionR
         return not (obj and obj.group.filter(locked=True).exists())
 
 
-class PersonCreateView(CrispyModelViewMixin, MessageMixin, CreateViewParentMixin, CreateViewPermissionRequired):
+class PersonCreateView(CrispyViewMixin, MessageMixin, CreateViewParentMixin, CreateViewPermissionRequired):
     cv_viewset = cv_person
 
     @classmethod

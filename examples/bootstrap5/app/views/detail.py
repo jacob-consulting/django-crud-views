@@ -3,7 +3,7 @@ from crispy_forms.layout import Row, Fieldset
 from django.utils.translation import gettext_lazy as _
 
 from app.models import Author, Detail
-from crud_views.lib.crispy import Column4, CrispyModelForm, CrispyModelViewMixin, CrispyDeleteForm, Column8
+from crud_views.lib.crispy import Column4, CrispyModelForm, CrispyViewMixin, CrispyDeleteForm, Column8
 from crud_views.lib.table import Table, UUIDLinkDetailColumn
 from crud_views.lib.views import (
     DetailViewPermissionRequired,
@@ -47,21 +47,21 @@ class DetailListView(ListViewTableMixin, ListViewPermissionRequired):
     table_class = DetailTable
 
 
-class DetailCreateView(CrispyModelViewMixin, MessageMixin, CreateViewPermissionRequired):
+class DetailCreateView(CrispyViewMixin, MessageMixin, CreateViewPermissionRequired):
     model = Author
     form_class = DetailForm
     cv_viewset = cv_detail
     cv_message = _("Created detail »{object}«")
 
 
-class DetailUpdateView(CrispyModelViewMixin, MessageMixin, UpdateViewPermissionRequired):
+class DetailUpdateView(CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
     model = Detail
     form_class = DetailForm
     cv_viewset = cv_detail
     cv_message = _("Updated detail »{object}«")
 
 
-class DetailDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequired):
+class DetailDeleteView(CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     model = Detail
     form_class = CrispyDeleteForm
     cv_viewset = cv_detail

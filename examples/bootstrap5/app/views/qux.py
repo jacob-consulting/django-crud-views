@@ -3,7 +3,7 @@ from crispy_forms.layout import Row
 from django.utils.translation import gettext_lazy as _
 
 from app.models import Qux
-from crud_views.lib.crispy import CrispyModelForm, Column4, CrispyModelViewMixin, CrispyDeleteForm
+from crud_views.lib.crispy import CrispyModelForm, Column4, CrispyViewMixin, CrispyDeleteForm
 from crud_views.lib.table import Table, LinkDetailColumn
 from crud_views.lib.view import SiblingContextButton
 from crud_views.lib.views import (
@@ -66,19 +66,19 @@ class QuxDetailView(DetailViewPermissionRequired):
     ]
 
 
-class QuxUpdateView(CrispyModelViewMixin, UpdateViewPermissionRequired):
+class QuxUpdateView(CrispyViewMixin, UpdateViewPermissionRequired):
     model = Qux
     form_class = QuxForm
     cv_viewset = cv_qux
 
 
-class QuxCreateView(CrispyModelViewMixin, CreateViewParentMixin, CreateViewPermissionRequired):
+class QuxCreateView(CrispyViewMixin, CreateViewParentMixin, CreateViewPermissionRequired):
     model = Qux
     form_class = QuxForm
     cv_viewset = cv_qux
 
 
-class QuxDeleteView(CrispyModelViewMixin, DeleteViewPermissionRequired):
+class QuxDeleteView(CrispyViewMixin, DeleteViewPermissionRequired):
     model = Qux
     form_class = CrispyDeleteForm
     cv_viewset = cv_qux

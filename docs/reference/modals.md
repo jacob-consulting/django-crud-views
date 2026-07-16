@@ -26,8 +26,8 @@ types raises system check error `viewset.E251`. Create/update support is planned
   navigates to the view's success URL — messages and `cv_success_key` work exactly as without
   modals.
 - Validation errors (and delete protection) re-render inside the open modal (status 422).
-- Progressive enhancement: direct links, middle-click, disabled JavaScript and non-Bootstrap
-  themes (e.g. `crud_views_plain`) all render the normal full page.
+- Progressive enhancement: direct links, middle-click, disabled JavaScript and custom themes
+  that ship no modal JavaScript all render the normal full page.
 
 ## Requirements
 

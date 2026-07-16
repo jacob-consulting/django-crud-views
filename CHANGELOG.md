@@ -1,6 +1,6 @@
 # Django CRUD Views - Changelog
 
-## Unreleased
+## 0.12.0
 
 ### Added
 - `Resource` + `ResourceViewMixin`: ViewSets over non-ORM data (list, detail, custom-form and

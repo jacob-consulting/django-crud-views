@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "polymorphic_demo",
     "guardian_demo",
     "resources",
+    "showcase",
 ]
 
 MIDDLEWARE = [

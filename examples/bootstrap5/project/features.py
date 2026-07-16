@@ -63,4 +63,11 @@ FEATURES: list[Feature] = [
         url_name="s3file-list",
         icon="fa-solid fa-cloud",
     ),
+    Feature(
+        app="showcase",
+        title="Showcase",
+        description="Presentation extras: card list, detail fieldsets, modal delete, custom actions.",
+        url_name="recipe-card",
+        icon="fa-solid fa-wand-magic-sparkles",
+    ),
 ]

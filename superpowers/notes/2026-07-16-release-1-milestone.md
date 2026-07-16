@@ -45,8 +45,8 @@ fresh session to brainstorm it standalone, one after the other, in order.
 
 | # | Sub-milestone | Ships as | Why this position |
 |---|---------------|----------|-------------------|
-| M1 | Remove `crud_views_plain` + examples groundwork | 0.13.0 | Mechanical; clears the ground for everything after |
-| M2 | API stability & backlog triage | 0.14.0 (or with M3) | Examples must be written against the final API |
+| M1 | Remove `crud_views_plain` + examples groundwork | 0.13.0 ✅ DONE | Mechanical; clears the ground for everything after |
+| M2 | API stability & backlog triage | 0.14.0 ✅ DONE | Examples must be written against the final API |
 | M3 | Examples rewrite | — | The big one; docs tutorial will align to it |
 | M4 | Documentation refinement | — | Tutorial follows the M3 `library/` app step by step |
 | M5 | README & marketing surface | — | References the final example-run instructions |
@@ -99,7 +99,7 @@ no grep hits for `crud_views_plain` outside CHANGELOG/history; 0.13.0 on PyPI.
 
 ---
 
-## M2 — API stability & backlog triage
+## M2 — API stability & backlog triage — DONE (0.14.0, 2026-07-16)
 
 **Goal:** 1.0.0's semver promise has a defined object: a documented public API surface, no
 lingering deprecations, and an explicitly triaged backlog.

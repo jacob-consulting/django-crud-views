@@ -1,6 +1,6 @@
 ---
 name: django-crud-views
-description: "Use when working with the django-crud-views package: wiring up ViewSets, ListViews, DetailViews, CreateViews, UpdateViews, or DeleteViews; implementing nested resources with ParentViewSet; configuring django-tables2, django-filter, or crispy-forms; using WorkflowView, FormSetMixin, polymorphic models, or Guardian per-object permissions; or when the codebase imports from crud_views.lib, crud_views_workflow, crud_views_polymorphic, or crud_views_guardian."
+description: "Use when working with the django-crud-views package: wiring up ViewSets, ListViews, DetailViews, CreateViews, UpdateViews, or DeleteViews; implementing nested resources with ParentViewSet; configuring django-tables2, django-filter, or crispy-forms; using WorkflowView, FormSetMixin, polymorphic models, or Guardian per-object permissions; displaying non-ORM or non-database data (S3 listings, external API results, config trees) in a ViewSet with Resource and ResourceViewMixin; or when the codebase imports from crud_views.lib, crud_views_workflow, crud_views_polymorphic, or crud_views_guardian."
 ---
 
 # django-crud-views
@@ -511,6 +511,84 @@ class PersonDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionR
 
 Full API: [references/api-reference.md](references/api-reference.md). Reference page with enforcement details:
 [docs/reference/action_enabled.md](../../docs/reference/action_enabled.md).
+
+---
+
+## Resources — Non-ORM Data in ViewSets (no database model)
+
+Use a `Resource` when the data a ViewSet lists isn't backed by the database — S3 bucket listings, an
+external REST API, a config tree. The ViewSet still gets list/detail pages, breadcrumbs, sibling-aware
+action buttons, and permission checks. A `Resource` is a **Pydantic** class (not a Django model) passed as
+`model=` to the ViewSet. **Create and update are deliberately out of scope** — if the data needs writable
+forms it has a home; model it as a real (possibly `managed=False`) model and use normal CRUD.
+
+Available since 0.12.0. Full reference: [docs/reference/resources.md](../../docs/reference/resources.md).
+
+```python
+import hashlib
+import django_tables2 as tables
+from crud_views.lib.resource import Resource, ResourceViewMixin
+from crud_views.lib.table import Table
+from crud_views.lib.viewset import ViewSet
+from crud_views.lib.views import ListViewTableMixin, ListViewPermissionRequired
+
+class S3File(Resource):                       # a Pydantic model, NOT a Django model
+    key: str
+    size: int
+
+    class Meta:                               # Django-Meta idiom; all fields optional
+        verbose_name = "s3 file"
+        verbose_name_plural = "s3 files"
+        pk_field = "key_md5"                  # names a field OR a @property
+        pk_type = ViewSet.PK.HEX             # URL regex; keys with "/" need a URL-safe computed pk
+
+    @property
+    def key_md5(self) -> str:                 # S3 keys contain "/", so expose a URL-safe pk
+        return hashlib.md5(self.key.encode()).hexdigest()
+
+    def __str__(self) -> str:
+        return self.key
+
+    @classmethod
+    def cv_get_items(cls, request, **url_kwargs):   # THE required hook — return a plain list (not a generator)
+        return [cls.model_validate(row) for row in list_bucket()]
+    # default cv_get_item(cls, request, pk, **url_kwargs) linear-scans cv_get_items(); override for direct lookup
+
+cv_s3file = ViewSet(
+    model=S3File,                             # Resource class goes here
+    name="s3file",
+    resource_permissions={                    # explicit — there is no ContentType to derive perms from
+        "view": "storage.view_s3file",
+        "delete": "storage.delete_s3file",
+    },
+)
+```
+
+**Views:** put `ResourceViewMixin` **first** in the bases — it overrides `get_queryset`/`get_object` so every
+existing view class resolves rows via `cv_get_items`/`cv_get_item` instead of the ORM.
+
+```python
+class S3FileListView(ResourceViewMixin, ListViewTableMixin, ListViewPermissionRequired):
+    cv_viewset = cv_s3file
+    table_class = S3FileTable
+    cv_list_actions = ["detail", "delete", "touch"]
+```
+
+Toolbox → which view class (all prefixed with `ResourceViewMixin`):
+- **List** → `ListViewTableMixin` + `ListView*` (pagination/tables2 work on plain lists unchanged)
+- **Detail** → `DetailCustomView*` with your own `template_name` (not property-grid `DetailView` — no model fields to introspect)
+- **Delete-with-confirm** → `CustomFormView*` + `CrispyDeleteForm`; do the real delete in `cv_form_valid(self, context)`. There is no `DeleteView` port.
+- **Form-less action** → `ActionView*`; do the side effect in `action(self, context) -> bool`
+
+**Permissions are explicit.** Resource ViewSets never derive permissions from a model. Pass a
+`resource_permissions` mapping (short key → `"app_label.codename"`), or `None` if every view is a non-`PermissionRequired`
+variant. The documented pattern for minting the codenames is an unmanaged permission-holder model
+(`managed=False`, `default_permissions=()`, explicit `permissions=[...]`). A `*PermissionRequired` view whose
+`cv_permission` key is missing from the mapping fails startup check **E260** — Resources never fail silently into "unprotected."
+
+**Nesting:** a Resource ViewSet can be the *child* of model ViewSets (any depth) — parent pks arrive in
+`cv_get_items`'s `url_kwargs`, and scoping the listing is your job (no ORM filter). A Resource can **not** be a
+*parent* (leaf-only; startup check **E261**). No guardian/workflow/polymorphic/filter/ordered integration — all ORM-bound.
 
 ---
 

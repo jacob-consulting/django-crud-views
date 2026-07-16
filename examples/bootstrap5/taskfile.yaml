@@ -1,48 +1,28 @@
 version: '3'
 
-env:
-  PYTHONPATH: ../../.
-
 tasks:
 
-  init:
+  run:
+    desc: Migrate, seed and start the example server
     cmds:
-      - task: migrate
-      - task: superuser
+      - uv run manage.py migrate
+      - uv run manage.py seed
+      - uv run manage.py runserver 0.0.0.0:8000
+
+  seed:
+    desc: Migrate and (re)seed demo data — idempotent
+    cmds:
+      - uv run manage.py migrate
+      - uv run manage.py seed
+
+  test:
+    cmds:
+      - uv run pytest
 
   migrations:
     cmds:
-      - ./manage.py makemigrations
-    silent: true
-
-  migrate:
-    cmds:
-      - ./manage.py migrate
-    silent: true
-
-  superuser:
-    cmds:
-      - ./manage.py createsuperuser --noinput
-    silent: true
-    env:
-      DJANGO_SUPERUSER_USERNAME: admin
-      DJANGO_SUPERUSER_PASSWORD: foobar4711
-      DJANGO_SUPERUSER_EMAIL: admin@example.org
+      - uv run manage.py makemigrations
 
   shell:
     cmds:
-      - ./manage.py shell
-    silent: true
-
-  run:
-    cmds:
-      - uv run manage.py runserver 0.0.0.0:8000
-
-  makemessages:
-    cmd: uv run manage.py makemessages -l de
-
-  compilemessages:
-    cmd: uv run manage.py compilemessages
-
-  setup_guardian_demo:
-    cmd: uv run manage.py setup_guardian_demo
+      - uv run manage.py shell

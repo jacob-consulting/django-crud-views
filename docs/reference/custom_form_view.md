@@ -121,7 +121,7 @@ class SiteFeedbackView(CrispyViewMixin, CustomFormNoObjectViewPermissionRequired
 
 ## CrispyViewMixin
 
-`CrispyViewMixin` (alias of `CrispyViewMixin`) enables crispy-forms support for the view's form. When added to a view, it passes the current view instance (`cv_view`) as an extra argument when constructing the form. This allows the form to generate context-aware submit and cancel buttons.
+`CrispyViewMixin` enables crispy-forms support for the view's form. When added to a view, it passes the current view instance (`cv_view`) as an extra argument when constructing the form. This allows the form to generate context-aware submit and cancel buttons.
 
 Add it to any view that uses a `CrispyModelForm` or `CrispyForm`:
 

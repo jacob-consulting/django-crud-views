@@ -8,6 +8,14 @@
   `CrispyModelForm` and `CrispyForm` views. Migration: replace `CrispyModelViewMixin` with
   `CrispyViewMixin` in imports and view base-class lists.
 
+### Changed
+- **Breaking (workflow):** `WorkflowView` now executes its transition logic in `cv_form_valid`
+  instead of `cv_form_valid_hook`, matching the framework convention (framework work in
+  `cv_form_valid`, `cv_form_valid_hook` reserved for user subclasses). If a subclass overrides
+  `cv_form_valid_hook` and relied on `super()` running the transition there, move that
+  `super()` call to `cv_form_valid`. Part of #31; the configurable-transaction half of that
+  issue is deferred to 1.x.
+
 ## 0.13.0
 
 ### Removed

@@ -75,8 +75,6 @@ class PersonCreateView(CrispyViewMixin, MessageMixin, CreateViewParentMixin, Cre
         return not (obj and obj.locked)
 ```
 
-See `examples/bootstrap5/app/views/group_members.py` for the full working example.
-
 ## Enforcement Points
 
 `cv_action_enabled` is enforced at two layers — button rendering and request dispatch:

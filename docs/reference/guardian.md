@@ -197,16 +197,15 @@ one query per related model, not one per object.
 
 ## Working Example
 
-See `examples/bootstrap5/` for a complete working example. After running
-migrations, use the management command to set up demo users with per-object
-permissions:
+See `examples/bootstrap5/guardian_demo/` for a complete working example. After running
+migrations, use the seed management command to set up demo users and data:
 
 ```bash
-python manage.py setup_guardian_demo
+python manage.py seed
 ```
 
-This creates `editor` (full access) and `reader` (view only) users with
-per-object permissions assigned to all existing objects.
+This creates `alice` and `bob` demo users and assigns per-object permissions on the
+seeded `Document` objects (see `guardian_demo/seed.py`).
 
 ## GuardianManageView
 

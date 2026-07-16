@@ -29,3 +29,9 @@ task init
 > **Note:** This will run the migrations and add a superuser with username `admin` and password `foobar4711`
 
 [Then open the app in your browser at http://localhost:8000](http://localhost:8000)
+
+## Claude Code skill
+
+A [Claude Code](https://docs.claude.com/en/docs/claude-code) skill for building with `django-crud-views`
+is maintained in a separate repository: [jacob-consulting/skills](https://github.com/jacob-consulting/skills).
+It is no longer bundled inside this repository.

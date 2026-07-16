@@ -53,7 +53,7 @@ class Truck(Vehicle):
 from django.forms import modelform_factory
 
 from crud_views.lib.viewset import ViewSet
-from crud_views.lib.crispy import CrispyModelViewMixin
+from crud_views.lib.crispy import CrispyViewMixin
 from crud_views.lib.crispy.form import CrispyDeleteForm
 from crud_views_polymorphic.lib import (
     PolymorphicCreateViewPermissionRequired,
@@ -72,12 +72,12 @@ CarForm = modelform_factory(Car, fields=["name", "doors"])
 TruckForm = modelform_factory(Truck, fields=["name", "payload_tons"])
 
 
-class VehicleCreateSelectView(CrispyModelViewMixin, PolymorphicCreateSelectViewPermissionRequired):
+class VehicleCreateSelectView(CrispyViewMixin, PolymorphicCreateSelectViewPermissionRequired):
     form_class = PolymorphicContentTypeForm
     cv_viewset = cv_vehicle
 
 
-class VehicleCreateView(CrispyModelViewMixin, PolymorphicCreateViewPermissionRequired):
+class VehicleCreateView(CrispyViewMixin, PolymorphicCreateViewPermissionRequired):
     cv_viewset = cv_vehicle
     polymorphic_forms = {
         Car: CarForm,
@@ -85,7 +85,7 @@ class VehicleCreateView(CrispyModelViewMixin, PolymorphicCreateViewPermissionReq
     }
 
 
-class VehicleUpdateView(CrispyModelViewMixin, PolymorphicUpdateViewPermissionRequired):
+class VehicleUpdateView(CrispyViewMixin, PolymorphicUpdateViewPermissionRequired):
     cv_viewset = cv_vehicle
     polymorphic_forms = {
         Car: CarForm,
@@ -93,7 +93,7 @@ class VehicleUpdateView(CrispyModelViewMixin, PolymorphicUpdateViewPermissionReq
     }
 
 
-class VehicleDeleteView(CrispyModelViewMixin, PolymorphicDeleteViewPermissionRequired):
+class VehicleDeleteView(CrispyViewMixin, PolymorphicDeleteViewPermissionRequired):
     form_class = CrispyDeleteForm
     cv_viewset = cv_vehicle
 

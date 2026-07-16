@@ -29,7 +29,7 @@ class CrispyFormMixin:
         - save
         - cancel, which is linked to the cancel key defined the CrudView
 
-    The mixin for CrudView(s) adds the view context cv_view to the form. CrispyModelViewMixin,
+    The mixin for CrudView(s) adds the view context cv_view to the form. CrispyViewMixin,
     when added to a CrudView, sets this extra argument for the form in get_form_kwargs.
     """
 
@@ -141,8 +141,3 @@ class CrispyViewMixin:
         if issubclass(form_class, (CrispyModelForm, CrispyForm)):
             kwargs["cv_view"] = self
         return kwargs
-
-
-# Deprecated alias kept for backwards compatibility, see issue #34
-class CrispyModelViewMixin(CrispyViewMixin):
-    pass

@@ -1,5 +1,5 @@
 """
-Tests for CustomFormView / CustomFormViewPermissionRequired and CrispyModelViewMixin.
+Tests for CustomFormView / CustomFormViewPermissionRequired and CrispyViewMixin.
 """
 
 import pytest
@@ -50,14 +50,14 @@ def test_custom_form_view_permission_required(client: Client, author_douglas_ada
 
 
 # ---------------------------------------------------------------------------
-# CrispyModelViewMixin — verifies cv_view is injected into the form
+# CrispyViewMixin — verifies cv_view is injected into the form
 # ---------------------------------------------------------------------------
 
 
 @pytest.mark.django_db
-def test_crispy_model_view_mixin_injects_cv_view(client_user_author_view: Client, author_douglas_adams):
+def test_crispy_view_mixin_injects_cv_view(client_user_author_view: Client, author_douglas_adams):
     """
-    CrispyModelViewMixin.get_form_kwargs injects cv_view into the form kwargs,
+    CrispyViewMixin.get_form_kwargs injects cv_view into the form kwargs,
     allowing CrispyModelForm to build the cancel button URL from the view context.
     We verify this by checking that the rendered contact form page contains the
     submit button label rendered by the crispy helper.
@@ -73,9 +73,9 @@ def test_crispy_model_view_mixin_injects_cv_view(client_user_author_view: Client
 
 
 @pytest.mark.django_db
-def test_crispy_model_view_mixin_on_create_view(client_user_author_add: Client):
+def test_crispy_view_mixin_on_create_view(client_user_author_add: Client):
     """
-    CrispyModelViewMixin works correctly on CreateView: the rendered form
+    CrispyViewMixin works correctly on CreateView: the rendered form
     contains the expected fields.
     """
     response = client_user_author_add.get("/author/create/")
@@ -85,9 +85,9 @@ def test_crispy_model_view_mixin_on_create_view(client_user_author_add: Client):
 
 
 @pytest.mark.django_db
-def test_crispy_model_view_mixin_on_update_view(client_user_author_change: Client, author_douglas_adams):
+def test_crispy_view_mixin_on_update_view(client_user_author_change: Client, author_douglas_adams):
     """
-    CrispyModelViewMixin works correctly on UpdateView: the rendered form
+    CrispyViewMixin works correctly on UpdateView: the rendered form
     is pre-populated with the existing object data.
     """
     pk = author_douglas_adams.pk

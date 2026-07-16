@@ -79,7 +79,7 @@ class WorkflowView(CustomFormView):
         context["has_workflow_choices"] = self.object.workflow_has_any_possible_transition(self.request.user)
         return context
 
-    def cv_form_valid_hook(self, context: dict):
+    def cv_form_valid(self, context: dict):
         """
         Process workflow transition
         """

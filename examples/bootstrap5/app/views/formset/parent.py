@@ -3,7 +3,7 @@ from crispy_forms.layout import Row
 from django.utils.translation import gettext_lazy as _
 
 from app.models.poly import Parent
-from crud_views.lib.crispy import CrispyModelViewMixin, CrispyDeleteForm, CrispyModelForm, Column4
+from crud_views.lib.crispy import CrispyViewMixin, CrispyDeleteForm, CrispyModelForm, Column4
 from crud_views.lib.table import Table, UUIDLinkDetailColumn
 from crud_views.lib.views import (
     ListViewTableMixin,
@@ -60,19 +60,19 @@ class ParentDetailView(DetailViewPermissionRequired):
     ]
 
 
-class ParentCreateView(CrispyModelViewMixin, CreateViewPermissionRequired):
+class ParentCreateView(CrispyViewMixin, CreateViewPermissionRequired):
     model = Parent
     form_class = ParentForm
     cv_viewset = cv_poly_parent_formset
 
 
-class ParentUpdateView(CrispyModelViewMixin, UpdateViewPermissionRequired):
+class ParentUpdateView(CrispyViewMixin, UpdateViewPermissionRequired):
     model = Parent
     form_class = ParentForm
     cv_viewset = cv_poly_parent_formset
 
 
-class ParentDeleteView(CrispyModelViewMixin, DeleteViewPermissionRequired):
+class ParentDeleteView(CrispyViewMixin, DeleteViewPermissionRequired):
     model = Parent
     form_class = CrispyDeleteForm
     cv_viewset = cv_poly_parent_formset

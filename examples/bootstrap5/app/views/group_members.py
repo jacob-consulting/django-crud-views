@@ -5,7 +5,7 @@ from crispy_forms.layout import Row
 from django.utils.translation import gettext_lazy as _
 
 from app.models import Person
-from crud_views.lib.crispy import Column4, CrispyModelForm, CrispyModelViewMixin, CrispyDeleteForm
+from crud_views.lib.crispy import Column4, CrispyModelForm, CrispyViewMixin, CrispyDeleteForm
 from crud_views.lib.table import Table, LinkDetailColumn
 from crud_views.lib.views import (
     DetailViewPermissionRequired,
@@ -62,7 +62,7 @@ class PersonListView(ListViewTableMixin, ListViewPermissionRequired):
     table_class = PersonTable
 
 
-class PersonCreateView(CrispyModelViewMixin, MessageMixin, CreateViewParentMixin, CreateViewPermissionRequired):
+class PersonCreateView(CrispyViewMixin, MessageMixin, CreateViewParentMixin, CreateViewPermissionRequired):
     model = Person
     form_class = PersonForm
     cv_viewset = cv_person
@@ -79,14 +79,14 @@ class PersonCreateView(CrispyModelViewMixin, MessageMixin, CreateViewParentMixin
         return defaults
 
 
-class PersonUpdateView(CrispyModelViewMixin, MessageMixin, UpdateViewPermissionRequired):
+class PersonUpdateView(CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
     model = Person
     form_class = PersonForm
     cv_viewset = cv_person
     cv_message = _("Updated person »{object}«")
 
 
-class PersonDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequired):
+class PersonDeleteView(CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     model = Person
     form_class = CrispyDeleteForm
     cv_viewset = cv_person

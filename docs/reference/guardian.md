@@ -186,7 +186,7 @@ list is filtered using per-object `view` permissions instead of model-level perm
 - Objects the user lacks per-object `view` permission for: shown as aggregated counts
 
 ```python
-class PublisherDeleteView(CrispyModelViewMixin, GuardianDeleteViewPermissionRequired):
+class PublisherDeleteView(CrispyViewMixin, GuardianDeleteViewPermissionRequired):
     form_class = CrispyDeleteForm
     cv_viewset = cv_publisher
     cv_show_related_objects = True

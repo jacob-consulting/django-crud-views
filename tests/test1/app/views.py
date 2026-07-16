@@ -8,7 +8,7 @@ from django.forms.fields import CharField
 from django.core.exceptions import ValidationError
 
 from tests.test1.app.models import Author, Publisher, Book, Vehicle, Car, Truck, Campaign
-from crud_views.lib.crispy import CrispyModelViewMixin, CrispyDeleteForm, CrispyModelForm
+from crud_views.lib.crispy import CrispyViewMixin, CrispyDeleteForm, CrispyModelForm
 from crud_views.lib.crispy.form import CrispyForm
 from crud_views.lib.table import Table, UUIDLinkDetailColumn, LinkDetailColumn
 from crud_views.lib.views import (
@@ -112,17 +112,17 @@ class AuthorForm(CrispyModelForm):
         return Row(Column4("first_name"), Column4("last_name"), Column4("pseudonym"))
 
 
-class AuthorCreateView(CrispyModelViewMixin, CreateViewPermissionRequired):
+class AuthorCreateView(CrispyViewMixin, CreateViewPermissionRequired):
     form_class = AuthorForm
     cv_viewset = cv_author
 
 
-class AuthorUpdateView(CrispyModelViewMixin, UpdateViewPermissionRequired):
+class AuthorUpdateView(CrispyViewMixin, UpdateViewPermissionRequired):
     form_class = AuthorForm
     cv_viewset = cv_author
 
 
-class AuthorDeleteView(CrispyModelViewMixin, DeleteViewPermissionRequired):
+class AuthorDeleteView(CrispyViewMixin, DeleteViewPermissionRequired):
     form_class = CrispyDeleteForm
     cv_viewset = cv_author
 
@@ -200,7 +200,7 @@ class AuthorContactForm(CrispyModelForm):
         return Column12("subject"), Column12("body")
 
 
-class AuthorContactView(CrispyModelViewMixin, MessageMixin, CustomFormViewPermissionRequired):
+class AuthorContactView(CrispyViewMixin, MessageMixin, CustomFormViewPermissionRequired):
     cv_key = "contact"
     cv_path = "contact"
     cv_viewset = cv_author
@@ -230,7 +230,7 @@ class AuthorWideCardDetailView(DetailViewPermissionRequired):
     cv_viewset = cv_author_wide_card
 
 
-class AuthorWideCardCreateView(CrispyModelViewMixin, CreateViewPermissionRequired):
+class AuthorWideCardCreateView(CrispyViewMixin, CreateViewPermissionRequired):
     form_class = AuthorForm
     cv_viewset = cv_author_wide_card
 
@@ -303,17 +303,17 @@ class PublisherForm(CrispyModelForm):
         return Row(Column4("name"))
 
 
-class PublisherCreateView(CrispyModelViewMixin, MessageMixin, CreateViewPermissionRequired):
+class PublisherCreateView(CrispyViewMixin, MessageMixin, CreateViewPermissionRequired):
     form_class = PublisherForm
     cv_viewset = cv_publisher
 
 
-class PublisherUpdateView(CrispyModelViewMixin, MessageMixin, UpdateViewPermissionRequired):
+class PublisherUpdateView(CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
     form_class = PublisherForm
     cv_viewset = cv_publisher
 
 
-class PublisherDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequired):
+class PublisherDeleteView(CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     form_class = CrispyDeleteForm
     cv_viewset = cv_publisher
 
@@ -393,17 +393,17 @@ class BookForm(CrispyModelForm):
         return Row(Column4("title"))
 
 
-class BookCreateView(CrispyModelViewMixin, CreateViewParentMixin, CreateViewPermissionRequired):
+class BookCreateView(CrispyViewMixin, CreateViewParentMixin, CreateViewPermissionRequired):
     form_class = BookForm
     cv_viewset = cv_book
 
 
-class BookUpdateView(CrispyModelViewMixin, UpdateViewPermissionRequired):
+class BookUpdateView(CrispyViewMixin, UpdateViewPermissionRequired):
     form_class = BookForm
     cv_viewset = cv_book
 
 
-class BookDeleteView(CrispyModelViewMixin, DeleteViewPermissionRequired):
+class BookDeleteView(CrispyViewMixin, DeleteViewPermissionRequired):
     form_class = CrispyDeleteForm
     cv_viewset = cv_book
 
@@ -484,12 +484,12 @@ class CrispyVehicleContentTypeForm(CrispyForm, PolymorphicContentTypeForm):
         return Row(Column4("polymorphic_ctype_id"))
 
 
-class VehicleCreateSelectView(CrispyModelViewMixin, PolymorphicCreateSelectViewPermissionRequired):
+class VehicleCreateSelectView(CrispyViewMixin, PolymorphicCreateSelectViewPermissionRequired):
     form_class = CrispyVehicleContentTypeForm
     cv_viewset = cv_vehicle
 
 
-class VehicleCreateView(CrispyModelViewMixin, PolymorphicCreateViewPermissionRequired):
+class VehicleCreateView(CrispyViewMixin, PolymorphicCreateViewPermissionRequired):
     cv_viewset = cv_vehicle
     cv_context_actions = ["home"]
     polymorphic_forms = {
@@ -498,7 +498,7 @@ class VehicleCreateView(CrispyModelViewMixin, PolymorphicCreateViewPermissionReq
     }
 
 
-class VehicleUpdateView(CrispyModelViewMixin, PolymorphicUpdateViewPermissionRequired):
+class VehicleUpdateView(CrispyViewMixin, PolymorphicUpdateViewPermissionRequired):
     cv_viewset = cv_vehicle
     polymorphic_forms = {
         Car: CarForm,
@@ -506,7 +506,7 @@ class VehicleUpdateView(CrispyModelViewMixin, PolymorphicUpdateViewPermissionReq
     }
 
 
-class VehicleDeleteView(CrispyModelViewMixin, PolymorphicDeleteViewPermissionRequired):
+class VehicleDeleteView(CrispyViewMixin, PolymorphicDeleteViewPermissionRequired):
     form_class = CrispyDeleteForm
     cv_viewset = cv_vehicle
 
@@ -556,7 +556,7 @@ class CampaignWorkflowForm(WorkflowForm):
         model = Campaign
 
 
-class CampaignWorkflowView(CrispyModelViewMixin, MessageMixin, WorkflowViewPermissionRequired):
+class CampaignWorkflowView(CrispyViewMixin, MessageMixin, WorkflowViewPermissionRequired):
     cv_context_actions = ["list", "detail", "workflow"]
     cv_viewset = cv_campaign
     form_class = CampaignWorkflowForm
@@ -581,17 +581,17 @@ class GuardianAuthorDetailView(GuardianDetailViewPermissionRequired):
     cv_viewset = cv_guardian_author
 
 
-class GuardianAuthorCreateView(CrispyModelViewMixin, GuardianCreateViewPermissionRequired):
+class GuardianAuthorCreateView(CrispyViewMixin, GuardianCreateViewPermissionRequired):
     form_class = AuthorForm
     cv_viewset = cv_guardian_author
 
 
-class GuardianAuthorUpdateView(CrispyModelViewMixin, GuardianUpdateViewPermissionRequired):
+class GuardianAuthorUpdateView(CrispyViewMixin, GuardianUpdateViewPermissionRequired):
     form_class = AuthorForm
     cv_viewset = cv_guardian_author
 
 
-class GuardianAuthorDeleteView(CrispyModelViewMixin, GuardianDeleteViewPermissionRequired):
+class GuardianAuthorDeleteView(CrispyViewMixin, GuardianDeleteViewPermissionRequired):
     form_class = CrispyDeleteForm
     cv_viewset = cv_guardian_author
 
@@ -621,17 +621,17 @@ class GuardianPublisherDetailView(GuardianDetailViewPermissionRequired):
     cv_viewset = cv_guardian_publisher
 
 
-class GuardianPublisherCreateView(CrispyModelViewMixin, GuardianCreateViewPermissionRequired):
+class GuardianPublisherCreateView(CrispyViewMixin, GuardianCreateViewPermissionRequired):
     form_class = PublisherForm
     cv_viewset = cv_guardian_publisher
 
 
-class GuardianPublisherUpdateView(CrispyModelViewMixin, GuardianUpdateViewPermissionRequired):
+class GuardianPublisherUpdateView(CrispyViewMixin, GuardianUpdateViewPermissionRequired):
     form_class = PublisherForm
     cv_viewset = cv_guardian_publisher
 
 
-class GuardianPublisherDeleteView(CrispyModelViewMixin, GuardianDeleteViewPermissionRequired):
+class GuardianPublisherDeleteView(CrispyViewMixin, GuardianDeleteViewPermissionRequired):
     form_class = CrispyDeleteForm
     cv_viewset = cv_guardian_publisher
 
@@ -664,17 +664,17 @@ class GuardianBookDetailView(GuardianDetailViewPermissionRequired):
     cv_viewset = cv_guardian_book
 
 
-class GuardianBookCreateView(CrispyModelViewMixin, CreateViewParentMixin, GuardianCreateViewPermissionRequired):
+class GuardianBookCreateView(CrispyViewMixin, CreateViewParentMixin, GuardianCreateViewPermissionRequired):
     form_class = BookForm
     cv_viewset = cv_guardian_book
 
 
-class GuardianBookUpdateView(CrispyModelViewMixin, GuardianUpdateViewPermissionRequired):
+class GuardianBookUpdateView(CrispyViewMixin, GuardianUpdateViewPermissionRequired):
     form_class = BookForm
     cv_viewset = cv_guardian_book
 
 
-class GuardianBookDeleteView(CrispyModelViewMixin, GuardianDeleteViewPermissionRequired):
+class GuardianBookDeleteView(CrispyViewMixin, GuardianDeleteViewPermissionRequired):
     form_class = CrispyDeleteForm
     cv_viewset = cv_guardian_book
 
@@ -693,7 +693,7 @@ class GuardianPublisherCascadeListView(ListViewTableMixin, GuardianListViewPermi
     cv_viewset = cv_guardian_publisher_cascade
 
 
-class GuardianPublisherCascadeDeleteView(CrispyModelViewMixin, GuardianDeleteViewPermissionRequired):
+class GuardianPublisherCascadeDeleteView(CrispyViewMixin, GuardianDeleteViewPermissionRequired):
     form_class = CrispyDeleteForm
     cv_viewset = cv_guardian_publisher_cascade
     cv_show_related_objects = True
@@ -712,7 +712,7 @@ class PublisherCascadeListView(ListViewTableMixin, ListViewPermissionRequired):
     cv_viewset = cv_publisher_cascade
 
 
-class PublisherCascadeDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequired):
+class PublisherCascadeDeleteView(CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     form_class = CrispyDeleteForm
     cv_viewset = cv_publisher_cascade
     cv_show_related_objects = True
@@ -731,7 +731,7 @@ class PublisherProtectedListView(ListViewTableMixin, ListViewPermissionRequired)
     cv_viewset = cv_publisher_protected
 
 
-class PublisherProtectedDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequired):
+class PublisherProtectedDeleteView(CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     form_class = CrispyDeleteForm
     cv_viewset = cv_publisher_protected
     cv_show_related_objects = True
@@ -755,7 +755,7 @@ class ProtectedDeleteForm(CrispyDeleteForm):
         return cleaned_data
 
 
-class PublisherFormProtectedDeleteView(CrispyModelViewMixin, DeleteViewPermissionRequired):
+class PublisherFormProtectedDeleteView(CrispyViewMixin, DeleteViewPermissionRequired):
     form_class = ProtectedDeleteForm
     cv_viewset = cv_publisher_form_protected
 
@@ -778,7 +778,7 @@ class PublisherLinkedListView(ListViewTableMixin, ListViewPermissionRequired):
     cv_viewset = cv_publisher_linked
 
 
-class PublisherLinkedDeleteView(CrispyModelViewMixin, DeleteViewPermissionRequired):
+class PublisherLinkedDeleteView(CrispyViewMixin, DeleteViewPermissionRequired):
     form_class = CrispyDeleteForm
     cv_viewset = cv_publisher_linked
     cv_show_related_objects = True
@@ -821,7 +821,7 @@ class AuthorModalDetailView(DetailViewPermissionRequired):
     ]
 
 
-class AuthorModalDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequired):
+class AuthorModalDeleteView(CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     form_class = CrispyDeleteForm
     cv_viewset = cv_author_modal
     cv_modal = True
@@ -841,7 +841,7 @@ class AuthorModalContactForm(CrispyModelForm):
         return Column12("subject"), Column12("body")
 
 
-class AuthorModalContactView(MessageMixin, CrispyModelViewMixin, CustomFormViewPermissionRequired):
+class AuthorModalContactView(MessageMixin, CrispyViewMixin, CustomFormViewPermissionRequired):
     cv_key = "contact"
     cv_path = "contact"
     cv_viewset = cv_author_modal
@@ -868,7 +868,7 @@ class PublisherModalProtectedListView(ListViewTableMixin, ListViewPermissionRequ
     cv_viewset = cv_publisher_modal_protected
 
 
-class PublisherModalProtectedDeleteView(CrispyModelViewMixin, DeleteViewPermissionRequired):
+class PublisherModalProtectedDeleteView(CrispyViewMixin, DeleteViewPermissionRequired):
     form_class = CrispyDeleteForm
     cv_viewset = cv_publisher_modal_protected
     cv_modal = True

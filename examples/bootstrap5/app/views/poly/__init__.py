@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 from app.models.poly import Poly, PolyOne, PolyTwo
 from app.views.poly.one import PolyOneForm
 from app.views.poly.two import PolyTwoForm
-from crud_views.lib.crispy import Column4, CrispyModelViewMixin
+from crud_views.lib.crispy import Column4, CrispyViewMixin
 from crud_views.lib.crispy.form import CrispyForm
 from crud_views_polymorphic.lib import (
     PolymorphicCreateSelectView,
@@ -45,20 +45,20 @@ class CrispyPolymorphicContentTypeForm(CrispyForm, PolymorphicContentTypeForm):
         return Row(Column4("polymorphic_ctype_id"))
 
 
-class PolyCreateSelectView(CrispyModelViewMixin, PolymorphicCreateSelectView):
+class PolyCreateSelectView(CrispyViewMixin, PolymorphicCreateSelectView):
     model = Poly
     form_class = CrispyPolymorphicContentTypeForm
     cv_viewset = cv_poly
 
 
-class PolyCreateView(CrispyModelViewMixin, PolymorphicCreateViewPermissionRequired):
+class PolyCreateView(CrispyViewMixin, PolymorphicCreateViewPermissionRequired):
     model = Poly
     cv_viewset = cv_poly
     cv_context_actions = ["home"]
     polymorphic_forms = {PolyOne: PolyOneForm, PolyTwo: PolyTwoForm}
 
 
-class PolyUpdateView(CrispyModelViewMixin, PolymorphicUpdateViewPermissionRequired):
+class PolyUpdateView(CrispyViewMixin, PolymorphicUpdateViewPermissionRequired):
     model = Poly
     cv_viewset = cv_poly
     polymorphic_forms = {PolyOne: PolyOneForm, PolyTwo: PolyTwoForm}

@@ -1,5 +1,26 @@
 # Django CRUD Views - Changelog
 
+## 0.14.0
+
+### Removed
+- **Breaking:** the deprecated `CrispyModelViewMixin` alias has been removed (#34). Use
+  `CrispyViewMixin` instead — it was always the implementing class, and it works for both
+  `CrispyModelForm` and `CrispyForm` views. Migration: replace `CrispyModelViewMixin` with
+  `CrispyViewMixin` in imports and view base-class lists.
+
+### Changed
+- **Breaking (workflow):** `WorkflowView` now executes its transition logic in `cv_form_valid`
+  instead of `cv_form_valid_hook`, matching the framework convention (framework work in
+  `cv_form_valid`, `cv_form_valid_hook` reserved for user subclasses). If a subclass overrides
+  `cv_form_valid_hook` and relied on `super()` running the transition there, move that
+  `super()` call to `cv_form_valid`. Part of #31; the configurable-transaction half of that
+  issue is deferred to 1.x.
+
+### Added
+- API stability statement: `docs/development/stability.md` defines the public API surface
+  covered by semver from 1.0.0 on, the internal/public split (including the formsets
+  declaration surface), and the post-1.0 deprecation policy.
+
 ## 0.13.0
 
 ### Removed

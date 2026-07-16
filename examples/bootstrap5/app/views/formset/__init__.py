@@ -10,7 +10,7 @@ from django.forms.models import inlineformset_factory
 from django.utils.translation import gettext_lazy as _
 
 from app.models.poly import Poly, PolyOne, PolyTwo, PolyTwoChoice, PolyThree, PolyAnswerText, PolyAnswerNumber
-from crud_views.lib.crispy import Column4, CrispyModelViewMixin, Column8
+from crud_views.lib.crispy import Column4, CrispyViewMixin, Column8
 from crud_views.lib.crispy.form import CrispyForm, CrispyModelForm
 from crud_views.lib.formsets import FormSet, FormSets, InlineFormSet
 from crud_views.lib.formsets.mixins import PolymorphicFormSetsViewMixin
@@ -129,14 +129,14 @@ class CrispyPolymorphicContentTypeForm(CrispyForm, PolymorphicContentTypeForm):
         return Row(Column4("polymorphic_ctype_id"))
 
 
-class PolyCreateSelectView(CrispyModelViewMixin, PolymorphicCreateSelectView):
+class PolyCreateSelectView(CrispyViewMixin, PolymorphicCreateSelectView):
     model = Poly
     form_class = CrispyPolymorphicContentTypeForm
     cv_viewset = cv_poly_formset
 
 
 class PolyCreateView(
-    CrispyModelViewMixin, CreateViewParentMixin, PolymorphicFormSetsViewMixin, PolymorphicCreateViewPermissionRequired
+    CrispyViewMixin, CreateViewParentMixin, PolymorphicFormSetsViewMixin, PolymorphicCreateViewPermissionRequired
 ):
     model = Poly
     cv_viewset = cv_poly_formset
@@ -161,7 +161,7 @@ class PolyCreateView(
             PolyAnswerNumber.objects.create(poly=self.object)
 
 
-class PolyUpdateView(CrispyModelViewMixin, PolymorphicFormSetsViewMixin, PolymorphicUpdateViewPermissionRequired):
+class PolyUpdateView(CrispyViewMixin, PolymorphicFormSetsViewMixin, PolymorphicUpdateViewPermissionRequired):
     model = Poly
     cv_viewset = cv_poly_formset
     cv_formsets_required: bool = False

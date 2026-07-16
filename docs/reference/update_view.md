@@ -8,7 +8,7 @@ the [CreateView](create_view.md), using Django's form handling and
 
 ```python
 from django.utils.translation import gettext as _
-from crud_views.lib.crispy import CrispyModelForm, CrispyModelViewMixin, Column4
+from crud_views.lib.crispy import CrispyModelForm, CrispyViewMixin, Column4
 from crud_views.lib.views import UpdateViewPermissionRequired, MessageMixin
 from crispy_forms.layout import Row
 
@@ -24,7 +24,7 @@ class AuthorUpdateForm(CrispyModelForm):
         return Row(Column4("first_name"), Column4("last_name"), Column4("pseudonym"))
 
 
-class AuthorUpdateView(CrispyModelViewMixin, MessageMixin, UpdateViewPermissionRequired):
+class AuthorUpdateView(CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
     form_class = AuthorUpdateForm
     cv_viewset = cv_author
     cv_message = "Updated author »{object}«"
@@ -75,7 +75,7 @@ class AuthorUpdateForm(AuthorCreateForm):
 Add `MessageMixin` to show a success message after updating:
 
 ```python
-class AuthorUpdateView(CrispyModelViewMixin, MessageMixin, UpdateViewPermissionRequired):
+class AuthorUpdateView(CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
     form_class = AuthorUpdateForm
     cv_viewset = cv_author
     cv_message = "Updated author »{object}«"

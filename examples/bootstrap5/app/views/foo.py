@@ -3,7 +3,7 @@ from crispy_forms.layout import Row
 from django.utils.translation import gettext_lazy as _
 
 from app.models import Foo
-from crud_views.lib.crispy import CrispyModelForm, Column4, CrispyModelViewMixin, CrispyDeleteForm
+from crud_views.lib.crispy import CrispyModelForm, Column4, CrispyViewMixin, CrispyDeleteForm
 from crud_views.lib.table import Table, LinkChildColumn, LinkDetailColumn
 from crud_views.lib.views import (
     DetailViewPermissionRequired,
@@ -59,19 +59,19 @@ class FooDetailView(DetailViewPermissionRequired):
     ]
 
 
-class FooUpdateView(CrispyModelViewMixin, UpdateViewPermissionRequired):
+class FooUpdateView(CrispyViewMixin, UpdateViewPermissionRequired):
     model = Foo
     form_class = FooForm
     cv_viewset = cv_foo
 
 
-class FooCreateView(CrispyModelViewMixin, CreateViewPermissionRequired):
+class FooCreateView(CrispyViewMixin, CreateViewPermissionRequired):
     model = Foo
     form_class = FooForm
     cv_viewset = cv_foo
 
 
-class FooDeleteView(CrispyModelViewMixin, DeleteViewPermissionRequired):
+class FooDeleteView(CrispyViewMixin, DeleteViewPermissionRequired):
     model = Foo
     form_class = CrispyDeleteForm
     cv_viewset = cv_foo

@@ -4,7 +4,7 @@ from typing import List
 import django_tables2 as tables
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Row, LayoutObject
-from crud_views.lib.crispy import CrispyModelForm, Column4, CrispyModelViewMixin, CrispyDeleteForm, Column8
+from crud_views.lib.crispy import CrispyModelForm, Column4, CrispyViewMixin, CrispyDeleteForm, Column8
 from crud_views.lib.table import Table, LinkDetailColumn
 from crud_views.lib.views import (
     DetailViewPermissionRequired,
@@ -205,21 +205,21 @@ cv_formsets: FormSets = FormSets(
 )
 
 
-class QuestionUpdateView(CrispyModelViewMixin, FormSetMixin, UpdateViewPermissionRequired):
+class QuestionUpdateView(CrispyViewMixin, FormSetMixin, UpdateViewPermissionRequired):
     model = Question
     form_class = QuestionForm
     cv_viewset = cv_question
     cv_formsets: FormSets = cv_formsets
 
 
-class QuestionCreateView(CrispyModelViewMixin, FormSetMixin, CreateViewPermissionRequired):
+class QuestionCreateView(CrispyViewMixin, FormSetMixin, CreateViewPermissionRequired):
     model = Question
     form_class = QuestionForm
     cv_viewset = cv_question
     cv_formsets: FormSets = cv_formsets
 
 
-class QuestionDeleteView(CrispyModelViewMixin, DeleteViewPermissionRequired):
+class QuestionDeleteView(CrispyViewMixin, DeleteViewPermissionRequired):
     model = Question
     form_class = CrispyDeleteForm
     cv_viewset = cv_question

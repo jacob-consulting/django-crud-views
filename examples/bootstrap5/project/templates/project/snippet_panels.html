@@ -1,0 +1,20 @@
+{% if panels %}
+    <div class="mt-4" id="snippet-panels">
+        <h5><i class="fa-solid fa-code"></i> The code behind this page</h5>
+        <div class="accordion" id="snippetAccordion">
+            {% for panel in panels %}
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#{{ panel.id }}" aria-controls="{{ panel.id }}">
+                            {{ panel.title }}
+                        </button>
+                    </h2>
+                    <div id="{{ panel.id }}" class="accordion-collapse collapse" data-bs-parent="#snippetAccordion">
+                        <div class="accordion-body overflow-auto">{{ panel.html }}</div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}

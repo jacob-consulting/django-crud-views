@@ -39,3 +39,19 @@ class SeedCommandTest(TestCase):
         self.assertTrue(User.objects.filter(username="admin", is_superuser=True).exists())
         self.assertTrue(User.objects.filter(username="alice", is_superuser=False).exists())
         self.assertTrue(User.objects.filter(username="bob", is_superuser=False).exists())
+
+
+class SnippetPanelsTest(TestCase):
+    def test_highlight_produces_html(self):
+        from project.templatetags.example_tags import _highlight
+
+        html = _highlight("def foo():\n    return 1\n")
+        self.assertIn("<span", html)
+        self.assertIn("foo", html)
+
+    def test_snippet_panels_empty_for_non_feature_view(self):
+        from project.templatetags.example_tags import snippet_panels
+        from project.views import HomeView
+
+        result = snippet_panels({"view": HomeView()})
+        self.assertEqual(result["panels"], [])

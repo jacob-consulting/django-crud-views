@@ -1,6 +1,7 @@
 {% extends "project/base.html" %}
 
 {% load crud_views %}
+{% load example_tags %}
 
 {% block content %}
 
@@ -33,5 +34,7 @@
             {% endblock cv_content %}
         </div>
     </div>
+
+    {% snippet_panels %}
 
 {% endblock content %}

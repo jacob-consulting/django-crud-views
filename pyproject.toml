@@ -80,6 +80,10 @@ test = [
     "django-guardian>=2.4",
 ]
 
+examples = [
+    "pygments",
+]
+
 [project.urls]
 Homepage = "https://github.com/jacob-consulting/django-crud-views"
 Documentation = "https://django-crud-views.readthedocs.io/en/latest/"

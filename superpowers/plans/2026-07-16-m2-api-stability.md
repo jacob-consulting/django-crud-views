@@ -8,6 +8,32 @@
 
 **Tech Stack:** Django package (`src/` layout, hatchling), pytest (run from `tests/`), mkdocs (readthedocs theme, awesome-pages), ruff, `gh` CLI, bump-my-version.
 
+## Handoff notes (for a fresh session)
+
+**Kickoff:** start from a clean, up-to-date `main` in `/home/alex/projects/alex/django-crud-views` and execute this plan with `superpowers:subagent-driven-development` (recommended) or `superpowers:executing-plans`. Work tasks strictly in order — Task 1 and Task 2 both edit `CHANGELOG.md` and `tests/`, and Task 6 assumes all prior commits exist.
+
+**Required reading before Task 1:**
+- Spec (the "why" behind every decision): `superpowers/specs/2026-07-16-m2-api-stability-design.md`
+- Milestone context (M2 section only): `superpowers/notes/2026-07-16-release-1-milestone.md`
+
+**Decisions are final.** All design choices (surviving name `CrispyViewMixin`, formsets public/private split, #28/#31 triage outcomes, doc location) were made in the 2026-07-16 brainstorm with the maintainer. Do not re-litigate them; if a step turns out to be impossible as written, stop and ask rather than substituting a different design.
+
+**Repo facts a fresh session won't know:**
+- Tests run from the `tests/` directory: `cd tests && pytest` (~320 tests, all green at plan time). CI additionally runs a nox matrix; local single-run is enough between tasks.
+- Pre-commit runs `ruff-format` — a commit may rewrite files; if it fails, re-stage and commit again.
+- `taskfile.yaml` has `bump-patch` only; minor bumps use `uv run bump-my-version bump minor` (Task 6 already says so). bump-my-version commits and tags itself.
+- Release = tag push triggers `.github/workflows/publish.yml` → PyPI. No GitHub Releases are created.
+- PR lifecycle: create PR → wait for CI → fix ruff findings if any → **squash**-merge → wait for main CI. Never merge red.
+
+**Facts verified 2026-07-16 — re-verify, don't assume:**
+- `CrispyModelViewMixin` reference sites: ~31 files under `tests/`, `docs/`, `examples/` plus the two files in `src/crud_views/lib/crispy/`. Re-grep in Task 1 Step 4.
+- `../django-crud-views-extensions` has zero `Crispy*` imports and zero `cv_form_valid_hook` uses (Task 6 re-checks).
+- Exactly one TODO comment in `src/` (`base.py:61`). Task 5 re-runs the sweep.
+
+**TDD honesty:** Tasks 1 and 2 have real RED steps. Run them and read the actual output — do not paraphrase or fabricate expected failures (if a "failing" test passes, the plan's premise is wrong: stop and investigate). Task 2's structural test must fail for the stated reason (`cv_form_valid_hook` in `vars(WorkflowView)`), not from an import typo.
+
+**External actions:** Tasks 4–6 write to GitHub (`gh` issue comments/edits, issue creation, PR, merge) and Task 6 publishes to PyPI. These are authorized as part of this plan once CI is green; they are not reversible, so follow the steps verbatim and verify each expected output before the next step.
+
 ## Global Constraints
 
 - Line length 120, double quotes (ruff); pre-commit runs `ruff-format`.

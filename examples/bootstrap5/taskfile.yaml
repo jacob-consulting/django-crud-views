@@ -1,1 +1,48 @@
-../shared/taskfile.yaml
+version: '3'
+
+env:
+  PYTHONPATH: ../../.
+
+tasks:
+
+  init:
+    cmds:
+      - task: migrate
+      - task: superuser
+
+  migrations:
+    cmds:
+      - ./manage.py makemigrations
+    silent: true
+
+  migrate:
+    cmds:
+      - ./manage.py migrate
+    silent: true
+
+  superuser:
+    cmds:
+      - ./manage.py createsuperuser --noinput
+    silent: true
+    env:
+      DJANGO_SUPERUSER_USERNAME: admin
+      DJANGO_SUPERUSER_PASSWORD: foobar4711
+      DJANGO_SUPERUSER_EMAIL: admin@example.org
+
+  shell:
+    cmds:
+      - ./manage.py shell
+    silent: true
+
+  run:
+    cmds:
+      - uv run manage.py runserver 0.0.0.0:8000
+
+  makemessages:
+    cmd: uv run manage.py makemessages -l de
+
+  compilemessages:
+    cmd: uv run manage.py compilemessages
+
+  setup_guardian_demo:
+    cmd: uv run manage.py setup_guardian_demo

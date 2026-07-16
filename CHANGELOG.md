@@ -16,6 +16,11 @@
   `super()` call to `cv_form_valid`. Part of #31; the configurable-transaction half of that
   issue is deferred to 1.x.
 
+### Added
+- API stability statement: `docs/development/stability.md` defines the public API surface
+  covered by semver from 1.0.0 on, the internal/public split (including the formsets
+  declaration surface), and the post-1.0 deprecation policy.
+
 ## 0.13.0
 
 ### Removed

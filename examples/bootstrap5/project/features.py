@@ -49,4 +49,11 @@ FEATURES: list[Feature] = [
         url_name="vehicle-list",
         icon="fa-solid fa-car",
     ),
+    Feature(
+        app="guardian_demo",
+        title="Guardian",
+        description="Per-object permissions: alice and bob each see their own documents; one is shared.",
+        url_name="document-list",
+        icon="fa-solid fa-user-lock",
+    ),
 ]

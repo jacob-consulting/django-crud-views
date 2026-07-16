@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "formsets",
     "workflow",
     "polymorphic_demo",
+    "guardian_demo",
 ]
 
 MIDDLEWARE = [

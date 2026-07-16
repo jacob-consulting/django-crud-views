@@ -1,5 +1,3 @@
-from pathlib import Path
-
 import pytest
 from django.core.exceptions import ImproperlyConfigured
 from django.template import Context, Template

@@ -18,6 +18,10 @@ Every crud_views template lives under a `crud_views/` directory, e.g.
 `app_directories` template loader searches each app in `INSTALLED_APPS` **in order** and
 returns the first template matching a given name.
 
+This assumes Django's default template configuration (`APP_DIRS: True`, or an explicit
+`django.template.loaders.app_directories.Loader`); a project with a custom `loaders` list
+resolves templates however that list dictates.
+
 So to override a template, an app earlier in `INSTALLED_APPS` ships a template with the
 **same name** under its own `templates/crud_views/` directory. That copy wins; crud_views'
 own copy is the fallback for every template the theme app does not override.

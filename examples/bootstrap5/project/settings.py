@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "library",
     "nested",
     "formsets",
+    "workflow",
 ]
 
 MIDDLEWARE = [

@@ -35,4 +35,11 @@ FEATURES: list[Feature] = [
         url_name="questionnaire-list",
         icon="fa-solid fa-list-check",
     ),
+    Feature(
+        app="workflow",
+        title="Workflow",
+        description="django-fsm state machine: transitions as form actions, with audit history.",
+        url_name="campaign-list",
+        icon="fa-solid fa-bullhorn",
+    ),
 ]

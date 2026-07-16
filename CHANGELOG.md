@@ -1,5 +1,12 @@
 # Django CRUD Views - Changelog
 
+## 0.12.1
+
+### Changed
+- Documentation: the Claude Code skill for this project moved out of this repository
+  to a standalone repo, [jacob-consulting/skills](https://github.com/jacob-consulting/skills).
+  `docs/development/index.md` now points there.
+
 ## 0.12.0
 
 ### Added

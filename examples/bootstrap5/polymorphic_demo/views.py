@@ -2,13 +2,13 @@ import django_tables2 as tables
 from crispy_forms.layout import Row
 from django.forms import modelform_factory
 
-from crud_views.lib.crispy import Column4, Column6, CrispyViewMixin
+from crud_views.lib.crispy import Column4, Column6, CrispyDeleteForm, CrispyViewMixin
 from crud_views.lib.crispy.form import CrispyForm
 from crud_views.lib.table import LinkDetailColumn, Table
 from crud_views.lib.views import ListViewPermissionRequired, ListViewTableMixin
 from crud_views.lib.viewset import ViewSet
 from crud_views_polymorphic.lib import (
-    PolymorphicCreateSelectView,
+    PolymorphicCreateSelectViewPermissionRequired,
     PolymorphicCreateViewPermissionRequired,
     PolymorphicDetailViewPermissionRequired,
     PolymorphicUpdateViewPermissionRequired,
@@ -58,7 +58,7 @@ class CrispyVehicleContentTypeForm(CrispyForm, PolymorphicContentTypeForm):
         return Row(Column4("polymorphic_ctype_id"))
 
 
-class VehicleCreateSelectView(CrispyViewMixin, PolymorphicCreateSelectView):
+class VehicleCreateSelectView(CrispyViewMixin, PolymorphicCreateSelectViewPermissionRequired):
     cv_viewset = cv_vehicle
     model = Vehicle
     form_class = CrispyVehicleContentTypeForm
@@ -85,6 +85,7 @@ class VehicleDetailView(PolymorphicDetailViewPermissionRequired):
     ]
 
 
-class VehicleDeleteView(PolymorphicDeleteViewPermissionRequired):
+class VehicleDeleteView(CrispyViewMixin, PolymorphicDeleteViewPermissionRequired):
     cv_viewset = cv_vehicle
     model = Vehicle
+    form_class = CrispyDeleteForm

@@ -47,6 +47,13 @@ class VehicleCreateSelectTest(PolymorphicTestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertContains(resp, "Hauler")
 
+    def test_delete_vehicle(self):
+        car = Car.objects.create(name="To Delete", doors=4)
+        # CrispyDeleteForm requires an explicit confirm=True (see tests/test1/test_delete.py)
+        resp = self.client.post(reverse("vehicle-delete", kwargs={"pk": car.pk}), {"confirm": True})
+        self.assertEqual(resp.status_code, 302)
+        self.assertFalse(Vehicle.objects.filter(pk=car.pk).exists())
+
 
 class PolymorphicSeedTest(TestCase):
     def test_seed_twice_and_covers_all_types(self):

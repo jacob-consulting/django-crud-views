@@ -6,11 +6,11 @@ deleting.
 ## Basic Usage
 
 ```python
-from crud_views.lib.crispy import CrispyModelViewMixin, CrispyDeleteForm
+from crud_views.lib.crispy import CrispyViewMixin, CrispyDeleteForm
 from crud_views.lib.views import DeleteViewPermissionRequired, MessageMixin
 
 
-class AuthorDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequired):
+class AuthorDeleteView(CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     form_class = CrispyDeleteForm
     cv_viewset = cv_author
     cv_message = "Deleted author »{object}«"
@@ -45,7 +45,7 @@ the object is deleted:
 ```python
 from crud_views.lib.crispy import CrispyDeleteForm
 
-class AuthorDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequired):
+class AuthorDeleteView(CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     form_class = CrispyDeleteForm
     cv_viewset = cv_author
 ```
@@ -58,7 +58,7 @@ logic.
 Add `MessageMixin` to show a success message after deletion:
 
 ```python
-class AuthorDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequired):
+class AuthorDeleteView(CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     form_class = CrispyDeleteForm
     cv_viewset = cv_author
     cv_message = "Deleted author »{object}«"
@@ -77,7 +77,7 @@ Show users what related objects will be deleted when they delete an object (simi
 This feature is opt-in.
 
 ```python
-class PublisherDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequired):
+class PublisherDeleteView(CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     form_class = CrispyDeleteForm
     cv_viewset = cv_publisher
     cv_show_related_objects = True  # show what will be cascade-deleted
@@ -94,7 +94,7 @@ When enabled, the delete confirmation page displays:
 Optionally render related objects as links to their detail views:
 
 ```python
-class PublisherDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequired):
+class PublisherDeleteView(CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     form_class = CrispyDeleteForm
     cv_viewset = cv_publisher
     cv_show_related_objects = True
@@ -130,7 +130,7 @@ Add custom business logic to prevent deletion.
 Override `cv_check_delete_protection()` to return error messages:
 
 ```python
-class PublisherDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequired):
+class PublisherDeleteView(CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     form_class = CrispyDeleteForm
     cv_viewset = cv_publisher
 

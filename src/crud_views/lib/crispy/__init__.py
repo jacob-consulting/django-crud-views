@@ -12,7 +12,7 @@ from .table import (
     Column11,
     Column12,
 )
-from .form import CrispyModelForm, CrispyViewMixin, CrispyModelViewMixin, CrispyForm, CrispyDeleteForm
+from .form import CrispyModelForm, CrispyViewMixin, CrispyForm, CrispyDeleteForm
 
 __all__ = [
     "Column1",
@@ -30,6 +30,5 @@ __all__ = [
     "CrispyModelForm",
     "CrispyForm",
     "CrispyDeleteForm",
-    "CrispyModelViewMixin",
     "CrispyViewMixin",
 ]

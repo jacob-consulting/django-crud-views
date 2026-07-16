@@ -33,6 +33,12 @@ you're building a small project or a large application, Django CRUD Views can he
   [bring your own theme](reference/theme.md) to customize the look and feel
 - Django system checks for configurations to fail early on startup
 
+## API stability
+
+From 1.0.0 on, django-crud-views follows [semantic versioning](https://semver.org) with a
+[documented public API surface](development/stability.md): breaking changes to the public
+API only happen in major releases, and deprecations are announced ahead of removal.
+
 ## What it is not
 
 - a replacement for Django's admin interface

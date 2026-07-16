@@ -58,7 +58,7 @@ class CrudView(metaclass=CrudViewMetaClass):
     cv_home_key: str | None = "list"  # home url, defaults to list
     cv_success_key: str | None = "list"  # success url, defaults to list
     cv_cancel_key: str | None = "list"  # cancel url, defaults to list
-    cv_parent_key: str | None = "list"  # parent key, defaults to list todo: does this make sense at all?
+    cv_parent_key: str | None = "list"  # parent key; default under review for 1.x, see issue #74
 
     cv_extends_template: str | None = None  # template to extend
 

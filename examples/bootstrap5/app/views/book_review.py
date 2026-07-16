@@ -1,7 +1,7 @@
 from django.utils.translation import gettext_lazy as _
 
 from app.models import BookReview
-from crud_views.lib.crispy import CrispyModelForm, CrispyDeleteForm, CrispyModelViewMixin, Column4, Column6
+from crud_views.lib.crispy import CrispyModelForm, CrispyDeleteForm, CrispyViewMixin, Column4, Column6
 from crud_views.lib.view import CardAction
 from crud_views.lib.views import (
     CreateViewParentMixin,
@@ -67,18 +67,16 @@ class BookReviewDetailView(GuardianDetailViewPermissionRequired):
     ]
 
 
-class BookReviewCreateView(
-    CrispyModelViewMixin, MessageMixin, CreateViewParentMixin, GuardianCreateViewPermissionRequired
-):
+class BookReviewCreateView(CrispyViewMixin, MessageMixin, CreateViewParentMixin, GuardianCreateViewPermissionRequired):
     form_class = BookReviewForm
     cv_viewset = cv_book_review
 
 
-class BookReviewUpdateView(CrispyModelViewMixin, MessageMixin, GuardianUpdateViewPermissionRequired):
+class BookReviewUpdateView(CrispyViewMixin, MessageMixin, GuardianUpdateViewPermissionRequired):
     form_class = BookReviewForm
     cv_viewset = cv_book_review
 
 
-class BookReviewDeleteView(CrispyModelViewMixin, MessageMixin, GuardianDeleteViewPermissionRequired):
+class BookReviewDeleteView(CrispyViewMixin, MessageMixin, GuardianDeleteViewPermissionRequired):
     form_class = CrispyDeleteForm
     cv_viewset = cv_book_review

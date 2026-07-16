@@ -262,8 +262,8 @@ def test_workflow_view_post_activate(client_user_campaign_change: Client, campai
 def test_workflow_view_post_emits_success_message(client_user_campaign_change: Client, campaign_new):
     """
     A WorkflowView that mixes in MessageMixin (as CampaignWorkflowView does) emits its
-    configured success message after a transition. MessageMixin precedes WorkflowView in the
-    MRO, so its cv_form_valid_hook wraps WorkflowView's transition processing and then emits.
+    configured success message after a transition. MessageMixin's cv_form_valid_hook runs
+    after WorkflowView.cv_form_valid has processed the transition, then emits the message.
     Regression guard for GitHub #52 (reported as "message never emitted" — it is emitted under
     the documented MessageMixin opt-in, exactly like Create/Update/Delete views).
     """
@@ -637,3 +637,41 @@ def test_workflow_view_checks_model_missing_state_badges():
     NoBadgesView.cv_viewset = mock_viewset
 
     assert "viewset.E235" in _error_ids(NoBadgesView)
+
+
+# ---------------------------------------------------------------------------
+# Hook placement (issue #31): transition logic must live in cv_form_valid,
+# leaving cv_form_valid_hook free as the user extension point.
+# ---------------------------------------------------------------------------
+
+
+def test_transition_logic_lives_in_cv_form_valid():
+    """
+    WorkflowView must do its framework work in cv_form_valid (like Create/Update/FormSet views)
+    and must NOT occupy cv_form_valid_hook, which is reserved for user subclasses.
+    """
+    from crud_views_workflow.lib.views import WorkflowView
+
+    assert "cv_form_valid" in vars(WorkflowView)
+    assert "cv_form_valid_hook" not in vars(WorkflowView)
+
+
+@pytest.mark.django_db
+def test_user_hook_override_keeps_transition(client_user_campaign_change: Client, campaign_new, monkeypatch):
+    """
+    A user subclass overriding cv_form_valid_hook (without calling super()) must not destroy
+    transition execution — regression guard for issue #31.
+    """
+    from tests.test1.app.views import CampaignWorkflowView
+
+    calls = []
+    monkeypatch.setattr(CampaignWorkflowView, "cv_form_valid_hook", lambda self, context: calls.append("hook"))
+
+    response = client_user_campaign_change.post(
+        f"/campaign/{campaign_new.pk}/workflow/",
+        {"transition": "wf_activate", "comment": ""},
+    )
+    assert response.status_code == 302
+    campaign_new.refresh_from_db()
+    assert campaign_new.state == CampaignState.ACTIVE
+    assert calls == ["hook"]

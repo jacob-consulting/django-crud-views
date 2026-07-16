@@ -4,7 +4,7 @@ Views can opt in to Bootstrap 5 modal rendering: action buttons then open the vi
 dialog instead of navigating to a full page.
 
 ```python
-class AuthorDeleteView(CrispyModelViewMixin, MessageMixin, DeleteViewPermissionRequired):
+class AuthorDeleteView(CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     form_class = CrispyDeleteForm
     cv_viewset = cv_author
     cv_modal = True                 # opt in

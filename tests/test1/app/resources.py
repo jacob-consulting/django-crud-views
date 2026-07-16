@@ -2,7 +2,7 @@ import hashlib
 
 import django_tables2 as tables
 
-from crud_views.lib.crispy import CrispyDeleteForm, CrispyModelViewMixin
+from crud_views.lib.crispy import CrispyDeleteForm, CrispyViewMixin
 from crud_views.lib.resource import Resource, ResourceViewMixin
 from crud_views.lib.table import Table
 from crud_views.lib.views import (
@@ -86,7 +86,7 @@ class S3FileDetailView(ResourceViewMixin, DetailCustomViewPermissionRequired):
     template_name = "app/s3file_detail.html"
 
 
-class S3FileDeleteView(ResourceViewMixin, CrispyModelViewMixin, MessageMixin, CustomFormViewPermissionRequired):
+class S3FileDeleteView(ResourceViewMixin, CrispyViewMixin, MessageMixin, CustomFormViewPermissionRequired):
     """
     Delete-with-confirm as a custom form view (spec decision 3: no DeleteView
     port — CustomFormView + dev hook IS the delete story for Resources).

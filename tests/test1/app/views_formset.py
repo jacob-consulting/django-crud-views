@@ -15,7 +15,7 @@ import django_tables2 as tables
 from crispy_forms.layout import LayoutObject, Row
 from django.forms.models import inlineformset_factory
 
-from crud_views.lib.crispy import Column4, Column8, CrispyModelForm, CrispyModelViewMixin
+from crud_views.lib.crispy import Column4, Column8, CrispyModelForm, CrispyViewMixin
 from crud_views.lib.formsets import FormSet, FormSetMixin, FormSets, Formsets, InlineFormSet
 from crud_views.lib.table import LinkDetailColumn, Table
 from crud_views.lib.views import (
@@ -117,13 +117,13 @@ class PublisherFormSetListView(ListViewTableMixin, ListViewPermissionRequired):
     cv_viewset = cv_publisher_formset
 
 
-class PublisherFormSetCreateView(CrispyModelViewMixin, FormSetMixin, CreateViewPermissionRequired):
+class PublisherFormSetCreateView(CrispyViewMixin, FormSetMixin, CreateViewPermissionRequired):
     form_class = PublisherFormSetForm
     cv_viewset = cv_publisher_formset
     cv_formsets: FormSets = publisher_formsets
 
 
-class PublisherFormSetUpdateView(CrispyModelViewMixin, FormSetMixin, UpdateViewPermissionRequired):
+class PublisherFormSetUpdateView(CrispyViewMixin, FormSetMixin, UpdateViewPermissionRequired):
     form_class = PublisherFormSetForm
     cv_viewset = cv_publisher_formset
     cv_formsets: FormSets = publisher_formsets

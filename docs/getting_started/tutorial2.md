@@ -8,7 +8,7 @@ Now let's add some other views.
 ```python
 from crispy_forms.layout import Row
 from crud_views.lib.views import CreateViewPermissionRequired, MessageMixin
-from crud_views.lib.crispy import Column4, CrispyModelForm, CrispyModelViewMixin, CrispyDeleteForm
+from crud_views.lib.crispy import Column4, CrispyModelForm, CrispyViewMixin, CrispyDeleteForm
 
 class AuthorCreateForm(CrispyModelForm):
 
@@ -20,7 +20,7 @@ class AuthorCreateForm(CrispyModelForm):
         return Row(Column4("first_name"), Column4("last_name"), Column4("pseudonym"))
 
     
-class AuthorCreateView(CrispyModelViewMixin, MessageMixin, CreateViewPermissionRequired):
+class AuthorCreateView(CrispyViewMixin, MessageMixin, CreateViewPermissionRequired):
     form_class = AuthorCreateForm
     vs = vs_author
 ```

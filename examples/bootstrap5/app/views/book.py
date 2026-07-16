@@ -3,7 +3,7 @@ from crispy_forms.layout import Row, Layout
 from django.utils.translation import gettext_lazy as _
 
 from app.models import Book
-from crud_views.lib.crispy import CrispyModelForm, Column4, Column2, CrispyModelViewMixin, CrispyDeleteForm
+from crud_views.lib.crispy import CrispyModelForm, Column4, Column2, CrispyViewMixin, CrispyDeleteForm
 from crud_views.lib.view import CardAction
 from crud_views.lib.views import (
     ListViewTableFilterMixin,
@@ -86,7 +86,7 @@ class BookDetailView(GuardianDetailCustomViewPermissionRequired):
     template_name = "app/book_detail.html"
 
 
-class BookUpdateView(CrispyModelViewMixin, MessageMixin, GuardianUpdateViewPermissionRequired):
+class BookUpdateView(CrispyViewMixin, MessageMixin, GuardianUpdateViewPermissionRequired):
     form_class = BookUpdateForm
     cv_viewset = cv_book
     cv_context_actions = ["card", "detail", "update", "delete"]
@@ -94,7 +94,7 @@ class BookUpdateView(CrispyModelViewMixin, MessageMixin, GuardianUpdateViewPermi
     cv_cancel_key = "card"
 
 
-class BookCreateView(CrispyModelViewMixin, MessageMixin, CreateViewParentMixin, GuardianCreateViewPermissionRequired):
+class BookCreateView(CrispyViewMixin, MessageMixin, CreateViewParentMixin, GuardianCreateViewPermissionRequired):
     form_class = BookCreateForm
     cv_viewset = cv_book
     cv_context_actions = ["card", "create"]
@@ -102,7 +102,7 @@ class BookCreateView(CrispyModelViewMixin, MessageMixin, CreateViewParentMixin, 
     cv_cancel_key = "card"
 
 
-class BookDeleteView(CrispyModelViewMixin, MessageMixin, GuardianDeleteViewPermissionRequired):
+class BookDeleteView(CrispyViewMixin, MessageMixin, GuardianDeleteViewPermissionRequired):
     form_class = CrispyDeleteForm
     cv_viewset = cv_book
     cv_context_actions = ["card", "detail", "update", "delete"]

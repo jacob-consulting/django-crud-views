@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     "crud_views_guardian.apps.CrudViewsGuardianConfig",
     "project",
     # example feature apps (one per crud_views feature)
+    "library",
 ]
 
 MIDDLEWARE = [

@@ -14,4 +14,11 @@ class Feature:
 
 FEATURES: list[Feature] = [
     # example feature apps append their entry here
+    Feature(
+        app="library",
+        title="Library",
+        description="Plain CRUD — list, detail, create, update, delete — plus tables, filters and ordering.",
+        url_name="author-list",
+        icon="fa-solid fa-book",
+    ),
 ]

@@ -47,7 +47,7 @@ fresh session to brainstorm it standalone, one after the other, in order.
 |---|---------------|----------|-------------------|
 | M1 | Remove `crud_views_plain` + examples groundwork | 0.13.0 ✅ DONE | Mechanical; clears the ground for everything after |
 | M2 | API stability & backlog triage | 0.14.0 ✅ DONE | Examples must be written against the final API |
-| M3 | Examples rewrite | — | The big one; docs tutorial will align to it |
+| M3 | Examples rewrite | — ✅ DONE | The big one; docs tutorial will align to it |
 | M4 | Documentation refinement | — | Tutorial follows the M3 `library/` app step by step |
 | M5 | README & marketing surface | — | References the final example-run instructions |
 | M6 | Release readiness → 1.0.0 | 1.0.0 | Security pass, version policy, changelog, cut release |
@@ -141,7 +141,19 @@ in/out-of-1.0 decision; extensions repo verified compatible.
 
 ---
 
-## M3 — Examples rewrite (the big one)
+## M3 — Examples rewrite — DONE (2026-07-17, no release)
+
+**Shipped:** `examples/bootstrap5/` rewritten as a slim `project/` package + eight self-contained
+feature apps (library, nested, formsets, workflow, polymorphic_demo, guardian_demo, resources,
+showcase), home-page catalog, idempotent `manage.py seed`, pygments source snippets + an "About
+this example" prose blurb on every page, English only, old `app/` monolith / committed db /
+German locale removed, and a pytest suite wired into nox + CI. Merged to `main` via squash PR #78
+(`35e3124`); no version bump / no PyPI release. **Naming decision:** the polymorphic and guardian
+example apps live in directories `polymorphic_demo/` and `guardian_demo/` (NOT `polymorphic`/
+`guardian`, which collide with the installed django-polymorphic / django-guardian app labels);
+URL prefixes stay `/polymorphic/` and `/guardian/`. Two package follow-ups filed for later:
+#76 (expand workflow/polymorphic public API surface used by the examples) and #77 (card list
+actions can't fire POST — `card_action.html` ignores `cv_list_action_method`).
 
 **Goal:** didactically clean examples — one self-contained app per feature inside a single
 runnable project, real-life domains, English only, tested, and structured so the docs

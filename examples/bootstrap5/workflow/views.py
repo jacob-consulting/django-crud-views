@@ -13,8 +13,7 @@ from crud_views.lib.views import (
     UpdateViewPermissionRequired,
 )
 from crud_views.lib.viewset import ViewSet
-from crud_views_workflow.lib.forms import WorkflowForm
-from crud_views_workflow.lib.views import WorkflowViewPermissionRequired
+from crud_views_workflow.lib import WorkflowForm, WorkflowViewPermissionRequired
 
 from workflow.models import Campaign
 

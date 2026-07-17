@@ -7,13 +7,13 @@ from crud_views.lib.table import LinkDetailColumn, Table
 from crud_views.lib.views import ListViewPermissionRequired, ListViewTableMixin
 from crud_views.lib.viewset import ViewSet
 from crud_views_polymorphic.lib import (
+    PolymorphicContentTypeForm,
     PolymorphicCreateSelectViewPermissionRequired,
     PolymorphicCreateViewPermissionRequired,
+    PolymorphicDeleteViewPermissionRequired,
     PolymorphicDetailViewPermissionRequired,
     PolymorphicUpdateViewPermissionRequired,
 )
-from crud_views_polymorphic.lib.create_select import PolymorphicContentTypeForm
-from crud_views_polymorphic.lib.delete import PolymorphicDeleteViewPermissionRequired
 
 from polymorphic_demo.models import Car, Motorcycle, Truck, Vehicle
 

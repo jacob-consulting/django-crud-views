@@ -2,7 +2,7 @@
 Tests for DetailView.cv_property_display and checks().
 """
 
-from django_object_detail import PropertyConfig
+from crud_views_object_detail.lib import PropertyConfig
 
 
 def _errors(view_cls):
@@ -20,9 +20,9 @@ def _error_ids(view_cls):
 
 def test_property_display_returns_cv_property_display():
     """property_display property returns cv_property_display."""
-    from crud_views.lib.views.detail import DetailView
+    from crud_views_object_detail.lib.views import ObjectDetailView
 
-    class TestView(DetailView):
+    class TestView(ObjectDetailView):
         cv_key = "detail"
         cv_property_display = [{"title": "A", "properties": ["x"]}]
 
@@ -32,9 +32,9 @@ def test_property_display_returns_cv_property_display():
 
 def test_property_display_none_when_not_set():
     """property_display returns None when cv_property_display is not overridden."""
-    from crud_views.lib.views.detail import DetailView
+    from crud_views_object_detail.lib.views import ObjectDetailView
 
-    class TestView(DetailView):
+    class TestView(ObjectDetailView):
         cv_key = "detail"
 
     view = TestView()
@@ -67,9 +67,9 @@ def test_detail_view_checks_pass_with_property_config():
 
 def test_detail_view_checks_missing_cv_property_display():
     """cv_property_display=None yields E240."""
-    from crud_views.lib.views.detail import DetailView
+    from crud_views_object_detail.lib.views import ObjectDetailView
 
-    class NoDisplayView(DetailView):
+    class NoDisplayView(ObjectDetailView):
         cv_key = "detail"
         cv_path = "detail"
         # cv_property_display deliberately not set
@@ -84,9 +84,9 @@ def test_detail_view_checks_missing_cv_property_display():
 
 def test_detail_view_checks_not_a_list():
     """cv_property_display that is not a list yields E241."""
-    from crud_views.lib.views.detail import DetailView
+    from crud_views_object_detail.lib.views import ObjectDetailView
 
-    class BadTypeView(DetailView):
+    class BadTypeView(ObjectDetailView):
         cv_key = "detail"
         cv_path = "detail"
         cv_property_display = "not a list"
@@ -101,9 +101,9 @@ def test_detail_view_checks_not_a_list():
 
 def test_detail_view_checks_group_missing_title():
     """A group dict without 'title' yields E242."""
-    from crud_views.lib.views.detail import DetailView
+    from crud_views_object_detail.lib.views import ObjectDetailView
 
-    class MissingTitleView(DetailView):
+    class MissingTitleView(ObjectDetailView):
         cv_key = "detail"
         cv_path = "detail"
         cv_property_display = [{"properties": ["x"]}]  # no 'title'
@@ -118,9 +118,9 @@ def test_detail_view_checks_group_missing_title():
 
 def test_detail_view_checks_group_missing_properties():
     """A group dict without 'properties' yields E243."""
-    from crud_views.lib.views.detail import DetailView
+    from crud_views_object_detail.lib.views import ObjectDetailView
 
-    class MissingPropsView(DetailView):
+    class MissingPropsView(ObjectDetailView):
         cv_key = "detail"
         cv_path = "detail"
         cv_property_display = [{"title": "A"}]  # no 'properties'
@@ -135,9 +135,9 @@ def test_detail_view_checks_group_missing_properties():
 
 def test_detail_view_checks_properties_not_a_list():
     """'properties' that is not a list yields E244."""
-    from crud_views.lib.views.detail import DetailView
+    from crud_views_object_detail.lib.views import ObjectDetailView
 
-    class BadPropsView(DetailView):
+    class BadPropsView(ObjectDetailView):
         cv_key = "detail"
         cv_path = "detail"
         cv_property_display = [{"title": "A", "properties": "not a list"}]
@@ -152,9 +152,9 @@ def test_detail_view_checks_properties_not_a_list():
 
 def test_detail_view_checks_invalid_property_type():
     """A property that is not str, dict, or PropertyConfig yields E245."""
-    from crud_views.lib.views.detail import DetailView
+    from crud_views_object_detail.lib.views import ObjectDetailView
 
-    class BadPropTypeView(DetailView):
+    class BadPropTypeView(ObjectDetailView):
         cv_key = "detail"
         cv_path = "detail"
         cv_property_display = [{"title": "A", "properties": [42]}]
@@ -169,9 +169,9 @@ def test_detail_view_checks_invalid_property_type():
 
 def test_detail_view_checks_string_property_accepted():
     """Plain string properties pass E245."""
-    from crud_views.lib.views.detail import DetailView
+    from crud_views_object_detail.lib.views import ObjectDetailView
 
-    class StringPropView(DetailView):
+    class StringPropView(ObjectDetailView):
         cv_key = "detail"
         cv_path = "detail"
         cv_property_display = [{"title": "A", "properties": ["name", "email"]}]
@@ -181,9 +181,9 @@ def test_detail_view_checks_string_property_accepted():
 
 def test_detail_view_checks_dict_property_accepted():
     """Dict properties pass E245."""
-    from crud_views.lib.views.detail import DetailView
+    from crud_views_object_detail.lib.views import ObjectDetailView
 
-    class DictPropView(DetailView):
+    class DictPropView(ObjectDetailView):
         cv_key = "detail"
         cv_path = "detail"
         cv_property_display = [{"title": "A", "properties": [{"path": "name", "detail": "The name"}]}]
@@ -193,9 +193,9 @@ def test_detail_view_checks_dict_property_accepted():
 
 def test_detail_view_checks_property_config_accepted():
     """PropertyConfig instances pass E245."""
-    from crud_views.lib.views.detail import DetailView
+    from crud_views_object_detail.lib.views import ObjectDetailView
 
-    class PropertyConfigView(DetailView):
+    class PropertyConfigView(ObjectDetailView):
         cv_key = "detail"
         cv_path = "detail"
         cv_property_display = [{"title": "A", "properties": [PropertyConfig(path="name")]}]

@@ -6,13 +6,13 @@ from crud_views.lib.table import LinkDetailColumn, Table
 from crud_views.lib.views import (
     CreateViewPermissionRequired,
     DeleteViewPermissionRequired,
-    DetailViewPermissionRequired,
     ListViewPermissionRequired,
     ListViewTableMixin,
     MessageMixin,
     UpdateViewPermissionRequired,
 )
 from crud_views.lib.viewset import ViewSet
+from crud_views_object_detail.lib import ObjectDetailViewPermissionRequired
 from crud_views_workflow.lib import WorkflowForm, WorkflowViewPermissionRequired
 
 from workflow.models import Campaign
@@ -43,7 +43,7 @@ class CampaignListView(ListViewTableMixin, ListViewPermissionRequired):
     cv_list_actions = ["detail", "workflow", "update", "delete"]
 
 
-class CampaignDetailView(DetailViewPermissionRequired):
+class CampaignDetailView(ObjectDetailViewPermissionRequired):
     cv_viewset = cv_campaign
     cv_context_actions = ["home", "detail", "update", "workflow", "delete"]
     cv_property_display = [

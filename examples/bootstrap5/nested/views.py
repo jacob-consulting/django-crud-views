@@ -7,13 +7,13 @@ from crud_views.lib.views import (
     CreateViewParentMixin,
     CreateViewPermissionRequired,
     DeleteViewPermissionRequired,
-    DetailViewPermissionRequired,
     ListViewPermissionRequired,
     ListViewTableMixin,
     MessageMixin,
     UpdateViewPermissionRequired,
 )
 from crud_views.lib.viewset import ParentViewSet, ViewSet
+from crud_views_object_detail.lib import ObjectDetailViewPermissionRequired
 
 from nested.models import Company, Department, Employee, Office
 
@@ -46,7 +46,7 @@ class CompanyListView(ListViewTableMixin, ListViewPermissionRequired):
     table_class = CompanyTable
 
 
-class CompanyDetailView(DetailViewPermissionRequired):
+class CompanyDetailView(ObjectDetailViewPermissionRequired):
     cv_viewset = cv_company
     cv_property_display = [
         {"title": "Company", "icon": "building", "properties": ["id", "name", "city"]},
@@ -103,7 +103,7 @@ class DepartmentListView(ListViewTableMixin, ListViewPermissionRequired):
     table_class = DepartmentTable
 
 
-class DepartmentDetailView(DetailViewPermissionRequired):
+class DepartmentDetailView(ObjectDetailViewPermissionRequired):
     cv_viewset = cv_department
     cv_property_display = [
         {"title": "Department", "icon": "people-group", "properties": ["id", "name", "company"]},
@@ -160,7 +160,7 @@ class EmployeeListView(ListViewTableMixin, ListViewPermissionRequired):
     table_class = EmployeeTable
 
 
-class EmployeeDetailView(DetailViewPermissionRequired):
+class EmployeeDetailView(ObjectDetailViewPermissionRequired):
     cv_viewset = cv_employee
     cv_property_display = [
         {"title": "Employee", "icon": "id-badge", "properties": ["id", "name", "email", "department"]},
@@ -216,7 +216,7 @@ class OfficeListView(ListViewTableMixin, ListViewPermissionRequired):
     table_class = OfficeTable
 
 
-class OfficeDetailView(DetailViewPermissionRequired):
+class OfficeDetailView(ObjectDetailViewPermissionRequired):
     cv_viewset = cv_office
     cv_property_display = [
         {"title": "Office", "icon": "door-open", "properties": ["id", "name", "company"]},

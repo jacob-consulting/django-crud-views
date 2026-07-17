@@ -23,11 +23,11 @@ from crud_views.lib.table import Table
 from crud_views.lib.views import (
     ListViewTableMixin,
     ListViewPermissionRequired,
-    DetailViewPermissionRequired,
     CreateViewPermissionRequired,
     UpdateViewPermissionRequired,
     DeleteViewPermissionRequired,
 )
+from crud_views_object_detail.lib import ObjectDetailViewPermissionRequired
 from .models import Author
 
 cv_author = ViewSet(model=Author, name="author")
@@ -43,7 +43,7 @@ class AuthorList(ListViewTableMixin, ListViewPermissionRequired):
     table_class = AuthorTable
 
 
-class AuthorDetail(DetailViewPermissionRequired):
+class AuthorDetail(ObjectDetailViewPermissionRequired):
     cv_viewset = cv_author
 
 
@@ -60,6 +60,9 @@ class AuthorUpdate(UpdateViewPermissionRequired):
 class AuthorDelete(DeleteViewPermissionRequired):
     cv_viewset = cv_author
 ```
+
+`ObjectDetailViewPermissionRequired` is provided by the `crud_views_object_detail` app; add it to
+`INSTALLED_APPS` alongside `crud_views`.
 
 ```python
 # app/urls.py

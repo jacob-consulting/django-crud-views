@@ -7,5 +7,4 @@ class CrudViewsWorkflowConfig(AppConfig):
     label = "cvw"
 
     def ready(self):
-        # import crud_views.checks  # noqa
-        pass
+        import crud_views_workflow.checks  # noqa

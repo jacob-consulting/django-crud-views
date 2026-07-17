@@ -98,6 +98,55 @@ class CheckAttributeReg(CheckAttribute):
             yield Error(id=f"viewset.{self.id}", msg=self.get_message())
 
 
+class CheckAttributeType(CheckAttribute):
+    """
+    Check attribute value is an instance of the expected type
+    """
+
+    id: str = "E101"
+    expected_type: type | tuple[type, ...]
+    msg: str = "Attribute »{attribute}» value »{value}» is not of type »{expected_type}» at »{context}»"
+
+    def get_message_context(self) -> dict:
+        context = super().get_message_context()
+        context.update(expected_type=self.expected_type)
+        return context
+
+    def messages(self) -> Iterable[CheckMessage]:
+        yield from super().messages()
+        if self.exists and self.value is not None and not isinstance(self.value, self.expected_type):
+            yield Error(id=self.get_id(), msg=self.get_message())
+
+
+class CheckMapping(CheckAttribute):
+    """
+    Check attribute is a dict mapping keys (subclasses of key_type) to values (instances of value_type)
+    """
+
+    id: str = "E205"
+    key_type: type | tuple[type, ...]
+    value_type: type | tuple[type, ...]
+    msg: str = "Attribute »{attribute}» at »{context}» is not a valid mapping: {detail}"
+
+    def _error(self, detail: str) -> Error:
+        kwargs = self.get_message_context()
+        return Error(id=self.get_id(), msg=self.msg.format(detail=detail, **kwargs))
+
+    def messages(self) -> Iterable[CheckMessage]:
+        yield from super().messages()
+        if not self.exists or self.value is None:
+            return
+        value = self.value
+        if not isinstance(value, dict):
+            yield self._error(f"expected a dict, got {type(value).__name__}")
+            return
+        for key, val in value.items():
+            if not isinstance(key, type) or not issubclass(key, self.key_type):
+                yield self._error(f"key »{key!r}» is not a subclass of {self.key_type}")
+            if not isinstance(val, self.value_type):
+                yield self._error(f"value for »{key!r}» is not of type {self.value_type}")
+
+
 class CheckEitherAttribute(Check):
     """
     Check for either attribute
@@ -197,22 +246,6 @@ class CheckTemplate(Check):
             except TemplateDoesNotExist:
                 msg = self.msg_template_not_found.format(template=template, context=self.context)
                 yield Error(id=self.get_id(), msg=msg)
-
-
-class ContextActionCheck(Check):
-    """
-    Checks for context action
-    """
-
-    msg: str = "Attribute »{attribute}» does not exist or is not set at »{context}»"
-
-    def messages(self) -> Iterable[CheckMessage]:
-        viewset = self.context.cv  # noqa
-        actions = self.context.cv_context_actions or list()  # noqa
-        for action in actions:  # noqa
-            is_view = viewset.has_view(action)
-            if not is_view:
-                yield Error(id=f"viewset.{self.id}", msg=f"{self.msg} at {self.context}: {action}")
 
 
 class CheckExpression(Check):

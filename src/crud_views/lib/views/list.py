@@ -1,6 +1,9 @@
+from typing import Iterable
+
 from django.utils.translation import gettext as _
 from django.views import generic
 
+from crud_views.lib.check import Check, CheckTemplateOrCode
 from crud_views.lib.view import CrudView, CrudViewPermissionRequiredMixin
 from crud_views.lib.settings import crud_views_settings
 
@@ -52,6 +55,11 @@ class ListView(CrudView, generic.ListView):
             self.cv_filter_header_template,
             self.cv_filter_header_template_code,
         )
+
+    @classmethod
+    def checks(cls) -> Iterable[Check]:
+        yield from super().checks()
+        yield CheckTemplateOrCode(context=cls, attribute="cv_filter_header_template")
 
 
 class ListViewPermissionRequired(CrudViewPermissionRequiredMixin, ListView):

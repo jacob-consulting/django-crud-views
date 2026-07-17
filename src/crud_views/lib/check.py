@@ -251,17 +251,33 @@ class CheckTemplate(Check):
 class ContextActionCheck(Check):
     """
     Checks for context action
+
+    A ``cv_context_actions`` entry resolves either to a sibling view registered on the
+    ViewSet (``ViewSet.has_view``) or to a context button (view-level ``cv_context_buttons``
+    or viewset-level ``context_buttons``, e.g. "home", "parent", "filter") — mirroring the
+    two-path resolution performed at render time by ``CrudView.cv_get_context()``. Only
+    actions resolving to neither are misconfigurations.
+
+    ``cv_viewset`` may legitimately be unset (e.g. isolated check-only test view classes not
+    wired to a real ViewSet); in that case there is nothing to validate against, so no
+    message is emitted.
     """
 
-    msg: str = "Attribute »{attribute}» does not exist or is not set at »{context}»"
+    id: str = "E203"
+    msg: str = "Context action »{action}» does not resolve to a view or context button in the viewset at »{context}»"
 
     def messages(self) -> Iterable[CheckMessage]:
-        viewset = self.context.cv  # noqa
-        actions = self.context.cv_context_actions or list()  # noqa
-        for action in actions:  # noqa
-            is_view = viewset.has_view(action)
-            if not is_view:
-                yield Error(id=f"viewset.{self.id}", msg=f"{self.msg} at {self.context}: {action}")
+        viewset = getattr(self.context, "cv_viewset", None)
+        if viewset is None:
+            return
+        actions = self.context.cv_context_actions or list()
+        button_keys = {cb.key for cb in getattr(self.context, "cv_context_buttons", None) or []}
+        button_keys |= {cb.key for cb in getattr(viewset, "context_buttons", None) or []}
+        for action in actions:
+            if action in button_keys:
+                continue
+            if not viewset.has_view(action):
+                yield Error(id=self.get_id(), msg=self.msg.format(action=action, context=self.context))
 
 
 class CheckExpression(Check):

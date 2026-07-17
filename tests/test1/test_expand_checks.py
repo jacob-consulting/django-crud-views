@@ -1,4 +1,4 @@
-from crud_views.lib.check import CheckAttributeType, CheckMapping
+from crud_views.lib.check import CheckAttributeType, CheckMapping, ContextActionCheck
 from django.db.models import Model
 from tests.test1.app.models import Book
 from crud_views.lib.formsets.formsets import FormSets
@@ -100,3 +100,44 @@ def test_formset_checks_do_not_reuse_e200_for_formsets():
     e200_attrs = {getattr(c, "attribute", None) for c in checks if getattr(c, "id", None) == "E200"}
     assert "cv_formsets" not in e200_attrs
     assert "cv_formsets_required" not in e200_attrs
+
+
+class FakeViewset:
+    def __init__(self, keys):
+        self._keys = keys
+
+    def has_view(self, name):
+        return name in self._keys
+
+
+class CtxActionsValid:
+    cv_viewset = FakeViewset(["update", "delete"])
+    cv_context_actions = ["update", "delete"]
+
+
+class CtxActionsBad:
+    cv_viewset = FakeViewset(["update"])
+    cv_context_actions = ["update", "does_not_exist"]
+
+
+class CtxActionsNone:
+    cv_viewset = FakeViewset(["update"])
+    cv_context_actions = None
+
+
+def test_context_action_check_valid_emits_no_message():
+    check = ContextActionCheck(context=CtxActionsValid, id="E203")
+    assert list(check.messages()) == []
+
+
+def test_context_action_check_missing_view_emits_error():
+    check = ContextActionCheck(context=CtxActionsBad, id="E203")
+    messages = list(check.messages())
+    assert len(messages) == 1
+    assert messages[0].id == "viewset.E203"
+    assert "does_not_exist" in messages[0].msg
+
+
+def test_context_action_check_none_emits_no_message():
+    check = ContextActionCheck(context=CtxActionsNone, id="E203")
+    assert list(check.messages()) == []

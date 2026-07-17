@@ -28,6 +28,14 @@ class AuthorCardListView(CardListViewPermissionRequired):
 
 URLs auto-register at `/<prefix>/card/`.
 
+Actions are rendered to match their target view automatically, exactly as table-list actions are:
+
+- A `key` pointing at a **GET** view (detail, update) renders a plain link.
+- A `key` pointing at a **POST-only** view — ordered up/down or any custom `ActionView` — renders a hidden POST form plus a submit-form trigger button (no bare GET link, so no `405 Method Not Allowed`).
+- A `key` pointing at a **modal-enabled** view (`cv_modal = True`) renders a modal trigger.
+
+You do not configure this on `CardAction`; the method and modal behaviour derive from the target view.
+
 ## CardAction Fields
 
 | Field | Type | Default | Description |

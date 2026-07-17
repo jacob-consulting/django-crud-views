@@ -513,7 +513,66 @@ git commit -m "docs: add issue forms and pull request template"
 
 ---
 
-### Task 4: Final verification
+### Task 4: CHANGELOG entry
+
+**Files:**
+- Modify: `CHANGELOG.md`
+
+**Interfaces:**
+- Consumes: nothing. Produces a new `## Unreleased` section (the previous one was
+  consumed by the 0.16.0 release cut, so the current top heading is `## 0.16.0`).
+
+- [ ] **Step 1: Add a new `## Unreleased` section above `## 0.16.0`**
+
+The file currently begins:
+
+```markdown
+# Django CRUD Views - Changelog
+
+## 0.16.0
+
+### Added
+```
+
+Insert a new Unreleased section so it becomes:
+
+```markdown
+# Django CRUD Views - Changelog
+
+## Unreleased
+
+### Added
+
+- Community-health files for the repository: a Contributor Covenant Code of
+  Conduct, a contributing guide, a security policy, GitHub issue forms (bug
+  report / feature request), and a pull request template. These satisfy the
+  GitHub community-standards checklist and do not affect the package.
+
+## 0.16.0
+
+### Added
+```
+
+- [ ] **Step 2: Verify the edit**
+
+Run:
+```bash
+head -12 CHANGELOG.md
+grep -n "## Unreleased" CHANGELOG.md
+```
+Expected: a single `## Unreleased` heading appears above `## 0.16.0`, with the
+community-health bullet under an `### Added` subheading.
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add CHANGELOG.md
+git commit -m "docs(changelog): note community-health files"
+```
+
+---
+
+### Task 5: Final verification
 
 **Files:** none (verification only)
 
@@ -553,7 +612,7 @@ Run:
 git status --short
 git log --oneline -4
 ```
-Expected: `superpowers/prompts/2027-07-17-object-detail-per-view.md` still shows as modified/unstaged (untouched); the last commits are Tasks 1–3, none referencing that file.
+Expected: `superpowers/prompts/2027-07-17-object-detail-per-view.md` still shows as modified/unstaged (untouched); the last commits are Tasks 1–4, none referencing that file.
 
 **Acceptance (post-merge, cannot assert locally):** after this branch merges to
 `main`, the GitHub `/community` page shows all eight rows green (Code of conduct,
@@ -570,7 +629,8 @@ satisfied).
 - CONTRIBUTING.md (DRY, links docs/development) → Task 2. ✓
 - Issue forms (bug/feature/config, YAML) → Task 3. ✓
 - PR template → Task 3. ✓
-- Verification (YAML parse, links, build, community-page acceptance) → Task 3 steps 5–6 + Task 4. ✓
+- CHANGELOG `## Unreleased` entry → Task 4. ✓
+- Verification (YAML parse, links, build, community-page acceptance) → Task 3 steps 5–6 + Task 5. ✓
 - Out-of-scope items (settings, mkdocs nav) → not touched. ✓
 
 **Placeholder scan:** Full content is inline for every file, including the complete

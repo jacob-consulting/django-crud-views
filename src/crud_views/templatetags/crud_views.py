@@ -276,6 +276,7 @@ def cv_card_action(context, action, obj=None):
             "cv_variant": action.variant,
             "cv_flex": action.flex,
             "cv_no_label": action.no_label,
+            "cv_list_action_method": "get",
         }
 
     user = context["request"].user
@@ -287,23 +288,27 @@ def cv_card_action(context, action, obj=None):
         return {"cv_access": False, "cv_action_enabled": action_enabled}
 
     url = view.cv_get_url(action.key, obj=obj)
+    view_context = view.cv_get_view_context(object=obj)
 
     if action.label:
         label = action.label
     else:
-        view_context = view.cv_get_view_context(object=obj)
         label = cls.cv_get_action_short_label(context=view_context)
 
-    return {
-        "cv_access": True,
-        "cv_action_enabled": action_enabled,
-        "cv_url": url,
-        "cv_label": label,
-        "cv_icon_action": cls.cv_icon_action,
-        "cv_variant": action.variant,
-        "cv_flex": action.flex,
-        "cv_no_label": action.no_label,
-    }
+    data = cls.cv_get_dict(
+        context=view_context,
+        cv_oid=view.cv_get_oid(action.key, obj=obj),
+        cv_url=url,
+        cv_access=True,
+        cv_action_enabled=action_enabled,
+    )
+    data.update(
+        cv_label=label,
+        cv_variant=action.variant,
+        cv_flex=action.flex,
+        cv_no_label=action.no_label,
+    )
+    return data
 
 
 @register.simple_tag(takes_context=True)
@@ -321,5 +326,9 @@ def cv_card(context, obj):
     view = cv_get_view(context)
     template_name = getattr(view, "cv_card_template", "crud_views/tags/card.html")
     t = get_template(template_name)
-    card_context = {"object": obj, "view": view, "request": context["request"]}
-    return mark_safe(t.render(card_context))
+    request = context["request"]
+    card_context = {"object": obj, "view": view, "request": request}
+    # Pass request= explicitly so Template.render() builds a RequestContext (not a plain Context).
+    # Without it, built-in context processors (e.g. csrf) never run, so {% csrf_token %} in any
+    # template included from here (e.g. card_action.html's hidden POST form) silently renders empty.
+    return mark_safe(t.render(card_context, request=request))

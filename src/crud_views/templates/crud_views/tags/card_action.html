@@ -1,5 +1,18 @@
 {% if cv_access and cv_action_enabled is not False %}
-<a href="{{ cv_url }}"
+{% if cv_list_action_method == "post" %}
+<form id="cv_form_{{ cv_oid }}" action="{{ cv_url }}" method="post" class="d-none">{% csrf_token %}</form>
+{% endif %}
+<a {% if cv_modal %}
+       href="{{ cv_url }}"
+       data-cv-modal="true"
+       data-cv-modal-size="{{ cv_modal_size }}"
+   {% elif cv_list_action_method == "post" %}
+       href="#"
+       data-cv-action="submit-form"
+       data-cv-target="cv_form_{{ cv_oid }}"
+   {% else %}
+       href="{{ cv_url }}"
+   {% endif %}
    class="btn btn-{% if cv_variant == 'primary' %}primary{% elif cv_variant == 'tertiary' %}outline-secondary{% else %}secondary{% endif %} btn-sm{% if cv_flex %} flex-grow-1{% endif %}"
    {% if cv_no_label %}title="{{ cv_label }}"{% endif %}>
    {% if cv_no_label %}{% if cv_icon_action %}<i class="{{ cv_icon_action }}"></i>{% endif %}{% else %}<span>{{ cv_label }}</span>{% endif %}

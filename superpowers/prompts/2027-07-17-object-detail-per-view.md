@@ -24,4 +24,4 @@ It is locally checked out at `../django-object-detail`
 
 # django-object-detail
 - after integration, update the project's README.md, explain that is integrated in django-crud-views now
-- set the project to archived
+- set the project to archive

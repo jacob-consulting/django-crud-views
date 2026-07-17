@@ -56,13 +56,13 @@ from crud_views.lib.viewset import ViewSet
 from crud_views.lib.crispy import CrispyViewMixin
 from crud_views.lib.crispy.form import CrispyDeleteForm
 from crud_views_polymorphic.lib import (
-    PolymorphicCreateViewPermissionRequired,
+    PolymorphicContentTypeForm,
     PolymorphicCreateSelectViewPermissionRequired,
-    PolymorphicUpdateViewPermissionRequired,
+    PolymorphicCreateViewPermissionRequired,
+    PolymorphicDeleteViewPermissionRequired,
     PolymorphicDetailViewPermissionRequired,
+    PolymorphicUpdateViewPermissionRequired,
 )
-from crud_views_polymorphic.lib.create_select import PolymorphicContentTypeForm
-from crud_views_polymorphic.lib.delete import PolymorphicDeleteViewPermissionRequired
 
 from .models import Vehicle, Car, Truck
 

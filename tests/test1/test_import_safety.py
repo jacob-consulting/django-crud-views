@@ -121,3 +121,42 @@ def test_workflow_models_load_with_late_custom_user_app(tmp_path):
     result = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True)
     assert result.returncode == 0, result.stderr
     assert "IMPORT-OK" in result.stdout
+
+
+def test_workflow_lib_package_imports_without_app_registry():
+    """The crud_views_workflow.lib package body must be lazy: importing the package before the
+    app registry is ready must not drag in .lib.views (WorkflowInfo model + auth mixins)."""
+    code = textwrap.dedent(
+        """
+        from django.conf import settings
+
+        settings.configure()  # no django.setup() -- the app registry is not ready
+
+        import crud_views_workflow.lib
+
+        print("IMPORT-OK")
+        """
+    )
+    result = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+    assert "IMPORT-OK" in result.stdout
+
+
+def test_workflow_lib_model_mixin_public_path_imports_without_app_registry():
+    """`from crud_views_workflow.lib import WorkflowModelMixin` is the documented public path and is
+    used by consumer model modules loaded before the app registry is ready -- it must not raise."""
+    code = textwrap.dedent(
+        """
+        from django.conf import settings
+
+        settings.configure()  # no django.setup() -- the app registry is not ready
+
+        from crud_views_workflow.lib import BadgeEnum, WorkflowComment, WorkflowForm, WorkflowModelMixin
+
+        assert WorkflowModelMixin is not None
+        print("IMPORT-OK")
+        """
+    )
+    result = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+    assert "IMPORT-OK" in result.stdout

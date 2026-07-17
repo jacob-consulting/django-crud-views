@@ -57,14 +57,17 @@ above, and the documented overridable hooks — e.g. `cv_form_valid` (framework 
 
 ### `crud_views_workflow`
 
-`WorkflowView`, `WorkflowViewPermissionRequired`, `WorkflowModelMixin`, the `WorkflowInfo`
-model, and the `on_transition` hook.
+Public import path: `crud_views_workflow.lib` —
+`WorkflowView`, `WorkflowViewPermissionRequired`, `WorkflowModelMixin`, `WorkflowForm`,
+`BadgeEnum`, `WorkflowComment`. The `WorkflowInfo` model stays at `crud_views_workflow.models`,
+and the `on_transition` hook is the documented overridable method on `WorkflowView`.
 
 ### `crud_views_polymorphic`
 
+Public import path: `crud_views_polymorphic.lib` —
 `PolymorphicCreateSelectView`, `PolymorphicCreateView`, `PolymorphicUpdateView`,
 `PolymorphicDeleteView`, `PolymorphicDetailView` — each with its `*PermissionRequired`
-variant.
+variant — plus the `PolymorphicContentTypeForm` used by the create-select flow.
 
 ### `crud_views_guardian`
 

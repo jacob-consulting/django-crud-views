@@ -98,6 +98,26 @@ class CheckAttributeReg(CheckAttribute):
             yield Error(id=f"viewset.{self.id}", msg=self.get_message())
 
 
+class CheckAttributeType(CheckAttribute):
+    """
+    Check attribute value is an instance of the expected type
+    """
+
+    id: str = "E101"
+    expected_type: type | tuple[type, ...]
+    msg: str = "Attribute »{attribute}» value »{value}» is not of type »{expected_type}» at »{context}»"
+
+    def get_message_context(self) -> dict:
+        context = super().get_message_context()
+        context.update(expected_type=self.expected_type)
+        return context
+
+    def messages(self) -> Iterable[CheckMessage]:
+        yield from super().messages()
+        if self.exists and self.value is not None and not isinstance(self.value, self.expected_type):
+            yield Error(id=self.get_id(), msg=self.get_message())
+
+
 class CheckEitherAttribute(Check):
     """
     Check for either attribute

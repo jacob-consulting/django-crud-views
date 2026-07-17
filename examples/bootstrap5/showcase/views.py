@@ -107,6 +107,7 @@ class RecipeFavoriteView(MessageMixin, ActionViewPermissionRequired):
     cv_key = "favorite"
     cv_path = "favorite"
     cv_permission = "change"
+    cv_backend_only = True  # redirect-only action: no header/paragraph page of its own
     cv_icon_action = "fa-regular fa-star"
     cv_action_label_template_code = "Favorite"
     cv_action_short_label_template_code = "Favorite"

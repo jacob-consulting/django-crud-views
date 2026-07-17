@@ -55,3 +55,20 @@ class SnippetPanelsTest(TestCase):
 
         result = snippet_panels({"view": HomeView()})
         self.assertEqual(result["panels"], [])
+
+
+class SystemChecksTest(TestCase):
+    def test_no_check_errors_with_every_viewset_registered(self):
+        # `runserver` loads the full URLconf, which imports every feature app's
+        # views.py and registers its ViewSets — so the crud_views ViewSet checks
+        # run against all of them. Bare `manage.py check` does NOT import those
+        # views.py modules, so it silently skips those checks and can pass while
+        # `runserver` fails. Reproduce runserver's state here so this suite
+        # catches ViewSet misconfiguration (e.g. a redirect-only action view
+        # missing cv_backend_only) that a plain `check` would miss.
+        from django.core import checks
+        from django.urls import get_resolver
+
+        get_resolver().url_patterns  # import every app's views.py via the URLconf
+        errors = [e for e in checks.run_checks() if e.level >= checks.ERROR]
+        self.assertEqual(errors, [], msg="\n".join(f"{e.id}: {e.msg}" for e in errors))

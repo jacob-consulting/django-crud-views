@@ -6,9 +6,9 @@ groups.
 
 !!! note "Looking for structured property-display detail?"
     Rich, structured property-group rendering (previously built into core `DetailView`) now
-    lives in the optional `crud_views_object_detail` app as `ObjectDetailView`
+    lives in the optional `crud_views_object_detail` app as [`ObjectDetailView`](object_detail_view.md)
     (`from crud_views_object_detail.lib import ObjectDetailView`). Add `crud_views_object_detail`
-    to `INSTALLED_APPS` and use `cv_property_display` on `ObjectDetailView` for that use case.
+    to `INSTALLED_APPS` and use `cv_property_display` on [`ObjectDetailView`](object_detail_view.md) for that use case.
 
 ## Quick Reference
 

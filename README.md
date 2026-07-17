@@ -81,7 +81,7 @@ cross-linked, and access gated by Django's permission system.
 - **Grows with you** — nested parent/child URLs from ForeignKeys, plus optional workflow (FSM) and polymorphic models; Django system checks catch misconfiguration at startup.
 - **Resources** — render non-ORM data (S3 listings, API results) through ViewSets: list, detail and custom actions without a Django model. See [docs](https://django-crud-views.readthedocs.io/en/latest/reference/resources/).
 
-Built on [django-tables2](https://django-tables2.readthedocs.io/en/latest/), [django-filter](https://django-filter.readthedocs.io/en/stable/), [django-crispy-forms](https://django-crispy-forms.readthedocs.io/en/latest/), [django-polymorphic](https://django-polymorphic.readthedocs.io/en/stable/), [django-guardian](https://django-guardian.readthedocs.io/), [django-ordered-model](https://github.com/django-ordered-model/django-ordered-model) and [django-object-detail](https://django-object-detail.readthedocs.io/en/latest/).
+Built on [django-tables2](https://django-tables2.readthedocs.io/en/latest/), [django-filter](https://django-filter.readthedocs.io/en/stable/), [django-crispy-forms](https://django-crispy-forms.readthedocs.io/en/latest/), [django-polymorphic](https://django-polymorphic.readthedocs.io/en/stable/), [django-guardian](https://django-guardian.readthedocs.io/) and [django-ordered-model](https://github.com/django-ordered-model/django-ordered-model). Grouped object-detail rendering is provided by the bundled `crud_views_object_detail` app.
 
 ## Install
 

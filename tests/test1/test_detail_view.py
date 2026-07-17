@@ -1,5 +1,5 @@
 """
-Tests for DetailView.cv_property_display and checks().
+Tests for ObjectDetailView.cv_property_display and checks().
 """
 
 from crud_views_object_detail.lib import PropertyConfig

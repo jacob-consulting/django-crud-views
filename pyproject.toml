@@ -114,7 +114,7 @@ indent-style = "space"
 addopts = "--strict-markers"
 
 [tool.coverage.run]
-source = ["crud_views", "crud_views_polymorphic", "crud_views_workflow"]
+source = ["crud_views", "crud_views_polymorphic", "crud_views_workflow", "crud_views_object_detail"]
 
 [tool.coverage.report]
 show_missing = true

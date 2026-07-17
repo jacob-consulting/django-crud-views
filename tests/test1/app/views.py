@@ -544,7 +544,7 @@ class CampaignListView(ListViewTableMixin, ListViewPermissionRequired):
 class CampaignDetailView(ObjectDetailViewPermissionRequired):
     cv_viewset = cv_campaign
     # cv_campaign only registers list/detail/workflow (no update/delete) — override the
-    # DetailView default (which assumes update/delete exist) to match the real ViewSet.
+    # ObjectDetailView default (which assumes update/delete exist) to match the real ViewSet.
     cv_context_actions = ["list", "detail", "workflow"]
     cv_property_display = [
         {

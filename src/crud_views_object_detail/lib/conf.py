@@ -31,8 +31,6 @@ def _from_settings(name, default=_UNSET):
 
 
 class CrudViewsObjectDetailSettings(BaseModel):
-    model_config = {"arbitrary_types_allowed": True}
-
     @cached_property
     def template_pack_layout(self) -> str:
         v = _from_settings("CRUD_VIEWS_OBJECT_DETAIL_TEMPLATE_PACK_LAYOUT")

@@ -1,6 +1,8 @@
 from crud_views.lib.check import CheckAttributeType, CheckMapping
 from django.db.models import Model
 from tests.test1.app.models import Book
+from crud_views.lib.formsets.formsets import FormSets
+from tests.test1.app.views_formset import PublisherFormSetCreateView
 
 
 class GoodType:
@@ -81,3 +83,20 @@ def test_check_mapping_bad_value_errors():
 def test_check_mapping_valid_emits_no_message():
     check = CheckMapping(context=ValidMapping, id="E205", attribute="attr", key_type=Model, value_type=str)
     assert list(check.messages()) == []
+
+
+def test_formset_create_view_yields_e204_typed_check():
+    checks = list(PublisherFormSetCreateView.checks())
+    e204 = [c for c in checks if getattr(c, "id", None) == "E204"]
+    assert len(e204) == 1
+    assert isinstance(e204[0], CheckAttributeType)
+    assert e204[0].attribute == "cv_formsets"
+    assert e204[0].expected_type is FormSets
+
+
+def test_formset_checks_do_not_reuse_e200_for_formsets():
+    # E200 belongs to cv_key; formsets must not collide with it
+    checks = list(PublisherFormSetCreateView.checks())
+    e200_attrs = {getattr(c, "attribute", None) for c in checks if getattr(c, "id", None) == "E200"}
+    assert "cv_formsets" not in e200_attrs
+    assert "cv_formsets_required" not in e200_attrs

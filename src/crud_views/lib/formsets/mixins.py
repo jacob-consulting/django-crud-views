@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Dict, Type, Iterable
 
-from crud_views.lib.check import Check, CheckAttribute
+from crud_views.lib.check import Check, CheckAttribute, CheckAttributeType, CheckMapping
 from django.core.exceptions import BadRequest
 from django.db.models import Model
 from django.forms.models import ModelForm
@@ -20,7 +20,7 @@ class FormSetMixinBase:
         Iterator of checks for the view
         """
         yield from super().checks()
-        yield CheckAttribute(context=cls, id="E200", attribute="cv_formsets_required")
+        yield CheckAttribute(context=cls, id="E206", attribute="cv_formsets_required")
 
     def get_context_data(self, **kwargs):
         """
@@ -147,7 +147,7 @@ class FormSetMixin(FormSetMixinBase):
         Iterator of checks for the view
         """
         yield from super().checks()
-        yield CheckAttribute(context=cls, id="E200", attribute="cv_formsets")
+        yield CheckAttributeType(context=cls, id="E204", attribute="cv_formsets", expected_type=FormSets)
 
     def cv_get_formsets(self) -> FormSets:
         return self.cv_formsets.clone(cv_view=self)  # noqa
@@ -162,7 +162,13 @@ class PolymorphicFormSetsViewMixin(FormSetMixinBase):
         Iterator of checks for the view
         """
         yield from super().checks()
-        yield CheckAttribute(context=cls, id="E200", attribute="cv_polymorphic_formsets")
+        yield CheckMapping(
+            context=cls,
+            id="E205",
+            attribute="cv_polymorphic_formsets",
+            key_type=Model,
+            value_type=FormSets,
+        )
 
     def cv_get_formsets(self) -> FormSets | None:
         model = self.polymorphic_model

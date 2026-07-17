@@ -11,6 +11,18 @@
   registry is ready). `crud_views_polymorphic.lib` now also exports `PolymorphicDeleteView`,
   `PolymorphicDeleteViewPermissionRequired`, and `PolymorphicContentTypeForm`. The deep submodule
   paths continue to work. These names are added to the API stability policy (#76).
+- Expanded Django system checks for developer-time validation (#28): a reusable
+  `CheckAttributeType` (E101) asserts an attribute's value type; `cv_formsets` (E204) and
+  `cv_polymorphic_formsets` (E205 — keys must be `Model` subclasses, values `FormSets`) are now
+  type-validated; `ListView`'s `cv_filter_header_template` is validated (E110); and
+  `crud_views_workflow` now raises a check error when the app is installed without its
+  `django-fsm-2` (E001) or `django-fsm-2-admin` (E002) dependencies.
+
+### Fixed
+
+- System check IDs for the formset view mixins no longer collide with `cv_key`'s `E200`.
+  `cv_formsets`, `cv_polymorphic_formsets`, and `cv_formsets_required` now use distinct IDs
+  (`E204`/`E205`/`E206`) (#28).
 
 ## 0.15.0
 

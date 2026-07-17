@@ -15,7 +15,6 @@ from crud_views.lib.check import (
     CheckTemplateOrCode,
     CheckTemplate,
     CheckExpression,
-    ContextActionCheck,
 )
 from crud_views.lib.exceptions import cv_raise, ParentViewSetError, CrudViewError, ViewSetKeyFoundError
 from django.contrib.auth.mixins import PermissionRequiredMixin
@@ -97,7 +96,6 @@ class CrudView(metaclass=CrudViewMetaClass):
         yield CheckAttributeReg(context=cls, id="E200", attribute="cv_key", **check.REGS["name"])
         yield CheckAttributeReg(context=cls, id="E201", attribute="cv_path", **check.REGS["path"])
         yield CheckTemplate(context=cls, id="E111", attribute="cv_extends_template")
-        yield ContextActionCheck(context=cls, id="E203")
 
         # templates are required for frontend views
         is_frontend = not cls.cv_backend_only

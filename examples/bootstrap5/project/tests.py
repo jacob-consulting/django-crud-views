@@ -105,3 +105,16 @@ class ExampleAboutTest(TestCase):
 
         result = example_about({"view": HomeView()})
         self.assertIsNone(result["feature"])
+
+
+class LookAtTest(TestCase):
+    def test_look_at_appears_with_the_code_panel(self):
+        from django.utils.html import escape
+
+        admin = get_user_model().objects.create_superuser(username="test-admin", password="pw")
+        self.client.force_login(admin)
+        feature = next(f for f in FEATURES if f.app == "polymorphic_demo")
+        resp = self.client.get(reverse(feature.url_name))
+        self.assertContains(resp, "Look at:")
+        # escape() because {{ look_at }} is autoescaped in the rendered panel
+        self.assertContains(resp, escape(feature.look_at[:40]))

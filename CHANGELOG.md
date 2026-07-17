@@ -1,5 +1,15 @@
 # Django CRUD Views - Changelog
 
+## [Unreleased]
+
+### Changed
+
+- Examples: `examples/bootstrap5` rewritten as one self-contained app per feature
+  (library, nested, formsets, workflow, polymorphic, guardian, resources, showcase) with a
+  home-page catalog, idempotent `manage.py seed`, rendered source snippets on every landing
+  page, and a pytest suite wired into CI. English only; the committed example database and
+  German locale files are gone.
+
 ## 0.14.0
 
 ### Removed

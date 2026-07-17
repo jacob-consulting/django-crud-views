@@ -21,6 +21,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - run: pip install nox uv
       - run: nox -s "tests-${{ matrix.python-version }}(django='4.2')" "tests-${{ matrix.python-version }}(django='5.2')" "tests-${{ matrix.python-version }}(django='6.0')" -- --cov-report=xml
+      - run: nox -s "examples-${{ matrix.python-version }}(django='4.2')" "examples-${{ matrix.python-version }}(django='5.2')" "examples-${{ matrix.python-version }}(django='6.0')"
       - uses: codecov/codecov-action@v5
         if: matrix.python-version == '3.13'
         with:

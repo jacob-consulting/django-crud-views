@@ -1,0 +1,22 @@
+{% extends "project/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}Log in — django-crud-views examples{% endblock title %}
+
+{% block content %}
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card">
+                <div class="card-header"><h4>Log in</h4></div>
+                <div class="card-body">
+                    {% crispy form %}
+                    <div class="alert alert-info mb-0 mt-3">
+                        Demo users: <code>admin/admin</code> (superuser),
+                        <code>alice/alice</code>, <code>bob/bob</code> —
+                        run <code>manage.py seed</code> first.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

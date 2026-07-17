@@ -42,9 +42,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django_fsm import FSMField, transition
 
-from crud_views_workflow.lib.enums import WorkflowComment
-from crud_views_workflow.lib.enums import BadgeEnum
-from crud_views_workflow.lib.mixins import WorkflowModelMixin
+from crud_views_workflow.lib import BadgeEnum, WorkflowComment, WorkflowModelMixin
 
 
 class CampaignState(models.TextChoices):
@@ -105,8 +103,7 @@ class Campaign(WorkflowModelMixin, models.Model):
 from crud_views.lib.crispy import CrispyViewMixin
 from crud_views.lib.views import MessageMixin
 from crud_views.lib.viewset import ViewSet
-from crud_views_workflow.lib.forms import WorkflowForm
-from crud_views_workflow.lib.views import WorkflowView
+from crud_views_workflow.lib import WorkflowForm, WorkflowView
 from .models import Campaign
 
 cv_campaign = ViewSet(model=Campaign, name="campaign")
@@ -147,7 +144,7 @@ the login page.
 Use `WorkflowViewPermissionRequired` for production views:
 
 ```python
-from crud_views_workflow.lib.views import WorkflowViewPermissionRequired
+from crud_views_workflow.lib import WorkflowViewPermissionRequired
 
 class CampaignWorkflowView(CrispyViewMixin, MessageMixin, WorkflowViewPermissionRequired):
     cv_context_actions = ["list", "detail", "workflow"]
@@ -192,10 +189,10 @@ class CampaignWorkflowView(CrispyViewMixin, MessageMixin, WorkflowViewPermission
 ### WorkflowComment
 
 Each transition declares its comment requirement via the `custom` dict on the `@transition` decorator.
-Import `WorkflowComment` from `crud_views_workflow.lib.enums`:
+Import `WorkflowComment` from `crud_views_workflow.lib`:
 
 ```python
-from crud_views_workflow.lib.enums import WorkflowComment
+from crud_views_workflow.lib import WorkflowComment
 
 @transition(
     field=state,
@@ -227,8 +224,7 @@ class Campaign(WorkflowModelMixin, models.Model):
 `BadgeEnum` is a `StrEnum` covering all Bootstrap contextual colours. Import it alongside `WorkflowModelMixin`:
 
 ```python
-from crud_views_workflow.lib.enums import BadgeEnum
-from crud_views_workflow.lib.mixins import WorkflowModelMixin
+from crud_views_workflow.lib import BadgeEnum, WorkflowModelMixin
 ```
 
 | Value | Bootstrap class |

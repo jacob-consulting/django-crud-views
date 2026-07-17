@@ -1,5 +1,17 @@
 # Django CRUD Views - Changelog
 
+## Unreleased
+
+### Added
+
+- Public API: `crud_views_workflow.lib` and `crud_views_polymorphic.lib` now expose curated
+  public surfaces. `crud_views_workflow.lib` re-exports `WorkflowView`,
+  `WorkflowViewPermissionRequired`, `WorkflowModelMixin`, `WorkflowForm`, `BadgeEnum`, and
+  `WorkflowComment` (resolved lazily so consumer model modules stay import-safe before the app
+  registry is ready). `crud_views_polymorphic.lib` now also exports `PolymorphicDeleteView`,
+  `PolymorphicDeleteViewPermissionRequired`, and `PolymorphicContentTypeForm`. The deep submodule
+  paths continue to work. These names are added to the API stability policy (#76).
+
 ## 0.15.0
 
 ### Fixed

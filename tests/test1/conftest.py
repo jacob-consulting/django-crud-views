@@ -28,6 +28,8 @@ def pytest_configure():
             "ordered_model",
             "django_tables2",
             "django_object_detail",
+            "crud_views_object_detail",
+            "tests.test1.od_app",
             "crud_views.apps.CrudViewsConfig",
             "django_fsm",
             "crud_views_workflow.apps.CrudViewsWorkflowConfig",

@@ -35,9 +35,11 @@ work. All items are additive dev-time tooling with no semver/runtime impact.
 
 ## Scope
 
-Five gaps: #1 type validation, #2 formsets checks, #3 reactivate context-action
-check, #5 filter header template check, #6 workflow dependency checks.
-Out of scope: #4 (already covered by E111).
+Originally five gaps: #1 type validation, #2 formsets checks, #3 reactivate
+context-action check, #5 filter header template check, #6 workflow dependency
+checks. During implementation **#3 was dropped as obsolete** (see section 3), so
+the shipped work is four gaps: #1, #2, #5, #6.
+Out of scope: #4 (already covered by E111), #3 (obsolete — no invariant to enforce).
 
 ## Design
 
@@ -92,18 +94,32 @@ class CheckMapping(CheckAttribute):
   a plain `CheckAttribute` but moves off the colliding E200 — reassign to a fresh
   id (E206) so all three formset checks are distinct.
 
-### 3. Reactivate `ContextActionCheck` as E203 (`lib/check.py` + `lib/view/base.py`)
+### 3. ~~Reactivate `ContextActionCheck` as E203~~ — DROPPED as obsolete
 
-Repair the body: `self.context.cv` → `self.context.cv_viewset`. Keep the
-`has_view(action)` call. Wire into `CrudView.checks()`:
+**Decision (2026-07-17, during implementation):** gap #3 is closed as
+**obsolete — no code**. Implementation revealed the check has no invariant left
+to enforce:
 
-```python
-yield ContextActionCheck(context=cls, id="E203")
-```
+- `CrudView.cv_get_context()` (`base.py:409`) resolves a `cv_context_actions`
+  entry via **two** paths — a context button (`cv_context_buttons` /
+  viewset-level `context_buttons`, e.g. `"home"`, `"parent"`, `"filter"`) or a
+  registered view key (`has_view`) — and, crucially, **deliberately treats an
+  entry resolving to neither as "not a misconfiguration" and silently skips
+  it** (explicit code comment). This resolution logic post-dates the original
+  `ContextActionCheck`, which only tested `has_view`.
+- The framework's own default context-action settings all include `"home"`
+  (a context button, not a view), so a `has_view`-only E203 would false-positive
+  on essentially every default-configured view.
+- Even a corrected two-path check contradicts the runtime's explicit
+  tolerance: it fires on the common, runtime-supported pattern of a read-mostly
+  partial ViewSet that doesn't register `update`/`delete` but inherits defaults
+  naming them (37 such fixtures exist in the test app alone). The rare value
+  (catching a typo in an explicitly-set action) is outweighed by punishing
+  legitimate configs the framework intentionally supports.
 
-Validates every key in `cv_context_actions` resolves to a real view in the
-ViewSet. Guard for `cv_context_actions is None` (already handled by
-`or list()`).
+The dead `ContextActionCheck` class is **removed** from `check.py` rather than
+left dormant. No wiring is added. The `CampaignDetailView` test fixture keeps a
+more-accurate explicit `cv_context_actions` as an incidental cleanup.
 
 ### 4. Filter header template check (`lib/views/list.py`)
 
@@ -144,7 +160,7 @@ missing dep never raises. Replace the `pass` in `apps.py:ready()` with
 | ID | Check | Where |
 |----|-------|-------|
 | `viewset.E101` | `CheckAttributeType` default | `lib/check.py` |
-| `viewset.E203` | `ContextActionCheck` (reactivated) | `lib/view/base.py` |
+| ~~`viewset.E203`~~ | ~~`ContextActionCheck`~~ — dropped as obsolete (gap #3) | — |
 | `viewset.E204` | `cv_formsets` is a `FormSets` | `lib/formsets/mixins.py` |
 | `viewset.E205` | `cv_polymorphic_formsets` mapping shape | `lib/formsets/mixins.py` |
 | `viewset.E206` | `cv_formsets_required` exists | `lib/formsets/mixins.py` |

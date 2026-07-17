@@ -363,7 +363,18 @@ git commit -m "feat(checks): type/mapping checks for cv_formsets & cv_polymorphi
 
 ---
 
-### Task 4: Reactivate `ContextActionCheck` (E203)
+### Task 4: ~~Reactivate `ContextActionCheck` (E203)~~ — DROPPED as obsolete
+
+> **Outcome (2026-07-17):** This task was NOT completed as written. During
+> implementation it was found that `CrudView.cv_get_context()` (`base.py:409`)
+> deliberately treats an unresolvable `cv_context_actions` key as "not a
+> misconfiguration" and skips it, and that the framework's default context
+> actions (all include `"home"`) plus the common partial-viewset pattern would
+> make E203 false-positive on legitimate configs. Per human decision, gap #3 is
+> closed as **obsolete**: the dead `ContextActionCheck` class was removed from
+> `check.py`, no wiring was added, and the `CampaignDetailView` fixture cleanup
+> was retained. See design spec section 3. The steps below are retained for
+> historical context only — do not execute them.
 
 **Files:**
 - Modify: `src/crud_views/lib/check.py` (repair `ContextActionCheck.messages()`)

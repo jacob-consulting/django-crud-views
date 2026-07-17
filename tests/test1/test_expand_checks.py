@@ -1,8 +1,9 @@
-from crud_views.lib.check import CheckAttributeType, CheckMapping
+from crud_views.lib.check import CheckAttributeType, CheckMapping, CheckTemplateOrCode
 from django.db.models import Model
 from tests.test1.app.models import Book
 from crud_views.lib.formsets.formsets import FormSets
 from tests.test1.app.views_formset import PublisherFormSetCreateView
+from crud_views.lib.views.list import ListView
 
 
 class GoodType:
@@ -100,3 +101,31 @@ def test_formset_checks_do_not_reuse_e200_for_formsets():
     e200_attrs = {getattr(c, "attribute", None) for c in checks if getattr(c, "id", None) == "E200"}
     assert "cv_formsets" not in e200_attrs
     assert "cv_formsets_required" not in e200_attrs
+
+
+class FilterHeaderMissing:
+    cv_filter_header_template = "does-not-exist.html"
+    cv_filter_header_template_code = None
+
+
+class FilterHeaderValid:
+    cv_filter_header_template = "crud_views/snippets/header/filter.html"
+    cv_filter_header_template_code = None
+
+
+def test_filter_header_missing_template_errors():
+    check = CheckTemplateOrCode(context=FilterHeaderMissing, attribute="cv_filter_header_template")
+    messages = list(check.messages())
+    assert len(messages) == 1
+    assert "does-not-exist.html" in messages[0].msg
+
+
+def test_filter_header_valid_template_emits_no_message():
+    check = CheckTemplateOrCode(context=FilterHeaderValid, attribute="cv_filter_header_template")
+    assert list(check.messages()) == []
+
+
+def test_list_view_checks_include_filter_header():
+    checks = list(ListView.checks())
+    attrs = {getattr(c, "attribute", None) for c in checks if isinstance(c, CheckTemplateOrCode)}
+    assert "cv_filter_header_template" in attrs

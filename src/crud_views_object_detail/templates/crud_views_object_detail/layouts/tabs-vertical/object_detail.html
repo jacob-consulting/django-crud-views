@@ -20,7 +20,7 @@
             <div class="col-md-9 border-start">
                 <div class="tab-content ps-md-4" id="objectDetailTabContent">
                     {% for group in groups %}
-                    {% render_group group %}
+                    {% render_group group layout=layout %}
                     {% endfor %}
                 </div>
             </div>

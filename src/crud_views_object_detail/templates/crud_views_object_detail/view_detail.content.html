@@ -1,4 +1,4 @@
 {% load crud_views_object_detail %}
 {% if object_detail_groups %}
-    {% render_object_detail object object_detail_groups %}
+    {% render_object_detail object object_detail_groups layout=object_detail_layout %}
 {% endif %}

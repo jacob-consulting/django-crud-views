@@ -8,7 +8,7 @@
         <table class="table table-striped table-hover mb-0">
             <tbody>
                 {% for prop in group.properties %}
-                {% render_property prop %}
+                {% render_property prop layout=layout %}
                 {% endfor %}
             </tbody>
         </table>

@@ -18,7 +18,7 @@
             <table class="table table-sm table-borderless mb-0">
                 <tbody>
                     {% for prop in group.properties %}
-                    {% render_property prop %}
+                    {% render_property prop layout=layout %}
                     {% endfor %}
                 </tbody>
             </table>

@@ -7,7 +7,7 @@
         </div>
         <ul class="list-group list-group-flush">
             {% for prop in group.properties %}
-            {% render_property prop %}
+            {% render_property prop layout=layout %}
             {% endfor %}
         </ul>
     </div>

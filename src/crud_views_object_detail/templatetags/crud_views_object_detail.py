@@ -14,43 +14,56 @@ register = template.Library()
 
 
 @register.simple_tag(takes_context=True)
-def render_object_detail(context, obj, groups=None, property_display=None):
+def render_object_detail(context, obj, groups=None, property_display=None, layout=None):
     """Render all property groups for an object.
 
     ``groups`` can be pre-resolved ``ResolvedGroup`` instances (from the mixin)
     or a raw ``property_display`` list that will be parsed and resolved here.
+
+    ``layout`` optionally overrides the layout pack (e.g. "accordion") for this
+    render only; it defaults to ``crud_views_object_detail_settings.template_pack_layout``
+    and is threaded down into the pack's own templates so nested ``render_group`` /
+    ``render_property`` calls use the same pack.
     """
     if groups is None and property_display is not None:
         configs = parse_property_display(property_display)
         view = context.get("view")
         groups = resolve_all(obj, configs, view=view)
 
-    pack = crud_views_object_detail_settings.template_pack_layout
+    pack = layout or crud_views_object_detail_settings.template_pack_layout
     tpl = select_template(
         [
             f"crud_views_object_detail/layouts/{pack}/object_detail.html",
             "crud_views_object_detail/object_detail.html",
         ]
     )
-    return mark_safe(tpl.render({"groups": groups or []}, context.get("request")))
+    return mark_safe(tpl.render({"groups": groups or [], "layout": pack}, context.get("request")))
 
 
 @register.simple_tag(takes_context=True)
-def render_group(context, group):
-    """Render a single property group using the configured layout pack."""
-    pack = crud_views_object_detail_settings.template_pack_layout
+def render_group(context, group, layout=None):
+    """Render a single property group using the configured layout pack.
+
+    ``layout`` optionally overrides the layout pack for this render only (see
+    ``render_object_detail``); defaults to the settings singleton.
+    """
+    pack = layout or crud_views_object_detail_settings.template_pack_layout
     tpl = select_template(
         [
             f"crud_views_object_detail/layouts/{pack}/group.html",
         ]
     )
-    return mark_safe(tpl.render({"group": group}, context.get("request")))
+    return mark_safe(tpl.render({"group": group, "layout": pack}, context.get("request")))
 
 
 @register.simple_tag(takes_context=True)
-def render_property(context, prop):
-    """Render a single property row using the configured layout pack."""
-    pack = crud_views_object_detail_settings.template_pack_layout
+def render_property(context, prop, layout=None):
+    """Render a single property row using the configured layout pack.
+
+    ``layout`` optionally overrides the layout pack for this render only (see
+    ``render_object_detail``); defaults to the settings singleton.
+    """
+    pack = layout or crud_views_object_detail_settings.template_pack_layout
     tpl = select_template(
         [
             f"crud_views_object_detail/layouts/{pack}/property.html",

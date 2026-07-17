@@ -21,6 +21,10 @@ class ObjectDetailMixin:
 
     cv_property_display: list | None = None
 
+    #: Optional per-view override of the object-detail layout pack (e.g. "accordion").
+    #: Falls back to ``CRUD_VIEWS_OBJECT_DETAIL_TEMPLATE_PACK_LAYOUT`` when None.
+    cv_object_detail_layout: str | None = None
+
     @property
     def property_display(self):
         return self.cv_property_display
@@ -42,6 +46,7 @@ class ObjectDetailMixin:
         if groups:
             instance = self.get_object_for_detail()
             context["object_detail_groups"] = resolve_all(instance, groups, view=self)
+        context["object_detail_layout"] = self.cv_object_detail_layout
         return context
 
     @classmethod

@@ -7,7 +7,7 @@
     {% if group.description %}<p class="text-body-secondary small mb-3">{{ group.description }}</p>{% endif %}
     <dl class="row mb-0">
         {% for prop in group.properties %}
-        {% render_property prop %}
+        {% render_property prop layout=layout %}
         {% endfor %}
     </dl>
 </div>

@@ -6,7 +6,7 @@
     </div>
     <div class="card-body">
         {% for prop in group.properties %}
-        {% render_property prop %}
+        {% render_property prop layout=layout %}
         {% endfor %}
     </div>
 </div>

@@ -65,3 +65,11 @@ def test_workflow_lib_unknown_attribute_raises_attribute_error():
 
     with pytest.raises(AttributeError):
         _ = wf_lib.NoSuchName
+
+
+def test_workflow_lib_exports_map_matches_all():
+    """Drift guard: the lazy _EXPORTS map and __all__ must stay in sync so star-import,
+    __dir__, and __getattr__ never disagree about the public surface."""
+    import crud_views_workflow.lib as wf_lib
+
+    assert set(wf_lib._EXPORTS) == set(wf_lib.__all__)

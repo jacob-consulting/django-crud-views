@@ -1,6 +1,6 @@
 # Django CRUD Views - Changelog
 
-## [Unreleased]
+## 0.15.0
 
 ### Fixed
 - Card list actions (`CardAction`) targeting POST-only views — ordered up/down or any custom

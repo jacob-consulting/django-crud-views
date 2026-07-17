@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+### Fixed
+- Card list actions (`CardAction`) targeting POST-only views — ordered up/down or any custom
+  `ActionView` — no longer render as bare GET links that return `405 Method Not Allowed`. They now
+  emit a hidden POST form plus a submit-form trigger, matching table-list actions, and modal-enabled
+  targets render a modal trigger. Behaviour is derived automatically from the target view; no
+  `CardAction` change is required (#77). Also fixes a latent bug where `{% csrf_token %}` rendered
+  empty inside a card because `cv_card` rendered its template without a request context.
+
 ### Changed
 
 - Examples: `examples/bootstrap5` rewritten as one self-contained app per feature

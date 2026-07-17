@@ -27,7 +27,6 @@ def pytest_configure():
             "polymorphic",
             "ordered_model",
             "django_tables2",
-            "django_object_detail",
             "crud_views_object_detail",
             "tests.test1.od_app",
             "crud_views.apps.CrudViewsConfig",

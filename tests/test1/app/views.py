@@ -23,7 +23,7 @@ from crud_views.lib.views import (
     OrderedUpViewPermissionRequired,
     OrderedUpDownPermissionRequired,
     CardListViewPermissionRequired,
-    DetailCustomViewPermissionRequired,
+    DetailViewPermissionRequired,
     ActionViewPermissionRequired,
 )
 from crud_views.lib.view import CardAction
@@ -235,7 +235,7 @@ class AuthorWideCardCreateView(CrispyViewMixin, CreateViewPermissionRequired):
     cv_viewset = cv_author_wide_card
 
 
-# --- Author Custom Detail (DetailCustomView without ObjectDetailMixin) ---
+# --- Author Custom Detail (DetailView without ObjectDetailMixin) ---
 
 cv_author_custom_detail = ViewSet(model=Author, name="author_custom_detail")
 
@@ -244,7 +244,7 @@ class AuthorCustomDetailListView(ListViewPermissionRequired):
     cv_viewset = cv_author_custom_detail
 
 
-class AuthorCustomDetailView(DetailCustomViewPermissionRequired):
+class AuthorCustomDetailView(DetailViewPermissionRequired):
     cv_viewset = cv_author_custom_detail
     template_name = "app/author_detail_custom.html"
 

@@ -1,9 +1,9 @@
 from crud_views.lib.view import CrudViewPermissionRequiredMixin
-from crud_views.lib.views import DetailCustomView
+from crud_views.lib.views import DetailView
 from .utils import PolymorphicCrudViewMixin
 
 
-class PolymorphicDetailView(PolymorphicCrudViewMixin, DetailCustomView):
+class PolymorphicDetailView(PolymorphicCrudViewMixin, DetailView):
     pass
 
 

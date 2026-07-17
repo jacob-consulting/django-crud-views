@@ -81,3 +81,27 @@ class FeatureRegistryTest(TestCase):
         for feature in FEATURES:
             self.assertTrue(feature.about.strip(), f"{feature.app} has no about text")
             self.assertTrue(feature.look_at.strip(), f"{feature.app} has no look_at text")
+
+
+class ExampleAboutTest(TestCase):
+    def setUp(self):
+        admin = get_user_model().objects.create_superuser(username="test-admin", password="pw")
+        self.client.force_login(admin)
+
+    def test_every_feature_page_shows_about(self):
+        from django.utils.html import escape
+
+        for feature in FEATURES:
+            resp = self.client.get(reverse(feature.url_name))
+            self.assertContains(resp, 'id="example-about"', msg_prefix=feature.app)
+            # a distinctive slice of the prose actually reaches the page.
+            # escape() because Django autoescapes the rendered {{ feature.about }}
+            # (e.g. an apostrophe becomes &#x27;), so the raw substring would not match.
+            self.assertContains(resp, escape(feature.about[:40]), msg_prefix=feature.app)
+
+    def test_example_about_empty_for_non_feature_view(self):
+        from project.templatetags.example_tags import example_about
+        from project.views import HomeView
+
+        result = example_about({"view": HomeView()})
+        self.assertIsNone(result["feature"])

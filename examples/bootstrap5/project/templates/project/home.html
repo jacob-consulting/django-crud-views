@@ -18,7 +18,10 @@
             <div class="col">
                 <div class="card h-100">
                     <div class="card-body">
-                        <h5 class="card-title"><i class="{{ feature.icon }}"></i> {{ feature.title }}</h5>
+                        <h5 class="card-title">
+                            <i class="{{ feature.icon }}"></i> {{ feature.title }}
+                            {% if feature.badge %}<span class="badge text-bg-success ms-2">{{ feature.badge }}</span>{% endif %}
+                        </h5>
                         <p class="card-text">{{ feature.description }}</p>
                     </div>
                     <div class="card-footer">

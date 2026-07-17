@@ -12,6 +12,7 @@ class Feature:
     look_at: str  # one-sentence code pointer shown next to "The code behind this page"
     url_name: str  # URL name of the app's landing page, e.g. "author-list"
     icon: str  # font-awesome classes
+    badge: str = ""  # optional small badge shown next to the title on the home page card
 
 
 FEATURES: list[Feature] = [
@@ -151,5 +152,24 @@ FEATURES: list[Feature] = [
         ),
         url_name="recipe-card",
         icon="fa-solid fa-wand-magic-sparkles",
+    ),
+    Feature(
+        app="object_detail",
+        title="Object Detail",
+        badge="NEW",
+        description="Seven detail-page layout themes, side by side, over the same product data.",
+        about=(
+            "django-object-detail's fieldset-based detail pages, integrated as crud_views_object_detail. A "
+            "Product's detail page is rendered once per layout pack — split-card, accordion, tabs-vertical, "
+            "card-rows, list-group-3col, striped-rows, table-inline — using a per-view "
+            "cv_object_detail_layout override, alongside badges, links, a custom star-rating template, FK "
+            "and O2O traversal, M2M fan-out, a model method and a view-computed property."
+        ),
+        look_at=(
+            "PRODUCT_DISPLAY and the _make_detail_view() factory (cv_object_detail_layout=theme) in "
+            "views.py; the ThemeLinksColumn on ProductTable links to all 7 detail pages from the list."
+        ),
+        url_name="product-list",
+        icon="fa-regular fa-box",
     ),
 ]

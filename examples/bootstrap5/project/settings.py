@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "guardian_demo",
     "resources",
     "showcase",
+    "object_detail",
 ]
 
 MIDDLEWARE = [

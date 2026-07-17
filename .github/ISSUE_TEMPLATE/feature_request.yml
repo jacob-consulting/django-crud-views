@@ -1,0 +1,36 @@
+name: Feature request
+description: Suggest an idea or improvement for django-crud-views
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / motivation
+      description: What problem would this solve? What are you trying to do?
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: What would you like to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+    validations:
+      required: false
+  - type: dropdown
+    id: affected-area
+    attributes:
+      label: Affected area
+      options:
+        - crud_views (core)
+        - crud_views_workflow
+        - crud_views_polymorphic
+        - crud_views_guardian
+        - unsure
+    validations:
+      required: false

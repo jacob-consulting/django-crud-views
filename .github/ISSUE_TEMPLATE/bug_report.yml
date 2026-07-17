@@ -1,0 +1,62 @@
+name: Bug report
+description: Report a problem with django-crud-views
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to file a bug report. Please fill in the
+        fields below so we can reproduce and fix the problem quickly.
+  - type: input
+    id: cv-version
+    attributes:
+      label: django-crud-views version
+      placeholder: "0.16.0"
+    validations:
+      required: true
+  - type: input
+    id: django-version
+    attributes:
+      label: Django version
+      placeholder: "5.2"
+    validations:
+      required: true
+  - type: input
+    id: python-version
+    attributes:
+      label: Python version
+      placeholder: "3.13"
+    validations:
+      required: true
+  - type: dropdown
+    id: affected-app
+    attributes:
+      label: Affected app
+      options:
+        - crud_views (core)
+        - crud_views_workflow
+        - crud_views_polymorphic
+        - crud_views_guardian
+        - unsure
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What went wrong?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: A minimal, reproducible example is ideal.
+    validations:
+      required: true
+  - type: textarea
+    id: expected-actual
+    attributes:
+      label: Expected vs. actual behavior
+    validations:
+      required: true

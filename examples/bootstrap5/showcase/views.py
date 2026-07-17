@@ -12,13 +12,13 @@ from crud_views.lib.crispy import (
 from crud_views.lib.view import CardAction
 from crud_views.lib.views import (
     ActionViewPermissionRequired,
+    CardListViewPermissionRequired,
     CreateViewPermissionRequired,
     DeleteViewPermissionRequired,
     DetailViewPermissionRequired,
     MessageMixin,
     UpdateViewPermissionRequired,
 )
-from crud_views.lib.views.card import CardListViewPermissionRequired
 from crud_views.lib.viewset import ViewSet
 
 from showcase.models import Recipe

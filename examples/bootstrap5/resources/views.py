@@ -22,7 +22,6 @@ from crud_views.lib.views import (
 )
 from crud_views.lib.views.form import CustomFormViewPermissionRequired
 from crud_views.lib.viewset import ViewSet
-from crud_views.lib.viewset.path_regs import PrimaryKeys
 
 #: pristine bucket content — FAKE_BUCKET is reset from this in tests
 INITIAL_BUCKET = [
@@ -44,7 +43,7 @@ class S3File(Resource):
         verbose_name_plural = "s3 files"
         app_label = "resources"
         pk_field = "key_md5"
-        pk_type = PrimaryKeys.HEX
+        pk_type = ViewSet.PK.HEX
 
     @property
     def key_md5(self) -> str:

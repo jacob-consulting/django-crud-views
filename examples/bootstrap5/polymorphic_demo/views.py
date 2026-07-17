@@ -2,8 +2,7 @@ import django_tables2 as tables
 from crispy_forms.layout import Row
 from django.forms import modelform_factory
 
-from crud_views.lib.crispy import Column4, Column6, CrispyDeleteForm, CrispyViewMixin
-from crud_views.lib.crispy.form import CrispyForm
+from crud_views.lib.crispy import Column4, Column6, CrispyDeleteForm, CrispyForm, CrispyViewMixin
 from crud_views.lib.table import LinkDetailColumn, Table
 from crud_views.lib.views import ListViewPermissionRequired, ListViewTableMixin
 from crud_views.lib.viewset import ViewSet

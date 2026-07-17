@@ -151,9 +151,13 @@ German locale removed, and a pytest suite wired into nox + CI. Merged to `main` 
 (`35e3124`); no version bump / no PyPI release. **Naming decision:** the polymorphic and guardian
 example apps live in directories `polymorphic_demo/` and `guardian_demo/` (NOT `polymorphic`/
 `guardian`, which collide with the installed django-polymorphic / django-guardian app labels);
-URL prefixes stay `/polymorphic/` and `/guardian/`. Two package follow-ups filed for later:
-#76 (expand workflow/polymorphic public API surface used by the examples) and #77 (card list
-actions can't fire POST — `card_action.html` ignores `cv_list_action_method`).
+URL prefixes stay `/polymorphic/` and `/guardian/`. Two package follow-ups were filed and are
+now both ✅ DONE: #77 (card list actions can't fire POST — `card_action.html` ignored
+`cv_list_action_method`) shipped in 0.15.0 via PR #79; #76 (expand workflow/polymorphic public
+API surface used by the examples) merged to `main` 2026-07-17 via squash PR #80 (`1549bac`) —
+`crud_views_workflow.lib` / `crud_views_polymorphic.lib` now expose curated public surfaces
+(workflow lazy for pre-`setup()` import safety), stability doc + examples + reference docs
+updated; unreleased (no version bump yet).
 
 **Goal:** didactically clean examples — one self-contained app per feature inside a single
 runnable project, real-life domains, English only, tested, and structured so the docs

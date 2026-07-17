@@ -52,6 +52,7 @@ from crud_views_guardian.lib.views import (
 )
 from crud_views_workflow.lib.forms import WorkflowForm
 from crud_views_workflow.lib.views import WorkflowViewPermissionRequired
+from crud_views_object_detail.lib import ObjectDetailMixin
 from crud_views.lib.crispy import Column4, Column6, Column12
 from crispy_forms.layout import Row, Layout
 
@@ -511,7 +512,7 @@ class VehicleDeleteView(CrispyViewMixin, PolymorphicDeleteViewPermissionRequired
     cv_viewset = cv_vehicle
 
 
-class VehicleDetailView(PolymorphicDetailViewPermissionRequired):
+class VehicleDetailView(ObjectDetailMixin, PolymorphicDetailViewPermissionRequired):
     cv_viewset = cv_vehicle
     cv_property_display = [
         {
@@ -580,7 +581,7 @@ class GuardianAuthorListView(ListViewTableMixin, GuardianListViewPermissionRequi
     cv_list_actions = ["detail", "update", "delete"]
 
 
-class GuardianAuthorDetailView(GuardianDetailViewPermissionRequired):
+class GuardianAuthorDetailView(ObjectDetailMixin, GuardianDetailViewPermissionRequired):
     cv_viewset = cv_guardian_author
 
 
@@ -620,7 +621,7 @@ class GuardianPublisherListView(ListViewTableMixin, GuardianListViewPermissionRe
     cv_list_actions = ["detail", "update", "delete"]
 
 
-class GuardianPublisherDetailView(GuardianDetailViewPermissionRequired):
+class GuardianPublisherDetailView(ObjectDetailMixin, GuardianDetailViewPermissionRequired):
     cv_viewset = cv_guardian_publisher
 
 
@@ -663,7 +664,7 @@ class GuardianBookListView(ListViewTableMixin, GuardianListViewPermissionRequire
     cv_list_actions = ["detail", "update", "delete"]
 
 
-class GuardianBookDetailView(GuardianDetailViewPermissionRequired):
+class GuardianBookDetailView(ObjectDetailMixin, GuardianDetailViewPermissionRequired):
     cv_viewset = cv_guardian_book
 
 

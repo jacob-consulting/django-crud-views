@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     "django_fsm",
     "django_tables2",
     "django_object_detail",
+    "crud_views_object_detail",
     "polymorphic",
     "guardian",
     "crud_views.apps.CrudViewsConfig",

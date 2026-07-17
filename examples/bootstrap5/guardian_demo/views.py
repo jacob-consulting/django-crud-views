@@ -12,6 +12,7 @@ from crud_views_guardian.lib.views import (
     GuardianUpdateViewPermissionRequired,
 )
 from crud_views_guardian.lib.viewset import GuardianViewSet
+from crud_views_object_detail.lib import ObjectDetailMixin
 
 from guardian_demo.models import Document
 
@@ -41,7 +42,7 @@ class DocumentListView(ListViewTableMixin, GuardianListViewPermissionRequired):
     table_class = DocumentTable
 
 
-class DocumentDetailView(GuardianDetailViewPermissionRequired):
+class DocumentDetailView(ObjectDetailMixin, GuardianDetailViewPermissionRequired):
     cv_viewset = cv_document
     cv_property_display = [
         {"title": "Document", "icon": "file-lines", "properties": ["id", "title", "owner", "body"]},

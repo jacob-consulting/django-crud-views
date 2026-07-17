@@ -15,6 +15,11 @@ and type() invokes that same metaclass machinery as a `class` statement would �
 each dynamically-built view registers under its own distinct cv_key/cv_path and gets
 its own urlpattern, verified by `python manage.py check` and by reversing all 7 URL
 names in tests.py.
+
+A minimal, detail-only ``cv_supplier`` ViewSet (``SupplierDetailView``) is also
+registered here: it exists solely so the ``supplier`` property in PRODUCT_DISPLAY has
+a real, correct ``link`` target (a Supplier's own detail page), rather than pointing at
+an unrelated Product page.
 """
 
 import django_tables2 as tables
@@ -33,12 +38,18 @@ from crud_views.lib.views import (
 from crud_views.lib.viewset import ViewSet
 from crud_views_object_detail.lib import BadgeConfig, ObjectDetailViewPermissionRequired, x
 
-from object_detail.models import Product
+from object_detail.models import Product, Supplier
 
 cv_product = ViewSet(
     model=Product,
     name="product",
     icon_header="fa-regular fa-box",
+)
+
+cv_supplier = ViewSet(
+    model=Supplier,
+    name="supplier",
+    icon_header="fa-regular fa-truck",
 )
 
 THEMES = [
@@ -150,6 +161,29 @@ class ProductCreateView(CrispyViewMixin, MessageMixin, CreateViewPermissionRequi
     cv_message = "Created product »{object}«"
 
 
+# --------------------------------------------------------------------------- supplier (minimal detail-only)
+
+# Read-only detail page so the product's "supplier" property can `link` to the
+# supplier's OWN detail page (see PRODUCT_DISPLAY below). No list/create/update/delete
+# views are registered here — this ViewSet exists solely as a correct link target.
+
+
+class SupplierDetailView(ObjectDetailViewPermissionRequired):
+    cv_viewset = cv_supplier
+    cv_property_display = [
+        {
+            "title": "Supplier",
+            "icon": "truck",
+            "properties": [
+                "name",
+                "website",
+                # plain BadgeConfig.color variant (distinct from color_map/color_fn above)
+                x("rating", badge=BadgeConfig(color="info")),
+            ],
+        },
+    ]
+
+
 # --------------------------------------------------------------------------- detail (one per theme)
 
 # shared property_display showing default rendering of many field types + traversal + methods
@@ -186,7 +220,9 @@ PRODUCT_DISPLAY = [
         "title": "Supplier (FK traversal)",
         "icon": "truck",
         "properties": [
-            x("supplier", link=detail_url_name("split-card")),
+            # value is a Supplier instance -> links to that supplier's OWN detail page
+            # (default LinkConfig branch: reverse(url, kwargs={"pk": value.pk})).
+            x("supplier", link="supplier-detail"),
             x("supplier__name", title="Supplier name"),
             x("supplier__website", title="Supplier website"),
             x("supplier__rating", title="Supplier rating"),

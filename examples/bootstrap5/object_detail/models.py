@@ -9,11 +9,14 @@ demoed from one project even though the global default pack
 
 PRODUCT_DISPLAY (see views.py) showcases: default rendering for char/text/decimal/
 float/integer/boolean/url/date/datetime fields, a badge with color_map+label_map+pill
-(``is_active``) and a badge with color_fn (``price``), a property ``link`` (supplier ->
-its split-card detail page), a per-type custom ``template`` (a star-rating widget on
+(``is_active``) and a badge with color_fn (``price``), a property ``link`` (``supplier``
+-> that Supplier's OWN detail page, via the minimal ``cv_supplier`` ViewSet added purely
+as a correct link target), a per-type custom ``template`` (a star-rating widget on
 ``supplier__rating``), FK traversal (``supplier__*``), O2O traversal (``warehouse__*``),
 M2M fan-out (``tags``), a model method (``stock_status``), a model @property
-(``margin_label``), and a view-computed property (``view_summary``).
+(``margin_label``), and a view-computed property (``view_summary``). The plain
+``BadgeConfig.color`` variant is showcased on the Supplier detail page's ``rating``
+property (see ``SupplierDetailView`` in views.py) rather than on Product.
 
 Intentionally omitted vs. the upstream django-object-detail catalog example: a
 FK->O2O *chain* (e.g. book -> publisher -> publisher.address) and a reverse-O2O

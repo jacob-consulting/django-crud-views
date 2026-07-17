@@ -20,7 +20,9 @@
                     <div class="card-body">
                         <h5 class="card-title">
                             <i class="{{ feature.icon }}"></i> {{ feature.title }}
-                            {% if feature.badge %}<span class="badge text-bg-success ms-2">{{ feature.badge }}</span>{% endif %}
+                            {% if feature.badge %}
+                                <span class="badge text-bg-success ms-2">{{ feature.badge }}</span>
+                            {% endif %}
                         </h5>
                         <p class="card-text">{{ feature.description }}</p>
                     </div>

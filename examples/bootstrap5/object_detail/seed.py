@@ -67,6 +67,7 @@ def seed():
     for username in ("alice", "bob"):
         user = User.objects.get(username=username)
         grant_model_perms(user, Product)
+        grant_model_perms(user, Supplier)
 
     suppliers = [
         Supplier.objects.get_or_create(name=name, defaults={"website": website, "rating": rating})[0]

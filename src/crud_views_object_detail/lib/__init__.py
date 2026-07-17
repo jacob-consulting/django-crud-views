@@ -8,6 +8,9 @@ __all__ = [
     "PropertyConfig",
     "PropertyGroupConfig",
     "x",
+    "ObjectDetailMixin",
+    "ObjectDetailView",
+    "ObjectDetailViewPermissionRequired",
 ]
 
 _EXPORTS = {
@@ -16,6 +19,9 @@ _EXPORTS = {
     "PropertyConfig": ("crud_views_object_detail.lib.config", "PropertyConfig"),
     "PropertyGroupConfig": ("crud_views_object_detail.lib.config", "PropertyGroupConfig"),
     "x": ("crud_views_object_detail.lib.config", "x"),
+    "ObjectDetailMixin": ("crud_views_object_detail.lib.mixins", "ObjectDetailMixin"),
+    "ObjectDetailView": ("crud_views_object_detail.lib.views", "ObjectDetailView"),
+    "ObjectDetailViewPermissionRequired": ("crud_views_object_detail.lib.views", "ObjectDetailViewPermissionRequired"),
 }
 
 

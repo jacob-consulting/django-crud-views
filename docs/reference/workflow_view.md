@@ -346,7 +346,7 @@ Use `state_badge` (the HTML badge property) in your table and detail view:
 ```python
 import django_tables2 as tables
 from crud_views.lib.table import Table, LinkDetailColumn
-from django_object_detail import PropertyConfig
+from crud_views_object_detail.lib import ObjectDetailViewPermissionRequired, PropertyConfig
 
 class CampaignTable(Table):
     id = LinkDetailColumn()
@@ -354,9 +354,9 @@ class CampaignTable(Table):
     state = tables.Column(accessor="state_badge")
 
 
-class CampaignDetailView(DetailViewPermissionRequired):
+class CampaignDetailView(ObjectDetailViewPermissionRequired):
     cv_viewset = cv_campaign
-    property_display = [
+    cv_property_display = [
         {
             "title": "Properties",
             "properties": [

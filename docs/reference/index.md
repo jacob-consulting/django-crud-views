@@ -4,6 +4,7 @@
 
 - [ListView](list_view.md) — display a list of model instances with tables and filters
 - [DetailView](detail_view.md) — display a single model instance with a custom template
+- [ObjectDetailView](object_detail_view.md) — display a single model instance with structured, auto-detected property groups (optional `crud_views_object_detail` app)
 - [CreateView](create_view.md) — create new model instances with forms
 - [UpdateView](update_view.md) — update existing model instances with forms
 - [DeleteView](delete_view.md) — delete model instances with confirmation

@@ -1,26 +1,12 @@
-import pytest
 from django.template import Context, Template
 from django.test import override_settings
 
-from crud_views_object_detail.lib import conf
 from crud_views_object_detail.lib.conf import (
     CrudViewsObjectDetailSettings,
     build_icon_class,
     build_named_icon_class,
 )
 from crud_views_object_detail.lib.resolvers import ResolvedGroup, ResolvedProperty
-from crud_views_object_detail.templatetags import crud_views_object_detail as tags
-
-
-@pytest.fixture(autouse=True)
-def _fresh_singleton(monkeypatch):
-    """build_icon_class/build_named_icon_class read the module-level singleton (via
-    conf.py's own globals), while the render_* tags hold their own separately-bound
-    reference to it (via `from ... import crud_views_object_detail_settings` in the
-    templatetags module). Both caches persist across tests via cached_property, so
-    reset both before each test so @override_settings actually takes effect."""
-    monkeypatch.setattr(conf, "crud_views_object_detail_settings", CrudViewsObjectDetailSettings())
-    monkeypatch.setattr(tags, "crud_views_object_detail_settings", CrudViewsObjectDetailSettings())
 
 
 # ---------------------------------------------------------------------------

@@ -3,26 +3,13 @@ from django.template import Template, Context
 from django.test import override_settings
 from django.utils import timezone
 
-from crud_views_object_detail.lib import conf
 from crud_views_object_detail.lib.config import x
-from crud_views_object_detail.lib.conf import CrudViewsObjectDetailSettings
 from crud_views_object_detail.lib.resolvers import (
     ResolvedProperty,
     resolve_all,
 )
 from crud_views_object_detail.lib.config import PropertyGroupConfig
-from crud_views_object_detail.templatetags import crud_views_object_detail as tags
 from tests.test1.od_app.models import Info, Report
-
-
-@pytest.fixture(autouse=True)
-def _fresh_singleton(monkeypatch):
-    """Both conf.py and the templatetags module hold their own bound reference to the
-    settings singleton (the latter via `from ... import crud_views_object_detail_settings`),
-    and cached_property values persist across tests. Reset both before each test so
-    @override_settings actually takes effect through the templatetags module."""
-    monkeypatch.setattr(conf, "crud_views_object_detail_settings", CrudViewsObjectDetailSettings())
-    monkeypatch.setattr(tags, "crud_views_object_detail_settings", CrudViewsObjectDetailSettings())
 
 
 @pytest.fixture

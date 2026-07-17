@@ -17,7 +17,7 @@ tasks:
 
   dev-install:
     cmds:
-      - uv pip install --upgrade .[ordered,polymorphic,workflow,dev,test]
+      - uv pip install --upgrade .[all,dev,test,examples]
     silent: true
 
   format:
@@ -70,11 +70,3 @@ tasks:
   msg-comp-crud_views:
     dir: src/crud_views
     cmd: PYTHONPATH=../.. python -m django compilemessages --settings=settings_i18n
-
-  msg-make-example:
-    dir: examples/bootstrap5
-    cmd: python manage.py makemessages -l de
-
-  msg-comp-example:
-    dir: examples/bootstrap5
-    cmd: python manage.py compilemessages -l de

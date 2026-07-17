@@ -1,0 +1,37 @@
+{% extends "project/base.html" %}
+
+{% block content %}
+
+    <div class="bg-body-tertiary p-4 rounded mb-4">
+        <h1>django-crud-views examples</h1>
+        <p class="lead">
+            One self-contained example app per feature.
+            Every page shows the code behind it.
+        </p>
+        <a class="btn btn-primary" href="https://django-crud-views.readthedocs.io/en/latest" role="button">
+            Documentation &raquo;
+        </a>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-3 g-3">
+        {% for feature in features %}
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="{{ feature.icon }}"></i> {{ feature.title }}</h5>
+                        <p class="card-text">{{ feature.description }}</p>
+                    </div>
+                    <div class="card-footer">
+                        <a class="btn btn-sm btn-outline-primary" href="{% url feature.url_name %}">Open</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="alert alert-info mt-4">
+        Demo users (created by <code>manage.py seed</code>): <code>admin/admin</code> (superuser),
+        <code>alice/alice</code> and <code>bob/bob</code> (regular users — see the Guardian example).
+    </div>
+
+{% endblock content %}

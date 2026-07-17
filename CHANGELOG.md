@@ -1,5 +1,14 @@
 # Django CRUD Views - Changelog
 
+## Unreleased
+
+### Added
+
+- Community-health files for the repository: a Contributor Covenant Code of
+  Conduct, a contributing guide, a security policy, GitHub issue forms (bug
+  report / feature request), and a pull request template. These satisfy the
+  GitHub community-standards checklist and do not affect the package.
+
 ## 0.16.0
 
 ### Added

@@ -129,3 +129,27 @@ def test_list_view_checks_include_filter_header():
     checks = list(ListView.checks())
     attrs = {getattr(c, "attribute", None) for c in checks if isinstance(c, CheckTemplateOrCode)}
     assert "cv_filter_header_template" in attrs
+
+
+def test_workflow_deps_all_present_no_errors():
+    from crud_views_workflow import checks as wf_checks
+
+    # dev env installs the [workflow] extra, so both deps import
+    assert wf_checks.check_workflow_dependencies() == []
+
+
+def test_workflow_missing_django_fsm_emits_e001(monkeypatch):
+    from crud_views_workflow import checks as wf_checks
+
+    monkeypatch.setattr(wf_checks, "_importable", lambda name: name != "django_fsm")
+    errors = wf_checks.check_workflow_dependencies()
+    assert any(e.id == "crud_views_workflow.E001" for e in errors)
+    assert all(e.id != "crud_views_workflow.E002" for e in errors)
+
+
+def test_workflow_missing_fsm_admin_emits_e002(monkeypatch):
+    from crud_views_workflow import checks as wf_checks
+
+    monkeypatch.setattr(wf_checks, "_importable", lambda name: name != "fsm_admin")
+    errors = wf_checks.check_workflow_dependencies()
+    assert any(e.id == "crud_views_workflow.E002" for e in errors)

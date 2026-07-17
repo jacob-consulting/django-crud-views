@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://django-crud-views.readthedocs.io/en/latest/
+    about: Read the docs before opening an issue — your question may be answered there.
+  - name: Report a security vulnerability
+    url: https://github.com/jacob-consulting/django-crud-views/security/policy
+    about: Please report security issues privately, not as a public issue.

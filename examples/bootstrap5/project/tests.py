@@ -72,3 +72,12 @@ class SystemChecksTest(TestCase):
         get_resolver().url_patterns  # import every app's views.py via the URLconf
         errors = [e for e in checks.run_checks() if e.level >= checks.ERROR]
         self.assertEqual(errors, [], msg="\n".join(f"{e.id}: {e.msg}" for e in errors))
+
+
+class FeatureRegistryTest(TestCase):
+    def test_every_feature_declares_about_and_look_at(self):
+        from project.features import FEATURES
+
+        for feature in FEATURES:
+            self.assertTrue(feature.about.strip(), f"{feature.app} has no about text")
+            self.assertTrue(feature.look_at.strip(), f"{feature.app} has no look_at text")

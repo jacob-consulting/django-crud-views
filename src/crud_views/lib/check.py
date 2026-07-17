@@ -118,6 +118,35 @@ class CheckAttributeType(CheckAttribute):
             yield Error(id=self.get_id(), msg=self.get_message())
 
 
+class CheckMapping(CheckAttribute):
+    """
+    Check attribute is a dict mapping keys (subclasses of key_type) to values (instances of value_type)
+    """
+
+    id: str = "E205"
+    key_type: type | tuple[type, ...]
+    value_type: type | tuple[type, ...]
+    msg: str = "Attribute »{attribute}» at »{context}» is not a valid mapping: {detail}"
+
+    def _error(self, detail: str) -> Error:
+        kwargs = self.get_message_context()
+        return Error(id=self.get_id(), msg=self.msg.format(detail=detail, **kwargs))
+
+    def messages(self) -> Iterable[CheckMessage]:
+        yield from super().messages()
+        if not self.exists or self.value is None:
+            return
+        value = self.value
+        if not isinstance(value, dict):
+            yield self._error(f"expected a dict, got {type(value).__name__}")
+            return
+        for key, val in value.items():
+            if not isinstance(key, type) or not issubclass(key, self.key_type):
+                yield self._error(f"key »{key!r}» is not a subclass of {self.key_type}")
+            if not isinstance(val, self.value_type):
+                yield self._error(f"value for »{key!r}» is not of type {self.value_type}")
+
+
 class CheckEitherAttribute(Check):
     """
     Check for either attribute

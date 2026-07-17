@@ -1,0 +1,16 @@
+{% load crud_views_object_detail %}
+<div class="card mb-3">
+    <div class="card-header bg-primary text-white d-flex align-items-center">
+        {% if group.icon %}<i class="{{ group.icon|icon_class }} me-2"></i>{% endif %}
+        <h5 class="mb-0 text-white">{{ group.title }}</h5>
+    </div>
+    <div class="card-body p-0">
+        <table class="table table-striped table-hover mb-0">
+            <tbody>
+                {% for prop in group.properties %}
+                {% render_property prop %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

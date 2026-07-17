@@ -51,7 +51,7 @@ def pytest_configure():
         TEMPLATES=[
             {
                 "BACKEND": "django.template.backends.django.DjangoTemplates",
-                "DIRS": [],
+                "DIRS": [Path(__file__).resolve().parent / "od" / "templates"],
                 "APP_DIRS": True,
                 "OPTIONS": {
                     "context_processors": [

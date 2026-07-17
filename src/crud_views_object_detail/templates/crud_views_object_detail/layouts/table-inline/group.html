@@ -1,0 +1,16 @@
+{% load crud_views_object_detail %}
+<div class="card mb-3">
+    <div class="card-header">
+        <h5 class="card-title mb-{% if group.description %}1{% else %}0{% endif %}">{{ group.title }}</h5>
+        {% if group.description %}<small class="text-body-secondary">{{ group.description }}</small>{% endif %}
+    </div>
+    <div class="card-body p-0">
+        <table class="table table-borderless mb-0">
+            <tbody>
+                {% for prop in group.properties %}
+                {% render_property prop %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

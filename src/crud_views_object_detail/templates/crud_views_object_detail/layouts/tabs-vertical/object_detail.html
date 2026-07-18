@@ -1,0 +1,29 @@
+{% load crud_views_object_detail %}
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="nav flex-column nav-pills" id="objectDetailTabs" role="tablist" aria-orientation="vertical">
+                    {% for group in groups %}
+                    <button class="nav-link{% if forloop.first %} active{% endif %} text-start"
+                            id="objectDetailTab-{{ group.title|slugify }}"
+                            data-bs-toggle="pill"
+                            data-bs-target="#objectDetailPane-{{ group.title|slugify }}"
+                            type="button" role="tab"
+                            aria-controls="objectDetailPane-{{ group.title|slugify }}"
+                            aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
+                        {% if group.icon %}<i class="{{ group.icon|icon_class }} me-2"></i>{% endif %}{{ group.title }}
+                    </button>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="col-md-9 border-start">
+                <div class="tab-content ps-md-4" id="objectDetailTabContent">
+                    {% for group in groups %}
+                    {% render_group group layout=layout %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -7,7 +7,6 @@ from crud_views.lib.table import LinkDetailColumn, Table, UUIDLinkDetailColumn
 from crud_views.lib.views import (
     CreateViewPermissionRequired,
     DeleteViewPermissionRequired,
-    DetailViewPermissionRequired,
     ListViewPermissionRequired,
     ListViewTableFilterMixin,
     ListViewTableMixin,
@@ -18,6 +17,7 @@ from crud_views.lib.views import (
 )
 from crud_views.lib.views.list import ListViewFilterFormHelper
 from crud_views.lib.viewset import ViewSet
+from crud_views_object_detail.lib import ObjectDetailViewPermissionRequired
 
 from library.models import Author, Book
 
@@ -64,7 +64,7 @@ class AuthorListView(ListViewTableMixin, ListViewTableFilterMixin, ListViewPermi
     formhelper_class = AuthorFilterFormHelper
 
 
-class AuthorDetailView(DetailViewPermissionRequired):
+class AuthorDetailView(ObjectDetailViewPermissionRequired):
     cv_viewset = cv_author
     cv_property_display = [
         {
@@ -133,7 +133,7 @@ class BookListView(ListViewTableMixin, ListViewPermissionRequired):
     cv_list_actions = ["detail", "update", "delete", "up", "down"]
 
 
-class BookDetailView(DetailViewPermissionRequired):
+class BookDetailView(ObjectDetailViewPermissionRequired):
     cv_viewset = cv_book
     cv_property_display = [
         {"title": "Book", "icon": "book", "properties": ["id", "title", "author", "price"]},

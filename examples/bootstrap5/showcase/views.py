@@ -15,11 +15,11 @@ from crud_views.lib.views import (
     CardListViewPermissionRequired,
     CreateViewPermissionRequired,
     DeleteViewPermissionRequired,
-    DetailViewPermissionRequired,
     MessageMixin,
     UpdateViewPermissionRequired,
 )
 from crud_views.lib.viewset import ViewSet
+from crud_views_object_detail.lib import ObjectDetailViewPermissionRequired
 
 from showcase.models import Recipe
 
@@ -54,7 +54,7 @@ class RecipeCardListView(CardListViewPermissionRequired):
     ]
 
 
-class RecipeDetailView(DetailViewPermissionRequired):
+class RecipeDetailView(ObjectDetailViewPermissionRequired):
     cv_viewset = cv_recipe
     cv_context_actions = ["card", "update", "delete"]
     cv_property_display = [

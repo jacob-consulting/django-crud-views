@@ -25,7 +25,6 @@ you're building a small project or a large application, Django CRUD Views can he
     - [django-polymorphic](https://django-polymorphic.readthedocs.io/en/stable/)
     - [django-ordered-model](https://github.com/django-ordered-model/django-ordered-model) *(optional)*
     - [django-fsm-2](https://github.com/django-commons/django-fsm-2)
-    - [django-object-detail](https://django-object-detail.readthedocs.io/en/latest/)
 - **ViewSet**s can be nested with deep URLs (multiple levels) if models are related via ForeignKey
 - **CrudView**s are predefined for CRUD operations: list, create, update, delete, detail, up/down
 - a **ViewSet** generates all urlpatterns for its **CrudView**s

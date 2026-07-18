@@ -11,13 +11,13 @@ from crud_views.lib.table import LinkDetailColumn, Table
 from crud_views.lib.views import (
     CreateViewPermissionRequired,
     DeleteViewPermissionRequired,
-    DetailViewPermissionRequired,
     ListViewPermissionRequired,
     ListViewTableMixin,
     MessageMixin,
     UpdateViewPermissionRequired,
 )
 from crud_views.lib.viewset import ViewSet
+from crud_views_object_detail.lib import ObjectDetailViewPermissionRequired
 
 from formsets.models import Choice, Question, Questionnaire
 
@@ -118,7 +118,7 @@ class QuestionnaireListView(ListViewTableMixin, ListViewPermissionRequired):
     table_class = QuestionnaireTable
 
 
-class QuestionnaireDetailView(DetailViewPermissionRequired):
+class QuestionnaireDetailView(ObjectDetailViewPermissionRequired):
     cv_viewset = cv_questionnaire
     cv_property_display = [
         {

@@ -1,0 +1,8 @@
+{% load crud_views_object_detail %}
+<div class="row mb-2">
+    <div class="col-sm-4 text-body-secondary fw-medium">{{ prop.label }}</div>
+    <div class="col-sm-8">
+        {% if prop.link_url %}<a href="{{ prop.link_url }}">{% endif %}{% render_property_value prop %}{% if prop.link_url %}</a>{% endif %}
+        {% if prop.detail %}<br><small class="text-body-tertiary">{{ prop.detail }}</small>{% endif %}
+    </div>
+</div>

@@ -1,0 +1,4 @@
+<span class="text-warning" title="{{ value }} / 5">
+    {% for _ in "12345" %}{% if forloop.counter <= value %}&#9733;{% else %}&#9734;{% endif %}{% endfor %}
+</span>
+<span class="text-body-secondary small ms-1">({{ value|floatformat:1 }})</span>

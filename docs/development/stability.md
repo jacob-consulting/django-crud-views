@@ -27,10 +27,15 @@ Internal APIs may change in any release without notice.
 `CrudView`, `CrudViewPermissionRequiredMixin`
 
 **Views** — `crud_views.lib.views`:
-`ListView`, `DetailView`, `DetailCustomView`, `CreateView`, `UpdateView`, `DeleteView`,
+`ListView`, `DetailView`, `CreateView`, `UpdateView`, `DeleteView`,
 `ActionView`, `OrderedUpView`, `OrderedDownView`, `CustomFormView`, `CustomFormNoObjectView`,
 `CardListView`, `ManageView` — each with its `*PermissionRequired` variant — plus the mixins
 `CreateViewParentMixin`, `ListViewTableMixin`, `ListViewTableFilterMixin`, `MessageMixin`
+
+`DetailView` is the simple, template-driven detail view. Rich property-display detail
+(structured property groups, previously on `DetailView` via django-object-detail) lives in the
+optional `crud_views_object_detail` app as `ObjectDetailView`
+(`from crud_views_object_detail.lib import ObjectDetailView`).
 
 **Crispy forms integration** — `crud_views.lib.crispy`:
 `CrispyViewMixin`, `CrispyModelForm`, `CrispyForm`, `CrispyDeleteForm`,
@@ -72,7 +77,7 @@ variant — plus the `PolymorphicContentTypeForm` used by the create-select flow
 ### `crud_views_guardian`
 
 `GuardianViewSet`, `GuardianManageView`, and the `Guardian*PermissionRequired` view variants
-(list, card list, detail, detail custom, create, update, delete, action).
+(list, card list, detail, create, update, delete, action).
 
 ## Deprecation policy (post-1.0)
 

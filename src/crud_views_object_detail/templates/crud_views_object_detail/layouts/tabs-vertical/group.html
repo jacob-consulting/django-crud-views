@@ -1,0 +1,13 @@
+{% load crud_views_object_detail %}
+<div class="tab-pane fade"
+     id="objectDetailPane-{{ group.title|slugify }}"
+     role="tabpanel"
+     aria-labelledby="objectDetailTab-{{ group.title|slugify }}">
+    <h5 class="mb-1">{{ group.title }}</h5>
+    {% if group.description %}<p class="text-body-secondary small mb-3">{{ group.description }}</p>{% endif %}
+    <dl class="row mb-0">
+        {% for prop in group.properties %}
+        {% render_property prop layout=layout %}
+        {% endfor %}
+    </dl>
+</div>

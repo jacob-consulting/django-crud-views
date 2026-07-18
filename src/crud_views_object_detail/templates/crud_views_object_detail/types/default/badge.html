@@ -1,0 +1,1 @@
+{% if value is None %}<span class="text-body-tertiary">&mdash;</span>{% else %}<span class="badge {{ prop.badge_css }}">{% if prop.badge_label %}{{ prop.badge_label }}{% else %}{{ value }}{% endif %}</span>{% endif %}

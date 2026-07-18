@@ -15,7 +15,7 @@ from crud_views.lib.resource import Resource, ResourceViewMixin
 from crud_views.lib.table import Table
 from crud_views.lib.views import (
     ActionViewPermissionRequired,
-    DetailCustomViewPermissionRequired,
+    DetailViewPermissionRequired,
     ListViewPermissionRequired,
     ListViewTableMixin,
     MessageMixin,
@@ -80,7 +80,7 @@ class S3FileListView(ResourceViewMixin, ListViewTableMixin, ListViewPermissionRe
     cv_list_actions = ["detail", "delete", "touch"]
 
 
-class S3FileDetailView(ResourceViewMixin, DetailCustomViewPermissionRequired):
+class S3FileDetailView(ResourceViewMixin, DetailViewPermissionRequired):
     cv_viewset = cv_s3file
     template_name = "resources/s3file_detail.html"
 

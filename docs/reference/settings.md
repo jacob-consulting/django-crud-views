@@ -104,28 +104,12 @@ DJANGO_TABLES2_TEMPLATE = "crud_views/table/bootstrap5.html"
 
 If you write your own table template, use `{% cv_querystring %}` (after `{% load crud_views %}`) in place of django-tables2's `{% querystring %}` / `{% querystring_replace %}` to keep it version-agnostic.
 
-## django-object-detail
+## crud_views_object_detail
 
-Settings for the [django-object-detail](https://django-object-detail.readthedocs.io/en/latest/) package used by the [DetailView](detail_view.md). These are standard Django settings (not prefixed with `CRUD_VIEWS_`).
-
-| Key                                  | Description                                          | Type   | Default        |
-|--------------------------------------|------------------------------------------------------|--------|----------------|
-| `OBJECT_DETAIL_TEMPLATE_PACK_LAYOUT` | Layout pack for group/property structure              | `str`  | `"split-card"` |
-| `OBJECT_DETAIL_TEMPLATE_PACK_TYPES`  | Type template pack for value rendering                | `str`  | `"default"`    |
-| `OBJECT_DETAIL_ICONS_LIBRARY`        | Icon library: `"bootstrap"` or `"fontawesome"`        | `str`  | `"bootstrap"`  |
-| `OBJECT_DETAIL_ICONS_CLASS`          | Base CSS class (`"bi"` or `"fa"`)                     | `str`  | per library    |
-| `OBJECT_DETAIL_ICONS_TYPE`           | Icon type (`None` for Bootstrap, `"regular"` for FA)  | `str`  | per library    |
-| `OBJECT_DETAIL_ICONS_PREFIX`         | Icon name prefix (`"bi"` or `"fa"`)                   | `str`  | per library    |
-| `OBJECT_DETAIL_NAMED_ICONS`          | Dict mapping named icons to icon names                | `dict` | per library    |
-
-Example configuration for Font Awesome with Bootstrap 5:
-
-```python
-OBJECT_DETAIL_TEMPLATE_PACK_LAYOUT = "split-card"
-OBJECT_DETAIL_TEMPLATE_PACK_TYPES = "default"
-OBJECT_DETAIL_ICONS_LIBRARY = "fontawesome"
-OBJECT_DETAIL_ICONS_TYPE = "solid"
-```
+Settings for the rich property-display [ObjectDetailView](object_detail_view.md), shipped
+in-tree as the optional `crud_views_object_detail` app. These are prefixed with
+`CRUD_VIEWS_OBJECT_DETAIL_` — see [ObjectDetailView settings](object_detail_settings.md) for
+the full reference.
 
 ## Permission caching
 

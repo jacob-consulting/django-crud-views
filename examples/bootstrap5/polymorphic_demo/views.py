@@ -6,6 +6,7 @@ from crud_views.lib.crispy import Column4, Column6, CrispyDeleteForm, CrispyForm
 from crud_views.lib.table import LinkDetailColumn, Table
 from crud_views.lib.views import ListViewPermissionRequired, ListViewTableMixin
 from crud_views.lib.viewset import ViewSet
+from crud_views_object_detail.lib import ObjectDetailMixin
 from crud_views_polymorphic.lib import (
     PolymorphicContentTypeForm,
     PolymorphicCreateSelectViewPermissionRequired,
@@ -76,7 +77,7 @@ class VehicleUpdateView(CrispyViewMixin, PolymorphicUpdateViewPermissionRequired
     polymorphic_forms = POLYMORPHIC_FORMS
 
 
-class VehicleDetailView(PolymorphicDetailViewPermissionRequired):
+class VehicleDetailView(ObjectDetailMixin, PolymorphicDetailViewPermissionRequired):
     cv_viewset = cv_vehicle
     model = Vehicle
     cv_property_display = [

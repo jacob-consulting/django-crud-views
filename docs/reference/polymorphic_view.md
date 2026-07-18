@@ -55,6 +55,7 @@ from django.forms import modelform_factory
 from crud_views.lib.viewset import ViewSet
 from crud_views.lib.crispy import CrispyViewMixin
 from crud_views.lib.crispy.form import CrispyDeleteForm
+from crud_views_object_detail.lib import ObjectDetailMixin
 from crud_views_polymorphic.lib import (
     PolymorphicContentTypeForm,
     PolymorphicCreateSelectViewPermissionRequired,
@@ -98,7 +99,7 @@ class VehicleDeleteView(CrispyViewMixin, PolymorphicDeleteViewPermissionRequired
     cv_viewset = cv_vehicle
 
 
-class VehicleDetailView(PolymorphicDetailViewPermissionRequired):
+class VehicleDetailView(ObjectDetailMixin, PolymorphicDetailViewPermissionRequired):
     cv_viewset = cv_vehicle
     cv_property_display = [
         {"title": "Attributes", "properties": ["name"]},

@@ -13,9 +13,10 @@ class AuthorDeleteView(CrispyViewMixin, MessageMixin, DeleteViewPermissionRequir
 
 ## Supported views
 
-`DeleteView`, `DetailView`, `CustomFormView` and `CustomFormNoObjectView` (and their
-permission-required and extension-package variants). Setting `cv_modal = True` on other view
-types raises system check error `viewset.E251`. Create/update support is planned.
+`DeleteView`, `ObjectDetailView` (from the optional `crud_views_object_detail` app —
+core `DetailView` does not support modals), `CustomFormView` and `CustomFormNoObjectView`
+(and their permission-required and extension-package variants). Setting `cv_modal = True` on
+other view types raises system check error `viewset.E251`. Create/update support is planned.
 
 ## Behavior
 

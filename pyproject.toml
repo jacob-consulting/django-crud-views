@@ -29,7 +29,6 @@ dependencies = [
     "django-tables2 (>=2.5.3)",
     "django-filter (>=21.1)",
     "typing-extensions (>=4.7.1)",
-    "django-object-detail (>=0.1.7)",
     "django-bootstrap5 (>=21.3)",
     "django-crispy-forms (>=2.0)",
     "crispy-bootstrap5 (>=2023.10)",
@@ -101,6 +100,7 @@ packages = [
     "src/crud_views_workflow",
     "src/crud_views_polymorphic",
     "src/crud_views_guardian",
+    "src/crud_views_object_detail",
 ]
 
 [tool.ruff]
@@ -114,7 +114,7 @@ indent-style = "space"
 addopts = "--strict-markers"
 
 [tool.coverage.run]
-source = ["crud_views", "crud_views_polymorphic", "crud_views_workflow"]
+source = ["crud_views", "crud_views_polymorphic", "crud_views_workflow", "crud_views_object_detail"]
 
 [tool.coverage.report]
 show_missing = true

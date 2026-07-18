@@ -1,0 +1,6 @@
+{% load crud_views_object_detail %}
+<dt class="col-sm-4 text-body-secondary fw-medium">{{ prop.label }}</dt>
+<dd class="col-sm-8{% if forloop.last %} mb-0{% endif %}">
+    {% if prop.link_url %}<a href="{{ prop.link_url }}">{% endif %}{% render_property_value prop %}{% if prop.link_url %}</a>{% endif %}
+    {% if prop.detail %}<div class="text-body-tertiary small">{{ prop.detail }}</div>{% endif %}
+</dd>

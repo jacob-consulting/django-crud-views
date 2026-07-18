@@ -19,12 +19,11 @@ from crud_views.lib.views import (
     DeleteViewPermissionRequired,
     CreateViewPermissionRequired,
     UpdateViewPermissionRequired,
-    DetailViewPermissionRequired,
     CreateViewParentMixin,
     OrderedUpViewPermissionRequired,
     OrderedUpDownPermissionRequired,
     CardListViewPermissionRequired,
-    DetailCustomViewPermissionRequired,
+    DetailViewPermissionRequired,
     ActionViewPermissionRequired,
 )
 from crud_views.lib.view import CardAction
@@ -52,6 +51,7 @@ from crud_views_guardian.lib.views import (
 )
 from crud_views_workflow.lib.forms import WorkflowForm
 from crud_views_workflow.lib.views import WorkflowViewPermissionRequired
+from crud_views_object_detail.lib import ObjectDetailMixin, ObjectDetailViewPermissionRequired
 from crud_views.lib.crispy import Column4, Column6, Column12
 from crispy_forms.layout import Row, Layout
 
@@ -85,7 +85,7 @@ class AuthorCardListView(CardListViewPermissionRequired):
     ]
 
 
-class AuthorDetailView(DetailViewPermissionRequired):
+class AuthorDetailView(ObjectDetailViewPermissionRequired):
     cv_viewset = cv_author
 
     cv_property_display = [
@@ -226,7 +226,7 @@ class AuthorWideCardListView(CardListViewPermissionRequired):
     ]
 
 
-class AuthorWideCardDetailView(DetailViewPermissionRequired):
+class AuthorWideCardDetailView(ObjectDetailViewPermissionRequired):
     cv_viewset = cv_author_wide_card
 
 
@@ -235,7 +235,7 @@ class AuthorWideCardCreateView(CrispyViewMixin, CreateViewPermissionRequired):
     cv_viewset = cv_author_wide_card
 
 
-# --- Author Custom Detail (DetailCustomView without ObjectDetailMixin) ---
+# --- Author Custom Detail (DetailView without ObjectDetailMixin) ---
 
 cv_author_custom_detail = ViewSet(model=Author, name="author_custom_detail")
 
@@ -244,7 +244,7 @@ class AuthorCustomDetailListView(ListViewPermissionRequired):
     cv_viewset = cv_author_custom_detail
 
 
-class AuthorCustomDetailView(DetailCustomViewPermissionRequired):
+class AuthorCustomDetailView(DetailViewPermissionRequired):
     cv_viewset = cv_author_custom_detail
     template_name = "app/author_detail_custom.html"
 
@@ -282,7 +282,7 @@ class PublisherListView(ListViewTableMixin, ListViewTableFilterMixin, ListViewPe
     cv_list_actions = ["detail", "update", "delete"]
 
 
-class PublisherDetailView(DetailViewPermissionRequired):
+class PublisherDetailView(ObjectDetailViewPermissionRequired):
     cv_viewset = cv_publisher
     cv_property_display = [
         {
@@ -372,7 +372,7 @@ class BookListView(ListViewTableMixin, ListViewPermissionRequired):
     cv_list_actions = ["detail", "update", "delete"]
 
 
-class BookDetailView(DetailViewPermissionRequired):
+class BookDetailView(ObjectDetailViewPermissionRequired):
     cv_viewset = cv_book
     cv_property_display = [
         {
@@ -431,7 +431,7 @@ class ContractListView(ListViewTableMixin, ListViewPermissionRequired):
     cv_list_actions = ["detail"]
 
 
-class ContractDetailView(DetailViewPermissionRequired):
+class ContractDetailView(ObjectDetailViewPermissionRequired):
     cv_viewset = cv_contract
     cv_property_display = [
         {
@@ -511,7 +511,7 @@ class VehicleDeleteView(CrispyViewMixin, PolymorphicDeleteViewPermissionRequired
     cv_viewset = cv_vehicle
 
 
-class VehicleDetailView(PolymorphicDetailViewPermissionRequired):
+class VehicleDetailView(ObjectDetailMixin, PolymorphicDetailViewPermissionRequired):
     cv_viewset = cv_vehicle
     cv_property_display = [
         {
@@ -541,10 +541,10 @@ class CampaignListView(ListViewTableMixin, ListViewPermissionRequired):
     table_class = CampaignTable
 
 
-class CampaignDetailView(DetailViewPermissionRequired):
+class CampaignDetailView(ObjectDetailViewPermissionRequired):
     cv_viewset = cv_campaign
     # cv_campaign only registers list/detail/workflow (no update/delete) — override the
-    # DetailView default (which assumes update/delete exist) to match the real ViewSet.
+    # ObjectDetailView default (which assumes update/delete exist) to match the real ViewSet.
     cv_context_actions = ["list", "detail", "workflow"]
     cv_property_display = [
         {
@@ -580,7 +580,7 @@ class GuardianAuthorListView(ListViewTableMixin, GuardianListViewPermissionRequi
     cv_list_actions = ["detail", "update", "delete"]
 
 
-class GuardianAuthorDetailView(GuardianDetailViewPermissionRequired):
+class GuardianAuthorDetailView(ObjectDetailMixin, GuardianDetailViewPermissionRequired):
     cv_viewset = cv_guardian_author
 
 
@@ -620,7 +620,7 @@ class GuardianPublisherListView(ListViewTableMixin, GuardianListViewPermissionRe
     cv_list_actions = ["detail", "update", "delete"]
 
 
-class GuardianPublisherDetailView(GuardianDetailViewPermissionRequired):
+class GuardianPublisherDetailView(ObjectDetailMixin, GuardianDetailViewPermissionRequired):
     cv_viewset = cv_guardian_publisher
 
 
@@ -663,7 +663,7 @@ class GuardianBookListView(ListViewTableMixin, GuardianListViewPermissionRequire
     cv_list_actions = ["detail", "update", "delete"]
 
 
-class GuardianBookDetailView(GuardianDetailViewPermissionRequired):
+class GuardianBookDetailView(ObjectDetailMixin, GuardianDetailViewPermissionRequired):
     cv_viewset = cv_guardian_book
 
 
@@ -816,7 +816,7 @@ class AuthorModalListView(ListViewTableMixin, ListViewPermissionRequired):
     cv_viewset = cv_author_modal
 
 
-class AuthorModalDetailView(DetailViewPermissionRequired):
+class AuthorModalDetailView(ObjectDetailViewPermissionRequired):
     cv_viewset = cv_author_modal
     cv_modal = True
     cv_property_display = [

@@ -17,11 +17,11 @@ from crud_views.lib.viewset import ViewSet
 from crud_views.lib.views import (
     ListViewTableMixin,
     ListViewPermissionRequired,
-    DetailViewPermissionRequired,
     CreateViewPermissionRequired,
     UpdateViewPermissionRequired,
     DeleteViewPermissionRequired,
 )
+from crud_views_object_detail.lib import ObjectDetailViewPermissionRequired
 
 # Registers into the global ViewSet registry at import time; the "readme" name
 # must stay unique across the test suite (duplicate names raise ViewSetError).
@@ -38,7 +38,7 @@ class ReadmeAuthorList(ListViewTableMixin, ListViewPermissionRequired):
     table_class = ReadmeAuthorTable
 
 
-class ReadmeAuthorDetail(DetailViewPermissionRequired):
+class ReadmeAuthorDetail(ObjectDetailViewPermissionRequired):
     cv_viewset = cv_readme
 
 

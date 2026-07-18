@@ -1,0 +1,12 @@
+{% load crud_views_object_detail %}
+<li class="list-group-item">
+    <div class="row align-items-center">
+        <div class="col-sm-3 text-body-secondary fw-medium">{{ prop.label }}</div>
+        <div class="col-sm-4 fw-semibold">
+            {% if prop.link_url %}<a href="{{ prop.link_url }}">{% endif %}{% render_property_value prop %}{% if prop.link_url %}</a>{% endif %}
+        </div>
+        <div class="col-sm-5 text-body-tertiary small">
+            {% if prop.detail %}<i class="{{ "text-icon"|named_icon_class }} me-1"></i>{{ prop.detail }}{% endif %}
+        </div>
+    </div>
+</li>

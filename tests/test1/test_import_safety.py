@@ -160,3 +160,42 @@ def test_workflow_lib_model_mixin_public_path_imports_without_app_registry():
     result = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True)
     assert result.returncode == 0, result.stderr
     assert "IMPORT-OK" in result.stdout
+
+
+def test_object_detail_lib_package_imports_without_app_registry():
+    """The crud_views_object_detail.lib package body must be lazy: importing the package before
+    the app registry is ready must not drag in .lib.views (CrudView + auth mixins)."""
+    code = textwrap.dedent(
+        """
+        from django.conf import settings
+
+        settings.configure()  # no django.setup() -- the app registry is not ready
+
+        import crud_views_object_detail.lib
+
+        print("IMPORT-OK")
+        """
+    )
+    result = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+    assert "IMPORT-OK" in result.stdout
+
+
+def test_object_detail_config_helpers_import_without_app_registry():
+    """`x()`, `PropertyConfig`, etc. are used inside consumer model/view modules loaded before
+    the app registry is ready; the config helpers must resolve without importing `lib.views`."""
+    code = textwrap.dedent(
+        """
+        from django.conf import settings
+
+        settings.configure()  # no django.setup() -- the app registry is not ready
+
+        from crud_views_object_detail.lib import BadgeConfig, LinkConfig, PropertyConfig, PropertyGroupConfig, x
+
+        assert x is not None
+        print("IMPORT-OK")
+        """
+    )
+    result = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+    assert "IMPORT-OK" in result.stdout

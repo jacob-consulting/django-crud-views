@@ -9,6 +9,17 @@
   report / feature request), and a pull request template. These satisfy the
   GitHub community-standards checklist and do not affect the package.
 
+### Changed
+
+- Rich property-display detail moved to the new optional `crud_views_object_detail` app as `ObjectDetailView`. Core `DetailView` is now the simple template-driven view (formerly `DetailCustomView`). Add `crud_views_object_detail` to `INSTALLED_APPS` and migrate `DetailView` + `cv_property_display` usages to `ObjectDetailView` (`from crud_views_object_detail.lib import ObjectDetailView`). Compose `ObjectDetailMixin` for polymorphic/guardian detail views that need property display.
+- Object-detail settings renamed `OBJECT_DETAIL_*` → `CRUD_VIEWS_OBJECT_DETAIL_*`.
+
+### Removed
+
+- `DetailCustomView` / `DetailCustomViewPermissionRequired` (use `DetailView` / `DetailViewPermissionRequired`).
+- `GuardianDetailCustomViewPermissionRequired` (use `GuardianDetailViewPermissionRequired`).
+- External `django-object-detail` dependency (vendored in-tree).
+
 ## 0.16.0
 
 ### Added

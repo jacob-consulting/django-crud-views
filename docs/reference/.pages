@@ -2,6 +2,13 @@ nav:
     - index.md
     - list_view.md
     - detail_view.md
+    - object_detail_view.md
+    - object_detail_configuration.md
+    - object_detail_field_types.md
+    - object_detail_links.md
+    - object_detail_badges.md
+    - object_detail_layout_packs.md
+    - object_detail_settings.md
     - create_view.md
     - update_view.md
     - delete_view.md

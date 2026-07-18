@@ -1,0 +1,14 @@
+{% load crud_views_object_detail %}
+<div class="mb-4">
+    <div class="card">
+        <div class="card-body pb-0">
+            <h5 class="card-title mb-{% if group.description %}1{% else %}0{% endif %}">{{ group.title }}</h5>
+            {% if group.description %}<p class="card-text text-body-secondary small">{{ group.description }}</p>{% endif %}
+        </div>
+        <ul class="list-group list-group-flush">
+            {% for prop in group.properties %}
+            {% render_property prop layout=layout %}
+            {% endfor %}
+        </ul>
+    </div>
+</div>

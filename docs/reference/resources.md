@@ -254,12 +254,11 @@ django-tables2 both operate on plain lists.
 
 ### Detail
 
-Resources use `DetailCustomView` (a fully custom template) rather than the
-property-grid `DetailView`, since there's no model field metadata to
-introspect:
+Resources use `DetailView` (a fully custom template) since there's no model field
+metadata to introspect:
 
 ```python
-class S3FileDetailView(ResourceViewMixin, DetailCustomViewPermissionRequired):
+class S3FileDetailView(ResourceViewMixin, DetailViewPermissionRequired):
     cv_viewset = cv_s3file
     template_name = "app/s3file_detail.html"
 ```
@@ -431,4 +430,4 @@ with warnings.catch_warnings():
 ---
 
 See also: [ActionView](action_view.md), [CustomFormView](custom_form_view.md),
-[DetailCustomView](detail_custom_view.md), [ListView](list_view.md).
+[DetailView](detail_view.md), [ListView](list_view.md).

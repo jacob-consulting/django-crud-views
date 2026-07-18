@@ -1,0 +1,23 @@
+{% load crud_views_object_detail %}
+<div class="card mb-3">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4 border-end mb-3 mb-md-0">
+                <div class="pe-md-3">
+                    <div class="d-flex align-items-center mb-2">
+                        {% if group.icon %}<i class="{{ group.icon|icon_class }} text-default fs-5 me-2"></i>{% endif %}
+                        <h5 class="card-title mb-0">{{ group.title }}</h5>
+                    </div>
+                    {% if group.description %}<p class="text-body-secondary small mb-0">{{ group.description }}</p>{% endif %}
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="ps-md-3">
+                    {% for prop in group.properties %}
+                    {% render_property prop layout=layout %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

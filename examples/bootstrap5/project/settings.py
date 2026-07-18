@@ -26,7 +26,7 @@ INSTALLED_APPS = [
     "ordered_model",
     "django_fsm",
     "django_tables2",
-    "django_object_detail",
+    "crud_views_object_detail",
     "polymorphic",
     "guardian",
     "crud_views.apps.CrudViewsConfig",
@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "guardian_demo",
     "resources",
     "showcase",
+    "object_detail",
 ]
 
 MIDDLEWARE = [
@@ -114,11 +115,11 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 # django-tables2
 DJANGO_TABLES2_TEMPLATE = "crud_views/table/bootstrap5.html"
 
-# django-object-detail
-OBJECT_DETAIL_TEMPLATE_PACK_LAYOUT = "split-card"
-OBJECT_DETAIL_TEMPLATE_PACK_TYPES = "default"
-OBJECT_DETAIL_ICONS_LIBRARY = "fontawesome"
-OBJECT_DETAIL_ICONS_TYPE = "solid"
+# crud_views_object_detail
+CRUD_VIEWS_OBJECT_DETAIL_TEMPLATE_PACK_LAYOUT = "split-card"
+CRUD_VIEWS_OBJECT_DETAIL_TEMPLATE_PACK_TYPES = "default"
+CRUD_VIEWS_OBJECT_DETAIL_ICONS_LIBRARY = "fontawesome"
+CRUD_VIEWS_OBJECT_DETAIL_ICONS_TYPE = "solid"
 
 # django-guardian
 AUTHENTICATION_BACKENDS = [

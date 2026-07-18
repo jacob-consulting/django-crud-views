@@ -1,6 +1,5 @@
 from crud_views.lib.views import (
     DetailViewPermissionRequired,
-    DetailCustomViewPermissionRequired,
     UpdateViewPermissionRequired,
     DeleteViewPermissionRequired,
     CreateViewPermissionRequired,
@@ -24,12 +23,6 @@ GUARDIAN_MIXINS = [
 
 class GuardianDetailViewPermissionRequired(
     GuardianParentPermissionMixin, GuardianObjectPermissionMixin, DetailViewPermissionRequired
-):
-    pass
-
-
-class GuardianDetailCustomViewPermissionRequired(
-    GuardianParentPermissionMixin, GuardianObjectPermissionMixin, DetailCustomViewPermissionRequired
 ):
     pass
 

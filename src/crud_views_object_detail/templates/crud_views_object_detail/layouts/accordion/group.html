@@ -1,0 +1,27 @@
+{% load crud_views_object_detail %}
+<div class="accordion-item">
+    <h2 class="accordion-header">
+        <button class="accordion-button collapsed" type="button"
+                data-bs-toggle="collapse" data-bs-target="#objectDetailCollapse-{{ group.title|slugify }}"
+                aria-expanded="false"
+                aria-controls="objectDetailCollapse-{{ group.title|slugify }}">
+            {% if group.icon %}<i class="{{ group.icon|icon_class }} me-2"></i>{% endif %}
+            {{ group.title }}
+            <span class="badge text-bg-secondary ms-2">{{ group.properties|length }} properties</span>
+        </button>
+    </h2>
+    <div id="objectDetailCollapse-{{ group.title|slugify }}"
+         class="accordion-collapse collapse"
+         data-bs-parent="#objectDetailAccordion">
+        <div class="accordion-body">
+            {% if group.description %}<p class="text-body-secondary small mb-3">{{ group.description }}</p>{% endif %}
+            <table class="table table-sm table-borderless mb-0">
+                <tbody>
+                    {% for prop in group.properties %}
+                    {% render_property prop layout=layout %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

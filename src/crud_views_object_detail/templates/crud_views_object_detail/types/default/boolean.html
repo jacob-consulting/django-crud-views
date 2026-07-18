@@ -1,0 +1,1 @@
+{% load crud_views_object_detail %}{% if value is None %}<span class="text-body-tertiary">&mdash;</span>{% elif value %}<i class="{{ "boolean-true"|named_icon_class }} text-success"></i>{% else %}<i class="{{ "boolean-false"|named_icon_class }} text-danger"></i>{% endif %}

@@ -62,7 +62,7 @@ def test_modal_view_sets_vary_header(client_user_author_modal: Client, author_do
 
 @pytest.mark.django_db
 def test_detail_modal_partial(client_user_author_modal: Client, author_douglas_adams):
-    """DetailView renders its object-detail groups inside the modal partial."""
+    """AuthorModalDetailView (ObjectDetailViewPermissionRequired) renders its object-detail groups inside the modal partial."""
     response = client_user_author_modal.get(f"/author_modal/{author_douglas_adams.pk}/detail/", headers=MODAL_HEADERS)
     assert response.status_code == 200
     assert "crud_views/modal/content.html" in template_names(response)

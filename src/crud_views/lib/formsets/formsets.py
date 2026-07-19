@@ -15,6 +15,7 @@ from pydantic import BaseModel, Field, model_validator
 from enum import Enum
 
 from .render_tree import XForm, XFormSet
+from crud_views.lib.conditional.formset import ConditionalFormSet
 
 
 class FormSet(BaseModel, arbitrary_types_allowed=True):
@@ -34,6 +35,7 @@ class FormSet(BaseModel, arbitrary_types_allowed=True):
     path: str | None = None
     pk: PK = PK.INT
     form_show_labels: bool = False
+    conditional: ConditionalFormSet | None = None
 
     def __str__(self):
         return f"FormSet({self.title})"
@@ -303,8 +305,22 @@ class FormSets(BaseModel, arbitrary_types_allowed=True):
     def __iter__(self):
         return iter(self.formsets)
 
+    def apply_conditional(self, main_form) -> None:
+        """Set cv_active on each top-level x_formset from its conditional toggle.
+
+        Reads the toggle from the *submitted* main form only. Nested formsets
+        are out of scope and always remain active."""
+        for x_formset in self.x_formsets:
+            conditional = x_formset.formset.conditional
+            if conditional is None:
+                x_formset.cv_active = True
+            else:
+                x_formset.cv_active = conditional.toggle.is_on(main_form)
+
     def is_valid(self) -> Iterable[Tuple[Any, bool]]:
         for x_formset in self.x_formsets:
+            if x_formset.cv_active is False:
+                continue
             yield from x_formset.is_valid()
 
     def all_valid(self) -> bool:
@@ -326,6 +342,16 @@ class FormSets(BaseModel, arbitrary_types_allowed=True):
 
     def save(self, commit: bool = True):
         for x_formset in self.x_formsets:
+            if x_formset.cv_active is False:
+                conditional = x_formset.formset.conditional
+                # purge is a destructive write — only run it when committing, and
+                # delete exactly the rows the formset manages (its queryset),
+                # never every child of the parent.
+                if commit and conditional is not None and conditional.on_off == "purge":
+                    fs = x_formset.instance  # bound model/inline formset
+                    if fs.instance.pk:
+                        fs.get_queryset().delete()
+                continue
             x_formset.save(commit=commit)
 
     def init(self, request: HttpRequest, form: ModelForm, instance, with_template: bool = True):

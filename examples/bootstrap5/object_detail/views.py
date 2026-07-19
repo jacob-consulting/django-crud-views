@@ -39,6 +39,7 @@ from crud_views.lib.viewset import ViewSet
 from crud_views_object_detail.lib import BadgeConfig, ObjectDetailViewPermissionRequired, x
 
 from object_detail.models import Product, Supplier
+from project.views import BreadcrumbMixin
 
 cv_product = ViewSet(
     model=Product,
@@ -146,7 +147,7 @@ class ProductTable(Table):
 # --------------------------------------------------------------------------- list / create
 
 
-class ProductListView(ListViewTableMixin, ListViewPermissionRequired):
+class ProductListView(BreadcrumbMixin, ListViewTableMixin, ListViewPermissionRequired):
     cv_viewset = cv_product
     table_class = ProductTable
     # no plain "detail"/"update"/"delete" keys are registered on this viewset
@@ -155,7 +156,7 @@ class ProductListView(ListViewTableMixin, ListViewPermissionRequired):
     cv_list_actions = []
 
 
-class ProductCreateView(CrispyViewMixin, MessageMixin, CreateViewPermissionRequired):
+class ProductCreateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, CreateViewPermissionRequired):
     cv_viewset = cv_product
     form_class = ProductForm
     cv_message = "Created product »{object}«"
@@ -168,7 +169,7 @@ class ProductCreateView(CrispyViewMixin, MessageMixin, CreateViewPermissionRequi
 # views are registered here — this ViewSet exists solely as a correct link target.
 
 
-class SupplierDetailView(ObjectDetailViewPermissionRequired):
+class SupplierDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
     cv_viewset = cv_supplier
     cv_property_display = [
         {
@@ -265,7 +266,7 @@ def _make_detail_view(theme: str):
 
     attrs["view_summary"] = view_summary
     class_name = f"Product{theme.title().replace('-', '')}DetailView"
-    return type(class_name, (ObjectDetailViewPermissionRequired,), attrs)
+    return type(class_name, (BreadcrumbMixin, ObjectDetailViewPermissionRequired), attrs)
 
 
 PRODUCT_DETAIL_VIEWS = [_make_detail_view(theme) for theme in THEMES]

@@ -22,6 +22,7 @@ from crud_views.lib.viewset import ViewSet
 from crud_views_object_detail.lib import ObjectDetailViewPermissionRequired
 
 from showcase.models import Recipe
+from project.views import BreadcrumbMixin
 
 cv_recipe = ViewSet(model=Recipe, name="recipe", icon_header="fa-solid fa-utensils")
 
@@ -41,7 +42,7 @@ class RecipeForm(CrispyModelForm):
         ]
 
 
-class RecipeCardListView(CardListViewPermissionRequired):
+class RecipeCardListView(BreadcrumbMixin, CardListViewPermissionRequired):
     cv_viewset = cv_recipe
     cv_path = ""  # the card list IS the landing page of this ViewSet
     cv_card_container_class = "col-md-6"
@@ -54,7 +55,7 @@ class RecipeCardListView(CardListViewPermissionRequired):
     ]
 
 
-class RecipeDetailView(ObjectDetailViewPermissionRequired):
+class RecipeDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
     cv_viewset = cv_recipe
     cv_context_actions = ["card", "update", "delete"]
     cv_property_display = [
@@ -80,21 +81,21 @@ class RecipeDetailView(ObjectDetailViewPermissionRequired):
         return f"{instance.title} — {instance.get_difficulty_display()}, serves {instance.servings}"
 
 
-class RecipeCreateView(CrispyViewMixin, MessageMixin, CreateViewPermissionRequired):
+class RecipeCreateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, CreateViewPermissionRequired):
     cv_viewset = cv_recipe
     cv_context_actions = ["card"]
     form_class = RecipeForm
     cv_message = "Created recipe »{object}«"
 
 
-class RecipeUpdateView(CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
+class RecipeUpdateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
     cv_viewset = cv_recipe
     cv_context_actions = ["card"]
     form_class = RecipeForm
     cv_message = "Updated recipe »{object}«"
 
 
-class RecipeDeleteView(CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
+class RecipeDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     cv_viewset = cv_recipe
     cv_context_actions = ["card"]
     form_class = CrispyDeleteForm
@@ -102,7 +103,7 @@ class RecipeDeleteView(CrispyViewMixin, MessageMixin, DeleteViewPermissionRequir
     cv_modal = True
 
 
-class RecipeFavoriteView(MessageMixin, ActionViewPermissionRequired):
+class RecipeFavoriteView(BreadcrumbMixin, MessageMixin, ActionViewPermissionRequired):
     cv_viewset = cv_recipe
     cv_key = "favorite"
     cv_path = "favorite"

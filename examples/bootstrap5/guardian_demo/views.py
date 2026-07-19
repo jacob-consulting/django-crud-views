@@ -15,6 +15,7 @@ from crud_views_guardian.lib.viewset import GuardianViewSet
 from crud_views_object_detail.lib import ObjectDetailMixin
 
 from guardian_demo.models import Document
+from project.views import BreadcrumbMixin
 
 cv_document = GuardianViewSet(model=Document, name="document", icon_header="fa-solid fa-file-lines")
 
@@ -37,19 +38,19 @@ class DocumentTable(Table):
     created_dt = tables.DateTimeColumn(verbose_name="Created")
 
 
-class DocumentListView(ListViewTableMixin, GuardianListViewPermissionRequired):
+class DocumentListView(BreadcrumbMixin, ListViewTableMixin, GuardianListViewPermissionRequired):
     cv_viewset = cv_document
     table_class = DocumentTable
 
 
-class DocumentDetailView(ObjectDetailMixin, GuardianDetailViewPermissionRequired):
+class DocumentDetailView(BreadcrumbMixin, ObjectDetailMixin, GuardianDetailViewPermissionRequired):
     cv_viewset = cv_document
     cv_property_display = [
         {"title": "Document", "icon": "file-lines", "properties": ["id", "title", "owner", "body"]},
     ]
 
 
-class DocumentCreateView(CrispyViewMixin, MessageMixin, GuardianCreateViewPermissionRequired):
+class DocumentCreateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, GuardianCreateViewPermissionRequired):
     cv_viewset = cv_document
     form_class = DocumentForm
     cv_message = "Created document »{object}«"
@@ -62,13 +63,13 @@ class DocumentCreateView(CrispyViewMixin, MessageMixin, GuardianCreateViewPermis
             cv_document.assign_perm(action, self.request.user, self.object)
 
 
-class DocumentUpdateView(CrispyViewMixin, MessageMixin, GuardianUpdateViewPermissionRequired):
+class DocumentUpdateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, GuardianUpdateViewPermissionRequired):
     cv_viewset = cv_document
     form_class = DocumentForm
     cv_message = "Updated document »{object}«"
 
 
-class DocumentDeleteView(CrispyViewMixin, MessageMixin, GuardianDeleteViewPermissionRequired):
+class DocumentDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, GuardianDeleteViewPermissionRequired):
     cv_viewset = cv_document
     form_class = CrispyDeleteForm
     cv_message = "Deleted document »{object}«"

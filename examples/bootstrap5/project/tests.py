@@ -118,3 +118,20 @@ class LookAtTest(TestCase):
         self.assertContains(resp, "Look at:")
         # escape() because {{ look_at }} is autoescaped in the rendered panel
         self.assertContains(resp, escape(feature.look_at[:40]))
+
+
+class BreadcrumbAdoptionTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.admin = get_user_model().objects.create_superuser(username="bc-admin", password="pw")
+
+    def setUp(self):
+        self.client.force_login(self.admin)
+
+    def test_every_feature_landing_page_shows_breadcrumb(self):
+        for feature in FEATURES:
+            with self.subTest(app=feature.app):
+                resp = self.client.get(reverse(feature.url_name))
+                self.assertEqual(resp.status_code, 200)
+                self.assertContains(resp, 'aria-label="breadcrumb"')
+                self.assertContains(resp, "Home")  # global prefix from settings

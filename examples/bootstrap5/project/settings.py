@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "resources",
     "showcase",
     "object_detail",
+    "conditional",
     "breadcrumbs",
 ]
 

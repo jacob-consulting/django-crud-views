@@ -1,0 +1,89 @@
+# tests/test1/test_conditional_layout.py
+import pytest
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Row
+from crispy_forms.utils import render_crispy_form
+from django import forms
+
+from crud_views.lib.conditional.layout import ToggleGroup
+from crud_views.lib.crispy import Column6
+from tests.test1.app.models import Profile
+
+pytestmark = pytest.mark.django_db
+
+
+class _LayoutForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ["name", "with_contact", "email", "phone"]
+
+    @property
+    def helper(self):
+        h = FormHelper()
+        h.layout = Layout(
+            Row(Column6("name"), Column6("with_contact")),
+            ToggleGroup("with_contact", Row(Column6("email"), Column6("phone"))),
+        )
+        return h
+
+
+def test_toggle_group_renders_marker_attributes():
+    form = _LayoutForm()
+    html = render_crispy_form(form, helper=form.helper)
+    assert 'cv-data-toggle-field="with_contact"' in html
+    assert "cv-data-toggle-group" in html
+    assert "email" in html and "phone" in html
+
+
+def test_toggle_group_does_not_inline_scripts():
+    # toggle.js is registered globally via crud_views_settings.javascript() and
+    # rendered by the cv_js tag — the layout element itself must stay script-free.
+    form = _LayoutForm()
+    html = render_crispy_form(form, helper=form.helper)
+    assert "toggle.js" not in html
+    assert "<script" not in html
+
+
+def test_toggle_js_registered_in_settings_javascript():
+    from crud_views.lib.settings import crud_views_settings
+
+    assert crud_views_settings.javascript()["toggle"] == "crud_views/js/toggle.js"
+
+
+class _LegendLayoutForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ["name", "with_contact", "email", "phone"]
+
+    @property
+    def helper(self):
+        h = FormHelper()
+        h.layout = Layout(
+            Row(Column6("name")),
+            Row(Column6("with_contact")),
+            ToggleGroup(
+                "with_contact",
+                Row(Column6("email"), Column6("phone")),
+                legend="Contact details",
+            ),
+        )
+        return h
+
+
+def test_toggle_group_legend_renders_fieldset():
+    form = _LegendLayoutForm()
+    html = render_crispy_form(form, helper=form.helper)
+    assert "<fieldset" in html
+    assert "<legend>Contact details</legend>" in html
+    # marker lives on the fieldset so toggle.js hides the whole group
+    assert 'cv-data-toggle-field="with_contact"' in html
+    assert "cv-data-toggle-group" in html
+
+
+def test_toggle_group_without_legend_stays_a_div():
+    # backward compat: no legend => current <div> rendering, no fieldset
+    form = _LayoutForm()
+    html = render_crispy_form(form, helper=form.helper)
+    assert "<fieldset" not in html
+    assert "<legend" not in html
+    assert "cv-data-toggle-group" in html

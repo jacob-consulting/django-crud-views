@@ -95,4 +95,5 @@ def test_empty_registry_output_unchanged(asset_registry):
     assert "/static/crud_views/js/formset.js" in html
     assert "/static/crud_views/js/list.filter.js" in html
     assert "/static/crud_views/js/modal.js" in html
-    assert html.count("<script") == 4
+    assert "/static/crud_views/js/toggle.js" in html
+    assert html.count("<script") == 5

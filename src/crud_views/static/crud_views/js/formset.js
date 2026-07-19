@@ -511,15 +511,25 @@ class CrudViewsFormset extends XBase {
     add_form_control_events(selection) {
 
         var me = this,
-            context = typeof selection === "undefined" ? null : me.get_form_context(selection),
+            is_global = typeof selection === "undefined",
+            context = is_global ? null : me.get_form_context(selection),
             can_delete = context ? context.formset.can_delete : true,
             can_order = context ? context.formset.can_order : true,
             edit_only = context ? context.formset.edit_only : false,
-            sel = typeof selection === "undefined" ? me.sel(`form.cv-form`) : selection,
-            del = can_delete ? me.sel_at(sel, CrudViewsFormset.const.form_control_delete, "delete not found") : null,
-            add = edit_only === false ? me.sel_at(sel, CrudViewsFormset.const.form_control_add, "add not found") : null,
-            up = can_order ? me.sel_at(sel, CrudViewsFormset.const.form_control_up, "up not found") : null,
-            down = can_order ? me.sel_at(sel, CrudViewsFormset.const.form_control_down, "down not found") : null;
+            sel = is_global ? me.sel(`form.cv-form`) : selection,
+            // On the global init pass `sel` spans every formset on the page, which may mix
+            // orderable with non-orderable (or deletable with edit-only) formsets. A control
+            // type can therefore be legitimately absent page-wide - e.g. a page whose only
+            // formset is non-orderable has no up/down buttons. Look controls up WITHOUT
+            // asserting in that case: binding a click handler to an empty jQuery set is a
+            // harmless no-op, whereas the asserting sel_at would throw and abort the whole
+            // controller, leaving even add/delete unbound. Per-row binding keeps the
+            // asserting lookup since the row's own context guarantees the control exists.
+            find = is_global ? (s) => sel.find(s) : (s, msg) => me.sel_at(sel, s, msg),
+            del = can_delete ? find(CrudViewsFormset.const.form_control_delete, "delete not found") : null,
+            add = edit_only === false ? find(CrudViewsFormset.const.form_control_add, "add not found") : null,
+            up = can_order ? find(CrudViewsFormset.const.form_control_up, "up not found") : null,
+            down = can_order ? find(CrudViewsFormset.const.form_control_down, "down not found") : null;
 
         if (del) {
             del.click(function (event) {

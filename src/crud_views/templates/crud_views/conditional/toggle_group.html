@@ -1,0 +1,12 @@
+{# src/crud_views/templates/crud_views/conditional/toggle_group.html #}
+{# toggle.js ships via the cv_js registry (crud_views_settings.javascript) — no inline script here #}
+{% if cv_toggle_legend %}
+<fieldset class="cv-toggle-group {{ cv_toggle_css }}" cv-data-toggle-group cv-data-toggle-field="{{ cv_toggle_field }}">
+    <legend>{{ cv_toggle_legend }}</legend>
+    {{ cv_toggle_inner }}
+</fieldset>
+{% else %}
+<div class="cv-toggle-group {{ cv_toggle_css }}" cv-data-toggle-group cv-data-toggle-field="{{ cv_toggle_field }}">
+    {{ cv_toggle_inner }}
+</div>
+{% endif %}

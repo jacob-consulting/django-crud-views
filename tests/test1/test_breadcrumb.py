@@ -1,6 +1,7 @@
 """Breadcrumb models, mixin and template tag tests."""
 
 import pytest
+from django.test import RequestFactory
 from django.utils.translation import gettext_lazy
 from pydantic import ValidationError
 
@@ -70,3 +71,141 @@ class TestBreadcrumbPrefixSetting:
     def test_non_dict_prefix_entry_produces_e102(self, monkeypatch):
         monkeypatch.setattr(crud_views_settings, "breadcrumb_prefix", ["not-a-dict"])
         assert [m for m in crud_views_settings.check_messages if m.id == "crud_views.E102"]
+
+
+def make_view(view_class, url, obj=None, **url_kwargs):
+    """Instantiate a CrudView the way Django does for a GET request."""
+    view = view_class()
+    request = RequestFactory().get(url)
+    view.setup(request, **url_kwargs)
+    if obj is not None:
+        view.object = obj
+    return view
+
+
+def titles(breadcrumb):
+    return [item.title for item in breadcrumb.items]
+
+
+def urls(breadcrumb):
+    return [item["url"] for item in breadcrumb.resolve_items()]
+
+
+@pytest.mark.django_db
+class TestBreadcrumbTopLevel:
+    def test_list_view_trail(self, publisher_penguin):
+        from tests.test1.app.views import PublisherBcListView
+
+        view = make_view(PublisherBcListView, "/publisher_bc/")
+        bc = view.cv_breadcrumb()
+        assert titles(bc) == ["Publishers"]
+        assert urls(bc) == ["/publisher_bc/"]
+
+    def test_detail_view_trail(self, publisher_penguin):
+        from tests.test1.app.views import PublisherBcDetailView
+
+        view = make_view(
+            PublisherBcDetailView,
+            f"/publisher_bc/{publisher_penguin.pk}/detail",
+            publisher_penguin,
+            pk=publisher_penguin.pk,
+        )
+        bc = view.cv_breadcrumb()
+        assert titles(bc) == ["Publishers", str(publisher_penguin)]
+
+    def test_update_view_trail_links_object_to_detail(self, publisher_penguin):
+        from tests.test1.app.views import PublisherBcUpdateView
+
+        view = make_view(
+            PublisherBcUpdateView,
+            f"/publisher_bc/{publisher_penguin.pk}/update",
+            publisher_penguin,
+            pk=publisher_penguin.pk,
+        )
+        bc = view.cv_breadcrumb()
+        # container, object (links to detail), action label (current page)
+        assert len(bc.items) == 3
+        assert titles(bc)[0] == "Publishers"
+        assert titles(bc)[1] == str(publisher_penguin)
+        assert f"/publisher_bc/{publisher_penguin.pk}/detail" in urls(bc)[1]
+
+    def test_create_view_trail(self):
+        from tests.test1.app.views import PublisherBcCreateView
+
+        view = make_view(PublisherBcCreateView, "/publisher_bc/create")
+        bc = view.cv_breadcrumb()
+        assert titles(bc)[0] == "Publishers"
+        assert len(bc.items) == 2  # container + action label
+
+    def test_no_detail_view_renders_object_unlinked(self, publisher_penguin):
+        from tests.test1.app.views import PublisherBcNodetailUpdateView
+
+        view = make_view(
+            PublisherBcNodetailUpdateView,
+            f"/publisher_bc_nodetail/{publisher_penguin.pk}/update",
+            publisher_penguin,
+            pk=publisher_penguin.pk,
+        )
+        bc = view.cv_breadcrumb()
+        object_item = bc.items[1]
+        assert object_item.title == str(publisher_penguin)
+        assert object_item.url_name is None
+
+    def test_card_container_fallback(self, publisher_penguin):
+        from tests.test1.app.views import PublisherBcCardDetailView
+
+        view = make_view(
+            PublisherBcCardDetailView,
+            f"/publisher_bc_card/{publisher_penguin.pk}/detail",
+            publisher_penguin,
+            pk=publisher_penguin.pk,
+        )
+        bc = view.cv_breadcrumb()
+        assert bc.items[0].url_name == "publisher_bc_card-card"
+
+    def test_memoization_returns_same_object(self, publisher_penguin):
+        from tests.test1.app.views import PublisherBcListView
+
+        view = make_view(PublisherBcListView, "/publisher_bc/")
+        assert view.cv_breadcrumb() is view.cv_breadcrumb()
+
+    def test_context_data_contains_breadcrumb(self, client, publisher_penguin):
+        response = client.get("/publisher_bc/")
+        assert response.status_code == 200
+        assert "cv_breadcrumb" in response.context
+
+
+@pytest.mark.django_db
+class TestBreadcrumbPrefix:
+    def test_prefix_from_setting(self, monkeypatch, publisher_penguin):
+        from tests.test1.app.views import PublisherBcListView
+
+        monkeypatch.setattr(
+            crud_views_settings, "breadcrumb_prefix", [{"title": "Home", "url_name": "publisher_bc-list"}]
+        )
+        view = make_view(PublisherBcListView, "/publisher_bc/")
+        assert titles(view.cv_breadcrumb())[0] == "Home"
+
+    def test_prefix_method_override(self, publisher_penguin):
+        from tests.test1.app.views import PublisherBcListView
+        from crud_views.lib.breadcrumb import BreadcrumbItem
+
+        class MyView(PublisherBcListView):
+            def cv_breadcrumb_prefix(self):
+                return [BreadcrumbItem(title="Host"), BreadcrumbItem(title="Section")]
+
+        view = make_view(MyView, "/publisher_bc/")
+        assert titles(view.cv_breadcrumb())[:2] == ["Host", "Section"]
+
+    def test_container_label_override(self, monkeypatch, publisher_penguin):
+        from tests.test1.app.views import PublisherBcDetailView, PublisherBcListView
+
+        # the override lives on the viewset's registered container view class; patch it there
+        monkeypatch.setattr(PublisherBcListView, "cv_breadcrumb_container_label", "All publishers")
+        view = make_view(
+            PublisherBcDetailView,
+            f"/publisher_bc/{publisher_penguin.pk}/detail",
+            publisher_penguin,
+            pk=publisher_penguin.pk,
+        )
+        assert titles(view.cv_breadcrumb())[0] == "All publishers"

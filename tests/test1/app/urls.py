@@ -18,6 +18,9 @@ from tests.test1.app.views import (
     cv_publisher_linked,
     cv_author_modal,
     cv_publisher_modal_protected,
+    cv_publisher_bc,
+    cv_publisher_bc_nodetail,
+    cv_publisher_bc_card,
 )
 from tests.test1.app.views_formset import cv_publisher_formset
 from tests.test1.app.resources import cv_s3file, cv_publisher_file
@@ -45,3 +48,6 @@ urlpatterns += cv_author_modal.urlpatterns
 urlpatterns += cv_publisher_modal_protected.urlpatterns
 urlpatterns += cv_s3file.urlpatterns
 urlpatterns += cv_publisher_file.urlpatterns
+urlpatterns += cv_publisher_bc.urlpatterns
+urlpatterns += cv_publisher_bc_nodetail.urlpatterns
+urlpatterns += cv_publisher_bc_card.urlpatterns

@@ -8,6 +8,7 @@
   Conduct, a contributing guide, a security policy, GitHub issue forms (bug
   report / feature request), and a pull request template. These satisfy the
   GitHub community-standards checklist and do not affect the package.
+- Conditional field-groups and conditional formsets: a checkbox toggle can hide a group of fields (or an entire first-level formset). When off, validation is skipped and values are cleared (formsets: `skip` keeps rows, `purge` deletes them). Enforced server-side; bundled `toggle.js` handles show/hide only. See `docs/reference/conditional.md`.
 
 ### Changed
 

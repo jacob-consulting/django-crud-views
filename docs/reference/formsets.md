@@ -130,8 +130,8 @@ Formsets support adding another row without a full page reload. Clicking a row's
 fires an AJAX `GET` back to the same view URL, with a `template` query parameter identifying
 the (possibly nested) formset by its key path — e.g. `questions` or `questions|choices` — plus
 `pk`, `num`, and `formset_parent_prefix_key`. `FormSetMixin` recognizes this parameter, renders
-a single empty row for that formset, and returns it as JSON (`html` and the new row's
-`rows` prefixes) instead of running the view's normal `GET`.
+a single empty row for that formset, and returns it as JSON (an `html` fragment plus a `rows`
+key holding the new row's form-prefix strings) instead of running the view's normal `GET`.
 
 This round trip is handled entirely by the bundled `formset.js` script, which ships
 automatically with the theme's JavaScript — no template or client-side wiring is required

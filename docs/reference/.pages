@@ -1,30 +1,40 @@
 nav:
     - index.md
-    - list_view.md
-    - detail_view.md
-    - object_detail_view.md
-    - object_detail_configuration.md
-    - object_detail_field_types.md
-    - object_detail_links.md
-    - object_detail_badges.md
-    - object_detail_layout_packs.md
-    - object_detail_settings.md
-    - create_view.md
-    - update_view.md
-    - delete_view.md
-    - action_enabled.md
-    - action_view.md
-    - breadcrumb.md
-    - custom_form_view.md
-    - nested.md
-    - workflow_view.md
-    - polymorphic_view.md
-    - context_buttons.md
-    - guardian.md
-    - ordered_view.md
-    - templates.md
-    - theme.md
+    - Core views:
+        - list_view.md
+        - detail_view.md
+        - create_view.md
+        - update_view.md
+        - delete_view.md
+        - custom_form_view.md
+        - nested.md
+    - Object detail:
+        - object_detail_view.md
+        - object_detail_configuration.md
+        - object_detail_field_types.md
+        - object_detail_links.md
+        - object_detail_badges.md
+        - object_detail_layout_packs.md
+        - object_detail_settings.md
+    - Lists & tables:
+        - card-list-view.md
+        - ordered_view.md
+    - Forms & formsets:
+        - formsets.md
+        - Conditional groups & formsets: conditional.md
+    - Actions & navigation:
+        - action_enabled.md
+        - action_view.md
+        - context_buttons.md
+        - breadcrumb.md
+        - modals.md
+    - Extensions:
+        - workflow_view.md
+        - polymorphic_view.md
+        - guardian.md
+        - resources.md
+    - Theming:
+        - templates.md
+        - theme.md
+        - assets.md
     - settings.md
-    - formsets.md
-    - Conditional groups & formsets: conditional.md
-    - ...

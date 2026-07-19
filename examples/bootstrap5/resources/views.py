@@ -22,6 +22,7 @@ from crud_views.lib.views import (
 )
 from crud_views.lib.views.form import CustomFormViewPermissionRequired
 from crud_views.lib.viewset import ViewSet
+from project.views import BreadcrumbMixin
 
 #: pristine bucket content — FAKE_BUCKET is reset from this in tests
 INITIAL_BUCKET = [
@@ -74,18 +75,20 @@ class S3FileTable(Table):
     size = tables.Column()
 
 
-class S3FileListView(ResourceViewMixin, ListViewTableMixin, ListViewPermissionRequired):
+class S3FileListView(BreadcrumbMixin, ResourceViewMixin, ListViewTableMixin, ListViewPermissionRequired):
     cv_viewset = cv_s3file
     table_class = S3FileTable
     cv_list_actions = ["detail", "delete", "touch"]
 
 
-class S3FileDetailView(ResourceViewMixin, DetailViewPermissionRequired):
+class S3FileDetailView(BreadcrumbMixin, ResourceViewMixin, DetailViewPermissionRequired):
     cv_viewset = cv_s3file
     template_name = "resources/s3file_detail.html"
 
 
-class S3FileDeleteView(ResourceViewMixin, CrispyViewMixin, MessageMixin, CustomFormViewPermissionRequired):
+class S3FileDeleteView(
+    BreadcrumbMixin, ResourceViewMixin, CrispyViewMixin, MessageMixin, CustomFormViewPermissionRequired
+):
     cv_viewset = cv_s3file
     cv_key = "delete"
     cv_path = "delete"
@@ -103,7 +106,7 @@ class S3FileDeleteView(ResourceViewMixin, CrispyViewMixin, MessageMixin, CustomF
         FAKE_BUCKET[:] = [row for row in FAKE_BUCKET if row["key"] != self.object.key]
 
 
-class S3FileTouchView(ResourceViewMixin, ActionViewPermissionRequired):
+class S3FileTouchView(BreadcrumbMixin, ResourceViewMixin, ActionViewPermissionRequired):
     cv_viewset = cv_s3file
     cv_key = "touch"
     cv_path = "touch"

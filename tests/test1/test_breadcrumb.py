@@ -2,6 +2,7 @@
 
 import pytest
 from django.http import Http404
+from django.template import Context, Template
 from django.test import RequestFactory
 from django.utils.translation import gettext_lazy
 from pydantic import ValidationError
@@ -299,3 +300,51 @@ class TestBreadcrumbAncestors:
         bc = view.cv_breadcrumb()
         publisher_item = next(item for item in bc.items if item.title == str(publisher))
         assert publisher_item.url_name is None
+
+
+def render_breadcrumb_tag(context_dict):
+    template = Template("{% load crud_views %}{% cv_breadcrumb %}")
+    return template.render(Context(context_dict))
+
+
+@pytest.mark.django_db
+class TestBreadcrumbTag:
+    def test_renders_bootstrap_markup(self, publisher_penguin):
+        bc = Breadcrumb(
+            items=(
+                BreadcrumbItem(title="Publishers", url_name="publisher_bc-list"),
+                BreadcrumbItem(title="Penguin"),
+            )
+        )
+        html = render_breadcrumb_tag({"cv_breadcrumb": bc})
+        assert '<nav aria-label="breadcrumb">' in html
+        assert 'class="breadcrumb"' in html
+        assert '<a href="/publisher_bc/">Publishers</a>' in html
+
+    def test_last_item_is_active_and_unlinked_even_with_url(self):
+        bc = Breadcrumb(
+            items=(
+                BreadcrumbItem(title="Publishers", url_name="publisher_bc-list"),
+                BreadcrumbItem(title="Current", url_name="publisher_bc-list"),
+            )
+        )
+        html = render_breadcrumb_tag({"cv_breadcrumb": bc})
+        assert 'aria-current="page"' in html
+        # the active (last) item must not be a link
+        active_part = html.split('aria-current="page"')[1]
+        assert "<a " not in active_part.split("</li>")[0]
+
+    def test_titles_are_escaped(self):
+        bc = Breadcrumb(items=(BreadcrumbItem(title="<script>x</script>"),))
+        html = render_breadcrumb_tag({"cv_breadcrumb": bc})
+        assert "<script>" not in html
+        assert "&lt;script&gt;" in html
+
+    def test_empty_without_mixin_context(self):
+        html = render_breadcrumb_tag({})
+        assert "<nav" not in html
+
+    def test_full_page_renders_breadcrumb(self, client, publisher_penguin):
+        response = client.get(f"/publisher_bc/{publisher_penguin.pk}/detail/")
+        assert response.status_code == 200
+        assert b'aria-label="breadcrumb"' in response.content

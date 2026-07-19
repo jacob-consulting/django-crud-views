@@ -50,7 +50,7 @@ Both inherit from Django's `generic.ListView` and `CrudView`.
 | `model` | `Model` | from `cv_viewset` | The Django model to list (auto-derived from ViewSet) |
 | `cv_viewset` | `ViewSet` | — | The ViewSet this view belongs to |
 | `cv_list_actions` | `list[str]` | `["detail", "update", "delete"]` | Actions shown per row in the table |
-| `cv_context_actions` | `list[str]` | `["parent", "filter", "create"]` | Actions shown in the header area |
+| `cv_context_actions` | `list[str]` | `["parent", "list", "filter", "create"]` | Actions shown in the header area |
 | `paginate_by` | `int` | `10` | Number of items per page |
 
 ### Customizing List Actions
@@ -144,7 +144,7 @@ when navigating away and back. Control this with:
 |-----------|------|---------|-------------|
 | `cv_filter_persistence` | `bool` | `True` | Store filter state in session |
 
-This can also be configured globally via the `FILTER_PERSISTENCE` setting.
+This can also be configured globally via the `CRUD_VIEWS_FILTER_PERSISTENCE` setting.
 
 ### Always-visible (pinned) filter
 

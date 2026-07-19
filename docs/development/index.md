@@ -24,9 +24,9 @@ Now let's run the example application with the `bootstrap5` theme:
 
 ```bash
 cd examples/bootstrap5
-task init
+task run
 ```
-> **Note:** This will run the migrations and add a superuser with username `admin` and password `foobar4711`
+> **Note:** This will run the migrations, seed demo data, and start the dev server. It adds a superuser with username `admin` and password `admin` (see `project/seeding.py`).
 
 [Then open the app in your browser at http://localhost:8000](http://localhost:8000)
 

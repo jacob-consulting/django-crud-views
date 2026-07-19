@@ -244,6 +244,22 @@ def _make(on_off, with_contact_value, profile=None, items=()):
     return formsets, main_form, profile
 
 
+def test_fixture_helpers_build():
+    """The fixture form/formset layout hooks produce crispy layouts."""
+    assert _ProfileForm(cv_view=None).get_layout_fields()
+    ItemFormSet = inlineformset_factory(
+        Profile,
+        ProfileItem,
+        formset=_ItemInlineFormSet,
+        form=_ItemForm,
+        fields=["label"],
+        extra=1,
+        can_delete=True,
+    )
+    wrapper = FormSet(title="Items", klass=ItemFormSet, fields=["label"], pk_field="id")
+    assert ItemFormSet(formset=wrapper).helper is not None
+
+
 @pytest.fixture
 def profile_formsets_off():
     formsets, main_form, _ = _make("skip", "")  # with_items off

@@ -192,6 +192,12 @@ class _ProfilePurgeConflictCreateView(CreateViewPermissionRequired):
     )
 
 
+def test_fixture_formset_helper_builds():
+    """The fixture formset's crispy helper builds from its layout hook."""
+    wrapper = _ProfileFormsetCreateView.cv_formsets["items"]
+    assert _ItemFormSet(formset=wrapper).helper is not None
+
+
 def test_missing_toggle_field_on_formset_conditional_flags_e311():
     """A ConditionalFormSet toggle absent from the parent form must be E311, not silently ignored.
 

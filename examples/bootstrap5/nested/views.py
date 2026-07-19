@@ -16,6 +16,7 @@ from crud_views.lib.viewset import ParentViewSet, ViewSet
 from crud_views_object_detail.lib import ObjectDetailViewPermissionRequired
 
 from nested.models import Company, Department, Employee, Office
+from project.views import BreadcrumbMixin
 
 # --------------------------------------------------------------------------- Company (root)
 
@@ -41,31 +42,31 @@ class CompanyTable(Table):
     offices = LinkChildColumn(name="office", verbose_name="Offices", attrs=Table.ca.w10)
 
 
-class CompanyListView(ListViewTableMixin, ListViewPermissionRequired):
+class CompanyListView(BreadcrumbMixin, ListViewTableMixin, ListViewPermissionRequired):
     cv_viewset = cv_company
     table_class = CompanyTable
 
 
-class CompanyDetailView(ObjectDetailViewPermissionRequired):
+class CompanyDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
     cv_viewset = cv_company
     cv_property_display = [
         {"title": "Company", "icon": "building", "properties": ["id", "name", "city"]},
     ]
 
 
-class CompanyCreateView(CrispyViewMixin, MessageMixin, CreateViewPermissionRequired):
+class CompanyCreateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, CreateViewPermissionRequired):
     cv_viewset = cv_company
     form_class = CompanyForm
     cv_message = "Created company »{object}«"
 
 
-class CompanyUpdateView(CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
+class CompanyUpdateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
     cv_viewset = cv_company
     form_class = CompanyForm
     cv_message = "Updated company »{object}«"
 
 
-class CompanyDeleteView(CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
+class CompanyDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     cv_viewset = cv_company
     form_class = CrispyDeleteForm
     cv_message = "Deleted company »{object}«"
@@ -98,31 +99,33 @@ class DepartmentTable(Table):
     employees = LinkChildColumn(name="employee", verbose_name="Employees", attrs=Table.ca.w10)
 
 
-class DepartmentListView(ListViewTableMixin, ListViewPermissionRequired):
+class DepartmentListView(BreadcrumbMixin, ListViewTableMixin, ListViewPermissionRequired):
     cv_viewset = cv_department
     table_class = DepartmentTable
 
 
-class DepartmentDetailView(ObjectDetailViewPermissionRequired):
+class DepartmentDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
     cv_viewset = cv_department
     cv_property_display = [
         {"title": "Department", "icon": "people-group", "properties": ["id", "name", "company"]},
     ]
 
 
-class DepartmentCreateView(CrispyViewMixin, MessageMixin, CreateViewParentMixin, CreateViewPermissionRequired):
+class DepartmentCreateView(
+    BreadcrumbMixin, CrispyViewMixin, MessageMixin, CreateViewParentMixin, CreateViewPermissionRequired
+):
     cv_viewset = cv_department
     form_class = DepartmentForm
     cv_message = "Created department »{object}«"
 
 
-class DepartmentUpdateView(CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
+class DepartmentUpdateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
     cv_viewset = cv_department
     form_class = DepartmentForm
     cv_message = "Updated department »{object}«"
 
 
-class DepartmentDeleteView(CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
+class DepartmentDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     cv_viewset = cv_department
     form_class = CrispyDeleteForm
     cv_message = "Deleted department »{object}«"
@@ -155,31 +158,33 @@ class EmployeeTable(Table):
     email = tables.Column()
 
 
-class EmployeeListView(ListViewTableMixin, ListViewPermissionRequired):
+class EmployeeListView(BreadcrumbMixin, ListViewTableMixin, ListViewPermissionRequired):
     cv_viewset = cv_employee
     table_class = EmployeeTable
 
 
-class EmployeeDetailView(ObjectDetailViewPermissionRequired):
+class EmployeeDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
     cv_viewset = cv_employee
     cv_property_display = [
         {"title": "Employee", "icon": "id-badge", "properties": ["id", "name", "email", "department"]},
     ]
 
 
-class EmployeeCreateView(CrispyViewMixin, MessageMixin, CreateViewParentMixin, CreateViewPermissionRequired):
+class EmployeeCreateView(
+    BreadcrumbMixin, CrispyViewMixin, MessageMixin, CreateViewParentMixin, CreateViewPermissionRequired
+):
     cv_viewset = cv_employee
     form_class = EmployeeForm
     cv_message = "Created employee »{object}«"
 
 
-class EmployeeUpdateView(CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
+class EmployeeUpdateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
     cv_viewset = cv_employee
     form_class = EmployeeForm
     cv_message = "Updated employee »{object}«"
 
 
-class EmployeeDeleteView(CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
+class EmployeeDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     cv_viewset = cv_employee
     form_class = CrispyDeleteForm
     cv_message = "Deleted employee »{object}«"
@@ -211,31 +216,33 @@ class OfficeTable(Table):
     name = tables.Column()
 
 
-class OfficeListView(ListViewTableMixin, ListViewPermissionRequired):
+class OfficeListView(BreadcrumbMixin, ListViewTableMixin, ListViewPermissionRequired):
     cv_viewset = cv_office
     table_class = OfficeTable
 
 
-class OfficeDetailView(ObjectDetailViewPermissionRequired):
+class OfficeDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
     cv_viewset = cv_office
     cv_property_display = [
         {"title": "Office", "icon": "door-open", "properties": ["id", "name", "company"]},
     ]
 
 
-class OfficeCreateView(CrispyViewMixin, MessageMixin, CreateViewParentMixin, CreateViewPermissionRequired):
+class OfficeCreateView(
+    BreadcrumbMixin, CrispyViewMixin, MessageMixin, CreateViewParentMixin, CreateViewPermissionRequired
+):
     cv_viewset = cv_office
     form_class = OfficeForm
     cv_message = "Created office »{object}«"
 
 
-class OfficeUpdateView(CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
+class OfficeUpdateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
     cv_viewset = cv_office
     form_class = OfficeForm
     cv_message = "Updated office »{object}«"
 
 
-class OfficeDeleteView(CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
+class OfficeDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     cv_viewset = cv_office
     form_class = CrispyDeleteForm
     cv_message = "Deleted office »{object}«"

@@ -878,3 +878,91 @@ class PublisherModalProtectedDeleteView(CrispyViewMixin, DeleteViewPermissionReq
 
     def cv_check_delete_protection(self) -> list[str]:
         return ["Cannot delete this publisher."]
+
+
+# --- Breadcrumb test viewsets (plain views, no permissions; see test_breadcrumb.py) ---
+
+from crud_views.lib.breadcrumb import CrudViewBreadcrumbMixin  # noqa: E402
+from crud_views.lib.views import (  # noqa: E402
+    CardListView,
+    CreateView,
+    DetailView,
+    ListView,
+    UpdateView,
+)
+
+cv_publisher_bc = ViewSet(model=Publisher, name="publisher_bc")
+
+
+class PublisherBcListView(CrudViewBreadcrumbMixin, ListView):
+    cv_viewset = cv_publisher_bc
+
+
+class PublisherBcDetailView(CrudViewBreadcrumbMixin, DetailView):
+    cv_viewset = cv_publisher_bc
+
+
+class PublisherBcCreateView(CrudViewBreadcrumbMixin, CreateView):
+    cv_viewset = cv_publisher_bc
+    fields = ["name"]
+
+
+class PublisherBcUpdateView(CrudViewBreadcrumbMixin, UpdateView):
+    cv_viewset = cv_publisher_bc
+    fields = ["name"]
+
+
+# no detail view: object items must render without a link
+cv_publisher_bc_nodetail = ViewSet(model=Publisher, name="publisher_bc_nodetail")
+
+
+class PublisherBcNodetailListView(CrudViewBreadcrumbMixin, ListView):
+    cv_viewset = cv_publisher_bc_nodetail
+
+
+class PublisherBcNodetailUpdateView(CrudViewBreadcrumbMixin, UpdateView):
+    cv_viewset = cv_publisher_bc_nodetail
+    fields = ["name"]
+
+
+# card-only container: breadcrumb must fall back from "list" to "card"
+cv_publisher_bc_card = ViewSet(model=Publisher, name="publisher_bc_card")
+
+
+class PublisherBcCardListView(CrudViewBreadcrumbMixin, CardListView):
+    cv_viewset = cv_publisher_bc_card
+    cv_card_actions = []
+
+
+class PublisherBcCardDetailView(CrudViewBreadcrumbMixin, DetailView):
+    cv_viewset = cv_publisher_bc_card
+
+
+# nested chain: publisher_bc -> book_bc -> booknote_bc (ancestor walk, see test_breadcrumb.py)
+from tests.test1.app.models import BookNote  # noqa: E402
+
+cv_book_bc = ViewSet(model=Book, name="book_bc", parent=ParentViewSet(name="publisher_bc", attribute="publisher"))
+
+
+class BookBcListView(CrudViewBreadcrumbMixin, ListView):
+    cv_viewset = cv_book_bc
+
+
+class BookBcDetailView(CrudViewBreadcrumbMixin, DetailView):
+    cv_viewset = cv_book_bc
+
+
+class BookBcUpdateView(CrudViewBreadcrumbMixin, UpdateView):
+    cv_viewset = cv_book_bc
+    fields = ["title"]
+
+
+cv_booknote_bc = ViewSet(model=BookNote, name="booknote_bc", parent=ParentViewSet(name="book_bc", attribute="book"))
+
+
+class BookNoteBcListView(CrudViewBreadcrumbMixin, ListView):
+    cv_viewset = cv_booknote_bc
+
+
+class BookNoteBcDetailView(CrudViewBreadcrumbMixin, DetailView):
+    cv_viewset = cv_booknote_bc

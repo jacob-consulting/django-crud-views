@@ -27,6 +27,7 @@ from crud_views.lib.viewset import ViewSet
 from crud_views_object_detail.lib import ObjectDetailViewPermissionRequired
 
 from conditional.models import Event, Registration, Session, Speaker
+from project.views import BreadcrumbMixin
 
 # ---------------- Kind 1: conditional field-group ----------------
 
@@ -81,12 +82,12 @@ class RegistrationTable(Table):
     with_company = tables.Column()
 
 
-class RegistrationListView(ListViewTableMixin, ListViewPermissionRequired):
+class RegistrationListView(BreadcrumbMixin, ListViewTableMixin, ListViewPermissionRequired):
     cv_viewset = cv_registration
     table_class = RegistrationTable
 
 
-class RegistrationDetailView(ObjectDetailViewPermissionRequired):
+class RegistrationDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
     cv_viewset = cv_registration
     cv_property_display = [
         {
@@ -97,19 +98,19 @@ class RegistrationDetailView(ObjectDetailViewPermissionRequired):
     ]
 
 
-class RegistrationCreateView(CrispyViewMixin, MessageMixin, CreateViewPermissionRequired):
+class RegistrationCreateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, CreateViewPermissionRequired):
     cv_viewset = cv_registration
     form_class = RegistrationForm
     cv_message = "Created registration »{object}«"
 
 
-class RegistrationUpdateView(CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
+class RegistrationUpdateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
     cv_viewset = cv_registration
     form_class = RegistrationForm
     cv_message = "Updated registration »{object}«"
 
 
-class RegistrationDeleteView(CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
+class RegistrationDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     cv_viewset = cv_registration
     form_class = CrispyDeleteForm
     cv_message = "Deleted registration »{object}«"
@@ -211,12 +212,12 @@ class EventTable(Table):
     with_sessions = tables.Column()
 
 
-class EventListView(ListViewTableMixin, ListViewPermissionRequired):
+class EventListView(BreadcrumbMixin, ListViewTableMixin, ListViewPermissionRequired):
     cv_viewset = cv_event
     table_class = EventTable
 
 
-class EventDetailView(ObjectDetailViewPermissionRequired):
+class EventDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
     cv_viewset = cv_event
     cv_property_display = [
         {
@@ -240,21 +241,21 @@ class EventDetailView(ObjectDetailViewPermissionRequired):
         return instance.speakers.count()
 
 
-class EventCreateView(CrispyViewMixin, FormSetMixin, MessageMixin, CreateViewPermissionRequired):
+class EventCreateView(BreadcrumbMixin, CrispyViewMixin, FormSetMixin, MessageMixin, CreateViewPermissionRequired):
     cv_viewset = cv_event
     form_class = EventForm
     cv_formsets: FormSets = cv_event_formsets
     cv_message = "Created event »{object}«"
 
 
-class EventUpdateView(CrispyViewMixin, FormSetMixin, MessageMixin, UpdateViewPermissionRequired):
+class EventUpdateView(BreadcrumbMixin, CrispyViewMixin, FormSetMixin, MessageMixin, UpdateViewPermissionRequired):
     cv_viewset = cv_event
     form_class = EventForm
     cv_formsets: FormSets = cv_event_formsets
     cv_message = "Updated event »{object}«"
 
 
-class EventDeleteView(CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
+class EventDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     cv_viewset = cv_event
     form_class = CrispyDeleteForm
     cv_message = "Deleted event »{object}«"

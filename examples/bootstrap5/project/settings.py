@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "showcase",
     "object_detail",
     "conditional",
+    "breadcrumbs",
 ]
 
 MIDDLEWARE = [
@@ -108,6 +109,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # django-crud-views
 CRUD_VIEWS_EXTENDS = "project/crud_views.html"
+CRUD_VIEWS_BREADCRUMB_PREFIX = [{"title": "Home", "url_name": "home"}]
 
 # crispy forms
 CRISPY_TEMPLATE_PACK = "bootstrap5"

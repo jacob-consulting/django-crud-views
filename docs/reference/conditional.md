@@ -113,7 +113,7 @@ The parent form must expose the toggle field (either a real model field or a `UI
 | ID | Level | Meaning |
 |---|---|---|
 | `crud_views.E310` | Error | `conditional=` placed on a nested (non-first-level) formset |
-| `crud_views.E311` | Error | Toggle field named in `ConditionalFormSet.toggle` is absent from the parent form |
+| `crud_views.E311` | Error | Toggle field named in a `ConditionalGroup` or `ConditionalFormSet.toggle` is absent from the parent form |
 | `crud_views.W320` | Warning | A field cleared by an off group is not `null=True, blank=True` — saves will likely fail |
 
 ---

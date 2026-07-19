@@ -91,23 +91,29 @@ def check_conditional(app_configs=None, **kwargs):
 
     for viewset in viewsets:
         for view in viewset.get_all_views().values():
+            form_class = getattr(view, "form_class", None)
+            declared = set(getattr(form_class, "base_fields", {}).keys()) if form_class else set()
+
             formsets = getattr(view, "cv_formsets", None)
             if formsets is not None:
                 # top-level only are allowed to carry a conditional
                 def _walk(formset, key, is_top):
-                    if formset.conditional is not None and not is_top:
-                        nested_conditionals.append((key, formset.conditional))
+                    if formset.conditional is not None:
+                        if not is_top:
+                            nested_conditionals.append((key, formset.conditional))
+                        elif form_class is not None:
+                            tname = formset.conditional.toggle.field_name()
+                            if not formset.conditional.toggle.inject and tname not in declared:
+                                missing_toggles.append((form_class.__name__, tname))
                     for ckey, child in formset.children.items():
                         _walk(child, f"{key}-{ckey}", False)
 
                 for key, fs in formsets.items():
                     _walk(fs, key, True)
 
-            form_class = getattr(view, "form_class", None)
             groups = getattr(form_class, "cv_conditional_groups", None) if form_class else None
             if groups:
                 model = getattr(getattr(form_class, "_meta", None), "model", None)
-                declared = set(getattr(form_class, "base_fields", {}).keys())
                 for group in groups:
                     tname = group.toggle.field_name()
                     if not group.toggle.inject and tname not in declared:

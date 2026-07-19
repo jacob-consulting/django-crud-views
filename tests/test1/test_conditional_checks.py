@@ -1,12 +1,16 @@
+from collections import OrderedDict
+
 from django import forms
+from django.forms.models import inlineformset_factory
 
 from crud_views.checks import _conditional_messages, check_conditional
 from crud_views.lib.conditional.formset import ConditionalFormSet
 from crud_views.lib.conditional.group import ConditionalGroup, ConditionalGroupFormMixin
 from crud_views.lib.conditional.toggle import ModelFieldToggle
+from crud_views.lib.formsets import FormSet, FormSets, InlineFormSet
 from crud_views.lib.viewset import ViewSet
 from crud_views.lib.views import CreateViewPermissionRequired
-from tests.test1.app.models import Profile
+from tests.test1.app.models import Profile, ProfileItem
 
 # ── one-off ViewSet + view registered at import time via metaclass ────────────
 _cv_profile_check = ViewSet(model=Profile, name="profile_check")
@@ -38,6 +42,64 @@ class _ProfileCreateView(CreateViewPermissionRequired):
     form_class = _AllFieldsForm
 
 
+class _ItemInlineFormSet(InlineFormSet):
+    def get_helper_layout_fields(self):
+        from crispy_forms.layout import Row
+
+        from crud_views.lib.crispy import Column8
+
+        return [Row(Column8("label"), self.form_control_col4)]
+
+
+_ItemFormSet = inlineformset_factory(
+    Profile,
+    ProfileItem,
+    formset=_ItemInlineFormSet,
+    fields=["label"],
+    extra=1,
+    can_delete=True,
+)
+
+
+class _ProfileFormsetOnlyForm(forms.ModelForm):
+    """Deliberately omits 'with_items' — the toggle used below is never declared."""
+
+    class Meta:
+        model = Profile
+        fields = ["name"]
+
+
+_cv_profile_formset_check = ViewSet(model=Profile, name="profile_formset_check")
+
+
+class _ProfileFormsetCreateView(CreateViewPermissionRequired):
+    cv_viewset = _cv_profile_formset_check
+    form_class = _ProfileFormsetOnlyForm
+    cv_formsets = FormSets(
+        formsets=OrderedDict(
+            items=FormSet(
+                title="Items",
+                klass=_ItemFormSet,
+                fields=["label"],
+                pk_field="id",
+                conditional=ConditionalFormSet(toggle=ModelFieldToggle("with_items")),
+            )
+        )
+    )
+
+
+def test_missing_toggle_field_on_formset_conditional_flags_e311():
+    """A ConditionalFormSet toggle absent from the parent form must be E311, not silently ignored.
+
+    Regression test: check_conditional() used to validate ConditionalGroup toggles only,
+    never ConditionalFormSet toggles, even though this was documented as covered. A typo'd
+    toggle field would pass checks and then silently behave as permanently-off at runtime.
+    """
+    messages = check_conditional()
+    e311_msgs = [m for m in messages if m.id == "crud_views.E311"]
+    assert any("with_items" in m.msg and "_ProfileFormsetOnlyForm" in m.msg for m in e311_msgs), e311_msgs
+
+
 def test_no_e311_with_all_fields():
     """check_conditional must NOT fire E311 when Meta.fields = '__all__'.
 
@@ -46,7 +108,7 @@ def test_no_e311_with_all_fields():
     with the fix that uses base_fields.keys() instead.
     """
     messages = check_conditional()
-    e311_msgs = [m for m in messages if m.id == "crud_views.E311"]
+    e311_msgs = [m for m in messages if m.id == "crud_views.E311" and "_AllFieldsForm" in m.msg]
     assert e311_msgs == [], f"False-positive E311 fired: {e311_msgs}"
 
 

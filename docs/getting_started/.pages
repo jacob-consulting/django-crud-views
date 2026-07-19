@@ -1,5 +1,8 @@
 nav:
     - index.md
-    - tutorial.md
-    - tutorial2.md
-    - ...
+    - Part 1 — Setup & first ViewSet: tutorial-1-setup.md
+    - Part 2 — The list view: tutorial-2-list.md
+    - Part 3 — Create, update, delete: tutorial-3-forms.md
+    - Part 4 — The detail view: tutorial-4-detail.md
+    - Part 5 — Filters & permissions: tutorial-5-filters-permissions.md
+    - Part 6 — Ordering & breadcrumbs: tutorial-6-books.md

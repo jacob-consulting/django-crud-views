@@ -62,4 +62,4 @@ traversal and fallback rules in detail.
 
 ![Author detail view](assets/tutorial-author-detail.png)
 
-Next: Part 5 — Filters & permissions
+Next: [Part 5 — Filters & permissions](tutorial-5-filters-permissions.md)

@@ -204,6 +204,12 @@ def cv_header(context):
     return view.cv_header
 
 
+@register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/breadcrumb.html", takes_context=True)
+def cv_breadcrumb(context):
+    breadcrumb = context.get("cv_breadcrumb")
+    return {"items": breadcrumb.resolve_items() if breadcrumb else []}
+
+
 @register.simple_tag(takes_context=True)
 def cv_paragraph(context):
     view: CrudView = cv_get_view(context)

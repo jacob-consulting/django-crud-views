@@ -20,6 +20,7 @@ from crud_views.lib.viewset import ViewSet
 from crud_views_object_detail.lib import ObjectDetailViewPermissionRequired
 
 from library.models import Author, Book
+from project.views import BreadcrumbMixin
 
 # --------------------------------------------------------------------------- Author
 
@@ -57,14 +58,14 @@ class AuthorTable(Table):
     pseudonym = tables.Column()
 
 
-class AuthorListView(ListViewTableMixin, ListViewTableFilterMixin, ListViewPermissionRequired):
+class AuthorListView(BreadcrumbMixin, ListViewTableMixin, ListViewTableFilterMixin, ListViewPermissionRequired):
     cv_viewset = cv_author
     table_class = AuthorTable
     filterset_class = AuthorFilter
     formhelper_class = AuthorFilterFormHelper
 
 
-class AuthorDetailView(ObjectDetailViewPermissionRequired):
+class AuthorDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
     cv_viewset = cv_author
     cv_property_display = [
         {
@@ -85,19 +86,19 @@ class AuthorDetailView(ObjectDetailViewPermissionRequired):
         return instance.book_set.count()
 
 
-class AuthorCreateView(CrispyViewMixin, MessageMixin, CreateViewPermissionRequired):
+class AuthorCreateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, CreateViewPermissionRequired):
     cv_viewset = cv_author
     form_class = AuthorForm
     cv_message = "Created author »{object}«"
 
 
-class AuthorUpdateView(CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
+class AuthorUpdateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
     cv_viewset = cv_author
     form_class = AuthorForm
     cv_message = "Updated author »{object}«"
 
 
-class AuthorDeleteView(CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
+class AuthorDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     cv_viewset = cv_author
     form_class = CrispyDeleteForm
     cv_message = "Deleted author »{object}«"
@@ -127,42 +128,42 @@ class BookTable(Table):
     price = tables.Column()
 
 
-class BookListView(ListViewTableMixin, ListViewPermissionRequired):
+class BookListView(BreadcrumbMixin, ListViewTableMixin, ListViewPermissionRequired):
     cv_viewset = cv_book
     table_class = BookTable
     cv_list_actions = ["detail", "update", "delete", "up", "down"]
 
 
-class BookDetailView(ObjectDetailViewPermissionRequired):
+class BookDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
     cv_viewset = cv_book
     cv_property_display = [
         {"title": "Book", "icon": "book", "properties": ["id", "title", "author", "price"]},
     ]
 
 
-class BookCreateView(CrispyViewMixin, MessageMixin, CreateViewPermissionRequired):
+class BookCreateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, CreateViewPermissionRequired):
     cv_viewset = cv_book
     form_class = BookForm
     cv_message = "Created book »{object}«"
 
 
-class BookUpdateView(CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
+class BookUpdateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
     cv_viewset = cv_book
     form_class = BookForm
     cv_message = "Updated book »{object}«"
 
 
-class BookDeleteView(CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
+class BookDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     cv_viewset = cv_book
     form_class = CrispyDeleteForm
     cv_message = "Deleted book »{object}«"
 
 
-class BookUpView(MessageMixin, OrderedUpViewPermissionRequired):
+class BookUpView(BreadcrumbMixin, MessageMixin, OrderedUpViewPermissionRequired):
     cv_viewset = cv_book
     cv_message = "Moved book »{object}« up"
 
 
-class BookDownView(MessageMixin, OrderedUpDownPermissionRequired):
+class BookDownView(BreadcrumbMixin, MessageMixin, OrderedUpDownPermissionRequired):
     cv_viewset = cv_book
     cv_message = "Moved book »{object}« down"

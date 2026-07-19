@@ -17,6 +17,7 @@ from crud_views_polymorphic.lib import (
 )
 
 from polymorphic_demo.models import Car, Motorcycle, Truck, Vehicle
+from project.views import BreadcrumbMixin
 
 cv_vehicle = ViewSet(model=Vehicle, name="vehicle", icon_header="fa-solid fa-car")
 
@@ -44,7 +45,7 @@ class VehicleTable(Table):
     type = tables.Column(accessor="polymorphic_ctype__model", verbose_name="Type")
 
 
-class VehicleListView(ListViewTableMixin, ListViewPermissionRequired):
+class VehicleListView(BreadcrumbMixin, ListViewTableMixin, ListViewPermissionRequired):
     cv_viewset = cv_vehicle
     table_class = VehicleTable
     cv_list_actions = ["detail", "update", "delete"]
@@ -58,26 +59,26 @@ class CrispyVehicleContentTypeForm(CrispyForm, PolymorphicContentTypeForm):
         return Row(Column4("polymorphic_ctype_id"))
 
 
-class VehicleCreateSelectView(CrispyViewMixin, PolymorphicCreateSelectViewPermissionRequired):
+class VehicleCreateSelectView(BreadcrumbMixin, CrispyViewMixin, PolymorphicCreateSelectViewPermissionRequired):
     cv_viewset = cv_vehicle
     model = Vehicle
     form_class = CrispyVehicleContentTypeForm
 
 
-class VehicleCreateView(CrispyViewMixin, PolymorphicCreateViewPermissionRequired):
+class VehicleCreateView(BreadcrumbMixin, CrispyViewMixin, PolymorphicCreateViewPermissionRequired):
     cv_viewset = cv_vehicle
     model = Vehicle
     cv_context_actions = ["home"]
     polymorphic_forms = POLYMORPHIC_FORMS
 
 
-class VehicleUpdateView(CrispyViewMixin, PolymorphicUpdateViewPermissionRequired):
+class VehicleUpdateView(BreadcrumbMixin, CrispyViewMixin, PolymorphicUpdateViewPermissionRequired):
     cv_viewset = cv_vehicle
     model = Vehicle
     polymorphic_forms = POLYMORPHIC_FORMS
 
 
-class VehicleDetailView(ObjectDetailMixin, PolymorphicDetailViewPermissionRequired):
+class VehicleDetailView(BreadcrumbMixin, ObjectDetailMixin, PolymorphicDetailViewPermissionRequired):
     cv_viewset = cv_vehicle
     model = Vehicle
     cv_property_display = [
@@ -85,7 +86,7 @@ class VehicleDetailView(ObjectDetailMixin, PolymorphicDetailViewPermissionRequir
     ]
 
 
-class VehicleDeleteView(CrispyViewMixin, PolymorphicDeleteViewPermissionRequired):
+class VehicleDeleteView(BreadcrumbMixin, CrispyViewMixin, PolymorphicDeleteViewPermissionRequired):
     cv_viewset = cv_vehicle
     model = Vehicle
     form_class = CrispyDeleteForm

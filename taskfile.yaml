@@ -3,6 +3,11 @@ version: '3'
 vars:
   PYTHON: "3.12"
 
+includes:
+  examples:
+    taskfile: examples/bootstrap5/taskfile.yaml
+    dir: examples/bootstrap5
+
 tasks:
 
   dev:
@@ -19,6 +24,11 @@ tasks:
     cmds:
       - uv pip install --upgrade .[all,dev,test,examples]
     silent: true
+
+  run:
+    desc: Migrate, seed and serve the example project (delegates to examples/bootstrap5)
+    cmds:
+      - task: examples:run
 
   format:
     cmds:

@@ -1,0 +1,13 @@
+{% extends "project/base.html" %}
+{% block content %}
+    <div class="alert alert-info">
+        <h4>Fake host application</h4>
+        <p>
+            This page stands in for an existing application that embeds django-crud-views.
+            The breadcrumb items pointing here are injected by <code>HostNavBreadcrumbMixin</code>
+            via <code>cv_breadcrumb_prefix()</code> — the crud-views pages of this app show
+            <em>Home › Host application › Workspaces › …</em>.
+        </p>
+        <p><a href="{% url 'workspace-list' %}">Back to workspaces</a></p>
+    </div>
+{% endblock content %}

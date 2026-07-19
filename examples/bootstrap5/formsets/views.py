@@ -20,6 +20,7 @@ from crud_views.lib.viewset import ViewSet
 from crud_views_object_detail.lib import ObjectDetailViewPermissionRequired
 
 from formsets.models import Choice, Question, Questionnaire
+from project.views import BreadcrumbMixin
 
 cv_questionnaire = ViewSet(model=Questionnaire, name="questionnaire", icon_header="fa-solid fa-list-check")
 
@@ -113,12 +114,12 @@ class QuestionnaireTable(Table):
     title = tables.Column()
 
 
-class QuestionnaireListView(ListViewTableMixin, ListViewPermissionRequired):
+class QuestionnaireListView(BreadcrumbMixin, ListViewTableMixin, ListViewPermissionRequired):
     cv_viewset = cv_questionnaire
     table_class = QuestionnaireTable
 
 
-class QuestionnaireDetailView(ObjectDetailViewPermissionRequired):
+class QuestionnaireDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
     cv_viewset = cv_questionnaire
     cv_property_display = [
         {
@@ -132,21 +133,25 @@ class QuestionnaireDetailView(ObjectDetailViewPermissionRequired):
         return instance.questions.count()
 
 
-class QuestionnaireCreateView(CrispyViewMixin, FormSetMixin, MessageMixin, CreateViewPermissionRequired):
+class QuestionnaireCreateView(
+    BreadcrumbMixin, CrispyViewMixin, FormSetMixin, MessageMixin, CreateViewPermissionRequired
+):
     cv_viewset = cv_questionnaire
     form_class = QuestionnaireForm
     cv_formsets: FormSets = cv_formsets
     cv_message = "Created questionnaire »{object}«"
 
 
-class QuestionnaireUpdateView(CrispyViewMixin, FormSetMixin, MessageMixin, UpdateViewPermissionRequired):
+class QuestionnaireUpdateView(
+    BreadcrumbMixin, CrispyViewMixin, FormSetMixin, MessageMixin, UpdateViewPermissionRequired
+):
     cv_viewset = cv_questionnaire
     form_class = QuestionnaireForm
     cv_formsets: FormSets = cv_formsets
     cv_message = "Updated questionnaire »{object}«"
 
 
-class QuestionnaireDeleteView(CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
+class QuestionnaireDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     cv_viewset = cv_questionnaire
     form_class = CrispyDeleteForm
     cv_message = "Deleted questionnaire »{object}«"

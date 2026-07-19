@@ -1,6 +1,12 @@
 from django.views import generic
 
+from crud_views.lib.breadcrumb import CrudViewBreadcrumbMixin
+
 from project.features import FEATURES
+
+
+class BreadcrumbMixin(CrudViewBreadcrumbMixin):
+    """Project-wide breadcrumb adoption point: every example view inherits this first."""
 
 
 class HomeView(generic.TemplateView):

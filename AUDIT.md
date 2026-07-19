@@ -10,7 +10,7 @@
 
 ## Phase 1 — Repo Map
 
-**Purpose:** `django-crud-views` is a published PyPI library (v0.5.0, "Development Status :: 4 - Beta", MIT) providing CRUD class-based views grouped into **ViewSets** — sibling-aware views with auto-generated URL patterns, permission integration, nesting, themes, and optional extensions. Intended users: Django developers building HTML CRUD UIs. Maturity: production-aspiring beta with real users (the author's own `dpl-examples` project consumes it).
+**Purpose:** `django-crud-views` is a published PyPI library (v0.5.0, "Development Status :: 4 - Beta", MIT) providing CRUD class-based views grouped into **ViewSets** — sibling-aware views with auto-generated URL patterns, permission integration, nesting, themes, and optional extensions. Intended users: Django developers building HTML CRUD UIs. Maturity: production-aspiring beta with real users (the author's own downstream projects consume it).
 
 **Stack:** Python ≥3.12, Django 4.2–6.0, Pydantic v2 (used unusually but deliberately for ViewSet/settings/check/formset config objects), django-tables2 / django-filter / crispy-forms as hard deps; fsm-2, polymorphic, ordered-model, guardian as optional extras. Build: hatchling + uv; tests: pytest + nox matrix; lint: ruff (format enforced in CI and pre-commit); docs: mkdocs → readthedocs.
 

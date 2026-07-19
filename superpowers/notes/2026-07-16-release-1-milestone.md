@@ -241,7 +241,7 @@ the sweep filed as #88 (i18n infra docs) and #89 (stability.md public-API list);
 sharing the README's voice with a `cv-sync`-marked code sample, FAQ cross-links to example
 apps and reference pages, a `formsets.md` AJAX-section copyedit, and the done-when
 verification sweep below (greps clean, `test_docs_sync.py` 34/34, `mkdocs build --strict`
-clean, full example suite 130/130); ships as the phase-3 PR. No version bump / no PyPI
+clean, full example suite 130/130); ships as PR #92. No version bump / no PyPI
 release for any phase.
 
 **Goal:** docs that sell and teach: a catchy teaser, a tutorial that is fun and verifiably

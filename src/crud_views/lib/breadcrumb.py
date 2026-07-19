@@ -80,7 +80,7 @@ class CheckBreadcrumbKeyObject(Check):
 class CrudViewBreadcrumbMixin:
     """
     Adds a Breadcrumb to the view context as ``cv_breadcrumb``, built from the
-    ViewSet hierarchy: [prefix items] › container › (ancestors …) › object › action.
+    ViewSet hierarchy: [prefix items] › (ancestors …) › container › object › action.
     Render it with the ``{% cv_breadcrumb %}`` template tag.
     """
 

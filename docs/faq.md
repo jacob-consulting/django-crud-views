@@ -159,6 +159,7 @@ class AuthorDetailView(DetailViewPermissionRequired):
 
     def get_toolbar_buttons(self):
         return self.cv_get_context_buttons(keys=["edit_detail", "delete"])
+```
 
 ## How do I link from one child collection to a sibling collection?
 
@@ -189,7 +190,6 @@ class BookListView(ListViewPermissionRequired):
 
 Use `ChildContextButton` on the parent view to go *down* to a child, and
 `SiblingContextButton` on a child view to go *sideways* to a sibling.
-```
 
 ## Why is the last breadcrumb item not a link
 

@@ -1,7 +1,7 @@
 # Breadcrumb
 
 `CrudViewBreadcrumbMixin` adds a Bootstrap 5.3 breadcrumb to any CrudView. The trail follows
-the ViewSet hierarchy — `[prefix] › container › (ancestors …) › object › action` — and
+the ViewSet hierarchy — `[prefix] › (ancestors …) › container › object › action` — and
 respects nested ViewSets: for a chain Company › Department › Employee, an employee's update
 page shows `Companies › ACME › Departments › Sales › Employees › Jane Doe › Edit`.
 
@@ -44,6 +44,9 @@ CRUD_VIEWS_BREADCRUMB_PREFIX = [
 **Method override** (dynamic, e.g. per request):
 
 ```python
+from crud_views.lib.breadcrumb import BreadcrumbItem, CrudViewBreadcrumbMixin
+
+
 class MyBreadcrumbMixin(CrudViewBreadcrumbMixin):
     def cv_breadcrumb_prefix(self):
         return super().cv_breadcrumb_prefix() + [

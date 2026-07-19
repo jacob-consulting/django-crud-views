@@ -156,7 +156,6 @@ FEATURES: list[Feature] = [
     Feature(
         app="object_detail",
         title="Object Detail",
-        badge="NEW",
         description="Seven detail-page layout themes, side by side, over the same product data.",
         about=(
             "django-object-detail's fieldset-based detail pages, integrated as crud_views_object_detail. A "

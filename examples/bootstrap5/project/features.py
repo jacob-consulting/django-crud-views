@@ -179,12 +179,15 @@ FEATURES: list[Feature] = [
         about=(
             "Two ways a checkbox can govern what's on the form. Registration reveals a fieldset of company "
             "billing details only when 'I represent a company' is ticked, validated and cleared server-side "
-            "regardless of JavaScript. Event goes further: ticking 'This event has sessions' reveals the "
-            "entire Sessions formset, and untoggling it purges any existing sessions on save."
+            "regardless of JavaScript; a second, transient 'Add a note' checkbox (UIFieldToggle — not a model "
+            "field) reveals an optional note. Event gates two formsets: Sessions with on_off='purge', which "
+            "deletes existing rows when untoggled, and Speakers with on_off='skip' (the safe default), which "
+            "merely hides them and leaves the rows untouched."
         ),
         look_at=(
-            "RegistrationForm.cv_conditional_groups and its ToggleGroup(..., legend=...) layout; "
-            "cv_event_formsets' ConditionalFormSet(toggle=ModelFieldToggle('with_sessions'), on_off='purge')."
+            "RegistrationForm.cv_conditional_groups (ModelFieldToggle + UIFieldToggle) and its "
+            "ToggleGroup(..., legend=...) layout; cv_event_formsets' two ConditionalFormSet declarations "
+            "contrasting on_off='purge' vs on_off='skip'."
         ),
         url_name="registration-list",
         icon="fa-solid fa-toggle-on",

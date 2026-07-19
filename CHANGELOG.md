@@ -8,6 +8,7 @@
   Conduct, a contributing guide, a security policy, GitHub issue forms (bug
   report / feature request), and a pull request template. These satisfy the
   GitHub community-standards checklist and do not affect the package.
+- Conditional field-groups and conditional formsets: a checkbox toggle can hide a group of fields (or an entire first-level formset). When off, validation is skipped entirely (field-level errors included) and values are cleared (formsets: `skip` keeps rows, `purge` deletes them). Enforced server-side; `toggle.js` (registered in the `cv_js` asset registry, modal-aware) handles show/hide only. The formset save flow now runs in a single transaction so a failed sibling save rolls a purge back. System checks: `E310` (conditional on nested formset), `E311` (toggle field missing from the parent form, including never-injected `ConditionalFormSet` toggles), `W320` (non-nullable field cleared by a group), `W321` (`purge` on a formset with `can_delete=False`/`edit_only=True`). See `docs/reference/conditional.md`.
 
 ### Changed
 

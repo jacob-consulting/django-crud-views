@@ -122,6 +122,7 @@ class CrudViewsSettings(BaseModel):
                 "formset": self.get_js("formset.js"),
                 "list_filter": self.get_js("list.filter.js"),
                 "modal": self.get_js("modal.js"),
+                "toggle": self.get_js("toggle.js"),
             }
         )
 

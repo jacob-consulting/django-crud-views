@@ -43,6 +43,14 @@ class PublisherFormSetForm(CrispyModelForm):
     def get_layout_fields(self):
         return [Row(Column4("name")), Formsets()]
 
+    @property
+    def helper(self):
+        # The CRUD create/update template already wraps fields in <form class="cv-form">.
+        # Without form_tag=False crispy nests a second <form>, which breaks formset.js.
+        h = super().helper
+        h.form_tag = False
+        return h
+
 
 class BookFormSetForm(CrispyModelForm):
     class Meta:

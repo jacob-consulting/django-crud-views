@@ -3,11 +3,35 @@ Characterization tests for the nested formsets subsystem
 (Publisher → books → notes, see tests/test1/app/views_formset.py).
 """
 
+import re
+
 import pytest
 from django.test.client import Client
 
 from tests.lib.helper.forms import field_key, field_keys, form_payload
 from tests.test1.app.models import Book, BookNote, Publisher
+
+
+@pytest.mark.django_db
+def test_formset_create_page_has_no_nested_form(client_user_publisher_formset: Client, cv_publisher_formset):
+    """A formset parent form must not emit its own <form> tag.
+
+    The CRUD create/update template already wraps the fields in
+    ``<form class="cv-form">``. If the form's crispy helper leaves
+    ``form_tag=True`` (the crispy default), a second <form> is nested inside
+    cv-form; the browser then closes cv-form early and ``formset.js`` — which
+    binds add/reorder handlers to ``form.cv-form`` — can no longer manage the
+    formset (rows can't be added). Guard against that regression here.
+    """
+    response = client_user_publisher_formset.get("/publisher-formset/create/")
+    assert response.status_code == 200
+    html = response.content.decode("utf-8", "replace")
+    start = html.find('class="cv-form"')
+    assert start != -1, "cv-form not found on the formset create page"
+    # cv-form's own "<form" opening is before its class attribute, so any "<form"
+    # found from the class attribute onward is a nested form.
+    nested = len(re.findall(r"<form\b", html[start:]))
+    assert nested == 0, f"formset parent form nested {nested} <form> tag(s) inside cv-form"
 
 
 @pytest.mark.django_db

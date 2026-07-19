@@ -101,6 +101,83 @@ def test_purge_only_deletes_formset_queryset():
     assert remaining == [keep]
 
 
+def test_purge_rolls_back_when_sibling_formset_save_fails(monkeypatch):
+    """Purge is destructive, so the whole save flow must be atomic: if a sibling
+    formset's save raises after the purge DELETE ran, the deletion must roll back
+    instead of leaving the parent updated and the children irrecoverably gone."""
+    from crud_views.lib.formsets.mixins import FormSetMixinBase
+    from crud_views.lib.formsets.render_tree import XFormSet
+
+    profile = Profile.objects.create(name="p", with_items=False)
+    ProfileItem.objects.create(profile=profile, label="a")
+    ProfileItem.objects.create(profile=profile, label="b")
+
+    ItemFormSet = inlineformset_factory(
+        Profile,
+        ProfileItem,
+        formset=_ItemInlineFormSet,
+        form=_ItemForm,
+        fields=["label"],
+        extra=1,
+        can_delete=True,
+    )
+    formsets = FormSets(
+        formsets=OrderedDict(
+            items=FormSet(
+                title="Items",
+                klass=ItemFormSet,
+                fields=["label"],
+                pk_field="id",
+                conditional=ConditionalFormSet(toggle=ModelFieldToggle("with_items"), on_off="purge"),
+            ),
+            extras=FormSet(
+                title="Extras",
+                klass=ItemFormSet,
+                fields=["label"],
+                pk_field="id",
+            ),
+        )
+    )
+    extras_prefix = f"extras-{profile.pk}-0"  # top-level formset prefix: <key>-<parent pk>-<index>
+    post = {
+        "name": "p",
+        "with_items": "",  # toggle off => purge on save
+        f"{extras_prefix}-TOTAL_FORMS": "0",
+        f"{extras_prefix}-INITIAL_FORMS": "0",
+        f"{extras_prefix}-MIN_NUM_FORMS": "0",
+        f"{extras_prefix}-MAX_NUM_FORMS": "1000",
+    }
+    request = RequestFactory().post("/", data=post)
+    main_form = _ProfileForm(cv_view=None, data=post, instance=profile)
+    assert main_form.is_valid() is True
+    formsets = formsets.clone(cv_view=None)
+    formsets.init(request=request, form=main_form, instance=profile)
+    formsets.apply_conditional(main_form)
+    assert formsets.all_valid() is True
+
+    # Make the sibling's save blow up AFTER the purge deleted rows. Only active
+    # x_formsets get save() called, so patching the class hits exactly "extras"
+    # (the purged "items" formset is inactive and takes the purge branch instead).
+    assert formsets.x_formsets[1].formset.original_key == "extras"
+
+    def _boom(self, commit=True, delete=False):
+        raise RuntimeError("sibling save failed")
+
+    monkeypatch.setattr(XFormSet, "save", _boom)
+
+    class _Base:
+        def cv_form_valid(self, context):
+            context["form"].save()
+
+    class _View(FormSetMixinBase, _Base):
+        pass
+
+    with pytest.raises(RuntimeError):
+        _View().cv_form_valid({"form": main_form, "formsets": formsets})
+
+    assert ProfileItem.objects.filter(profile=profile).count() == 2  # purge rolled back
+
+
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
@@ -197,7 +274,8 @@ def test_formsets_html_marks_conditional_block():
     formsets, main_form, _ = _make("skip", "")
     html = render_to_string("crud_views/formsets/formsets.html", {"formsets": formsets})
     assert 'cv-data-toggle-field="with_items"' in html
-    assert "crud_views/js/toggle.js" in html
+    # toggle.js is served by the cv_js registry (settings.javascript), not inlined here
+    assert "<script" not in html
     assert "formset.js" not in html
 
 

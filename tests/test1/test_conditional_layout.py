@@ -35,10 +35,19 @@ def test_toggle_group_renders_marker_attributes():
     assert "email" in html and "phone" in html
 
 
-def test_toggle_group_includes_toggle_js():
+def test_toggle_group_does_not_inline_scripts():
+    # toggle.js is registered globally via crud_views_settings.javascript() and
+    # rendered by the cv_js tag — the layout element itself must stay script-free.
     form = _LayoutForm()
     html = render_crispy_form(form, helper=form.helper)
-    assert "crud_views/js/toggle.js" in html
+    assert "toggle.js" not in html
+    assert "<script" not in html
+
+
+def test_toggle_js_registered_in_settings_javascript():
+    from crud_views.lib.settings import crud_views_settings
+
+    assert crud_views_settings.javascript()["toggle"] == "crud_views/js/toggle.js"
 
 
 class _LegendLayoutForm(forms.ModelForm):

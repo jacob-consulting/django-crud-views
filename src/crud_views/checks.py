@@ -46,7 +46,7 @@ def _registry_needs_ordered_model() -> bool:
     return False
 
 
-def _conditional_messages(nested_conditionals, missing_toggles, non_nullable_clears):
+def _conditional_messages(nested_conditionals, missing_toggles, non_nullable_clears, purge_conflicts=()):
     """Pure formatter — turns collected findings into Django check messages.
 
     Kept separate from registry traversal so it is unit-testable without the
@@ -64,7 +64,11 @@ def _conditional_messages(nested_conditionals, missing_toggles, non_nullable_cle
         messages.append(
             Error(
                 f"Conditional toggle field '{field}' is not present on form '{form_name}'.",
-                hint="Add the field to the form (model field) or use UIFieldToggle so it is injected.",
+                hint=(
+                    "Declare the field on the form (a model field or a BooleanField(required=False)). "
+                    "Only ConditionalGroup toggles are auto-injected (UIFieldToggle via "
+                    "ConditionalGroupFormMixin); ConditionalFormSet toggles never are."
+                ),
                 id="crud_views.E311",
             )
         )
@@ -76,6 +80,15 @@ def _conditional_messages(nested_conditionals, missing_toggles, non_nullable_cle
                 id="crud_views.W320",
             )
         )
+    for key, reason in purge_conflicts:
+        messages.append(
+            DjangoWarning(
+                f"ConditionalFormSet on formset '{key}' uses on_off='purge' but the formset forbids "
+                f"row deletion ({reason}); the toggle will bulk-delete rows anyway.",
+                hint="Use on_off='skip', or allow deletion on the formset explicitly.",
+                id="crud_views.W321",
+            )
+        )
     return messages
 
 
@@ -85,6 +98,7 @@ def check_conditional(app_configs=None, **kwargs):
     nested_conditionals: list = []
     missing_toggles: list = []
     non_nullable_clears: list = []
+    purge_conflicts: list = []
 
     with _REGISTRY_LOCK:
         viewsets = list(_REGISTRY.values())
@@ -94,6 +108,11 @@ def check_conditional(app_configs=None, **kwargs):
             form_class = getattr(view, "form_class", None)
             declared = set(getattr(form_class, "base_fields", {}).keys()) if form_class else set()
 
+            groups = getattr(form_class, "cv_conditional_groups", None) if form_class else None
+            # ConditionalGroupFormMixin injects these at form init — the only
+            # injection path there is; formset toggles are never auto-injected.
+            group_injected = {g.toggle.field_name() for g in groups or [] if g.toggle.inject}
+
             formsets = getattr(view, "cv_formsets", None)
             if formsets is not None:
                 # top-level only are allowed to carry a conditional
@@ -101,17 +120,22 @@ def check_conditional(app_configs=None, **kwargs):
                     if formset.conditional is not None:
                         if not is_top:
                             nested_conditionals.append((key, formset.conditional))
-                        elif form_class is not None:
-                            tname = formset.conditional.toggle.field_name()
-                            if not formset.conditional.toggle.inject and tname not in declared:
-                                missing_toggles.append((form_class.__name__, tname))
+                        else:
+                            if form_class is not None:
+                                tname = formset.conditional.toggle.field_name()
+                                if tname not in declared and tname not in group_injected:
+                                    missing_toggles.append((form_class.__name__, tname))
+                            if formset.conditional.on_off == "purge":
+                                if not formset.klass.can_delete:
+                                    purge_conflicts.append((key, "can_delete=False"))
+                                elif formset.klass.edit_only:
+                                    purge_conflicts.append((key, "edit_only=True"))
                     for ckey, child in formset.children.items():
                         _walk(child, f"{key}-{ckey}", False)
 
                 for key, fs in formsets.items():
                     _walk(fs, key, True)
 
-            groups = getattr(form_class, "cv_conditional_groups", None) if form_class else None
             if groups:
                 model = getattr(getattr(form_class, "_meta", None), "model", None)
                 for group in groups:
@@ -128,7 +152,17 @@ def check_conditional(app_configs=None, **kwargs):
                                 if fname not in group.empty_values:
                                     non_nullable_clears.append((form_class.__name__, fname))
 
-    return _conditional_messages(nested_conditionals, missing_toggles, non_nullable_clears)
+    # Create/Update views routinely share form_class + cv_formsets — report each
+    # distinct finding once, not once per view.
+    seen_nested = set()
+    nested_conditionals = [
+        (key, cond) for key, cond in nested_conditionals if not (key in seen_nested or seen_nested.add(key))
+    ]
+    missing_toggles = list(dict.fromkeys(missing_toggles))
+    non_nullable_clears = list(dict.fromkeys(non_nullable_clears))
+    purge_conflicts = list(dict.fromkeys(purge_conflicts))
+
+    return _conditional_messages(nested_conditionals, missing_toggles, non_nullable_clears, purge_conflicts)
 
 
 @register(TAG)

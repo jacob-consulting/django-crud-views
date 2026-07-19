@@ -4,6 +4,7 @@ from typing import Dict, Type, Iterable
 
 from crud_views.lib.check import Check, CheckAttribute, CheckAttributeType, CheckMapping
 from django.core.exceptions import BadRequest
+from django.db import transaction
 from django.db.models import Model
 from django.forms.models import ModelForm
 from django.http import JsonResponse
@@ -95,22 +96,25 @@ class FormSetMixinBase:
 
     def cv_form_valid(self, context: dict):
         """
-        Save form and formsets
+        Save form and formsets — atomically: a conditional purge issues a DELETE
+        before sibling formsets save, so a failure later in the flow must roll
+        the whole write (main form, purge, formsets) back.
         """
-        # save main form
-        super().cv_form_valid(context)
+        with transaction.atomic():
+            # save main form
+            super().cv_form_valid(context)
 
-        # get the formsets
-        formsets = context.get("formsets", None)
-        if formsets is None:
-            if self.cv_formsets_required:
-                raise ValueError("Formsets are required but not defined, cv_formsets_required=True")
+            # get the formsets
+            formsets = context.get("formsets", None)
+            if formsets is None:
+                if self.cv_formsets_required:
+                    raise ValueError("Formsets are required but not defined, cv_formsets_required=True")
 
-            # nothing to do here
-            return
+                # nothing to do here
+                return
 
-        # save formsets
-        formsets.save(commit=True)
+            # save formsets
+            formsets.save(commit=True)
 
     def cv_get_formsets(self) -> FormSets:
         return self.cv_formsets.clone(cv_view=self)  # noqa

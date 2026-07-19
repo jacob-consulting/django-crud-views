@@ -64,11 +64,17 @@ class ConditionalGroupFormMixin:
         for group in self.cv_conditional_groups:
             if group.is_on(self):
                 for name in group.required_fields:
-                    if name in self.fields and cleaned.get(name) in self.fields[name].empty_values:
-                        self.add_error(name, self.fields[name].error_messages["required"])
+                    # A field that already failed its own validation keeps that error;
+                    # piling a "required" error on top would contradict it.
+                    if name in self.fields and name not in self.errors:
+                        if cleaned.get(name) in self.fields[name].empty_values:
+                            self.add_error(name, self.fields[name].error_messages["required"])
             else:
                 for name in group.fields:
                     if name in self.fields:
+                        # Off skips validation entirely: drop field-level errors too,
+                        # the submitted value is discarded either way.
+                        self.errors.pop(name, None)
                         cleaned[name] = group.empty_value_for(name)
         return cleaned
 

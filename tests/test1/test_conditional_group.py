@@ -75,6 +75,22 @@ def test_clean_skips_fields_not_on_form():
     assert form_off.cleaned_data["email"] is None
 
 
+def test_off_group_suppresses_field_level_errors():
+    """Off means off: even a field-level error (max_length) on an off-group field
+    must not block the form — the value is discarded anyway."""
+    form = ContactForm(data={"name": "a", "email": "x" * 150})  # toggle off, email over max_length=100
+    assert form.is_valid() is True
+    assert form.cleaned_data["email"] is None
+
+
+def test_on_group_field_error_is_not_doubled_with_required():
+    """A field failing its own validation while the toggle is on must not get an
+    additional contradictory 'required' error piled on top."""
+    form = ContactForm(data={"name": "a", "with_contact": "on", "email": "x" * 150})
+    assert form.is_valid() is False
+    assert len(form.errors["email"]) == 1, form.errors["email"]
+
+
 def test_ui_field_toggle_is_injected_and_not_a_model_field():
     class UIForm(ConditionalGroupFormMixin, forms.ModelForm):
         cv_conditional_groups = [

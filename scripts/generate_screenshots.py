@@ -9,6 +9,7 @@ Usage (from the repo root):
 Boots the seeded dev server on a scratch port, logs in as the demo user
 ``alice`` and captures the tutorial pages into docs/getting_started/assets/.
 Re-run whenever the UI changes; commit the PNGs like normal files.
+Also captures readme-hero.png, the README's hero image.
 """
 
 import subprocess
@@ -69,6 +70,25 @@ def main() -> None:
                 page.wait_for_load_state("networkidle")
                 page.screenshot(path=ASSETS_DIR / f"{name}.png")
                 print(f"captured {name}.png  ({path})")
+
+            # readme-hero: author list with the filter form expanded, so the hero shows
+            # table + filter form + context buttons + breadcrumb trail all at once
+            page.goto(f"{BASE}/library/author/")
+            page.wait_for_load_state("networkidle")
+            page.click("#cv-filter-toggle")
+            page.wait_for_selector("#filter-form input[name=first_name]", state="visible")
+            # the toggle drives a Bootstrap collapse; wait for its height transition to
+            # finish so the screenshot isn't captured mid-animation
+            page.wait_for_function(
+                "document.querySelector('#filter-collapse').classList.contains('show') "
+                "&& !document.querySelector('#filter-collapse').classList.contains('collapsing')"
+            )
+            page.screenshot(path=ASSETS_DIR / "readme-hero.png")
+            print("captured readme-hero.png  (/library/author/, filter expanded)")
+
+            # move the pointer off the filter toggle so its :hover state doesn't leak
+            # onto whatever element sits at the same coordinates on the next pages
+            page.mouse.move(0, 0)
 
             # object pages: derive the first author's detail URL from the list table
             page.goto(f"{BASE}/library/author/")

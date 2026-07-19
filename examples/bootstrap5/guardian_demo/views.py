@@ -53,7 +53,7 @@ class DocumentDetailView(BreadcrumbMixin, ObjectDetailMixin, GuardianDetailViewP
 class DocumentCreateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, GuardianCreateViewPermissionRequired):
     cv_viewset = cv_document
     form_class = DocumentForm
-    cv_message = "Created document »{object}«"
+    cv_message_template_code = "Created document »{{ object }}«"
 
     def cv_form_valid(self, context: dict):
         # the creator owns the document and gets full object-level permissions
@@ -66,10 +66,10 @@ class DocumentCreateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, Guardia
 class DocumentUpdateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, GuardianUpdateViewPermissionRequired):
     cv_viewset = cv_document
     form_class = DocumentForm
-    cv_message = "Updated document »{object}«"
+    cv_message_template_code = "Updated document »{{ object }}«"
 
 
 class DocumentDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, GuardianDeleteViewPermissionRequired):
     cv_viewset = cv_document
     form_class = CrispyDeleteForm
-    cv_message = "Deleted document »{object}«"
+    cv_message_template_code = "Deleted document »{{ object }}«"

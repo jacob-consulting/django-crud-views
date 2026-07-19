@@ -182,15 +182,7 @@ cv_book = ViewSet(
 )
 ```
 
-```python
-class BookListView(ListViewPermissionRequired):
-    cv_viewset = cv_book
-    cv_context_actions = ["parent", "create", "articles"]
-```
-
-Use `ChildContextButton` on the parent view to go *down* to a child, and
-`SiblingContextButton` on a child view to go *sideways* to a sibling.
-<<<<<<< HEAD
+Full documentation of parent/child ViewSets: [Nested ViewSets](reference/nested.md).
 
 ## Why is the last breadcrumb item not a link
 
@@ -205,8 +197,6 @@ Use `CRUD_VIEWS_BREADCRUMB_PREFIX` for a static, site-wide prefix, or override
 `cv_breadcrumb_prefix()` in a project base view for dynamic items — see
 [Breadcrumb](reference/breadcrumb.md). The breadcrumb deliberately covers only the
 crud-views hierarchy; it is not a navigation framework.
-=======
-```
 
 ## How do I make a group of fields required only when a checkbox is on?
 
@@ -252,4 +242,3 @@ When the checkbox is off the group fields are cleared on save (they must be
 `null=True, blank=True`). To toggle an **entire first-level formset** instead of a
 field-group, use `ConditionalFormSet` — see the
 [reference page](reference/conditional.md).
->>>>>>> origin/main

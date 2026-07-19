@@ -1,0 +1,69 @@
+# Executes README.md's "Run the example project" tool-free path verbatim on all
+# three OSes. If you edit that README section, update the run blocks below to
+# match — and vice versa (lockstep rule, spec §3).
+#
+# Sanctioned CI-only deviations from the README block:
+#   - `git clone` + `cd django-crud-views` are replaced by actions/checkout
+#   - `call` before the Windows activate (required inside a batch script)
+#   - `--noreload` on runserver (single process, clean teardown)
+#   - runserver in the background + scripts/wait_for_server.py instead of a
+#     human opening the browser
+name: readme-examples
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "README.md"
+      - "examples/**"
+      - "pyproject.toml"
+      - "src/**"
+      - "scripts/wait_for_server.py"
+      - ".github/workflows/readme-examples.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "README.md"
+      - "examples/**"
+      - "pyproject.toml"
+      - "src/**"
+      - "scripts/wait_for_server.py"
+      - ".github/workflows/readme-examples.yml"
+
+jobs:
+  readme-tool-free-path:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - name: README tool-free path (Linux/macOS)
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install -e ".[all,examples]"
+          cd examples/bootstrap5
+          python manage.py migrate
+          python manage.py seed
+          python manage.py runserver --noreload &
+          python ../../scripts/wait_for_server.py http://127.0.0.1:8000/login/ 60
+          kill %1 || true
+      - name: README tool-free path (Windows)
+        if: runner.os == 'Windows'
+        shell: cmd
+        run: |
+          python -m venv .venv
+          call .venv\Scripts\activate
+          pip install -e ".[all,examples]"
+          cd examples\bootstrap5
+          python manage.py migrate
+          python manage.py seed
+          start /b python manage.py runserver --noreload
+          python ..\..\scripts\wait_for_server.py http://127.0.0.1:8000/login/ 60

@@ -49,7 +49,7 @@ fresh session to brainstorm it standalone, one after the other, in order.
 | M2 | API stability & backlog triage | 0.14.0 ✅ DONE | Examples must be written against the final API |
 | M3 | Examples rewrite | — ✅ DONE | The big one; docs tutorial will align to it |
 | M4 | Documentation refinement | — ✅ DONE | Tutorial follows the M3 `library/` app step by step |
-| M5 | README & marketing surface | — | References the final example-run instructions |
+| M5 | README & marketing surface | — ✅ DONE | References the final example-run instructions |
 | M6 | Release readiness → 1.0.0 | 1.0.0 | Security pass, version policy, changelog, cut release |
 
 M3–M5 can ship as further 0.x releases as convenient; only M1 (breaking removal) and
@@ -290,7 +290,17 @@ deliberate, every feature has a reference page, and no doc mentions removed func
 
 ---
 
-## M5 — README & marketing surface
+## M5 — README & marketing surface — DONE (2026-07-19, no release)
+
+**Shipped:** Hero screenshot of the example app (author list with expanded filter, captured
+by `scripts/generate_screenshots.py`, embedded via raw URL so PyPI renders it), a new
+"Run the example project" README section — tool-free `venv`/`pip` path first, `task dev &&
+task run` shortcut second — with the tool-free block executed verbatim on
+ubuntu/macos/windows by the new `readme-examples.yml` workflow (the milestone's per-platform
+verification, made durable), README bullets aligned word-for-word with the docs teaser (one
+voice), and `twine check` passed for the PyPI long description. Also fixed on the way: the
+repo-root `task run` the docs promised didn't exist — the root taskfile now delegates to
+`examples/bootstrap5` via `includes:`. Ships as PR #93. No version bump / no PyPI release.
 
 **Goal:** the GitHub home page catches experienced Django developers who are fed up writing
 the same CRUD code — and gets them to a running example in minutes, on Linux, macOS **and

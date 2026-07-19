@@ -172,4 +172,22 @@ FEATURES: list[Feature] = [
         url_name="product-list",
         icon="fa-regular fa-box",
     ),
+    Feature(
+        app="conditional",
+        title="Conditional",
+        badge="NEW",
+        description="A checkbox toggle reveals a field-group or an entire formset, enforced server-side.",
+        about=(
+            "Two ways a checkbox can govern what's on the form. Registration reveals a fieldset of company "
+            "billing details only when 'I represent a company' is ticked, validated and cleared server-side "
+            "regardless of JavaScript. Event goes further: ticking 'This event has sessions' reveals the "
+            "entire Sessions formset, and untoggling it purges any existing sessions on save."
+        ),
+        look_at=(
+            "RegistrationForm.cv_conditional_groups and its ToggleGroup(..., legend=...) layout; "
+            "cv_event_formsets' ConditionalFormSet(toggle=ModelFieldToggle('with_sessions'), on_off='purge')."
+        ),
+        url_name="registration-list",
+        icon="fa-solid fa-toggle-on",
+    ),
 ]

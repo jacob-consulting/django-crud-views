@@ -172,4 +172,24 @@ FEATURES: list[Feature] = [
         url_name="product-list",
         icon="fa-regular fa-box",
     ),
+    Feature(
+        app="breadcrumbs",
+        title="Breadcrumbs",
+        badge="NEW",
+        description="ViewSet-aware breadcrumbs, plus injecting a host application's navigation as prefix items.",
+        about=(
+            "Every page in these examples renders a breadcrumb via CrudViewBreadcrumbMixin and the "
+            "cv_breadcrumb template tag: container › object › action, following the ViewSet parent chain. "
+            "This app additionally simulates being embedded in a larger host application: "
+            "HostNavBreadcrumbMixin overrides cv_breadcrumb_prefix() to inject a 'Host application' item "
+            "after the global 'Home' prefix that CRUD_VIEWS_BREADCRUMB_PREFIX configures in settings.py."
+        ),
+        look_at=(
+            "HostNavBreadcrumbMixin.cv_breadcrumb_prefix() in views.py (code-level injection), "
+            "CRUD_VIEWS_BREADCRUMB_PREFIX in project/settings.py (setting-level prefix), and the "
+            "{% cv_breadcrumb %} block in project/crud_views.html."
+        ),
+        url_name="workspace-list",
+        icon="fa-solid fa-ellipsis",
+    ),
 ]

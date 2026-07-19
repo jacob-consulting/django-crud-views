@@ -5,6 +5,7 @@ from django.utils.translation import gettext_lazy
 from pydantic import ValidationError
 
 from crud_views.lib.breadcrumb import Breadcrumb, BreadcrumbItem
+from crud_views.lib.settings import crud_views_settings
 
 
 class TestBreadcrumbItem:
@@ -52,3 +53,20 @@ class TestBreadcrumb:
     def test_items_coerced_to_tuple(self):
         bc = Breadcrumb(items=[BreadcrumbItem(title="A")])
         assert isinstance(bc.items, tuple)
+
+
+class TestBreadcrumbPrefixSetting:
+    def test_default_is_empty(self):
+        assert crud_views_settings.breadcrumb_prefix == []
+
+    def test_valid_prefix_produces_no_e102(self, monkeypatch):
+        monkeypatch.setattr(crud_views_settings, "breadcrumb_prefix", [{"title": "Home", "url_name": "author-list"}])
+        assert not [m for m in crud_views_settings.check_messages if m.id == "crud_views.E102"]
+
+    def test_malformed_prefix_produces_e102(self, monkeypatch):
+        monkeypatch.setattr(crud_views_settings, "breadcrumb_prefix", [{"url_name": "author-list"}])  # no title
+        assert [m for m in crud_views_settings.check_messages if m.id == "crud_views.E102"]
+
+    def test_non_dict_prefix_entry_produces_e102(self, monkeypatch):
+        monkeypatch.setattr(crud_views_settings, "breadcrumb_prefix", ["not-a-dict"])
+        assert [m for m in crud_views_settings.check_messages if m.id == "crud_views.E102"]

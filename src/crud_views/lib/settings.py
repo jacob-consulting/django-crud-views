@@ -31,6 +31,9 @@ class CrudViewsSettings(BaseModel):
     # session
     session_data_key: str = from_settings("CRUD_VIEWS_SESSION_DATA_KEY", "viewset")
 
+    # breadcrumb
+    breadcrumb_prefix: List[dict] = from_settings("CRUD_VIEWS_BREADCRUMB_PREFIX", default=[])
+
     # filter
     filter_persistence: bool = from_settings("CRUD_VIEWS_FILTER_PERSISTENCE", default=True)
     filter_pinned: bool = from_settings("CRUD_VIEWS_FILTER_PINNED", default=False)
@@ -95,6 +98,23 @@ class CrudViewsSettings(BaseModel):
                     ),
                 )
             )
+
+        # deferred import: settings.py must not import breadcrumb.py at module level
+        # (breadcrumb.py imports crud_views_settings)
+        from pydantic import ValidationError as PydanticValidationError
+
+        from crud_views.lib.breadcrumb import BreadcrumbItem
+
+        for i, entry in enumerate(self.breadcrumb_prefix):
+            try:
+                BreadcrumbItem.model_validate(entry)
+            except PydanticValidationError as exc:
+                messages.append(
+                    Error(
+                        id="crud_views.E102",
+                        msg=f"setting CRUD_VIEWS_BREADCRUMB_PREFIX entry {i} is invalid: {exc}",
+                    )
+                )
 
         return messages
 

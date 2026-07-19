@@ -23,5 +23,5 @@ nav:
     - templates.md
     - theme.md
     - settings.md
-    - Conditional groups: conditional.md
+    - Conditional groups & formsets: conditional.md
     - ...

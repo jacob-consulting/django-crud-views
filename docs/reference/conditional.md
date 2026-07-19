@@ -1,6 +1,8 @@
 # Conditional Field-Groups & Conditional FormSets
 
-A checkbox toggle can hide a group of fields (or an entire **first-level** formset). When off, the group or formset is hidden client-side and — authoritatively **server-side** — skips validation and clears its data. JavaScript is cosmetic only; the server enforces the contract on every submit, including tampered or JS-off POSTs.
+A checkbox toggle can hide a group of fields (or an entire **first-level** formset). When off, the group or formset is hidden client-side and — authoritatively **server-side** — skips validation and clears its data. JavaScript is convenience only: `toggle.js` shows/hides the group and disables its inputs so they are not submitted, but the server enforces the exact same contract on every submit, including tampered or JS-off POSTs.
+
+`toggle.js` ships automatically via the `cv_js` asset registry (`crud_views_settings.javascript()`); no template changes are needed. It also re-initializes inside Bootstrap modals (`cv_modal = True` views) via the `cv:modal:loaded` event.
 
 Import everything from `crud_views.lib.conditional`.
 
@@ -80,6 +82,19 @@ ConditionalGroup(
 | `toggle` | — | `ToggleSource` that governs the formset |
 | `on_off` | `"skip"` | `"skip"` — leave existing rows untouched when off; `"purge"` — delete them on save |
 
+!!! warning "purge permanently deletes rows"
+
+    With `on_off="purge"`, saving the form while the toggle is off **deletes every
+    existing row the formset manages** — there is no undo. Prefer `skip` (the
+    default) unless deletion is exactly what you want. `purge` overrides the
+    formset's own deletion settings: it deletes rows even when the formset is
+    configured with `can_delete=False` or `edit_only=True` (system check
+    `crud_views.W321` warns about that combination). The only permission gate is
+    the parent object's *change* permission — no per-row delete permission is
+    checked, also under django-guardian. The save flow (main form, purge, sibling
+    formsets) runs inside a single database transaction, so a failure elsewhere
+    rolls the purge back.
+
 ### Scope constraint
 
 Only **first-level** formsets may be conditional. Attaching `ConditionalFormSet` to a nested formset (one with a `parent` key) raises system-check error `crud_views.E310`.
@@ -104,7 +119,7 @@ cv_formsets = FormSets(formsets={
 })
 ```
 
-The parent form must expose the toggle field (either a real model field or a `UIFieldToggle`-injected field via `ConditionalGroupFormMixin`).
+The parent form must expose the toggle field. **`ConditionalFormSet` toggles are never auto-injected** — only `ConditionalGroup` toggles are (by `ConditionalGroupFormMixin`). So either use a real model/form field, declare the checkbox on the form yourself (`forms.BooleanField(required=False)`), or reuse a `UIFieldToggle` that a `ConditionalGroup` on the same form already injects. A toggle that is missing from the form is flagged by system check `crud_views.E311`; without it the formset would be permanently off — and with `on_off="purge"` that silently deletes rows on every save.
 
 ---
 
@@ -113,8 +128,9 @@ The parent form must expose the toggle field (either a real model field or a `UI
 | ID | Level | Meaning |
 |---|---|---|
 | `crud_views.E310` | Error | `conditional=` placed on a nested (non-first-level) formset |
-| `crud_views.E311` | Error | Toggle field named in a `ConditionalGroup` or `ConditionalFormSet.toggle` is absent from the parent form |
+| `crud_views.E311` | Error | Toggle field named in a `ConditionalGroup` or `ConditionalFormSet.toggle` is absent from the parent form (and not injected by a group on that form) |
 | `crud_views.W320` | Warning | A field cleared by an off group is not `null=True, blank=True` — saves will likely fail |
+| `crud_views.W321` | Warning | `on_off="purge"` combined with a formset that forbids row deletion (`can_delete=False` / `edit_only=True`) — the toggle bulk-deletes rows anyway |
 
 ---
 
@@ -122,5 +138,5 @@ The parent form must expose the toggle field (either a real model field or a `UI
 
 The `examples/bootstrap5/conditional/` app (`conditional/views.py`) shows both kinds side by side:
 
-- `cv_registration` — field-group with `ModelFieldToggle` (`with_company` → `company_name`, `vat_id`), rendered as a titled `<fieldset>` via `ToggleGroup(..., legend="Company details")`
-- `cv_event` — conditional first-level formset (`with_sessions` → the `sessions` formset, `on_off="purge"`)
+- `cv_registration` — two field-groups on one form: a `ModelFieldToggle` group (`with_company` → `company_name`, `vat_id`) rendered as a titled `<fieldset>` via `ToggleGroup(..., legend="Company details")`, and a transient `UIFieldToggle` group (`add_note` → `note`), including the pattern of deriving the transient toggle's `initial` from the instance in `__init__`
+- `cv_event` — two conditional first-level formsets contrasting the `on_off` modes: `with_sessions` → the `sessions` formset with `"purge"` (rows deleted on save when off), and `with_speakers` → the `speakers` formset with `"skip"` (rows kept)

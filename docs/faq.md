@@ -73,6 +73,8 @@ To change the layout of *all* context buttons project-wide, override
 `crud_views/tags/context_action.html` in your project's templates, or point
 `CRUD_VIEWS_CONTEXT_BUTTON_TEMPLATE` at your own template.
 
+*Full docs: [Context Buttons](reference/context_buttons.md).*
+
 ## I need to render a context button manually in a template
 
 Use the `cv_context_button` tag to place a single button anywhere in your own layout,
@@ -161,6 +163,8 @@ class AuthorDetailView(DetailViewPermissionRequired):
         return self.cv_get_context_buttons(keys=["edit_detail", "delete"])
 ```
 
+*Full docs: [Context Buttons § Manual Placement](reference/context_buttons.md#manual-placement-template-tags).*
+
 ## How do I link from one child collection to a sibling collection?
 
 When you have a parent with several children (e.g. `Author` → `Book`, `Article`) and want a
@@ -191,12 +195,18 @@ as `active` with `aria-current="page"` and no link — linking a page to itself 
 pointless reload. `{% cv_breadcrumb %}` therefore always renders the last item unlinked,
 even when the underlying `BreadcrumbItem` carries a URL.
 
+*See it running: [`examples/bootstrap5/breadcrumbs/`](https://github.com/jacob-consulting/django-crud-views/tree/main/examples/bootstrap5/breadcrumbs) ·
+Full docs: [Breadcrumb](reference/breadcrumb.md).*
+
 ## How do I hook the breadcrumb into my site's navigation
 
 Use `CRUD_VIEWS_BREADCRUMB_PREFIX` for a static, site-wide prefix, or override
 `cv_breadcrumb_prefix()` in a project base view for dynamic items — see
 [Breadcrumb](reference/breadcrumb.md). The breadcrumb deliberately covers only the
 crud-views hierarchy; it is not a navigation framework.
+
+*See it running: [`examples/bootstrap5/breadcrumbs/`](https://github.com/jacob-consulting/django-crud-views/tree/main/examples/bootstrap5/breadcrumbs) ·
+Full docs: [Breadcrumb § Hooking into your site navigation](reference/breadcrumb.md#hooking-into-your-site-navigation).*
 
 ## How do I make a group of fields required only when a checkbox is on?
 
@@ -242,3 +252,6 @@ When the checkbox is off the group fields are cleared on save (they must be
 `null=True, blank=True`). To toggle an **entire first-level formset** instead of a
 field-group, use `ConditionalFormSet` — see the
 [reference page](reference/conditional.md).
+
+*See it running: [`examples/bootstrap5/conditional/`](https://github.com/jacob-consulting/django-crud-views/tree/main/examples/bootstrap5/conditional) ·
+Full docs: [Conditional Field-Groups & Conditional FormSets](reference/conditional.md).*

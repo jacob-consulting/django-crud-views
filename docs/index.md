@@ -1,36 +1,62 @@
 # Django CRUD Views
 
-Managing CRUD (Create, Read, Update, Delete) operations is a common requirement in Django applications. While Django’s
-class-based views provide flexibility, implementing CRUD functionality often involves repetitive code.
+**Stop hand-writing the same list, detail, create, update and delete views for every
+model.** Define your model, register a `ViewSet`, and Django CRUD Views generates the
+pages, wires up every URL, and cross-links the views — using *your* templates and *your*
+permissions, right inside your own app.
 
-Django CRUD Views simplifies this process by offering reusable, customizable class-based views that streamline CRUD
-operations. This package helps developers write cleaner, more maintainable code while keeping full control over their
-views.
+## This is all you write
 
-This documentation provides everything you need to get started, from installation to advanced customization. Whether
-you're building a small project or a large application, Django CRUD Views can help you work more efficiently.
+A ViewSet is the container for all sibling views of one model:
 
-## Features
+<!-- cv-sync: library/views.py -->
+```python
+cv_author = ViewSet(model=Author, name="author", icon_header="fa-regular fa-user")
+```
 
-- a collection of **CrudView**s for the same Django model whereas these views are aware of their sibling views
-- such a collection is called a **ViewSet**
-- linking to sibling views is easy, respecting Django's permission system
-- designed for HTML
-- built on top of Django's class-based generic views
-- and Django's permission system
-- uses these excellent packages:
-    - [django-tables2](https://django-tables2.readthedocs.io/en/latest/)
-    - [django-filter](https://django-filter.readthedocs.io/en/stable/)
-    - [django-crispy-forms](https://django-crispy-forms.readthedocs.io/en/latest/)
-    - [django-polymorphic](https://django-polymorphic.readthedocs.io/en/stable/)
-    - [django-ordered-model](https://github.com/django-ordered-model/django-ordered-model) *(optional)*
-    - [django-fsm-2](https://github.com/django-commons/django-fsm-2)
-- **ViewSet**s can be nested with deep URLs (multiple levels) if models are related via ForeignKey
-- **CrudView**s are predefined for CRUD operations: list, create, update, delete, detail, up/down
-- a **ViewSet** generates all urlpatterns for its **CrudView**s
-- Themes are pluggable — `bootstrap5` (Bootstrap 5) ships as the default, and you can
-  [bring your own theme](reference/theme.md) to customize the look and feel
-- Django system checks for configurations to fail early on startup
+One class per page — here the list view with a sortable table and filter form:
+
+<!-- cv-sync: library/views.py -->
+```python
+class AuthorListView(BreadcrumbMixin, ListViewTableMixin, ListViewTableFilterMixin, ListViewPermissionRequired):
+    cv_viewset = cv_author
+    table_class = AuthorTable
+    filterset_class = AuthorFilter
+    formhelper_class = AuthorFilterFormHelper
+```
+
+And one line of URL wiring:
+
+<!-- cv-sync: library/urls.py -->
+```python
+urlpatterns = cv_author.urlpatterns + cv_book.urlpatterns
+```
+
+That's the real, runnable code of the [tutorial](getting_started/index.md) — a CI check
+keeps this page and the tutorial in sync with the example project.
+
+## Why developers use it
+
+- **Skip the CRUD boilerplate** — one ViewSet replaces a pile of near-identical
+  class-based views and `urls.py` entries.
+- **Views that know their siblings** — automatic cross-linking that respects Django's
+  permission system; no hand-written `reverse()` wiring.
+- **Your app, your control** — your templates, URLs and permissions; built on Django's
+  generic class-based views, not locked inside `/admin`.
+- **Batteries included** — sortable, filterable, paginated tables
+  ([django-tables2](https://django-tables2.readthedocs.io/en/latest/),
+  [django-filter](https://django-filter.readthedocs.io/en/stable/)), crispy forms
+  ([django-crispy-forms](https://django-crispy-forms.readthedocs.io/en/latest/)),
+  breadcrumbs, formsets, and nested parent/child URLs.
+- **Grows with your app** — optional extensions for workflows
+  ([django-fsm-2](https://github.com/django-commons/django-fsm-2)), polymorphic models
+  ([django-polymorphic](https://django-polymorphic.readthedocs.io/en/stable/)),
+  per-object permissions ([django-guardian](https://django-guardian.readthedocs.io/)),
+  ordering ([django-ordered-model](https://github.com/django-ordered-model/django-ordered-model))
+  and non-ORM resources.
+- **Pluggable themes** — `bootstrap5` ships as the default;
+  [bring your own theme](reference/theme.md).
+- **Fails early** — Django system checks validate your configuration at startup.
 
 ## API stability
 

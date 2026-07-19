@@ -48,7 +48,7 @@ fresh session to brainstorm it standalone, one after the other, in order.
 | M1 | Remove `crud_views_plain` + examples groundwork | 0.13.0 ✅ DONE | Mechanical; clears the ground for everything after |
 | M2 | API stability & backlog triage | 0.14.0 ✅ DONE | Examples must be written against the final API |
 | M3 | Examples rewrite | — ✅ DONE | The big one; docs tutorial will align to it |
-| M4 | Documentation refinement | — | Tutorial follows the M3 `library/` app step by step |
+| M4 | Documentation refinement | — ✅ DONE | Tutorial follows the M3 `library/` app step by step |
 | M5 | README & marketing surface | — | References the final example-run instructions |
 | M6 | Release readiness → 1.0.0 | 1.0.0 | Security pass, version policy, changelog, cut release |
 
@@ -225,7 +225,24 @@ home page navigates to every feature app.
 
 ---
 
-## M4 — Documentation refinement
+## M4 — Documentation refinement — DONE (2026-07-19, no release)
+
+**Shipped:** Three-phase rollout. **Phase 1** — a `cv-sync` pytest check plus a Playwright
+screenshot script, and the old `tutorial.md`/`tutorial2.md` replaced by a 6-part tutorial
+(`tutorial-1-setup.md` … `tutorial-6-books.md`) built step by step against the `library/`
+example app with `cv-sync`-marked code blocks, plus a fix for the examples' dead `cv_message`
+attribute to the real `cv_message_template_code` API (see #86); merged to `main` via squash
+PR #87 (`dbbea0f`). **Phase 2** — new `nested.md` and `formsets.md` reference pages, a
+staleness sweep (current API, `/en/stable/` links, dead `cv_message` mentions removed, wrong
+context-action defaults corrected), a grouped reference nav (7 sections, 32 pages), and a
+repair of pre-existing committed merge-conflict markers in `docs/faq.md`; gaps too large for
+the sweep filed as #88 (i18n infra docs) and #89 (stability.md public-API list); merged to
+`main` via squash PR #90 (`3f403db`). **Phase 3** (this change) — `index.md` teaser rewrite
+sharing the README's voice with a `cv-sync`-marked code sample, FAQ cross-links to example
+apps and reference pages, a `formsets.md` AJAX-section copyedit, and the done-when
+verification sweep below (greps clean, `test_docs_sync.py` 34/34, `mkdocs build --strict`
+clean, full example suite 130/130); ships as PR #92. No version bump / no PyPI
+release for any phase.
 
 **Goal:** docs that sell and teach: a catchy teaser, a tutorial that is fun and verifiably
 in sync with the `library/` example app, logical ordering, and a reference that covers every

@@ -14,6 +14,7 @@ nav:
     - delete_view.md
     - action_enabled.md
     - action_view.md
+    - breadcrumb.md
     - custom_form_view.md
     - workflow_view.md
     - polymorphic_view.md

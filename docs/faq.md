@@ -190,3 +190,17 @@ class BookListView(ListViewPermissionRequired):
 Use `ChildContextButton` on the parent view to go *down* to a child, and
 `SiblingContextButton` on a child view to go *sideways* to a sibling.
 ```
+
+## Why is the last breadcrumb item not a link
+
+The last item is the page the user is on. Bootstrap and WAI-ARIA both mark the current page
+as `active` with `aria-current="page"` and no link — linking a page to itself only invites a
+pointless reload. `{% cv_breadcrumb %}` therefore always renders the last item unlinked,
+even when the underlying `BreadcrumbItem` carries a URL.
+
+## How do I hook the breadcrumb into my site's navigation
+
+Use `CRUD_VIEWS_BREADCRUMB_PREFIX` for a static, site-wide prefix, or override
+`cv_breadcrumb_prefix()` in a project base view for dynamic items — see
+[Breadcrumb](reference/breadcrumb.md). The breadcrumb deliberately covers only the
+crud-views hierarchy; it is not a navigation framework.

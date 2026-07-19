@@ -936,3 +936,33 @@ class PublisherBcCardListView(CrudViewBreadcrumbMixin, CardListView):
 
 class PublisherBcCardDetailView(CrudViewBreadcrumbMixin, DetailView):
     cv_viewset = cv_publisher_bc_card
+
+
+# nested chain: publisher_bc -> book_bc -> booknote_bc (ancestor walk, see test_breadcrumb.py)
+from tests.test1.app.models import BookNote  # noqa: E402
+
+cv_book_bc = ViewSet(model=Book, name="book_bc", parent=ParentViewSet(name="publisher_bc", attribute="publisher"))
+
+
+class BookBcListView(CrudViewBreadcrumbMixin, ListView):
+    cv_viewset = cv_book_bc
+
+
+class BookBcDetailView(CrudViewBreadcrumbMixin, DetailView):
+    cv_viewset = cv_book_bc
+
+
+class BookBcUpdateView(CrudViewBreadcrumbMixin, UpdateView):
+    cv_viewset = cv_book_bc
+    fields = ["title"]
+
+
+cv_booknote_bc = ViewSet(model=BookNote, name="booknote_bc", parent=ParentViewSet(name="book_bc", attribute="book"))
+
+
+class BookNoteBcListView(CrudViewBreadcrumbMixin, ListView):
+    cv_viewset = cv_booknote_bc
+
+
+class BookNoteBcDetailView(CrudViewBreadcrumbMixin, DetailView):
+    cv_viewset = cv_booknote_bc

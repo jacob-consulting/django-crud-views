@@ -7,9 +7,12 @@ args/kwargs and are resolved to concrete URLs only when rendered.
 
 from typing import Any, Dict, List, Tuple
 
+from django.core.exceptions import ObjectDoesNotExist
+from django.http import Http404
 from django.urls import reverse
 from pydantic import BaseModel, field_validator, model_validator
 
+from crud_views.lib.exceptions import CrudViewError, cv_raise
 from crud_views.lib.settings import crud_views_settings
 
 
@@ -147,7 +150,74 @@ class CrudViewBreadcrumbMixin:
         return Breadcrumb(items=tuple(self.cv_breadcrumb_prefix()) + tuple(items))
 
     def _cv_breadcrumb_ancestors(self, context) -> List[BreadcrumbItem]:
-        return []  # implemented in Task 4
+        """
+        Items for the ancestor chain, innermost ancestor first (caller reverses).
+        Costs one scoped query per ancestor level; results are part of the per-request
+        breadcrumb cache (cv_breadcrumb).
+        """
+        viewset = self.cv_viewset
+        items: List[BreadcrumbItem] = []
+
+        parents = []
+        parent = viewset.parent
+        while parent is not None:
+            parents.append(parent)
+            parent = parent.viewset.parent
+        if not parents:
+            return items
+
+        # URL kwarg names of the ancestor chain, outermost first
+        arg_names = viewset.get_parent_url_args()
+        arg_names.reverse()
+        cv_raise(
+            len(parents) == len(arg_names),
+            f"breadcrumb ancestor chain mismatch at {viewset!r}: "
+            f"{len(parents)} parents but {len(arg_names)} parent url args",
+            CrudViewError,
+        )
+        arg_values = [self.kwargs[name] for name in arg_names]  # noqa
+
+        # innermost ancestor first: parents[0] is the immediate parent
+        for i, parent in enumerate(parents):
+            x = len(parents) - i
+            chain_names, chain_values = arg_names[:x], arg_values[:x]
+            ancestor_pk = chain_values[-1]
+
+            # scoped fetch: parent.viewset.get_queryset(view) filters by the ancestor's
+            # own parent pks from this view's url kwargs, so a tampered pk combination
+            # 404s instead of leaking a foreign object's label
+            try:
+                ancestor = parent.viewset.get_queryset(view=self).get(pk=ancestor_pk)
+            except ObjectDoesNotExist:
+                raise Http404(f"breadcrumb ancestor {parent.viewset.name}={ancestor_pk!r} not found")
+
+            grand_kwargs = dict(zip(chain_names[:-1], chain_values[:-1]))
+
+            # ancestor object item, linked to its detail view when registered
+            if parent.viewset.is_view_registered(self.cv_breadcrumb_key_object):
+                item_kwargs = dict(grand_kwargs)
+                item_kwargs[parent.viewset.pk_name] = ancestor_pk
+                items.append(
+                    BreadcrumbItem(
+                        title=self.cv_breadcrumb_object_label(ancestor),
+                        url_name=parent.viewset.get_router_name(self.cv_breadcrumb_key_object),
+                        kwargs=item_kwargs,
+                    )
+                )
+            else:
+                items.append(BreadcrumbItem(title=self.cv_breadcrumb_object_label(ancestor)))
+
+            # ancestor container item (list/card)
+            container_key = self.cv_breadcrumb_container_key(parent.viewset)
+            if container_key is not None:
+                items.append(
+                    BreadcrumbItem(
+                        title=self._cv_breadcrumb_container_label(parent.viewset, context),
+                        url_name=parent.viewset.get_router_name(container_key),
+                        kwargs=grand_kwargs,
+                    )
+                )
+        return items
 
     # -- django integration ----------------------------------------------
 

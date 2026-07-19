@@ -1,12 +1,14 @@
 """Breadcrumb models, mixin and template tag tests."""
 
 import pytest
+from django.http import Http404
 from django.test import RequestFactory
 from django.utils.translation import gettext_lazy
 from pydantic import ValidationError
 
 from crud_views.lib.breadcrumb import Breadcrumb, BreadcrumbItem
 from crud_views.lib.settings import crud_views_settings
+from tests.test1.app.models import Book, BookNote, Publisher
 
 
 class TestBreadcrumbItem:
@@ -136,6 +138,7 @@ class TestBreadcrumbTopLevel:
         bc = view.cv_breadcrumb()
         assert titles(bc)[0] == "Publishers"
         assert len(bc.items) == 2  # container + action label
+        assert bc.items[1].url_name is None  # action label (current page) is unlinked
 
     def test_no_detail_view_renders_object_unlinked(self, publisher_penguin):
         from tests.test1.app.views import PublisherBcNodetailUpdateView
@@ -209,3 +212,90 @@ class TestBreadcrumbPrefix:
             pk=publisher_penguin.pk,
         )
         assert titles(view.cv_breadcrumb())[0] == "All publishers"
+
+
+@pytest.fixture
+def bc_chain(db):
+    publisher = Publisher.objects.create(name="Penguin BC")
+    book = Book.objects.create(title="Hitchhiker BC", publisher=publisher)
+    note = BookNote.objects.create(book=book, note="First note")
+    return publisher, book, note
+
+
+@pytest.mark.django_db
+class TestBreadcrumbAncestors:
+    def _note_detail_view(self, publisher, book, note):
+        from tests.test1.app.views import BookNoteBcDetailView
+
+        url = f"/publisher_bc/{publisher.pk}/book_bc/{book.pk}/booknote_bc/{note.pk}/detail"
+        return make_view(
+            BookNoteBcDetailView,
+            url,
+            note,
+            publisher_bc_pk=publisher.pk,
+            book_bc_pk=book.pk,
+            pk=note.pk,
+        )
+
+    def test_deep_chain_titles(self, bc_chain):
+        publisher, book, note = bc_chain
+        bc = self._note_detail_view(publisher, book, note).cv_breadcrumb()
+        assert titles(bc) == [
+            "Publishers",
+            str(publisher),
+            "Books",
+            str(book),
+            "Book notes",
+            str(note),
+        ]
+
+    def test_deep_chain_urls_resolve(self, bc_chain):
+        publisher, book, note = bc_chain
+        bc = self._note_detail_view(publisher, book, note).cv_breadcrumb()
+        resolved = bc.resolve_items()
+        # ancestor object items link to their detail views with full chain kwargs
+        assert resolved[1]["url"] == f"/publisher_bc/{publisher.pk}/detail/"
+        assert resolved[3]["url"] == f"/publisher_bc/{publisher.pk}/book_bc/{book.pk}/detail/"
+        # container items carry the chain kwargs of their level
+        assert resolved[2]["url"] == f"/publisher_bc/{publisher.pk}/book_bc/"
+        assert resolved[4]["url"] == f"/publisher_bc/{publisher.pk}/book_bc/{book.pk}/booknote_bc/"
+
+    def test_child_list_view_trail(self, bc_chain):
+        from tests.test1.app.views import BookBcListView
+
+        publisher, book, note = bc_chain
+        view = make_view(BookBcListView, f"/publisher_bc/{publisher.pk}/book_bc/", publisher_bc_pk=publisher.pk)
+        assert titles(view.cv_breadcrumb()) == ["Publishers", str(publisher), "Books"]
+
+    def test_tampered_parent_pk_raises_404(self, bc_chain):
+        publisher, book, note = bc_chain
+        other = Publisher.objects.create(name="Other House")
+        # note's real book under a foreign publisher pk: ancestor lookup must 404, not leak
+        view = self._note_detail_view(other, book, note)
+        with pytest.raises(Http404):
+            view.cv_breadcrumb()
+
+    def test_ancestor_query_count(self, bc_chain, django_assert_num_queries):
+        publisher, book, note = bc_chain
+        view = self._note_detail_view(publisher, book, note)
+        with django_assert_num_queries(2):  # one per ancestor level: book, publisher
+            view.cv_breadcrumb()
+        with django_assert_num_queries(0):  # memoized
+            view.cv_breadcrumb()
+
+    def test_ancestor_without_detail_view_is_unlinked(self, monkeypatch, bc_chain):
+        from tests.test1.app.views import BookBcDetailView, cv_publisher_bc
+
+        publisher, book, note = bc_chain
+        # simulate an ancestor viewset without a detail view; monkeypatch restores _views
+        monkeypatch.delitem(cv_publisher_bc._views, "detail")
+        view = make_view(
+            BookBcDetailView,
+            f"/publisher_bc/{publisher.pk}/book_bc/{book.pk}/detail",
+            book,
+            publisher_bc_pk=publisher.pk,
+            pk=book.pk,
+        )
+        bc = view.cv_breadcrumb()
+        publisher_item = next(item for item in bc.items if item.title == str(publisher))
+        assert publisher_item.url_name is None

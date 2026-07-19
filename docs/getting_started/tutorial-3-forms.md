@@ -36,7 +36,7 @@ Both views reuse `AuthorForm`. `AuthorCreateView`:
 class AuthorCreateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, CreateViewPermissionRequired):
     cv_viewset = cv_author
     form_class = AuthorForm
-    cv_message = "Created author »{object}«"
+    cv_message_template_code = "Created author »{{ object }}«"
 ```
 
 And `AuthorUpdateView`:
@@ -46,16 +46,20 @@ And `AuthorUpdateView`:
 class AuthorUpdateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
     cv_viewset = cv_author
     form_class = AuthorForm
-    cv_message = "Updated author »{object}«"
+    cv_message_template_code = "Updated author »{{ object }}«"
 ```
 
 Both inherit `BreadcrumbMixin` — that's the example project's breadcrumb
 adoption point, covered in Part 6; ignore it until then. `CrispyViewMixin`
-renders `form_class` with crispy-forms instead of plain Django form
-rendering. `MessageMixin` adds a `messages.success` call on successful
-submit, using `cv_message` as the template: `{object}` interpolates
-`str(self.object)` — the model's `__str__` — so the flash message reads
-"Created author »Ursula Le Guin«".
+doesn't render the form itself — it passes the view into the form's kwargs so
+`CrispyModelForm` can build its crispy helper and layout, and the actual
+rendering happens through that helper in the templates. `MessageMixin` adds a
+`messages.success` call on successful submit: `cv_message_template_code` is
+an inline Django template string rendered with the object in context (hence
+`{{ object }}`, not `{object}`) — `str(self.object)` is what ends up in the
+message, so it reads "Created author »Ursula Le Guin«". Its sibling
+`cv_message_template` does the same job but points at a template snippet
+file instead of an inline string.
 
 ![Author create view](assets/tutorial-author-create.png)
 
@@ -70,7 +74,7 @@ Delete gets its own form class rather than `AuthorForm`:
 class AuthorDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     cv_viewset = cv_author
     form_class = CrispyDeleteForm
-    cv_message = "Deleted author »{object}«"
+    cv_message_template_code = "Deleted author »{{ object }}«"
     cv_show_related_objects = True
 ```
 

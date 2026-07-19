@@ -1,6 +1,6 @@
 # Django CRUD Views - Changelog
 
-## Unreleased
+## 0.17.0
 
 ### Added
 
@@ -8,8 +8,28 @@
   Conduct, a contributing guide, a security policy, GitHub issue forms (bug
   report / feature request), and a pull request template. These satisfy the
   GitHub community-standards checklist and do not affect the package.
+- Documentation overhaul: the old two-page tutorial is replaced by a six-part series built
+  step by step against the `examples/bootstrap5/library` app, with a `cv-sync` CI check that
+  keeps marked docs code blocks verbatim-identical to the example source; new `nested.md`
+  and `formsets.md` reference pages; a grouped reference nav; a docs-index teaser sharing
+  the README voice; FAQ answers cross-linked to reference pages and example apps. Does not
+  affect the package.
+- README: hero screenshot of the example app and a "Run the example project" section — a
+  tool-free `venv`/`pip` path plus a `task dev && task run` shortcut. The tool-free
+  instructions are executed verbatim on Linux, macOS and Windows by the new
+  `readme-examples` CI workflow. Does not affect the package.
 - Breadcrumbs: `CrudViewBreadcrumbMixin` builds a Bootstrap 5.3 breadcrumb from the ViewSet hierarchy — `[prefix] › (ancestors …) › container › object › action` — and `{% cv_breadcrumb %}` renders it (nothing at all for views without the mixin, so it is safe to place unconditionally in `CRUD_VIEWS_EXTENDS`). Leading host-application items come from the new `CRUD_VIEWS_BREADCRUMB_PREFIX` setting (validated by check `E102`) or from overriding `cv_breadcrumb_prefix()`. Labels and links are customizable via `cv_breadcrumb_key_object` (mistyped overrides warn with `viewset.W270`), `cv_breadcrumb_container_label`, `cv_breadcrumb_object_label()` and `cv_breadcrumb_get()`. Ancestors are resolved with parent-scoped queries, so a tampered parent pk in the URL yields 404. All `examples/bootstrap5` feature apps adopt it. See `docs/reference/breadcrumb.md`.
 - Conditional field-groups and conditional formsets: a checkbox toggle can hide a group of fields (or an entire first-level formset). When off, validation is skipped entirely (field-level errors included) and values are cleared (formsets: `skip` keeps rows, `purge` deletes them). Enforced server-side; `toggle.js` (registered in the `cv_js` asset registry, modal-aware) handles show/hide only. The formset save flow now runs in a single transaction so a failed sibling save rolls a purge back. System checks: `E310` (conditional on nested formset), `E311` (toggle field missing from the parent form, including never-injected `ConditionalFormSet` toggles), `W320` (non-nullable field cleared by a group), `W321` (`purge` on a formset with `can_delete=False`/`edit_only=True`). See `docs/reference/conditional.md`.
+
+### Fixed
+
+- `task run` now works from the repository root (delegates to `examples/bootstrap5` via a
+  taskfile include) — README and the getting-started docs promised it, but the root task
+  did not exist.
+- Examples and docs used a dead `cv_message` attribute; replaced with the real
+  `cv_message_template_code` API (`{{ object }}` interpolation). The underlying
+  system-check gap — unknown `cv_*` names are silently ignored — is tracked in #86.
+- Repaired committed merge-conflict markers in `docs/faq.md`.
 
 ### Changed
 

@@ -9,6 +9,7 @@ Usage (from the repo root):
 Boots the seeded dev server on a scratch port, logs in as the demo user
 ``alice`` and captures the tutorial pages into docs/getting_started/assets/.
 Re-run whenever the UI changes; commit the PNGs like normal files.
+Also captures readme-hero.png, the README's hero image.
 """
 
 import subprocess
@@ -30,6 +31,7 @@ STATIC_PAGES = [
     ("tutorial-author-list", "/library/author/"),
     ("tutorial-author-create", "/library/author/create/"),
     ("tutorial-book-list", "/library/book/"),
+    ("readme-hero", "/library/author/"),
 ]
 
 

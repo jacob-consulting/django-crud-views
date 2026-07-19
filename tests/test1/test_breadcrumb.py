@@ -348,3 +348,27 @@ class TestBreadcrumbTag:
         response = client.get(f"/publisher_bc/{publisher_penguin.pk}/detail/")
         assert response.status_code == 200
         assert b'aria-label="breadcrumb"' in response.content
+
+
+@pytest.mark.django_db
+class TestBreadcrumbCheck:
+    def _messages(self, view_class):
+        return [m for check in view_class.checks() for m in check.messages()]
+
+    def test_overridden_unregistered_key_warns_w270(self):
+        from tests.test1.app.views import PublisherBcDetailView
+
+        class Typo(PublisherBcDetailView):
+            cv_breadcrumb_key_object = "detials"  # typo
+
+        assert any(m.id == "viewset.W270" for m in self._messages(Typo))
+
+    def test_default_key_without_detail_view_stays_silent(self):
+        from tests.test1.app.views import PublisherBcNodetailUpdateView
+
+        assert not any(m.id == "viewset.W270" for m in self._messages(PublisherBcNodetailUpdateView))
+
+    def test_registered_key_stays_silent(self):
+        from tests.test1.app.views import PublisherBcDetailView
+
+        assert not any(m.id == "viewset.W270" for m in self._messages(PublisherBcDetailView))

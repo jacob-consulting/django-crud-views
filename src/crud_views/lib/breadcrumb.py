@@ -5,13 +5,15 @@ BreadcrumbItem/Breadcrumb are late-resolving: items carry a URL pattern *name* p
 args/kwargs and are resolved to concrete URLs only when rendered.
 """
 
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, Iterable, List, Tuple
 
+from django.core.checks import CheckMessage, Warning as CheckWarning
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
 from django.urls import reverse
 from pydantic import BaseModel, field_validator, model_validator
 
+from crud_views.lib.check import Check
 from crud_views.lib.exceptions import CrudViewError, cv_raise
 from crud_views.lib.settings import crud_views_settings
 
@@ -52,6 +54,29 @@ class Breadcrumb(BaseModel):
         return [item.resolve() for item in self.items]
 
 
+class CheckBreadcrumbKeyObject(Check):
+    """Warn when an overridden cv_breadcrumb_key_object names an unregistered view key."""
+
+    id: str = "W270"
+    key: str
+    default_key: str
+    msg: str = (
+        "cv_breadcrumb_key_object »{key}« is not registered at »{context}« — "
+        "object breadcrumb items will render without a link (typo?)"
+    )
+
+    def get_message_context(self) -> dict:
+        context = super().get_message_context()
+        context.update(key=self.key)
+        return context
+
+    def messages(self) -> Iterable[CheckMessage]:
+        if self.key == self.default_key:
+            return  # default with a missing detail view is a legitimate configuration
+        if not self.context.cv_viewset.is_view_registered(self.key):
+            yield CheckWarning(id=self.get_id(), msg=self.get_message())
+
+
 class CrudViewBreadcrumbMixin:
     """
     Adds a Breadcrumb to the view context as ``cv_breadcrumb``, built from the
@@ -61,6 +86,15 @@ class CrudViewBreadcrumbMixin:
 
     cv_breadcrumb_key_object: str = "detail"  # view key object items link to
     cv_breadcrumb_container_label: str | None = None  # overrides the container (list/card) label
+
+    @classmethod
+    def checks(cls) -> Iterable[Check]:
+        yield from super().checks()  # noqa
+        yield CheckBreadcrumbKeyObject(
+            context=cls,
+            key=cls.cv_breadcrumb_key_object,
+            default_key=CrudViewBreadcrumbMixin.cv_breadcrumb_key_object,
+        )
 
     # -- extension points -------------------------------------------------
 

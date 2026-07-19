@@ -74,4 +74,4 @@ Visiting the list URL now shows a sortable, paginated table of authors:
 
 ![Author list view](assets/tutorial-author-list.png)
 
-Next: Part 3 — Create, update, delete
+Next: [Part 3 — Create, update, delete](tutorial-3-forms.md)

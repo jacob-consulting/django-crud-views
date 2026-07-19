@@ -17,6 +17,10 @@
 - Line length 120, double quotes, ruff (`task format`, `task check`) before each commit touching `src/` or `examples/`.
 - New system check IDs from the branch (`E310`, `E311`, `W320`) do not collide with current IDs in use (`E100`, `E101`, `E300`, `W110`, `W330`, `W331`) — verified.
 - Given another session is active in this same (non-worktree) directory on an unrelated feature, execute this plan in an isolated git worktree (see `superpowers:using-git-worktrees`).
+- **Shell hazard — `VIRTUAL_ENV` is pinned globally.** This machine's shell profile unconditionally sets `VIRTUAL_ENV=/home/alex/projects/alex/django-crud-views/.venv` (the root checkout's venv) on every new shell. Two distinct risks follow, and **every command in every task below — every `Run:` line and every bash block, whether it invokes `uv`, `task`, bare `pytest`, or `manage.py` — must be preceded by `unset VIRTUAL_ENV` in that same shell call** (the harness does not persist shell state between Bash calls, so this is not a one-time fix):
+  1. *Corruption:* `uv`/`task dev` respect `VIRTUAL_ENV` over project-relative discovery, so running them from inside the worktree without unsetting it first repoints the **shared root venv's** editable `django-crud-views` install at the worktree — breaking the environment for any other session using the root checkout. (This happened once while setting this worktree up and was repaired; do not repeat it.)
+  2. *Silent false-green:* a bare `pytest`/`manage.py` invocation with `VIRTUAL_ENV` still pointing at root runs against the **root checkout's installed package**, not this worktree's edits — tests can report PASS while testing old, unmodified code.
+  The worktree's own `.venv` was created fresh at `<worktree>/.venv` with `VIRTUAL_ENV` unset and confirmed isolated (its `crud_views` import resolves inside the worktree, not the root checkout) with a clean baseline (755 passed, 1 skipped).
 
 ---
 

@@ -8,6 +8,11 @@
 #   - `--noreload` on runserver (single process, clean teardown)
 #   - runserver in the background + scripts/wait_for_server.py instead of a
 #     human opening the browser
+#   - `kill %1 || true` cleanup on Linux/macOS (no README analog)
+#   - Windows redirects runserver output to runserver.log instead of the
+#     inherited console handle, and has no explicit kill: `start /b`'s child
+#     is terminated by the runner's job cleanup, and the redirection is what
+#     prevents the step from hanging on that inherited handle
 name: readme-examples
 
 on:
@@ -65,5 +70,5 @@ jobs:
           cd examples\bootstrap5
           python manage.py migrate
           python manage.py seed
-          start /b python manage.py runserver --noreload
+          start /b python manage.py runserver --noreload > runserver.log 2>&1 < nul
           python ..\..\scripts\wait_for_server.py http://127.0.0.1:8000/login/ 60

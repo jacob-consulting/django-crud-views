@@ -318,6 +318,12 @@ To render wrappers, headings, or separators only when the user may access a key,
 {% endif %}
 ```
 
+### Rendering a custom loop of buttons
+
+For a loop over the view's resolved, access-filtered button contexts (e.g. to wrap each
+button in your own markup) rather than one key at a time, see
+[FAQ: I need to render a context button manually in a template](../faq.md#i-need-to-render-a-context-button-manually-in-a-template).
+
 ## Import Paths
 
 ```python

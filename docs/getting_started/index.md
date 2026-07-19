@@ -1,16 +1,28 @@
-# Preface
+# Getting started
 
-This tutorial provides a comprehensive guide to using django-crud-views, a lightweight library that simplifies building
-CRUD (Create, Read, Update, Delete) views in Django. The tutorial covers installation, configuration, and usage of the
-library to streamline common database operations with minimal boilerplate code. It explores key features such as
-class-based views, form handling, and customization options to tailor CRUD functionality to specific project needs.
-Through practical examples and step-by-step instructions, developers will learn how to efficiently implement CRUD
-interfaces, reducing development time while maintaining Django’s flexibility and robustness.
+The tutorial builds a small library application — authors and their books — step by step.
+It is the `library/` app of the example project that ships in the repository, so every
+code block you see is real, tested code: a CI check verifies the tutorial matches the
+example source.
 
-## Proceed with the tutorial
+## Follow the tutorial
 
-Click here to proceed with the [tutorial.](tutorial.md)
+1. [Part 1 — Setup & first ViewSet](tutorial-1-setup.md)
+2. [Part 2 — The list view](tutorial-2-list.md)
+3. [Part 3 — Create, update, delete](tutorial-3-forms.md)
+4. [Part 4 — The detail view](tutorial-4-detail.md)
+5. [Part 5 — Filters & permissions](tutorial-5-filters-permissions.md)
+6. [Part 6 — A second model: ordering & breadcrumbs](tutorial-6-books.md)
 
-## Or run the example application
+## Or run the finished result first
 
-If you want to see Django CRUD views in action, please goto [index.md](../development/index.md).
+The example project contains the tutorial's `library/` app plus one app per feature:
+
+```bash
+git clone https://github.com/jacob-consulting/django-crud-views.git
+cd django-crud-views
+task dev   # create the venv (requires uv and task)
+task run   # migrate, seed and serve http://localhost:8000/
+```
+
+Log in with `alice` / `alice` and explore.

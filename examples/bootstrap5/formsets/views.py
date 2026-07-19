@@ -139,7 +139,7 @@ class QuestionnaireCreateView(
     cv_viewset = cv_questionnaire
     form_class = QuestionnaireForm
     cv_formsets: FormSets = cv_formsets
-    cv_message = "Created questionnaire »{object}«"
+    cv_message_template_code = "Created questionnaire »{{ object }}«"
 
 
 class QuestionnaireUpdateView(
@@ -148,10 +148,10 @@ class QuestionnaireUpdateView(
     cv_viewset = cv_questionnaire
     form_class = QuestionnaireForm
     cv_formsets: FormSets = cv_formsets
-    cv_message = "Updated questionnaire »{object}«"
+    cv_message_template_code = "Updated questionnaire »{{ object }}«"
 
 
 class QuestionnaireDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     cv_viewset = cv_questionnaire
     form_class = CrispyDeleteForm
-    cv_message = "Deleted questionnaire »{object}«"
+    cv_message_template_code = "Deleted questionnaire »{{ object }}«"

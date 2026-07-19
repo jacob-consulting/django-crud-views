@@ -89,19 +89,19 @@ class AuthorDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
 class AuthorCreateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, CreateViewPermissionRequired):
     cv_viewset = cv_author
     form_class = AuthorForm
-    cv_message = "Created author »{object}«"
+    cv_message_template_code = "Created author »{{ object }}«"
 
 
 class AuthorUpdateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
     cv_viewset = cv_author
     form_class = AuthorForm
-    cv_message = "Updated author »{object}«"
+    cv_message_template_code = "Updated author »{{ object }}«"
 
 
 class AuthorDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     cv_viewset = cv_author
     form_class = CrispyDeleteForm
-    cv_message = "Deleted author »{object}«"
+    cv_message_template_code = "Deleted author »{{ object }}«"
     cv_show_related_objects = True
 
 
@@ -144,26 +144,26 @@ class BookDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
 class BookCreateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, CreateViewPermissionRequired):
     cv_viewset = cv_book
     form_class = BookForm
-    cv_message = "Created book »{object}«"
+    cv_message_template_code = "Created book »{{ object }}«"
 
 
 class BookUpdateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
     cv_viewset = cv_book
     form_class = BookForm
-    cv_message = "Updated book »{object}«"
+    cv_message_template_code = "Updated book »{{ object }}«"
 
 
 class BookDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     cv_viewset = cv_book
     form_class = CrispyDeleteForm
-    cv_message = "Deleted book »{object}«"
+    cv_message_template_code = "Deleted book »{{ object }}«"
 
 
 class BookUpView(BreadcrumbMixin, MessageMixin, OrderedUpViewPermissionRequired):
     cv_viewset = cv_book
-    cv_message = "Moved book »{object}« up"
+    cv_message_template_code = "Moved book »{{ object }}« up"
 
 
 class BookDownView(BreadcrumbMixin, MessageMixin, OrderedUpDownPermissionRequired):
     cv_viewset = cv_book
-    cv_message = "Moved book »{object}« down"
+    cv_message_template_code = "Moved book »{{ object }}« down"

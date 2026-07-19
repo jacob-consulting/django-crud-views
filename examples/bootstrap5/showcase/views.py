@@ -85,21 +85,21 @@ class RecipeCreateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, CreateVie
     cv_viewset = cv_recipe
     cv_context_actions = ["card"]
     form_class = RecipeForm
-    cv_message = "Created recipe »{object}«"
+    cv_message_template_code = "Created recipe »{{ object }}«"
 
 
 class RecipeUpdateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
     cv_viewset = cv_recipe
     cv_context_actions = ["card"]
     form_class = RecipeForm
-    cv_message = "Updated recipe »{object}«"
+    cv_message_template_code = "Updated recipe »{{ object }}«"
 
 
 class RecipeDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     cv_viewset = cv_recipe
     cv_context_actions = ["card"]
     form_class = CrispyDeleteForm
-    cv_message = "Deleted recipe »{object}«"
+    cv_message_template_code = "Deleted recipe »{{ object }}«"
     cv_modal = True
 
 

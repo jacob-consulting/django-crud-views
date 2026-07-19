@@ -57,19 +57,19 @@ class CompanyDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
 class CompanyCreateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, CreateViewPermissionRequired):
     cv_viewset = cv_company
     form_class = CompanyForm
-    cv_message = "Created company »{object}«"
+    cv_message_template_code = "Created company »{{ object }}«"
 
 
 class CompanyUpdateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
     cv_viewset = cv_company
     form_class = CompanyForm
-    cv_message = "Updated company »{object}«"
+    cv_message_template_code = "Updated company »{{ object }}«"
 
 
 class CompanyDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     cv_viewset = cv_company
     form_class = CrispyDeleteForm
-    cv_message = "Deleted company »{object}«"
+    cv_message_template_code = "Deleted company »{{ object }}«"
 
 
 # --------------------------------------------------------------------------- Department (child of Company)
@@ -116,19 +116,19 @@ class DepartmentCreateView(
 ):
     cv_viewset = cv_department
     form_class = DepartmentForm
-    cv_message = "Created department »{object}«"
+    cv_message_template_code = "Created department »{{ object }}«"
 
 
 class DepartmentUpdateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
     cv_viewset = cv_department
     form_class = DepartmentForm
-    cv_message = "Updated department »{object}«"
+    cv_message_template_code = "Updated department »{{ object }}«"
 
 
 class DepartmentDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     cv_viewset = cv_department
     form_class = CrispyDeleteForm
-    cv_message = "Deleted department »{object}«"
+    cv_message_template_code = "Deleted department »{{ object }}«"
 
 
 # --------------------------------------------------------------------------- Employee (grandchild)
@@ -175,19 +175,19 @@ class EmployeeCreateView(
 ):
     cv_viewset = cv_employee
     form_class = EmployeeForm
-    cv_message = "Created employee »{object}«"
+    cv_message_template_code = "Created employee »{{ object }}«"
 
 
 class EmployeeUpdateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
     cv_viewset = cv_employee
     form_class = EmployeeForm
-    cv_message = "Updated employee »{object}«"
+    cv_message_template_code = "Updated employee »{{ object }}«"
 
 
 class EmployeeDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     cv_viewset = cv_employee
     form_class = CrispyDeleteForm
-    cv_message = "Deleted employee »{object}«"
+    cv_message_template_code = "Deleted employee »{{ object }}«"
 
 
 # --------------------------------------------------------------------------- Office (second child of Company)
@@ -233,16 +233,16 @@ class OfficeCreateView(
 ):
     cv_viewset = cv_office
     form_class = OfficeForm
-    cv_message = "Created office »{object}«"
+    cv_message_template_code = "Created office »{{ object }}«"
 
 
 class OfficeUpdateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
     cv_viewset = cv_office
     form_class = OfficeForm
-    cv_message = "Updated office »{object}«"
+    cv_message_template_code = "Updated office »{{ object }}«"
 
 
 class OfficeDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     cv_viewset = cv_office
     form_class = CrispyDeleteForm
-    cv_message = "Deleted office »{object}«"
+    cv_message_template_code = "Deleted office »{{ object }}«"

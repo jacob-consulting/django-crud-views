@@ -1,5 +1,5 @@
 from functools import cached_property
-from typing import Any, ClassVar, List, Tuple
+from typing import Any, ClassVar, Dict, List, Tuple
 
 from box import Box
 from django.conf import settings
@@ -32,7 +32,7 @@ class CrudViewsSettings(BaseModel):
     session_data_key: str = from_settings("CRUD_VIEWS_SESSION_DATA_KEY", "viewset")
 
     # breadcrumb
-    breadcrumb_prefix: List[dict] = from_settings("CRUD_VIEWS_BREADCRUMB_PREFIX", default=[])
+    breadcrumb_prefix: List[Dict[str, Any]] = from_settings("CRUD_VIEWS_BREADCRUMB_PREFIX", default=[])
 
     # filter
     filter_persistence: bool = from_settings("CRUD_VIEWS_FILTER_PERSISTENCE", default=True)

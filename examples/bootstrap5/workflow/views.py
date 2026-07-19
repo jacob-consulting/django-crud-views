@@ -63,21 +63,21 @@ class CampaignDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
 class CampaignCreateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, CreateViewPermissionRequired):
     cv_viewset = cv_campaign
     form_class = CampaignForm
-    cv_message = "Created campaign »{object}«"
+    cv_message_template_code = "Created campaign »{{ object }}«"
 
 
 class CampaignUpdateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
     cv_viewset = cv_campaign
     cv_context_actions = ["home", "detail", "update", "workflow", "delete"]
     form_class = CampaignForm
-    cv_message = "Updated campaign »{object}«"
+    cv_message_template_code = "Updated campaign »{{ object }}«"
 
 
 class CampaignDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     cv_viewset = cv_campaign
     cv_context_actions = ["home", "detail", "update", "workflow", "delete"]
     form_class = CrispyDeleteForm
-    cv_message = "Deleted campaign »{object}«"
+    cv_message_template_code = "Deleted campaign »{{ object }}«"
 
 
 class CampaignWorkflowForm(WorkflowForm):

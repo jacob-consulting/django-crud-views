@@ -101,19 +101,19 @@ class RegistrationDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired
 class RegistrationCreateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, CreateViewPermissionRequired):
     cv_viewset = cv_registration
     form_class = RegistrationForm
-    cv_message = "Created registration »{object}«"
+    cv_message_template_code = "Created registration »{{ object }}«"
 
 
 class RegistrationUpdateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
     cv_viewset = cv_registration
     form_class = RegistrationForm
-    cv_message = "Updated registration »{object}«"
+    cv_message_template_code = "Updated registration »{{ object }}«"
 
 
 class RegistrationDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     cv_viewset = cv_registration
     form_class = CrispyDeleteForm
-    cv_message = "Deleted registration »{object}«"
+    cv_message_template_code = "Deleted registration »{{ object }}«"
 
 
 # ---------------- Kind 2: conditional first-level formset ----------------
@@ -245,17 +245,17 @@ class EventCreateView(BreadcrumbMixin, CrispyViewMixin, FormSetMixin, MessageMix
     cv_viewset = cv_event
     form_class = EventForm
     cv_formsets: FormSets = cv_event_formsets
-    cv_message = "Created event »{object}«"
+    cv_message_template_code = "Created event »{{ object }}«"
 
 
 class EventUpdateView(BreadcrumbMixin, CrispyViewMixin, FormSetMixin, MessageMixin, UpdateViewPermissionRequired):
     cv_viewset = cv_event
     form_class = EventForm
     cv_formsets: FormSets = cv_event_formsets
-    cv_message = "Updated event »{object}«"
+    cv_message_template_code = "Updated event »{{ object }}«"
 
 
 class EventDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     cv_viewset = cv_event
     form_class = CrispyDeleteForm
-    cv_message = "Deleted event »{object}«"
+    cv_message_template_code = "Deleted event »{{ object }}«"

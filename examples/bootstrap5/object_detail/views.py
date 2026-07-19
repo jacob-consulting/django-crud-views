@@ -159,7 +159,7 @@ class ProductListView(BreadcrumbMixin, ListViewTableMixin, ListViewPermissionReq
 class ProductCreateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, CreateViewPermissionRequired):
     cv_viewset = cv_product
     form_class = ProductForm
-    cv_message = "Created product »{object}«"
+    cv_message_template_code = "Created product »{{ object }}«"
 
 
 # --------------------------------------------------------------------------- supplier (minimal detail-only)

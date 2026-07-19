@@ -52,7 +52,7 @@ class AuthorContactView(MessageMixin, CrispyViewMixin, CustomFormViewPermissionR
     cv_viewset = cv_author
     form_class = AuthorContactForm
 
-    cv_message_template_code = "Successfully contacted author »{object}«"
+    cv_message_template_code = "Successfully contacted author »{{ object }}«"
     cv_context_actions = ["parent", "detail", "update", "delete", "contact"]
     cv_header_template_code = _("Contact Author")
     cv_paragraph_template_code = _("Send a message to the Author")
@@ -98,7 +98,7 @@ Combine with `MessageMixin` to display a flash message after a successful submis
 ```python
 class AuthorContactView(MessageMixin, CrispyViewMixin, CustomFormViewPermissionRequired):
     ...
-    cv_message_template_code = "Successfully contacted author »{object}«"
+    cv_message_template_code = "Successfully contacted author »{{ object }}«"
 ```
 
 ## Non-Object View

@@ -27,7 +27,7 @@ class AuthorUpdateForm(CrispyModelForm):
 class AuthorUpdateView(CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
     form_class = AuthorUpdateForm
     cv_viewset = cv_author
-    cv_message = "Updated author »{object}«"
+    cv_message_template_code = "Updated author »{{ object }}«"
 ```
 
 ## View Classes
@@ -47,7 +47,7 @@ Both inherit from Django's `generic.UpdateView` and `CrudView`.
 | `form_class` | `Form` | — | The form class for the update form |
 | `cv_viewset` | `ViewSet` | — | The ViewSet this view belongs to |
 | `cv_success_key` | `str` | `"list"` | ViewSet key to redirect to after success |
-| `cv_context_actions` | `list[str]` | `["home"]` | Actions shown in the header area |
+| `cv_context_actions` | `list[str]` | `["home", "detail", "update", "delete"]` | Actions shown in the header area |
 
 ## Reusing the Create Form
 
@@ -78,7 +78,7 @@ Add `MessageMixin` to show a success message after updating:
 class AuthorUpdateView(CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
     form_class = AuthorUpdateForm
     cv_viewset = cv_author
-    cv_message = "Updated author »{object}«"
+    cv_message_template_code = "Updated author »{{ object }}«"
 ```
 
 ## Form Processing Hooks

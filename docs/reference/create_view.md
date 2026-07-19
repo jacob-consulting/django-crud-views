@@ -35,7 +35,7 @@ class AuthorCreateForm(CrispyModelForm):
 class AuthorCreateView(CrispyViewMixin, MessageMixin, CreateViewPermissionRequired):
     form_class = AuthorCreateForm
     cv_viewset = cv_author
-    cv_message = "Created author »{object}«"
+    cv_message_template_code = "Created author »{{ object }}«"
 ```
 
 ## View Classes
@@ -55,7 +55,7 @@ Both inherit from Django's `generic.CreateView` and `CrudView`.
 | `form_class` | `Form` | — | The form class for the create form |
 | `cv_viewset` | `ViewSet` | — | The ViewSet this view belongs to |
 | `cv_success_key` | `str` | `"list"` | ViewSet key to redirect to after success |
-| `cv_context_actions` | `list[str]` | `["home"]` | Actions shown in the header area |
+| `cv_context_actions` | `list[str]` | `["home", "create"]` | Actions shown in the header area |
 
 ## Form Classes
 
@@ -97,10 +97,10 @@ Add `MessageMixin` to show a success message after creation:
 class AuthorCreateView(CrispyViewMixin, MessageMixin, CreateViewPermissionRequired):
     form_class = AuthorCreateForm
     cv_viewset = cv_author
-    cv_message = "Created author »{object}«"
+    cv_message_template_code = "Created author »{{ object }}«"
 ```
 
-The `{object}` placeholder is replaced with the string representation of the created instance.
+`cv_message_template_code` is a Django template string; `{{ object }}` renders to the string representation of the created instance.
 
 ## Creating Child Objects
 

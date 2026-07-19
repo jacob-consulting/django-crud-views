@@ -58,7 +58,7 @@ views and `self.cv_get_parent_object()` for child-create views.
 class PersonDeleteView(CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     form_class = CrispyDeleteForm
     cv_viewset = cv_person
-    cv_message = "Deleted person »{object}«"
+    cv_message_template_code = "Deleted person »{{ object }}«"
 
     @classmethod
     def cv_action_enabled(cls, user, obj=None):

@@ -10,9 +10,12 @@
 #     human opening the browser
 #   - `kill %1 || true` cleanup on Linux/macOS (no README analog)
 #   - Windows redirects runserver output to runserver.log instead of the
-#     inherited console handle, and has no explicit kill: `start /b`'s child
-#     is terminated by the runner's job cleanup, and the redirection is what
-#     prevents the step from hanging on that inherited handle
+#     inherited console handle; the redirection is what prevents the step from
+#     hanging on that inherited handle
+#   - a separate Windows cleanup step reaps the server (no README analog).
+#     `start /b` detaches it, so nothing in the step guarantees it is gone.
+#     In practice it has been observed already dead by the next step, so this
+#     is defensive tidying, not a proven fix for anything.
 name: readme-examples
 
 on:
@@ -72,3 +75,25 @@ jobs:
           python manage.py seed
           start /b python manage.py runserver --noreload > runserver.log 2>&1 < nul
           python ..\..\scripts\wait_for_server.py http://127.0.0.1:8000/login/ 60
+      # `start /b` detaches the server; nothing in the step above guarantees it
+      # is gone. This reaps it explicitly, before the actions' post-run steps.
+      #
+      # NOT a proven fix for the intermittent post-run failure seen on PR #94:
+      # on the first run with this step, tasklist reported no surviving python
+      # process, so the step had nothing to kill. That failure produced no
+      # diagnostic output and both post-run steps failed within the same second,
+      # which looks more like an infrastructure blip than a file lock. Keep this
+      # as cheap insurance against a detached server lingering; if the flake
+      # recurs, the tasklist output here is the first thing to read.
+      #
+      # always() so the server is reaped even when the step above failed.
+      # Matching on the image name is safe: nothing later in the job needs
+      # Python, and the runner is disposable. `exit /b 0` keeps cleanup from
+      # ever failing the job.
+      - name: Stop example server (Windows)
+        if: always() && runner.os == 'Windows'
+        shell: cmd
+        run: |
+          tasklist /FI "IMAGENAME eq python.exe"
+          taskkill /F /IM python.exe
+          exit /b 0

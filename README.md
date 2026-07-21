@@ -125,4 +125,4 @@ is `task dev && task run` from the repository root.
 Full tutorial and reference: <https://django-crud-views.readthedocs.io>
 
 ## Current version
-Current version: 0.17.0
+Current version: 0.18.0

@@ -1,3 +1,6 @@
+import re
+
+import django
 import pytest
 from django.core.exceptions import ImproperlyConfigured
 from django.template import Context, Template
@@ -276,3 +279,28 @@ def test_check_asset_registry_w332_integrity_on_local_path(asset_registry):
     asset_registry.register_assets(key="picker", css=[Asset(path="picker/plugin.css", integrity="sha384-abc")])
     messages = check_asset_registry()
     assert [m.id for m in messages] == ["crud_views.W332"]
+
+
+@pytest.mark.skipif(django.VERSION < (6, 0), reason="built-in CSP middleware requires Django 6.0")
+def test_django6_builtin_csp_nonce_roundtrip(asset_registry):
+    from django.http import HttpResponse
+    from django.middleware.csp import ContentSecurityPolicyMiddleware
+    from django.test import RequestFactory, override_settings
+    from django.utils.csp import CSP
+
+    rendered = {}
+
+    def get_response(request):
+        html = _render_ctx("cv_js", {"request": request})
+        rendered["html"] = html
+        return HttpResponse(html)
+
+    with override_settings(SECURE_CSP={"script-src": [CSP.SELF, CSP.NONCE]}):
+        middleware = ContentSecurityPolicyMiddleware(get_response)
+        response = middleware(RequestFactory().get("/"))
+
+    match = re.search(r'nonce="([^"]+)"', rendered["html"])
+    assert match, rendered["html"]
+    nonce = match.group(1)
+    assert rendered["html"].count(f'nonce="{nonce}"') == 5  # same nonce on all 5 core scripts
+    assert f"'nonce-{nonce}'" in response["Content-Security-Policy"]

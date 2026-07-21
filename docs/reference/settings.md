@@ -60,7 +60,7 @@ Default list actions for list view.
 
 django-crud-views is compatible with strict Content Security Policy headers. The package does not use inline scripts, inline event handlers, inline styles, or `javascript:` URIs.
 
-Projects can enforce a CSP without `unsafe-inline` for both `script-src` and `style-src` directives.
+Projects can enforce a CSP without `unsafe-inline` for both `script-src` and `style-src` directives. For nonce-based strict CSP (`'strict-dynamic'`), the asset tags emit nonces automatically — see [Nonce support](#nonce-support).
 
 ### Template tags
 
@@ -91,7 +91,42 @@ All interactive behavior (list action form submissions, cancel button navigation
 - `[data-cv-action="submit-form"]` elements trigger form submission
 - `[data-cv-cancel-url]` elements trigger navigation
 
-No nonces or hashes are required.
+For host-allowlist policies (`script-src 'self'`) no nonces or hashes are required. Nonce-based policies are supported automatically — see below.
+
+### Nonce support
+
+Under a strict CSP (`script-src 'nonce-…' 'strict-dynamic'`), browsers ignore host allowlists, so every `<script>` tag needs a `nonce` attribute. `{% cv_js %}` and `{% cv_css %}` detect the request's CSP nonce automatically and render it on every tag — no configuration needed:
+
+- **Django 6.0+ built-in CSP**: enable `django.middleware.csp.ContentSecurityPolicyMiddleware` and include the `CSP.NONCE` sentinel in `SECURE_CSP`. The tags use `django.middleware.csp.get_nonce()`.
+- **Django 4.2/5.2 with [django-csp](https://django-csp.readthedocs.io/)**: the tags read the `request.csp_nonce` attribute set by `CSPMiddleware`.
+- **Custom setups**: store the nonce on the request under the attribute named by `CRUD_VIEWS_CSP_NONCE_ATTR` (default `csp_nonce`), or expose it as a `csp_nonce` template context variable.
+
+Without CSP middleware the output is unchanged — no nonce attributes are rendered. The tags need the `django.template.context_processors.request` context processor (part of Django's default template configuration).
+
+| Key                        | Description                                                        | Type  | Default     |
+|----------------------------|----------------------------------------------------------------------|-------|-------------|
+| CRUD_VIEWS_CSP_NONCE_ATTR  | Request attribute the asset tags read the CSP nonce from           | `str` | `csp_nonce` |
+
+### Subresource integrity (SRI)
+
+Asset bundles registered via `register_assets()` accept `Asset` instances alongside plain path strings, carrying `integrity` and `crossorigin` attributes for external URLs:
+
+```python
+from crud_views.lib.assets import Asset, register_assets
+
+register_assets(
+    key="my_widget",
+    js=[
+        "my_widget/widget.js",  # own static file — no SRI needed
+        Asset(
+            path="https://cdn.example.com/lib.min.js",
+            integrity="sha384-…",  # crossorigin="anonymous" is added automatically
+        ),
+    ],
+)
+```
+
+System checks validate SRI metadata at startup: `crud_views.E330` rejects integrity values without a `sha256-`/`sha384-`/`sha512-` prefix, and `crud_views.W332` warns when integrity is set on a same-origin static path (SRI there breaks on every asset edit and adds no security value).
 
 ## django-tables2 compatibility
 

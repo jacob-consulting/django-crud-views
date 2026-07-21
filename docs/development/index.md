@@ -18,6 +18,16 @@ git clone git@github.com:jacob-consulting/django-crud-views.git
 cd django-crud-views
 task dev
 ```
+
+## JS tests
+
+The package's static JavaScript (`formset.js`, `modal.js`, `toggle.js`) has a
+[Vitest](https://vitest.dev/) unit-test suite. It needs [Node.js](https://nodejs.org/) 20+:
+
+```bash
+task test-js
+```
+
 ## Run example application
 
 Now let's run the example application with the `bootstrap5` theme:

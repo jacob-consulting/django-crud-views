@@ -1,0 +1,23 @@
+{
+  "name": "django-crud-views-js-tests",
+  "version": "1.0.0",
+  "description": "Dev-only JS unit-test harness (see superpowers/specs/2026-07-21-js-test-harness-design.md)",
+  "directories": {
+    "doc": "docs",
+    "example": "examples",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "jquery": "~3.7.1",
+    "jsdom": "^29.1.1",
+    "vitest": "^4.1.10"
+  }
+}

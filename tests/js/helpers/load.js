@@ -1,15 +1,11 @@
 import fs from "node:fs";
+import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { vi } from "vitest";
 
-// jsdom's URL constructor differs from Node's; wrap in try/catch for compatibility
-const JS_DIR = (() => {
-    try {
-        return fileURLToPath(new URL("../../../src/crud_views/static/crud_views/js/", import.meta.url));
-    } catch {
-        return fileURLToPath(new URL("../../../src/crud_views/static/crud_views/js/", `file://${process.cwd()}/tests/js/helpers/load.js`));
-    }
-})();
+// Resolve via path, not `new URL(relative, base)` — in the jsdom test
+// environment the global URL is jsdom's and rejects file-scheme resolution.
+const JS_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../../src/crud_views/static/crud_views/js");
 
 // jsdom's window.location is unforgeable (cannot be spied on or replaced) and
 // its navigation methods are no-ops. The shipped files always navigate via
@@ -33,7 +29,7 @@ function testWindow() {
 }
 
 export async function loadScript(name) {
-    const code = fs.readFileSync(`${JS_DIR}${name}.js`, "utf-8");
+    const code = fs.readFileSync(path.join(JS_DIR, `${name}.js`), "utf-8");
     new Function("window", code)(testWindow());
     // jQuery defers $(document).ready() callbacks by a microtask even when the
     // document is already complete; wait for them so wiring is done on return.

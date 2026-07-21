@@ -2,6 +2,7 @@ from django.core.checks import Error
 from django.core.checks import Warning as DjangoWarning
 from django.core.checks import register
 
+from crud_views.lib import assets
 from crud_views.lib import ordered as ordered_helper
 from crud_views.lib.formsets.formsets import FormSet
 from crud_views.lib.settings import crud_views_settings
@@ -179,3 +180,36 @@ def check_ordered_model_installed(app_configs=None, **kwargs):
             id="crud_views.E300",
         )
     ]
+
+
+_INTEGRITY_PREFIXES = ("sha256-", "sha384-", "sha512-")
+
+
+@register(TAG)
+def check_asset_registry(app_configs=None, **kwargs):
+    """Validate SRI metadata on registered asset bundles."""
+    messages = []
+    for bundle in assets.get_registered():
+        for asset in bundle.js + bundle.css:
+            if asset.integrity is None:
+                continue
+            if not asset.integrity.startswith(_INTEGRITY_PREFIXES):
+                messages.append(
+                    Error(
+                        f"Asset {asset.path!r} in bundle {bundle.key!r} has an invalid integrity value "
+                        f"{asset.integrity!r}.",
+                        hint="Use a sha256-/sha384-/sha512- prefixed hash, e.g. from: "
+                        "openssl dgst -sha384 -binary FILE | openssl base64 -A",
+                        id="crud_views.E330",
+                    )
+                )
+            if not assets.is_external(asset.path):
+                messages.append(
+                    DjangoWarning(
+                        f"Asset {asset.path!r} in bundle {bundle.key!r} sets integrity on a same-origin static path.",
+                        hint="SRI is meant for external URLs; on own static files it breaks on every asset "
+                        "edit and adds no security value. Remove the integrity attribute.",
+                        id="crud_views.W332",
+                    )
+                )
+    return messages

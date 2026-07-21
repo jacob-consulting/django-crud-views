@@ -1,7 +1,5 @@
 {% load crud_views_formsets %}
-{% load static %}
 
-<link rel="stylesheet" href="{% static 'crud_views/css/formset.css' %}">
 {% for x_formset in formsets.x_formsets %}
     {% if x_formset.cv_toggle_field %}
     <div cv-data-toggle-group cv-data-toggle-field="{{ x_formset.cv_toggle_field }}">

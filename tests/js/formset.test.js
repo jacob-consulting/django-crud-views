@@ -189,4 +189,52 @@ describe("formset.js", () => {
             });
         });
     });
+
+    describe("CrudViewsFormset", () => {
+        it("initializes on a non-orderable formset without aborting (regression)", () => {
+            formsetFixture({ canOrder: false });
+            expect(() => new window.cv.CrudViewsFormset()).not.toThrow();
+            // delete still works, proving handlers were bound despite missing up/down
+            document.querySelector("button.cv-form-ctrl-delete").click();
+            expect(document.querySelector('input[name="book-None-0-0-DELETE"]').getAttribute("value")).toBe("1");
+        });
+
+        it("initializes on an edit-only formset without an add button", () => {
+            formsetFixture({ editOnly: true });
+            expect(() => new window.cv.CrudViewsFormset()).not.toThrow();
+            document.querySelector("button.cv-form-ctrl-delete").click();
+            expect(document.querySelector('input[name="book-None-0-0-DELETE"]').getAttribute("value")).toBe("1");
+        });
+
+        it("wires the control buttons to row actions", () => {
+            formsetFixture({ rows: 2 });
+            new window.cv.CrudViewsFormset();
+            document.querySelector('button.cv-form-ctrl-down[cv-data-formset-form-prefix="book-None-0-0"]').click();
+            const prefixes = [...document.querySelectorAll(".cv-formset-row")]
+                .map((el) => el.getAttribute("cv-data-formset-form-prefix"));
+            expect(prefixes).toEqual(["book-None-0-1", "book-None-0-0"]);
+        });
+
+        it("reorders all formsets on submit and lets the submit proceed", () => {
+            formsetFixture({ rows: 2 });
+            new window.cv.CrudViewsFormset();
+            document.querySelectorAll("input[name$=-ORDER]").forEach((el) => (el.value = "9"));
+            const form = document.querySelector("form.cv-form");
+            const event = new Event("submit", { bubbles: true, cancelable: true });
+            form.dispatchEvent(event);
+            expect(event.defaultPrevented).toBe(false);
+            expect([...document.querySelectorAll("input[name$=-ORDER]")].map((el) => el.value)).toEqual(["1", "2"]);
+        });
+
+        it("blocks the submit when reordering fails outright", () => {
+            formsetFixture({ rows: 2 });
+            const controller = new window.cv.CrudViewsFormset();
+            const form = document.querySelector("form.cv-form");
+            // make reorder_formsets throw: the controller can no longer find form.cv-form
+            form.className = "";
+            const event = new Event("submit", { bubbles: true, cancelable: true });
+            form.dispatchEvent(event);
+            expect(event.defaultPrevented).toBe(true);
+        });
+    });
 });

@@ -1,3 +1,3 @@
 {% for item in css %}
-    <link rel="stylesheet" href="{{ item.url }}">
+    <link rel="stylesheet" href="{{ item.url }}"{% if nonce %} nonce="{{ nonce }}"{% endif %}{% if item.integrity %} integrity="{{ item.integrity }}"{% endif %}{% if item.crossorigin %} crossorigin="{{ item.crossorigin }}"{% endif %}>
 {% endfor %}

@@ -16,20 +16,52 @@ register = template.Library()
 _querystring_impl = getattr(_dt2, "querystring_replace", None) or _dt2.querystring
 
 
+def _resolve_nonce(context) -> str | None:
+    """CSP nonce auto-detect: request attribute (django-csp convention), Django 6's
+    built-in middleware, then a csp_nonce context variable. Checks existence and
+    force-evaluates via str() — Django 6's LazyNonce is falsy until first evaluated."""
+    request = context.get("request")
+    if request is not None:
+        nonce = getattr(request, crud_views_settings.csp_nonce_attr, None)
+        if nonce is None:
+            try:
+                from django.middleware.csp import get_nonce  # Django >= 6.0 only
+            except ImportError:
+                pass
+            else:
+                nonce = get_nonce(request)
+        if nonce is not None:
+            return str(nonce) or None
+    nonce = context.get("csp_nonce")
+    if nonce is not None:
+        return str(nonce) or None
+    return None
+
+
+def _asset_items(entries) -> list:
+    items = []
+    for asset in entries:
+        crossorigin = asset.crossorigin
+        if asset.integrity and crossorigin is None:
+            crossorigin = "anonymous"  # required for cross-origin SRI fetches
+        items.append({"url": assets.resolve_url(asset.path), "integrity": asset.integrity, "crossorigin": crossorigin})
+    return items
+
+
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/shared/css.html", takes_context=True)
 def cv_css(context):
-    entries = list(crud_views_settings.css.values())
+    entries = list(assets.normalize_entries(crud_views_settings.css.values()))
     for bundle in assets.get_registered(only_emitting=True):
         entries.extend(bundle.css)
-    return {"css": [{"url": assets.resolve_url(entry)} for entry in entries]}
+    return {"css": _asset_items(entries), "nonce": _resolve_nonce(context)}
 
 
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/shared/js.html", takes_context=True)
 def cv_js(context):
-    entries = list(crud_views_settings.javascript().values())
+    entries = list(assets.normalize_entries(crud_views_settings.javascript().values()))
     for bundle in assets.get_registered(only_emitting=True):
         entries.extend(bundle.js)
-    return {"js": [{"url": assets.resolve_url(entry)} for entry in entries]}
+    return {"js": _asset_items(entries), "nonce": _resolve_nonce(context)}
 
 
 def cv_get_view(context) -> CrudView:

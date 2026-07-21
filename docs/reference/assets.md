@@ -23,6 +23,11 @@ Rules:
 
 - Entries are static paths resolved through `{% static %}` — unless they start with
   `http://`, `https://` or `//`, in which case they are rendered verbatim (CDN mode).
+- Entries may also be `Asset` instances (`crud_views.lib.assets.Asset`) carrying `integrity`/
+  `crossorigin` SRI metadata for external URLs — see
+  [Subresource integrity (SRI)](settings.md#subresource-integrity-sri) in the settings
+  reference. `{% cv_js %}`/`{% cv_css %}` also auto-detect a CSP nonce; see
+  [Nonce support](settings.md#nonce-support).
 - Core assets always render first; registered bundles follow in registration order,
   which equals `INSTALLED_APPS` order.
 - `key` must be unique; registering the same key twice raises `ImproperlyConfigured`.

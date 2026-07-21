@@ -128,3 +128,75 @@ def test_normalize_entries(asset_registry):
     asset = Asset(path="a.js", integrity="sha384-abc", crossorigin="anonymous")
     assert normalize_entries(["a.js", asset]) == (Asset(path="a.js"), asset)
     assert normalize_entries([]) == ()
+
+
+class _FakeLazyNonce:
+    """Mimics Django 6 LazyNonce: falsy until first evaluated via str()."""
+
+    def __init__(self, value="lazy123"):
+        self.value = value
+        self.evaluated = False
+
+    def __bool__(self):
+        return self.evaluated
+
+    def __str__(self):
+        self.evaluated = True
+        return self.value
+
+
+def _request(**attrs):
+    from django.test import RequestFactory
+
+    request = RequestFactory().get("/")
+    for name, value in attrs.items():
+        setattr(request, name, value)
+    return request
+
+
+def test_resolve_nonce_absent():
+    from crud_views.templatetags.crud_views import _resolve_nonce
+
+    assert _resolve_nonce({}) is None
+    assert _resolve_nonce({"request": _request()}) is None
+
+
+def test_resolve_nonce_request_attr_django_csp_convention():
+    from crud_views.templatetags.crud_views import _resolve_nonce
+
+    assert _resolve_nonce({"request": _request(csp_nonce="abc123")}) == "abc123"
+
+
+def test_resolve_nonce_forces_lazy_evaluation():
+    # Django 6 LazyNonce is falsy until evaluated — truthiness checks would drop it.
+    from crud_views.templatetags.crud_views import _resolve_nonce
+
+    lazy = _FakeLazyNonce()
+    assert _resolve_nonce({"request": _request(csp_nonce=lazy)}) == "lazy123"
+    assert lazy.evaluated is True
+
+
+def test_resolve_nonce_context_var_fallback():
+    from crud_views.templatetags.crud_views import _resolve_nonce
+
+    assert _resolve_nonce({"csp_nonce": _FakeLazyNonce("ctx456")}) == "ctx456"
+
+
+def test_resolve_nonce_request_attr_beats_context_var():
+    from crud_views.templatetags.crud_views import _resolve_nonce
+
+    context = {"request": _request(csp_nonce="fromrequest"), "csp_nonce": "fromcontext"}
+    assert _resolve_nonce(context) == "fromrequest"
+
+
+def test_resolve_nonce_configurable_attr(settings):
+    from crud_views.lib.settings import crud_views_settings
+    from crud_views.templatetags.crud_views import _resolve_nonce
+
+    assert crud_views_settings.csp_nonce_attr == "csp_nonce"
+    original = crud_views_settings.csp_nonce_attr
+    crud_views_settings.csp_nonce_attr = "my_nonce"
+    try:
+        assert _resolve_nonce({"request": _request(my_nonce="custom789")}) == "custom789"
+    finally:
+        crud_views_settings.csp_nonce_attr = original

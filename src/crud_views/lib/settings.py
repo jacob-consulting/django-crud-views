@@ -31,6 +31,9 @@ class CrudViewsSettings(BaseModel):
     # session
     session_data_key: str = from_settings("CRUD_VIEWS_SESSION_DATA_KEY", "viewset")
 
+    # csp
+    csp_nonce_attr: str = from_settings("CRUD_VIEWS_CSP_NONCE_ATTR", default="csp_nonce")
+
     # breadcrumb
     breadcrumb_prefix: List[Dict[str, Any]] = from_settings("CRUD_VIEWS_BREADCRUMB_PREFIX", default=[])
 

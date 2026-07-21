@@ -185,6 +185,40 @@ def test_resolve_nonce_context_var_fallback():
     assert _resolve_nonce({"csp_nonce": _FakeLazyNonce("ctx456")}) == "ctx456"
 
 
+def test_resolve_nonce_uses_django6_get_nonce(monkeypatch):
+    """The Django 6 branch, exercised on every Django version.
+
+    Django 6's middleware stores the nonce on the private ``request._csp_nonce``, so the
+    django-csp attribute lookup misses and resolution must fall through to ``get_nonce()``.
+    Stubbing the module keeps this covered on 4.2/5.2, where it cannot be imported at all.
+    """
+    import sys
+    import types
+
+    from crud_views.templatetags.crud_views import _resolve_nonce
+
+    stub = types.ModuleType("django.middleware.csp")
+    stub.get_nonce = lambda request: _FakeLazyNonce("from-get-nonce")
+    monkeypatch.setitem(sys.modules, "django.middleware.csp", stub)
+
+    assert _resolve_nonce({"request": _request()}) == "from-get-nonce"
+
+
+def test_resolve_nonce_without_django6_csp_module(monkeypatch):
+    """The ImportError branch, exercised on every Django version.
+
+    Setting the entry to None makes ``from django.middleware.csp import ...`` raise
+    ImportError, which is what Django 4.2/5.2 do natively — so this stays covered on 6.0.
+    """
+    import sys
+
+    from crud_views.templatetags.crud_views import _resolve_nonce
+
+    monkeypatch.setitem(sys.modules, "django.middleware.csp", None)
+
+    assert _resolve_nonce({"request": _request()}) is None
+
+
 def test_resolve_nonce_request_attr_beats_context_var():
     from crud_views.templatetags.crud_views import _resolve_nonce
 

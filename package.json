@@ -9,8 +9,7 @@
   },
   "scripts": {
     "test": "vitest run",
-    "test:watch": "vitest",
-    "coverage": "vitest run --coverage"
+    "test:watch": "vitest"
   },
   "private": true,
   "engines": {

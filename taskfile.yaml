@@ -67,6 +67,20 @@ tasks:
       - rm -rf .nox
     silent: true
 
+  test-js:
+    desc: Run the JS unit tests (Vitest + jsdom, requires Node 20+)
+    cmds:
+      - test -d node_modules || npm ci
+      - npx vitest run
+    silent: true
+
+  test-js-watch:
+    desc: Run the JS unit tests in watch mode
+    cmds:
+      - test -d node_modules || npm ci
+      - npx vitest
+    silent: true
+
   install-skill-claude:
     cmds:
       - rm -rf ~/.claude/skills/django-crud-views

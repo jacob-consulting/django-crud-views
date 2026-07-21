@@ -153,14 +153,17 @@ which templates it mirrors; template changes must update fixtures.
 - **Docs:** CONTRIBUTING/README dev-setup gains one line: "JS tests: `task test-js`
   (requires Node 22+)."
 - **package.json:** `private: true`, `engines: { node: ">=20" }` (local dev machines run
-  Node 20; CI uses 22), scripts `test` / `test:watch` / `coverage`.
-- **Coverage:** generated locally via `npm run coverage` (v8 provider, scoped to the five
-  source files). Not wired into codecov initially — the codecov patch gate is tuned for
-  Python; adding a `javascript` flag is an explicit follow-up decision.
+  Node 20; CI uses 22), scripts `test` / `test:watch`.
+- **Coverage:** dropped during implementation. The sources execute via `new Function` in the
+  test loader, which Vitest's coverage providers cannot see; instrumenting with
+  `istanbul-lib-instrument` in the loader produced counters in `globalThis.__coverage__`,
+  but the istanbul provider verifiably drops externally-produced entries (all-zero report).
+  Coverage wiring is a follow-up; candidate approach: standalone `nyc`/`istanbul-lib-report`
+  over the loader-produced `__coverage__` object.
 
 ## Out of scope / follow-ups
 
 - Tests for `viewset.js` and `list.filter.js` (add when those files change)
 - Vitest browser mode (real Chromium via Playwright) as an integration layer
-- Codecov `javascript` flag
+- Coverage reporting (dropped in implementation — see CI section) and a Codecov `javascript` flag
 - Any refactor of the JS files beyond the attachment blocks

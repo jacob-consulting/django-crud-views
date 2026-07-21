@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Added
+
+- JS unit-test harness (Vitest + jsdom) for the package's static JavaScript
+  (`formset.js`, `modal.js`, `toggle.js`), with a `JS Tests` CI workflow and a
+  `task test-js` shortcut. Dev-only; does not affect the package.
+
 ### Fixed
 
 - `formset.js`: rows marked for deletion now lose their `ORDER` value during client-side

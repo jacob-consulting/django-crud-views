@@ -152,8 +152,8 @@ which templates it mirrors; template changes must update fixtures.
   `npx vitest run`) and `test-js-watch`. `task test` (nox) stays Python-only.
 - **Docs:** CONTRIBUTING/README dev-setup gains one line: "JS tests: `task test-js`
   (requires Node 22+)."
-- **package.json:** `private: true`, `engines: { node: ">=22" }`, scripts `test` /
-  `test:watch` / `coverage`.
+- **package.json:** `private: true`, `engines: { node: ">=20" }` (local dev machines run
+  Node 20; CI uses 22), scripts `test` / `test:watch` / `coverage`.
 - **Coverage:** generated locally via `npm run coverage` (v8 provider, scoped to the five
   source files). Not wired into codecov initially — the codecov patch gate is tuned for
   Python; adding a `javascript` flag is an explicit follow-up decision.

@@ -14,7 +14,7 @@ _EXTERNAL_PREFIXES = ("http://", "https://", "//")
 class Asset:
     """A single JS/CSS asset: a static path or external URL, with optional SRI metadata.
 
-    integrity is meant for external URLs (see system checks E330/W331); when set and
+    integrity is meant for external URLs (see system checks E330/W332); when set and
     crossorigin is None, tags render crossorigin="anonymous".
     """
 

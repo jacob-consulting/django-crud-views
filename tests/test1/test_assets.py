@@ -246,3 +246,33 @@ def test_crossorigin_without_integrity(asset_registry):
     html = _render_ctx("cv_js", {})
     assert 'src="https://cdn.example.com/x.js" crossorigin="anonymous"' in html
     assert "integrity" not in html
+
+
+def test_check_asset_registry_ok(asset_registry):
+    from crud_views.checks import check_asset_registry
+    from crud_views.lib.assets import Asset
+
+    asset_registry.register_assets(
+        key="cdn",
+        js=["plain/local.js", Asset(path="https://cdn.example.com/x.js", integrity="sha384-abc")],
+    )
+    assert check_asset_registry() == []
+
+
+def test_check_asset_registry_e330_malformed_integrity(asset_registry):
+    from crud_views.checks import check_asset_registry
+    from crud_views.lib.assets import Asset
+
+    asset_registry.register_assets(key="cdn", js=[Asset(path="https://cdn.example.com/x.js", integrity="md5-abc")])
+    messages = check_asset_registry()
+    assert [m.id for m in messages] == ["crud_views.E330"]
+    assert "cdn" in messages[0].msg and "https://cdn.example.com/x.js" in messages[0].msg
+
+
+def test_check_asset_registry_w332_integrity_on_local_path(asset_registry):
+    from crud_views.checks import check_asset_registry
+    from crud_views.lib.assets import Asset
+
+    asset_registry.register_assets(key="picker", css=[Asset(path="picker/plugin.css", integrity="sha384-abc")])
+    messages = check_asset_registry()
+    assert [m.id for m in messages] == ["crud_views.W332"]

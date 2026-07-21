@@ -16,13 +16,15 @@ def asset_registry():
 
 
 def test_register_and_get(asset_registry):
+    from crud_views.lib.assets import Asset
+
     asset_registry.register_assets(key="a", js=["a/one.js"], css=["a/one.css"])
     asset_registry.register_assets(key="b", js=["b/two.js"])
 
     bundles = asset_registry.get_registered()
     assert [b.key for b in bundles] == ["a", "b"]  # registration order
-    assert bundles[0].js == ("a/one.js",)
-    assert bundles[0].css == ("a/one.css",)
+    assert bundles[0].js == (Asset(path="a/one.js"),)
+    assert bundles[0].css == (Asset(path="a/one.css"),)
     assert bundles[1].css == ()
     assert bundles[0].emit is True
 
@@ -97,3 +99,32 @@ def test_empty_registry_output_unchanged(asset_registry):
     assert "/static/crud_views/js/modal.js" in html
     assert "/static/crud_views/js/toggle.js" in html
     assert html.count("<script") == 5
+
+
+def test_asset_normalization(asset_registry):
+    from crud_views.lib.assets import Asset
+
+    asset_registry.register_assets(
+        key="mixed",
+        js=[
+            "plain/path.js",
+            Asset(path="https://cdn.example.com/x.js", integrity="sha384-abc"),
+        ],
+        css=[Asset(path="plain/path.css")],
+    )
+    bundle = asset_registry.get_registered()[0]
+    assert bundle.js == (
+        Asset(path="plain/path.js"),
+        Asset(path="https://cdn.example.com/x.js", integrity="sha384-abc"),
+    )
+    assert bundle.css == (Asset(path="plain/path.css"),)
+    assert bundle.js[0].integrity is None
+    assert bundle.js[0].crossorigin is None
+
+
+def test_normalize_entries(asset_registry):
+    from crud_views.lib.assets import Asset, normalize_entries
+
+    asset = Asset(path="a.js", integrity="sha384-abc", crossorigin="anonymous")
+    assert normalize_entries(["a.js", asset]) == (Asset(path="a.js"), asset)
+    assert normalize_entries([]) == ()

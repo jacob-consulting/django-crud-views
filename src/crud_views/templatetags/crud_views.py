@@ -18,18 +18,18 @@ _querystring_impl = getattr(_dt2, "querystring_replace", None) or _dt2.querystri
 
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/shared/css.html", takes_context=True)
 def cv_css(context):
-    entries = list(crud_views_settings.css.values())
+    entries = list(assets.normalize_entries(crud_views_settings.css.values()))
     for bundle in assets.get_registered(only_emitting=True):
         entries.extend(bundle.css)
-    return {"css": [{"url": assets.resolve_url(entry)} for entry in entries]}
+    return {"css": [{"url": assets.resolve_url(entry.path)} for entry in entries]}
 
 
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/shared/js.html", takes_context=True)
 def cv_js(context):
-    entries = list(crud_views_settings.javascript().values())
+    entries = list(assets.normalize_entries(crud_views_settings.javascript().values()))
     for bundle in assets.get_registered(only_emitting=True):
         entries.extend(bundle.js)
-    return {"js": [{"url": assets.resolve_url(entry)} for entry in entries]}
+    return {"js": [{"url": assets.resolve_url(entry.path)} for entry in entries]}
 
 
 def cv_get_view(context) -> CrudView:

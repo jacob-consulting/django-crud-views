@@ -11,6 +11,24 @@ _EXTERNAL_PREFIXES = ("http://", "https://", "//")
 
 
 @dataclass(frozen=True)
+class Asset:
+    """A single JS/CSS asset: a static path or external URL, with optional SRI metadata.
+
+    integrity is meant for external URLs (see system checks E330/W331); when set and
+    crossorigin is None, tags render crossorigin="anonymous".
+    """
+
+    path: str
+    integrity: str | None = None
+    crossorigin: str | None = None
+
+
+def normalize_entries(entries: Iterable) -> tuple:
+    """Normalize a mix of str and Asset entries to a tuple of Asset."""
+    return tuple(entry if isinstance(entry, Asset) else Asset(path=entry) for entry in entries)
+
+
+@dataclass(frozen=True)
 class AssetBundle:
     key: str
     js: tuple = ()
@@ -25,13 +43,14 @@ _LOCK = Lock()
 def register_assets(key: str, js: Iterable[str] = (), css: Iterable[str] = (), emit: bool = True) -> None:
     """Register an asset bundle. Call from AppConfig.ready().
 
-    Entries are static paths, or external URLs (http://, https://, //) rendered verbatim.
+    Entries are static paths, external URLs (http://, https://, //) rendered verbatim, or Asset
+    instances carrying SRI metadata.
     Bundles render after core assets, in registration order (= INSTALLED_APPS order).
     """
     with _LOCK:
         if key in _REGISTRY:
             raise ImproperlyConfigured(f"crud_views asset bundle {key!r} is already registered")
-        _REGISTRY[key] = AssetBundle(key=key, js=tuple(js), css=tuple(css), emit=emit)
+        _REGISTRY[key] = AssetBundle(key=key, js=normalize_entries(js), css=normalize_entries(css), emit=emit)
 
 
 def get_registered(only_emitting: bool = False) -> List[AssetBundle]:

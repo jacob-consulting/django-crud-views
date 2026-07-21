@@ -7,6 +7,10 @@
 - Asset registry CSP support: `{% cv_js %}` / `{% cv_css %}` auto-detect the CSP nonce (django-csp's `request.csp_nonce` on Django 4.2/5.2 and the built-in CSP middleware on Django 6.0) and render `nonce` attributes on all script/link tags. New setting `CRUD_VIEWS_CSP_NONCE_ATTR` (default `csp_nonce`). Output is unchanged when no CSP middleware is present.
 - `Asset` dataclass for `register_assets()` entries with SRI `integrity`/`crossorigin` metadata for external URLs; new system checks `crud_views.E330` (malformed integrity) and `crud_views.W332` (integrity on same-origin path).
 
+### Changed
+
+- `AssetBundle.js` and `AssetBundle.css` now hold `Asset` instances instead of plain strings. Code that treated entries as strings (e.g. `bundle.js[0].startswith(...)`) must switch to `bundle.js[0].path`. `register_assets()` itself is unaffected — plain string entries are still accepted and normalized to `Asset` internally.
+
 ## 0.17.0
 
 ### Added

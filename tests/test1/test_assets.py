@@ -281,6 +281,17 @@ def test_check_asset_registry_w332_integrity_on_local_path(asset_registry):
     assert [m.id for m in messages] == ["crud_views.W332"]
 
 
+def test_check_asset_registry_both_defects_on_same_asset(asset_registry):
+    """The E330 and W332 checks are independent ``if`` blocks, not elif — an asset that is both
+    malformed AND same-origin must produce both messages."""
+    from crud_views.checks import check_asset_registry
+    from crud_views.lib.assets import Asset
+
+    asset_registry.register_assets(key="picker", css=[Asset(path="picker/plugin.css", integrity="md5-abc")])
+    messages = check_asset_registry()
+    assert sorted(m.id for m in messages) == ["crud_views.E330", "crud_views.W332"]
+
+
 @pytest.mark.skipif(django.VERSION < (6, 0), reason="built-in CSP middleware requires Django 6.0")
 def test_django6_builtin_csp_nonce_roundtrip(asset_registry):
     from django.http import HttpResponse

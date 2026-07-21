@@ -23,7 +23,7 @@ class Asset:
     crossorigin: str | None = None
 
 
-def normalize_entries(entries: Iterable) -> tuple:
+def normalize_entries(entries: Iterable[str | Asset]) -> tuple[Asset, ...]:
     """Normalize a mix of str and Asset entries to a tuple of Asset."""
     return tuple(entry if isinstance(entry, Asset) else Asset(path=entry) for entry in entries)
 

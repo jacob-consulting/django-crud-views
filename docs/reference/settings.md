@@ -103,8 +103,16 @@ Under a strict CSP (`script-src 'nonce-…' 'strict-dynamic'`), browsers ignore 
 
 Without CSP middleware the output is unchanged — no nonce attributes are rendered. The tags need the `django.template.context_processors.request` context processor (part of Django's default template configuration).
 
+!!! warning "Nonces and cached HTML"
+
+    A nonce is generated per request. If rendered pages are cached (Django's cache
+    middleware, a reverse proxy, or a CDN), the cached HTML keeps the nonce it was
+    rendered with while each new response carries a fresh header nonce — and the
+    browser then blocks the assets. Exclude nonce-bearing pages from HTML caching,
+    or use a host-allowlist policy instead of a nonce-based one.
+
 | Key                        | Description                                                        | Type  | Default     |
-|----------------------------|----------------------------------------------------------------------|-------|-------------|
+|----------------------------|--------------------------------------------------------------------|-------|-------------|
 | CRUD_VIEWS_CSP_NONCE_ATTR  | Request attribute the asset tags read the CSP nonce from           | `str` | `csp_nonce` |
 
 ### Subresource integrity (SRI)

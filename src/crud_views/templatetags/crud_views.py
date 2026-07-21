@@ -16,7 +16,7 @@ register = template.Library()
 _querystring_impl = getattr(_dt2, "querystring_replace", None) or _dt2.querystring
 
 
-def _resolve_nonce(context) -> "str | None":
+def _resolve_nonce(context) -> str | None:
     """CSP nonce auto-detect: request attribute (django-csp convention), Django 6's
     built-in middleware, then a csp_nonce context variable. Checks existence and
     force-evaluates via str() — Django 6's LazyNonce is falsy until first evaluated."""

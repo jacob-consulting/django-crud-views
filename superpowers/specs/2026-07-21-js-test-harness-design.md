@@ -38,9 +38,8 @@ runner; tests always exercise the exact files Django serves.
 ### Repo layout
 
 ```
-package.json              # private, engines node>=22; devDeps: vitest, jsdom, jquery
-vitest.config.js          # environment: jsdom, include: tests/js/**/*.test.js,
-                          # coverage scoped to src/crud_views/static/crud_views/js/*.js
+package.json              # private, engines node>=20; devDeps: vitest, jsdom, jquery
+vitest.config.js          # environment: jsdom, include: tests/js/**/*.test.js
 tests/js/
   helpers/
     load.js               # loadScript("formset") — read + execute the real source file
@@ -151,7 +150,7 @@ which templates it mirrors; template changes must update fixtures.
 - **Taskfile:** new `test-js` task (`npm ci` if `node_modules` is missing, then
   `npx vitest run`) and `test-js-watch`. `task test` (nox) stays Python-only.
 - **Docs:** CONTRIBUTING/README dev-setup gains one line: "JS tests: `task test-js`
-  (requires Node 22+)."
+  (requires Node 20+)."
 - **package.json:** `private: true`, `engines: { node: ">=20" }` (local dev machines run
   Node 20; CI uses 22), scripts `test` / `test:watch`.
 - **Coverage:** dropped during implementation. The sources execute via `new Function` in the

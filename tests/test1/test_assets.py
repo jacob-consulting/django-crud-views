@@ -148,6 +148,19 @@ class _FakeLazyNonce:
         return self.value
 
 
+def test_fake_lazy_nonce_models_django6_lazynonce():
+    """Guard the test double itself.
+
+    The nonce tests below are only meaningful if this fake really is falsy before its first
+    evaluation — that is the Django 6 LazyNonce trap they exist to pin. If __bool__ silently
+    became truthy, those tests would still pass while proving nothing.
+    """
+    lazy = _FakeLazyNonce("x")
+    assert not lazy
+    assert str(lazy) == "x"
+    assert lazy
+
+
 def _request(**attrs):
     from django.test import RequestFactory
 

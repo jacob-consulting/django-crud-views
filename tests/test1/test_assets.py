@@ -200,3 +200,49 @@ def test_resolve_nonce_configurable_attr(settings):
         assert _resolve_nonce({"request": _request(my_nonce="custom789")}) == "custom789"
     finally:
         crud_views_settings.csp_nonce_attr = original
+
+
+def _render_ctx(tag: str, ctx: dict) -> str:
+    return Template("{% load crud_views %}{% " + tag + " %}").render(Context(ctx))
+
+
+def test_no_nonce_output_byte_identical(asset_registry):
+    # Hard guarantee: without a nonce source, output is exactly the pre-CSP format.
+    html = _render("cv_js")
+    assert "nonce" not in html
+    assert "integrity" not in html
+    assert "crossorigin" not in html
+    assert '<script type="application/javascript" src="/static/crud_views/js/viewset.js"></script>' in html
+
+
+def test_nonce_rendered_on_all_script_tags(asset_registry):
+    html = _render_ctx("cv_js", {"request": _request(csp_nonce="abc123")})
+    assert html.count('nonce="abc123"') == 5  # all 5 core scripts
+
+
+def test_nonce_rendered_on_link_tags(asset_registry):
+    html = _render_ctx("cv_css", {"request": _request(csp_nonce="abc123")})
+    assert html.count('nonce="abc123"') == 3  # property.css, table.css, formset.css
+
+
+def test_sri_attributes_rendered(asset_registry):
+    from crud_views.lib.assets import Asset
+
+    asset_registry.register_assets(
+        key="cdn",
+        js=[Asset(path="https://cdn.example.com/x.js", integrity="sha384-abc")],
+        css=[Asset(path="https://cdn.example.com/x.css", integrity="sha384-def", crossorigin="use-credentials")],
+    )
+    js = _render_ctx("cv_js", {})
+    assert 'src="https://cdn.example.com/x.js" integrity="sha384-abc" crossorigin="anonymous"' in js
+    css = _render_ctx("cv_css", {})
+    assert 'integrity="sha384-def" crossorigin="use-credentials"' in css
+
+
+def test_crossorigin_without_integrity(asset_registry):
+    from crud_views.lib.assets import Asset
+
+    asset_registry.register_assets(key="cdn", js=[Asset(path="https://cdn.example.com/x.js", crossorigin="anonymous")])
+    html = _render_ctx("cv_js", {})
+    assert 'src="https://cdn.example.com/x.js" crossorigin="anonymous"' in html
+    assert "integrity" not in html

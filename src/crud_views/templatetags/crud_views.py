@@ -38,12 +38,22 @@ def _resolve_nonce(context) -> "str | None":
     return None
 
 
+def _asset_items(entries) -> list:
+    items = []
+    for asset in entries:
+        crossorigin = asset.crossorigin
+        if asset.integrity and crossorigin is None:
+            crossorigin = "anonymous"  # required for cross-origin SRI fetches
+        items.append({"url": assets.resolve_url(asset.path), "integrity": asset.integrity, "crossorigin": crossorigin})
+    return items
+
+
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/shared/css.html", takes_context=True)
 def cv_css(context):
     entries = list(assets.normalize_entries(crud_views_settings.css.values()))
     for bundle in assets.get_registered(only_emitting=True):
         entries.extend(bundle.css)
-    return {"css": [{"url": assets.resolve_url(entry.path)} for entry in entries]}
+    return {"css": _asset_items(entries), "nonce": _resolve_nonce(context)}
 
 
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/shared/js.html", takes_context=True)
@@ -51,7 +61,7 @@ def cv_js(context):
     entries = list(assets.normalize_entries(crud_views_settings.javascript().values()))
     for bundle in assets.get_registered(only_emitting=True):
         entries.extend(bundle.js)
-    return {"js": [{"url": assets.resolve_url(entry.path)} for entry in entries]}
+    return {"js": _asset_items(entries), "nonce": _resolve_nonce(context)}
 
 
 def cv_get_view(context) -> CrudView:

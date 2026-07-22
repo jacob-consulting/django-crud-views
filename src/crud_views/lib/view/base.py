@@ -88,6 +88,9 @@ class CrudView(metaclass=CrudViewMetaClass):
     cv_icon_action: str | None = None  # font awesome icon
     cv_icon_header: str | None = None  # font awesome icon
 
+    # W280: custom cv_* data attributes to exempt from the unknown-attribute check
+    cv_check_ignore_attributes: frozenset[str] = frozenset()
+
     @classmethod
     def checks(cls) -> Iterable[Check]:
         """

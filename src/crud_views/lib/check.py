@@ -1,7 +1,9 @@
+import difflib
 import re
 from typing import Any, Iterable, Type
 
 from django.core.checks import Error, CheckMessage
+from django.core.checks import Warning as DjangoWarning
 from django.template import TemplateDoesNotExist
 from django.template.loader import get_template
 from pydantic import BaseModel
@@ -255,3 +257,94 @@ class CheckExpression(Check):
     def messages(self) -> Iterable[CheckMessage]:
         if not self.expression:
             yield Error(id=f"viewset.{self.id}", msg=f"{self.msg} at {self.context}")
+
+
+_PACKAGE_PREFIX = "crud_views"
+_CV_PREFIX = "cv_"
+_IGNORE_ATTR = "cv_check_ignore_attributes"
+
+
+def _is_config_value(value: Any) -> bool:
+    """True for a plain data attribute — not a method, property, classmethod, or other descriptor."""
+    return not (callable(value) or hasattr(value, "__get__"))
+
+
+class CheckUnknownAttributes(Check):
+    """
+    Warn about cv_* data attributes that no crud_views class declares.
+
+    A typo or stale name (cv_message for cv_message_template_code, an attribute
+    removed in a rename) is otherwise silently ignored. The known-set is derived
+    from the MRO: every legitimate config attribute is declared with a default on
+    a crud_views* class, so no hand-maintained registry is needed. Only non-callable,
+    non-descriptor data attributes are flagged (user cv_* methods/properties are skipped).
+    """
+
+    id: str = "W280"
+    msg: str = (
+        "{attribute} on {context} is not a known crud_views attribute — it is silently "
+        "ignored (dead attribute or typo).{suggestion}"
+    )
+
+    def _known(self) -> tuple[set[str], set[str]]:
+        """Return (all cv_* names, data-attribute cv_* names) declared by crud_views* classes.
+
+        The full set is used to decide what is "unknown" (so overriding a real method name
+        with data is not flagged); the data-attribute subset is the suggestion pool, so a
+        near-match never points at a method like cv_get_message.
+        """
+        all_names: set[str] = set()
+        data_names: set[str] = set()
+        for klass in self.context.__mro__:
+            if not klass.__module__.startswith(_PACKAGE_PREFIX):
+                continue
+            for name, value in vars(klass).items():
+                if not name.startswith(_CV_PREFIX):
+                    continue
+                all_names.add(name)
+                if _is_config_value(value):
+                    data_names.add(name)
+        return all_names, data_names
+
+    def _allowlist(self) -> set[str]:
+        # union across the MRO so a mixin and the leaf view can each exempt their own attrs
+        allow: set[str] = set()
+        for klass in self.context.__mro__:
+            value = vars(klass).get(_IGNORE_ATTR)
+            if value:
+                allow.update(value)
+        return allow
+
+    def _suspects(self) -> set[str]:
+        suspects: set[str] = set()
+        for klass in self.context.__mro__:
+            if klass.__module__.startswith(_PACKAGE_PREFIX):
+                continue  # package code defines the known-set, never suspect
+            for name, value in vars(klass).items():
+                if name.startswith(_CV_PREFIX) and _is_config_value(value):
+                    suspects.add(name)
+        return suspects
+
+    def _suggestion(self, name: str, pool: set[str]) -> str:
+        # pool is the data-attribute known-set — suggest real config attributes, never methods
+        candidates = sorted(pool)
+        matches = difflib.get_close_matches(name, candidates, n=1, cutoff=0.6)
+        if not matches:
+            # difflib misses when the correct name is much longer; fall back to prefix
+            prefixed = sorted((k for k in candidates if k.startswith(name)), key=len)
+            matches = prefixed[:1]
+        return f" Did you mean {matches[0]}?" if matches else ""
+
+    def messages(self) -> Iterable[CheckMessage]:
+        known_all, known_data = self._known()
+        unknown = self._suspects() - known_all - self._allowlist()
+        for name in sorted(unknown):
+            msg = self.msg.format(attribute=name, context=self.context, suggestion=self._suggestion(name, known_data))
+            yield DjangoWarning(
+                msg,
+                hint=(
+                    f"Remove it, fix the name, or add it to {_IGNORE_ATTR} on the view "
+                    f"if it is an intentional custom attribute."
+                ),
+                id=self.get_id(),
+            )

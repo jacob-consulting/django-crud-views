@@ -30,6 +30,12 @@ inconsistent in register/formality, or wrong for domain-specific UI terms (e.g. 
 "Confirm deletion", permission/workflow vocabulary). `de` is the baseline for what a
 human-reviewed catalog should look like.
 
+`pt` additionally mixes European and Brazilian Portuguese across its own catalogs — e.g.
+`crud_views` pt uses European forms ("Guardar", "Gerir", "Repor filtro") while
+`crud_views_guardian` and the example app use Brazilian forms ("Usuários", "aplicativo"). The
+`pt` reviewer needs to normalize dialect consistently across all six `pt` catalogs, not just fix
+correctness/tone issues.
+
 ## Files to review
 
 Each locale has one catalog per package — 5 packages × 5 locales = 25 files:

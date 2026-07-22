@@ -66,6 +66,9 @@ def test_dead_attribute_warns_and_suggests_near_match():
     # cv_message_template and cv_message_template_code are both valid near-matches;
     # "cv_message_template" is a substring of both, so this tolerates either suggestion.
     assert "cv_message_template" in m.msg
+    # Suggestion pool is context-local: an ActionView-only attribute (in the package-wide
+    # detection set but not in a plain CrudView's MRO) must never be suggested here.
+    assert "cv_action_messages" not in m.msg
 
 
 def test_legitimate_override_does_not_warn():

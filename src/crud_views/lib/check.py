@@ -270,11 +270,13 @@ def _is_config_value(value: Any) -> bool:
 
 
 def _own_cv_annotations(klass: type) -> set[str]:
-    """cv_*-prefixed names annotated on this class only (own annotations, no inheritance).
+    """cv_*-prefixed names from ``klass.__annotations__``.
 
     Handles annotation-only declarations like `cv_formsets: FormSets` (no default) that
-    never appear in vars(klass). `klass.__annotations__` returns the class's own annotations
-    (empty dict if none) on Python 3.10+; wrapped defensively for the PEP 649 lazy path on 3.14.
+    never appear in vars(klass). Note `klass.__annotations__` can surface a base class's
+    annotations when ``klass`` has none of its own — harmless here, because every class in
+    the MRO is visited and the results are unioned, so a name is attributed to the class
+    that actually declares it either way. Wrapped defensively for the PEP 649 lazy path on 3.14.
     """
     try:
         annotations = klass.__annotations__

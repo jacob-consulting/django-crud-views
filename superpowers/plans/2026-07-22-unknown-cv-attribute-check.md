@@ -158,6 +158,75 @@ _CV_PREFIX = "cv_"
 _IGNORE_ATTR = "cv_check_ignore_attributes"
 
 
+def _is_config_value(value: Any) -> bool:
+    """True for a plain data attribute — not a method, property, classmethod, or other descriptor."""
+    return not (callable(value) or hasattr(value, "__get__"))
+
+
+def _own_cv_annotations(klass: type) -> set[str]:
+    """cv_*-prefixed names annotated on this class only (own annotations, no inheritance).
+
+    Handles annotation-only declarations like `cv_formsets: FormSets` (no default) that
+    never appear in vars(klass). `klass.__annotations__` returns the class's own annotations
+    (empty dict if none) on Python 3.10+; wrapped defensively for the PEP 649 lazy path on 3.14.
+    """
+    try:
+        annotations = klass.__annotations__
+    except Exception:
+        annotations = vars(klass).get("__annotations__", {})
+    return {name for name in annotations if name.startswith(_CV_PREFIX)}
+
+
+def _collect_cv_names(klass: type, all_names: set[str], data_names: set[str]) -> None:
+    """Add klass's own cv_* declarations — defaults (vars) and annotation-only — to the sets."""
+    for name in _own_cv_annotations(klass):
+        all_names.add(name)
+        data_names.add(name)  # annotation-only config attrs are data, suggestible
+    for name, value in vars(klass).items():
+        if name.startswith(_CV_PREFIX):
+            all_names.add(name)
+            if _is_config_value(value):
+                data_names.add(name)
+
+
+def _registered_view_classes() -> list[type]:
+    """All view classes across every registered ViewSet (empty before the app registry loads)."""
+    from crud_views.lib.viewset import _REGISTRY, _REGISTRY_LOCK
+
+    with _REGISTRY_LOCK:
+        viewsets = list(_REGISTRY.values())
+    classes: list[type] = []
+    for viewset in viewsets:
+        classes.extend(viewset.get_all_views().values())
+    return classes
+
+
+_VOCAB_CACHE: dict[int, tuple[frozenset[str], frozenset[str]]] = {}
+
+
+def _registry_vocabulary() -> tuple[frozenset[str], frozenset[str]]:
+    """Package-wide (all cv_* names, data-attribute cv_* names) declared by any crud_views* class
+    used by a registered view. Cached per registry size — the ViewSet registry only grows at
+    import time and is stable when system checks run, so the count is a safe cache key."""
+    classes = _registered_view_classes()
+    key = len(classes)
+    cached = _VOCAB_CACHE.get(key)
+    if cached is not None:
+        return cached
+    all_names: set[str] = set()
+    data_names: set[str] = set()
+    seen: set[type] = set()
+    for view in classes:
+        for klass in view.__mro__:
+            if klass in seen or not klass.__module__.startswith(_PACKAGE_PREFIX):
+                continue
+            seen.add(klass)
+            _collect_cv_names(klass, all_names, data_names)
+    result = (frozenset(all_names), frozenset(data_names))
+    _VOCAB_CACHE[key] = result
+    return result
+
+
 class CheckUnknownAttributes(Check):
     """
     Warn about cv_* data attributes that no crud_views class declares.
@@ -175,12 +244,17 @@ class CheckUnknownAttributes(Check):
         "ignored (dead attribute or typo).{suggestion}"
     )
 
-    def _known(self) -> set[str]:
-        known: set[str] = set()
+    def _context_names(self) -> tuple[set[str], set[str]]:
+        """(all cv_* names, data-attribute cv_* names) declared by crud_views* classes in this
+        view's own MRO. The data subset is the suggestion pool — kept context-local so a
+        'did you mean' hint stays relevant to this view type instead of pulling in unrelated
+        attributes (e.g. cv_action_messages from ActionView) via the package-wide set."""
+        all_names: set[str] = set()
+        data_names: set[str] = set()
         for klass in self.context.__mro__:
             if klass.__module__.startswith(_PACKAGE_PREFIX):
-                known.update(name for name in vars(klass) if name.startswith(_CV_PREFIX))
-        return known
+                _collect_cv_names(klass, all_names, data_names)
+        return all_names, data_names
 
     def _allowlist(self) -> set[str]:
         # union across the MRO so a mixin and the leaf view can each exempt their own attrs
@@ -197,27 +271,29 @@ class CheckUnknownAttributes(Check):
             if klass.__module__.startswith(_PACKAGE_PREFIX):
                 continue  # package code defines the known-set, never suspect
             for name, value in vars(klass).items():
-                if not name.startswith(_CV_PREFIX):
-                    continue
-                if callable(value) or hasattr(value, "__get__"):
-                    continue  # method / property / descriptor — not a config value
-                suspects.add(name)
+                if name.startswith(_CV_PREFIX) and _is_config_value(value):
+                    suspects.add(name)
         return suspects
 
-    def _suggestion(self, name: str, known: set[str]) -> str:
-        pool = sorted(known)
-        matches = difflib.get_close_matches(name, pool, n=1, cutoff=0.6)
+    def _suggestion(self, name: str, pool: set[str]) -> str:
+        # pool is the data-attribute known-set — suggest real config attributes, never methods
+        candidates = sorted(pool)
+        matches = difflib.get_close_matches(name, candidates, n=1, cutoff=0.6)
         if not matches:
             # difflib misses when the correct name is much longer; fall back to prefix
-            prefixed = sorted((k for k in pool if k.startswith(name)), key=len)
+            prefixed = sorted((k for k in candidates if k.startswith(name)), key=len)
             matches = prefixed[:1]
         return f" Did you mean {matches[0]}?" if matches else ""
 
     def messages(self) -> Iterable[CheckMessage]:
-        known = self._known()
-        unknown = self._suspects() - known - self._allowlist()
+        reg_all, _reg_data = _registry_vocabulary()
+        ctx_all, ctx_data = self._context_names()
+        known_all = reg_all | ctx_all  # package-wide: is this a real crud_views attribute name?
+        unknown = self._suspects() - known_all - self._allowlist()
         for name in sorted(unknown):
-            msg = self.msg.format(attribute=name, context=self.context, suggestion=self._suggestion(name, known))
+            # suggest only from THIS view's own data attributes, so the hint stays relevant
+            suggestion = self._suggestion(name, ctx_data)
+            msg = self.msg.format(attribute=name, context=self.context, suggestion=suggestion)
             yield DjangoWarning(
                 msg,
                 hint=(
@@ -299,6 +375,21 @@ def test_registered_views_have_no_unknown_attribute_warnings():
         if getattr(m, "id", None) == "viewset.W280"
     ]
     assert w280 == [], [w.msg for w in w280]
+
+
+def test_checks_all_releases_registry_lock_before_yielding():
+    # Regression: checks_all() must snapshot-then-release _REGISTRY_LOCK. If it holds the lock
+    # across yields, calling .messages() on a yielded check (which re-acquires the lock via the
+    # package-wide vocabulary) self-deadlocks. A fast, non-hanging probe: the lock must be free
+    # while iterating the generator.
+    from crud_views.lib.viewset import ViewSet, _REGISTRY_LOCK
+
+    for _check in ViewSet.checks_all():
+        acquired = _REGISTRY_LOCK.acquire(blocking=False)
+        if acquired:
+            _REGISTRY_LOCK.release()
+        assert acquired, "checks_all() held _REGISTRY_LOCK across a yield — messages() would deadlock"
+        break  # one iteration proves the lock is released during iteration
 ```
 
 - [ ] **Step 2: Run tests to verify they fail**
@@ -341,10 +432,55 @@ from crud_views.lib.check import (
 )
 ```
 
+- [ ] **Step 3b: Make `checks_all()` release the registry lock before yielding**
+
+The package-wide known-set (`_registry_vocabulary`) re-acquires `_REGISTRY_LOCK` from inside `Check.messages()`. But `ViewSet.checks_all()` currently holds that non-reentrant lock across its entire generator (it yields *inside* `with _REGISTRY_LOCK`), and `check_viewsets` calls `.messages()` mid-iteration — so the second acquire self-deadlocks. Fix `checks_all()` to snapshot-then-release, matching the pattern already used at `checks.py:36`, `checks.py:104`, and `viewset/__init__.py:124`.
+
+In `src/crud_views/lib/viewset/__init__.py`, replace:
+
+```python
+    @staticmethod
+    def checks_all() -> Iterable[Check]:
+        """
+        Iterator over all checks of all viewsets
+        """
+        with _REGISTRY_LOCK:
+            for cv in _REGISTRY.values():
+                yield from cv.checks()
+```
+
+with:
+
+```python
+    @staticmethod
+    def checks_all() -> Iterable[Check]:
+        """
+        Iterator over all checks of all viewsets
+        """
+        with _REGISTRY_LOCK:
+            viewsets = list(_REGISTRY.values())
+        for cv in viewsets:
+            yield from cv.checks()
+```
+
+- [ ] **Step 3c: Guard `CheckAttributeReg` against a None value**
+
+The integration test iterates every check's `.messages()` on a fixture whose `cv_key` is `None`. `CheckAttributeReg.messages()` then calls `self.reg.match(self.value)` with `self.value is None`, raising `TypeError`. Add the same `self.value is not None` guard the sibling `CheckAttributeType` already uses. In `src/crud_views/lib/check.py`, in `CheckAttributeReg.messages()`, change:
+
+```python
+        if self.exists and not self.reg.match(self.value):
+```
+
+to:
+
+```python
+        if self.exists and self.value is not None and not self.reg.match(self.value):
+```
+
 - [ ] **Step 4: Run the new integration tests**
 
 Run: `cd tests && pytest test1/test_unknown_attribute_check.py -v`
-Expected: PASS — all tests including the three integration tests.
+Expected: PASS — all tests including the integration and deadlock-regression tests.
 
 - [ ] **Step 5: Run the full test suite to confirm no regressions / no false positives**
 

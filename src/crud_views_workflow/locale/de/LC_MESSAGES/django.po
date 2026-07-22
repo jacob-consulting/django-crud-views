@@ -39,10 +39,8 @@ msgid "Process workflow"
 msgstr "Workflow verarbeiten"
 
 #: lib/views.py:30
-#, fuzzy
-#| msgid "Successfully processed workflow step on »{{ object }}«"
 msgid "Process workflow step on »{{ object }}«"
-msgstr "Workflow-Schritt für »{{ object }}« erfolgreich verarbeitet"
+msgstr "Workflow-Schritt für »{{ object }}« verarbeiten"
 
 #: lib/views.py:34
 msgid "Select a possible workflow action to take"

@@ -3,7 +3,7 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
+# NOTE: fr/es/pt/it/zh-hans translations are machine-authored pending native review (see #88 follow-up).
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
@@ -12,59 +12,60 @@ msgstr ""
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language: zh_Hans\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+
 #: lib/crispy/form.py:36 templates/crud_views/tags/button_submit.html:3
 msgid "Save"
-msgstr ""
+msgstr "保存"
 
 #: lib/crispy/form.py:118
 msgid "Confirm deletion"
-msgstr ""
+msgstr "确认删除"
 
 #: lib/formsets/inline_formset.py:20
 msgid "Cannot add entries here without filling in the parent."
-msgstr ""
+msgstr "未填写父级元素前无法在此处添加条目。"
 
 #: lib/table/table.py:30
 msgid "Actions"
-msgstr ""
+msgstr "操作"
 
 #: lib/view/base.py:443
 msgid "Cancel"
-msgstr ""
+msgstr "取消"
 
 #: lib/views/list.py:83
 msgid "Apply Filter"
-msgstr ""
+msgstr "应用筛选"
 
 #: lib/views/list.py:88
 msgid "Reset Filter"
-msgstr ""
+msgstr "重置筛选"
 
 #: templates/crud_views/columns/child.html:3
 #, python-format
 msgid "Go to %(verbose_name_plural)s"
-msgstr ""
+msgstr "前往 %(verbose_name_plural)s"
 
 #: templates/crud_views/modal/content.html:4
 msgid "Close"
-msgstr ""
+msgstr "关闭"
 
 #: templates/crud_views/snippets/action/card.html:3
 #: templates/crud_views/snippets/header/card.html:3
 #: templates/crud_views/snippets/header/list.html:3
 #, python-format
 msgid "%(verbose_name_plural_translate)s"
-msgstr ""
+msgstr "%(verbose_name_plural_translate)s"
 
 #: templates/crud_views/snippets/action/child.html:3
 #, python-format
 msgid "Goto child of %(verbose_name_translate)s"
-msgstr ""
+msgstr "前往 %(verbose_name_translate)s 的子级元素"
 
 #: templates/crud_views/snippets/action/create.html:3
 #: templates/crud_views/snippets/action/create_select.html:3
@@ -72,47 +73,47 @@ msgstr ""
 #: templates/crud_views/snippets/paragraph/create_select.html:3
 #, python-format
 msgid "Create new %(verbose_name_translate)s"
-msgstr ""
+msgstr "新建 %(verbose_name_translate)s"
 
 #: templates/crud_views/snippets/action/delete.html:3
 #, python-format
 msgid "Delete %(verbose_name_translate)s »%(object)s«"
-msgstr ""
+msgstr "删除 %(verbose_name_translate)s »%(object)s«"
 
 #: templates/crud_views/snippets/action/detail.html:3
 #, python-format
 msgid "Show %(verbose_name_translate)s »%(object)s« detail."
-msgstr ""
+msgstr "显示 %(verbose_name_translate)s »%(object)s« 的详情。"
 
 #: templates/crud_views/snippets/action/down.html:3
 #, python-format
 msgid "Move %(verbose_name_translate)s down"
-msgstr ""
+msgstr "将 %(verbose_name_translate)s 下移"
 
 #: templates/crud_views/snippets/action/list.html:3
 #: templates/crud_views/snippets/paragraph/list.html:3
 #, python-format
 msgid "List of all %(verbose_name_plural_translate)s"
-msgstr ""
+msgstr "所有 %(verbose_name_plural_translate)s 的列表"
 
 #: templates/crud_views/snippets/action/manage.html:3
 #, python-format
 msgid "ViewSet %(viewset)s%(viewset.name)s details."
-msgstr ""
+msgstr "ViewSet %(viewset)s%(viewset.name)s 的详情。"
 
 #: templates/crud_views/snippets/action/up.html:3
 #, python-format
 msgid "Move %(verbose_name_translate)s up"
-msgstr ""
+msgstr "将 %(verbose_name_translate)s 上移"
 
 #: templates/crud_views/snippets/action/update.html:3
 #, python-format
 msgid "Update %(verbose_name_translate)s »%(object)s«"
-msgstr ""
+msgstr "编辑 %(verbose_name_translate)s »%(object)s«"
 
 #: templates/crud_views/snippets/action_short/card.html:3
 msgid "Cards"
-msgstr ""
+msgstr "卡片"
 
 #: templates/crud_views/snippets/action_short/child.html:3
 #: templates/crud_views/snippets/header/create.html:3
@@ -121,141 +122,141 @@ msgstr ""
 #: templates/crud_views/snippets/header/update.html:3
 #, python-format
 msgid "%(verbose_name_translate)s"
-msgstr ""
+msgstr "%(verbose_name_translate)s"
 
 #: templates/crud_views/snippets/action_short/create.html:3
 #: templates/crud_views/snippets/action_short/create_select.html:3
 msgid "Create"
-msgstr ""
+msgstr "新建"
 
 #: templates/crud_views/snippets/action_short/delete.html:3
 msgid "Delete"
-msgstr ""
+msgstr "删除"
 
 #: templates/crud_views/snippets/action_short/detail.html:3
 msgid "Detail"
-msgstr ""
+msgstr "详情"
 
 #: templates/crud_views/snippets/action_short/down.html:3
 msgid "Down"
-msgstr ""
+msgstr "下移"
 
 #: templates/crud_views/snippets/action_short/list.html:3
 msgid "List"
-msgstr ""
+msgstr "列表"
 
 #: templates/crud_views/snippets/action_short/manage.html:3
 msgid "Manage"
-msgstr ""
+msgstr "管理"
 
 #: templates/crud_views/snippets/action_short/up.html:3
 msgid "Up"
-msgstr ""
+msgstr "上移"
 
 #: templates/crud_views/snippets/action_short/update.html:3
 msgid "Update"
-msgstr ""
+msgstr "编辑"
 
 #: templates/crud_views/snippets/card_order.html:4
 msgid "Order by"
-msgstr ""
+msgstr "排序方式"
 
 #: templates/crud_views/snippets/card_order.html:10
 msgid "Sort direction"
-msgstr ""
+msgstr "排序方向"
 
 #: templates/crud_views/snippets/card_order.html:13
 msgid "Ascending"
-msgstr ""
+msgstr "升序"
 
 #: templates/crud_views/snippets/card_order.html:18
 msgid "Descending"
-msgstr ""
+msgstr "降序"
 
 #: templates/crud_views/snippets/delete/related_objects.html:6
 msgid "Deletion is blocked by protected relationships:"
-msgstr ""
+msgstr "由于存在受保护的关联关系，删除操作被阻止："
 
 #: templates/crud_views/snippets/delete/related_objects.html:16
 msgid "The following related objects will also be deleted:"
-msgstr ""
+msgstr "以下关联对象也将被删除："
 
 #: templates/crud_views/snippets/delete/related_objects.html:24
 msgid "Details about the related objects to be deleted:"
-msgstr ""
+msgstr "有关待删除关联对象的详情："
 
 #: templates/crud_views/snippets/header/create_select.html:3
 #, python-format
 msgid "Select type of %(verbose_name_translate)s to create"
-msgstr ""
+msgstr "选择要创建的 %(verbose_name_translate)s 类型"
 
 #: templates/crud_views/snippets/header/filter.html:3
 #, python-format
 msgid "Filter %(verbose_name_plural_translate)s"
-msgstr ""
+msgstr "筛选 %(verbose_name_plural_translate)s"
 
 #: templates/crud_views/snippets/header/manage.html:3
 msgid "ViewSet Management"
-msgstr ""
+msgstr "ViewSet 管理"
 
 #: templates/crud_views/snippets/message/create.html:3
 #, python-format
 msgid "Created %(verbose_name_translate)s <strong>%(object)s</strong>"
-msgstr ""
+msgstr "已创建 %(verbose_name_translate)s <strong>%(object)s</strong>"
 
 #: templates/crud_views/snippets/message/delete.html:3
 #, python-format
 msgid "Deleted %(verbose_name_translate)s <strong>%(object)s</strong>"
-msgstr ""
+msgstr "已删除 %(verbose_name_translate)s <strong>%(object)s</strong>"
 
 #: templates/crud_views/snippets/message/down.html:3
 #, python-format
 msgid "Moved %(verbose_name_translate)s <strong>%(object)s</strong> down"
-msgstr ""
+msgstr "已将 %(verbose_name_translate)s <strong>%(object)s</strong> 下移"
 
 #: templates/crud_views/snippets/message/up.html:3
 #, python-format
 msgid "Moved %(verbose_name_translate)s <strong>%(object)s</strong> up"
-msgstr ""
+msgstr "已将 %(verbose_name_translate)s <strong>%(object)s</strong> 上移"
 
 #: templates/crud_views/snippets/message/update.html:3
 #, python-format
 msgid "Updated %(verbose_name_translate)s <strong>%(object)s</strong>"
-msgstr ""
+msgstr "已更新 %(verbose_name_translate)s <strong>%(object)s</strong>"
 
 #: templates/crud_views/snippets/paragraph/card.html:3
 #, python-format
 msgid "Cards of all %(verbose_name_plural_translate)s"
-msgstr ""
+msgstr "所有 %(verbose_name_plural_translate)s 的卡片"
 
 #: templates/crud_views/snippets/paragraph/delete.html:3
 #, python-format
 msgid "Delete %(verbose_name_translate)s <strong>%(object)s</strong>"
-msgstr ""
+msgstr "删除 %(verbose_name_translate)s <strong>%(object)s</strong>"
 
 #: templates/crud_views/snippets/paragraph/detail.html:3
 #, python-format
 msgid "%(verbose_name_translate)s <strong>%(object)s</strong> detail"
-msgstr ""
+msgstr "%(verbose_name_translate)s <strong>%(object)s</strong> 详情"
 
 #: templates/crud_views/snippets/paragraph/manage.html:3
 #, python-format
 msgid "Manage details of ViewSet <strong>%(cv)s</strong>«"
-msgstr ""
+msgstr "管理 ViewSet <strong>%(cv)s</strong> 的详情«"
 
 #: templates/crud_views/snippets/paragraph/update.html:3
 #, python-format
 msgid "Update %(verbose_name_translate)s <strong>%(object)s</strong>"
-msgstr ""
+msgstr "编辑 %(verbose_name_translate)s <strong>%(object)s</strong>"
 
 #: templates/crud_views/table/bootstrap5.html:70
 msgid "previous"
-msgstr ""
+msgstr "上一页"
 
 #: templates/crud_views/table/bootstrap5.html:90
 msgid "next"
-msgstr ""
+msgstr "下一页"
 
 #: templates/crud_views/view_delete.content.html:5
 msgid "This object cannot be deleted:"
-msgstr ""
+msgstr "此对象无法删除："

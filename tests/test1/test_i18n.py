@@ -45,13 +45,14 @@ def test_german_translations_load():
         translation.deactivate()
 
 
-# NOTE: scoped to the three small packages completed in this task (#88 Task 4).
-# Task 5 extends SHIPPED to add crud_views and crud_views_workflow once their
-# new-locale catalogs are authored.
+# NOTE: covers all five shipped packages (#88 Task 4 + Task 5), each with
+# a fully translated de/fr/es/pt/it/zh_Hans catalog.
 SHIPPED = {
     "crud_views_polymorphic": ["de", "fr", "es", "pt", "it", "zh_Hans"],
     "crud_views_guardian": ["de", "fr", "es", "pt", "it", "zh_Hans"],
     "crud_views_object_detail": ["de", "fr", "es", "pt", "it", "zh_Hans"],
+    "crud_views": ["de", "fr", "es", "pt", "it", "zh_Hans"],
+    "crud_views_workflow": ["de", "fr", "es", "pt", "it", "zh_Hans"],
 }
 
 

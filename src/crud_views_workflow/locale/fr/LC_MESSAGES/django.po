@@ -3,7 +3,7 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
+# NOTE: fr/es/pt/it/zh-hans translations are machine-authored pending native review (see #88 follow-up).
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
@@ -12,75 +12,76 @@ msgstr ""
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
 #: lib/forms.py:20
 msgid "Process Workflow Step"
-msgstr ""
+msgstr "Traiter l'étape du workflow"
 
 #: lib/forms.py:36
 msgid "Add your comment…"
-msgstr ""
+msgstr "Ajouter votre commentaire…"
 
 #: lib/forms.py:68
 msgid "Comment is required for this transition"
-msgstr ""
+msgstr "Un commentaire est requis pour cette transition"
 
 #: lib/views.py:28
 msgid "Successfully processed workflow step on »{{ object }}«"
-msgstr ""
+msgstr "Étape du workflow traitée avec succès sur »{{ object }}«"
 
 #: lib/views.py:29 lib/views.py:31 lib/views.py:32
 msgid "Process workflow"
-msgstr ""
+msgstr "Traiter le workflow"
 
 #: lib/views.py:30
 msgid "Process workflow step on »{{ object }}«"
-msgstr ""
+msgstr "Traiter l'étape du workflow sur »{{ object }}«"
 
 #: lib/views.py:34
 msgid "Select a possible workflow action to take"
-msgstr ""
+msgstr "Sélectionner une action de workflow possible"
 
 #: lib/views.py:36
 msgid "Please provide a comment for your workflow step"
-msgstr ""
+msgstr "Veuillez fournir un commentaire pour votre étape de workflow"
 
 #: templates/crud_views_workflow/view_workflow.action.html:7
 msgid "Workflow Action"
-msgstr ""
+msgstr "Action du workflow"
 
 #: templates/crud_views_workflow/view_workflow.action.html:18
 msgid "There are no workflow steps available from the current state."
-msgstr ""
+msgstr "Aucune étape de workflow n'est disponible depuis l'état actuel."
 
 #: templates/crud_views_workflow/view_workflow.history.html:4
 msgid "Workflow History"
-msgstr ""
+msgstr "Historique du workflow"
 
 #: templates/crud_views_workflow/view_workflow.history.html:9
 msgid "Transition"
-msgstr ""
+msgstr "Transition"
 
 #: templates/crud_views_workflow/view_workflow.history.html:10
 msgid "Actor"
-msgstr ""
+msgstr "Acteur"
 
 #: templates/crud_views_workflow/view_workflow.history.html:11
 msgid "Old state"
-msgstr ""
+msgstr "Ancien état"
 
 #: templates/crud_views_workflow/view_workflow.history.html:12
 msgid "New state"
-msgstr ""
+msgstr "Nouvel état"
 
 #: templates/crud_views_workflow/view_workflow.history.html:13
 msgid "Comment"
-msgstr ""
+msgstr "Commentaire"
 
 #: templates/crud_views_workflow/view_workflow.history.html:14
 msgid "Timestamp"
-msgstr ""
+msgstr "Horodatage"

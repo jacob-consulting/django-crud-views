@@ -26,7 +26,7 @@ msgstr "Löschen bestätigen"
 
 #: lib/formsets/inline_formset.py:20
 msgid "Cannot add entries here without filling in the parent."
-msgstr ""
+msgstr "Hier können keine Einträge hinzugefügt werden, ohne das übergeordnete Element auszufüllen."
 
 #: lib/table/table.py:30
 msgid "Actions"
@@ -51,7 +51,7 @@ msgstr "Gehe zu %(verbose_name_plural)s"
 
 #: templates/crud_views/modal/content.html:4
 msgid "Close"
-msgstr ""
+msgstr "Schließen"
 
 #: templates/crud_views/snippets/action/card.html:3
 #: templates/crud_views/snippets/header/card.html:3
@@ -111,7 +111,7 @@ msgstr "%(verbose_name_translate)s »%(object)s« bearbeiten"
 
 #: templates/crud_views/snippets/action_short/card.html:3
 msgid "Cards"
-msgstr ""
+msgstr "Karten"
 
 #: templates/crud_views/snippets/action_short/child.html:3
 #: templates/crud_views/snippets/header/create.html:3
@@ -157,33 +157,31 @@ msgstr "Bearbeiten"
 
 #: templates/crud_views/snippets/card_order.html:4
 msgid "Order by"
-msgstr ""
+msgstr "Sortieren nach"
 
 #: templates/crud_views/snippets/card_order.html:10
-#, fuzzy
-#| msgid "Confirm deletion"
 msgid "Sort direction"
-msgstr "Löschen bestätigen"
+msgstr "Sortierrichtung"
 
 #: templates/crud_views/snippets/card_order.html:13
 msgid "Ascending"
-msgstr ""
+msgstr "Aufsteigend"
 
 #: templates/crud_views/snippets/card_order.html:18
 msgid "Descending"
-msgstr ""
+msgstr "Absteigend"
 
 #: templates/crud_views/snippets/delete/related_objects.html:6
 msgid "Deletion is blocked by protected relationships:"
-msgstr ""
+msgstr "Das Löschen wird durch geschützte Beziehungen verhindert:"
 
 #: templates/crud_views/snippets/delete/related_objects.html:16
 msgid "The following related objects will also be deleted:"
-msgstr ""
+msgstr "Die folgenden verknüpften Objekte werden ebenfalls gelöscht:"
 
 #: templates/crud_views/snippets/delete/related_objects.html:24
 msgid "Details about the related objects to be deleted:"
-msgstr ""
+msgstr "Details zu den zu löschenden verknüpften Objekten:"
 
 #: templates/crud_views/snippets/header/create_select.html:3
 #, python-format
@@ -227,10 +225,9 @@ msgid "Updated %(verbose_name_translate)s <strong>%(object)s</strong>"
 msgstr "%(verbose_name_translate)s <strong>%(object)s</strong> aktualisiert"
 
 #: templates/crud_views/snippets/paragraph/card.html:3
-#, fuzzy, python-format
-#| msgid "List of all %(verbose_name_plural_translate)s"
+#, python-format
 msgid "Cards of all %(verbose_name_plural_translate)s"
-msgstr "Alle %(verbose_name_plural_translate)s"
+msgstr "Karten aller %(verbose_name_plural_translate)s"
 
 #: templates/crud_views/snippets/paragraph/delete.html:3
 #, python-format
@@ -262,4 +259,4 @@ msgstr "weiter"
 
 #: templates/crud_views/view_delete.content.html:5
 msgid "This object cannot be deleted:"
-msgstr ""
+msgstr "Dieses Objekt kann nicht gelöscht werden:"

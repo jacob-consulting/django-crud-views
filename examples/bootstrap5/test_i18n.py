@@ -23,3 +23,11 @@ def test_selector_present_in_nav():
     resp = Client().get("/")
     body = resp.content.decode()
     assert 'name="language"' in body  # selector form field rendered
+
+
+@pytest.mark.django_db
+def test_nav_logout_translated_de(client, django_user_model):
+    user = django_user_model.objects.create_user("u", password="p")
+    client.force_login(user)
+    resp = client.get("/", HTTP_ACCEPT_LANGUAGE="de")
+    assert "Abmelden" in resp.content.decode()  # "Log Out" -> German

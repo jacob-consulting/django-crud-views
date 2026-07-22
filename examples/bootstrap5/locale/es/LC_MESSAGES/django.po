@@ -1,0 +1,144 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+# NOTE: fr/es/pt/it/zh-hans translations are machine-authored pending native review (see #88 follow-up).
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-22 11:26+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: project/features.py:24
+msgid "Library"
+msgstr "Biblioteca"
+
+#: project/features.py:41
+msgid "Nested"
+msgstr "Anidado"
+
+#: project/features.py:59
+msgid "Formsets"
+msgstr "Conjuntos de formularios"
+
+#: project/features.py:75
+msgid "Workflow"
+msgstr "Flujo de trabajo"
+
+#: project/features.py:92
+msgid "Polymorphic"
+msgstr "Polimórfico"
+
+#: project/features.py:109
+msgid "Guardian"
+msgstr "Guardian"
+
+#: project/features.py:126
+msgid "Resources"
+msgstr "Recursos"
+
+#: project/features.py:143
+msgid "Showcase"
+msgstr "Vitrina"
+
+#: project/features.py:160
+msgid "Object Detail"
+msgstr "Detalle del objeto"
+
+#: project/features.py:178
+msgid "Breadcrumbs"
+msgstr "Migas de pan"
+
+#: project/features.py:179 project/features.py:199
+msgid "NEW"
+msgstr "NUEVO"
+
+#: project/features.py:198
+msgid "Conditional"
+msgstr "Condicional"
+
+#: project/settings.py:103
+msgid "English"
+msgstr "Inglés"
+
+#: project/settings.py:104
+msgid "German"
+msgstr "Alemán"
+
+#: project/settings.py:105
+msgid "French"
+msgstr "Francés"
+
+#: project/settings.py:106
+msgid "Spanish"
+msgstr "Español"
+
+#: project/settings.py:107
+msgid "Portuguese"
+msgstr "Portugués"
+
+#: project/settings.py:108
+msgid "Italian"
+msgstr "Italiano"
+
+#: project/settings.py:109
+msgid "Simplified Chinese"
+msgstr "Chino simplificado"
+
+#: project/settings.py:128
+msgid "Home"
+msgstr "Inicio"
+
+#: project/templates/project/base.html:14 project/templates/project/home.html:8
+#: project/templates/registration/login.html:5
+msgid "django-crud-views examples"
+msgstr "django-crud-views – ejemplos"
+
+#: project/templates/project/example_about.html:6
+#, python-format
+msgid "About this example — %(title)s"
+msgstr "Acerca de este ejemplo — %(title)s"
+
+#: project/templates/project/home.html:10
+msgid ""
+"One self-contained example app per feature. Every page shows the code behind "
+"it."
+msgstr "Una aplicación de ejemplo autónoma por función. Cada página muestra el código correspondiente."
+
+#: project/templates/project/home.html:14
+msgid "Documentation"
+msgstr "Documentación"
+
+#: project/templates/project/home.html:32
+msgid "Open"
+msgstr "Abrir"
+
+#: project/templates/project/nav.html:24
+msgid "Log Out"
+msgstr "Cerrar sesión"
+
+#: project/templates/project/nav.html:27 project/urls.py:17
+msgid "Log In"
+msgstr "Iniciar sesión"
+
+#: project/templates/project/snippet_panels.html:4
+msgid "The code behind this page"
+msgstr "El código detrás de esta página"
+
+#: project/templates/project/snippet_panels.html:6
+msgid "Look at:"
+msgstr "Ver:"
+
+#: project/templates/registration/login.html:5
+#: project/templates/registration/login.html:11
+msgid "Log in"
+msgstr "Iniciar sesión"

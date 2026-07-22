@@ -7,6 +7,11 @@
 - JS unit-test harness (Vitest + jsdom) for the package's static JavaScript
   (`formset.js`, `modal.js`, `toggle.js`), with a `JS Tests` CI workflow and a
   `task test-js` shortcut. Dev-only; does not affect the package.
+- New system check `crud_views.W280` (id surfaces as `viewset.W280`): warns when a view
+  declares a `cv_*` data attribute that no `crud_views` class recognizes — a dead attribute
+  or typo (e.g. `cv_message` instead of `cv_message_template_code`) — with a near-match
+  suggestion. Exempt an intentional custom attribute via `cv_check_ignore_attributes` on the
+  view. Relates to #28. (#86)
 
 ### Fixed
 

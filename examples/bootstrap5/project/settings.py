@@ -6,6 +6,8 @@ One self-contained example app per crud_views feature — see the home page.
 
 from pathlib import Path
 
+from django.utils.translation import gettext_lazy as _
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = "django-insecure-example-project-do-not-use-in-production"
@@ -51,6 +53,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -71,6 +74,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "django.template.context_processors.i18n",
                 "crud_views.lib.context_processor.crud_views_context",
             ],
         },
@@ -94,6 +98,18 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 LANGUAGE_CODE = "en-us"
+
+LANGUAGES = [
+    ("en", _("English")),
+    ("de", _("German")),
+    ("fr", _("French")),
+    ("es", _("Spanish")),
+    ("pt", _("Portuguese")),
+    ("it", _("Italian")),
+    ("zh-hans", _("Simplified Chinese")),
+]
+LOCALE_PATHS = [BASE_DIR / "locale"]
+
 TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
@@ -109,7 +125,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # django-crud-views
 CRUD_VIEWS_EXTENDS = "project/crud_views.html"
-CRUD_VIEWS_BREADCRUMB_PREFIX = [{"title": "Home", "url_name": "home"}]
+CRUD_VIEWS_BREADCRUMB_PREFIX = [{"title": _("Home"), "url_name": "home"}]
 
 # crispy forms
 CRISPY_TEMPLATE_PACK = "bootstrap5"

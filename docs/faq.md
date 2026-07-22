@@ -255,3 +255,40 @@ field-group, use `ConditionalFormSet` — see the
 
 *See it running: [`examples/bootstrap5/conditional/`](https://github.com/jacob-consulting/django-crud-views/tree/main/examples/bootstrap5/conditional) ·
 Full docs: [Conditional Field-Groups & Conditional FormSets](reference/conditional.md).*
+
+## Why is my `cv_*` attribute silently ignored? (check W280)
+
+`CrudView` config attributes use the `cv_` prefix and are read via `getattr`, so a typo or a
+stale name left over from a rename — e.g. `cv_message` when the real attribute is
+`cv_message_template_code` — is never an error at import time. It just gets ignored, and
+your setting has no effect.
+
+The `viewset.W280` system check catches this: it warns about any `cv_*` **data attribute**
+(methods and properties are not checked) whose name is not part of the package vocabulary —
+i.e. not declared by any `crud_views` class, core or one of the workflow / polymorphic /
+guardian / object_detail / `crud_views_widget_*` extensions. The warning names the attribute
+and suggests the closest real attribute on that view.
+
+W280 only answers "is this a real `crud_views` attribute name?" A real attribute that's
+valid on the package but doesn't apply to this particular view type is a separate concern,
+covered by other checks — W280 is purely about unknown or typo'd names.
+
+Only *data* attributes are checked. An attribute whose value is callable — a method, or a
+class assigned directly (e.g. `cv_something = SomeForm`) — is skipped, so those typos are not
+caught. This keeps the check from flagging your own helper methods.
+
+**Silencing a legitimate custom attribute (recommended):** declare it in the per-class
+allowlist:
+
+```python
+class MyView(UpdateView):
+    cv_check_ignore_attributes = frozenset({"cv_my_custom_flag"})
+    cv_my_custom_flag = True
+```
+
+The allowlist is unioned across the class hierarchy, so a mixin and the concrete view can
+each contribute their own exemptions.
+
+**Global silencing (coarse):** add `SILENCED_SYSTEM_CHECKS = ["viewset.W280"]` to your
+Django settings to suppress the warning everywhere; prefer the per-class allowlist above for
+targeted exemption.

@@ -1,5 +1,14 @@
 # Django CRUD Views - Changelog
 
+## Unreleased
+
+### Added
+
+- New system check `viewset.W280`: warns when a view declares a `cv_*` data attribute that no
+  `crud_views` class recognizes — a dead attribute or typo (e.g. `cv_message` instead of
+  `cv_message_template_code`) — with a near-match suggestion. Exempt an intentional custom
+  attribute via `cv_check_ignore_attributes` on the view. Relates to #28. (#86)
+
 ## 0.18.0
 
 ### Added

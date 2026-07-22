@@ -96,7 +96,7 @@ class CheckAttributeReg(CheckAttribute):
 
     def messages(self) -> Iterable[CheckMessage]:
         yield from super().messages()
-        if self.exists and not self.reg.match(self.value):
+        if self.exists and self.value is not None and not self.reg.match(self.value):
             yield Error(id=f"viewset.{self.id}", msg=self.get_message())
 
 
@@ -269,6 +269,70 @@ def _is_config_value(value: Any) -> bool:
     return not (callable(value) or hasattr(value, "__get__"))
 
 
+def _own_cv_annotations(klass: type) -> set[str]:
+    """cv_*-prefixed names annotated on this class only (own annotations, no inheritance).
+
+    Handles annotation-only declarations like `cv_formsets: FormSets` (no default) that
+    never appear in vars(klass). `klass.__annotations__` returns the class's own annotations
+    (empty dict if none) on Python 3.10+; wrapped defensively for the PEP 649 lazy path on 3.14.
+    """
+    try:
+        annotations = klass.__annotations__
+    except Exception:
+        annotations = vars(klass).get("__annotations__", {})
+    return {name for name in annotations if name.startswith(_CV_PREFIX)}
+
+
+def _collect_cv_names(klass: type, all_names: set[str], data_names: set[str]) -> None:
+    """Add klass's own cv_* declarations — defaults (vars) and annotation-only — to the sets."""
+    for name in _own_cv_annotations(klass):
+        all_names.add(name)
+        data_names.add(name)  # annotation-only config attrs are data, suggestible
+    for name, value in vars(klass).items():
+        if name.startswith(_CV_PREFIX):
+            all_names.add(name)
+            if _is_config_value(value):
+                data_names.add(name)
+
+
+def _registered_view_classes() -> list[type]:
+    """All view classes across every registered ViewSet (empty before the app registry loads)."""
+    from crud_views.lib.viewset import _REGISTRY, _REGISTRY_LOCK
+
+    with _REGISTRY_LOCK:
+        viewsets = list(_REGISTRY.values())
+    classes: list[type] = []
+    for viewset in viewsets:
+        classes.extend(viewset.get_all_views().values())
+    return classes
+
+
+_VOCAB_CACHE: dict[int, tuple[frozenset[str], frozenset[str]]] = {}
+
+
+def _registry_vocabulary() -> tuple[frozenset[str], frozenset[str]]:
+    """Package-wide (all cv_* names, data-attribute cv_* names) declared by any crud_views* class
+    used by a registered view. Cached per registry size — the ViewSet registry only grows at
+    import time and is stable when system checks run, so the count is a safe cache key."""
+    classes = _registered_view_classes()
+    key = len(classes)
+    cached = _VOCAB_CACHE.get(key)
+    if cached is not None:
+        return cached
+    all_names: set[str] = set()
+    data_names: set[str] = set()
+    seen: set[type] = set()
+    for view in classes:
+        for klass in view.__mro__:
+            if klass in seen or not klass.__module__.startswith(_PACKAGE_PREFIX):
+                continue
+            seen.add(klass)
+            _collect_cv_names(klass, all_names, data_names)
+    result = (frozenset(all_names), frozenset(data_names))
+    _VOCAB_CACHE[key] = result
+    return result
+
+
 class CheckUnknownAttributes(Check):
     """
     Warn about cv_* data attributes that no crud_views class declares.
@@ -286,24 +350,16 @@ class CheckUnknownAttributes(Check):
         "ignored (dead attribute or typo).{suggestion}"
     )
 
-    def _known(self) -> tuple[set[str], set[str]]:
-        """Return (all cv_* names, data-attribute cv_* names) declared by crud_views* classes.
-
-        The full set is used to decide what is "unknown" (so overriding a real method name
-        with data is not flagged); the data-attribute subset is the suggestion pool, so a
-        near-match never points at a method like cv_get_message.
-        """
+    def _context_names(self) -> tuple[set[str], set[str]]:
+        """(all cv_* names, data-attribute cv_* names) declared by crud_views* classes in this
+        view's own MRO. The data subset is the suggestion pool — kept context-local so a
+        'did you mean' hint stays relevant to this view type instead of pulling in unrelated
+        attributes (e.g. cv_action_messages from ActionView) via the package-wide set."""
         all_names: set[str] = set()
         data_names: set[str] = set()
         for klass in self.context.__mro__:
-            if not klass.__module__.startswith(_PACKAGE_PREFIX):
-                continue
-            for name, value in vars(klass).items():
-                if not name.startswith(_CV_PREFIX):
-                    continue
-                all_names.add(name)
-                if _is_config_value(value):
-                    data_names.add(name)
+            if klass.__module__.startswith(_PACKAGE_PREFIX):
+                _collect_cv_names(klass, all_names, data_names)
         return all_names, data_names
 
     def _allowlist(self) -> set[str]:
@@ -336,10 +392,14 @@ class CheckUnknownAttributes(Check):
         return f" Did you mean {matches[0]}?" if matches else ""
 
     def messages(self) -> Iterable[CheckMessage]:
-        known_all, known_data = self._known()
+        reg_all, _reg_data = _registry_vocabulary()
+        ctx_all, ctx_data = self._context_names()
+        known_all = reg_all | ctx_all  # package-wide: is this a real crud_views attribute name?
         unknown = self._suspects() - known_all - self._allowlist()
         for name in sorted(unknown):
-            msg = self.msg.format(attribute=name, context=self.context, suggestion=self._suggestion(name, known_data))
+            # suggest only from THIS view's own data attributes, so the hint stays relevant
+            suggestion = self._suggestion(name, ctx_data)
+            msg = self.msg.format(attribute=name, context=self.context, suggestion=suggestion)
             yield DjangoWarning(
                 msg,
                 hint=(

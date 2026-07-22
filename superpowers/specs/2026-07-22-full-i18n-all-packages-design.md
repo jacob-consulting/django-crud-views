@@ -62,17 +62,62 @@ and that native-speaker corrections are welcome. A follow-up issue tracks native
 
 ### 1. String audit and marking
 
-Sweep all five packages and the example app; wrap every user-facing hardcoded string.
+Wrap every user-facing hardcoded string. Marking conventions:
 
 - **Python:** `from django.utils.translation import gettext_lazy as _` (lazy, for module-level and
   attribute strings) and wrap. Use `gettext` (non-lazy) only inside request-time functions where a
   string is needed eagerly.
 - **Templates:** `{% load i18n %}` then `{% translate "..." %}` for simple strings and
-  `{% blocktranslate %}...{% endblocktranslate %}` for strings with placeholders.
-- Priority order by current gap: `crud_views_guardian` (0 marked) → `crud_views_object_detail` (1)
-  → `crud_views_polymorphic` (2) → template strings still hardcoded in any package → example app.
-- Do **not** mark developer-facing strings (log messages, exception messages for developers,
-  system-check messages) unless they are already conventionally translated in the codebase.
+  `{% blocktranslate %}...{% endblocktranslate %}` for strings with placeholders / pluralization.
+- Do **not** mark developer-facing strings (log messages, `ValueError`/exception messages meant for
+  developers, system-check messages) unless already conventionally translated in the codebase.
+
+#### Concrete inventory (audited 2026-07-22)
+
+The `crud_views` and `crud_views_workflow` packages are already marked. The three unmarked
+packages have a **small but non-empty** surface — most of it in guardian:
+
+**`crud_views_guardian`** — `templates/crud_views/view_guardian_manage.html` (only source of
+user-facing text; Python has only dev-facing `ValueError`s):
+
+| String | Marking |
+|---|---|
+| `Guardian Configuration` | `{% translate %}` |
+| `Setting`, `Value` | `{% translate %}` |
+| `Permission Holders` | `{% translate %}` |
+| `Group`, `Permission`, `Model-level`, `Objects (guardian)`, `Users` | `{% translate %}` |
+| `No permission holders found.` | `{% translate %}` |
+| `{{ row.object_count }} objects` | `{% blocktranslate count n=row.object_count %}{{ n }} object{% plural %}{{ n }} objects{% endblocktranslate %}` |
+
+The `cv_guardian_*` / `parent_viewset` identifier strings in the config table are **code
+identifiers, not prose** — leave untranslated.
+
+**`crud_views_polymorphic`** — one string:
+
+| Location | String | Marking |
+|---|---|---|
+| `lib/create_select.py:15` | `forms.ChoiceField(label="Type", ...)` | `label=_("Type")` |
+
+Its `create_select` header/paragraph snippets live in `crud_views/templates/.../snippets/` and are
+already `blocktranslate`d — no work there.
+
+**`crud_views_object_detail`** — one string:
+
+| Location | String | Marking |
+|---|---|---|
+| `apps.py:8` | `verbose_name = "Crud Views Object Detail"` | `verbose_name = _("Crud Views Object Detail")` |
+
+Templates and value-type partials contain **no literal user-facing text** — all labels/titles come
+from config `LazyStr` (already translatable by the caller) or from model-field `verbose_name`.
+`resolvers.py` auto-derives labels from field names via `.title()`; these are dynamic, not string
+literals, and are left as existing behavior (out of scope).
+
+**Optional consistency touch-up:** `polymorphic`/`guardian` `apps.py` set only a short `label` and
+no `verbose_name`. Adding a translated `verbose_name` (as `object_detail` already has) is a small,
+optional improvement for the admin app list — include if cheap.
+
+The example app is audited during implementation (nav "Log In"/"Log Out", `HomeView`, feature
+titles in `example_tags`, and any visible template prose).
 
 ### 2. Reusable language selector in `crud_views` core
 

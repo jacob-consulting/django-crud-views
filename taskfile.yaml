@@ -2,6 +2,8 @@ version: '3'
 
 vars:
   PYTHON: "3.12"
+  LOCALES: "de fr es pt it zh_Hans"
+  I18N_PACKAGES: "crud_views crud_views_workflow crud_views_polymorphic crud_views_guardian crud_views_object_detail"
 
 includes:
   examples:
@@ -87,10 +89,17 @@ tasks:
       - cp -r skills/django-crud-views ~/.claude/skills/
     silent: true
 
-  msg-make-crud_views:
-    dir: src/crud_views
-    cmd: PYTHONPATH=../.. python -m django makemessages -l de --settings=settings_i18n
+  msg-make:
+    desc: Extract translatable strings for all packages and locales
+    dir: src
+    cmd: |
+      for pkg in {{ .I18N_PACKAGES }}; do
+        for loc in {{ .LOCALES }}; do
+          (cd "$pkg" && PYTHONPATH=../.. python -m django makemessages -l "$loc" --settings=settings_i18n)
+        done
+      done
 
-  msg-comp-crud_views:
-    dir: src/crud_views
-    cmd: PYTHONPATH=../.. python -m django compilemessages --settings=settings_i18n
+  msg-comp:
+    desc: Compile all package message catalogs
+    dir: src
+    cmd: PYTHONPATH=.. python -m django compilemessages --settings=settings_i18n

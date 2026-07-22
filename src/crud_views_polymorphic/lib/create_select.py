@@ -2,6 +2,7 @@ from typing import List, Type, Iterable
 
 from django import forms
 from django.http import HttpResponseRedirect
+from django.utils.translation import gettext_lazy as _
 from django.views import generic
 from polymorphic.models import PolymorphicModel
 
@@ -12,7 +13,7 @@ from .utils import get_polymorphic_child_models_content_types
 
 
 class PolymorphicContentTypeForm(forms.Form):
-    polymorphic_ctype_id = forms.ChoiceField(label="Type", choices=[])
+    polymorphic_ctype_id = forms.ChoiceField(label=_("Type"), choices=[])
 
     def __init__(self, *args, polymorphic_ctype_choices, **kwargs):
         super().__init__(*args, **kwargs)

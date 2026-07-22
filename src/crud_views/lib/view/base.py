@@ -15,6 +15,7 @@ from crud_views.lib.check import (
     CheckTemplateOrCode,
     CheckTemplate,
     CheckExpression,
+    CheckUnknownAttributes,
 )
 from crud_views.lib.exceptions import cv_raise, ParentViewSetError, CrudViewError, ViewSetKeyFoundError
 from django.contrib.auth.mixins import PermissionRequiredMixin
@@ -123,6 +124,7 @@ class CrudView(metaclass=CrudViewMetaClass):
             expression=not cls.cv_modal or cls.cv_modal_supported,
             msg="cv_modal is not supported for this view type (phase 1: delete, detail and custom form views)",
         )
+        yield CheckUnknownAttributes(context=cls)
 
     def get_success_url(self) -> str:
         url = self.cv_get_url(key=self.cv_success_key, obj=getattr(self, "object", None))

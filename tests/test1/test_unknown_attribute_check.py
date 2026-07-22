@@ -49,6 +49,10 @@ class UnionExemptView(_ExemptMixin):
     cv_from_leaf = 2
 
 
+class MethodShadowView(CrudView):
+    cv_get_message = "literal"  # shadows a real package METHOD name with data — known name, must not warn
+
+
 def _w280(context):
     return list(CheckUnknownAttributes(context=context).messages())
 
@@ -85,3 +89,64 @@ def test_unlisted_custom_attribute_warns():
 def test_allowlist_is_unioned_across_the_mro():
     # If the check used getattr (leaf shadows), cv_from_mixin would leak a warning.
     assert _w280(UnionExemptView) == []
+
+
+def test_shadowing_a_known_method_name_with_data_does_not_warn():
+    assert _w280(MethodShadowView) == []
+
+
+def test_annotation_only_package_attribute_is_known():
+    # cv_formsets is declared annotation-only (no default) on FormSetMixin; a view that
+    # legitimately sets it must not be flagged as unknown (regression for the vars()-only gap).
+    from crud_views.lib.formsets.mixins import FormSetMixin
+
+    class FormsetUserView(FormSetMixin, CrudView):
+        cv_formsets = "sentinel"  # value type is irrelevant to the name-based known-set
+
+    assert _w280(FormsetUserView) == []
+
+
+def test_real_package_attr_on_view_without_its_mixin_is_not_flagged():
+    # cv_formsets is a real package attribute (FormSetMixin) read generically by check_conditional.
+    # A registered formset view puts it in the package vocabulary, so setting it on a view that
+    # does NOT inherit FormSetMixin must not be flagged (package-wide known-set, not MRO-local).
+    # Importing the module registers PublisherFormSet* views, so this holds regardless of the
+    # test execution order / scope (in-process, the registry is otherwise import-order dependent).
+    import tests.test1.app.views_formset  # noqa: F401 — ensures a FormSetMixin view is registered
+
+    class PlainView(CrudView):
+        cv_formsets = "sentinel"
+
+    assert _w280(PlainView) == []
+
+
+def test_checks_chain_yields_the_unknown_attribute_check():
+    ids = [c.id for c in DeadAttrView.checks()]
+    assert "W280" in ids
+
+
+def test_checks_chain_emits_w280_for_dead_attr():
+    warnings = [m for c in DeadAttrView.checks() for m in c.messages() if getattr(m, "id", None) == "viewset.W280"]
+    assert any("cv_message" in w.msg for w in warnings)
+
+
+def test_registered_views_have_no_unknown_attribute_warnings():
+    # Guards against false positives on the real, correctly-configured test-app views.
+    from crud_views.lib.viewset import ViewSet
+
+    w280 = [m for c in ViewSet.checks_all() for m in c.messages() if getattr(m, "id", None) == "viewset.W280"]
+    assert w280 == [], [w.msg for w in w280]
+
+
+def test_checks_all_releases_registry_lock_before_yielding():
+    # Regression: checks_all() must snapshot-then-release _REGISTRY_LOCK. If it holds the lock
+    # across yields, calling .messages() on a yielded check (which re-acquires the lock via the
+    # package-wide vocabulary) self-deadlocks. Probe: the lock must be free during iteration.
+    from crud_views.lib.viewset import ViewSet, _REGISTRY_LOCK
+
+    for _check in ViewSet.checks_all():
+        acquired = _REGISTRY_LOCK.acquire(blocking=False)
+        if acquired:
+            _REGISTRY_LOCK.release()
+        assert acquired, "checks_all() held _REGISTRY_LOCK across a yield — messages() would deadlock"
+        break

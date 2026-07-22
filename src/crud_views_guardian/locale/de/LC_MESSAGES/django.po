@@ -3,7 +3,6 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
@@ -12,7 +11,7 @@ msgstr ""
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -20,47 +19,47 @@ msgstr ""
 
 #: templates/crud_views/view_guardian_manage.html:5
 msgid "Guardian Configuration"
-msgstr ""
+msgstr "Guardian-Konfiguration"
 
 #: templates/crud_views/view_guardian_manage.html:9
 msgid "Setting"
-msgstr ""
+msgstr "Einstellung"
 
 #: templates/crud_views/view_guardian_manage.html:10
 msgid "Value"
-msgstr ""
+msgstr "Wert"
 
 #: templates/crud_views/view_guardian_manage.html:33
 msgid "Permission Holders"
-msgstr ""
+msgstr "Berechtigungsinhaber"
 
 #: templates/crud_views/view_guardian_manage.html:37
 msgid "Group"
-msgstr ""
+msgstr "Gruppe"
 
 #: templates/crud_views/view_guardian_manage.html:38
 msgid "Permission"
-msgstr ""
+msgstr "Berechtigung"
 
 #: templates/crud_views/view_guardian_manage.html:39
 msgid "Model-level"
-msgstr ""
+msgstr "Modellebene"
 
 #: templates/crud_views/view_guardian_manage.html:40
 msgid "Objects (guardian)"
-msgstr ""
+msgstr "Objekte (Guardian)"
 
 #: templates/crud_views/view_guardian_manage.html:41
 msgid "Users"
-msgstr ""
+msgstr "Benutzer"
 
 #: templates/crud_views/view_guardian_manage.html:48
 #, python-format
 msgid "%(count)s object"
 msgid_plural "%(count)s objects"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%(count)s Objekt"
+msgstr[1] "%(count)s Objekte"
 
 #: templates/crud_views/view_guardian_manage.html:54
 msgid "No permission holders found."
-msgstr ""
+msgstr "Keine Berechtigungsinhaber gefunden."

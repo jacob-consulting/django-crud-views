@@ -273,6 +273,10 @@ W280 only answers "is this a real `crud_views` attribute name?" A real attribute
 valid on the package but doesn't apply to this particular view type is a separate concern,
 covered by other checks — W280 is purely about unknown or typo'd names.
 
+Only *data* attributes are checked. An attribute whose value is callable — a method, or a
+class assigned directly (e.g. `cv_something = SomeForm`) — is skipped, so those typos are not
+caught. This keeps the check from flagging your own helper methods.
+
 **Silencing a legitimate custom attribute (recommended):** declare it in the per-class
 allowlist:
 

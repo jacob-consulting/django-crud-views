@@ -26,3 +26,16 @@ tasks:
   shell:
     cmds:
       - uv run manage.py shell
+
+  msg-make:
+    desc: Extract translatable strings for the example app
+    cmds:
+      - for: { var: LOCALES }
+        cmd: uv run manage.py makemessages -l {{ .ITEM }}
+    vars:
+      LOCALES: "de fr es pt it zh_Hans"
+
+  msg-comp:
+    desc: Compile the example app message catalog
+    cmds:
+      - uv run manage.py compilemessages

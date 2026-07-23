@@ -1,0 +1,87 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+# NOTE: fr/es/pt/it/zh-hans translations are machine-authored pending native review (see #88 follow-up).
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-22 04:00-0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: zh_Hans\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: lib/forms.py:20
+msgid "Process Workflow Step"
+msgstr "处理工作流步骤"
+
+#: lib/forms.py:36
+msgid "Add your comment…"
+msgstr "添加您的评论…"
+
+#: lib/forms.py:68
+msgid "Comment is required for this transition"
+msgstr "此转换需要填写评论"
+
+#: lib/views.py:28
+msgid "Successfully processed workflow step on »{{ object }}«"
+msgstr "已成功处理 »{{ object }}« 上的工作流步骤"
+
+#: lib/views.py:29 lib/views.py:31 lib/views.py:32
+msgid "Process workflow"
+msgstr "处理工作流"
+
+#: lib/views.py:30
+msgid "Process workflow step on »{{ object }}«"
+msgstr "处理 »{{ object }}« 上的工作流步骤"
+
+#: lib/views.py:34
+msgid "Select a possible workflow action to take"
+msgstr "选择可执行的工作流操作"
+
+#: lib/views.py:36
+msgid "Please provide a comment for your workflow step"
+msgstr "请为您的工作流步骤填写评论"
+
+#: templates/crud_views_workflow/view_workflow.action.html:7
+msgid "Workflow Action"
+msgstr "工作流操作"
+
+#: templates/crud_views_workflow/view_workflow.action.html:18
+msgid "There are no workflow steps available from the current state."
+msgstr "当前状态下没有可用的工作流步骤。"
+
+#: templates/crud_views_workflow/view_workflow.history.html:4
+msgid "Workflow History"
+msgstr "工作流历史"
+
+#: templates/crud_views_workflow/view_workflow.history.html:9
+msgid "Transition"
+msgstr "转换"
+
+#: templates/crud_views_workflow/view_workflow.history.html:10
+msgid "Actor"
+msgstr "操作者"
+
+#: templates/crud_views_workflow/view_workflow.history.html:11
+msgid "Old state"
+msgstr "原状态"
+
+#: templates/crud_views_workflow/view_workflow.history.html:12
+msgid "New state"
+msgstr "新状态"
+
+#: templates/crud_views_workflow/view_workflow.history.html:13
+msgid "Comment"
+msgstr "评论"
+
+#: templates/crud_views_workflow/view_workflow.history.html:14
+msgid "Timestamp"
+msgstr "时间戳"

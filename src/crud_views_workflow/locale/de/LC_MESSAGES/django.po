@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-01 14:50+0000\n"
+"POT-Creation-Date: 2026-07-22 04:00-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: German <de@li.org>\n"
@@ -39,8 +39,8 @@ msgid "Process workflow"
 msgstr "Workflow verarbeiten"
 
 #: lib/views.py:30
-msgid "Process workflow step"
-msgstr "Workflow-Schritt verarbeiten"
+msgid "Process workflow step on »{{ object }}«"
+msgstr "Workflow-Schritt für »{{ object }}« verarbeiten"
 
 #: lib/views.py:34
 msgid "Select a possible workflow action to take"
@@ -85,3 +85,6 @@ msgstr "Kommentar"
 #: templates/crud_views_workflow/view_workflow.history.html:14
 msgid "Timestamp"
 msgstr "Zeitstempel"
+
+#~ msgid "Process workflow step"
+#~ msgstr "Workflow-Schritt verarbeiten"

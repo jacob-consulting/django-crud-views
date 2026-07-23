@@ -5,6 +5,7 @@ from django.contrib import admin
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import include, path
+from django.utils.translation import gettext_lazy as _
 
 from project.views import HomeView
 
@@ -13,12 +14,13 @@ class CrispyAuthenticationForm(AuthenticationForm):
     @property
     def helper(self):
         helper = FormHelper()
-        helper.layout = Layout("username", "password", FormActions(Submit("login", "Log In")))
+        helper.layout = Layout("username", "password", FormActions(Submit("login", _("Log In"))))
         return helper
 
 
 urlpatterns = [
     path("", HomeView.as_view(), name="home"),
+    path("i18n/", include("django.conf.urls.i18n")),
     path("login/", LoginView.as_view(form_class=CrispyAuthenticationForm), name="login"),
     path("logout/", LogoutView.as_view(), name="logout"),
     path("admin/", admin.site.urls),

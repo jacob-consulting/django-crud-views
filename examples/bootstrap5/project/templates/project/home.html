@@ -1,15 +1,17 @@
 {% extends "project/base.html" %}
 
+{% load i18n %}
+
 {% block content %}
 
     <div class="bg-body-tertiary p-4 rounded mb-4">
-        <h1>django-crud-views examples</h1>
+        <h1>{% translate "django-crud-views examples" %}</h1>
         <p class="lead">
-            One self-contained example app per feature.
-            Every page shows the code behind it.
+            {% blocktranslate trimmed %}One self-contained example app per feature.
+            Every page shows the code behind it.{% endblocktranslate %}
         </p>
         <a class="btn btn-primary" href="https://django-crud-views.readthedocs.io/en/latest" role="button">
-            Documentation &raquo;
+            {% translate "Documentation" %} &raquo;
         </a>
     </div>
 
@@ -27,7 +29,7 @@
                         <p class="card-text">{{ feature.description }}</p>
                     </div>
                     <div class="card-footer">
-                        <a class="btn btn-sm btn-outline-primary" href="{% url feature.url_name %}">Open</a>
+                        <a class="btn btn-sm btn-outline-primary" href="{% url feature.url_name %}">{% translate "Open" %}</a>
                     </div>
                 </div>
             </div>

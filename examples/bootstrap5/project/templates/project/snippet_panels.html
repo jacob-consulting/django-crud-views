@@ -1,8 +1,9 @@
+{% load i18n %}
 {% if panels %}
     <div class="mt-4" id="snippet-panels">
-        <h5><i class="fa-solid fa-code"></i> The code behind this page</h5>
+        <h5><i class="fa-solid fa-code"></i> {% translate "The code behind this page" %}</h5>
         {% if look_at %}
-            <p class="text-body-secondary"><strong>Look at:</strong> {{ look_at }}</p>
+            <p class="text-body-secondary"><strong>{% translate "Look at:" %}</strong> {{ look_at }}</p>
         {% endif %}
         <div class="accordion" id="snippetAccordion">
             {% for panel in panels %}

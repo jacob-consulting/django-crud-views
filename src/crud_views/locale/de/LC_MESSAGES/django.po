@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: django-crud-views\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-09 10:13-0500\n"
+"POT-Creation-Date: 2026-07-22 04:00-0500\n"
 "PO-Revision-Date: 2026-04-01 00:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: German\n"
@@ -20,29 +20,45 @@ msgstr ""
 msgid "Save"
 msgstr "Speichern"
 
-#: lib/crispy/form.py:107
+#: lib/crispy/form.py:118
 msgid "Confirm deletion"
 msgstr "Löschen bestätigen"
+
+#: lib/formsets/inline_formset.py:20
+msgid "Cannot add entries here without filling in the parent."
+msgstr "Hier können keine Einträge hinzugefügt werden, ohne das übergeordnete Element auszufüllen."
 
 #: lib/table/table.py:30
 msgid "Actions"
 msgstr "Aktionen"
 
-#: lib/view/base.py:340
+#: lib/view/base.py:443
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: lib/views/list.py:75
+#: lib/views/list.py:83
 msgid "Apply Filter"
 msgstr "Filter anwenden"
 
-#: lib/views/list.py:80
+#: lib/views/list.py:88
 msgid "Reset Filter"
 msgstr "Filter zurücksetzen"
 
 #: templates/crud_views/columns/child.html:3
+#, python-format
 msgid "Go to %(verbose_name_plural)s"
 msgstr "Gehe zu %(verbose_name_plural)s"
+
+#: templates/crud_views/modal/content.html:4
+msgid "Close"
+msgstr "Schließen"
+
+#: templates/crud_views/snippets/action/card.html:3
+#: templates/crud_views/snippets/header/card.html:3
+#: templates/crud_views/snippets/header/list.html:3
+#, python-format
+msgid "%(verbose_name_plural_translate)s"
+msgstr "%(verbose_name_plural_translate)s"
 
 #: templates/crud_views/snippets/action/child.html:3
 #, python-format
@@ -93,6 +109,10 @@ msgstr "%(verbose_name_translate)s nach oben verschieben"
 msgid "Update %(verbose_name_translate)s »%(object)s«"
 msgstr "%(verbose_name_translate)s »%(object)s« bearbeiten"
 
+#: templates/crud_views/snippets/action_short/card.html:3
+msgid "Cards"
+msgstr "Karten"
+
 #: templates/crud_views/snippets/action_short/child.html:3
 #: templates/crud_views/snippets/header/create.html:3
 #: templates/crud_views/snippets/header/delete.html:3
@@ -135,6 +155,34 @@ msgstr "Rauf"
 msgid "Update"
 msgstr "Bearbeiten"
 
+#: templates/crud_views/snippets/card_order.html:4
+msgid "Order by"
+msgstr "Sortieren nach"
+
+#: templates/crud_views/snippets/card_order.html:10
+msgid "Sort direction"
+msgstr "Sortierrichtung"
+
+#: templates/crud_views/snippets/card_order.html:13
+msgid "Ascending"
+msgstr "Aufsteigend"
+
+#: templates/crud_views/snippets/card_order.html:18
+msgid "Descending"
+msgstr "Absteigend"
+
+#: templates/crud_views/snippets/delete/related_objects.html:6
+msgid "Deletion is blocked by protected relationships:"
+msgstr "Das Löschen wird durch geschützte Beziehungen verhindert:"
+
+#: templates/crud_views/snippets/delete/related_objects.html:16
+msgid "The following related objects will also be deleted:"
+msgstr "Die folgenden verknüpften Objekte werden ebenfalls gelöscht:"
+
+#: templates/crud_views/snippets/delete/related_objects.html:24
+msgid "Details about the related objects to be deleted:"
+msgstr "Details zu den zu löschenden verknüpften Objekten:"
+
 #: templates/crud_views/snippets/header/create_select.html:3
 #, python-format
 msgid "Select type of %(verbose_name_translate)s to create"
@@ -144,11 +192,6 @@ msgstr "Typ von %(verbose_name_translate)s zum Erstellen auswählen"
 #, python-format
 msgid "Filter %(verbose_name_plural_translate)s"
 msgstr "%(verbose_name_plural_translate)s filtern"
-
-#: templates/crud_views/snippets/header/list.html:3
-#, python-format
-msgid "%(verbose_name_plural_translate)s"
-msgstr "%(verbose_name_plural_translate)s"
 
 #: templates/crud_views/snippets/header/manage.html:3
 msgid "ViewSet Management"
@@ -181,6 +224,11 @@ msgstr ""
 msgid "Updated %(verbose_name_translate)s <strong>%(object)s</strong>"
 msgstr "%(verbose_name_translate)s <strong>%(object)s</strong> aktualisiert"
 
+#: templates/crud_views/snippets/paragraph/card.html:3
+#, python-format
+msgid "Cards of all %(verbose_name_plural_translate)s"
+msgstr "Karten aller %(verbose_name_plural_translate)s"
+
 #: templates/crud_views/snippets/paragraph/delete.html:3
 #, python-format
 msgid "Delete %(verbose_name_translate)s <strong>%(object)s</strong>"
@@ -201,10 +249,14 @@ msgstr "Details des ViewSets <strong>%(cv)s</strong> verwalten"
 msgid "Update %(verbose_name_translate)s <strong>%(object)s</strong>"
 msgstr "%(verbose_name_translate)s <strong>%(object)s</strong> bearbeiten"
 
-#: templates/crud_views/table/bootstrap5.html:69
+#: templates/crud_views/table/bootstrap5.html:70
 msgid "previous"
 msgstr "zurück"
 
-#: templates/crud_views/table/bootstrap5.html:89
+#: templates/crud_views/table/bootstrap5.html:90
 msgid "next"
 msgstr "weiter"
+
+#: templates/crud_views/view_delete.content.html:5
+msgid "This object cannot be deleted:"
+msgstr "Dieses Objekt kann nicht gelöscht werden:"

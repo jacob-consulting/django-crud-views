@@ -13,4 +13,7 @@ INSTALLED_APPS = [
     "django.contrib.auth",
     "crud_views",
     "crud_views_workflow",
+    "crud_views_polymorphic",
+    "crud_views_guardian",
+    "crud_views_object_detail",
 ]

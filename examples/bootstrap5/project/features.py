@@ -2,6 +2,8 @@
 
 from dataclasses import dataclass
 
+from django.utils.translation import gettext_lazy as _
+
 
 @dataclass(frozen=True)
 class Feature:
@@ -19,7 +21,7 @@ FEATURES: list[Feature] = [
     # example feature apps append their entry here
     Feature(
         app="library",
-        title="Library",
+        title=_("Library"),
         description="Plain CRUD — list, detail, create, update, delete — plus tables, filters and ordering.",
         about=(
             "The starting point: a plain CRUD interface built from a ViewSet. Authors and books each get a "
@@ -36,7 +38,7 @@ FEATURES: list[Feature] = [
     ),
     Feature(
         app="nested",
-        title="Nested",
+        title=_("Nested"),
         description="Parent/child ViewSets with nested URLs: Company → Department → Employee, plus Offices.",
         about=(
             "ViewSets that nest inside a parent. A Company owns Departments, a Department owns Employees, and "
@@ -54,7 +56,7 @@ FEATURES: list[Feature] = [
     ),
     Feature(
         app="formsets",
-        title="Formsets",
+        title=_("Formsets"),
         description="Inline formsets: edit a questionnaire with its questions and choices on one page.",
         about=(
             "Editing a record together with its children on one page. A Questionnaire is edited alongside its "
@@ -70,7 +72,7 @@ FEATURES: list[Feature] = [
     ),
     Feature(
         app="workflow",
-        title="Workflow",
+        title=_("Workflow"),
         description="django-fsm state machine: transitions as form actions, with audit history.",
         about=(
             "A state machine driving the UI. A Campaign moves through draft → active → complete (or "
@@ -87,7 +89,7 @@ FEATURES: list[Feature] = [
     ),
     Feature(
         app="polymorphic_demo",
-        title="Polymorphic",
+        title=_("Polymorphic"),
         description="One list over Car, Truck and Motorcycle with type-specific create and update forms.",
         about=(
             "One ViewSet over several concrete model types. Vehicle is a django-polymorphic base; Car, Truck "
@@ -104,7 +106,7 @@ FEATURES: list[Feature] = [
     ),
     Feature(
         app="guardian_demo",
-        title="Guardian",
+        title=_("Guardian"),
         description="Per-object permissions: alice and bob each see their own documents; one is shared.",
         about=(
             "Per-object permissions with django-guardian. Documents are owned by individual users: sign in as "
@@ -121,7 +123,7 @@ FEATURES: list[Feature] = [
     ),
     Feature(
         app="resources",
-        title="Resources",
+        title=_("Resources"),
         description="A ViewSet over non-ORM data: a fake S3 bucket listing with delete and touch actions.",
         about=(
             "A ViewSet over data that isn't in the database at all. Here the 'records' are entries in a fake "
@@ -138,7 +140,7 @@ FEATURES: list[Feature] = [
     ),
     Feature(
         app="showcase",
-        title="Showcase",
+        title=_("Showcase"),
         description="Presentation extras: card list, detail fieldsets, modal delete, custom actions.",
         about=(
             "Presentation building blocks gathered in one place. Recipes are shown as a grid of cards instead "
@@ -155,7 +157,7 @@ FEATURES: list[Feature] = [
     ),
     Feature(
         app="object_detail",
-        title="Object Detail",
+        title=_("Object Detail"),
         description="Seven detail-page layout themes, side by side, over the same product data.",
         about=(
             "django-object-detail's fieldset-based detail pages, integrated as crud_views_object_detail. A "
@@ -173,8 +175,8 @@ FEATURES: list[Feature] = [
     ),
     Feature(
         app="breadcrumbs",
-        title="Breadcrumbs",
-        badge="NEW",
+        title=_("Breadcrumbs"),
+        badge=_("NEW"),
         description="ViewSet-aware breadcrumbs, plus injecting a host application's navigation as prefix items.",
         about=(
             "Every page in these examples renders a breadcrumb via CrudViewBreadcrumbMixin and the "
@@ -193,8 +195,8 @@ FEATURES: list[Feature] = [
     ),
     Feature(
         app="conditional",
-        title="Conditional",
-        badge="NEW",
+        title=_("Conditional"),
+        badge=_("NEW"),
         description="A checkbox toggle reveals a field-group or an entire formset, enforced server-side.",
         about=(
             "Two ways a checkbox can govern what's on the form. Registration reveals a fieldset of company "

@@ -1,0 +1,66 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+# NOTE: fr/es/pt/it/zh-hans translations are machine-authored pending native review (see #88 follow-up).
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-22 04:12-0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: templates/crud_views/view_guardian_manage.html:5
+msgid "Guardian Configuration"
+msgstr "Configurazione Guardian"
+
+#: templates/crud_views/view_guardian_manage.html:9
+msgid "Setting"
+msgstr "Impostazione"
+
+#: templates/crud_views/view_guardian_manage.html:10
+msgid "Value"
+msgstr "Valore"
+
+#: templates/crud_views/view_guardian_manage.html:33
+msgid "Permission Holders"
+msgstr "Titolari dei permessi"
+
+#: templates/crud_views/view_guardian_manage.html:37
+msgid "Group"
+msgstr "Gruppo"
+
+#: templates/crud_views/view_guardian_manage.html:38
+msgid "Permission"
+msgstr "Permesso"
+
+#: templates/crud_views/view_guardian_manage.html:39
+msgid "Model-level"
+msgstr "Livello modello"
+
+#: templates/crud_views/view_guardian_manage.html:40
+msgid "Objects (guardian)"
+msgstr "Oggetti (guardian)"
+
+#: templates/crud_views/view_guardian_manage.html:41
+msgid "Users"
+msgstr "Utenti"
+
+#: templates/crud_views/view_guardian_manage.html:48
+#, python-format
+msgid "%(count)s object"
+msgid_plural "%(count)s objects"
+msgstr[0] "%(count)s oggetto"
+msgstr[1] "%(count)s oggetti"
+
+#: templates/crud_views/view_guardian_manage.html:54
+msgid "No permission holders found."
+msgstr "Nessun titolare di permessi trovato."

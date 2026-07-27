@@ -213,7 +213,6 @@ class XFormset extends XBase {
             empty_fields = me.fields,
             pk_name = me.pk_field,
             empty_fields_check = empty_fields.concat([pk_name]),  // check all fields and pk
-            delete_checkbox = true,  // todo: from json
             order_index = 1;
 
         // abort if formset is not ordered
@@ -253,7 +252,9 @@ class XFormset extends XBase {
                 }),
                 all_empty = empty.every((el) => el),
                 // is row deleted? (depends on input type)
-                deleted = delete_checkbox ? del.checked : del.value === "on";
+                // DELETE may render as a hidden input (crud_views default, value "1"/"0")
+                // or as Django's checkbox
+                deleted = del.type === "checkbox" ? del.checked : del.value === "1";
 
             // set order depending on visibility
             if (all_empty || deleted) {
@@ -608,3 +609,9 @@ $(function () {
         new CrudViewsFormset();
     }
 });
+
+// Test seam: expose the formset classes on a shared namespace. In the browser
+// these are top-level lexical globals reachable by other classic scripts but
+// not inspectable via window; this adds namespaced access for the unit tests.
+window.cv = window.cv || {};
+Object.assign(window.cv, {CVFSConst, XBase, XFormset, XForm, CrudViewsFormset});

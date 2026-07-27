@@ -61,10 +61,10 @@ maps to a single Django permission: list/detail → `view`, create → `add`,
 update → `change`, delete → `delete`.
 
 ```python
-ListViewPermissionRequired      # requires "view" permission
-CreateViewPermissionRequired    # requires "add" permission
-UpdateViewPermissionRequired    # requires "change" permission
-DeleteViewPermissionRequired    # requires "delete" permission
+ListViewPermissionRequired  # requires "view" permission
+CreateViewPermissionRequired  # requires "add" permission
+UpdateViewPermissionRequired  # requires "change" permission
+DeleteViewPermissionRequired  # requires "delete" permission
 ```
 
 This isn't just a server-side gate. A user without `library.add_author`

@@ -25,12 +25,12 @@ The base class. Links to a sibling view within the same viewset.
 from crud_views.lib.view import ContextButton
 
 ContextButton(
-    key="my_button",               # action key referenced in cv_context_actions
-    key_target="detail",           # target view key within the same viewset
-    label_template=None,           # path to a Django template for the label
-    label_template_code=None,      # inline Django template string for the label
-    template=None,                 # path to a Django template for the whole button
-    template_code=None,            # inline Django template string for the whole button
+    key="my_button",  # action key referenced in cv_context_actions
+    key_target="detail",  # target view key within the same viewset
+    label_template=None,  # path to a Django template for the label
+    label_template_code=None,  # inline Django template string for the label
+    template=None,  # path to a Django template for the whole button
+    template_code=None,  # inline Django template string for the whole button
 )
 ```
 
@@ -83,10 +83,10 @@ navigates to the book list filtered by that author. This is the inverse of `Pare
 from crud_views.lib.view import ChildContextButton
 
 ChildContextButton(
-    key="books",                   # action key referenced in cv_context_actions
-    child_name="book",             # name of the child viewset
-    child_key="list",              # target view key in the child viewset (default: "list")
-    label_template_code="Books",   # optional: inline Django template string for the label
+    key="books",  # action key referenced in cv_context_actions
+    child_name="book",  # name of the child viewset
+    child_key="list",  # target view key in the child viewset (default: "list")
+    label_template_code="Books",  # optional: inline Django template string for the label
 )
 ```
 
@@ -117,7 +117,8 @@ from crud_views.lib.views import DetailViewPermissionRequired
 cv_author = ViewSet(
     model=Author,
     name="author",
-    context_buttons=context_buttons_default() + [
+    context_buttons=context_buttons_default()
+    + [
         ChildContextButton(key="books", child_name="book", label_template_code="Books"),
     ],
 )
@@ -147,9 +148,9 @@ use `ChildContextButton` on the *parent* view and `SiblingContextButton` on its 
 from crud_views.lib.view import SiblingContextButton
 
 SiblingContextButton(
-    key="articles",                # action key referenced in cv_context_actions
-    sibling_name="article",        # registry name of the sibling viewset (same parent)
-    sibling_key="list",            # target view key in the sibling viewset (default: "list")
+    key="articles",  # action key referenced in cv_context_actions
+    sibling_name="article",  # registry name of the sibling viewset (same parent)
+    sibling_key="list",  # target view key in the sibling viewset (default: "list")
     label_template_code="Articles",
 )
 ```
@@ -180,7 +181,8 @@ cv_book = ViewSet(
     model=Book,
     name="book",
     parent=ParentViewSet(name="author"),
-    context_buttons=context_buttons_default() + [
+    context_buttons=context_buttons_default()
+    + [
         SiblingContextButton(key="articles", sibling_name="article", label_template_code="Articles"),
     ],
 )
@@ -205,7 +207,8 @@ from crud_views.lib.view import ContextButton, ChildContextButton
 cv_author = ViewSet(
     model=Author,
     name="author",
-    context_buttons=context_buttons_default() + [
+    context_buttons=context_buttons_default()
+    + [
         ChildContextButton(key="books", child_name="book"),
         ChildContextButton(key="articles", child_name="article", label_template_code="Articles"),
     ],
@@ -232,10 +235,11 @@ every view in it. To define a button on a **single view**, set `cv_context_butto
 from crud_views.lib.view import ChildContextButton
 from crud_views.lib.views import DetailViewPermissionRequired
 
+
 class BookDetailView(DetailViewPermissionRequired):
     cv_viewset = cv_book
-    cv_context_actions = ["update", "delete", "reviews"]   # "reviews" listed -> it renders
-    cv_context_buttons = [                                  # defines "reviews" for this view only
+    cv_context_actions = ["update", "delete", "reviews"]  # "reviews" listed -> it renders
+    cv_context_buttons = [  # defines "reviews" for this view only
         ChildContextButton(key="reviews", child_name="review", label_template_code="Reviews"),
     ]
 ```

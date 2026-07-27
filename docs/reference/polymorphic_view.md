@@ -118,6 +118,7 @@ urlpatterns = cv_vehicle.urlpatterns
 ```python
 from crud_views.lib.views import ListViewPermissionRequired, ListViewTableMixin
 
+
 class VehicleListView(ListViewTableMixin, ListViewPermissionRequired):
     cv_viewset = cv_vehicle
     cv_list_actions = ["detail", "update", "delete"]

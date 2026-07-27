@@ -34,16 +34,20 @@ The mixin disarms Django's field-level `required` check for group fields so the 
 ```python
 from crispy_forms.layout import Row
 from crud_views.lib.conditional import (
-    ConditionalGroupModelForm, ConditionalGroup, ToggleGroup, ModelFieldToggle,
+    ConditionalGroupModelForm,
+    ConditionalGroup,
+    ToggleGroup,
+    ModelFieldToggle,
 )
 from crud_views.lib.crispy import Column6
+
 
 class RegistrationForm(ConditionalGroupModelForm):
     cv_conditional_groups = [
         ConditionalGroup(
-            toggle=ModelFieldToggle("with_company"),   # checkbox field already on the model
+            toggle=ModelFieldToggle("with_company"),  # checkbox field already on the model
             fields=["company_name", "vat_id"],
-            required=["company_name"],                  # only company_name is required when on
+            required=["company_name"],  # only company_name is required when on
         ),
     ]
 
@@ -105,18 +109,20 @@ Only **first-level** formsets may be conditional. Attaching `ConditionalFormSet`
 from crud_views.lib.conditional import ConditionalFormSet, ModelFieldToggle
 from crud_views.lib.formsets import FormSet, FormSets, FormSetMixin
 
-cv_formsets = FormSets(formsets={
-    "sessions": FormSet(
-        title="Sessions",
-        klass=SessionFormSet,
-        fields=["title"],
-        pk_field="id",
-        conditional=ConditionalFormSet(
-            toggle=ModelFieldToggle("with_sessions"),
-            on_off="skip",   # default; use "purge" to delete rows on save
+cv_formsets = FormSets(
+    formsets={
+        "sessions": FormSet(
+            title="Sessions",
+            klass=SessionFormSet,
+            fields=["title"],
+            pk_field="id",
+            conditional=ConditionalFormSet(
+                toggle=ModelFieldToggle("with_sessions"),
+                on_off="skip",  # default; use "purge" to delete rows on save
+            ),
         ),
-    ),
-})
+    }
+)
 ```
 
 The parent form must expose the toggle field. **`ConditionalFormSet` toggles are never auto-injected** — only `ConditionalGroup` toggles are (by `ConditionalGroupFormMixin`). So either use a real model/form field, declare the checkbox on the form yourself (`forms.BooleanField(required=False)`), or reuse a `UIFieldToggle` that a `ConditionalGroup` on the same form already injects. A toggle that is missing from the form is flagged by system check `crud_views.E311`; without it the formset would be permanently off — and with `on_off="purge"` that silently deletes rows on every save.

@@ -44,7 +44,8 @@ from crud_views.lib.views import DetailViewPermissionRequired, ListViewPermissio
 cv_author = ViewSet(
     model=Author,
     name="author",
-    context_buttons=context_buttons_default() + [
+    context_buttons=context_buttons_default()
+    + [
         # the standard edit button, plus a variant with a custom template
         ContextButton(key="edit", key_target="update"),
         ContextButton(
@@ -61,12 +62,12 @@ cv_author = ViewSet(
 
 class AuthorListView(ListViewPermissionRequired):
     cv_viewset = cv_author
-    cv_context_actions = ["edit", "delete"]          # default-shaped edit button
+    cv_context_actions = ["edit", "delete"]  # default-shaped edit button
 
 
 class AuthorDetailView(DetailViewPermissionRequired):
     cv_viewset = cv_author
-    cv_context_actions = ["edit_detail", "delete"]   # custom-shaped edit button
+    cv_context_actions = ["edit_detail", "delete"]  # custom-shaped edit button
 ```
 
 To change the layout of *all* context buttons project-wide, override
@@ -180,7 +181,8 @@ cv_book = ViewSet(
     model=Book,
     name="book",
     parent=ParentViewSet(name="author"),
-    context_buttons=context_buttons_default() + [
+    context_buttons=context_buttons_default()
+    + [
         SiblingContextButton(key="articles", sibling_name="article", label_template_code="Articles"),
     ],
 )
@@ -219,16 +221,20 @@ declared required; JavaScript only hides the group.
 ```python
 from crispy_forms.layout import Row
 from crud_views.lib.conditional import (
-    ConditionalGroupModelForm, ConditionalGroup, ToggleGroup, ModelFieldToggle,
+    ConditionalGroupModelForm,
+    ConditionalGroup,
+    ToggleGroup,
+    ModelFieldToggle,
 )
 from crud_views.lib.crispy import Column6
+
 
 class RegistrationForm(ConditionalGroupModelForm):
     cv_conditional_groups = [
         ConditionalGroup(
             toggle=ModelFieldToggle("with_company"),  # or UIFieldToggle("...") for a non-model checkbox
             fields=["company_name", "vat_id"],
-            required=["company_name"],                 # only this is required when on
+            required=["company_name"],  # only this is required when on
         ),
     ]
 

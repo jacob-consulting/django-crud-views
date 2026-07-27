@@ -17,6 +17,7 @@ and configurable action buttons. The card body template is overridable per view.
 from crud_views.lib.view import CardAction
 from crud_views.lib.views import CardListViewPermissionRequired
 
+
 class AuthorCardListView(CardListViewPermissionRequired):
     cv_viewset = cv_author
     cv_card_actions = [
@@ -72,6 +73,7 @@ Link to a child viewset from a card button — the card equivalent of `LinkChild
 ```python
 from crud_views.lib.view import CardAction
 
+
 class PublisherCardListView(CardListViewPermissionRequired):
     cv_viewset = cv_publisher
     cv_card_actions = [
@@ -125,6 +127,7 @@ Add `ListViewTableFilterMixin` for django-filter support (same pattern as table 
 ```python
 from crud_views.lib.views import CardListViewPermissionRequired, ListViewTableFilterMixin
 
+
 class AuthorCardListView(ListViewTableFilterMixin, CardListViewPermissionRequired):
     cv_viewset = cv_author
     filterset_class = AuthorFilter
@@ -146,10 +149,11 @@ Declare orderable fields with `cv_order_fields`. The card view then renders an
 ```python
 from crud_views.lib.views import CardListViewPermissionRequired
 
+
 class BookCardListView(CardListViewPermissionRequired):
     cv_viewset = cv_book
     cv_order_fields = ["title", ("price", "Price")]  # str or (name, label)
-    cv_order_default = "title"                        # leading "-" => descending
+    cv_order_default = "title"  # leading "-" => descending
     cv_card_actions = [...]
 ```
 
@@ -201,6 +205,7 @@ UpdateView, and DeleteView all redirect to the card view after success.
 
 ```python
 from crud_views_guardian.lib.views import GuardianCardListViewPermissionRequired
+
 
 class AuthorCardListView(GuardianCardListViewPermissionRequired):
     cv_viewset = cv_author  # must be a GuardianViewSet

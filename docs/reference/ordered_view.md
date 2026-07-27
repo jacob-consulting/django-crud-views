@@ -19,6 +19,7 @@ Your model must extend `OrderedModel`:
 ```python
 from ordered_model.models import OrderedModel
 
+
 class Author(OrderedModel):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
@@ -43,6 +44,7 @@ from crud_views.lib.views import (
     OrderedUpViewPermissionRequired,
     OrderedUpDownPermissionRequired,
 )
+
 
 class AuthorUpView(OrderedUpViewPermissionRequired):
     cv_viewset = cv_author

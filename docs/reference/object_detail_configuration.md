@@ -77,6 +77,7 @@ This lets you compute display values using view-level context (e.g. `self.reques
 ```python
 from crud_views_object_detail.lib import ObjectDetailViewPermissionRequired
 
+
 class BookDetailView(ObjectDetailViewPermissionRequired):
     cv_viewset = cv_book
     cv_property_display = [

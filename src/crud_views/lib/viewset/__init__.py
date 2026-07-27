@@ -147,8 +147,9 @@ class ViewSet(BaseModel):
         Iterator over all checks of all viewsets
         """
         with _REGISTRY_LOCK:
-            for cv in _REGISTRY.values():
-                yield from cv.checks()
+            viewsets = list(_REGISTRY.values())
+        for cv in viewsets:
+            yield from cv.checks()
 
     def has_view(self, name) -> bool:
         return name in self._views

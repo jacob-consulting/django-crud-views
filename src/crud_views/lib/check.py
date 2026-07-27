@@ -1,7 +1,9 @@
+import difflib
 import re
 from typing import Any, Iterable, Type
 
 from django.core.checks import Error, CheckMessage
+from django.core.checks import Warning as DjangoWarning
 from django.template import TemplateDoesNotExist
 from django.template.loader import get_template
 from pydantic import BaseModel
@@ -94,7 +96,7 @@ class CheckAttributeReg(CheckAttribute):
 
     def messages(self) -> Iterable[CheckMessage]:
         yield from super().messages()
-        if self.exists and not self.reg.match(self.value):
+        if self.exists and self.value is not None and not self.reg.match(self.value):
             yield Error(id=f"viewset.{self.id}", msg=self.get_message())
 
 
@@ -255,3 +257,156 @@ class CheckExpression(Check):
     def messages(self) -> Iterable[CheckMessage]:
         if not self.expression:
             yield Error(id=f"viewset.{self.id}", msg=f"{self.msg} at {self.context}")
+
+
+_PACKAGE_PREFIX = "crud_views"
+_CV_PREFIX = "cv_"
+_IGNORE_ATTR = "cv_check_ignore_attributes"
+
+
+def _is_config_value(value: Any) -> bool:
+    """True for a plain data attribute — not a method, property, classmethod, or other descriptor."""
+    return not (callable(value) or hasattr(value, "__get__"))
+
+
+def _own_cv_annotations(klass: type) -> set[str]:
+    """cv_*-prefixed names from ``klass.__annotations__``.
+
+    Handles annotation-only declarations like `cv_formsets: FormSets` (no default) that
+    never appear in vars(klass). Note `klass.__annotations__` can surface a base class's
+    annotations when ``klass`` has none of its own — harmless here, because every class in
+    the MRO is visited and the results are unioned, so a name is attributed to the class
+    that actually declares it either way. Wrapped defensively for the PEP 649 lazy path on 3.14.
+    """
+    try:
+        annotations = klass.__annotations__
+    except Exception:
+        annotations = vars(klass).get("__annotations__", {})
+    return {name for name in annotations if name.startswith(_CV_PREFIX)}
+
+
+def _collect_cv_names(klass: type, all_names: set[str], data_names: set[str]) -> None:
+    """Add klass's own cv_* declarations — defaults (vars) and annotation-only — to the sets."""
+    for name in _own_cv_annotations(klass):
+        all_names.add(name)
+        data_names.add(name)  # annotation-only config attrs are data, suggestible
+    for name, value in vars(klass).items():
+        if name.startswith(_CV_PREFIX):
+            all_names.add(name)
+            if _is_config_value(value):
+                data_names.add(name)
+
+
+def _registered_view_classes() -> list[type]:
+    """All view classes across every registered ViewSet (empty before the app registry loads)."""
+    from crud_views.lib.viewset import _REGISTRY, _REGISTRY_LOCK
+
+    with _REGISTRY_LOCK:
+        viewsets = list(_REGISTRY.values())
+    classes: list[type] = []
+    for viewset in viewsets:
+        classes.extend(viewset.get_all_views().values())
+    return classes
+
+
+_VOCAB_CACHE: dict[int, tuple[frozenset[str], frozenset[str]]] = {}
+
+
+def _registry_vocabulary() -> tuple[frozenset[str], frozenset[str]]:
+    """Package-wide (all cv_* names, data-attribute cv_* names) declared by any crud_views* class
+    used by a registered view. Cached per registry size — the ViewSet registry only grows at
+    import time and is stable when system checks run, so the count is a safe cache key."""
+    classes = _registered_view_classes()
+    key = len(classes)
+    cached = _VOCAB_CACHE.get(key)
+    if cached is not None:
+        return cached
+    all_names: set[str] = set()
+    data_names: set[str] = set()
+    seen: set[type] = set()
+    for view in classes:
+        for klass in view.__mro__:
+            if klass in seen or not klass.__module__.startswith(_PACKAGE_PREFIX):
+                continue
+            seen.add(klass)
+            _collect_cv_names(klass, all_names, data_names)
+    result = (frozenset(all_names), frozenset(data_names))
+    _VOCAB_CACHE[key] = result
+    return result
+
+
+class CheckUnknownAttributes(Check):
+    """
+    Warn about cv_* data attributes that no crud_views class declares.
+
+    A typo or stale name (cv_message for cv_message_template_code, an attribute
+    removed in a rename) is otherwise silently ignored. The known-set is derived
+    from the MRO: every legitimate config attribute is declared with a default on
+    a crud_views* class, so no hand-maintained registry is needed. Only non-callable,
+    non-descriptor data attributes are flagged (user cv_* methods/properties are skipped).
+    """
+
+    id: str = "W280"
+    msg: str = (
+        "{attribute} on {context} is not a known crud_views attribute — it is silently "
+        "ignored (dead attribute or typo).{suggestion}"
+    )
+
+    def _context_names(self) -> tuple[set[str], set[str]]:
+        """(all cv_* names, data-attribute cv_* names) declared by crud_views* classes in this
+        view's own MRO. The data subset is the suggestion pool — kept context-local so a
+        'did you mean' hint stays relevant to this view type instead of pulling in unrelated
+        attributes (e.g. cv_action_messages from ActionView) via the package-wide set."""
+        all_names: set[str] = set()
+        data_names: set[str] = set()
+        for klass in self.context.__mro__:
+            if klass.__module__.startswith(_PACKAGE_PREFIX):
+                _collect_cv_names(klass, all_names, data_names)
+        return all_names, data_names
+
+    def _allowlist(self) -> set[str]:
+        # union across the MRO so a mixin and the leaf view can each exempt their own attrs
+        allow: set[str] = set()
+        for klass in self.context.__mro__:
+            value = vars(klass).get(_IGNORE_ATTR)
+            if value:
+                allow.update(value)
+        return allow
+
+    def _suspects(self) -> set[str]:
+        suspects: set[str] = set()
+        for klass in self.context.__mro__:
+            if klass.__module__.startswith(_PACKAGE_PREFIX):
+                continue  # package code defines the known-set, never suspect
+            for name, value in vars(klass).items():
+                if name.startswith(_CV_PREFIX) and _is_config_value(value):
+                    suspects.add(name)
+        return suspects
+
+    def _suggestion(self, name: str, pool: set[str]) -> str:
+        # pool is the data-attribute known-set — suggest real config attributes, never methods
+        candidates = sorted(pool)
+        matches = difflib.get_close_matches(name, candidates, n=1, cutoff=0.6)
+        if not matches:
+            # difflib misses when the correct name is much longer; fall back to prefix
+            prefixed = sorted((k for k in candidates if k.startswith(name)), key=len)
+            matches = prefixed[:1]
+        return f" Did you mean {matches[0]}?" if matches else ""
+
+    def messages(self) -> Iterable[CheckMessage]:
+        reg_all, _reg_data = _registry_vocabulary()
+        ctx_all, ctx_data = self._context_names()
+        known_all = reg_all | ctx_all  # package-wide: is this a real crud_views attribute name?
+        unknown = self._suspects() - known_all - self._allowlist()
+        for name in sorted(unknown):
+            # suggest only from THIS view's own data attributes, so the hint stays relevant
+            suggestion = self._suggestion(name, ctx_data)
+            msg = self.msg.format(attribute=name, context=self.context, suggestion=suggestion)
+            yield DjangoWarning(
+                msg,
+                hint=(
+                    f"Remove it, fix the name, or add it to {_IGNORE_ATTR} on the view "
+                    f"if it is an intentional custom attribute."
+                ),
+                id=self.get_id(),
+            )

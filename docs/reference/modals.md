@@ -7,8 +7,8 @@ dialog instead of navigating to a full page.
 class AuthorDeleteView(CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     form_class = CrispyDeleteForm
     cv_viewset = cv_author
-    cv_modal = True                 # opt in
-    cv_modal_size = "modal-lg"      # optional: "", "modal-sm", "modal-lg", "modal-xl"
+    cv_modal = True  # opt in
+    cv_modal_size = "modal-lg"  # optional: "", "modal-sm", "modal-lg", "modal-xl"
 ```
 
 ## Supported views

@@ -7,11 +7,13 @@ Any Django app can contribute JavaScript and CSS to the output of `{% cv_js %}` 
 # myextension/apps.py
 from django.apps import AppConfig
 
+
 class MyExtensionConfig(AppConfig):
     name = "myextension"
 
     def ready(self):
         from crud_views.lib.assets import register_assets
+
         register_assets(
             key="myextension",
             js=["myextension/plugin.js", "myextension/init.js"],
@@ -53,8 +55,8 @@ spec = VendorSpec(
     files=("plugin.js", "plugin.css"),
     target=vendor_dir / "myextension" / "1.2.3",
 )
-vendor(spec)            # downloads files + writes a version stamp
-check_vendored(spec)    # system-check messages on drift (W330 missing, W331 mismatch)
+vendor(spec)  # downloads files + writes a version stamp
+check_vendored(spec)  # system-check messages on drift (W330 missing, W331 mismatch)
 ```
 
 The target must be a project directory that is on `STATICFILES_DIRS` — never a

@@ -53,6 +53,7 @@ The template receives `object`, `view`, and `cv_extends` in its context:
 ```python
 from crud_views_guardian.lib.views import GuardianDetailViewPermissionRequired
 
+
 class BookDetailView(GuardianDetailViewPermissionRequired):
     cv_viewset = cv_book  # must be a GuardianViewSet
     template_name = "myapp/book_detail.html"

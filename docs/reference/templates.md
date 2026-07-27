@@ -41,8 +41,8 @@ mixin and inherit:
 class MySpecialBase(CrudView):
     cv_extends_template = "myapp/special_base.html"
 
-class FooListView(MySpecialBase, ListView):
-    ...
+
+class FooListView(MySpecialBase, ListView): ...
 ```
 
 !!! warning "The override template must be a real base template"

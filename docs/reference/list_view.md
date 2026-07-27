@@ -109,24 +109,20 @@ from crud_views.lib.views.list import ListViewFilterFormHelper
 
 class AuthorFilterFormHelper(ListViewFilterFormHelper):
     layout = Layout(
-        Row(
-            Column4("first_name"), Column4("last_name")
-        ),
+        Row(Column4("first_name"), Column4("last_name")),
     )
 
 
 class AuthorFilter(django_filters.FilterSet):
-    first_name = django_filters.CharFilter(lookup_expr='icontains')
-    last_name = django_filters.CharFilter(lookup_expr='icontains')
+    first_name = django_filters.CharFilter(lookup_expr="icontains")
+    last_name = django_filters.CharFilter(lookup_expr="icontains")
 
     class Meta:
         model = Author
         fields = ["first_name", "last_name"]
 
 
-class AuthorListView(ListViewTableMixin,
-                     ListViewTableFilterMixin,
-                     ListViewPermissionRequired):
+class AuthorListView(ListViewTableMixin, ListViewTableFilterMixin, ListViewPermissionRequired):
     table_class = AuthorTable
     cv_viewset = cv_author
 

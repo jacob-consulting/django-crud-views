@@ -108,13 +108,14 @@ not only a declared field) and pick one of two patterns:
 ```python
 import base64
 
+
 class S3File(Resource):
-    key: str          # the real S3 key, shown in tables
+    key: str  # the real S3 key, shown in tables
     size: int
 
     class Meta:
         pk_field = "key_b64"
-        pk_type = ViewSet.PK.STR   # r"[A-Za-z0-9_\-]+" — the base64url alphabet
+        pk_type = ViewSet.PK.STR  # r"[A-Za-z0-9_\-]+" — the base64url alphabet
 
     @property
     def key_b64(self) -> str:
@@ -139,12 +140,13 @@ default linear scan.
 ```python
 import hashlib
 
+
 class S3File(Resource):
     key: str
 
     class Meta:
         pk_field = "key_md5"
-        pk_type = ViewSet.PK.HEX   # r"[0-9a-z]+" — hexdigests fit, no padding games
+        pk_type = ViewSet.PK.HEX  # r"[0-9a-z]+" — hexdigests fit, no padding games
 
     @property
     def key_md5(self) -> str:
@@ -178,8 +180,8 @@ you declare:
 # app: storage
 class S3FilePermissions(models.Model):
     class Meta:
-        managed = False              # no table
-        default_permissions = ()     # no add/change/delete/view auto-perms
+        managed = False  # no table
+        default_permissions = ()  # no add/change/delete/view auto-perms
         permissions = [
             ("view_s3file", "Can view S3 files"),
             ("delete_s3file", "Can delete S3 files"),
@@ -231,8 +233,7 @@ existing view class resolves rows through `cv_get_items`/`cv_get_item`
 instead of the ORM:
 
 ```python
-class S3FileListView(ResourceViewMixin, ListViewTableMixin, ListViewPermissionRequired):
-    ...
+class S3FileListView(ResourceViewMixin, ListViewTableMixin, ListViewPermissionRequired): ...
 ```
 
 ### List
@@ -382,7 +383,7 @@ class PublisherFile(Resource):
 cv_publisher_file = ViewSet(
     model=PublisherFile,
     name="publisherfile",
-    parent=ParentViewSet(name="publisher"),   # publisher is a normal model ViewSet
+    parent=ParentViewSet(name="publisher"),  # publisher is a normal model ViewSet
     resource_permissions={"view": "storage.view_s3file"},
 )
 ```

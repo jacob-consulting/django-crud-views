@@ -58,7 +58,7 @@ all = [
 ]
 
 dev = [
-    "ruff",
+    "ruff==0.15.21",
     "pre-commit",
     "bump-my-version",
     "mkdocs (>=1.6.1)",
@@ -105,6 +105,7 @@ packages = [
 
 [tool.ruff]
 line-length = 120
+extend-exclude = ["superpowers/**"]
 
 [tool.ruff.format]
 quote-style = "double"

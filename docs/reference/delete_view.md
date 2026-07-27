@@ -45,6 +45,7 @@ the object is deleted:
 ```python
 from crud_views.lib.crispy import CrispyDeleteForm
 
+
 class AuthorDeleteView(CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     form_class = CrispyDeleteForm
     cv_viewset = cv_author

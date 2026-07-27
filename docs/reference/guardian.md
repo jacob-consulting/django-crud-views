@@ -51,9 +51,11 @@ from crud_views_guardian.lib.views import (
 
 cv_author = GuardianViewSet(model=Author, name="author")
 
+
 class AuthorListView(ListViewTableMixin, GuardianListViewPermissionRequired):
     cv_viewset = cv_author
     ...
+
 
 class AuthorDetailView(GuardianDetailViewPermissionRequired):
     cv_viewset = cv_author
@@ -140,6 +142,7 @@ class BookCreateView(CreateViewParentMixin, GuardianCreateViewPermissionRequired
             return False
         # custom logic, e.g. check role membership beyond the standard perm
         from guardian.core import ObjectPermissionChecker
+
         return ObjectPermissionChecker(user).has_perm("change_publisher", parent_obj)
 ```
 
@@ -160,8 +163,8 @@ cv_book = GuardianViewSet(
     model=Book,
     name="book",
     parent=ParentViewSet(name="author"),
-    cv_guardian_parent_permission="view",          # for list/detail/update/delete
-    cv_guardian_parent_create_permission="change", # for create (None = use above)
+    cv_guardian_parent_permission="view",  # for list/detail/update/delete
+    cv_guardian_parent_create_permission="change",  # for create (None = use above)
 )
 ```
 
@@ -232,8 +235,10 @@ To use a custom manage view class for a specific viewset, set `manage_view_class
 ```python
 from crud_views_guardian.lib.viewset import GuardianViewSet
 
+
 class MyCustomGuardianManageView(GuardianManageView):
     template_name = "myapp/custom_guardian_manage.html"
+
 
 cv_author = GuardianViewSet(
     model=Author,

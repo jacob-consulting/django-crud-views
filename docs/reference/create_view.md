@@ -110,6 +110,7 @@ set the parent reference:
 ```python
 from crud_views.lib.views import CreateViewParentMixin
 
+
 class BookCreateView(CrispyViewMixin, MessageMixin, CreateViewParentMixin, CreateViewPermissionRequired):
     form_class = BookCreateForm
     cv_viewset = cv_book

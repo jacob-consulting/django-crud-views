@@ -1,5 +1,20 @@
 # Django CRUD Views - Changelog
 
+## Unreleased
+
+### Added
+
+- JS unit-test harness (Vitest + jsdom) for the package's static JavaScript
+  (`formset.js`, `modal.js`, `toggle.js`), with a `JS Tests` CI workflow and a
+  `task test-js` shortcut. Dev-only; does not affect the package.
+
+### Fixed
+
+- `formset.js`: rows marked for deletion now lose their `ORDER` value during client-side
+  reordering. The check read `.checked` on the hidden `DELETE` input (always false); it now
+  inspects the input type. No server-side impact — Django's `ordered_forms` already
+  excluded deleted forms.
+
 ## 0.18.0
 
 ### Added

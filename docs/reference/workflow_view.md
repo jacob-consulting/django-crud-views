@@ -146,6 +146,7 @@ Use `WorkflowViewPermissionRequired` for production views:
 ```python
 from crud_views_workflow.lib import WorkflowViewPermissionRequired
 
+
 class CampaignWorkflowView(CrispyViewMixin, MessageMixin, WorkflowViewPermissionRequired):
     cv_context_actions = ["list", "detail", "workflow"]
     cv_viewset = cv_campaign
@@ -347,6 +348,7 @@ Use `state_badge` (the HTML badge property) in your table and detail view:
 import django_tables2 as tables
 from crud_views.lib.table import Table, LinkDetailColumn
 from crud_views_object_detail.lib import ObjectDetailViewPermissionRequired, PropertyConfig
+
 
 class CampaignTable(Table):
     id = LinkDetailColumn()

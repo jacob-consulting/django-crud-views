@@ -108,6 +108,7 @@ Use `CustomFormNoObjectView` when the form is not tied to a specific model insta
 ```python
 from crud_views.lib.views.form import CustomFormNoObjectViewPermissionRequired
 
+
 class SiteFeedbackView(CrispyViewMixin, CustomFormNoObjectViewPermissionRequired):
     cv_key = "feedback"
     cv_path = "feedback"

@@ -44,7 +44,7 @@ Your theme app **must be listed before `crud_views`** so its templates are found
 ```python
 INSTALLED_APPS = [
     # ...
-    "myapp_theme.apps.MyAppThemeConfig",   # <-- before crud_views
+    "myapp_theme.apps.MyAppThemeConfig",  # <-- before crud_views
     "crud_views.apps.CrudViewsConfig",
     # ...
 ]

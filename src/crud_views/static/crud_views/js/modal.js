@@ -107,3 +107,9 @@ $(document).ready(function () {
         cvModalSubmit(this);
     });
 });
+
+// Test seam: expose the modal API on a shared namespace. The functions above
+// are already implicit window globals in the browser (top-level declarations);
+// this only adds `CVModalConst` and namespaced access for the unit tests.
+window.cv = window.cv || {};
+Object.assign(window.cv, {CVModalConst, cvModalElements, cvModalInject, cvModalOpen, cvModalSubmit});

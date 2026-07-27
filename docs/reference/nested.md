@@ -140,7 +140,8 @@ from crud_views.lib.view import ChildContextButton
 cv_company = ViewSet(
     model=Company,
     name="company",
-    context_buttons=context_buttons_default() + [
+    context_buttons=context_buttons_default()
+    + [
         ChildContextButton(key="departments", child_name="department", label_template_code="Departments"),
     ],
 )
@@ -172,7 +173,8 @@ cv_book = ViewSet(
     model=Book,
     name="book",
     parent=ParentViewSet(name="author"),
-    context_buttons=context_buttons_default() + [
+    context_buttons=context_buttons_default()
+    + [
         SiblingContextButton(key="articles", sibling_name="article", label_template_code="Articles"),
     ],
 )

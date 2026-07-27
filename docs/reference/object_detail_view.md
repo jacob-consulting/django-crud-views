@@ -82,10 +82,10 @@ cv_property_display = [
     {
         "title": "Basic Info",
         "properties": [
-            "title",                                          # plain string
-            {"path": "state_badge", "title": "State"},        # dict
-            x("author__name", title="Writer"),                # x() shorthand
-            PropertyConfig(path="isbn", detail="ISBN"),        # PropertyConfig
+            "title",  # plain string
+            {"path": "state_badge", "title": "State"},  # dict
+            x("author__name", title="Writer"),  # x() shorthand
+            PropertyConfig(path="isbn", detail="ISBN"),  # PropertyConfig
         ],
     },
 ]

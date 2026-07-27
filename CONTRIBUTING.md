@@ -26,6 +26,7 @@ task dev
 3. Run the tests:
    - quick: `cd tests && pytest`
    - full matrix (Python 3.12/3.13/3.14 × Django 4.2/5.2/6.0): `task test`
+   - JS unit tests (requires Node 20+): `task test-js`
 4. Format and lint before committing:
    - `task format` (ruff format)
    - `task check` (ruff check --fix)

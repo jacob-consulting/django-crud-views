@@ -1,9 +1,13 @@
 # Django CRUD Views - Changelog
 
-## Unreleased
+## 0.19.0
 
 ### Added
 
+- New system check `viewset.W280`: warns when a view declares a `cv_*` data attribute that no
+  `crud_views` class recognizes — a dead attribute or typo (e.g. `cv_message` instead of
+  `cv_message_template_code`) — with a near-match suggestion. Exempt an intentional custom
+  attribute via `cv_check_ignore_attributes` on the view. Relates to #28. (#86)
 - JS unit-test harness (Vitest + jsdom) for the package's static JavaScript
   (`formset.js`, `modal.js`, `toggle.js`), with a `JS Tests` CI workflow and a
   `task test-js` shortcut. Dev-only; does not affect the package.
@@ -14,15 +18,6 @@
   reordering. The check read `.checked` on the hidden `DELETE` input (always false); it now
   inspects the input type. No server-side impact — Django's `ordered_forms` already
   excluded deleted forms.
-
-## Unreleased
-
-### Added
-
-- New system check `viewset.W280`: warns when a view declares a `cv_*` data attribute that no
-  `crud_views` class recognizes — a dead attribute or typo (e.g. `cv_message` instead of
-  `cv_message_template_code`) — with a near-match suggestion. Exempt an intentional custom
-  attribute via `cv_check_ignore_attributes` on the view. Relates to #28. (#86)
 
 ## 0.18.0
 

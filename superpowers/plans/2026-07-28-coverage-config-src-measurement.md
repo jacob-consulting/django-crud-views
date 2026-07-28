@@ -21,7 +21,7 @@ Everything below was established in the planning session. **You do not need to r
 ### Where things stand
 
 - **Branch:** `feature/coverage-config-src-measurement-103`, three commits ahead of `main` (`main` tip is `cf3f038`). All three are documentation only — spec `6590916`, spec amendment `5ff0666`, this plan `977dc93`. **No implementation work has started.** Task 1 Step 1 is the first thing to do.
-- **Working tree:** three untracked files at the repo root — `PR-ruff-0.16-explicit-select.md`, `feature-ruff-0.16-explicit-select.patch`, and a long `docs(view)__…patch`. These are **leftovers from earlier, unrelated work on #102**. Do not commit them, do not delete them, do not let them into the PR.
+- **Working tree:** clean. (Three untracked `#102` ruff patch leftovers were deleted on 2026-07-28 after confirming the work is merged as `cf3f038` and the branch `feature/ruff-0.16-explicit-select` still holds all 11 commits.)
 - **Issue #103's "Suggested fix" section is wrong** and has been publicly corrected — see the [correction comment](https://github.com/jacob-consulting/django-crud-views/issues/103#issuecomment-5109148896). Read the comment, not the issue body, for the mechanism.
 - **No PR exists yet.** Task 3 Step 5 opens it.
 

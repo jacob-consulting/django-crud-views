@@ -12,6 +12,64 @@
 **Issue:** [#103](https://github.com/jacob-consulting/django-crud-views/issues/103) — see also the [correction comment](https://github.com/jacob-consulting/django-crud-views/issues/103#issuecomment-5109148896), which supersedes the issue's "Suggested fix" section.
 **Branch:** `feature/coverage-config-src-measurement-103` (already created; spec already committed there)
 
+---
+
+## Starting Point — read this first (written 2026-07-28)
+
+Everything below was established in the planning session. **You do not need to re-derive any of it, and re-running the experiments is a waste of time — they are recorded here with their results.**
+
+### Where things stand
+
+- **Branch:** `feature/coverage-config-src-measurement-103`, three commits ahead of `main` (`main` tip is `cf3f038`). All three are documentation only — spec `6590916`, spec amendment `5ff0666`, this plan `977dc93`. **No implementation work has started.** Task 1 Step 1 is the first thing to do.
+- **Working tree:** three untracked files at the repo root — `PR-ruff-0.16-explicit-select.md`, `feature-ruff-0.16-explicit-select.patch`, and a long `docs(view)__…patch`. These are **leftovers from earlier, unrelated work on #102**. Do not commit them, do not delete them, do not let them into the PR.
+- **Issue #103's "Suggested fix" section is wrong** and has been publicly corrected — see the [correction comment](https://github.com/jacob-consulting/django-crud-views/issues/103#issuecomment-5109148896). Read the comment, not the issue body, for the mechanism.
+- **No PR exists yet.** Task 3 Step 5 opens it.
+
+### The finding that drives the whole plan
+
+Coverage.py's relative directory follows the **process CWD**, not the location of the config file. `relative_files = true` only strips the prefix from files living *under* that directory, and `src/` is not under `tests/`. This is why the issue's proposed fixes fail.
+
+Tested against coverage.py 7.15.2 with the package installed editable:
+
+| Setup | Emitted filename | Codecov-mappable |
+|---|---|---|
+| `relative_files`, `tests/.coveragerc` (issue option 1) | `home/alex/…/src/crud_views/checks.py` | no |
+| `relative_files`, root config via `--cov-config` (issue option 2) | `home/alex/…/src/crud_views/checks.py` | no |
+| `[paths]` remapping, cwd=`tests/` | `home/alex/…/src/crud_views/checks.py` | no |
+| `relative_files`, **cwd = repo root** (issue option 3) | `src/crud_views/checks.py` | **yes** |
+
+Two corollaries worth not rediscovering:
+
+- Running from the root makes the root config live with **no `--cov-config` flag**. Coverage discovers `pyproject.toml` in the CWD, and pytest-cov's `.coveragerc` default is special-cased by coverage.py to mean "search the defaults". Confirmed directly: from the root, `coverage.Coverage()` reports `config_file: …/pyproject.toml`, `source: [4 packages]`, `fail_under: 88.0`.
+- `relative_files` is **not** needed for the filenames — running from the root yields `src/…` without it. It is worth setting for a different reason: it empties the XML `<source>` element. Without it the report carries `<source>/home/alex/projects/alex/django-crud-views</source>`, a machine-specific prefix Codecov's path-fixing must guess past.
+
+### Baseline measurements (py3.12 / Django 5.2, this machine)
+
+Already taken with the full suite run from the repo root. **868 passed, 1 skipped — identical to running from `tests/`**, so the CWD change breaks no conftest, xdist, or path behaviour. That is the main execution risk, and it is already retired.
+
+src-only total: **4429 statements, 268 missing, 94%**.
+
+| Package | Stmts | Miss | Cov |
+|---|---:|---:|---:|
+| `crud_views` | 3387 | 221 | 93.5% |
+| `crud_views_guardian` | 264 | 27 | 89.8% |
+| `crud_views_object_detail` | 382 | 9 | 97.6% |
+| `crud_views_polymorphic` | 135 | 4 | 97.0% |
+| `crud_views_workflow` | 261 | 7 | 97.3% |
+
+### Decisions already made — do not relitigate
+
+- **Scope is minimal.** No `codecov.yml`, no matrix combining. Both were considered and deliberately deferred to follow-up issues.
+- **`fail_under` stays at 88.** The number was going to be retuned out of fear the figure would drop below the gate; it doesn't — 94% leaves 6 points of headroom. Keeping measurement and policy changes separate is the point.
+- **One working directory everywhere.** The alternative — change nox only, leave `cd tests && pytest` documented — was rejected because the bug exists precisely because two CWDs were in play. Hence the `CLAUDE.md` / `CONTRIBUTING.md` / PR-template edits.
+- **Nothing turns red on landing.** This repo posts only `codecov/patch`, not `codecov/project` (verified against `cf3f038`'s statuses), so the 99% → 94% move affects the badge and Codecov UI only.
+
+### Environment
+
+- Local venv: `.venv/bin/python` — Python 3.12.3, Django 5.2.14, coverage.py 7.15.2.
+- CI matrix is Python 3.12/3.13/3.14 × Django 4.2/5.2/6.0, minus Django 4.2 × py3.14 = **8 rows**. Codecov uploads only from the py3.13 row.
+- `taskfile.yaml` (lowercase, not `Taskfile.yml`) provides `task format`, `task check`, `task test`. It needs **no change** — `task test` shells out to nox.
+
 ## Global Constraints
 
 - Line length 120, double quotes, ruff-formatted. `ruff-format` runs as a pre-commit hook.
@@ -416,3 +474,26 @@ Report the CI status, the Codecov compare result, and the new project percentage
 **Consistency:** `_coverage_run_config()` is defined once in Task 1 and used by both tests in that file; no later task references it. The `source` list in Task 1 Step 3 is byte-identical to the sorted list Task 1 Step 1's test computes. The `coverage.xml` properties asserted in Task 2 Step 5 are the same ones Task 2's Interfaces block promises.
 
 **Known soft spot:** the expected test count in Task 2 Step 4 (870) is derived, not observed — the pre-change baseline was 868 passed / 1 skipped and Task 1 adds 2 tests. Treat a mismatch as worth investigating, not as an automatic failure.
+
+---
+
+## Resuming Mid-Plan
+
+If you are picking this up after some tasks are already done, establish where you are before touching anything:
+
+```bash
+git log --oneline main..HEAD
+```
+
+Map the commits you find onto the plan:
+
+| Last commit subject | Completed through | Resume at |
+|---|---|---|
+| `docs(plan): …` | plan only, nothing implemented | Task 1, Step 1 |
+| `test(coverage): pin source list …` | Task 1 | Task 2, Step 1 |
+| `fix(ci): run pytest from repo root …` | Task 2 | Task 3, Step 1 |
+| `docs(changelog): …` | Task 3 Step 4 | Task 3, Step 5 (open the PR) |
+
+Then check whether a PR is already open with `gh pr view --json number,state,url` before running Task 3 Step 5, so you don't open a duplicate.
+
+The single highest-value confirmation, if you want one cheap check that the work is behaving, is Task 2 Step 5's assertions on the root `coverage.xml`. Empty `<source>`, filenames starting `src/`, zero `tests/` entries — that quartet is the whole point of the change.

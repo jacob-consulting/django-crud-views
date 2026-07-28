@@ -1,6 +1,7 @@
+from django.views import generic
+
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import CrudView, CrudViewPermissionRequiredMixin
-from django.views import generic
 
 from .mixins import CrudViewProcessFormMixin
 
@@ -68,4 +69,4 @@ class CreateViewParentMixin:
             super().cv_form_valid(context)
 
     def cv_parent_many_to_many_through_defaults(self, instance, parent_instance, m2m) -> dict:
-        return dict()
+        return {}

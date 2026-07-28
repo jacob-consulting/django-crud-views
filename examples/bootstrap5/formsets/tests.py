@@ -1,9 +1,9 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
+from project.testing import field_key, field_keys, form_payload
 
 from formsets.models import Choice, Question, Questionnaire
-from project.testing import field_key, field_keys, form_payload
 
 
 class FormsetsTestCase(TestCase):

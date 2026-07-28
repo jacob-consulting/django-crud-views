@@ -26,6 +26,7 @@ import django_tables2 as tables
 from crispy_forms.layout import Fieldset, Row
 from django.urls import reverse
 from django.utils.html import format_html_join
+from project.views import BreadcrumbMixin
 
 from crud_views.lib.crispy import Column4, Column6, Column12, CrispyModelForm, CrispyViewMixin
 from crud_views.lib.table import Table
@@ -37,9 +38,7 @@ from crud_views.lib.views import (
 )
 from crud_views.lib.viewset import ViewSet
 from crud_views_object_detail.lib import BadgeConfig, ObjectDetailViewPermissionRequired, x
-
 from object_detail.models import Product, Supplier
-from project.views import BreadcrumbMixin
 
 cv_product = ViewSet(
     model=Product,

@@ -1,5 +1,6 @@
 import django_tables2 as tables
 from crispy_forms.layout import Row
+from project.views import BreadcrumbMixin
 
 from crud_views.lib.crispy import Column6, Column12, CrispyDeleteForm, CrispyModelForm, CrispyViewMixin
 from crud_views.lib.table import LinkDetailColumn, Table
@@ -13,9 +14,7 @@ from crud_views_guardian.lib.views import (
 )
 from crud_views_guardian.lib.viewset import GuardianViewSet
 from crud_views_object_detail.lib import ObjectDetailMixin
-
 from guardian_demo.models import Document
-from project.views import BreadcrumbMixin
 
 cv_document = GuardianViewSet(model=Document, name="document", icon_header="fa-solid fa-file-lines")
 

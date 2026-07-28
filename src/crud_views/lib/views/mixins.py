@@ -1,5 +1,7 @@
+import contextlib
 import json
-from typing import Iterable
+from collections.abc import Iterable
+from typing import ClassVar
 from urllib.parse import parse_qs, urlencode
 
 from django.contrib import messages
@@ -28,7 +30,7 @@ class CrudViewProcessFormMixin:
 
         # views with object context (update, object-based custom forms) resolve their
         # object; create and no-object views run with object=None
-        self.object = self.get_object() if self.cv_object else None  # noqa
+        self.object = self.get_object() if self.cv_object else None
 
         context = self.get_context_data(**kwargs)
         self.cv_post_hook(context)
@@ -115,11 +117,11 @@ class MessageMixin:
         """
         Iterator of checks for the view
         """
-        yield from super().checks()  # noqa
+        yield from super().checks()
         yield CheckTemplateOrCode(context=cls, attribute="cv_message_template")
 
     def cv_form_valid_hook(self, context: dict):
-        super().cv_form_valid_hook(context)  # noqa
+        super().cv_form_valid_hook(context)
         message = self.cv_get_message()
         if message:
             messages.success(self.request, message)
@@ -134,7 +136,7 @@ class CardOrderMixin:
     Direction is restricted to ``asc`` / ``desc``.
     """
 
-    cv_order_fields: list = []  # list[str | tuple[str, str]]: field name or (name, label)
+    cv_order_fields: ClassVar[list] = []  # list[str | tuple[str, str]]: field name or (name, label)
     cv_order_default: str | None = None  # e.g. "-name"; leading "-" => descending
     cv_order_param: str = "order"
     cv_order_dir_param: str = "dir"
@@ -234,7 +236,7 @@ class ListViewTableFilterMixin(FilterView):
     cv_session_key_querystring: str = "filter_query_string"
     cv_filter_pinned: bool = crud_views_settings.filter_pinned
 
-    def get_filterset(self, filterset_class):  # noqa
+    def get_filterset(self, filterset_class):
         kwargs = self.get_filterset_kwargs(filterset_class)
         filterset = filterset_class(**kwargs)
         if self.formhelper_class:
@@ -244,11 +246,8 @@ class ListViewTableFilterMixin(FilterView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        if self.cv_filter_pinned:
-            # pinned filter is always shown; the toggle/session-expanded state is moot
-            filter_expanded = True
-        else:
-            filter_expanded = SessionData.from_view(self).get("filter_expanded", False)
+        # pinned filter is always shown; the toggle/session-expanded state is moot
+        filter_expanded = True if self.cv_filter_pinned else SessionData.from_view(self).get("filter_expanded", False)
         context["cv_filter_pinned"] = self.cv_filter_pinned
         context["cv_filter_expanded"] = filter_expanded
         return context
@@ -263,8 +262,8 @@ class ListViewTableFilterMixin(FilterView):
 
         try:
             data = json.loads(request.body.decode("utf-8"))
-        except (json.JSONDecodeError, UnicodeDecodeError):
-            raise BadRequest("invalid JSON body")
+        except (json.JSONDecodeError, UnicodeDecodeError) as err:
+            raise BadRequest("invalid JSON body") from err
         filter_expanded = data.get("filter_expanded", None)
         if filter_expanded is None:
             raise BadRequest("filter_expanded not set")
@@ -293,10 +292,8 @@ class ListViewTableFilterMixin(FilterView):
             qs = parse_qs(query_string)
             reset_filter = qs.get("reset_filter", ["false"])[0] == "true"
             if reset_filter:
-                try:
+                with contextlib.suppress(KeyError):
                     del sd[self.cv_session_key_querystring]
-                except KeyError:
-                    pass
                 url = self.request.path
                 keep = {}
                 order_param = getattr(self, "cv_order_param", "order")

@@ -1,17 +1,17 @@
 from crud_views.lib.views import (
-    DetailViewPermissionRequired,
-    UpdateViewPermissionRequired,
-    DeleteViewPermissionRequired,
-    CreateViewPermissionRequired,
-    ListViewPermissionRequired,
-    CardListViewPermissionRequired,
     ActionViewPermissionRequired,
+    CardListViewPermissionRequired,
+    CreateViewPermissionRequired,
+    DeleteViewPermissionRequired,
+    DetailViewPermissionRequired,
+    ListViewPermissionRequired,
+    UpdateViewPermissionRequired,
 )
 from crud_views.lib.views.manage import ManageView
 from crud_views_guardian.lib.mixins import (
     GuardianObjectPermissionMixin,
-    GuardianQuerysetMixin,
     GuardianParentPermissionMixin,
+    GuardianQuerysetMixin,
 )
 
 GUARDIAN_MIXINS = [
@@ -230,8 +230,8 @@ class GuardianManageView(ManageView):
 
     def get_permission_holders(self):
         from django.contrib.contenttypes.models import ContentType
-        from guardian.models import GroupObjectPermission
         from django.db.models import Count
+        from guardian.models import GroupObjectPermission
 
         holders = {(r["group"], r["permission"]): r for r in super().get_permission_holders()}
 

@@ -16,9 +16,8 @@ def _boom():
 
 
 def test_ignore_exception_raises_in_strict_mode():
-    with override_settings(CRUD_VIEWS_STRICT=True):
-        with pytest.raises(KeyError):
-            _boom()
+    with override_settings(CRUD_VIEWS_STRICT=True), pytest.raises(KeyError):
+        _boom()
 
 
 def test_ignore_exception_swallows_when_not_strict():
@@ -29,9 +28,8 @@ def test_ignore_exception_swallows_when_not_strict():
 def test_strict_defaults_to_debug_on():
     # without CRUD_VIEWS_STRICT set, strictness follows DEBUG
     # (note: pytest-django forces DEBUG=False during tests, so set it explicitly)
-    with override_settings(DEBUG=True):
-        with pytest.raises(KeyError):
-            _boom()
+    with override_settings(DEBUG=True), pytest.raises(KeyError):
+        _boom()
 
 
 def test_strict_defaults_to_swallow_when_debug_off():

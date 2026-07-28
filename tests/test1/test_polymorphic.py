@@ -4,7 +4,7 @@ from django.test.client import Client
 
 from crud_views.lib.viewset import ViewSet
 from tests.lib.helper.boostrap5 import Table
-from tests.test1.app.models import Vehicle, Car, Truck
+from tests.test1.app.models import Car, Truck, Vehicle
 
 
 @pytest.mark.django_db

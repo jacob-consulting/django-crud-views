@@ -2,7 +2,7 @@ from django.views import generic
 from django.views.generic.detail import SingleObjectMixin
 
 from crud_views.lib.view import CrudView
-from crud_views.lib.viewset import path_regs, PrimaryKeys
+from crud_views.lib.viewset import PrimaryKeys, path_regs
 
 
 class RedirectChildView(CrudView, SingleObjectMixin, generic.RedirectView):

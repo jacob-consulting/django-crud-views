@@ -5,7 +5,7 @@ from pydantic import ValidationError
 
 from crud_views.lib.exceptions import ViewSetError
 from crud_views.lib.resource import Resource
-from crud_views.lib.viewset import ViewSet, ParentViewSet
+from crud_views.lib.viewset import ParentViewSet, ViewSet
 from crud_views.lib.viewset.path_regs import PrimaryKeys
 from tests.test1.app.models import Author
 
@@ -116,7 +116,7 @@ def test_e260_missing_permission_key():
 
     vs = ViewSet(model=T5Item, name="t5_e260", resource_permissions=None)
 
-    class T5E260ListView(ListViewPermissionRequired):  # noqa
+    class T5E260ListView(ListViewPermissionRequired):
         cv_viewset = vs  # registers at class definition; cv_permission "view" not in {}
 
     assert "viewset.E260" in check_error_ids(vs)
@@ -127,7 +127,7 @@ def test_e260_ok_when_key_present():
 
     vs = ViewSet(model=T5Item, name="t5_e260_ok", resource_permissions={"view": "app.view_s3file"})
 
-    class T5E260OkListView(ListViewPermissionRequired):  # noqa
+    class T5E260OkListView(ListViewPermissionRequired):
         cv_viewset = vs
 
     assert "viewset.E260" not in check_error_ids(vs)
@@ -139,12 +139,12 @@ def test_e261_resource_as_parent_rejected():
 
     vs_parent = ViewSet(model=T5Item, name="t5_e261_parent", resource_permissions=None)
 
-    class T5E261ParentListView(ListView):  # noqa — parent needs a registered view
+    class T5E261ParentListView(ListView):
         cv_viewset = vs_parent
 
     vs_child = ViewSet(model=Author, name="t5_e261_child", parent=ParentViewSet(name="t5_e261_parent"))
 
-    class T5E261ChildListView(ListView):  # noqa
+    class T5E261ChildListView(ListView):
         cv_viewset = vs_child
 
     assert "viewset.E261" in check_error_ids(vs_child)
@@ -156,7 +156,7 @@ def test_e262_write_views_rejected():
 
     vs = ViewSet(model=T5Item, name="t5_e262", resource_permissions=None)
 
-    class T5E262UpdateView(UpdateView):  # noqa
+    class T5E262UpdateView(UpdateView):
         cv_viewset = vs
 
     assert "viewset.E262" in check_error_ids(vs)

@@ -1,5 +1,6 @@
+from typing import Self
+
 from pydantic import model_validator
-from typing_extensions import Self
 
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.viewset import ViewSet
@@ -23,6 +24,7 @@ class GuardianViewSet(ViewSet):
 
     def get_manage_view_class(self):
         from django.utils.module_loading import import_string
+
         from crud_views_guardian.lib.views import GuardianManageView
 
         dotted = self.manage_view_class or crud_views_settings.guardian_manage_view_class
@@ -42,7 +44,7 @@ class GuardianViewSet(ViewSet):
         del self._views["manage"]
 
         base = self.get_manage_view_class()
-        _AutoManageView = type("AutoManageView", (base,), {"model": self.model, "cv_viewset": self})  # noqa: F841
+        _AutoManageView = type("AutoManageView", (base,), {"model": self.model, "cv_viewset": self})
 
         return result
 

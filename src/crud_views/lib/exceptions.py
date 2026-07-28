@@ -1,6 +1,5 @@
 import logging
 from functools import wraps
-from typing import Type
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +24,7 @@ class ParentViewSetError(Exception):
     pass
 
 
-def cv_raise(expression: bool, msg: str, exception: Type[Exception] = ViewSetError):
+def cv_raise(expression: bool, msg: str, exception: type[Exception] = ViewSetError):
     if not expression:
         raise exception(msg)
 
@@ -49,7 +48,7 @@ def ignore_exception(exception_type, default_value=None, default_empty_dict: boo
                     raise
                 logger.warning("ignoring exception in %s", func.__qualname__, exc_info=True)
                 if default_empty_dict:
-                    return dict()
+                    return {}
                 return default_value
 
         return wrapper

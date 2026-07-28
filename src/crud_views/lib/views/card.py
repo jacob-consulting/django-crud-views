@@ -1,9 +1,11 @@
+from typing import ClassVar
+
 from django.views import generic
 
+from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import CrudView, CrudViewPermissionRequiredMixin
 from crud_views.lib.view.card import CardAction
 from crud_views.lib.views.mixins import CardOrderMixin
-from crud_views.lib.settings import crud_views_settings
 
 
 class CardListView(CardOrderMixin, CrudView, generic.ListView):
@@ -15,7 +17,7 @@ class CardListView(CardOrderMixin, CrudView, generic.ListView):
     cv_path = "card"
     cv_object = False
     paginate_by = None  # set per-view to enable pagination
-    cv_card_actions: list[CardAction] = []
+    cv_card_actions: ClassVar[list[CardAction]] = []
     cv_card_container_class: str = "col-md-6"
     cv_card_template: str = "crud_views/tags/card.html"
     cv_context_actions = crud_views_settings.list_context_actions

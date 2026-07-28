@@ -1,6 +1,7 @@
 import django_filters
 import django_tables2 as tables
 from crispy_forms.layout import Layout, Row
+from project.views import BreadcrumbMixin
 
 from crud_views.lib.crispy import Column2, Column4, Column6, CrispyDeleteForm, CrispyModelForm, CrispyViewMixin
 from crud_views.lib.table import LinkDetailColumn, Table, UUIDLinkDetailColumn
@@ -18,9 +19,7 @@ from crud_views.lib.views import (
 from crud_views.lib.views.list import ListViewFilterFormHelper
 from crud_views.lib.viewset import ViewSet
 from crud_views_object_detail.lib import ObjectDetailViewPermissionRequired
-
 from library.models import Author, Book
-from project.views import BreadcrumbMixin
 
 # --------------------------------------------------------------------------- Author
 

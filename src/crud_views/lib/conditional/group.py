@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, ClassVar
 
 from django.forms import BooleanField
 
@@ -45,7 +45,7 @@ class ConditionalGroupFormMixin:
     required fields, regardless of what the client submitted.
     """
 
-    cv_conditional_groups: list[ConditionalGroup] = []
+    cv_conditional_groups: ClassVar[list[ConditionalGroup]] = []
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -66,9 +66,12 @@ class ConditionalGroupFormMixin:
                 for name in group.required_fields:
                     # A field that already failed its own validation keeps that error;
                     # piling a "required" error on top would contradict it.
-                    if name in self.fields and name not in self.errors:
-                        if cleaned.get(name) in self.fields[name].empty_values:
-                            self.add_error(name, self.fields[name].error_messages["required"])
+                    if (
+                        name in self.fields
+                        and name not in self.errors
+                        and cleaned.get(name) in self.fields[name].empty_values
+                    ):
+                        self.add_error(name, self.fields[name].error_messages["required"])
             else:
                 for name in group.fields:
                     if name in self.fields:

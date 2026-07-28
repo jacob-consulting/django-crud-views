@@ -1,13 +1,14 @@
-from typing import List, Type, Iterable
+from collections.abc import Iterable
 
 from django import forms
 from django.http import HttpResponseRedirect
 from django.views import generic
 from polymorphic.models import PolymorphicModel
 
-from crud_views.lib.check import CheckEitherAttribute, Check
-from crud_views.lib.view import CrudView, CrudViewPermissionRequiredMixin
+from crud_views.lib.check import Check, CheckEitherAttribute
 from crud_views.lib.settings import crud_views_settings
+from crud_views.lib.view import CrudView, CrudViewPermissionRequiredMixin
+
 from .utils import get_polymorphic_child_models_content_types
 
 
@@ -29,8 +30,8 @@ class PolymorphicCreateSelectView(CrudView, generic.FormView):
     cv_path = "create/select"
     cv_success_key = "list"
     cv_context_actions = crud_views_settings.create_select_context_actions
-    cv_polymorphic_exclude: List[Type[PolymorphicModel]] | None = None
-    cv_polymorphic_include: List[Type[PolymorphicModel]] | None = None
+    cv_polymorphic_exclude: list[type[PolymorphicModel]] | None = None
+    cv_polymorphic_include: list[type[PolymorphicModel]] | None = None
 
     # texts and labels
     cv_header_template: str = "crud_views/snippets/header/create_select.html"
@@ -53,7 +54,7 @@ class PolymorphicCreateSelectView(CrudView, generic.FormView):
 
     def get_form(self, form_class=None):
         form_class = form_class if form_class else self.get_form_class()
-        content_types = get_polymorphic_child_models_content_types(self.model)  # noqa
+        content_types = get_polymorphic_child_models_content_types(self.model)
         if self.cv_polymorphic_exclude:
             content_types = {k: v for k, v in content_types.items() if k not in self.cv_polymorphic_exclude}
         elif self.cv_polymorphic_include:

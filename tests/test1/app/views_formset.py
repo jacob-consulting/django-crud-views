@@ -9,7 +9,6 @@ Used by tests/test1/test_formsets*.py to exercise the formsets subsystem.
 """
 
 from collections import OrderedDict
-from typing import List
 
 import django_tables2 as tables
 from crispy_forms.layout import LayoutObject, Row
@@ -25,7 +24,6 @@ from crud_views.lib.views import (
     UpdateViewPermissionRequired,
 )
 from crud_views.lib.viewset import ViewSet
-
 from tests.test1.app.models import Book, BookNote, Publisher
 
 cv_publisher_formset = ViewSet(
@@ -59,7 +57,7 @@ class BookFormSetForm(CrispyModelForm):
 
 
 class BookInlineFormSet(InlineFormSet):
-    def get_helper_layout_fields(self) -> List[LayoutObject]:
+    def get_helper_layout_fields(self) -> list[LayoutObject]:
         return [Row(Column8("title"), self.form_control_col4)]
 
 
@@ -83,7 +81,7 @@ class BookNoteFormSetForm(CrispyModelForm):
 
 
 class BookNoteInlineFormSet(InlineFormSet):
-    def get_helper_layout_fields(self) -> List[LayoutObject]:
+    def get_helper_layout_fields(self) -> list[LayoutObject]:
         return [Row(Column8("note"), self.form_control_col4)]
 
 

@@ -6,7 +6,7 @@ instead of silently overwriting the first registration.
 import pytest
 
 from crud_views.lib.exceptions import ViewSetError
-from crud_views.lib.viewset import ViewSet, _REGISTRY
+from crud_views.lib.viewset import _REGISTRY, ViewSet
 from tests.test1.app.models import Publisher
 
 

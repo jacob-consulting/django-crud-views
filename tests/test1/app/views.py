@@ -1,59 +1,54 @@
-import django_tables2 as tables
-
 import django_filters
-
+import django_tables2 as tables
+from crispy_forms.layout import Layout, Row
+from django.core.exceptions import ValidationError
 from django.forms import modelform_factory
 from django.forms.fields import CharField
 
-from django.core.exceptions import ValidationError
-
-from tests.test1.app.models import Author, Publisher, Book, Vehicle, Car, Truck, Campaign
-from crud_views.lib.crispy import CrispyViewMixin, CrispyDeleteForm, CrispyModelForm
+from crud_views.lib.crispy import Column4, Column6, Column12, CrispyDeleteForm, CrispyModelForm, CrispyViewMixin
 from crud_views.lib.crispy.form import CrispyForm
-from crud_views.lib.table import Table, UUIDLinkDetailColumn, LinkDetailColumn
+from crud_views.lib.table import LinkDetailColumn, Table, UUIDLinkDetailColumn
+from crud_views.lib.view import CardAction, ContextButton, ParentContextButton
 from crud_views.lib.views import (
-    ListViewTableMixin,
-    ListViewTableFilterMixin,
-    MessageMixin,
-    ListViewPermissionRequired,
-    DeleteViewPermissionRequired,
-    CreateViewPermissionRequired,
-    UpdateViewPermissionRequired,
-    CreateViewParentMixin,
-    OrderedUpViewPermissionRequired,
-    OrderedUpDownPermissionRequired,
-    CardListViewPermissionRequired,
-    DetailViewPermissionRequired,
     ActionViewPermissionRequired,
+    CardListViewPermissionRequired,
+    CreateViewParentMixin,
+    CreateViewPermissionRequired,
+    DeleteViewPermissionRequired,
+    DetailViewPermissionRequired,
+    ListViewPermissionRequired,
+    ListViewTableFilterMixin,
+    ListViewTableMixin,
+    MessageMixin,
+    OrderedUpDownPermissionRequired,
+    OrderedUpViewPermissionRequired,
+    UpdateViewPermissionRequired,
 )
-from crud_views.lib.view import CardAction
 from crud_views.lib.views.form import CustomFormViewPermissionRequired
-from crud_views.lib.views.manage import ManageView
 from crud_views.lib.views.list import ListViewFilterFormHelper
+from crud_views.lib.views.manage import ManageView
+from crud_views.lib.viewset import ParentViewSet, ViewSet, context_buttons_default
+from crud_views_guardian.lib.views import (
+    GuardianCardListViewPermissionRequired,
+    GuardianCreateViewPermissionRequired,
+    GuardianDeleteViewPermissionRequired,
+    GuardianDetailViewPermissionRequired,
+    GuardianListViewPermissionRequired,
+    GuardianUpdateViewPermissionRequired,
+)
+from crud_views_guardian.lib.viewset import GuardianViewSet
+from crud_views_object_detail.lib import ObjectDetailMixin, ObjectDetailViewPermissionRequired
 from crud_views_polymorphic.lib import (
-    PolymorphicCreateViewPermissionRequired,
     PolymorphicCreateSelectViewPermissionRequired,
-    PolymorphicUpdateViewPermissionRequired,
+    PolymorphicCreateViewPermissionRequired,
     PolymorphicDetailViewPermissionRequired,
+    PolymorphicUpdateViewPermissionRequired,
 )
 from crud_views_polymorphic.lib.create_select import PolymorphicContentTypeForm
 from crud_views_polymorphic.lib.delete import PolymorphicDeleteViewPermissionRequired
-from crud_views.lib.viewset import ViewSet, ParentViewSet, context_buttons_default
-from crud_views.lib.view import ContextButton, ParentContextButton
-from crud_views_guardian.lib.viewset import GuardianViewSet
-from crud_views_guardian.lib.views import (
-    GuardianListViewPermissionRequired,
-    GuardianDetailViewPermissionRequired,
-    GuardianUpdateViewPermissionRequired,
-    GuardianDeleteViewPermissionRequired,
-    GuardianCreateViewPermissionRequired,
-    GuardianCardListViewPermissionRequired,
-)
 from crud_views_workflow.lib.forms import WorkflowForm
 from crud_views_workflow.lib.views import WorkflowViewPermissionRequired
-from crud_views_object_detail.lib import ObjectDetailMixin, ObjectDetailViewPermissionRequired
-from crud_views.lib.crispy import Column4, Column6, Column12
-from crispy_forms.layout import Row, Layout
+from tests.test1.app.models import Author, Book, Campaign, Car, Publisher, Truck, Vehicle
 
 cv_author = ViewSet(model=Author, name="author", icon_header="fa-regular fa-user")
 
@@ -646,8 +641,8 @@ cv_guardian_book = GuardianViewSet(
     icon_header="fa-regular fa-address-book",
     cv_guardian_parent_permission="view",
     cv_guardian_parent_create_permission="change",
-    context_buttons=context_buttons_default()
-    + [
+    context_buttons=[
+        *context_buttons_default(),
         ContextButton(key="create_button", key_target="create"),  # key != key_target
         ParentContextButton(key="publisher_detail", key_target="detail"),  # → object-gated parent detail
         ParentContextButton(

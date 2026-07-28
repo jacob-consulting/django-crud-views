@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
+from project.seeding import grant_model_perms
 
 from formsets.models import Choice, Question, Questionnaire
-from project.seeding import grant_model_perms
 
 QUESTIONNAIRES = {
     "Customer Survey": {

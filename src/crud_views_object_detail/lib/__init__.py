@@ -5,12 +5,12 @@ from importlib import import_module
 __all__ = [
     "BadgeConfig",
     "LinkConfig",
-    "PropertyConfig",
-    "PropertyGroupConfig",
-    "x",
     "ObjectDetailMixin",
     "ObjectDetailView",
     "ObjectDetailViewPermissionRequired",
+    "PropertyConfig",
+    "PropertyGroupConfig",
+    "x",
 ]
 
 _EXPORTS = {

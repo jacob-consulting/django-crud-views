@@ -2,8 +2,8 @@ import pytest
 from django.contrib.auth import get_user_model
 from django.test import RequestFactory
 
-from tests.test1.app.views import AuthorListView
 from crud_views.lib.viewset import ViewSet
+from tests.test1.app.views import AuthorListView
 
 User = get_user_model()
 

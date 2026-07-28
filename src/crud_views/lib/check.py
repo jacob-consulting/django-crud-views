@@ -1,8 +1,9 @@
 import difflib
 import re
-from typing import Any, Iterable, Type
+from collections.abc import Iterable
+from typing import Any
 
-from django.core.checks import Error, CheckMessage
+from django.core.checks import CheckMessage, Error
 from django.core.checks import Warning as DjangoWarning
 from django.template import TemplateDoesNotExist
 from django.template.loader import get_template
@@ -25,7 +26,7 @@ class Check(BaseModel):
     Base class for checks
     """
 
-    context: Type | object
+    context: type | object
     id: str
     msg: str | None = None
 
@@ -36,13 +37,13 @@ class Check(BaseModel):
         return f"viewset.{self.id}"
 
     def get_message_context(self) -> dict:
-        return dict(
-            context=self.context,
-            id=self.id,
-            eid=self.get_id(),
-        )
+        return {
+            "context": self.context,
+            "id": self.id,
+            "eid": self.get_id(),
+        }
 
-    def get_message(self, msg: str = None) -> str:
+    def get_message(self, msg: str | None = None) -> str:
         kwargs = self.get_message_context()
         template = msg if msg else self.msg
         return template.format(**kwargs)

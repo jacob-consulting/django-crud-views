@@ -1,11 +1,10 @@
-from typing import List
-
 from crispy_forms.layout import Row
-from django.forms import RadioSelect, ChoiceField, CharField
+from django.forms import CharField, ChoiceField, RadioSelect
 from django.forms.widgets import Textarea
 from django.utils.translation import gettext_lazy as _
 
-from crud_views.lib.crispy import CrispyForm, Column8
+from crud_views.lib.crispy import Column8, CrispyForm
+
 from .enums import WorkflowComment
 
 
@@ -15,12 +14,12 @@ class WorkflowForm(CrispyForm):
     """
 
     class Meta:
-        fields = ["transition", "comment"]
+        fields = ["transition", "comment"]  # noqa: RUF012 — Django Meta option, not a typed class attribute
 
     submit_label: str = _("Process Workflow Step")
 
     transition = ChoiceField(
-        choices=tuple(),
+        choices=(),
         widget=RadioSelect,
         label="LABEL-PLACEHOLDER",
         help_text="HELP-PLACEHOLDER",
@@ -41,7 +40,7 @@ class WorkflowForm(CrispyForm):
     def get_layout_fields(self):
         return Row(Column8("transition")), Row(Column8("comment"))
 
-    def __init__(self, *args, choices: List[tuple[str, str]], transition_comments: dict, **kwargs):
+    def __init__(self, *args, choices: list[tuple[str, str]], transition_comments: dict, **kwargs):
         super().__init__(*args, **kwargs)
         self.transition_comments = transition_comments
         self.transition_comment = (

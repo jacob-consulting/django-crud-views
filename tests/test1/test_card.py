@@ -68,6 +68,7 @@ def test_card_list_renders_objects(
 @pytest.fixture
 def user_author_all_perms(cv_author):
     from django.contrib.auth.models import User
+
     from tests.lib.helper.user import user_viewset_permission
 
     user = User.objects.create_user(username="user_author_all_perms", password="password")
@@ -156,6 +157,7 @@ def cv_author_wide_card():
 @pytest.fixture
 def user_author_wide_card_view(cv_author_wide_card):
     from django.contrib.auth.models import User
+
     from tests.lib.helper.user import user_viewset_permission
 
     user = User.objects.create_user(username="user_wide_card", password="password")
@@ -205,6 +207,7 @@ def test_get_view_class_raises_when_neither_list_nor_card(cv_author):
 @pytest.fixture
 def user_author_wide_card_add(cv_author_wide_card):
     from django.contrib.auth.models import User
+
     from tests.lib.helper.user import user_viewset_permission
 
     user = User.objects.create_user(username="user_wide_card_add", password="password")

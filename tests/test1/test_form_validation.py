@@ -3,7 +3,6 @@ from django.test.client import Client
 
 from tests.test1.app.models import Publisher
 
-
 # --- Create: validation errors ---
 
 

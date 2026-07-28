@@ -1,5 +1,5 @@
+from collections.abc import Generator
 from functools import cached_property
-from typing import List, Dict, Generator, Type
 
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Model
@@ -7,13 +7,13 @@ from django.forms import ModelForm
 from polymorphic.models import PolymorphicModel
 
 
-def get_polymorphic_child_models(model: PolymorphicModel) -> List[Type[PolymorphicModel]]:
+def get_polymorphic_child_models(model: PolymorphicModel) -> list[type[PolymorphicModel]]:
     """
     Get all child models of a polymorphic model.
     """
     assert issubclass(model, PolymorphicModel), "not a polymorphic model"
 
-    def subclasses(m: Type[PolymorphicModel]) -> Generator[Type[PolymorphicModel], None, None]:
+    def subclasses(m: type[PolymorphicModel]) -> Generator[type[PolymorphicModel], None, None]:
         for sm in m.__subclasses__():
             yield sm
             yield from subclasses(sm)
@@ -21,7 +21,7 @@ def get_polymorphic_child_models(model: PolymorphicModel) -> List[Type[Polymorph
     return list(subclasses(model))
 
 
-def get_polymorphic_child_models_content_types(model: PolymorphicModel) -> Dict[Type[Model], ContentType]:
+def get_polymorphic_child_models_content_types(model: PolymorphicModel) -> dict[type[Model], ContentType]:
     child_models = get_polymorphic_child_models(model)
     content_types = ContentType.objects.get_for_models(*child_models, for_concrete_models=True)
     return content_types
@@ -32,7 +32,7 @@ class PolymorphicCrudViewMixin:
     Polymorphic ViewSet mixin
     """
 
-    polymorphic_forms: Dict[Model, ModelForm] = None
+    polymorphic_forms: dict[Model, ModelForm] = None
 
     @property
     def polymorphic_ctype_id(self) -> int:

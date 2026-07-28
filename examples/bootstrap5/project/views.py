@@ -1,7 +1,6 @@
 from django.views import generic
 
 from crud_views.lib.breadcrumb import CrudViewBreadcrumbMixin
-
 from project.features import FEATURES
 
 

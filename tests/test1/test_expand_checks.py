@@ -1,9 +1,10 @@
-from crud_views.lib.check import CheckAttributeType, CheckMapping, CheckTemplateOrCode
 from django.db.models import Model
-from tests.test1.app.models import Book
+
+from crud_views.lib.check import CheckAttributeType, CheckMapping, CheckTemplateOrCode
 from crud_views.lib.formsets.formsets import FormSets
-from tests.test1.app.views_formset import PublisherFormSetCreateView
 from crud_views.lib.views.list import ListView
+from tests.test1.app.models import Book
+from tests.test1.app.views_formset import PublisherFormSetCreateView
 
 
 class GoodType:

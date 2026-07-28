@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
+from project.seeding import grant_model_perms
 
 from nested.models import Company, Department, Employee, Office
-from project.seeding import grant_model_perms
 
 COMPANIES = {
     "Acme Corp": {

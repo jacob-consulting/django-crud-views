@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-from typing import Any, List
+from typing import Any, Self
 
 from django.http import Http404
 from pydantic import BaseModel
-from typing_extensions import Self
 
 # NOTE: this module must not import anything from crud_views.lib.viewset,
 # including its "leaf" submodules — importing e.g. viewset.path_regs still
@@ -103,7 +102,7 @@ class Resource(BaseModel):
                     raise TypeError(f"{cls.__name__}: Meta.pk_field is 'pk' but no 'pk' field or attribute is defined")
 
     @classmethod
-    def cv_get_items(cls, request, **url_kwargs) -> List[Self]:
+    def cv_get_items(cls, request, **url_kwargs) -> list[Self]:
         """
         Return all rows. Implemented by the developer (read S3, walk a config
         tree, call an API, ...). ``url_kwargs`` are the resolved URL kwargs of

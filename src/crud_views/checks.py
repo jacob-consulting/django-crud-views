@@ -1,13 +1,12 @@
-from django.core.checks import Error
+from django.core.checks import Error, register
 from django.core.checks import Warning as DjangoWarning
-from django.core.checks import register
 
 from crud_views.lib import assets
 from crud_views.lib import ordered as ordered_helper
 from crud_views.lib.formsets.formsets import FormSet
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.views.action_ordered import OrderedDownView, OrderedUpView
-from crud_views.lib.viewset import ViewSet, _REGISTRY, _REGISTRY_LOCK
+from crud_views.lib.viewset import _REGISTRY, _REGISTRY_LOCK, ViewSet
 
 TAG = "crud_views"
 
@@ -41,9 +40,8 @@ def _registry_needs_ordered_model() -> bool:
             if issubclass(view, (OrderedUpView, OrderedDownView)):
                 return True
             formsets = getattr(view, "cv_formsets", None)
-            if formsets is not None:
-                if any(_formset_uses_ordering(fs) for fs in formsets.values()):
-                    return True
+            if formsets is not None and any(_formset_uses_ordering(fs) for fs in formsets.values()):
+                return True
     return False
 
 
@@ -117,15 +115,18 @@ def check_conditional(app_configs=None, **kwargs):
             formsets = getattr(view, "cv_formsets", None)
             if formsets is not None:
                 # top-level only are allowed to carry a conditional
+                # B023 is a false positive here — _walk is invoked only at
+                # the call sites below, within the same loop iteration that
+                # defines it, so the closure never outlives its bindings.
                 def _walk(formset, key, is_top):
                     if formset.conditional is not None:
                         if not is_top:
                             nested_conditionals.append((key, formset.conditional))
                         else:
-                            if form_class is not None:
+                            if form_class is not None:  # noqa: B023
                                 tname = formset.conditional.toggle.field_name()
-                                if tname not in declared and tname not in group_injected:
-                                    missing_toggles.append((form_class.__name__, tname))
+                                if tname not in declared and tname not in group_injected:  # noqa: B023
+                                    missing_toggles.append((form_class.__name__, tname))  # noqa: B023
                             if formset.conditional.on_off == "purge":
                                 if not formset.klass.can_delete:
                                     purge_conflicts.append((key, "can_delete=False"))
@@ -149,9 +150,11 @@ def check_conditional(app_configs=None, **kwargs):
                                 mf = model._meta.get_field(fname)
                             except Exception:
                                 continue
-                            if not (getattr(mf, "null", False) and getattr(mf, "blank", False)):
-                                if fname not in group.empty_values:
-                                    non_nullable_clears.append((form_class.__name__, fname))
+                            if (
+                                not (getattr(mf, "null", False) and getattr(mf, "blank", False))
+                                and fname not in group.empty_values
+                            ):
+                                non_nullable_clears.append((form_class.__name__, fname))
 
     # Create/Update views routinely share form_class + cv_formsets — report each
     # distinct finding once, not once per view.

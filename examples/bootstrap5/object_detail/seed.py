@@ -2,9 +2,9 @@ from decimal import Decimal
 
 from django.contrib.auth import get_user_model
 from django.utils import timezone
+from project.seeding import grant_model_perms
 
 from object_detail.models import Product, Supplier, Tag, Warehouse
-from project.seeding import grant_model_perms
 
 SUPPLIERS = [
     ("Acme Corp", "https://acme.example.com", 4.5),

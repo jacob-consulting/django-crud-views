@@ -1,5 +1,6 @@
 from crud_views.lib.view import CrudViewPermissionRequiredMixin
 from crud_views.lib.views import DetailView
+
 from .utils import PolymorphicCrudViewMixin
 
 

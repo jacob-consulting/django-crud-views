@@ -39,8 +39,8 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
         return self.request.user.groups.filter(name=crud_views_settings.manage_group).exists()
 
     def get_permission_holders(self):
-        from django.contrib.auth.models import Group
         from django.contrib.auth import get_user_model
+        from django.contrib.auth.models import Group
 
         User = get_user_model()
         rows = []
@@ -76,7 +76,7 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
         permissions = self.cv_viewset.permissions
         rows = []
         for short, long in permissions.items():
-            rows.append(dict(viewset=short, django=long, has_permission=self.request.user.has_perm(long)))
+            rows.append({"viewset": short, "django": long, "has_permission": self.request.user.has_perm(long)})
         views = self.get_view_data()
         permission_holders = self.get_permission_holders()
         context.update(

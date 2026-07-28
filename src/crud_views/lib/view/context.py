@@ -1,4 +1,4 @@
-from typing import Dict, Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from crud_views.lib.view.base import CrudView
@@ -41,7 +41,7 @@ class ViewContext(BaseModel, arbitrary_types_allowed=True):
                 raise ValueError(f"ViewContext.object must be a Model or Resource instance, got {type(value)!r}")
         return value
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {"object": self.object}
 
     @property

@@ -1,9 +1,9 @@
 from decimal import Decimal
 
 from django.contrib.auth import get_user_model
+from project.seeding import grant_model_perms
 
 from library.models import Author, Book
-from project.seeding import grant_model_perms
 
 AUTHORS = [
     ("Ursula", "Le Guin", None, [("A Wizard of Earthsea", "7.99"), ("The Dispossessed", "9.99")]),

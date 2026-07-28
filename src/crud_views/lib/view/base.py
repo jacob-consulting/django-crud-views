@@ -1,38 +1,43 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
 from functools import cached_property
-from typing import Dict, List, Type, Any, Iterable, Tuple, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from crud_views.lib.viewset import ViewSet
     from django.contrib.auth.models import AbstractUser as User
 
-from crud_views.lib import check
-from crud_views.lib.check import (
-    Check,
-    CheckAttributeReg,
-    CheckAttribute,
-    CheckTemplateOrCode,
-    CheckTemplate,
-    CheckExpression,
-    CheckUnknownAttributes,
-)
-from crud_views.lib.exceptions import cv_raise, ParentViewSetError, CrudViewError, ViewSetKeyFoundError
+    from crud_views.lib.viewset import ViewSet
+
+from typing import Self
+
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.db.models import Model
 from django.shortcuts import get_object_or_404
-from django.template import Context as TemplateContext, Template
+from django.template import Context as TemplateContext
+from django.template import Template
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.cache import patch_vary_headers
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
-from typing_extensions import Self
 
+from crud_views.lib import check
+from crud_views.lib.check import (
+    Check,
+    CheckAttribute,
+    CheckAttributeReg,
+    CheckExpression,
+    CheckTemplate,
+    CheckTemplateOrCode,
+    CheckUnknownAttributes,
+)
+from crud_views.lib.exceptions import CrudViewError, ParentViewSetError, ViewSetKeyFoundError, cv_raise
+
+from ..settings import crud_views_settings
 from .buttons import ContextButton
 from .context import ViewContext
 from .meta import CrudViewMetaClass
-from ..settings import crud_views_settings
 
 
 def cv_is_modal_request(request) -> bool:
@@ -45,17 +50,17 @@ class CrudView(metaclass=CrudViewMetaClass):
     A view that is part of a ViewSet
     """
 
-    cv_viewset: "ViewSet" = None
+    cv_viewset: ViewSet = None
     cv_key: str = None  # the key to register the view (i.e. detail, list, create, update, delete)
     cv_path: str = None  # i.e. detail, update or "" for list views
     cv_object: bool = True  # view has object context (only list views do not have object context)
     cv_backend_only: bool = (
         False  # views is only available in the backend, so i.e. title and paragraph templates are not required
     )
-    cv_list_actions: List[str] | None = None  # actions for the list view
+    cv_list_actions: list[str] | None = None  # actions for the list view
     cv_list_action_method: str = "get"  # method to call for list actions
-    cv_context_actions: List[str] | None = None  # context actions for the view (top right)
-    cv_context_buttons: List[ContextButton] | None = None  # view-level context button definitions (issue #27)
+    cv_context_actions: list[str] | None = None  # context actions for the view (top right)
+    cv_context_buttons: list[ContextButton] | None = None  # view-level context button definitions (issue #27)
     cv_home_key: str | None = "list"  # home url, defaults to list
     cv_success_key: str | None = "list"  # success url, defaults to list
     cv_cancel_key: str | None = "list"  # cancel url, defaults to list
@@ -182,7 +187,7 @@ class CrudView(metaclass=CrudViewMetaClass):
         return None
 
     @classmethod
-    def render_snippet(cls, data: dict, template: str = None, template_code: str = None) -> str:
+    def render_snippet(cls, data: dict, template: str | None = None, template_code: str | None = None) -> str:
         """
         Either render the template_code or the template
         """
@@ -251,27 +256,27 @@ class CrudView(metaclass=CrudViewMetaClass):
         )
 
     @classmethod
-    def cv_get_dict(cls, context: ViewContext, **extra) -> Dict[str, Any]:
+    def cv_get_dict(cls, context: ViewContext, **extra) -> dict[str, Any]:
         """
         Note: This is a classmethod, so the view instance and it's object context is not available here.
               The data this method returns is used to link sibling views.
         """
-        data = dict(
-            cv_key=cls.cv_key,
-            cv_path=cls.cv_path,
-            cv_action_label=cls.cv_get_action_label(context=context),
-            cv_action_short_label=cls.cv_get_action_short_label(context=context),
-            cv_list_actions=cls.cv_list_actions,
-            cv_list_action_method=cls.cv_list_action_method,
-            cv_context_actions=cls.cv_context_actions,
-            cv_home_key=cls.cv_home_key,
-            cv_success_key=cls.cv_success_key,
-            cv_cancel_key=cls.cv_cancel_key,
-            cv_icon_action=cls.cv_icon_action,
-            cv_icon_header=cls.cv_icon_header,
-            cv_modal=cls.cv_modal,
-            cv_modal_size=cls.cv_modal_size,
-        )
+        data = {
+            "cv_key": cls.cv_key,
+            "cv_path": cls.cv_path,
+            "cv_action_label": cls.cv_get_action_label(context=context),
+            "cv_action_short_label": cls.cv_get_action_short_label(context=context),
+            "cv_list_actions": cls.cv_list_actions,
+            "cv_list_action_method": cls.cv_list_action_method,
+            "cv_context_actions": cls.cv_context_actions,
+            "cv_home_key": cls.cv_home_key,
+            "cv_success_key": cls.cv_success_key,
+            "cv_cancel_key": cls.cv_cancel_key,
+            "cv_icon_action": cls.cv_icon_action,
+            "cv_icon_header": cls.cv_icon_header,
+            "cv_modal": cls.cv_modal,
+            "cv_modal_size": cls.cv_modal_size,
+        }
         data["cv_is_active"] = cls.cv_viewset.get_router_name(cls.cv_key) == context.router_name
         data.update(extra)
         return data
@@ -283,7 +288,7 @@ class CrudView(metaclass=CrudViewMetaClass):
         """
         return ""
 
-    def cv_get_cls(self, key: str | None = None) -> Type[Self]:
+    def cv_get_cls(self, key: str | None = None) -> type[Self]:
         """
         Get the class of the view or for a sibling of the view from ViewSet
         """
@@ -291,21 +296,21 @@ class CrudView(metaclass=CrudViewMetaClass):
         cls = self.__class__ if key == self.cv_key else self.cv_viewset.get_view_class(key)
         return cls
 
-    def cv_get_cls_assert_object(self, key: str | None = None, obj: Model | None = None) -> Type[Self]:
+    def cv_get_cls_assert_object(self, key: str | None = None, obj: Model | None = None) -> type[Self]:
         """
         See cv_get_cls, but assert object context
         """
         cls = self.cv_get_cls(key)
-        cv_raise(cls.cv_object is False or cls.cv_object is True and obj, f"view {cls} requires object")
+        cv_raise(cls.cv_object is False or (cls.cv_object is True and obj), f"view {cls} requires object")
         return cls
 
     @classmethod
     def cv_get_url_extra_kwargs(cls) -> dict:
-        return dict()
+        return {}
 
     def cv_get_router_and_args(
         self, key: str | None = None, obj=None, extra_kwargs: dict | None = None
-    ) -> Tuple[str, tuple, dict]:
+    ) -> tuple[str, tuple, dict]:
         """
         Get the router name, args, kwargs url for a sibling defined by a key
         """
@@ -313,7 +318,7 @@ class CrudView(metaclass=CrudViewMetaClass):
 
         if extra_kwargs:
             assert isinstance(extra_kwargs, dict)
-        kwargs = extra_kwargs if extra_kwargs else dict()
+        kwargs = extra_kwargs if extra_kwargs else {}
         args = []
 
         # if the view requires an object, add pk using the pk_name defined at ViewSet
@@ -342,7 +347,7 @@ class CrudView(metaclass=CrudViewMetaClass):
         """
         Get the url for a sibling defined by key
         """
-        router_name, args, kwargs = self.cv_get_router_and_args(key=key, obj=obj, extra_kwargs=extra_kwargs)
+        router_name, _args, kwargs = self.cv_get_router_and_args(key=key, obj=obj, extra_kwargs=extra_kwargs)
         url_path = reverse(router_name, kwargs=kwargs)
         return url_path
 
@@ -395,7 +400,7 @@ class CrudView(metaclass=CrudViewMetaClass):
 
     def cv_get_context(
         self, key: str | None = None, obj: Model | None = None, user: User | None = None, request=None
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Get template context for this view for a key and an optional object
         """
@@ -416,12 +421,12 @@ class CrudView(metaclass=CrudViewMetaClass):
             return {}
 
         # the key is a view
-        dict_kwargs = dict(
-            cv_access=False,
-            cv_oid=self.cv_get_oid(key=key, obj=obj),
-            cv_url=self.cv_get_url(key=key, obj=obj),
-            cv_template=crud_views_settings.context_button_template,
-        )
+        dict_kwargs = {
+            "cv_access": False,
+            "cv_oid": self.cv_get_oid(key=key, obj=obj),
+            "cv_url": self.cv_get_url(key=key, obj=obj),
+            "cv_template": crud_views_settings.context_button_template,
+        }
 
         # set up the view context
         context = self.cv_get_view_context(object=obj)
@@ -445,7 +450,7 @@ class CrudView(metaclass=CrudViewMetaClass):
         Get the context for the cancel button
         """
         url = self.cv_get_url(key=self.cv_cancel_key, obj=obj)
-        return dict(cv_url=url, cv_action_label=_("Cancel"))
+        return {"cv_url": url, "cv_action_label": _("Cancel")}
 
     def cv_get_child_url(self, name: str, key: str, obj: Model | None = None) -> str:
         """
@@ -457,8 +462,11 @@ class CrudView(metaclass=CrudViewMetaClass):
         name = viewset.get_router_name(key)
         args = viewset.get_parent_url_args()
         attrs = viewset.get_parent_attributes()
-        kw = dict()
-        for idx, (arg, attr) in enumerate(zip(args, attrs)):
+        kw = {}
+        # args and attrs are produced by identical traversals of the same parent chain
+        # (ViewSet.get_parent_url_args / get_parent_attributes), so they are equal-length by
+        # construction; strict=False keeps this an exact no-op.
+        for idx, (arg, _attr) in enumerate(zip(args, attrs, strict=False)):
             if idx == 0 and obj:
                 kw[arg] = obj.pk  # it's me, because I'm linking to the child
             else:
@@ -493,7 +501,7 @@ class CrudView(metaclass=CrudViewMetaClass):
         # get the parent object
         parent_model = self.cv_viewset.get_parent_model()
         arg = self.cv_viewset.get_parent_url_args(first_only=True)
-        pk = self.kwargs[arg]  # noqa
+        pk = self.kwargs[arg]
         return get_object_or_404(parent_model, pk=pk)
 
     def cv_get_parent_object_attribute(self) -> str:
@@ -517,13 +525,13 @@ class CrudViewPermissionRequiredMixin(PermissionRequiredMixin):
         """
         Iterator of checks for the view
         """
-        yield from super().checks()  # noqa
+        yield from super().checks()
         yield CheckAttribute(context=cls, id="E202", attribute="cv_permission")
 
     @cached_property
     def permission_required(self) -> str:
         cv_raise(self.cv_permission is not None, f"cv_permission not set at {self}")
-        perms = self.cv_viewset.permissions  # noqa
+        perms = self.cv_viewset.permissions
         perm = perms.get(self.cv_permission)
         assert perm, f"permission {self.cv_permission} not found at {self}"
         return perm
@@ -543,6 +551,6 @@ class CrudViewPermissionRequiredMixin(PermissionRequiredMixin):
     @classmethod
     def cv_has_access(cls, user: User, obj: Model | None = None) -> bool:
         perm = cls.cv_viewset.permissions.get(cls.cv_permission)
-        perms = (perm,) if perm else tuple()
+        perms = (perm,) if perm else ()
         has_access = user.has_perms(perms)
         return has_access

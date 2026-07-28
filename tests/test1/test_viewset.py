@@ -49,7 +49,8 @@ def test_default_permissions_parses_action_containing_model_name():
     """
     from django.contrib.auth.models import Permission
     from django.contrib.contenttypes.models import ContentType
-    from crud_views.lib.viewset import ViewSet, _REGISTRY
+
+    from crud_views.lib.viewset import _REGISTRY, ViewSet
     from tests.test1.app.models import Book
 
     ct = ContentType.objects.get_for_model(Book)  # ct.model == "book"

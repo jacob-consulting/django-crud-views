@@ -1,5 +1,3 @@
-from typing import List
-
 from lxml import html
 from lxml.html import Element
 
@@ -91,9 +89,9 @@ class Column:
         return self.element.text_content().strip()
 
     @property
-    def actions(self) -> List[Action]:
+    def actions(self) -> list[Action]:
         assert self.index == self.action_index
-        data: List[Action] = []
+        data: list[Action] = []
         for index, element in enumerate(self.element.xpath("div/a|span")):
             action = Action(index, element)
             data.append(action)
@@ -110,7 +108,7 @@ class Row:
         return f"row({self.index})"
 
     @property
-    def columns(self) -> List[Column]:
+    def columns(self) -> list[Column]:
         result = []
         for index, element in enumerate(self.element.xpath("td")):
             column = Column(index, self, element, action_index=self.action_index)
@@ -118,7 +116,7 @@ class Row:
         return result
 
     @property
-    def actions(self) -> List[Action]:
+    def actions(self) -> list[Action]:
         column = self.columns[self.action_index]
         return column.actions
 
@@ -139,7 +137,7 @@ class Table:
         return self.html.xpath("//div[@cv-context-container='true']")[0]
 
     @property
-    def context_actions(self) -> List[Action]:
+    def context_actions(self) -> list[Action]:
         return [Action(index=index, element=element) for index, element in enumerate(self.context.xpath("a"))]
 
     def get_context_action(self, key: str) -> Action:
@@ -157,7 +155,7 @@ class Table:
         return self.table.xpath("//tbody")[0]
 
     @property
-    def rows(self) -> List[Row]:
+    def rows(self) -> list[Row]:
         action_index = self.action_index
         return [Row(index, row, action_index=action_index) for index, row in enumerate(self.tbody.xpath("tr"))]
 
@@ -166,7 +164,7 @@ class Table:
         return self.table.xpath("//thead")[0]
 
     @property
-    def headers(self) -> List[Header]:
+    def headers(self) -> list[Header]:
         return [Header(header) for header in self.thead.xpath("//th")]
 
     @property

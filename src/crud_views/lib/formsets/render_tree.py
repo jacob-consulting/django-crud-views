@@ -20,7 +20,8 @@ walk the tree depth-first, handling deletes before updates.
 from __future__ import annotations
 
 import json
-from typing import Any, List, Iterable, Tuple
+from collections.abc import Iterable
+from typing import Any
 
 from django.forms.forms import BaseForm
 from django.forms.formsets import BaseFormSet
@@ -39,7 +40,7 @@ class XForm(BaseModel, arbitrary_types_allowed=True):
     prefix_key: str
     form: BaseForm
     parent: XFormSet | None = None
-    formsets: List[XFormSet] = Field(default_factory=lambda: list())
+    formsets: list[XFormSet] = Field(default_factory=lambda: [])
 
     def __str__(self):
         return f"XForm(prefix={self.prefix},prefix_key={self.prefix_key},key={self.key},level={self.level})"
@@ -58,19 +59,19 @@ class XForm(BaseModel, arbitrary_types_allowed=True):
 
     @property
     def data(self) -> dict:
-        return dict(
-            key=self.key,
-            prefix=self.prefix,
-            prefix_key=self.prefix_key,
-            formset_prefix=self.parent.prefix,
-            pk=str(self.parent.pk),
-        )
+        return {
+            "key": self.key,
+            "prefix": self.prefix,
+            "prefix_key": self.prefix_key,
+            "formset_prefix": self.parent.prefix,
+            "pk": str(self.parent.pk),
+        }
 
     @property
     def json_data(self) -> str:
         return json.dumps(self.data)  # .replace('"', "'")
 
-    def is_valid(self) -> Iterable[Tuple[Any, bool]]:
+    def is_valid(self) -> Iterable[tuple[Any, bool]]:
         for x_formset in self.formsets:
             yield from x_formset.is_valid()
 
@@ -96,7 +97,7 @@ class XFormSet(BaseModel, arbitrary_types_allowed=True):
     cv_active: bool = True
     instance: BaseFormSet
     management_form: Any
-    forms: List[XForm] = Field(default_factory=lambda: list())
+    forms: list[XForm] = Field(default_factory=lambda: [])
     parent: XForm | None = None
     render_rows_only: bool = False  # True for the AJAX row template: skip the fieldset wrapper
 
@@ -137,7 +138,7 @@ class XFormSet(BaseModel, arbitrary_types_allowed=True):
         return ""
 
     @property
-    def hierarchy(self) -> List[str]:
+    def hierarchy(self) -> list[str]:
         return self.formset.hierarchy
 
     @property
@@ -170,22 +171,22 @@ class XFormSet(BaseModel, arbitrary_types_allowed=True):
 
     @property
     def data(self) -> dict:
-        return dict(
-            key=self.key,
-            prefix=self.prefix,
-            prefix_key=self.prefix_key,
-            hierarchy=self.hierarchy,
-            parent_prefix=self.parent_prefix,
-            parent_prefix_key=self.parent_prefix_key,
-            can_delete=self.formset.can_delete,
-            can_delete_extra=self.formset.can_delete_extra,
-            can_order=self.formset.can_order,
-            edit_only=self.formset.edit_only,
-            path=self.formset.path,
-            fields=self.formset.fields,
-            pk_field=self.formset.pk_field,
-            pk=self.pk.value,
-        )
+        return {
+            "key": self.key,
+            "prefix": self.prefix,
+            "prefix_key": self.prefix_key,
+            "hierarchy": self.hierarchy,
+            "parent_prefix": self.parent_prefix,
+            "parent_prefix_key": self.parent_prefix_key,
+            "can_delete": self.formset.can_delete,
+            "can_delete_extra": self.formset.can_delete_extra,
+            "can_order": self.formset.can_order,
+            "edit_only": self.formset.edit_only,
+            "path": self.formset.path,
+            "fields": self.formset.fields,
+            "pk_field": self.formset.pk_field,
+            "pk": self.pk.value,
+        }
 
     @property
     def json_data(self) -> str:
@@ -196,7 +197,7 @@ class XFormSet(BaseModel, arbitrary_types_allowed=True):
         conditional = self.formset.conditional
         return conditional.toggle.field_name() if conditional is not None else ""
 
-    def is_valid(self) -> Iterable[Tuple[Any, bool]]:
+    def is_valid(self) -> Iterable[tuple[Any, bool]]:
         yield self, self.instance.is_valid()
         for x_form in self.forms:
             yield from x_form.is_valid()

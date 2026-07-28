@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Iterable
+from collections.abc import Iterable
 
 from crud_views.lib.check import Check, CheckAttribute, CheckExpression
 from crud_views_object_detail.lib.config import PropertyConfig, PropertyGroupConfig, parse_property_display
@@ -95,4 +95,4 @@ class ObjectDetailMixin:
                                         "dict, or PropertyConfig"
                                     ),
                                 )
-        yield from super().checks()  # noqa
+        yield from super().checks()

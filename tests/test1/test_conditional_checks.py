@@ -8,8 +8,8 @@ from crud_views.lib.conditional.formset import ConditionalFormSet
 from crud_views.lib.conditional.group import ConditionalGroup, ConditionalGroupFormMixin
 from crud_views.lib.conditional.toggle import ModelFieldToggle, UIFieldToggle
 from crud_views.lib.formsets import FormSet, FormSets, InlineFormSet
-from crud_views.lib.viewset import ViewSet
 from crud_views.lib.views import CreateViewPermissionRequired, UpdateViewPermissionRequired
+from crud_views.lib.viewset import ViewSet
 from tests.test1.app.models import Profile, ProfileItem
 
 # ── one-off ViewSet + view registered at import time via metaclass ────────────

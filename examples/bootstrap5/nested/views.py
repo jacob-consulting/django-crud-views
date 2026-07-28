@@ -1,5 +1,6 @@
 import django_tables2 as tables
 from crispy_forms.layout import Row
+from project.views import BreadcrumbMixin
 
 from crud_views.lib.crispy import Column6, CrispyDeleteForm, CrispyModelForm, CrispyViewMixin
 from crud_views.lib.table import LinkChildColumn, LinkDetailColumn, Table
@@ -14,9 +15,7 @@ from crud_views.lib.views import (
 )
 from crud_views.lib.viewset import ParentViewSet, ViewSet
 from crud_views_object_detail.lib import ObjectDetailViewPermissionRequired
-
 from nested.models import Company, Department, Employee, Office
-from project.views import BreadcrumbMixin
 
 # --------------------------------------------------------------------------- Company (root)
 

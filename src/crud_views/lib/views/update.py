@@ -2,6 +2,7 @@ from django.views import generic
 
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import CrudView, CrudViewPermissionRequiredMixin
+
 from .mixins import CrudViewProcessFormMixin
 
 

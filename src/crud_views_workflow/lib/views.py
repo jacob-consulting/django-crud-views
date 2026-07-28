@@ -1,4 +1,4 @@
-from typing import Iterable
+from collections.abc import Iterable
 
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import SuspiciousOperation
@@ -8,6 +8,7 @@ from django.utils.translation import gettext_lazy as _
 from crud_views.lib.check import Check, CheckAttribute, CheckExpression
 from crud_views.lib.view import CrudViewPermissionRequiredMixin
 from crud_views.lib.views.form import CustomFormView
+
 from ..models import WorkflowInfo
 from .mixins import WorkflowModelMixin
 

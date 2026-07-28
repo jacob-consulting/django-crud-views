@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -6,11 +6,11 @@ from crud_views.lib.settings import crud_views_settings
 
 
 def default_dict(*args, **kwargs) -> Any:
-    return dict()
+    return {}
 
 
 class ViewData(BaseModel):
-    data: Dict[str, Any] = Field(default_factory=default_dict)  # cv_key to Any
+    data: dict[str, Any] = Field(default_factory=default_dict)  # cv_key to Any
 
     def set(self, key, value):
         self.data[key] = value
@@ -20,10 +20,10 @@ class ViewData(BaseModel):
 
 
 class ViewSetData(BaseModel):
-    views: Dict[str, ViewData] = Field(default_factory=default_dict)  # ViewSet name to ViewData
+    views: dict[str, ViewData] = Field(default_factory=default_dict)  # ViewSet name to ViewData
 
     def get_view_data(self, view_key: str) -> ViewData:
-        if view_key not in self.views.keys():
+        if view_key not in self.views:
             view_data = ViewData()
             self.views[view_key] = view_data
             return view_data
@@ -37,7 +37,7 @@ class SessionData(BaseModel):
     """
 
     view: Any = None
-    apps: Dict[str, ViewSetData] = Field(default_factory=default_dict)  # app ViewSetData
+    apps: dict[str, ViewSetData] = Field(default_factory=default_dict)  # app ViewSetData
 
     @property
     def view_key(self) -> str:
@@ -49,7 +49,7 @@ class SessionData(BaseModel):
         return self.view.model._meta.app_label
 
     def get_viewset_data(self) -> ViewSetData:
-        if self.app_label not in self.apps.keys():
+        if self.app_label not in self.apps:
             viewset_data = ViewSetData()
             self.apps[self.app_label] = viewset_data
             return viewset_data
@@ -62,10 +62,7 @@ class SessionData(BaseModel):
     @classmethod
     def from_view(cls, view):
         session_data = view.request.session.get(crud_views_settings.session_data_key, None)
-        if session_data is None:
-            session_data = SessionData(view=view)
-        else:
-            session_data = SessionData(view=view, **session_data)
+        session_data = SessionData(view=view) if session_data is None else SessionData(view=view, **session_data)
         return session_data
 
     def __enter__(self):

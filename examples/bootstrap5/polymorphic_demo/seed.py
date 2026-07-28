@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
+from project.seeding import grant_model_perms
 
 from polymorphic_demo.models import Car, Motorcycle, Truck, Vehicle
-from project.seeding import grant_model_perms
 
 
 def seed():

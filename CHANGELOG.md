@@ -1,5 +1,14 @@
 # Django CRUD Views - Changelog
 
+## Unreleased
+
+### Changed
+
+- `crud_views_settings.dict` is renamed to `crud_views_settings.as_dict`. The old
+  name shadowed the `dict` builtin inside the class body, which breaks annotations
+  under PEP 649 deferred evaluation on Python 3.14. Only affects code that reads the
+  settings object directly; the template context it feeds is unchanged.
+
 ## 0.19.0
 
 ### Added

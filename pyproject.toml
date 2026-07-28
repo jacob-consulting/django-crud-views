@@ -58,7 +58,7 @@ all = [
 ]
 
 dev = [
-    "ruff==0.15.21",
+    "ruff>=0.16,<0.17",
     "pre-commit",
     "bump-my-version",
     "mkdocs (>=1.6.1)",
@@ -110,6 +110,18 @@ extend-exclude = ["superpowers/**"]
 [tool.ruff.format]
 quote-style = "double"
 indent-style = "space"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "C4", "SIM", "RUF"]
+# `›` is the breadcrumb separator, not a mistyped `>`.
+allowed-confusables = ["›"]
+
+[tool.ruff.lint.per-file-ignores]
+# ClassVar annotations on test fixtures and teaching examples add noise, not
+# safety; Django generates migrations, so annotations there do not survive.
+"tests/**" = ["RUF012"]
+"examples/**" = ["RUF012"]
+"**/migrations/*" = ["RUF012"]
 
 [tool.pytest.ini_options]
 addopts = "--strict-markers"

@@ -9,19 +9,19 @@ crud-views passes a ``view=`` kwarg the stock ``Table`` does not accept.
 
 import django_tables2 as tables
 import pytest
-from django.urls import path, include
+from django.urls import include, path
 
-from tests.test1.app.models import Author
 from crud_views.lib.table import Table
-from crud_views.lib.viewset import ViewSet
 from crud_views.lib.views import (
-    ListViewTableMixin,
-    ListViewPermissionRequired,
     CreateViewPermissionRequired,
-    UpdateViewPermissionRequired,
     DeleteViewPermissionRequired,
+    ListViewPermissionRequired,
+    ListViewTableMixin,
+    UpdateViewPermissionRequired,
 )
+from crud_views.lib.viewset import ViewSet
 from crud_views_object_detail.lib import ObjectDetailViewPermissionRequired
+from tests.test1.app.models import Author
 
 # Registers into the global ViewSet registry at import time; the "readme" name
 # must stay unique across the test suite (duplicate names raise ViewSetError).

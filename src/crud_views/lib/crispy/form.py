@@ -1,12 +1,10 @@
-from typing import List
-
 from crispy_forms.bootstrap import FormActions
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Button, Layout, Row, Submit, LayoutObject, BaseInput
-from django.forms import ModelForm, Form, BooleanField
+from crispy_forms.layout import BaseInput, Button, Layout, LayoutObject, Row, Submit
+from django.forms import BooleanField, Form, ModelForm
 from django.utils.translation import gettext_lazy as _
 
-from crud_views.lib.crispy import Column4
+from crud_views.lib.crispy.table import Column4
 
 
 class CrispyFormMixin:
@@ -48,7 +46,7 @@ class CrispyFormMixin:
         helper.layout = Layout(*fields, self.get_form_actions())
         return helper
 
-    def get_layout_fields(self) -> LayoutObject | BaseInput | List[LayoutObject | BaseInput]:
+    def get_layout_fields(self) -> LayoutObject | BaseInput | list[LayoutObject | BaseInput]:
         raise NotImplementedError
 
     def get_form_actions(self) -> FormActions:
@@ -136,8 +134,8 @@ class CrispyViewMixin:
     """
 
     def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()  # noqa
-        form_class = self.get_form_class()  # noqa
+        kwargs = super().get_form_kwargs()
+        form_class = self.get_form_class()
         if issubclass(form_class, (CrispyModelForm, CrispyForm)):
             kwargs["cv_view"] = self
         return kwargs

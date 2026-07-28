@@ -2,8 +2,8 @@ from django.http import Http404
 from django.urls import reverse
 from pydantic import BaseModel, Field
 
-from .context import ViewContext
 from ..settings import crud_views_settings
+from .context import ViewContext
 
 
 class ContextButton(BaseModel):
@@ -20,9 +20,8 @@ class ContextButton(BaseModel):
 
     @staticmethod
     def _resolve_container_key(viewset, key_target: str) -> str:
-        if key_target == "list" and not viewset.is_view_registered("list"):
-            if viewset.is_view_registered("card"):
-                return "card"
+        if key_target == "list" and not viewset.is_view_registered("list") and viewset.is_view_registered("card"):
+            return "card"
         return key_target
 
     def render_label(self, data: dict, context: ViewContext) -> str:
@@ -52,7 +51,7 @@ class ContextButton(BaseModel):
     def get_context(self, context: ViewContext) -> dict:
         key_target = self._resolve_container_key(context.view.cv_viewset, self.key_target)
 
-        dict_kwargs = dict(cv_access=False, cv_url=context.view.cv_get_url(key=key_target, obj=context.object))
+        dict_kwargs = {"cv_access": False, "cv_url": context.view.cv_get_url(key=key_target, obj=context.object)}
 
         # get target view class
         cls = context.view.cv_get_cls_assert_object(key_target, context.object)
@@ -87,17 +86,17 @@ class ParentContextButton(ContextButton):
 
         # does the view has no parent?
         if not context.view.cv_viewset.parent:
-            return dict()
+            return {}
 
         # get the parent view class, defined by target
         parent = context.view.cv_viewset.parent
         key_target = self._resolve_container_key(parent.viewset, self.key_target)
         cls = parent.viewset.get_view_class(key_target)
 
-        dict_kwargs = dict(cv_access=False, cv_icon_action=cls.cv_viewset.icon_header)
+        dict_kwargs = {"cv_access": False, "cv_icon_action": cls.cv_viewset.icon_header}
 
         # parent url kwargs
-        kwargs = dict()
+        kwargs = {}
         for idx, arg in enumerate(context.view.cv_viewset.get_parent_url_args()):
             if idx == 0:
                 if cls.cv_object:
@@ -148,18 +147,18 @@ class ChildContextButton(ContextButton):
 
     def get_context(self, context: ViewContext) -> dict:
         if context.object is None:
-            return dict()
+            return {}
 
         child_vs = context.view.cv_viewset.get_viewset(self.child_name)
         cls = child_vs.get_view_class(self.child_key)
 
         url = context.view.cv_get_child_url(self.child_name, self.child_key, context.object)
 
-        dict_kwargs = dict(
-            cv_access=False,
-            cv_url=url,
-            cv_icon_action=child_vs.icon_header,
-        )
+        dict_kwargs = {
+            "cv_access": False,
+            "cv_url": url,
+            "cv_icon_action": child_vs.icon_header,
+        }
 
         # button visibility — independent of access/permission
         dict_kwargs["cv_action_enabled"] = cls.cv_action_enabled(context.view.request.user, context.object)
@@ -192,7 +191,7 @@ class SiblingContextButton(ContextButton):
     def get_context(self, context: ViewContext) -> dict:
         # only rendered on child views (those with a parent)
         if not context.view.cv_viewset.parent:
-            return dict()
+            return {}
 
         sibling_vs = context.view.cv_viewset.get_viewset(self.sibling_name)
         sibling_key = self._resolve_container_key(sibling_vs, self.sibling_key)
@@ -202,11 +201,11 @@ class SiblingContextButton(ContextButton):
         kwargs = {arg: context.view.kwargs[arg] for arg in sibling_vs.get_parent_url_args()}
         cv_url = reverse(sibling_vs.get_router_name(sibling_key), kwargs=kwargs)
 
-        dict_kwargs = dict(
-            cv_access=False,
-            cv_url=cv_url,
-            cv_icon_action=sibling_vs.icon_header,
-        )
+        dict_kwargs = {
+            "cv_access": False,
+            "cv_url": cv_url,
+            "cv_icon_action": sibling_vs.icon_header,
+        }
 
         # button visibility — independent of access/permission
         dict_kwargs["cv_action_enabled"] = cls.cv_action_enabled(context.view.request.user, None)
@@ -236,7 +235,7 @@ class FilterContextButton(ContextButton):
     def get_context(self, context: ViewContext) -> dict:
         from ..views import ListViewTableFilterMixin
 
-        dict_kwargs = dict(cv_access=False)
+        dict_kwargs = {"cv_access": False}
 
         # if view has no filter, no button is shown
         if not isinstance(context.view, ListViewTableFilterMixin):
@@ -248,7 +247,7 @@ class FilterContextButton(ContextButton):
 
         list_url = context.view.cv_get_url(key=context.view.cv_key)
 
-        data = dict()
+        data = {}
         data["cv_action_label"] = "Filter"
         data["cv_icon_action"] = crud_views_settings.filter_icon
         data["cv_url"] = list_url

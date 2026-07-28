@@ -1,5 +1,5 @@
 from functools import cached_property
-from typing import Dict, Any, List
+from typing import Any
 
 from django.db.models import Choices
 from django.template.loader import render_to_string
@@ -16,38 +16,38 @@ class WorkflowModelMixin:
     """
 
     STATE_CHOICES: Choices = None  # i.e. models.TextChoice
-    STATE_BADGES: Dict[TState, BadgeEnum] | None = None
+    STATE_BADGES: dict[TState, BadgeEnum] | None = None
     STATE_BADGE_DEFAULT: BadgeEnum = BadgeEnum.INFO
     COMMENT_DEFAULT: WorkflowComment = WorkflowComment.NONE
 
     def state_increment(self):
-        self.state_version += 1  # noqa
+        self.state_version += 1
 
     def get_state_name(self, state) -> str:
-        assert self.STATE_CHOICES, "STATE_CHOICES must be defined"  # noqa
+        assert self.STATE_CHOICES, "STATE_CHOICES must be defined"
         if not state:
             return ""
-        return dict(self.STATE_CHOICES.choices)[state]  # noqa
+        return dict(self.STATE_CHOICES.choices)[state]
 
     @property
     def state_name(self) -> str:
-        assert self.state, "FSM state column missing"  # noqa
-        return self.get_state_name(self.state)  # noqa
+        assert self.state, "FSM state column missing"
+        return self.get_state_name(self.state)
 
     def get_state_badge(self, state) -> str:
-        assert self.STATE_BADGES is not None, "STATE_BADGES must be defined"  # noqa
+        assert self.STATE_BADGES is not None, "STATE_BADGES must be defined"
         name = self.get_state_name(state)
-        klass = self.STATE_BADGES.get(state, self.STATE_BADGE_DEFAULT)  # noqa
+        klass = self.STATE_BADGES.get(state, self.STATE_BADGE_DEFAULT)
         html = render_to_string("crud_views_workflow/badge.html", {"state": state, "name": name, "class": klass})
         return mark_safe(html)
 
     @property
     def state_badge(self) -> str:
-        return self.get_state_badge(self.state)  # noqa
+        return self.get_state_badge(self.state)
 
     @staticmethod
-    def workflow_comment_kwargs(comment: str | None = None) -> Dict:
-        return dict(comment=comment) if comment else dict()
+    def workflow_comment_kwargs(comment: str | None = None) -> dict:
+        return {"comment": comment} if comment else {}
 
     def get_workflow_info_queryset(self):
         # Imported lazily so WorkflowModelMixin can be imported before the app registry is ready
@@ -59,31 +59,31 @@ class WorkflowModelMixin:
         return WorkflowInfo.objects.filter(
             workflow_object_pk=str(self.pk),
             workflow_object_content_type=ContentType.objects.get_for_model(self),
-        ).order_by("timestamp")  # noqa
+        ).order_by("timestamp")
 
     @property
-    def workflow_data(self) -> List[Dict]:
+    def workflow_data(self) -> list[dict]:
         items = []
         queryset = self.get_workflow_info_queryset()
         for info in queryset:
             items.append(
-                dict(
-                    timestamp=info.timestamp,
-                    user=info.user,
-                    state_old=info.state_old,
-                    state_new=info.state_new,
-                    state_old_badge=self.get_state_badge(info.state_old),
-                    state_new_badge=self.get_state_badge(info.state_new),
-                    transition=info.transition,
-                    transition_label=self.workflow_get_transition_label(info.transition),
-                    comment=info.comment,
-                )
+                {
+                    "timestamp": info.timestamp,
+                    "user": info.user,
+                    "state_old": info.state_old,
+                    "state_new": info.state_new,
+                    "state_old_badge": self.get_state_badge(info.state_old),
+                    "state_new_badge": self.get_state_badge(info.state_new),
+                    "transition": info.transition,
+                    "transition_label": self.workflow_get_transition_label(info.transition),
+                    "comment": info.comment,
+                }
             )
         return items
 
-    def workflow_get_possible_transitions(self, user) -> List[tuple[Any, Any, Any]]:
+    def workflow_get_possible_transitions(self, user) -> list[tuple[Any, Any, Any]]:
         actions = []
-        for transition in self.get_available_user_state_transitions(user):  # noqa
+        for transition in self.get_available_user_state_transitions(user):
             label = transition.custom.get("label", transition.name)
             comment = transition.custom.get("comment", self.COMMENT_DEFAULT)
             actions.append((transition.name, label, comment))
@@ -93,20 +93,17 @@ class WorkflowModelMixin:
         return len(self.workflow_get_possible_transitions(user)) > 0
 
     def workflow_has_transition(self, user, transition) -> bool:
-        for v, x, y in self.workflow_get_possible_transitions(user):
-            if v == transition:
-                return True
-        return False
+        return any(v == transition for v, x, y in self.workflow_get_possible_transitions(user))
 
     @cached_property
-    def workflow_get_transition_label_map(self) -> Dict[str, str]:
+    def workflow_get_transition_label_map(self) -> dict[str, str]:
         return {t.name: t.custom.get("label", t.name) for t in self.get_all_state_transitions()}
 
     def workflow_get_transition_label(self, name) -> str:
         return self.workflow_get_transition_label_map[name]
 
     def workflow_get_form_kwargs(self, user):
-        kwargs, choices, _initial, transition_comments = dict(), [], [], dict()
+        kwargs, choices, _initial, transition_comments = {}, [], [], {}
         for value, label, comment in self.workflow_get_possible_transitions(user):
             choices.append((value, label))
             transition_comments[value] = comment

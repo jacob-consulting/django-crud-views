@@ -1,6 +1,7 @@
 import django_tables2 as tables
 from crispy_forms.layout import Row
 from django.forms import modelform_factory
+from project.views import BreadcrumbMixin
 
 from crud_views.lib.crispy import Column4, Column6, CrispyDeleteForm, CrispyForm, CrispyViewMixin
 from crud_views.lib.table import LinkDetailColumn, Table
@@ -15,9 +16,7 @@ from crud_views_polymorphic.lib import (
     PolymorphicDetailViewPermissionRequired,
     PolymorphicUpdateViewPermissionRequired,
 )
-
 from polymorphic_demo.models import Car, Motorcycle, Truck, Vehicle
-from project.views import BreadcrumbMixin
 
 cv_vehicle = ViewSet(model=Vehicle, name="vehicle", icon_header="fa-solid fa-car")
 

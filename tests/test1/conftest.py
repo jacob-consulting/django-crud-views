@@ -1,8 +1,8 @@
+from pathlib import Path
+
 import django
 import pytest
 from django.conf import settings
-from pathlib import Path
-
 from django.test import Client
 
 from tests.lib.helper.user import user_viewset_permission

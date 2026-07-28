@@ -8,7 +8,6 @@ from crud_views_object_detail.lib.conf import (
 )
 from crud_views_object_detail.lib.resolvers import ResolvedGroup, ResolvedProperty
 
-
 # ---------------------------------------------------------------------------
 # Conf field tests
 # ---------------------------------------------------------------------------

@@ -17,7 +17,7 @@ class WorkflowInfo(models.Model):
     workflow_object = GenericForeignKey("workflow_object_content_type", "workflow_object_pk")
 
     class Meta:
-        indexes = [
+        indexes = [  # noqa: RUF012 — Django Meta option, not a typed class attribute
             # Explicit name matches migration 0002 (AddIndex). Without it, Django auto-generates a
             # hashed name that differs from the shipped migration, causing perpetual RenameIndex drift.
             models.Index(

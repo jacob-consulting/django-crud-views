@@ -9,6 +9,7 @@ and a form-less ActionView. The bucket resets on server restart.
 import hashlib
 
 import django_tables2 as tables
+from project.views import BreadcrumbMixin
 
 from crud_views.lib.crispy import CrispyDeleteForm, CrispyViewMixin
 from crud_views.lib.resource import Resource, ResourceViewMixin
@@ -22,7 +23,6 @@ from crud_views.lib.views import (
 )
 from crud_views.lib.views.form import CustomFormViewPermissionRequired
 from crud_views.lib.viewset import ViewSet
-from project.views import BreadcrumbMixin
 
 #: pristine bucket content — FAKE_BUCKET is reset from this in tests
 INITIAL_BUCKET = [

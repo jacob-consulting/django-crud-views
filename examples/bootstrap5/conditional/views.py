@@ -3,7 +3,9 @@ from collections import OrderedDict
 import django_tables2 as tables
 from crispy_forms.layout import Row
 from django.forms.models import inlineformset_factory
+from project.views import BreadcrumbMixin
 
+from conditional.models import Event, Registration, Session, Speaker
 from crud_views.lib.conditional import (
     ConditionalFormSet,
     ConditionalGroup,
@@ -25,9 +27,6 @@ from crud_views.lib.views import (
 )
 from crud_views.lib.viewset import ViewSet
 from crud_views_object_detail.lib import ObjectDetailViewPermissionRequired
-
-from conditional.models import Event, Registration, Session, Speaker
-from project.views import BreadcrumbMixin
 
 # ---------------- Kind 1: conditional field-group ----------------
 

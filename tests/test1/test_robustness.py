@@ -31,9 +31,8 @@ def test_session_data_not_written_when_block_raises():
 
     view = DummyView()
 
-    with pytest.raises(ValueError, match="boom"):
-        with SessionData(view=view) as sd:  # noqa: F841
-            raise ValueError("boom")
+    with pytest.raises(ValueError, match="boom"), SessionData(view=view) as sd:  # noqa: F841
+        raise ValueError("boom")
 
     assert view.request.session == {}
 

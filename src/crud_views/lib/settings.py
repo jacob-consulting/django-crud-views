@@ -1,9 +1,10 @@
 from functools import cached_property
-from typing import Any, ClassVar, Dict, List, Tuple
+from typing import Any, ClassVar
 
 from box import Box
 from django.conf import settings
-from django.core.checks import CheckMessage, Error, Warning as CheckWarning
+from django.core.checks import CheckMessage, Error
+from django.core.checks import Warning as CheckWarning
 from django.template import TemplateDoesNotExist
 from django.template.loader import get_template
 from pydantic import BaseModel
@@ -14,7 +15,7 @@ def from_settings(name, default=None) -> Any:
 
 
 class CrudViewsSettings(BaseModel):
-    MANAGE_VIEWS_ENABLED_VALUES: ClassVar[Tuple[str, ...]] = ("no", "yes", "debug_only")
+    MANAGE_VIEWS_ENABLED_VALUES: ClassVar[tuple[str, ...]] = ("no", "yes", "debug_only")
 
     # basic
     extends: str | None = from_settings(
@@ -35,7 +36,7 @@ class CrudViewsSettings(BaseModel):
     csp_nonce_attr: str = from_settings("CRUD_VIEWS_CSP_NONCE_ATTR", default="csp_nonce")
 
     # breadcrumb
-    breadcrumb_prefix: List[Dict[str, Any]] = from_settings("CRUD_VIEWS_BREADCRUMB_PREFIX", default=[])
+    breadcrumb_prefix: list[dict[str, Any]] = from_settings("CRUD_VIEWS_BREADCRUMB_PREFIX", default=[])
 
     # filter
     filter_persistence: bool = from_settings("CRUD_VIEWS_FILTER_PERSISTENCE", default=True)
@@ -46,28 +47,28 @@ class CrudViewsSettings(BaseModel):
     )
 
     # view defaults
-    list_actions: List[str] = from_settings("CRUD_VIEWS_LIST_ACTIONS", default=["detail", "update", "delete"])
-    list_context_actions: List[str] = from_settings(
+    list_actions: list[str] = from_settings("CRUD_VIEWS_LIST_ACTIONS", default=["detail", "update", "delete"])
+    list_context_actions: list[str] = from_settings(
         "CRUD_VIEWS_LIST_CONTEXT_ACTIONS", default=["parent", "list", "filter", "create"]
     )
-    detail_context_actions: List[str] = from_settings(
+    detail_context_actions: list[str] = from_settings(
         "CRUD_VIEWS_DETAIL_CONTEXT_ACTIONS", default=["home", "detail", "update", "delete"]
     )
-    create_context_actions: List[str] = from_settings("CRUD_VIEWS_CREATE_CONTEXT_ACTIONS", default=["home", "create"])
-    update_context_actions: List[str] = from_settings(
+    create_context_actions: list[str] = from_settings("CRUD_VIEWS_CREATE_CONTEXT_ACTIONS", default=["home", "create"])
+    update_context_actions: list[str] = from_settings(
         "CRUD_VIEWS_UPDATE_CONTEXT_ACTIONS", default=["home", "detail", "update", "delete"]
     )
-    delete_context_actions: List[str] = from_settings(
+    delete_context_actions: list[str] = from_settings(
         "CRUD_VIEWS_DELETE_CONTEXT_ACTIONS", default=["home", "detail", "update", "delete"]
     )
-    manage_context_actions: List[str] = from_settings("CRUD_VIEWS_MANAGE_CONTEXT_ACTIONS", default=["home"])
-    create_select_context_actions: List[str] = from_settings(
+    manage_context_actions: list[str] = from_settings("CRUD_VIEWS_MANAGE_CONTEXT_ACTIONS", default=["home"])
+    create_select_context_actions: list[str] = from_settings(
         "CRUD_VIEWS_CREATE_SELECT_CONTEXT_ACTIONS", default=["home", "create_select"]
     )
 
     @property
-    def check_messages(self) -> List[CheckMessage]:
-        messages: List[CheckMessage] = []
+    def check_messages(self) -> list[CheckMessage]:
+        messages: list[CheckMessage] = []
 
         if not self.extends:
             messages.append(Error(id="crud_views.E100", msg="setting CRUD_VIEWS_EXTENDS is not set"))
@@ -160,7 +161,7 @@ class CrudViewsSettings(BaseModel):
         )
 
     @cached_property
-    def dict(self) -> dict:
+    def as_dict(self) -> dict:
         return {
             "viewset": {
                 "extends": self.extends,

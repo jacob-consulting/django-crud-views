@@ -1,7 +1,9 @@
 import django_tables2 as tables
 from crispy_forms.layout import Row
 from django.views import generic
+from project.views import BreadcrumbMixin
 
+from breadcrumbs.models import Board, Workspace
 from crud_views.lib.breadcrumb import BreadcrumbItem
 from crud_views.lib.crispy import Column4, CrispyDeleteForm, CrispyModelForm, CrispyViewMixin
 from crud_views.lib.table import LinkDetailColumn, Table
@@ -16,9 +18,6 @@ from crud_views.lib.views import (
 from crud_views.lib.viewset import ParentViewSet, ViewSet
 from crud_views_object_detail.lib import ObjectDetailViewPermissionRequired
 
-from breadcrumbs.models import Board, Workspace
-from project.views import BreadcrumbMixin
-
 
 class HostNavBreadcrumbMixin(BreadcrumbMixin):
     """
@@ -28,7 +27,8 @@ class HostNavBreadcrumbMixin(BreadcrumbMixin):
     """
 
     def cv_breadcrumb_prefix(self):
-        return super().cv_breadcrumb_prefix() + [
+        return [
+            *super().cv_breadcrumb_prefix(),
             BreadcrumbItem(title="Host application", url_name="breadcrumbs-host"),
         ]
 

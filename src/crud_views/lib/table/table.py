@@ -1,5 +1,3 @@
-from typing import Type
-
 import django_tables2 as tables
 from django.utils.translation import gettext_lazy as _
 
@@ -12,7 +10,7 @@ class TableWithViewContext(tables.Table):
     Table with view context
     """
 
-    ca: Type[ColAttr] = ColAttr
+    ca: type[ColAttr] = ColAttr
 
     def __init__(self, *args, **kwargs):
         if "view" not in kwargs:

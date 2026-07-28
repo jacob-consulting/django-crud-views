@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Annotated, Any, Optional
+from typing import Annotated, Any
 
 from django.utils.functional import Promise
 from pydantic import BaseModel, ConfigDict, field_validator
@@ -21,8 +21,8 @@ class LinkConfig(BaseModel):
     """Configuration for linking a property value to a URL."""
 
     url: str
-    args: Optional[list[str]] = None
-    kwargs: Optional[dict[str, str]] = None
+    args: list[str] | None = None
+    kwargs: dict[str, str] | None = None
 
 
 class BadgeConfig(BaseModel):
@@ -30,10 +30,10 @@ class BadgeConfig(BaseModel):
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    color: Optional[str] = None
-    color_map: Optional[dict] = None
-    color_fn: Optional[Any] = None
-    label_map: Optional[dict] = None
+    color: str | None = None
+    color_map: dict | None = None
+    color_fn: Any | None = None
+    label_map: dict | None = None
     pill: bool = False
 
 
@@ -41,12 +41,12 @@ class PropertyConfig(BaseModel):
     """Configuration for a single property to display."""
 
     path: str
-    title: Optional[LazyStr] = None
-    detail: Optional[LazyStr] = None
-    type: Optional[str] = None
-    template: Optional[str] = None
-    link: Optional[LinkConfig] = None
-    badge: Optional[BadgeConfig] = None
+    title: LazyStr | None = None
+    detail: LazyStr | None = None
+    type: str | None = None
+    template: str | None = None
+    link: LinkConfig | None = None
+    badge: BadgeConfig | None = None
 
     @field_validator("link", mode="before")
     @classmethod
@@ -67,8 +67,8 @@ class PropertyGroupConfig(BaseModel):
     """Configuration for a group of properties."""
 
     title: LazyStr
-    description: Optional[LazyStr] = None
-    icon: Optional[str] = None
+    description: LazyStr | None = None
+    icon: str | None = None
     properties: list[PropertyConfig]
 
     @field_validator("properties", mode="before")

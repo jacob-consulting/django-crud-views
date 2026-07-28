@@ -1,46 +1,41 @@
-from .action_ordered import (
-    OrderedUpView,
-    OrderedDownView,
-    OrderedUpViewPermissionRequired,
-    OrderedUpDownPermissionRequired,
-)
-from .child import RedirectChildView
-from .delete import DeleteView, DeleteViewPermissionRequired
-from .list import ListView, ListViewPermissionRequired
-from .detail import DetailView, DetailViewPermissionRequired
-from .create import CreateView, CreateViewPermissionRequired, CreateViewParentMixin
-from .mixins import MessageMixin, ListViewTableMixin, ListViewTableFilterMixin
-from .update import UpdateView, UpdateViewPermissionRequired
 from .action import ActionView, ActionViewPermissionRequired
+from .action_ordered import (
+    OrderedDownView,
+    OrderedUpDownPermissionRequired,
+    OrderedUpView,
+    OrderedUpViewPermissionRequired,
+)
 from .card import CardListView, CardListViewPermissionRequired
+from .child import RedirectChildView
+from .create import CreateView, CreateViewParentMixin, CreateViewPermissionRequired
+from .delete import DeleteView, DeleteViewPermissionRequired
+from .detail import DetailView, DetailViewPermissionRequired
+from .list import ListView, ListViewPermissionRequired
+from .mixins import ListViewTableFilterMixin, ListViewTableMixin, MessageMixin
+from .update import UpdateView, UpdateViewPermissionRequired
 
 __all__ = [
-    # basic crud views
-    "ListView",
-    "ListViewPermissionRequired",
-    "DetailView",
-    "DetailViewPermissionRequired",
+    "ActionView",
+    "ActionViewPermissionRequired",
+    "CardListView",
+    "CardListViewPermissionRequired",
     "CreateView",
     "CreateViewParentMixin",
     "CreateViewPermissionRequired",
-    "UpdateView",
-    "UpdateViewPermissionRequired",
     "DeleteView",
     "DeleteViewPermissionRequired",
-    "ActionView",
-    "ActionViewPermissionRequired",
-    # ordered
-    "OrderedUpView",
-    "OrderedUpViewPermissionRequired",
+    "DetailView",
+    "DetailViewPermissionRequired",
+    "ListView",
+    "ListViewPermissionRequired",
+    "ListViewTableFilterMixin",
+    "ListViewTableMixin",
+    "MessageMixin",
     "OrderedDownView",
     "OrderedUpDownPermissionRequired",
-    # card
-    "CardListView",
-    "CardListViewPermissionRequired",
-    # child
+    "OrderedUpView",
+    "OrderedUpViewPermissionRequired",
     "RedirectChildView",
-    # mixins
-    "MessageMixin",
-    "ListViewTableMixin",
-    "ListViewTableFilterMixin",
+    "UpdateView",
+    "UpdateViewPermissionRequired",
 ]

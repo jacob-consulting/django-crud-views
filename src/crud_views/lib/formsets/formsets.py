@@ -2,36 +2,40 @@ from __future__ import annotations
 
 import re
 from collections import OrderedDict
-from typing import Any, OrderedDict as OrderedDictType, List, Iterable, Tuple
-from typing import Dict, Type, Self
+from collections import OrderedDict as OrderedDictType
+from collections.abc import Iterable
+from enum import Enum
+from typing import Any, Self
 
-from crud_views.lib.view import CrudView
 from django.core.exceptions import ValidationError
 from django.forms.forms import BaseForm
-from django.forms.models import ModelForm, BaseInlineFormSet
+from django.forms.models import BaseInlineFormSet, ModelForm
 from django.http.request import HttpRequest
 from django.template.loader import render_to_string
 from pydantic import BaseModel, Field, model_validator
-from enum import Enum
+
+from crud_views.lib.conditional.formset import ConditionalFormSet
+from crud_views.lib.view import CrudView
 
 from .render_tree import XForm, XFormSet
-from crud_views.lib.conditional.formset import ConditionalFormSet
 
 
 class FormSet(BaseModel, arbitrary_types_allowed=True):
-    class PK(str, Enum):
+    # str+Enum (not StrEnum): StrEnum changes str(member) from "PK.INT" to the value, which would
+    # alter the rendered cv-data-formset-form payload — see render_tree.py:67 (str(self.parent.pk)).
+    class PK(str, Enum):  # noqa: UP042
         INT = r"\d+"
         UUID = r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
 
     key: str | None = None
     original_key: str | None = None
     title: str | None = None
-    fields: List[str] | None = None
+    fields: list[str] | None = None
     pk_field: str | None = None
     cv_view: CrudView | None = None
     parent: Self | None = None
-    klass: Type[BaseInlineFormSet]
-    children: Dict[str, Self] = Field(default_factory=lambda: OrderedDict())
+    klass: type[BaseInlineFormSet]
+    children: dict[str, Self] = Field(default_factory=lambda: OrderedDict())
     path: str | None = None
     pk: PK = PK.INT
     form_show_labels: bool = False
@@ -45,8 +49,9 @@ class FormSet(BaseModel, arbitrary_types_allowed=True):
     @model_validator(mode="after")
     def validate_formset(self) -> Self:
 
-        from .inline_formset import BaseInlineFormSet
         from crud_views.lib.ordered import get_ordered_model
+
+        from .inline_formset import BaseInlineFormSet
 
         if self.klass.can_order:
             ordered_model = get_ordered_model()
@@ -85,15 +90,15 @@ class FormSet(BaseModel, arbitrary_types_allowed=True):
         return self.klass.edit_only
 
     @property
-    def hierarchy(self) -> List[Self]:
+    def hierarchy(self) -> list[Self]:
         if self.parent is None:
             return [self.original_key]
-        return self.parent.hierarchy + [self.original_key]
+        return [*self.parent.hierarchy, self.original_key]
 
     def init(
         self,
         request: HttpRequest,
-        forms: List[BaseForm],
+        forms: list[BaseForm],
         index: int = 0,
         parent: XForm | None = None,
         parent_prefix: str | None = None,
@@ -113,7 +118,7 @@ class FormSet(BaseModel, arbitrary_types_allowed=True):
         # get parent prefix with -
         parent_prefix_ = f"{parent_prefix}-" if parent_prefix else ""
 
-        for i, form in enumerate(forms):
+        for _i, form in enumerate(forms):
             prefix_key = f"{parent_prefix_}{form.instance.pk}-{index}"
             prefix = f"{self.key}-{prefix_key}"
 
@@ -150,7 +155,7 @@ class FormSet(BaseModel, arbitrary_types_allowed=True):
                 )
                 x_formset.forms.append(x_form)
 
-                for child_index, (key, child_formset) in enumerate(self.children.items()):
+                for child_index, (_key, child_formset) in enumerate(self.children.items()):
                     x_formsets = child_formset.init(
                         request=request,
                         forms=[x_form.form],
@@ -193,7 +198,7 @@ class FormSet(BaseModel, arbitrary_types_allowed=True):
             formset=self,
             parent=parent,
             management_form=formset_instance.management_form,
-            render_rows_only=True if level == 0 else False,
+            render_rows_only=level == 0,
         )
 
         # get the forms
@@ -223,7 +228,7 @@ class FormSet(BaseModel, arbitrary_types_allowed=True):
             )
             x_formset.forms.append(x_form)
 
-            for child_index, (key, child_formset) in enumerate(self.children.items()):
+            for child_index, (_key, child_formset) in enumerate(self.children.items()):
                 x_formsets = child_formset.template(
                     pk=None,  # all sub-forms are new, so they have no pk
                     index=child_index,
@@ -235,7 +240,7 @@ class FormSet(BaseModel, arbitrary_types_allowed=True):
 
         yield x_formset
 
-    def is_valid(self) -> Iterable[Tuple[Any, bool]]:
+    def is_valid(self) -> Iterable[tuple[Any, bool]]:
         for instance in self.instances:
             yield instance, instance.is_valid()
         for formset in self.children.values():
@@ -257,15 +262,15 @@ class FormSet(BaseModel, arbitrary_types_allowed=True):
 class FormSets(BaseModel, arbitrary_types_allowed=True):
     formsets: OrderedDictType[str, FormSet]
     cv_view: CrudView | None = None
-    x_formsets: List[XFormSet] = Field(default_factory=lambda: list())
-    js_data: dict = Field(default_factory=lambda: dict())
+    x_formsets: list[XFormSet] = Field(default_factory=lambda: [])
+    js_data: dict = Field(default_factory=lambda: {})
     scripts: bool = True
 
     @model_validator(mode="before")
     @classmethod
     def check_keys(cls, data: Any) -> Any:
-        formsets = data.get("formsets", dict())
-        for key in formsets.keys():
+        formsets = data.get("formsets", {})
+        for key in formsets:
             if re.match(r"^[a-z\-]+$", key) is None:
                 raise ValueError(f"Formset key must contain only lowercase letters and slashes, got {key}")
         return data
@@ -317,7 +322,7 @@ class FormSets(BaseModel, arbitrary_types_allowed=True):
             else:
                 x_formset.cv_active = conditional.toggle.is_on(main_form)
 
-    def is_valid(self) -> Iterable[Tuple[Any, bool]]:
+    def is_valid(self) -> Iterable[tuple[Any, bool]]:
         for x_formset in self.x_formsets:
             if x_formset.cv_active is False:
                 continue
@@ -355,37 +360,34 @@ class FormSets(BaseModel, arbitrary_types_allowed=True):
             x_formset.save(commit=commit)
 
     def init(self, request: HttpRequest, form: ModelForm, instance, with_template: bool = True):
-        for key, formset in self.items():
+        for _key, formset in self.items():
             x_formsets = list(formset.init(request=request, forms=[form]))
             self.x_formsets.extend(x_formsets)
 
     def init_js_data(self, view):
-        data = dict(
-            path=view.request.path,
-        )
+        data = {
+            "path": view.request.path,
+        }
         self.js_data = data
 
-    def get_template(self, key_path: List[str], pk: int, num: int, parent_prefix=None):
+    def get_template(self, key_path: list[str], pk: int, num: int, parent_prefix=None):
         formset = None
         for level, key in enumerate(key_path):
-            if level == 0:
-                formset = self.get(key)
-            else:
-                formset = formset.children[key]
+            formset = self.get(key) if level == 0 else formset.children[key]
 
         x_formsets = list(formset.template(index=0, parent_prefix=parent_prefix, force_form_index=num, pk=pk))
         assert len(x_formsets) == 1
         x_formset = x_formsets[0]
-        data = dict(x_formset=x_formset)
+        data = {"x_formset": x_formset}
 
         rows = [form.prefix for form in x_formset.forms]
         html = render_to_string("crud_views/formsets/formset.html", data)
-        data = dict(rows=rows, html=html)
+        data = {"rows": rows, "html": html}
         return data
 
     def clone(self, cv_view: CrudView) -> Self:
         formsets = self.model_copy(deep=True)
         formsets.cv_view = cv_view
-        for key, formset in formsets.items():
+        for _key, formset in formsets.items():
             formset.patch(cv_view)
         return formsets

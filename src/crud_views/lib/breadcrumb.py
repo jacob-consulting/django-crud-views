@@ -5,9 +5,11 @@ BreadcrumbItem/Breadcrumb are late-resolving: items carry a URL pattern *name* p
 args/kwargs and are resolved to concrete URLs only when rendered.
 """
 
-from typing import Any, Dict, Iterable, List, Tuple
+from collections.abc import Iterable
+from typing import Any
 
-from django.core.checks import CheckMessage, Warning as CheckWarning
+from django.core.checks import CheckMessage
+from django.core.checks import Warning as CheckWarning
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
 from django.urls import reverse
@@ -39,7 +41,7 @@ class BreadcrumbItem(BaseModel):
             raise ValueError("BreadcrumbItem accepts args or kwargs, not both (reverse() restriction)")
         return self
 
-    def resolve(self) -> Dict[str, str | None]:
+    def resolve(self) -> dict[str, str | None]:
         if self.url_name is None:
             url = None
         else:
@@ -48,9 +50,9 @@ class BreadcrumbItem(BaseModel):
 
 
 class Breadcrumb(BaseModel):
-    items: Tuple[BreadcrumbItem, ...] = ()
+    items: tuple[BreadcrumbItem, ...] = ()
 
-    def resolve_items(self) -> List[Dict[str, str | None]]:
+    def resolve_items(self) -> list[dict[str, str | None]]:
         return [item.resolve() for item in self.items]
 
 
@@ -89,7 +91,7 @@ class CrudViewBreadcrumbMixin:
 
     @classmethod
     def checks(cls) -> Iterable[Check]:
-        yield from super().checks()  # noqa
+        yield from super().checks()
         yield CheckBreadcrumbKeyObject(
             context=cls,
             key=cls.cv_breadcrumb_key_object,
@@ -98,7 +100,7 @@ class CrudViewBreadcrumbMixin:
 
     # -- extension points -------------------------------------------------
 
-    def cv_breadcrumb_prefix(self) -> List[BreadcrumbItem]:
+    def cv_breadcrumb_prefix(self) -> list[BreadcrumbItem]:
         """Items prepended to the trail; default reads CRUD_VIEWS_BREADCRUMB_PREFIX."""
         return [BreadcrumbItem.model_validate(entry) for entry in crud_views_settings.breadcrumb_prefix]
 
@@ -136,41 +138,41 @@ class CrudViewBreadcrumbMixin:
 
     def cv_breadcrumb_get(self) -> Breadcrumb:
         obj = getattr(self, "object", None)
-        context = self.cv_get_view_context(object=obj)  # noqa
+        context = self.cv_get_view_context(object=obj)
         viewset = self.cv_viewset
-        items: List[BreadcrumbItem] = []
+        items: list[BreadcrumbItem] = []
 
         # 1. own-view segment, innermost first (reversed at the end)
-        if self.cv_object:  # noqa
+        if self.cv_object:
             has_detail = viewset.is_view_registered(self.cv_breadcrumb_key_object)
-            if has_detail and self.cv_key != self.cv_breadcrumb_key_object:  # noqa
+            if has_detail and self.cv_key != self.cv_breadcrumb_key_object:
                 # action label (current page) + object item linking to the detail view
-                name, _, kwargs = self.cv_get_router_and_args(self.cv_key, obj=obj)  # noqa
+                name, _, kwargs = self.cv_get_router_and_args(self.cv_key, obj=obj)
                 items.append(
                     BreadcrumbItem(title=self.cv_get_action_short_label(context=context), url_name=name, kwargs=kwargs)
                 )
-                name, _, kwargs = self.cv_get_router_and_args(self.cv_breadcrumb_key_object, obj=obj)  # noqa
+                name, _, kwargs = self.cv_get_router_and_args(self.cv_breadcrumb_key_object, obj=obj)
                 items.append(BreadcrumbItem(title=self.cv_breadcrumb_object_label(obj), url_name=name, kwargs=kwargs))
             elif has_detail:
                 # this IS the detail view: object item only
-                name, _, kwargs = self.cv_get_router_and_args(self.cv_breadcrumb_key_object, obj=obj)  # noqa
+                name, _, kwargs = self.cv_get_router_and_args(self.cv_breadcrumb_key_object, obj=obj)
                 items.append(BreadcrumbItem(title=self.cv_breadcrumb_object_label(obj), url_name=name, kwargs=kwargs))
             else:
                 # no detail view: action label (current page) + unlinked object item
-                name, _, kwargs = self.cv_get_router_and_args(self.cv_key, obj=obj)  # noqa
+                name, _, kwargs = self.cv_get_router_and_args(self.cv_key, obj=obj)
                 items.append(
                     BreadcrumbItem(title=self.cv_get_action_short_label(context=context), url_name=name, kwargs=kwargs)
                 )
                 items.append(BreadcrumbItem(title=self.cv_breadcrumb_object_label(obj)))
         else:
             container_key = self.cv_breadcrumb_container_key(viewset)
-            if self.cv_key != container_key:  # noqa
+            if self.cv_key != container_key:
                 items.append(BreadcrumbItem(title=self.cv_get_action_short_label(context=context)))
 
         # container item of this viewset
         container_key = self.cv_breadcrumb_container_key(viewset)
         if container_key is not None:
-            name, _, kwargs = self.cv_get_router_and_args(container_key, obj=obj)  # noqa
+            name, _, kwargs = self.cv_get_router_and_args(container_key, obj=obj)
             items.append(
                 BreadcrumbItem(
                     title=self._cv_breadcrumb_container_label(viewset, context), url_name=name, kwargs=kwargs
@@ -183,14 +185,14 @@ class CrudViewBreadcrumbMixin:
         items.reverse()
         return Breadcrumb(items=tuple(self.cv_breadcrumb_prefix()) + tuple(items))
 
-    def _cv_breadcrumb_ancestors(self, context) -> List[BreadcrumbItem]:
+    def _cv_breadcrumb_ancestors(self, context) -> list[BreadcrumbItem]:
         """
         Items for the ancestor chain, innermost ancestor first (caller reverses).
         Costs one scoped query per ancestor level; results are part of the per-request
         breadcrumb cache (cv_breadcrumb).
         """
         viewset = self.cv_viewset
-        items: List[BreadcrumbItem] = []
+        items: list[BreadcrumbItem] = []
 
         parents = []
         parent = viewset.parent
@@ -209,7 +211,7 @@ class CrudViewBreadcrumbMixin:
             f"{len(parents)} parents but {len(arg_names)} parent url args",
             CrudViewError,
         )
-        arg_values = [self.kwargs[name] for name in arg_names]  # noqa
+        arg_values = [self.kwargs[name] for name in arg_names]
 
         # innermost ancestor first: parents[0] is the immediate parent
         for i, parent in enumerate(parents):
@@ -222,10 +224,12 @@ class CrudViewBreadcrumbMixin:
             # 404s instead of leaking a foreign object's label
             try:
                 ancestor = parent.viewset.get_queryset(view=self).get(pk=ancestor_pk)
-            except ObjectDoesNotExist:
-                raise Http404(f"breadcrumb ancestor {parent.viewset.name}={ancestor_pk!r} not found")
+            except ObjectDoesNotExist as err:
+                raise Http404(f"breadcrumb ancestor {parent.viewset.name}={ancestor_pk!r} not found") from err
 
-            grand_kwargs = dict(zip(chain_names[:-1], chain_values[:-1]))
+            # chain_values is derived element-wise from chain_names (see arg_values above),
+            # so both slices are equal-length by construction; strict=True asserts that.
+            grand_kwargs = dict(zip(chain_names[:-1], chain_values[:-1], strict=True))
 
             # ancestor object item, linked to its detail view when registered
             if parent.viewset.is_view_registered(self.cv_breadcrumb_key_object):
@@ -256,6 +260,6 @@ class CrudViewBreadcrumbMixin:
     # -- django integration ----------------------------------------------
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)  # noqa
+        context = super().get_context_data(**kwargs)
         context["cv_breadcrumb"] = self.cv_breadcrumb()
         return context

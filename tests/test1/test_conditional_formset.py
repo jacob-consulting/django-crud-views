@@ -1,6 +1,6 @@
-import pytest
 from collections import OrderedDict
 
+import pytest
 from crispy_forms.layout import Row
 from django.forms.models import inlineformset_factory
 from django.test import RequestFactory
@@ -287,7 +287,7 @@ def profile_with_items_skip_off():
 def test_formsets_html_marks_conditional_block():
     from django.template.loader import render_to_string
 
-    formsets, main_form, _ = _make("skip", "")
+    formsets, _main_form, _ = _make("skip", "")
     html = render_to_string("crud_views/formsets/formsets.html", {"formsets": formsets})
     assert 'cv-data-toggle-field="with_items"' in html
     # toggle.js is served by the cv_js registry (settings.javascript), not inlined here

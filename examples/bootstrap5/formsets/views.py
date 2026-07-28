@@ -4,6 +4,7 @@ import django_tables2 as tables
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Row
 from django.forms.models import inlineformset_factory
+from project.views import BreadcrumbMixin
 
 from crud_views.lib.crispy import Column8, CrispyDeleteForm, CrispyModelForm, CrispyViewMixin
 from crud_views.lib.formsets import FormSet, FormSetMixin, FormSets, Formsets, InlineFormSet
@@ -18,9 +19,7 @@ from crud_views.lib.views import (
 )
 from crud_views.lib.viewset import ViewSet
 from crud_views_object_detail.lib import ObjectDetailViewPermissionRequired
-
 from formsets.models import Choice, Question, Questionnaire
-from project.views import BreadcrumbMixin
 
 cv_questionnaire = ViewSet(model=Questionnaire, name="questionnaire", icon_header="fa-solid fa-list-check")
 

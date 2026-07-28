@@ -1,16 +1,16 @@
-from typing import Iterable
+from collections.abc import Iterable
 
 from django.utils.translation import gettext as _
 from django.views import generic
 
 from crud_views.lib.check import Check, CheckTemplateOrCode
-from crud_views.lib.view import CrudView, CrudViewPermissionRequiredMixin
 from crud_views.lib.settings import crud_views_settings
+from crud_views.lib.view import CrudView, CrudViewPermissionRequiredMixin
 
 # crispy may not be installed
 try:
-    from crispy_forms.helper import FormHelper
     from crispy_forms import layout
+    from crispy_forms.helper import FormHelper
 except ImportError:
     FormHelper = object
     layout = None

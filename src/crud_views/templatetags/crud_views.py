@@ -4,8 +4,8 @@ from django.utils.safestring import mark_safe
 from django_tables2.templatetags import django_tables2 as _dt2
 
 from crud_views.lib import assets
-from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.exceptions import ViewSetKeyFoundError, ignore_exception
+from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import CrudView
 
 register = template.Library()
@@ -119,7 +119,7 @@ def cv_list_action_form(context, key, obj=None):
 @register.simple_tag(takes_context=True)
 @ignore_exception(ViewSetKeyFoundError, default_value="")
 def cv_context_action(context, key, obj=None):
-    obj = None if not obj else obj  # fix empty string from template
+    obj = obj if obj else None  # fix empty string from template
     ctx = cv_get_context(context=context, key=key, obj=obj)
     if not ctx:
         return ""
@@ -133,7 +133,7 @@ def cv_context_action(context, key, obj=None):
 @register.simple_tag(takes_context=True)
 @ignore_exception(ViewSetKeyFoundError, default_value="")
 def cv_context_button(context, key, obj=None):
-    obj = None if not obj else obj  # fix empty string from template
+    obj = obj if obj else None  # fix empty string from template
     view = cv_get_view(context)
     if obj is None:
         obj = getattr(view, "object", None)
@@ -144,7 +144,7 @@ def cv_context_button(context, key, obj=None):
 @register.simple_tag(takes_context=True)
 @ignore_exception(ViewSetKeyFoundError, default_value=None)
 def cv_context_url(context, key, obj=None):
-    obj = None if not obj else obj  # fix empty string from template
+    obj = obj if obj else None  # fix empty string from template
     view = cv_get_view(context)
     if obj is None:
         obj = getattr(view, "object", None)
@@ -213,21 +213,21 @@ def cv_header_icon_class(context):
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/icon.html", takes_context=True)
 def cv_filter_icon(context):
     view: CrudView = cv_get_view(context)
-    icon = view.cv_get_filter_icon()  # noqa
+    icon = view.cv_get_filter_icon()
     return {"icon": icon}
 
 
 @register.simple_tag(takes_context=True)
 def cv_filter_icon_class(context):
     view: CrudView = cv_get_view(context)
-    icon = view.cv_get_filter_icon()  # noqa
+    icon = view.cv_get_filter_icon()
     return icon
 
 
 @register.simple_tag(takes_context=True)
 def cv_filter_header(context):
     view: CrudView = cv_get_view(context)
-    return view.cv_filter_header  # noqa
+    return view.cv_filter_header
 
 
 @register.simple_tag(takes_context=True)
@@ -328,10 +328,7 @@ def cv_card_action(context, action, obj=None):
     url = view.cv_get_url(action.key, obj=obj)
     view_context = view.cv_get_view_context(object=obj)
 
-    if action.label:
-        label = action.label
-    else:
-        label = cls.cv_get_action_short_label(context=view_context)
+    label = action.label or cls.cv_get_action_short_label(context=view_context)
 
     data = cls.cv_get_dict(
         context=view_context,

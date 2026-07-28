@@ -67,7 +67,7 @@ def test_check_errors_when_ordered_model_absent(monkeypatch, cv_author):
 def _fake_formset(can_order, children=None):
     return SimpleNamespace(
         klass=SimpleNamespace(can_order=can_order),
-        children={k: v for k, v in (children or [])},
+        children=dict(children or []),
     )
 
 

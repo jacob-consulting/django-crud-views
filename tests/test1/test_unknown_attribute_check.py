@@ -3,7 +3,6 @@ from functools import cached_property
 from crud_views.lib.check import CheckUnknownAttributes
 from crud_views.lib.view.base import CrudView
 
-
 # Bare CrudView subclasses do NOT register (metaclass registers only when
 # cv_viewset is in the class body), so these are safe, unregistered fixtures
 # whose MRO still includes the package classes that populate the known-set.
@@ -145,7 +144,7 @@ def test_checks_all_releases_registry_lock_before_yielding():
     # Regression: checks_all() must snapshot-then-release _REGISTRY_LOCK. If it holds the lock
     # across yields, calling .messages() on a yielded check (which re-acquires the lock via the
     # package-wide vocabulary) self-deadlocks. Probe: the lock must be free during iteration.
-    from crud_views.lib.viewset import ViewSet, _REGISTRY_LOCK
+    from crud_views.lib.viewset import _REGISTRY_LOCK, ViewSet
 
     for _check in ViewSet.checks_all():
         acquired = _REGISTRY_LOCK.acquire(blocking=False)

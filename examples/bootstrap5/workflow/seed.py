@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
-
 from project.seeding import grant_model_perms
+
 from workflow.models import Campaign
 
 

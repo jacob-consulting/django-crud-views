@@ -1,4 +1,5 @@
 from crispy_forms.layout import Fieldset, Row
+from project.views import BreadcrumbMixin
 
 from crud_views.lib.crispy import (
     Column2,
@@ -20,9 +21,7 @@ from crud_views.lib.views import (
 )
 from crud_views.lib.viewset import ViewSet
 from crud_views_object_detail.lib import ObjectDetailViewPermissionRequired
-
 from showcase.models import Recipe
-from project.views import BreadcrumbMixin
 
 cv_recipe = ViewSet(model=Recipe, name="recipe", icon_header="fa-solid fa-utensils")
 

@@ -1,14 +1,13 @@
 import pytest
-from django.template import Template, Context
+from django.template import Context, Template
 from django.test import override_settings
 from django.utils import timezone
 
-from crud_views_object_detail.lib.config import x
+from crud_views_object_detail.lib.config import PropertyGroupConfig, x
 from crud_views_object_detail.lib.resolvers import (
     ResolvedProperty,
     resolve_all,
 )
-from crud_views_object_detail.lib.config import PropertyGroupConfig
 from tests.test1.od_app.models import Info, Report
 
 

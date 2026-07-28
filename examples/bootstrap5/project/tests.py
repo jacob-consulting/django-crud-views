@@ -69,7 +69,10 @@ class SystemChecksTest(TestCase):
         from django.core import checks
         from django.urls import get_resolver
 
-        get_resolver().url_patterns  # import every app's views.py via the URLconf
+        # accessing url_patterns imports every app's views.py via the URLconf; assert non-empty so a
+        # broken URLconf (e.g. an import error swallowed upstream) fails loudly here instead of silently
+        # skipping the check below
+        assert get_resolver().url_patterns, "URLconf resolved no patterns"
         errors = [e for e in checks.run_checks() if e.level >= checks.ERROR]
         self.assertEqual(errors, [], msg="\n".join(f"{e.id}: {e.msg}" for e in errors))
 

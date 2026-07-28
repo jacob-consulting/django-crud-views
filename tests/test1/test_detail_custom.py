@@ -13,6 +13,7 @@ def cv_author_custom_detail():
 @pytest.fixture
 def user_author_custom_detail_view(cv_author_custom_detail):
     from django.contrib.auth.models import User
+
     from tests.lib.helper.user import user_viewset_permission
 
     user = User.objects.create_user(username="user_custom_detail", password="password")

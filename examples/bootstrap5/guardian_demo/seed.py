@@ -1,8 +1,8 @@
 from django.contrib.auth import get_user_model
+from project.seeding import grant_model_perms
 
 from guardian_demo.models import Document
 from guardian_demo.views import cv_document
-from project.seeding import grant_model_perms
 
 #: owner username → documents
 DOCUMENTS = {

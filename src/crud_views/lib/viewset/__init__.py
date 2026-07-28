@@ -1,37 +1,40 @@
 import threading
 from collections import OrderedDict
+from collections.abc import Iterable
 from functools import cached_property
-from typing import Dict, List, Type, Any, Iterable, ClassVar
+from typing import Any, ClassVar, Self
 
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
-from django.db.models import Model, QuerySet, Q
-from django.urls import re_path, URLResolver
+from django.db.models import Model, Q, QuerySet
+from django.urls import URLResolver, re_path
 from django.utils.translation import gettext as _
-from pydantic import BaseModel, PrivateAttr, Field, model_validator
-from typing_extensions import Self
+from pydantic import BaseModel, Field, PrivateAttr, model_validator
 
-from crud_views.lib.exceptions import cv_raise, ViewSetNotFoundError, ViewSetKeyFoundError
+from crud_views.lib.exceptions import ViewSetKeyFoundError, ViewSetNotFoundError, cv_raise
 from crud_views.lib.resource import Resource
 from crud_views.lib.viewset import path_regs
-from .parentviewset import ParentViewSet
-from .path_regs import PrimaryKeys
+
 from .. import check
-from ..check import CheckAttributeReg, Check, CheckTemplate, CheckExpression
+from ..check import Check, CheckAttributeReg, CheckExpression, CheckTemplate
 from ..settings import crud_views_settings
 from ..view import (
     ContextButton,
-    ParentContextButton,
     CrudView,
+    ParentContextButton,
     ViewContext,
+)
+from ..view import (
     CrudViewPermissionRequiredMixin as CrudViewPermissionRequiredMixin,
 )
 from ..view.buttons import FilterContextButton
 from ..views.manage import ManageView
+from .parentviewset import ParentViewSet
+from .path_regs import PrimaryKeys
 
 
 def empty_dict() -> dict:
-    return dict()
+    return {}
 
 
 def context_buttons_default(*args, **kwargs) -> Any:
@@ -39,7 +42,8 @@ def context_buttons_default(*args, **kwargs) -> Any:
         ContextButton(
             key="home",
             key_target="list",
-            # I don't think we need templates here because the title should be the one of the list page where it links to
+            # I don't think we need templates here because the title should be the one of the
+            # list page where it links to
         ),
         ParentContextButton(key="parent", key_target="list"),
         FilterContextButton(),
@@ -69,15 +73,15 @@ class ViewSet(BaseModel):
     - delete    : delete
     """
 
-    PK: ClassVar[Type[PrimaryKeys]] = PrimaryKeys
+    PK: ClassVar[type[PrimaryKeys]] = PrimaryKeys
 
-    model: Type[Model] | Type[Resource]
+    model: type[Model] | type[Resource]
     name: str
     prefix: str | None = None
     app: str | None = None
     pk: str | None = None  # auto-detected from model if not set
     pk_name: str = "pk"
-    context_buttons: List[ContextButton] = Field(default_factory=context_buttons_default)
+    context_buttons: list[ContextButton] = Field(default_factory=context_buttons_default)
     parent: ParentViewSet | None = None
     ordering: str | None = None
     icon_header: str | None = None
@@ -86,9 +90,9 @@ class ViewSet(BaseModel):
     # Resource-based ViewSets only: explicit permission map, e.g.
     # {"view": "storage.view_s3object", "delete": "storage.delete_s3object"}.
     # None means: no permissions declared (only non-PermissionRequired views).
-    resource_permissions: Dict[str, str] | None = None
+    resource_permissions: dict[str, str] | None = None
 
-    _views: Dict[str, Type[CrudView]] = PrivateAttr(default_factory=empty_dict)  # noqa
+    _views: dict[str, type[CrudView]] = PrivateAttr(default_factory=empty_dict)
 
     def __repr__(self):
         return f"ViewSet({self.name})"
@@ -131,7 +135,7 @@ class ViewSet(BaseModel):
         # ManageView is model/session tooling — not supported for Resources (spec §5.4)
         if not self.is_resource:
             base = self.get_manage_view_class()
-            _AutoManageView = type("AutoManageView", (base,), {"model": self.model, "cv_viewset": self})  # noqa: F841
+            _AutoManageView = type("AutoManageView", (base,), {"model": self.model, "cv_viewset": self})
 
         return self
 
@@ -154,7 +158,7 @@ class ViewSet(BaseModel):
     def has_view(self, name) -> bool:
         return name in self._views
 
-    def get_all_views(self) -> Dict[str, Type[CrudView]]:
+    def get_all_views(self) -> dict[str, type[CrudView]]:
         return self._views
 
     def checks(self) -> Iterable[Check]:
@@ -210,7 +214,7 @@ class ViewSet(BaseModel):
             self.prefix = self.name
         return self
 
-    def get_parent_url_args(self, first_only: bool = False) -> List[str] | str:
+    def get_parent_url_args(self, first_only: bool = False) -> list[str] | str:
         """
         Get url args for all parents
         """
@@ -237,7 +241,7 @@ class ViewSet(BaseModel):
             return self.parent.viewset.model
         return None
 
-    def get_parent_attributes(self, first_only: bool = False) -> List[str] | str:
+    def get_parent_attributes(self, first_only: bool = False) -> list[str] | str:
         """
         Get url args for all parents
         """
@@ -265,17 +269,14 @@ class ViewSet(BaseModel):
             f"add ResourceViewMixin as the FIRST base class of the view",
         )
 
-        q_kwargs = dict()
+        q_kwargs = {}
         if self.parent:
             parent = self.parent
             attribute = None
             while parent is not None:
                 # parent args
                 pk_name = parent.get_pk_name()
-                if attribute is None:
-                    attribute = parent.get_attribute()
-                else:
-                    attribute = f"{attribute}__{parent.get_attribute()}"
+                attribute = parent.get_attribute() if attribute is None else f"{attribute}__{parent.get_attribute()}"
 
                 # generate q-args
                 q_kwargs.update({f"{attribute}__pk": view.kwargs[pk_name]})
@@ -295,7 +296,7 @@ class ViewSet(BaseModel):
 
         return queryset
 
-    def register_view_class(self, key: str, view_class: Type[CrudView]):
+    def register_view_class(self, key: str, view_class: type[CrudView]):
         cv_raise(key not in self._views, f"key {key} already registered at {self}")
         self._views[key] = view_class
         # add manage view to context actions; copy-on-write because the list may be
@@ -303,9 +304,9 @@ class ViewSet(BaseModel):
         if crud_views_settings.manage_views_enabled != "no" and not self.is_resource:
             actions = view_class.cv_context_actions
             if isinstance(actions, list) and "manage" not in actions and view_class.cv_key != "manage":
-                view_class.cv_context_actions = actions + ["manage"]
+                view_class.cv_context_actions = [*actions, "manage"]
 
-    def get_manage_view_class(self) -> Type[CrudView]:
+    def get_manage_view_class(self) -> type[CrudView]:
         from django.utils.module_loading import import_string
 
         dotted = self.manage_view_class or crud_views_settings.manage_view_class
@@ -316,7 +317,7 @@ class ViewSet(BaseModel):
     def is_view_registered(self, key: str) -> bool:
         return key in self._views
 
-    def get_view_class(self, key: str) -> Type[CrudView]:
+    def get_view_class(self, key: str) -> type[CrudView]:
         if not self.is_view_registered(key) and key == "list" and self.is_view_registered("card"):
             return self._views["card"]
         cv_raise(self.is_view_registered(key), f"key {key} not registered at {self}", ViewSetKeyFoundError)
@@ -381,7 +382,7 @@ class ViewSet(BaseModel):
         return f"{path}/"
 
     @cached_property
-    def urlpatterns(self) -> List[URLResolver]:
+    def urlpatterns(self) -> list[URLResolver]:
         """
         Create urlpatterns for all views of ViewSet
         """
@@ -404,7 +405,7 @@ class ViewSet(BaseModel):
 
             # args for re_path
             route = rf"^{path_parent}{path_prefix}{path_pk}{path_view}{path_contribute}$"
-            view = view_class.as_view()  # noqa
+            view = view_class.as_view()
             name = self.get_router_name(key)
 
             # create and add URLResolver
@@ -432,7 +433,7 @@ class ViewSet(BaseModel):
             not self.is_resource,
             f"default_permissions must not be used for Resource-based ViewSet {self!r}; set resource_permissions",
         )
-        model = self.model  # noqa
+        model = self.model
         content_type = ContentType.objects.get_for_model(model)
         permissions = OrderedDict()
         for permission in Permission.objects.filter(content_type=content_type):

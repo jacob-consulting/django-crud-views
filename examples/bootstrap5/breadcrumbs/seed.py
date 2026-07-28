@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
+from project.seeding import grant_model_perms
 
 from breadcrumbs.models import Board, Workspace
-from project.seeding import grant_model_perms
 
 WORKSPACES = {
     "Acme": ["Roadmap", "Sprint Backlog"],

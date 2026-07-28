@@ -191,8 +191,8 @@ class TestBreadcrumbPrefix:
         assert titles(view.cv_breadcrumb())[0] == "Home"
 
     def test_prefix_method_override(self, publisher_penguin):
-        from tests.test1.app.views import PublisherBcListView
         from crud_views.lib.breadcrumb import BreadcrumbItem
+        from tests.test1.app.views import PublisherBcListView
 
         class MyView(PublisherBcListView):
             def cv_breadcrumb_prefix(self):
@@ -264,12 +264,12 @@ class TestBreadcrumbAncestors:
     def test_child_list_view_trail(self, bc_chain):
         from tests.test1.app.views import BookBcListView
 
-        publisher, book, note = bc_chain
+        publisher, _book, _note = bc_chain
         view = make_view(BookBcListView, f"/publisher_bc/{publisher.pk}/book_bc/", publisher_bc_pk=publisher.pk)
         assert titles(view.cv_breadcrumb()) == ["Publishers", str(publisher), "Books"]
 
     def test_tampered_parent_pk_raises_404(self, bc_chain):
-        publisher, book, note = bc_chain
+        _publisher, book, note = bc_chain
         other = Publisher.objects.create(name="Other House")
         # note's real book under a foreign publisher pk: ancestor lookup must 404, not leak
         view = self._note_detail_view(other, book, note)
@@ -287,7 +287,7 @@ class TestBreadcrumbAncestors:
     def test_ancestor_without_detail_view_is_unlinked(self, monkeypatch, bc_chain):
         from tests.test1.app.views import BookBcDetailView, cv_publisher_bc
 
-        publisher, book, note = bc_chain
+        publisher, book, _note = bc_chain
         # simulate an ancestor viewset without a detail view; monkeypatch restores _views
         monkeypatch.delitem(cv_publisher_bc._views, "detail")
         view = make_view(

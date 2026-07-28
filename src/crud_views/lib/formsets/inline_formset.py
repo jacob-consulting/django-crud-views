@@ -1,14 +1,13 @@
 from __future__ import annotations
 
-from typing import List
-
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, LayoutObject, Field, BaseInput
-from crud_views.lib.crispy import Column4, Column2
+from crispy_forms.layout import BaseInput, Field, Layout, LayoutObject
 from django.core.exceptions import ValidationError
 from django.forms import BaseForm
 from django.forms.models import BaseInlineFormSet, ModelForm
 from django.utils.translation import gettext_lazy as _
+
+from crud_views.lib.crispy import Column2, Column4
 
 from .formsets import FormSet
 from .layout import FormControl
@@ -71,10 +70,10 @@ class InlineFormSet(BaseInlineFormSet):
         helper.layout = Layout(*all_fields)
         return helper
 
-    def get_helper_layout_fields(self) -> List[LayoutObject]:
+    def get_helper_layout_fields(self) -> list[LayoutObject]:
         raise NotImplementedError()
 
-    def get_helper_hidden_fields(self) -> List[LayoutObject]:
+    def get_helper_hidden_fields(self) -> list[LayoutObject]:
         fields = []
         if self.formset.can_order:
             fields.append(Field("ORDER", type="hidden"))
@@ -101,19 +100,13 @@ class InlineFormSet(BaseInlineFormSet):
 
     @property
     def has_any_form_with_data(self) -> bool:
-        for data in self.cleaned_data:
-            if len(data) and data.get("DELETE") is not True:
-                return True
-        return False
+        return any(len(data) and data.get("DELETE") is not True for data in self.cleaned_data)
 
     @staticmethod
     def is_empty_form(form) -> bool:
-        if form.is_valid() and not form.cleaned_data:
-            return True
-        else:
-            # Either the form has errors (isn't valid) or
-            # it doesn't have errors and contains data.
-            return False
+        # Either the form has errors (isn't valid) or
+        # it doesn't have errors and contains data.
+        return form.is_valid() and not form.cleaned_data
 
     def clean(self):
         super().clean()
@@ -153,7 +146,7 @@ class CrispyInlineFormMixin:
         helper.layout = Layout(*fields)
         return helper
 
-    def get_layout_fields(self) -> LayoutObject | BaseInput | List[LayoutObject | BaseInput]:
+    def get_layout_fields(self) -> LayoutObject | BaseInput | list[LayoutObject | BaseInput]:
         raise NotImplementedError
 
 

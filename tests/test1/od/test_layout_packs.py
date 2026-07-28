@@ -1,5 +1,5 @@
 import pytest
-from django.template import Template, Context
+from django.template import Context, Template
 from django.test import override_settings
 
 from crud_views_object_detail.lib.resolvers import ResolvedGroup, ResolvedProperty

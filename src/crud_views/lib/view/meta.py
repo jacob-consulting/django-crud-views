@@ -24,7 +24,7 @@ class CrudViewMetaClass(_base_metaclass):
             cv_raise(key is not None, f"ViewSet {obj} has no attribute cv_key")
 
             # register view
-            cv_viewset.register_view_class(key, obj)  # noqa
+            cv_viewset.register_view_class(key, obj)
 
             # auto-set model from viewset if not explicitly provided
             if "model" not in attrs:

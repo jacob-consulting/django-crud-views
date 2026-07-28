@@ -2,7 +2,6 @@ import pytest
 
 from tests.lib.helper.guardian import user_guardian_object_perm
 
-
 # ── Object-level enforcement: detail/update/delete ──────────────────────────
 
 
@@ -217,6 +216,7 @@ def test_cv_has_access_no_object_returns_false(user_guardian):
 def test_accept_global_perms_allows_model_level_on_detail(client, cv_guardian_author, author_douglas_adams):
     """With accept_global_perms=True, model-level perm grants object access."""
     from django.contrib.auth.models import User
+
     from tests.lib.helper.user import user_viewset_permission
     from tests.test1.app.views import GuardianAuthorDetailView
 
@@ -259,6 +259,7 @@ def test_list_cv_has_access_with_object_returns_true(user_guardian, author_dougl
 def test_non_guardian_cv_has_access_with_model_perm(author_douglas_adams):
     """Non-guardian cv_has_access returns True when user has model-level perm (base.py revert check)."""
     from django.contrib.auth.models import User
+
     from tests.lib.helper.user import user_viewset_permission
     from tests.test1.app.views import AuthorDetailView, cv_author
 
@@ -276,6 +277,7 @@ def test_non_guardian_cv_has_access_with_model_perm(author_douglas_adams):
 def test_create_cv_has_access_top_level_with_add_perm(user_guardian, cv_guardian_author):
     """Top-level create: True when user has model-level add perm."""
     from django.contrib.auth.models import User
+
     from tests.lib.helper.user import user_viewset_permission
     from tests.test1.app.views import GuardianAuthorCreateView
 
@@ -294,7 +296,8 @@ def test_create_cv_has_access_top_level_without_add_perm(user_guardian):
 
 @pytest.mark.django_db
 def test_create_cv_has_access_child_no_object_with_parent_perm(user_guardian, cv_guardian_publisher, publisher_a):
-    """Child create, obj=None: False regardless of parent perm — parent obj is not available so access cannot be confirmed."""
+    """Child create, obj=None: False regardless of parent perm — parent obj is not available so access
+    cannot be confirmed."""
     from tests.test1.app.views import GuardianBookCreateView
 
     user_guardian_object_perm(user_guardian, cv_guardian_publisher, "change", publisher_a)
@@ -370,7 +373,9 @@ def test_cv_create_has_access_returns_false_without_parent_perm(user_guardian, p
 def _make_book_list_view(user_guardian, publisher_a):
     """Instantiate GuardianBookListView with request and URL kwargs for publisher_a."""
     from unittest.mock import MagicMock
+
     from django.test import RequestFactory
+
     from tests.test1.app.views import GuardianBookListView, cv_guardian_book
 
     rf = RequestFactory()
@@ -475,7 +480,9 @@ def test_default_parent_button_visible_regardless_of_object_perm(user_guardian, 
 def test_parent_detail_button_unresolvable_parent_hidden(user_guardian, publisher_a):
     """Unresolvable parent PK → parent-detail button hidden, no exception raised."""
     from unittest.mock import MagicMock
+
     from django.test import RequestFactory
+
     from tests.test1.app.views import GuardianBookListView, cv_guardian_book
 
     rf = RequestFactory()
@@ -554,7 +561,9 @@ def test_create_button_matches_create_without_parent_perm(user_guardian, publish
 def test_create_button_unresolvable_parent_denied(user_guardian):
     """Unresolvable parent → create_button denied, no exception raised."""
     from unittest.mock import MagicMock
+
     from django.test import RequestFactory
+
     from tests.test1.app.views import GuardianBookListView, cv_guardian_book
 
     rf = RequestFactory()
@@ -577,10 +586,13 @@ def test_create_button_unresolvable_parent_denied(user_guardian):
 def test_top_level_create_unchanged_by_key_target_fix(user_guardian, cv_guardian_author):
     """Top-level (no-parent) create access is unaffected — the override's has_parent guard skips it."""
     from unittest.mock import MagicMock
+
     from django.contrib.auth.models import User
     from django.test import RequestFactory
+
     from tests.lib.helper.user import user_viewset_permission
-    from tests.test1.app.views import GuardianAuthorListView, cv_guardian_author as author_vs
+    from tests.test1.app.views import GuardianAuthorListView
+    from tests.test1.app.views import cv_guardian_author as author_vs
 
     rf = RequestFactory()
     request = rf.get("/guardian_author/")
@@ -639,6 +651,7 @@ def test_guardian_manage_permission_holders_has_object_count(client_guardian, cv
     """Permission holders includes guardian object count after assigning per-object group perm."""
     from django.contrib.auth.models import Group
     from guardian.shortcuts import assign_perm
+
     from tests.test1.app.models import Author
 
     group = Group.objects.create(name="editors")
@@ -778,6 +791,7 @@ def test_guardian_get_manage_view_class_field_wins_over_setting(cv_guardian_auth
 def test_guardian_register_uses_custom_manage_view_class():
     """GuardianViewSet.register() wires up the class specified by manage_view_class."""
     import uuid
+
     from crud_views.lib.viewset import _REGISTRY, _REGISTRY_LOCK
     from crud_views_guardian.lib.viewset import GuardianViewSet
     from tests.test1.app.models import Author

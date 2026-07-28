@@ -1,11 +1,10 @@
 from django.views.generic.base import TemplateResponseMixin, View
-
-from crud_views.lib.views.mixins import CrudViewProcessFormMixin
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import FormMixin
 
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import CrudView, CrudViewPermissionRequiredMixin
+from crud_views.lib.views.mixins import CrudViewProcessFormMixin
 
 
 class CustomFormView(CrudViewProcessFormMixin, CrudView, FormMixin, DetailView):

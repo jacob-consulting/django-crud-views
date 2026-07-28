@@ -1,11 +1,11 @@
 import pytest
 from django.contrib.auth import get_user_model
 from django.urls import reverse
+from project.seeding import ensure_demo_users
 
 from object_detail.models import Product
 from object_detail.seed import seed
 from object_detail.views import THEMES, detail_url_name
-from project.seeding import ensure_demo_users
 
 # Discriminating marker per layout pack, copied from tests/test1/od/test_layout_packs.py
 # (LAYOUT_PACKS): a substring that appears in exactly one pack's templates and is rendered

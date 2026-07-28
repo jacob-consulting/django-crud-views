@@ -1,8 +1,8 @@
 """Public asset registry: apps contribute JS/CSS to cv_js/cv_css via AppConfig.ready()."""
 
+from collections.abc import Iterable
 from dataclasses import dataclass
 from threading import Lock
-from typing import Iterable, List
 
 from django.core.exceptions import ImproperlyConfigured
 from django.templatetags.static import static
@@ -53,7 +53,7 @@ def register_assets(key: str, js: Iterable[str] = (), css: Iterable[str] = (), e
         _REGISTRY[key] = AssetBundle(key=key, js=normalize_entries(js), css=normalize_entries(css), emit=emit)
 
 
-def get_registered(only_emitting: bool = False) -> List[AssetBundle]:
+def get_registered(only_emitting: bool = False) -> list[AssetBundle]:
     with _LOCK:
         bundles = list(_REGISTRY.values())
     if only_emitting:

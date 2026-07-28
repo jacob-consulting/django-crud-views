@@ -38,11 +38,10 @@ class GuardianObjectPermissionMixin:
         return True
 
     def _check_object_perm(self, user, perm: str, obj) -> bool:
-        if self.cv_guardian_accept_global_perms:
-            # Check model-level perm first (without obj — ModelBackend returns empty
-            # set when obj is passed, so we must call has_perm without obj here).
-            if user.has_perm(perm):
-                return True
+        # Check model-level perm first (without obj — ModelBackend returns empty
+        # set when obj is passed, so we must call has_perm without obj here).
+        if self.cv_guardian_accept_global_perms and user.has_perm(perm):
+            return True
         from guardian.core import ObjectPermissionChecker
 
         checker = ObjectPermissionChecker(user)
@@ -62,11 +61,10 @@ class GuardianObjectPermissionMixin:
     def cv_has_access(cls, user, obj=None):
         perm = cls.cv_viewset.permissions.get(cls.cv_permission)
         if obj is not None:
-            if cls.cv_guardian_accept_global_perms:
-                # Model-level perm must be checked without obj (ModelBackend ignores
-                # obj and returns empty set when obj is passed).
-                if user.has_perm(perm):
-                    return True
+            # Model-level perm must be checked without obj (ModelBackend ignores
+            # obj and returns empty set when obj is passed).
+            if cls.cv_guardian_accept_global_perms and user.has_perm(perm):
+                return True
             from guardian.core import ObjectPermissionChecker
 
             checker = ObjectPermissionChecker(user)
@@ -139,19 +137,22 @@ class GuardianQuerysetMixin:
                 target_cls = self.cv_viewset.get_view_class(target_key)
             else:
                 target_cls = None
-            if target_cls and getattr(target_cls, "cv_permission", None) == "add":
-                if hasattr(target_cls, "cv_create_has_access"):
-                    try:
-                        parent_obj = self.cv_get_parent_object()
-                    except (Http404, KeyError):
-                        logger.warning(
-                            "could not resolve parent object for create button visibility at %s",
-                            self,
-                            exc_info=True,
-                        )
-                        parent_obj = None
-                    ctx["cv_access"] = target_cls.cv_create_has_access(user, self, parent_obj)
-                    ctx["cv_action_enabled"] = target_cls.cv_action_enabled(user, parent_obj)
+            if (
+                target_cls
+                and getattr(target_cls, "cv_permission", None) == "add"
+                and hasattr(target_cls, "cv_create_has_access")
+            ):
+                try:
+                    parent_obj = self.cv_get_parent_object()
+                except (Http404, KeyError):
+                    logger.warning(
+                        "could not resolve parent object for create button visibility at %s",
+                        self,
+                        exc_info=True,
+                    )
+                    parent_obj = None
+                ctx["cv_access"] = target_cls.cv_create_has_access(user, self, parent_obj)
+                ctx["cv_action_enabled"] = target_cls.cv_action_enabled(user, parent_obj)
 
         return ctx
 

@@ -17,6 +17,8 @@ def test_polymorphic_lib_exposes_delete_and_content_type_form():
     from crud_views_polymorphic.lib.create_select import PolymorphicContentTypeForm as _form
     from crud_views_polymorphic.lib.delete import (
         PolymorphicDeleteView as _delete,
+    )
+    from crud_views_polymorphic.lib.delete import (
         PolymorphicDeleteViewPermissionRequired as _delete_perm,
     )
 

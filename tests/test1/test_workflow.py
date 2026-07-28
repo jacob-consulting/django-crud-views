@@ -6,10 +6,9 @@ import pytest
 from django.contrib.messages import get_messages
 from django.test.client import Client
 
-from tests.test1.app.models import Campaign, CampaignState
 from crud_views_workflow.lib.enums import BadgeEnum
 from crud_views_workflow.models import WorkflowInfo
-
+from tests.test1.app.models import Campaign, CampaignState
 
 # ---------------------------------------------------------------------------
 # WorkflowModelMixin model-layer tests
@@ -191,6 +190,7 @@ def test_comment_default_is_none():
 def test_comment_default_fallback(campaign_new, user_campaign_change):
     """COMMENT_DEFAULT is used when a transition omits 'comment' from custom."""
     from unittest.mock import MagicMock, patch
+
     from crud_views_workflow.lib.enums import WorkflowComment
 
     mock_transition = MagicMock()
@@ -206,6 +206,7 @@ def test_comment_default_fallback(campaign_new, user_campaign_change):
 def test_comment_default_override(campaign_new, user_campaign_change):
     """Overriding COMMENT_DEFAULT changes the fallback for transitions without an explicit comment."""
     from unittest.mock import MagicMock, patch
+
     from crud_views_workflow.lib.enums import WorkflowComment
 
     mock_transition = MagicMock()
@@ -546,8 +547,8 @@ def test_workflow_view_checks_missing_form_class():
 
 def test_workflow_view_checks_transition_label_none():
     """cv_transition_label=None yields E231."""
-    from crud_views_workflow.lib.views import WorkflowView
     from crud_views_workflow.lib.forms import WorkflowForm
+    from crud_views_workflow.lib.views import WorkflowView
 
     class NoLabelView(WorkflowView):
         cv_key = "wf"
@@ -560,8 +561,8 @@ def test_workflow_view_checks_transition_label_none():
 
 def test_workflow_view_checks_comment_label_none():
     """cv_comment_label=None yields E232."""
-    from crud_views_workflow.lib.views import WorkflowView
     from crud_views_workflow.lib.forms import WorkflowForm
+    from crud_views_workflow.lib.views import WorkflowView
 
     class NoCommentLabelView(WorkflowView):
         cv_key = "wf"
@@ -575,8 +576,9 @@ def test_workflow_view_checks_comment_label_none():
 def test_workflow_view_checks_model_not_mixin():
     """Model that does not extend WorkflowModelMixin yields E233."""
     from unittest.mock import MagicMock
-    from crud_views_workflow.lib.views import WorkflowView
+
     from crud_views_workflow.lib.forms import WorkflowForm
+    from crud_views_workflow.lib.views import WorkflowView
 
     class PlainModel:
         pass
@@ -596,9 +598,10 @@ def test_workflow_view_checks_model_not_mixin():
 def test_workflow_view_checks_model_missing_state_choices():
     """WorkflowModelMixin model without STATE_CHOICES set yields E234."""
     from unittest.mock import MagicMock
-    from crud_views_workflow.lib.views import WorkflowView
+
     from crud_views_workflow.lib.forms import WorkflowForm
     from crud_views_workflow.lib.mixins import WorkflowModelMixin
+    from crud_views_workflow.lib.views import WorkflowView
 
     class NoChoicesModel(WorkflowModelMixin):
         STATE_CHOICES = None
@@ -619,9 +622,10 @@ def test_workflow_view_checks_model_missing_state_choices():
 def test_workflow_view_checks_model_missing_state_badges():
     """WorkflowModelMixin model without STATE_BADGES set yields E235."""
     from unittest.mock import MagicMock
-    from crud_views_workflow.lib.views import WorkflowView
+
     from crud_views_workflow.lib.forms import WorkflowForm
     from crud_views_workflow.lib.mixins import WorkflowModelMixin
+    from crud_views_workflow.lib.views import WorkflowView
 
     class NoBadgesModel(WorkflowModelMixin):
         STATE_CHOICES = object()

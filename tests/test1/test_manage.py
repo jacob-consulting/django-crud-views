@@ -115,7 +115,8 @@ def test_manage_registered_on_all_viewsets(cv_author, cv_publisher, cv_book):
 @pytest.mark.django_db
 def test_manage_accessible_via_crud_views_manage_group(client, cv_author, monkeypatch):
     """User in CRUD_VIEWS_MANAGE group can access manage view even when setting is 'no'."""
-    from django.contrib.auth.models import User, Group
+    from django.contrib.auth.models import Group, User
+
     from crud_views.lib.settings import crud_views_settings
 
     monkeypatch.setattr(crud_views_settings, "manage_views_enabled", "no")
@@ -133,6 +134,7 @@ def test_manage_accessible_via_crud_views_manage_group(client, cv_author, monkey
 def test_manage_blocked_without_group_or_setting(client, cv_author, monkeypatch):
     """Authenticated user without CRUD_VIEWS_MANAGE group gets 403 when setting is 'no'."""
     from django.contrib.auth.models import User
+
     from crud_views.lib.settings import crud_views_settings
 
     monkeypatch.setattr(crud_views_settings, "manage_views_enabled", "no")
@@ -167,6 +169,7 @@ def test_manage_permission_holders_shows_groups(client_user_author_view, cv_auth
     """Groups with model-level permissions appear in permission_holders."""
     from django.contrib.auth.models import Group, Permission
     from django.contrib.contenttypes.models import ContentType
+
     from tests.test1.app.models import Author
 
     ct = ContentType.objects.get_for_model(Author)
@@ -239,7 +242,8 @@ def test_get_manage_view_class_field_wins_over_setting(cv_author, monkeypatch):
 def test_register_uses_custom_manage_view_class():
     """ViewSet.register() wires up the class specified by manage_view_class."""
     import uuid
-    from crud_views.lib.viewset import ViewSet, _REGISTRY, _REGISTRY_LOCK
+
+    from crud_views.lib.viewset import _REGISTRY, _REGISTRY_LOCK, ViewSet
     from tests.test1.app.models import Author
     from tests.test1.app.views import CustomManageViewForTest
 

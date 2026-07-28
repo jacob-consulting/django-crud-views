@@ -10,7 +10,6 @@ import json
 import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List
 
 from django.core.checks import CheckMessage
 from django.core.checks import Warning as CheckWarning
@@ -31,21 +30,21 @@ class VendorSpec:
         return self.base_url.format(version=self.version)
 
 
-def vendor(spec: VendorSpec) -> List[Path]:
+def vendor(spec: VendorSpec) -> list[Path]:
     """Download spec.files into spec.target and write a version stamp."""
     spec.target.mkdir(parents=True, exist_ok=True)
     written = []
     base = spec.resolved_base_url.rstrip("/")
     for name in spec.files:
         path = spec.target / name
-        with urllib.request.urlopen(f"{base}/{name}") as response:  # noqa: S310
+        with urllib.request.urlopen(f"{base}/{name}") as response:
             path.write_bytes(response.read())
         written.append(path)
     (spec.target / STAMP_NAME).write_text(json.dumps({"key": spec.key, "version": spec.version}))
     return written
 
 
-def check_vendored(spec: VendorSpec) -> List[CheckMessage]:
+def check_vendored(spec: VendorSpec) -> list[CheckMessage]:
     """System-check helper: warn when configured pin and vendored files drift."""
     stamp = spec.target / STAMP_NAME
     if not stamp.exists():

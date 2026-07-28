@@ -5,7 +5,6 @@ Tests for CustomFormView / CustomFormViewPermissionRequired and CrispyViewMixin.
 import pytest
 from django.test.client import Client
 
-
 # ---------------------------------------------------------------------------
 # CustomFormView (object-based) — GET / POST
 # ---------------------------------------------------------------------------

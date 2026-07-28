@@ -1,13 +1,14 @@
 from __future__ import annotations
 
-from typing import Dict, Type, Iterable
+from collections.abc import Iterable
 
-from crud_views.lib.check import Check, CheckAttribute, CheckAttributeType, CheckMapping
 from django.core.exceptions import BadRequest
 from django.db import transaction
 from django.db.models import Model
 from django.forms.models import ModelForm
 from django.http import JsonResponse
+
+from crud_views.lib.check import Check, CheckAttribute, CheckAttributeType, CheckMapping
 
 from .formsets import FormSets
 
@@ -27,7 +28,7 @@ class FormSetMixinBase:
         """
         In formset mixin formsets need to be created to be added to the context
         """
-        data = super().get_context_data(**kwargs)  # noqa
+        data = super().get_context_data(**kwargs)
         formsets = self.cv_init_formsets(data.get("form"))
         if formsets is not None:
             data["formsets"] = formsets
@@ -41,7 +42,7 @@ class FormSetMixinBase:
         if template:
             data = self.get_template_html(request)
             return JsonResponse(data)
-        return super().get(request, *args, **kwargs)  # noqa
+        return super().get(request, *args, **kwargs)
 
     def get_template_html(self, request):
 
@@ -77,7 +78,7 @@ class FormSetMixinBase:
         form_valid = super().cv_form_is_valid(context)
 
         # get the formsets
-        formsets = context.get("formsets", None)
+        formsets = context.get("formsets")
         if formsets is None:
             if self.cv_formsets_required:
                 raise ValueError("Formsets are required but not defined, cv_formsets_required=True")
@@ -105,7 +106,7 @@ class FormSetMixinBase:
             super().cv_form_valid(context)
 
             # get the formsets
-            formsets = context.get("formsets", None)
+            formsets = context.get("formsets")
             if formsets is None:
                 if self.cv_formsets_required:
                     raise ValueError("Formsets are required but not defined, cv_formsets_required=True")
@@ -117,7 +118,7 @@ class FormSetMixinBase:
             formsets.save(commit=True)
 
     def cv_get_formsets(self) -> FormSets:
-        return self.cv_formsets.clone(cv_view=self)  # noqa
+        return self.cv_formsets.clone(cv_view=self)
 
     def cv_patch_formsets(self, formsets: FormSets):
         pass
@@ -157,11 +158,11 @@ class FormSetMixin(FormSetMixinBase):
         yield CheckAttributeType(context=cls, id="E204", attribute="cv_formsets", expected_type=FormSets)
 
     def cv_get_formsets(self) -> FormSets:
-        return self.cv_formsets.clone(cv_view=self)  # noqa
+        return self.cv_formsets.clone(cv_view=self)
 
 
 class PolymorphicFormSetsViewMixin(FormSetMixinBase):
-    cv_polymorphic_formsets: Dict[Type[Model], FormSets]
+    cv_polymorphic_formsets: dict[type[Model], FormSets]
 
     @classmethod
     def checks(cls) -> Iterable[Check]:
@@ -184,4 +185,4 @@ class PolymorphicFormSetsViewMixin(FormSetMixinBase):
         formsets = self.cv_polymorphic_formsets.get(model, None)
         if formsets is None:
             return None
-        return formsets.clone(cv_view=self)  # noqa
+        return formsets.clone(cv_view=self)

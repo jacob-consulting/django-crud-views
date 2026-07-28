@@ -7,10 +7,8 @@ Use this helper to resolve the class on demand.
 
 from __future__ import annotations
 
-from typing import Type
 
-
-def get_ordered_model() -> Type | None:
+def get_ordered_model() -> type | None:
     """Return the ``OrderedModel`` class, or ``None`` if the package is absent.
 
     Setting ``sys.modules['ordered_model'] = None`` (as tests do to simulate a

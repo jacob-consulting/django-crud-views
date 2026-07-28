@@ -1,5 +1,5 @@
 import re
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from crud_views.lib.viewset import ViewSet
@@ -13,14 +13,14 @@ REG_ATTRIBUTE = re.compile(r"[a-z][a-z_]*")
 class ParentViewSet(BaseModel):
     name: str  # the name of the parent ViewSet
     attribute: str | None = None  # the model attribute with the ForeignKey to the parent model
-    pk_name: str | None = (
-        None  # the name of the primary key in the url pattern with _pk suffix, defaults to parent ViewSet name plus "_pk"
-    )
+    # the name of the primary key in the url pattern with _pk suffix, defaults to parent
+    # ViewSet name plus "_pk"
+    pk_name: str | None = None
     many_to_many_through_attribute: str | None = (
         None  # the name of the parent's manay to many attribute that points to the child
     )
 
-    @field_validator("attribute", mode="plain")  # noqa
+    @field_validator("attribute", mode="plain")
     @classmethod
     def validate_attribute(cls, value: Any) -> Any:
         """
@@ -32,7 +32,7 @@ class ParentViewSet(BaseModel):
             raise ValueError(f"attribute must be lowercase alpha with underscores at {cls}")
         return value
 
-    @field_validator("pk_name", mode="plain")  # noqa
+    @field_validator("pk_name", mode="plain")
     @classmethod
     def validate_pk_name(cls, value: Any) -> Any:
         """

@@ -132,7 +132,7 @@ def resolve_property(instance: models.Model, config: PropertyConfig, view=None) 
     is_many = False
     current_model = type(instance)
 
-    for i, segment in enumerate(segments):
+    for _i, segment in enumerate(segments):
         try:
             field_obj = current_model._meta.get_field(segment)
         except FieldDoesNotExist:
@@ -158,10 +158,7 @@ def resolve_property(instance: models.Model, config: PropertyConfig, view=None) 
             # OneToOneRel must be checked before ManyToOneRel (it's a subclass)
             if isinstance(field_obj, (models.ForeignKey, models.OneToOneField, models.OneToOneRel)):
                 current_model = field_obj.related_model
-            elif isinstance(field_obj, models.ManyToManyField):
-                is_many = True
-                current_model = field_obj.related_model
-            elif isinstance(field_obj, (models.ManyToManyRel, models.ManyToOneRel)):
+            elif isinstance(field_obj, (models.ManyToManyField, models.ManyToManyRel, models.ManyToOneRel)):
                 is_many = True
                 current_model = field_obj.related_model
 

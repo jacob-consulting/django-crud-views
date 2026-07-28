@@ -67,11 +67,21 @@ have to guess past. The CWD is the fix; `relative_files` makes the result unambi
 **`pyproject.toml`**, `[tool.coverage.run]` — add `relative_files = true`; add the missing
 `crud_views_guardian` and alphabetize `source` across all five packages in `src/`.
 
-**`.github/workflows/tests.yml`** — `coverage.xml` is now written at the repo root, so the
-upload step's `files: tests/coverage.xml` becomes `files: coverage.xml`.
+**`.github/workflows/tests.yml`** and **`.github/workflows/publish.yml`** — `coverage.xml` is
+now written at the repo root, so the `codecov-action` step's `files: tests/coverage.xml`
+becomes `files: coverage.xml` in *both* workflows. `publish.yml` carries an independent copy
+of the upload step; missing it would leave every release uploading a nonexistent file.
 
-**`CLAUDE.md`** — the documented quick loop moves to the repo root: `pytest tests`,
+**`CLAUDE.md`**, **`CONTRIBUTING.md`**, and **`.github/PULL_REQUEST_TEMPLATE.md`** — all three
+document `cd tests && pytest`. The quick loop moves to the repo root: `pytest tests`,
 `pytest tests/test1/test_crud.py`, `pytest tests/test1/test_crud.py::test_name -v`.
+
+**`CHANGELOG.md`** — an entry under `## Unreleased`, per the project's PR checklist.
+
+**`tests/test1/test_coverage_config.py`** (new) — a regression test asserting that
+`[tool.coverage.run].source` lists every package directory under `src/`, in sorted order, and
+that `relative_files` is enabled. The `crud_views_guardian` omission survived precisely because
+nothing checked it; this is the guard against the same drift recurring.
 
 Collapsing to a single working directory is part of the fix, not incidental tidying. The bug
 exists because two CWDs were in play and the config matched only one of them; leaving

@@ -24,7 +24,7 @@ jobs:
         if: matrix.python-version == '3.13'
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: tests/coverage.xml
+          files: coverage.xml
 
   docs:
     runs-on: ubuntu-latest

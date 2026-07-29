@@ -20,14 +20,14 @@ task dev
 # Run tests via nox (matrix: Python 3.12/3.13/3.14 × Django 4.2/5.2/6.0)
 task test
 
-# Run tests directly for quick iteration (from tests/ directory)
-cd tests && pytest
+# Run tests directly for quick iteration (from the repo root)
+pytest tests
 
 # Run a single test file
-cd tests && pytest test1/test_crud.py
+pytest tests/test1/test_crud.py
 
 # Run a single test
-cd tests && pytest test1/test_crud.py::test_name -v
+pytest tests/test1/test_crud.py::test_name -v
 
 # Lint and format
 task format   # ruff format

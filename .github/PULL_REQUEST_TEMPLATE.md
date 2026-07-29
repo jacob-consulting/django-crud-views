@@ -16,7 +16,7 @@
 
 ## Checklist
 
-- [ ] Tests pass (`cd tests && pytest`)
+- [ ] Tests pass (`pytest tests`)
 - [ ] `task format` and `task check` are clean
 - [ ] `CHANGELOG.md` has an entry under `## Unreleased`
 - [ ] Documentation updated (if behavior changed)

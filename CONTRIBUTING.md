@@ -24,7 +24,7 @@ task dev
 2. Make your change following the existing patterns. Write tests first (this
    project follows test-driven development).
 3. Run the tests:
-   - quick: `cd tests && pytest`
+   - quick: `pytest tests`
    - full matrix (Python 3.12/3.13/3.14 × Django 4.2/5.2/6.0): `task test`
    - JS unit tests (requires Node 20+): `task test-js`
 4. Format and lint before committing:

@@ -13,8 +13,7 @@ def tests(session, django):
     session.install(f"django~={django}.0")
     session.install(".[polymorphic,workflow,ordered,test]")
 
-    with session.chdir("./tests"):
-        session.run("pytest", "-n", "auto", "--cov", "--cov-report=term-missing", *session.posargs)
+    session.run("pytest", "tests", "-n", "auto", "--cov", "--cov-report=term-missing", *session.posargs)
 
 
 @nox.session(python=["3.12", "3.13", "3.14"], venv_backend="uv")

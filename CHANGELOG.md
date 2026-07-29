@@ -8,6 +8,12 @@
   name shadowed the `dict` builtin inside the class body, which breaks annotations
   under PEP 649 deferred evaluation on Python 3.14. Only affects code that reads the
   settings object directly; the template context it feeds is unchanged.
+- Importing `crud_views` now fails immediately with `ImportError` if `django-filter` or
+  `django-crispy-forms` is missing, instead of importing successfully. Previously, a missing
+  `django-crispy-forms` would fail later with a confusing `AttributeError` during rendering;
+  a missing `django-filter` was silently tolerated by an inert fallback. Both are required
+  dependencies, so this only affects broken installations. The dead `try`/`except ImportError`
+  guards that produced the old behaviour have been removed. (#107)
 
 ### Fixed
 

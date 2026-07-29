@@ -1,11 +1,8 @@
+from django_filters.views import FilterMixin
+
 from crud_views.lib.exceptions import cv_raise
 
-try:
-    from django_filters.views import FilterMixin
-
-    _base_metaclass = type(FilterMixin)
-except ImportError:
-    _base_metaclass = type
+_base_metaclass = type(FilterMixin)
 
 
 class CrudViewMetaClass(_base_metaclass):

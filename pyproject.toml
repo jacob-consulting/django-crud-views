@@ -127,7 +127,14 @@ allowed-confusables = ["›"]
 addopts = "--strict-markers"
 
 [tool.coverage.run]
-source = ["crud_views", "crud_views_polymorphic", "crud_views_workflow", "crud_views_object_detail"]
+relative_files = true
+source = [
+    "crud_views",
+    "crud_views_guardian",
+    "crud_views_object_detail",
+    "crud_views_polymorphic",
+    "crud_views_workflow",
+]
 
 [tool.coverage.report]
 show_missing = true

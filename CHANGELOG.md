@@ -9,6 +9,16 @@
   under PEP 649 deferred evaluation on Python 3.14. Only affects code that reads the
   settings object directly; the template context it feeds is unchanged.
 
+### Fixed
+
+- Coverage is now measured for the package source. `pytest` runs from the repository
+  root instead of `tests/`, so coverage.py finds the `[tool.coverage.*]` config in
+  `pyproject.toml` — previously it found none, measured the test suite instead of
+  `src/`, and emitted absolute paths that Codecov silently discarded. The reported
+  project figure drops from ~99% to ~94% as a result: that is a measurement
+  correction, not a regression. `crud_views_guardian`, missing from the coverage
+  `source` list, is now included. (#103)
+
 ## 0.19.0
 
 ### Added

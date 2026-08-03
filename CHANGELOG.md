@@ -1,5 +1,7 @@
 # Django CRUD Views - Changelog
 
+## Unreleased
+
 ## 0.20.0
 
 ### Fixed
@@ -11,6 +13,13 @@
   sits about 5px above its neighbours; the line visibly steps at the action
   column. The cells now carry a plain `cv-col-action` hook and the shipped
   `table.css` right-aligns them with `text-align`.
+- Coverage is now measured for the package source. `pytest` runs from the repository
+  root instead of `tests/`, so coverage.py finds the `[tool.coverage.*]` config in
+  `pyproject.toml` — previously it found none, measured the test suite instead of
+  `src/`, and emitted absolute paths that Codecov silently discarded. The reported
+  project figure drops from ~99% to ~94% as a result: that is a measurement
+  correction, not a regression. `crud_views_guardian`, missing from the coverage
+  `source` list, is now included. (#103)
 
 ### Changed
 
@@ -18,11 +27,6 @@
   `th`/`td` classes changed from `d-flex justify-content-end` to
   `cv-col-action`. Projects selecting the action cell by the old class — in CSS
   or in tests — need to update the selector.
-
-## Unreleased
-
-### Changed
-
 - `crud_views_settings.dict` is renamed to `crud_views_settings.as_dict`. The old
   name shadowed the `dict` builtin inside the class body, which breaks annotations
   under PEP 649 deferred evaluation on Python 3.14. Only affects code that reads the
@@ -33,16 +37,6 @@
   a missing `django-filter` was silently tolerated by an inert fallback. Both are required
   dependencies, so this only affects broken installations. The dead `try`/`except ImportError`
   guards that produced the old behaviour have been removed. (#107)
-
-### Fixed
-
-- Coverage is now measured for the package source. `pytest` runs from the repository
-  root instead of `tests/`, so coverage.py finds the `[tool.coverage.*]` config in
-  `pyproject.toml` — previously it found none, measured the test suite instead of
-  `src/`, and emitted absolute paths that Codecov silently discarded. The reported
-  project figure drops from ~99% to ~94% as a result: that is a measurement
-  correction, not a regression. `crud_views_guardian`, missing from the coverage
-  `source` list, is now included. (#103)
 
 ## 0.19.0
 

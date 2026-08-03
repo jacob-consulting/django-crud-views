@@ -1,5 +1,24 @@
 # Django CRUD Views - Changelog
 
+## 0.20.0
+
+### Fixed
+
+- The action column no longer breaks the row separator. `ColAttr.action` used to
+  put Bootstrap's `d-flex justify-content-end` on the column's `th` and `td`.
+  `display: flex` takes a table cell out of the table layout model, so the cell
+  is not stretched to the row height and its bottom border — the row separator —
+  sits about 5px above its neighbours; the line visibly steps at the action
+  column. The cells now carry a plain `cv-col-action` hook and the shipped
+  `table.css` right-aligns them with `text-align`.
+
+### Changed
+
+- **Breaking for custom styling and markup assertions:** the action column's
+  `th`/`td` classes changed from `d-flex justify-content-end` to
+  `cv-col-action`. Projects selecting the action cell by the old class — in CSS
+  or in tests — need to update the selector.
+
 ## Unreleased
 
 ### Changed

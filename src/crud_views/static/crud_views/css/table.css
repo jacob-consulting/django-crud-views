@@ -77,3 +77,13 @@
 .cv-col-100 {
     width: 100% !important;
 }
+
+/* The action column used to be right-aligned with `d-flex justify-content-end`.
+   That is `display: flex` on a table cell, which drops the cell out of the
+   table layout model: it is no longer stretched to the row height, so its
+   bottom border — the row separator — steps up relative to its neighbours.
+   The cell stays a table cell and is aligned with `text-align` instead; the
+   action buttons are inline-level (`.btn-group` is `inline-flex`). */
+.cv-col-action {
+    text-align: right;
+}

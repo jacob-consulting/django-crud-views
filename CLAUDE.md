@@ -4,9 +4,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-`django-crud-views` is a reusable Django package that provides CRUD (Create, Read, Update, Delete) class-based views grouped into **ViewSets**. Views within a ViewSet are aware of their siblings and can link to each other while respecting Django's permission system. The package ships as four separate Django apps in a single distribution:
+`django-crud-views` is a reusable Django package that provides CRUD (Create, Read, Update, Delete) class-based views grouped into **ViewSets**. Views within a ViewSet are aware of their siblings and can link to each other while respecting Django's permission system. The package ships as five separate Django apps in a single distribution:
 
 - `crud_views` — core package (Bootstrap 5 theme)
+- `crud_views_object_detail` — rich property-grid detail view (`ObjectDetailView`)
 - `crud_views_workflow` — django-fsm state machine integration
 - `crud_views_polymorphic` — django-polymorphic model support
 - `crud_views_guardian` — django-guardian per-object permission support
@@ -60,7 +61,7 @@ A ViewSet auto-discovers the model's PK type (UUID, int, slug) and generates `ur
   - `ListView` (list.py), `DetailView` (detail.py), `CreateView` (create.py), `UpdateView` (update.py), `DeleteView` (delete.py)
   - `ActionView` (action.py), `OrderedUpView`/`OrderedDownView` (action_ordered.py)
 - Each has a `*PermissionRequired` variant that adds `CrudViewPermissionRequiredMixin`
-- `CrispyModelViewMixin` / `CrispyModelForm` (`crud_views/lib/crispy/`) integrate django-crispy-forms
+- `CrispyViewMixin` / `CrispyModelForm` (`crud_views/lib/crispy/`) integrate django-crispy-forms
 - `ListViewTableMixin` / `ListViewTableFilterMixin` integrate django-tables2 and django-filter
 
 ### Nested (Parent-Child) ViewSets

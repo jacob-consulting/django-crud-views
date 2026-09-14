@@ -3,6 +3,7 @@ from tests.test1.app.views import (
     cv_author,
     cv_author_custom_detail,
     cv_author_modal,
+    cv_author_origin,
     cv_author_wide_card,
     cv_book,
     cv_book_bc,
@@ -10,6 +11,7 @@ from tests.test1.app.views import (
     cv_campaign,
     cv_contract,
     cv_guardian_author,
+    cv_guardian_author_origin,
     cv_guardian_book,
     cv_guardian_publisher,
     cv_guardian_publisher_cascade,
@@ -55,3 +57,5 @@ urlpatterns += cv_publisher_bc_nodetail.urlpatterns
 urlpatterns += cv_publisher_bc_card.urlpatterns
 urlpatterns += cv_book_bc.urlpatterns
 urlpatterns += cv_booknote_bc.urlpatterns
+urlpatterns += cv_author_origin.urlpatterns
+urlpatterns += cv_guardian_author_origin.urlpatterns

@@ -107,6 +107,7 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
                             "cv_home_key": view.cv_home_key,
                             "cv_success_key": view.cv_success_key,
                             "cv_cancel_key": view.cv_cancel_key,
+                            "cv_cancel_keys": view.cv_cancel_keys,
                             "cv_parent_key": view.cv_parent_key,
                         }
                     ),

@@ -74,6 +74,8 @@ The view is auto-registered with `cv_author` via `cv_key` and `cv_path`, so its 
 | `cv_viewset` | `ViewSet` | — | The ViewSet this view belongs to |
 | `form_class` | `Form` | — | The form class to render |
 | `cv_success_key` | `str` | `"list"` | ViewSet key to redirect to after a valid form submission |
+| `cv_cancel_key` | `str` | `"list"` | ViewSet key the cancel button returns to (static fallback) |
+| `cv_cancel_keys` | `list[str] \| None` | `None` | Origin keys the cancel button may return to dynamically (no-object views only to non-object keys). See [UpdateView](update_view.md#dynamic-cancel-target) |
 | `cv_context_actions` | `list[str]` | from settings | Actions shown in the header area |
 | `cv_header_template_code` | `str` | — | Translatable header text |
 | `cv_paragraph_template_code` | `str` | — | Translatable paragraph text below the header |

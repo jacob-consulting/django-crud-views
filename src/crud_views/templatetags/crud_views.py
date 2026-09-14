@@ -325,7 +325,7 @@ def cv_card_action(context, action, obj=None):
     if not access:
         return {"cv_access": False, "cv_action_enabled": action_enabled}
 
-    url = view.cv_get_url(action.key, obj=obj)
+    url = view.cv_get_link_url(cls, action.key, obj)
     view_context = view.cv_get_view_context(object=obj)
 
     label = action.label or cls.cv_get_action_short_label(context=view_context)

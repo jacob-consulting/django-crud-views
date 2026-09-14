@@ -23,6 +23,12 @@ Session settings.
 |------------------|------------------------------------------------------------|-------|-----------|
 | CRUD_VIEWS_SESSION_DATA_KEY | The session key used to store data for `django-crud-views` | `str` | `viewset` |
 
+## Cancel button
+
+| Key              | Description                                                | Type  | Default   |
+|------------------|------------------------------------------------------------|-------|-----------|
+| CRUD_VIEWS_CANCEL_ORIGIN_PARAM | Query-string parameter that carries the origin view key for views with `cv_cancel_keys` (see [UpdateView](update_view.md#dynamic-cancel-target)). Must match `^[a-z][a-z0-9_]*$`; otherwise system check `crud_views.E103` fails. | `str` | `cv_from` |
+
 ## Filter
 
 Settings for filter.

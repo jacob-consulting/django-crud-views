@@ -55,6 +55,8 @@ Both inherit from Django's `generic.CreateView` and `CrudView`.
 | `form_class` | `Form` | — | The form class for the create form |
 | `cv_viewset` | `ViewSet` | — | The ViewSet this view belongs to |
 | `cv_success_key` | `str` | `"list"` | ViewSet key to redirect to after success |
+| `cv_cancel_key` | `str` | `"list"` | ViewSet key the cancel button returns to (static fallback) |
+| `cv_cancel_keys` | `list[str] \| None` | `None` | Origin keys the cancel button may return to dynamically; object views such as `detail` are never used from a create view. See [UpdateView](update_view.md#dynamic-cancel-target) |
 | `cv_context_actions` | `list[str]` | `["home", "create"]` | Actions shown in the header area |
 
 ## Form Classes

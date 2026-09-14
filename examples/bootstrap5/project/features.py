@@ -29,7 +29,9 @@ FEATURES: list[Feature] = [
         ),
         look_at=(
             "the cv_author and cv_book ViewSets and their List/Detail/Create/Update/Delete views; AuthorTable "
-            "and AuthorFilter for the table and filter; BookUpView / BookDownView for ordering."
+            "and AuthorFilter for the table and filter; BookUpView / BookDownView for ordering; "
+            "cv_cancel_keys on AuthorUpdateView / AuthorDeleteView, which sends Cancel back to the page "
+            "you came from (list or detail)."
         ),
         url_name="author-list",
         icon="fa-solid fa-book",

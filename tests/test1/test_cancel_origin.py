@@ -154,6 +154,20 @@ def test_cv_get_cancel_key_falls_back_for_unsaved_instance(
 
 
 @pytest.mark.django_db
+def test_cv_get_cancel_key_falls_back_for_unregistered_allowed_key(
+    client_user_author_origin, cv_author_origin, author_douglas_adams
+):
+    """A cv_cancel_keys entry that is not a registered view (an ignored viewset.E252) degrades
+    gracefully at runtime: get_view_class raises, the cancel button keeps cv_cancel_key."""
+    pk = author_douglas_adams.pk
+    response = client_user_author_origin.get(url(cv_author_origin, "update", pk), {PARAM: "nope"})
+    view = response.context["view"]
+    view.cv_cancel_keys = [*view.cv_cancel_keys, "nope"]  # instance-level, as if E252 were ignored
+    assert view.cv_get_origin_key() == "nope"
+    assert view.cv_get_cancel_key() == "card"
+
+
+@pytest.mark.django_db
 def test_cv_get_dict_exposes_cancel_keys(client_user_author_origin, cv_author_origin, author_douglas_adams):
     pk = author_douglas_adams.pk
     response = client_user_author_origin.get(url(cv_author_origin, "detail", pk))

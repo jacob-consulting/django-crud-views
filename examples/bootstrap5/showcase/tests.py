@@ -24,6 +24,21 @@ class RecipeCardTest(ShowcaseTestCase):
         self.assertContains(resp, "Shakshuka")
         self.assertContains(resp, "snippet-panels")
 
+    def test_card_signed_order_toolbar_without_direction_buttons(self):
+        resp = self.client.get(reverse("recipe-card"))
+        self.assertContains(resp, 'data-cv-action="submit-on-change"')
+        self.assertContains(resp, '<option value="-created_dt" selected>Newest first</option>', html=True)
+        self.assertNotContains(resp, 'name="dir"')
+
+    def test_card_signed_order_applies_queryset_ordering(self):
+        Recipe.objects.create(title="Aioli", difficulty="easy", servings=1)
+        resp = self.client.get(reverse("recipe-card"), {"order": "-title"})
+        content = resp.content.decode()
+        self.assertLess(content.index("Shakshuka"), content.index("Aioli"))
+        resp = self.client.get(reverse("recipe-card"), {"order": "title"})
+        content = resp.content.decode()
+        self.assertLess(content.index("Aioli"), content.index("Shakshuka"))
+
     def test_detail_shows_fieldset_groups(self):
         resp = self.client.get(reverse("recipe-detail", kwargs={"pk": self.recipe.pk}))
         self.assertEqual(resp.status_code, 200)

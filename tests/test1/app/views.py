@@ -355,6 +355,25 @@ class PublisherOrderCardListView(ListViewTableFilterMixin, CardListViewPermissio
     cv_card_actions = []
 
 
+# --- Publisher Signed Order Demo (card with direction encoded in the order choices, no dir buttons) ---
+
+cv_publisher_signed_order = ViewSet(
+    model=Publisher,
+    name="publisher_signed_order",
+)
+
+
+class PublisherSignedOrderCardListView(ListViewTableFilterMixin, CardListViewPermissionRequired):
+    cv_viewset = cv_publisher_signed_order
+    # signed entries: direction is part of the choice; "+" is accepted and normalised to the bare name
+    cv_order_fields = [("-name", "Name Z-A"), ("+name", "Name A-Z"), "id", "-id"]
+    cv_order_default = "-name"
+    paginate_by = 2
+    filterset_class = PublisherOrderFilter
+    formhelper_class = PublisherFilterFormHelper
+    cv_card_actions = []
+
+
 # --- Book (INT PK, child of Publisher) ---
 
 cv_book = ViewSet(

@@ -20,6 +20,11 @@ $(document).ready(function () {
         $("#" + targetId).submit();
     });
 
+    // auto-submit a form control (e.g. the card order combo) via data-cv-action="submit-on-change"
+    $(document).on("change", "[data-cv-action='submit-on-change']", function () {
+        this.form.submit();
+    });
+
     // cancel button navigation via data-cv-cancel-url
     $(document).on("click", "[data-cv-cancel-url]", function (e) {
         e.preventDefault();

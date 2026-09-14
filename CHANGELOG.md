@@ -1,5 +1,20 @@
 # Django CRUD Views - Changelog
 
+## Unreleased
+
+### Added
+
+- Card list ordering can encode the direction in the choices. Prefix an entry in
+  `cv_order_fields` with `-` or `+` (`("-created", "Newest first")`, `"-title"`) and the
+  toolbar becomes a single "Order by" combo that submits on change; the asc/desc buttons are
+  gone. The URL carries the signed value (`?order=-created`, ascending as the bare name),
+  `dir` is ignored, the whitelist is exact per signed value, and the combo preselects the
+  active choice including `cv_order_default`. Auto-labels for bare signed strings use the
+  field's verbose name plus a translated "(ascending)" / "(descending)" suffix. Lists without
+  a signed entry keep the combo-plus-buttons toolbar unchanged.
+- `viewset.js`: generic `data-cv-action="submit-on-change"` handler that submits the enclosing
+  form when the control changes (used by the signed order combo; CSP-safe, no inline handler).
+
 ## 0.21.0
 
 ### Added

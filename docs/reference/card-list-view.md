@@ -143,8 +143,14 @@ works the same way: the filter renders always-open and the toggle button is hidd
 
 ## Ordering
 
-Declare orderable fields with `cv_order_fields`. The card view then renders an
-"Order by" combo plus an ascending/descending toggle above the grid.
+Declare orderable fields with `cv_order_fields`. Depending on how the entries are
+written, the card view renders one of two toolbars above the grid.
+
+### Signed choices (single combo, no buttons)
+
+Prefix a field name with `-` (descending) or `+` (ascending) and the direction becomes
+part of the choice. The toolbar is then a single "Order by" combo that submits as soon
+as a choice is picked. No ascending/descending buttons are rendered.
 
 ```python
 from crud_views.lib.views import CardListViewPermissionRequired
@@ -152,21 +158,54 @@ from crud_views.lib.views import CardListViewPermissionRequired
 
 class BookCardListView(CardListViewPermissionRequired):
     cv_viewset = cv_book
+    cv_order_fields = [
+        ("-created", "Newest first"),
+        ("+created", "Oldest first"),
+        ("title", "Title A-Z"),   # plain name in signed mode == ascending
+        "-title",                 # auto-labelled "Title (descending)"
+    ]
+    cv_order_default = "-created"
+    cv_card_actions = [...]
+```
+
+- A list is in **signed mode** as soon as one entry starts with `+` or `-`. Plain names
+  in a signed list mean ascending.
+- The URL carries the direction in the value: `?order=-created`. Ascending is always
+  emitted as the bare name (`?order=created`), never `+created`, because a literal `+`
+  in a query string decodes to a space. The `dir` parameter is ignored in signed mode.
+- The whitelist is exact: with only `-created` declared, `?order=created` is rejected and
+  the default ordering applies.
+- The combo preselects the active choice, including the `cv_order_default` when no
+  `order` parameter is present.
+- Auto-labels for bare signed strings are built from the field's verbose name plus a
+  translated "(ascending)" / "(descending)" suffix.
+- The auto-submit is wired by `viewset.js` through `data-cv-action="submit-on-change"`,
+  so it works under a strict CSP without inline handlers.
+
+### Field plus direction buttons
+
+Plain names keep the classic toolbar: an "Order by" combo plus an ascending/descending
+button pair. To apply a sort, pick a field and click the ↑ or ↓ button.
+
+```python
+class BookCardListView(CardListViewPermissionRequired):
+    cv_viewset = cv_book
     cv_order_fields = ["title", ("price", "Price")]  # str or (name, label)
     cv_order_default = "title"  # leading "-" => descending
     cv_card_actions = [...]
 ```
 
+### Attributes
+
 | Attribute | Type | Default | Description |
 |---|---|---|---|
-| `cv_order_fields` | `list[str \| tuple[str, str]]` | `[]` | Orderable fields. A string uses the model field's verbose name as the label; a `(name, label)` tuple sets an explicit label. The combo is hidden when empty. |
-| `cv_order_default` | `str \| None` | `None` | Ordering applied when no `order` parameter is present. Leading `-` means descending (e.g. `"-created"`). |
-| `cv_order_param` | `str` | `"order"` | GET parameter name for the field. Change it if a model field is literally named `order`. |
-| `cv_order_dir_param` | `str` | `"dir"` | GET parameter name for the direction (`asc`/`desc`). |
+| `cv_order_fields` | `list[str \| tuple[str, str]]` | `[]` | Orderable fields. A string uses the model field's verbose name as the label; a `(name, label)` tuple sets an explicit label. A `+`/`-` prefix on the name encodes the direction and switches the view to signed mode. The combo is hidden when empty. |
+| `cv_order_default` | `str \| None` | `None` | Ordering applied when no valid `order` parameter is present. Leading `-` means descending (e.g. `"-created"`). |
+| `cv_order_param` | `str` | `"order"` | GET parameter name for the field (signed mode: the signed value). Change it if a model field is literally named `order`. |
+| `cv_order_dir_param` | `str` | `"dir"` | GET parameter name for the direction (`asc`/`desc`). Only used with plain names. |
 
-The selected field is **whitelisted** against `cv_order_fields`, so an arbitrary
-`?order=` value can never reach `order_by()`. To apply a sort, pick a field and click
-the ↑ or ↓ button.
+The selected value is **whitelisted** against `cv_order_fields`, so an arbitrary
+`?order=` value can never reach `order_by()`.
 
 ## Paging
 

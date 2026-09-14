@@ -25,6 +25,7 @@ from tests.test1.app.views import (
     cv_publisher_modal_protected,
     cv_publisher_order,
     cv_publisher_protected,
+    cv_publisher_signed_order,
     cv_vehicle,
 )
 from tests.test1.app.views_formset import cv_publisher_formset
@@ -35,6 +36,7 @@ urlpatterns += cv_author_wide_card.urlpatterns
 urlpatterns += cv_author_custom_detail.urlpatterns
 urlpatterns += cv_publisher.urlpatterns
 urlpatterns += cv_publisher_order.urlpatterns
+urlpatterns += cv_publisher_signed_order.urlpatterns
 urlpatterns += cv_book.urlpatterns
 urlpatterns += cv_contract.urlpatterns
 urlpatterns += cv_vehicle.urlpatterns

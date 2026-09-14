@@ -141,16 +141,18 @@ FEATURES: list[Feature] = [
     Feature(
         app="showcase",
         title="Showcase",
-        description="Presentation extras: card list, detail fieldsets, modal delete, custom actions.",
+        description="Presentation extras: card list with signed ordering, fieldsets, modal delete, custom actions.",
         about=(
             "Presentation building blocks gathered in one place. Recipes are shown as a grid of cards instead "
-            "of a table, the detail page groups fields into labelled fieldsets, deletion happens in a modal, "
-            "and a custom 'favorite' action toggles a flag straight from the list. Mix these into your own "
-            "views as needed."
+            "of a table, ordered by a single combo whose choices carry the direction ('Newest first', "
+            "'Title Z-A') so no asc/desc buttons are needed, the detail page groups fields into labelled "
+            "fieldsets, deletion happens in a modal, and a custom 'favorite' action toggles a flag straight "
+            "from the list. Mix these into your own views as needed."
         ),
         look_at=(
-            "RecipeCardListView (the card grid), the cv_property_display fieldset groups on RecipeDetailView, "
-            "cv_modal on RecipeDeleteView, and the RecipeFavoriteView custom action in views.py."
+            "RecipeCardListView (the card grid and its signed cv_order_fields), the cv_property_display "
+            "fieldset groups on RecipeDetailView, cv_modal on RecipeDeleteView, and the RecipeFavoriteView "
+            "custom action in views.py."
         ),
         url_name="recipe-card",
         icon="fa-solid fa-wand-magic-sparkles",

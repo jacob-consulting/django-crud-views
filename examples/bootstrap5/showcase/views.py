@@ -46,6 +46,16 @@ class RecipeCardListView(BreadcrumbMixin, CardListViewPermissionRequired):
     cv_path = ""  # the card list IS the landing page of this ViewSet
     cv_card_container_class = "col-md-6"
     cv_context_actions = ["card", "create"]
+    # signed ordering: the direction is part of each choice, so the toolbar is a single combo
+    # (no asc/desc buttons) that submits on change
+    cv_order_fields = [
+        ("-created_dt", "Newest first"),
+        ("created_dt", "Oldest first"),
+        ("title", "Title A-Z"),
+        ("-title", "Title Z-A"),
+        "servings",  # plain name in signed mode = ascending, auto-labelled "Servings (ascending)"
+    ]
+    cv_order_default = "-created_dt"
     cv_card_actions = [
         CardAction(key="detail", label="Details", variant="primary", flex=True),
         CardAction(key="update", label="Edit"),

@@ -7,6 +7,7 @@ from urllib.parse import parse_qs, urlencode
 from django.contrib import messages
 from django.core.exceptions import BadRequest
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.utils.translation import gettext as _
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
 
@@ -134,31 +135,75 @@ class CardOrderMixin:
     The order field is whitelisted against ``cv_order_fields`` so an arbitrary
     GET parameter can never reach ``QuerySet.order_by()`` (no ordering injection).
     Direction is restricted to ``asc`` / ``desc``.
+
+    Two modes, inferred from ``cv_order_fields``:
+
+    * **legacy** — plain field names (``"name"`` / ``("name", "Label")``): the combo
+      picks the field, separate asc/desc buttons pick the direction
+      (``?order=name&dir=desc``).
+    * **signed** — at least one entry starts with ``+`` or ``-``
+      (``("-created", "Newest first")``): the direction is encoded in the choice,
+      no direction buttons are rendered, the combo auto-submits on change and
+      ``?order=-created`` carries the direction (``dir`` is ignored). Ascending is
+      always emitted as the bare name because a literal ``+`` in a query string
+      decodes to a space. Plain names in signed mode mean ascending.
     """
 
-    cv_order_fields: ClassVar[list] = []  # list[str | tuple[str, str]]: field name or (name, label)
+    cv_order_fields: ClassVar[list] = []  # list[str | tuple[str, str]]: [+|-]field name or ([+|-]name, label)
     cv_order_default: str | None = None  # e.g. "-name"; leading "-" => descending
     cv_order_param: str = "order"
     cv_order_dir_param: str = "dir"
 
+    @staticmethod
+    def _order_entry_name(entry) -> str:
+        return entry[0] if isinstance(entry, (tuple, list)) else entry
+
+    @staticmethod
+    def _split_signed(name: str) -> tuple[str, str]:
+        """``"-name"`` -> ``("name", "desc")``; ``"+name"`` / ``"name"`` -> ``("name", "asc")``."""
+        if name.startswith("-"):
+            return name[1:], "desc"
+        if name.startswith("+"):
+            return name[1:], "asc"
+        return name, "asc"
+
+    @staticmethod
+    def _signed_key(field: str, direction: str) -> str:
+        """Normalised choice value / URL value: bare name for asc, ``-name`` for desc."""
+        return f"-{field}" if direction == "desc" else field
+
+    def cv_order_is_signed(self) -> bool:
+        return any(self._order_entry_name(f)[:1] in ("+", "-") for f in self.cv_order_fields)
+
     def cv_get_order_field_names(self) -> list[str]:
-        return [f[0] if isinstance(f, (tuple, list)) else f for f in self.cv_order_fields]
+        """Whitelist: bare field names (legacy) or normalised signed keys (signed mode)."""
+        names = [self._order_entry_name(f) for f in self.cv_order_fields]
+        if self.cv_order_is_signed():
+            return [self._signed_key(*self._split_signed(n)) for n in names]
+        return names
+
+    def _order_default(self) -> tuple[str | None, str]:
+        if self.cv_order_default:
+            return self._split_signed(self.cv_order_default)
+        return None, "asc"
 
     def cv_get_order(self) -> tuple[str | None, str]:
         """Resolve (field_name_or_None, direction) from GET, whitelisted."""
         names = self.cv_get_order_field_names()
-        field = self.request.GET.get(self.cv_order_param) or ""
+        value = self.request.GET.get(self.cv_order_param) or ""
+        if self.cv_order_is_signed():
+            if value in names:
+                return self._split_signed(value)
+            return self._order_default()
         direction = self.request.GET.get(self.cv_order_dir_param) or "asc"
         if direction not in ("asc", "desc"):
             direction = "asc"
-        if field in names:
-            return field, direction
+        if value in names:
+            return value, direction
         # not selected / not whitelisted -> fall back to default ordering
-        if self.cv_order_default:
-            default = self.cv_order_default
-            if default.startswith("-"):
-                return default[1:], "desc"
-            return default, "asc"
+        field, default_direction = self._order_default()
+        if field:
+            return field, default_direction
         return None, direction
 
     def get_queryset(self):
@@ -169,19 +214,33 @@ class CardOrderMixin:
             qs = qs.order_by(f"{prefix}{field}")
         return qs
 
+    def _order_field_label(self, field: str) -> str:
+        try:
+            return str(self.model._meta.get_field(field).verbose_name).capitalize()
+        except Exception:  # pragma: no cover - defensive
+            return field
+
     def cv_get_order_choices(self) -> list[dict]:
-        current, _ = self.cv_get_order()
+        current, direction = self.cv_get_order()
+        signed = self.cv_order_is_signed()
+        current_key = self._signed_key(current, direction) if (signed and current) else current
         choices = []
         for f in self.cv_order_fields:
-            if isinstance(f, (tuple, list)):
-                name, label = f[0], f[1]
+            explicit_label = f[1] if isinstance(f, (tuple, list)) else None
+            raw = self._order_entry_name(f)
+            if signed:
+                field, field_direction = self._split_signed(raw)
+                name = self._signed_key(field, field_direction)
+                if explicit_label is not None:
+                    label = explicit_label
+                elif field_direction == "desc":
+                    label = _("%(field)s (descending)") % {"field": self._order_field_label(field)}
+                else:
+                    label = _("%(field)s (ascending)") % {"field": self._order_field_label(field)}
             else:
-                name = f
-                try:
-                    label = str(self.model._meta.get_field(name).verbose_name).capitalize()
-                except Exception:  # pragma: no cover - defensive
-                    label = name
-            choices.append({"name": name, "label": label, "selected": name == current})
+                name = raw
+                label = explicit_label if explicit_label is not None else self._order_field_label(name)
+            choices.append({"name": name, "label": label, "selected": name == current_key})
         return choices
 
     def get_context_data(self, **kwargs):
@@ -190,6 +249,7 @@ class CardOrderMixin:
         context["cv_order_choices"] = self.cv_get_order_choices()
         context["cv_order_current"] = current or ""
         context["cv_order_dir"] = direction
+        context["cv_order_signed"] = self.cv_order_is_signed()
         context["cv_order_param"] = self.cv_order_param
         context["cv_order_dir_param"] = self.cv_order_dir_param
         # all current GET params except order/dir/page, for the toolbar's hidden inputs

@@ -161,8 +161,8 @@ class BookCardListView(CardListViewPermissionRequired):
     cv_order_fields = [
         ("-created", "Newest first"),
         ("+created", "Oldest first"),
-        ("title", "Title A-Z"),   # plain name in signed mode == ascending
-        "-title",                 # auto-labelled "Title (descending)"
+        ("title", "Title A-Z"),  # plain name in signed mode == ascending
+        "-title",  # auto-labelled "Title (descending)"
     ]
     cv_order_default = "-created"
     cv_card_actions = [...]

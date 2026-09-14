@@ -63,7 +63,12 @@ class CrispyFormMixin:
 
     def get_cancel_button_kwargs(self) -> dict:
         request = self.cv_view.request
-        obj = getattr(self, "instance", getattr(self.cv_view, "object", None))
+        # prefer the view's own object: it is the authoritative saved object for object-based
+        # views (ModelForm.instance is a form implementation detail that, on CustomFormView, is
+        # never bound to it -- it stays the form's own blank/unsaved instance)
+        obj = getattr(self.cv_view, "object", None)
+        if obj is None:
+            obj = getattr(self, "instance", None)
         context = self.cv_view.get_cancel_button_context(obj=obj, user=request.user, request=request)
         url = context["cv_url"]
         return {

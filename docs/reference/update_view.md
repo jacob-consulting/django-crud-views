@@ -47,7 +47,49 @@ Both inherit from Django's `generic.UpdateView` and `CrudView`.
 | `form_class` | `Form` | — | The form class for the update form |
 | `cv_viewset` | `ViewSet` | — | The ViewSet this view belongs to |
 | `cv_success_key` | `str` | `"list"` | ViewSet key to redirect to after success |
+| `cv_cancel_key` | `str` | `"list"` | ViewSet key the cancel button returns to (static fallback) |
+| `cv_cancel_keys` | `list[str] \| None` | `None` | Origin keys the cancel button may return to dynamically; see [Dynamic cancel target](#dynamic-cancel-target) |
 | `cv_context_actions` | `list[str]` | `["home", "detail", "update", "delete"]` | Actions shown in the header area |
+
+## Dynamic cancel target
+
+*Available since 0.21.0.*
+
+By default the cancel button always returns to `cv_cancel_key` (`"list"`). With `cv_cancel_keys`
+the button returns to the sibling view the user came from instead:
+
+<!-- cv-sync: library/views.py -->
+```python
+class AuthorUpdateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
+    cv_viewset = cv_author
+    form_class = AuthorForm
+    cv_message_template_code = "Updated author »{{ object }}«"
+    cv_cancel_keys = ["list", "detail"]  # cancel returns to where the user came from
+```
+
+How it works:
+
+- Links **into** a view with `cv_cancel_keys` carry the current view's key as a query parameter
+  when that key is listed: `/author/<pk>/update/?cv_from=detail` from the detail page,
+  `?cv_from=list` from the list. Links into views without `cv_cancel_keys` are unchanged.
+  The parameter name is `CRUD_VIEWS_CANCEL_ORIGIN_PARAM` (default `cv_from`, see [Settings](settings.md#cancel-button)).
+- The view resolves the target with `cv_get_cancel_key()`: the value must match `^[a-z][a-z0-9_]*$`,
+  be listed in `cv_cancel_keys`, be registered on the ViewSet, and, for object views such as `detail`,
+  the current view must have an object (a create view falls back). Anything else falls back to
+  `cv_cancel_key`. The parameter is a **view key**, never a URL, so it cannot redirect elsewhere.
+- The origin survives validation errors: the form posts to `request.get_full_path`, so an invalid
+  submit re-renders with the same cancel target, in full-page and modal mode.
+- System check `viewset.E252` fails at startup when an entry of `cv_cancel_keys` is not a registered
+  view key (`"list"` is accepted when only a card view is registered).
+
+Code that builds sibling links itself (themes, custom columns) should call
+`view.cv_get_link_url(target_cls, key, obj)` instead of `view.cv_get_url(key, obj)` so the link
+carries the origin. On a ViewSet without a list view, the card page counts as the `list` origin,
+the same fallback `cv_get_cancel_key()` and `viewset.E252` already apply.
+
+Works the same on `CreateView`, `DeleteView`, `CustomFormView` and `CustomFormNoObjectView`.
+Custom templates that build a back link from the cancel key should use
+`{% cv_context_url view.cv_get_cancel_key as url %}` rather than `view.cv_cancel_key`.
 
 ## Reusing the Create Form
 

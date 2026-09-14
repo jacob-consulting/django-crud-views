@@ -47,3 +47,22 @@ def test_theme_setting_warns_it_is_ignored():
     settings_obj = CrudViewsSettings(theme="bootstrap5")
     messages = settings_obj.check_messages
     assert any("CRUD_VIEWS_THEME" in m.msg for m in messages)
+
+
+def test_cancel_origin_param_default():
+    settings_obj = CrudViewsSettings()
+    assert settings_obj.cancel_origin_param == "cv_from"
+
+
+def test_cancel_origin_param_valid_name_no_message():
+    settings_obj = CrudViewsSettings(cancel_origin_param="origin_2")
+    assert settings_obj.check_messages == []
+
+
+def test_cancel_origin_param_invalid_name_reported():
+    for bad in ("bad param", "bad-param", "Bad", "2bad", "", "a/b", "a=b"):
+        settings_obj = CrudViewsSettings(cancel_origin_param=bad)
+        messages = settings_obj.check_messages
+        assert len(messages) == 1, bad
+        assert messages[0].id == "crud_views.E103"
+        assert "CRUD_VIEWS_CANCEL_ORIGIN_PARAM" in messages[0].msg

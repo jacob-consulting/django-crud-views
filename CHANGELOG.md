@@ -2,6 +2,34 @@
 
 ## Unreleased
 
+### Added
+
+- Dynamic cancel button target. A view that declares `cv_cancel_keys = ["list", "detail"]`
+  sends its cancel button back to the sibling view the user came from. Sibling links into such a
+  view carry the origin as a validated view key in the query string
+  (`?cv_from=detail`, name configurable via `CRUD_VIEWS_CANCEL_ORIGIN_PARAM`). Unknown, disallowed,
+  or malformed values fall back to the unchanged `cv_cancel_key`. New system checks
+  `crud_views.E103` (invalid parameter name) and `viewset.E252` (unregistered key in
+  `cv_cancel_keys`). Views without `cv_cancel_keys` are unaffected. Custom link builders should
+  use the new `view.cv_get_link_url(cls, key, obj)` instead of `cv_get_url` to carry the origin.
+
+### Changed
+
+- The create, update, delete and custom-form content templates post to `request.get_full_path`
+  instead of `request.path`, so the query string survives a validation re-render. Themes that
+  override these templates should do the same to get the dynamic cancel target on re-render.
+
+### Fixed
+
+- `CustomFormNoObjectView` no longer crashes on GET with the default context actions. It
+  inherited the detail view's actions (`detail`, `update`, `delete`), which need an object the
+  view does not have; it now defaults to the create view's actions
+  (`CRUD_VIEWS_CREATE_CONTEXT_ACTIONS`). Views that set `cv_context_actions` themselves are
+  unaffected.
+- The crispy cancel button on a `CustomFormView` with a `CrispyModelForm` now targets the
+  view's object. It used the form's own unsaved `instance`, so `cv_cancel_key = "detail"` on
+  such a view linked to a non-existent object. Create and update views are unchanged.
+
 ## 0.20.0
 
 ### Fixed

@@ -62,6 +62,22 @@ class AuthorCrudTest(LibraryTestCase):
         self.assertEqual(resp.status_code, 302)
         self.assertFalse(Author.objects.filter(pk=author.pk).exists())
 
+    def test_update_cancel_returns_to_detail_origin(self):
+        detail_url = reverse("author-detail", kwargs={"pk": self.author.pk})
+        update_url = reverse("author-update", kwargs={"pk": self.author.pk})
+        resp = self.client.get(detail_url)
+        self.assertContains(resp, f'href="{update_url}?cv_from=detail"')
+        resp = self.client.get(update_url, {"cv_from": "detail"})
+        self.assertContains(resp, f'data-cv-cancel-url="{detail_url}"')
+
+    def test_update_cancel_returns_to_list_origin(self):
+        list_url = reverse("author-list")
+        update_url = reverse("author-update", kwargs={"pk": self.author.pk})
+        resp = self.client.get(list_url)
+        self.assertContains(resp, f'href="{update_url}?cv_from=list"')
+        resp = self.client.get(update_url, {"cv_from": "list"})
+        self.assertContains(resp, f'data-cv-cancel-url="{list_url}"')
+
 
 class BookOrderingTest(LibraryTestCase):
     def test_book_list_renders(self):

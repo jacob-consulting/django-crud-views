@@ -24,7 +24,7 @@ from crud_views.lib.views import (
     OrderedUpViewPermissionRequired,
     UpdateViewPermissionRequired,
 )
-from crud_views.lib.views.form import CustomFormViewPermissionRequired
+from crud_views.lib.views.form import CustomFormNoObjectViewPermissionRequired, CustomFormViewPermissionRequired
 from crud_views.lib.views.list import ListViewFilterFormHelper
 from crud_views.lib.views.manage import ManageView
 from crud_views.lib.viewset import ParentViewSet, ViewSet, context_buttons_default
@@ -218,6 +218,7 @@ class AuthorWideCardListView(CardListViewPermissionRequired):
     cv_card_container_class = "col-md-12"
     cv_card_actions = [
         CardAction(key="detail", label="Details", variant="primary", flex=True),
+        CardAction(key="update", label="Edit"),
     ]
 
 
@@ -228,6 +229,13 @@ class AuthorWideCardDetailView(ObjectDetailViewPermissionRequired):
 class AuthorWideCardCreateView(CrispyViewMixin, CreateViewPermissionRequired):
     form_class = AuthorForm
     cv_viewset = cv_author_wide_card
+
+
+class AuthorWideCardUpdateView(CrispyViewMixin, UpdateViewPermissionRequired):
+    form_class = AuthorForm
+    cv_viewset = cv_author_wide_card
+    cv_cancel_key = "detail"
+    cv_cancel_keys = ["list", "detail"]
 
 
 # --- Author Custom Detail (DetailView without ObjectDetailMixin) ---
@@ -961,3 +969,115 @@ class BookNoteBcListView(CrudViewBreadcrumbMixin, ListView):
 
 class BookNoteBcDetailView(CrudViewBreadcrumbMixin, DetailView):
     cv_viewset = cv_booknote_bc
+
+
+# --- Author Origin (dynamic cancel target via cv_cancel_keys) ---
+# Every form view uses cv_cancel_key = "card" as the static fallback so tests can tell
+# "resolved to list" apart from "fell back to the default".
+
+cv_author_origin = ViewSet(
+    model=Author,
+    name="author_origin",
+    context_buttons=[*context_buttons_default(), ContextButton(key="edit", key_target="update")],
+)
+
+
+class AuthorOriginListView(ListViewTableMixin, ListViewPermissionRequired):
+    table_class = AuthorTable
+    cv_viewset = cv_author_origin
+    cv_list_actions = ["detail", "update", "delete"]
+
+
+class AuthorOriginCardListView(CardListViewPermissionRequired):
+    cv_viewset = cv_author_origin
+    cv_card_actions = [
+        CardAction(key="detail", label="Details"),
+        CardAction(key="update", label="Edit"),
+    ]
+
+
+class AuthorOriginDetailView(ObjectDetailViewPermissionRequired):
+    cv_viewset = cv_author_origin
+    cv_context_actions = ["home", "detail", "update", "delete", "edit", "contact", "create"]
+    cv_property_display = [{"title": "Attributes", "properties": ["first_name", "last_name"]}]
+
+
+class AuthorOriginCreateView(CrispyViewMixin, CreateViewPermissionRequired):
+    form_class = AuthorForm
+    cv_viewset = cv_author_origin
+    cv_cancel_key = "card"
+    cv_cancel_keys = ["list", "detail"]
+
+
+class AuthorOriginUpdateView(CrispyViewMixin, UpdateViewPermissionRequired):
+    form_class = AuthorForm
+    cv_viewset = cv_author_origin
+    cv_cancel_key = "card"
+    cv_cancel_keys = ["list", "detail"]
+
+
+class AuthorOriginDeleteView(CrispyViewMixin, DeleteViewPermissionRequired):
+    form_class = CrispyDeleteForm
+    cv_viewset = cv_author_origin
+    cv_cancel_key = "card"
+    cv_cancel_keys = ["list", "detail"]
+
+    def cv_check_delete_protection(self) -> list[str]:
+        if self.object.pseudonym == "protected":
+            return ["This author is protected."]
+        return []
+
+
+class AuthorOriginContactView(CrispyViewMixin, MessageMixin, CustomFormViewPermissionRequired):
+    cv_key = "contact"
+    cv_path = "contact"
+    cv_viewset = cv_author_origin
+    form_class = AuthorContactForm
+    cv_cancel_key = "card"
+    cv_cancel_keys = ["list", "detail"]
+    cv_message_template_code = "Contacted author »{{ object }}«"
+    cv_header_template_code = "Contact Author"
+    cv_paragraph_template_code = "Send a message to the Author"
+    cv_action_label_template_code = "Contact"
+    cv_action_short_label_template_code = "Contact"
+
+
+class AuthorOriginBroadcastForm(CrispyForm):
+    subject = CharField(label="Subject", required=True)
+
+    def get_layout_fields(self):
+        return Column12("subject")
+
+
+class AuthorOriginBroadcastView(CrispyViewMixin, CustomFormNoObjectViewPermissionRequired):
+    cv_key = "broadcast"
+    cv_path = "broadcast"
+    cv_viewset = cv_author_origin
+    form_class = AuthorOriginBroadcastForm
+    cv_cancel_key = "card"
+    cv_cancel_keys = ["list", "detail"]
+    cv_header_template_code = "Broadcast"
+    cv_paragraph_template_code = "Message all authors"
+    cv_action_label_template_code = "Broadcast"
+    cv_action_short_label_template_code = "Broadcast"
+
+
+# --- Guardian Author Origin (cv_cancel_keys under per-object permissions) ---
+
+cv_guardian_author_origin = GuardianViewSet(model=Author, name="guardian_author_origin")
+
+
+class GuardianAuthorOriginListView(ListViewTableMixin, GuardianListViewPermissionRequired):
+    table_class = AuthorTable
+    cv_viewset = cv_guardian_author_origin
+    cv_list_actions = ["detail", "update"]
+
+
+class GuardianAuthorOriginDetailView(ObjectDetailMixin, GuardianDetailViewPermissionRequired):
+    cv_viewset = cv_guardian_author_origin
+
+
+class GuardianAuthorOriginUpdateView(CrispyViewMixin, GuardianUpdateViewPermissionRequired):
+    form_class = AuthorForm
+    cv_viewset = cv_guardian_author_origin
+    cv_cancel_keys = ["detail"]

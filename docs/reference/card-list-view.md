@@ -195,8 +195,10 @@ filter keeps the active order.
 ## List Key Fallback
 
 When a ViewSet has a `CardListView` but no `ListView`, keys that reference `"list"`
-(such as `cv_success_key`, `cv_cancel_key`, and the default "home" context button)
-automatically fall back to `"card"`. No manual overrides needed.
+(such as `cv_success_key`, `cv_cancel_key`, `cv_cancel_keys`, and the default "home" context button)
+automatically fall back to `"card"`. No manual overrides needed. Card actions carry the
+`card` origin key into views that list it in `cv_cancel_keys`
+(see [Dynamic cancel target](update_view.md#dynamic-cancel-target)).
 
 This means a ViewSet with only a `CardListView` works out of the box — CreateView,
 UpdateView, and DeleteView all redirect to the card view after success.

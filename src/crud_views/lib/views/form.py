@@ -50,7 +50,7 @@ class CustomFormNoObjectView(CrudViewProcessFormMixin, CrudView, FormMixin, Temp
     template_name = "crud_views/view_custom_form.html"
     cv_content_template = "crud_views/view_custom_form.content.html"
     cv_modal_supported = True
-    cv_context_actions = crud_views_settings.detail_context_actions
+    cv_context_actions = crud_views_settings.create_context_actions
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data()

@@ -51,10 +51,13 @@ class ContextButton(BaseModel):
     def get_context(self, context: ViewContext) -> dict:
         key_target = self._resolve_container_key(context.view.cv_viewset, self.key_target)
 
-        dict_kwargs = {"cv_access": False, "cv_url": context.view.cv_get_url(key=key_target, obj=context.object)}
-
         # get target view class
         cls = context.view.cv_get_cls_assert_object(key_target, context.object)
+
+        dict_kwargs = {
+            "cv_access": False,
+            "cv_url": context.view.cv_get_link_url(cls, key_target, context.object),
+        }
 
         # button visibility — independent of access/permission
         dict_kwargs["cv_action_enabled"] = cls.cv_action_enabled(context.view.request.user, context.object)

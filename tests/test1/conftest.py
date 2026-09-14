@@ -781,3 +781,33 @@ def user_s3file_delete(cv_s3file):
 def client_user_s3file_delete(client, user_s3file_delete) -> Client:
     client.force_login(user_s3file_delete)
     return client
+
+
+@pytest.fixture
+def cv_author_origin():
+    from tests.test1.app.views import cv_author_origin as ret
+
+    return ret
+
+
+@pytest.fixture
+def user_author_origin(cv_author_origin):
+    from django.contrib.auth.models import User
+
+    user = User.objects.create_user(username="user_author_origin", password="password")
+    for perm in ("view", "add", "change", "delete"):
+        user_viewset_permission(user, cv_author_origin, perm)
+    return user
+
+
+@pytest.fixture
+def client_user_author_origin(client, user_author_origin) -> Client:
+    client.force_login(user_author_origin)
+    return client
+
+
+@pytest.fixture
+def cv_guardian_author_origin():
+    from tests.test1.app.views import cv_guardian_author_origin as ret
+
+    return ret

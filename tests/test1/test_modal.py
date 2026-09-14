@@ -247,3 +247,27 @@ def test_modal_js_registered_and_shipped():
 def test_cv_js_tag_includes_modal_js(client_user_author_modal: Client):
     response = client_user_author_modal.get("/author_modal/")
     assert "crud_views/js/modal.js" in response.content.decode()
+
+
+# ---------------------------------------------------------------------------
+# Cancel origin survives the modal 422 re-render
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.django_db
+def test_modal_custom_form_invalid_keeps_cancel_origin(
+    client_user_author_modal: Client, author_douglas_adams, monkeypatch
+):
+    """A modal custom-form re-render (422) keeps the origin-resolved cancel URL."""
+    import re
+
+    from tests.test1.app.views import AuthorModalContactView
+
+    monkeypatch.setattr(AuthorModalContactView, "cv_cancel_keys", ["detail"])
+    pk = author_douglas_adams.pk
+    origin_url = f"/author_modal/{pk}/contact/?cv_from=detail"
+    response = client_user_author_modal.post(origin_url, {"subject": "", "body": ""}, headers=MODAL_HEADERS)
+    assert response.status_code == 422
+    html = response.content.decode()
+    assert re.search(r'action="' + re.escape(origin_url) + '"', html)
+    assert f'data-cv-cancel-url="/author_modal/{pk}/detail/"' in html

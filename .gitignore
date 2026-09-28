@@ -16,3 +16,6 @@ TASKS.md
 .worktrees
 node_modules
 coverage-js
+# SonarQube: local token and scanner work directory
+.env
+.scannerwork/

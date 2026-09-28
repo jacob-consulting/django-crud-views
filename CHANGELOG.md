@@ -5,8 +5,9 @@
 ### Fixed
 
 - Accessibility of the shipped templates:
-  - context and list actions that navigate are plain links now (no `role="button"`),
-    labelled with `aria-label`; their icons are `aria-hidden`
+  - context and list actions that navigate are plain links now (no `role="button"`);
+    icon-only actions carry their name as visually hidden text
+    (`<span class="visually-hidden">`, same as the `title`) and their icons are `aria-hidden`
   - list actions that POST (`cv_list_action_method = "post"`, e.g. ordered up/down) and the
     filter toggle (`#cv-filter-toggle`) render as `<button type="button">` instead of
     `<a href="#">`. **If you style these by element (`a.btn`, `a#cv-filter-toggle`), update

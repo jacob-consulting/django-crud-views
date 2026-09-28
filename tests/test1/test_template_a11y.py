@@ -12,6 +12,17 @@ def _doc(response):
     return html.fromstring(response.content)
 
 
+def _assert_icon_action_named(el):
+    """Icon-only action: the name comes from visually hidden text matching the title,
+    not from aria-label (an aria-label that differs from the visible content is what
+    WCAG 2.5.3 / Sonar S7927 flag)."""
+    assert el.get("aria-label") is None
+    (hidden,) = el.cssselect("span.visually-hidden")
+    assert hidden.text_content().strip()
+    assert hidden.text_content().strip() == el.get("title")
+    assert all(i.get("aria-hidden") == "true" for i in el.cssselect("i"))
+
+
 @pytest.mark.django_db
 def test_context_actions_are_labelled_links_without_button_role(
     client_user_author_view, cv_author, author_douglas_adams
@@ -22,8 +33,7 @@ def test_context_actions_are_labelled_links_without_button_role(
     for a in actions:
         assert a.get("href")
         assert a.get("role") is None
-        assert a.get("aria-label")
-        assert all(i.get("aria-hidden") == "true" for i in a.cssselect("i"))
+        _assert_icon_action_named(a)
 
 
 @pytest.mark.django_db
@@ -36,7 +46,7 @@ def test_get_list_actions_are_labelled_links_without_button_role(
     for a in links:
         assert a.get("href")
         assert a.get("role") is None
-        assert a.get("aria-label")
+        _assert_icon_action_named(a)
 
 
 @pytest.mark.django_db
@@ -55,7 +65,7 @@ def test_post_list_action_is_a_button_that_submits_its_form(client, cv_author, a
     (up,) = doc.cssselect('[cv-list-container] [cv-key="up"]')
     assert up.tag == "button" and up.get("type") == "button"
     assert up.get("data-cv-action") == "submit-form"
-    assert up.get("aria-label")
+    _assert_icon_action_named(up)
     assert doc.cssselect(f"form#{up.get('data-cv-target')}"), "the targeted POST form must exist"
     (detail,) = doc.cssselect('[cv-list-container] [cv-key="detail"]')
     assert detail.tag == "a" and detail.get("href")
@@ -74,7 +84,7 @@ def test_filter_toggle_is_a_labelled_button(client):
     (toggle,) = doc.cssselect("#cv-filter-toggle")
     assert toggle.tag == "button" and toggle.get("type") == "button"
     assert toggle.get("role") is None
-    assert toggle.get("aria-label")
+    _assert_icon_action_named(toggle)
 
 
 def test_formset_controls_have_labels_and_hidden_icons():

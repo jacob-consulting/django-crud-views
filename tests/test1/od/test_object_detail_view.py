@@ -121,3 +121,37 @@ def test_view_with_layout_override_renders_accordion_marker():
     context["object"] = Info(text="Widget")
     html = render_to_string("crud_views_object_detail/view_detail.content.html", context)
     assert "accordion-item" in html
+
+
+def test_property_group_config_entries_skip_dict_shape_checks():
+    """A PropertyGroupConfig is already validated by pydantic, so E242-E245 must not
+    fire for it, even next to a malformed dict group that does."""
+    from crud_views_object_detail.lib.config import PropertyGroupConfig
+    from crud_views_object_detail.lib.views import ObjectDetailView
+
+    class V(ObjectDetailView):
+        cv_key = "detail"
+        cv_path = "detail"
+        cv_property_display = [
+            PropertyGroupConfig(title="Typed", properties=["name"]),
+            {"title": "Bad", "properties": [42]},
+        ]
+
+    messages = [m for chk in V.checks() for m in chk.messages()]
+    ids = {m.id for m in messages}
+    assert "viewset.E242" not in ids and "viewset.E243" not in ids
+    e245 = [m for m in messages if m.id == "viewset.E245"]
+    assert len(e245) == 1 and "cv_property_display[1]" in e245[0].msg, messages
+
+
+def test_resolve_value_returns_list_when_single_path_fans_out_to_nothing():
+    """First segment resolves, a later one is missing on every object: the result is
+    an empty list, not _MISSING and not a single value."""
+    from types import SimpleNamespace
+
+    from crud_views_object_detail.lib.resolvers import _MISSING, _resolve_value
+
+    obj = SimpleNamespace(child=SimpleNamespace())
+    value = _resolve_value(obj, ["child", "absent"], is_many=False)
+    assert value is not _MISSING
+    assert value == []

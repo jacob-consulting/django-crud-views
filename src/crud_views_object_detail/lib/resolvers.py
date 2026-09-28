@@ -117,6 +117,47 @@ def _resolve_badge_label(value: Any, badge: BadgeConfig) -> str | None:
     return badge.label_map.get(value)
 
 
+def _field_label(field_obj, segment: str) -> str:
+    verbose = getattr(field_obj, "verbose_name", None)
+    if verbose:
+        v = str(verbose)
+        return v[0].upper() + v[1:]
+    return segment.replace("_", " ").title()
+
+
+def _resolve_field_meta(model, segments: list[str], path: str) -> tuple[str, str | None, str, bool]:
+    """Walk the _meta chain along ``segments``: (label, detail, type, is_many)."""
+    label = path
+    detail = None
+    field_type = "default"
+    is_many = False
+    current_model = model
+
+    for segment in segments:
+        try:
+            field_obj = current_model._meta.get_field(segment)
+        except FieldDoesNotExist:
+            # Could be a method/property — no further metadata to extract
+            label = segment.replace("_", " ").title()
+            break
+
+        label = _field_label(field_obj, segment)
+        help_text = getattr(field_obj, "help_text", None)
+        if help_text:
+            detail = str(help_text)
+        field_type = _get_field_type(field_obj)
+
+        # Navigate into related models for FK/O2O
+        # OneToOneRel must be checked before ManyToOneRel (it's a subclass)
+        if isinstance(field_obj, (models.ForeignKey, models.OneToOneField, models.OneToOneRel)):
+            current_model = field_obj.related_model
+        elif isinstance(field_obj, (models.ManyToManyField, models.ManyToManyRel, models.ManyToOneRel)):
+            is_many = True
+            current_model = field_obj.related_model
+
+    return label, detail, field_type, is_many
+
+
 def resolve_property(instance: models.Model, config: PropertyConfig, view=None) -> ResolvedProperty:
     """Resolve a PropertyConfig against a model instance.
 
@@ -126,41 +167,7 @@ def resolve_property(instance: models.Model, config: PropertyConfig, view=None) 
     segments = config.path.split("__")
 
     # Walk _meta to gather field metadata
-    label = config.path
-    detail = None
-    field_type = "default"
-    is_many = False
-    current_model = type(instance)
-
-    for _i, segment in enumerate(segments):
-        try:
-            field_obj = current_model._meta.get_field(segment)
-        except FieldDoesNotExist:
-            # Could be a method/property — no further metadata to extract
-            label = segment.replace("_", " ").title()
-            break
-        else:
-            # Extract metadata from the field
-            verbose = getattr(field_obj, "verbose_name", None)
-            if verbose:
-                v = str(verbose)
-                label = v[0].upper() + v[1:]
-            else:
-                label = segment.replace("_", " ").title()
-
-            help_text = getattr(field_obj, "help_text", None)
-            if help_text:
-                detail = str(help_text)
-
-            field_type = _get_field_type(field_obj)
-
-            # Navigate into related models for FK/O2O
-            # OneToOneRel must be checked before ManyToOneRel (it's a subclass)
-            if isinstance(field_obj, (models.ForeignKey, models.OneToOneField, models.OneToOneRel)):
-                current_model = field_obj.related_model
-            elif isinstance(field_obj, (models.ManyToManyField, models.ManyToManyRel, models.ManyToOneRel)):
-                is_many = True
-                current_model = field_obj.related_model
+    label, detail, field_type, is_many = _resolve_field_meta(type(instance), segments, config.path)
 
     # Apply config overrides
     if config.title:
@@ -181,11 +188,8 @@ def resolve_property(instance: models.Model, config: PropertyConfig, view=None) 
     link_url = _resolve_link_url(value, config.link, is_many)
 
     # Resolve badge
-    badge_css = None
-    badge_label = None
-    if config.badge:
-        badge_css = _resolve_badge_css(value, config.badge)
-        badge_label = _resolve_badge_label(value, config.badge)
+    badge_css = _resolve_badge_css(value, config.badge) if config.badge else None
+    badge_label = _resolve_badge_label(value, config.badge) if config.badge else None
 
     return ResolvedProperty(
         path=config.path,
@@ -207,43 +211,36 @@ def _resolve_value(instance: models.Model, segments: list[str], is_many: bool) -
     Tracks a list of current objects to handle M2M fan-out.
     Returns _MISSING if the first segment is not found on the instance.
     """
-    current: list[Any] = [instance]
-    first_resolved = False
-
-    for i, segment in enumerate(segments):
-        next_objects: list[Any] = []
-        for obj in current:
-            if obj is None:
-                next_objects.append(None)
-                continue
-
-            attr = getattr(obj, segment, _MISSING)
-
-            if attr is _MISSING:
-                continue
-
-            if i == 0:
-                first_resolved = True
-
-            # Check if it's a manager (M2M or reverse FK)
-            if hasattr(attr, "all"):
-                next_objects.extend(attr.all())
-            elif callable(attr):
-                next_objects.append(attr())
-            else:
-                next_objects.append(attr)
-
-        current = next_objects
-
-    if not first_resolved:
+    if not segments:
+        return _MISSING
+    first = getattr(instance, segments[0], _MISSING) if instance is not None else _MISSING
+    if first is _MISSING:
         return _MISSING
 
-    if is_many:
-        return current
-    elif len(current) == 1:
+    current = _expand(first)
+    for segment in segments[1:]:
+        current = [value for obj in current for value in _step(obj, segment)]
+
+    if not is_many and len(current) == 1:
         return current[0]
-    else:
-        return current
+    return current
+
+
+def _expand(attr: Any) -> list[Any]:
+    # Check if it's a manager (M2M or reverse FK)
+    if hasattr(attr, "all"):
+        return list(attr.all())
+    if callable(attr):
+        return [attr()]
+    return [attr]
+
+
+def _step(obj: Any, segment: str) -> list[Any]:
+    """Values reached from ``obj`` via ``segment``; None propagates, a missing attribute drops out."""
+    if obj is None:
+        return [None]
+    attr = getattr(obj, segment, _MISSING)
+    return [] if attr is _MISSING else _expand(attr)
 
 
 def resolve_group(instance: models.Model, config: PropertyGroupConfig, view=None) -> ResolvedGroup:

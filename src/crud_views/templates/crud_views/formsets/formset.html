@@ -39,11 +39,7 @@
 
         <!-- crispy form: start {{ x_form.prefix }} -->
         <div class="cv-formset-form">
-            <!-- TODO: GET HELPER FROM x_form -->
             {% crispy x_form.form x_form.helper %}
-            {% comment %}
-                {% crispy x_form.form x_formset.instance.helper %}
-            {% endcomment %}
         </div>
         <!-- crispy form: end {{ x_form.prefix }} -->
 

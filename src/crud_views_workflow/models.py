@@ -8,7 +8,7 @@ class WorkflowInfo(models.Model):
     transition = models.CharField(max_length=255)
     state_old = models.CharField(max_length=255)
     state_new = models.CharField(max_length=255)
-    comment = models.TextField(null=True, blank=True)
+    comment = models.TextField(null=True, blank=True)  # NOSONAR S6553: NULL = no comment given, kept for existing rows
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
     timestamp = models.DateTimeField(auto_now_add=True)
     data = models.JSONField(default=dict, blank=True, null=True)

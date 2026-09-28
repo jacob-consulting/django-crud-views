@@ -815,8 +815,8 @@ def test_guardian_register_uses_custom_manage_view_class():
 def test_child_list_with_accept_global_allows_object_perm_on_parent(
     client_guardian, user_guardian, cv_guardian_publisher, publisher_a, monkeypatch
 ):
-    """With cv_guardian_accept_global_perms=True the parent check goes through
-    user.has_perm(perm, obj); an object permission on the parent still grants access."""
+    """With cv_guardian_accept_global_perms=True an object permission on the parent
+    still grants access (the global permission is only an additional fallback)."""
     from tests.test1.app.views import GuardianBookListView
 
     monkeypatch.setattr(GuardianBookListView, "cv_guardian_accept_global_perms", True)
@@ -831,4 +831,80 @@ def test_child_list_with_accept_global_denies_without_any_parent_perm(client_gua
 
     monkeypatch.setattr(GuardianBookListView, "cv_guardian_accept_global_perms", True)
     response = client_guardian.get(f"/guardian_publisher/{publisher_a.pk}/guardian_book/")
+    assert response.status_code == 403
+
+
+# ── #121: accept_global also applies to the parent permission check ──────────
+
+
+def _grant_global(user, codename):
+    from django.contrib.auth.models import Permission, User
+
+    user.user_permissions.add(Permission.objects.get(codename=codename))
+    return User.objects.get(pk=user.pk)  # drop Django's per-instance permission cache
+
+
+@pytest.mark.django_db
+def test_accept_global_parent_global_perm_grants_child_list(client, user_guardian, publisher_a, monkeypatch):
+    from tests.test1.app.views import GuardianBookListView
+
+    monkeypatch.setattr(GuardianBookListView, "cv_guardian_accept_global_perms", True)
+    client.force_login(_grant_global(user_guardian, "view_publisher"))
+    response = client.get(f"/guardian_publisher/{publisher_a.pk}/guardian_book/")
+    assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_accept_global_parent_global_perm_grants_child_detail(
+    client, user_guardian, cv_guardian_book, publisher_a, book_under_publisher_a, monkeypatch
+):
+    """Parent: global view perm only. The book itself still needs its own grant."""
+    from tests.test1.app.views import GuardianBookDetailView
+
+    monkeypatch.setattr(GuardianBookDetailView, "cv_guardian_accept_global_perms", True)
+    user_guardian_object_perm(user_guardian, cv_guardian_book, "view", book_under_publisher_a)
+    client.force_login(_grant_global(user_guardian, "view_publisher"))
+    response = client.get(f"/guardian_publisher/{publisher_a.pk}/guardian_book/{book_under_publisher_a.pk}/detail/")
+    assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_accept_global_parent_global_perm_grants_child_create(client, user_guardian, publisher_a, monkeypatch):
+    """Create needs cv_guardian_parent_create_permission ('change') on the parent."""
+    from tests.test1.app.views import GuardianBookCreateView
+
+    monkeypatch.setattr(GuardianBookCreateView, "cv_guardian_accept_global_perms", True, raising=False)
+    client.force_login(_grant_global(user_guardian, "change_publisher"))
+    response = client.get(f"/guardian_publisher/{publisher_a.pk}/guardian_book/create/")
+    assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_accept_global_parent_wrong_global_perm_still_denies_create(client, user_guardian, publisher_a, monkeypatch):
+    """A global 'view' on the parent does not satisfy the create gate's 'change'."""
+    from tests.test1.app.views import GuardianBookCreateView
+
+    monkeypatch.setattr(GuardianBookCreateView, "cv_guardian_accept_global_perms", True, raising=False)
+    client.force_login(_grant_global(user_guardian, "view_publisher"))
+    response = client.get(f"/guardian_publisher/{publisher_a.pk}/guardian_book/create/")
+    assert response.status_code == 403
+
+
+@pytest.mark.django_db
+def test_strict_mode_ignores_global_parent_perm(client, user_guardian, publisher_a):
+    """Default (flag off): a global permission on the parent is not enough."""
+    client.force_login(_grant_global(user_guardian, "view_publisher"))
+    response = client.get(f"/guardian_publisher/{publisher_a.pk}/guardian_book/")
+    assert response.status_code == 403
+
+
+@pytest.mark.django_db
+def test_accept_global_parent_perm_still_runs_action_enabled_gate(client, user_guardian, publisher_a, monkeypatch):
+    """The state gate for no-object child views applies after the permission check."""
+    from tests.test1.app.views import GuardianBookCreateView
+
+    monkeypatch.setattr(GuardianBookCreateView, "cv_guardian_accept_global_perms", True, raising=False)
+    monkeypatch.setattr(GuardianBookCreateView, "cv_action_enabled", classmethod(lambda cls, user, obj=None: False))
+    client.force_login(_grant_global(user_guardian, "change_publisher"))
+    response = client.get(f"/guardian_publisher/{publisher_a.pk}/guardian_book/create/")
     assert response.status_code == 403

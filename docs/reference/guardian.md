@@ -170,6 +170,11 @@ cv_book = GuardianViewSet(
 
 Setting either to `None` disables the parent check for that view type.
 
+The parent check follows the child view's `cv_guardian_accept_global_perms`: in
+strict mode (the default) only a per-object grant on the parent counts; with the
+flag set, a model-level permission on the parent model (e.g. `app.view_author`) is
+accepted as a fallback.
+
 ## Group Permissions
 
 Guardian group permissions are respected by default (`use_groups=True`).

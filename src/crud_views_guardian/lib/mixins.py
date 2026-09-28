@@ -180,7 +180,8 @@ class GuardianParentPermissionMixin:
 
     Reads cv_guardian_parent_permission / cv_guardian_parent_create_permission
     from the child GuardianViewSet. Respects cv_guardian_accept_global_perms
-    from the combined view class.
+    from the combined view class: when set, a model-level permission on the
+    parent model is accepted as a fallback for the per-object one.
 
     When a parent viewset is present, overrides has_permission() to return True
     so that Django's model-level PermissionRequiredMixin is bypassed; the parent
@@ -217,8 +218,11 @@ class GuardianParentPermissionMixin:
         return perm_key
 
     def _guardian_has_parent_perm(self, user, parent_perm: str, parent_obj) -> bool:
-        if getattr(self, "cv_guardian_accept_global_perms", False):
-            return user.has_perm(parent_perm, parent_obj)
+        # accept_global: the model-level permission is a fallback. Note that
+        # user.has_perm(perm, obj) would NOT do this — Django's ModelBackend returns
+        # nothing once an object is passed, and guardian checks object perms only.
+        if getattr(self, "cv_guardian_accept_global_perms", False) and user.has_perm(parent_perm):
+            return True
         from guardian.core import ObjectPermissionChecker
 
         return ObjectPermissionChecker(user).has_perm(parent_perm.split(".")[1], parent_obj)

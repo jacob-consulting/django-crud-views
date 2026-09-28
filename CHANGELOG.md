@@ -1,5 +1,20 @@
 # Django CRUD Views - Changelog
 
+## Unreleased
+
+### Fixed
+
+- Guardian: child views with `cv_guardian_accept_global_perms = True` now accept a
+  model-level permission on the **parent** model as a fallback, like every other guardian
+  check and as documented. Before, the parent check used `user.has_perm(perm, parent_obj)`,
+  which never considers global permissions, so such users got 403 on child
+  list/detail/create/update/delete while `cv_has_access` still rendered the buttons.
+  Strict mode (the default) is unchanged. (#121)
+- `ColumnAttrs.__or__` no longer mutates its left operand. Combining the shared presets
+  (`Table.ca.w10 | Table.ca.ID`) used to permanently change the preset, so every later
+  column using it rendered the extra classes; merging a class onto an empty one produced a
+  leading space. (#117)
+
 ## 0.22.0
 
 ### Added

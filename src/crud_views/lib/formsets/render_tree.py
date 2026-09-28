@@ -202,37 +202,52 @@ class XFormSet(BaseModel, arbitrary_types_allowed=True):
         for x_form in self.forms:
             yield from x_form.is_valid()
 
+    def _get_x_form(self, form):
+        for x_form in self.forms:
+            if form == x_form.form:
+                return x_form
+        raise CrudViewError(f"no XForm found for form with prefix {form.prefix} at {self}")
+
+    def _delete_form(self, form, commit: bool):
+        # get x-form to process nested forms
+        x_form = self._get_x_form(form)
+
+        # delete is instance and pk
+        if form.instance and form.instance.pk:
+            form.instance.delete()
+
+        # deleted nested forms
+        x_form.save(commit=commit, delete=True)
+
+    @staticmethod
+    def _save_changed_form(form, can_order: bool):
+        # save instance
+        instance = form.save(commit=False)
+
+        # update order
+        order_value = form.cleaned_data.get("ORDER") if can_order else None
+        if order_value is not None:
+            instance.order = order_value
+
+        # finally save instance
+        instance.save()
+        form.save_m2m()
+
     def save(self, commit: bool = True, delete=False):
         """
         Nested save and delete
         """
-
-        def get_x_form(form):
-            for x_form in self.forms:
-                if form == x_form.form:
-                    return x_form
-            raise CrudViewError(f"no XForm found for form with prefix {form.prefix} at {self}")
-
         # NOTE: instance.ordered_forms DOES NOT INCLUDE DELETED FORMS ;-)
         can_order = self.formset.can_order
 
         # handle deleted
         delete_forms = [f for f in self.instance.forms if delete is True or f.cleaned_data.get("DELETE", False)]
         regular_forms = [f for f in self.instance.forms if f not in delete_forms]
-        ordered_forms = self.instance.ordered_forms if can_order else []
-        update_forms = ordered_forms if can_order else regular_forms
+        update_forms = self.instance.ordered_forms if can_order else regular_forms
 
         # process forms to delete
         for form in delete_forms:
-            # get x-form to process nested forms
-            x_form = get_x_form(form)
-
-            # delete is instance and pk
-            if form.instance and form.instance.pk:
-                form.instance.delete()
-
-            # deleted nested forms
-            x_form.save(commit=commit, delete=True)
+            self._delete_form(form, commit)
 
         # do not continue in case of nested delete
         if delete:
@@ -240,25 +255,9 @@ class XFormSet(BaseModel, arbitrary_types_allowed=True):
 
         for form in update_forms:
             # just make sure x-form exists for this form
-            get_x_form(form)
-
-            # check for changes
-            has_changed = form.has_changed()
-            if not has_changed:
-                continue
-
-            # save instance
-            instance = form.save(commit=False)
-
-            # update order
-            if can_order:
-                order_value = form.cleaned_data.get("ORDER")
-                if order_value is not None:
-                    instance.order = order_value
-
-            # finally save instance
-            instance.save()
-            form.save_m2m()
+            self._get_x_form(form)
+            if form.has_changed():
+                self._save_changed_form(form, can_order)
 
         # now save the x_forms
         for x_form in self.forms:

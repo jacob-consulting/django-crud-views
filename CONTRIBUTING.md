@@ -41,6 +41,27 @@ task dev
   the full test matrix).
 - A maintainer will review and **squash-merge** your PR.
 
+## SonarQube analysis (maintainers)
+
+The package sources (`src/`) are analysed on [SonarQube](https://sonar.cnbg-n.com) as project
+`django-crud-views:main`. The analysis runs locally; it needs Docker and a token.
+
+One-time setup:
+
+1. On the SonarQube server, generate a project analysis token for `django-crud-views:main`
+   (My Account → Security → Generate Token).
+2. `cp .env.example .env` and set `SONAR_TOKEN` in `.env`. The file is gitignored — never commit it.
+
+Run:
+
+```bash
+task sonar
+```
+
+This reinstalls the package into `.venv`, runs the test suite with coverage (writing `coverage.xml`), and runs the
+`sonar-scanner-cli` Docker image against the repository, mounted read-only. Failing tests or coverage below the
+threshold do not abort the scan. The configuration lives in `sonar-project.properties`.
+
 ## Reporting bugs and requesting features
 
 Please use the [issue tracker](https://github.com/jacob-consulting/django-crud-views/issues)

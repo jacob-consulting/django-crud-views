@@ -37,44 +37,49 @@ class GuardianDeleteRelatedObjectsMixin:
     """Filter cascade-delete related objects by per-object view permissions via django-guardian."""
 
     def cv_filter_related_objects(self, user, related):
-        from guardian.shortcuts import get_objects_for_user
-
         from crud_views.lib.views.delete import RelatedObjects
 
         if not related.tree:
             return related
 
-        permitted_pks = {}
-        accept_global = getattr(self, "cv_guardian_accept_global_perms", False)
-
-        def get_permitted_pks(model):
-            if model not in permitted_pks:
-                opts = model._meta
-                perm = f"{opts.app_label}.view_{opts.model_name}"
-                qs = get_objects_for_user(user, perm, klass=model, accept_global_perms=accept_global)
-                permitted_pks[model] = set(qs.values_list("pk", flat=True))
-            return permitted_pks[model]
-
-        def _filter_tree(items):
-            result = []
-            for item in items:
-                if isinstance(item, list):
-                    result.append(_filter_tree(item))
-                elif item is not None and hasattr(item, "_meta"):
-                    pks = get_permitted_pks(item._meta.model)
-                    if item.pk in pks:
-                        result.append(item)
-                    else:
-                        result.append(None)
-                else:
-                    result.append(item)
-            return result
-
+        permitted = _PermittedPks(user, getattr(self, "cv_guardian_accept_global_perms", False))
         return RelatedObjects(
-            tree=_filter_tree(related.tree),
+            tree=_filter_tree(related.tree, permitted),
             summary=related.summary,
             protected=related.protected,
         )
+
+
+class _PermittedPks:
+    """Per-model cache of the pks ``user`` may view."""
+
+    def __init__(self, user, accept_global: bool):
+        self.user = user
+        self.accept_global = accept_global
+        self._cache: dict = {}
+
+    def __call__(self, model) -> set:
+        if model not in self._cache:
+            from guardian.shortcuts import get_objects_for_user
+
+            opts = model._meta
+            perm = f"{opts.app_label}.view_{opts.model_name}"
+            qs = get_objects_for_user(self.user, perm, klass=model, accept_global_perms=self.accept_global)
+            self._cache[model] = set(qs.values_list("pk", flat=True))
+        return self._cache[model]
+
+
+def _filter_tree(items: list, permitted: _PermittedPks) -> list:
+    return [_filter_item(item, permitted) for item in items]
+
+
+def _filter_item(item, permitted: _PermittedPks):
+    """Keep permitted model objects, hide others as None, pass everything else through."""
+    if isinstance(item, list):
+        return _filter_tree(item, permitted)
+    if item is not None and hasattr(item, "_meta"):
+        return item if item.pk in permitted(item._meta.model) else None
+    return item
 
 
 class GuardianDeleteViewPermissionRequired(

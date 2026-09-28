@@ -215,6 +215,35 @@ describe("formset.js", () => {
             expect(prefixes).toEqual(["book-None-0-1", "book-None-0-0"]);
         });
 
+        it("binds each control of a row added after init exactly once", () => {
+            formsetFixture({ rows: 1 });
+            const controller = new window.cv.CrudViewsFormset();
+            document.querySelector(".cv-formset-row").insertAdjacentHTML("afterend", rowHtml(1));
+            controller.add_form_control_for_new_rows(["book-None-0-1"]);
+
+            // one click toggles DELETE once (a double binding would toggle it back)
+            document.querySelector('button.cv-form-ctrl-delete[cv-data-formset-form-prefix="book-None-0-1"]').click();
+            expect(document.querySelector('input[name="book-None-0-1-DELETE"]').getAttribute("value")).toBe("1");
+
+            document.querySelector('button.cv-form-ctrl-up[cv-data-formset-form-prefix="book-None-0-1"]').click();
+            const prefixes = [...document.querySelectorAll(".cv-formset-row")]
+                .map((el) => el.getAttribute("cv-data-formset-form-prefix"));
+            expect(prefixes).toEqual(["book-None-0-1", "book-None-0-0"]);
+        });
+
+        it("binds nothing for a new row whose lookup fails", () => {
+            formsetFixture({ rows: 1 });
+            const controller = new window.cv.CrudViewsFormset();
+            // a new row lacking its up/down buttons although the formset is orderable
+            document.querySelector(".cv-formset-row").insertAdjacentHTML("afterend", rowHtml(1));
+            document.querySelectorAll('[cv-data-formset-form-prefix="book-None-0-1"].cv-form-ctrl-up, '
+                + '[cv-data-formset-form-prefix="book-None-0-1"].cv-form-ctrl-down').forEach((el) => el.remove());
+
+            expect(() => controller.add_form_control_for_new_rows(["book-None-0-1"])).toThrow("up not found");
+            document.querySelector('button.cv-form-ctrl-delete[cv-data-formset-form-prefix="book-None-0-1"]').click();
+            expect(document.querySelector('input[name="book-None-0-1-DELETE"]').getAttribute("value")).toBe("0");
+        });
+
         it("reorders all formsets on submit and lets the submit proceed", () => {
             formsetFixture({ rows: 2 });
             new window.cv.CrudViewsFormset();

@@ -486,74 +486,74 @@ class CrudViewsFormset extends XBase {
      * @param selection
      */
     add_form_control_events(selection) {
-
-        let is_global = selection === undefined,
-            context = is_global ? null : this.get_form_context(selection),
-            can_delete = context ? context.formset.can_delete : true,
-            can_order = context ? context.formset.can_order : true,
-            edit_only = context ? context.formset.edit_only : false,
-            sel = is_global ? this.sel(`form.cv-form`) : selection,
-            // On the global init pass `sel` spans every formset on the page, which may mix
-            // orderable with non-orderable (or deletable with edit-only) formsets. A control
-            // type can therefore be legitimately absent page-wide - e.g. a page whose only
-            // formset is non-orderable has no up/down buttons. Look controls up WITHOUT
-            // asserting in that case: binding a click handler to an empty jQuery set is a
-            // harmless no-op, whereas the asserting sel_at would throw and abort the whole
-            // controller, leaving even add/delete unbound. Per-row binding keeps the
-            // asserting lookup since the row's own context guarantees the control exists.
-            find = is_global ? (s) => sel.find(s) : (s, msg) => this.sel_at(sel, s, msg),
-            del = can_delete ? find(CrudViewsFormset.const.form_control_delete, "delete not found") : null,
-            add = edit_only === false ? find(CrudViewsFormset.const.form_control_add, "add not found") : null,
-            up = can_order ? find(CrudViewsFormset.const.form_control_up, "up not found") : null,
-            down = can_order ? find(CrudViewsFormset.const.form_control_down, "down not found") : null;
-
-        if (del) {
-            del.click((event) => {
-                try {
-                    let form = this.get_form_context($(event.currentTarget));
-                    form.delete();
-                } catch (error) {
-                    this.debug("error", error);
-                }
-                event.preventDefault();
-            });
+        let controls = selection === undefined
+            ? this.find_page_form_controls()
+            : this.find_row_form_controls(selection);
+        for (const [action, control] of Object.entries(controls)) {
+            this.bind_form_control(control, action);
         }
+    }
 
-        if (add) {
-            add.click((event) => {
-                try {
-                    let form = this.get_form_context($(event.currentTarget));
-                    form.add();
-                } catch (error) {
-                    this.debug("error", error);
-                }
-                event.preventDefault();
-            });
-        }
+    /**
+     * Form controls of every formset on the page (global init pass).
+     *
+     * The page may mix orderable with non-orderable (or deletable with edit-only)
+     * formsets, so a control type can legitimately be absent page-wide - e.g. a page
+     * whose only formset is non-orderable has no up/down buttons. Look controls up
+     * WITHOUT asserting: binding a click handler to an empty jQuery set is a harmless
+     * no-op, whereas the asserting sel_at would throw and abort the whole controller,
+     * leaving even add/delete unbound.
+     */
+    find_page_form_controls() {
+        let sel = this.sel(`form.cv-form`);
+        return this.lookup_form_controls(
+            {can_delete: true, can_order: true, edit_only: false},
+            (s) => sel.find(s),
+        );
+    }
 
-        if (up) {
-            up.click((event) => {
-                try {
-                    let form = this.get_form_context($(event.currentTarget));
-                    form.up();
-                } catch (error) {
-                    this.debug("error", error);
-                }
-                event.preventDefault();
-            });
-        }
+    /**
+     * Form controls of one row. Keeps the asserting lookup, since the row's own
+     * formset context guarantees the control exists.
+     */
+    find_row_form_controls(selection) {
+        let flags = this.get_form_context(selection).formset;
+        return this.lookup_form_controls(flags, (s, msg) => this.sel_at(selection, s, msg));
+    }
 
-        if (down) {
-            down.click((event) => {
-                try {
-                    let form = this.get_form_context($(event.currentTarget));
-                    form.down();
-                } catch (error) {
-                    this.debug("error", error);
-                }
-                event.preventDefault();
-            });
+    /**
+     * Look every control up before any gets bound, so a failing per-row lookup binds nothing.
+     */
+    lookup_form_controls(flags, find) {
+        let c = CrudViewsFormset.const;
+        return {
+            delete: flags.can_delete ? find(c.form_control_delete, "delete not found") : null,
+            add: flags.edit_only === false ? find(c.form_control_add, "add not found") : null,
+            up: flags.can_order ? find(c.form_control_up, "up not found") : null,
+            down: flags.can_order ? find(c.form_control_down, "down not found") : null,
+        };
+    }
+
+    /**
+     * Bind clicks on form controls to the XForm method named by action
+     * (delete, add, up or down).
+     *
+     * @param controls jQuery selection, or null to skip
+     * @param action
+     */
+    bind_form_control(controls, action) {
+        if (!controls) {
+            return;
         }
+        controls.click((event) => {
+            try {
+                let form = this.get_form_context($(event.currentTarget));
+                form[action]();
+            } catch (error) {
+                this.debug("error", error);
+            }
+            event.preventDefault();
+        });
     }
 
     /**

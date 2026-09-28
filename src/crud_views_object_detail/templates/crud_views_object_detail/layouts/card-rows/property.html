@@ -3,6 +3,6 @@
     <div class="col-sm-4 text-body-secondary fw-medium">{{ prop.label }}</div>
     <div class="col-sm-8">
         {% if prop.link_url %}<a href="{{ prop.link_url }}">{% endif %}{% render_property_value prop %}{% if prop.link_url %}</a>{% endif %}
-        {% if prop.detail %}<i class="{{ "property-detail"|named_icon_class }} text-muted ms-1" role="button" tabindex="0" data-bs-toggle="tooltip" data-bs-title="{{ prop.detail }}"></i>{% endif %}
+        {% if prop.detail %}<button type="button" class="btn btn-link p-0 ms-1 align-baseline text-muted" data-bs-toggle="tooltip" data-bs-title="{{ prop.detail }}" aria-label="{{ prop.detail }}"><i class="{{ "property-detail"|named_icon_class }}" aria-hidden="true"></i></button>{% endif %}
     </div>
 </div>

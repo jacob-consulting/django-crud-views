@@ -1,19 +1,27 @@
 {% if cv_action_enabled is not False and cv_access is True %}
+{% if cv_list_action_method == "post" and not cv_modal %}
+<button type="button"
+    data-cv-action="submit-form"
+    data-cv-target="cv_form_{{ cv_oid }}"
+    class="btn btn-outline-primary btn-xs"
+    title="{{ cv_action_label }}"
+    aria-label="{{ cv_action_label }}"
+    cv-key="{{ cv_key }}">
+    {% if cv_icon_action %}<i class="{{ cv_icon_action }}" aria-hidden="true"></i>{% endif %}
+</button>
+{% else %}
 <a {% if cv_modal %}
     href="{{ cv_url }}"
     data-cv-modal="true"
     data-cv-modal-size="{{ cv_modal_size }}"
 {% elif cv_list_action_method == "get" %}
     href="{{ cv_url }}"
-{% elif cv_list_action_method == "post" %}
-    href="#"
-    data-cv-action="submit-form"
-    data-cv-target="cv_form_{{ cv_oid }}"
 {% endif %}
     class="btn btn-outline-primary btn-xs"
-    role="button"
     title="{{ cv_action_label }}"
+    aria-label="{{ cv_action_label }}"
     cv-key="{{ cv_key }}">
-    {% if cv_icon_action %}<i class="{{ cv_icon_action }}"></i>{% endif %}
+    {% if cv_icon_action %}<i class="{{ cv_icon_action }}" aria-hidden="true"></i>{% endif %}
 </a>
+{% endif %}
 {% endif %}

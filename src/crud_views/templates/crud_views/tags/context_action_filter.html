@@ -1,8 +1,8 @@
-<a href="#"
+<button type="button"
    class="btn btn-outline-primary btn-lg"
    id="cv-filter-toggle"
-   role="button"
    title="{{ cv_action_label }}"
+   aria-label="{{ cv_action_label }}"
    cv-key="{{ cv_key }}">
-    {% if cv_icon_action %}<i class="{{ cv_icon_action }}"></i>{% endif %}
-</a>
+    {% if cv_icon_action %}<i class="{{ cv_icon_action }}" aria-hidden="true"></i>{% endif %}
+</button>

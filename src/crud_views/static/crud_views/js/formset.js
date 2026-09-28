@@ -395,7 +395,7 @@ class XForm extends XBase {
         let deleted = this.get_delete(),
             sel_highlight = this.get_inputs();
 
-        // todo: toggle feature flag
+        // delete is a toggle: a second click un-marks the row
         this.set_delete(!deleted);
 
         this.highlight_delete(sel_highlight);

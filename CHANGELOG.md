@@ -4,6 +4,13 @@
 
 ### Fixed
 
+- object detail, card-rows layout: the property detail tooltip now actually shows. Bootstrap
+  tooltips are opt-in and nothing initialised them. The new core script
+  `crud_views/js/tooltip.js` (emitted by `{% cv_js %}`, CSP/SRI-compatible, no inline script)
+  initialises the package's own triggers, marked `data-cv-tooltip`, on page load and after
+  modal content is injected. App-owned `[data-bs-toggle="tooltip"]` elements are left to the
+  application; the card-rows trigger no longer uses `data-bs-toggle`. Also available as
+  `cv.initTooltips(root)` for content you inject yourself. (#125)
 - Accessibility of the shipped templates:
   - context and list actions that navigate are plain links now (no `role="button"`);
     icon-only actions carry their name as visually hidden text

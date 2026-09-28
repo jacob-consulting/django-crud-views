@@ -164,6 +164,7 @@ class CrudViewsSettings(BaseModel):
                 "list_filter": self.get_js("list.filter.js"),
                 "modal": self.get_js("modal.js"),
                 "toggle": self.get_js("toggle.js"),
+                "tooltip": self.get_js("tooltip.js"),
             }
         )
 

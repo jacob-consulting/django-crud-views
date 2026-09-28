@@ -81,6 +81,37 @@ tasks:
       - npx vitest
     silent: true
 
+  sonar:
+    desc: Run tests with coverage and upload a SonarQube analysis of src/ (needs Docker and SONAR_TOKEN in .env)
+    dotenv: [".env"]
+    vars:
+      SCANNER_IMAGE: sonarsource/sonar-scanner-cli:12.1.0.3233_8.0.1
+    preconditions:
+      - sh: test -n "$SONAR_TOKEN"
+        msg: "SONAR_TOKEN is not set. Copy .env.example to .env and add the project analysis token (see CONTRIBUTING.md)."
+      - sh: docker info > /dev/null 2>&1
+        msg: "Docker is not available. Start the Docker daemon and retry."
+    cmds:
+      # Never scan a report left over from an earlier run.
+      - rm -f coverage.xml
+      # task dev installs non-editable; reinstall so coverage line numbers match src/.
+      - uv pip install --no-deps --reinstall .
+      # Failing tests or coverage below fail_under must not block the scan.
+      - cmd: uv run --no-sync pytest tests -n auto --cov --cov-report=term --cov-report=xml:coverage.xml
+        ignore_error: true
+      - |
+        if [ ! -f coverage.xml ]; then
+          echo "coverage.xml was not written (pytest did not finish); not scanning."
+          exit 1
+        fi
+      - >-
+        docker run --rm
+        -e SONAR_TOKEN
+        -v "{{.ROOT_DIR}}:/usr/src:ro"
+        {{.SCANNER_IMAGE}}
+        -Dsonar.working.directory=/tmp/scannerwork
+      - echo "Result -> https://sonar.cnbg-n.com/dashboard?id=django-crud-views%3Amain"
+
   install-skill-claude:
     cmds:
       - rm -rf ~/.claude/skills/django-crud-views

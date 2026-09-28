@@ -68,5 +68,5 @@ class CreateViewParentMixin:
             # now save the form
             super().cv_form_valid(context)
 
-    def cv_parent_many_to_many_through_defaults(self, instance, parent_instance, m2m) -> dict:
+    def cv_parent_many_to_many_through_defaults(self, instance, parent_instance, m2m) -> dict:  # NOSONAR S1172 hook
         return {}

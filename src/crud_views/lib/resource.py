@@ -30,7 +30,7 @@ class ResourceMeta:
     # viewset.path_regs executes the viewset package __init__, which imports
     # this module back)
     pk_type: str = r"[A-Za-z0-9_\-]+"
-    ordering: str | None = None  # informational; sort in cv_get_items
+    ordering: str | None = None  # informational only, sorting happens in cv_get_items
 
 
 _META_ATTRS = ("verbose_name", "verbose_name_plural", "app_label", "pk_field", "pk_type", "ordering")
@@ -150,7 +150,7 @@ class ResourceViewMixin:
     def get_queryset(self):
         return self.model.cv_get_items(self.request, **self.kwargs)
 
-    def get_object(self, queryset=None):
+    def get_object(self, queryset=None):  # NOSONAR S1172: Django SingleObjectMixin signature
         pk_name = self.cv_viewset.pk_name
         pk = self.kwargs[pk_name]
         url_kwargs = {k: v for k, v in self.kwargs.items() if k != pk_name}

@@ -24,7 +24,7 @@ class CrudViewProcessFormMixin:
     Why? Because we need a more detailed handling of the post method.
     """
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):  # NOSONAR S1172: Django View.post signature
         """
         Override ProcessFormView
         """

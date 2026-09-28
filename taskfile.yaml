@@ -95,7 +95,8 @@ tasks:
       # Never scan a report left over from an earlier run.
       - rm -f coverage.xml
       # task dev installs non-editable; reinstall so coverage line numbers match src/.
-      - uv pip install --no-deps --reinstall .
+      # -p pins the project .venv (the one uv run uses), even if another VIRTUAL_ENV is active.
+      - uv pip install -p .venv/bin/python --no-deps --reinstall .
       # Failing tests or coverage below fail_under must not block the scan.
       - cmd: uv run --no-sync pytest tests -n auto --cov --cov-report=term --cov-report=xml:coverage.xml
         ignore_error: true

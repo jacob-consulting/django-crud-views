@@ -194,41 +194,48 @@ class GuardianParentPermissionMixin:
 
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
-            behavior = getattr(self, "cv_guardian_anonymous_behavior", "redirect")
-            if behavior == "404":
-                raise Http404
-            if behavior == "403":
-                raise PermissionDenied
-            return self.handle_no_permission()  # redirect to login
+            return self._guardian_deny_anonymous()
         parent_vs = self.cv_viewset.parent
         if parent_vs is not None:
-            is_create = getattr(self, "cv_permission", None) == "add"
-            perm_key = None
-            if is_create:
-                perm_key = getattr(self.cv_viewset, "cv_guardian_parent_create_permission", None)
-            if perm_key is None:
-                perm_key = getattr(self.cv_viewset, "cv_guardian_parent_permission", "view")
-
-            if perm_key is not None:
-                parent_pk = kwargs.get(parent_vs.get_pk_name())
-                parent_obj = get_object_or_404(parent_vs.viewset.model, pk=parent_pk)
-                parent_perm = parent_vs.viewset.permissions.get(perm_key)
-                accept_global = getattr(self, "cv_guardian_accept_global_perms", False)
-                if accept_global:
-                    has_perm = request.user.has_perm(parent_perm, parent_obj)
-                else:
-                    from guardian.core import ObjectPermissionChecker
-
-                    checker = ObjectPermissionChecker(request.user)
-                    has_perm = checker.has_perm(parent_perm.split(".")[1], parent_obj)
-                if not has_perm:
-                    raise PermissionDenied
-                # Secondary state gate — only for no-object child views (e.g. create),
-                # whose action object IS the parent. Object child-views (detail/update/
-                # delete) carry a row and are gated in get_object() with that row, so we
-                # must NOT also gate them here with the parent (that would invoke
-                # cv_action_enabled with the wrong object type).
-                if not self.cv_object and not self.cv_action_enabled(request.user, parent_obj):
-                    raise PermissionDenied
-
+            self._guardian_check_parent(request.user, parent_vs, kwargs)
         return super().dispatch(request, *args, **kwargs)
+
+    def _guardian_deny_anonymous(self):
+        behavior = getattr(self, "cv_guardian_anonymous_behavior", "redirect")
+        if behavior == "404":
+            raise Http404
+        if behavior == "403":
+            raise PermissionDenied
+        return self.handle_no_permission()  # redirect to login
+
+    def _guardian_parent_perm_key(self) -> str | None:
+        perm_key = None
+        if getattr(self, "cv_permission", None) == "add":
+            perm_key = getattr(self.cv_viewset, "cv_guardian_parent_create_permission", None)
+        if perm_key is None:
+            perm_key = getattr(self.cv_viewset, "cv_guardian_parent_permission", "view")
+        return perm_key
+
+    def _guardian_has_parent_perm(self, user, parent_perm: str, parent_obj) -> bool:
+        if getattr(self, "cv_guardian_accept_global_perms", False):
+            return user.has_perm(parent_perm, parent_obj)
+        from guardian.core import ObjectPermissionChecker
+
+        return ObjectPermissionChecker(user).has_perm(parent_perm.split(".")[1], parent_obj)
+
+    def _guardian_check_parent(self, user, parent_vs, kwargs):
+        """Raise PermissionDenied unless ``user`` may act on the parent object."""
+        perm_key = self._guardian_parent_perm_key()
+        if perm_key is None:
+            return
+        parent_obj = get_object_or_404(parent_vs.viewset.model, pk=kwargs.get(parent_vs.get_pk_name()))
+        parent_perm = parent_vs.viewset.permissions.get(perm_key)
+        if not self._guardian_has_parent_perm(user, parent_perm, parent_obj):
+            raise PermissionDenied
+        # Secondary state gate — only for no-object child views (e.g. create),
+        # whose action object IS the parent. Object child-views (detail/update/
+        # delete) carry a row and are gated in get_object() with that row, so we
+        # must NOT also gate them here with the parent (that would invoke
+        # cv_action_enabled with the wrong object type).
+        if not self.cv_object and not self.cv_action_enabled(user, parent_obj):
+            raise PermissionDenied

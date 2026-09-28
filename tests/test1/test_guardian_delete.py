@@ -36,3 +36,37 @@ def test_guardian_delete_still_works(client_guardian, user_guardian, cv_guardian
     response = client_guardian.post(f"/guardian_publisher_cascade/{pk}/delete/", {"confirm": True})
     assert response.status_code == 302
     assert not Publisher.objects.filter(pk=pk).exists()
+
+
+# ── cv_filter_related_objects, called directly ────────────────────────────────
+
+
+@pytest.mark.django_db
+def test_filter_related_objects_empty_tree_is_returned_unchanged(user_guardian):
+    from crud_views.lib.views.delete import RelatedObjects
+    from crud_views_guardian.lib.views import GuardianDeleteRelatedObjectsMixin
+
+    related = RelatedObjects(tree=[], summary={}, protected=[])
+    assert GuardianDeleteRelatedObjectsMixin().cv_filter_related_objects(user_guardian, related) is related
+
+
+@pytest.mark.django_db
+def test_filter_related_objects_hides_unpermitted_and_keeps_structure(
+    user_guardian, cv_guardian_publisher, publisher_a, publisher_b
+):
+    """Permitted objects stay, unpermitted ones become None, non-model entries
+    (e.g. the string labels Django's collector emits) and nesting are preserved."""
+    from crud_views.lib.views.delete import RelatedObjects
+    from crud_views_guardian.lib.views import GuardianDeleteRelatedObjectsMixin
+
+    user_guardian_object_perm(user_guardian, cv_guardian_publisher, "view", publisher_a)
+    related = RelatedObjects(
+        tree=[publisher_a, ["label", publisher_b, [publisher_a]], None],
+        summary={"x": 1},
+        protected=["p"],
+    )
+
+    result = GuardianDeleteRelatedObjectsMixin().cv_filter_related_objects(user_guardian, related)
+
+    assert result.tree == [publisher_a, ["label", None, [publisher_a]], None]
+    assert result.summary == {"x": 1} and result.protected == ["p"]

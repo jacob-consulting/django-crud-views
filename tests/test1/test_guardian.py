@@ -809,3 +809,26 @@ def test_guardian_register_uses_custom_manage_view_class():
     finally:
         with _REGISTRY_LOCK:
             _REGISTRY.pop(name, None)
+
+
+@pytest.mark.django_db
+def test_child_list_with_accept_global_allows_object_perm_on_parent(
+    client_guardian, user_guardian, cv_guardian_publisher, publisher_a, monkeypatch
+):
+    """With cv_guardian_accept_global_perms=True the parent check goes through
+    user.has_perm(perm, obj); an object permission on the parent still grants access."""
+    from tests.test1.app.views import GuardianBookListView
+
+    monkeypatch.setattr(GuardianBookListView, "cv_guardian_accept_global_perms", True)
+    user_guardian_object_perm(user_guardian, cv_guardian_publisher, "view", publisher_a)
+    response = client_guardian.get(f"/guardian_publisher/{publisher_a.pk}/guardian_book/")
+    assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_child_list_with_accept_global_denies_without_any_parent_perm(client_guardian, publisher_a, monkeypatch):
+    from tests.test1.app.views import GuardianBookListView
+
+    monkeypatch.setattr(GuardianBookListView, "cv_guardian_accept_global_perms", True)
+    response = client_guardian.get(f"/guardian_publisher/{publisher_a.pk}/guardian_book/")
+    assert response.status_code == 403

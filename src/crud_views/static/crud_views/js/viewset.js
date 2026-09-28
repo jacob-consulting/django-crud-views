@@ -1,5 +1,5 @@
 function cvGetConfig() {
-    var el = document.getElementById("cv-config");
+    const el = document.getElementById("cv-config");
     if (!el) {
         throw new Error("cvGetConfig: #cv-config element not found. Make sure {% cv_config %} is in your base template.");
     }
@@ -16,7 +16,7 @@ $(document).ready(function () {
     // list action form submit via data-cv-action="submit-form"
     $(document).on("click", "[data-cv-action='submit-form']", function (e) {
         e.preventDefault();
-        var targetId = $(this).attr("data-cv-target");
+        const targetId = $(this).attr("data-cv-target");
         $("#" + targetId).submit();
     });
 
@@ -28,6 +28,6 @@ $(document).ready(function () {
     // cancel button navigation via data-cv-cancel-url
     $(document).on("click", "[data-cv-cancel-url]", function (e) {
         e.preventDefault();
-        window.location.href = $(this).attr("data-cv-cancel-url");
+        globalThis.location.href = $(this).attr("data-cv-cancel-url");
     });
 });

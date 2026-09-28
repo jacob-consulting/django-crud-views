@@ -1,6 +1,6 @@
 $(document).ready(function () {
 
-    var config = cvGetConfig();
+    const config = cvGetConfig();
 
     // add event listener to the filter button
     $('#filter-button').click(function () {
@@ -16,9 +16,9 @@ $(document).ready(function () {
             params = new URLSearchParams(query_string),
             reset_param = "reset_filter=true";
         if (params.has("sort")) {
-            window.location.href = url + "?sort=" + params.get("sort") + "&" + reset_param;
+            globalThis.location.href = url + "?sort=" + params.get("sort") + "&" + reset_param;
         } else {
-            window.location.href = url + "?" + reset_param;
+            globalThis.location.href = url + "?" + reset_param;
         }
     });
 
@@ -30,7 +30,6 @@ $(document).ready(function () {
         // get vars
         let collapse = $('#filter-collapse'),
             visible = collapse.is(":visible"),
-            form = $('#filter-form'),
             data = {
                 filter_expanded: !visible,
             };
@@ -48,7 +47,6 @@ $(document).ready(function () {
             }
         );
 
-        // console.log('cv_filter_toggle', isVisible, collapse, form);
         collapse.collapse("toggle");
         event.preventDefault();
     });

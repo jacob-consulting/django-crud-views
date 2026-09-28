@@ -4,6 +4,18 @@
 
 ### Fixed
 
+- Accessibility of the shipped templates:
+  - context and list actions that navigate are plain links now (no `role="button"`),
+    labelled with `aria-label`; their icons are `aria-hidden`
+  - list actions that POST (`cv_list_action_method = "post"`, e.g. ordered up/down) and the
+    filter toggle (`#cv-filter-toggle`) render as `<button type="button">` instead of
+    `<a href="#">`. **If you style these by element (`a.btn`, `a#cv-filter-toggle`), update
+    the selector.**
+  - formset row controls get correct group labels (the add/delete group was labelled
+    "Order") and `aria-label`s on the icon-only buttons
+  - object detail: property labels are row headers (`<th scope="row">`) in the accordion,
+    table-inline and striped-rows layouts; the card-rows detail tooltip is triggered by a
+    labelled `<button>` instead of an `<i role="button" tabindex="0">`
 - Guardian: child views with `cv_guardian_accept_global_perms = True` now accept a
   model-level permission on the **parent** model as a fallback, like every other guardian
   check and as documented. Before, the parent check used `user.has_perm(perm, parent_obj)`,

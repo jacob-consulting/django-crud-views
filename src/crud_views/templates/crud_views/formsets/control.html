@@ -1,27 +1,28 @@
+{% load i18n %}
 <div class="cv-form-ctrl">
 
-    <div class="btn-group" role="group">
+    <div class="btn-group" role="group" aria-label="{% translate 'Row controls' %}">
         {% if formset.can_order %}
-            <div class="btn-group" role="group" aria-label="Order">
-                <button type="button" class="btn btn-light cv-form-ctrl-up" title="up"
+            <div class="btn-group" role="group" aria-label="{% translate 'Order' %}">
+                <button type="button" class="btn btn-light cv-form-ctrl-up" title="up" aria-label="{% translate 'Move up' %}"
                         cv-data-formset-form-prefix="{{ form.prefix }}">
-                    <i class="fa-solid fa-caret-up"></i>
+                    <i class="fa-solid fa-caret-up" aria-hidden="true"></i>
                 </button>
-                <button type="button" class="btn btn-light cv-form-ctrl-down" title="down"
+                <button type="button" class="btn btn-light cv-form-ctrl-down" title="down" aria-label="{% translate 'Move down' %}"
                         cv-data-formset-form-prefix="{{ form.prefix }}">
-                    <i class="fa-solid fa-caret-down"></i>
+                    <i class="fa-solid fa-caret-down" aria-hidden="true"></i>
                 </button>
             </div>
         {% endif %}
-        <div class="btn-group" role="group" aria-label="Order">
-            <button type="button" class="btn btn-light cv-form-ctrl-add" title="add"
+        <div class="btn-group" role="group" aria-label="{% translate 'Add or delete' %}">
+            <button type="button" class="btn btn-light cv-form-ctrl-add" title="add" aria-label="{% translate 'Add row' %}"
                     cv-data-formset-form-prefix="{{ form.prefix }}">
-                <i class="fa-solid fa-plus"></i>
+                <i class="fa-solid fa-plus" aria-hidden="true"></i>
             </button>
             {% if formset.can_delete %}
-                <button type="button" class="btn btn-light cv-form-ctrl-delete" title="delete"
+                <button type="button" class="btn btn-light cv-form-ctrl-delete" title="delete" aria-label="{% translate 'Delete row' %}"
                         cv-data-formset-form-prefix="{{ form.prefix }}">
-                    <i class="fa-solid fa-square-xmark"></i>
+                    <i class="fa-solid fa-square-xmark" aria-hidden="true"></i>
                 </button>
             {% endif %}
         </div>

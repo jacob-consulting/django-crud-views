@@ -62,37 +62,41 @@ class ObjectDetailMixin:
             )
             if isinstance(pd, list):
                 for i, group in enumerate(pd):
-                    if isinstance(group, PropertyGroupConfig):
-                        continue
-                    yield CheckExpression(
-                        context=cls,
-                        id="E242",
-                        expression=isinstance(group, dict) and "title" in group,
-                        msg=f"cv_property_display[{i}] must be a dict with a 'title' key",
-                    )
-                    yield CheckExpression(
-                        context=cls,
-                        id="E243",
-                        expression=isinstance(group, dict) and "properties" in group,
-                        msg=f"cv_property_display[{i}] must be a dict with a 'properties' key",
-                    )
-                    if isinstance(group, dict) and "properties" in group:
-                        props = group["properties"]
-                        yield CheckExpression(
-                            context=cls,
-                            id="E244",
-                            expression=isinstance(props, list),
-                            msg=f"cv_property_display[{i}]['properties'] must be a list",
-                        )
-                        if isinstance(props, list):
-                            for j, prop in enumerate(props):
-                                yield CheckExpression(
-                                    context=cls,
-                                    id="E245",
-                                    expression=isinstance(prop, (str, dict, PropertyConfig)),
-                                    msg=(
-                                        f"cv_property_display[{i}]['properties'][{j}] must be a str, "
-                                        "dict, or PropertyConfig"
-                                    ),
-                                )
+                    yield from cls._checks_property_group(i, group)
         yield from super().checks()
+
+    @classmethod
+    def _checks_property_group(cls, i: int, group) -> Iterable[Check]:
+        if isinstance(group, PropertyGroupConfig):
+            return  # already validated by pydantic
+        yield CheckExpression(
+            context=cls,
+            id="E242",
+            expression=isinstance(group, dict) and "title" in group,
+            msg=f"cv_property_display[{i}] must be a dict with a 'title' key",
+        )
+        yield CheckExpression(
+            context=cls,
+            id="E243",
+            expression=isinstance(group, dict) and "properties" in group,
+            msg=f"cv_property_display[{i}] must be a dict with a 'properties' key",
+        )
+        if isinstance(group, dict) and "properties" in group:
+            yield from cls._checks_group_properties(i, group["properties"])
+
+    @classmethod
+    def _checks_group_properties(cls, i: int, props) -> Iterable[Check]:
+        yield CheckExpression(
+            context=cls,
+            id="E244",
+            expression=isinstance(props, list),
+            msg=f"cv_property_display[{i}]['properties'] must be a list",
+        )
+        if isinstance(props, list):
+            for j, prop in enumerate(props):
+                yield CheckExpression(
+                    context=cls,
+                    id="E245",
+                    expression=isinstance(prop, (str, dict, PropertyConfig)),
+                    msg=f"cv_property_display[{i}]['properties'][{j}] must be a str, dict, or PropertyConfig",
+                )

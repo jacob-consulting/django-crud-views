@@ -47,7 +47,7 @@ def groups():
 # silently falls back to the wrong (or a cached) template.
 LAYOUT_PACKS = [
     ("split-card", "border-end"),
-    ("card-rows", 'data-bs-toggle="tooltip"'),
+    ("card-rows", "data-cv-tooltip"),
     ("table-inline", "table table-borderless mb-0"),
     ("list-group-3col", "list-group-item"),
     ("accordion", "accordion-item"),

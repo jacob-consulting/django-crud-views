@@ -21,7 +21,7 @@ task dev
 
 ## JS tests
 
-The package's static JavaScript (`formset.js`, `modal.js`, `toggle.js`) has a
+The package's static JavaScript (`formset.js`, `modal.js`, `toggle.js`, `tooltip.js`, …) has a
 [Vitest](https://vitest.dev/) unit-test suite. It needs [Node.js](https://nodejs.org/) 20+:
 
 ```bash

@@ -40,7 +40,10 @@ Groups as vertical tabs with properties in the tab content area.
 
 ### Card Rows
 
-Each group rendered as a standalone card with stacked property rows.
+Each group rendered as a standalone card with stacked property rows. A property's
+`detail` text is shown as a tooltip on an info icon (hover or keyboard focus). The
+tooltip is initialised by the bundled `crud_views/js/tooltip.js` (via `{% cv_js %}`) and
+needs Bootstrap's JavaScript; without it the text remains available to screen readers.
 
 ![card-rows](screenshots/card-rows.png)
 

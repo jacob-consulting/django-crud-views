@@ -13,12 +13,14 @@ __all__ = [
     "x",
 ]
 
+_CONFIG = "crud_views_object_detail.lib.config"
+
 _EXPORTS = {
-    "BadgeConfig": ("crud_views_object_detail.lib.config", "BadgeConfig"),
-    "LinkConfig": ("crud_views_object_detail.lib.config", "LinkConfig"),
-    "PropertyConfig": ("crud_views_object_detail.lib.config", "PropertyConfig"),
-    "PropertyGroupConfig": ("crud_views_object_detail.lib.config", "PropertyGroupConfig"),
-    "x": ("crud_views_object_detail.lib.config", "x"),
+    "BadgeConfig": (_CONFIG, "BadgeConfig"),
+    "LinkConfig": (_CONFIG, "LinkConfig"),
+    "PropertyConfig": (_CONFIG, "PropertyConfig"),
+    "PropertyGroupConfig": (_CONFIG, "PropertyGroupConfig"),
+    "x": (_CONFIG, "x"),
     "ObjectDetailMixin": ("crud_views_object_detail.lib.mixins", "ObjectDetailMixin"),
     "ObjectDetailView": ("crud_views_object_detail.lib.views", "ObjectDetailView"),
     "ObjectDetailViewPermissionRequired": ("crud_views_object_detail.lib.views", "ObjectDetailViewPermissionRequired"),

@@ -14,7 +14,8 @@ class WorkflowForm(CrispyForm):
     """
 
     class Meta:
-        fields = ["transition", "comment"]  # noqa: RUF012 — Django Meta option, not a typed class attribute
+        # RUF012: Django Meta option, not a typed class attribute
+        fields = ["transition", "comment"]  # noqa: RUF012
 
     submit_label: str = _("Process Workflow Step")
 

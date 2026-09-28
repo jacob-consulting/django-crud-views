@@ -32,7 +32,7 @@ class PolymorphicCrudViewMixin:
     Polymorphic ViewSet mixin
     """
 
-    polymorphic_forms: dict[Model, ModelForm] = None
+    polymorphic_forms: dict[Model, ModelForm] | None = None
 
     @property
     def polymorphic_ctype_id(self) -> int:

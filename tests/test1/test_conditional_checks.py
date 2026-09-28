@@ -1,8 +1,10 @@
 from collections import OrderedDict
+from types import SimpleNamespace
 
 from django import forms
 from django.forms.models import inlineformset_factory
 
+from crud_views import checks
 from crud_views.checks import _conditional_messages, check_conditional
 from crud_views.lib.conditional.formset import ConditionalFormSet
 from crud_views.lib.conditional.group import ConditionalGroup, ConditionalGroupFormMixin
@@ -294,3 +296,94 @@ def test_non_nullable_clear_warned():
         non_nullable_clears=[("SomeForm", "email")],
     )
     assert any(m.id == "crud_views.W320" for m in msgs)
+
+
+# ── registry-level branches, run against an isolated fake registry ────────────
+# Real ViewSets register globally at import time; these scenarios would leak
+# warnings into other tests, so check_conditional() walks a stand-in registry.
+
+
+def _fake_formset(conditional=None, children=None, can_delete=True, edit_only=False):
+    return SimpleNamespace(
+        conditional=conditional,
+        children=children or {},
+        klass=SimpleNamespace(can_delete=can_delete, edit_only=edit_only),
+    )
+
+
+def _run_check_with(monkeypatch, form_class, formsets=None):
+    view = SimpleNamespace(form_class=form_class, cv_formsets=formsets)
+    viewset = SimpleNamespace(get_all_views=lambda: {"create": view})
+    monkeypatch.setattr(checks, "_REGISTRY", {"fake": viewset})
+    return check_conditional()
+
+
+class _NameWithItemsForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ["name", "with_items"]
+
+
+def test_conditional_on_nested_child_formset_flags_e310(monkeypatch):
+    child = _fake_formset(conditional=ConditionalFormSet(toggle=ModelFieldToggle("with_items")))
+    top = _fake_formset(children={"sub": child})
+    messages = _run_check_with(monkeypatch, _NameWithItemsForm, {"items": top})
+    e310 = [m for m in messages if m.id == "crud_views.E310"]
+    assert len(e310) == 1 and "items-sub" in e310[0].msg, messages
+
+
+def test_purge_with_edit_only_warns_w321(monkeypatch):
+    fs = _fake_formset(
+        conditional=ConditionalFormSet(toggle=ModelFieldToggle("with_items"), on_off="purge"),
+        edit_only=True,
+    )
+    messages = _run_check_with(monkeypatch, _NameWithItemsForm, {"items": fs})
+    w321 = [m for m in messages if m.id == "crud_views.W321"]
+    assert len(w321) == 1 and "edit_only=True" in w321[0].msg, messages
+
+
+class _UndeclaredModelToggleGroupForm(forms.ModelForm):
+    cv_conditional_groups = [ConditionalGroup(toggle=ModelFieldToggle("not_on_form"), fields=["email"])]
+
+    class Meta:
+        model = Profile
+        fields = ["name", "email"]
+
+
+def test_group_model_toggle_missing_from_form_flags_e311(monkeypatch):
+    messages = _run_check_with(monkeypatch, _UndeclaredModelToggleGroupForm)
+    e311 = [m for m in messages if m.id == "crud_views.E311"]
+    assert len(e311) == 1 and "not_on_form" in e311[0].msg, messages
+
+
+class _NonNullableClearGroupForm(forms.ModelForm):
+    cv_conditional_groups = [
+        ConditionalGroup(toggle=ModelFieldToggle("with_contact"), fields=["name", "email", "no_such_field"])
+    ]
+
+    class Meta:
+        model = Profile
+        fields = ["name", "email", "with_contact"]
+
+
+def test_group_clearing_non_nullable_field_warns_w320_and_skips_unknown_fields(monkeypatch):
+    """`name` is NOT NULL → W320; `email` is null+blank → fine; `no_such_field`
+    is not a model field → skipped rather than crashing the check."""
+    messages = _run_check_with(monkeypatch, _NonNullableClearGroupForm)
+    w320 = [m for m in messages if m.id == "crud_views.W320"]
+    assert len(w320) == 1 and "name" in w320[0].msg, messages
+    assert not any("email" in m.msg or "no_such_field" in m.msg for m in w320), messages
+
+
+def test_group_field_with_empty_value_does_not_warn_w320(monkeypatch):
+    class _Form(forms.ModelForm):
+        cv_conditional_groups = [
+            ConditionalGroup(toggle=ModelFieldToggle("with_contact"), fields=["name"], empty_values={"name": "-"})
+        ]
+
+        class Meta:
+            model = Profile
+            fields = ["name", "with_contact"]
+
+    messages = _run_check_with(monkeypatch, _Form)
+    assert not [m for m in messages if m.id == "crud_views.W320"], messages

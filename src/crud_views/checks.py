@@ -1,3 +1,5 @@
+import dataclasses
+
 from django.core.checks import Error, register
 from django.core.checks import Warning as DjangoWarning
 
@@ -91,80 +93,110 @@ def _conditional_messages(nested_conditionals, missing_toggles, non_nullable_cle
     return messages
 
 
+@dataclasses.dataclass
+class _ConditionalFindings:
+    """Raw findings of check_conditional, collected across all registered views."""
+
+    nested_conditionals: list = dataclasses.field(default_factory=list)
+    missing_toggles: list = dataclasses.field(default_factory=list)
+    non_nullable_clears: list = dataclasses.field(default_factory=list)
+    purge_conflicts: list = dataclasses.field(default_factory=list)
+
+
+def _purge_conflict(klass) -> str | None:
+    """Why purge contradicts the formset class, or None if it doesn't."""
+    if not klass.can_delete:
+        return "can_delete=False"
+    if klass.edit_only:
+        return "edit_only=True"
+    return None
+
+
+def _check_top_level_conditional(formset, key, form_class, available_toggles, findings):
+    conditional = formset.conditional
+    if form_class is not None:
+        tname = conditional.toggle.field_name()
+        if tname not in available_toggles:
+            findings.missing_toggles.append((form_class.__name__, tname))
+    if conditional.on_off == "purge":
+        conflict = _purge_conflict(formset.klass)
+        if conflict:
+            findings.purge_conflicts.append((key, conflict))
+
+
+def _walk_formset(formset, key, is_top, form_class, available_toggles, findings):
+    """Only top-level formsets may carry a conditional; recurse into children."""
+    if formset.conditional is not None:
+        if is_top:
+            _check_top_level_conditional(formset, key, form_class, available_toggles, findings)
+        else:
+            findings.nested_conditionals.append((key, formset.conditional))
+    for ckey, child in formset.children.items():
+        _walk_formset(child, f"{key}-{ckey}", False, form_class, available_toggles, findings)
+
+
+def _non_nullable_clears(model, group):
+    """Group fields that clearing (toggle off) would set to an invalid empty value."""
+    for fname in group.fields:
+        try:
+            mf = model._meta.get_field(fname)
+        except Exception:
+            continue
+        if not (getattr(mf, "null", False) and getattr(mf, "blank", False)) and fname not in group.empty_values:
+            yield fname
+
+
+def _collect_group_findings(form_class, groups, declared, findings):
+    model = getattr(getattr(form_class, "_meta", None), "model", None)
+    for group in groups:
+        tname = group.toggle.field_name()
+        if not group.toggle.inject and tname not in declared:
+            findings.missing_toggles.append((form_class.__name__, tname))
+        if model is not None:
+            findings.non_nullable_clears.extend(
+                (form_class.__name__, fname) for fname in _non_nullable_clears(model, group)
+            )
+
+
+def _collect_view_findings(view, findings):
+    form_class = getattr(view, "form_class", None)
+    declared = set(getattr(form_class, "base_fields", {}).keys()) if form_class else set()
+
+    groups = getattr(form_class, "cv_conditional_groups", None) if form_class else None
+    # ConditionalGroupFormMixin injects these at form init — the only
+    # injection path there is; formset toggles are never auto-injected.
+    group_injected = {g.toggle.field_name() for g in groups or [] if g.toggle.inject}
+
+    formsets = getattr(view, "cv_formsets", None)
+    if formsets is not None:
+        for key, fs in formsets.items():
+            _walk_formset(fs, key, True, form_class, declared | group_injected, findings)
+
+    if groups:
+        _collect_group_findings(form_class, groups, declared, findings)
+
+
 @register(TAG)
 def check_conditional(app_configs=None, **kwargs):
     """Validate ConditionalGroup / ConditionalFormSet declarations."""
-    nested_conditionals: list = []
-    missing_toggles: list = []
-    non_nullable_clears: list = []
-    purge_conflicts: list = []
+    findings = _ConditionalFindings()
 
     with _REGISTRY_LOCK:
         viewsets = list(_REGISTRY.values())
 
     for viewset in viewsets:
         for view in viewset.get_all_views().values():
-            form_class = getattr(view, "form_class", None)
-            declared = set(getattr(form_class, "base_fields", {}).keys()) if form_class else set()
-
-            groups = getattr(form_class, "cv_conditional_groups", None) if form_class else None
-            # ConditionalGroupFormMixin injects these at form init — the only
-            # injection path there is; formset toggles are never auto-injected.
-            group_injected = {g.toggle.field_name() for g in groups or [] if g.toggle.inject}
-
-            formsets = getattr(view, "cv_formsets", None)
-            if formsets is not None:
-                # top-level only are allowed to carry a conditional
-                # B023 is a false positive here — _walk is invoked only at
-                # the call sites below, within the same loop iteration that
-                # defines it, so the closure never outlives its bindings.
-                def _walk(formset, key, is_top):
-                    if formset.conditional is not None:
-                        if not is_top:
-                            nested_conditionals.append((key, formset.conditional))
-                        else:
-                            if form_class is not None:  # noqa: B023
-                                tname = formset.conditional.toggle.field_name()
-                                if tname not in declared and tname not in group_injected:  # noqa: B023
-                                    missing_toggles.append((form_class.__name__, tname))  # noqa: B023
-                            if formset.conditional.on_off == "purge":
-                                if not formset.klass.can_delete:
-                                    purge_conflicts.append((key, "can_delete=False"))
-                                elif formset.klass.edit_only:
-                                    purge_conflicts.append((key, "edit_only=True"))
-                    for ckey, child in formset.children.items():
-                        _walk(child, f"{key}-{ckey}", False)
-
-                for key, fs in formsets.items():
-                    _walk(fs, key, True)
-
-            if groups:
-                model = getattr(getattr(form_class, "_meta", None), "model", None)
-                for group in groups:
-                    tname = group.toggle.field_name()
-                    if not group.toggle.inject and tname not in declared:
-                        missing_toggles.append((form_class.__name__, tname))
-                    if model is not None:
-                        for fname in group.fields:
-                            try:
-                                mf = model._meta.get_field(fname)
-                            except Exception:
-                                continue
-                            if (
-                                not (getattr(mf, "null", False) and getattr(mf, "blank", False))
-                                and fname not in group.empty_values
-                            ):
-                                non_nullable_clears.append((form_class.__name__, fname))
+            _collect_view_findings(view, findings)
 
     # Create/Update views routinely share form_class + cv_formsets — report each
     # distinct finding once, not once per view.
     seen_nested = set()
     nested_conditionals = [
-        (key, cond) for key, cond in nested_conditionals if not (key in seen_nested or seen_nested.add(key))
+        (key, cond) for key, cond in findings.nested_conditionals if not (key in seen_nested or seen_nested.add(key))
     ]
-    missing_toggles = list(dict.fromkeys(missing_toggles))
-    non_nullable_clears = list(dict.fromkeys(non_nullable_clears))
-    purge_conflicts = list(dict.fromkeys(purge_conflicts))
+    missing_toggles = list(dict.fromkeys(findings.missing_toggles))
+    non_nullable_clears = list(dict.fromkeys(findings.non_nullable_clears))
+    purge_conflicts = list(dict.fromkeys(findings.purge_conflicts))
 
     return _conditional_messages(nested_conditionals, missing_toggles, non_nullable_clears, purge_conflicts)
 

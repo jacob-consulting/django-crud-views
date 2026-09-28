@@ -1,3 +1,4 @@
+import copy
 from collections import UserDict
 from typing import Self
 
@@ -24,25 +25,31 @@ class ColumnAttrs(UserDict):
 
     def __or__(self, other):
         assert isinstance(other, ColumnAttrs)
+        # deep copy: the result must not share nested dicts with the operands,
+        # which are often the class-level ColAttr presets
+        return ColumnAttrs(copy.deepcopy(_merge_attrs(dict(self), dict(other))))
 
-        def merge(dict1, dict2):
-            for key, value in dict2.items():
-                if key in dict1 and isinstance(dict1[key], dict) and isinstance(value, dict):
-                    dict1[key] = merge(dict1[key], value)
-                else:
-                    if key == "class":
-                        assert isinstance(value, str)
-                        # check if class is already set
-                        classes = [c for c in dict1.get(key, "").split(" ") if len(c)]
-                        if value not in classes:
-                            value = dict1.get(key, "") + " " + value
-                            dict1[key] = value
-                    else:
-                        dict1[key] = value
-            return dict1
 
-        merged: dict = merge(dict(self), dict(other))
-        return ColumnAttrs(merged)
+def _merge_class(existing: str, value: str) -> str:
+    assert isinstance(value, str)
+    classes = existing.split()
+    if value not in classes:
+        classes.append(value)
+    return " ".join(classes)
+
+
+def _merge_attrs(base: dict, extra: dict) -> dict:
+    """Merge ``extra`` into a new dict based on ``base``; neither argument is modified."""
+    merged = dict(base)
+    for key, value in extra.items():
+        current = merged.get(key)
+        if isinstance(current, dict) and isinstance(value, dict):
+            merged[key] = _merge_attrs(current, value)
+        elif key == "class":
+            merged[key] = _merge_class(current or "", value)
+        else:
+            merged[key] = value
+    return merged
 
 
 class ColAttrMeta(type):

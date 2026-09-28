@@ -220,6 +220,16 @@ class CardOrderMixin:
         except Exception:  # pragma: no cover - defensive
             return field
 
+    def _signed_order_choice(self, raw: str, explicit_label) -> tuple[str, str]:
+        """Choice name and label for a signed ordering entry (e.g. ``-title``)."""
+        field, field_direction = self._split_signed(raw)
+        name = self._signed_key(field, field_direction)
+        if explicit_label is not None:
+            return name, explicit_label
+        if field_direction == "desc":
+            return name, _("%(field)s (descending)") % {"field": self._order_field_label(field)}
+        return name, _("%(field)s (ascending)") % {"field": self._order_field_label(field)}
+
     def cv_get_order_choices(self) -> list[dict]:
         current, direction = self.cv_get_order()
         signed = self.cv_order_is_signed()
@@ -229,14 +239,7 @@ class CardOrderMixin:
             explicit_label = f[1] if isinstance(f, (tuple, list)) else None
             raw = self._order_entry_name(f)
             if signed:
-                field, field_direction = self._split_signed(raw)
-                name = self._signed_key(field, field_direction)
-                if explicit_label is not None:
-                    label = explicit_label
-                elif field_direction == "desc":
-                    label = _("%(field)s (descending)") % {"field": self._order_field_label(field)}
-                else:
-                    label = _("%(field)s (ascending)") % {"field": self._order_field_label(field)}
+                name, label = self._signed_order_choice(raw, explicit_label)
             else:
                 name = raw
                 label = explicit_label if explicit_label is not None else self._order_field_label(name)

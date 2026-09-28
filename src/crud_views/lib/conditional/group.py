@@ -63,23 +63,25 @@ class ConditionalGroupFormMixin:
         cleaned = super().clean()
         for group in self.cv_conditional_groups:
             if group.is_on(self):
-                for name in group.required_fields:
-                    # A field that already failed its own validation keeps that error;
-                    # piling a "required" error on top would contradict it.
-                    if (
-                        name in self.fields
-                        and name not in self.errors
-                        and cleaned.get(name) in self.fields[name].empty_values
-                    ):
-                        self.add_error(name, self.fields[name].error_messages["required"])
+                self._cv_enforce_required(group, cleaned)
             else:
-                for name in group.fields:
-                    if name in self.fields:
-                        # Off skips validation entirely: drop field-level errors too,
-                        # the submitted value is discarded either way.
-                        self.errors.pop(name, None)
-                        cleaned[name] = group.empty_value_for(name)
+                self._cv_clear_group(group, cleaned)
         return cleaned
+
+    def _cv_enforce_required(self, group, cleaned):
+        for name in group.required_fields:
+            # A field that already failed its own validation keeps that error;
+            # piling a "required" error on top would contradict it.
+            if name in self.fields and name not in self.errors and cleaned.get(name) in self.fields[name].empty_values:
+                self.add_error(name, self.fields[name].error_messages["required"])
+
+    def _cv_clear_group(self, group, cleaned):
+        for name in group.fields:
+            if name in self.fields:
+                # Off skips validation entirely: drop field-level errors too,
+                # the submitted value is discarded either way.
+                self.errors.pop(name, None)
+                cleaned[name] = group.empty_value_for(name)
 
 
 from crud_views.lib.crispy import CrispyModelForm  # noqa: E402  (placed at end to avoid cycle)

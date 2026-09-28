@@ -2,7 +2,6 @@
    class="btn btn-outline-primary btn-lg"
    id="cv-filter-toggle"
    title="{{ cv_action_label }}"
-   aria-label="{{ cv_action_label }}"
    cv-key="{{ cv_key }}">
-    {% if cv_icon_action %}<i class="{{ cv_icon_action }}" aria-hidden="true"></i>{% endif %}
+    {% if cv_icon_action %}<i class="{{ cv_icon_action }}" aria-hidden="true"></i>{% endif %}<span class="visually-hidden">{{ cv_action_label }}</span>
 </button>

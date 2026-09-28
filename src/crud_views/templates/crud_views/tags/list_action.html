@@ -5,9 +5,8 @@
     data-cv-target="cv_form_{{ cv_oid }}"
     class="btn btn-outline-primary btn-xs"
     title="{{ cv_action_label }}"
-    aria-label="{{ cv_action_label }}"
     cv-key="{{ cv_key }}">
-    {% if cv_icon_action %}<i class="{{ cv_icon_action }}" aria-hidden="true"></i>{% endif %}
+    {% if cv_icon_action %}<i class="{{ cv_icon_action }}" aria-hidden="true"></i>{% endif %}<span class="visually-hidden">{{ cv_action_label }}</span>
 </button>
 {% else %}
 <a {% if cv_modal %}
@@ -19,9 +18,8 @@
 {% endif %}
     class="btn btn-outline-primary btn-xs"
     title="{{ cv_action_label }}"
-    aria-label="{{ cv_action_label }}"
     cv-key="{{ cv_key }}">
-    {% if cv_icon_action %}<i class="{{ cv_icon_action }}" aria-hidden="true"></i>{% endif %}
+    {% if cv_icon_action %}<i class="{{ cv_icon_action }}" aria-hidden="true"></i>{% endif %}<span class="visually-hidden">{{ cv_action_label }}</span>
 </a>
 {% endif %}
 {% endif %}

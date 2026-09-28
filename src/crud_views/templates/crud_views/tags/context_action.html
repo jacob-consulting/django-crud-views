@@ -1,9 +1,8 @@
 {% if cv_key and cv_action_enabled is not False and cv_access is True %}
     <a href="{{ cv_url }}" class="btn btn-outline-primary {% if cv_is_active %}active{% endif %} btn-lg"
        title="{{ cv_action_label }}"
-       aria-label="{{ cv_action_label }}"
        {% if cv_modal %}data-cv-modal="true" data-cv-modal-size="{{ cv_modal_size }}"{% endif %}
        cv-key="{{ cv_key }}">
-        {% if cv_icon_action %}<i class="{{ cv_icon_action }}" aria-hidden="true"></i>{% endif %}
+        {% if cv_icon_action %}<i class="{{ cv_icon_action }}" aria-hidden="true"></i>{% endif %}<span class="visually-hidden">{{ cv_action_label }}</span>
     </a>
 {% endif %}

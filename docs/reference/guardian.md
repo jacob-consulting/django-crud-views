@@ -168,7 +168,10 @@ cv_book = GuardianViewSet(
 )
 ```
 
-Setting either to `None` disables the parent check for that view type.
+`cv_guardian_parent_create_permission=None` (the default) means create views use
+`cv_guardian_parent_permission` as well. Setting `cv_guardian_parent_permission=None`
+disables the parent check, for create views too unless they have their own
+`cv_guardian_parent_create_permission`.
 
 The parent check follows the child view's `cv_guardian_accept_global_perms`: in
 strict mode (the default) only a per-object grant on the parent counts; with the

@@ -9,8 +9,9 @@ const JS_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..
 
 // jsdom's window.location is unforgeable (cannot be spied on or replaced) and
 // its navigation methods are no-ops. The shipped files always navigate via
-// `window.location.*`, so loadScript executes them against a Proxy whose
-// `location` is this stub; everything else falls through to the real window.
+// `globalThis.location.*`, so loadScript executes them against a Proxy (bound
+// as both `window` and `globalThis`) whose `location` is this stub; everything
+// else falls through to the real window.
 export const nav = {
     assign: vi.fn(),
     href: "",
@@ -30,7 +31,8 @@ function testWindow() {
 
 export async function loadScript(name) {
     const code = fs.readFileSync(path.join(JS_DIR, `${name}.js`), "utf-8");
-    new Function("window", code)(testWindow());
+    const win = testWindow();
+    new Function("window", "globalThis", code)(win, win);
     // jQuery defers $(document).ready() callbacks by a microtask even when the
     // document is already complete; wait for them so wiring is done on return.
     await new Promise((resolve) => window.jQuery(resolve));

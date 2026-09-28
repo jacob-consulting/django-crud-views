@@ -45,7 +45,7 @@ function cvModalOpen(url, size) {
     fetch(url, {headers: {"X-CV-Modal": "true"}})
         .then(function (response) {
             if (!response.ok) {
-                window.location.assign(url);
+                globalThis.location.assign(url);
                 return null;
             }
             return response.text();
@@ -60,7 +60,7 @@ function cvModalOpen(url, size) {
             bootstrap.Modal.getOrCreateInstance(els.modal).show();
         })
         .catch(function () {
-            window.location.assign(url);
+            globalThis.location.assign(url);
         });
 }
 
@@ -76,13 +76,13 @@ function cvModalSubmit(form) {
         .then(function (response) {
             const redirect = response.headers.get("X-CV-Redirect");
             if (redirect) {
-                window.location.assign(redirect);
+                globalThis.location.assign(redirect);
                 return null;
             }
             if (response.status === 422) {
                 return response.text();
             }
-            window.location.assign(fallback);
+            globalThis.location.assign(fallback);
             return null;
         })
         .then(function (html) {
@@ -92,7 +92,7 @@ function cvModalSubmit(form) {
             cvModalInject(html);
         })
         .catch(function () {
-            window.location.assign(fallback);
+            globalThis.location.assign(fallback);
         });
 }
 
@@ -111,5 +111,5 @@ $(document).ready(function () {
 // Test seam: expose the modal API on a shared namespace. The functions above
 // are already implicit window globals in the browser (top-level declarations);
 // this only adds `CVModalConst` and namespaced access for the unit tests.
-window.cv = window.cv || {};
-Object.assign(window.cv, {CVModalConst, cvModalElements, cvModalInject, cvModalOpen, cvModalSubmit});
+globalThis.cv = globalThis.cv || {};
+Object.assign(globalThis.cv, {CVModalConst, cvModalElements, cvModalInject, cvModalOpen, cvModalSubmit});

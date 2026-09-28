@@ -121,6 +121,7 @@ class FormSetMixinBase:
         return self.cv_formsets.clone(cv_view=self)
 
     def cv_patch_formsets(self, formsets: FormSets):
+        # hook: override to adjust the formsets before they are rendered; no-op by default
         pass
 
     def cv_init_formsets(self, form: ModelForm) -> FormSets | None:

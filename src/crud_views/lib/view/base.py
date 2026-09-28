@@ -51,9 +51,9 @@ class CrudView(metaclass=CrudViewMetaClass):
     A view that is part of a ViewSet
     """
 
-    cv_viewset: ViewSet = None
-    cv_key: str = None  # the key to register the view (i.e. detail, list, create, update, delete)
-    cv_path: str = None  # i.e. detail, update or "" for list views
+    cv_viewset: ViewSet | None = None
+    cv_key: str | None = None  # the key to register the view (i.e. detail, list, create, update, delete)
+    cv_path: str | None = None  # i.e. detail, update or "" for list views
     cv_object: bool = True  # view has object context (only list views do not have object context)
     cv_backend_only: bool = (
         False  # views is only available in the backend, so i.e. title and paragraph templates are not required
@@ -601,7 +601,7 @@ ViewContext.model_rebuild()
 
 
 class CrudViewPermissionRequiredMixin(PermissionRequiredMixin):
-    cv_permission: str = None  # permission required for the view
+    cv_permission: str | None = None  # permission required for the view
 
     @classmethod
     def checks(cls) -> Iterable[Check]:

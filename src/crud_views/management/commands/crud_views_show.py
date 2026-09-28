@@ -5,4 +5,5 @@ class Command(BaseCommand):
     help = "Show Django CRUD views"
 
     def handle(self, *args, **options):
+        # placeholder command: prints nothing yet
         pass

@@ -42,14 +42,14 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
         from django.contrib.auth import get_user_model
         from django.contrib.auth.models import Group
 
-        User = get_user_model()
+        user_model = get_user_model()
         rows = []
         for key, perm in self.cv_viewset.permissions.items():
             app_label, codename = perm.split(".")
             users = []
             if crud_views_settings.manage_show_users:
                 users = list(
-                    User.objects.filter(
+                    user_model.objects.filter(
                         user_permissions__codename=codename,
                         user_permissions__content_type__app_label=app_label,
                     )

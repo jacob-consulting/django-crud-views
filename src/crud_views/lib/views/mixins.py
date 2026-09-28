@@ -273,7 +273,7 @@ class ListViewTableMixin(SingleTableMixin):
     cv_content_template = "crud_views/view_list_table.content.html"
 
     table: SingleTableMixin = None
-    table_class: str = None
+    table_class: str | None = None
     paginate_by: int = 10
 
     def get_table_kwargs(self):

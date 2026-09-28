@@ -12,6 +12,8 @@ from crud_views.lib.views.form import CustomFormView
 from ..models import WorkflowInfo
 from .mixins import WorkflowModelMixin
 
+_PROCESS_WORKFLOW = _("Process workflow")
+
 
 class WorkflowView(CustomFormView):
     """
@@ -27,10 +29,10 @@ class WorkflowView(CustomFormView):
     cv_icon_header = "fa-solid fa-diagram-project"
     cv_icon_action = "fa-solid fa-diagram-project"
     cv_message_template_code = _("Successfully processed workflow step on »{{ object }}«")
-    cv_header_template_code = _("Process workflow")
+    cv_header_template_code = _PROCESS_WORKFLOW
     cv_paragraph_template_code = _("Process workflow step on »{{ object }}«")
-    cv_action_label_template_code = _("Process workflow")
-    cv_action_short_label_template_code = _("Process workflow")
+    cv_action_label_template_code = _PROCESS_WORKFLOW
+    cv_action_short_label_template_code = _PROCESS_WORKFLOW
 
     cv_transition_label = _("Select a possible workflow action to take")
     cv_transition_help_text = None

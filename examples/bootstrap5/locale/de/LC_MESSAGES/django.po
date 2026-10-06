@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-22 11:26+0000\n"
+"POT-Creation-Date: 2026-10-06 08:22+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,47 +21,47 @@ msgstr ""
 msgid "Library"
 msgstr "Bibliothek"
 
-#: project/features.py:41
+#: project/features.py:43
 msgid "Nested"
 msgstr "Verschachtelt"
 
-#: project/features.py:59
+#: project/features.py:61
 msgid "Formsets"
 msgstr "Formularsätze"
 
-#: project/features.py:75
+#: project/features.py:77
 msgid "Workflow"
 msgstr "Workflow"
 
-#: project/features.py:92
+#: project/features.py:94
 msgid "Polymorphic"
 msgstr "Polymorph"
 
-#: project/features.py:109
+#: project/features.py:111
 msgid "Guardian"
 msgstr "Guardian"
 
-#: project/features.py:126
+#: project/features.py:128
 msgid "Resources"
 msgstr "Ressourcen"
 
-#: project/features.py:143
+#: project/features.py:145
 msgid "Showcase"
 msgstr "Showcase"
 
-#: project/features.py:160
+#: project/features.py:164
 msgid "Object Detail"
 msgstr "Objekt-Detail"
 
-#: project/features.py:178
+#: project/features.py:182
 msgid "Breadcrumbs"
 msgstr "Breadcrumbs"
 
-#: project/features.py:179 project/features.py:199
+#: project/features.py:183 project/features.py:203
 msgid "NEW"
 msgstr "NEU"
 
-#: project/features.py:198
+#: project/features.py:202
 msgid "Conditional"
 msgstr "Bedingt"
 
@@ -73,27 +73,7 @@ msgstr "Englisch"
 msgid "German"
 msgstr "Deutsch"
 
-#: project/settings.py:105
-msgid "French"
-msgstr "Französisch"
-
-#: project/settings.py:106
-msgid "Spanish"
-msgstr "Spanisch"
-
-#: project/settings.py:107
-msgid "Portuguese"
-msgstr "Portugiesisch"
-
-#: project/settings.py:108
-msgid "Italian"
-msgstr "Italienisch"
-
-#: project/settings.py:109
-msgid "Simplified Chinese"
-msgstr "Vereinfachtes Chinesisch"
-
-#: project/settings.py:128
+#: project/settings.py:123
 msgid "Home"
 msgstr "Startseite"
 
@@ -111,7 +91,9 @@ msgstr "Über dieses Beispiel — %(title)s"
 msgid ""
 "One self-contained example app per feature. Every page shows the code behind "
 "it."
-msgstr "Eine eigenständige Beispielanwendung pro Funktion. Jede Seite zeigt den dazugehörigen Code."
+msgstr ""
+"Eine eigenständige Beispielanwendung pro Funktion. Jede Seite zeigt den "
+"dazugehörigen Code."
 
 #: project/templates/project/home.html:14
 msgid "Documentation"

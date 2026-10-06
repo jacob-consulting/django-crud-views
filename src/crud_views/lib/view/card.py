@@ -1,9 +1,11 @@
 from pydantic import BaseModel, model_validator
 
+from crud_views.lib.lazy import LazyStr
+
 
 class CardAction(BaseModel):
     key: str = ""
-    label: str | None = None
+    label: LazyStr | None = None
     no_label: bool = False
     variant: str = "secondary"
     flex: bool = False

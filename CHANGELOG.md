@@ -1,5 +1,14 @@
 # Django CRUD Views - Changelog
 
+## Unreleased
+
+### Fixed
+
+- `FormSet(title=...)` and `CardAction(label=...)` accept `gettext_lazy` strings and keep them
+  lazy, so labels defined at class level render in the request's language. Previously they
+  raised a pydantic `ValidationError` at import. The `LazyStr` field type moved to
+  `crud_views.lib.lazy` (still importable from `crud_views_object_detail.lib.config`). (#131)
+
 ## 0.24.1
 
 ### Added

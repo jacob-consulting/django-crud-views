@@ -1,20 +1,10 @@
 from __future__ import annotations
 
-from typing import Annotated, Any
+from typing import Any
 
-from django.utils.functional import Promise
 from pydantic import BaseModel, ConfigDict, field_validator
-from pydantic.functional_validators import PlainValidator
 
-
-def _validate_lazy_str(v: Any) -> str | Promise:
-    """Accept plain strings and Django lazy translation strings without coercion."""
-    if isinstance(v, (str, Promise)):
-        return v
-    raise ValueError(f"Expected str or lazy string, got {type(v)}")
-
-
-LazyStr = Annotated[str, PlainValidator(_validate_lazy_str)]
+from crud_views.lib.lazy import LazyStr
 
 
 class LinkConfig(BaseModel):

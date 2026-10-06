@@ -15,6 +15,7 @@ from django.template.loader import render_to_string
 from pydantic import BaseModel, Field, model_validator
 
 from crud_views.lib.conditional.formset import ConditionalFormSet
+from crud_views.lib.lazy import LazyStr
 from crud_views.lib.view import CrudView
 
 from .render_tree import XForm, XFormSet
@@ -29,7 +30,7 @@ class FormSet(BaseModel, arbitrary_types_allowed=True):
 
     key: str | None = None
     original_key: str | None = None
-    title: str | None = None
+    title: LazyStr | None = None
     fields: list[str] | None = None
     pk_field: str | None = None
     cv_view: CrudView | None = None

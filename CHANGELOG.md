@@ -1,5 +1,15 @@
 # Django CRUD Views - Changelog
 
+## Unreleased
+
+### Changed
+
+- CI coverage: every test matrix row now uploads to Codecov, one report per Django session
+  (`coverage-py<python>-dj<django>.xml`, flagged `py<python>`). Previously all sessions wrote the
+  same `coverage.xml` and only Python 3.13 × Django 6.0 was uploaded. (#105)
+- New `codecov.yml`: statuses wait for all three matrix uploads; `codecov/project` is posted as
+  informational, `codecov/patch` keeps the `auto` target; migrations are excluded. (#106)
+
 ## 0.24.2
 
 ### Fixed

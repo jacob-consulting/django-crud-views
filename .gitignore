@@ -10,6 +10,7 @@ uv.lock
 /PRIVATE.md
 .coverage
 coverage.xml
+coverage-*.xml
 .nox
 /insights
 TASKS.md

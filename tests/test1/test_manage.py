@@ -259,3 +259,19 @@ def test_register_uses_custom_manage_view_class():
     finally:
         with _REGISTRY_LOCK:
             _REGISTRY.pop(name, None)
+
+
+@pytest.mark.django_db
+def test_manage_view_headings_translated(client_user_author_view: Client, cv_author):
+    """Headings and column headers follow the active language; attribute names (pk, app, ...) stay as-is."""
+    from django.utils import translation
+    from lxml import html
+
+    with translation.override("de"):
+        response = client_user_author_view.get("/author/manage/")
+    doc = html.fromstring(response.content)
+    headings = [h.text_content().strip() for h in doc.cssselect("h3, h4")]
+    assert {"Eigenschaften", "Berechtigungen", "Berechtigungsinhaber", "Views"} <= set(headings)
+    columns = [th.text_content().strip() for th in doc.cssselect("th")]
+    assert {"Berechtigung", "Django-Berechtigung", "Zugriff"} <= set(columns)
+    assert "pk_name" in columns

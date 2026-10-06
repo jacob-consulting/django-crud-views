@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: django-crud-views\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-06 03:22-0500\n"
+"POT-Creation-Date: 2026-10-06 04:26-0500\n"
 "PO-Revision-Date: 2026-04-01 00:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: German\n"
@@ -46,12 +46,12 @@ msgstr "Filter anwenden"
 msgid "Reset Filter"
 msgstr "Filter zurücksetzen"
 
-#: lib/views/mixins.py:230
+#: lib/views/mixins.py:231
 #, python-format
 msgid "%(field)s (descending)"
 msgstr "%(field)s (absteigend)"
 
-#: lib/views/mixins.py:231
+#: lib/views/mixins.py:232
 #, python-format
 msgid "%(field)s (ascending)"
 msgstr "%(field)s (aufsteigend)"
@@ -300,3 +300,48 @@ msgstr "weiter"
 #: templates/crud_views/view_delete.content.html:5
 msgid "This object cannot be deleted:"
 msgstr "Dieses Objekt kann nicht gelöscht werden:"
+
+#: templates/crud_views/view_manage.html:9
+msgid "Properties"
+msgstr "Eigenschaften"
+
+#: templates/crud_views/view_manage.html:65
+msgid "Permissions"
+msgstr "Berechtigungen"
+
+#: templates/crud_views/view_manage.html:69
+#: templates/crud_views/view_manage.html:94
+msgid "Permission"
+msgstr "Berechtigung"
+
+#: templates/crud_views/view_manage.html:70
+msgid "Django Permission"
+msgstr "Django-Berechtigung"
+
+#: templates/crud_views/view_manage.html:71
+msgid "Access"
+msgstr "Zugriff"
+
+#: templates/crud_views/view_manage.html:89
+msgid "Permission Holders"
+msgstr "Berechtigungsinhaber"
+
+#: templates/crud_views/view_manage.html:93
+msgid "Group"
+msgstr "Gruppe"
+
+#: templates/crud_views/view_manage.html:95
+msgid "Model-level"
+msgstr "Modellebene"
+
+#: templates/crud_views/view_manage.html:96
+msgid "Users"
+msgstr "Benutzer"
+
+#: templates/crud_views/view_manage.html:108
+msgid "No permission holders found."
+msgstr "Keine Berechtigungsinhaber gefunden."
+
+#: templates/crud_views/view_manage.html:114
+msgid "Views"
+msgstr "Views"

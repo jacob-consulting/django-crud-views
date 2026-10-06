@@ -11,6 +11,8 @@
 - object detail: `date`, `datetime` and `timestamp` properties use the active locale's
   `DATE_FORMAT` / `DATETIME_FORMAT` instead of a hard-coded US pattern (German read
   "Okt. 6, 2026"; now "6. Oktober 2026"). English output is unchanged.
+- The ViewSet manage page translates its headings and column headers (ViewSet attribute names
+  such as `pk` or `pk_name` stay as they are).
 
 ## 0.24.3
 

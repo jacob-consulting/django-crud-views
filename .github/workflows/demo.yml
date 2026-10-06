@@ -37,11 +37,28 @@ jobs:
         run: |
           set -euo pipefail
           auth="Authorization: Bearer $RENDER_API_KEY"
-          deploy_id=$(curl -fsS -X POST "$RENDER_API/services/$RENDER_SERVICE_ID/deploys" \
+          since=$(date -u -d '-2 minutes' +%Y-%m-%dT%H:%M:%SZ)
+          code=$(curl -sS -o deploy.json -w '%{http_code}' -X POST "$RENDER_API/services/$RENDER_SERVICE_ID/deploys" \
             -H "$auth" -H "Content-Type: application/json" \
-            -d "{\"commitId\": \"$GITHUB_SHA\"}" | jq -r '.id // empty')
+            -d "{\"commitId\": \"$GITHUB_SHA\"}")
+          deploy_id=""
+          case "$code" in
+            201)
+              deploy_id=$(jq -r '.id // empty' deploy.json) ;;
+            202)
+              # another deploy is running: Render queued ours (empty body), so find it in the deploy list
+              echo "deploy queued behind another one, looking it up"
+              for _ in $(seq 1 12); do
+                deploy_id=$(curl -fsS "$RENDER_API/services/$RENDER_SERVICE_ID/deploys?limit=20&createdAfter=$since" \
+                  -H "$auth" | jq -r --arg sha "$GITHUB_SHA" '[.[].deploy | select(.commit.id == $sha)][0].id // empty')
+                [ -n "$deploy_id" ] && break
+                sleep 5
+              done ;;
+            *)
+              echo "::error::Render answered HTTP $code: $(cat deploy.json)"; exit 1 ;;
+          esac
           if [ -z "$deploy_id" ]; then
-            echo "::error::Render returned no deploy id"; exit 1
+            echo "::error::no deploy id for $GITHUB_SHA (HTTP $code)"; exit 1
           fi
           echo "deploy $deploy_id for $GITHUB_SHA"
           for _ in $(seq 1 100); do
@@ -59,17 +76,35 @@ jobs:
   reset:
     if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.reset_only)
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - name: Restart the service (fresh filesystem, fresh database)
         env:
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
           RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
+          DEMO_URL: ${{ vars.DEMO_URL }}
         run: |
           set -euo pipefail
+          DEMO_URL="${DEMO_URL%/}"
+          # X-Demo-Boot changes with every new process; a restart swaps instances without downtime,
+          # so wait until a different boot id answers before the smoke test runs
+          boot() {
+            curl -s -o /dev/null -D - --max-time 90 "$DEMO_URL/login/" | tr -d '\r' \
+              | awk 'tolower($1) == "x-demo-boot:" { print $2 }'
+          }
+          before=$(boot || true)
+          echo "boot id before: ${before:-none}"
           curl -fsS -X POST "$RENDER_API/services/$RENDER_SERVICE_ID/restart" \
             -H "Authorization: Bearer $RENDER_API_KEY"
           echo "restart requested"
+          for _ in $(seq 1 30); do
+            now=$(boot || true)
+            if [ -n "$now" ] && [ "$now" != "$before" ]; then
+              echo "new instance answers, boot id $now"; exit 0
+            fi
+            sleep 10
+          done
+          echo "::error::still the old instance 5 minutes after the restart"; exit 1
 
   smoke:
     needs: [deploy, reset]
@@ -82,6 +117,7 @@ jobs:
       - name: Login page answers, admin is not mounted
         run: |
           set -uo pipefail
+          DEMO_URL="${DEMO_URL%/}"
           code=000
           for _ in $(seq 1 18); do  # a free instance may need ~1 minute to wake up
             code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 90 "$DEMO_URL/login/")

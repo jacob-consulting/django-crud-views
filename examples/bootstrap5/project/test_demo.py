@@ -34,6 +34,7 @@ class DemoSettingsTest(SimpleTestCase):
         demo = load_demo_settings(DEMO_ENV)
         self.assertEqual(demo.MIDDLEWARE[0], "django.middleware.security.SecurityMiddleware")
         self.assertEqual(demo.MIDDLEWARE[1], "whitenoise.middleware.WhiteNoiseMiddleware")
+        self.assertEqual(demo.MIDDLEWARE[-2], "project.boot.BootIdMiddleware")
         self.assertEqual(demo.MIDDLEWARE[-1], "project.ratelimit.WriteRateLimitMiddleware")
 
     def test_base_middleware_is_not_mutated(self):

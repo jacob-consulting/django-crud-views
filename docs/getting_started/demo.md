@@ -15,5 +15,5 @@ Things to know:
 - **Saving is rate-limited** to 30 changes per minute and 300 per day per visitor.
 - **The Django admin is not available** on the demo.
 
-The demo always runs the latest release. To run the same project on your machine, see
+The demo normally runs the latest release. To run the same project on your machine, see
 [Run the finished result first](index.md#or-run-the-finished-result-first).

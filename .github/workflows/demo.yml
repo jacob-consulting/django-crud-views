@@ -1,0 +1,94 @@
+# Public demo on Render (render.yaml). Deploys a release tag's exact commit; wipes the demo data daily.
+# Needs secrets RENDER_API_KEY, RENDER_SERVICE_ID and the repository variable DEMO_URL.
+name: demo
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      reset_only:
+        description: "Only wipe the demo data (restart on the current version), do not deploy"
+        type: boolean
+        default: false
+  schedule:
+    - cron: "0 3 * * *"
+
+concurrency:
+  group: demo
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  RENDER_API: https://api.render.com/v1
+
+jobs:
+  deploy:
+    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && !inputs.reset_only)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Deploy this commit to Render and wait until live
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
+        run: |
+          set -euo pipefail
+          auth="Authorization: Bearer $RENDER_API_KEY"
+          deploy_id=$(curl -fsS -X POST "$RENDER_API/services/$RENDER_SERVICE_ID/deploys" \
+            -H "$auth" -H "Content-Type: application/json" \
+            -d "{\"commitId\": \"$GITHUB_SHA\"}" | jq -r '.id // empty')
+          if [ -z "$deploy_id" ]; then
+            echo "::error::Render returned no deploy id"; exit 1
+          fi
+          echo "deploy $deploy_id for $GITHUB_SHA"
+          for _ in $(seq 1 100); do
+            status=$(curl -fsS "$RENDER_API/services/$RENDER_SERVICE_ID/deploys/$deploy_id" -H "$auth" | jq -r .status)
+            echo "status: $status"
+            case "$status" in
+              live) exit 0 ;;
+              build_failed|update_failed|pre_deploy_failed|canceled|deactivated)
+                echo "::error::deploy ended as $status"; exit 1 ;;
+            esac
+            sleep 10
+          done
+          echo "::error::deploy not live after ~17 minutes"; exit 1
+
+  reset:
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.reset_only)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Restart the service (fresh filesystem, fresh database)
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
+        run: |
+          set -euo pipefail
+          curl -fsS -X POST "$RENDER_API/services/$RENDER_SERVICE_ID/restart" \
+            -H "Authorization: Bearer $RENDER_API_KEY"
+          echo "restart requested"
+
+  smoke:
+    needs: [deploy, reset]
+    if: always() && (needs.deploy.result == 'success' || needs.reset.result == 'success')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      DEMO_URL: ${{ vars.DEMO_URL }}
+    steps:
+      - name: Login page answers, admin is not mounted
+        run: |
+          set -uo pipefail
+          code=000
+          for _ in $(seq 1 18); do  # a free instance may need ~1 minute to wake up
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 90 "$DEMO_URL/login/")
+            [ "$code" = 200 ] && break
+            sleep 10
+          done
+          [ "$code" = 200 ] || { echo "::error::/login/ returned $code"; exit 1; }
+          admin=$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$DEMO_URL/admin/")
+          [ "$admin" = 404 ] || { echo "::error::/admin/ returned $admin, expected 404"; exit 1; }
+          echo "demo OK"

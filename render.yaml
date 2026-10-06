@@ -1,0 +1,23 @@
+# Render Blueprint for the public demo of examples/bootstrap5.
+# Deploys are driven by .github/workflows/demo.yml through the Render API, never by pushes (autoDeploy: false).
+# The free plan's filesystem is ephemeral: every start migrates and seeds a fresh SQLite database.
+services:
+  - type: web
+    name: django-crud-views-demo
+    runtime: python
+    plan: free
+    autoDeploy: false
+    buildCommand: >-
+      pip install ".[all,examples]" -r requirements/demo.txt &&
+      cd examples/bootstrap5 && python manage.py collectstatic --noinput
+    startCommand: >-
+      cd examples/bootstrap5 && python manage.py migrate --noinput && python manage.py seed &&
+      gunicorn project.wsgi --workers 1 --bind 0.0.0.0:$PORT
+    healthCheckPath: /login/
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: project.settings_demo
+      - key: SECRET_KEY
+        generateValue: true
+      - key: PYTHON_VERSION
+        value: "3.13"

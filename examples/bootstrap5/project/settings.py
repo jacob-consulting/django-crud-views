@@ -72,6 +72,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "crud_views.lib.context_processor.crud_views_context",
+                "project.context_processors.demo",
             ],
         },
     },
@@ -110,6 +111,9 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 # django-crud-views
 CRUD_VIEWS_EXTENDS = "project/crud_views.html"
 CRUD_VIEWS_BREADCRUMB_PREFIX = [{"title": "Home", "url_name": "home"}]
+
+# public demo (see settings_demo.py); False for local runs
+DEMO_MODE = False
 
 # crispy forms
 CRISPY_TEMPLATE_PACK = "bootstrap5"

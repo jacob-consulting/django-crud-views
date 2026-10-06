@@ -24,7 +24,7 @@ def examples(session, django):
         session.skip("Django 4.2 does not support Python 3.14")
 
     session.install(f"django~={django}.0")
-    session.install(".[all,test,examples]")
+    session.install(".[all,test,examples]", "-r", "requirements/demo.txt")
 
     with session.chdir("./examples/bootstrap5"):
         session.run("pytest", *session.posargs)

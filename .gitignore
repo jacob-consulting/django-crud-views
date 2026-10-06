@@ -19,3 +19,5 @@ coverage-js
 # SonarQube: local token and scanner work directory
 .env
 .scannerwork/
+
+examples/bootstrap5/staticfiles/

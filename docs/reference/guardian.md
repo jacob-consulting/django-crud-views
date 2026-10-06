@@ -215,8 +215,15 @@ migrations, use the seed management command to set up demo users and data:
 python manage.py seed
 ```
 
-This creates `alice` and `bob` demo users and assigns per-object permissions on the
-seeded `Document` objects (see `guardian_demo/seed.py`).
+This creates the `alice` and `bob` demo users and assigns per-object permissions on the
+seeded `Document` objects (see `guardian_demo/seed.py`):
+
+| Document          | Owner | alice                | bob                  |
+|-------------------|-------|----------------------|----------------------|
+| Roadmap 2027      | alice | view, change, delete | —                    |
+| Team Handbook     | alice | view, change, delete | view                 |
+| Meeting Notes     | bob   | —                    | view, change, delete |
+| Release Checklist | bob   | view, change         | view, change, delete |
 
 ## GuardianManageView
 

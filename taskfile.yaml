@@ -22,7 +22,7 @@ tasks:
 
   dev-install:
     cmds:
-      - uv pip install --upgrade .[all,dev,test,examples]
+      - uv pip install --upgrade .[all,dev,test,examples] -r requirements/demo.txt
     silent: true
 
   run:

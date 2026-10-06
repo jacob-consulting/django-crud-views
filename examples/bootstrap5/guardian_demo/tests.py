@@ -83,3 +83,33 @@ class GuardianSeedTest(TestCase):
         resp = self.client.get(reverse("document-list"))
         self.assertEqual(resp.status_code, 200)
         self.assertContains(resp, "Team Handbook")  # alice's doc, shared view-only
+
+
+class GuardianSeedEditShareTest(TestCase):
+    """The seed shares one of bob's documents with alice: she may edit it, not delete it."""
+
+    def setUp(self):
+        from django.core.management import call_command
+
+        call_command("seed")
+        User = get_user_model()
+        self.alice = User.objects.get(username="alice")
+        self.bob = User.objects.get(username="bob")
+        self.doc = Document.objects.get(title="Release Checklist")
+
+    def test_owned_by_bob(self):
+        self.assertEqual(self.doc.owner, self.bob)
+
+    def test_alice_can_view_and_edit(self):
+        self.client.force_login(self.alice)
+        self.assertContains(self.client.get(reverse("document-list")), "Release Checklist")
+        self.assertEqual(self.client.get(reverse("document-update", kwargs={"pk": self.doc.pk})).status_code, 200)
+
+    def test_alice_cannot_delete(self):
+        self.client.force_login(self.alice)
+        self.assertEqual(self.client.get(reverse("document-delete", kwargs={"pk": self.doc.pk})).status_code, 403)
+
+    def test_bob_has_full_rights(self):
+        self.client.force_login(self.bob)
+        for key in ("document-detail", "document-update", "document-delete"):
+            self.assertEqual(self.client.get(reverse(key, kwargs={"pk": self.doc.pk})).status_code, 200, key)

@@ -42,7 +42,7 @@ POLYMORPHIC_FORMS = {Car: CarForm, Truck: TruckForm, Motorcycle: MotorcycleForm}
 class VehicleTable(Table):
     id = LinkDetailColumn()
     name = tables.Column()
-    type = tables.Column(accessor="polymorphic_ctype__model", verbose_name="Type")
+    type = tables.Column(accessor="polymorphic_ctype__model", verbose_name=_("Type"))
 
 
 class VehicleListView(BreadcrumbMixin, ListViewTableMixin, ListViewPermissionRequired):

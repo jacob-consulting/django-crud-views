@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-06 09:18+0000\n"
+"POT-Creation-Date: 2026-10-06 12:13+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -273,6 +273,10 @@ msgstr "Dokument"
 msgid "documents"
 msgstr "Dokumente"
 
+#: guardian_demo/views.py:36
+msgid "Created"
+msgstr "Erstellt"
+
 #: guardian_demo/views.py:47
 msgid "Document"
 msgstr "Dokument"
@@ -413,6 +417,14 @@ msgstr "Büro"
 msgid "offices"
 msgstr "Büros"
 
+#: nested/views.py:39
+msgid "Departments"
+msgstr "Abteilungen"
+
+#: nested/views.py:40
+msgid "Offices"
+msgstr "Büros"
+
 #: nested/views.py:51
 msgid "Company"
 msgstr "Unternehmen"
@@ -428,6 +440,10 @@ msgstr "Unternehmen »{{ object }}« aktualisiert"
 #: nested/views.py:70
 msgid "Deleted company “{{ object }}”"
 msgstr "Unternehmen »{{ object }}« gelöscht"
+
+#: nested/views.py:95
+msgid "Employees"
+msgstr "Mitarbeiter"
 
 #: nested/views.py:106
 msgid "Department"
@@ -749,6 +765,10 @@ msgstr "Motorrad"
 msgid "motorcycles"
 msgstr "Motorräder"
 
+#: polymorphic_demo/views.py:45
+msgid "Type"
+msgstr "Typ"
+
 #: polymorphic_demo/views.py:56
 msgid "Select"
 msgstr "Auswählen"
@@ -761,15 +781,15 @@ msgstr "Fahrzeug"
 msgid "NEW"
 msgstr "NEU"
 
-#: project/settings.py:103
+#: project/settings.py:104
 msgid "English"
 msgstr "Englisch"
 
-#: project/settings.py:104
+#: project/settings.py:105
 msgid "German"
 msgstr "Deutsch"
 
-#: project/settings.py:123
+#: project/settings.py:124
 msgid "Home"
 msgstr "Startseite"
 
@@ -992,7 +1012,7 @@ msgstr "Abgebrochen"
 msgid "Error"
 msgstr "Fehler"
 
-#: workflow/models.py:27
+#: workflow/models.py:27 workflow/views.py:36
 msgid "state"
 msgstr "Status"
 

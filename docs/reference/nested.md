@@ -125,8 +125,8 @@ class CompanyTable(Table):
     id = LinkDetailColumn()
     name = tables.Column()
     city = tables.Column()
-    departments = LinkChildColumn(name="department", verbose_name="Departments", attrs=Table.ca.w10)
-    offices = LinkChildColumn(name="office", verbose_name="Offices", attrs=Table.ca.w10)
+    departments = LinkChildColumn(name="department", verbose_name=_("Departments"), attrs=Table.ca.w10)
+    offices = LinkChildColumn(name="office", verbose_name=_("Offices"), attrs=Table.ca.w10)
 ```
 
 To link down from outside a table row — e.g. a "Departments" button in a detail view's

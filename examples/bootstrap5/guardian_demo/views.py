@@ -33,7 +33,7 @@ class DocumentTable(Table):
     id = LinkDetailColumn()
     title = tables.Column()
     owner = tables.Column()
-    created_dt = tables.DateTimeColumn(verbose_name="Created")
+    created_dt = tables.DateTimeColumn(verbose_name=_("Created"))
 
 
 class DocumentListView(BreadcrumbMixin, ListViewTableMixin, GuardianListViewPermissionRequired):

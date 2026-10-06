@@ -132,3 +132,24 @@ def test_demo_pages_render_german(client, django_user_model):
     # catalog wins over crud_views' and renders "Sichern"
     html = client.get("/library/author/create/", HTTP_ACCEPT_LANGUAGE="de").content.decode()
     assert 'value="Sichern"' in html
+
+
+def test_example_table_columns_mark_headers_for_translation():
+    # explicit column verbose_names bypass the model's (translated) field names
+    import importlib
+    import inspect
+
+    import django_tables2 as tables
+    from django.utils.functional import Promise
+
+    missing = []
+    for label in EXAMPLE_APPS:
+        module = importlib.import_module(f"{label}.views")
+        for name, cls in inspect.getmembers(module, inspect.isclass):
+            if not issubclass(cls, tables.Table) or cls.__module__ != module.__name__:
+                continue
+            for col_name, column in cls.base_columns.items():
+                header = column.verbose_name
+                if header is not None and not isinstance(header, Promise):
+                    missing.append(f"{label}.{name}.{col_name}={header!r}")
+    assert not missing, f"table headers not marked with gettext_lazy: {missing}"

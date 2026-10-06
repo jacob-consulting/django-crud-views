@@ -36,8 +36,8 @@ class CompanyTable(Table):
     id = LinkDetailColumn()
     name = tables.Column()
     city = tables.Column()
-    departments = LinkChildColumn(name="department", verbose_name="Departments", attrs=Table.ca.w10)
-    offices = LinkChildColumn(name="office", verbose_name="Offices", attrs=Table.ca.w10)
+    departments = LinkChildColumn(name="department", verbose_name=_("Departments"), attrs=Table.ca.w10)
+    offices = LinkChildColumn(name="office", verbose_name=_("Offices"), attrs=Table.ca.w10)
 
 
 class CompanyListView(BreadcrumbMixin, ListViewTableMixin, ListViewPermissionRequired):
@@ -92,7 +92,7 @@ class DepartmentForm(CrispyModelForm):
 class DepartmentTable(Table):
     id = LinkDetailColumn()
     name = tables.Column()
-    employees = LinkChildColumn(name="employee", verbose_name="Employees", attrs=Table.ca.w10)
+    employees = LinkChildColumn(name="employee", verbose_name=_("Employees"), attrs=Table.ca.w10)
 
 
 class DepartmentListView(BreadcrumbMixin, ListViewTableMixin, ListViewPermissionRequired):

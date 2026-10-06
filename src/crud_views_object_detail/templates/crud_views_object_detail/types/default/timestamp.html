@@ -1,1 +1,1 @@
-{% if value is None %}<span class="text-body-tertiary">&mdash;</span>{% else %}<time datetime="{{ value|date:'c' }}">{{ value|date:"N j, Y, P" }}</time>{% endif %}
+{% if value is None %}<span class="text-body-tertiary">&mdash;</span>{% else %}<time datetime="{{ value|date:'c' }}">{{ value|date:"DATETIME_FORMAT" }}</time>{% endif %}

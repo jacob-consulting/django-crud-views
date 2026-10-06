@@ -8,6 +8,9 @@
   only their first letter (Django's `capfirst`) instead of `str.capitalize()`, which lower-cased
   the rest: "API key" stayed "Api key", German "S3-Dateien" became "S3-dateien", and the
   primary key's ordering label read "Id (ascending)" instead of "ID (ascending)".
+- object detail: `date`, `datetime` and `timestamp` properties use the active locale's
+  `DATE_FORMAT` / `DATETIME_FORMAT` instead of a hard-coded US pattern (German read
+  "Okt. 6, 2026"; now "6. Oktober 2026"). English output is unchanged.
 
 ## 0.24.3
 

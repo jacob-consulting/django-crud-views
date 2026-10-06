@@ -20,20 +20,21 @@ to `Author`:
 <!-- cv-sync: library/models.py -->
 ```python
 class Book(OrderedModel):
-    title = models.CharField(max_length=100)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    title = models.CharField(_("title"), max_length=100)
+    price = models.DecimalField(_("price"), max_digits=10, decimal_places=2)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE, verbose_name=_("author"))
 
     class Meta(OrderedModel.Meta):
-        pass
+        verbose_name = _("book")
+        verbose_name_plural = _("books")
 
     def __str__(self):
         return self.title
 ```
 
 `OrderedModel` adds an `order` field and the `Meta` machinery that keeps it
-consistent; `class Meta(OrderedModel.Meta): pass` is the minimum needed to
-inherit that behavior. Nothing about the FK to `Author` is crud_views- or
+consistent; subclassing `OrderedModel.Meta` is what inherits that behavior (the
+translatable verbose names are the same as on `Author`). Nothing about the FK to `Author` is crud_views- or
 ordering-specific — it's just how `Book` relates to its author.
 
 Add `ordered_model` to `INSTALLED_APPS` and create the migration as usual.

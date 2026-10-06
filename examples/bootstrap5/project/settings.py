@@ -72,7 +72,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "crud_views.lib.context_processor.crud_views_context",
-                "project.context_processors.demo",
+                "project.context_processors.project_info",
             ],
         },
     },

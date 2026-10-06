@@ -1,9 +1,32 @@
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 
+import crud_views
 from project.features import FEATURES
+
+
+class FooterTest(TestCase):
+    LINKS = (
+        "https://django-crud-views.readthedocs.io/",
+        "https://github.com/jacob-consulting/django-crud-views",
+        "https://django-crud-views-demo.onrender.com/",
+    )
+
+    def assert_footer(self, resp):
+        self.assertContains(resp, 'id="site-footer"')
+        self.assertContains(resp, f"django-crud-views {crud_views.__version__}")
+        for url in self.LINKS:
+            self.assertContains(resp, f'href="{url}"')
+
+    def test_footer_on_home_and_login(self):
+        for name in ("home", "login"):
+            self.assert_footer(self.client.get(reverse(name)))
+
+    @override_settings(DEMO_MODE=True)
+    def test_footer_on_demo(self):
+        self.assert_footer(self.client.get(reverse("login")))
 
 
 class HomePageTest(TestCase):

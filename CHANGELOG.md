@@ -1,5 +1,12 @@
 # Django CRUD Views - Changelog
 
+## Unreleased
+
+### Added
+
+- Example project: a static footer on every page showing the django-crud-views version and links to the
+  documentation, the GitHub repository and the live demo.
+
 ## 0.24.0
 
 ### Added

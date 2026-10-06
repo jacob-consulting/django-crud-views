@@ -12,6 +12,7 @@ DOCUMENTS = {
     ],
     "bob": [
         ("Meeting Notes", "Standup summaries."),
+        ("Release Checklist", "Steps before every release."),
     ],
 }
 
@@ -33,3 +34,6 @@ def seed():
 
     # alice shares the handbook with bob, view-only
     cv_document.assign_perm("view", users["bob"], docs["Team Handbook"])
+    # bob shares the release checklist with alice: she may edit it, not delete it
+    for action in ("view", "change"):
+        cv_document.assign_perm(action, users["alice"], docs["Release Checklist"])

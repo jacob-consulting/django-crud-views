@@ -107,11 +107,12 @@ FEATURES: list[Feature] = [
     Feature(
         app="guardian_demo",
         title="Guardian",
-        description="Per-object permissions: alice and bob each see their own documents; one is shared.",
+        description="Per-object permissions: alice and bob each see their own documents, plus shared ones.",
         about=(
             "Per-object permissions with django-guardian. Documents are owned by individual users: sign in as "
-            "alice or bob (password same as the username) and each sees only their own documents, except one "
-            "that is explicitly shared. Creating a document grants its creator full object-level rights."
+            "alice or bob (password same as the username) and each sees only their own documents, plus two that "
+            "are shared — alice's Team Handbook with bob, view-only, and bob's Release Checklist with alice, "
+            "editable but not deletable. Creating a document grants its creator full object-level rights."
         ),
         look_at=(
             "the GuardianViewSet and the Guardian*ViewPermissionRequired views, and "

@@ -1,5 +1,15 @@
 # Django CRUD Views - Changelog
 
+## Unreleased
+
+### Fixed
+
+- A ViewSet without a `list`/`card` view (e.g. detail-only, as a link target) no longer raises
+  `ViewSetKeyFoundError` on its detail page in strict mode (`CRUD_VIEWS_STRICT`, default
+  `DEBUG`), and no longer logs a warning per request otherwise: a context button whose target
+  view is not registered — like the default `"home"` → `list` — is skipped, the same as an
+  unregistered view key. (#132)
+
 ## 0.23.0
 
 ### Fixed

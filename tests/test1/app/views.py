@@ -252,6 +252,16 @@ class AuthorCustomDetailView(DetailViewPermissionRequired):
     template_name = "app/author_detail_custom.html"
 
 
+# --- Author detail-only (no list/card view: the default "home" context button has no target) ---
+
+cv_author_detail_only = ViewSet(model=Author, name="author_detail_only")
+
+
+class AuthorDetailOnlyView(ObjectDetailViewPermissionRequired):
+    cv_viewset = cv_author_detail_only
+    cv_property_display = [{"title": "Author", "properties": ["first_name", "last_name"]}]
+
+
 # --- Publisher (INT PK) ---
 
 cv_publisher = ViewSet(

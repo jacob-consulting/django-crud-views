@@ -67,3 +67,25 @@ def test_detail_view_still_works(client_user_author_view: Client, cv_author, aut
     content = response.content.decode()
     assert "Douglas" in content
     assert "Adams" in content
+
+
+@pytest.mark.django_db
+def test_detail_only_viewset_skips_home_button_without_target(client, author_douglas_adams, settings):
+    """A ViewSet with only a detail view renders; the default "home" button (-> list) is skipped, not a 500.
+
+    Strict mode (CRUD_VIEWS_STRICT, defaults to DEBUG) re-raises ignored exceptions, so the bug only showed in
+    development; pytest-django runs with DEBUG=False.
+    """
+    settings.CRUD_VIEWS_STRICT = True
+    from django.contrib.auth.models import User
+
+    from tests.lib.helper.user import user_viewset_permission
+    from tests.test1.app.views import cv_author_detail_only
+
+    user = User.objects.create_user(username="user_detail_only", password="password")
+    user_viewset_permission(user, cv_author_detail_only, "view")
+    client.force_login(user)
+
+    response = client.get(f"/author_detail_only/{author_douglas_adams.pk}/detail/")
+    assert response.status_code == 200
+    assert b'/author_detail_only/"' not in response.content  # no link to a list that does not exist

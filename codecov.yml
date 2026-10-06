@@ -7,6 +7,8 @@ codecov:
 
 coverage:
   status:
+    # Not posted today: Codecov's free Developer plan is filed under the Team tier, which posts
+    # only codecov/patch (codecov/feedback#830). Kept so it works once that is fixed. See #142.
     project:
       default:
         target: auto

@@ -8,6 +8,11 @@
   lazy, so labels defined at class level render in the request's language. Previously they
   raised a pydantic `ValidationError` at import. The `LazyStr` field type moved to
   `crud_views.lib.lazy` (still importable from `crud_views_object_detail.lib.config`). (#131)
+- A ViewSet without a `list`/`card` view (e.g. detail-only, as a link target) no longer raises
+  `ViewSetKeyFoundError` on its detail page in strict mode (`CRUD_VIEWS_STRICT`, default
+  `DEBUG`), and no longer logs a warning per request otherwise: a context button whose target
+  view is not registered — like the default `"home"` → `list` — is skipped, the same as an
+  unregistered view key. (#132)
 
 ## 0.24.1
 

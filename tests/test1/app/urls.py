@@ -2,6 +2,7 @@ from tests.test1.app.resources import cv_publisher_file, cv_s3file
 from tests.test1.app.views import (
     cv_author,
     cv_author_custom_detail,
+    cv_author_detail_only,
     cv_author_modal,
     cv_author_origin,
     cv_author_wide_card,
@@ -34,6 +35,7 @@ urlpatterns = []
 urlpatterns += cv_author.urlpatterns
 urlpatterns += cv_author_wide_card.urlpatterns
 urlpatterns += cv_author_custom_detail.urlpatterns
+urlpatterns += cv_author_detail_only.urlpatterns
 urlpatterns += cv_publisher.urlpatterns
 urlpatterns += cv_publisher_order.urlpatterns
 urlpatterns += cv_publisher_signed_order.urlpatterns

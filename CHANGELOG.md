@@ -2,6 +2,27 @@
 
 ## Unreleased
 
+### Added
+
+- Full English + German translation across all five packages (#88). `crud_views_guardian`,
+  `crud_views_polymorphic` and `crud_views_object_detail` ship their first `de` catalogs (guardian
+  manage page including the pluralized object count, the polymorphic "Type" picker, the object
+  detail app name); the `crud_views` and `crud_views_workflow` catalogs are complete. English is
+  the source language and needs no catalog; other languages can be added per project via
+  `LOCALE_PATHS`. `docs/development/i18n.md` lists what a new package locale must meet.
+- `{% cv_language_selector %}` template tag: renders a `set_language` form listing every entry of
+  `settings.LANGUAGES` in its own name ("Deutsch", "English"), so the list stays readable whatever
+  language is active. Needs `django.conf.urls.i18n` in the URLconf; themes that override
+  `theme_path` provide `snippets/language_selector.html` if they use the tag.
+- The bootstrap5 example app is fully translated to German, with the language selector in the
+  nav. About/Look-at panels, seed data and feature titles stay English.
+
+### Changed
+
+- English messages quote object names with “…” instead of the German »…« (e.g. "Successfully
+  processed workflow step on “Spring sale”"); the German catalog keeps »…«. Tests asserting the
+  old English text need updating.
+
 ### Fixed
 
 - Model names in headings, actions and messages, and auto-generated ordering labels, upper-case

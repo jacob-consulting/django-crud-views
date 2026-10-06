@@ -1,5 +1,10 @@
 from django.conf import settings
 
+import crud_views
 
-def demo(request):
-    return {"demo_mode": getattr(settings, "DEMO_MODE", False)}
+
+def project_info(request):
+    return {
+        "demo_mode": getattr(settings, "DEMO_MODE", False),
+        "crud_views_version": crud_views.__version__,
+    }

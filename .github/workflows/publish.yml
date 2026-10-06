@@ -19,12 +19,17 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - run: pip install nox uv
-      - run: nox -s "tests-${{ matrix.python-version }}(django='4.2')" "tests-${{ matrix.python-version }}(django='5.2')" "tests-${{ matrix.python-version }}(django='6.0')" -- --cov-report=xml
+      - run: nox -s "tests-${{ matrix.python-version }}(django='4.2')" "tests-${{ matrix.python-version }}(django='5.2')" "tests-${{ matrix.python-version }}(django='6.0')"
+      # Every row uploads one report per Django session; Codecov merges them per commit.
+      # codecov.yml (after_n_builds) waits for all rows before posting statuses. See #105.
+      - id: coverage-files
+        run: echo "files=$(ls coverage-py*.xml | paste -sd, -)" >> "$GITHUB_OUTPUT"
       - uses: codecov/codecov-action@v5
-        if: matrix.python-version == '3.13'
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: coverage.xml
+          files: ${{ steps.coverage-files.outputs.files }}
+          disable_search: true
+          flags: py${{ matrix.python-version }}
 
   docs:
     runs-on: ubuntu-latest

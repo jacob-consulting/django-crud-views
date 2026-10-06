@@ -1,0 +1,22 @@
+# Codecov is advisory here: main has no branch protection, so statuses inform rather than
+# gate. See issue #106.
+codecov:
+  notify:
+    # One upload per tests matrix row (py3.12, py3.13, py3.14); see issue #105.
+    after_n_builds: 3
+
+coverage:
+  status:
+    project:
+      default:
+        target: auto
+        informational: true
+    patch:
+      default:
+        target: auto
+
+comment:
+  after_n_builds: 3
+
+ignore:
+  - "src/**/migrations/**"

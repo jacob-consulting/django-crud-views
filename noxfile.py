@@ -13,7 +13,10 @@ def tests(session, django):
     session.install(f"django~={django}.0")
     session.install(".[polymorphic,workflow,ordered,test]")
 
-    session.run("pytest", "tests", "-n", "auto", "--cov", "--cov-report=term-missing", *session.posargs)
+    # One XML report per session: all sessions run from the repo root, so a shared
+    # coverage.xml would be overwritten by each session in turn. See issue #105.
+    xml_report = f"--cov-report=xml:coverage-py{session.python}-dj{django}.xml"
+    session.run("pytest", "tests", "-n", "auto", "--cov", "--cov-report=term-missing", xml_report, *session.posargs)
 
 
 @nox.session(python=["3.12", "3.13", "3.14"], venv_backend="uv")

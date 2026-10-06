@@ -9,6 +9,12 @@
   admin, show a reset banner and rate-limit writes per client IP. See the docs, *Live demo* and
   *Deploying the demo*.
 
+### Fixed
+
+- Demo deploy workflow (#135): a deploy that Render queues behind another one (HTTP 202) is followed to `live`
+  instead of failing; the daily reset waits until the restarted instance answers (new `X-Demo-Boot` header)
+  before its smoke test; logging out is no longer rate-limited.
+
 ### Changed
 
 - Example project: the seeded users are `alice/alice` and `bob/bob` only; the `admin/admin` superuser is gone

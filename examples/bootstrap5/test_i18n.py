@@ -153,3 +153,21 @@ def test_example_table_columns_mark_headers_for_translation():
                 if header is not None and not isinstance(header, Promise):
                     missing.append(f"{label}.{name}.{col_name}={header!r}")
     assert not missing, f"table headers not marked with gettext_lazy: {missing}"
+
+
+@pytest.mark.django_db
+def test_demo_chrome_renders_german(client, settings):
+    # demo banner, home-page user hint, footer and the rate-limit page
+    from django.template.loader import render_to_string
+    from django.test import RequestFactory
+    from django.utils import translation
+
+    settings.DEMO_MODE = True
+    html = client.get("/", HTTP_ACCEPT_LANGUAGE="de").content.decode()
+    assert "Öffentliche Demo" in html
+    assert "Demo-Benutzer" in html
+    assert "Live-Demo" in html and "Doku" in html
+
+    with translation.override("de"):
+        html = render_to_string("project/429.html", request=RequestFactory().get("/"))
+    assert "Zu viele Änderungen" in html

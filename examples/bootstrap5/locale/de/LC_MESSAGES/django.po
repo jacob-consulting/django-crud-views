@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-06 12:13+0000\n"
+"POT-Creation-Date: 2026-10-06 16:38+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -777,31 +777,61 @@ msgstr "Auswählen"
 msgid "Vehicle"
 msgstr "Fahrzeug"
 
-#: project/features.py:183 project/features.py:203
+#: project/features.py:184 project/features.py:204
 msgid "NEW"
 msgstr "NEU"
 
-#: project/settings.py:104
+#: project/settings.py:105
 msgid "English"
 msgstr "Englisch"
 
-#: project/settings.py:105
+#: project/settings.py:106
 msgid "German"
 msgstr "Deutsch"
 
-#: project/settings.py:124
+#: project/settings.py:125
 msgid "Home"
 msgstr "Startseite"
 
-#: project/templates/project/base.html:14 project/templates/project/home.html:8
+#: project/templates/project/429.html:4 project/templates/project/429.html:8
+msgid "Too many changes"
+msgstr "Zu viele Änderungen"
+
+#: project/templates/project/429.html:4 project/templates/project/base.html:14
+#: project/templates/project/home.html:8
 #: project/templates/registration/login.html:5
 msgid "django-crud-views examples"
 msgstr "django-crud-views – Beispiele"
+
+#: project/templates/project/429.html:9
+msgid ""
+"This public demo limits how often one visitor can save. Please try again in a"
+" minute."
+msgstr ""
+"Diese öffentliche Demo begrenzt, wie oft ein Besucher speichern kann. Bitte "
+"versuchen Sie es in einer Minute erneut."
+
+#: project/templates/project/base.html:48
+msgid ""
+"Public demo — data resets daily and after inactivity. Log in as "
+"<code>alice/alice</code> or <code>bob/bob</code>."
+msgstr ""
+"Öffentliche Demo — die Daten werden täglich und nach Inaktivität "
+"zurückgesetzt. Melden Sie sich als <code>alice/alice</code> oder "
+"<code>bob/bob</code> an."
 
 #: project/templates/project/example_about.html:6
 #, python-format
 msgid "About this example — %(title)s"
 msgstr "Über dieses Beispiel — %(title)s"
+
+#: project/templates/project/footer.html:6
+msgid "Docs"
+msgstr "Doku"
+
+#: project/templates/project/footer.html:12
+msgid "Live demo"
+msgstr "Live-Demo"
 
 #: project/templates/project/home.html:10
 msgid ""
@@ -818,6 +848,16 @@ msgstr "Dokumentation"
 #: project/templates/project/home.html:32
 msgid "Open"
 msgstr "Öffnen"
+
+#: project/templates/project/home.html:40
+msgid ""
+"Demo users (created by <code>manage.py seed</code>): <code>alice/alice</code>"
+" and <code>bob/bob</code> (regular users — the Guardian example shows them "
+"different documents)."
+msgstr ""
+"Demo-Benutzer (angelegt mit <code>manage.py seed</code>): "
+"<code>alice/alice</code> und <code>bob/bob</code> (normale Benutzer — das "
+"Guardian-Beispiel zeigt ihnen unterschiedliche Dokumente)."
 
 #: project/templates/project/nav.html:24
 msgid "Log Out"

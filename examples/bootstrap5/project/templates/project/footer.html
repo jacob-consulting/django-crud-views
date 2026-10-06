@@ -1,12 +1,13 @@
+{% load i18n %}
 <footer class="container border-top mt-5 py-3 text-muted small" id="site-footer">
     <span>django-crud-views {{ crud_views_version }}</span>
     &middot;
     <a href="https://django-crud-views.readthedocs.io/" class="link-secondary" target="_blank" rel="noopener">
-        <i class="fa-solid fa-book"></i> Docs</a>
+        <i class="fa-solid fa-book"></i> {% translate "Docs" %}</a>
     &middot;
     <a href="https://github.com/jacob-consulting/django-crud-views" class="link-secondary" target="_blank" rel="noopener">
         <i class="fa-brands fa-github"></i> GitHub</a>
     &middot;
     <a href="https://django-crud-views-demo.onrender.com/" class="link-secondary" target="_blank" rel="noopener">
-        <i class="fa-solid fa-globe"></i> Live demo</a>
+        <i class="fa-solid fa-globe"></i> {% translate "Live demo" %}</a>
 </footer>

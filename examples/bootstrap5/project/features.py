@@ -8,8 +8,8 @@ from django.utils.translation import gettext_lazy as _
 @dataclass(frozen=True)
 class Feature:
     app: str  # python package name of the example app, e.g. "library"
-    title: str  # card/nav title on the home page
-    description: str  # one-liner on the home page card
+    title: str  # card/nav title; names a package feature as in the docs, so deliberately not translated
+    description: str  # one-liner on the home page card (English, like about/look_at: they quote code)
     about: str  # 2-4 sentence teaching paragraph shown on every page of the app
     look_at: str  # one-sentence code pointer shown next to "The code behind this page"
     url_name: str  # URL name of the app's landing page, e.g. "author-list"
@@ -21,7 +21,7 @@ FEATURES: list[Feature] = [
     # example feature apps append their entry here
     Feature(
         app="library",
-        title=_("Library"),
+        title="Library",
         description="Plain CRUD — list, detail, create, update, delete — plus tables, filters and ordering.",
         about=(
             "The starting point: a plain CRUD interface built from a ViewSet. Authors and books each get a "
@@ -40,7 +40,7 @@ FEATURES: list[Feature] = [
     ),
     Feature(
         app="nested",
-        title=_("Nested"),
+        title="Nested",
         description="Parent/child ViewSets with nested URLs: Company → Department → Employee, plus Offices.",
         about=(
             "ViewSets that nest inside a parent. A Company owns Departments, a Department owns Employees, and "
@@ -58,7 +58,7 @@ FEATURES: list[Feature] = [
     ),
     Feature(
         app="formsets",
-        title=_("Formsets"),
+        title="Formsets",
         description="Inline formsets: edit a questionnaire with its questions and choices on one page.",
         about=(
             "Editing a record together with its children on one page. A Questionnaire is edited alongside its "
@@ -74,7 +74,7 @@ FEATURES: list[Feature] = [
     ),
     Feature(
         app="workflow",
-        title=_("Workflow"),
+        title="Workflow",
         description="django-fsm state machine: transitions as form actions, with audit history.",
         about=(
             "A state machine driving the UI. A Campaign moves through draft → active → complete (or "
@@ -91,7 +91,7 @@ FEATURES: list[Feature] = [
     ),
     Feature(
         app="polymorphic_demo",
-        title=_("Polymorphic"),
+        title="Polymorphic",
         description="One list over Car, Truck and Motorcycle with type-specific create and update forms.",
         about=(
             "One ViewSet over several concrete model types. Vehicle is a django-polymorphic base; Car, Truck "
@@ -108,7 +108,7 @@ FEATURES: list[Feature] = [
     ),
     Feature(
         app="guardian_demo",
-        title=_("Guardian"),
+        title="Guardian",
         description="Per-object permissions: alice and bob each see their own documents, plus shared ones.",
         about=(
             "Per-object permissions with django-guardian. Documents are owned by individual users: sign in as "
@@ -126,7 +126,7 @@ FEATURES: list[Feature] = [
     ),
     Feature(
         app="resources",
-        title=_("Resources"),
+        title="Resources",
         description="A ViewSet over non-ORM data: a fake S3 bucket listing with delete and touch actions.",
         about=(
             "A ViewSet over data that isn't in the database at all. Here the 'records' are entries in a fake "
@@ -143,7 +143,7 @@ FEATURES: list[Feature] = [
     ),
     Feature(
         app="showcase",
-        title=_("Showcase"),
+        title="Showcase",
         description="Presentation extras: card list with signed ordering, fieldsets, modal delete, custom actions.",
         about=(
             "Presentation building blocks gathered in one place. Recipes are shown as a grid of cards instead "
@@ -162,7 +162,7 @@ FEATURES: list[Feature] = [
     ),
     Feature(
         app="object_detail",
-        title=_("Object Detail"),
+        title="Object Detail",
         description="Seven detail-page layout themes, side by side, over the same product data.",
         about=(
             "django-object-detail's fieldset-based detail pages, integrated as crud_views_object_detail. A "
@@ -180,7 +180,7 @@ FEATURES: list[Feature] = [
     ),
     Feature(
         app="breadcrumbs",
-        title=_("Breadcrumbs"),
+        title="Breadcrumbs",
         badge=_("NEW"),
         description="ViewSet-aware breadcrumbs, plus injecting a host application's navigation as prefix items.",
         about=(
@@ -200,7 +200,7 @@ FEATURES: list[Feature] = [
     ),
     Feature(
         app="conditional",
-        title=_("Conditional"),
+        title="Conditional",
         badge=_("NEW"),
         description="A checkbox toggle reveals a field-group or an entire formset, enforced server-side.",
         about=(

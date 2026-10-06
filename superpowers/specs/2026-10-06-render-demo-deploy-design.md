@@ -53,12 +53,14 @@ New `examples/bootstrap5/project/settings_demo.py` does `from project.settings i
 - `SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")`, `SESSION_COOKIE_SECURE`, `CSRF_COOKIE_SECURE`.
 - whitenoise: `WhiteNoiseMiddleware` right after `SecurityMiddleware`, `STATIC_ROOT = BASE_DIR / "staticfiles"`,
   compressed manifest storage.
-- `DEMO_MODE = True` (base settings get `DEMO_MODE = False`).
+- `DEMO_MODE = True` (base settings get `DEMO_MODE = False`); a `project.context_processors.demo` context
+  processor exposes it to templates.
 - Rate-limit middleware appended to `MIDDLEWARE`; `CACHES` = local memory.
 
 `DEMO_MODE` controls exactly two things; the rate-limit middleware is simply only listed in `settings_demo`:
 
-1. `project/urls.py` does not mount `/admin/`.
+1. `/admin/` is not mounted: `settings_demo` sets `ROOT_URLCONF = "project.urls_demo"`, which re-exports
+   `project.urls.urlpatterns` without the admin entry (testable via `override_settings`, no module reload).
 2. The base template shows a banner: "Public demo — data resets daily and after inactivity. Log in as alice/alice
    or bob/bob."
 
@@ -76,10 +78,11 @@ not in a package extra, so the published package metadata is unchanged.
   again in a minute.").
 - Counters live in the local-memory cache; losing them on restart is acceptable.
 
-Client IP: Render sits behind a proxy chain and sets `X-Forwarded-For`. The leftmost entry is client-controlled
-and therefore spoofable. The implementation reads the IP via one function, `client_ip(request)`, whose header
-choice is confirmed against a live request on the first deploy (log the relevant headers once, pick the entry
-Render itself appends, then remove the logging). Until then it uses the rightmost `X-Forwarded-For` entry.
+Client IP: Render sits behind Cloudflare plus its own proxy, and both append to `X-Forwarded-For`. The leftmost
+entries are client-controlled (spoofable), and the rightmost is a Render-internal 10.x address shared by every
+visitor. Neither works as a key. Render sets `True-Client-IP` to the real client address and overwrites a
+client-sent one, so `client_ip(request)` reads `True-Client-IP`, falling back to `REMOTE_ADDR` (local runs,
+tests). This is confirmed against a live request on the first deploy.
 
 ## 4. Render service
 

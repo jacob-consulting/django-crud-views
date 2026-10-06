@@ -30,15 +30,27 @@ class HomePageTest(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertContains(resp, "alice")
 
+    def test_pages_do_not_advertise_admin_user(self):
+        for name in ("home", "login"):
+            resp = self.client.get(reverse(name))
+            self.assertNotContains(resp, "admin/admin")
+            self.assertContains(resp, "alice/alice")
+            self.assertContains(resp, "bob/bob")
+
 
 class SeedCommandTest(TestCase):
     def test_seed_twice_is_idempotent(self):
         call_command("seed")
         call_command("seed")
         User = get_user_model()
-        self.assertTrue(User.objects.filter(username="admin", is_superuser=True).exists())
         self.assertTrue(User.objects.filter(username="alice", is_superuser=False).exists())
         self.assertTrue(User.objects.filter(username="bob", is_superuser=False).exists())
+
+    def test_seed_creates_no_admin_user(self):
+        call_command("seed")
+        User = get_user_model()
+        self.assertFalse(User.objects.filter(username="admin").exists())
+        self.assertFalse(User.objects.filter(is_superuser=True).exists())
 
 
 class SnippetPanelsTest(TestCase):

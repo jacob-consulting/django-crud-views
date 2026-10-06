@@ -36,7 +36,7 @@ Now let's run the example application with the `bootstrap5` theme:
 cd examples/bootstrap5
 task run
 ```
-> **Note:** This will run the migrations, seed demo data, and start the dev server. It adds a superuser with username `admin` and password `admin` (see `project/seeding.py`).
+> **Note:** This will run the migrations, seed demo data, and start the dev server. It creates the demo users `alice` / `alice` and `bob` / `bob` (see `project/seeding.py`). To use the Django admin at `/admin/`, create a superuser first: `python manage.py createsuperuser`.
 
 [Then open the app in your browser at http://localhost:8000](http://localhost:8000)
 

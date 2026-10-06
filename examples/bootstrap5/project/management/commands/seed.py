@@ -11,7 +11,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         ensure_demo_users()
-        self.stdout.write("users: admin/admin (superuser), alice/alice, bob/bob")
+        self.stdout.write("users: alice/alice, bob/bob")
         for feature in FEATURES:
             import_module(f"{feature.app}.seed").seed()
             self.stdout.write(f"seeded {feature.app}")

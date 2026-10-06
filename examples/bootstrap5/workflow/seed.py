@@ -6,7 +6,7 @@ from workflow.models import Campaign
 
 def seed():
     User = get_user_model()
-    admin = User.objects.get(username="admin")
+    actor = User.objects.get(username="alice")
     for username in ("alice", "bob"):
         grant_model_perms(User.objects.get(username=username), Campaign)
 
@@ -14,12 +14,12 @@ def seed():
 
     summer, created = Campaign.objects.get_or_create(name="Summer Sale")
     if created:
-        summer.wf_activate(by=admin)
+        summer.wf_activate(by=actor)
         summer.save()
 
     winter, created = Campaign.objects.get_or_create(name="Winter Launch")
     if created:
-        winter.wf_activate(by=admin)
+        winter.wf_activate(by=actor)
         winter.save()
-        winter.wf_complete(by=admin, comment="Wrapped up early")
+        winter.wf_complete(by=actor, comment="Wrapped up early")
         winter.save()

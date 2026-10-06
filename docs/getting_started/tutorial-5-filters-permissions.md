@@ -92,8 +92,9 @@ def seed():
 `grant_model_perms` is a small project-level helper (`project/seeding.py`)
 that assigns all four Django model permissions — `view`, `add`, `change`,
 `delete` — for a model to a user. Both demo users, `alice` and `bob`, get
-full `Author` and `Book` permissions this way; try revoking one via the
-Django admin to see the create button and the 403 for yourself.
+full `Author` and `Book` permissions this way. To see the create button disappear and the 403 for
+yourself, create a superuser (`python manage.py createsuperuser`), revoke one of alice's permissions in
+the Django admin at `/admin/`, and log in as alice again.
 
 ![Author list view with filters](assets/tutorial-author-list.png)
 

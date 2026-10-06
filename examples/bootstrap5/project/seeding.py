@@ -4,7 +4,6 @@ from django.contrib.contenttypes.models import ContentType
 
 #: username, password, is_superuser — shown on the home and login pages
 DEMO_USERS = [
-    ("admin", "admin", True),
     ("alice", "alice", False),
     ("bob", "bob", False),
 ]

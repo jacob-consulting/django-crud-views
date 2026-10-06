@@ -1,5 +1,14 @@
 # Django CRUD Views - Changelog
 
+## Unreleased
+
+### Fixed
+
+- Model names in headings, actions and messages, and auto-generated ordering labels, upper-case
+  only their first letter (Django's `capfirst`) instead of `str.capitalize()`, which lower-cased
+  the rest: "API key" stayed "Api key", German "S3-Dateien" became "S3-dateien", and the
+  primary key's ordering label read "Id (ascending)" instead of "ID (ascending)".
+
 ## 0.24.3
 
 ### Changed

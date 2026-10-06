@@ -8,6 +8,7 @@ from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Model, Q, QuerySet
 from django.urls import URLResolver, re_path
+from django.utils.text import capfirst
 from django.utils.translation import gettext as _
 from pydantic import BaseModel, Field, PrivateAttr, model_validator
 
@@ -459,8 +460,8 @@ class ViewSet(BaseModel):
         data = {
             "viewset": self,
             "cv": self,
-            "verbose_name": meta.verbose_name.capitalize(),
-            "verbose_name_plural": meta.verbose_name_plural.capitalize(),
+            "verbose_name": capfirst(meta.verbose_name),
+            "verbose_name_plural": capfirst(meta.verbose_name_plural),
         }
         data.update(
             {

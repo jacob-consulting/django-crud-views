@@ -92,6 +92,8 @@ pip install django-crud-views
 
 Optional extras: `django-crud-views[guardian]` (per-object permissions), `django-crud-views[ordered]` (up/down ordering), `django-crud-views[all]` (everything).
 
+**Try it online:** the [live demo](https://django-crud-views-demo.onrender.com/) runs the example project (log in as `alice` / `alice` or `bob` / `bob`; data resets daily).
+
 ## Run the example project
 
 The repository ships a runnable example project — the tutorial's library app plus one app

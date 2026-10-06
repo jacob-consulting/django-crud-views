@@ -1,5 +1,20 @@
 # Django CRUD Views - Changelog
 
+## Unreleased
+
+### Added
+
+- Public demo of the example project on Render's free plan (`render.yaml`, `.github/workflows/demo.yml`):
+  deployed on release tags or manually, data wiped daily. Demo-only settings `project.settings_demo` disable the
+  admin, show a reset banner and rate-limit writes per client IP. See the docs, *Live demo* and
+  *Deploying the demo*.
+
+### Changed
+
+- Example project: the seeded users are `alice/alice` and `bob/bob` only; the `admin/admin` superuser is gone
+  (use `manage.py createsuperuser` for the Django admin). The Guardian example also shares an editable document
+  with alice.
+
 ## 0.23.0
 
 ### Fixed

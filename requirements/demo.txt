@@ -1,0 +1,4 @@
+# Deploy-only dependencies of the public demo (render.yaml). Not part of the package.
+gunicorn>=23
+whitenoise>=6.9
+django-ratelimit>=4.1

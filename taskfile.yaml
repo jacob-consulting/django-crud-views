@@ -2,7 +2,7 @@ version: '3'
 
 vars:
   PYTHON: "3.12"
-  LOCALES: "de fr es pt it zh_Hans"
+  LOCALES: "de"
   I18N_PACKAGES: "crud_views crud_views_workflow crud_views_polymorphic crud_views_guardian crud_views_object_detail"
 
 includes:

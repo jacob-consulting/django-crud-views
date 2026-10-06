@@ -33,7 +33,7 @@ tasks:
       - for: { var: LOCALES }
         cmd: uv run manage.py makemessages -l {{ .ITEM }}
     vars:
-      LOCALES: "de fr es pt it zh_Hans"
+      LOCALES: "de"
 
   msg-comp:
     desc: Compile the example app message catalog

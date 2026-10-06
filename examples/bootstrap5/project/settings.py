@@ -103,11 +103,6 @@ LANGUAGE_CODE = "en-us"
 LANGUAGES = [
     ("en", _("English")),
     ("de", _("German")),
-    ("fr", _("French")),
-    ("es", _("Spanish")),
-    ("pt", _("Portuguese")),
-    ("it", _("Italian")),
-    ("zh-hans", _("Simplified Chinese")),
 ]
 LOCALE_PATHS = [BASE_DIR / "locale"]
 

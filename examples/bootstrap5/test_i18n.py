@@ -5,7 +5,7 @@ import pytest
 from django.test import Client
 
 LOCALE_DIR = Path(__file__).resolve().parent / "locale"
-LOCALES = ["de", "fr", "es", "pt", "it", "zh_Hans"]
+LOCALES = ["de"]
 
 
 @pytest.mark.django_db

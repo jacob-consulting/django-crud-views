@@ -98,7 +98,7 @@ class DepartmentCreateView(
 ):
     cv_viewset = cv_department
     form_class = DepartmentForm
-    cv_message_template_code = "Created department »{{ object }}«"
+    cv_message_template_code = _("Created department “{{ object }}”")
 ```
 
 `CreateViewParentMixin` reads the parent object from the URL and sets it on the form instance

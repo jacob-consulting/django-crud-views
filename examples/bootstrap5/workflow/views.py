@@ -1,5 +1,6 @@
 import django_tables2 as tables
 from crispy_forms.layout import Row
+from django.utils.translation import gettext_lazy as _
 from project.views import BreadcrumbMixin
 
 from crud_views.lib.crispy import Column6, CrispyDeleteForm, CrispyModelForm, CrispyViewMixin
@@ -21,8 +22,6 @@ cv_campaign = ViewSet(model=Campaign, name="campaign", icon_header="fa-solid fa-
 
 
 class CampaignForm(CrispyModelForm):
-    submit_label = "Save"
-
     class Meta:
         model = Campaign
         fields = ["name"]
@@ -34,7 +33,7 @@ class CampaignForm(CrispyModelForm):
 class CampaignTable(Table):
     id = LinkDetailColumn()
     name = tables.Column(attrs=Table.ca.w70)
-    state = tables.Column(accessor="state_badge", attrs=Table.ca.w20)
+    state = tables.Column(verbose_name=_("state"), accessor="state_badge", attrs=Table.ca.w20)
 
 
 class CampaignListView(BreadcrumbMixin, ListViewTableMixin, ListViewPermissionRequired):
@@ -48,12 +47,12 @@ class CampaignDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
     cv_context_actions = ["home", "detail", "update", "workflow", "delete"]
     cv_property_display = [
         {
-            "title": "Campaign",
+            "title": _("Campaign"),
             "icon": "bullhorn",
             "properties": [
                 "id",
                 "name",
-                {"path": "state_badge", "title": "State", "detail": "Current workflow state"},
+                {"path": "state_badge", "title": _("State"), "detail": _("Current workflow state")},
             ],
         },
     ]
@@ -62,21 +61,21 @@ class CampaignDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
 class CampaignCreateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, CreateViewPermissionRequired):
     cv_viewset = cv_campaign
     form_class = CampaignForm
-    cv_message_template_code = "Created campaign »{{ object }}«"
+    cv_message_template_code = _("Created campaign “{{ object }}”")
 
 
 class CampaignUpdateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
     cv_viewset = cv_campaign
     cv_context_actions = ["home", "detail", "update", "workflow", "delete"]
     form_class = CampaignForm
-    cv_message_template_code = "Updated campaign »{{ object }}«"
+    cv_message_template_code = _("Updated campaign “{{ object }}”")
 
 
 class CampaignDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     cv_viewset = cv_campaign
     cv_context_actions = ["home", "detail", "update", "workflow", "delete"]
     form_class = CrispyDeleteForm
-    cv_message_template_code = "Deleted campaign »{{ object }}«"
+    cv_message_template_code = _("Deleted campaign “{{ object }}”")
 
 
 class CampaignWorkflowForm(WorkflowForm):

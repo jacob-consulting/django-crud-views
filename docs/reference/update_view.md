@@ -63,7 +63,7 @@ the button returns to the sibling view the user came from instead:
 class AuthorUpdateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
     cv_viewset = cv_author
     form_class = AuthorForm
-    cv_message_template_code = "Updated author »{{ object }}«"
+    cv_message_template_code = _("Updated author “{{ object }}”")
     cv_cancel_keys = ["list", "detail"]  # cancel returns to where the user came from
 ```
 

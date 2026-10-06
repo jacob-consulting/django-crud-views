@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     "ordered_model",
     "django_fsm",
     "django_tables2",
+    "django_filters",  # its locale/ catalog (e.g. "contains" in filter labels) only loads when installed
     "crud_views_object_detail",
     "polymorphic",
     "guardian",

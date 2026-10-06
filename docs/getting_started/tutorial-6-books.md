@@ -54,8 +54,6 @@ cv_book = ViewSet(model=Book, name="book", icon_header="fa-solid fa-book")
 <!-- cv-sync: library/views.py -->
 ```python
 class BookForm(CrispyModelForm):
-    submit_label = "Save"
-
     class Meta:
         model = Book
         fields = ["title", "author", "price"]
@@ -94,12 +92,12 @@ That's what puts the up/down reorder arrows on each row. They call
 ```python
 class BookUpView(BreadcrumbMixin, MessageMixin, OrderedUpViewPermissionRequired):
     cv_viewset = cv_book
-    cv_message_template_code = "Moved book »{{ object }}« up"
+    cv_message_template_code = _("Moved book “{{ object }}” up")
 
 
 class BookDownView(BreadcrumbMixin, MessageMixin, OrderedUpDownPermissionRequired):
     cv_viewset = cv_book
-    cv_message_template_code = "Moved book »{{ object }}« down"
+    cv_message_template_code = _("Moved book “{{ object }}” down")
 ```
 
 `OrderedUpViewPermissionRequired` and `OrderedUpDownPermissionRequired` move

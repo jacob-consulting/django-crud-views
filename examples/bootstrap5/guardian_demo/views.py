@@ -1,5 +1,6 @@
 import django_tables2 as tables
 from crispy_forms.layout import Row
+from django.utils.translation import gettext_lazy as _
 from project.views import BreadcrumbMixin
 
 from crud_views.lib.crispy import Column6, Column12, CrispyDeleteForm, CrispyModelForm, CrispyViewMixin
@@ -20,8 +21,6 @@ cv_document = GuardianViewSet(model=Document, name="document", icon_header="fa-s
 
 
 class DocumentForm(CrispyModelForm):
-    submit_label = "Save"
-
     class Meta:
         model = Document
         fields = ["title", "body"]
@@ -45,14 +44,14 @@ class DocumentListView(BreadcrumbMixin, ListViewTableMixin, GuardianListViewPerm
 class DocumentDetailView(BreadcrumbMixin, ObjectDetailMixin, GuardianDetailViewPermissionRequired):
     cv_viewset = cv_document
     cv_property_display = [
-        {"title": "Document", "icon": "file-lines", "properties": ["id", "title", "owner", "body"]},
+        {"title": _("Document"), "icon": "file-lines", "properties": ["id", "title", "owner", "body"]},
     ]
 
 
 class DocumentCreateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, GuardianCreateViewPermissionRequired):
     cv_viewset = cv_document
     form_class = DocumentForm
-    cv_message_template_code = "Created document »{{ object }}«"
+    cv_message_template_code = _("Created document “{{ object }}”")
 
     def cv_form_valid(self, context: dict):
         # the creator owns the document and gets full object-level permissions
@@ -65,10 +64,10 @@ class DocumentCreateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, Guardia
 class DocumentUpdateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, GuardianUpdateViewPermissionRequired):
     cv_viewset = cv_document
     form_class = DocumentForm
-    cv_message_template_code = "Updated document »{{ object }}«"
+    cv_message_template_code = _("Updated document “{{ object }}”")
 
 
 class DocumentDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, GuardianDeleteViewPermissionRequired):
     cv_viewset = cv_document
     form_class = CrispyDeleteForm
-    cv_message_template_code = "Deleted document »{{ object }}«"
+    cv_message_template_code = _("Deleted document “{{ object }}”")

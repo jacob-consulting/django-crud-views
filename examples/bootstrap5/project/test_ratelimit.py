@@ -62,6 +62,13 @@ class WriteRateLimitTest(TestCase):
             self.post("203.0.113.7", HTTP_X_FORWARDED_FOR=f"10.9.9.{i}")
         self.assertEqual(self.post("203.0.113.7", HTTP_X_FORWARDED_FOR="10.9.9.250").status_code, 429)
 
+    def test_logout_is_never_limited(self, _time):
+        for _ in range(31):
+            self.post("203.0.113.7")
+        resp = self.client.post(reverse("logout"), HTTP_TRUE_CLIENT_IP="203.0.113.7")
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(self.post("203.0.113.7").status_code, 429)  # other writes stay limited
+
     @override_settings(DEMO_WRITE_RATES=("1000/m", "5/d"))
     def test_daily_limit_applies(self, _time):
         for _ in range(5):

@@ -24,6 +24,7 @@ MIDDLEWARE = [
     MIDDLEWARE[0],  # SecurityMiddleware
     "whitenoise.middleware.WhiteNoiseMiddleware",
     *MIDDLEWARE[1:],
+    "project.boot.BootIdMiddleware",
     "project.ratelimit.WriteRateLimitMiddleware",
 ]
 

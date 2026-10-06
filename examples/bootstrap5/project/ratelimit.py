@@ -3,6 +3,7 @@
 from django.conf import settings
 from django.http import HttpRequest
 from django.shortcuts import render
+from django.urls import reverse
 from django_ratelimit.core import is_ratelimited
 
 SAFE_METHODS = {"GET", "HEAD", "OPTIONS"}
@@ -27,7 +28,9 @@ class WriteRateLimitMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        if request.method not in SAFE_METHODS and self._limited(request):
+        # logout is a POST since Django 5; a limited visitor must still be able to leave
+        exempt = request.path == reverse("logout")
+        if request.method not in SAFE_METHODS and not exempt and self._limited(request):
             return render(request, "project/429.html", status=429)
         return self.get_response(request)
 

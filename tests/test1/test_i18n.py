@@ -74,7 +74,7 @@ def test_no_empty_or_fuzzy_msgstr():
 
 
 def test_mo_files_load():
-    for pkg, loc, d in _iter_po():
+    for _pkg, _loc, d in _iter_po():
         mo = d / "django.mo"
         assert mo.exists(), f"missing {mo}"
         with mo.open("rb") as fh:

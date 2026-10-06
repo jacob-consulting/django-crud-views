@@ -8,12 +8,11 @@ def _render(langs):
     rf = RequestFactory()
     request = rf.get("/some/path/")
     tmpl = Template("{% load crud_views %}{% cv_language_selector %}")
-    with translation.override("de"):
-        with pytest.MonkeyPatch().context() as mp:
-            from django.conf import settings
+    with translation.override("de"), pytest.MonkeyPatch().context() as mp:
+        from django.conf import settings
 
-            mp.setattr(settings, "LANGUAGES", langs, raising=False)
-            return tmpl.render(Context({"request": request}))
+        mp.setattr(settings, "LANGUAGES", langs, raising=False)
+        return tmpl.render(Context({"request": request}))
 
 
 def test_selector_lists_languages_and_posts_to_set_language():

@@ -431,8 +431,12 @@ class CrudView(metaclass=CrudViewMetaClass):
         # is the key a context button?
         context_button = self.cv_get_context_button(key)
         if context_button:
-            ctx = context_button.get_context(context)
-            return ctx
+            # a button whose target view is not registered (e.g. the default "home" -> list on a
+            # detail-only ViewSet) is skipped like an unregistered view key below
+            try:
+                return context_button.get_context(context)
+            except ViewSetKeyFoundError:
+                return {}
 
         # get target view class; an unregistered key is not a misconfiguration here -> skip
         try:

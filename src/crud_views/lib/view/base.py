@@ -620,7 +620,10 @@ class CrudViewPermissionRequiredMixin(PermissionRequiredMixin):
         cv_raise(self.cv_permission is not None, f"cv_permission not set at {self}")
         perms = self.cv_viewset.permissions
         perm = perms.get(self.cv_permission)
-        assert perm, f"permission {self.cv_permission} not found at {self}"
+        assert perm, (
+            f"permission {self.cv_permission} not found at {self} — if the model is new, run `manage.py migrate`; "
+            f"a server started before the migration may need a restart"
+        )
         return perm
 
     def has_permission(self):

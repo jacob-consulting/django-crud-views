@@ -14,6 +14,10 @@
 
 ### Fixed
 
+- `ViewSet.permissions` / `default_permissions` no longer cache an empty permission lookup for the life of
+  the process (#151). A server running while `migrate` created a new model's permissions failed every
+  PermissionRequired view of that ViewSet with "permission view not found" until restarted; the empty
+  result is now looked up again, and the error message points at `migrate` / restarting.
 - A context button with its own `template` / `template_code` was rendered in the `{% cv_context_actions %}`
   header toolbar even when the user lacked access or the action was disabled — only the default template
   checked `cv_access`. `{% cv_context_action %}` now applies the same visibility rule as `cv_context_button`,

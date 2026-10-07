@@ -94,6 +94,7 @@ class ViewSet(BaseModel):
     resource_permissions: dict[str, str] | None = None
 
     _views: dict[str, type[CrudView]] = PrivateAttr(default_factory=empty_dict)
+    _default_permissions: OrderedDict[str, str] | None = PrivateAttr(default=None)
 
     def __repr__(self):
         return f"ViewSet({self.name})"
@@ -415,7 +416,7 @@ class ViewSet(BaseModel):
 
         return urlpatterns
 
-    @cached_property
+    @property
     def default_permissions(self) -> OrderedDict[str, str]:
         """
         Default permissions extracted from model
@@ -426,10 +427,13 @@ class ViewSet(BaseModel):
             - ...
             - and custom permissions defined on model
 
-        Note: this is a process-lifetime ``cached_property`` that performs database queries
-        (a ``ContentType`` lookup and a ``Permission`` query). It is evaluated once per
-        process and is not refreshed if permissions change at runtime.
+        Note: the lookup (a ``ContentType`` lookup and a ``Permission`` query) is cached for the
+        process once it finds permissions; it is not refreshed if permissions change at runtime.
+        An empty result is not cached: read before ``migrate`` created the rows, it would
+        otherwise break every PermissionRequired view until the process restarts (#151).
         """
+        if self._default_permissions is not None:
+            return self._default_permissions
         cv_raise(
             not self.is_resource,
             f"default_permissions must not be used for Resource-based ViewSet {self!r}; set resource_permissions",
@@ -444,9 +448,11 @@ class ViewSet(BaseModel):
             # "change_book_status" instead of being truncated to "change" for model "book".
             action = permission.codename.removesuffix(f"_{permission.content_type.model}")
             permissions[action] = f"{permission.content_type.app_label}.{permission.codename}"
+        if permissions:
+            self._default_permissions = permissions
         return permissions
 
-    @cached_property
+    @property
     def permissions(self) -> OrderedDict[str, str]:
         if self.is_resource:
             return OrderedDict(self.resource_permissions or {})

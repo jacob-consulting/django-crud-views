@@ -71,3 +71,32 @@ def test_default_permissions_parses_action_containing_model_name():
     # standard actions still parse
     for action in ("add", "change", "delete", "view"):
         assert action in permissions
+
+
+@pytest.mark.django_db
+def test_permissions_not_cached_while_empty():
+    """An empty permission lookup (rows not created yet) is not cached for the process (#151).
+
+    A server started before ``migrate`` used to cache ``{}`` forever, so every PermissionRequired view of the
+    ViewSet failed with "permission view not found" until restart, even after migrate created the rows.
+    """
+    from django.apps import apps
+    from django.contrib.auth.management import create_permissions
+    from django.contrib.auth.models import Permission
+    from django.contrib.contenttypes.models import ContentType
+
+    from crud_views.lib.viewset import _REGISTRY, ViewSet
+    from tests.test1.app.models import Book
+
+    ct = ContentType.objects.get_for_model(Book)
+    Permission.objects.filter(content_type=ct).delete()  # the state before migrate
+    name = "book_perm_cache_probe"
+    try:
+        viewset = ViewSet(model=Book, name=name)
+        assert viewset.permissions == {}
+
+        create_permissions(apps.get_app_config(Book._meta.app_label), verbosity=0)  # what migrate does
+
+        assert viewset.permissions["view"] == f"{ct.app_label}.view_book"
+    finally:
+        _REGISTRY.pop(name, None)

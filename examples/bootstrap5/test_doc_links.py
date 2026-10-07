@@ -17,6 +17,8 @@ EXAMPLES_DIR = Path(__file__).resolve().parent
 DOCS_DIR = EXAMPLES_DIR.parents[1] / "docs"
 
 HEADING_RE = re.compile(r"^#{1,6}\s+(?P<text>.+?)\s*#*\s*$")
+FENCE_RE = re.compile(r"^\s*(?P<fence>`{3,}|~{3,})")
+LINK_TARGET_RE = re.compile(r"\]\((?P<url>https?://[^)\s]+)\)")
 
 
 def slugify(value: str, separator: str = "-") -> str:
@@ -29,16 +31,38 @@ def slugify(value: str, separator: str = "-") -> str:
     return re.sub(rf"[{separator}\s]+", separator, value)
 
 
+def unfenced_lines(markdown: str):
+    """Lines outside fenced code blocks. A fence closes only on the same character with at least its length."""
+    fence = ""
+    for line in markdown.splitlines():
+        if fence:
+            closing = line.strip()
+            if set(closing) == {fence[0]} and len(closing) >= len(fence):
+                fence = ""
+            continue
+        if m := FENCE_RE.match(line):
+            fence = m["fence"]
+            continue
+        yield line
+
+
 def heading_slugs(markdown: str) -> set[str]:
     """Anchor slugs of all ATX headings, skipping lines inside fenced code blocks."""
-    slugs, in_fence = set(), False
-    for line in markdown.splitlines():
-        if line.lstrip().startswith(("```", "~~~")):
-            in_fence = not in_fence
+    return {slugify(m["text"]) for line in unfenced_lines(markdown) if (m := HEADING_RE.match(line))}
+
+
+def demo_links(markdown: str) -> set[str]:
+    """Link targets inside ``!!! example`` admonitions -- the "Try it live" boxes."""
+    links, in_box = set(), False
+    for line in unfenced_lines(markdown):
+        if line.startswith("!!! example"):
+            in_box = True
             continue
-        if not in_fence and (m := HEADING_RE.match(line)):
-            slugs.add(slugify(m["text"]))
-    return slugs
+        if in_box and line.strip() and not line.startswith("    "):
+            in_box = False
+        if in_box:
+            links.update(m["url"] for m in LINK_TARGET_RE.finditer(line))
+    return links
 
 
 @pytest.mark.parametrize(
@@ -58,6 +82,24 @@ def test_slugify_matches_mkdocs(heading, slug):
 def test_heading_slugs_ignore_fenced_code():
     markdown = "# Title\n\n## Real heading\n\n```python\n# urls.py\n## not a heading\n```\n\n### After fence\n"
     assert heading_slugs(markdown) == {"title", "real-heading", "after-fence"}
+
+
+def test_heading_slugs_fence_closes_only_on_matching_marker():
+    # a fence closes only on the same character with at least the opening length
+    markdown = "~~~\n```\n## inside\n```\n~~~\n\n## After\n\n````\n```\n## inside too\n```\n````\n"
+    assert heading_slugs(markdown) == {"after"}
+
+
+def test_demo_links_only_counts_link_targets_in_example_boxes():
+    markdown = (
+        "Prose mentions https://x/nested/company/ without linking.\n\n"
+        "```\n[code](https://x/in-code/)\n```\n\n"
+        '!!! example "Try it live"\n'
+        "    The [Nested](https://x/nested/company/) and the\n"
+        "    [Showcase](https://x/showcase/recipe/1/) examples.\n\n"
+        "After the box: [later](https://x/after/)\n"
+    )
+    assert demo_links(markdown) == {"https://x/nested/company/", "https://x/showcase/recipe/1/"}
 
 
 def test_every_feature_declares_doc_refs():
@@ -99,5 +141,7 @@ def test_docs_page_links_back_to_demo(feature, page):
     from django.urls import reverse
 
     demo_url = DEMO_BASE + reverse(feature.url_name)
-    text = (DOCS_DIR / page).read_text(encoding="utf-8")
-    assert demo_url in text, f"docs/{page} does not link to the {feature.title} example ({demo_url})"
+    links = demo_links((DOCS_DIR / page).read_text(encoding="utf-8"))
+    assert demo_url in links, (
+        f"docs/{page} has no 'Try it live' box linking to the {feature.title} example ({demo_url})"
+    )

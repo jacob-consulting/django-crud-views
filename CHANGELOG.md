@@ -1,5 +1,15 @@
 # Django CRUD Views - Changelog
 
+## Unreleased
+
+### Changed
+
+- Example project: the "References to documentation" links show an external-link icon and tell screen
+  readers they open in a new tab ("(opens in a new tab)" / "(öffnet in einem neuen Tab)").
+- The example project's docs cross-link test only accepts a demo link that is the exact target of a link
+  inside a "Try it live" box (previously any mention of the URL anywhere on the page counted), and closes
+  a fenced code block only on a matching fence, as Markdown does.
+
 ## 0.24.4
 
 ### Added
@@ -39,6 +49,8 @@
   "Okt. 6, 2026"; now "6. Oktober 2026"). English output is unchanged.
 - The ViewSet manage page translates its headings and column headers (ViewSet attribute names
   such as `pk` or `pk_name` stay as they are).
+- Docs: `!!! note` / `!!! warning` blocks render as boxes on Read the Docs. The `admonition`
+  extension was never enabled, so they showed as plain paragraphs starting with a literal `!!! note`.
 
 ## 0.24.3
 

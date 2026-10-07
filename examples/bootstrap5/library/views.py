@@ -1,6 +1,7 @@
 import django_filters
 import django_tables2 as tables
 from crispy_forms.layout import Layout, Row
+from django.utils.translation import gettext_lazy as _
 from project.views import BreadcrumbMixin
 
 from crud_views.lib.crispy import Column2, Column4, Column6, CrispyDeleteForm, CrispyModelForm, CrispyViewMixin
@@ -27,8 +28,6 @@ cv_author = ViewSet(model=Author, name="author", icon_header="fa-regular fa-user
 
 
 class AuthorForm(CrispyModelForm):
-    submit_label = "Save"
-
     class Meta:
         model = Author
         fields = ["first_name", "last_name", "pseudonym"]
@@ -68,14 +67,14 @@ class AuthorDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
     cv_viewset = cv_author
     cv_property_display = [
         {
-            "title": "Author",
+            "title": _("Author"),
             "icon": "user",
             "properties": [
                 "id",
                 "first_name",
                 "last_name",
                 "pseudonym",
-                {"path": "book_count", "detail": "Number of books (computed on the view)"},
+                {"path": "book_count", "detail": _("Number of books (computed on the view)")},
             ],
         },
     ]
@@ -88,20 +87,20 @@ class AuthorDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
 class AuthorCreateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, CreateViewPermissionRequired):
     cv_viewset = cv_author
     form_class = AuthorForm
-    cv_message_template_code = "Created author »{{ object }}«"
+    cv_message_template_code = _("Created author “{{ object }}”")
 
 
 class AuthorUpdateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
     cv_viewset = cv_author
     form_class = AuthorForm
-    cv_message_template_code = "Updated author »{{ object }}«"
+    cv_message_template_code = _("Updated author “{{ object }}”")
     cv_cancel_keys = ["list", "detail"]  # cancel returns to where the user came from
 
 
 class AuthorDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     cv_viewset = cv_author
     form_class = CrispyDeleteForm
-    cv_message_template_code = "Deleted author »{{ object }}«"
+    cv_message_template_code = _("Deleted author “{{ object }}”")
     cv_show_related_objects = True
     cv_cancel_keys = ["list", "detail"]
 
@@ -112,8 +111,6 @@ cv_book = ViewSet(model=Book, name="book", icon_header="fa-solid fa-book")
 
 
 class BookForm(CrispyModelForm):
-    submit_label = "Save"
-
     class Meta:
         model = Book
         fields = ["title", "author", "price"]
@@ -138,33 +135,33 @@ class BookListView(BreadcrumbMixin, ListViewTableMixin, ListViewPermissionRequir
 class BookDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
     cv_viewset = cv_book
     cv_property_display = [
-        {"title": "Book", "icon": "book", "properties": ["id", "title", "author", "price"]},
+        {"title": _("Book"), "icon": "book", "properties": ["id", "title", "author", "price"]},
     ]
 
 
 class BookCreateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, CreateViewPermissionRequired):
     cv_viewset = cv_book
     form_class = BookForm
-    cv_message_template_code = "Created book »{{ object }}«"
+    cv_message_template_code = _("Created book “{{ object }}”")
 
 
 class BookUpdateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
     cv_viewset = cv_book
     form_class = BookForm
-    cv_message_template_code = "Updated book »{{ object }}«"
+    cv_message_template_code = _("Updated book “{{ object }}”")
 
 
 class BookDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     cv_viewset = cv_book
     form_class = CrispyDeleteForm
-    cv_message_template_code = "Deleted book »{{ object }}«"
+    cv_message_template_code = _("Deleted book “{{ object }}”")
 
 
 class BookUpView(BreadcrumbMixin, MessageMixin, OrderedUpViewPermissionRequired):
     cv_viewset = cv_book
-    cv_message_template_code = "Moved book »{{ object }}« up"
+    cv_message_template_code = _("Moved book “{{ object }}” up")
 
 
 class BookDownView(BreadcrumbMixin, MessageMixin, OrderedUpDownPermissionRequired):
     cv_viewset = cv_book
-    cv_message_template_code = "Moved book »{{ object }}« down"
+    cv_message_template_code = _("Moved book “{{ object }}” down")

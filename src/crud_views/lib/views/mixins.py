@@ -7,6 +7,7 @@ from urllib.parse import parse_qs, urlencode
 from django.contrib import messages
 from django.core.exceptions import BadRequest
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.utils.text import capfirst
 from django.utils.translation import gettext as _
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
@@ -216,7 +217,7 @@ class CardOrderMixin:
 
     def _order_field_label(self, field: str) -> str:
         try:
-            return str(self.model._meta.get_field(field).verbose_name).capitalize()
+            return str(capfirst(self.model._meta.get_field(field).verbose_name))
         except Exception:  # pragma: no cover - defensive
             return field
 

@@ -1,6 +1,7 @@
 import django_tables2 as tables
 from crispy_forms.layout import Row
 from django.forms import modelform_factory
+from django.utils.translation import gettext_lazy as _
 from project.views import BreadcrumbMixin
 
 from crud_views.lib.crispy import Column4, Column6, CrispyDeleteForm, CrispyForm, CrispyViewMixin
@@ -41,7 +42,7 @@ POLYMORPHIC_FORMS = {Car: CarForm, Truck: TruckForm, Motorcycle: MotorcycleForm}
 class VehicleTable(Table):
     id = LinkDetailColumn()
     name = tables.Column()
-    type = tables.Column(accessor="polymorphic_ctype__model", verbose_name="Type")
+    type = tables.Column(accessor="polymorphic_ctype__model", verbose_name=_("Type"))
 
 
 class VehicleListView(BreadcrumbMixin, ListViewTableMixin, ListViewPermissionRequired):
@@ -52,7 +53,7 @@ class VehicleListView(BreadcrumbMixin, ListViewTableMixin, ListViewPermissionReq
 
 
 class CrispyVehicleContentTypeForm(CrispyForm, PolymorphicContentTypeForm):
-    submit_label = "Select"
+    submit_label = _("Select")
 
     def get_layout_fields(self):
         return Row(Column4("polymorphic_ctype_id"))
@@ -81,7 +82,7 @@ class VehicleDetailView(BreadcrumbMixin, ObjectDetailMixin, PolymorphicDetailVie
     cv_viewset = cv_vehicle
     model = Vehicle
     cv_property_display = [
-        {"title": "Vehicle", "icon": "car", "properties": ["id", "name"]},
+        {"title": _("Vehicle"), "icon": "car", "properties": ["id", "name"]},
     ]
 
 

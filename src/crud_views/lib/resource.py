@@ -18,7 +18,7 @@ from pydantic import BaseModel
 class ResourceMeta:
     """
     Defaults for Resource.Meta. Mirrors the Django model Meta idiom; values
-    should be lowercase (ViewSet.get_meta() applies .capitalize()).
+    should be lowercase (ViewSet.get_meta() upper-cases the first letter).
     """
 
     verbose_name: str = "item"

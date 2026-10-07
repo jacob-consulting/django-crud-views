@@ -1,0 +1,24 @@
+{% load i18n %}
+{% if languages|length > 1 %}
+<div class="dropdown">
+  <button class="btn btn-outline-secondary dropdown-toggle" type="button"
+          data-bs-toggle="dropdown" aria-expanded="false">
+    <i class="fa-solid fa-language"></i>
+    {% for code, name in languages %}{% if code == current %}{{ name }}{% endif %}{% endfor %}
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    {% for code, name in languages %}
+    <li>
+      <form action="{% url 'set_language' %}" method="post" class="m-0">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ next }}">
+        <input type="hidden" name="language" value="{{ code }}">
+        <button type="submit" class="dropdown-item{% if code == current %} active{% endif %}">
+          {{ name }}
+        </button>
+      </form>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}

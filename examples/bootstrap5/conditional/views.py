@@ -3,6 +3,7 @@ from collections import OrderedDict
 import django_tables2 as tables
 from crispy_forms.layout import Row
 from django.forms.models import inlineformset_factory
+from django.utils.translation import gettext_lazy as _
 from project.views import BreadcrumbMixin
 
 from conditional.models import Event, Registration, Session, Speaker
@@ -58,7 +59,7 @@ class RegistrationForm(ConditionalGroupModelForm):
         # A UIFieldToggle is not persisted, so derive its initial state from the
         # instance — otherwise updating a registration with a note would render
         # the toggle off and clear the note on the next save.
-        self.fields["add_note"].label = "Add a note"
+        self.fields["add_note"].label = _("Add a note")
         self.fields["add_note"].initial = bool(self.instance.pk and self.instance.note)
 
     def get_layout_fields(self):
@@ -68,7 +69,7 @@ class RegistrationForm(ConditionalGroupModelForm):
             ToggleGroup(
                 "with_company",
                 Row(Column6("company_name"), Column6("vat_id")),
-                legend="Company details",
+                legend=_("Company details"),
             ),
             Row(Column6("add_note")),
             ToggleGroup("add_note", Row(Column8("note"))),
@@ -90,7 +91,7 @@ class RegistrationDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired
     cv_viewset = cv_registration
     cv_property_display = [
         {
-            "title": "Registration",
+            "title": _("Registration"),
             "icon": "user-plus",
             "properties": ["id", "name", "with_company", "company_name", "vat_id", "note"],
         },
@@ -100,19 +101,19 @@ class RegistrationDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired
 class RegistrationCreateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, CreateViewPermissionRequired):
     cv_viewset = cv_registration
     form_class = RegistrationForm
-    cv_message_template_code = "Created registration »{{ object }}«"
+    cv_message_template_code = _("Created registration “{{ object }}”")
 
 
 class RegistrationUpdateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
     cv_viewset = cv_registration
     form_class = RegistrationForm
-    cv_message_template_code = "Updated registration »{{ object }}«"
+    cv_message_template_code = _("Updated registration “{{ object }}”")
 
 
 class RegistrationDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     cv_viewset = cv_registration
     form_class = CrispyDeleteForm
-    cv_message_template_code = "Deleted registration »{{ object }}«"
+    cv_message_template_code = _("Deleted registration “{{ object }}”")
 
 
 # ---------------- Kind 2: conditional first-level formset ----------------
@@ -184,7 +185,7 @@ SpeakerFormSet = inlineformset_factory(
 cv_event_formsets: FormSets = FormSets(
     formsets=OrderedDict(
         sessions=FormSet(
-            title="Sessions",
+            title=_("Sessions"),
             klass=SessionFormSet,
             fields=["title"],
             pk_field="id",
@@ -193,7 +194,7 @@ cv_event_formsets: FormSets = FormSets(
             conditional=ConditionalFormSet(toggle=ModelFieldToggle("with_sessions"), on_off="purge"),
         ),
         speakers=FormSet(
-            title="Speakers",
+            title=_("Speakers"),
             klass=SpeakerFormSet,
             fields=["name"],
             pk_field="id",
@@ -220,15 +221,15 @@ class EventDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
     cv_viewset = cv_event
     cv_property_display = [
         {
-            "title": "Event",
+            "title": _("Event"),
             "icon": "calendar",
             "properties": [
                 "id",
                 "name",
                 "with_sessions",
-                {"path": "session_count", "detail": "Number of sessions"},
+                {"path": "session_count", "detail": _("Number of sessions")},
                 "with_speakers",
-                {"path": "speaker_count", "detail": "Number of speakers"},
+                {"path": "speaker_count", "detail": _("Number of speakers")},
             ],
         },
     ]
@@ -244,17 +245,17 @@ class EventCreateView(BreadcrumbMixin, CrispyViewMixin, FormSetMixin, MessageMix
     cv_viewset = cv_event
     form_class = EventForm
     cv_formsets: FormSets = cv_event_formsets
-    cv_message_template_code = "Created event »{{ object }}«"
+    cv_message_template_code = _("Created event “{{ object }}”")
 
 
 class EventUpdateView(BreadcrumbMixin, CrispyViewMixin, FormSetMixin, MessageMixin, UpdateViewPermissionRequired):
     cv_viewset = cv_event
     form_class = EventForm
     cv_formsets: FormSets = cv_event_formsets
-    cv_message_template_code = "Updated event »{{ object }}«"
+    cv_message_template_code = _("Updated event “{{ object }}”")
 
 
 class EventDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     cv_viewset = cv_event
     form_class = CrispyDeleteForm
-    cv_message_template_code = "Deleted event »{{ object }}«"
+    cv_message_template_code = _("Deleted event “{{ object }}”")

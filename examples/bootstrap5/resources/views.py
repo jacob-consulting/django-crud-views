@@ -9,6 +9,7 @@ and a form-less ActionView. The bucket resets on server restart.
 import hashlib
 
 import django_tables2 as tables
+from django.utils.translation import gettext_lazy as _
 from project.views import BreadcrumbMixin
 
 from crud_views.lib.crispy import CrispyDeleteForm, CrispyViewMixin
@@ -40,8 +41,8 @@ class S3File(Resource):
     size: int
 
     class Meta:
-        verbose_name = "s3 file"
-        verbose_name_plural = "s3 files"
+        verbose_name = _("S3 file")
+        verbose_name_plural = _("S3 files")
         app_label = "resources"
         pk_field = "key_md5"
         pk_type = ViewSet.PK.HEX
@@ -71,8 +72,8 @@ cv_s3file = ViewSet(
 
 
 class S3FileTable(Table):
-    key = tables.Column()
-    size = tables.Column()
+    key = tables.Column(verbose_name=_("key"))
+    size = tables.Column(verbose_name=_("size"))
 
 
 class S3FileListView(BreadcrumbMixin, ResourceViewMixin, ListViewTableMixin, ListViewPermissionRequired):
@@ -95,11 +96,11 @@ class S3FileDeleteView(
     cv_permission = "delete"
     form_class = CrispyDeleteForm
     cv_icon_action = "fa-regular fa-trash-can"
-    cv_action_label_template_code = "Delete"
-    cv_action_short_label_template_code = "Delete"
-    cv_message_template_code = "Deleted »{{ object }}«"
-    cv_header_template_code = "Delete S3 file"
-    cv_paragraph_template_code = "Confirm deletion of »{{ object }}«"
+    cv_action_label_template_code = _("Delete")
+    cv_action_short_label_template_code = _("Delete")
+    cv_message_template_code = _("Deleted “{{ object }}”")
+    cv_header_template_code = _("Delete S3 file")
+    cv_paragraph_template_code = _("Confirm deletion of “{{ object }}”")
 
     def cv_form_valid(self, context):
         # in a real project: boto3 delete_object(Bucket=..., Key=self.object.key)
@@ -113,10 +114,10 @@ class S3FileTouchView(BreadcrumbMixin, ResourceViewMixin, ActionViewPermissionRe
     cv_permission = "delete"
     cv_backend_only = True
     cv_icon_action = "fa-regular fa-hand-pointer"
-    cv_action_label_template_code = "Touch"
-    cv_action_short_label_template_code = "Touch"
-    cv_message_template_code = "Touched »{{ object }}«"
-    cv_message_template_error_code = "Touch failed for »{{ object }}«"
+    cv_action_label_template_code = _("Touch")
+    cv_action_short_label_template_code = _("Touch")
+    cv_message_template_code = _("Touched “{{ object }}”")
+    cv_message_template_error_code = _("Touch failed for “{{ object }}”")
 
     def action(self, context) -> bool:
         # in a real project: e.g. copy_object onto itself to refresh metadata

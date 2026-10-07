@@ -72,15 +72,17 @@ Here's the `Author` model we'll build the rest of the tutorial around:
 <!-- cv-sync: library/models.py -->
 ```python
 class Author(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
-    pseudonym = models.CharField(max_length=100, blank=True, null=True)
-    created_dt = models.DateTimeField(auto_now_add=True, verbose_name="Created")
-    modified_dt = models.DateTimeField(auto_now=True, verbose_name="Modified")
+    id = models.UUIDField(_("ID"), primary_key=True, default=uuid.uuid4, editable=False)
+    first_name = models.CharField(_("first name"), max_length=100)
+    last_name = models.CharField(_("last name"), max_length=100)
+    pseudonym = models.CharField(_("pseudonym"), max_length=100, blank=True, null=True)
+    created_dt = models.DateTimeField(_("created"), auto_now_add=True)
+    modified_dt = models.DateTimeField(_("modified"), auto_now=True)
 
     class Meta:
         ordering = ["last_name", "first_name"]
+        verbose_name = _("author")
+        verbose_name_plural = _("authors")
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
@@ -89,6 +91,11 @@ class Author(models.Model):
 A plain Django model — nothing crud_views-specific here. It uses a `UUIDField`
 primary key, which `django-crud-views` will auto-detect in a moment and use
 to generate UUID-typed URL patterns.
+
+The `_("…")` labels (`gettext_lazy as _`) are plain Django i18n: `django-crud-views`
+uses `verbose_name` for table headers, form labels and page titles, so marking them
+translatable is all it takes for those to follow the active language — see
+[Internationalization](../development/i18n.md).
 
 Create and apply the migration:
 

@@ -1,5 +1,6 @@
 import django_tables2 as tables
 from crispy_forms.layout import Row
+from django.utils.translation import gettext_lazy as _
 from project.views import BreadcrumbMixin
 
 from crud_views.lib.crispy import Column6, CrispyDeleteForm, CrispyModelForm, CrispyViewMixin
@@ -23,8 +24,6 @@ cv_company = ViewSet(model=Company, name="company", icon_header="fa-solid fa-bui
 
 
 class CompanyForm(CrispyModelForm):
-    submit_label = "Save"
-
     class Meta:
         model = Company
         fields = ["name", "city"]
@@ -37,8 +36,8 @@ class CompanyTable(Table):
     id = LinkDetailColumn()
     name = tables.Column()
     city = tables.Column()
-    departments = LinkChildColumn(name="department", verbose_name="Departments", attrs=Table.ca.w10)
-    offices = LinkChildColumn(name="office", verbose_name="Offices", attrs=Table.ca.w10)
+    departments = LinkChildColumn(name="department", verbose_name=_("Departments"), attrs=Table.ca.w10)
+    offices = LinkChildColumn(name="office", verbose_name=_("Offices"), attrs=Table.ca.w10)
 
 
 class CompanyListView(BreadcrumbMixin, ListViewTableMixin, ListViewPermissionRequired):
@@ -49,26 +48,26 @@ class CompanyListView(BreadcrumbMixin, ListViewTableMixin, ListViewPermissionReq
 class CompanyDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
     cv_viewset = cv_company
     cv_property_display = [
-        {"title": "Company", "icon": "building", "properties": ["id", "name", "city"]},
+        {"title": _("Company"), "icon": "building", "properties": ["id", "name", "city"]},
     ]
 
 
 class CompanyCreateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, CreateViewPermissionRequired):
     cv_viewset = cv_company
     form_class = CompanyForm
-    cv_message_template_code = "Created company »{{ object }}«"
+    cv_message_template_code = _("Created company “{{ object }}”")
 
 
 class CompanyUpdateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
     cv_viewset = cv_company
     form_class = CompanyForm
-    cv_message_template_code = "Updated company »{{ object }}«"
+    cv_message_template_code = _("Updated company “{{ object }}”")
 
 
 class CompanyDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     cv_viewset = cv_company
     form_class = CrispyDeleteForm
-    cv_message_template_code = "Deleted company »{{ object }}«"
+    cv_message_template_code = _("Deleted company “{{ object }}”")
 
 
 # --------------------------------------------------------------------------- Department (child of Company)
@@ -82,8 +81,6 @@ cv_department = ViewSet(
 
 
 class DepartmentForm(CrispyModelForm):
-    submit_label = "Save"
-
     class Meta:
         model = Department
         fields = ["name"]
@@ -95,7 +92,7 @@ class DepartmentForm(CrispyModelForm):
 class DepartmentTable(Table):
     id = LinkDetailColumn()
     name = tables.Column()
-    employees = LinkChildColumn(name="employee", verbose_name="Employees", attrs=Table.ca.w10)
+    employees = LinkChildColumn(name="employee", verbose_name=_("Employees"), attrs=Table.ca.w10)
 
 
 class DepartmentListView(BreadcrumbMixin, ListViewTableMixin, ListViewPermissionRequired):
@@ -106,7 +103,7 @@ class DepartmentListView(BreadcrumbMixin, ListViewTableMixin, ListViewPermission
 class DepartmentDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
     cv_viewset = cv_department
     cv_property_display = [
-        {"title": "Department", "icon": "people-group", "properties": ["id", "name", "company"]},
+        {"title": _("Department"), "icon": "people-group", "properties": ["id", "name", "company"]},
     ]
 
 
@@ -115,19 +112,19 @@ class DepartmentCreateView(
 ):
     cv_viewset = cv_department
     form_class = DepartmentForm
-    cv_message_template_code = "Created department »{{ object }}«"
+    cv_message_template_code = _("Created department “{{ object }}”")
 
 
 class DepartmentUpdateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
     cv_viewset = cv_department
     form_class = DepartmentForm
-    cv_message_template_code = "Updated department »{{ object }}«"
+    cv_message_template_code = _("Updated department “{{ object }}”")
 
 
 class DepartmentDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     cv_viewset = cv_department
     form_class = CrispyDeleteForm
-    cv_message_template_code = "Deleted department »{{ object }}«"
+    cv_message_template_code = _("Deleted department “{{ object }}”")
 
 
 # --------------------------------------------------------------------------- Employee (grandchild)
@@ -141,8 +138,6 @@ cv_employee = ViewSet(
 
 
 class EmployeeForm(CrispyModelForm):
-    submit_label = "Save"
-
     class Meta:
         model = Employee
         fields = ["name", "email"]
@@ -165,7 +160,7 @@ class EmployeeListView(BreadcrumbMixin, ListViewTableMixin, ListViewPermissionRe
 class EmployeeDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
     cv_viewset = cv_employee
     cv_property_display = [
-        {"title": "Employee", "icon": "id-badge", "properties": ["id", "name", "email", "department"]},
+        {"title": _("Employee"), "icon": "id-badge", "properties": ["id", "name", "email", "department"]},
     ]
 
 
@@ -174,19 +169,19 @@ class EmployeeCreateView(
 ):
     cv_viewset = cv_employee
     form_class = EmployeeForm
-    cv_message_template_code = "Created employee »{{ object }}«"
+    cv_message_template_code = _("Created employee “{{ object }}”")
 
 
 class EmployeeUpdateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
     cv_viewset = cv_employee
     form_class = EmployeeForm
-    cv_message_template_code = "Updated employee »{{ object }}«"
+    cv_message_template_code = _("Updated employee “{{ object }}”")
 
 
 class EmployeeDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     cv_viewset = cv_employee
     form_class = CrispyDeleteForm
-    cv_message_template_code = "Deleted employee »{{ object }}«"
+    cv_message_template_code = _("Deleted employee “{{ object }}”")
 
 
 # --------------------------------------------------------------------------- Office (second child of Company)
@@ -200,8 +195,6 @@ cv_office = ViewSet(
 
 
 class OfficeForm(CrispyModelForm):
-    submit_label = "Save"
-
     class Meta:
         model = Office
         fields = ["name"]
@@ -223,7 +216,7 @@ class OfficeListView(BreadcrumbMixin, ListViewTableMixin, ListViewPermissionRequ
 class OfficeDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
     cv_viewset = cv_office
     cv_property_display = [
-        {"title": "Office", "icon": "door-open", "properties": ["id", "name", "company"]},
+        {"title": _("Office"), "icon": "door-open", "properties": ["id", "name", "company"]},
     ]
 
 
@@ -232,16 +225,16 @@ class OfficeCreateView(
 ):
     cv_viewset = cv_office
     form_class = OfficeForm
-    cv_message_template_code = "Created office »{{ object }}«"
+    cv_message_template_code = _("Created office “{{ object }}”")
 
 
 class OfficeUpdateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
     cv_viewset = cv_office
     form_class = OfficeForm
-    cv_message_template_code = "Updated office »{{ object }}«"
+    cv_message_template_code = _("Updated office “{{ object }}”")
 
 
 class OfficeDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     cv_viewset = cv_office
     form_class = CrispyDeleteForm
-    cv_message_template_code = "Deleted office »{{ object }}«"
+    cv_message_template_code = _("Deleted office “{{ object }}”")

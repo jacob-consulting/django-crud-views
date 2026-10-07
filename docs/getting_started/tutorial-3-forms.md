@@ -11,8 +11,6 @@ layout you control via `get_layout_fields`. Here's `AuthorForm`:
 <!-- cv-sync: library/views.py -->
 ```python
 class AuthorForm(CrispyModelForm):
-    submit_label = "Save"
-
     class Meta:
         model = Author
         fields = ["first_name", "last_name", "pseudonym"]
@@ -21,7 +19,8 @@ class AuthorForm(CrispyModelForm):
         return Row(Column4("first_name"), Column4("last_name"), Column4("pseudonym"))
 ```
 
-`submit_label` overrides the submit button's text. `get_layout_fields` returns
+The submit button reads "Save" (translated) by default; set `submit_label` on the form to
+change it. `get_layout_fields` returns
 a crispy `Layout` (or, as here, a single `Row`) built from `Column2` /
 `Column4` / `Column6` — these aren't crud_views-specific widgets, just thin
 `Column` subclasses that set a Bootstrap grid CSS class (`col-md-2`,
@@ -36,7 +35,7 @@ Both views reuse `AuthorForm`. `AuthorCreateView`:
 class AuthorCreateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, CreateViewPermissionRequired):
     cv_viewset = cv_author
     form_class = AuthorForm
-    cv_message_template_code = "Created author »{{ object }}«"
+    cv_message_template_code = _("Created author “{{ object }}”")
 ```
 
 And `AuthorUpdateView`:
@@ -46,7 +45,7 @@ And `AuthorUpdateView`:
 class AuthorUpdateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
     cv_viewset = cv_author
     form_class = AuthorForm
-    cv_message_template_code = "Updated author »{{ object }}«"
+    cv_message_template_code = _("Updated author “{{ object }}”")
 ```
 
 Both inherit `BreadcrumbMixin` — that's the example project's breadcrumb
@@ -57,7 +56,8 @@ rendering happens through that helper in the templates. `MessageMixin` adds a
 `messages.success` call on successful submit: `cv_message_template_code` is
 an inline Django template string rendered with the object in context (hence
 `{{ object }}`, not `{object}`) — `str(self.object)` is what ends up in the
-message, so it reads "Created author »Ursula Le Guin«". Its sibling
+message, so it reads "Created author “Ursula Le Guin”". Wrapping the string in
+`_()` (`gettext_lazy`) makes it translatable like any other label. Its sibling
 `cv_message_template` does the same job but points at a template snippet
 file instead of an inline string.
 
@@ -74,7 +74,7 @@ Delete gets its own form class rather than `AuthorForm`:
 class AuthorDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     cv_viewset = cv_author
     form_class = CrispyDeleteForm
-    cv_message_template_code = "Deleted author »{{ object }}«"
+    cv_message_template_code = _("Deleted author “{{ object }}”")
     cv_show_related_objects = True
 ```
 

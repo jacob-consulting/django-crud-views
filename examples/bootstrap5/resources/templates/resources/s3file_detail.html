@@ -1,10 +1,11 @@
 {% extends cv_extends %}
+{% load i18n %}
 
 {% block cv_content %}
     <div class="card">
         <div class="card-body">
             <h5 class="card-title">{{ object.key }}</h5>
-            <p class="card-text">{{ object.size }} bytes</p>
+            <p class="card-text">{% blocktranslate count size=object.size %}{{ size }} byte{% plural %}{{ size }} bytes{% endblocktranslate %}</p>
         </div>
     </div>
 {% endblock cv_content %}

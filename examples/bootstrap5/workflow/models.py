@@ -1,15 +1,16 @@
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 from django_fsm import FSMField, transition
 
 from crud_views_workflow.lib import BadgeEnum, WorkflowComment, WorkflowModelMixin
 
 
 class CampaignState(models.TextChoices):
-    DRAFT = "draft", "Draft"
-    ACTIVE = "active", "Active"
-    COMPLETED = "completed", "Completed"
-    CANCELLED = "cancelled", "Cancelled"
-    ERROR = "error", "Error"
+    DRAFT = "draft", _("Draft")
+    ACTIVE = "active", _("Active")
+    COMPLETED = "completed", _("Completed")
+    CANCELLED = "cancelled", _("Cancelled")
+    ERROR = "error", _("Error")
 
 
 class Campaign(WorkflowModelMixin, models.Model):
@@ -22,8 +23,12 @@ class Campaign(WorkflowModelMixin, models.Model):
         CampaignState.ERROR: BadgeEnum.DANGER,
     }
 
-    name = models.CharField(max_length=128)
-    state = FSMField(default=CampaignState.DRAFT, choices=CampaignState.choices)
+    name = models.CharField(_("name"), max_length=128)
+    state = FSMField(_("state"), default=CampaignState.DRAFT, choices=CampaignState.choices)
+
+    class Meta:
+        verbose_name = _("campaign")
+        verbose_name_plural = _("campaigns")
 
     def __str__(self):
         return self.name
@@ -33,7 +38,7 @@ class Campaign(WorkflowModelMixin, models.Model):
         source=CampaignState.DRAFT,
         target=CampaignState.ACTIVE,
         on_error=CampaignState.ERROR,
-        custom={"label": "Activate", "comment": WorkflowComment.NONE},
+        custom={"label": _("Activate"), "comment": WorkflowComment.NONE},
     )
     def wf_activate(self, request=None, by=None, comment=None):
         pass
@@ -43,7 +48,7 @@ class Campaign(WorkflowModelMixin, models.Model):
         source=CampaignState.ACTIVE,
         target=CampaignState.COMPLETED,
         on_error=CampaignState.ERROR,
-        custom={"label": "Complete", "comment": WorkflowComment.OPTIONAL},
+        custom={"label": _("Complete"), "comment": WorkflowComment.OPTIONAL},
     )
     def wf_complete(self, request=None, by=None, comment=None):
         pass
@@ -53,7 +58,7 @@ class Campaign(WorkflowModelMixin, models.Model):
         source=[CampaignState.DRAFT, CampaignState.ACTIVE],
         target=CampaignState.CANCELLED,
         on_error=CampaignState.ERROR,
-        custom={"label": "Cancel", "comment": WorkflowComment.REQUIRED},
+        custom={"label": _("Cancel"), "comment": WorkflowComment.REQUIRED},
     )
     def wf_cancel(self, request=None, by=None, comment=None):
         pass

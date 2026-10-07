@@ -98,7 +98,7 @@ class DepartmentCreateView(
 ):
     cv_viewset = cv_department
     form_class = DepartmentForm
-    cv_message_template_code = "Created department »{{ object }}«"
+    cv_message_template_code = _("Created department “{{ object }}”")
 ```
 
 `CreateViewParentMixin` reads the parent object from the URL and sets it on the form instance
@@ -125,8 +125,8 @@ class CompanyTable(Table):
     id = LinkDetailColumn()
     name = tables.Column()
     city = tables.Column()
-    departments = LinkChildColumn(name="department", verbose_name="Departments", attrs=Table.ca.w10)
-    offices = LinkChildColumn(name="office", verbose_name="Offices", attrs=Table.ca.w10)
+    departments = LinkChildColumn(name="department", verbose_name=_("Departments"), attrs=Table.ca.w10)
+    offices = LinkChildColumn(name="office", verbose_name=_("Offices"), attrs=Table.ca.w10)
 ```
 
 To link down from outside a table row — e.g. a "Departments" button in a detail view's

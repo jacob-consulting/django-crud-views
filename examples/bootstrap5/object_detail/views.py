@@ -26,6 +26,7 @@ import django_tables2 as tables
 from crispy_forms.layout import Fieldset, Row
 from django.urls import reverse
 from django.utils.html import format_html_join
+from django.utils.translation import gettext_lazy as _
 from project.views import BreadcrumbMixin
 
 from crud_views.lib.crispy import Column4, Column6, Column12, CrispyModelForm, CrispyViewMixin
@@ -81,13 +82,11 @@ _LAYOUT_FIELDS = [
     Fieldset("Stock & status", Row(Column4("stock"), Column4("weight_kg"), Column4("is_active"))),
     Fieldset("Links & dates", Row(Column6("homepage"), Column6("release_date"))),
     Fieldset("Relations", Row(Column4("supplier"), Column4("warehouse"), Column4("tags"))),
-    Fieldset("Description", Row(Column12("description"))),
+    Fieldset(_("Description"), Row(Column12("description"))),
 ]
 
 
 class ProductForm(CrispyModelForm):
-    submit_label = "Save"
-
     class Meta:
         model = Product
         fields = [
@@ -122,7 +121,7 @@ class ThemeLinksColumn(tables.Column):
 
     def __init__(self, **extra):
         extra.setdefault("orderable", False)
-        extra.setdefault("verbose_name", "Themes")
+        extra.setdefault("verbose_name", _("Themes"))
         extra.setdefault("empty_values", ())
         super().__init__(**extra)
 
@@ -158,7 +157,7 @@ class ProductListView(BreadcrumbMixin, ListViewTableMixin, ListViewPermissionReq
 class ProductCreateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, CreateViewPermissionRequired):
     cv_viewset = cv_product
     form_class = ProductForm
-    cv_message_template_code = "Created product »{{ object }}«"
+    cv_message_template_code = _("Created product “{{ object }}”")
 
 
 # --------------------------------------------------------------------------- supplier (minimal detail-only)
@@ -172,7 +171,7 @@ class SupplierDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
     cv_viewset = cv_supplier
     cv_property_display = [
         {
-            "title": "Supplier",
+            "title": _("Supplier"),
             "icon": "truck",
             "properties": [
                 "name",
@@ -189,7 +188,7 @@ class SupplierDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
 # shared property_display showing default rendering of many field types + traversal + methods
 PRODUCT_DISPLAY = [
     {
-        "title": "Basics",
+        "title": _("Basics"),
         "icon": "box",
         "properties": [
             "name",
@@ -198,16 +197,16 @@ PRODUCT_DISPLAY = [
             x("price"),
             x(
                 "price",
-                title="Price tier",
+                title=_("Price tier"),
                 badge=BadgeConfig(color_fn=lambda p: "success" if p >= 100 else "secondary"),
             ),
-            x("weight_kg", title="Weight (kg)"),
+            x("weight_kg", title=_("Weight (kg)")),
             "stock",
             x(
                 "is_active",
                 badge=BadgeConfig(
                     color_map={True: "success", False: "secondary"},
-                    label_map={True: "Active", False: "Inactive"},
+                    label_map={True: _("Active"), False: _("Inactive")},
                     pill=True,
                 ),
             ),
@@ -217,35 +216,35 @@ PRODUCT_DISPLAY = [
         ],
     },
     {
-        "title": "Supplier (FK traversal)",
+        "title": _("Supplier (FK traversal)"),
         "icon": "truck",
         "properties": [
             # value is a Supplier instance -> links to that supplier's OWN detail page
             # (default LinkConfig branch: reverse(url, kwargs={"pk": value.pk})).
             x("supplier", link="supplier-detail"),
-            x("supplier__name", title="Supplier name"),
-            x("supplier__website", title="Supplier website"),
-            x("supplier__rating", title="Supplier rating"),
-            x("supplier__rating", title="Supplier rating (stars)", template="object_detail/star_rating.html"),
+            x("supplier__name", title=_("Supplier name")),
+            x("supplier__website", title=_("Supplier website")),
+            x("supplier__rating", title=_("Supplier rating")),
+            x("supplier__rating", title=_("Supplier rating (stars)"), template="object_detail/star_rating.html"),
         ],
     },
     {
-        "title": "Warehouse (O2O traversal)",
+        "title": _("Warehouse (O2O traversal)"),
         "icon": "warehouse",
         "properties": [
-            x("warehouse__code", title="Warehouse code"),
-            x("warehouse__city", title="City"),
-            x("warehouse__country", title="Country"),
+            x("warehouse__code", title=_("Warehouse code")),
+            x("warehouse__city", title=_("City")),
+            x("warehouse__country", title=_("Country")),
         ],
     },
     {
-        "title": "Tags (M2M) & computed",
+        "title": _("Tags (M2M) & computed"),
         "icon": "tags",
         "properties": [
             "tags",
-            x("margin_label", title="Margin"),
-            x("stock_status", title="Stock status"),
-            x("view_summary", title="Summary (view-computed)"),
+            x("margin_label", title=_("Margin")),
+            x("stock_status", title=_("Stock status")),
+            x("view_summary", title=_("Summary (view-computed)")),
         ],
     },
 ]

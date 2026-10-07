@@ -1,4 +1,6 @@
 from crispy_forms.layout import Fieldset, Row
+from django.utils.translation import gettext
+from django.utils.translation import gettext_lazy as _
 from project.views import BreadcrumbMixin
 
 from crud_views.lib.crispy import (
@@ -27,8 +29,6 @@ cv_recipe = ViewSet(model=Recipe, name="recipe", icon_header="fa-solid fa-utensi
 
 
 class RecipeForm(CrispyModelForm):
-    submit_label = "Save"
-
     class Meta:
         model = Recipe
         fields = ["title", "difficulty", "servings", "description"]
@@ -37,7 +37,7 @@ class RecipeForm(CrispyModelForm):
         # crispy Fieldsets group the form into titled sections
         return [
             Fieldset("Basics", Row(Column6("title"), Column4("difficulty"), Column2("servings"))),
-            Fieldset("Details", Row(Column12("description"))),
+            Fieldset(_("Details"), Row(Column12("description"))),
         ]
 
 
@@ -49,17 +49,17 @@ class RecipeCardListView(BreadcrumbMixin, CardListViewPermissionRequired):
     # signed ordering: the direction is part of each choice, so the toolbar is a single combo
     # (no asc/desc buttons) that submits on change
     cv_order_fields = [
-        ("-created_dt", "Newest first"),
-        ("created_dt", "Oldest first"),
-        ("title", "Title A-Z"),
-        ("-title", "Title Z-A"),
+        ("-created_dt", _("Newest first")),
+        ("created_dt", _("Oldest first")),
+        ("title", _("Title A-Z")),
+        ("-title", _("Title Z-A")),
         "servings",  # plain name in signed mode = ascending, auto-labelled "Servings (ascending)"
     ]
     cv_order_default = "-created_dt"
     cv_card_actions = [
-        CardAction(key="detail", label="Details", variant="primary", flex=True),
-        CardAction(key="update", label="Edit"),
-        CardAction(key="favorite", label="Favorite"),
+        CardAction(key="detail", label=_("Details"), variant="primary", flex=True),
+        CardAction(key="update", label=_("Edit")),
+        CardAction(key="favorite", label=_("Favorite")),
         CardAction(key="delete", no_label=True, variant="tertiary"),
     ]
 
@@ -69,46 +69,50 @@ class RecipeDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
     cv_context_actions = ["card", "update", "delete"]
     cv_property_display = [
         {
-            "title": "Basics",
+            "title": _("Basics"),
             "icon": "utensils",
-            "description": "What and how much",
+            "description": _("What and how much"),
             "properties": ["title", "difficulty", "servings", "favorite"],
         },
         {
-            "title": "Details",
+            "title": _("Details"),
             "icon": "circle-info",
-            "description": "Preparation and metadata",
+            "description": _("Preparation and metadata"),
             "properties": [
                 "description",
                 "created_dt",
-                {"path": "summary", "detail": "Computed on the view"},
+                {"path": "summary", "detail": _("Computed on the view")},
             ],
         },
     ]
 
     def summary(self, instance):
-        return f"{instance.title} — {instance.get_difficulty_display()}, serves {instance.servings}"
+        return gettext("%(title)s — %(difficulty)s, serves %(servings)s") % {
+            "title": instance.title,
+            "difficulty": instance.get_difficulty_display(),
+            "servings": instance.servings,
+        }
 
 
 class RecipeCreateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, CreateViewPermissionRequired):
     cv_viewset = cv_recipe
     cv_context_actions = ["card"]
     form_class = RecipeForm
-    cv_message_template_code = "Created recipe »{{ object }}«"
+    cv_message_template_code = _("Created recipe “{{ object }}”")
 
 
 class RecipeUpdateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
     cv_viewset = cv_recipe
     cv_context_actions = ["card"]
     form_class = RecipeForm
-    cv_message_template_code = "Updated recipe »{{ object }}«"
+    cv_message_template_code = _("Updated recipe “{{ object }}”")
 
 
 class RecipeDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     cv_viewset = cv_recipe
     cv_context_actions = ["card"]
     form_class = CrispyDeleteForm
-    cv_message_template_code = "Deleted recipe »{{ object }}«"
+    cv_message_template_code = _("Deleted recipe “{{ object }}”")
     cv_modal = True
 
 
@@ -119,10 +123,10 @@ class RecipeFavoriteView(BreadcrumbMixin, MessageMixin, ActionViewPermissionRequ
     cv_permission = "change"
     cv_backend_only = True  # redirect-only action: no header/paragraph page of its own
     cv_icon_action = "fa-regular fa-star"
-    cv_action_label_template_code = "Favorite"
-    cv_action_short_label_template_code = "Favorite"
-    cv_message_template_code = "Toggled favorite for »{{ object }}«"
-    cv_message_template_error_code = "Could not toggle favorite for »{{ object }}«"
+    cv_action_label_template_code = _("Favorite")
+    cv_action_short_label_template_code = _("Favorite")
+    cv_message_template_code = _("Toggled favorite for “{{ object }}”")
+    cv_message_template_error_code = _("Could not toggle favorite for “{{ object }}”")
 
     def action(self, context) -> bool:
         self.object.favorite = not self.object.favorite

@@ -1,5 +1,6 @@
 import django_tables2 as tables
 from crispy_forms.layout import Row
+from django.utils.translation import gettext_lazy as _
 from django.views import generic
 from project.views import BreadcrumbMixin
 
@@ -29,7 +30,7 @@ class HostNavBreadcrumbMixin(BreadcrumbMixin):
     def cv_breadcrumb_prefix(self):
         return [
             *super().cv_breadcrumb_prefix(),
-            BreadcrumbItem(title="Host application", url_name="breadcrumbs-host"),
+            BreadcrumbItem(title=_("Host application"), url_name="breadcrumbs-host"),
         ]
 
 
@@ -45,8 +46,6 @@ cv_workspace = ViewSet(model=Workspace, name="workspace", icon_header="fa-solid 
 
 
 class WorkspaceForm(CrispyModelForm):
-    submit_label = "Save"
-
     class Meta:
         model = Workspace
         fields = ["name"]
@@ -68,7 +67,7 @@ class WorkspaceListView(HostNavBreadcrumbMixin, ListViewTableMixin, ListViewPerm
 class WorkspaceDetailView(HostNavBreadcrumbMixin, ObjectDetailViewPermissionRequired):
     cv_viewset = cv_workspace
     cv_property_display = [
-        {"title": "Workspace", "icon": "diagram-project", "properties": ["id", "name"]},
+        {"title": _("Workspace"), "icon": "diagram-project", "properties": ["id", "name"]},
     ]
 
 
@@ -93,8 +92,6 @@ cv_board = ViewSet(model=Board, name="board", parent=ParentViewSet(name="workspa
 
 
 class BoardForm(CrispyModelForm):
-    submit_label = "Save"
-
     class Meta:
         model = Board
         fields = ["title"]
@@ -116,7 +113,7 @@ class BoardListView(HostNavBreadcrumbMixin, ListViewTableMixin, ListViewPermissi
 class BoardDetailView(HostNavBreadcrumbMixin, ObjectDetailViewPermissionRequired):
     cv_viewset = cv_board
     cv_property_display = [
-        {"title": "Board", "icon": "chalkboard", "properties": ["id", "title", "workspace"]},
+        {"title": _("Board"), "icon": "chalkboard", "properties": ["id", "title", "workspace"]},
     ]
 
 

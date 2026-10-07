@@ -1,6 +1,9 @@
 from django import template
+from django.conf import settings
 from django.template.loader import get_template, render_to_string
 from django.utils.safestring import mark_safe
+from django.utils.text import capfirst
+from django.utils.translation import get_language, get_language_info
 from django_tables2.templatetags import django_tables2 as _dt2
 
 from crud_views.lib import assets
@@ -270,6 +273,24 @@ def cv_pagination(context):
         "paginator": context.get("paginator"),
         "is_paginated": context.get("is_paginated", False),
         "base_qs": base_qs,
+    }
+
+
+def _language_name_local(code, fallback):
+    """A language's name in that language ("Deutsch"), so the selector stays readable whatever is active."""
+    try:
+        return capfirst(get_language_info(code)["name_local"])
+    except KeyError:
+        return fallback
+
+
+@register.inclusion_tag(f"{crud_views_settings.theme_path}/snippets/language_selector.html", takes_context=True)
+def cv_language_selector(context):
+    request = context.get("request")
+    return {
+        "languages": [(code, _language_name_local(code, name)) for code, name in settings.LANGUAGES],
+        "current": get_language(),
+        "next": request.get_full_path() if request is not None else "/",
     }
 
 

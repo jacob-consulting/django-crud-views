@@ -1,0 +1,1101 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-06 16:38+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: breadcrumbs/models.py:6 conditional/models.py:6 conditional/models.py:23
+#: conditional/models.py:51 nested/models.py:6 nested/models.py:22
+#: nested/models.py:37 nested/models.py:51 object_detail/models.py:38
+#: object_detail/models.py:66 object_detail/models.py:78
+#: polymorphic_demo/models.py:7 workflow/models.py:26
+msgid "name"
+msgstr "Name"
+
+#: breadcrumbs/models.py:10 breadcrumbs/models.py:20
+msgid "workspace"
+msgstr "Arbeitsbereich"
+
+#: breadcrumbs/models.py:11
+msgid "workspaces"
+msgstr "Arbeitsbereiche"
+
+#: breadcrumbs/models.py:18 conditional/models.py:38 formsets/models.py:7
+#: guardian_demo/models.py:7 library/models.py:26 showcase/models.py:11
+msgid "title"
+msgstr "Titel"
+
+#: breadcrumbs/models.py:25
+msgid "board"
+msgstr "Board"
+
+#: breadcrumbs/models.py:26
+msgid "boards"
+msgstr "Boards"
+
+#: breadcrumbs/templates/breadcrumbs/host.html:5
+msgid "Fake host application"
+msgstr "Simulierte Host-Anwendung"
+
+#: breadcrumbs/templates/breadcrumbs/host.html:7
+msgid ""
+"This page stands in for an existing application that embeds django-crud-"
+"views. The breadcrumb items pointing here are injected by "
+"<code>HostNavBreadcrumbMixin</code> via <code>cv_breadcrumb_prefix()</code> "
+"— the crud-views pages of this app show <em>Home › Host application › "
+"Workspaces › …</em>."
+msgstr ""
+"Diese Seite steht für eine bestehende Anwendung, in die django-crud-views "
+"eingebettet ist. Die Breadcrumb-Einträge, die hierher verweisen, fügt "
+"<code>HostNavBreadcrumbMixin</code> über <code>cv_breadcrumb_prefix()</code> "
+"ein — die crud-views-Seiten dieser App zeigen <em>Startseite › Host-"
+"Anwendung › Arbeitsbereiche › …</em>."
+
+#: breadcrumbs/templates/breadcrumbs/host.html:14
+msgid "Back to workspaces"
+msgstr "Zurück zu den Arbeitsbereichen"
+
+#: breadcrumbs/views.py:33
+msgid "Host application"
+msgstr "Host-Anwendung"
+
+#: breadcrumbs/views.py:70
+msgid "Workspace"
+msgstr "Arbeitsbereich"
+
+#: breadcrumbs/views.py:116
+msgid "Board"
+msgstr "Board"
+
+#: conditional/models.py:7
+msgid "I represent a company"
+msgstr "Ich vertrete ein Unternehmen"
+
+#: conditional/models.py:8
+msgid "company name"
+msgstr "Firmenname"
+
+#: conditional/models.py:9
+msgid "VAT ID"
+msgstr "USt-IdNr."
+
+#: conditional/models.py:11
+msgid "note"
+msgstr "Notiz"
+
+#: conditional/models.py:15
+msgid "registration"
+msgstr "Anmeldung"
+
+#: conditional/models.py:16
+msgid "registrations"
+msgstr "Anmeldungen"
+
+#: conditional/models.py:24
+msgid "This event has sessions"
+msgstr "Diese Veranstaltung hat Sessions"
+
+#: conditional/models.py:25
+msgid "Show speaker line-up"
+msgstr "Referenten anzeigen"
+
+#: conditional/models.py:29 conditional/models.py:37 conditional/models.py:50
+msgid "event"
+msgstr "Veranstaltung"
+
+#: conditional/models.py:30
+msgid "events"
+msgstr "Veranstaltungen"
+
+#: conditional/models.py:42
+msgid "session"
+msgstr "Session"
+
+#: conditional/models.py:43
+msgid "sessions"
+msgstr "Sessions"
+
+#: conditional/models.py:55
+msgid "speaker"
+msgstr "Referent"
+
+#: conditional/models.py:56
+msgid "speakers"
+msgstr "Referenten"
+
+#: conditional/views.py:62
+msgid "Add a note"
+msgstr "Notiz hinzufügen"
+
+#: conditional/views.py:72
+msgid "Company details"
+msgstr "Firmendaten"
+
+#: conditional/views.py:94
+msgid "Registration"
+msgstr "Anmeldung"
+
+#: conditional/views.py:104
+msgid "Created registration “{{ object }}”"
+msgstr "Anmeldung »{{ object }}« erstellt"
+
+#: conditional/views.py:110
+msgid "Updated registration “{{ object }}”"
+msgstr "Anmeldung »{{ object }}« aktualisiert"
+
+#: conditional/views.py:116
+msgid "Deleted registration “{{ object }}”"
+msgstr "Anmeldung »{{ object }}« gelöscht"
+
+#: conditional/views.py:188
+msgid "Sessions"
+msgstr "Sessions"
+
+#: conditional/views.py:197
+msgid "Speakers"
+msgstr "Referenten"
+
+#: conditional/views.py:224
+msgid "Event"
+msgstr "Veranstaltung"
+
+#: conditional/views.py:230
+msgid "Number of sessions"
+msgstr "Anzahl Sessions"
+
+#: conditional/views.py:232
+msgid "Number of speakers"
+msgstr "Anzahl Referenten"
+
+#: conditional/views.py:248
+msgid "Created event “{{ object }}”"
+msgstr "Veranstaltung »{{ object }}« erstellt"
+
+#: conditional/views.py:255
+msgid "Updated event “{{ object }}”"
+msgstr "Veranstaltung »{{ object }}« aktualisiert"
+
+#: conditional/views.py:261
+msgid "Deleted event “{{ object }}”"
+msgstr "Veranstaltung »{{ object }}« gelöscht"
+
+#: formsets/models.py:11 formsets/models.py:20
+msgid "questionnaire"
+msgstr "Fragebogen"
+
+#: formsets/models.py:12
+msgid "questionnaires"
+msgstr "Fragebögen"
+
+#: formsets/models.py:22
+msgid "text"
+msgstr "Text"
+
+#: formsets/models.py:25 formsets/models.py:33
+msgid "question"
+msgstr "Frage"
+
+#: formsets/models.py:26
+msgid "questions"
+msgstr "Fragen"
+
+#: formsets/models.py:34
+msgid "label"
+msgstr "Bezeichnung"
+
+#: formsets/models.py:37
+msgid "choice"
+msgstr "Antwortoption"
+
+#: formsets/models.py:38
+msgid "choices"
+msgstr "Antwortoptionen"
+
+#: formsets/views.py:95
+msgid "Questions"
+msgstr "Fragen"
+
+#: formsets/views.py:101
+msgid "Choices"
+msgstr "Antwortoptionen"
+
+#: formsets/views.py:126
+msgid "Questionnaire"
+msgstr "Fragebogen"
+
+#: formsets/views.py:128
+msgid "Number of questions"
+msgstr "Anzahl Fragen"
+
+#: formsets/views.py:142
+msgid "Created questionnaire “{{ object }}”"
+msgstr "Fragebogen »{{ object }}« erstellt"
+
+#: formsets/views.py:151
+msgid "Updated questionnaire “{{ object }}”"
+msgstr "Fragebogen »{{ object }}« aktualisiert"
+
+#: formsets/views.py:157
+msgid "Deleted questionnaire “{{ object }}”"
+msgstr "Fragebogen »{{ object }}« gelöscht"
+
+#: guardian_demo/models.py:8
+msgid "body"
+msgstr "Inhalt"
+
+#: guardian_demo/models.py:10
+msgid "owner"
+msgstr "Eigentümer"
+
+#: guardian_demo/models.py:12 library/models.py:13 object_detail/models.py:89
+#: showcase/models.py:16
+msgid "created"
+msgstr "Erstellt"
+
+#: guardian_demo/models.py:16
+msgid "document"
+msgstr "Dokument"
+
+#: guardian_demo/models.py:17
+msgid "documents"
+msgstr "Dokumente"
+
+#: guardian_demo/views.py:36
+msgid "Created"
+msgstr "Erstellt"
+
+#: guardian_demo/views.py:47
+msgid "Document"
+msgstr "Dokument"
+
+#: guardian_demo/views.py:54
+msgid "Created document “{{ object }}”"
+msgstr "Dokument »{{ object }}« erstellt"
+
+#: guardian_demo/views.py:67
+msgid "Updated document “{{ object }}”"
+msgstr "Dokument »{{ object }}« aktualisiert"
+
+#: guardian_demo/views.py:73
+msgid "Deleted document “{{ object }}”"
+msgstr "Dokument »{{ object }}« gelöscht"
+
+#: library/models.py:9
+msgid "ID"
+msgstr "ID"
+
+#: library/models.py:10
+msgid "first name"
+msgstr "Vorname"
+
+#: library/models.py:11
+msgid "last name"
+msgstr "Nachname"
+
+#: library/models.py:12
+msgid "pseudonym"
+msgstr "Pseudonym"
+
+#: library/models.py:14
+msgid "modified"
+msgstr "Geändert"
+
+#: library/models.py:18 library/models.py:28
+msgid "author"
+msgstr "Autor"
+
+#: library/models.py:19
+msgid "authors"
+msgstr "Autoren"
+
+#: library/models.py:27 object_detail/models.py:82
+msgid "price"
+msgstr "Preis"
+
+#: library/models.py:31
+msgid "book"
+msgstr "Buch"
+
+#: library/models.py:32
+msgid "books"
+msgstr "Bücher"
+
+#: library/views.py:70
+msgid "Author"
+msgstr "Autor"
+
+#: library/views.py:77
+msgid "Number of books (computed on the view)"
+msgstr "Anzahl Bücher (in der View berechnet)"
+
+#: library/views.py:90
+msgid "Created author “{{ object }}”"
+msgstr "Autor »{{ object }}« erstellt"
+
+#: library/views.py:96
+msgid "Updated author “{{ object }}”"
+msgstr "Autor »{{ object }}« aktualisiert"
+
+#: library/views.py:103
+msgid "Deleted author “{{ object }}”"
+msgstr "Autor »{{ object }}« gelöscht"
+
+#: library/views.py:138
+msgid "Book"
+msgstr "Buch"
+
+#: library/views.py:145
+msgid "Created book “{{ object }}”"
+msgstr "Buch »{{ object }}« erstellt"
+
+#: library/views.py:151
+msgid "Updated book “{{ object }}”"
+msgstr "Buch »{{ object }}« aktualisiert"
+
+#: library/views.py:157
+msgid "Deleted book “{{ object }}”"
+msgstr "Buch »{{ object }}« gelöscht"
+
+#: library/views.py:162
+msgid "Moved book “{{ object }}” up"
+msgstr "Buch »{{ object }}« nach oben verschoben"
+
+#: library/views.py:167
+msgid "Moved book “{{ object }}” down"
+msgstr "Buch »{{ object }}« nach unten verschoben"
+
+#: nested/models.py:7 object_detail/models.py:53
+msgid "city"
+msgstr "Stadt"
+
+#: nested/models.py:11 nested/models.py:20 nested/models.py:50
+msgid "company"
+msgstr "Unternehmen"
+
+#: nested/models.py:12
+msgid "companies"
+msgstr "Unternehmen"
+
+#: nested/models.py:26 nested/models.py:35
+msgid "department"
+msgstr "Abteilung"
+
+#: nested/models.py:27
+msgid "departments"
+msgstr "Abteilungen"
+
+#: nested/models.py:38
+msgid "email"
+msgstr "E-Mail"
+
+#: nested/models.py:42
+msgid "employee"
+msgstr "Mitarbeiter"
+
+#: nested/models.py:43
+msgid "employees"
+msgstr "Mitarbeiter"
+
+#: nested/models.py:55
+msgid "office"
+msgstr "Büro"
+
+#: nested/models.py:56
+msgid "offices"
+msgstr "Büros"
+
+#: nested/views.py:39
+msgid "Departments"
+msgstr "Abteilungen"
+
+#: nested/views.py:40
+msgid "Offices"
+msgstr "Büros"
+
+#: nested/views.py:51
+msgid "Company"
+msgstr "Unternehmen"
+
+#: nested/views.py:58
+msgid "Created company “{{ object }}”"
+msgstr "Unternehmen »{{ object }}« erstellt"
+
+#: nested/views.py:64
+msgid "Updated company “{{ object }}”"
+msgstr "Unternehmen »{{ object }}« aktualisiert"
+
+#: nested/views.py:70
+msgid "Deleted company “{{ object }}”"
+msgstr "Unternehmen »{{ object }}« gelöscht"
+
+#: nested/views.py:95
+msgid "Employees"
+msgstr "Mitarbeiter"
+
+#: nested/views.py:106
+msgid "Department"
+msgstr "Abteilung"
+
+#: nested/views.py:115
+msgid "Created department “{{ object }}”"
+msgstr "Abteilung »{{ object }}« erstellt"
+
+#: nested/views.py:121
+msgid "Updated department “{{ object }}”"
+msgstr "Abteilung »{{ object }}« aktualisiert"
+
+#: nested/views.py:127
+msgid "Deleted department “{{ object }}”"
+msgstr "Abteilung »{{ object }}« gelöscht"
+
+#: nested/views.py:163
+msgid "Employee"
+msgstr "Mitarbeiter"
+
+#: nested/views.py:172
+msgid "Created employee “{{ object }}”"
+msgstr "Mitarbeiter »{{ object }}« erstellt"
+
+#: nested/views.py:178
+msgid "Updated employee “{{ object }}”"
+msgstr "Mitarbeiter »{{ object }}« aktualisiert"
+
+#: nested/views.py:184
+msgid "Deleted employee “{{ object }}”"
+msgstr "Mitarbeiter »{{ object }}« gelöscht"
+
+#: nested/views.py:219
+msgid "Office"
+msgstr "Büro"
+
+#: nested/views.py:228
+msgid "Created office “{{ object }}”"
+msgstr "Büro »{{ object }}« erstellt"
+
+#: nested/views.py:234
+msgid "Updated office “{{ object }}”"
+msgstr "Büro »{{ object }}« aktualisiert"
+
+#: nested/views.py:240
+msgid "Deleted office “{{ object }}”"
+msgstr "Büro »{{ object }}« gelöscht"
+
+#: object_detail/models.py:38
+msgid "Supplier company name"
+msgstr "Firmenname des Lieferanten"
+
+#: object_detail/models.py:39
+msgid "website"
+msgstr "Website"
+
+#: object_detail/models.py:39 object_detail/views.py:226
+msgid "Supplier website"
+msgstr "Website des Lieferanten"
+
+#: object_detail/models.py:40
+msgid "rating"
+msgstr "Bewertung"
+
+#: object_detail/models.py:40
+msgid "Supplier rating (0-5)"
+msgstr "Lieferantenbewertung (0–5)"
+
+#: object_detail/models.py:44 object_detail/models.py:91
+msgid "supplier"
+msgstr "Lieferant"
+
+#: object_detail/models.py:45
+msgid "suppliers"
+msgstr "Lieferanten"
+
+#: object_detail/models.py:52
+msgid "code"
+msgstr "Code"
+
+#: object_detail/models.py:54
+msgid "country"
+msgstr "Land"
+
+#: object_detail/models.py:58 object_detail/models.py:99
+msgid "warehouse"
+msgstr "Lager"
+
+#: object_detail/models.py:59
+msgid "warehouses"
+msgstr "Lager"
+
+#: object_detail/models.py:70
+msgid "tag"
+msgstr "Tag"
+
+#: object_detail/models.py:71 object_detail/models.py:101
+msgid "tags"
+msgstr "Tags"
+
+#: object_detail/models.py:78
+msgid "Product name"
+msgstr "Produktname"
+
+#: object_detail/models.py:79 showcase/models.py:12
+msgid "description"
+msgstr "Beschreibung"
+
+#: object_detail/models.py:79
+msgid "Full description"
+msgstr "Vollständige Beschreibung"
+
+#: object_detail/models.py:80
+msgid "SKU"
+msgstr "SKU"
+
+#: object_detail/models.py:80
+msgid "Stock keeping unit"
+msgstr "Artikelnummer (Stock Keeping Unit)"
+
+#: object_detail/models.py:82
+msgid "Retail price"
+msgstr "Verkaufspreis"
+
+#: object_detail/models.py:84
+msgid "weight (kg)"
+msgstr "Gewicht (kg)"
+
+#: object_detail/models.py:84
+msgid "Weight in kilograms"
+msgstr "Gewicht in Kilogramm"
+
+#: object_detail/models.py:85
+msgid "stock"
+msgstr "Bestand"
+
+#: object_detail/models.py:85
+msgid "Units in stock"
+msgstr "Stück auf Lager"
+
+#: object_detail/models.py:86
+msgid "active"
+msgstr "Aktiv"
+
+#: object_detail/models.py:86
+msgid "Available for sale"
+msgstr "Im Verkauf verfügbar"
+
+#: object_detail/models.py:87
+msgid "homepage"
+msgstr "Homepage"
+
+#: object_detail/models.py:87
+msgid "Product page"
+msgstr "Produktseite"
+
+#: object_detail/models.py:88
+msgid "release date"
+msgstr "Erscheinungsdatum"
+
+#: object_detail/models.py:88
+msgid "Release date"
+msgstr "Erscheinungsdatum"
+
+#: object_detail/models.py:89
+msgid "Record created"
+msgstr "Datensatz erstellt"
+
+#: object_detail/models.py:105
+msgid "product"
+msgstr "Produkt"
+
+#: object_detail/models.py:106
+msgid "products"
+msgstr "Produkte"
+
+#: object_detail/models.py:113
+msgid "premium"
+msgstr "Premium"
+
+#: object_detail/models.py:113
+msgid "standard"
+msgstr "Standard"
+
+#: object_detail/models.py:116
+msgid "in stock"
+msgstr "auf Lager"
+
+#: object_detail/models.py:116
+msgid "out of stock"
+msgstr "nicht auf Lager"
+
+#: object_detail/views.py:85
+msgid "Description"
+msgstr "Beschreibung"
+
+#: object_detail/views.py:124
+msgid "Themes"
+msgstr "Themes"
+
+#: object_detail/views.py:160
+msgid "Created product “{{ object }}”"
+msgstr "Produkt »{{ object }}« erstellt"
+
+#: object_detail/views.py:174
+msgid "Supplier"
+msgstr "Lieferant"
+
+#: object_detail/views.py:191 showcase/views.py:72
+msgid "Basics"
+msgstr "Grunddaten"
+
+#: object_detail/views.py:200
+msgid "Price tier"
+msgstr "Preisklasse"
+
+#: object_detail/views.py:203
+msgid "Weight (kg)"
+msgstr "Gewicht (kg)"
+
+#: object_detail/views.py:209 workflow/models.py:10
+msgid "Active"
+msgstr "Aktiv"
+
+#: object_detail/views.py:209
+msgid "Inactive"
+msgstr "Inaktiv"
+
+#: object_detail/views.py:219
+msgid "Supplier (FK traversal)"
+msgstr "Lieferant (FK-Traversierung)"
+
+#: object_detail/views.py:225
+msgid "Supplier name"
+msgstr "Name des Lieferanten"
+
+#: object_detail/views.py:227
+msgid "Supplier rating"
+msgstr "Lieferantenbewertung"
+
+#: object_detail/views.py:228
+msgid "Supplier rating (stars)"
+msgstr "Lieferantenbewertung (Sterne)"
+
+#: object_detail/views.py:232
+msgid "Warehouse (O2O traversal)"
+msgstr "Lager (O2O-Traversierung)"
+
+#: object_detail/views.py:235
+msgid "Warehouse code"
+msgstr "Lagercode"
+
+#: object_detail/views.py:236
+msgid "City"
+msgstr "Stadt"
+
+#: object_detail/views.py:237
+msgid "Country"
+msgstr "Land"
+
+#: object_detail/views.py:241
+msgid "Tags (M2M) & computed"
+msgstr "Tags (M2M) & berechnet"
+
+#: object_detail/views.py:245
+msgid "Margin"
+msgstr "Marge"
+
+#: object_detail/views.py:246
+msgid "Stock status"
+msgstr "Lagerstatus"
+
+#: object_detail/views.py:247
+msgid "Summary (view-computed)"
+msgstr "Zusammenfassung (in der View berechnet)"
+
+#: polymorphic_demo/models.py:11
+msgid "vehicle"
+msgstr "Fahrzeug"
+
+#: polymorphic_demo/models.py:12
+msgid "vehicles"
+msgstr "Fahrzeuge"
+
+#: polymorphic_demo/models.py:19
+msgid "doors"
+msgstr "Türen"
+
+#: polymorphic_demo/models.py:22
+msgid "car"
+msgstr "Auto"
+
+#: polymorphic_demo/models.py:23
+msgid "cars"
+msgstr "Autos"
+
+#: polymorphic_demo/models.py:27
+msgid "payload (tons)"
+msgstr "Nutzlast (t)"
+
+#: polymorphic_demo/models.py:30
+msgid "truck"
+msgstr "Lkw"
+
+#: polymorphic_demo/models.py:31
+msgid "trucks"
+msgstr "Lkws"
+
+#: polymorphic_demo/models.py:35
+msgid "engine (cc)"
+msgstr "Hubraum (cm³)"
+
+#: polymorphic_demo/models.py:38
+msgid "motorcycle"
+msgstr "Motorrad"
+
+#: polymorphic_demo/models.py:39
+msgid "motorcycles"
+msgstr "Motorräder"
+
+#: polymorphic_demo/views.py:45
+msgid "Type"
+msgstr "Typ"
+
+#: polymorphic_demo/views.py:56
+msgid "Select"
+msgstr "Auswählen"
+
+#: polymorphic_demo/views.py:85
+msgid "Vehicle"
+msgstr "Fahrzeug"
+
+#: project/features.py:184 project/features.py:204
+msgid "NEW"
+msgstr "NEU"
+
+#: project/settings.py:105
+msgid "English"
+msgstr "Englisch"
+
+#: project/settings.py:106
+msgid "German"
+msgstr "Deutsch"
+
+#: project/settings.py:125
+msgid "Home"
+msgstr "Startseite"
+
+#: project/templates/project/429.html:4 project/templates/project/429.html:8
+msgid "Too many changes"
+msgstr "Zu viele Änderungen"
+
+#: project/templates/project/429.html:4 project/templates/project/base.html:14
+#: project/templates/project/home.html:8
+#: project/templates/registration/login.html:5
+msgid "django-crud-views examples"
+msgstr "django-crud-views – Beispiele"
+
+#: project/templates/project/429.html:9
+msgid ""
+"This public demo limits how often one visitor can save. Please try again in a"
+" minute."
+msgstr ""
+"Diese öffentliche Demo begrenzt, wie oft ein Besucher speichern kann. Bitte "
+"versuchen Sie es in einer Minute erneut."
+
+#: project/templates/project/base.html:48
+msgid ""
+"Public demo — data resets daily and after inactivity. Log in as "
+"<code>alice/alice</code> or <code>bob/bob</code>."
+msgstr ""
+"Öffentliche Demo — die Daten werden täglich und nach Inaktivität "
+"zurückgesetzt. Melden Sie sich als <code>alice/alice</code> oder "
+"<code>bob/bob</code> an."
+
+#: project/templates/project/example_about.html:6
+#, python-format
+msgid "About this example — %(title)s"
+msgstr "Über dieses Beispiel — %(title)s"
+
+#: project/templates/project/footer.html:6
+msgid "Docs"
+msgstr "Doku"
+
+#: project/templates/project/footer.html:12
+msgid "Live demo"
+msgstr "Live-Demo"
+
+#: project/templates/project/home.html:10
+msgid ""
+"One self-contained example app per feature. Every page shows the code behind "
+"it."
+msgstr ""
+"Eine eigenständige Beispielanwendung pro Funktion. Jede Seite zeigt den "
+"dazugehörigen Code."
+
+#: project/templates/project/home.html:14
+msgid "Documentation"
+msgstr "Dokumentation"
+
+#: project/templates/project/home.html:32
+msgid "Open"
+msgstr "Öffnen"
+
+#: project/templates/project/home.html:40
+msgid ""
+"Demo users (created by <code>manage.py seed</code>): <code>alice/alice</code>"
+" and <code>bob/bob</code> (regular users — the Guardian example shows them "
+"different documents)."
+msgstr ""
+"Demo-Benutzer (angelegt mit <code>manage.py seed</code>): "
+"<code>alice/alice</code> und <code>bob/bob</code> (normale Benutzer — das "
+"Guardian-Beispiel zeigt ihnen unterschiedliche Dokumente)."
+
+#: project/templates/project/nav.html:24
+msgid "Log Out"
+msgstr "Abmelden"
+
+#: project/templates/project/nav.html:27 project/urls.py:17
+msgid "Log In"
+msgstr "Anmelden"
+
+#: project/templates/project/snippet_panels.html:4
+msgid "The code behind this page"
+msgstr "Der Code hinter dieser Seite"
+
+#: project/templates/project/snippet_panels.html:6
+msgid "Look at:"
+msgstr "Siehe:"
+
+#: project/templates/registration/login.html:5
+#: project/templates/registration/login.html:11
+msgid "Log in"
+msgstr "Anmelden"
+
+#: resources/models.py:13 resources/views.py:44
+msgid "S3 file"
+msgstr "S3-Datei"
+
+#: resources/models.py:14 resources/views.py:45
+msgid "S3 files"
+msgstr "S3-Dateien"
+
+#: resources/models.py:17
+msgid "Can view S3 files"
+msgstr "Kann S3-Dateien anzeigen"
+
+#: resources/models.py:18
+msgid "Can delete S3 files"
+msgstr "Kann S3-Dateien löschen"
+
+#: resources/templates/resources/s3file_detail.html:8
+#, python-format
+msgid "%(size)s byte"
+msgid_plural "%(size)s bytes"
+msgstr[0] "%(size)s Byte"
+msgstr[1] "%(size)s Byte"
+
+#: resources/views.py:75
+msgid "key"
+msgstr "Schlüssel"
+
+#: resources/views.py:76
+msgid "size"
+msgstr "Größe"
+
+#: resources/views.py:99 resources/views.py:100
+msgid "Delete"
+msgstr "Löschen"
+
+#: resources/views.py:101
+msgid "Deleted “{{ object }}”"
+msgstr "»{{ object }}« gelöscht"
+
+#: resources/views.py:102
+msgid "Delete S3 file"
+msgstr "S3-Datei löschen"
+
+#: resources/views.py:103
+msgid "Confirm deletion of “{{ object }}”"
+msgstr "Löschen von »{{ object }}« bestätigen"
+
+#: resources/views.py:117 resources/views.py:118
+msgid "Touch"
+msgstr "Touch"
+
+#: resources/views.py:119
+msgid "Touched “{{ object }}”"
+msgstr "Zeitstempel von »{{ object }}« aktualisiert"
+
+#: resources/views.py:120
+msgid "Touch failed for “{{ object }}”"
+msgstr "Touch für »{{ object }}« fehlgeschlagen"
+
+#: showcase/models.py:7
+msgid "Easy"
+msgstr "Leicht"
+
+#: showcase/models.py:8
+msgid "Medium"
+msgstr "Mittel"
+
+#: showcase/models.py:9
+msgid "Hard"
+msgstr "Schwer"
+
+#: showcase/models.py:13
+msgid "difficulty"
+msgstr "Schwierigkeit"
+
+#: showcase/models.py:14
+msgid "servings"
+msgstr "Portionen"
+
+#: showcase/models.py:15
+msgid "favorite"
+msgstr "Favorit"
+
+#: showcase/models.py:20
+msgid "recipe"
+msgstr "Rezept"
+
+#: showcase/models.py:21
+msgid "recipes"
+msgstr "Rezepte"
+
+#: showcase/views.py:40 showcase/views.py:60 showcase/views.py:78
+msgid "Details"
+msgstr "Details"
+
+#: showcase/views.py:52
+msgid "Newest first"
+msgstr "Neueste zuerst"
+
+#: showcase/views.py:53
+msgid "Oldest first"
+msgstr "Älteste zuerst"
+
+#: showcase/views.py:54
+msgid "Title A-Z"
+msgstr "Titel A-Z"
+
+#: showcase/views.py:55
+msgid "Title Z-A"
+msgstr "Titel Z-A"
+
+#: showcase/views.py:61
+msgid "Edit"
+msgstr "Bearbeiten"
+
+#: showcase/views.py:62 showcase/views.py:126 showcase/views.py:127
+msgid "Favorite"
+msgstr "Favorit"
+
+#: showcase/views.py:74
+msgid "What and how much"
+msgstr "Was und wie viel"
+
+#: showcase/views.py:80
+msgid "Preparation and metadata"
+msgstr "Zubereitung und Metadaten"
+
+#: showcase/views.py:84
+msgid "Computed on the view"
+msgstr "In der View berechnet"
+
+#: showcase/views.py:90
+#, python-format
+msgid "%(title)s — %(difficulty)s, serves %(servings)s"
+msgstr "%(title)s — %(difficulty)s, für %(servings)s Personen"
+
+#: showcase/views.py:101
+msgid "Created recipe “{{ object }}”"
+msgstr "Rezept »{{ object }}« erstellt"
+
+#: showcase/views.py:108
+msgid "Updated recipe “{{ object }}”"
+msgstr "Rezept »{{ object }}« aktualisiert"
+
+#: showcase/views.py:115
+msgid "Deleted recipe “{{ object }}”"
+msgstr "Rezept »{{ object }}« gelöscht"
+
+#: showcase/views.py:128
+msgid "Toggled favorite for “{{ object }}”"
+msgstr "Favorit für »{{ object }}« umgeschaltet"
+
+#: showcase/views.py:129
+msgid "Could not toggle favorite for “{{ object }}”"
+msgstr "Favorit für »{{ object }}« konnte nicht umgeschaltet werden"
+
+#: workflow/models.py:9
+msgid "Draft"
+msgstr "Entwurf"
+
+#: workflow/models.py:11
+msgid "Completed"
+msgstr "Abgeschlossen"
+
+#: workflow/models.py:12
+msgid "Cancelled"
+msgstr "Abgebrochen"
+
+#: workflow/models.py:13
+msgid "Error"
+msgstr "Fehler"
+
+#: workflow/models.py:27 workflow/views.py:36
+msgid "state"
+msgstr "Status"
+
+#: workflow/models.py:30
+msgid "campaign"
+msgstr "Kampagne"
+
+#: workflow/models.py:31
+msgid "campaigns"
+msgstr "Kampagnen"
+
+#: workflow/models.py:41
+msgid "Activate"
+msgstr "Aktivieren"
+
+#: workflow/models.py:51
+msgid "Complete"
+msgstr "Abschließen"
+
+#: workflow/models.py:61
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: workflow/views.py:50
+msgid "Campaign"
+msgstr "Kampagne"
+
+#: workflow/views.py:55
+msgid "State"
+msgstr "Status"
+
+#: workflow/views.py:55
+msgid "Current workflow state"
+msgstr "Aktueller Workflow-Status"
+
+#: workflow/views.py:64
+msgid "Created campaign “{{ object }}”"
+msgstr "Kampagne »{{ object }}« erstellt"
+
+#: workflow/views.py:71
+msgid "Updated campaign “{{ object }}”"
+msgstr "Kampagne »{{ object }}« aktualisiert"
+
+#: workflow/views.py:78
+msgid "Deleted campaign “{{ object }}”"
+msgstr "Kampagne »{{ object }}« gelöscht"

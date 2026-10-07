@@ -4,6 +4,7 @@ import django_tables2 as tables
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Row
 from django.forms.models import inlineformset_factory
+from django.utils.translation import gettext_lazy as _
 from project.views import BreadcrumbMixin
 
 from crud_views.lib.crispy import Column8, CrispyDeleteForm, CrispyModelForm, CrispyViewMixin
@@ -91,13 +92,13 @@ ChoiceFormSet = inlineformset_factory(
 cv_formsets: FormSets = FormSets(
     formsets=OrderedDict(
         questions=FormSet(
-            title="Questions",
+            title=_("Questions"),
             klass=QuestionFormSet,
             fields=["text"],
             pk_field="id",
             children=OrderedDict(
                 choices=FormSet(
-                    title="Choices",
+                    title=_("Choices"),
                     klass=ChoiceFormSet,
                     fields=["label"],
                     pk_field="id",
@@ -122,9 +123,9 @@ class QuestionnaireDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequire
     cv_viewset = cv_questionnaire
     cv_property_display = [
         {
-            "title": "Questionnaire",
+            "title": _("Questionnaire"),
             "icon": "list-check",
-            "properties": ["id", "title", {"path": "question_count", "detail": "Number of questions"}],
+            "properties": ["id", "title", {"path": "question_count", "detail": _("Number of questions")}],
         },
     ]
 
@@ -138,7 +139,7 @@ class QuestionnaireCreateView(
     cv_viewset = cv_questionnaire
     form_class = QuestionnaireForm
     cv_formsets: FormSets = cv_formsets
-    cv_message_template_code = "Created questionnaire »{{ object }}«"
+    cv_message_template_code = _("Created questionnaire “{{ object }}”")
 
 
 class QuestionnaireUpdateView(
@@ -147,10 +148,10 @@ class QuestionnaireUpdateView(
     cv_viewset = cv_questionnaire
     form_class = QuestionnaireForm
     cv_formsets: FormSets = cv_formsets
-    cv_message_template_code = "Updated questionnaire »{{ object }}«"
+    cv_message_template_code = _("Updated questionnaire “{{ object }}”")
 
 
 class QuestionnaireDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
     cv_viewset = cv_questionnaire
     form_class = CrispyDeleteForm
-    cv_message_template_code = "Deleted questionnaire »{{ object }}«"
+    cv_message_template_code = _("Deleted questionnaire “{{ object }}”")

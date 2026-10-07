@@ -121,7 +121,7 @@ def test_signed_choices_values_are_normalised_signed_keys():
 
 def test_signed_choices_labels_explicit_and_auto_translated():
     choices = _signed_view({}).cv_get_order_choices()
-    assert [c["label"] for c in choices] == ["Name Z-A", "Name A-Z", "Id (ascending)", "Id (descending)"]
+    assert [c["label"] for c in choices] == ["Name Z-A", "Name A-Z", "ID (ascending)", "ID (descending)"]
 
 
 def test_signed_choices_select_default_when_no_param():

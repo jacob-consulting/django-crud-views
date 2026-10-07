@@ -31,68 +31,86 @@ from decimal import Decimal
 
 from django.db import models
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 
 class Supplier(models.Model):
-    name = models.CharField(max_length=200, help_text="Supplier company name")
-    website = models.URLField(blank=True, help_text="Supplier website")
-    rating = models.FloatField(default=0.0, help_text="Supplier rating (0-5)")
+    name = models.CharField(_("name"), max_length=200, help_text=_("Supplier company name"))
+    website = models.URLField(_("website"), blank=True, help_text=_("Supplier website"))
+    rating = models.FloatField(_("rating"), default=0.0, help_text=_("Supplier rating (0-5)"))
 
     class Meta:
         ordering = ["name"]
+        verbose_name = _("supplier")
+        verbose_name_plural = _("suppliers")
 
     def __str__(self):
         return self.name
 
 
 class Warehouse(models.Model):
-    code = models.CharField(max_length=20, unique=True)
-    city = models.CharField(max_length=120)
-    country = models.CharField(max_length=120)
+    code = models.CharField(_("code"), max_length=20, unique=True)
+    city = models.CharField(_("city"), max_length=120)
+    country = models.CharField(_("country"), max_length=120)
 
     class Meta:
         ordering = ["code"]
+        verbose_name = _("warehouse")
+        verbose_name_plural = _("warehouses")
 
     def __str__(self):
         return f"{self.code} ({self.city})"
 
 
 class Tag(models.Model):
-    name = models.CharField(max_length=60, unique=True)
+    name = models.CharField(_("name"), max_length=60, unique=True)
 
     class Meta:
         ordering = ["name"]
+        verbose_name = _("tag")
+        verbose_name_plural = _("tags")
 
     def __str__(self):
         return self.name
 
 
 class Product(models.Model):
-    name = models.CharField(max_length=200, help_text="Product name")
-    description = models.TextField(blank=True, help_text="Full description")
-    sku = models.SlugField(max_length=40, help_text="Stock keeping unit")
-    price = models.DecimalField(max_digits=8, decimal_places=2, default=Decimal("0.00"), help_text="Retail price")
-    weight_kg = models.FloatField(default=0.0, help_text="Weight in kilograms")
-    stock = models.PositiveIntegerField(default=0, help_text="Units in stock")
-    is_active = models.BooleanField(default=True, help_text="Available for sale")
-    homepage = models.URLField(blank=True, help_text="Product page")
-    release_date = models.DateField(null=True, blank=True, help_text="Release date")
-    created_at = models.DateTimeField(default=timezone.now, help_text="Record created")
-    supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE, related_name="products")
-    warehouse = models.OneToOneField(
-        Warehouse, on_delete=models.SET_NULL, null=True, blank=True, related_name="product"
+    name = models.CharField(_("name"), max_length=200, help_text=_("Product name"))
+    description = models.TextField(_("description"), blank=True, help_text=_("Full description"))
+    sku = models.SlugField(_("SKU"), max_length=40, help_text=_("Stock keeping unit"))
+    price = models.DecimalField(
+        _("price"), max_digits=8, decimal_places=2, default=Decimal("0.00"), help_text=_("Retail price")
     )
-    tags = models.ManyToManyField(Tag, related_name="products", blank=True)
+    weight_kg = models.FloatField(_("weight (kg)"), default=0.0, help_text=_("Weight in kilograms"))
+    stock = models.PositiveIntegerField(_("stock"), default=0, help_text=_("Units in stock"))
+    is_active = models.BooleanField(_("active"), default=True, help_text=_("Available for sale"))
+    homepage = models.URLField(_("homepage"), blank=True, help_text=_("Product page"))
+    release_date = models.DateField(_("release date"), null=True, blank=True, help_text=_("Release date"))
+    created_at = models.DateTimeField(_("created"), default=timezone.now, help_text=_("Record created"))
+    supplier = models.ForeignKey(
+        Supplier, on_delete=models.CASCADE, related_name="products", verbose_name=_("supplier")
+    )
+    warehouse = models.OneToOneField(
+        Warehouse,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="product",
+        verbose_name=_("warehouse"),
+    )
+    tags = models.ManyToManyField(Tag, related_name="products", blank=True, verbose_name=_("tags"))
 
     class Meta:
         ordering = ["name"]
+        verbose_name = _("product")
+        verbose_name_plural = _("products")
 
     def __str__(self):
         return self.name
 
     @property
     def margin_label(self) -> str:
-        return "premium" if self.price >= Decimal("100") else "standard"
+        return _("premium") if self.price >= Decimal("100") else _("standard")
 
     def stock_status(self) -> str:
-        return "in stock" if self.stock > 0 else "out of stock"
+        return _("in stock") if self.stock > 0 else _("out of stock")

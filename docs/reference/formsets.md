@@ -62,13 +62,13 @@ QuestionFormSet = inlineformset_factory(
 cv_formsets: FormSets = FormSets(
     formsets=OrderedDict(
         questions=FormSet(
-            title="Questions",
+            title=_("Questions"),
             klass=QuestionFormSet,
             fields=["text"],
             pk_field="id",
             children=OrderedDict(
                 choices=FormSet(
-                    title="Choices",
+                    title=_("Choices"),
                     klass=ChoiceFormSet,
                     fields=["label"],
                     pk_field="id",
@@ -118,7 +118,7 @@ class QuestionnaireCreateView(
     cv_viewset = cv_questionnaire
     form_class = QuestionnaireForm
     cv_formsets: FormSets = cv_formsets
-    cv_message_template_code = "Created questionnaire »{{ object }}«"
+    cv_message_template_code = _("Created questionnaire “{{ object }}”")
 ```
 
 The update view mirrors this exactly, mixing `FormSetMixin` in against

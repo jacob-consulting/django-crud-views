@@ -29,14 +29,14 @@ class AuthorDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
     cv_viewset = cv_author
     cv_property_display = [
         {
-            "title": "Author",
+            "title": _("Author"),
             "icon": "user",
             "properties": [
                 "id",
                 "first_name",
                 "last_name",
                 "pseudonym",
-                {"path": "book_count", "detail": "Number of books (computed on the view)"},
+                {"path": "book_count", "detail": _("Number of books (computed on the view)")},
             ],
         },
     ]

@@ -4,6 +4,27 @@ from dataclasses import dataclass
 
 from django.utils.translation import gettext_lazy as _
 
+#: Read the Docs version linked from the demo. "stable" is the newest release tag, which is what the demo runs.
+DOCS_BASE = "https://django-crud-views.readthedocs.io/en/stable"
+
+
+@dataclass(frozen=True)
+class DocRef:
+    page: str  # path under docs/, e.g. "reference/nested.md"
+    label: str  # English link text, deliberately not translated (like Feature.title / look_at)
+    anchor: str = ""  # heading slug on that page, e.g. "creating-children"
+
+    @property
+    def url(self) -> str:
+        """Read the Docs URL, following mkdocs' use_directory_urls: x/y.md -> x/y/, x/index.md -> x/."""
+        path = self.page.removesuffix(".md")
+        if path == "index" or path.endswith("/index"):
+            path = path.removesuffix("index")
+        else:
+            path += "/"
+        url = f"{DOCS_BASE}/{path}"
+        return f"{url}#{self.anchor}" if self.anchor else url
+
 
 @dataclass(frozen=True)
 class Feature:
@@ -15,6 +36,7 @@ class Feature:
     url_name: str  # URL name of the app's landing page, e.g. "author-list"
     icon: str  # font-awesome classes
     badge: str = ""  # optional small badge shown next to the title on the home page card
+    docs: tuple[DocRef, ...] = ()  # documentation sections listed under "References to documentation"
 
 
 FEATURES: list[Feature] = [

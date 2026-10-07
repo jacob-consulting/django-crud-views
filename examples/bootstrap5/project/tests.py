@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
-from django.test import TestCase, override_settings
+from django.test import SimpleTestCase, TestCase, override_settings
 from django.urls import reverse
 
 import crud_views
@@ -173,3 +173,36 @@ class BreadcrumbAdoptionTest(TestCase):
                 self.assertEqual(resp.status_code, 200)
                 self.assertContains(resp, 'aria-label="breadcrumb"')
                 self.assertContains(resp, "Home")  # global prefix from settings
+
+
+class DocRefTest(SimpleTestCase):
+    def test_url_plain_page(self):
+        from project.features import DOCS_BASE, DocRef
+
+        ref = DocRef(page="reference/nested.md", label="Nested")
+        self.assertEqual(ref.url, f"{DOCS_BASE}/reference/nested/")
+
+    def test_url_with_anchor(self):
+        from project.features import DOCS_BASE, DocRef
+
+        ref = DocRef(page="reference/nested.md", label="Nested", anchor="creating-children")
+        self.assertEqual(ref.url, f"{DOCS_BASE}/reference/nested/#creating-children")
+
+    def test_url_index_pages(self):
+        from project.features import DOCS_BASE, DocRef
+
+        self.assertEqual(DocRef(page="getting_started/index.md", label="x").url, f"{DOCS_BASE}/getting_started/")
+        self.assertEqual(DocRef(page="index.md", label="x").url, f"{DOCS_BASE}/")
+
+    def test_docs_base_is_stable(self):
+        from project.features import DOCS_BASE
+
+        self.assertEqual(DOCS_BASE, "https://django-crud-views.readthedocs.io/en/stable")
+
+    def test_feature_docs_defaults_to_empty_tuple(self):
+        from project.features import Feature
+
+        feature = Feature(
+            app="x", title="X", description="d", about="a", look_at="l", url_name="home", icon="fa-solid fa-x"
+        )
+        self.assertEqual(feature.docs, ())

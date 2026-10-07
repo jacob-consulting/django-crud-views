@@ -18,6 +18,11 @@ class ContextButtonsTestCase(TestCase):
         cls.update_url = reverse("ticket-update", kwargs={"pk": cls.ticket.pk})
         cls.delete_url = reverse("ticket-delete", kwargs={"pk": cls.ticket.pk})
 
+    @staticmethod
+    def rendered(resp) -> str:
+        """The page without the code panel, which shows these templates' source (and so their class names)."""
+        return resp.content.decode().split('id="snippet-panels"')[0]
+
     def detail(self, user):
         self.client.force_login(user)
         resp = self.client.get(reverse("ticket-detail", kwargs={"pk": self.ticket.pk}))
@@ -27,20 +32,19 @@ class ContextButtonsTestCase(TestCase):
 
 class TicketDetailEditorTest(ContextButtonsTestCase):
     def test_header_uses_inline_template_code_button(self):
-        self.assertContains(self.detail(self.editor), 'class="btn btn-primary btn-lg cv-demo-edit-big"')
+        self.assertIn('class="btn btn-primary btn-lg cv-demo-edit-big"', self.rendered(self.detail(self.editor)))
 
     def test_manual_toolbar_renders_file_template_button(self):
         resp = self.detail(self.editor)
-        self.assertContains(resp, 'id="manual-toolbar"')
-        self.assertContains(resp, 'cv-demo-edit-pill"')
+        self.assertIn("cv-demo-edit-pill", self.rendered(resp).split('id="manual-toolbar"')[1])
 
     def test_url_tile_links_to_update(self):
         resp = self.detail(self.editor)
         tile = f'href="{self.update_url}?cv_from=detail" class="card text-decoration-none" id="url-tile"'
-        self.assertContains(resp, tile)
+        self.assertIn(tile, self.rendered(resp))
 
     def test_gated_section_shown(self):
-        self.assertContains(self.detail(self.editor), 'id="gated-section"')
+        self.assertIn('id="gated-section"', self.rendered(self.detail(self.editor)))
 
     def test_renders_german(self):
         self.client.force_login(self.editor)
@@ -51,32 +55,31 @@ class TicketDetailEditorTest(ContextButtonsTestCase):
     def test_custom_loop_wraps_each_button(self):
         resp = self.detail(self.editor)
         # home, edit_big, delete + manage (appended by CRUD_VIEWS_MANAGE_VIEWS_ENABLED)
-        self.assertContains(resp, 'class="cv-demo-loop-item"', count=4)
+        self.assertEqual(self.rendered(resp).count('class="cv-demo-loop-item"'), 4)
 
 
 class TicketDetailViewerTest(ContextButtonsTestCase):
     def test_no_edit_or_delete_link_anywhere(self):
-        resp = self.detail(self.viewer)
-        self.assertNotContains(resp, self.update_url)
-        self.assertNotContains(resp, self.delete_url)
+        html = self.rendered(self.detail(self.viewer))
+        self.assertNotIn(self.update_url, html)
+        self.assertNotIn(self.delete_url, html)
 
     def test_no_custom_button_markup(self):
-        resp = self.detail(self.viewer)
-        # a raw closing quote: the code panel shows the same class names, but HTML-escaped (&quot;)
-        self.assertNotContains(resp, 'cv-demo-edit-big"')
-        self.assertNotContains(resp, 'cv-demo-edit-pill"')
+        html = self.rendered(self.detail(self.viewer))
+        self.assertNotIn("cv-demo-edit-big", html)
+        self.assertNotIn("cv-demo-edit-pill", html)
 
     def test_url_tile_replaced_by_hint(self):
-        resp = self.detail(self.viewer)
-        self.assertNotContains(resp, 'id="url-tile"')
-        self.assertContains(resp, 'id="url-tile-hidden"')
+        html = self.rendered(self.detail(self.viewer))
+        self.assertNotIn('id="url-tile"', html)
+        self.assertIn('id="url-tile-hidden"', html)
 
     def test_gated_section_absent(self):
-        self.assertNotContains(self.detail(self.viewer), 'id="gated-section"')
+        self.assertNotIn('id="gated-section"', self.rendered(self.detail(self.viewer)))
 
     def test_custom_loop_only_lists_accessible_buttons(self):
         # home + manage; edit_big and delete are filtered out
-        self.assertContains(self.detail(self.viewer), 'class="cv-demo-loop-item"', count=2)
+        self.assertEqual(self.rendered(self.detail(self.viewer)).count('class="cv-demo-loop-item"'), 2)
 
 
 class TicketCrudTest(ContextButtonsTestCase):

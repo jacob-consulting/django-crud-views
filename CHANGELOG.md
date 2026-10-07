@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+### Added
+
+- Example project: a **Context Buttons** app (#91). Tickets with two whole-button variants of the edit button
+  (inline `template_code` and a `template=` file) and a detail page that places buttons by hand with
+  `cv_context_button`, `cv_context_url`, `cv_context_has_permission` and a `cv_get_context_buttons` loop.
+  alice may edit, bob may only view, so logging in as both shows every inaccessible button disappear. The
+  FAQ's context-button sections and the Context Buttons reference link to it.
+- Example project: "The code behind this page" also shows each app's own templates (Django template
+  highlighting), so template-only features such as the manual placement tags are visible next to the code.
+
 ### Fixed
 
 - A context button with its own `template` / `template_code` was rendered in the `{% cv_context_actions %}`

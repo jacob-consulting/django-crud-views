@@ -4,6 +4,12 @@ Context buttons are the action buttons rendered in the header area of a view —
 the `cv_context_actions` attribute on each view class. They provide navigation between views
 within and across viewsets.
 
+!!! example "Try it live"
+    The [Context Buttons example](https://django-crud-views-demo.onrender.com/context-buttons/ticket/) in the live
+    demo shows whole-button templates and manual placement — open a ticket and log in as `alice` / `alice` and as
+    `bob` / `bob` to compare what each of them sees. See [Live demo](../getting_started/demo.md) for data resets
+    and wake-up time.
+
 Every ViewSet has a `context_buttons` list that defines which buttons are available. The
 default set is provided by `context_buttons_default()`:
 

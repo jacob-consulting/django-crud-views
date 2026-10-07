@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "object_detail",
     "conditional",
     "breadcrumbs",
+    "context_buttons",
 ]
 
 MIDDLEWARE = [

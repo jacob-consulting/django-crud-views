@@ -329,4 +329,34 @@ FEATURES: list[Feature] = [
             ),
         ),
     ),
+    Feature(
+        app="context_buttons",
+        title="Context Buttons",
+        description="Whole-button templates and placing context buttons by hand with template tags.",
+        about=(
+            "Context buttons outside the standard toolbar. Two edit buttons bring their own markup — one "
+            "inline via template_code, one from a template file — and the ticket detail page places buttons "
+            "by hand: a custom toolbar, a tile built from just the URL, a section shown only to users who may "
+            "delete, and a loop over the view's buttons. Log in as alice (may edit) and as bob (may only "
+            "view): every button bob may not use disappears."
+        ),
+        look_at=(
+            "the edit_big (template_code) and edit_pill (template=) ContextButtons on cv_ticket in views.py, "
+            "and the four numbered sections of context_buttons/ticket_detail.html."
+        ),
+        url_name="ticket-list",
+        icon="fa-solid fa-hand-pointer",
+        docs=(
+            DocRef(
+                page="reference/context_buttons.md",
+                label="Context Buttons — ContextButton",
+                anchor="contextbutton",
+            ),
+            DocRef(
+                page="reference/context_buttons.md",
+                label="Context Buttons — manual placement (template tags)",
+                anchor="manual-placement-template-tags",
+            ),
+        ),
+    ),
 ]

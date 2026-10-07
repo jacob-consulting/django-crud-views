@@ -5,7 +5,7 @@ from django.conf import settings
 from django.utils.safestring import mark_safe
 from pygments import highlight
 from pygments.formatters import HtmlFormatter
-from pygments.lexers import PythonLexer
+from pygments.lexers import HtmlDjangoLexer, PythonLexer
 
 register = template.Library()
 
@@ -28,9 +28,9 @@ def example_about(context):
 SNIPPET_FILES = ["models.py", "views.py"]
 
 
-def _highlight(source: str) -> str:
+def _highlight(source: str, lexer=None) -> str:
     formatter = HtmlFormatter(noclasses=True, style="friendly")
-    return highlight(source, PythonLexer(), formatter)
+    return highlight(source, lexer or PythonLexer(), formatter)
 
 
 def _feature_for(view):
@@ -48,16 +48,21 @@ def snippet_panels(context):
     app = feature.app if feature else None
     panels = []
     if app:
-        for name in SNIPPET_FILES:
-            path = Path(settings.BASE_DIR) / app / name
-            if path.exists():
-                panels.append(
-                    {
-                        "id": f"snippet-{app}-{name.replace('.', '-')}",
-                        "title": f"{app}/{name}",
-                        "html": mark_safe(_highlight(path.read_text())),
-                    }
-                )
+        app_dir = Path(settings.BASE_DIR) / app
+        # the app's own templates follow the Python files: some features live in a template
+        files = [(name, PythonLexer()) for name in SNIPPET_FILES if (app_dir / name).exists()]
+        files += [
+            (path.relative_to(app_dir).as_posix(), HtmlDjangoLexer())
+            for path in sorted((app_dir / "templates").rglob("*.html"))
+        ]
+        for name, lexer in files:
+            panels.append(
+                {
+                    "id": f"snippet-{app}-{name.replace('.', '-').replace('/', '-')}",
+                    "title": f"{app}/{name}",
+                    "html": mark_safe(_highlight((app_dir / name).read_text(), lexer)),
+                }
+            )
     return {
         "panels": panels,
         "look_at": feature.look_at if feature else "",

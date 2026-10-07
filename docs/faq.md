@@ -77,7 +77,8 @@ To change the layout of *all* context buttons project-wide, override
 `crud_views/tags/context_action.html` in your project's templates, or point
 `CRUD_VIEWS_CONTEXT_BUTTON_TEMPLATE` at your own template.
 
-*Full docs: [Context Buttons](reference/context_buttons.md).*
+*See it running: [`examples/bootstrap5/context_buttons/`](https://github.com/jacob-consulting/django-crud-views/tree/main/examples/bootstrap5/context_buttons) ·
+Full docs: [Context Buttons](reference/context_buttons.md).*
 
 ## I need to render a context button manually in a template
 
@@ -166,7 +167,8 @@ class AuthorDetailView(DetailViewPermissionRequired):
         return self.cv_get_context_buttons(keys=["edit_detail", "delete"])
 ```
 
-*Full docs: [Context Buttons § Manual Placement](reference/context_buttons.md#manual-placement-template-tags).*
+*See it running: [`examples/bootstrap5/context_buttons/`](https://github.com/jacob-consulting/django-crud-views/tree/main/examples/bootstrap5/context_buttons) ·
+Full docs: [Context Buttons § Manual Placement](reference/context_buttons.md#manual-placement-template-tags).*
 
 ## How do I link from one child collection to a sibling collection?
 

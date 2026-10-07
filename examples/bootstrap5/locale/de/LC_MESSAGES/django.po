@@ -875,6 +875,10 @@ msgstr "Der Code hinter dieser Seite"
 msgid "Look at:"
 msgstr "Siehe:"
 
+#: project/templates/project/snippet_panels.html:24
+msgid "References to documentation"
+msgstr "Verweise auf die Dokumentation"
+
 #: project/templates/registration/login.html:5
 #: project/templates/registration/login.html:11
 msgid "Log in"

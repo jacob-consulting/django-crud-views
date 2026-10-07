@@ -58,4 +58,8 @@ def snippet_panels(context):
                         "html": mark_safe(_highlight(path.read_text())),
                     }
                 )
-    return {"panels": panels, "look_at": feature.look_at if feature else ""}
+    return {
+        "panels": panels,
+        "look_at": feature.look_at if feature else "",
+        "docs": feature.docs if feature else (),
+    }

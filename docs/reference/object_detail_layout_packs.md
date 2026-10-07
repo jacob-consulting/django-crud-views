@@ -12,6 +12,10 @@ Seven layout packs are included:
 | Table inline | `"table-inline"` |
 | List group (3-col) | `"list-group-3col"` |
 
+!!! example "Try it live"
+    The [Object Detail example](https://django-crud-views-demo.onrender.com/object-detail/product/) in the live demo shows this in
+    action — log in as `alice` / `alice`. See [Live demo](../getting_started/demo.md) for data resets and wake-up time.
+
 Set the layout in your Django settings:
 
 ```python

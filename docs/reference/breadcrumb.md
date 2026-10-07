@@ -5,6 +5,10 @@ the ViewSet hierarchy — `[prefix] › (ancestors …) › container › object
 respects nested ViewSets: for a chain Company › Department › Employee, an employee's update
 page shows `Companies › ACME › Departments › Sales › Employees › Jane Doe › Edit`.
 
+!!! example "Try it live"
+    The [Breadcrumbs example](https://django-crud-views-demo.onrender.com/breadcrumbs/workspace/) in the live demo shows this in
+    action — log in as `alice` / `alice`. See [Live demo](../getting_started/demo.md) for data resets and wake-up time.
+
 ## Usage
 
 ```python

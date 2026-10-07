@@ -8,6 +8,10 @@ A child ViewSet can declare a parent ViewSet. Once declared:
 - context buttons can jump up (`parent`), down (`ChildContextButton`), or sideways
   (`SiblingContextButton`) across the hierarchy
 
+!!! example "Try it live"
+    The [Nested example](https://django-crud-views-demo.onrender.com/nested/company/) in the live demo shows this in
+    action — log in as `alice` / `alice`. See [Live demo](../getting_started/demo.md) for data resets and wake-up time.
+
 Nesting is not limited to one level — a child ViewSet can itself be the parent of a
 grandchild ViewSet, and a single parent can have any number of children.
 

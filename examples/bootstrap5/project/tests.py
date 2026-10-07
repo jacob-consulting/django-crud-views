@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
-from django.test import TestCase, override_settings
+from django.test import SimpleTestCase, TestCase, override_settings
 from django.urls import reverse
 
 import crud_views
@@ -173,3 +173,87 @@ class BreadcrumbAdoptionTest(TestCase):
                 self.assertEqual(resp.status_code, 200)
                 self.assertContains(resp, 'aria-label="breadcrumb"')
                 self.assertContains(resp, "Home")  # global prefix from settings
+
+
+class DocRefTest(SimpleTestCase):
+    def test_url_plain_page(self):
+        from project.features import DOCS_BASE, DocRef
+
+        ref = DocRef(page="reference/nested.md", label="Nested")
+        self.assertEqual(ref.url, f"{DOCS_BASE}/reference/nested/")
+
+    def test_url_with_anchor(self):
+        from project.features import DOCS_BASE, DocRef
+
+        ref = DocRef(page="reference/nested.md", label="Nested", anchor="creating-children")
+        self.assertEqual(ref.url, f"{DOCS_BASE}/reference/nested/#creating-children")
+
+    def test_url_index_pages(self):
+        from project.features import DOCS_BASE, DocRef
+
+        self.assertEqual(DocRef(page="getting_started/index.md", label="x").url, f"{DOCS_BASE}/getting_started/")
+        self.assertEqual(DocRef(page="index.md", label="x").url, f"{DOCS_BASE}/")
+
+    def test_docs_base_is_stable(self):
+        from project.features import DOCS_BASE
+
+        self.assertEqual(DOCS_BASE, "https://django-crud-views.readthedocs.io/en/stable")
+
+    def test_feature_docs_defaults_to_empty_tuple(self):
+        from project.features import Feature
+
+        feature = Feature(
+            app="x", title="X", description="d", about="a", look_at="l", url_name="home", icon="fa-solid fa-x"
+        )
+        self.assertEqual(feature.docs, ())
+
+
+class DocRefsPanelTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.admin = get_user_model().objects.create_superuser(username="docs-admin", password="pw")
+
+    def setUp(self):
+        self.client.force_login(self.admin)
+
+    def test_every_feature_page_lists_its_doc_refs(self):
+        from django.utils.html import escape
+
+        for feature in FEATURES:
+            with self.subTest(app=feature.app):
+                resp = self.client.get(reverse(feature.url_name))
+                self.assertContains(resp, "References to documentation")
+                for ref in feature.docs:
+                    self.assertContains(resp, f'<a href="{ref.url}" target="_blank" rel="noopener">')
+                    self.assertContains(resp, escape(ref.label))
+
+    def test_heading_translated_de_labels_stay_english(self):
+        from django.utils.html import escape
+
+        feature = next(f for f in FEATURES if f.app == "nested")
+        resp = self.client.get(reverse(feature.url_name), HTTP_ACCEPT_LANGUAGE="de")
+        self.assertContains(resp, "Verweise auf die Dokumentation")
+        self.assertNotContains(resp, "References to documentation")
+        self.assertContains(resp, escape(feature.docs[1].label))
+        self.assertContains(resp, f'href="{feature.docs[1].url}"')
+
+    def test_docs_empty_for_non_feature_view(self):
+        from project.templatetags.example_tags import snippet_panels
+        from project.views import HomeView
+
+        self.assertEqual(snippet_panels({"view": HomeView()})["docs"], ())
+
+    def test_home_has_no_doc_refs_heading(self):
+        resp = self.client.get(reverse("home"))
+        self.assertNotContains(resp, "References to documentation")
+
+    def test_no_heading_when_docs_empty(self):
+        from django.template.loader import render_to_string
+
+        html = render_to_string(
+            "project/snippet_panels.html",
+            {"panels": [{"id": "p", "title": "t", "html": "h"}], "look_at": "", "docs": ()},
+        )
+        self.assertIn("snippet-panels", html)
+        self.assertNotIn("References to documentation", html)
+        self.assertNotIn("<ul", html)

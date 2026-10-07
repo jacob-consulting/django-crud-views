@@ -5,6 +5,10 @@ It is the `library/` app of the example project that ships in the repository, so
 code block you see is real, tested code: a CI check verifies the tutorial matches the
 example source.
 
+!!! example "Try it live"
+    The [Library example](https://django-crud-views-demo.onrender.com/library/author/) in the live demo shows this in
+    action — log in as `alice` / `alice`. See [Live demo](demo.md) for data resets and wake-up time.
+
 ## Follow the tutorial
 
 1. [Part 1 — Setup & first ViewSet](tutorial-1-setup.md)

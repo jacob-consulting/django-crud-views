@@ -4,6 +4,27 @@ from dataclasses import dataclass
 
 from django.utils.translation import gettext_lazy as _
 
+#: Read the Docs version linked from the demo. "stable" is the newest release tag, which is what the demo runs.
+DOCS_BASE = "https://django-crud-views.readthedocs.io/en/stable"
+
+
+@dataclass(frozen=True)
+class DocRef:
+    page: str  # path under docs/, e.g. "reference/nested.md"
+    label: str  # English link text, deliberately not translated (like Feature.title / look_at)
+    anchor: str = ""  # heading slug on that page, e.g. "creating-children"
+
+    @property
+    def url(self) -> str:
+        """Read the Docs URL, following mkdocs' use_directory_urls: x/y.md -> x/y/, x/index.md -> x/."""
+        path = self.page.removesuffix(".md")
+        if path == "index" or path.endswith("/index"):
+            path = path.removesuffix("index")
+        else:
+            path += "/"
+        url = f"{DOCS_BASE}/{path}"
+        return f"{url}#{self.anchor}" if self.anchor else url
+
 
 @dataclass(frozen=True)
 class Feature:
@@ -15,6 +36,7 @@ class Feature:
     url_name: str  # URL name of the app's landing page, e.g. "author-list"
     icon: str  # font-awesome classes
     badge: str = ""  # optional small badge shown next to the title on the home page card
+    docs: tuple[DocRef, ...] = ()  # documentation sections listed under "References to documentation"
 
 
 FEATURES: list[Feature] = [
@@ -37,6 +59,20 @@ FEATURES: list[Feature] = [
         ),
         url_name="author-list",
         icon="fa-solid fa-book",
+        docs=(
+            DocRef(page="getting_started/index.md", label="Getting started — the tutorial builds this app"),
+            DocRef(
+                page="reference/list_view.md",
+                label="ListView — table with django-tables2",
+                anchor="table-with-django-tables2",
+            ),
+            DocRef(
+                page="reference/list_view.md",
+                label="ListView — filtering with django-filter",
+                anchor="filtering-with-django-filter",
+            ),
+            DocRef(page="reference/ordered_view.md", label="OrderedView — manual up/down ordering"),
+        ),
     ),
     Feature(
         app="nested",
@@ -55,6 +91,10 @@ FEATURES: list[Feature] = [
         ),
         url_name="company-list",
         icon="fa-solid fa-sitemap",
+        docs=(
+            DocRef(page="reference/nested.md", label="Nested ViewSets (parent/child)"),
+            DocRef(page="reference/nested.md", label="Nested ViewSets — creating children", anchor="creating-children"),
+        ),
     ),
     Feature(
         app="formsets",
@@ -71,6 +111,7 @@ FEATURES: list[Feature] = [
         ),
         url_name="questionnaire-list",
         icon="fa-solid fa-list-check",
+        docs=(DocRef(page="reference/formsets.md", label="Formsets"),),
     ),
     Feature(
         app="workflow",
@@ -88,6 +129,14 @@ FEATURES: list[Feature] = [
         ),
         url_name="campaign-list",
         icon="fa-solid fa-bullhorn",
+        docs=(
+            DocRef(page="reference/workflow_view.md", label="WorkflowView"),
+            DocRef(
+                page="reference/workflow_view.md",
+                label="WorkflowView — WorkflowModelMixin (audit history)",
+                anchor="workflowmodelmixin",
+            ),
+        ),
     ),
     Feature(
         app="polymorphic_demo",
@@ -105,6 +154,18 @@ FEATURES: list[Feature] = [
         ),
         url_name="vehicle-list",
         icon="fa-solid fa-car",
+        docs=(
+            DocRef(
+                page="reference/polymorphic_view.md",
+                label="PolymorphicView — two-step create flow",
+                anchor="two-step-create-flow",
+            ),
+            DocRef(
+                page="reference/polymorphic_view.md",
+                label="PolymorphicView — polymorphic_forms",
+                anchor="polymorphic_forms",
+            ),
+        ),
     ),
     Feature(
         app="guardian_demo",
@@ -123,6 +184,14 @@ FEATURES: list[Feature] = [
         ),
         url_name="document-list",
         icon="fa-solid fa-user-lock",
+        docs=(
+            DocRef(page="reference/guardian.md", label="Per-object permissions (django-guardian)"),
+            DocRef(
+                page="reference/guardian.md",
+                label="Guardian — working example and seeded permissions",
+                anchor="working-example",
+            ),
+        ),
     ),
     Feature(
         app="resources",
@@ -140,6 +209,7 @@ FEATURES: list[Feature] = [
         ),
         url_name="s3file-list",
         icon="fa-solid fa-cloud",
+        docs=(DocRef(page="reference/resources.md", label="Resources — non-ORM data in ViewSets"),),
     ),
     Feature(
         app="showcase",
@@ -159,6 +229,20 @@ FEATURES: list[Feature] = [
         ),
         url_name="recipe-card",
         icon="fa-solid fa-wand-magic-sparkles",
+        docs=(
+            DocRef(
+                page="reference/card-list-view.md",
+                label="CardListView — signed ordering choices",
+                anchor="signed-choices-single-combo-no-buttons",
+            ),
+            DocRef(
+                page="reference/object_detail_view.md",
+                label="ObjectDetailView — the cv_property_display DSL",
+                anchor="the-cv_property_display-dsl",
+            ),
+            DocRef(page="reference/modals.md", label="Modals"),
+            DocRef(page="reference/action_view.md", label="ActionView — custom actions"),
+        ),
     ),
     Feature(
         app="object_detail",
@@ -177,6 +261,12 @@ FEATURES: list[Feature] = [
         ),
         url_name="product-list",
         icon="fa-regular fa-box",
+        docs=(
+            DocRef(page="reference/object_detail_view.md", label="ObjectDetailView"),
+            DocRef(page="reference/object_detail_layout_packs.md", label="Object detail — layout packs"),
+            DocRef(page="reference/object_detail_badges.md", label="Object detail — badges"),
+            DocRef(page="reference/object_detail_links.md", label="Object detail — links"),
+        ),
     ),
     Feature(
         app="breadcrumbs",
@@ -197,6 +287,14 @@ FEATURES: list[Feature] = [
         ),
         url_name="workspace-list",
         icon="fa-solid fa-ellipsis",
+        docs=(
+            DocRef(page="reference/breadcrumb.md", label="Breadcrumb"),
+            DocRef(
+                page="reference/breadcrumb.md",
+                label="Breadcrumb — hooking into your site navigation",
+                anchor="hooking-into-your-site-navigation",
+            ),
+        ),
     ),
     Feature(
         app="conditional",
@@ -218,5 +316,17 @@ FEATURES: list[Feature] = [
         ),
         url_name="registration-list",
         icon="fa-solid fa-toggle-on",
+        docs=(
+            DocRef(
+                page="reference/conditional.md",
+                label="Conditional field-groups",
+                anchor="kind-1-conditional-field-group-in-a-form",
+            ),
+            DocRef(
+                page="reference/conditional.md",
+                label="Conditional formsets",
+                anchor="kind-2-conditional-formset",
+            ),
+        ),
     ),
 ]

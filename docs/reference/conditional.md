@@ -2,6 +2,10 @@
 
 A checkbox toggle can hide a group of fields (or an entire **first-level** formset). When off, the group or formset is hidden client-side and — authoritatively **server-side** — skips validation and clears its data. JavaScript is convenience only: `toggle.js` shows/hides the group and disables its inputs so they are not submitted, but the server enforces the exact same contract on every submit, including tampered or JS-off POSTs.
 
+!!! example "Try it live"
+    The [Conditional example](https://django-crud-views-demo.onrender.com/conditional/registration/) in the live demo shows this in
+    action — log in as `alice` / `alice`. See [Live demo](../getting_started/demo.md) for data resets and wake-up time.
+
 `toggle.js` ships automatically via the `cv_js` asset registry (`crud_views_settings.javascript()`); no template changes are needed. It also re-initializes inside Bootstrap modals (`cv_modal = True` views) via the `cv:modal:loaded` event.
 
 Import everything from `crud_views.lib.conditional`.

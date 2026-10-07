@@ -20,5 +20,13 @@
                 </div>
             {% endfor %}
         </div>
+        {% if docs %}
+            <h5 class="mt-3"><i class="fa-solid fa-book"></i> {% translate "References to documentation" %}</h5>
+            <ul>
+                {% for ref in docs %}
+                    <li><a href="{{ ref.url }}" target="_blank" rel="noopener">{{ ref.label }}</a></li>
+                {% endfor %}
+            </ul>
+        {% endif %}
     </div>
 {% endif %}

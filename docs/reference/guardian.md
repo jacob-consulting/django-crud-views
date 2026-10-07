@@ -5,6 +5,11 @@ The `crud_views_guardian` sub-package adds per-object permission support via
 swapping `ViewSet` → `GuardianViewSet` and `*ViewPermissionRequired` →
 `Guardian*ViewPermissionRequired`.
 
+!!! example "Try it live"
+    The [Guardian example](https://django-crud-views-demo.onrender.com/guardian/document/) in the live demo shows
+    this in action — log in as `alice` / `alice` and as `bob` / `bob` to compare what each of them sees. See
+    [Live demo](../getting_started/demo.md) for data resets and wake-up time.
+
 ## Installation
 
 ```bash

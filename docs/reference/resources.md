@@ -6,6 +6,10 @@ trees, results from an external API — and still get the same chrome: list and
 detail pages, breadcrumbs, sibling-aware action buttons, and permission
 checking.
 
+!!! example "Try it live"
+    The [Resources example](https://django-crud-views-demo.onrender.com/resources/s3file/) in the live demo shows this in
+    action — log in as `alice` / `alice`. See [Live demo](../getting_started/demo.md) for data resets and wake-up time.
+
 ## What and why
 
 A `Resource` is a small Pydantic base class plus one view mixin

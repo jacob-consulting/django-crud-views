@@ -3,6 +3,10 @@
 Render objects as cards instead of table rows. Each card shows the object name
 and configurable action buttons. The card body template is overridable per view.
 
+!!! example "Try it live"
+    The [Showcase example](https://django-crud-views-demo.onrender.com/showcase/recipe/) in the live demo shows this in
+    action — log in as `alice` / `alice`. See [Live demo](../getting_started/demo.md) for data resets and wake-up time.
+
 ## Quick Reference
 
 | View class | Use for |

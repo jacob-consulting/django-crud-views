@@ -5,6 +5,10 @@ with the crud-views framework. It renders a form that allows users to execute FS
 model instance, enforces comment requirements per transition, and maintains a full audit history via
 the `WorkflowInfo` model.
 
+!!! example "Try it live"
+    The [Workflow example](https://django-crud-views-demo.onrender.com/workflow/campaign/) in the live demo shows this in
+    action — log in as `alice` / `alice`. See [Live demo](../getting_started/demo.md) for data resets and wake-up time.
+
 ## Installation
 
 Install the `workflow` optional dependency group:

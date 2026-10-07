@@ -87,7 +87,8 @@ def client_author_view_change(client, cv_author):
 @pytest.fixture
 def cv_author_custom_edit(monkeypatch, cv_author):
     """cv_author plus whole-button variants of the edit button (inline code and file template)."""
-    buttons = cv_author.context_buttons + [
+    buttons = [
+        *cv_author.context_buttons,
         ContextButton(key="edit_code", key_target="update", template_code='<a class="custom-code">Edit</a>'),
         ContextButton(key="edit_file", key_target="update", template="app/custom_edit_button.html"),
     ]

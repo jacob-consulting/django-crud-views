@@ -79,8 +79,13 @@ def cv_get_context(context, key, obj=None) -> dict:
     return context
 
 
+def _context_button_visible(ctx) -> bool:
+    """A context button is shown only when the user may access its target and the action is enabled."""
+    return bool(ctx) and ctx.get("cv_action_enabled") is not False and ctx.get("cv_access") is True
+
+
 def _render_context_button(view, ctx) -> str:
-    if not ctx or ctx.get("cv_action_enabled") is False or ctx.get("cv_access") is not True:
+    if not _context_button_visible(ctx):
         return ""
     if ctx.get("cv_template_code"):
         return view.render_snippet(ctx, template_code=ctx["cv_template_code"])
@@ -124,7 +129,9 @@ def cv_list_action_form(context, key, obj=None):
 def cv_context_action(context, key, obj=None):
     obj = obj if obj else None  # fix empty string from template
     ctx = cv_get_context(context=context, key=key, obj=obj)
-    if not ctx:
+    # gate here, not only in the default template: per-button template / template_code must not show a
+    # button the user may not use (#147)
+    if not _context_button_visible(ctx):
         return ""
     if ctx.get("cv_template_code"):
         view = cv_get_view(context)
@@ -152,7 +159,7 @@ def cv_context_url(context, key, obj=None):
     if obj is None:
         obj = getattr(view, "object", None)
     ctx = cv_get_context(context=context, key=key, obj=obj)
-    if not ctx or ctx.get("cv_action_enabled") is False or ctx.get("cv_access") is not True:
+    if not _context_button_visible(ctx):
         return None
     return ctx.get("cv_url")
 

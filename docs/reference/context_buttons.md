@@ -47,7 +47,9 @@ Access is checked via the target view's `cv_has_access(user, obj)`.
 
 When neither `template` nor `template_code` is set, the button uses the
 `CRUD_VIEWS_CONTEXT_BUTTON_TEMPLATE` setting (default
-`crud_views/tags/context_action.html`). For placing buttons by hand in a custom layout, see
+`crud_views/tags/context_action.html`). Whichever template is used, it is only rendered
+when the user may access the target and the action is enabled (`cv_access` is `True`,
+`cv_action_enabled` is not `False`), so custom templates need no access check of their own. For placing buttons by hand in a custom layout, see
 [Manual Placement (Template Tags)](#manual-placement-template-tags) below.
 
 ### Active state
@@ -294,8 +296,8 @@ Target a different object by passing it as the second argument:
 !!! note "`None` means hidden"
     Because `cv_context_url` returns `None` for both "no access" and "action disabled", gating
     your markup with `{% if url %}` makes the link disappear entirely — matching
-    `cv_context_button`, and unlike the `{% cv_context_actions %}` container, which greys
-    inaccessible buttons out instead.
+    `cv_context_button` and the `{% cv_context_actions %}` container, which hide inaccessible
+    buttons as well.
 
 ### `cv_context_button` — render the full button
 

@@ -16,6 +16,9 @@ A `ContextButton` can override the template *for that button only* with two fiel
 `template_code` takes precedence over `template`; if neither is set, the
 `CRUD_VIEWS_CONTEXT_BUTTON_TEMPLATE` default is used.
 
+A button template is only rendered when the user may access the target and the action is
+enabled, so your template needs no `cv_access` check of its own.
+
 !!! note
     These template the **whole button**. The existing `label_template` /
     `label_template_code` fields only template the button's **label** inside the default
@@ -99,9 +102,8 @@ a different object explicitly:
 
 !!! note "Hidden when there is no access"
     `cv_context_button` renders **nothing** when the user lacks access to the target or the
-    action is disabled. This differs from the default `{% cv_context_actions %}` container,
-    which renders inaccessible buttons as *disabled/greyed*. Reach for the manual tag when
-    you want the button to disappear entirely.
+    action is disabled — the same rule as the `{% cv_context_actions %}` header container, so a
+    button never shows up in one place and not the other.
 
 ### Get the target URL only (no markup)
 

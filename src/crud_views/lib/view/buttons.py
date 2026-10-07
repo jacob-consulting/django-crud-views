@@ -250,7 +250,7 @@ class FilterContextButton(ContextButton):
 
         list_url = context.view.cv_get_url(key=context.view.cv_key)
 
-        data = {}
+        data = {"cv_access": True}  # it toggles the filter of the list page the user is already on
         data["cv_action_label"] = "Filter"
         data["cv_icon_action"] = crud_views_settings.filter_icon
         data["cv_url"] = list_url

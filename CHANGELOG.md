@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+### Fixed
+
+- A context button with its own `template` / `template_code` was rendered in the `{% cv_context_actions %}`
+  header toolbar even when the user lacked access or the action was disabled — only the default template
+  checked `cv_access`. `{% cv_context_action %}` now applies the same visibility rule as `cv_context_button`,
+  `cv_context_url` and `cv_get_context_buttons`, so custom button templates need no guard of their own
+  (#147). `FilterContextButton` now sets `cv_access=True` when shown.
+- Docs: the FAQ and the Context Buttons reference no longer claim the header container greys inaccessible
+  buttons out — it has hidden them since 0.9.0.
+
 ### Changed
 
 - Example project: the "References to documentation" links show an external-link icon and tell screen

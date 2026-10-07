@@ -237,6 +237,15 @@ class DocRefsPanelTest(TestCase):
         self.assertContains(resp, escape(feature.docs[1].label))
         self.assertContains(resp, f'href="{feature.docs[1].url}"')
 
+    def test_doc_links_announce_new_tab(self):
+        feature = next(f for f in FEATURES if f.app == "nested")
+        resp = self.client.get(reverse(feature.url_name))
+        self.assertContains(resp, '<span class="visually-hidden">(opens in a new tab)</span>', count=len(feature.docs))
+        resp = self.client.get(reverse(feature.url_name), HTTP_ACCEPT_LANGUAGE="de")
+        self.assertContains(
+            resp, '<span class="visually-hidden">(öffnet in einem neuen Tab)</span>', count=len(feature.docs)
+        )
+
     def test_docs_empty_for_non_feature_view(self):
         from project.templatetags.example_tags import snippet_panels
         from project.views import HomeView

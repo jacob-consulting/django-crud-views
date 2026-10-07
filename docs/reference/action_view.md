@@ -4,6 +4,10 @@
 then redirects. Subclass it and implement `action(self, context) -> bool`; return a truthy
 value on success and a falsy value on failure.
 
+!!! example "Try it live"
+    The [Showcase example](https://django-crud-views-demo.onrender.com/showcase/recipe/) in the live demo shows this in
+    action — log in as `alice` / `alice`. See [Live demo](../getting_started/demo.md) for data resets and wake-up time.
+
 ```python
 from crud_views.lib.views import ActionViewPermissionRequired
 

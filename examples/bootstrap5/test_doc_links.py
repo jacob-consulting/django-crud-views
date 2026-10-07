@@ -80,3 +80,24 @@ def test_doc_ref_resolves(feature, ref):
     if ref.anchor:
         slugs = heading_slugs(page.read_text(encoding="utf-8"))
         assert ref.anchor in slugs, f"{feature.app}: no heading with anchor #{ref.anchor} in {ref.page}"
+
+
+DEMO_BASE = "https://django-crud-views-demo.onrender.com"
+
+
+def iter_backlinks():
+    """One case per (feature, distinct referenced page); a page referenced twice by one app is checked once."""
+    return [
+        pytest.param(feature, page, id=f"{feature.app}:{page}")
+        for feature in FEATURES
+        for page in dict.fromkeys(ref.page for ref in feature.docs)
+    ]
+
+
+@pytest.mark.parametrize("feature, page", iter_backlinks())
+def test_docs_page_links_back_to_demo(feature, page):
+    from django.urls import reverse
+
+    demo_url = DEMO_BASE + reverse(feature.url_name)
+    text = (DOCS_DIR / page).read_text(encoding="utf-8")
+    assert demo_url in text, f"docs/{page} does not link to the {feature.title} example ({demo_url})"

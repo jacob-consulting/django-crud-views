@@ -6,6 +6,10 @@ children through their own separate CRUD views. A formset can itself declare chi
 row can carry its own nested formset (e.g. each *question* row carries its own *choices*
 formset).
 
+!!! example "Try it live"
+    The [Formsets example](https://django-crud-views-demo.onrender.com/formsets/questionnaire/) in the live demo shows this in
+    action — log in as `alice` / `alice`. See [Live demo](../getting_started/demo.md) for data resets and wake-up time.
+
 !!! note "Stability"
     This page documents the supported formsets surface: `FormSetMixin`, `FormSets`, `FormSet`,
     `InlineFormSet`, `Formsets`, `FormControl` — exactly the names exported by

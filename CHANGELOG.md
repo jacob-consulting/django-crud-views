@@ -16,6 +16,11 @@
   `theme_path` provide `snippets/language_selector.html` if they use the tag.
 - The bootstrap5 example app is fully translated to German, with the language selector in the
   nav. About/Look-at panels, seed data and feature titles stay English.
+- Documentation and live demo link to each other. Every example page in the demo lists the documentation
+  sections that explain it under "References to documentation" (German: "Verweise auf die Dokumentation"),
+  linking to the `stable` docs; every one of those docs pages has a "Try it live" box linking back to the
+  example. A test in the example project checks that every reference resolves to an existing page and heading
+  and that every referenced page links back.
 
 ### Changed
 

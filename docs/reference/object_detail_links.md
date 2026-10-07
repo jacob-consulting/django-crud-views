@@ -18,3 +18,7 @@ from crud_views_object_detail.lib import x, LinkConfig
 ```
 
 The `args` and `kwargs` values are attribute names looked up on the resolved value.
+
+!!! example "Try it live"
+    The [Object Detail example](https://django-crud-views-demo.onrender.com/object-detail/product/) in the live demo shows this in
+    action — log in as `alice` / `alice`. See [Live demo](../getting_started/demo.md) for data resets and wake-up time.

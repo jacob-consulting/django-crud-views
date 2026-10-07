@@ -4,6 +4,10 @@ The `OrderedUpView` and `OrderedDownView` integrate [django-ordered-model](https
 with the crud-views framework. They provide up/down reordering actions for model instances that
 extend `OrderedModel`.
 
+!!! example "Try it live"
+    The [Library example](https://django-crud-views-demo.onrender.com/library/author/) in the live demo shows this in
+    action — log in as `alice` / `alice`. See [Live demo](../getting_started/demo.md) for data resets and wake-up time.
+
 ## Installation
 
 Install the `ordered` optional dependency group:

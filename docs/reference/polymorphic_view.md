@@ -5,6 +5,10 @@ models. It provides a two-step create flow (select subtype → fill form) and po
 detail, update, and delete views that resolve the correct form based on the actual subtype of
 each object.
 
+!!! example "Try it live"
+    The [Polymorphic example](https://django-crud-views-demo.onrender.com/polymorphic/vehicle/) in the live demo shows this in
+    action — log in as `alice` / `alice`. See [Live demo](../getting_started/demo.md) for data resets and wake-up time.
+
 ## Installation
 
 Install the `polymorphic` optional dependency group:

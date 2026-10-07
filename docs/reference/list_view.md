@@ -4,6 +4,10 @@ The `ListView` displays a list of model instances. It integrates with
 [django-tables2](https://django-tables2.readthedocs.io/en/latest/) for table rendering and
 [django-filter](https://django-filter.readthedocs.io/en/stable/) for filtering.
 
+!!! example "Try it live"
+    The [Library example](https://django-crud-views-demo.onrender.com/library/author/) in the live demo shows this in
+    action — log in as `alice` / `alice`. See [Live demo](../getting_started/demo.md) for data resets and wake-up time.
+
 ## Basic Usage
 
 A minimal list view with a table:

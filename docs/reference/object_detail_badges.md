@@ -37,3 +37,7 @@ from crud_views_object_detail.lib import x, BadgeConfig
 | `color_fn`  | Callable that receives the value and returns a color name |
 | `label_map` | `dict` mapping values to display labels |
 | `pill`      | `True` to use rounded-pill style |
+
+!!! example "Try it live"
+    The [Object Detail example](https://django-crud-views-demo.onrender.com/object-detail/product/) in the live demo shows this in
+    action — log in as `alice` / `alice`. See [Live demo](../getting_started/demo.md) for data resets and wake-up time.

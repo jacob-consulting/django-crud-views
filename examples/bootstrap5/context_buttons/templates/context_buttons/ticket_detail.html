@@ -1,0 +1,56 @@
+{% extends cv_extends %}
+{% load i18n crud_views %}
+
+{% block cv_content %}
+    <dl class="row">
+        <dt class="col-sm-3">{% translate "Title" %}</dt><dd class="col-sm-9">{{ object.title }}</dd>
+        <dt class="col-sm-3">{% translate "Priority" %}</dt><dd class="col-sm-9">{{ object.get_priority_display }}</dd>
+        <dt class="col-sm-3">{% translate "Description" %}</dt><dd class="col-sm-9">{{ object.description|default:"—" }}</dd>
+    </dl>
+
+    <p class="text-body-secondary">
+        {% blocktranslate trimmed %}
+            Every button below is placed by hand in this template. Log in as <strong>alice</strong> (may edit and
+            delete) and as <strong>bob</strong> (may only view) to compare: a button the user may not use
+            renders nothing — exactly like the toolbar in the page header.
+        {% endblocktranslate %}
+    </p>
+
+    {# 1. cv_context_button: one complete button by key, rendered with that button's own template #}
+    <h5>1. <code>{% verbatim %}{% cv_context_button %}{% endverbatim %}</code></h5>
+    <p class="text-body-secondary small">{% translate "A toolbar of your own. edit_pill uses a template file, delete the default template." %}</p>
+    <div class="d-flex gap-2 mb-4" id="manual-toolbar">
+        {% cv_context_button "edit_pill" %}
+        {% cv_context_button "delete" %}
+    </div>
+
+    {# 2. cv_context_url: only the permission-checked URL, for markup you write yourself #}
+    <h5>2. <code>{% verbatim %}{% cv_context_url %}{% endverbatim %}</code></h5>
+    {% cv_context_url "update" as edit_url %}
+    {% if edit_url %}
+        <a href="{{ edit_url }}" class="card text-decoration-none" id="url-tile">
+            <div class="card-body"><i class="fa-solid fa-pen" aria-hidden="true"></i> {% translate "Edit this ticket" %}</div>
+        </a>
+    {% else %}
+        <p class="text-body-secondary small" id="url-tile-hidden">{% translate "No URL — you may not edit this ticket, so the tile is not rendered." %}</p>
+    {% endif %}
+
+    {# 3. cv_context_has_permission: show surrounding markup only when the user may use the key #}
+    <h5 class="mt-4">3. <code>cv_context_has_permission</code></h5>
+    {% if view|cv_context_has_permission:"delete" %}
+        <div class="alert alert-danger" id="gated-section">
+            <h6>{% translate "Danger zone" %}</h6>
+            {% cv_context_button "delete" %}
+        </div>
+    {% else %}
+        <p class="text-body-secondary small">{% translate "The danger zone is only shown to users who may delete." %}</p>
+    {% endif %}
+
+    {# 4. a loop over the view's cv_context_actions, already filtered to the buttons the user may use #}
+    <h5>4. <code>view.cv_get_context_buttons</code> + <code>{% verbatim %}{% cv_render_context_button %}{% endverbatim %}</code></h5>
+    <ul class="list-inline">
+        {% for ctx in view.cv_get_context_buttons %}
+            <li class="list-inline-item"><span class="cv-demo-loop-item">{% cv_render_context_button ctx %}</span></li>
+        {% endfor %}
+    </ul>
+{% endblock cv_content %}

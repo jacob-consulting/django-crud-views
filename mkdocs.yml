@@ -11,3 +11,6 @@ edit_uri: blob/master/docs/
 
 markdown_extensions:
     - admonition
+
+validation:
+    anchors: warn

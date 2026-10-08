@@ -8,6 +8,7 @@ nav:
         - delete_view.md
         - custom_form_view.md
         - nested.md
+        - Request lifecycle & transactions: request_lifecycle.md
     - Object detail:
         - object_detail_view.md
         - object_detail_configuration.md

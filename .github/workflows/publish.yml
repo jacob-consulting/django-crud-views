@@ -14,8 +14,8 @@ jobs:
       matrix:
         python-version: ["3.12", "3.13", "3.14"]
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
       - run: 'pip install --require-hashes --only-binary :all: -r .github/requirements/ci.txt'
@@ -24,7 +24,7 @@ jobs:
       # codecov.yml (after_n_builds) waits for all rows before posting statuses. See #105.
       - id: coverage-files
         run: echo "files=$(ls coverage-py*.xml | paste -sd, -)" >> "$GITHUB_OUTPUT"
-      - uses: codecov/codecov-action@0fb7174895f61a3b6b78fc075e0cd60383518dac # v5.5.5
+      - uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ${{ steps.coverage-files.outputs.files }}
@@ -34,8 +34,8 @@ jobs:
   docs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.13"
       - run: 'pip install --require-hashes --only-binary :all: -r docs/requirements.txt'
@@ -44,8 +44,8 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.13"
       - run: 'pip install --require-hashes --only-binary :all: -r .github/requirements/ci.txt'
@@ -59,8 +59,8 @@ jobs:
     permissions:
       id-token: write
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.13"
       - run: 'pip install --require-hashes --only-binary :all: -r .github/requirements/ci.txt'

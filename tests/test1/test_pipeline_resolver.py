@@ -142,3 +142,14 @@ def test_bare_string_source_filenames_is_one_pattern(asset_registry, bundled):
     rows = _rows({"JAVASCRIPT": {"main": {"source_filenames": "crud_views/js/viewset.js"}}})
     assert rows["crud_views/js/viewset.js"].delivery == ("pipeline:main",)
     assert rows["crud_views/js/formset.js"].delivery == ("none",)
+
+
+def test_lazy_sources_kept_unresolved(monkeypatch):
+    import django.apps
+
+    from crud_views.lib.pipeline import cv_sources, pipeline_sources
+
+    lazy = cv_sources("css", keys=[])
+    monkeypatch.setattr(django.apps.apps, "ready", False)
+    result = pipeline_sources({"JAVASCRIPT": {"main": {"source_filenames": lazy}}})
+    assert result[0].sources is lazy

@@ -164,7 +164,8 @@ def pipeline_sources(conf: dict | None = None) -> list[PipelineSource]:
             continue
         for package, config in packages.items():
             if isinstance(config, dict):
-                result.append(PipelineSource(kind=kind, package=package, sources=config.get("source_filenames") or ()))
+                value = config.get("source_filenames")  # no truthiness test: it would resolve a LazySources
+                result.append(PipelineSource(kind=kind, package=package, sources=() if value is None else value))
     return result
 
 

@@ -78,6 +78,7 @@ test = [
     "cssselect",
     "django-guardian>=2.4",
     "polib",
+    "django-pipeline",
 ]
 
 examples = [

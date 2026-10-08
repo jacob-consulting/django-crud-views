@@ -67,7 +67,6 @@ class CrudView(metaclass=CrudViewMetaClass):
     cv_success_keys: list[str] | None = None  # origin keys the success redirect may return to; None = static
     cv_cancel_key: str | None = "list"  # cancel url, defaults to list
     cv_cancel_keys: list[str] | None = None  # origin keys the cancel button may return to; None = static
-    cv_parent_key: str | None = "list"  # parent key; default under review for 1.x, see issue #74
 
     cv_extends_template: str | None = None  # template to extend
 

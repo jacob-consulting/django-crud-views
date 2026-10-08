@@ -78,6 +78,19 @@ class AuthorCrudTest(LibraryTestCase):
         resp = self.client.get(update_url, {"cv_from": "list"})
         self.assertContains(resp, f'data-cv-cancel-url="{list_url}"')
 
+    def test_update_success_returns_to_detail_origin(self):
+        detail_url = reverse("author-detail", kwargs={"pk": self.author.pk})
+        update_url = reverse("author-update", kwargs={"pk": self.author.pk})
+        data = {"first_name": "Ursula K.", "last_name": "Le Guin", "pseudonym": ""}
+        resp = self.client.post(f"{update_url}?cv_from=detail", data)
+        self.assertRedirects(resp, detail_url, fetch_redirect_response=False)
+
+    def test_update_success_returns_to_list_origin(self):
+        update_url = reverse("author-update", kwargs={"pk": self.author.pk})
+        data = {"first_name": "Ursula K.", "last_name": "Le Guin", "pseudonym": ""}
+        resp = self.client.post(f"{update_url}?cv_from=list", data)
+        self.assertRedirects(resp, reverse("author-list"), fetch_redirect_response=False)
+
 
 class BookOrderingTest(LibraryTestCase):
     def test_book_list_renders(self):

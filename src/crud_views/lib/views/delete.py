@@ -1,5 +1,6 @@
 import logging
 from collections import defaultdict
+from collections.abc import Iterable
 from typing import NamedTuple
 
 from django.contrib.admin.utils import NestedObjects
@@ -7,6 +8,8 @@ from django.db import router
 from django.urls import NoReverseMatch, reverse
 from django.views import generic
 
+from crud_views.lib.check import Check, CheckExpression
+from crud_views.lib.exceptions import ViewSetKeyFoundError
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import CrudView, CrudViewPermissionRequiredMixin
 from crud_views.lib.view.base import cv_is_modal_request
@@ -46,6 +49,35 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, generic.DeleteView):
 
     # messages
     cv_message_template: str | None = "crud_views/snippets/message/delete.html"
+
+    @classmethod
+    def checks(cls) -> Iterable[Check]:
+        yield from super().checks()
+        yield CheckExpression(
+            context=cls,
+            id="E254",
+            expression=not cls.cv_success_object_keys(),
+            msg=(
+                f"cv_success_key / cv_success_keys of a delete view must not be object views, the object is "
+                f"gone after success, got {cls.cv_success_object_keys()!r}"
+            ),
+        )
+
+    @classmethod
+    def cv_success_object_keys(cls) -> list[str]:
+        """Registered cv_success_key / cv_success_keys entries that need an object (unregistered ones are
+        not this check's job)."""
+        candidates = [*([cls.cv_success_key] if cls.cv_success_key else []), *(cls.cv_success_keys or [])]
+        if not candidates or cls.cv_viewset is None:
+            return []
+        keys = []
+        for key in candidates:
+            try:
+                if cls.cv_viewset.get_view_class(key).cv_object:
+                    keys.append(key)
+            except ViewSetKeyFoundError:
+                pass
+        return keys
 
     def cv_get_related_objects(self) -> RelatedObjects:
         using = router.db_for_write(self.object._meta.model)

@@ -32,9 +32,10 @@ Both inherit from Django's `generic.DeleteView` and `CrudView`.
 | `model` | `Model` | from `cv_viewset` | The Django model to delete (auto-derived from ViewSet) |
 | `form_class` | `Form` | — | The form class (typically `CrispyDeleteForm`) |
 | `cv_viewset` | `ViewSet` | — | The ViewSet this view belongs to |
-| `cv_success_key` | `str` | `"list"` | ViewSet key to redirect to after success |
+| `cv_success_key` | `str` | `"list"` | ViewSet key to redirect to after success; must not be an object view such as `detail`, the object is gone (`viewset.E254`) |
 | `cv_cancel_key` | `str` | `"list"` | ViewSet key the cancel button returns to (static fallback) |
 | `cv_cancel_keys` | `list[str] \| None` | `None` | Origin keys the cancel button may return to dynamically. See [UpdateView](update_view.md#dynamic-cancel-target) |
+| `cv_success_keys` | `list[str] \| None` | `None` | Origin keys the success redirect may return to dynamically; object views such as `detail` are rejected (`viewset.E254`). See [UpdateView](update_view.md#dynamic-success-target) |
 | `cv_context_actions` | `list[str]` | `["home", "detail", "update", "delete"]` | Actions shown in the header area |
 | `cv_show_related_objects` | `bool` | `False` | Show cascading deletes display |
 | `cv_link_related_objects` | `bool` | `False` | Link related objects to their detail views |

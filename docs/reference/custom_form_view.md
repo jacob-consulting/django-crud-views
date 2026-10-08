@@ -76,6 +76,7 @@ The view is auto-registered with `cv_author` via `cv_key` and `cv_path`, so its 
 | `cv_success_key` | `str` | `"list"` | ViewSet key to redirect to after a valid form submission |
 | `cv_cancel_key` | `str` | `"list"` | ViewSet key the cancel button returns to (static fallback) |
 | `cv_cancel_keys` | `list[str] \| None` | `None` | Origin keys the cancel button may return to dynamically (no-object views only to non-object keys). See [UpdateView](update_view.md#dynamic-cancel-target) |
+| `cv_success_keys` | `list[str] \| None` | `None` | Origin keys the success redirect may return to dynamically. See [UpdateView](update_view.md#dynamic-success-target) |
 | `cv_context_actions` | `list[str]` | from settings | Actions shown in the header area |
 | `cv_header_template_code` | `str` | — | Translatable header text |
 | `cv_paragraph_template_code` | `str` | — | Translatable paragraph text below the header |
@@ -91,7 +92,7 @@ Override `cv_form_valid` to handle the submitted form data:
 
 The `context` dict contains at least `"form"` (the bound, validated form) and `"object"` (the loaded model instance, for object-based views).
 
-After `cv_form_valid_hook`, the view redirects to `cv_success_key` (default: `"list"`).
+After `cv_form_valid_hook`, the view redirects to `cv_success_key` (default: `"list"`), or to the origin view when it is listed in [`cv_success_keys`](update_view.md#dynamic-success-target).
 
 ## Adding a Success Message
 

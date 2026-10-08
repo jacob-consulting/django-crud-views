@@ -369,7 +369,7 @@ def test_existing_viewset_links_unchanged(client_user_author_change, cv_author, 
 def test_custom_origin_param_name(client_user_author_origin, cv_author_origin, author_douglas_adams, monkeypatch):
     from crud_views.lib.settings import crud_views_settings
 
-    monkeypatch.setattr(crud_views_settings, "cancel_origin_param", "origin")
+    monkeypatch.setattr(crud_views_settings, "origin_param", "origin")
     pk = author_douglas_adams.pk
     response = client_user_author_origin.get(url(cv_author_origin, "detail", pk))
     assert f"{url(cv_author_origin, 'update', pk)}?origin=detail" in hrefs(response)

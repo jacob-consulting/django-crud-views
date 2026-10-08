@@ -505,3 +505,66 @@ def test_resource_action_runs_on_commit_without_transaction(
     assert response.status_code == 302
     assert len(calls) == 1
     assert resources.TOUCHED == ["reports/2026/q1.pdf"]
+
+
+# --- Task 5: workflow --------------------------------------------------------------------------
+
+
+@pytest.mark.django_db
+def test_workflow_on_transition_exception_rolls_back_state_and_info(
+    client_user_campaign_change, campaign_new, monkeypatch
+):
+    """Guard: passes before and after (the inner atomic already existed)."""
+    from crud_views_workflow.models import WorkflowInfo
+    from tests.test1.app.models import CampaignState
+    from tests.test1.app.views import CampaignWorkflowView
+
+    monkeypatch.setattr(CampaignWorkflowView, "on_transition", _boom)
+    with pytest.raises(Boom):
+        client_user_campaign_change.post(
+            f"/campaign/{campaign_new.pk}/workflow/", {"transition": "wf_activate", "comment": ""}
+        )
+    campaign_new.refresh_from_db()
+    assert campaign_new.state == CampaignState.NEW
+    assert WorkflowInfo.objects.count() == 0
+
+
+@pytest.mark.django_db
+def test_workflow_info_available_in_on_commit(
+    client_user_campaign_change, campaign_new, monkeypatch, django_capture_on_commit_callbacks
+):
+    from tests.test1.app.models import CampaignState
+    from tests.test1.app.views import CampaignWorkflowView
+
+    calls = _record_on_commit(monkeypatch, CampaignWorkflowView)
+    with django_capture_on_commit_callbacks(execute=True):
+        response = client_user_campaign_change.post(
+            f"/campaign/{campaign_new.pk}/workflow/", {"transition": "wf_activate", "comment": ""}
+        )
+    assert response.status_code == 302
+    assert len(calls) == 1
+    info = calls[0]["workflow_info"]
+    assert info.transition == "wf_activate"
+    assert info.state_new == CampaignState.ACTIVE
+
+
+@pytest.mark.django_db
+def test_workflow_inner_atomic_uses_routed_alias(client_user_campaign_change, campaign_new, monkeypatch):
+    """With cv_atomic = False the transition is still atomic, on the routed alias (not a bare atomic())."""
+    from tests.test1.app.views import CampaignWorkflowView
+
+    seen: list = []
+    real_atomic = transaction.atomic
+
+    def spy(*args, **kwargs):
+        seen.append(kwargs.get("using"))
+        return real_atomic(*args, **kwargs)
+
+    monkeypatch.setattr(CampaignWorkflowView, "cv_atomic", False)
+    monkeypatch.setattr("crud_views_workflow.lib.views.transaction.atomic", spy)
+    response = client_user_campaign_change.post(
+        f"/campaign/{campaign_new.pk}/workflow/", {"transition": "wf_activate", "comment": ""}
+    )
+    assert response.status_code == 302
+    assert DEFAULT_DB_ALIAS in seen
+    assert None not in seen  # every atomic() in the request names its database

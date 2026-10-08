@@ -379,3 +379,129 @@ def test_guardian_delete_goes_through_seam(
         response = client_guardian.post(f"/guardian_publisher_cascade/{publisher_a.pk}/delete/", {"confirm": True})
     assert response.status_code == 302
     assert len(calls) == 1
+
+
+# --- Task 4: action views ----------------------------------------------------------------------
+
+
+@pytest.fixture
+def author(db):
+    from tests.test1.app.models import Author
+
+    return Author.objects.create(first_name="First", last_name="Author")
+
+
+def _write_pseudonym(value: str, result: bool, rollback: bool = False):
+    def action(self, context):
+        self.object.pseudonym = value
+        self.object.save()
+        if rollback:
+            transaction.set_rollback(True)
+        return result
+
+    return action
+
+
+@pytest.mark.django_db
+def test_action_success_hook_exception_rolls_back(client_user_author_change, author, monkeypatch):
+    from tests.test1.app.views import AuthorHookPingView
+
+    monkeypatch.setattr(AuthorHookPingView, "action", _write_pseudonym("acted", True))
+    monkeypatch.setattr(AuthorHookPingView, "cv_action_success_hook", _boom)
+    with pytest.raises(Boom):
+        client_user_author_change.post(f"/author/{author.pk}/ping-hook/")
+    author.refresh_from_db()
+    assert author.pseudonym is None
+
+
+@pytest.mark.django_db
+def test_action_false_does_not_roll_back(
+    client_user_author_change, author, monkeypatch, django_capture_on_commit_callbacks
+):
+    from tests.test1.app.views import AuthorPingView
+
+    calls = _record_on_commit(monkeypatch, AuthorPingView)
+    monkeypatch.setattr(AuthorPingView, "action", _write_pseudonym("partial", False))
+    with django_capture_on_commit_callbacks(execute=True):
+        response = client_user_author_change.post(f"/author/{author.pk}/ping/")
+    assert response.status_code == 302
+    author.refresh_from_db()
+    assert author.pseudonym == "partial"
+    assert calls == []
+
+
+@pytest.mark.django_db
+def test_action_set_rollback_recipe(client_user_author_change, author, monkeypatch):
+    """docs recipe 'Rolling back a failed action': set_rollback(True) undoes the action's writes."""
+    from tests.test1.app.views import AuthorPingView
+
+    monkeypatch.setattr(AuthorPingView, "action", _write_pseudonym("undone", False, rollback=True))
+    response = client_user_author_change.post(f"/author/{author.pk}/ping/")
+    assert response.status_code == 302
+    author.refresh_from_db()
+    assert author.pseudonym is None
+
+
+@pytest.mark.django_db
+def test_action_false_without_atomic_keeps_partial_write(
+    client_user_author_change, author, monkeypatch, django_capture_on_commit_callbacks
+):
+    """Review focus 5: cv_atomic = False + False result: no error, no cv_on_commit, write stays."""
+    from tests.test1.app.views import AuthorPingView
+
+    calls = _record_on_commit(monkeypatch, AuthorPingView)
+    monkeypatch.setattr(AuthorPingView, "cv_atomic", False)
+    monkeypatch.setattr(AuthorPingView, "action", _write_pseudonym("partial", False))
+    with django_capture_on_commit_callbacks(execute=True):
+        response = client_user_author_change.post(f"/author/{author.pk}/ping/")
+    assert response.status_code == 302
+    author.refresh_from_db()
+    assert author.pseudonym == "partial"
+    assert calls == []
+
+
+@pytest.mark.django_db
+def test_action_on_commit_runs_on_success(
+    client_user_author_change, author, monkeypatch, django_capture_on_commit_callbacks
+):
+    from tests.test1.app.views import AuthorPingView
+
+    calls = _record_on_commit(monkeypatch, AuthorPingView)
+    with django_capture_on_commit_callbacks(execute=True):
+        response = client_user_author_change.post(f"/author/{author.pk}/ping/")
+    assert response.status_code == 302
+    assert len(calls) == 1
+    assert calls[0]["object"] == author
+
+
+@pytest.mark.django_db
+def test_ordered_up_hook_exception_rolls_back_swap(client_user_author_change, monkeypatch):
+    from tests.test1.app.models import Author
+    from tests.test1.app.views import AuthorUpView
+
+    first = Author.objects.create(first_name="A", last_name="First")
+    second = Author.objects.create(first_name="B", last_name="Second")
+    before = {a.pk: a.order for a in Author.objects.all()}
+    monkeypatch.setattr(AuthorUpView, "cv_action_success_hook", _boom)
+    with pytest.raises(Boom):
+        client_user_author_change.post(f"/author/{second.pk}/up/")
+    assert {a.pk: a.order for a in Author.objects.all()} == before
+    assert len(before) == 2 and first.pk in before  # both rows took part
+
+
+@pytest.mark.django_db
+def test_resource_action_runs_on_commit_without_transaction(
+    client_user_s3file_delete, monkeypatch, django_capture_on_commit_callbacks
+):
+    import hashlib
+
+    from tests.test1.app import resources
+
+    monkeypatch.setattr(resources, "TOUCHED", [])
+    calls = _record_on_commit(monkeypatch, resources.S3FileTouchView)
+    key = hashlib.md5(b"reports/2026/q1.pdf").hexdigest()
+    with django_capture_on_commit_callbacks(execute=True):
+        response = client_user_s3file_delete.post(f"/s3file/{key}/touch/")
+    assert response.status_code == 302
+    assert len(calls) == 1
+    assert resources.TOUCHED == ["reports/2026/q1.pdf"]

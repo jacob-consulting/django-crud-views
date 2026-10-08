@@ -45,6 +45,19 @@ class Book(models.Model):
         return self.title
 
 
+class Genre(models.Model):
+    """M2M child of Publisher: exercises CreateViewParentMixin's many_to_many_through branch."""
+
+    name = models.CharField(max_length=100)
+    publishers = models.ManyToManyField(Publisher, related_name="genres")
+
+    class Meta:
+        ordering = ["name"]
+
+    def __str__(self):
+        return self.name
+
+
 class BookNote(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name="notes")
     note = models.CharField(max_length=200)

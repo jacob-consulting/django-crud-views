@@ -7,7 +7,7 @@ from threading import Lock
 from django.core.exceptions import ImproperlyConfigured
 from django.templatetags.static import static
 
-_EXTERNAL_PREFIXES = ("http://", "https://", "//")  # NOSONAR: matches URLs, does not request them
+_EXTERNAL_PREFIXES = ("http://", "https://", "//")  # NOSONAR S5332: matches URLs, never requests them
 
 
 @dataclass(frozen=True)

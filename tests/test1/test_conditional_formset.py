@@ -172,8 +172,9 @@ def test_purge_rolls_back_when_sibling_formset_save_fails(monkeypatch):
     class _View(FormSetMixinBase, _Base):
         pass
 
+    view = _View()
     with pytest.raises(RuntimeError):
-        _View().cv_form_valid({"form": main_form, "formsets": formsets})
+        view.cv_form_valid({"form": main_form, "formsets": formsets})
 
     assert ProfileItem.objects.filter(profile=profile).count() == 2  # purge rolled back
 

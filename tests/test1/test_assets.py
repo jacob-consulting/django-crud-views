@@ -317,7 +317,8 @@ def test_check_asset_registry_e330_malformed_integrity(asset_registry):
     asset_registry.register_assets(key="cdn", js=[Asset(path="https://cdn.example.com/x.js", integrity="md5-abc")])
     messages = check_asset_registry()
     assert [m.id for m in messages] == ["crud_views.E330"]
-    assert "cdn" in messages[0].msg and "https://cdn.example.com/x.js" in messages[0].msg
+    assert "cdn" in messages[0].msg
+    assert "https://cdn.example.com/x.js" in messages[0].msg
 
 
 def test_check_asset_registry_w332_integrity_on_local_path(asset_registry):

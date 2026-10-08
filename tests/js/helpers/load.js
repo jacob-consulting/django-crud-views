@@ -32,7 +32,8 @@ function testWindow() {
 export async function loadScript(name) {
     const code = fs.readFileSync(path.join(JS_DIR, `${name}.js`), "utf-8");
     const win = testWindow();
-    new Function("window", "globalThis", code)(win, win);
+    // Evaluates the package's own static JS inside the test window, as a <script> tag would.
+    new Function("window", "globalThis", code)(win, win); // NOSONAR S1523
     // jQuery defers $(document).ready() callbacks by a microtask even when the
     // document is already complete; wait for them so wiring is done on return.
     await new Promise((resolve) => window.jQuery(resolve));

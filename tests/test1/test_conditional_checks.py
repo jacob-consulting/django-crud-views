@@ -329,7 +329,8 @@ def test_conditional_on_nested_child_formset_flags_e310(monkeypatch):
     top = _fake_formset(children={"sub": child})
     messages = _run_check_with(monkeypatch, _NameWithItemsForm, {"items": top})
     e310 = [m for m in messages if m.id == "crud_views.E310"]
-    assert len(e310) == 1 and "items-sub" in e310[0].msg, messages
+    assert len(e310) == 1, messages
+    assert "items-sub" in e310[0].msg, messages
 
 
 def test_purge_with_edit_only_warns_w321(monkeypatch):
@@ -339,7 +340,8 @@ def test_purge_with_edit_only_warns_w321(monkeypatch):
     )
     messages = _run_check_with(monkeypatch, _NameWithItemsForm, {"items": fs})
     w321 = [m for m in messages if m.id == "crud_views.W321"]
-    assert len(w321) == 1 and "edit_only=True" in w321[0].msg, messages
+    assert len(w321) == 1, messages
+    assert "edit_only=True" in w321[0].msg, messages
 
 
 class _UndeclaredModelToggleGroupForm(forms.ModelForm):
@@ -353,7 +355,8 @@ class _UndeclaredModelToggleGroupForm(forms.ModelForm):
 def test_group_model_toggle_missing_from_form_flags_e311(monkeypatch):
     messages = _run_check_with(monkeypatch, _UndeclaredModelToggleGroupForm)
     e311 = [m for m in messages if m.id == "crud_views.E311"]
-    assert len(e311) == 1 and "not_on_form" in e311[0].msg, messages
+    assert len(e311) == 1, messages
+    assert "not_on_form" in e311[0].msg, messages
 
 
 class _NonNullableClearGroupForm(forms.ModelForm):
@@ -371,7 +374,8 @@ def test_group_clearing_non_nullable_field_warns_w320_and_skips_unknown_fields(m
     is not a model field → skipped rather than crashing the check."""
     messages = _run_check_with(monkeypatch, _NonNullableClearGroupForm)
     w320 = [m for m in messages if m.id == "crud_views.W320"]
-    assert len(w320) == 1 and "name" in w320[0].msg, messages
+    assert len(w320) == 1, messages
+    assert "name" in w320[0].msg, messages
     assert not any("email" in m.msg or "no_such_field" in m.msg for m in w320), messages
 
 

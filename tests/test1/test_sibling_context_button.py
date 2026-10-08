@@ -72,5 +72,6 @@ def test_unknown_sibling_raises(client_user_book_view, cv_book, publisher_pengui
 
     view = _book_list_view(client_user_book_view, publisher_penguin)
     btn = SiblingContextButton(key="to_nothing", sibling_name="does_not_exist")
+    context = view.cv_get_view_context()
     with pytest.raises(ViewSetNotFoundError):
-        btn.get_context(view.cv_get_view_context())
+        btn.get_context(context)

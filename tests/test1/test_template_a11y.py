@@ -63,12 +63,14 @@ def test_post_list_action_is_a_button_that_submits_its_form(client, cv_author, a
 
     doc = _doc(client.get("/author/"))
     (up,) = doc.cssselect('[cv-list-container] [cv-key="up"]')
-    assert up.tag == "button" and up.get("type") == "button"
+    assert up.tag == "button"
+    assert up.get("type") == "button"
     assert up.get("data-cv-action") == "submit-form"
     _assert_icon_action_named(up)
     assert doc.cssselect(f"form#{up.get('data-cv-target')}"), "the targeted POST form must exist"
     (detail,) = doc.cssselect('[cv-list-container] [cv-key="detail"]')
-    assert detail.tag == "a" and detail.get("href")
+    assert detail.tag == "a"
+    assert detail.get("href")
 
 
 @pytest.mark.django_db
@@ -82,7 +84,8 @@ def test_filter_toggle_is_a_labelled_button(client):
     client.force_login(user)
     doc = _doc(client.get("/publisher_order/card/"))
     (toggle,) = doc.cssselect("#cv-filter-toggle")
-    assert toggle.tag == "button" and toggle.get("type") == "button"
+    assert toggle.tag == "button"
+    assert toggle.get("type") == "button"
     assert toggle.get("role") is None
     _assert_icon_action_named(toggle)
 
@@ -98,7 +101,8 @@ def test_formset_controls_have_labels_and_hidden_icons():
     groups = doc.cssselect("fieldset.btn-group")
     assert len(groups) == 3
     labels = [g.get("aria-label") for g in groups]
-    assert all(labels) and len(set(labels)) == len(labels), labels
+    assert all(labels), labels
+    assert len(set(labels)) == len(labels), labels
     buttons = doc.cssselect("button")
     assert len(buttons) == 4
     assert all(b.get("aria-label") for b in buttons)

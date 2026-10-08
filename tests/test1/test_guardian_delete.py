@@ -69,4 +69,5 @@ def test_filter_related_objects_hides_unpermitted_and_keeps_structure(
     result = GuardianDeleteRelatedObjectsMixin().cv_filter_related_objects(user_guardian, related)
 
     assert result.tree == [publisher_a, ["label", None, [publisher_a]], None]
-    assert result.summary == {"x": 1} and result.protected == ["p"]
+    assert result.summary == {"x": 1}
+    assert result.protected == ["p"]

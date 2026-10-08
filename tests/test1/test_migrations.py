@@ -13,7 +13,5 @@ def test_workflow_app_has_no_missing_migrations():
     perpetually propose a RenameIndex for consumers.
     """
     out = StringIO()
-    try:
-        call_command("makemigrations", "cvw", check=True, dry_run=True, stdout=out, stderr=out)
-    except SystemExit:
-        pytest.fail(f"cvw has missing migrations:\n{out.getvalue()}")
+    call_command("makemigrations", "cvw", dry_run=True, stdout=out, stderr=out)
+    assert "No changes detected" in out.getvalue(), f"cvw has missing migrations:\n{out.getvalue()}"

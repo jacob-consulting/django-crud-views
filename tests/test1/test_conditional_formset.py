@@ -165,7 +165,17 @@ def test_purge_rolls_back_when_sibling_formset_save_fails(monkeypatch):
 
     monkeypatch.setattr(XFormSet, "save", _boom)
 
+    aliases: list[str] = []
+
     class _Base:
+        # cv_atomic = False and no cv_get_atomic(): only the formset mixin's own inner
+        # atomic() protects the purge here, which must hold regardless of the view setting
+        cv_atomic = False
+
+        def cv_get_db_alias(self):
+            aliases.append("default")
+            return "default"
+
         def cv_form_valid(self, context):
             context["form"].save()
 
@@ -177,6 +187,7 @@ def test_purge_rolls_back_when_sibling_formset_save_fails(monkeypatch):
         view.cv_form_valid({"form": main_form, "formsets": formsets})
 
     assert ProfileItem.objects.filter(profile=profile).count() == 2  # purge rolled back
+    assert aliases == ["default"]  # the inner atomic() uses the routed database
 
 
 # ---------------------------------------------------------------------------

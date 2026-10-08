@@ -6,18 +6,6 @@ from django.core.exceptions import ImproperlyConfigured
 from django.template import Context, Template
 
 
-@pytest.fixture
-def asset_registry():
-    """Snapshot/restore the module-global registry around each test."""
-    from crud_views.lib import assets
-
-    snapshot = dict(assets._REGISTRY)
-    assets._REGISTRY.clear()
-    yield assets
-    assets._REGISTRY.clear()
-    assets._REGISTRY.update(snapshot)
-
-
 def test_register_and_get(asset_registry):
     from crud_views.lib.assets import Asset
 

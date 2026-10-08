@@ -53,17 +53,13 @@ def _asset_items(entries) -> list:
 
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/shared/css.html", takes_context=True)
 def cv_css(context):
-    entries = list(assets.normalize_entries(crud_views_settings.css.values()))
-    for bundle in assets.get_registered(only_emitting=True):
-        entries.extend(bundle.css)
+    entries = [entry.asset for entry in assets.tag_entries("css")]
     return {"css": _asset_items(entries), "nonce": _resolve_nonce(context)}
 
 
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/shared/js.html", takes_context=True)
 def cv_js(context):
-    entries = list(assets.normalize_entries(crud_views_settings.javascript().values()))
-    for bundle in assets.get_registered(only_emitting=True):
-        entries.extend(bundle.js)
+    entries = [entry.asset for entry in assets.tag_entries("js")]
     return {"js": _asset_items(entries), "nonce": _resolve_nonce(context)}
 
 

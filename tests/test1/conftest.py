@@ -8,6 +8,18 @@ from django.test import Client
 from tests.lib.helper.user import user_viewset_permission
 
 
+@pytest.fixture
+def asset_registry():
+    """Snapshot/restore the module-global asset registry around each test."""
+    from crud_views.lib import assets
+
+    snapshot = dict(assets._REGISTRY)
+    assets._REGISTRY.clear()
+    yield assets
+    assets._REGISTRY.clear()
+    assets._REGISTRY.update(snapshot)
+
+
 def pytest_configure():
     settings.configure(
         BASE_DIR=Path(__file__).resolve().parent.parent,

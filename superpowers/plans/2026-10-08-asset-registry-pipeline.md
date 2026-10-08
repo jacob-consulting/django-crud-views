@@ -38,6 +38,20 @@ django-pipeline 4.x (test-only dependency).
 - Changelog entry required (`CHANGELOG.md`, new `## Unreleased` section).
 - Never mention customer project names anywhere (code, docs, commits, skill).
 
+## Implementer environment
+
+- Repo: `/home/alex/projects/alex/django-crud-views`, branch `feature/asset-registry-pipeline`, worked
+  **in this checkout — no git worktree** (an inherited `VIRTUAL_ENV` would send installs to another
+  checkout's venv and make the import/pipeline tests exercise the wrong code).
+- Python/tools: always `.venv/bin/pytest`, `.venv/bin/python`, `.venv/bin/mkdocs`. Do not use `uv run`
+  (it creates a `uv.lock`, which this repo deliberately does not have). Installs:
+  `env -u VIRTUAL_ENV uv pip install -p .venv/bin/python -e ".[polymorphic,workflow,ordered,test]"`.
+- Lint: `task format` (ruff format) and `task check` (ruff check --fix). Ruff selects
+  `E, F, I, UP, B, C4, SIM, RUF` — imports must sit at the top of a file (E402) and be sorted (I).
+- Commits: the pre-commit hook runs `ruff-format`; if it reformats files the commit aborts — re-`git add`
+  and commit again. Never `--no-verify`. No attribution lines in commit messages.
+- Do not dispatch subagents; do not push; do not touch `main`.
+
 ## Review Focus
 
 1. **Test-order pollution through pipeline's `setting_changed` receiver** — once any test imported
@@ -99,6 +113,8 @@ CORE_CSS = ["crud_views/css/property.css", "crud_views/css/table.css", "crud_vie
 
 ### Task 1: Core bundle, keyed `collect()`, `tag_entries()`
 
+**Constraints that bind this task:** No `override_settings(PIPELINE=...)`; settings are read at import, so patch `crud_views_settings` attributes in tests. Tag output must stay byte-identical (existing `tests/test1/test_assets.py` is the guard).
+
 **Files:**
 - Modify: `src/crud_views/lib/assets.py`
 - Modify: `src/crud_views/templatetags/crud_views.py:54-67` (`cv_css`, `cv_js`)
@@ -138,7 +154,7 @@ def asset_registry():
 Add `import pytest` to the conftest imports if absent. Delete the identical fixture from
 `tests/test1/test_assets.py` (lines 9-18).
 
-Run: `pytest tests/test1/test_assets.py -q`
+Run: `.venv/bin/pytest tests/test1/test_assets.py -q`
 Expected: all pass (fixture now comes from conftest).
 
 - [ ] **Step 2: Write the failing tests**
@@ -210,7 +226,7 @@ def test_tag_entries_default_equals_emitting_collect(asset_registry):
 
 - [ ] **Step 3: Run tests to verify they fail**
 
-Run: `pytest tests/test1/test_assets_bundles.py -q`
+Run: `.venv/bin/pytest tests/test1/test_assets_bundles.py -q`
 Expected: FAIL — `AttributeError: module 'crud_views.lib.assets' has no attribute 'core_bundle'` (and similar).
 
 - [ ] **Step 4: Implement in `src/crud_views/lib/assets.py`**
@@ -292,7 +308,7 @@ def cv_js(context):
 
 - [ ] **Step 6: Run the new and the existing asset tests**
 
-Run: `pytest tests/test1/test_assets_bundles.py tests/test1/test_assets.py -q`
+Run: `.venv/bin/pytest tests/test1/test_assets_bundles.py tests/test1/test_assets.py -q`
 Expected: PASS (existing tag tests are the byte-identical regression guard).
 
 - [ ] **Step 7: Commit**
@@ -305,6 +321,8 @@ git commit -m "feat(assets): core bundle first in a keyed collect(); reserve the
 ---
 
 ### Task 2: `CRUD_VIEWS_ASSETS_BUNDLED` — tags emit only external entries
+
+**Constraints that bind this task:** `CRUD_VIEWS_ASSETS_BUNDLED` default `False`; with `False` tag output is byte-identical to before. Imports at the top of test files (E402).
 
 **Files:**
 - Modify: `src/crud_views/lib/settings.py` (after the `csp_nonce_attr` field)
@@ -331,10 +349,11 @@ def bundled(monkeypatch):
     return crud_views_settings
 ```
 
-- [ ] **Step 2: Write the failing tests** (append to `tests/test1/test_assets_bundles.py`)
+- [ ] **Step 2: Write the failing tests** (append to `tests/test1/test_assets_bundles.py`; move the
+`from django.template import Context, Template` import to the **top** of the file with the other imports — E402)
 
 ```python
-from django.template import Context, Template
+from django.template import Context, Template  # -> top of file
 
 
 def _render(tag: str, context: dict | None = None) -> str:
@@ -383,7 +402,7 @@ def test_not_bundled_renders_local_and_external(asset_registry):
 
 - [ ] **Step 3: Run tests to verify they fail**
 
-Run: `pytest tests/test1/test_assets_bundles.py -q`
+Run: `.venv/bin/pytest tests/test1/test_assets_bundles.py -q`
 Expected: FAIL — `AttributeError: 'CrudViewsSettings' object has no attribute 'assets_bundled'` (monkeypatch raises on missing attribute) and the default test fails.
 
 - [ ] **Step 4: Implement**
@@ -414,7 +433,7 @@ def tag_entries(kind: str) -> list[BundleEntry]:
 
 - [ ] **Step 5: Run tests**
 
-Run: `pytest tests/test1/test_assets_bundles.py tests/test1/test_assets.py -q`
+Run: `.venv/bin/pytest tests/test1/test_assets_bundles.py tests/test1/test_assets.py -q`
 Expected: PASS
 
 - [ ] **Step 6: Commit**
@@ -427,6 +446,8 @@ git commit -m "feat(assets): CRUD_VIEWS_ASSETS_BUNDLED limits cv_js/cv_css to ex
 ---
 
 ### Task 3: `cv_sources()` / `LazySources`
+
+**Constraints that bind this task:** `src/crud_views/lib/pipeline.py` imports **stdlib only at module level**; it never imports django-pipeline. No `override_settings(PIPELINE=...)`.
 
 **Files:**
 - Create: `src/crud_views/lib/pipeline.py`
@@ -582,7 +603,7 @@ def test_importable_without_django_settings():
 
 - [ ] **Step 2: Run tests to verify they fail**
 
-Run: `pytest tests/test1/test_pipeline_sources.py -q`
+Run: `.venv/bin/pytest tests/test1/test_pipeline_sources.py -q`
 Expected: FAIL — `ModuleNotFoundError: No module named 'crud_views.lib.pipeline'`
 
 - [ ] **Step 3: Implement `src/crud_views/lib/pipeline.py`**
@@ -731,8 +752,8 @@ def cv_sources(
 
 - [ ] **Step 4: Run tests**
 
-Run: `pytest tests/test1/test_pipeline_sources.py -q`
-Expected: PASS. If `test_importable_without_django_settings` fails with `ModuleNotFoundError: crud_views`, the venv lacks the editable install — run `task dev` (or `uv pip install -e .`), not a code change.
+Run: `.venv/bin/pytest tests/test1/test_pipeline_sources.py -q`
+Expected: PASS. If `test_importable_without_django_settings` fails with `ModuleNotFoundError: crud_views`, the venv lacks the editable install — run `task dev`, not a code change.
 
 - [ ] **Step 5: Commit**
 
@@ -744,6 +765,8 @@ git commit -m "feat(pipeline): lazy cv_sources() for django-pipeline source_file
 ---
 
 ### Task 4: Shared delivery resolver (`pipeline_sources`, `asset_rows`)
+
+**Constraints that bind this task:** `lib/pipeline.py` module-level imports stay stdlib-only. Never `override_settings(PIPELINE=...)` or pytest-django's `settings` fixture for `PIPELINE` — use `pipeline_setting` (reason: django-pipeline's `reload_settings` receiver raises `TypeError` on override exit → random-order failures).
 
 **Files:**
 - Modify: `src/crud_views/lib/pipeline.py`
@@ -919,7 +942,7 @@ def test_rows_order_js_then_css(asset_registry):
 
 - [ ] **Step 3: Run tests to verify they fail**
 
-Run: `pytest tests/test1/test_pipeline_resolver.py -q`
+Run: `.venv/bin/pytest tests/test1/test_pipeline_resolver.py -q`
 Expected: FAIL — `ImportError: cannot import name 'asset_rows' from 'crud_views.lib.pipeline'` (the signal test passes already — fine, it pins the fixture).
 
 - [ ] **Step 4: Implement** — append to `src/crud_views/lib/pipeline.py`, and change the top imports to:
@@ -1027,8 +1050,8 @@ def asset_rows(conf: dict | None = None) -> list[AssetRow]:
 
 - [ ] **Step 5: Run tests**
 
-Run: `pytest tests/test1/test_pipeline_resolver.py tests/test1/test_pipeline_sources.py -q`
-Expected: PASS. Also run `pytest tests/test1/test_pipeline_sources.py::test_importable_without_django_settings -q` again — the new top-level imports must stay stdlib-only.
+Run: `.venv/bin/pytest tests/test1/test_pipeline_resolver.py tests/test1/test_pipeline_sources.py -q`
+Expected: PASS. Also run `.venv/bin/pytest tests/test1/test_pipeline_sources.py::test_importable_without_django_settings -q` again — the new top-level imports must stay stdlib-only.
 
 - [ ] **Step 6: Commit**
 
@@ -1040,6 +1063,8 @@ git commit -m "feat(pipeline): shared asset delivery resolver (asset_rows)"
 ---
 
 ### Task 5: System checks W340–W345
+
+**Constraints that bind this task:** All new checks are `Warning`s with IDs `crud_views.W340`–`W345`, tag `"crud_views"`. Read `settings.PIPELINE` as plain data; never import django-pipeline in `src/`. Tests set `PIPELINE` only via the `pipeline_setting` fixture.
 
 **Files:**
 - Modify: `src/crud_views/checks.py` (new function after `check_asset_registry`)
@@ -1171,7 +1196,7 @@ def test_check_registered_under_crud_views_tag():
 
 - [ ] **Step 2: Run tests to verify they fail**
 
-Run: `pytest tests/test1/test_pipeline_checks.py -q`
+Run: `.venv/bin/pytest tests/test1/test_pipeline_checks.py -q`
 Expected: FAIL — `ImportError: cannot import name 'check_asset_pipeline'`
 
 - [ ] **Step 3: Implement** — in `src/crud_views/checks.py` add `from crud_views.lib import pipeline as pipeline_helper` to the imports and append after `check_asset_registry`:
@@ -1258,12 +1283,12 @@ def check_asset_pipeline(app_configs=None, **kwargs):
 
 - [ ] **Step 4: Run tests**
 
-Run: `pytest tests/test1/test_pipeline_checks.py tests/test1/test_assets.py -q`
+Run: `.venv/bin/pytest tests/test1/test_pipeline_checks.py tests/test1/test_assets.py -q`
 Expected: PASS
 
 - [ ] **Step 5: Run the full suite in random order with a fixed seed (pollution guard)**
 
-Run: `pytest tests -q -p random_order --random-order-seed=4711 -n auto`
+Run: `.venv/bin/pytest tests -q --random-order-seed=4711 -n auto`
 Expected: PASS (no new failures vs. `main`).
 
 - [ ] **Step 6: Commit**
@@ -1276,6 +1301,8 @@ git commit -m "feat(checks): W340-W345 for the django-pipeline asset integration
 ---
 
 ### Task 6: `manage.py cv_assets`
+
+**Constraints that bind this task:** Command name `cv_assets`. Never import django-pipeline in `src/`. Tests set `PIPELINE` only via `pipeline_setting`.
 
 **Files:**
 - Create: `src/crud_views/management/commands/cv_assets.py`
@@ -1364,7 +1391,7 @@ def test_empty_selection_prints_header_only(asset_registry, pipeline_setting):
 
 - [ ] **Step 2: Run tests to verify they fail**
 
-Run: `pytest tests/test1/test_cv_assets_command.py -q`
+Run: `.venv/bin/pytest tests/test1/test_cv_assets_command.py -q`
 Expected: FAIL — `CommandError: Unknown command: 'cv_assets'`
 
 - [ ] **Step 3: Implement `src/crud_views/management/commands/cv_assets.py`**
@@ -1409,7 +1436,7 @@ Note: `dataclasses.asdict` keeps `delivery` as a tuple; `json.dumps` writes it a
 
 - [ ] **Step 4: Run tests**
 
-Run: `pytest tests/test1/test_cv_assets_command.py -q`
+Run: `.venv/bin/pytest tests/test1/test_cv_assets_command.py -q`
 Expected: PASS
 
 - [ ] **Step 5: Commit**
@@ -1422,6 +1449,8 @@ git commit -m "feat: cv_assets management command lists registry assets and thei
 ---
 
 ### Task 7: Real django-pipeline integration tests
+
+**Constraints that bind this task:** django-pipeline goes into the `test` extra only (no `dev`, no `[pipeline]` extra, no import in `src/`). Never `override_settings(PIPELINE=...)`; patch `pipeline.conf.settings` with `monkeypatch.setitem` as shown.
 
 **Files:**
 - Modify: `pyproject.toml` (`test` extra)
@@ -1436,13 +1465,19 @@ git commit -m "feat: cv_assets management command lists registry assets and thei
 
 In `pyproject.toml` `[project.optional-dependencies] test = [...]` add `"django-pipeline",` after `"polib",`.
 
-Run: `uv pip install -e ".[polymorphic,workflow,ordered,test]"` (or `task dev`)
+Run: `env -u VIRTUAL_ENV uv pip install -p .venv/bin/python -e ".[polymorphic,workflow,ordered,test]"`
 Expected: django-pipeline installed (`python -c "import pipeline"` succeeds).
 
 - [ ] **Step 2: Verify Django 6.0 compatibility first (risk from the spec)**
 
 Run: `nox -s "tests-3.13(django='6.0')" -- tests/test1/test_assets.py -q` after Step 1, then once Step 4 exists rerun with `tests/test1/test_pipeline_integration.py`.
-Expected: import of `pipeline.packager` works on Django 6.0. If it fails at import, keep `pytest.importorskip("pipeline.packager")` (Step 4) — it skips cleanly — and record the finding in the PR description. Do not add Django-version code paths to `src/`.
+Note: the nox session already passes `tests` before posargs, so this runs the whole suite plus the named file — slow, not wrong.
+Expected: `pipeline.packager` imports and works on Django 6.0. Outcomes:
+- Fails at **import** → `pytest.importorskip("pipeline.packager")` (Step 4) skips cleanly.
+- Imports but **breaks at runtime** on a matrix row → mark only the affected integration tests with
+  `pytest.mark.skipif(<exact condition>, reason="django-pipeline <version> incompatible with Django <x>: <error>")`.
+- Either way: write the finding into the task report (it goes into the PR description). Do not add
+  Django-version code paths to `src/`.
 
 - [ ] **Step 3: Static fixtures**
 
@@ -1529,13 +1564,13 @@ def test_pack_concatenates_in_registry_order(asset_registry, noop_compressors, t
 
 - [ ] **Step 5: Run tests**
 
-Run: `pytest tests/test1/test_pipeline_integration.py -v`
+Run: `.venv/bin/pytest tests/test1/test_pipeline_integration.py -v`
 Expected: PASS (2 tests). If `find_source_storage` is slow it is still fine; if the first 60 chars of
 two core files coincide (e.g. identical license headers), switch to `[:200]` — do not drop the order assert.
 
 - [ ] **Step 6: Full suite, random order, two seeds**
 
-Run: `pytest tests -q -p random_order --random-order-seed=4711 -n auto` and again with `--random-order-seed=1234`
+Run: `.venv/bin/pytest tests -q --random-order-seed=4711 -n auto` and again with `--random-order-seed=1234`
 Expected: PASS both. A failure mentioning `reload_settings` / `NoneType` means a test used `override_settings(PIPELINE=...)` — replace it with `pipeline_setting`.
 
 - [ ] **Step 7: Commit**
@@ -1548,6 +1583,8 @@ git commit -m "test: verify cv_sources against real django-pipeline packaging"
 ---
 
 ### Task 8: Docs + changelog
+
+**Constraints that bind this task:** Changelog entry under a new `## Unreleased` section. Never mention customer project names. Docs build with `.venv/bin/mkdocs` (not `uv run`).
 
 **Files:**
 - Modify: `docs/reference/assets.md` (reword the `emit=False` bullet; append a new section)
@@ -1712,12 +1749,16 @@ hand-maintained lists get the same checks.
 
 - [ ] **Step 5: Build docs**
 
-Run: `uv run mkdocs build --strict -q` (from repo root)
-Expected: no warnings about broken anchors (`assets.md#bundling-with-django-pipeline`).
+Baseline: **before Step 1**, build the untouched docs and keep the output:
+`.venv/bin/mkdocs build --strict -d /tmp/cv-docs-baseline 2>&1 | tee /tmp/cv-docs-baseline.log`.
+After the edits: `.venv/bin/mkdocs build --strict -d /tmp/cv-docs-new 2>&1 | tee /tmp/cv-docs-new.log`.
+Expected: the new log has **no warnings that the baseline log lacks** (in particular none about
+`assets.md#bundling-with-django-pipeline`). Pre-existing warnings are not this task's to fix — list them
+in the report. `admonition` is already enabled in `mkdocs.yml`.
 
 - [ ] **Step 6: Lint + full tests, commit**
 
-Run: `task format && task check && pytest tests -q -n auto`
+Run: `task format && task check && .venv/bin/pytest tests -q -n auto`
 Expected: clean, PASS.
 
 ```bash
@@ -1728,6 +1769,10 @@ git commit -m "docs: bundling crud-views assets with django-pipeline"
 ---
 
 ### Task 9: Update the django-crud-views skill (`../skills`) — after the package release
+
+> **Not part of the subagent-driven run of Tasks 1–8.** It waits on a release the user has not
+> requested and pushes to a shared repo. The controller does it after the release, and first writes
+> the drift-audit harness (Step 6) out in full as code.
 
 **Gate:** Do this only after the package release carrying this feature exists (the next minor,
 expected **0.25.0**). Releasing and merging require the user's explicit request — if no release

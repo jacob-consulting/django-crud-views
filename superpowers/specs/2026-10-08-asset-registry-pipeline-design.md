@@ -34,8 +34,10 @@ loaded twice.
   True` and gets every local crud-views asset bundled in registry order; adding or removing an
   extension app needs no settings change.
 - With bundled mode on, no local crud-views asset is emitted by the tags; CDN entries still are.
-- Misconfiguration (gaps, double-loading, typos, eager expansion) is reported at startup, not in
-  the browser.
+- Misconfiguration (gaps, double-loading, typos, eager expansion, split CDN/local delivery) is
+  reported at startup, not in the browser.
+- `manage.py cv_assets --external` lists every CDN asset in the registry, so a production setup
+  can decide what to vendor without inspecting rendered HTML.
 - With `CRUD_VIEWS_ASSETS_BUNDLED = False` (default), tag output is byte-identical to today.
 
 ## Key finding (verified against django-pipeline 4.1.0)
@@ -49,6 +51,24 @@ loaded twice.
   point. This removes the settings-time vs. `ready()`-time chicken-and-egg without patching pipeline.
 - `Package.sources` keeps a path only if `find(path)` succeeds — **external URLs are silently
   dropped**. `cv_sources()` therefore excludes them explicitly.
+
+## What can and cannot be bundled
+
+- Pipeline only concatenates files the staticfiles finders locate on disk; it never downloads.
+  **CDN entries cannot be bundled** — in bundled mode they keep rendering through
+  `{% cv_js %}` / `{% cv_css %}` (with SRI + nonce).
+- **Core has no external entries.** All nine core files (`crud_views/js/{viewset,formset,
+  list.filter,modal,toggle,tooltip}.js`, `crud_views/css/{property,table,formset}.css`) are local
+  and fully bundleable; with only core installed, bundled-mode tag output is empty. Core's
+  third-party dependencies (Bootstrap, jQuery, Font Awesome) are project-provided and outside the
+  registry by design.
+- **Extensions must be in a local (vendored) mode to be fully bundled.** Example:
+  `crud_views_widget_datetimepicker` registers CDN URLs for the plugin by default
+  (`SOURCE="cdn"`) plus a local `init.js`; bundling it in that mode puts `init.js` into the bundle
+  while the plugin stays a CDN tag — split delivery with an ordering hazard (W345). Projects switch
+  such extensions to vendored mode (`SOURCE="vendored"` + `cv_vendor_datetimepicker`).
+- Recommended template order in bundled mode: project CDN deps (Bootstrap, jQuery) →
+  `{% cv_css %}{% cv_js %}` (registry CDN entries) → pipeline `{% stylesheet %}{% javascript %}`.
 
 ## Section 1 — One ordered asset list; bundled mode
 
@@ -197,10 +217,45 @@ resolved `LazySources` paths, plus plain string entries interpreted as pipeline 
 | W342 | `ASSETS_BUNDLED=False` and a `LazySources` resolves assets from **emitting** bundles (core counts as emitting) | Double load: bundled *and* emitted by the tags. Hint: set `CRUD_VIEWS_ASSETS_BUNDLED = True`. |
 | W343 | A `LazySources` names an unregistered key in `keys=` / `exclude=` | Typo or removed extension; hint lists known keys. |
 | W344 | A `LazySources` of kind `css` sits under `JAVASCRIPT`, or vice versa | Kind mismatch pipeline would concatenate silently. |
+| W345 | `ASSETS_BUNDLED=True` and one bundle mixes external and local entries of the same kind | Split delivery: the CDN entries stay tags, the local ones go into the pipeline bundle, so e.g. an `init.js` may run before its CDN plugin. Hint: switch the extension to a vendored/local mode; `cv_assets --external` lists the affected entries. Generic — core knows nothing about specific extensions. |
 
 Out of scope (YAGNI): the same asset in two packages (legitimate for per-page packages); ordering
 checks against jQuery; file-existence checks (pipeline's `find()`, `collectstatic`, and W330/W331
 already cover these).
+
+## Section 3b — `cv_assets` management command
+
+Purpose: make the registry inspectable — in particular, list every CDN asset so a production
+setup can decide what to vendor, instead of searching a rendered page's HTML.
+
+`src/crud_views/management/commands/cv_assets.py` (prefix matches the extensions'
+`cv_vendor_datetimepicker`).
+
+```
+$ python manage.py cv_assets
+KEY             KIND  DELIVERY        PATH
+crud_views      js    pipeline:main   crud_views/js/viewset.js
+...
+datetimepicker  js    tag (CDN)       https://cdn.jsdelivr.net/npm/jquery-datetimepicker@2.5.21/build/jquery.datetimepicker.full.min.js
+datetimepicker  js    pipeline:main   crud_views_widget_datetimepicker/init.js
+datetimepicker  css   tag (CDN)       https://cdn.jsdelivr.net/npm/jquery-datetimepicker@2.5.21/build/jquery.datetimepicker.min.css
+```
+
+- Rows in `collect()` order (core first), all bundles including `emit=False`.
+- Columns: bundle key, kind, delivery, path/URL; `integrity` shown when set.
+- **Delivery** values: `tag`, `tag (CDN)`, `pipeline:<package>` (comma-joined if in several),
+  `none` (local asset delivered by nothing — the W341 case), `none (emit=False)`.
+- Options:
+  - `--external` — only external (CDN) entries.
+  - `--kind js|css` — filter by kind.
+  - `--format table|json` (default `table`). JSON: a list of objects
+    `{key, kind, path, external, integrity, crossorigin, emit, delivery}` — also usable to derive
+    CSP `script-src`/`style-src` host allowlists.
+- **One shared resolver.** Delivery is computed by a single function in
+  `crud_views/lib/pipeline.py` (e.g. `asset_delivery() -> list[AssetRow]`) that the command, the
+  W34x checks, and the tags' bundled-mode filter all rely on — they cannot disagree.
+- Reads `settings.PIPELINE` as plain data; never imports pipeline. Works without pipeline
+  installed (delivery is then `tag`/`tag (CDN)`/`none` only).
 
 ## Section 4 — Tests, docs, skill, rollout
 
@@ -224,8 +279,15 @@ already cover these).
   `AppRegistryNotReady` carrying the hint.
 - Settings-time import safety: subprocess `python -c "import crud_views.lib.pipeline"` **without**
   `DJANGO_SETTINGS_MODULE` succeeds.
-- Checks W340–W344: one positive and one negative case each via `override_settings(PIPELINE=...)`,
-  including plain-string glob coverage and W341 suppression under W340.
+- Checks W340–W345: one positive and one negative case each via `override_settings(PIPELINE=...)`,
+  including plain-string glob coverage and W341 suppression under W340; W345 with a mixed
+  CDN/local bundle vs. an all-local and an all-CDN bundle.
+- `cv_assets` (via `call_command`, no pipeline required): table rows in `collect()` order;
+  `--external` / `--kind` filtering; `--format json` schema; every delivery value (`tag`,
+  `tag (CDN)`, `pipeline:<pkg>` incl. multiple packages, `none`, `none (emit=False)`); output
+  without `PIPELINE` set.
+- Shared resolver: the delivery the command reports agrees with what `cv_js`/`cv_css` render and
+  what W341/W342 flag for the same configuration.
 
 Registry state: tests that register bundles snapshot and restore `assets._REGISTRY` (existing
 pattern in `tests/test1/test_assets.py`).
@@ -244,11 +306,13 @@ pattern in `tests/test1/test_assets.py`).
 
 - `docs/reference/assets.md`: new section **"Bundling with django-pipeline"** — full settings
   example (jQuery via `before=`), the eager-expansion trap, `keys`/`exclude` splitting, CDN entries
-  stay in the tags, re-minifying already-minified vendor files is harmless, W340–W344 table.
+  stay in the tags, re-minifying already-minified vendor files is harmless, W340–W345 table.
+  Includes "what can and cannot be bundled" (core is all-local; extensions need vendored mode;
+  recommended template order) and the `cv_assets` command with sample output.
   Reword the existing `emit=False` bullet to point to the new section.
 - `docs/reference/settings.md`: `CRUD_VIEWS_ASSETS_BUNDLED`.
 - `CHANGELOG.md`: **Added** — `cv_sources()` lazy pipeline sources, `CRUD_VIEWS_ASSETS_BUNDLED`,
-  checks W340–W344. **Changed** — core assets are part of the registry ordering (`iter_bundles()` /
+  checks W340–W345, `cv_assets` management command. **Changed** — core assets are part of the registry ordering (`iter_bundles()` /
   `collect()`); `"crud_views"` is a reserved bundle key.
 
 ### Skill update (`../skills`, in scope)
@@ -259,13 +323,15 @@ Repo `jacob-consulting/skills`, working copy `/home/alex/projects/alex/skills`, 
 
 - `skills/django-crud-views/SKILL.md`, section "Static assets, CSP, and SRI": new subsection
   "Bundling with django-pipeline" — the settings example, `CRUD_VIEWS_ASSETS_BUNDLED`, the
-  eager-expansion trap, CDN entries stay in the tags. Add a Common Mistakes row for
-  `[*cv_sources(...)]` / `list(cv_sources(...))` in settings.py.
+  eager-expansion trap, CDN entries stay in the tags, extensions need vendored mode to be fully
+  bundled, `cv_assets --external` to find CDN entries. Common Mistakes rows for
+  `[*cv_sources(...)]` / `list(cv_sources(...))` in settings.py and for bundling an extension in
+  CDN mode (W345).
 - Frontmatter `description`: mention bundling registered assets with django-pipeline so the skill
   triggers on pipeline questions.
 - `skills/django-crud-views/references/api-reference.md`: `cv_sources` / `LazySources` signature
   table under the asset registry section; `iter_bundles`, `collect`, `CORE_KEY`; the
-  `CRUD_VIEWS_ASSETS_BUNDLED` setting under "Asset registry / CSP settings"; W340–W344 in the
+  `CRUD_VIEWS_ASSETS_BUNDLED` setting under "Asset registry / CSP settings"; the `cv_assets` command (options, delivery values, JSON schema); W340–W345 in the
   checks listing.
 - Plugin `CHANGELOG.md` entry under `[Unreleased]`, then a plugin release via
   `scripts/release.sh django-crud-views X.Y.Z` (plugin version independent of package version).
@@ -276,8 +342,18 @@ Repo `jacob-consulting/skills`, working copy `/home/alex/projects/alex/skills`, 
 
 ### Follow-ups (out of scope)
 
+- **Generic CDN vendoring (separate spec).** `cv_vendor_assets` downloads every external registry
+  entry into `CRUD_VIEWS_ASSETS_VENDOR_DIR` (on `STATICFILES_DIRS`), **verifying the SRI hash at
+  download time** when `integrity` is set, and writes a URL → local-path manifest; `collect()` then
+  substitutes vendored copies for external entries, so they bundle automatically, stop being
+  emitted as tags, and W345 cannot occur. Works for every extension without extension code. Open
+  design questions for that spec: manifest format, relative `url()` references inside vendored CSS
+  (fonts/images), source maps, staleness check (reusing W330/W331 logic). Builds on `cv_assets`'
+  resolver.
 - Extensions repo: datetimepicker docs replace the manual `source_files()` pipeline recipe with
   `cv_sources(keys=["datetimepicker"])`; `source_files()` stays (vendoring uses it).
+- Extensions repo: a datetimepicker `MINIFIED` setting (registers `source_files(minified=False)`)
+  so pipeline compresses the unminified sources instead of re-compressing `.min` files.
 - Bootstrap5 example app pipeline mode — not now.
 - Option B from brainstorming (`{% cv_js %}` rendering the pipeline package itself, nonce-aware) —
   can be layered on later without breaking this design.

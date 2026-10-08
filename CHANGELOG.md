@@ -14,7 +14,7 @@
   `context["workflow_info"]` (#31).
 - Reference page "Request lifecycle, transactions & hooks" with the call chain of every POST view,
   a hook reference, recipes and a migration guide, plus six FAQ entries that link to it. The docs
-  build now validates anchors.
+  build now validates anchors (#31).
 
 ### Changed
 
@@ -28,6 +28,9 @@
   `TransactionManagementError` (#31).
 - **Breaking:** code that calls `transaction.atomic(durable=True)` from the write phase now raises
   `RuntimeError`; set `cv_atomic = False` on that view (#31).
+- **Breaking:** a custom `post()` that calls `cv_form_valid` / `cv_form_valid_hook` / `action()`
+  directly bypasses the transaction and `cv_on_commit`; call `cv_form_valid_process()` /
+  `cv_action_process()` instead (#31).
 
 ### Fixed
 

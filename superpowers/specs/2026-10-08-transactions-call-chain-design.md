@@ -203,8 +203,8 @@ next to the view pages. Sections (anchors are stable link targets):
    - `#durable-services`: `durable=True` with `cv_atomic = False` / overriding `cv_get_atomic()`
    - `#resource-views-writing-orm-rows`
    - `#multiple-databases`
-6. Limitations: no transactions across databases; delete-protection and workflow-permission checks run outside the
-   transaction (no `select_for_update`); the inner workflow and formset blocks are always atomic.
+6. Limitations: no transactions across databases; delete protection runs before the transaction and the
+   workflow-permission check runs inside it; neither takes a row lock (no `select_for_update`); the inner workflow and formset blocks are always atomic.
 7. Migrating from 0.26 and earlier (`#migrating`): the four breaking changes with before/after code.
 
 **FAQ entries (`docs/faq.md`)**, each a 2–5 line answer linking to the recipe:

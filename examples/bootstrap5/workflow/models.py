@@ -41,6 +41,7 @@ class Campaign(WorkflowModelMixin, models.Model):
         custom={"label": _("Activate"), "comment": WorkflowComment.NONE},
     )
     def wf_activate(self, request=None, by=None, comment=None):
+        # The state change is all there is: django-fsm sets the field, WorkflowModelMixin logs it.
         pass
 
     @transition(
@@ -51,6 +52,7 @@ class Campaign(WorkflowModelMixin, models.Model):
         custom={"label": _("Complete"), "comment": WorkflowComment.OPTIONAL},
     )
     def wf_complete(self, request=None, by=None, comment=None):
+        # The state change is all there is: django-fsm sets the field, WorkflowModelMixin logs it.
         pass
 
     @transition(
@@ -61,4 +63,5 @@ class Campaign(WorkflowModelMixin, models.Model):
         custom={"label": _("Cancel"), "comment": WorkflowComment.REQUIRED},
     )
     def wf_cancel(self, request=None, by=None, comment=None):
+        # The state change is all there is: django-fsm sets the field, WorkflowModelMixin logs it.
         pass

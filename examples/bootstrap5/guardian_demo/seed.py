@@ -18,8 +18,8 @@ DOCUMENTS = {
 
 
 def seed():
-    User = get_user_model()
-    users = {name: User.objects.get(username=name) for name in ("alice", "bob")}
+    user_model = get_user_model()
+    users = {name: user_model.objects.get(username=name) for name in ("alice", "bob")}
     for user in users.values():
         grant_model_perms(user, Document, actions=("add",))
 

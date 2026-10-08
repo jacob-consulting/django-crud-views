@@ -21,9 +21,9 @@ COMPANIES = {
 
 
 def seed():
-    User = get_user_model()
+    user_model = get_user_model()
     for username in ("alice", "bob"):
-        user = User.objects.get(username=username)
+        user = user_model.objects.get(username=username)
         for model in (Company, Department, Employee, Office):
             grant_model_perms(user, model)
     for name, data in COMPANIES.items():

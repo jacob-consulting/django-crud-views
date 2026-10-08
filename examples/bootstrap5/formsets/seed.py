@@ -15,9 +15,9 @@ QUESTIONNAIRES = {
 
 
 def seed():
-    User = get_user_model()
+    user_model = get_user_model()
     for username in ("alice", "bob"):
-        user = User.objects.get(username=username)
+        user = user_model.objects.get(username=username)
         for model in (Questionnaire, Question, Choice):
             grant_model_perms(user, model)
     for title, questions in QUESTIONNAIRES.items():

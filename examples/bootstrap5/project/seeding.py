@@ -11,10 +11,10 @@ DEMO_USERS = [
 
 def ensure_demo_users() -> dict:
     """Create (or reset the password of) the demo users. Idempotent."""
-    User = get_user_model()
+    user_model = get_user_model()
     users = {}
     for username, password, superuser in DEMO_USERS:
-        user, _ = User.objects.get_or_create(
+        user, _ = user_model.objects.get_or_create(
             username=username,
             defaults={"is_superuser": superuser, "is_staff": superuser},
         )

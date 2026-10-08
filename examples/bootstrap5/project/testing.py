@@ -1,4 +1,4 @@
-"""Test helper: turn a rendered form into a POST payload (copied from tests/lib/helper/forms.py)."""
+"""Test helper: turn a rendered form into a POST payload (adapted from tests/lib/helper/forms.py)."""
 
 from lxml import html
 
@@ -17,27 +17,34 @@ def form_payload(response) -> dict:
     payload = {}
     for el in form.cssselect("input, select, textarea"):
         name = el.get("name")
-        if not name:
-            continue
-        if el.tag == "input":
-            input_type = (el.get("type") or "text").lower()
-            if input_type in ("submit", "button", "reset"):
-                continue
-            if input_type in ("checkbox", "radio"):
-                if el.get("checked") is not None:
-                    payload[name] = el.get("value", "on")
-                continue
-            payload[name] = el.get("value") or ""
-        elif el.tag == "select":
-            selected = el.cssselect("option[selected]")
-            if selected:
-                payload[name] = selected[0].get("value", "")
-            else:
-                options = el.cssselect("option")
-                payload[name] = options[0].get("value", "") if options else ""
-        else:  # textarea
-            payload[name] = el.text or ""
+        if name:
+            value = _field_value(el)
+            if value is not _NOT_SUBMITTED:
+                payload[name] = value
     return payload
+
+
+_NOT_SUBMITTED = object()
+
+
+def _field_value(el):
+    """The value a browser submits for one named field, or _NOT_SUBMITTED."""
+    if el.tag == "select":
+        return _select_value(el)
+    if el.tag == "textarea":
+        return el.text or ""
+    input_type = (el.get("type") or "text").lower()
+    if input_type in ("submit", "button", "reset"):
+        return _NOT_SUBMITTED
+    if input_type in ("checkbox", "radio"):
+        return el.get("value", "on") if el.get("checked") is not None else _NOT_SUBMITTED
+    return el.get("value") or ""
+
+
+def _select_value(el) -> str:
+    """The selected option's value, or the first option's (the browser default)."""
+    options = el.cssselect("option[selected]") or el.cssselect("option")
+    return options[0].get("value", "") if options else ""
 
 
 def field_keys(payload: dict, suffix: str) -> list:

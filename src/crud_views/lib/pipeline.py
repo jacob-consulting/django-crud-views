@@ -5,7 +5,9 @@ Settings-time safe: module-level imports are stdlib only, so ``settings.py`` can
 values pipeline reads, and reads ``settings.PIPELINE`` as plain data.
 """
 
-from collections.abc import Iterable, Sequence
+from collections.abc import Callable, Iterable, Sequence
+from dataclasses import dataclass
+from fnmatch import fnmatchcase
 
 KINDS = ("js", "css")
 SECTIONS = {"js": "JAVASCRIPT", "css": "STYLESHEETS"}
@@ -137,3 +139,97 @@ def cv_sources(
     out - pipeline cannot bundle them; {% cv_js %}/{% cv_css %} keep rendering them.
     """
     return LazySources(kind, before=before, after=after, keys=keys, exclude=exclude)
+
+
+@dataclass(frozen=True)
+class PipelineSource:
+    """One pipeline package's source_filenames, tagged with the kind of its PIPELINE section."""
+
+    kind: str
+    package: str
+    sources: object  # LazySources or an iterable of plain path / glob strings
+
+
+def pipeline_sources(conf: dict | None = None) -> list[PipelineSource]:
+    """Walk PIPELINE["JAVASCRIPT"] / ["STYLESHEETS"] as plain data (never imports pipeline)."""
+    if conf is None:
+        from django.conf import settings
+
+        conf = getattr(settings, "PIPELINE", None)
+    conf = conf or {}
+    result = []
+    for kind, section in SECTIONS.items():
+        for package, config in (conf.get(section) or {}).items():
+            result.append(PipelineSource(kind=kind, package=package, sources=config.get("source_filenames", ())))
+    return result
+
+
+def _coverage(sources: list[PipelineSource]) -> list[tuple[PipelineSource, Callable[[str], bool]]]:
+    """Per package a path predicate; LazySources resolve once, plain strings match as glob patterns."""
+    result = []
+    for source in sources:
+        if isinstance(source.sources, LazySources):
+            result.append((source, frozenset(source.sources).__contains__))
+        else:
+            patterns = tuple(p for p in source.sources if isinstance(p, str))
+            result.append((source, lambda path, patterns=patterns: any(fnmatchcase(path, p) for p in patterns)))
+    return result
+
+
+@dataclass(frozen=True)
+class AssetRow:
+    """One registry asset and how it reaches the browser."""
+
+    key: str
+    kind: str
+    path: str
+    external: bool
+    integrity: str | None
+    crossorigin: str | None
+    emit: bool
+    delivery: tuple[str, ...]
+
+    @property
+    def delivery_label(self) -> str:
+        return ", ".join(self.delivery)
+
+    @property
+    def bundled(self) -> bool:
+        return any(d.startswith("pipeline:") for d in self.delivery)
+
+
+def asset_rows(conf: dict | None = None) -> list[AssetRow]:
+    """Every registry asset (core first, all bundles incl. emit=False) with its delivery.
+
+    The single resolver behind the W34x checks and ``manage.py cv_assets``; "tag" delivery comes from
+    assets.tag_entries(), the exact list {% cv_js %}/{% cv_css %} render.
+    """
+    from crud_views.lib import assets
+
+    coverage = _coverage(pipeline_sources(conf))
+    rows = []
+    for kind in KINDS:
+        tagged = {(entry.key, entry.asset.path) for entry in assets.tag_entries(kind)}
+        for entry in assets.collect(kind):
+            path = entry.asset.path
+            external = assets.is_external(path)
+            delivery = []
+            if (entry.key, path) in tagged:
+                delivery.append("tag (CDN)" if external else "tag")
+            if not external:
+                delivery += [f"pipeline:{s.package}" for s, covers in coverage if s.kind == kind and covers(path)]
+            if not delivery:
+                delivery.append("none" if entry.emit else "none (emit=False)")
+            rows.append(
+                AssetRow(
+                    key=entry.key,
+                    kind=kind,
+                    path=path,
+                    external=external,
+                    integrity=entry.asset.integrity,
+                    crossorigin=entry.asset.crossorigin,
+                    emit=entry.emit,
+                    delivery=tuple(delivery),
+                )
+            )
+    return rows

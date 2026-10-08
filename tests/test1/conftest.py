@@ -101,6 +101,8 @@ def pytest_configure():
         CRISPY_ALLOWED_TEMPLATE_PACKS="bootstrap5",
         # django_tables2
         DJANGO_TABLES2_TEMPLATE="django_tables2/bootstrap5.html",
+        # django-pipeline reads settings.PIPELINE at import of pipeline.conf; must exist
+        PIPELINE={},
     )
 
     django.setup()
@@ -832,3 +834,19 @@ def bundled(monkeypatch):
 
     monkeypatch.setattr(crud_views_settings, "assets_bundled", True)
     return crud_views_settings
+
+
+@pytest.fixture
+def pipeline_setting(monkeypatch):
+    """Set settings.PIPELINE for one test WITHOUT override_settings.
+
+    override_settings fires setting_changed; django-pipeline's receiver (pipeline.conf.reload_settings)
+    does settings.update(value) and raises TypeError when the value reverts to None, giving
+    order-dependent failures once any test imported pipeline. A plain setattr fires no signal.
+    """
+    from django.conf import settings
+
+    def _set(conf):
+        monkeypatch.setattr(settings, "PIPELINE", conf)
+
+    return _set

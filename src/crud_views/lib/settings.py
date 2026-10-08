@@ -38,6 +38,9 @@ class CrudViewsSettings(BaseModel):
     # csp
     csp_nonce_attr: str = from_settings("CRUD_VIEWS_CSP_NONCE_ATTR", default="csp_nonce")
 
+    # asset bundling (django-pipeline): tags emit only external entries, a bundler delivers the rest
+    assets_bundled: bool = from_settings("CRUD_VIEWS_ASSETS_BUNDLED", default=False)
+
     # breadcrumb
     breadcrumb_prefix: list[dict[str, Any]] = from_settings("CRUD_VIEWS_BREADCRUMB_PREFIX", default=[])
 

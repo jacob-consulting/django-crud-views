@@ -823,3 +823,12 @@ def cv_guardian_author_origin():
     from tests.test1.app.views import cv_guardian_author_origin as ret
 
     return ret
+
+
+@pytest.fixture
+def bundled(monkeypatch):
+    """Turn on CRUD_VIEWS_ASSETS_BUNDLED for one test (settings are read at import, so patch the model)."""
+    from crud_views.lib.settings import crud_views_settings
+
+    monkeypatch.setattr(crud_views_settings, "assets_bundled", True)
+    return crud_views_settings

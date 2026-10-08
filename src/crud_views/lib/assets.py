@@ -113,5 +113,14 @@ def collect(kind: str, *, only_emitting: bool = False) -> list[BundleEntry]:
 
 
 def tag_entries(kind: str) -> list[BundleEntry]:
-    """The entries {% cv_js %} / {% cv_css %} render."""
-    return collect(kind, only_emitting=True)
+    """The entries {% cv_js %} / {% cv_css %} render.
+
+    With CRUD_VIEWS_ASSETS_BUNDLED a bundler (django-pipeline) delivers every local static path, so
+    only external (CDN) entries remain for the tags.
+    """
+    from crud_views.lib.settings import crud_views_settings
+
+    entries = collect(kind, only_emitting=True)
+    if crud_views_settings.assets_bundled:
+        entries = [entry for entry in entries if is_external(entry.asset.path)]
+    return entries

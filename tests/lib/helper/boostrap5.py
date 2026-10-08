@@ -92,7 +92,7 @@ class Column:
     def actions(self) -> list[Action]:
         assert self.index == self.action_index
         data: list[Action] = []
-        for index, element in enumerate(self.element.xpath("div/a|span")):
+        for index, element in enumerate(self.element.xpath("fieldset/a|span")):
             action = Action(index, element)
             data.append(action)
         return data
@@ -134,7 +134,7 @@ class Table:
 
     @property
     def context(self) -> Element:
-        return self.html.xpath("//div[@cv-context-container='true']")[0]
+        return self.html.xpath("//fieldset[@cv-context-container='true']")[0]
 
     @property
     def context_actions(self) -> list[Action]:

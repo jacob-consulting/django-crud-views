@@ -1,4 +1,4 @@
-{% load crud_views_object_detail %}
+{% load i18n crud_views_object_detail %}
 <div class="accordion-item">
     <h2 class="accordion-header">
         <button class="accordion-button collapsed" type="button"
@@ -16,6 +16,9 @@
         <div class="accordion-body">
             {% if group.description %}<p class="text-body-secondary small mb-3">{{ group.description }}</p>{% endif %}
             <table class="table table-sm table-borderless mb-0">
+                <thead class="visually-hidden">
+                    <tr><th scope="col">{% translate "Property" %}</th><th scope="col">{% translate "Value" %}</th></tr>
+                </thead>
                 <tbody>
                     {% for prop in group.properties %}
                     {% render_property prop layout=layout %}

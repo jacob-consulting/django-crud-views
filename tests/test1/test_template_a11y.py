@@ -95,7 +95,8 @@ def test_formset_controls_have_labels_and_hidden_icons():
         Context({"formset": SimpleNamespace(can_order=True, can_delete=True), "form": SimpleNamespace(prefix="p-0")})
     )
     doc = html.fromstring(rendered)
-    groups = doc.cssselect('[role="group"]')
+    groups = doc.cssselect("fieldset.btn-group")
+    assert len(groups) == 3
     labels = [g.get("aria-label") for g in groups]
     assert all(labels) and len(set(labels)) == len(labels), labels
     buttons = doc.cssselect("button")

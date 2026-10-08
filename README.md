@@ -1,11 +1,15 @@
 # Django CRUD Views
 
-![Tests](https://github.com/jacob-consulting/django-crud-views/actions/workflows/tests.yml/badge.svg)
-![Lint](https://github.com/jacob-consulting/django-crud-views/actions/workflows/lint.yml/badge.svg)
-![Coverage](https://codecov.io/gh/jacob-consulting/django-crud-views/branch/main/graph/badge.svg)
-![PyPI](https://img.shields.io/pypi/v/django-crud-views)
-![License](https://img.shields.io/pypi/l/django-crud-views)
-![Docs](https://readthedocs.org/projects/django-crud-views/badge/?version=latest)
+[![Tests](https://github.com/jacob-consulting/django-crud-views/actions/workflows/tests.yml/badge.svg)](https://github.com/jacob-consulting/django-crud-views/actions/workflows/tests.yml)
+[![Lint](https://github.com/jacob-consulting/django-crud-views/actions/workflows/lint.yml/badge.svg)](https://github.com/jacob-consulting/django-crud-views/actions/workflows/lint.yml)
+[![Coverage](https://codecov.io/gh/jacob-consulting/django-crud-views/branch/main/graph/badge.svg)](https://codecov.io/gh/jacob-consulting/django-crud-views)
+[![PyPI](https://img.shields.io/pypi/v/django-crud-views)](https://pypi.org/project/django-crud-views/)
+[![License](https://img.shields.io/pypi/l/django-crud-views)](https://github.com/jacob-consulting/django-crud-views/blob/main/LICENSE)
+[![Docs](https://readthedocs.org/projects/django-crud-views/badge/?version=latest)](https://django-crud-views.readthedocs.io/en/latest/)
+[![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=jacob-consulting_django-crud-views&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=jacob-consulting_django-crud-views)
+[![Security](https://sonarcloud.io/api/project_badges/measure?project=jacob-consulting_django-crud-views&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=jacob-consulting_django-crud-views)
+[![Reliability](https://sonarcloud.io/api/project_badges/measure?project=jacob-consulting_django-crud-views&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=jacob-consulting_django-crud-views)
+[![Maintainability](https://sonarcloud.io/api/project_badges/measure?project=jacob-consulting_django-crud-views&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=jacob-consulting_django-crud-views)
 
 ![The example app's author list: sortable filtered table, permission-aware buttons and breadcrumbs](https://raw.githubusercontent.com/jacob-consulting/django-crud-views/main/docs/getting_started/assets/readme-hero.png)
 

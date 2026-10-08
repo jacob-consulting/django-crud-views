@@ -18,7 +18,7 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
-      - run: pip install --require-hashes --only-binary :all: -r .github/requirements/ci.txt
+      - run: 'pip install --require-hashes --only-binary :all: -r .github/requirements/ci.txt'
       - run: nox -s "tests-${{ matrix.python-version }}(django='4.2')" "tests-${{ matrix.python-version }}(django='5.2')" "tests-${{ matrix.python-version }}(django='6.0')"
       # Every row uploads one report per Django session; Codecov merges them per commit.
       # codecov.yml (after_n_builds) waits for all rows before posting statuses. See #105.
@@ -38,7 +38,7 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.13"
-      - run: pip install --require-hashes --only-binary :all: -r docs/requirements.txt
+      - run: 'pip install --require-hashes --only-binary :all: -r docs/requirements.txt'
       - run: mkdocs build --strict
 
   lint:
@@ -48,7 +48,7 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.13"
-      - run: pip install --require-hashes --only-binary :all: -r .github/requirements/ci.txt
+      - run: 'pip install --require-hashes --only-binary :all: -r .github/requirements/ci.txt'
       - run: ruff format --check .
       - run: ruff check .
 
@@ -63,6 +63,6 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.13"
-      - run: pip install --require-hashes --only-binary :all: -r .github/requirements/ci.txt
+      - run: 'pip install --require-hashes --only-binary :all: -r .github/requirements/ci.txt'
       - run: python -m build
       - uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2

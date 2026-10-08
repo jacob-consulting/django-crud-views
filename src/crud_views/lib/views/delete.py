@@ -210,8 +210,7 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, generic.DeleteView):
                 if self.cv_modal and cv_is_modal_request(self.request):
                     response.status_code = 422
                 return response
-            self.cv_form_valid(context)
-            self.cv_form_valid_hook(context)
+            self.cv_form_valid_process(context)
             return self.cv_form_valid_redirect(context)
         else:
             self.cv_form_invalid_hook(context)

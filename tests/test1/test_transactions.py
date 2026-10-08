@@ -302,3 +302,80 @@ def test_polymorphic_create_goes_through_seam(client_user_vehicle_add, monkeypat
         response = client_user_vehicle_add.post(f"/vehicle/create//ct/{car_ct.id}/", {"name": "Coupe", "doors": 2})
     assert response.status_code == 302
     assert len(calls) == 1
+
+
+# --- Task 3: delete views ----------------------------------------------------------------------
+
+
+@pytest.mark.django_db
+def test_delete_hook_exception_keeps_object(client_user_publisher_delete, monkeypatch):
+    from tests.test1.app.views import PublisherDeleteView
+
+    publisher = Publisher.objects.create(name="Survivor")
+    monkeypatch.setattr(PublisherDeleteView, "cv_form_valid_hook", _boom)
+    with pytest.raises(Boom):
+        client_user_publisher_delete.post(f"/publisher/{publisher.pk}/delete/", {"confirm": True})
+    assert Publisher.objects.filter(pk=publisher.pk).exists()
+
+
+@pytest.mark.django_db
+def test_delete_runs_on_commit(client_user_publisher_delete, monkeypatch, django_capture_on_commit_callbacks):
+    from tests.test1.app.views import PublisherDeleteView
+
+    publisher = Publisher.objects.create(name="Gone")
+    calls = _record_on_commit(monkeypatch, PublisherDeleteView)
+    with django_capture_on_commit_callbacks(execute=True):
+        response = client_user_publisher_delete.post(f"/publisher/{publisher.pk}/delete/", {"confirm": True})
+    assert response.status_code == 302
+    assert len(calls) == 1
+    assert not Publisher.objects.filter(pk=publisher.pk).exists()
+
+
+@pytest.mark.django_db
+def test_delete_protection_skips_write_phase(
+    client_user_publisher_protected_delete, monkeypatch, django_capture_on_commit_callbacks
+):
+    """Review focus 3: a protection veto renders the form again; no delete, no cv_on_commit."""
+    from tests.test1.app.views import PublisherProtectedDeleteView
+
+    publisher = Publisher.objects.create(name="Protected")
+    calls = _record_on_commit(monkeypatch, PublisherProtectedDeleteView)
+    with django_capture_on_commit_callbacks(execute=True):
+        response = client_user_publisher_protected_delete.post(
+            f"/publisher_protected/{publisher.pk}/delete/", {"confirm": True}
+        )
+    assert response.status_code == 200
+    assert calls == []
+    assert Publisher.objects.filter(pk=publisher.pk).exists()
+
+
+@pytest.mark.django_db
+def test_modal_delete_runs_on_commit_and_keeps_204(
+    client_user_author_modal, author_douglas_adams, monkeypatch, django_capture_on_commit_callbacks
+):
+    """Review focus 2: modal submits answer 204 + X-CV-Redirect and still run cv_on_commit."""
+    from tests.test1.app.views import AuthorModalDeleteView
+
+    calls = _record_on_commit(monkeypatch, AuthorModalDeleteView)
+    with django_capture_on_commit_callbacks(execute=True):
+        response = client_user_author_modal.post(
+            f"/author_modal/{author_douglas_adams.pk}/delete/", {"confirm": True}, headers={"X-CV-Modal": "true"}
+        )
+    assert response.status_code == 204
+    assert response.headers["X-CV-Redirect"] == "/author_modal/"
+    assert len(calls) == 1
+
+
+@pytest.mark.django_db
+def test_guardian_delete_goes_through_seam(
+    client_guardian, user_guardian, publisher_a, monkeypatch, django_capture_on_commit_callbacks
+):
+    from tests.lib.helper.guardian import user_guardian_object_perm
+    from tests.test1.app.views import GuardianPublisherCascadeDeleteView, cv_guardian_publisher_cascade
+
+    user_guardian_object_perm(user_guardian, cv_guardian_publisher_cascade, "delete", publisher_a)
+    calls = _record_on_commit(monkeypatch, GuardianPublisherCascadeDeleteView)
+    with django_capture_on_commit_callbacks(execute=True):
+        response = client_guardian.post(f"/guardian_publisher_cascade/{publisher_a.pk}/delete/", {"confirm": True})
+    assert response.status_code == 302
+    assert len(calls) == 1

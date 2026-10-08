@@ -142,6 +142,12 @@ register_assets(
 
 System checks validate SRI metadata at startup: `crud_views.E330` rejects integrity values without a `sha256-`/`sha384-`/`sha512-` prefix, and `crud_views.W332` warns when integrity is set on a same-origin static path (SRI there breaks on every asset edit and adds no security value).
 
+## Asset bundling
+
+| Key                       | Description                                                                                       | Type   | Default |
+|---------------------------|---------------------------------------------------------------------------------------------------|--------|---------|
+| CRUD_VIEWS_ASSETS_BUNDLED | `{% cv_js %}`/`{% cv_css %}` emit only external (CDN) entries; a bundler such as django-pipeline delivers all local assets. See [Bundling with django-pipeline](assets.md#bundling-with-django-pipeline). | `bool` | `False` |
+
 ## django-tables2 compatibility
 
 The list view table template `crud_views/table/bootstrap5.html` works with **both django-tables2 2.x and 3.x**.

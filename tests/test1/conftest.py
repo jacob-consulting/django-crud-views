@@ -8,6 +8,18 @@ from django.test import Client
 from tests.lib.helper.user import user_viewset_permission
 
 
+@pytest.fixture
+def asset_registry():
+    """Snapshot/restore the module-global asset registry around each test."""
+    from crud_views.lib import assets
+
+    snapshot = dict(assets._REGISTRY)
+    assets._REGISTRY.clear()
+    yield assets
+    assets._REGISTRY.clear()
+    assets._REGISTRY.update(snapshot)
+
+
 def pytest_configure():
     settings.configure(
         BASE_DIR=Path(__file__).resolve().parent.parent,
@@ -89,6 +101,8 @@ def pytest_configure():
         CRISPY_ALLOWED_TEMPLATE_PACKS="bootstrap5",
         # django_tables2
         DJANGO_TABLES2_TEMPLATE="django_tables2/bootstrap5.html",
+        # django-pipeline reads settings.PIPELINE at import of pipeline.conf; must exist
+        PIPELINE={},
     )
 
     django.setup()
@@ -811,3 +825,28 @@ def cv_guardian_author_origin():
     from tests.test1.app.views import cv_guardian_author_origin as ret
 
     return ret
+
+
+@pytest.fixture
+def bundled(monkeypatch):
+    """Turn on CRUD_VIEWS_ASSETS_BUNDLED for one test (settings are read at import, so patch the model)."""
+    from crud_views.lib.settings import crud_views_settings
+
+    monkeypatch.setattr(crud_views_settings, "assets_bundled", True)
+    return crud_views_settings
+
+
+@pytest.fixture
+def pipeline_setting(monkeypatch):
+    """Set settings.PIPELINE for one test WITHOUT override_settings.
+
+    override_settings fires setting_changed; django-pipeline's receiver (pipeline.conf.reload_settings)
+    does settings.update(value) and raises TypeError when the value reverts to None, giving
+    order-dependent failures once any test imported pipeline. A plain setattr fires no signal.
+    """
+    from django.conf import settings
+
+    def _set(conf):
+        monkeypatch.setattr(settings, "PIPELINE", conf)
+
+    return _set

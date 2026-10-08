@@ -111,7 +111,7 @@ class QuestionnaireForm(CrispyModelForm):
 
 Mix `FormSetMixin` into the create/update view and set `cv_formsets` to the `FormSets`
 instance declared above. `FormSetMixin` builds the formsets into the context, validates them
-alongside the main form, and saves them (in the same transaction as the main object) on a
+alongside the main form, and saves them (in the same [transaction](request_lifecycle.md#transactions) as the main object) on a
 valid submit:
 
 <!-- cv-sync: formsets/views.py -->

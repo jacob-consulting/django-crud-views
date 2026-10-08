@@ -85,14 +85,17 @@ The view is auto-registered with `cv_author` via `cv_key` and `cv_path`, so its 
 
 Override `cv_form_valid` to handle the submitted form data:
 
-| Hook | Description |
-|------|-------------|
-| `cv_form_valid(context)` | Called when the form is valid — implement your action here |
-| `cv_form_valid_hook(context)` | Called after `cv_form_valid` (used by `MessageMixin`) |
+| Hook | Phase | Description |
+|------|-------|-------------|
+| `cv_form_valid(context)` | in transaction | Called when the form is valid — implement your action here |
+| `cv_form_valid_hook(context)` | in transaction | Called after `cv_form_valid` (used by `MessageMixin`) |
+| `cv_on_commit(context)` | after commit | Side effects: mail, Celery, webhooks |
 
 The `context` dict contains at least `"form"` (the bound, validated form) and `"object"` (the loaded model instance, for object-based views).
 
 After `cv_form_valid_hook`, the view redirects to `cv_success_key` (default: `"list"`), or to the origin view when it is listed in [`cv_success_keys`](update_view.md#dynamic-success-target).
+
+See [Request lifecycle, transactions & hooks](request_lifecycle.md) for the full call chain.
 
 ## Adding a Success Message
 

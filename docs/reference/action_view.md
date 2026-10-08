@@ -46,13 +46,17 @@ with the view metadata in context, including `{{ object }}`.
 
 ## Hooks
 
-Override these for side effects beyond messaging; they run after the (optional) message is
-emitted:
+`action()` and these hooks run in one transaction; side effects belong in `cv_on_commit`, which
+runs after the commit and only when `action()` returned truthy:
 
-| Hook | When |
-|------|------|
-| `cv_action_success_hook(self, context)` | action returned truthy |
-| `cv_action_error_hook(self, context)` | action returned falsy |
+| Hook | When | Phase |
+|------|------|-------|
+| `cv_action_success_hook(self, context)` | action returned truthy | in transaction |
+| `cv_action_error_hook(self, context)` | action returned falsy | in transaction |
+| `cv_on_commit(self, context)` | action returned truthy | after commit |
+
+A falsy result does not roll back what `action()` wrote; see
+[Rolling back a failed action](request_lifecycle.md#rolling-back-a-failed-action).
 
 ## View Classes
 

@@ -300,7 +300,7 @@ def check_asset_pipeline(app_configs=None, **kwargs):
                             hint=(
                                 "Bundled mode suppresses its tag; include the bundle in a cv_sources() call."
                                 if row.emit
-                                else "It has emit=False, so it is delivered by nothing; include the bundle in a cv_sources() call."
+                                else "It has emit=False, so it is delivered by nothing; include it in a cv_sources() call."
                             ),
                             id="crud_views.W341",
                         )

@@ -1,5 +1,13 @@
 # Django CRUD Views - Changelog
 
+## Unreleased
+
+### Removed
+
+- **Breaking:** `CrudView.cv_parent_key`. It was never read, so setting it had no effect; system
+  check `viewset.W280` now flags it as unknown. The parent link's target is
+  `ParentContextButton(key="parent", key_target=...)` (#74).
+
 ## 0.26.0
 
 ### Added

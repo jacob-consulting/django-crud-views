@@ -152,3 +152,13 @@ def test_checks_all_releases_registry_lock_before_yielding():
             _REGISTRY_LOCK.release()
         assert acquired, "checks_all() held _REGISTRY_LOCK across a yield — messages() would deadlock"
         break
+
+
+class RemovedParentKeyView(CrudView):
+    cv_parent_key = "list"  # removed (issue #74): it never had an effect
+
+
+def test_removed_cv_parent_key_warns():
+    messages = _w280(RemovedParentKeyView)
+    assert [m.id for m in messages] == ["viewset.W280"]
+    assert "cv_parent_key" in messages[0].msg

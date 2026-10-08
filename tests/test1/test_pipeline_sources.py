@@ -87,8 +87,9 @@ def test_add_and_radd_stay_lazy(asset_registry):
 def test_adding_two_lazy_sources_is_unsupported():
     from crud_views.lib.pipeline import cv_sources
 
+    first, second = cv_sources("js"), cv_sources("js")
     with pytest.raises(TypeError):
-        cv_sources("js") + cv_sources("js")
+        first + second
 
 
 def test_invalid_kind():

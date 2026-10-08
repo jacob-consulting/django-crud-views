@@ -322,7 +322,8 @@ from `CrudViewPermissionRequiredMixin`.
 
 ### `on_transition` hook
 
-Override `on_transition` to run custom logic after a successful transition:
+Override `on_transition` for **database** follow-ups of a transition. It runs inside the
+transaction, so its writes roll back together with the transition:
 
 ```python
 class CampaignWorkflowView(CrispyViewMixin, MessageMixin, WorkflowView):
@@ -330,9 +331,19 @@ class CampaignWorkflowView(CrispyViewMixin, MessageMixin, WorkflowView):
     form_class = CampaignWorkflowForm
 
     def on_transition(self, info, transition, state_old, state_new, comment, user, data):
-        # send notification, trigger async task, etc.
-        send_notification(self.object, state_new, user)
+        CampaignAudit.objects.create(campaign=self.object, state=state_new, user=user)
 ```
+
+Send notifications and start async tasks from `cv_on_commit` instead. It runs after the commit,
+and `context["workflow_info"]` holds the `WorkflowInfo` record:
+
+```python
+    def cv_on_commit(self, context):
+        info = context["workflow_info"]
+        send_notification(self.object, info.state_new, info.user)
+```
+
+See [Side effects after commit](request_lifecycle.md#side-effects-after-commit).
 
 | Parameter | Description |
 |-----------|-------------|

@@ -2,6 +2,42 @@
 
 ## Unreleased
 
+### Added
+
+- Transactions around every write. Form, delete and action views run their write phase
+  (`cv_form_valid` + `cv_form_valid_hook`, resp. `action()` + its success/error hook) in
+  `transaction.atomic()` on the model's write database. New `CrudView.cv_atomic` (default `True`,
+  `False` on `ResourceViewMixin`), `cv_get_atomic()`, `cv_get_db_alias()`, and the seam methods
+  `cv_form_valid_process()` / `cv_action_process()` (#31).
+- `cv_on_commit(context)` hook: runs after the commit, never after a rollback. The place for mail,
+  Celery tasks and webhooks. Workflow views pass the transition record as
+  `context["workflow_info"]` (#31).
+- Reference page "Request lifecycle, transactions & hooks" with the call chain of every POST view,
+  a hook reference, recipes and a migration guide, plus six FAQ entries that link to it. The docs
+  build now validates anchors.
+
+### Changed
+
+- **Breaking:** `cv_form_valid_hook`, `cv_action_success_hook` and `cv_action_error_hook` now run
+  inside the transaction, before the commit. Move side effects (mail, Celery, webhooks) to
+  `cv_on_commit`, or set `cv_atomic = False` to keep the old behaviour (#31).
+- **Breaking:** an exception raised in those hooks now rolls back the write; before, the object
+  stayed saved (#31).
+- **Breaking:** `try/except IntegrityError` inside `cv_form_valid` needs its own nested
+  `transaction.atomic()` on PostgreSQL, otherwise the next query raises
+  `TransactionManagementError` (#31).
+- **Breaking:** code that calls `transaction.atomic(durable=True)` from the write phase now raises
+  `RuntimeError`; set `cv_atomic = False` on that view (#31).
+
+### Fixed
+
+- `CreateView` / `UpdateView` saved the instance and its many-to-many data in separate
+  transactions; a failure in `save_m2m()` left a half-saved object (#31).
+- `CreateViewParentMixin` with `many_to_many_through_attribute` left an object without a parent
+  when adding it to the parent's relation failed (#31).
+- The formset and workflow transactions used the `default` database instead of the model's
+  routed write database (#31).
+
 ### Removed
 
 - **Breaking:** `CrudView.cv_parent_key`. It was never read, so setting it had no effect; system

@@ -304,6 +304,7 @@ def cv_form_valid_hook(self, context):
     super().cv_form_valid_hook(context)
     notify_team.delay(self.object.pk)
 
+
 # after
 def cv_on_commit(self, context):
     notify_team.delay(self.object.pk)

@@ -43,24 +43,10 @@ task dev
 
 ## SonarQube analysis (maintainers)
 
-The package sources (`src/`) are analysed on [SonarQube](https://sonar.cnbg-n.com) as project
-`django-crud-views:main`. The analysis runs locally; it needs Docker and a token.
-
-One-time setup:
-
-1. On the SonarQube server, generate a project analysis token for `django-crud-views:main`
-   (My Account → Security → Generate Token).
-2. `cp .env.example .env` and set `SONAR_TOKEN` in `.env`. The file is gitignored — never commit it.
-
-Run:
-
-```bash
-task sonar
-```
-
-This reinstalls the package into `.venv`, runs the test suite with coverage (writing `coverage.xml`), and runs the
-`sonar-scanner-cli` Docker image against the repository, mounted read-only. Failing tests or coverage below the
-threshold do not abort the scan. The configuration lives in `sonar-project.properties`.
+The repository is analysed by [SonarQube Cloud](https://sonarcloud.io/project/overview?id=jacob-consulting_django-crud-views)
+through its GitHub app (automatic analysis): every push and pull request gets a "SonarCloud Code Analysis" check.
+Nothing runs locally. The few analysis settings it reads live in `.sonarcloud.properties`; issue suppressions and
+false-positive markings are managed in the SonarQube Cloud UI.
 
 ## Reporting bugs and requesting features
 

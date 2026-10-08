@@ -180,6 +180,8 @@ class CrudView(metaclass=CrudViewMetaClass):
         """
         Context manager around the POST write phase: transaction.atomic() on cv_get_db_alias(),
         or a no-op when cv_atomic is False. Override for durable=True or a custom boundary.
+        To change the database, override cv_get_db_alias() instead — cv_on_commit is registered on that
+        alias, so a cv_get_atomic() override must use the same alias.
         """
         if not self.cv_atomic:
             return nullcontext()

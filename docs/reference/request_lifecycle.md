@@ -90,6 +90,9 @@ override `post()`, call them instead of `cv_form_valid` / `action()` directly to
 deletes, the deleted instance with `pk=None`). For workflow views, `context["workflow_info"]` is the `WorkflowInfo` record
 of the transition.
 
+Success messages (`MessageMixin`, action messages) are queued inside the transaction. If a later
+hook raises, the write is rolled back but the message may still be shown on the next page.
+
 ## Transactions
 
 | Name | Kind | Default | Meaning |
@@ -108,8 +111,8 @@ When `cv_on_commit` runs:
 | the write phase raised, or `transaction.set_rollback(True)` was called | never |
 
 With `ATOMIC_REQUESTS = True` the view's own `atomic()` becomes a savepoint inside the request
-transaction. That costs almost nothing, and an error in the write phase still rolls back only that
-phase.
+transaction. That costs almost nothing; an uncaught error in the write phase still rolls back the whole
+request transaction.
 
 Formsets and workflow transitions have their own inner `atomic()` on the same database. It keeps
 "purge + formset saves" and "state change + `WorkflowInfo`" all-or-nothing even with
@@ -185,7 +188,8 @@ class ArchiveView(ActionViewPermissionRequired):
 ```
 
 `set_rollback(True)` needs a transaction: with `cv_atomic = False` it raises
-`TransactionManagementError`.
+`TransactionManagementError`. It also rolls back anything `cv_action_error_hook` writes, such as a
+failure audit row.
 
 ### Catching IntegrityError
 
@@ -231,8 +235,13 @@ class ImportView(CustomFormViewPermissionRequired):
         run_import(self.object, context["form"].cleaned_data["file"])
 ```
 
+With `ATOMIC_REQUESTS = True` the request transaction is still open, so also decorate the view with
+`transaction.non_atomic_requests` (for class-based views:
+`method_decorator(transaction.non_atomic_requests, name="dispatch")`).
+
 For a different boundary (for example `savepoint=False`), override `cv_get_atomic()` and return
-your own context manager.
+your own context manager. Keep it on `cv_get_db_alias()`: `cv_on_commit` is registered on that
+alias. To change the database, override `cv_get_db_alias()` instead.
 
 ### Resource views writing ORM rows
 
@@ -276,15 +285,15 @@ another model. Django has no transactions across databases: writes to a second d
 
 - **No transactions across databases.** If a router sends `WorkflowInfo` or formset child models
   to a different database than the view's model, those writes are not atomic with the main write.
-- **Checks run before the transaction.** Delete protection (`cv_check_delete_protection`) and the
-  workflow permission check run outside the transaction and do not lock rows
-  (no `select_for_update`). Two concurrent requests can both pass the check.
+- **Checks do not lock rows.** Delete protection (`cv_check_delete_protection`) runs before the
+  transaction; the workflow permission check runs inside it but against an object loaded without a
+  row lock (no `select_for_update`). Two concurrent requests can both pass the check.
 - **Inner blocks are always atomic.** Formset saves and workflow transitions keep their own
   `atomic()` even with `cv_atomic = False`.
 
 ## Migrating
 
-Coming from 0.26 or earlier, four behaviours changed:
+Coming from 0.26 or earlier, five behaviours changed:
 
 **1. `cv_form_valid_hook`, `cv_action_success_hook` and `cv_action_error_hook` run before the
 commit.** Move side effects to `cv_on_commit`:
@@ -309,6 +318,10 @@ See [Catching IntegrityError](#catching-integrityerror).
 
 **4. `atomic(durable=True)` called from the write phase raises `RuntimeError`.** Set
 `cv_atomic = False` on that view. See [Durable services](#durable-services).
+
+**5. Custom `post()` overrides that call `cv_form_valid` / `cv_form_valid_hook` / `action()`
+directly get no transaction and no `cv_on_commit`.** Call `cv_form_valid_process(context)` (form
+and delete views) or `cv_action_process(context)` (action views) instead.
 
 To get the old behaviour for one view, set `cv_atomic = False`. Hooks then run in autocommit mode
 as before, and `cv_on_commit` runs immediately after the write phase.

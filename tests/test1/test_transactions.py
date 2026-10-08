@@ -364,6 +364,9 @@ def test_modal_delete_runs_on_commit_and_keeps_204(
     assert response.status_code == 204
     assert response.headers["X-CV-Redirect"] == "/author_modal/"
     assert len(calls) == 1
+    from tests.test1.app.models import Author
+
+    assert not Author.objects.filter(pk=author_douglas_adams.pk).exists()
 
 
 @pytest.mark.django_db
@@ -482,11 +485,21 @@ def test_ordered_up_hook_exception_rolls_back_swap(client_user_author_change, mo
     first = Author.objects.create(first_name="A", last_name="First")
     second = Author.objects.create(first_name="B", last_name="Second")
     before = {a.pk: a.order for a in Author.objects.all()}
+    assert before[second.pk] > before[first.pk]  # precondition: "up" would swap them
     monkeypatch.setattr(AuthorUpView, "cv_action_success_hook", _boom)
     with pytest.raises(Boom):
         client_user_author_change.post(f"/author/{second.pk}/up/")
     assert {a.pk: a.order for a in Author.objects.all()} == before
-    assert len(before) == 2 and first.pk in before  # both rows took part
+
+
+@pytest.mark.django_db(transaction=True)
+def test_on_commit_error_after_real_commit_keeps_data(client_user_publisher_add, monkeypatch):
+    from tests.test1.app.views import PublisherCreateView
+
+    monkeypatch.setattr(PublisherCreateView, "cv_on_commit", _boom)
+    with pytest.raises(Boom):
+        client_user_publisher_add.post("/publisher/create/", {"name": "Really Committed"})
+    assert Publisher.objects.filter(name="Really Committed").exists()
 
 
 @pytest.mark.django_db

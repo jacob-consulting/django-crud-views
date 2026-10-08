@@ -93,7 +93,7 @@ def test_purge_only_deletes_formset_queryset():
     main_form = _ProfileForm(cv_view=None, data=post, instance=profile)
     main_form.is_valid()
     formsets = formsets.clone(cv_view=None)
-    formsets.init(request=request, form=main_form, instance=profile)
+    formsets.init(request=request, form=main_form)
     formsets.apply_conditional(main_form)
     formsets.save(commit=True)
 
@@ -151,7 +151,7 @@ def test_purge_rolls_back_when_sibling_formset_save_fails(monkeypatch):
     main_form = _ProfileForm(cv_view=None, data=post, instance=profile)
     assert main_form.is_valid() is True
     formsets = formsets.clone(cv_view=None)
-    formsets.init(request=request, form=main_form, instance=profile)
+    formsets.init(request=request, form=main_form)
     formsets.apply_conditional(main_form)
     assert formsets.all_valid() is True
 
@@ -240,7 +240,7 @@ def _make(on_off, with_contact_value, profile=None, items=()):
     main_form = _ProfileForm(cv_view=None, data=post, instance=profile)
     main_form.is_valid()
     formsets = formsets.clone(cv_view=None)
-    formsets.init(request=request, form=main_form, instance=profile)
+    formsets.init(request=request, form=main_form)
     return formsets, main_form, profile
 
 
@@ -329,7 +329,7 @@ def test_off_formset_without_management_form_does_not_crash():
     formsets = formsets.clone(cv_view=None)
 
     # init must not raise even though the formset's management form is absent
-    formsets.init(request=request, form=main_form, instance=None)
+    formsets.init(request=request, form=main_form)
 
     formsets.apply_conditional(main_form)
     assert all(x.cv_active is False for x in formsets.x_formsets)

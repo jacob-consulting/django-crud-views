@@ -137,7 +137,7 @@ class FormSetMixinBase:
         if formsets is None:
             return None
 
-        formsets.init(request=self.request, form=form, instance=self.object)
+        formsets.init(request=self.request, form=form)
 
         formsets.init_js_data(self)
 

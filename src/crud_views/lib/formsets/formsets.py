@@ -360,7 +360,7 @@ class FormSets(BaseModel, arbitrary_types_allowed=True):
                 continue
             x_formset.save(commit=commit)
 
-    def init(self, request: HttpRequest, form: ModelForm, instance, with_template: bool = True):
+    def init(self, request: HttpRequest, form: ModelForm):
         for _key, formset in self.items():
             x_formsets = list(formset.init(request=request, forms=[form]))
             self.x_formsets.extend(x_formsets)

@@ -1,5 +1,16 @@
 # Django CRUD Views - Changelog
 
+## Unreleased
+
+### Changed
+
+- Button groups (context actions, list row actions, formset row controls, card ordering) render as
+  `<fieldset class="btn-group">` instead of `<div class="btn-group" role="group">`. Selectors that target
+  `div.btn-group` or `[role="group"]` need updating.
+- Object-detail table layouts (accordion, striped-rows, table-inline) get a visually hidden
+  "Property / Value" column header row.
+- `FormSets.init()` no longer takes the unused `instance` and `with_template` arguments.
+
 ## 0.24.5
 
 ### Added

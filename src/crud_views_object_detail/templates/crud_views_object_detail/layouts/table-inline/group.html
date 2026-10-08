@@ -1,4 +1,4 @@
-{% load crud_views_object_detail %}
+{% load i18n crud_views_object_detail %}
 <div class="card mb-3">
     <div class="card-header">
         <h5 class="card-title mb-{% if group.description %}1{% else %}0{% endif %}">{{ group.title }}</h5>
@@ -6,6 +6,9 @@
     </div>
     <div class="card-body p-0">
         <table class="table table-borderless mb-0">
+            <thead class="visually-hidden">
+                <tr><th scope="col">{% translate "Property" %}</th><th scope="col">{% translate "Value" %}</th></tr>
+            </thead>
             <tbody>
                 {% for prop in group.properties %}
                 {% render_property prop layout=layout %}

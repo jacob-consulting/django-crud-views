@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Self
 
+from django.db import DEFAULT_DB_ALIAS
 from django.http import Http404
 from pydantic import BaseModel
 
@@ -145,7 +146,15 @@ class ResourceViewMixin:
     - get_object: replaces SingleObjectMixin.get_object. Also used by the
       permission machinery (cv_get_action_object), so a bad pk yields 404
       during the permission phase — same contract as model views.
+    - cv_atomic / cv_get_db_alias: no database transaction by default and no
+      router lookup; set cv_atomic = True when the view also writes ORM rows.
     """
+
+    cv_atomic: bool = False  # a DB transaction cannot roll back S3 / API writes
+
+    def cv_get_db_alias(self) -> str:
+        # a Resource is not a Django model: never hand it to DATABASE_ROUTERS
+        return DEFAULT_DB_ALIAS
 
     def get_queryset(self):
         return self.model.cv_get_items(self.request, **self.kwargs)

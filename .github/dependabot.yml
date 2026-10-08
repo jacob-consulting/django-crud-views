@@ -32,6 +32,11 @@ updates:
       interval: weekly
     cooldown:
       default-days: 7
+    ignore:
+      # The JS tests run against the jQuery major that projects load with crud_views (3.x, see the
+      # example's base.html). Moving to jQuery 4 is a support decision, not a routine bump.
+      - dependency-name: jquery
+        update-types: ["version-update:semver-major"]
     groups:
       npm-dev:
         patterns: ["*"]

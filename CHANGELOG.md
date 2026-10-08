@@ -1,5 +1,26 @@
 # Django CRUD Views - Changelog
 
+## Unreleased
+
+### Added
+
+- django-pipeline support for the asset registry: `cv_sources()` (`crud_views.lib.pipeline`) is a lazy
+  `source_filenames` value that fills pipeline packages with core and all registered local assets;
+  `CRUD_VIEWS_ASSETS_BUNDLED = True` limits `{% cv_js %}`/`{% cv_css %}` to CDN entries.
+- System checks `crud_views.W340`–`W345` for the pipeline integration (missing packages, gaps,
+  double loading, unknown keys, kind mismatch, mixed CDN/local bundles).
+- `manage.py cv_assets` lists every registered asset and how it is delivered (`--external`,
+  `--kind`, `--format json`).
+
+### Changed
+
+- Core assets are part of the registry ordering (`crud_views.lib.assets.iter_bundles()` / `collect()`),
+  always first; the bundle key `crud_views` is reserved.
+
+### Internal
+
+- django-pipeline is a test-only dependency.
+
 ## 0.24.6
 
 ### Changed

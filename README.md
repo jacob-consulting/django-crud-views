@@ -131,4 +131,4 @@ is `task dev && task run` from the repository root.
 Full tutorial and reference: <https://django-crud-views.readthedocs.io>
 
 ## Current version
-Current version: 0.25.0
+Current version: 0.26.0

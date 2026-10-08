@@ -257,3 +257,14 @@ def test_check_e254_only_applies_to_delete():
         cv_success_keys = ["detail"]
 
     assert "viewset.E254" not in check_ids(Probe)
+
+
+def test_check_e254_leaves_unregistered_keys_to_e253():
+    from tests.test1.app.views import AuthorOriginDeleteView
+
+    class Probe(AuthorOriginDeleteView):
+        cv_success_keys = ["nope"]
+
+    ids = check_ids(Probe)
+    assert "viewset.E253" in ids
+    assert "viewset.E254" not in ids

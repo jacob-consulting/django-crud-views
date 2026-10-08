@@ -155,4 +155,5 @@ Delivery is `tag`, `tag (CDN)`, `pipeline:<package>`, `none` (delivered by nothi
 | `crud_views.W345` | Bundled mode: a bundle mixes CDN and local entries — vendor that extension. |
 
 Plain string entries in `source_filenames` (including glob patterns) count as coverage too, so
-hand-maintained lists get the same checks.
+hand-maintained lists get the same checks. Globs match per path segment, as in django-pipeline: `*` does not
+cross `/`, so `crud_views/*.js` does not cover `crud_views/js/viewset.js`.

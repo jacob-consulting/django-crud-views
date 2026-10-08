@@ -111,3 +111,39 @@ def test_check_registered_under_crud_views_tag():
 
     assert check_asset_pipeline in registry.registry.get_checks()
     assert "crud_views" in check_asset_pipeline.tags
+
+
+def test_w341_hint_for_emit_false_bundle(asset_registry, bundled, pipeline_setting):
+    from crud_views.lib.pipeline import cv_sources
+
+    asset_registry.register_assets(key="hidden", js=["h/x.js"], emit=False)
+    pipeline_setting(
+        {
+            "JAVASCRIPT": {"main": {"source_filenames": cv_sources("js", exclude=["hidden"])}},
+            "STYLESHEETS": {"main": {"source_filenames": cv_sources("css")}},
+        }
+    )
+    messages = _check()
+    assert _ids(messages) == ["crud_views.W341"]
+    assert "h/x.js" in messages[0].msg
+    assert "delivered by nothing" in messages[0].hint
+    assert "cv_sources()" in messages[0].hint
+    assert "suppresses its tag" not in messages[0].hint
+
+
+def test_w345_message_for_emit_false_bundle(asset_registry, bundled, pipeline_setting):
+    from crud_views.lib.pipeline import cv_sources
+
+    asset_registry.register_assets(key="dtp", js=["https://cdn.example.com/dtp.js", "dtp/init.js"], emit=False)
+    pipeline_setting(
+        {
+            "JAVASCRIPT": {"main": {"source_filenames": cv_sources("js")}},
+            "STYLESHEETS": {"main": {"source_filenames": cv_sources("css")}},
+        }
+    )
+    messages = _check()
+    assert _ids(messages) == ["crud_views.W345"]
+    assert "'dtp'" in messages[0].msg
+    assert "delivered by nothing" in messages[0].msg
+    assert "may load before" not in messages[0].msg
+    assert "cv_assets --external" in messages[0].hint

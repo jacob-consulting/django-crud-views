@@ -297,7 +297,12 @@ def check_asset_pipeline(app_configs=None, **kwargs):
                     messages.append(
                         DjangoWarning(
                             f"Asset {row.path!r} (bundle {row.key!r}) is not in any PIPELINE[{section!r}] package.",
-                            hint="Bundled mode suppresses its tag; include the bundle in a cv_sources() call.",
+                            hint=(
+                                "Bundled mode suppresses its tag; include the bundle in a cv_sources() call."
+                                if row.emit
+                                else "It has no tag (emit=False), so it is delivered by nothing; include the bundle in a "
+                                "cv_sources() call."
+                            ),
                             id="crud_views.W341",
                         )
                     )
@@ -309,7 +314,12 @@ def check_asset_pipeline(app_configs=None, **kwargs):
                     messages.append(
                         DjangoWarning(
                             f"Asset bundle {bundle.key!r} mixes CDN and local {kind} entries; pipeline cannot "
-                            "bundle the CDN ones, so its local entries may load before them.",
+                            + (
+                                "bundle the CDN ones, so its local entries may load before them."
+                                if bundle.emit
+                                else "bundle the CDN ones and, with emit=False, no tag emits them: they are "
+                                "delivered by nothing."
+                            ),
                             hint="Switch the extension to a vendored/local mode. List the affected entries with: "
                             "manage.py cv_assets --external",
                             id="crud_views.W345",

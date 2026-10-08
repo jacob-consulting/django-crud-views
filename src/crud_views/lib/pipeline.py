@@ -169,6 +169,26 @@ def pipeline_sources(conf: dict | None = None) -> list[PipelineSource]:
     return result
 
 
+def _glob_match(path: str, pattern: str) -> bool:
+    """Match like pipeline/glob.py: one path segment at a time, so ``*`` never crosses ``/`` (no ``**`` support).
+
+    pipeline lists a directory and fnmatch-filters its names, hiding dotfiles unless the pattern starts with ".".
+    """
+    path_parts, pattern_parts = path.split("/"), pattern.split("/")
+    if len(path_parts) != len(pattern_parts):
+        return False
+    for name, part in zip(path_parts, pattern_parts, strict=True):
+        if not fnmatchcase(name, part):
+            return False
+        if _has_magic(part) and name.startswith(".") and not part.startswith("."):
+            return False
+    return True
+
+
+def _has_magic(text: str) -> bool:
+    return any(char in text for char in "*?[")
+
+
 def _coverage(sources: list[PipelineSource]) -> list[tuple[PipelineSource, Callable[[str], bool]]]:
     """Per package a path predicate; LazySources resolve once, plain strings match as glob patterns."""
     result = []
@@ -178,7 +198,7 @@ def _coverage(sources: list[PipelineSource]) -> list[tuple[PipelineSource, Calla
         else:
             items = (source.sources,) if isinstance(source.sources, str) else source.sources
             patterns = tuple(p for p in items if isinstance(p, str))
-            result.append((source, lambda path, patterns=patterns: any(fnmatchcase(path, p) for p in patterns)))
+            result.append((source, lambda path, patterns=patterns: any(_glob_match(path, p) for p in patterns)))
     return result
 
 

@@ -153,3 +153,13 @@ def test_lazy_sources_kept_unresolved(monkeypatch):
     monkeypatch.setattr(django.apps.apps, "ready", False)
     result = pipeline_sources({"JAVASCRIPT": {"main": {"source_filenames": lazy}}})
     assert result[0].sources is lazy
+
+
+def test_glob_star_does_not_cross_path_segments(asset_registry, bundled):
+    rows = _rows({"JAVASCRIPT": {"main": {"source_filenames": ["crud_views/*.js"]}}})
+    assert all(rows[p].delivery == ("none",) for p in CORE_JS)
+
+
+def test_bare_star_covers_nothing_nested(asset_registry, bundled):
+    rows = _rows({"JAVASCRIPT": {"main": {"source_filenames": ["*"]}}})
+    assert all(rows[p].delivery == ("none",) for p in CORE_JS)

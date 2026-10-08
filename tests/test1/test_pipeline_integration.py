@@ -1,3 +1,4 @@
+from itertools import pairwise
 from pathlib import Path
 
 import pytest
@@ -69,5 +70,38 @@ def test_pack_concatenates_in_registry_order(asset_registry, noop_compressors, f
     output = (tmp_path / "out" / "main.js").read_text()
     expected = [*CORE_JS, "pipeline_test/extra.js", "pipeline_test/app.js"]
     positions = [output.index(Path(finders.find(path)).read_text()[:60]) for path in expected]
-    assert positions == sorted(positions)
+    assert all(a < b for a, b in pairwise(positions))
+    assert "cdn.example.com" not in output
+
+
+def test_pipeline_settings_keep_lazy_sources_by_reference():
+    from pipeline.conf import PipelineSettings
+
+    from crud_views.lib.pipeline import cv_sources
+
+    lazy = cv_sources("js")
+    conf = PipelineSettings({"JAVASCRIPT": {"main": {"source_filenames": lazy}}})
+    assert conf["JAVASCRIPT"]["main"]["source_filenames"] is lazy
+
+
+def test_pack_stylesheets_concatenates_in_registry_order(asset_registry, noop_compressors, finder_storage, tmp_path):
+    from django.contrib.staticfiles import finders
+    from django.core.files.storage import FileSystemStorage
+    from pipeline.packager import Packager
+
+    from crud_views.lib.pipeline import cv_sources
+
+    asset_registry.register_assets(key="extra", css=["pipeline_test/extra.css", "https://cdn.example.com/x.css"])
+    packages = {"main": {"source_filenames": cv_sources("css"), "output_filename": "out/main.css"}}
+    storage = FileSystemStorage(location=str(tmp_path), base_url="/static/")
+    packager = Packager(storage=storage, js_packages={}, css_packages=packages)
+    package = packager.package_for("css", "main")
+    packager.pack_stylesheets(package)
+
+    output = (tmp_path / "out" / "main.css").read_text()
+    expected = [*(e.asset.path for e in asset_registry.collect("css") if "://" not in e.asset.path)]
+    assert expected[-1] == "pipeline_test/extra.css"
+    assert package.sources == expected
+    positions = [output.index(Path(finders.find(path)).read_text()[:40]) for path in expected]
+    assert all(a < b for a, b in pairwise(positions))
     assert "cdn.example.com" not in output

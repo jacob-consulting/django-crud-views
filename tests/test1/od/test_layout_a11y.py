@@ -27,9 +27,11 @@ def test_card_rows_detail_tooltip_trigger_is_a_labelled_button():
             Context({"prop": prop})
         )
     (trigger,) = html.fromstring(rendered).cssselect("[data-cv-tooltip]")
-    assert trigger.tag == "button" and trigger.get("type") == "button"
+    assert trigger.tag == "button"
+    assert trigger.get("type") == "button"
     assert trigger.get("aria-label") == "Currently active"
-    assert trigger.get("role") is None and trigger.get("tabindex") is None
+    assert trigger.get("role") is None
+    assert trigger.get("tabindex") is None
     assert all(i.get("aria-hidden") == "true" for i in trigger.cssselect("i"))
 
 

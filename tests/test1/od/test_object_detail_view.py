@@ -139,9 +139,11 @@ def test_property_group_config_entries_skip_dict_shape_checks():
 
     messages = [m for chk in V.checks() for m in chk.messages()]
     ids = {m.id for m in messages}
-    assert "viewset.E242" not in ids and "viewset.E243" not in ids
+    assert "viewset.E242" not in ids
+    assert "viewset.E243" not in ids
     e245 = [m for m in messages if m.id == "viewset.E245"]
-    assert len(e245) == 1 and "cv_property_display[1]" in e245[0].msg, messages
+    assert len(e245) == 1, messages
+    assert "cv_property_display[1]" in e245[0].msg, messages
 
 
 def test_resolve_value_returns_list_when_single_path_fans_out_to_nothing():

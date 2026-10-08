@@ -24,8 +24,9 @@ def test_update_post_propagates_get_object_errors(user_publisher_formset):
     request = RequestFactory().post(f"/publisher-formset/{publisher.pk}/update/", {"name": "Changed"})
     request.user = user_publisher_formset
 
+    view = BrokenUpdateView.as_view()
     with pytest.raises(AttributeError, match="broken queryset"):
-        BrokenUpdateView.as_view()(request, pk=publisher.pk)
+        view(request, pk=publisher.pk)
 
     # and no phantom object was created by a silent create path
     assert Publisher.objects.count() == 1
@@ -43,8 +44,9 @@ def test_delete_post_propagates_get_object_errors(user_publisher_delete):
     request = RequestFactory().post(f"/publisher/{publisher.pk}/delete/", {"confirm": True})
     request.user = user_publisher_delete
 
+    view = BrokenDeleteView.as_view()
     with pytest.raises(AttributeError, match="broken queryset"):
-        BrokenDeleteView.as_view()(request, pk=publisher.pk)
+        view(request, pk=publisher.pk)
 
     assert Publisher.objects.filter(pk=publisher.pk).exists()
 

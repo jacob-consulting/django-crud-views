@@ -251,17 +251,16 @@ def check_asset_registry(app_configs=None, **kwargs):
     return messages
 
 
-@register(TAG)
-def check_asset_pipeline(app_configs=None, **kwargs):
-    """Validate the django-pipeline integration (cv_sources / CRUD_VIEWS_ASSETS_BUNDLED)."""
-    messages = []
-    sources = pipeline_helper.pipeline_sources()
-    lazies = [s for s in sources if isinstance(s.sources, pipeline_helper.LazySources)]
-    known_keys = [assets.CORE_KEY, *(bundle.key for bundle in assets.get_registered())]
+def _pipeline_location(source) -> str:
+    return f"PIPELINE[{pipeline_helper.SECTIONS[source.kind]!r}][{source.package!r}]"
 
+
+def _check_cv_sources_args(lazies, known_keys) -> list:
+    """W344 (js/css mismatch) and W343 (unknown bundle keys) for each cv_sources() package."""
+    messages = []
     for source in lazies:
         lazy = source.sources
-        where = f"PIPELINE[{pipeline_helper.SECTIONS[source.kind]!r}][{source.package!r}]"
+        where = _pipeline_location(source)
         if lazy.kind != source.kind:
             messages.append(
                 DjangoWarning(
@@ -270,70 +269,93 @@ def check_asset_pipeline(app_configs=None, **kwargs):
                     id="crud_views.W344",
                 )
             )
-        for key in (*(lazy.keys or ()), *lazy.exclude):
-            if key not in known_keys:
-                messages.append(
-                    DjangoWarning(
-                        f"cv_sources() in {where} names unknown asset bundle {key!r}.",
-                        hint=f"Known bundle keys: {', '.join(known_keys)}.",
-                        id="crud_views.W343",
-                    )
-                )
+        messages.extend(
+            DjangoWarning(
+                f"cv_sources() in {where} names unknown asset bundle {key!r}.",
+                hint=f"Known bundle keys: {', '.join(known_keys)}.",
+                id="crud_views.W343",
+            )
+            for key in (*(lazy.keys or ()), *lazy.exclude)
+            if key not in known_keys
+        )
+    return messages
 
-    if crud_views_settings.assets_bundled:
-        if not lazies:
+
+def _check_bundled_coverage(lazies) -> list:
+    """W340 (no cv_sources() at all) or W341 (local asset in no package) in bundled mode."""
+    if not lazies:
+        return [
+            DjangoWarning(
+                "CRUD_VIEWS_ASSETS_BUNDLED is on, but no PIPELINE package uses cv_sources(): local "
+                "crud_views assets are delivered by nothing.",
+                hint="Add cv_sources('js') / cv_sources('css') to your PIPELINE packages' source_filenames.",
+                id="crud_views.W340",
+            )
+        ]
+    return [
+        DjangoWarning(
+            f"Asset {row.path!r} (bundle {row.key!r}) is not in any "
+            f"PIPELINE[{pipeline_helper.SECTIONS[row.kind]!r}] package.",
+            hint=(
+                "Bundled mode suppresses its tag; include the bundle in a cv_sources() call."
+                if row.emit
+                else "emit=False: delivered by nothing; include the bundle in a cv_sources() call."
+            ),
+            id="crud_views.W341",
+        )
+        for row in pipeline_helper.asset_rows()
+        if not row.external and not row.bundled
+    ]
+
+
+def _check_mixed_bundles() -> list:
+    """W345: in bundled mode a bundle mixing CDN and local entries cannot be bundled consistently."""
+    messages = []
+    for bundle in assets.iter_bundles():
+        for kind in pipeline_helper.KINDS:
+            entries = getattr(bundle, kind)
+            external = [a for a in entries if assets.is_external(a.path)]
+            if not external or len(external) == len(entries):
+                continue
+            consequence = (
+                "bundle the CDN ones, so its local entries may load before them."
+                if bundle.emit
+                else "bundle the CDN ones and, with emit=False, no tag emits them: they are delivered by nothing."
+            )
             messages.append(
                 DjangoWarning(
-                    "CRUD_VIEWS_ASSETS_BUNDLED is on, but no PIPELINE package uses cv_sources(): local "
-                    "crud_views assets are delivered by nothing.",
-                    hint="Add cv_sources('js') / cv_sources('css') to your PIPELINE packages' source_filenames.",
-                    id="crud_views.W340",
+                    f"Asset bundle {bundle.key!r} mixes CDN and local {kind} entries; pipeline cannot {consequence}",
+                    hint="Switch the extension to a vendored/local mode. List the affected entries with: "
+                    "manage.py cv_assets --external",
+                    id="crud_views.W345",
                 )
             )
-        else:
-            for row in pipeline_helper.asset_rows():
-                if not row.external and not row.bundled:
-                    section = pipeline_helper.SECTIONS[row.kind]
-                    messages.append(
-                        DjangoWarning(
-                            f"Asset {row.path!r} (bundle {row.key!r}) is not in any PIPELINE[{section!r}] package.",
-                            hint=(
-                                "Bundled mode suppresses its tag; include the bundle in a cv_sources() call."
-                                if row.emit
-                                else "emit=False: delivered by nothing; include the bundle in a cv_sources() call."
-                            ),
-                            id="crud_views.W341",
-                        )
-                    )
-        for bundle in assets.iter_bundles():
-            for kind in pipeline_helper.KINDS:
-                entries = getattr(bundle, kind)
-                external = [a for a in entries if assets.is_external(a.path)]
-                if external and len(external) < len(entries):
-                    messages.append(
-                        DjangoWarning(
-                            f"Asset bundle {bundle.key!r} mixes CDN and local {kind} entries; pipeline cannot "
-                            + (
-                                "bundle the CDN ones, so its local entries may load before them."
-                                if bundle.emit
-                                else "bundle the CDN ones and, with emit=False, no tag emits them: they are "
-                                "delivered by nothing."
-                            ),
-                            hint="Switch the extension to a vendored/local mode. List the affected entries with: "
-                            "manage.py cv_assets --external",
-                            id="crud_views.W345",
-                        )
-                    )
+    return messages
+
+
+def _check_double_load(lazies) -> list:
+    """W342: not bundled, but cv_sources() bundles assets the tags also emit."""
+    return [
+        DjangoWarning(
+            f"cv_sources() in {_pipeline_location(source)} bundles assets that {{% cv_js %}}/{{% cv_css %}} also "
+            "emit: they load twice.",
+            hint="Set CRUD_VIEWS_ASSETS_BUNDLED = True.",
+            id="crud_views.W342",
+        )
+        for source in lazies
+        if any(entry.emit for entry in source.sources.registry_entries())
+    ]
+
+
+@register(TAG)
+def check_asset_pipeline(app_configs=None, **kwargs):
+    """Validate the django-pipeline integration (cv_sources / CRUD_VIEWS_ASSETS_BUNDLED)."""
+    lazies = [s for s in pipeline_helper.pipeline_sources() if isinstance(s.sources, pipeline_helper.LazySources)]
+    known_keys = [assets.CORE_KEY, *(bundle.key for bundle in assets.get_registered())]
+    messages = _check_cv_sources_args(lazies, known_keys)
+    if crud_views_settings.assets_bundled:
+        messages += _check_bundled_coverage(lazies)
+        messages += _check_mixed_bundles()
     else:
-        for source in lazies:
-            if any(entry.emit for entry in source.sources.registry_entries()):
-                where = f"PIPELINE[{pipeline_helper.SECTIONS[source.kind]!r}][{source.package!r}]"
-                messages.append(
-                    DjangoWarning(
-                        f"cv_sources() in {where} bundles assets that {{% cv_js %}}/{{% cv_css %}} also emit: "
-                        "they load twice.",
-                        hint="Set CRUD_VIEWS_ASSETS_BUNDLED = True.",
-                        id="crud_views.W342",
-                    )
-                )
+        messages += _check_double_load(lazies)
     return messages

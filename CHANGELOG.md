@@ -20,6 +20,8 @@
 ### Internal
 
 - django-pipeline is a test-only dependency.
+- Split `check_asset_pipeline` and `asset_rows` into smaller helpers to bring their cognitive complexity
+  under SonarQube's limit; no behaviour change.
 
 ## 0.24.6
 

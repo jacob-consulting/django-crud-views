@@ -224,6 +224,21 @@ class AssetRow:
         return any(d.startswith("pipeline:") for d in self.delivery)
 
 
+def _delivery(
+    entry, kind: str, external: bool, tagged: bool, coverage: list[tuple[PipelineSource, Callable[[str], bool]]]
+) -> tuple[str, ...]:
+    """How one registry entry reaches the browser: tag, pipeline package(s), or none."""
+    delivery = []
+    if tagged:
+        delivery.append("tag (CDN)" if external else "tag")
+    if not external:
+        path = entry.asset.path
+        delivery += [f"pipeline:{s.package}" for s, covers in coverage if s.kind == kind and covers(path)]
+    if not delivery:
+        delivery.append("none" if entry.emit else "none (emit=False)")
+    return tuple(delivery)
+
+
 def asset_rows(conf: dict | None = None) -> list[AssetRow]:
     """Every registry asset (core first, all bundles incl. emit=False) with its delivery.
 
@@ -239,13 +254,6 @@ def asset_rows(conf: dict | None = None) -> list[AssetRow]:
         for entry in assets.collect(kind):
             path = entry.asset.path
             external = assets.is_external(path)
-            delivery = []
-            if (entry.key, path) in tagged:
-                delivery.append("tag (CDN)" if external else "tag")
-            if not external:
-                delivery += [f"pipeline:{s.package}" for s, covers in coverage if s.kind == kind and covers(path)]
-            if not delivery:
-                delivery.append("none" if entry.emit else "none (emit=False)")
             rows.append(
                 AssetRow(
                     key=entry.key,
@@ -255,7 +263,7 @@ def asset_rows(conf: dict | None = None) -> list[AssetRow]:
                     integrity=entry.asset.integrity,
                     crossorigin=entry.asset.crossorigin,
                     emit=entry.emit,
-                    delivery=tuple(delivery),
+                    delivery=_delivery(entry, kind, external, (entry.key, path) in tagged, coverage),
                 )
             )
     return rows

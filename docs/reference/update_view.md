@@ -111,7 +111,7 @@ It shares the origin parameter with `cv_cancel_keys` and resolves it the same wa
 - An object view such as `detail` needs a persisted object. That is always true after an update
   or a custom form on an object, and after a create (the new object). It is never true after a
   delete: `DeleteView` falls back to `cv_success_key`, and system check `viewset.E254` rejects
-  object views in a delete view's `cv_success_keys` at startup.
+  object views in a delete view's `cv_success_keys` and `cv_success_key` at startup.
 - Modal forms use the resolved URL in their `X-CV-Redirect` header. `ActionView` and the ordered
   up/down views honour `cv_success_keys` too, so an action started from the detail page can return there.
 - System check `viewset.E253` fails at startup when an entry of `cv_success_keys` is not a

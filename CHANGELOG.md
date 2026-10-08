@@ -22,6 +22,13 @@
   is unchanged. `CrudView.cv_cancel_keys_registered()` is replaced by
   `cv_origin_keys_registered(keys)`.
 
+### Fixed
+
+- A `DeleteView` whose `cv_success_key` is an object view (e.g. `"detail"`) crashed with
+  `NoReverseMatch` on every successful delete, because the object's pk is `None` after `delete()`.
+  System check `viewset.E254` now rejects it at startup. A soft-deleting view that really redirects
+  to its object must silence `viewset.E254` (#167).
+
 ## 0.25.0
 
 ### Added

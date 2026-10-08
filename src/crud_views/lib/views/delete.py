@@ -58,18 +58,20 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, generic.DeleteView):
             id="E254",
             expression=not cls.cv_success_object_keys(),
             msg=(
-                f"cv_success_keys of a delete view must not contain object views, the object is gone after "
-                f"success, got {cls.cv_success_object_keys()!r}"
+                f"cv_success_key / cv_success_keys of a delete view must not be object views, the object is "
+                f"gone after success, got {cls.cv_success_object_keys()!r}"
             ),
         )
 
     @classmethod
     def cv_success_object_keys(cls) -> list[str]:
-        """Registered cv_success_keys entries that need an object (unregistered ones are E253's job)."""
-        if not cls.cv_success_keys or cls.cv_viewset is None:
+        """Registered cv_success_key / cv_success_keys entries that need an object (unregistered ones are
+        not this check's job)."""
+        candidates = [*([cls.cv_success_key] if cls.cv_success_key else []), *(cls.cv_success_keys or [])]
+        if not candidates or cls.cv_viewset is None:
             return []
         keys = []
-        for key in cls.cv_success_keys:
+        for key in candidates:
             try:
                 if cls.cv_viewset.get_view_class(key).cv_object:
                     keys.append(key)

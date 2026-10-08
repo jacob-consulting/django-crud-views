@@ -268,3 +268,21 @@ def test_check_e254_leaves_unregistered_keys_to_e253():
     ids = check_ids(Probe)
     assert "viewset.E253" in ids
     assert "viewset.E254" not in ids
+
+
+def test_check_e254_delete_rejects_object_success_key():
+    """Issue #167: a static object-view cv_success_key on a delete view crashes with NoReverseMatch."""
+    from tests.test1.app.views import AuthorOriginDeleteView
+
+    class Probe(AuthorOriginDeleteView):
+        cv_success_key = "detail"
+
+    messages = [m for c in Probe.checks() for m in c.messages() if m.id == "viewset.E254"]
+    assert messages
+    assert "cv_success_key" in messages[0].msg
+
+
+def test_check_e254_delete_default_success_key_passes():
+    from tests.test1.app.views import AuthorOriginDeleteView
+
+    assert "viewset.E254" not in check_ids(AuthorOriginDeleteView)

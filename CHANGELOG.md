@@ -11,6 +11,16 @@
   "Property / Value" column header row.
 - `FormSets.init()` no longer takes the unused `instance` and `with_template` arguments.
 
+### Internal
+
+- Code quality is now analysed by SonarQube Cloud (automatic analysis via `.sonarcloud.properties`;
+  the local `sonar-project.properties` setup is gone) (#153). The initial scan's findings were
+  resolved across src, tests, examples and scripts (#154–#156, #158).
+- CI: workflow dependencies are locked (SonarQube supply-chain findings) (#157); Dependabot no
+  longer proposes major jQuery bumps for the JS test harness (#161).
+- README: SonarQube Cloud badges (Quality Gate, Security, Reliability, Maintainability), and every
+  badge now links to its source (#163).
+
 ## 0.24.5
 
 ### Added

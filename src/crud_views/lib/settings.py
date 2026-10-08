@@ -32,8 +32,8 @@ class CrudViewsSettings(BaseModel):
     # session
     session_data_key: str = from_settings("CRUD_VIEWS_SESSION_DATA_KEY", "viewset")
 
-    # cancel button
-    cancel_origin_param: str = from_settings("CRUD_VIEWS_CANCEL_ORIGIN_PARAM", default="cv_from")
+    # origin of cancel button and success redirect (cv_cancel_keys / cv_success_keys)
+    origin_param: str = from_settings("CRUD_VIEWS_ORIGIN_PARAM", default="cv_from")
 
     # csp
     csp_nonce_attr: str = from_settings("CRUD_VIEWS_CSP_NONCE_ATTR", default="csp_nonce")
@@ -112,14 +112,11 @@ class CrudViewsSettings(BaseModel):
         # deferred import: settings.py must not import check.py at module level
         from crud_views.lib.check import REGS
 
-        if not REGS["name"]["reg"].match(self.cancel_origin_param):
+        if not REGS["name"]["reg"].match(self.origin_param):
             messages.append(
                 Error(
                     id="crud_views.E103",
-                    msg=(
-                        f"setting CRUD_VIEWS_CANCEL_ORIGIN_PARAM {REGS['name']['msg']}, "
-                        f"got {self.cancel_origin_param!r}"
-                    ),
+                    msg=(f"setting CRUD_VIEWS_ORIGIN_PARAM {REGS['name']['msg']}, got {self.origin_param!r}"),
                 )
             )
 

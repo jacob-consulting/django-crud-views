@@ -95,6 +95,7 @@ class AuthorUpdateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, UpdateVie
     form_class = AuthorForm
     cv_message_template_code = _("Updated author “{{ object }}”")
     cv_cancel_keys = ["list", "detail"]  # cancel returns to where the user came from
+    cv_success_keys = ["list", "detail"]  # so does save
 
 
 class AuthorDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):

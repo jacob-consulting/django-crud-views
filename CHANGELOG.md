@@ -1,5 +1,27 @@
 # Django CRUD Views - Changelog
 
+## Unreleased
+
+### Added
+
+- Dynamic success target. A view that declares `cv_success_keys = ["list", "detail"]` redirects
+  to the sibling view the user came from after a successful submit, using the same origin
+  parameter as `cv_cancel_keys`. Links carry the origin when the target lists the key in either
+  list; both resolve independently and fall back to `cv_success_key`. Works on create, update,
+  delete, custom form, workflow and action views, and in modals (`X-CV-Redirect`). New
+  `CrudView.cv_get_success_key()` and system checks `viewset.E253` (unregistered key in
+  `cv_success_keys`) and `viewset.E254` (object view in a delete view's `cv_success_keys`; the
+  object is gone after success, so it also falls back at runtime).
+- FAQ entry on sending Cancel and Save back to the page the user came from.
+- The library example's `AuthorUpdateView` uses `cv_success_keys`.
+
+### Changed
+
+- **Breaking:** the setting `CRUD_VIEWS_CANCEL_ORIGIN_PARAM` is renamed to `CRUD_VIEWS_ORIGIN_PARAM`
+  (settings field `origin_param`), as it now serves both cancel and success. The default `cv_from`
+  is unchanged. `CrudView.cv_cancel_keys_registered()` is replaced by
+  `cv_origin_keys_registered(keys)`.
+
 ## 0.25.0
 
 ### Added

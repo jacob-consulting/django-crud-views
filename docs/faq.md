@@ -194,6 +194,44 @@ cv_book = ViewSet(
 
 Full documentation of parent/child ViewSets: [Nested ViewSets](reference/nested.md).
 
+## How do I send Cancel and Save back to the page the user came from?
+
+Form views go back to the list by default, both on **Cancel** (`cv_cancel_key`) and after a
+successful **Save** (`cv_success_key`). When a form can be opened from several places, typically
+the list and the detail page, list those places as allowed origins instead:
+
+<!-- cv-sync: library/views.py -->
+```python
+class AuthorUpdateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):
+    cv_viewset = cv_author
+    form_class = AuthorForm
+    cv_message_template_code = _("Updated author “{{ object }}”")
+    cv_cancel_keys = ["list", "detail"]  # cancel returns to where the user came from
+    cv_success_keys = ["list", "detail"]  # so does save
+```
+
+The two options are independent; set either one, or both:
+
+| Attribute         | Controls                          | Falls back to    |
+|-------------------|-----------------------------------|------------------|
+| `cv_cancel_keys`  | the target of the Cancel button   | `cv_cancel_key`  |
+| `cv_success_keys` | the redirect after a valid submit | `cv_success_key` |
+
+Links into the form carry the origin view key as `?cv_from=detail` (parameter name:
+`CRUD_VIEWS_ORIGIN_PARAM`). The value is a **view key**, never a URL, and is only used when it is
+listed and registered on the ViewSet, so it cannot redirect elsewhere. Anything else falls back to
+the static key.
+
+Two limits follow from that:
+
+- An origin that needs an object is skipped when there is none: Cancel on a create view never
+  returns to `detail`, and Save on a delete view never does (system check `viewset.E254`).
+- Returning to the list drops its filter, sort order and page.
+
+*See it running: [`examples/bootstrap5/library/`](https://github.com/jacob-consulting/django-crud-views/tree/main/examples/bootstrap5/library) ·
+Full docs: [Dynamic cancel target](reference/update_view.md#dynamic-cancel-target) ·
+[Dynamic success target](reference/update_view.md#dynamic-success-target).*
+
 ## Why is the last breadcrumb item not a link
 
 The last item is the page the user is on. Bootstrap and WAI-ARIA both mark the current page

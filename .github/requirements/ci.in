@@ -1,0 +1,6 @@
+# Tools the GitHub workflows install with pip. Edit this file, then regenerate the hashed lock:
+#   uv pip compile --universal --generate-hashes --python-version 3.12 .github/requirements/ci.in -o .github/requirements/ci.txt
+nox
+uv
+ruff>=0.16,<0.17
+build

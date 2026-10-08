@@ -1,0 +1,37 @@
+# Keeps the pinned CI inputs fresh: action commit SHAs, the hashed pip locks
+# (docs/requirements.txt, .github/requirements/ci.txt) and package-lock.json.
+# The cooldown skips releases younger than a week, so a compromised release has
+# time to be yanked before it lands here.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      actions:
+        patterns: ["*"]
+
+  - package-ecosystem: pip
+    directories:
+      - "/docs"
+      - "/.github/requirements"
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      pip-tools:
+        patterns: ["*"]
+
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      npm-dev:
+        patterns: ["*"]

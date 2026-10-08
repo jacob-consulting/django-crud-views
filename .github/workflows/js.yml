@@ -15,5 +15,5 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - run: npm ci
-      - run: npx vitest run
+      - run: npm ci --ignore-scripts
+      - run: npm test

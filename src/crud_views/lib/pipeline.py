@@ -159,8 +159,12 @@ def pipeline_sources(conf: dict | None = None) -> list[PipelineSource]:
     conf = conf or {}
     result = []
     for kind, section in SECTIONS.items():
-        for package, config in (conf.get(section) or {}).items():
-            result.append(PipelineSource(kind=kind, package=package, sources=config.get("source_filenames", ())))
+        packages = conf.get(section)
+        if not isinstance(packages, dict):
+            continue
+        for package, config in packages.items():
+            if isinstance(config, dict):
+                result.append(PipelineSource(kind=kind, package=package, sources=config.get("source_filenames") or ()))
     return result
 
 
@@ -171,7 +175,8 @@ def _coverage(sources: list[PipelineSource]) -> list[tuple[PipelineSource, Calla
         if isinstance(source.sources, LazySources):
             result.append((source, frozenset(source.sources).__contains__))
         else:
-            patterns = tuple(p for p in source.sources if isinstance(p, str))
+            items = (source.sources,) if isinstance(source.sources, str) else source.sources
+            patterns = tuple(p for p in items if isinstance(p, str))
             result.append((source, lambda path, patterns=patterns: any(fnmatchcase(path, p) for p in patterns)))
     return result
 

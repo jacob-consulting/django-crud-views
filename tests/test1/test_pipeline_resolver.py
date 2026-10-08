@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import pytest
+
 CORE_JS = [
     "crud_views/js/viewset.js",
     "crud_views/js/formset.js",
@@ -120,3 +122,23 @@ def test_rows_order_js_then_css(asset_registry):
     kinds = [r.kind for r in rows]
     assert kinds == ["js"] * 6 + ["css"] * 3
     assert [r.path for r in rows[:6]] == CORE_JS
+
+
+@pytest.mark.parametrize(
+    "conf",
+    [
+        {"JAVASCRIPT": {"p": {"source_filenames": None}}},
+        {"JAVASCRIPT": {"p": None}},
+        {"JAVASCRIPT": [1]},
+    ],
+)
+def test_odd_pipeline_shapes_are_ignored(asset_registry, conf):
+    from crud_views.lib.pipeline import asset_rows
+
+    assert all(r.delivery == ("tag",) for r in asset_rows(conf) if r.kind == "js")
+
+
+def test_bare_string_source_filenames_is_one_pattern(asset_registry, bundled):
+    rows = _rows({"JAVASCRIPT": {"main": {"source_filenames": "crud_views/js/viewset.js"}}})
+    assert rows["crud_views/js/viewset.js"].delivery == ("pipeline:main",)
+    assert rows["crud_views/js/formset.js"].delivery == ("none",)

@@ -13,7 +13,6 @@ Also captures readme-hero.png, the README's hero image.
 """
 
 import subprocess
-import sys
 import time
 import urllib.request
 from pathlib import Path
@@ -45,13 +44,15 @@ def wait_for_server(timeout: float = 30.0) -> None:
     raise RuntimeError(f"server on {BASE} did not come up")
 
 
+def manage(*args: str) -> list[str]:
+    """Command line for an examples-project management command."""
+    return ["uv", "run", "manage.py", *args]
+
+
 def main() -> None:
-    subprocess.run(["uv", "run", "manage.py", "migrate"], cwd=EXAMPLES_DIR, check=True)
-    subprocess.run(["uv", "run", "manage.py", "seed"], cwd=EXAMPLES_DIR, check=True)
-    server = subprocess.Popen(
-        ["uv", "run", "manage.py", "runserver", f"127.0.0.1:{PORT}", "--noreload"],
-        cwd=EXAMPLES_DIR,
-    )
+    subprocess.run(manage("migrate"), cwd=EXAMPLES_DIR, check=True)
+    subprocess.run(manage("seed"), cwd=EXAMPLES_DIR, check=True)
+    server = subprocess.Popen(manage("runserver", f"127.0.0.1:{PORT}", "--noreload"), cwd=EXAMPLES_DIR)
     try:
         wait_for_server()
         ASSETS_DIR.mkdir(parents=True, exist_ok=True)
@@ -112,4 +113,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    main()

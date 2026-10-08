@@ -99,9 +99,10 @@ class FormSetMixinBase:
         """
         Save form and formsets — atomically: a conditional purge issues a DELETE
         before sibling formsets save, so a failure later in the flow must roll
-        the whole write (main form, purge, formsets) back.
+        the whole write (main form, purge, formsets) back. This inner block holds
+        even with cv_atomic = False; with cv_atomic = True it is a savepoint.
         """
-        with transaction.atomic():
+        with transaction.atomic(using=self.cv_get_db_alias()):
             # save main form
             super().cv_form_valid(context)
 

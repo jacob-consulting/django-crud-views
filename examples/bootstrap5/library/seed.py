@@ -6,16 +6,16 @@ from project.seeding import grant_model_perms
 from library.models import Author, Book
 
 AUTHORS = [
-    ("Ursula", "Le Guin", None, [("A Wizard of Earthsea", "7.99"), ("The Dispossessed", "9.99")]),
-    ("Terry", "Pratchett", None, [("Guards! Guards!", "8.99"), ("Small Gods", "8.49")]),
+    ("Ursula", "Le Guin", "", [("A Wizard of Earthsea", "7.99"), ("The Dispossessed", "9.99")]),
+    ("Terry", "Pratchett", "", [("Guards! Guards!", "8.99"), ("Small Gods", "8.49")]),
     ("Alice", "Sheldon", "James Tiptree Jr.", [("Her Smoke Rose Up Forever", "11.99")]),
 ]
 
 
 def seed():
-    User = get_user_model()
+    user_model = get_user_model()
     for username in ("alice", "bob"):
-        user = User.objects.get(username=username)
+        user = user_model.objects.get(username=username)
         grant_model_perms(user, Author)
         grant_model_perms(user, Book)
     for first, last, pseudonym, books in AUTHORS:

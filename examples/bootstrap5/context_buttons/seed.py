@@ -5,10 +5,10 @@ from context_buttons.models import Ticket
 
 
 def seed():
-    User = get_user_model()
+    user_model = get_user_model()
     # alice may do everything, bob may only look: log in as both to see which buttons disappear
-    grant_model_perms(User.objects.get(username="alice"), Ticket)
-    grant_model_perms(User.objects.get(username="bob"), Ticket, actions=("view",))
+    grant_model_perms(user_model.objects.get(username="alice"), Ticket)
+    grant_model_perms(user_model.objects.get(username="bob"), Ticket, actions=("view",))
 
     for title, priority in (
         ("Printer on fire", Ticket.Priority.HIGH),

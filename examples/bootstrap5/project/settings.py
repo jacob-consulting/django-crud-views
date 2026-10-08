@@ -11,7 +11,7 @@ from django.utils.translation import gettext_lazy as _
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = "django-insecure-example-project-do-not-use-in-production"
-DEBUG = True
+DEBUG = True  # NOSONAR S4507: local example only; settings_demo.py sets DEBUG = False
 ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [

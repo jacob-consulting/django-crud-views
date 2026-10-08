@@ -5,9 +5,9 @@ from polymorphic_demo.models import Car, Motorcycle, Truck, Vehicle
 
 
 def seed():
-    User = get_user_model()
+    user_model = get_user_model()
     for username in ("alice", "bob"):
-        user = User.objects.get(username=username)
+        user = user_model.objects.get(username=username)
         for model in (Vehicle, Car, Truck, Motorcycle):
             grant_model_perms(user, model)
     Car.objects.get_or_create(name="Coupe", defaults={"doors": 2})

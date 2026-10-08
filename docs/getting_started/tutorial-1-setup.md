@@ -75,7 +75,7 @@ class Author(models.Model):
     id = models.UUIDField(_("ID"), primary_key=True, default=uuid.uuid4, editable=False)
     first_name = models.CharField(_("first name"), max_length=100)
     last_name = models.CharField(_("last name"), max_length=100)
-    pseudonym = models.CharField(_("pseudonym"), max_length=100, blank=True, null=True)
+    pseudonym = models.CharField(_("pseudonym"), max_length=100, blank=True)
     created_dt = models.DateTimeField(_("created"), auto_now_add=True)
     modified_dt = models.DateTimeField(_("modified"), auto_now=True)
 

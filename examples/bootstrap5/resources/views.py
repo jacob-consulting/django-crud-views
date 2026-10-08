@@ -50,7 +50,7 @@ class S3File(Resource):
     @property
     def key_md5(self) -> str:
         # S3 keys contain "/" — hash them into a URL-safe pk (docs: Resources)
-        return hashlib.md5(self.key.encode()).hexdigest()
+        return hashlib.md5(self.key.encode(), usedforsecurity=False).hexdigest()
 
     def __str__(self) -> str:
         return self.key

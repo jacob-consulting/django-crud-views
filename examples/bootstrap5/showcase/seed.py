@@ -12,9 +12,9 @@ RECIPES = [
 
 
 def seed():
-    User = get_user_model()
+    user_model = get_user_model()
     for username in ("alice", "bob"):
-        grant_model_perms(User.objects.get(username=username), Recipe)
+        grant_model_perms(user_model.objects.get(username=username), Recipe)
     for title, description, difficulty, servings, favorite in RECIPES:
         Recipe.objects.get_or_create(
             title=title,

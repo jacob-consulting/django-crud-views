@@ -78,9 +78,9 @@ The bundled example grants permissions during seeding, in `library/seed.py`:
 <!-- cv-sync: library/seed.py -->
 ```python
 def seed():
-    User = get_user_model()
+    user_model = get_user_model()
     for username in ("alice", "bob"):
-        user = User.objects.get(username=username)
+        user = user_model.objects.get(username=username)
         grant_model_perms(user, Author)
         grant_model_perms(user, Book)
     for first, last, pseudonym, books in AUTHORS:

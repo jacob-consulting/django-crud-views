@@ -10,9 +10,9 @@ WORKSPACES = {
 
 
 def seed():
-    User = get_user_model()
+    user_model = get_user_model()
     for username in ("alice", "bob"):
-        user = User.objects.get(username=username)
+        user = user_model.objects.get(username=username)
         grant_model_perms(user, Workspace)
         grant_model_perms(user, Board)
     for workspace_name, board_titles in WORKSPACES.items():

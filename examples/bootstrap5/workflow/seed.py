@@ -5,10 +5,10 @@ from workflow.models import Campaign
 
 
 def seed():
-    User = get_user_model()
-    actor = User.objects.get(username="alice")
+    user_model = get_user_model()
+    actor = user_model.objects.get(username="alice")
     for username in ("alice", "bob"):
-        grant_model_perms(User.objects.get(username=username), Campaign)
+        grant_model_perms(user_model.objects.get(username=username), Campaign)
 
     Campaign.objects.get_or_create(name="Spring Newsletter")  # stays in draft
 

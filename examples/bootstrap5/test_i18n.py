@@ -125,7 +125,8 @@ def test_demo_pages_render_german(client, django_user_model):
     client.force_login(django_user_model.objects.create_superuser("admin-de", password="p"))
 
     html = client.get("/library/author/", HTTP_ACCEPT_LANGUAGE="de").content.decode()
-    assert "Vorname" in html and "Nachname" in html
+    assert "Vorname" in html
+    assert "Nachname" in html
     assert "First name" not in html
 
     # the package's lazy "Save" default (no English override in the examples); Django admin's de
@@ -166,7 +167,8 @@ def test_demo_chrome_renders_german(client, settings):
     html = client.get("/", HTTP_ACCEPT_LANGUAGE="de").content.decode()
     assert "Öffentliche Demo" in html
     assert "Demo-Benutzer" in html
-    assert "Live-Demo" in html and "Doku" in html
+    assert "Live-Demo" in html
+    assert "Doku" in html
 
     with translation.override("de"):
         html = render_to_string("project/429.html", request=RequestFactory().get("/"))

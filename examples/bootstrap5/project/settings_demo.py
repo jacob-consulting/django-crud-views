@@ -5,7 +5,7 @@ Extends the local example settings. Requires the env var SECRET_KEY; RENDER_EXTE
 
 import os
 
-from project.settings import *  # noqa: F403
+from project.settings import *  # noqa: F403  # NOSONAR S2208
 from project.settings import BASE_DIR, MIDDLEWARE
 
 DEBUG = False

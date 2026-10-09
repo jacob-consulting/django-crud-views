@@ -261,6 +261,28 @@ Two rules:
   button, the view-level one wins for that view. Declare a same-key button in
   `cv_context_buttons` to customize a single view without touching the ViewSet.
 
+## Target check (E255)
+
+A button whose target view is not registered is skipped at render time, so a typo would only make
+the button disappear. The `viewset.E255` system check catches this at startup for every button in
+a ViewSet's `context_buttons` and a view's `cv_context_buttons`:
+
+| Button | Must resolve |
+|---|---|
+| `ContextButton` | `key_target` is registered on its own ViewSet |
+| `ParentContextButton` | the ViewSet has a parent, and `key_target` is registered on it |
+| `ChildContextButton` | `child_name` is a child ViewSet of this one, and `child_key` is registered on it |
+| `SiblingContextButton` | `sibling_name` is a registered ViewSet, and `sibling_key` is registered on it |
+
+`list` also resolves when the target ViewSet registers only `card`.
+
+Not checked:
+
+- Buttons equal to an entry of `context_buttons_default()`. The default `home` and `parent`
+  buttons are meant to vanish on a ViewSet without a list view or without a parent.
+- Button subclasses that override `get_context()`, such as `FilterContextButton`. A custom
+  button type can override `cv_check_target(viewset)`, which returns a problem message or `None`.
+
 ## Manual Placement (Template Tags)
 
 The `cv_context_actions` attribute renders the configured buttons automatically in the view

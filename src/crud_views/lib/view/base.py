@@ -38,7 +38,7 @@ from crud_views.lib.check import (
 from crud_views.lib.exceptions import CrudViewError, ParentViewSetError, ViewSetKeyFoundError, cv_raise
 
 from ..settings import crud_views_settings
-from .buttons import ContextButton
+from .buttons import ContextButton, context_button_checks
 from .context import ViewContext
 from .meta import CrudViewMetaClass
 
@@ -146,6 +146,8 @@ class CrudView(metaclass=CrudViewMetaClass):
             expression=cls.cv_origin_keys_registered(cls.cv_success_keys),
             msg=f"cv_success_keys entries must be registered view keys, got {cls.cv_success_keys!r}",
         )
+        if cls.cv_viewset is not None:
+            yield from context_button_checks(cls, cls.cv_viewset, cls.cv_context_buttons)
         yield CheckUnknownAttributes(context=cls)
 
     def get_success_url(self) -> str:

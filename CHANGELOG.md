@@ -1,5 +1,16 @@
 # Django CRUD Views - Changelog
 
+## Unreleased
+
+### Added
+
+- System check `viewset.E255`: every explicitly configured context button (ViewSet
+  `context_buttons` and view-level `cv_context_buttons`) must resolve its target at startup —
+  `child_name`/`child_key`, `sibling_name`/`sibling_key`, and `key_target` on the own or parent
+  ViewSet, with the `list` → `card` fallback. Since 0.24.2 a misspelled target made the button
+  disappear silently. Buttons equal to a `context_buttons_default()` entry are not checked (#172).
+- `ContextButton.cv_check_target(viewset)`, overridable by custom button types (#172).
+
 ## 0.27.0
 
 ### Added

@@ -347,6 +347,17 @@ Set `cv_atomic = False` on the view. To change the boundary instead (another dat
 The [hook reference](reference/request_lifecycle.md#hook-reference) lists every overridable method
 with its phase (outside, in the transaction, after the commit) and what it is meant for.
 
+## Why did my context button disappear? (check E255)
+
+Since 0.24.2 a context button whose target view is not registered is skipped at render time
+instead of raising, so the default `home` button can vanish on a detail-only ViewSet. The
+downside: a typo such as `ChildContextButton(key="members", child_name="member", child_key="lsit")`
+also just makes the button disappear.
+
+The `viewset.E255` system check reports such a button at startup, naming the button key, its
+class and the view key or ViewSet name that does not resolve. Fix the name, or register the
+missing view. See [Target check](reference/context_buttons.md#target-check-e255) for the rules.
+
 ## Why is my `cv_*` attribute silently ignored? (check W280)
 
 `CrudView` config attributes use the `cv_` prefix and are read via `getattr`, so a typo or a

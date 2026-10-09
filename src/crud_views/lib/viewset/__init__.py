@@ -2,7 +2,7 @@ import threading
 from collections import OrderedDict
 from collections.abc import Iterable
 from functools import cached_property
-from typing import Any, ClassVar, Self
+from typing import ClassVar, Self
 
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
@@ -22,13 +22,12 @@ from ..settings import crud_views_settings
 from ..view import (
     ContextButton,
     CrudView,
-    ParentContextButton,
     ViewContext,
 )
 from ..view import (
     CrudViewPermissionRequiredMixin as CrudViewPermissionRequiredMixin,
 )
-from ..view.buttons import FilterContextButton
+from ..view.buttons import context_button_checks, context_buttons_default
 from ..views.manage import ManageView
 from .parentviewset import ParentViewSet
 from .path_regs import PrimaryKeys
@@ -36,19 +35,6 @@ from .path_regs import PrimaryKeys
 
 def empty_dict() -> dict:
     return {}
-
-
-def context_buttons_default(*args, **kwargs) -> Any:
-    return [
-        ContextButton(
-            key="home",
-            key_target="list",
-            # I don't think we need templates here because the title should be the one of the
-            # list page where it links to
-        ),
-        ParentContextButton(key="parent", key_target="list"),
-        FilterContextButton(),
-    ]
 
 
 _REGISTRY = OrderedDict()
@@ -170,6 +156,7 @@ class ViewSet(BaseModel):
         yield CheckAttributeReg(context=self, id="E002", attribute="name", **check.REGS["name"])
         yield CheckAttributeReg(context=self, id="E003", attribute="prefix", **check.REGS["path"])
         yield CheckTemplate(context=self, id="E111", attribute="extends")
+        yield from context_button_checks(self, self, self.context_buttons)
 
         if self.is_resource:
             from crud_views.lib.views import CreateView, DeleteView, UpdateView

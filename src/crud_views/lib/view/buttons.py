@@ -1,9 +1,18 @@
+from typing import Any
+
 from django.http import Http404
 from django.urls import reverse
 from pydantic import BaseModel, Field
 
+from ..check import CheckExpression
+from ..exceptions import ViewSetNotFoundError
 from ..settings import crud_views_settings
 from .context import ViewContext
+
+
+def _is_registered(viewset, key: str) -> bool:
+    """True when key is a registered view of viewset, "list" falling back to "card" like get_view_class."""
+    return viewset.is_view_registered(key) or (key == "list" and viewset.is_view_registered("card"))
 
 
 class ContextButton(BaseModel):
@@ -23,6 +32,20 @@ class ContextButton(BaseModel):
         if key_target == "list" and not viewset.is_view_registered("list") and viewset.is_view_registered("card"):
             return "card"
         return key_target
+
+    def _problem(self, msg: str) -> str:
+        return f"context button {self.key!r} ({type(self).__name__}): {msg}"
+
+    def cv_check_target(self, viewset) -> str | None:
+        """
+        System check viewset.E255: why this button's target does not resolve on viewset, or None.
+        Subclasses with their own get_context() may not use key_target and are skipped.
+        """
+        if type(self).get_context is not ContextButton.get_context or self.key_target is None:
+            return None
+        if not _is_registered(viewset, self.key_target):
+            return self._problem(f"key_target {self.key_target!r} is not registered at ViewSet {viewset.name!r}")
+        return None
 
     def render_label(self, data: dict, context: ViewContext) -> str:
         if self.label_template:
@@ -84,6 +107,14 @@ class ParentContextButton(ContextButton):
     """
     A context button that
     """
+
+    def cv_check_target(self, viewset) -> str | None:
+        if not viewset.parent:
+            return self._problem(f"ViewSet {viewset.name!r} has no parent")
+        parent = viewset.parent.viewset
+        if self.key_target is None or not _is_registered(parent, self.key_target):
+            return self._problem(f"key_target {self.key_target!r} is not registered at parent ViewSet {parent.name!r}")
+        return None
 
     def get_context(self, context: ViewContext) -> dict:
 
@@ -148,6 +179,17 @@ class ChildContextButton(ContextButton):
     child_name: str
     child_key: str = "list"
 
+    def cv_check_target(self, viewset) -> str | None:
+        try:
+            child_vs = viewset.get_viewset(self.child_name)
+        except ViewSetNotFoundError:
+            return self._problem(f"child_name {self.child_name!r} is not a registered ViewSet")
+        if not child_vs.parent or child_vs.parent.name != viewset.name:
+            return self._problem(f"ViewSet {self.child_name!r} is not a child of ViewSet {viewset.name!r}")
+        if not _is_registered(child_vs, self.child_key):
+            return self._problem(f"child_key {self.child_key!r} is not registered at ViewSet {self.child_name!r}")
+        return None
+
     def get_context(self, context: ViewContext) -> dict:
         if context.object is None:
             return {}
@@ -190,6 +232,15 @@ class SiblingContextButton(ContextButton):
 
     sibling_name: str
     sibling_key: str = "list"
+
+    def cv_check_target(self, viewset) -> str | None:
+        try:
+            sibling_vs = viewset.get_viewset(self.sibling_name)
+        except ViewSetNotFoundError:
+            return self._problem(f"sibling_name {self.sibling_name!r} is not a registered ViewSet")
+        if not _is_registered(sibling_vs, self.sibling_key):
+            return self._problem(f"sibling_key {self.sibling_key!r} is not registered at ViewSet {self.sibling_name!r}")
+        return None
 
     def get_context(self, context: ViewContext) -> dict:
         # only rendered on child views (those with a parent)
@@ -258,3 +309,29 @@ class FilterContextButton(ContextButton):
         self._inject_template(data)
 
         return data
+
+
+def context_buttons_default(*args, **kwargs) -> Any:
+    return [
+        ContextButton(
+            key="home",
+            key_target="list",
+            # I don't think we need templates here because the title should be the one of the
+            # list page where it links to
+        ),
+        ParentContextButton(key="parent", key_target="list"),
+        FilterContextButton(),
+    ]
+
+
+def context_button_checks(context, viewset, buttons: list[ContextButton] | None):
+    """
+    System check viewset.E255 for explicitly configured context buttons. Buttons equal to a default
+    are skipped: their target is legitimately absent on e.g. a detail-only or root ViewSet (#132).
+    """
+    defaults = context_buttons_default()
+    for button in buttons or []:
+        if button in defaults:
+            continue
+        problem = button.cv_check_target(viewset)
+        yield CheckExpression(context=context, id="E255", expression=problem is None, msg=problem or "")

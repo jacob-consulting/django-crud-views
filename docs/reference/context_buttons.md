@@ -279,7 +279,8 @@ a ViewSet's `context_buttons` and a view's `cv_context_buttons`:
 Not checked:
 
 - Buttons equal to an entry of `context_buttons_default()`. The default `home` and `parent`
-  buttons are meant to vanish on a ViewSet without a list view or without a parent.
+  buttons are meant to vanish on a ViewSet without a list view or without a parent. A changed
+  default, e.g. `home` with its own `label_template_code`, is checked like any other button.
 - Button subclasses that override `get_context()`, such as `FilterContextButton`. A custom
   button type can override `cv_check_target(viewset)`, which returns a problem message or `None`.
 

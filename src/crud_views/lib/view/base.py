@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
+from contextlib import nullcontext
 from functools import cached_property
 from typing import TYPE_CHECKING, Any
 from urllib.parse import urlencode
@@ -13,6 +14,7 @@ if TYPE_CHECKING:
 from typing import Self
 
 from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.db import router, transaction
 from django.db.models import Model
 from django.shortcuts import get_object_or_404
 from django.template import Context as TemplateContext
@@ -67,6 +69,7 @@ class CrudView(metaclass=CrudViewMetaClass):
     cv_success_keys: list[str] | None = None  # origin keys the success redirect may return to; None = static
     cv_cancel_key: str | None = "list"  # cancel url, defaults to list
     cv_cancel_keys: list[str] | None = None  # origin keys the cancel button may return to; None = static
+    cv_atomic: bool = True  # run the POST write phase in transaction.atomic(); see request_lifecycle.md
 
     cv_extends_template: str | None = None  # template to extend
 
@@ -168,6 +171,28 @@ class CrudView(metaclass=CrudViewMetaClass):
         if self.cv_modal:
             patch_vary_headers(response, ["X-CV-Modal"])
         return response
+
+    def cv_get_db_alias(self) -> str:
+        """Database alias of the POST write phase; follows DATABASE_ROUTERS for the ViewSet's model."""
+        return router.db_for_write(self.cv_viewset.model)
+
+    def cv_get_atomic(self):
+        """
+        Context manager around the POST write phase: transaction.atomic() on cv_get_db_alias(),
+        or a no-op when cv_atomic is False. Override for durable=True or a custom boundary.
+        To change the database, override cv_get_db_alias() instead — cv_on_commit is registered on that
+        alias, so a cv_get_atomic() override must use the same alias.
+        """
+        if not self.cv_atomic:
+            return nullcontext()
+        return transaction.atomic(using=self.cv_get_db_alias())
+
+    def cv_on_commit(self, context: dict) -> None:
+        """
+        Hook: runs after the write phase is committed, never after a rollback.
+        Put side effects here: mail, Celery tasks, webhooks, cache invalidation.
+        """
+        pass
 
     def cv_get_extends_template(self) -> str:
         if self.cv_extends_template:

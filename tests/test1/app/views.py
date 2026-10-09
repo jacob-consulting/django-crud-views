@@ -48,7 +48,7 @@ from crud_views_polymorphic.lib.create_select import PolymorphicContentTypeForm
 from crud_views_polymorphic.lib.delete import PolymorphicDeleteViewPermissionRequired
 from crud_views_workflow.lib.forms import WorkflowForm
 from crud_views_workflow.lib.views import WorkflowViewPermissionRequired
-from tests.test1.app.models import Author, Book, Campaign, Car, Publisher, Truck, Vehicle
+from tests.test1.app.models import Author, Book, Campaign, Car, Genre, Publisher, Truck, Vehicle
 
 cv_author = ViewSet(model=Author, name="author", icon_header="fa-regular fa-user")
 
@@ -438,6 +438,35 @@ class BookUpdateView(CrispyViewMixin, UpdateViewPermissionRequired):
 class BookDeleteView(CrispyViewMixin, DeleteViewPermissionRequired):
     form_class = CrispyDeleteForm
     cv_viewset = cv_book
+
+
+# --- Genre (INT PK, many-to-many child of Publisher; transaction tests) ---
+
+cv_genre = ViewSet(
+    model=Genre,
+    name="genre",
+    parent=ParentViewSet(name="publisher", attribute="publishers", many_to_many_through_attribute="genres"),
+)
+
+
+class GenreForm(CrispyModelForm):
+    submit_label = "Create"
+
+    class Meta:
+        model = Genre
+        fields = ["name"]
+
+    def get_layout_fields(self):
+        return Row(Column4("name"))
+
+
+class GenreListView(ListViewPermissionRequired):
+    cv_viewset = cv_genre
+
+
+class GenreCreateView(CrispyViewMixin, CreateViewParentMixin, CreateViewPermissionRequired):
+    form_class = GenreForm
+    cv_viewset = cv_genre
 
 
 # --- Contract (second child of publisher, sibling of book) ---

@@ -58,14 +58,16 @@ tree, per-formset plumbing) is internal, and stays internal in 1.0.
 **Declared attributes and hooks**: the documented `cv_*` class attributes of the classes
 above, and the documented overridable hooks — e.g. `cv_form_valid` (framework work step),
 `cv_form_valid_hook` (user extension point), `cv_post_hook`, `cv_form_invalid_hook`,
-`cv_form_valid_redirect`.
+`cv_form_valid_redirect`, and the transaction API: `cv_atomic`, `cv_get_atomic`,
+`cv_get_db_alias`, `cv_on_commit`, `cv_form_valid_process`, `cv_action_process`
+(see [Request lifecycle, transactions & hooks](../reference/request_lifecycle.md)).
 
 ### `crud_views_workflow`
 
 Public import path: `crud_views_workflow.lib` —
 `WorkflowView`, `WorkflowViewPermissionRequired`, `WorkflowModelMixin`, `WorkflowForm`,
 `BadgeEnum`, `WorkflowComment`. The `WorkflowInfo` model stays at `crud_views_workflow.models`,
-and the `on_transition` hook is the documented overridable method on `WorkflowView`.
+and the `on_transition` hook is the documented overridable method on `WorkflowView` (it runs inside the transaction; `context["workflow_info"]` is available in `cv_on_commit`).
 
 ### `crud_views_polymorphic`
 

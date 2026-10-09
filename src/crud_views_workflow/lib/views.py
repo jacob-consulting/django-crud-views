@@ -102,7 +102,7 @@ class WorkflowView(CustomFormView):
         wf_method = getattr(self.object, transition, None)
         assert callable(wf_method), f"Invalid transition {transition}"
 
-        with transaction.atomic():
+        with transaction.atomic(using=self.cv_get_db_alias()):
             # get old state
             state_old = self.object.state
 
@@ -128,12 +128,17 @@ class WorkflowView(CustomFormView):
                 workflow_object_content_type=ContentType.objects.get_for_model(self.object),
             )
 
+            # expose the transition record to cv_on_commit (side effects after commit)
+            context["workflow_info"] = info
+
             # call hook
             self.on_transition(info, transition, state_old, state_new, comment, user, data)
 
     def on_transition(self, info, transition, state_old, state_new, comment, user, data):
         """
-        Override this to do additional stuff after a transition
+        Override for database follow-ups of a transition. Runs inside the transaction, so
+        writes here roll back together with the transition. Put side effects (mail, Celery,
+        webhooks) in cv_on_commit instead; context["workflow_info"] holds the record there.
         """
         pass
 

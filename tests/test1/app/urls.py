@@ -11,6 +11,7 @@ from tests.test1.app.views import (
     cv_booknote_bc,
     cv_campaign,
     cv_contract,
+    cv_genre,
     cv_guardian_author,
     cv_guardian_author_origin,
     cv_guardian_book,
@@ -40,6 +41,7 @@ urlpatterns += cv_publisher.urlpatterns
 urlpatterns += cv_publisher_order.urlpatterns
 urlpatterns += cv_publisher_signed_order.urlpatterns
 urlpatterns += cv_book.urlpatterns
+urlpatterns += cv_genre.urlpatterns
 urlpatterns += cv_contract.urlpatterns
 urlpatterns += cv_vehicle.urlpatterns
 urlpatterns += cv_campaign.urlpatterns

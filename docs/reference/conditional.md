@@ -100,7 +100,7 @@ ConditionalGroup(
     `crud_views.W321` warns about that combination). The only permission gate is
     the parent object's *change* permission — no per-row delete permission is
     checked, also under django-guardian. The save flow (main form, purge, sibling
-    formsets) runs inside a single database transaction, so a failure elsewhere
+    formsets) runs inside a single database [transaction](request_lifecycle.md#transactions), so a failure elsewhere
     rolls the purge back.
 
 ### Scope constraint

@@ -159,11 +159,15 @@ class AuthorUpdateView(CrispyViewMixin, MessageMixin, UpdateViewPermissionRequir
 
 The same hooks as [CreateView](create_view.md#form-processing-hooks) are available:
 
-| Hook | Description |
-|------|-------------|
-| `cv_post_hook(context)` | Called at the start of POST processing |
-| `cv_form_is_valid(context)` | Override to add custom validation |
-| `cv_form_valid(context)` | Called when the form is valid (saves the instance) |
-| `cv_form_valid_hook(context)` | Called after `cv_form_valid` (used by `MessageMixin`) |
-| `cv_form_invalid(context)` | Called when the form is invalid |
-| `cv_form_invalid_hook(context)` | Called after form invalid handling |
+| Hook | Phase | Description |
+|------|-------|-------------|
+| `cv_post_hook(context)` | outside | Called at the start of POST processing |
+| `cv_form_is_valid(context)` | outside | Override to add custom validation |
+| `cv_form_valid(context)` | in transaction | Called when the form is valid (saves the instance) |
+| `cv_form_valid_hook(context)` | in transaction | Called after `cv_form_valid` (used by `MessageMixin`) |
+| `cv_on_commit(context)` | after commit | Side effects: mail, Celery, webhooks |
+| `cv_form_invalid(context)` | outside | Called when the form is invalid |
+| `cv_form_invalid_hook(context)` | outside | Called after form invalid handling |
+
+The full call chain, the transaction settings and recipes are in
+[Request lifecycle, transactions & hooks](request_lifecycle.md).

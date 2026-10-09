@@ -75,6 +75,9 @@ class AuthorDeleteView(CrispyViewMixin, MessageMixin, DeleteViewPermissionRequir
 The same hooks as [CreateView](create_view.md#form-processing-hooks) are available, since
 `DeleteView` also uses `CrudViewProcessFormMixin`.
 
+`self.object.delete()` and `cv_form_valid_hook` run in one transaction; side effects belong in
+`cv_on_commit`. See [Request lifecycle, transactions & hooks](request_lifecycle.md#call-chains).
+
 ## Cascading Deletes Display
 
 Show users what related objects will be deleted when they delete an object (similar to Django Admin).

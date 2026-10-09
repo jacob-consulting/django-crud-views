@@ -304,6 +304,49 @@ field-group, use `ConditionalFormSet` — see the
 *See it running: [`examples/bootstrap5/conditional/`](https://github.com/jacob-consulting/django-crud-views/tree/main/examples/bootstrap5/conditional) ·
 Full docs: [Conditional Field-Groups & Conditional FormSets](reference/conditional.md).*
 
+## How do I send an email or start a Celery task after a save?
+
+Override `cv_on_commit(context)`. It runs after the database transaction has committed, and never
+after a rollback. Don't use `cv_form_valid_hook`: it runs inside the transaction.
+
+```python
+def cv_on_commit(self, context):
+    send_welcome_mail.delay(self.object.pk)
+```
+
+See [Side effects after commit](reference/request_lifecycle.md#side-effects-after-commit).
+
+## Why does my Celery task sometimes raise `DoesNotExist`?
+
+The task was started inside the transaction (from `cv_form_valid_hook`, `action()` or
+`on_transition`), and the worker ran it before the commit made the row visible. Start it from
+`cv_on_commit` instead. See [Side effects after commit](reference/request_lifecycle.md#side-effects-after-commit)
+and [when `cv_on_commit` runs](reference/request_lifecycle.md#transactions).
+
+## How do I undo an action's changes when `action()` returns `False`?
+
+Returning `False` shows the error message but keeps what `action()` already wrote. Call
+`transaction.set_rollback(True)` before returning. See
+[Rolling back a failed action](reference/request_lifecycle.md#rolling-back-a-failed-action).
+
+## Why do I get `TransactionManagementError` after catching `IntegrityError`?
+
+`cv_form_valid` runs inside a transaction. On PostgreSQL a caught database error breaks it. Wrap
+the statement that may fail in its own `transaction.atomic()`. See
+[Catching IntegrityError](reference/request_lifecycle.md#catching-integrityerror).
+
+## How do I turn off the transaction for one view?
+
+Set `cv_atomic = False` on the view. To change the boundary instead (another database,
+`durable=True` services), override `cv_get_db_alias()` or `cv_get_atomic()`. See
+[Transactions](reference/request_lifecycle.md#transactions) and
+[Durable services](reference/request_lifecycle.md#durable-services).
+
+## Where does each hook run, and which one should I override?
+
+The [hook reference](reference/request_lifecycle.md#hook-reference) lists every overridable method
+with its phase (outside, in the transaction, after the commit) and what it is meant for.
+
 ## Why is my `cv_*` attribute silently ignored? (check W280)
 
 `CrudView` config attributes use the `cv_` prefix and are read via `getattr`, so a typo or a

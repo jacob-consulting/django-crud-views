@@ -1,11 +1,13 @@
 import contextlib
 import json
 from collections.abc import Iterable
+from functools import partial
 from typing import ClassVar
 from urllib.parse import parse_qs, urlencode
 
 from django.contrib import messages
 from django.core.exceptions import BadRequest
+from django.db import transaction
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.utils.text import capfirst
 from django.utils.translation import gettext as _
@@ -20,7 +22,7 @@ from crud_views.lib.view.base import cv_is_modal_request
 
 class CrudViewProcessFormMixin:
     """
-    Mixin for create and update views.
+    Mixin for form-processing views (create, update, delete, custom forms, workflow).
     Note ProcessFormView.post is overridden.
     Why? Because we need a more detailed handling of the post method.
     """
@@ -37,12 +39,22 @@ class CrudViewProcessFormMixin:
         context = self.get_context_data(**kwargs)
         self.cv_post_hook(context)
         if self.cv_form_is_valid(context):
-            self.cv_form_valid(context)
-            self.cv_form_valid_hook(context)
+            self.cv_form_valid_process(context)
             return self.cv_form_valid_redirect(context)
         else:
             self.cv_form_invalid_hook(context)
             return self.cv_form_invalid(context)
+
+    def cv_form_valid_process(self, context: dict) -> None:
+        """
+        Write phase of a valid POST: cv_form_valid and cv_form_valid_hook run inside
+        cv_get_atomic(); cv_on_commit is scheduled to run after the commit (never after a
+        rollback). A subclass overriding post() should call this to keep the transaction.
+        """
+        with self.cv_get_atomic():
+            self.cv_form_valid(context)
+            self.cv_form_valid_hook(context)
+            transaction.on_commit(partial(self.cv_on_commit, context), using=self.cv_get_db_alias())
 
     def cv_post_hook(self, context: dict):
         """

@@ -3,9 +3,13 @@
 The example project runs as a public demo at
 **[django-crud-views-demo.onrender.com](https://django-crud-views-demo.onrender.com/)**.
 
-Log in as `alice` / `alice` or `bob` / `bob`. Both have full model permissions in every example. They differ in
-the **Guardian** example, which uses per-object permissions: each sees their own documents plus the ones the other
-shared with them.
+Log in as `alice` / `alice` or `bob` / `bob`. alice has full model permissions in every example. bob has the same,
+except in:
+
+- **Context Buttons** and **Action Menus**, where bob may only view, to show what a restricted user sees: actions he
+  may not use disappear, or, in Action Menus, show disabled ("Archive").
+- **Guardian**, which uses per-object permissions: each user sees their own documents plus the ones the other shared
+  with them.
 
 Things to know:
 

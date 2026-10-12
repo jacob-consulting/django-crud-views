@@ -938,12 +938,14 @@ msgstr "Öffnen"
 #: project/templates/project/home.html:40
 msgid ""
 "Demo users (created by <code>manage.py seed</code>): <code>alice/alice</code>"
-" and <code>bob/bob</code> (regular users — the Guardian example shows them "
-"different documents)."
+" and <code>bob/bob</code> (regular users — bob may only view in Context "
+"Buttons and Action Menus, and the Guardian example shows them different "
+"documents)."
 msgstr ""
 "Demo-Benutzer (angelegt mit <code>manage.py seed</code>): "
-"<code>alice/alice</code> und <code>bob/bob</code> (normale Benutzer — das "
-"Guardian-Beispiel zeigt ihnen unterschiedliche Dokumente)."
+"<code>alice/alice</code> und <code>bob/bob</code> (normale Benutzer — bob darf "
+"in Context Buttons und Action Menus nur ansehen, und das Guardian-Beispiel "
+"zeigt ihnen unterschiedliche Dokumente)."
 
 #: project/templates/project/nav.html:24
 msgid "Log Out"

@@ -196,6 +196,8 @@ def cv_context_action(context, key, obj=None):
 def cv_context_action_form(context, key, obj=None):
     """Hidden POST form for a context action; nothing for GET, hidden or disabled actions (#178)."""
     obj = obj if obj else None  # fix empty string from template
+    if obj is None:
+        obj = getattr(cv_get_view(context), "object", None)
     ctx = cv_resolve_action(cv_get_context(context=context, key=key, obj=obj))
     if ctx is None or ctx["cv_disabled"]:
         return {}

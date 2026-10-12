@@ -105,3 +105,43 @@ def test_form_post_is_not_405(client_full, author_douglas_adams, monkeypatch):
     form = doc.cssselect("form[id^='cv_form_']")[0]
     resp = client_full.post(form.get("action"))
     assert resp.status_code == 302
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("inline", [None, ["detail"]])
+def test_context_button_wrapping_post_target(client_full, author_douglas_adams, monkeypatch, inline):
+    from crud_views.lib.view import ContextButton
+
+    buttons = [
+        ContextButton(key="raise", key_target="up", label_template_code="Raise"),
+        ContextButton(key="lower", key_target="down", label_template_code="Lower"),
+    ]
+    monkeypatch.setattr(AuthorDetailView, "cv_context_buttons", buttons)
+    monkeypatch.setattr(AuthorDetailView, "cv_context_actions", ["detail", "raise", "lower"])
+    monkeypatch.setattr(AuthorDetailView, "cv_context_actions_inline", inline)
+    doc = _doc(client_full, author_douglas_adams)
+    triggers = _toolbar(doc).cssselect("[data-cv-action='submit-form']")
+    targets = {t.get("cv-key"): t.get("data-cv-target") for t in triggers}
+    assert set(targets) == {"up", "down"}
+    assert targets["up"] != targets["down"]
+    _assert_form(doc, targets["up"], author_douglas_adams, "up")
+    _assert_form(doc, targets["down"], author_douglas_adams, "down")
+
+
+@pytest.mark.django_db
+def test_manual_placement_pairs_button_and_form(client_full, author_douglas_adams):
+    from django.template import RequestContext, Template
+
+    resp = client_full.get(reverse(cv_author.get_router_name("detail"), kwargs={"pk": author_douglas_adams.pk}))
+    view, request = resp.context["view"], resp.context["request"]
+    tpl = Template("{% load crud_views %}{% cv_context_action_form 'up' %}{% cv_context_button 'up' %}")
+    doc = lxml_html.fromstring(f"<div>{tpl.render(RequestContext(request, {'view': view}))}</div>")
+    button = doc.cssselect("[data-cv-action='submit-form']")[0]
+    _assert_form(doc, button.get("data-cv-target"), author_douglas_adams, "up")
+    # GET target: the form tag renders nothing
+    assert (
+        Template("{% load crud_views %}{% cv_context_action_form 'update' %}")
+        .render(RequestContext(request, {"view": view}))
+        .strip()
+        == ""
+    )

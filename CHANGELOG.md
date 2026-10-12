@@ -12,10 +12,10 @@
 
 ### Fixed
 
-- Context toolbar: POST-only views in `cv_context_actions` (`ActionView`, `OrderedUpView` / `OrderedDownView`)
-  rendered as GET links and answered 405 Method Not Allowed. They now submit a hidden POST form, inline and from the
-  toolbar's action menu, as list rows and cards do; disabled actions render no form. New tag
-  `{% cv_context_action_form key obj %}` renders that form for manually placed buttons. GET-only toolbars render
+- Context toolbar: POST-only views in `cv_context_actions` (`ActionView`, `OrderedUpView` / `OrderedDownView`) rendered
+  as GET links and answered 405 Method Not Allowed, also when wrapped in a `ContextButton`. They now submit a hidden
+  POST form, inline and from the toolbar's action menu, as list rows and cards do; disabled actions render no form. New
+  tag `{% cv_context_action_form key obj %}` renders that form for manually placed buttons. GET-only toolbars render
   unchanged. The action-menus example's detail toolbar offers *done* / *archive* again (#178).
 
 - `{% cv_language_selector %}`: the decorative language icon carries `aria-hidden="true"`, so screen readers no

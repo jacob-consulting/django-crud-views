@@ -276,7 +276,7 @@ class ChoreDetailView(DetailViewPermissionRequired):
 ```
 
 When you place such a button yourself with `{% cv_context_button "done" %}`, also render its form, outside any
-`.btn-group`: `{% cv_context_action_form "done" object %}`.
+`.btn-group`: `{% cv_context_action_form "done" %}`.
 
 ## Target check (E255)
 
@@ -313,6 +313,7 @@ same context as the configured buttons, so access and the `cv_action_enabled` st
 | `{% cv_context_button "key" %}`           | Rendered button markup, or **nothing** when no access |
 | `{% cv_context_url "key" as url %}`       | The target URL string, or `None` when no access      |
 | `view\|cv_context_has_permission:"key"`   | `True`/`False` — may the user access the key?        |
+| `{% cv_context_action_form "key" %}`      | Hidden POST form for a POST-only key, else nothing   |
 
 In every case the object defaults to the view's current object; pass a second argument to
 target a different object, and unknown keys resolve to nothing/`None` rather than raising.

@@ -1,6 +1,6 @@
 {% load i18n crud_views %}
 {% load example_tags %}
-<nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
+<nav class="navbar navbar-expand-xl navbar-dark bg-dark mb-4">
     <div class="container-fluid">
         <a class="navbar-brand" href="{% url "home" %}">django-crud-views</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
@@ -8,12 +8,26 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarCollapse">
-            <ul class="navbar-nav me-auto mb-2 mb-md-0">
-                {% get_features as features %}
-                {% for feature in features %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url feature.url_name %}">{{ feature.title }}</a>
-                    </li>
+            <ul class="navbar-nav me-auto mb-2 mb-xl-0">
+                {% get_feature_groups as nav_groups %}
+                {% for group, features in nav_groups.groups %}
+                    {% if features %}
+                        <li class="nav-item dropdown">
+                            <button type="button" id="nav-group-{{ group.key }}" class="nav-link dropdown-toggle{% if group.key == nav_groups.active_group %} active{% endif %}" data-bs-toggle="dropdown" aria-expanded="false"{% if group.key == nav_groups.active_group %} aria-current="true"{% endif %}>
+                                <i class="{{ group.icon }}"></i> {{ group.title }}
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="nav-group-{{ group.key }}">
+                                {% for feature in features %}
+                                    <li>
+                                        <a class="dropdown-item" href="{% url feature.url_name %}">
+                                            <i class="{{ feature.icon }} fa-fw"></i> {{ feature.title }}
+                                            {% if feature.badge %}<span class="badge text-bg-success ms-1">{{ feature.badge }}</span>{% endif %}
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                    {% endif %}
                 {% endfor %}
             </ul>
             <div class="me-3">{% cv_language_selector %}</div>

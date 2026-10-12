@@ -1,3 +1,5 @@
+import re
+
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from django.test import SimpleTestCase, TestCase, override_settings
@@ -203,7 +205,14 @@ class DocRefTest(SimpleTestCase):
         from project.features import Feature
 
         feature = Feature(
-            app="x", title="X", description="d", about="a", look_at="l", url_name="home", icon="fa-solid fa-x"
+            app="x",
+            group="basics",
+            title="X",
+            description="d",
+            about="a",
+            look_at="l",
+            url_name="home",
+            icon="fa-solid fa-x",
         )
         self.assertEqual(feature.docs, ())
 
@@ -266,3 +275,156 @@ class DocRefsPanelTest(TestCase):
         self.assertIn("snippet-panels", html)
         self.assertNotIn("References to documentation", html)
         self.assertNotIn("<ul", html)
+
+
+class FeatureGroupsTest(SimpleTestCase):
+    def test_every_feature_has_a_known_group_and_no_group_is_empty(self):
+        from project.features import GROUPS, feature_groups
+
+        keys = [group.key for group in GROUPS]
+        self.assertEqual(keys, ["basics", "forms", "ui", "extensions"])
+        for feature in FEATURES:
+            self.assertIn(feature.group, keys, feature.app)
+        for group, features in feature_groups():
+            self.assertTrue(features, f"group {group.key} is empty")
+
+    def test_grouping_matches_spec(self):
+        from project.features import feature_groups
+
+        grouped = {group.key: [f.app for f in features] for group, features in feature_groups()}
+        self.assertEqual(
+            grouped,
+            {
+                "basics": ["library", "nested", "resources"],
+                "forms": ["formsets", "conditional"],
+                "ui": ["showcase", "breadcrumbs", "context_buttons", "action_menus"],
+                "extensions": ["workflow", "polymorphic_demo", "guardian_demo", "object_detail"],
+            },
+        )
+
+    def test_unknown_group_raises(self):
+        import dataclasses
+        from unittest import mock
+
+        from project.features import feature_groups
+
+        bad = dataclasses.replace(FEATURES[0], group="nope")
+        with (
+            mock.patch("project.features.FEATURES", [*FEATURES, bad]),
+            self.assertRaisesRegex(ValueError, "'library'.*'nope'"),
+        ):
+            feature_groups()
+
+
+NAV_GROUP_ID = re.compile(r'id="nav-group-([a-z]+)"')
+ACTIVE_NAV_GROUP = re.compile(r'id="nav-group-([a-z]+)" class="nav-link dropdown-toggle active"')
+
+
+def navbar_html(resp) -> str:
+    """Only the top navbar: the breadcrumb is another <nav>, and some pages add their own dropdowns."""
+    body = resp.content.decode()
+    start = body.index('<nav class="navbar')
+    return body[start : body.index("</nav>", start)]
+
+
+class NavGroupsTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.admin = get_user_model().objects.create_superuser(username="nav-admin", password="pw")
+
+    def test_four_group_dropdowns_on_home_and_feature_page(self):
+        nav = navbar_html(self.client.get(reverse("home")))
+        self.assertEqual(NAV_GROUP_ID.findall(nav), ["basics", "forms", "ui", "extensions"])
+        self.client.force_login(self.admin)
+        nav = navbar_html(self.client.get(reverse("author-list")))
+        self.assertEqual(NAV_GROUP_ID.findall(nav), ["basics", "forms", "ui", "extensions"])
+
+    def test_group_toggles_are_buttons(self):
+        # a real <button>, not <a role="button">: keyboard accessible without extra handlers (Sonar Web:S6819)
+        nav = navbar_html(self.client.get(reverse("home")))
+        for key in ("basics", "forms", "ui", "extensions"):
+            self.assertIn(f'<button type="button" id="nav-group-{key}" class="nav-link dropdown-toggle', nav)
+        self.assertNotIn('role="button"', nav)
+
+    def test_nav_links_every_feature(self):
+        nav = navbar_html(self.client.get(reverse("home")))
+        for feature in FEATURES:
+            self.assertIn(f'href="{reverse(feature.url_name)}"', nav, feature.app)
+
+    def test_feature_page_marks_its_group_active(self):
+        self.client.force_login(self.admin)
+        for feature in FEATURES:
+            with self.subTest(app=feature.app):
+                nav = navbar_html(self.client.get(reverse(feature.url_name)))
+                self.assertEqual(ACTIVE_NAV_GROUP.findall(nav), [feature.group])
+                self.assertEqual(nav.count('aria-current="true"'), 1)
+
+    def test_non_landing_page_marks_its_group_active(self):
+        self.client.force_login(self.admin)
+        nav = navbar_html(self.client.get(reverse("author-create")))
+        self.assertEqual(ACTIVE_NAV_GROUP.findall(nav), ["basics"])
+
+    def test_home_and_login_have_no_active_group(self):
+        for name in ("home", "login"):
+            with self.subTest(page=name):
+                nav = navbar_html(self.client.get(reverse(name)))
+                self.assertEqual(ACTIVE_NAV_GROUP.findall(nav), [])
+                self.assertNotIn('aria-current="true"', nav)
+
+    def test_tag_without_view_in_context(self):
+        from project.templatetags.example_tags import get_feature_groups
+
+        result = get_feature_groups({})
+        self.assertIsNone(result["active_group"])
+        self.assertEqual([group.key for group, _ in result["groups"]], ["basics", "forms", "ui", "extensions"])
+
+    def test_badges_shown_in_dropdown(self):
+        nav = navbar_html(self.client.get(reverse("home")))
+        with_badge = [f for f in FEATURES if f.badge]
+        self.assertTrue(with_badge, "no feature has a badge any more; drop this test")
+        self.assertEqual(nav.count('class="badge text-bg-success ms-1"'), len(with_badge))
+
+    def test_empty_group_not_rendered_in_nav(self):
+        from unittest import mock
+
+        from project.features import GROUPS, FeatureGroup
+
+        empty = FeatureGroup(key="empty", title="Empty", icon="fa-solid fa-ban")
+        with mock.patch("project.features.GROUPS", [*GROUPS, empty]):
+            nav = navbar_html(self.client.get(reverse("home")))
+        self.assertNotIn('id="nav-group-empty"', nav)
+        self.assertEqual(len(NAV_GROUP_ID.findall(nav)), 4)
+
+
+class HomeGroupsTest(TestCase):
+    def test_home_has_a_heading_per_group_in_order(self):
+        from project.features import GROUPS
+
+        body = self.client.get(reverse("home")).content.decode()
+        positions = [body.index(f'id="group-{group.key}"') for group in GROUPS]
+        self.assertEqual(positions, sorted(positions))
+
+    def test_cards_sit_under_their_group_heading(self):
+        from project.features import feature_groups
+
+        body = self.client.get(reverse("home")).content.decode()
+        # everything after the first heading, cut into one chunk per group (the navbar sits before it)
+        sections = dict(chunk.split('"', 1) for chunk in body.split('<h2 id="group-')[1:])
+        for group, features in feature_groups():
+            for feature in features:
+                self.assertIn(f'href="{reverse(feature.url_name)}">Open</a>', sections[group.key], feature.app)
+
+    def test_empty_group_has_no_heading(self):
+        from unittest import mock
+
+        from project.features import GROUPS, FeatureGroup
+
+        empty = FeatureGroup(key="empty", title="Empty", icon="fa-solid fa-ban")
+        with mock.patch("project.features.GROUPS", [*GROUPS, empty]):
+            resp = self.client.get(reverse("home"))
+        self.assertNotContains(resp, 'id="group-empty"')
+
+    def test_group_titles_translated_de(self):
+        resp = self.client.get(reverse("home"), HTTP_ACCEPT_LANGUAGE="de")
+        for title in ("Grundlagen", "Formulare", "Oberfläche", "Erweiterungen"):
+            self.assertContains(resp, title)

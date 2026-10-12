@@ -10,11 +10,14 @@ from pygments.lexers import HtmlDjangoLexer, PythonLexer
 register = template.Library()
 
 
-@register.simple_tag
-def get_features():
-    from project.features import FEATURES
+@register.simple_tag(takes_context=True)
+def get_feature_groups(context):
+    """Navbar data: the feature groups, plus the key of the group the current page's view belongs to (or None)."""
+    from project.features import feature_groups
 
-    return FEATURES
+    view = context.get("view")
+    feature = _feature_for(view) if view is not None else None
+    return {"groups": feature_groups(), "active_group": feature.group if feature else None}
 
 
 @register.inclusion_tag("project/example_about.html", takes_context=True)

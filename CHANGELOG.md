@@ -18,6 +18,9 @@
 - Demo docs and the example home page no longer claim both demo users have full permissions everywhere: bob may
   only view in the Context Buttons and Action Menus examples (#180).
 
+- Examples: the navbar groups the example apps into Basics / Forms / UI / Extensions dropdowns, and the home page
+  uses the same groups as headings, so the menu no longer wraps; below 1200px it collapses into the hamburger menu.
+
 ## 0.28.0
 
 ### Added

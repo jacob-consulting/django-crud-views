@@ -68,6 +68,15 @@ Default list actions for list view.
 |-----|-------------|------|---------|
 | CRUD_VIEWS_INACCESSIBLE_ACTIONS | `"hide"` or `"disable"`: how actions the user may not use are rendered. Overridable per ViewSet (`inaccessible_actions`) and per view (`cv_inaccessible_actions`). See [Hide or disable inaccessible actions](inaccessible_actions.md). Invalid values raise `crud_views.E104`. | `str` | `hide` |
 
+## Action menus
+
+| Key | Description | Type | Default |
+|-----|-------------|------|---------|
+| CRUD_VIEWS_LIST_ACTIONS_INLINE | List row actions kept as buttons; the rest go into a `⋯` menu. `None`: no menu. See [Action menus](action_menus.md). Invalid values raise `crud_views.E105`. | `list[str] \| None` | `None` |
+| CRUD_VIEWS_CONTEXT_ACTIONS_INLINE | The same for the context toolbar. | `list[str] \| None` | `None` |
+| CRUD_VIEWS_CARD_ACTIONS_INLINE | The same for card actions. | `list[str] \| None` | `None` |
+| CRUD_VIEWS_ACTIONS_MENU_ICON | Icon of the menu toggle (bootstrap5 only) | `str` | `fa-solid fa-ellipsis` |
+
 ## Content Security Policy (CSP)
 
 django-crud-views is compatible with strict Content Security Policy headers. The package does not use inline scripts, inline event handlers, inline styles, or `javascript:` URIs.

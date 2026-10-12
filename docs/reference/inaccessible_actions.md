@@ -86,3 +86,8 @@ templates) to render disabled buttons.
 | `viewset.E207` | `cv_inaccessible_actions` is not `None`, `"hide"` or `"disable"` |
 
 `ViewSet.inaccessible_actions` is validated when the ViewSet is defined (pydantic `ValidationError`).
+
+## Inside action menus
+
+Disabled actions inside an [action menu](action_menus.md) render as disabled dropdown items; hidden ones appear
+nowhere, and a menu whose actions are all hidden renders no toggle.

@@ -264,3 +264,6 @@ class AuthorCardListView(GuardianCardListViewPermissionRequired):
 ```
 
 The queryset is automatically filtered to objects the user has per-object view permission on.
+
+!!! tip "Many actions?"
+    Fold the less common actions into a `⋯` dropdown: see [Action menus](action_menus.md).

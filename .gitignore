@@ -21,3 +21,6 @@ coverage-js
 .env
 
 examples/bootstrap5/staticfiles/
+
+.superpowers/
+.playwright-mcp/

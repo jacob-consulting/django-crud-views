@@ -1,12 +1,23 @@
 {% load crud_views %}
+{% cv_card_action_group object as group %}
 
 <div class="card mb-3">
     <div class="card-body">
         <h5 class="card-title">{{ object }}</h5>
         <div class="d-flex gap-2">
+            {% if group is None %}
             {% for action in view.cv_card_actions %}
                 {% cv_card_action action object %}
             {% endfor %}
+            {% else %}
+            {% for ctx in group.inline %}
+                {% cv_render_card_action ctx %}
+            {% endfor %}
+            {% for ctx in group.menu %}
+                {% cv_render_list_action_form ctx %}
+            {% endfor %}
+            {% cv_actions_menu group "card" %}
+            {% endif %}
         </div>
     </div>
 </div>

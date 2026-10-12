@@ -391,6 +391,19 @@ def cv_card_action(context, action, obj=None):
 
 
 @register.simple_tag(takes_context=True)
+def cv_card_action_group(context, obj):
+    """Card actions split into inline buttons and menu items; None: no menu (#174)."""
+    get_group = getattr(cv_get_view(context), "cv_get_card_action_group", None)
+    return get_group(obj) if get_group else None
+
+
+@register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/card_action.html", takes_context=True)
+def cv_render_card_action(context, ctx):
+    """Render already-resolved card action data (#174)."""
+    return ctx or {}
+
+
+@register.simple_tag(takes_context=True)
 def cv_user_in_group(context, group):
     if group is None:
         return False

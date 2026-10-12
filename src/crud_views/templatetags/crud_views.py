@@ -326,48 +326,7 @@ def cv_context_has_permission(view, key) -> bool:
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/card_action.html", takes_context=True)
 def cv_card_action(context, action, obj=None):
     view = cv_get_view(context)
-    user = context["request"].user
-
-    if action.child_name:
-        url = view.cv_get_child_url(action.child_name, action.child_key, obj)
-        child_viewset = view.cv_viewset.get_viewset(action.child_name)
-        child_cls = child_viewset.get_view_class(action.child_key)
-        # permission is checked on the child view, like ChildContextButton (#149)
-        data = {
-            "cv_access": bool(child_cls.cv_has_access(user, obj)),
-            "cv_action_enabled": child_cls.cv_action_enabled(user, obj),
-            "cv_inaccessible_actions": child_cls.cv_get_inaccessible_actions(),
-            "cv_url": url,
-            "cv_label": action.label,
-            "cv_icon_action": child_cls.cv_icon_action,
-            "cv_variant": action.variant,
-            "cv_flex": action.flex,
-            "cv_no_label": action.no_label,
-            "cv_list_action_method": "get",
-        }
-        return cv_resolve_action(data) or {}
-
-    cls = view.cv_viewset.get_view_class(action.key)
-    url = view.cv_get_link_url(cls, action.key, obj)
-    view_context = view.cv_get_view_context(object=obj)
-
-    label = action.label or cls.cv_get_action_short_label(context=view_context)
-
-    # always build the full data: disable mode renders label/icon/variant without access (#149)
-    data = cls.cv_get_dict(
-        context=view_context,
-        cv_oid=view.cv_get_oid(action.key, obj=obj),
-        cv_url=url,
-        cv_access=bool(cls.cv_has_access(user, obj)),
-        cv_action_enabled=cls.cv_action_enabled(user, obj),
-    )
-    data.update(
-        cv_label=label,
-        cv_variant=action.variant,
-        cv_flex=action.flex,
-        cv_no_label=action.no_label,
-    )
-    return cv_resolve_action(data) or {}
+    return cv_resolve_action(view.cv_get_card_action_data(action, obj, context["request"].user)) or {}
 
 
 @register.simple_tag(takes_context=True)

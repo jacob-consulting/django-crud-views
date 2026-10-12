@@ -22,7 +22,6 @@ from tests.test1.app.views import (
     AuthorCardListView,
     AuthorDeleteView,
     AuthorListView,
-    AuthorPingView,
     AuthorUpdateView,
     AuthorUpView,
     cv_author,
@@ -82,17 +81,10 @@ def objects(db):
     Publisher.objects.create(id=PUBLISHER_PK, name="Penguin")
 
 
-def _ping_labels(monkeypatch):
-    # AuthorPingView renders no label snippet of its own; rows and cards need one.
-    monkeypatch.setattr(AuthorPingView, "cv_action_label_template_code", "Ping")
-    monkeypatch.setattr(AuthorPingView, "cv_action_short_label_template_code", "Ping")
-
-
 @pytest.fixture
 def list_actions(monkeypatch):
     monkeypatch.setattr(AuthorListView, "cv_list_actions", LIST_ACTIONS)
     monkeypatch.setattr(AuthorDeleteView, "cv_modal", True)
-    _ping_labels(monkeypatch)
 
 
 @pytest.mark.django_db
@@ -128,7 +120,6 @@ def test_toolbar_list_with_filter(objects):
 
 @pytest.mark.django_db
 def test_cards_author_full(objects, monkeypatch):
-    _ping_labels(monkeypatch)
     monkeypatch.setattr(
         AuthorCardListView,
         "cv_card_actions",

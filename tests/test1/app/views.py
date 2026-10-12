@@ -135,6 +135,8 @@ class AuthorPingView(ActionViewPermissionRequired):
     cv_path = "ping"
     cv_viewset = cv_author
     cv_backend_only = True
+    cv_action_label_template_code = "Ping"
+    cv_action_short_label_template_code = "Ping"
     cv_message_template_code = "Pinged »{{ object }}«"
     cv_message_template_error_code = "Ping failed for »{{ object }}«"
 
@@ -148,6 +150,8 @@ class AuthorSilentPingView(ActionViewPermissionRequired):
     cv_path = "ping-silent"
     cv_viewset = cv_author
     cv_backend_only = True
+    cv_action_label_template_code = "Silent ping"
+    cv_action_short_label_template_code = "Silent ping"
 
     def action(self, context):
         return True
@@ -158,6 +162,8 @@ class AuthorMutedPingView(ActionViewPermissionRequired):
     cv_path = "ping-muted"
     cv_viewset = cv_author
     cv_backend_only = True
+    cv_action_label_template_code = "Muted ping"
+    cv_action_short_label_template_code = "Muted ping"
     cv_action_messages = False
     cv_message_template_code = "Should not appear"
 
@@ -170,6 +176,8 @@ class AuthorHookPingView(ActionViewPermissionRequired):
     cv_path = "ping-hook"
     cv_viewset = cv_author
     cv_backend_only = True
+    cv_action_label_template_code = "Hook ping"
+    cv_action_short_label_template_code = "Hook ping"
 
     def action(self, context):
         return True

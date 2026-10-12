@@ -27,8 +27,25 @@ class DocRef:
 
 
 @dataclass(frozen=True)
+class FeatureGroup:
+    key: str  # referenced by Feature.group
+    title: str  # navbar dropdown and home page heading; page chrome, so translated (unlike Feature.title)
+    icon: str  # font-awesome classes
+
+
+#: navbar dropdowns and home page sections, in display order
+GROUPS: list[FeatureGroup] = [
+    FeatureGroup(key="basics", title=_("Basics"), icon="fa-solid fa-cubes"),
+    FeatureGroup(key="forms", title=_("Forms"), icon="fa-solid fa-pen-to-square"),
+    FeatureGroup(key="ui", title=_("UI"), icon="fa-solid fa-palette"),
+    FeatureGroup(key="extensions", title=_("Extensions"), icon="fa-solid fa-puzzle-piece"),
+]
+
+
+@dataclass(frozen=True)
 class Feature:
     app: str  # python package name of the example app, e.g. "library"
+    group: str  # FeatureGroup.key this app is listed under in the navbar and on the home page
     title: str  # card/nav title; names a package feature as in the docs, so deliberately not translated
     description: str  # one-liner on the home page card (English, like about/look_at: they quote code)
     about: str  # 2-4 sentence teaching paragraph shown on every page of the app
@@ -43,6 +60,7 @@ FEATURES: list[Feature] = [
     # example feature apps append their entry here
     Feature(
         app="library",
+        group="basics",
         title="Library",
         description="Plain CRUD — list, detail, create, update, delete — plus tables, filters and ordering.",
         about=(
@@ -76,6 +94,7 @@ FEATURES: list[Feature] = [
     ),
     Feature(
         app="nested",
+        group="basics",
         title="Nested",
         description="Parent/child ViewSets with nested URLs: Company → Department → Employee, plus Offices.",
         about=(
@@ -98,6 +117,7 @@ FEATURES: list[Feature] = [
     ),
     Feature(
         app="formsets",
+        group="forms",
         title="Formsets",
         description="Inline formsets: edit a questionnaire with its questions and choices on one page.",
         about=(
@@ -115,6 +135,7 @@ FEATURES: list[Feature] = [
     ),
     Feature(
         app="workflow",
+        group="extensions",
         title="Workflow",
         description="django-fsm state machine: transitions as form actions, with audit history.",
         about=(
@@ -140,6 +161,7 @@ FEATURES: list[Feature] = [
     ),
     Feature(
         app="polymorphic_demo",
+        group="extensions",
         title="Polymorphic",
         description="One list over Car, Truck and Motorcycle with type-specific create and update forms.",
         about=(
@@ -169,6 +191,7 @@ FEATURES: list[Feature] = [
     ),
     Feature(
         app="guardian_demo",
+        group="extensions",
         title="Guardian",
         description="Per-object permissions: alice and bob each see their own documents, plus shared ones.",
         about=(
@@ -195,6 +218,7 @@ FEATURES: list[Feature] = [
     ),
     Feature(
         app="resources",
+        group="basics",
         title="Resources",
         description="A ViewSet over non-ORM data: a fake S3 bucket listing with delete and touch actions.",
         about=(
@@ -213,6 +237,7 @@ FEATURES: list[Feature] = [
     ),
     Feature(
         app="showcase",
+        group="ui",
         title="Showcase",
         description="Presentation extras: card list with signed ordering, fieldsets, modal delete, custom actions.",
         about=(
@@ -246,6 +271,7 @@ FEATURES: list[Feature] = [
     ),
     Feature(
         app="object_detail",
+        group="extensions",
         title="Object Detail",
         description="Seven detail-page layout themes, side by side, over the same product data.",
         about=(
@@ -270,6 +296,7 @@ FEATURES: list[Feature] = [
     ),
     Feature(
         app="breadcrumbs",
+        group="ui",
         title="Breadcrumbs",
         badge=_("NEW"),
         description="ViewSet-aware breadcrumbs, plus injecting a host application's navigation as prefix items.",
@@ -298,6 +325,7 @@ FEATURES: list[Feature] = [
     ),
     Feature(
         app="conditional",
+        group="forms",
         title="Conditional",
         badge=_("NEW"),
         description="A checkbox toggle reveals a field-group or an entire formset, enforced server-side.",
@@ -331,6 +359,7 @@ FEATURES: list[Feature] = [
     ),
     Feature(
         app="context_buttons",
+        group="ui",
         title="Context Buttons",
         description="Whole-button templates and placing context buttons by hand with template tags.",
         about=(
@@ -361,6 +390,7 @@ FEATURES: list[Feature] = [
     ),
     Feature(
         app="action_menus",
+        group="ui",
         title="Action Menus",
         description="Fold the less common actions of list rows, the toolbar and cards into a ⋯ dropdown.",
         about=(
@@ -383,3 +413,16 @@ FEATURES: list[Feature] = [
         ),
     ),
 ]
+
+
+def feature_groups() -> list[tuple[FeatureGroup, list[Feature]]]:
+    """FEATURES bucketed by GROUPS: one (group, features) pair per group in GROUPS order, FEATURES order within.
+
+    Raises ValueError for a feature naming an unknown group, so a typo fails loudly instead of hiding the app.
+    """
+    buckets: dict[str, list[Feature]] = {group.key: [] for group in GROUPS}
+    for feature in FEATURES:
+        if feature.group not in buckets:
+            raise ValueError(f"Feature {feature.app!r} names unknown group {feature.group!r}")
+        buckets[feature.group].append(feature)
+    return [(group, buckets[group.key]) for group in GROUPS]

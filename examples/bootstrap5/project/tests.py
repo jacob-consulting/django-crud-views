@@ -203,7 +203,14 @@ class DocRefTest(SimpleTestCase):
         from project.features import Feature
 
         feature = Feature(
-            app="x", title="X", description="d", about="a", look_at="l", url_name="home", icon="fa-solid fa-x"
+            app="x",
+            group="basics",
+            title="X",
+            description="d",
+            about="a",
+            look_at="l",
+            url_name="home",
+            icon="fa-solid fa-x",
         )
         self.assertEqual(feature.docs, ())
 
@@ -266,3 +273,42 @@ class DocRefsPanelTest(TestCase):
         self.assertIn("snippet-panels", html)
         self.assertNotIn("References to documentation", html)
         self.assertNotIn("<ul", html)
+
+
+class FeatureGroupsTest(SimpleTestCase):
+    def test_every_feature_has_a_known_group_and_no_group_is_empty(self):
+        from project.features import GROUPS, feature_groups
+
+        keys = [group.key for group in GROUPS]
+        self.assertEqual(keys, ["basics", "forms", "ui", "extensions"])
+        for feature in FEATURES:
+            self.assertIn(feature.group, keys, feature.app)
+        for group, features in feature_groups():
+            self.assertTrue(features, f"group {group.key} is empty")
+
+    def test_grouping_matches_spec(self):
+        from project.features import feature_groups
+
+        grouped = {group.key: [f.app for f in features] for group, features in feature_groups()}
+        self.assertEqual(
+            grouped,
+            {
+                "basics": ["library", "nested", "resources"],
+                "forms": ["formsets", "conditional"],
+                "ui": ["showcase", "breadcrumbs", "context_buttons", "action_menus"],
+                "extensions": ["workflow", "polymorphic_demo", "guardian_demo", "object_detail"],
+            },
+        )
+
+    def test_unknown_group_raises(self):
+        import dataclasses
+        from unittest import mock
+
+        from project.features import feature_groups
+
+        bad = dataclasses.replace(FEATURES[0], group="nope")
+        with (
+            mock.patch("project.features.FEATURES", [*FEATURES, bad]),
+            self.assertRaisesRegex(ValueError, "'library'.*'nope'"),
+        ):
+            feature_groups()

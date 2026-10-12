@@ -24,11 +24,6 @@ def client_full(db):
 
 @pytest.fixture
 def menu_list(monkeypatch):
-    from tests.test1.app.views import AuthorPingView
-
-    # the test app's ping view has no label templates of its own (same workaround as the golden test)
-    monkeypatch.setattr(AuthorPingView, "cv_action_label_template_code", "Ping", raising=False)
-    monkeypatch.setattr(AuthorPingView, "cv_action_short_label_template_code", "Ping", raising=False)
     monkeypatch.setattr(AuthorListView, "cv_list_actions", ["detail", "update", "delete", "up", "ping"])
     monkeypatch.setattr(AuthorListView, "cv_list_actions_inline", ["detail"])
 

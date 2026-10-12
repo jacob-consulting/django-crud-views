@@ -2,7 +2,18 @@
 
 ## Unreleased
 
+### Changed
+
+- System check `viewset.E110` now requires `cv_action_label_template[_code]` and
+  `cv_action_short_label_template[_code]` on backend-only views (`cv_backend_only = True`) too. Such views still render
+  as buttons in list rows, cards, context toolbars and action menus, where a missing label used to raise
+  `CrudViewError: no template or template_code provided` at request time. Header and paragraph templates stay optional
+  for backend-only views. Projects with label-less backend-only views must add the two label attributes (#179).
+
 ### Internal
+
+- The test app's backend-only ping views declare their action labels; the action-menu tests no longer monkeypatch
+  them (#179).
 
 - Demo docs and the example home page no longer claim both demo users have full permissions everywhere: bob may
   only view in the Context Buttons and Action Menus examples (#180).

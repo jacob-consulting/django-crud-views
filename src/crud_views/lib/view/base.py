@@ -116,16 +116,13 @@ class CrudView(metaclass=CrudViewMetaClass):
         yield CheckAttributeReg(context=cls, id="E201", attribute="cv_path", **check.REGS["path"])
         yield CheckTemplate(context=cls, id="E111", attribute="cv_extends_template")
 
-        # templates are required for frontend views
-        is_frontend = not cls.cv_backend_only
-        if is_frontend:
-            for attribute in [
-                "cv_header_template",
-                "cv_paragraph_template",
-                "cv_action_label_template",
-                "cv_action_short_label_template",
-            ]:
-                yield CheckTemplateOrCode(context=cls, attribute=attribute)
+        # action labels are required for every view: backend-only views still render them as buttons (#179);
+        # header and paragraph templates are required for frontend views only
+        attributes = ["cv_action_label_template", "cv_action_short_label_template"]
+        if not cls.cv_backend_only:
+            attributes = ["cv_header_template", "cv_paragraph_template", *attributes]
+        for attribute in attributes:
+            yield CheckTemplateOrCode(context=cls, attribute=attribute)
 
         yield CheckExpression(
             context=cls,

@@ -317,7 +317,9 @@ class FeatureGroupsTest(SimpleTestCase):
 
 
 NAV_GROUP_ID = re.compile(r'id="nav-group-([a-z]+)"')
-ACTIVE_NAV_GROUP = re.compile(r'id="nav-group-([a-z]+)" class="nav-link dropdown-toggle active"')
+ACTIVE_NAV_GROUP = re.compile(r'id="nav-group-(\w+)"[^>]*\bactive\b')
+ACTIVE_NAV_ITEM = re.compile(r'<a class="dropdown-item active" aria-current="page" href="([^"]+)"')
+ICON_TAG = re.compile(r'<i class="fa[^"]*"[^>]*>')
 
 
 def navbar_html(resp) -> str:
@@ -358,11 +360,23 @@ class NavGroupsTest(TestCase):
                 nav = navbar_html(self.client.get(reverse(feature.url_name)))
                 self.assertEqual(ACTIVE_NAV_GROUP.findall(nav), [feature.group])
                 self.assertEqual(nav.count('aria-current="true"'), 1)
+                self.assertEqual(ACTIVE_NAV_ITEM.findall(nav), [reverse(feature.url_name)])
+                self.assertEqual(nav.count('aria-current="page"'), 1)
 
     def test_non_landing_page_marks_its_group_active(self):
         self.client.force_login(self.admin)
         nav = navbar_html(self.client.get(reverse("author-create")))
         self.assertEqual(ACTIVE_NAV_GROUP.findall(nav), ["basics"])
+        self.assertEqual(ACTIVE_NAV_ITEM.findall(nav), [reverse("author-list")])
+
+    def test_nav_icons_hidden_from_screen_readers(self):
+        nav = navbar_html(self.client.get(reverse("home")))
+        # only the feature-group menus: the language selector after them is the package's template
+        groups = nav[nav.index('<ul class="navbar-nav') : nav.index('<div class="me-3">')]
+        icons = ICON_TAG.findall(groups)
+        self.assertTrue(icons)
+        for icon in icons:
+            self.assertIn('aria-hidden="true"', icon)
 
     def test_home_and_login_have_no_active_group(self):
         for name in ("home", "login"):
@@ -370,12 +384,15 @@ class NavGroupsTest(TestCase):
                 nav = navbar_html(self.client.get(reverse(name)))
                 self.assertEqual(ACTIVE_NAV_GROUP.findall(nav), [])
                 self.assertNotIn('aria-current="true"', nav)
+                self.assertNotIn('aria-current="page"', nav)
+                self.assertEqual(ACTIVE_NAV_ITEM.findall(nav), [])
 
     def test_tag_without_view_in_context(self):
         from project.templatetags.example_tags import get_feature_groups
 
         result = get_feature_groups({})
         self.assertIsNone(result["active_group"])
+        self.assertIsNone(result["active_app"])
         self.assertEqual([group.key for group, _ in result["groups"]], ["basics", "forms", "ui", "extensions"])
 
     def test_badges_shown_in_dropdown(self):
@@ -412,7 +429,18 @@ class HomeGroupsTest(TestCase):
         sections = dict(chunk.split('"', 1) for chunk in body.split('<h2 id="group-')[1:])
         for group, features in feature_groups():
             for feature in features:
-                self.assertIn(f'href="{reverse(feature.url_name)}">Open</a>', sections[group.key], feature.app)
+                card_link = f'href="{reverse(feature.url_name)}">Open</a>'
+                self.assertIn(card_link, sections[group.key], feature.app)
+                for other, section in sections.items():
+                    if other != group.key:
+                        self.assertNotIn(card_link, section, f"{feature.app} also under {other}")
+
+    def test_home_icons_hidden_from_screen_readers(self):
+        body = self.client.get(reverse("home")).content.decode()
+        icons = ICON_TAG.findall(body[body.index('<main class="container">') :])
+        self.assertTrue(icons)
+        for icon in icons:
+            self.assertIn('aria-hidden="true"', icon)
 
     def test_empty_group_has_no_heading(self):
         from unittest import mock

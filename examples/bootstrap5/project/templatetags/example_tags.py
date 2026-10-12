@@ -12,12 +12,16 @@ register = template.Library()
 
 @register.simple_tag(takes_context=True)
 def get_feature_groups(context):
-    """Navbar data: the feature groups, plus the key of the group the current page's view belongs to (or None)."""
+    """Navbar data: the feature groups, plus the group key and app of the current page's feature (or None)."""
     from project.features import feature_groups
 
     view = context.get("view")
     feature = _feature_for(view) if view is not None else None
-    return {"groups": feature_groups(), "active_group": feature.group if feature else None}
+    return {
+        "groups": feature_groups(),
+        "active_group": feature.group if feature else None,
+        "active_app": feature.app if feature else None,
+    }
 
 
 @register.inclusion_tag("project/example_about.html", takes_context=True)

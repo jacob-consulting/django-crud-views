@@ -292,7 +292,7 @@ FEATURES: list[Feature] = [
             "views.py; the ThemeLinksColumn on ProductTable links to all 7 detail pages from the list."
         ),
         url_name="product-list",
-        icon="fa-regular fa-box",
+        icon="fa-solid fa-box",
         docs=(
             DocRef(page="reference/object_detail_view.md", label="ObjectDetailView"),
             DocRef(page="reference/object_detail_layout_packs.md", label="Object detail — layout packs"),
@@ -432,3 +432,8 @@ def feature_groups() -> list[tuple[FeatureGroup, list[Feature]]]:
             raise ValueError(f"Feature {feature.app!r} names unknown group {feature.group!r}")
         buckets[feature.group].append(feature)
     return [(group, buckets[group.key]) for group in GROUPS]
+
+
+# validate the group keys at import time: project.views imports this module via the URLconf, so a typo
+# fails runserver's startup checks instead of the first page view
+feature_groups()

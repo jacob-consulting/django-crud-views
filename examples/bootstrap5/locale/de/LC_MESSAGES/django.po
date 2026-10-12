@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-07 09:26+0000\n"
+"POT-Creation-Date: 2026-10-12 15:01+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,8 +17,123 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: breadcrumbs/models.py:6 conditional/models.py:6 conditional/models.py:23
-#: conditional/models.py:51 nested/models.py:6 nested/models.py:22
+#: action_menus/models.py:7 breadcrumbs/models.py:18 conditional/models.py:39
+#: context_buttons/models.py:11 formsets/models.py:7 guardian_demo/models.py:7
+#: library/models.py:26 showcase/models.py:11
+msgid "title"
+msgstr "Titel"
+
+#: action_menus/models.py:8
+msgid "done"
+msgstr "erledigt"
+
+#: action_menus/models.py:9
+msgid "archived"
+msgstr "archiviert"
+
+#: action_menus/models.py:12 action_menus/models.py:20
+msgid "chore"
+msgstr "Aufgabe"
+
+#: action_menus/models.py:13
+msgid "chores"
+msgstr "Aufgaben"
+
+#: action_menus/models.py:21 formsets/models.py:22
+msgid "text"
+msgstr "Text"
+
+#: action_menus/models.py:24
+msgid "step"
+msgstr "Schritt"
+
+#: action_menus/models.py:25
+msgid "steps"
+msgstr "Schritte"
+
+#: action_menus/views.py:72 showcase/views.py:40 showcase/views.py:60
+#: showcase/views.py:78
+msgid "Details"
+msgstr "Details"
+
+#: action_menus/views.py:73 showcase/views.py:61
+msgid "Edit"
+msgstr "Bearbeiten"
+
+#: action_menus/views.py:74 action_menus/views.py:120
+msgid "Done"
+msgstr "Erledigt"
+
+#: action_menus/views.py:75 action_menus/views.py:138 action_menus/views.py:139
+msgid "Archive"
+msgstr "Archivieren"
+
+#: action_menus/views.py:76
+msgid "Steps"
+msgstr "Schritte"
+
+#: action_menus/views.py:77 resources/views.py:99 resources/views.py:100
+msgid "Delete"
+msgstr "Löschen"
+
+#: action_menus/views.py:87
+msgid "Chore"
+msgstr "Aufgabe"
+
+#: action_menus/views.py:94
+msgid "Created chore “{{ object }}”"
+msgstr "Aufgabe „{{ object }}“ angelegt"
+
+#: action_menus/views.py:102
+msgid "Updated chore “{{ object }}”"
+msgstr "Aufgabe „{{ object }}“ aktualisiert"
+
+#: action_menus/views.py:109
+msgid "Deleted chore “{{ object }}”"
+msgstr "Aufgabe „{{ object }}“ gelöscht"
+
+#: action_menus/views.py:119
+msgid "Toggle done"
+msgstr "Erledigt umschalten"
+
+#: action_menus/views.py:121
+msgid "Toggled done for “{{ object }}”"
+msgstr "Erledigt für „{{ object }}“ umgeschaltet"
+
+#: action_menus/views.py:122
+msgid "Could not toggle done for “{{ object }}”"
+msgstr "Erledigt für „{{ object }}“ konnte nicht umgeschaltet werden"
+
+#: action_menus/views.py:140
+msgid "Toggled archive for “{{ object }}”"
+msgstr "Archivierung für „{{ object }}“ umgeschaltet"
+
+#: action_menus/views.py:141
+msgid "Could not archive “{{ object }}”"
+msgstr "„{{ object }}“ konnte nicht archiviert werden"
+
+#: action_menus/views.py:151
+msgid "Moved chore “{{ object }}” up"
+msgstr "Aufgabe „{{ object }}“ nach oben verschoben"
+
+#: action_menus/views.py:156
+msgid "Moved chore “{{ object }}” down"
+msgstr "Aufgabe „{{ object }}“ nach unten verschoben"
+
+#: action_menus/views.py:186
+msgid "Created step “{{ object }}”"
+msgstr "Schritt „{{ object }}“ angelegt"
+
+#: action_menus/views.py:192
+msgid "Updated step “{{ object }}”"
+msgstr "Schritt „{{ object }}“ aktualisiert"
+
+#: action_menus/views.py:198
+msgid "Deleted step “{{ object }}”"
+msgstr "Schritt „{{ object }}“ gelöscht"
+
+#: breadcrumbs/models.py:6 conditional/models.py:6 conditional/models.py:24
+#: conditional/models.py:52 nested/models.py:6 nested/models.py:22
 #: nested/models.py:37 nested/models.py:51 object_detail/models.py:38
 #: object_detail/models.py:66 object_detail/models.py:78
 #: polymorphic_demo/models.py:7 workflow/models.py:26
@@ -32,12 +147,6 @@ msgstr "Arbeitsbereich"
 #: breadcrumbs/models.py:11
 msgid "workspaces"
 msgstr "Arbeitsbereiche"
-
-#: breadcrumbs/models.py:18 conditional/models.py:38
-#: context_buttons/models.py:11 formsets/models.py:7 guardian_demo/models.py:7
-#: library/models.py:26 showcase/models.py:11
-msgid "title"
-msgstr "Titel"
 
 #: breadcrumbs/models.py:25
 msgid "board"
@@ -55,15 +164,15 @@ msgstr "Simulierte Host-Anwendung"
 msgid ""
 "This page stands in for an existing application that embeds django-crud-"
 "views. The breadcrumb items pointing here are injected by "
-"<code>HostNavBreadcrumbMixin</code> via <code>cv_breadcrumb_prefix()</code> —"
-" the crud-views pages of this app show <em>Home › Host application › "
+"<code>HostNavBreadcrumbMixin</code> via <code>cv_breadcrumb_prefix()</code> "
+"— the crud-views pages of this app show <em>Home › Host application › "
 "Workspaces › …</em>."
 msgstr ""
 "Diese Seite steht für eine bestehende Anwendung, in die django-crud-views "
 "eingebettet ist. Die Breadcrumb-Einträge, die hierher verweisen, fügt "
 "<code>HostNavBreadcrumbMixin</code> über <code>cv_breadcrumb_prefix()</code> "
-"ein — die crud-views-Seiten dieser App zeigen <em>Startseite › Host-Anwendung"
-" › Arbeitsbereiche › …</em>."
+"ein — die crud-views-Seiten dieser App zeigen <em>Startseite › Host-"
+"Anwendung › Arbeitsbereiche › …</em>."
 
 #: breadcrumbs/templates/breadcrumbs/host.html:14
 msgid "Back to workspaces"
@@ -85,55 +194,55 @@ msgstr "Board"
 msgid "I represent a company"
 msgstr "Ich vertrete ein Unternehmen"
 
-#: conditional/models.py:8
+#: conditional/models.py:9
 msgid "company name"
 msgstr "Firmenname"
 
-#: conditional/models.py:9
+#: conditional/models.py:10
 msgid "VAT ID"
 msgstr "USt-IdNr."
 
-#: conditional/models.py:11
+#: conditional/models.py:12
 msgid "note"
 msgstr "Notiz"
 
-#: conditional/models.py:15
+#: conditional/models.py:16
 msgid "registration"
 msgstr "Anmeldung"
 
-#: conditional/models.py:16
+#: conditional/models.py:17
 msgid "registrations"
 msgstr "Anmeldungen"
 
-#: conditional/models.py:24
+#: conditional/models.py:25
 msgid "This event has sessions"
 msgstr "Diese Veranstaltung hat Sessions"
 
-#: conditional/models.py:25
+#: conditional/models.py:26
 msgid "Show speaker line-up"
 msgstr "Referenten anzeigen"
 
-#: conditional/models.py:29 conditional/models.py:37 conditional/models.py:50
+#: conditional/models.py:30 conditional/models.py:38 conditional/models.py:51
 msgid "event"
 msgstr "Veranstaltung"
 
-#: conditional/models.py:30
+#: conditional/models.py:31
 msgid "events"
 msgstr "Veranstaltungen"
 
-#: conditional/models.py:42
+#: conditional/models.py:43
 msgid "session"
 msgstr "Session"
 
-#: conditional/models.py:43
+#: conditional/models.py:44
 msgid "sessions"
 msgstr "Sessions"
 
-#: conditional/models.py:55
+#: conditional/models.py:56
 msgid "speaker"
 msgstr "Referent"
 
-#: conditional/models.py:56
+#: conditional/models.py:57
 msgid "speakers"
 msgstr "Referenten"
 
@@ -238,15 +347,15 @@ msgstr "Beschreibung"
 #: context_buttons/templates/context_buttons/ticket_detail.html:12
 msgid ""
 "Every button below is placed by hand in this template. Log in as "
-"<strong>alice</strong> (may edit and delete) and as <strong>bob</strong> (may"
-" only view) to compare: a button the user may not use is hidden, except "
+"<strong>alice</strong> (may edit and delete) and as <strong>bob</strong> "
+"(may only view) to compare: a button the user may not use is hidden, except "
 "delete, which this demo renders disabled (greyed out)."
 msgstr ""
 "Jede Schaltfläche unten wird in diesem Template von Hand platziert. Melden "
 "Sie sich als <strong>alice</strong> (darf bearbeiten und löschen) und als "
 "<strong>bob</strong> (darf nur ansehen) an und vergleichen Sie: Eine "
-"Schaltfläche, die der Benutzer nicht verwenden darf, wird ausgeblendet, außer"
-" „Löschen“, das in dieser Demo deaktiviert (ausgegraut) angezeigt wird."
+"Schaltfläche, die der Benutzer nicht verwenden darf, wird ausgeblendet, "
+"außer „Löschen“, das in dieser Demo deaktiviert (ausgegraut) angezeigt wird."
 
 #: context_buttons/templates/context_buttons/ticket_detail.html:21
 msgid ""
@@ -293,10 +402,6 @@ msgstr "Fragebogen"
 #: formsets/models.py:12
 msgid "questionnaires"
 msgstr "Fragebögen"
-
-#: formsets/models.py:22
-msgid "text"
-msgstr "Text"
 
 #: formsets/models.py:25 formsets/models.py:33
 msgid "question"
@@ -443,31 +548,31 @@ msgstr "Autor »{{ object }}« erstellt"
 msgid "Updated author “{{ object }}”"
 msgstr "Autor »{{ object }}« aktualisiert"
 
-#: library/views.py:103
+#: library/views.py:104
 msgid "Deleted author “{{ object }}”"
 msgstr "Autor »{{ object }}« gelöscht"
 
-#: library/views.py:138
+#: library/views.py:139
 msgid "Book"
 msgstr "Buch"
 
-#: library/views.py:145
+#: library/views.py:146
 msgid "Created book “{{ object }}”"
 msgstr "Buch »{{ object }}« erstellt"
 
-#: library/views.py:151
+#: library/views.py:152
 msgid "Updated book “{{ object }}”"
 msgstr "Buch »{{ object }}« aktualisiert"
 
-#: library/views.py:157
+#: library/views.py:158
 msgid "Deleted book “{{ object }}”"
 msgstr "Buch »{{ object }}« gelöscht"
 
-#: library/views.py:162
+#: library/views.py:163
 msgid "Moved book “{{ object }}” up"
 msgstr "Buch »{{ object }}« nach oben verschoben"
 
-#: library/views.py:167
+#: library/views.py:168
 msgid "Moved book “{{ object }}” down"
 msgstr "Buch »{{ object }}« nach unten verschoben"
 
@@ -863,19 +968,39 @@ msgstr "Auswählen"
 msgid "Vehicle"
 msgstr "Fahrzeug"
 
-#: project/features.py:274 project/features.py:302
+#: project/features.py:42
+msgctxt "feature group"
+msgid "Basics"
+msgstr "Grundlagen"
+
+#: project/features.py:45
+msgctxt "feature group"
+msgid "Forms"
+msgstr "Formulare"
+
+#: project/features.py:46
+msgctxt "feature group"
+msgid "UI"
+msgstr "Oberfläche"
+
+#: project/features.py:47
+msgctxt "feature group"
+msgid "Extensions"
+msgstr "Erweiterungen"
+
+#: project/features.py:307 project/features.py:336
 msgid "NEW"
 msgstr "NEU"
 
-#: project/settings.py:106
+#: project/settings.py:107
 msgid "English"
 msgstr "Englisch"
 
-#: project/settings.py:107
+#: project/settings.py:108
 msgid "German"
 msgstr "Deutsch"
 
-#: project/settings.py:126
+#: project/settings.py:127
 msgid "Home"
 msgstr "Startseite"
 
@@ -891,20 +1016,20 @@ msgstr "django-crud-views – Beispiele"
 
 #: project/templates/project/429.html:9
 msgid ""
-"This public demo limits how often one visitor can save. Please try again in a"
-" minute."
+"This public demo limits how often one visitor can save. Please try again in "
+"a minute."
 msgstr ""
 "Diese öffentliche Demo begrenzt, wie oft ein Besucher speichern kann. Bitte "
 "versuchen Sie es in einer Minute erneut."
 
 #: project/templates/project/base.html:48
 msgid ""
-"Public demo — data resets daily and after inactivity. Log in as "
-"<code>alice/alice</code> or <code>bob/bob</code>."
+"Public demo — data resets daily and after inactivity. Log in as <code>alice/"
+"alice</code> or <code>bob/bob</code>."
 msgstr ""
 "Öffentliche Demo — die Daten werden täglich und nach Inaktivität "
-"zurückgesetzt. Melden Sie sich als <code>alice/alice</code> oder "
-"<code>bob/bob</code> an."
+"zurückgesetzt. Melden Sie sich als <code>alice/alice</code> oder <code>bob/"
+"bob</code> an."
 
 #: project/templates/project/example_about.html:6
 #, python-format
@@ -931,27 +1056,27 @@ msgstr ""
 msgid "Documentation"
 msgstr "Dokumentation"
 
-#: project/templates/project/home.html:32
+#: project/templates/project/home.html:35
 msgid "Open"
 msgstr "Öffnen"
 
-#: project/templates/project/home.html:40
+#: project/templates/project/home.html:45
 msgid ""
-"Demo users (created by <code>manage.py seed</code>): <code>alice/alice</code>"
-" and <code>bob/bob</code> (regular users — bob may only view in Context "
+"Demo users (created by <code>manage.py seed</code>): <code>alice/alice</"
+"code> and <code>bob/bob</code> (regular users — bob may only view in Context "
 "Buttons and Action Menus, and the Guardian example shows them different "
 "documents)."
 msgstr ""
-"Demo-Benutzer (angelegt mit <code>manage.py seed</code>): "
-"<code>alice/alice</code> und <code>bob/bob</code> (normale Benutzer — bob darf "
-"in Context Buttons und Action Menus nur ansehen, und das Guardian-Beispiel "
-"zeigt ihnen unterschiedliche Dokumente)."
+"Demo-Benutzer (angelegt mit <code>manage.py seed</code>): <code>alice/alice</"
+"code> und <code>bob/bob</code> (normale Benutzer — bob darf in Context "
+"Buttons und Action Menus nur ansehen, und das Guardian-Beispiel zeigt ihnen "
+"unterschiedliche Dokumente)."
 
-#: project/templates/project/nav.html:24
+#: project/templates/project/nav.html:38
 msgid "Log Out"
 msgstr "Abmelden"
 
-#: project/templates/project/nav.html:27 project/urls.py:17
+#: project/templates/project/nav.html:41 project/urls.py:17
 msgid "Log In"
 msgstr "Anmelden"
 
@@ -1006,10 +1131,6 @@ msgstr "Schlüssel"
 #: resources/views.py:76
 msgid "size"
 msgstr "Größe"
-
-#: resources/views.py:99 resources/views.py:100
-msgid "Delete"
-msgstr "Löschen"
 
 #: resources/views.py:101
 msgid "Deleted “{{ object }}”"
@@ -1067,10 +1188,6 @@ msgstr "Rezept"
 msgid "recipes"
 msgstr "Rezepte"
 
-#: showcase/views.py:40 showcase/views.py:60 showcase/views.py:78
-msgid "Details"
-msgstr "Details"
-
 #: showcase/views.py:52
 msgid "Newest first"
 msgstr "Neueste zuerst"
@@ -1086,10 +1203,6 @@ msgstr "Titel A-Z"
 #: showcase/views.py:55
 msgid "Title Z-A"
 msgstr "Titel Z-A"
-
-#: showcase/views.py:61
-msgid "Edit"
-msgstr "Bearbeiten"
 
 #: showcase/views.py:62 showcase/views.py:126 showcase/views.py:127
 msgid "Favorite"
@@ -1164,11 +1277,11 @@ msgstr "Kampagnen"
 msgid "Activate"
 msgstr "Aktivieren"
 
-#: workflow/models.py:51
+#: workflow/models.py:52
 msgid "Complete"
 msgstr "Abschließen"
 
-#: workflow/models.py:61
+#: workflow/models.py:63
 msgid "Cancel"
 msgstr "Abbrechen"
 
@@ -1195,115 +1308,3 @@ msgstr "Kampagne »{{ object }}« aktualisiert"
 #: workflow/views.py:78
 msgid "Deleted campaign “{{ object }}”"
 msgstr "Kampagne »{{ object }}« gelöscht"
-
-#: action_menus/models.py:8
-msgid "done"
-msgstr "erledigt"
-
-#: action_menus/models.py:9
-msgid "archived"
-msgstr "archiviert"
-
-#: action_menus/models.py:12 action_menus/models.py:20
-msgid "chore"
-msgstr "Aufgabe"
-
-#: action_menus/models.py:13
-msgid "chores"
-msgstr "Aufgaben"
-
-#: action_menus/models.py:24
-msgid "step"
-msgstr "Schritt"
-
-#: action_menus/models.py:25
-msgid "steps"
-msgstr "Schritte"
-
-#: action_menus/views.py:69 action_menus/views.py:115
-msgid "Done"
-msgstr "Erledigt"
-
-#: action_menus/views.py:70 action_menus/views.py:133 action_menus/views.py:134
-msgid "Archive"
-msgstr "Archivieren"
-
-#: action_menus/views.py:71
-msgid "Steps"
-msgstr "Schritte"
-
-#: action_menus/views.py:82
-msgid "Chore"
-msgstr "Aufgabe"
-
-#: action_menus/views.py:89
-msgid "Created chore “{{ object }}”"
-msgstr "Aufgabe „{{ object }}“ angelegt"
-
-#: action_menus/views.py:97
-msgid "Updated chore “{{ object }}”"
-msgstr "Aufgabe „{{ object }}“ aktualisiert"
-
-#: action_menus/views.py:104
-msgid "Deleted chore “{{ object }}”"
-msgstr "Aufgabe „{{ object }}“ gelöscht"
-
-#: action_menus/views.py:114
-msgid "Toggle done"
-msgstr "Erledigt umschalten"
-
-#: action_menus/views.py:116
-msgid "Toggled done for “{{ object }}”"
-msgstr "Erledigt für „{{ object }}“ umgeschaltet"
-
-#: action_menus/views.py:117
-msgid "Could not toggle done for “{{ object }}”"
-msgstr "Erledigt für „{{ object }}“ konnte nicht umgeschaltet werden"
-
-#: action_menus/views.py:135
-msgid "Toggled archive for “{{ object }}”"
-msgstr "Archivierung für „{{ object }}“ umgeschaltet"
-
-#: action_menus/views.py:136
-msgid "Could not archive “{{ object }}”"
-msgstr "„{{ object }}“ konnte nicht archiviert werden"
-
-#: action_menus/views.py:146
-msgid "Moved chore “{{ object }}” up"
-msgstr "Aufgabe „{{ object }}“ nach oben verschoben"
-
-#: action_menus/views.py:151
-msgid "Moved chore “{{ object }}” down"
-msgstr "Aufgabe „{{ object }}“ nach unten verschoben"
-
-#: action_menus/views.py:179
-msgid "Created step “{{ object }}”"
-msgstr "Schritt „{{ object }}“ angelegt"
-
-#: action_menus/views.py:185
-msgid "Updated step “{{ object }}”"
-msgstr "Schritt „{{ object }}“ aktualisiert"
-
-#: action_menus/views.py:191
-msgid "Deleted step “{{ object }}”"
-msgstr "Schritt „{{ object }}“ gelöscht"
-
-#: project/features.py
-msgctxt "feature group"
-msgid "Basics"
-msgstr "Grundlagen"
-
-#: project/features.py
-msgctxt "feature group"
-msgid "Forms"
-msgstr "Formulare"
-
-#: project/features.py
-msgctxt "feature group"
-msgid "UI"
-msgstr "Oberfläche"
-
-#: project/features.py
-msgctxt "feature group"
-msgid "Extensions"
-msgstr "Erweiterungen"

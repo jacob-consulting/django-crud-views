@@ -81,6 +81,9 @@ uses the same groups as section headings so navbar and home page stay consistent
   </li>
   ```
 
+- The navbar breakpoint moves from `navbar-expand-md` to `navbar-expand-xl` (and `mb-md-0` to `mb-xl-0`). Measured
+  during implementation: logged in, in German, the expanded bar needs ~1080px, so at `md`/`lg` it overflowed
+  horizontally; below 1200px it now collapses into the hamburger menu.
 - Brand, language selector, username and login/logout stay unchanged. `base.html` already loads the Bootstrap JS
   bundle (`{% bootstrap_javascript %}`), so dropdowns work without new assets. In the collapsed mobile menu the dropdowns
   expand inline, which is Bootstrap's native behaviour.
@@ -124,5 +127,4 @@ Extensions dropdowns, and the home page uses the same groups as headings, so the
 ## Out of scope
 
 - Package templates and the package's own navigation: nothing in `src/` changes.
-- Changing the navbar breakpoint (`navbar-expand-md`) — four items fit comfortably at `md`.
 - Documentation pages under `docs/`: they don't describe the example navbar.

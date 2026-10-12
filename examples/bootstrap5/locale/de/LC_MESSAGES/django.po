@@ -1287,3 +1287,23 @@ msgstr "Schritt „{{ object }}“ aktualisiert"
 #: action_menus/views.py:191
 msgid "Deleted step “{{ object }}”"
 msgstr "Schritt „{{ object }}“ gelöscht"
+
+#: project/features.py
+msgctxt "feature group"
+msgid "Basics"
+msgstr "Grundlagen"
+
+#: project/features.py
+msgctxt "feature group"
+msgid "Forms"
+msgstr "Formulare"
+
+#: project/features.py
+msgctxt "feature group"
+msgid "UI"
+msgstr "Oberfläche"
+
+#: project/features.py
+msgctxt "feature group"
+msgid "Extensions"
+msgstr "Erweiterungen"

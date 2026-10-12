@@ -1,7 +1,7 @@
 from django.views import generic
 
 from crud_views.lib.breadcrumb import CrudViewBreadcrumbMixin
-from project.features import FEATURES
+from project.features import feature_groups
 
 
 class BreadcrumbMixin(CrudViewBreadcrumbMixin):
@@ -13,5 +13,5 @@ class HomeView(generic.TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["features"] = FEATURES
+        context["feature_groups"] = feature_groups()
         return context

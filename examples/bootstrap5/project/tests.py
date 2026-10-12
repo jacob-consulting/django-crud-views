@@ -387,3 +387,37 @@ class NavGroupsTest(TestCase):
             nav = navbar_html(self.client.get(reverse("home")))
         self.assertNotIn('id="nav-group-empty"', nav)
         self.assertEqual(len(NAV_GROUP_ID.findall(nav)), 4)
+
+
+class HomeGroupsTest(TestCase):
+    def test_home_has_a_heading_per_group_in_order(self):
+        from project.features import GROUPS
+
+        body = self.client.get(reverse("home")).content.decode()
+        positions = [body.index(f'id="group-{group.key}"') for group in GROUPS]
+        self.assertEqual(positions, sorted(positions))
+
+    def test_cards_sit_under_their_group_heading(self):
+        from project.features import feature_groups
+
+        body = self.client.get(reverse("home")).content.decode()
+        # everything after the first heading, cut into one chunk per group (the navbar sits before it)
+        sections = dict(chunk.split('"', 1) for chunk in body.split('<h2 id="group-')[1:])
+        for group, features in feature_groups():
+            for feature in features:
+                self.assertIn(f'href="{reverse(feature.url_name)}">Open</a>', sections[group.key], feature.app)
+
+    def test_empty_group_has_no_heading(self):
+        from unittest import mock
+
+        from project.features import GROUPS, FeatureGroup
+
+        empty = FeatureGroup(key="empty", title="Empty", icon="fa-solid fa-ban")
+        with mock.patch("project.features.GROUPS", [*GROUPS, empty]):
+            resp = self.client.get(reverse("home"))
+        self.assertNotContains(resp, 'id="group-empty"')
+
+    def test_group_titles_translated_de(self):
+        resp = self.client.get(reverse("home"), HTTP_ACCEPT_LANGUAGE="de")
+        for title in ("Grundlagen", "Formulare", "Oberfläche", "Erweiterungen"):
+            self.assertContains(resp, title)

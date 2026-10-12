@@ -3,6 +3,7 @@
 from dataclasses import dataclass
 
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import pgettext_lazy
 
 #: Read the Docs version linked from the demo. "stable" is the newest release tag, which is what the demo runs.
 DOCS_BASE = "https://django-crud-views.readthedocs.io/en/stable"
@@ -29,16 +30,17 @@ class DocRef:
 @dataclass(frozen=True)
 class FeatureGroup:
     key: str  # referenced by Feature.group
-    title: str  # navbar dropdown and home page heading; page chrome, so translated (unlike Feature.title)
+    title: str  # navbar dropdown and home page heading; page chrome, so translated (unlike Feature.title);
+    # pgettext context "feature group" because e.g. "Basics" is also a fieldset title with another translation
     icon: str  # font-awesome classes
 
 
 #: navbar dropdowns and home page sections, in display order
 GROUPS: list[FeatureGroup] = [
-    FeatureGroup(key="basics", title=_("Basics"), icon="fa-solid fa-cubes"),
-    FeatureGroup(key="forms", title=_("Forms"), icon="fa-solid fa-pen-to-square"),
-    FeatureGroup(key="ui", title=_("UI"), icon="fa-solid fa-palette"),
-    FeatureGroup(key="extensions", title=_("Extensions"), icon="fa-solid fa-puzzle-piece"),
+    FeatureGroup(key="basics", title=pgettext_lazy("feature group", "Basics"), icon="fa-solid fa-cubes"),
+    FeatureGroup(key="forms", title=pgettext_lazy("feature group", "Forms"), icon="fa-solid fa-pen-to-square"),
+    FeatureGroup(key="ui", title=pgettext_lazy("feature group", "UI"), icon="fa-solid fa-palette"),
+    FeatureGroup(key="extensions", title=pgettext_lazy("feature group", "Extensions"), icon="fa-solid fa-puzzle-piece"),
 ]
 
 

@@ -17,6 +17,8 @@ List row:   [👁]  [⋯]                  Context:  [✏](active) [⋯]
                   └ ⧉ Copy
 ```
 
+![A list row with its action menu open](screenshots/action-menus.png)
+
 ## Configuration
 
 Each location has an **inline keys** list:

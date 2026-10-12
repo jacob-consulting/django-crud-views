@@ -75,6 +75,10 @@ class ViewSet(BaseModel):
     manage_view_class: str | None = None
     extends: str | None = None  # base template all views in this viewset extend
     inaccessible_actions: Literal["hide", "disable"] | None = None  # None: CRUD_VIEWS_INACCESSIBLE_ACTIONS
+    # overflow menu (#174): keys that stay inline buttons; None: CRUD_VIEWS_*_ACTIONS_INLINE
+    list_actions_inline: list[str] | tuple[str, ...] | None = None
+    context_actions_inline: list[str] | tuple[str, ...] | None = None
+    card_actions_inline: list[str] | tuple[str, ...] | None = None
     # Resource-based ViewSets only: explicit permission map, e.g.
     # {"view": "storage.view_s3object", "delete": "storage.delete_s3object"}.
     # None means: no permissions declared (only non-PermissionRequired views).

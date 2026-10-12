@@ -1,9 +1,12 @@
+from collections.abc import Iterable
 from typing import ClassVar
 
 from django.views import generic
 
+from crud_views.lib.check import Check
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import CrudView, CrudViewPermissionRequiredMixin
+from crud_views.lib.view.action_menu import cv_inline_checks
 from crud_views.lib.view.card import CardAction
 from crud_views.lib.views.mixins import CardOrderMixin
 
@@ -18,6 +21,7 @@ class CardListView(CardOrderMixin, CrudView, generic.ListView):
     cv_object = False
     paginate_by = None  # set per-view to enable pagination
     cv_card_actions: ClassVar[list[CardAction]] = []
+    cv_card_actions_inline: list[str] | None = None  # card action keys kept as buttons (#174)
     cv_card_container_class: str = "col-md-6"
     cv_card_template: str = "crud_views/tags/card.html"
     cv_context_actions = crud_views_settings.list_context_actions
@@ -36,6 +40,17 @@ class CardListView(CardOrderMixin, CrudView, generic.ListView):
     @staticmethod
     def cv_get_filter_icon() -> str:
         return crud_views_settings.filter_icon
+
+    @classmethod
+    def cv_get_card_actions_inline(cls):
+        """Card action keys (CardAction.key, or child_name) kept as buttons; None: no menu (#174)."""
+        return cls.cv_first_inline_keys(cls.cv_card_actions_inline, "card_actions_inline")
+
+    @classmethod
+    def checks(cls) -> Iterable[Check]:
+        yield from super().checks()
+        keys = [action.key or action.child_name for action in cls.cv_card_actions]
+        yield from cv_inline_checks(cls, "cv_card_actions_inline", keys)
 
     @property
     def cv_filter_header(self) -> str:

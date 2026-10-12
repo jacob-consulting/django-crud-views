@@ -259,7 +259,15 @@ is empty or lacks these, the scenario does not exercise what it claims — fix t
 Run: `pytest tests/test1/test_action_menus_golden.py -v` (run twice — the second run proves stability)
 Expected: 8 passed both times.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 5: Prove the baseline is stable across the matrix**
+
+Run: `nox -s "tests-3.13(django='4.2')" -- -k action_menus_golden` and
+`nox -s "tests-3.14(django='6.0')" -- -k action_menus_golden` (`nox -l` lists the session names; `uvx nox` if nox
+is not installed).
+Expected: 8 passed in both (other tests are deselected). If a golden file differs between Django versions, extend
+`_norm` to neutralize exactly that difference and recapture — never keep version-specific golden files.
+
+- [ ] **Step 6: Commit**
 
 ```bash
 git add tests/test1/test_action_menus_golden.py tests/test1/golden/action_menus
@@ -1114,7 +1122,7 @@ git commit -m "feat: action group methods on list, context and card views (#174)
 
 import pytest
 from django.contrib.auth.models import User
-from django.test import Client
+from django.test import Client, override_settings
 from django.urls import reverse
 from django.utils import translation
 from lxml import html as lxml_html
@@ -1223,6 +1231,19 @@ def test_disabled_item(client_user_author_view, author_douglas_adams, menu_list,
 
 
 @pytest.mark.django_db
+def test_disabled_post_item_has_no_form(client_user_author_view, author_douglas_adams, menu_list, monkeypatch):
+    from tests.test1.app.views import AuthorPingView
+
+    monkeypatch.setattr(AuthorPingView, "cv_inaccessible_actions", "disable")
+    (td,) = _rows(client_user_author_view)
+    ping = td.cssselect('.dropdown-item[cv-key="ping"]')[0]
+    assert ping.tag == "button"
+    assert ping.get("disabled") is not None
+    assert ping.get("data-cv-action") is None
+    assert td.xpath('.//form[starts-with(@id, "cv_form_")]') == []
+
+
+@pytest.mark.django_db
 def test_no_toggle_when_menu_empty(client_user_author_view, author_douglas_adams, menu_list):
     # view-only user, default hide mode: every menu candidate is hidden
     (td,) = _rows(client_user_author_view)
@@ -1248,6 +1269,7 @@ def test_custom_menu_icon(client_full, author_douglas_adams, menu_list, monkeypa
 
 
 @pytest.mark.django_db
+@override_settings(LANGUAGES=[("en", "English"), ("de", "German")])
 def test_german_label(client_full, author_douglas_adams, menu_list):
     # the test project has no LocaleMiddleware: activate German around the request (as test_i18n.py does)
     with translation.override("de"):
@@ -2047,10 +2069,11 @@ nowhere, and a menu whose actions are all hidden renders no toggle.
 and under `### Internal`:
 
 ```markdown
-- `.superpowers/` (brainstorming mockups) is git-ignored (#174).
+- `.superpowers/` (brainstorming mockups) and `.playwright-mcp/` (browser-tool output) are git-ignored (#174).
 ```
 
-- [ ] **Step 4: `.gitignore`** — append a line `.superpowers/`.
+- [ ] **Step 4: `.gitignore`** — append two lines: `.superpowers/` and `.playwright-mcp/` (browser-tool scratch
+  output, recreated by Task 10).
 
 - [ ] **Step 5: Build the docs**
 
@@ -2486,7 +2509,8 @@ class ChoreCardTest(ActionMenusTestCase):
         self.assertIn("Delete", labels)
 ```
 
-The `steps` ChildContextButton resolves to the child list view, so its `cv-key` is `list` (asserted in
+`"steps"` (a `ChildContextButton`) inside `cv_list_actions` is used nowhere else in the repo yet — this is the
+spot in this task most likely to need a second look. It resolves to the child list view, so its `cv-key` is `list` (asserted in
 `test_row_keeps_inline_buttons_and_menu`); if the resolved key differs, inspect the rendered HTML and fix the
 expectation — but verify the item links to `/action-menus/chore/<pk>/step/…`.
 

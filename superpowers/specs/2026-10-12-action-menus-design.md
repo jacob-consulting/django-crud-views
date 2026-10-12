@@ -2,7 +2,7 @@
 
 - Issue: [#174](https://github.com/jacob-consulting/django-crud-views/issues/174)
 - Date: 2026-10-12
-- Status: draft (awaiting spec review)
+- Status: approved (spec reviewed 2026-10-12)
 
 ## Goal
 

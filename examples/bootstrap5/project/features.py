@@ -359,4 +359,27 @@ FEATURES: list[Feature] = [
             ),
         ),
     ),
+    Feature(
+        app="action_menus",
+        title="Action Menus",
+        description="Fold the less common actions of list rows, the toolbar and cards into a ⋯ dropdown.",
+        about=(
+            "A chore has eight actions — too many buttons for every table row. The list keeps detail, up and "
+            "down as buttons and folds the rest into a ⋯ menu; the toolbar and the cards do the same. Delete opens "
+            "a modal; done / archive are POST actions in the list rows and cards (the toolbar only links). "
+            "Log in as bob (may only view): archive stays visible but disabled, the other actions disappear."
+        ),
+        look_at=(
+            "cv_list_actions_inline, cv_context_actions_inline and cv_card_actions_inline in views.py, and "
+            "ChoreArchiveView.cv_inaccessible_actions."
+        ),
+        url_name="chore-list",
+        icon="fa-solid fa-ellipsis",
+        docs=(
+            DocRef(page="reference/action_menus.md", label="Action menus — configuration", anchor="configuration"),
+            DocRef(
+                page="reference/action_menus.md", label="Action menus — hide and disable", anchor="hide-and-disable"
+            ),
+        ),
+    ),
 ]

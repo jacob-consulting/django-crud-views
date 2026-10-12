@@ -122,6 +122,64 @@ def cv_list_action_form(context, key, obj=None):
 
 
 @register.simple_tag(takes_context=True)
+def cv_list_action_group(context, obj):
+    """Row actions split into inline buttons and menu items; None: no menu (#174)."""
+    return cv_get_view(context).cv_get_list_action_group(obj)
+
+
+@register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/list_action.html", takes_context=True)
+def cv_render_list_action(context, ctx):
+    """Render already-resolved row action data (#174)."""
+    return ctx or {}
+
+
+@register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/list_action_form.html", takes_context=True)
+def cv_render_list_action_form(context, ctx):
+    """Hidden POST form for already-resolved action data; nothing for a disabled action (#174)."""
+    if not ctx or ctx.get("cv_disabled"):
+        return {}
+    return ctx
+
+
+# (wrapper class, toggle button classes) per location: the toggle matches its neighbouring buttons (#174)
+_ACTIONS_MENU_STYLE = {
+    "list": ("btn-group", "btn-outline-primary btn-xs"),
+    "context": ("btn-group", "btn-outline-primary btn-lg"),
+    "card": ("dropdown", "btn-secondary btn-sm"),
+}
+
+
+@register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/actions_menu.html", takes_context=True)
+def cv_actions_menu(context, group, location):
+    """The dropdown for a group's menu items; renders nothing when there are none (#174)."""
+    if group is None or not group.menu:
+        return {}
+    wrapper_class, toggle_class = _ACTIONS_MENU_STYLE[location]
+    return {
+        "cv_menu_items": group.menu,
+        "cv_location": location,
+        "cv_menu_wrapper_class": wrapper_class,
+        "cv_toggle_class": toggle_class,
+        "cv_menu_icon": crud_views_settings.actions_menu_icon,
+    }
+
+
+@register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/actions_menu_item.html")
+def cv_render_menu_item(ctx, location):
+    """One dropdown item from resolved action data (#174)."""
+    return {**ctx, "cv_location": location}
+
+
+def _render_context_action(context, ctx) -> str:
+    """Render resolved context-button data: its template_code, its template, or the default button template."""
+    if ctx.get("cv_template_code"):
+        view = cv_get_view(context)
+        return view.render_snippet(ctx, template_code=ctx["cv_template_code"])
+    template = ctx.get("cv_template") or crud_views_settings.context_button_template
+    return render_to_string(template, context=ctx, request=context["request"])
+
+
+@register.simple_tag(takes_context=True)
 @ignore_exception(ViewSetKeyFoundError, default_value="")
 def cv_context_action(context, key, obj=None):
     obj = obj if obj else None  # fix empty string from template
@@ -130,11 +188,13 @@ def cv_context_action(context, key, obj=None):
     ctx = cv_resolve_action(cv_get_context(context=context, key=key, obj=obj))
     if ctx is None:
         return ""
-    if ctx.get("cv_template_code"):
-        view = cv_get_view(context)
-        return view.render_snippet(ctx, template_code=ctx["cv_template_code"])
-    template = ctx.get("cv_template") or crud_views_settings.context_button_template
-    return render_to_string(template, context=ctx, request=context["request"])
+    return _render_context_action(context, ctx)
+
+
+@register.simple_tag(takes_context=True)
+def cv_render_context_action(context, ctx) -> str:
+    """Render already-resolved context-button data exactly like cv_context_action does (#174)."""
+    return _render_context_action(context, ctx)
 
 
 @register.simple_tag(takes_context=True)
@@ -182,7 +242,8 @@ def cv_querystring(parser, token):
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/context_actions.html", takes_context=True)
 def cv_context_actions(context, obj=None):
     view: CrudView = cv_get_view(context)
-    return {"view": view, "request": context["request"], "object": obj}
+    group = view.cv_get_context_action_group(obj if obj else None)
+    return {"view": view, "request": context["request"], "object": obj, "group": group}
 
 
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/button_cancel.html", takes_context=True)
@@ -326,48 +387,20 @@ def cv_context_has_permission(view, key) -> bool:
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/card_action.html", takes_context=True)
 def cv_card_action(context, action, obj=None):
     view = cv_get_view(context)
-    user = context["request"].user
+    return cv_resolve_action(view.cv_get_card_action_data(action, obj, context["request"].user)) or {}
 
-    if action.child_name:
-        url = view.cv_get_child_url(action.child_name, action.child_key, obj)
-        child_viewset = view.cv_viewset.get_viewset(action.child_name)
-        child_cls = child_viewset.get_view_class(action.child_key)
-        # permission is checked on the child view, like ChildContextButton (#149)
-        data = {
-            "cv_access": bool(child_cls.cv_has_access(user, obj)),
-            "cv_action_enabled": child_cls.cv_action_enabled(user, obj),
-            "cv_inaccessible_actions": child_cls.cv_get_inaccessible_actions(),
-            "cv_url": url,
-            "cv_label": action.label,
-            "cv_icon_action": child_cls.cv_icon_action,
-            "cv_variant": action.variant,
-            "cv_flex": action.flex,
-            "cv_no_label": action.no_label,
-            "cv_list_action_method": "get",
-        }
-        return cv_resolve_action(data) or {}
 
-    cls = view.cv_viewset.get_view_class(action.key)
-    url = view.cv_get_link_url(cls, action.key, obj)
-    view_context = view.cv_get_view_context(object=obj)
+@register.simple_tag(takes_context=True)
+def cv_card_action_group(context, obj):
+    """Card actions split into inline buttons and menu items; None: no menu (#174)."""
+    get_group = getattr(cv_get_view(context), "cv_get_card_action_group", None)
+    return get_group(obj) if get_group else None
 
-    label = action.label or cls.cv_get_action_short_label(context=view_context)
 
-    # always build the full data: disable mode renders label/icon/variant without access (#149)
-    data = cls.cv_get_dict(
-        context=view_context,
-        cv_oid=view.cv_get_oid(action.key, obj=obj),
-        cv_url=url,
-        cv_access=bool(cls.cv_has_access(user, obj)),
-        cv_action_enabled=cls.cv_action_enabled(user, obj),
-    )
-    data.update(
-        cv_label=label,
-        cv_variant=action.variant,
-        cv_flex=action.flex,
-        cv_no_label=action.no_label,
-    )
-    return cv_resolve_action(data) or {}
+@register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/card_action.html", takes_context=True)
+def cv_render_card_action(context, ctx):
+    """Render already-resolved card action data (#174)."""
+    return ctx or {}
 
 
 @register.simple_tag(takes_context=True)

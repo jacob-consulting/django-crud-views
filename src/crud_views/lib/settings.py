@@ -46,6 +46,13 @@ class CrudViewsSettings(BaseModel):
     # CrudView overrides (cv_get_inaccessible_actions)
     inaccessible_actions: str = from_settings("CRUD_VIEWS_INACCESSIBLE_ACTIONS", default="hide")
 
+    # overflow menu (#174): keys that stay inline buttons; None = no menu. Overridable per ViewSet
+    # (*_actions_inline) and per view (cv_*_actions_inline), resolved on the rendering view
+    list_actions_inline: Any = from_settings("CRUD_VIEWS_LIST_ACTIONS_INLINE", default=None)
+    context_actions_inline: Any = from_settings("CRUD_VIEWS_CONTEXT_ACTIONS_INLINE", default=None)
+    card_actions_inline: Any = from_settings("CRUD_VIEWS_CARD_ACTIONS_INLINE", default=None)
+    actions_menu_icon: str = from_settings("CRUD_VIEWS_ACTIONS_MENU_ICON", default="fa-solid fa-ellipsis")
+
     # breadcrumb
     breadcrumb_prefix: list[dict[str, Any]] = from_settings("CRUD_VIEWS_BREADCRUMB_PREFIX", default=[])
 
@@ -124,6 +131,22 @@ class CrudViewsSettings(BaseModel):
                     ),
                 )
             )
+
+        # deferred import: settings.py must not import the view package at module level
+        from crud_views.lib.view.action_menu import cv_is_inline_keys
+
+        for setting, value in (
+            ("CRUD_VIEWS_LIST_ACTIONS_INLINE", self.list_actions_inline),
+            ("CRUD_VIEWS_CONTEXT_ACTIONS_INLINE", self.context_actions_inline),
+            ("CRUD_VIEWS_CARD_ACTIONS_INLINE", self.card_actions_inline),
+        ):
+            if not cv_is_inline_keys(value):
+                messages.append(
+                    Error(
+                        id="crud_views.E105",
+                        msg=f"setting {setting} must be None or a list of strings, got {value!r}",
+                    )
+                )
 
         # deferred import: settings.py must not import check.py at module level
         from crud_views.lib.check import REGS

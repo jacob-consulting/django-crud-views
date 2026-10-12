@@ -260,6 +260,14 @@ class CheckExpression(Check):
             yield Error(id=f"viewset.{self.id}", msg=f"{self.msg} at {self.context}")
 
 
+class CheckWarningExpression(CheckExpression):
+    """Like CheckExpression, but reports a warning instead of an error."""
+
+    def messages(self) -> Iterable[CheckMessage]:
+        if not self.expression:
+            yield DjangoWarning(id=f"viewset.{self.id}", msg=f"{self.msg} at {self.context}")
+
+
 _PACKAGE_PREFIX = "crud_views"
 _CV_PREFIX = "cv_"
 _IGNORE_ATTR = "cv_check_ignore_attributes"

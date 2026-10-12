@@ -167,3 +167,6 @@ only the (now irrelevant) expanded/collapsed state is dropped. Applies equally t
 
 > To disable an action the user *is* permitted to perform, based on object state
 > (e.g. a locked/open parent), see [Conditionally disabling an action](action_enabled.md).
+
+!!! tip "Many actions?"
+    Fold the less common actions into a `⋯` dropdown: see [Action menus](action_menus.md).

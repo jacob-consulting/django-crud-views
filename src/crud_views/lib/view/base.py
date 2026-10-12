@@ -38,6 +38,7 @@ from crud_views.lib.check import (
 from crud_views.lib.exceptions import CrudViewError, ParentViewSetError, ViewSetKeyFoundError, cv_raise
 
 from ..settings import crud_views_settings
+from .action_menu import ActionGroup, cv_context_button_foldable, cv_inline_checks, cv_split_actions
 from .buttons import ContextButton, context_button_checks
 from .context import ViewContext
 from .meta import CrudViewMetaClass
@@ -74,6 +75,8 @@ class CrudView(metaclass=CrudViewMetaClass):
 
     cv_extends_template: str | None = None  # template to extend
     cv_inaccessible_actions: str | None = None  # "hide" | "disable"; None: ViewSet, then setting
+    cv_list_actions_inline: list[str] | None = None  # list row keys kept as buttons; None: ViewSet, then setting
+    cv_context_actions_inline: list[str] | None = None  # toolbar keys kept as buttons; None: ViewSet, then setting
 
     # modal rendering (Bootstrap 5 theme; see superpowers/specs/2026-07-14-bootstrap-modals-design.md)
     cv_modal: bool = False  # opt-in: action buttons open this view in a modal
@@ -154,6 +157,8 @@ class CrudView(metaclass=CrudViewMetaClass):
             expression=cls.cv_inaccessible_actions in (None, "hide", "disable"),
             msg=f"cv_inaccessible_actions must be None, 'hide' or 'disable', got {cls.cv_inaccessible_actions!r}",
         )
+        yield from cv_inline_checks(cls, "cv_list_actions_inline", cls.cv_list_actions)
+        yield from cv_inline_checks(cls, "cv_context_actions_inline", cls.cv_context_actions)
         if cls.cv_viewset is not None:
             yield from context_button_checks(cls, cls.cv_viewset, cls.cv_context_buttons)
         yield CheckUnknownAttributes(context=cls)
@@ -219,6 +224,25 @@ class CrudView(metaclass=CrudViewMetaClass):
         if cls.cv_viewset is not None and cls.cv_viewset.inaccessible_actions:
             return cls.cv_viewset.inaccessible_actions
         return crud_views_settings.inaccessible_actions
+
+    @classmethod
+    def cv_first_inline_keys(cls, view_value, viewset_field: str):
+        """First inline-keys value that is not None: view, then ViewSet, then setting (#174)."""
+        if view_value is not None:
+            return view_value
+        if cls.cv_viewset is not None and getattr(cls.cv_viewset, viewset_field) is not None:
+            return getattr(cls.cv_viewset, viewset_field)
+        return getattr(crud_views_settings, viewset_field)
+
+    @classmethod
+    def cv_get_list_actions_inline(cls):
+        """List row keys kept as buttons, the rest go into the menu; None: no menu (#174)."""
+        return cls.cv_first_inline_keys(cls.cv_list_actions_inline, "list_actions_inline")
+
+    @classmethod
+    def cv_get_context_actions_inline(cls):
+        """Context toolbar keys kept as buttons, the rest go into the menu; None: no menu (#174)."""
+        return cls.cv_first_inline_keys(cls.cv_context_actions_inline, "context_actions_inline")
 
     @classmethod
     def cv_has_access(cls, user: User, obj: Model | None = None) -> bool:
@@ -460,6 +484,36 @@ class CrudView(metaclass=CrudViewMetaClass):
             if ctx is not None:
                 result.append(ctx)
         return result
+
+    def cv_resolved_actions(self, keys: list[str] | None, obj=None) -> list[tuple[str, dict]]:
+        """(configured key, resolved data) for each usable or disabled action; hidden and unregistered keys are
+        skipped, as the per-key tags do (#174)."""
+        items: list[tuple[str, dict]] = []
+        for key in keys or []:
+            try:
+                ctx = self.cv_get_context(key=key, obj=obj, user=self.request.user, request=self.request)
+            except ViewSetKeyFoundError:
+                continue
+            ctx = cv_resolve_action(ctx)
+            if ctx is not None:
+                items.append((key, ctx))
+        return items
+
+    def cv_get_list_action_group(self, obj) -> ActionGroup | None:
+        """Row actions split into inline buttons and menu items; None: no menu, render the plain buttons (#174)."""
+        inline = self.cv_get_list_actions_inline()
+        if inline is None:
+            return None
+        return cv_split_actions(self.cv_resolved_actions(self.cv_list_actions, obj), inline)
+
+    def cv_get_context_action_group(self, obj=None) -> ActionGroup | None:
+        """Context toolbar split into inline buttons and menu items; buttons with their own template stay inline.
+        None: no menu (#174)."""
+        inline = self.cv_get_context_actions_inline()
+        if inline is None:
+            return None
+        items = self.cv_resolved_actions(self.cv_context_actions, obj)
+        return cv_split_actions(items, inline, foldable=cv_context_button_foldable)
 
     def cv_get_oid(self, key: str, obj: Model | None = None) -> str | None:
         """

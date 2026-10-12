@@ -10,9 +10,18 @@
   context buttons, list actions and card actions. Templates get `cv_disabled` and `cv_disabled_reason`
   (`"permission"` | `"state"`); disabled actions render as a native `<button type="button" disabled>` carrying
   `data-cv-disabled`. New system checks `crud_views.E104` and `viewset.E207` (#149).
+- Action menus: list rows, the context toolbar and cards can fold actions into one Bootstrap `⋯` dropdown. Inline
+  keys per location via settings `CRUD_VIEWS_LIST_ACTIONS_INLINE`, `CRUD_VIEWS_CONTEXT_ACTIONS_INLINE`,
+  `CRUD_VIEWS_CARD_ACTIONS_INLINE`, ViewSet fields `*_actions_inline` and view attributes `cv_*_actions_inline`
+  (resolved on the rendering view); `None` (default) keeps today's markup. Toggle icon via
+  `CRUD_VIEWS_ACTIONS_MENU_ICON`. Overridable templates `actions_menu.html`, `actions_menu_toggle.html`,
+  `actions_menu_item.html`, `actions_menu_item_label.html`. New system checks `crud_views.E105`, `viewset.E208`, `viewset.W290`. Requires the
+  Bootstrap JS bundle; a context button's own label also labels its menu item (#174).
 
 ### Changed
 
+- A context button's own `label_template` / `label_template_code` now also sets `cv_action_short_label` in its data
+  (used as the menu item text; visible to custom templates that show the short label) (#174).
 - Child card actions (`CardAction(child_name=...)`) now check the child view's permission like
   `ChildContextButton`. Users without it no longer see the button (previously it rendered and the target answered
   with 403). Guardian child list views still grant access at render time, so their child card actions keep
@@ -29,6 +38,7 @@
 - Fixed SonarQube Cloud findings: disabled actions use a native disabled `<button>` instead of
   `<a role="button" aria-disabled="true">` (Web:S6819, mouse-event and identical-link-text rules), and the E255
   check tests assert one condition per `assert` (python:S9073).
+- `.superpowers/` (brainstorming mockups) and `.playwright-mcp/` (browser-tool output) are git-ignored (#174).
 
 ## 0.27.1
 

@@ -367,3 +367,6 @@ button in your own markup) rather than one key at a time, see
 from crud_views.lib.view import ContextButton, ParentContextButton, ChildContextButton
 from crud_views.lib.viewset import context_buttons_default
 ```
+
+!!! tip "Many actions?"
+    Fold the less common actions into a `⋯` dropdown: see [Action menus](action_menus.md).

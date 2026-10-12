@@ -42,3 +42,9 @@ def test_selector_shows_languages_in_their_own_name():
 def test_selector_falls_back_to_settings_name_for_unknown_code():
     html = _render([("en", "English"), ("xx-custom", "Custom Language")])
     assert "Custom Language" in html
+
+
+def test_selector_icon_hidden_from_screen_readers():
+    # decorative: the button text already names the current language (#186)
+    html = _render([("en", "English"), ("de", "German")])
+    assert '<i class="fa-solid fa-language" aria-hidden="true"></i>' in html

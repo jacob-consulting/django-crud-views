@@ -10,6 +10,11 @@
   `CrudViewError: no template or template_code provided` at request time. Header and paragraph templates stay optional
   for backend-only views. Projects with label-less backend-only views must add the two label attributes (#179).
 
+### Fixed
+
+- `{% cv_language_selector %}`: the decorative language icon carries `aria-hidden="true"`, so screen readers no
+  longer announce the glyph next to the language name (#186).
+
 ### Internal
 
 - The test app's backend-only ping views declare their action labels; the action-menu tests no longer monkeypatch

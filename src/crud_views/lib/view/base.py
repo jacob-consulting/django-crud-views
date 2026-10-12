@@ -41,6 +41,7 @@ from ..settings import crud_views_settings
 from .buttons import ContextButton, context_button_checks
 from .context import ViewContext
 from .meta import CrudViewMetaClass
+from .visibility import cv_resolve_action
 
 
 def cv_is_modal_request(request) -> bool:
@@ -72,6 +73,7 @@ class CrudView(metaclass=CrudViewMetaClass):
     cv_atomic: bool = True  # run the POST write phase in transaction.atomic(); see request_lifecycle.md
 
     cv_extends_template: str | None = None  # template to extend
+    cv_inaccessible_actions: str | None = None  # "hide" | "disable"; None: ViewSet, then setting
 
     # modal rendering (Bootstrap 5 theme; see superpowers/specs/2026-07-14-bootstrap-modals-design.md)
     cv_modal: bool = False  # opt-in: action buttons open this view in a modal
@@ -146,6 +148,12 @@ class CrudView(metaclass=CrudViewMetaClass):
             expression=cls.cv_origin_keys_registered(cls.cv_success_keys),
             msg=f"cv_success_keys entries must be registered view keys, got {cls.cv_success_keys!r}",
         )
+        yield CheckExpression(
+            context=cls,
+            id="E207",
+            expression=cls.cv_inaccessible_actions in (None, "hide", "disable"),
+            msg=f"cv_inaccessible_actions must be None, 'hide' or 'disable', got {cls.cv_inaccessible_actions!r}",
+        )
         if cls.cv_viewset is not None:
             yield from context_button_checks(cls, cls.cv_viewset, cls.cv_context_buttons)
         yield CheckUnknownAttributes(context=cls)
@@ -202,6 +210,15 @@ class CrudView(metaclass=CrudViewMetaClass):
         if self.cv_viewset.extends:
             return self.cv_viewset.extends
         return crud_views_settings.extends
+
+    @classmethod
+    def cv_get_inaccessible_actions(cls) -> str:
+        """Hide or disable this action's button for users who may not use it: view, then ViewSet, then setting."""
+        if cls.cv_inaccessible_actions:
+            return cls.cv_inaccessible_actions
+        if cls.cv_viewset is not None and cls.cv_viewset.inaccessible_actions:
+            return cls.cv_viewset.inaccessible_actions
+        return crud_views_settings.inaccessible_actions
 
     @classmethod
     def cv_has_access(cls, user: User, obj: Model | None = None) -> bool:
@@ -320,6 +337,7 @@ class CrudView(metaclass=CrudViewMetaClass):
             "cv_icon_header": cls.cv_icon_header,
             "cv_modal": cls.cv_modal,
             "cv_modal_size": cls.cv_modal_size,
+            "cv_inaccessible_actions": cls.cv_get_inaccessible_actions(),
         }
         data["cv_is_active"] = cls.cv_viewset.get_router_name(cls.cv_key) == context.router_name
         data.update(extra)
@@ -429,7 +447,8 @@ class CrudView(metaclass=CrudViewMetaClass):
 
     def cv_get_context_buttons(self, keys: list[str] | None = None, obj=None) -> list[dict]:
         """
-        Resolved, access-filtered context-button data for a custom template loop.
+        Resolved context-button data for a custom template loop: hidden buttons are left out, disabled
+        ones (cv_inaccessible_actions = "disable") are included with cv_disabled=True.
         keys defaults to this view's cv_context_actions; obj defaults to the view's object.
         """
         keys = keys if keys is not None else (self.cv_context_actions or [])
@@ -437,10 +456,9 @@ class CrudView(metaclass=CrudViewMetaClass):
             obj = getattr(self, "object", None)
         result: list[dict] = []
         for key in keys:
-            ctx = self.cv_get_context(key=key, obj=obj, user=self.request.user, request=self.request)
-            if not ctx or ctx.get("cv_action_enabled") is False or ctx.get("cv_access") is not True:
-                continue
-            result.append(ctx)
+            ctx = cv_resolve_action(self.cv_get_context(key=key, obj=obj, user=self.request.user, request=self.request))
+            if ctx is not None:
+                result.append(ctx)
         return result
 
     def cv_get_oid(self, key: str, obj: Model | None = None) -> str | None:

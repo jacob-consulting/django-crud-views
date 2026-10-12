@@ -86,7 +86,13 @@ class PublisherCardListView(CardListViewPermissionRequired):
     ]
 ```
 
-Child actions always render (no permission check on the card). The target view handles its own permissions. This matches `LinkChildColumn` behavior for tables.
+Child actions check the child view's permission (`cv_has_access` and `cv_action_enabled` on the `child_key` view of
+the child ViewSet), like `ChildContextButton`. A user who may not open the child view does not see the button, or sees
+it disabled when the child view resolves to `"disable"` (see [Hide or disable inaccessible actions](inaccessible_actions.md)).
+Before 0.28.0 child actions always rendered and the target view answered with 403. `LinkChildColumn` in tables still
+renders without a permission check. With a `GuardianViewSet` child, the child list view's `cv_has_access` is always
+`True` (access to the parent is checked per request), so such child card actions keep rendering — the same as
+`ChildContextButton`.
 
 | Field | Required | Description |
 |---|---|---|

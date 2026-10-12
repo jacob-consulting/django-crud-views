@@ -34,8 +34,9 @@ class PersonDeleteView(DeleteViewPermissionRequired):
 
 When `cv_action_enabled` returns `False`:
 
-- The action's button is **hidden entirely** (not greyed out) in list actions, context actions,
-  and card actions.
+- The action's button is **hidden** in list actions, context actions and card actions — or rendered
+  **disabled** when the target view resolves to `"disable"` (see
+  [Hide or disable inaccessible actions](inaccessible_actions.md)).
 - A direct GET or POST to the action's URL returns **403** for an authenticated user
   (anonymous users receive a login redirect, as usual).
 

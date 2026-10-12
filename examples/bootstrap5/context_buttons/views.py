@@ -62,8 +62,8 @@ class TicketListView(BreadcrumbMixin, ListViewTableMixin, ListViewPermissionRequ
 
 class TicketDetailView(BreadcrumbMixin, DetailViewPermissionRequired):
     cv_viewset = cv_ticket
-    # the header toolbar: edit_big is drawn by its own template_code; like every context button it is
-    # hidden for a user who may not change the ticket (log in as bob)
+    # the header toolbar: edit_big is drawn by its own template_code; it is hidden for a user who may not change
+    # the ticket (log in as bob), while delete is shown disabled (TicketDeleteView.cv_inaccessible_actions)
     cv_context_actions = ["home", "edit_big", "delete"]
     # places the buttons by hand with cv_context_button / cv_context_url / cv_context_has_permission
     # and a custom loop over cv_get_context_buttons
@@ -88,3 +88,5 @@ class TicketDeleteView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, DeleteVie
     form_class = CrispyDeleteForm
     cv_message_template_code = _("Deleted ticket “{{ object }}”")
     cv_cancel_keys = ["list", "detail"]
+    # a viewer (bob) sees the delete button greyed out instead of hidden; edit stays hidden (#149)
+    cv_inaccessible_actions = "disable"

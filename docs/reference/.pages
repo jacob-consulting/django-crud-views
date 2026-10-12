@@ -25,6 +25,7 @@ nav:
         - Conditional groups & formsets: conditional.md
     - Actions & navigation:
         - action_enabled.md
+        - inaccessible_actions.md
         - action_view.md
         - context_buttons.md
         - breadcrumb.md

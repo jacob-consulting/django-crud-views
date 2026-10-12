@@ -268,8 +268,8 @@ def test_card_child_action_renders_url(client_user_publisher_card: Client, cv_pu
 
 
 @pytest.mark.django_db
-def test_card_child_action_always_renders(cv_publisher, publisher_penguin):
-    """Child actions render even without explicit child view permission."""
+def test_card_child_action_hidden_without_child_permission(cv_publisher, cv_book, publisher_penguin):
+    """Child actions check the child view's permission (#149): no book permission -> no Books button."""
     from django.contrib.auth.models import User
 
     user = User.objects.create_user(username="user_pub_no_book", password="password")
@@ -282,6 +282,5 @@ def test_card_child_action_always_renders(cv_publisher, publisher_penguin):
     doc = html.fromstring(response.content)
     card = doc.cssselect(".card.mb-3")[0]
     actions = card.cssselect("a.btn")
-    assert len(actions) == 2
-    books_btn = actions[1]
-    assert "Books" in books_btn.text_content()
+    assert len(actions) == 1
+    assert "Books" not in card.text_content()

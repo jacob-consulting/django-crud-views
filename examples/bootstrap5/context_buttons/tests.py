@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
+from lxml import html as lxml_html
 from project.seeding import grant_model_perms
 
 from context_buttons.models import Ticket
@@ -77,9 +78,17 @@ class TicketDetailViewerTest(ContextButtonsTestCase):
     def test_gated_section_absent(self):
         self.assertNotIn('id="gated-section"', self.rendered(self.detail(self.viewer)))
 
-    def test_custom_loop_only_lists_accessible_buttons(self):
-        # home + manage; edit_big and delete are filtered out
-        self.assertEqual(self.rendered(self.detail(self.viewer)).count('class="cv-demo-loop-item"'), 2)
+    def test_custom_loop_lists_accessible_and_disabled_buttons(self):
+        # home + delete (disabled: TicketDeleteView.cv_inaccessible_actions = "disable") + manage;
+        # edit_big targets update, which stays hidden
+        self.assertEqual(self.rendered(self.detail(self.viewer)).count('class="cv-demo-loop-item"'), 3)
+
+    def test_delete_shown_disabled_in_toolbar(self):
+        doc = lxml_html.fromstring(self.rendered(self.detail(self.viewer)))
+        (btn,) = doc.cssselect('[cv-context-container] [cv-key="delete"]')
+        self.assertEqual(btn.get("aria-disabled"), "true")
+        self.assertEqual(btn.get("data-cv-disabled"), "permission")
+        self.assertIsNone(btn.get("href"))
 
 
 class TicketCrudTest(ContextButtonsTestCase):
@@ -93,6 +102,13 @@ class TicketCrudTest(ContextButtonsTestCase):
     def test_template_shown_in_code_panel(self):
         resp = self.detail(self.viewer)
         self.assertContains(resp, "context_buttons/templates/context_buttons/ticket_detail.html")
+
+    def test_list_shows_disabled_delete_for_viewer(self):
+        self.client.force_login(self.viewer)
+        resp = self.client.get(reverse("ticket-list"))
+        html = resp.content.decode().split('id="snippet-panels"')[0]
+        self.assertIn('data-cv-disabled="permission"', html)
+        self.assertNotIn(self.delete_url, html)
 
     def test_viewer_cannot_open_update(self):
         self.client.force_login(self.viewer)

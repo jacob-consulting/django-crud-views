@@ -1,4 +1,12 @@
-{% if cv_access and cv_action_enabled is not False %}
+{% if cv_disabled %}
+<a class="btn btn-{% if cv_variant == 'primary' %}primary{% elif cv_variant == 'tertiary' %}outline-secondary{% else %}secondary{% endif %} btn-sm{% if cv_flex %} flex-grow-1{% endif %} disabled"
+   aria-disabled="true"
+   role="button"
+   data-cv-disabled="{{ cv_disabled_reason }}"
+   {% if cv_no_label %}title="{{ cv_label }}"{% endif %}>
+   {% if cv_no_label %}{% if cv_icon_action %}<i class="{{ cv_icon_action }}"></i>{% endif %}{% else %}<span>{{ cv_label }}</span>{% endif %}
+</a>
+{% elif cv_access and cv_action_enabled is not False %}
 {% if cv_list_action_method == "post" %}
 <form id="cv_form_{{ cv_oid }}" action="{{ cv_url }}" method="post" class="d-none">{% csrf_token %}</form>
 {% endif %}

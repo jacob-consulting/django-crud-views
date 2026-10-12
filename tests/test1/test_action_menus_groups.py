@@ -3,6 +3,7 @@
 import pytest
 from django.urls import reverse
 
+from crud_views.lib.exceptions import ViewSetKeyFoundError
 from crud_views.lib.view import CardAction
 from tests.test1.app.views import (
     AuthorCardListView,
@@ -110,3 +111,20 @@ def test_card_tag_and_group_share_data(client_user_author_view, author_douglas_a
     monkeypatch.setattr(AuthorCardListView, "cv_card_actions_inline", [])
     group = view.cv_get_card_action_group(author_douglas_adams)
     assert group.menu[0]["cv_url"] == data["cv_url"]
+
+
+@pytest.mark.django_db
+def test_list_group_skips_unregistered_key(list_view, author_douglas_adams, monkeypatch):
+    # defensive guard: a key whose context cannot be resolved is skipped, not raised
+    monkeypatch.setattr(AuthorListView, "cv_list_actions", ["detail", "update"])
+    monkeypatch.setattr(AuthorListView, "cv_list_actions_inline", [])
+    original = list_view.cv_get_context
+
+    def raising(*args, key=None, **kwargs):
+        if key == "update":
+            raise ViewSetKeyFoundError(key)
+        return original(*args, key=key, **kwargs)
+
+    monkeypatch.setattr(list_view, "cv_get_context", raising)
+    group = list_view.cv_get_list_action_group(author_douglas_adams)
+    assert _keys(group.menu) == ["detail"]

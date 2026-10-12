@@ -59,10 +59,12 @@ def test_inline_card_button_unchanged_and_menu(db, author_douglas_adams, author_
     card = _card(_client([(cv_author, ("view", "change"))]), reverse(cv_author.get_router_name("card")))
     row = card.cssselect(".d-flex.gap-2")[0]
     detail = row.xpath("./a")[0]
-    assert "btn-primary" in detail.get("class") and "flex-grow-1" in detail.get("class")
+    assert "btn-primary" in detail.get("class")
+    assert "flex-grow-1" in detail.get("class")
     wrapper = row.xpath("./div[contains(@class, 'dropdown')]")[0]
     toggle = wrapper.cssselect(".cv-menu-toggle")[0]
-    assert "btn-secondary" in toggle.get("class") and "btn-sm" in toggle.get("class")
+    assert "btn-secondary" in toggle.get("class")
+    assert "btn-sm" in toggle.get("class")
     items = wrapper.cssselect(".dropdown-item")
     # variant / flex / no_label are ignored in the menu; CardAction.label is the item text
     assert [i.text_content().strip() for i in items] == ["Edit", "Ping"]
@@ -84,7 +86,8 @@ def test_disabled_card_item(db, author_douglas_adams, author_card_actions, monke
     monkeypatch.setattr(AuthorUpdateView, "cv_inaccessible_actions", "disable")
     card = _card(_client([(cv_author, ("view",))]), reverse(cv_author.get_router_name("card")))
     edit = next(i for i in card.cssselect(".dropdown-item") if i.text_content().strip() == "Edit")
-    assert edit.tag == "button" and edit.get("disabled") is not None
+    assert edit.tag == "button"
+    assert edit.get("disabled") is not None
     assert edit.get("data-cv-disabled") == "permission"
 
 

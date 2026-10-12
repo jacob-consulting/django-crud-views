@@ -37,7 +37,11 @@ class FeatureGroup:
 
 #: navbar dropdowns and home page sections, in display order
 GROUPS: list[FeatureGroup] = [
-    FeatureGroup(key="basics", title=pgettext_lazy("feature group", "Basics"), icon="fa-solid fa-cubes"),
+    FeatureGroup(
+        key="basics",
+        title=pgettext_lazy("feature group", "Basics"),  # NOSONAR S1192 xgettext needs a literal msgctxt
+        icon="fa-solid fa-cubes",
+    ),
     FeatureGroup(key="forms", title=pgettext_lazy("feature group", "Forms"), icon="fa-solid fa-pen-to-square"),
     FeatureGroup(key="ui", title=pgettext_lazy("feature group", "UI"), icon="fa-solid fa-palette"),
     FeatureGroup(key="extensions", title=pgettext_lazy("feature group", "Extensions"), icon="fa-solid fa-puzzle-piece"),

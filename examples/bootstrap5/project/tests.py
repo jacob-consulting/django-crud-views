@@ -339,6 +339,13 @@ class NavGroupsTest(TestCase):
         nav = navbar_html(self.client.get(reverse("author-list")))
         self.assertEqual(NAV_GROUP_ID.findall(nav), ["basics", "forms", "ui", "extensions"])
 
+    def test_group_toggles_are_buttons(self):
+        # a real <button>, not <a role="button">: keyboard accessible without extra handlers (Sonar Web:S6819)
+        nav = navbar_html(self.client.get(reverse("home")))
+        for key in ("basics", "forms", "ui", "extensions"):
+            self.assertIn(f'<button type="button" id="nav-group-{key}" class="nav-link dropdown-toggle', nav)
+        self.assertNotIn('role="button"', nav)
+
     def test_nav_links_every_feature(self):
         nav = navbar_html(self.client.get(reverse("home")))
         for feature in FEATURES:

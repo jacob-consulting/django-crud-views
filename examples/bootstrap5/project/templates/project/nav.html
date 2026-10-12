@@ -13,9 +13,9 @@
                 {% for group, features in nav_groups.groups %}
                     {% if features %}
                         <li class="nav-item dropdown">
-                            <a id="nav-group-{{ group.key }}" class="nav-link dropdown-toggle{% if group.key == nav_groups.active_group %} active{% endif %}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"{% if group.key == nav_groups.active_group %} aria-current="true"{% endif %}>
+                            <button type="button" id="nav-group-{{ group.key }}" class="nav-link dropdown-toggle{% if group.key == nav_groups.active_group %} active{% endif %}" data-bs-toggle="dropdown" aria-expanded="false"{% if group.key == nav_groups.active_group %} aria-current="true"{% endif %}>
                                 <i class="{{ group.icon }}"></i> {{ group.title }}
-                            </a>
+                            </button>
                             <ul class="dropdown-menu" aria-labelledby="nav-group-{{ group.key }}">
                                 {% for feature in features %}
                                     <li>

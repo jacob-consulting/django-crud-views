@@ -69,3 +69,10 @@ Give your theme app a template at
 
 With `myapp_theme` listed before `crud_views` in `INSTALLED_APPS`, every crud_views form now
 renders your button, while all other templates keep the bootstrap5 defaults.
+
+## Disabled actions in overridden templates
+
+The shipped `tags/context_action.html`, `tags/list_action.html` and `tags/card_action.html` start with a
+`{% if cv_disabled %}` branch. If you override one of them, keep that branch to support
+`CRUD_VIEWS_INACCESSIBLE_ACTIONS = "disable"`; without it the action stays hidden. See
+[Hide or disable inaccessible actions](inaccessible_actions.md).

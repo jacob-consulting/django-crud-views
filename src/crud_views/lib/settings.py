@@ -16,6 +16,7 @@ def from_settings(name, default=None) -> Any:
 
 class CrudViewsSettings(BaseModel):
     MANAGE_VIEWS_ENABLED_VALUES: ClassVar[tuple[str, ...]] = ("no", "yes", "debug_only")
+    INACCESSIBLE_ACTIONS_VALUES: ClassVar[tuple[str, ...]] = ("hide", "disable")
 
     # basic
     extends: str | None = from_settings(
@@ -40,6 +41,10 @@ class CrudViewsSettings(BaseModel):
 
     # asset bundling (django-pipeline): tags emit only external entries, a bundler delivers the rest
     assets_bundled: bool = from_settings("CRUD_VIEWS_ASSETS_BUNDLED", default=False)
+
+    # actions the user may not use: "hide" (default) or "disable" (rendered greyed out); see ViewSet /
+    # CrudView overrides (cv_get_inaccessible_actions)
+    inaccessible_actions: str = from_settings("CRUD_VIEWS_INACCESSIBLE_ACTIONS", default="hide")
 
     # breadcrumb
     breadcrumb_prefix: list[dict[str, Any]] = from_settings("CRUD_VIEWS_BREADCRUMB_PREFIX", default=[])
@@ -105,6 +110,17 @@ class CrudViewsSettings(BaseModel):
                     msg=(
                         f"setting CRUD_VIEWS_MANAGE_VIEWS_ENABLED must be one of "
                         f"{self.MANAGE_VIEWS_ENABLED_VALUES}, got {self.manage_views_enabled!r}"
+                    ),
+                )
+            )
+
+        if self.inaccessible_actions not in self.INACCESSIBLE_ACTIONS_VALUES:
+            messages.append(
+                Error(
+                    id="crud_views.E104",
+                    msg=(
+                        f"setting CRUD_VIEWS_INACCESSIBLE_ACTIONS must be one of "
+                        f"{self.INACCESSIBLE_ACTIONS_VALUES}, got {self.inaccessible_actions!r}"
                     ),
                 )
             )

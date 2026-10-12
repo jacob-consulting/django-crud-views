@@ -12,7 +12,7 @@
         {% blocktranslate trimmed %}
             Every button below is placed by hand in this template. Log in as <strong>alice</strong> (may edit and
             delete) and as <strong>bob</strong> (may only view) to compare: a button the user may not use
-            renders nothing — exactly like the toolbar in the page header.
+            is hidden, except delete, which this demo renders disabled (greyed out).
         {% endblocktranslate %}
     </p>
 
@@ -46,7 +46,7 @@
         <p class="text-body-secondary small">{% translate "The danger zone is only shown to users who may delete." %}</p>
     {% endif %}
 
-    {# 4. a loop over the view's cv_context_actions, already filtered to the buttons the user may use #}
+    {# 4. a loop over the view's cv_context_actions: hidden buttons left out, disabled ones (delete for bob) included #}
     <h5>4. <code>view.cv_get_context_buttons</code> + <code>{% verbatim %}{% cv_render_context_button %}{% endverbatim %}</code></h5>
     <ul class="list-inline">
         {% for ctx in view.cv_get_context_buttons %}

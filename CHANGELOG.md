@@ -1,5 +1,29 @@
 # Django CRUD Views - Changelog
 
+## Unreleased
+
+### Added
+
+- Inaccessible actions can be rendered **disabled** instead of hidden: setting `CRUD_VIEWS_INACCESSIBLE_ACTIONS`
+  (`"hide"` default, `"disable"`), overridable per ViewSet (`inaccessible_actions`) and per CrudView
+  (`cv_inaccessible_actions`, resolved on the action's target view via `cv_get_inaccessible_actions()`). Applies to
+  context buttons, list actions and card actions. Templates get `cv_disabled` and `cv_disabled_reason`
+  (`"permission"` | `"state"`); disabled buttons carry `aria-disabled` / `disabled` and `data-cv-disabled`. New
+  system checks `crud_views.E104` and `viewset.E207` (#149).
+
+### Changed
+
+- Child card actions (`CardAction(child_name=...)`) now check the child view's permission like
+  `ChildContextButton`. Users without it no longer see the button (previously it rendered and the target answered
+  with 403). Guardian child list views still grant access at render time, so their child card actions keep
+  rendering, as with `ChildContextButton` (#149).
+- `CrudView.cv_get_context_buttons()` includes disabled entries (`cv_disabled=True`, `cv_url=None`) when the target
+  view resolves to `"disable"` (#149).
+- In the default "hide" mode, the list and card action tags (`cv_list_action`, `cv_list_action_form`,
+  `cv_card_action`) no longer pass data for inaccessible actions to their templates (they get an empty context).
+  Projects that overrode `list_action.html` / `card_action.html` to draw their own placeholder for `not cv_access`
+  should switch the target view to `"disable"` and use the `cv_disabled` branch (#149).
+
 ## 0.27.1
 
 ### Added

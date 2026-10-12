@@ -55,7 +55,9 @@ When neither `template` nor `template_code` is set, the button uses the
 `CRUD_VIEWS_CONTEXT_BUTTON_TEMPLATE` setting (default
 `crud_views/tags/context_action.html`). Whichever template is used, it is only rendered
 when the user may access the target and the action is enabled (`cv_access` is `True`,
-`cv_action_enabled` is not `False`), so custom templates need no access check of their own. For placing buttons by hand in a custom layout, see
+`cv_action_enabled` is not `False`), so custom templates need no access check of their own —
+except for targets that render inaccessible actions disabled, see
+[Hide or disable inaccessible actions](inaccessible_actions.md#custom-button-templates). For placing buttons by hand in a custom layout, see
 [Manual Placement (Template Tags)](#manual-placement-template-tags) below.
 
 ### Active state
@@ -323,16 +325,16 @@ Target a different object by passing it as the second argument:
 ```
 
 !!! note "`None` means hidden"
-    Because `cv_context_url` returns `None` for both "no access" and "action disabled", gating
-    your markup with `{% if url %}` makes the link disappear entirely — matching
-    `cv_context_button` and the `{% cv_context_actions %}` container, which hide inaccessible
-    buttons as well.
+    Because `cv_context_url` returns `None` for both "no access" and "action disabled" — also when the target view
+    renders inaccessible actions disabled — gating your markup with `{% if url %}` makes the link disappear
+    entirely. `cv_context_button` and the `{% cv_context_actions %}` container hide inaccessible buttons, or render
+    them disabled in disable mode (see [Hide or disable inaccessible actions](inaccessible_actions.md)).
 
 ### `cv_context_button` — render the full button
 
 When you want the library to render the complete button markup (not just the URL), use
 `cv_context_button`. It renders **nothing** when the user lacks access or the action is
-disabled:
+disabled — or a disabled button when the target view uses `cv_inaccessible_actions = "disable"`:
 
 ```django
 {% load crud_views %}

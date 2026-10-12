@@ -31,6 +31,7 @@
 - [Breadcrumb](breadcrumb.md) — a Bootstrap breadcrumb following the ViewSet hierarchy
 - [Modals](modals.md) — open supported views in a Bootstrap modal instead of a full page
 - [Conditionally disabling an action](action_enabled.md) — disable an action a user is otherwise permitted to perform, based on object state
+- [Hide or disable inaccessible actions](inaccessible_actions.md) — render actions the user may not use greyed out instead of hidden
 
 ## Extensions
 

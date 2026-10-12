@@ -10,6 +10,7 @@ from crud_views.lib import assets
 from crud_views.lib.exceptions import ViewSetKeyFoundError, ignore_exception
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import CrudView
+from crud_views.lib.view.visibility import cv_resolve_action
 
 register = template.Library()
 
@@ -75,13 +76,9 @@ def cv_get_context(context, key, obj=None) -> dict:
     return context
 
 
-def _context_button_visible(ctx) -> bool:
-    """A context button is shown only when the user may access its target and the action is enabled."""
-    return bool(ctx) and ctx.get("cv_action_enabled") is not False and ctx.get("cv_access") is True
-
-
 def _render_context_button(view, ctx) -> str:
-    if not _context_button_visible(ctx):
+    ctx = cv_resolve_action(ctx)
+    if ctx is None:
         return ""
     if ctx.get("cv_template_code"):
         return view.render_snippet(ctx, template_code=ctx["cv_template_code"])
@@ -112,22 +109,26 @@ def cv_config(context):
 
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/list_action.html", takes_context=True)
 def cv_list_action(context, key, obj=None):
-    return cv_get_context(context=context, key=key, obj=obj)
+    return cv_resolve_action(cv_get_context(context=context, key=key, obj=obj)) or {}
 
 
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/list_action_form.html", takes_context=True)
 def cv_list_action_form(context, key, obj=None):
-    return cv_get_context(context=context, key=key, obj=obj)
+    ctx = cv_resolve_action(cv_get_context(context=context, key=key, obj=obj))
+    # a disabled button never submits: no hidden POST form for it (#149)
+    if ctx is None or ctx["cv_disabled"]:
+        return {}
+    return ctx
 
 
 @register.simple_tag(takes_context=True)
 @ignore_exception(ViewSetKeyFoundError, default_value="")
 def cv_context_action(context, key, obj=None):
     obj = obj if obj else None  # fix empty string from template
-    ctx = cv_get_context(context=context, key=key, obj=obj)
     # gate here, not only in the default template: per-button template / template_code must not show a
-    # button the user may not use (#147)
-    if not _context_button_visible(ctx):
+    # button the user may not use (#147); in disable mode they get cv_disabled data instead (#149)
+    ctx = cv_resolve_action(cv_get_context(context=context, key=key, obj=obj))
+    if ctx is None:
         return ""
     if ctx.get("cv_template_code"):
         view = cv_get_view(context)
@@ -154,8 +155,9 @@ def cv_context_url(context, key, obj=None):
     view = cv_get_view(context)
     if obj is None:
         obj = getattr(view, "object", None)
-    ctx = cv_get_context(context=context, key=key, obj=obj)
-    if not _context_button_visible(ctx):
+    ctx = cv_resolve_action(cv_get_context(context=context, key=key, obj=obj))
+    # a bare URL cannot say "disabled": None for every unusable action, in both modes (#149)
+    if ctx is None or ctx["cv_disabled"]:
         return None
     return ctx.get("cv_url")
 
@@ -324,14 +326,17 @@ def cv_context_has_permission(view, key) -> bool:
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/card_action.html", takes_context=True)
 def cv_card_action(context, action, obj=None):
     view = cv_get_view(context)
+    user = context["request"].user
 
     if action.child_name:
         url = view.cv_get_child_url(action.child_name, action.child_key, obj)
         child_viewset = view.cv_viewset.get_viewset(action.child_name)
         child_cls = child_viewset.get_view_class(action.child_key)
-        return {
-            "cv_access": True,
-            "cv_action_enabled": child_cls.cv_action_enabled(context["request"].user, obj),
+        # permission is checked on the child view, like ChildContextButton (#149)
+        data = {
+            "cv_access": bool(child_cls.cv_has_access(user, obj)),
+            "cv_action_enabled": child_cls.cv_action_enabled(user, obj),
+            "cv_inaccessible_actions": child_cls.cv_get_inaccessible_actions(),
             "cv_url": url,
             "cv_label": action.label,
             "cv_icon_action": child_cls.cv_icon_action,
@@ -340,26 +345,21 @@ def cv_card_action(context, action, obj=None):
             "cv_no_label": action.no_label,
             "cv_list_action_method": "get",
         }
+        return cv_resolve_action(data) or {}
 
-    user = context["request"].user
     cls = view.cv_viewset.get_view_class(action.key)
-    access = cls.cv_has_access(user, obj)
-    action_enabled = cls.cv_action_enabled(user, obj)
-
-    if not access:
-        return {"cv_access": False, "cv_action_enabled": action_enabled}
-
     url = view.cv_get_link_url(cls, action.key, obj)
     view_context = view.cv_get_view_context(object=obj)
 
     label = action.label or cls.cv_get_action_short_label(context=view_context)
 
+    # always build the full data: disable mode renders label/icon/variant without access (#149)
     data = cls.cv_get_dict(
         context=view_context,
         cv_oid=view.cv_get_oid(action.key, obj=obj),
         cv_url=url,
-        cv_access=True,
-        cv_action_enabled=action_enabled,
+        cv_access=bool(cls.cv_has_access(user, obj)),
+        cv_action_enabled=cls.cv_action_enabled(user, obj),
     )
     data.update(
         cv_label=label,
@@ -367,7 +367,7 @@ def cv_card_action(context, action, obj=None):
         cv_flex=action.flex,
         cv_no_label=action.no_label,
     )
-    return data
+    return cv_resolve_action(data) or {}
 
 
 @register.simple_tag(takes_context=True)

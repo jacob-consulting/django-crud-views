@@ -2,7 +2,7 @@ import threading
 from collections import OrderedDict
 from collections.abc import Iterable
 from functools import cached_property
-from typing import ClassVar, Self
+from typing import ClassVar, Literal, Self
 
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
@@ -74,6 +74,7 @@ class ViewSet(BaseModel):
     icon_header: str | None = None
     manage_view_class: str | None = None
     extends: str | None = None  # base template all views in this viewset extend
+    inaccessible_actions: Literal["hide", "disable"] | None = None  # None: CRUD_VIEWS_INACCESSIBLE_ACTIONS
     # Resource-based ViewSets only: explicit permission map, e.g.
     # {"view": "storage.view_s3object", "delete": "storage.delete_s3object"}.
     # None means: no permissions declared (only non-PermissionRequired views).

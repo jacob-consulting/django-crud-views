@@ -17,14 +17,14 @@
 
     {% for group, features in feature_groups %}
         {% if features %}
-            <h2 id="group-{{ group.key }}" class="h4 mt-4 mb-3"><i class="{{ group.icon }}"></i> {{ group.title }}</h2>
+            <h2 id="group-{{ group.key }}" class="h4 mt-4 mb-3"><i class="{{ group.icon }}" aria-hidden="true"></i> {{ group.title }}</h2>
             <div class="row row-cols-1 row-cols-md-3 g-3">
                 {% for feature in features %}
                     <div class="col">
                         <div class="card h-100">
                             <div class="card-body">
                                 <h5 class="card-title">
-                                    <i class="{{ feature.icon }}"></i> {{ feature.title }}
+                                    <i class="{{ feature.icon }}" aria-hidden="true"></i> {{ feature.title }}
                                     {% if feature.badge %}
                                         <span class="badge text-bg-success ms-2">{{ feature.badge }}</span>
                                     {% endif %}

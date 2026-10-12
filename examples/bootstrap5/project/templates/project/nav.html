@@ -14,13 +14,13 @@
                     {% if features %}
                         <li class="nav-item dropdown">
                             <button type="button" id="nav-group-{{ group.key }}" class="nav-link dropdown-toggle{% if group.key == nav_groups.active_group %} active{% endif %}" data-bs-toggle="dropdown" aria-expanded="false"{% if group.key == nav_groups.active_group %} aria-current="true"{% endif %}>
-                                <i class="{{ group.icon }}"></i> {{ group.title }}
+                                <i class="{{ group.icon }}" aria-hidden="true"></i> {{ group.title }}
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="nav-group-{{ group.key }}">
                                 {% for feature in features %}
                                     <li>
-                                        <a class="dropdown-item" href="{% url feature.url_name %}">
-                                            <i class="{{ feature.icon }} fa-fw"></i> {{ feature.title }}
+                                        <a class="dropdown-item{% if feature.app == nav_groups.active_app %} active{% endif %}"{% if feature.app == nav_groups.active_app %} aria-current="page"{% endif %} href="{% url feature.url_name %}">
+                                            <i class="{{ feature.icon }} fa-fw" aria-hidden="true"></i> {{ feature.title }}
                                             {% if feature.badge %}<span class="badge text-bg-success ms-1">{{ feature.badge }}</span>{% endif %}
                                         </a>
                                     </li>

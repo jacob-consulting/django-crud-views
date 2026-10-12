@@ -1,7 +1,7 @@
 {% load i18n %}
 {% if panels %}
     <div class="mt-4" id="snippet-panels">
-        <h5><i class="fa-solid fa-code"></i> {% translate "The code behind this page" %}</h5>
+        <h5><i class="fa-solid fa-code" aria-hidden="true"></i> {% translate "The code behind this page" %}</h5>
         {% if look_at %}
             <p class="text-body-secondary"><strong>{% translate "Look at:" %}</strong> {{ look_at }}</p>
         {% endif %}
@@ -21,7 +21,7 @@
             {% endfor %}
         </div>
         {% if docs %}
-            <h5 class="mt-3"><i class="fa-solid fa-book"></i> {% translate "References to documentation" %}</h5>
+            <h5 class="mt-3"><i class="fa-solid fa-book" aria-hidden="true"></i> {% translate "References to documentation" %}</h5>
             <ul>
                 {% for ref in docs %}
                     <li>

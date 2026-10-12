@@ -1,7 +1,7 @@
 {% load i18n %}
 {% if feature.about %}
     <div class="alert alert-light border d-flex gap-3 mb-4" id="example-about">
-        <i class="fa-solid fa-circle-info fs-4 text-secondary mt-1"></i>
+        <i class="fa-solid fa-circle-info fs-4 text-secondary mt-1" aria-hidden="true"></i>
         <div>
             <h6 class="mb-1">{% blocktranslate with title=feature.title %}About this example — {{ title }}{% endblocktranslate %}</h6>
             <p class="mb-0">{{ feature.about }}</p>

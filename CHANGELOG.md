@@ -30,7 +30,8 @@
   only view in the Context Buttons and Action Menus examples (#180).
 
 - Examples: the navbar groups the example apps into Basics / Forms / UI / Extensions dropdowns, and the home page
-  uses the same groups as headings, so the menu no longer wraps; below 1200px it collapses into the hamburger menu.
+  uses the same groups as headings, so the menu no longer wraps; below 1200px it collapses into the hamburger menu
+  (#183).
 
 - Examples navbar follow-ups (#184): the current app is marked `active` / `aria-current="page"` inside its group
   dropdown, decorative icons in the example chrome carry `aria-hidden="true"`, an unknown feature group fails at

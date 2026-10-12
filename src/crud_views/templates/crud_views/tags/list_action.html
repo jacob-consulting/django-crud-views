@@ -1,5 +1,4 @@
 {% if cv_disabled %}
-{% if cv_list_action_method == "post" and not cv_modal %}
 <button type="button"
     class="btn btn-outline-primary btn-xs"
     disabled
@@ -8,16 +7,6 @@
     cv-key="{{ cv_key }}">
     {% if cv_icon_action %}<i class="{{ cv_icon_action }}" aria-hidden="true"></i>{% endif %}<span class="visually-hidden">{{ cv_action_label }}</span>
 </button>
-{% else %}
-<a class="btn btn-outline-primary btn-xs disabled"
-    aria-disabled="true"
-    role="button"
-    data-cv-disabled="{{ cv_disabled_reason }}"
-    title="{{ cv_action_label }}"
-    cv-key="{{ cv_key }}">
-    {% if cv_icon_action %}<i class="{{ cv_icon_action }}" aria-hidden="true"></i>{% endif %}<span class="visually-hidden">{{ cv_action_label }}</span>
-</a>
-{% endif %}
 {% elif cv_action_enabled is not False and cv_access is True %}
 {% if cv_list_action_method == "post" and not cv_modal %}
 <button type="button"

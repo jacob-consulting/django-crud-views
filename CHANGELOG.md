@@ -8,8 +8,8 @@
   (`"hide"` default, `"disable"`), overridable per ViewSet (`inaccessible_actions`) and per CrudView
   (`cv_inaccessible_actions`, resolved on the action's target view via `cv_get_inaccessible_actions()`). Applies to
   context buttons, list actions and card actions. Templates get `cv_disabled` and `cv_disabled_reason`
-  (`"permission"` | `"state"`); disabled buttons carry `aria-disabled` / `disabled` and `data-cv-disabled`. New
-  system checks `crud_views.E104` and `viewset.E207` (#149).
+  (`"permission"` | `"state"`); disabled actions render as a native `<button type="button" disabled>` carrying
+  `data-cv-disabled`. New system checks `crud_views.E104` and `viewset.E207` (#149).
 
 ### Changed
 
@@ -23,6 +23,12 @@
   `cv_card_action`) no longer pass data for inaccessible actions to their templates (they get an empty context).
   Projects that overrode `list_action.html` / `card_action.html` to draw their own placeholder for `not cv_access`
   should switch the target view to `"disable"` and use the `cv_disabled` branch (#149).
+
+### Internal
+
+- Fixed SonarQube Cloud findings: disabled actions use a native disabled `<button>` instead of
+  `<a role="button" aria-disabled="true">` (Web:S6819, mouse-event and identical-link-text rules), and the E255
+  check tests assert one condition per `assert` (python:S9073).
 
 ## 0.27.1
 

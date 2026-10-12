@@ -35,17 +35,21 @@ def test_child_button_resolves():
 
 def test_child_button_unknown_viewset():
     problem = ChildContextButton(key="books", child_name="bok").cv_check_target(vs("publisher"))
-    assert "'books'" in problem and "ChildContextButton" in problem and "'bok'" in problem
+    assert "'books'" in problem
+    assert "ChildContextButton" in problem
+    assert "'bok'" in problem
 
 
 def test_child_button_unknown_key():
     problem = ChildContextButton(key="books", child_name="book", child_key="lsit").cv_check_target(vs("publisher"))
-    assert "'lsit'" in problem and "'book'" in problem
+    assert "'lsit'" in problem
+    assert "'book'" in problem
 
 
 def test_child_button_not_a_child():
     problem = ChildContextButton(key="authors", child_name="author").cv_check_target(vs("publisher"))
-    assert "'author'" in problem and "child" in problem
+    assert "'author'" in problem
+    assert "child" in problem
 
 
 def test_sibling_button_resolves():
@@ -54,13 +58,15 @@ def test_sibling_button_resolves():
 
 def test_sibling_button_unknown_viewset():
     problem = SiblingContextButton(key="contracts", sibling_name="contrakt").cv_check_target(vs("book"))
-    assert "'contrakt'" in problem and "SiblingContextButton" in problem
+    assert "'contrakt'" in problem
+    assert "SiblingContextButton" in problem
 
 
 def test_sibling_button_unknown_key():
     btn = SiblingContextButton(key="contracts", sibling_name="contract", sibling_key="update")
     problem = btn.cv_check_target(vs("book"))
-    assert "'update'" in problem and "'contract'" in problem
+    assert "'update'" in problem
+    assert "'contract'" in problem
 
 
 def test_sibling_button_list_falls_back_to_card():
@@ -74,12 +80,15 @@ def test_parent_button_resolves():
 
 def test_parent_button_unknown_key():
     problem = ParentContextButton(key="up", key_target="detial").cv_check_target(vs("book"))
-    assert "'detial'" in problem and "'publisher'" in problem and "ParentContextButton" in problem
+    assert "'detial'" in problem
+    assert "'publisher'" in problem
+    assert "ParentContextButton" in problem
 
 
 def test_parent_button_without_parent():
     problem = ParentContextButton(key="up", key_target="list").cv_check_target(vs("publisher"))
-    assert "'up'" in problem and "parent" in problem
+    assert "'up'" in problem
+    assert "parent" in problem
 
 
 def test_plain_button_resolves():
@@ -88,7 +97,9 @@ def test_plain_button_resolves():
 
 def test_plain_button_unknown_key():
     problem = ContextButton(key="edit", key_target="updte").cv_check_target(vs("book"))
-    assert "'edit'" in problem and "ContextButton" in problem and "'updte'" in problem
+    assert "'edit'" in problem
+    assert "ContextButton" in problem
+    assert "'updte'" in problem
 
 
 def test_plain_button_list_falls_back_to_card():
@@ -116,7 +127,8 @@ def test_button_overriding_get_context_is_skipped():
 def test_viewset_reports_unresolved_button():
     messages = viewset_e255(vs("publisher"), [ChildContextButton(key="books", child_name="book", child_key="lsit")])
     assert len(messages) == 1
-    assert "'lsit'" in messages[0] and "publisher" in messages[0]
+    assert "'lsit'" in messages[0]
+    assert "publisher" in messages[0]
 
 
 def test_viewset_defaults_are_not_flagged():

@@ -33,9 +33,8 @@ Order: `CrudView.cv_inaccessible_actions` → `ViewSet.inaccessible_actions` →
 The default templates render a disabled action without a URL and without the JavaScript hooks
 (`data-cv-action`, `data-cv-modal`), so it cannot be activated by mouse or keyboard:
 
-- links: `<a class="btn … disabled" aria-disabled="true" role="button" data-cv-disabled="permission">`
-- POST list actions: `<button type="button" class="btn …" disabled data-cv-disabled="permission">`, and no hidden
-  POST form
+- every disabled action (context buttons, list and card actions, whether they link or POST):
+  `<button type="button" class="btn …" disabled data-cv-disabled="permission">`, and no hidden POST form
 
 `data-cv-disabled` is `"permission"` when the user lacks the permission and `"state"` when `cv_action_enabled`
 returned `False`. Use it to style the two cases differently:

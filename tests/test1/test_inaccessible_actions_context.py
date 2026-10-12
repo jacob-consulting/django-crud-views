@@ -45,10 +45,8 @@ def test_toolbar_disabled_for_permission(client_user_author_view, cv_author, aut
     resp = _detail(client_user_author_view, cv_author, author_douglas_adams)
     doc = lxml_html.fromstring(resp.content)
     (btn,) = doc.cssselect('[cv-context-container] [cv-key="delete"]')
-    assert btn.tag == "a"
-    assert "disabled" in btn.get("class").split()
-    assert btn.get("aria-disabled") == "true"
-    assert btn.get("role") == "button"
+    assert btn.tag == "button"
+    assert btn.get("disabled") is not None
     assert btn.get("data-cv-disabled") == "permission"
     assert btn.get("href") is None
     assert btn.get("data-cv-modal") is None
@@ -73,7 +71,8 @@ def test_context_button_tag_and_url(client_user_author_view, cv_author, author_d
     resp = _detail(client_user_author_view, cv_author, author_douglas_adams)
     out = _render(resp, '{% cv_context_button "delete" %}|{% cv_context_url "delete" as u %}[{{ u }}]')
     button, url = out.split("|")
-    assert 'aria-disabled="true"' in button
+    assert "<button" in button
+    assert " disabled" in button
     assert "href=" not in button
     assert url == "[None]"
 
@@ -104,7 +103,7 @@ def test_loop_render_disabled_entry(client_user_author_view, cv_author, author_d
     )
     doc = lxml_html.fromstring(f"<ul>{out}</ul>")
     (btn,) = doc.cssselect('[cv-key="delete"]')
-    assert btn.get("aria-disabled") == "true"
+    assert btn.get("disabled") is not None
     (detail,) = doc.cssselect('[cv-key="detail"]')
     assert detail.get("href")
 

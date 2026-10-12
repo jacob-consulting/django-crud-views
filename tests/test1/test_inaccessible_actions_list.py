@@ -30,9 +30,9 @@ def test_list_hide_is_default(client_user_publisher_view, publisher_penguin):
 def test_list_get_action_disabled(client_user_publisher_view, publisher_penguin, monkeypatch):
     monkeypatch.setattr(PublisherDeleteView, "cv_inaccessible_actions", "disable")
     content, doc = _doc(client_user_publisher_view, "/publisher/")
-    (btn,) = doc.cssselect('a[cv-key="delete"]')
-    assert "disabled" in btn.get("class").split()
-    assert btn.get("aria-disabled") == "true"
+    (btn,) = doc.cssselect('[cv-key="delete"]')
+    assert btn.tag == "button"
+    assert btn.get("disabled") is not None
     assert btn.get("data-cv-disabled") == "permission"
     assert btn.get("href") is None
     assert f"/publisher/{publisher_penguin.pk}/delete/" not in content
@@ -63,7 +63,7 @@ def test_list_modal_action_disabled(client_user_author_view, author_douglas_adam
     monkeypatch.setattr(AuthorDeleteView, "cv_modal", True)
     monkeypatch.setattr(AuthorDeleteView, "cv_inaccessible_actions", "disable")
     _, doc = _doc(client_user_author_view, "/author/")
-    (btn,) = doc.cssselect('a[cv-key="delete"]')
+    (btn,) = doc.cssselect('[cv-key="delete"]')
     assert btn.get("href") is None
     assert btn.get("data-cv-modal") is None
     assert btn.get("data-cv-modal-size") is None
@@ -76,6 +76,6 @@ def test_guardian_object_denial_disabled(
     user_guardian_object_perm(user_guardian, cv_guardian_author, "view", author_douglas_adams)
     monkeypatch.setattr(GuardianAuthorDeleteView, "cv_inaccessible_actions", "disable")
     _, doc = _doc(client_guardian, "/guardian_author/")
-    (btn,) = doc.cssselect('a[cv-key="delete"]')
-    assert btn.get("aria-disabled") == "true"
+    (btn,) = doc.cssselect('[cv-key="delete"]')
+    assert btn.get("disabled") is not None
     assert btn.get("data-cv-disabled") == "permission"

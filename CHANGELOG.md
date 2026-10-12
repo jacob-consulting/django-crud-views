@@ -16,7 +16,7 @@
   (resolved on the rendering view); `None` (default) keeps today's markup. Toggle icon via
   `CRUD_VIEWS_ACTIONS_MENU_ICON`. Overridable templates `actions_menu.html`, `actions_menu_toggle.html`,
   `actions_menu_item.html`. New system checks `crud_views.E105`, `viewset.E208`, `viewset.W290`. Requires the
-  Bootstrap JS bundle (#174).
+  Bootstrap JS bundle; a context button's own label also labels its menu item (#174).
 
 ### Changed
 

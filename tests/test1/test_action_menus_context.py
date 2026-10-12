@@ -6,6 +6,7 @@ from django.test import Client
 from django.urls import reverse
 from lxml import html as lxml_html
 
+from crud_views.lib.view import ContextButton
 from tests.lib.helper.user import user_viewset_permission
 from tests.test1.app.views import (
     AuthorDeleteView,
@@ -110,3 +111,31 @@ def test_modal_item(client_full, author_douglas_adams, monkeypatch):
     toolbar = _toolbar(client_full, _detail_url(author_douglas_adams))
     delete = toolbar.cssselect('.dropdown-item[cv-key="delete"]')[0]
     assert delete.get("data-cv-modal") == "true"
+
+
+@pytest.mark.django_db
+def test_context_button_own_label_is_menu_item_text(client_full, author_douglas_adams, monkeypatch):
+    monkeypatch.setattr(
+        AuthorDetailView,
+        "cv_context_buttons",
+        [ContextButton(key="edit_custom", key_target="update", label_template_code="Custom label")],
+    )
+    monkeypatch.setattr(AuthorDetailView, "cv_context_actions", ["detail", "edit_custom"])
+    monkeypatch.setattr(AuthorDetailView, "cv_context_actions_inline", ["detail"])
+    toolbar = _toolbar(client_full, _detail_url(author_douglas_adams))
+    item = toolbar.cssselect('.dropdown-item[cv-key="update"]')[0]
+    assert item.text_content().strip() == "Custom label"
+
+
+@pytest.mark.django_db
+def test_context_button_without_label_keeps_target_short_label(client_full, author_douglas_adams, monkeypatch):
+    monkeypatch.setattr(
+        AuthorDetailView,
+        "cv_context_buttons",
+        [ContextButton(key="edit_plain", key_target="update")],
+    )
+    monkeypatch.setattr(AuthorDetailView, "cv_context_actions", ["detail", "edit_plain"])
+    monkeypatch.setattr(AuthorDetailView, "cv_context_actions_inline", ["detail"])
+    toolbar = _toolbar(client_full, _detail_url(author_douglas_adams))
+    item = toolbar.cssselect('.dropdown-item[cv-key="update"]')[0]
+    assert item.text_content().strip() == "Update"

@@ -62,6 +62,13 @@ class ChoreDetailTest(ActionMenusTestCase):
         detail = toolbar.cssselect('.dropdown-item[cv-key="detail"]')[0]
         self.assertEqual(detail.get("aria-current"), "page")
 
+    def test_steps_item_uses_button_label(self):
+        doc = self.get(self.alice, "chore-detail", pk=self.chore.pk)
+        toolbar = doc.xpath("//fieldset[@cv-context-container]")[0]
+        steps = toolbar.cssselect('.dropdown-item[cv-key="list"]')
+        self.assertIn("Steps", [i.text_content().strip() for i in steps])
+        self.assertIn("List", [i.text_content().strip() for i in steps])
+
     def test_active_update_inline(self):
         doc = self.get(self.alice, "chore-update", pk=self.chore.pk)
         toolbar = doc.xpath("//fieldset[@cv-context-container]")[0]

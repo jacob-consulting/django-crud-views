@@ -27,7 +27,12 @@ cv_chore = ViewSet(
     model=Chore,
     name="chore",
     icon_header="fa-solid fa-broom",
-    context_buttons=[*context_buttons_default(), ChildContextButton(key="steps", child_name="step")],
+    context_buttons=[
+        *context_buttons_default(),
+        ChildContextButton(
+            key="steps", child_name="step", label_template_code='{% load i18n %}{% translate "Steps" %}'
+        ),
+    ],
 )
 
 # every action of a chore; which ones stay buttons is decided per location below

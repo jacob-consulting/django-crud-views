@@ -54,14 +54,17 @@ class ContextButton(BaseModel):
             return context.view.render_snippet(data, template_code=self.label_template_code)
 
     def _apply_label(self, data: dict, context: ViewContext) -> None:
-        """Override the seeded default label when this button declares its own label_template[_code].
+        """Override the seeded default labels when this button declares its own label_template[_code].
 
-        render_label() returns None when neither is set, so the target view's default label
-        (already in data) is preserved. Shared by every button subclass so none can forget it.
+        The declared label becomes both cv_action_label and cv_action_short_label, so it is the button's
+        label everywhere, including action menu items (which render the short label). render_label()
+        returns None when neither is set, so the target view's default labels (already in data) are
+        preserved. Shared by every button subclass so none can forget it.
         """
         cv_action_label = self.render_label(data, context)
         if cv_action_label:
             data["cv_action_label"] = cv_action_label
+            data["cv_action_short_label"] = cv_action_label
 
     def _inject_template(self, data: dict) -> None:
         if self.template_code:

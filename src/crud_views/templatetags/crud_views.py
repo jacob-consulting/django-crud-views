@@ -170,6 +170,15 @@ def cv_render_menu_item(ctx, location):
     return {**ctx, "cv_location": location}
 
 
+def _render_context_action(context, ctx) -> str:
+    """Render resolved context-button data: its template_code, its template, or the default button template."""
+    if ctx.get("cv_template_code"):
+        view = cv_get_view(context)
+        return view.render_snippet(ctx, template_code=ctx["cv_template_code"])
+    template = ctx.get("cv_template") or crud_views_settings.context_button_template
+    return render_to_string(template, context=ctx, request=context["request"])
+
+
 @register.simple_tag(takes_context=True)
 @ignore_exception(ViewSetKeyFoundError, default_value="")
 def cv_context_action(context, key, obj=None):
@@ -179,11 +188,13 @@ def cv_context_action(context, key, obj=None):
     ctx = cv_resolve_action(cv_get_context(context=context, key=key, obj=obj))
     if ctx is None:
         return ""
-    if ctx.get("cv_template_code"):
-        view = cv_get_view(context)
-        return view.render_snippet(ctx, template_code=ctx["cv_template_code"])
-    template = ctx.get("cv_template") or crud_views_settings.context_button_template
-    return render_to_string(template, context=ctx, request=context["request"])
+    return _render_context_action(context, ctx)
+
+
+@register.simple_tag(takes_context=True)
+def cv_render_context_action(context, ctx) -> str:
+    """Render already-resolved context-button data exactly like cv_context_action does (#174)."""
+    return _render_context_action(context, ctx)
 
 
 @register.simple_tag(takes_context=True)
@@ -231,7 +242,8 @@ def cv_querystring(parser, token):
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/context_actions.html", takes_context=True)
 def cv_context_actions(context, obj=None):
     view: CrudView = cv_get_view(context)
-    return {"view": view, "request": context["request"], "object": obj}
+    group = view.cv_get_context_action_group(obj if obj else None)
+    return {"view": view, "request": context["request"], "object": obj, "group": group}
 
 
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/button_cancel.html", takes_context=True)

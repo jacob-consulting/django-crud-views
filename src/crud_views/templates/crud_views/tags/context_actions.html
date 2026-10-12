@@ -1,6 +1,7 @@
 {% load crud_views %}
 
 {% if view.cv_context_actions %}
+{% if group is None %}
 
     <fieldset class="btn-group btn-group-lg" aria-label="Actions" cv-context-container="true">
         {% for key in view.cv_context_actions %}
@@ -8,4 +9,14 @@
         {% endfor %}
     </fieldset>
 
+{% else %}
+
+    <fieldset class="btn-group btn-group-lg" aria-label="Actions" cv-context-container="true">
+        {% for ctx in group.inline %}
+            {% cv_render_context_action ctx %}
+        {% endfor %}
+        {% cv_actions_menu group "context" %}
+    </fieldset>
+
+{% endif %}
 {% endif %}

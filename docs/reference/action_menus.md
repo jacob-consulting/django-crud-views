@@ -4,6 +4,12 @@ Views with many actions render one button per action. An **action menu** keeps t
 folds all others into one dropdown (`⋯`) at the end of the group. It works in three places: list rows, the context
 toolbar and cards.
 
+!!! example "Try it live"
+    The [Action Menus example](https://django-crud-views-demo.onrender.com/action-menus/chore/) in the live demo
+    folds chore actions into `⋯` menus on the list, the toolbar and the cards — log in as `alice` / `alice` and as
+    `bob` / `bob` to compare what each of them sees. See [Live demo](../getting_started/demo.md) for data resets
+    and wake-up time.
+
 ```
 List row:   [👁]  [⋯]                  Context:  [✏](active) [⋯]
                   ├ ✏ Edit

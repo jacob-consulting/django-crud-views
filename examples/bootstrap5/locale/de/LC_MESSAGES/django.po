@@ -245,8 +245,8 @@ msgstr ""
 "Jede Schaltfläche unten wird in diesem Template von Hand platziert. Melden "
 "Sie sich als <strong>alice</strong> (darf bearbeiten und löschen) und als "
 "<strong>bob</strong> (darf nur ansehen) an und vergleichen Sie: Eine "
-"Schaltfläche, die der Benutzer nicht verwenden darf, wird ausgeblendet, "
-"außer „Löschen“, das in dieser Demo deaktiviert (ausgegraut) angezeigt wird."
+"Schaltfläche, die der Benutzer nicht verwenden darf, wird ausgeblendet, außer"
+" „Löschen“, das in dieser Demo deaktiviert (ausgegraut) angezeigt wird."
 
 #: context_buttons/templates/context_buttons/ticket_detail.html:21
 msgid ""
@@ -1193,3 +1193,95 @@ msgstr "Kampagne »{{ object }}« aktualisiert"
 #: workflow/views.py:78
 msgid "Deleted campaign “{{ object }}”"
 msgstr "Kampagne »{{ object }}« gelöscht"
+
+#: action_menus/models.py:8
+msgid "done"
+msgstr "erledigt"
+
+#: action_menus/models.py:9
+msgid "archived"
+msgstr "archiviert"
+
+#: action_menus/models.py:12 action_menus/models.py:20
+msgid "chore"
+msgstr "Aufgabe"
+
+#: action_menus/models.py:13
+msgid "chores"
+msgstr "Aufgaben"
+
+#: action_menus/models.py:24
+msgid "step"
+msgstr "Schritt"
+
+#: action_menus/models.py:25
+msgid "steps"
+msgstr "Schritte"
+
+#: action_menus/views.py:69 action_menus/views.py:115
+msgid "Done"
+msgstr "Erledigt"
+
+#: action_menus/views.py:70 action_menus/views.py:133 action_menus/views.py:134
+msgid "Archive"
+msgstr "Archivieren"
+
+#: action_menus/views.py:71
+msgid "Steps"
+msgstr "Schritte"
+
+#: action_menus/views.py:82
+msgid "Chore"
+msgstr "Aufgabe"
+
+#: action_menus/views.py:89
+msgid "Created chore “{{ object }}”"
+msgstr "Aufgabe „{{ object }}“ angelegt"
+
+#: action_menus/views.py:97
+msgid "Updated chore “{{ object }}”"
+msgstr "Aufgabe „{{ object }}“ aktualisiert"
+
+#: action_menus/views.py:104
+msgid "Deleted chore “{{ object }}”"
+msgstr "Aufgabe „{{ object }}“ gelöscht"
+
+#: action_menus/views.py:114
+msgid "Toggle done"
+msgstr "Erledigt umschalten"
+
+#: action_menus/views.py:116
+msgid "Toggled done for “{{ object }}”"
+msgstr "Erledigt für „{{ object }}“ umgeschaltet"
+
+#: action_menus/views.py:117
+msgid "Could not toggle done for “{{ object }}”"
+msgstr "Erledigt für „{{ object }}“ konnte nicht umgeschaltet werden"
+
+#: action_menus/views.py:135
+msgid "Toggled archive for “{{ object }}”"
+msgstr "Archivierung für „{{ object }}“ umgeschaltet"
+
+#: action_menus/views.py:136
+msgid "Could not archive “{{ object }}”"
+msgstr "„{{ object }}“ konnte nicht archiviert werden"
+
+#: action_menus/views.py:146
+msgid "Moved chore “{{ object }}” up"
+msgstr "Aufgabe „{{ object }}“ nach oben verschoben"
+
+#: action_menus/views.py:151
+msgid "Moved chore “{{ object }}” down"
+msgstr "Aufgabe „{{ object }}“ nach unten verschoben"
+
+#: action_menus/views.py:179
+msgid "Created step “{{ object }}”"
+msgstr "Schritt „{{ object }}“ angelegt"
+
+#: action_menus/views.py:185
+msgid "Updated step “{{ object }}”"
+msgstr "Schritt „{{ object }}“ aktualisiert"
+
+#: action_menus/views.py:191
+msgid "Deleted step “{{ object }}”"
+msgstr "Schritt „{{ object }}“ gelöscht"

@@ -63,8 +63,9 @@ from [hide or disable](inaccessible_actions.md), which resolves on each action's
 
 `up` / `down` (ordered views) can be folded but are awkward in a menu — keep them inline.
 
-The context toolbar renders links (GET) only. POST actions such as `ActionView` belong in list rows or cards, where a
-hidden form submits them; listed in `cv_context_actions` they render as plain links (also before #174).
+POST-only actions (`ActionView`, `OrderedUpView` / `OrderedDownView`) work everywhere, inline and inside the menu: the
+container renders a hidden `<form method="post" id="cv_form_…">` per action before the button group, and the button or
+menu item carries `data-cv-action="submit-form"` and `data-cv-target` to submit it. Disabled actions get no form.
 
 ## Hide and disable
 

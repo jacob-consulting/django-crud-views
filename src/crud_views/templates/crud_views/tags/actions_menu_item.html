@@ -8,9 +8,10 @@
     data-cv-modal="true" data-cv-modal-size="{{ cv_modal_size }}"
     {% if cv_location == "context" %}title="{{ cv_action_label }}"{% endif %}
     cv-key="{{ cv_key }}">{% include "crud_views/tags/actions_menu_item_label.html" %}</a>
-{% elif cv_list_action_method == "post" and cv_location != "context" %}
+{% elif cv_list_action_method == "post" %}
 <button type="button" class="dropdown-item"
     data-cv-action="submit-form" data-cv-target="cv_form_{{ cv_oid }}"
+    {% if cv_location == "context" %}title="{{ cv_action_label }}"{% endif %}
     cv-key="{{ cv_key }}">{% include "crud_views/tags/actions_menu_item_label.html" %}</button>
 {% else %}
 <a class="dropdown-item{% if cv_is_active %} active{% endif %}" href="{{ cv_url }}"

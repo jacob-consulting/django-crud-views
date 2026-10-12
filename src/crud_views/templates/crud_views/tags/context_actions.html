@@ -3,6 +3,10 @@
 {% if view.cv_context_actions %}
 {% if group is None %}
 
+    {% for key in view.cv_context_actions %}
+        {% cv_context_action_form key object %}
+    {% endfor %}
+
     <fieldset class="btn-group btn-group-lg" aria-label="Actions" cv-context-container="true">
         {% for key in view.cv_context_actions %}
             {% cv_context_action key object %}
@@ -10,6 +14,10 @@
     </fieldset>
 
 {% else %}
+
+    {% for ctx in group.all %}
+        {% cv_render_list_action_form ctx %}
+    {% endfor %}
 
     <fieldset class="btn-group btn-group-lg" aria-label="Actions" cv-context-container="true">
         {% for ctx in group.inline %}

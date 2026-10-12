@@ -71,6 +71,17 @@ class PostActionsTest(ActionMenusTestCase):
     def test_card_post_items_submit_forms(self):
         self.assert_post_items(self.get(self.alice, "chore-card"))
 
+    def test_toolbar_post_items_submit_forms(self):
+        self.assert_post_items(self.get(self.alice, "chore-detail", pk=self.chore.pk))
+
+    def test_toolbar_done_toggles(self):
+        doc = self.get(self.alice, "chore-detail", pk=self.chore.pk)
+        item = doc.xpath("//fieldset[@cv-context-container]")[0].cssselect('.dropdown-item[cv-key="done"]')[0]
+        form = doc.xpath(f"//form[@id='{item.get('data-cv-target')}']")[0]
+        self.assertEqual(self.client.post(form.get("action")).status_code, 302)
+        self.chore.refresh_from_db()
+        self.assertTrue(self.chore.done)
+
 
 class ChoreDetailTest(ActionMenusTestCase):
     def test_active_detail_in_menu(self):
@@ -78,11 +89,6 @@ class ChoreDetailTest(ActionMenusTestCase):
         toolbar = doc.xpath("//fieldset[@cv-context-container]")[0]
         detail = toolbar.cssselect('.dropdown-item[cv-key="detail"]')[0]
         self.assertEqual(detail.get("aria-current"), "page")
-
-    def test_toolbar_has_no_post_actions(self):
-        doc = self.get(self.alice, "chore-detail", pk=self.chore.pk)
-        toolbar = doc.xpath("//fieldset[@cv-context-container]")[0]
-        self.assertEqual(toolbar.cssselect('[cv-key="done"], [cv-key="archive"]'), [])
 
     def test_steps_item_uses_button_label(self):
         doc = self.get(self.alice, "chore-detail", pk=self.chore.pk)

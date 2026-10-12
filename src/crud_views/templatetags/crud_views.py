@@ -191,6 +191,19 @@ def cv_context_action(context, key, obj=None):
     return _render_context_action(context, ctx)
 
 
+@register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/list_action_form.html", takes_context=True)
+@ignore_exception(ViewSetKeyFoundError, default_empty_dict=True)
+def cv_context_action_form(context, key, obj=None):
+    """Hidden POST form for a context action; nothing for GET, hidden or disabled actions (#178)."""
+    obj = obj if obj else None  # fix empty string from template
+    if obj is None:
+        obj = getattr(cv_get_view(context), "object", None)
+    ctx = cv_resolve_action(cv_get_context(context=context, key=key, obj=obj))
+    if ctx is None or ctx["cv_disabled"]:
+        return {}
+    return ctx
+
+
 @register.simple_tag(takes_context=True)
 def cv_render_context_action(context, ctx) -> str:
     """Render already-resolved context-button data exactly like cv_context_action does (#174)."""

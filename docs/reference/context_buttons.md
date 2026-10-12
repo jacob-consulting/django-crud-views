@@ -263,6 +263,21 @@ Two rules:
   button, the view-level one wins for that view. Declare a same-key button in
   `cv_context_buttons` to customize a single view without touching the ViewSet.
 
+## POST actions
+
+Keys of POST-only views (`ActionView`, `OrderedUpView` / `OrderedDownView`) work in `cv_context_actions` like any
+other key. The toolbar renders a hidden `<form method="post">` for each of them before the button group and a
+`<button data-cv-action="submit-form">` that submits it, as list rows do. Disabled actions render no form.
+
+```python
+class ChoreDetailView(DetailViewPermissionRequired):
+    cv_viewset = cv_chore
+    cv_context_actions = ["home", "update", "done"]  # "done" is an ActionView: the button POSTs
+```
+
+When you place such a button yourself with `{% cv_context_button "done" %}`, also render its form, outside any
+`.btn-group`: `{% cv_context_action_form "done" %}`.
+
 ## Target check (E255)
 
 A button whose target view is not registered is skipped at render time, so a typo would only make
@@ -298,6 +313,7 @@ same context as the configured buttons, so access and the `cv_action_enabled` st
 | `{% cv_context_button "key" %}`           | Rendered button markup, or **nothing** when no access |
 | `{% cv_context_url "key" as url %}`       | The target URL string, or `None` when no access      |
 | `view\|cv_context_has_permission:"key"`   | `True`/`False` — may the user access the key?        |
+| `{% cv_context_action_form "key" %}`      | Hidden POST form for a POST-only key, else nothing   |
 
 In every case the object defaults to the view's current object; pass a second argument to
 target a different object, and unknown keys resolve to nothing/`None` rather than raising.

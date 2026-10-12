@@ -83,6 +83,8 @@ class ContextButton(BaseModel):
         dict_kwargs = {
             "cv_access": False,
             "cv_url": context.view.cv_get_link_url(cls, key_target, context.object),
+            # id of the hidden POST form when the target is POST-only (#178)
+            "cv_oid": context.view.cv_get_oid(key=key_target, obj=context.object),
         }
 
         # button visibility — independent of access/permission

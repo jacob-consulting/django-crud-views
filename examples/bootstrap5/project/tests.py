@@ -1,3 +1,5 @@
+import re
+
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from django.test import SimpleTestCase, TestCase, override_settings
@@ -312,3 +314,76 @@ class FeatureGroupsTest(SimpleTestCase):
             self.assertRaisesRegex(ValueError, "'library'.*'nope'"),
         ):
             feature_groups()
+
+
+NAV_GROUP_ID = re.compile(r'id="nav-group-([a-z]+)"')
+ACTIVE_NAV_GROUP = re.compile(r'id="nav-group-([a-z]+)" class="nav-link dropdown-toggle active"')
+
+
+def navbar_html(resp) -> str:
+    """Only the top navbar: the breadcrumb is another <nav>, and some pages add their own dropdowns."""
+    body = resp.content.decode()
+    start = body.index('<nav class="navbar')
+    return body[start : body.index("</nav>", start)]
+
+
+class NavGroupsTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.admin = get_user_model().objects.create_superuser(username="nav-admin", password="pw")
+
+    def test_four_group_dropdowns_on_home_and_feature_page(self):
+        nav = navbar_html(self.client.get(reverse("home")))
+        self.assertEqual(NAV_GROUP_ID.findall(nav), ["basics", "forms", "ui", "extensions"])
+        self.client.force_login(self.admin)
+        nav = navbar_html(self.client.get(reverse("author-list")))
+        self.assertEqual(NAV_GROUP_ID.findall(nav), ["basics", "forms", "ui", "extensions"])
+
+    def test_nav_links_every_feature(self):
+        nav = navbar_html(self.client.get(reverse("home")))
+        for feature in FEATURES:
+            self.assertIn(f'href="{reverse(feature.url_name)}"', nav, feature.app)
+
+    def test_feature_page_marks_its_group_active(self):
+        self.client.force_login(self.admin)
+        for feature in FEATURES:
+            with self.subTest(app=feature.app):
+                nav = navbar_html(self.client.get(reverse(feature.url_name)))
+                self.assertEqual(ACTIVE_NAV_GROUP.findall(nav), [feature.group])
+                self.assertEqual(nav.count('aria-current="true"'), 1)
+
+    def test_non_landing_page_marks_its_group_active(self):
+        self.client.force_login(self.admin)
+        nav = navbar_html(self.client.get(reverse("author-create")))
+        self.assertEqual(ACTIVE_NAV_GROUP.findall(nav), ["basics"])
+
+    def test_home_and_login_have_no_active_group(self):
+        for name in ("home", "login"):
+            with self.subTest(page=name):
+                nav = navbar_html(self.client.get(reverse(name)))
+                self.assertEqual(ACTIVE_NAV_GROUP.findall(nav), [])
+                self.assertNotIn('aria-current="true"', nav)
+
+    def test_tag_without_view_in_context(self):
+        from project.templatetags.example_tags import get_feature_groups
+
+        result = get_feature_groups({})
+        self.assertIsNone(result["active_group"])
+        self.assertEqual([group.key for group, _ in result["groups"]], ["basics", "forms", "ui", "extensions"])
+
+    def test_badges_shown_in_dropdown(self):
+        nav = navbar_html(self.client.get(reverse("home")))
+        with_badge = [f for f in FEATURES if f.badge]
+        self.assertTrue(with_badge, "no feature has a badge any more; drop this test")
+        self.assertEqual(nav.count('class="badge text-bg-success ms-1"'), len(with_badge))
+
+    def test_empty_group_not_rendered_in_nav(self):
+        from unittest import mock
+
+        from project.features import GROUPS, FeatureGroup
+
+        empty = FeatureGroup(key="empty", title="Empty", icon="fa-solid fa-ban")
+        with mock.patch("project.features.GROUPS", [*GROUPS, empty]):
+            nav = navbar_html(self.client.get(reverse("home")))
+        self.assertNotIn('id="nav-group-empty"', nav)
+        self.assertEqual(len(NAV_GROUP_ID.findall(nav)), 4)

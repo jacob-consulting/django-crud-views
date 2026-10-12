@@ -87,3 +87,8 @@
 .cv-col-action {
     text-align: right;
 }
+
+/* action overflow menu (#174): .dropdown-toggle keeps Bootstrap's button-group corner rounding; hide its caret */
+.cv-menu-toggle.dropdown-toggle::after {
+    display: none;
+}

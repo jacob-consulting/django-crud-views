@@ -122,6 +122,55 @@ def cv_list_action_form(context, key, obj=None):
 
 
 @register.simple_tag(takes_context=True)
+def cv_list_action_group(context, obj):
+    """Row actions split into inline buttons and menu items; None: no menu (#174)."""
+    return cv_get_view(context).cv_get_list_action_group(obj)
+
+
+@register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/list_action.html", takes_context=True)
+def cv_render_list_action(context, ctx):
+    """Render already-resolved row action data (#174)."""
+    return ctx or {}
+
+
+@register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/list_action_form.html", takes_context=True)
+def cv_render_list_action_form(context, ctx):
+    """Hidden POST form for already-resolved action data; nothing for a disabled action (#174)."""
+    if not ctx or ctx.get("cv_disabled"):
+        return {}
+    return ctx
+
+
+# (wrapper class, toggle button classes) per location: the toggle matches its neighbouring buttons (#174)
+_ACTIONS_MENU_STYLE = {
+    "list": ("btn-group", "btn-outline-primary btn-xs"),
+    "context": ("btn-group", "btn-outline-primary btn-lg"),
+    "card": ("dropdown", "btn-secondary btn-sm"),
+}
+
+
+@register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/actions_menu.html", takes_context=True)
+def cv_actions_menu(context, group, location):
+    """The dropdown for a group's menu items; renders nothing when there are none (#174)."""
+    if group is None or not group.menu:
+        return {}
+    wrapper_class, toggle_class = _ACTIONS_MENU_STYLE[location]
+    return {
+        "cv_menu_items": group.menu,
+        "cv_location": location,
+        "cv_menu_wrapper_class": wrapper_class,
+        "cv_toggle_class": toggle_class,
+        "cv_menu_icon": crud_views_settings.actions_menu_icon,
+    }
+
+
+@register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/actions_menu_item.html")
+def cv_render_menu_item(ctx, location):
+    """One dropdown item from resolved action data (#174)."""
+    return {**ctx, "cv_location": location}
+
+
+@register.simple_tag(takes_context=True)
 @ignore_exception(ViewSetKeyFoundError, default_value="")
 def cv_context_action(context, key, obj=None):
     obj = obj if obj else None  # fix empty string from template

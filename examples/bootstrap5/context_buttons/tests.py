@@ -86,7 +86,8 @@ class TicketDetailViewerTest(ContextButtonsTestCase):
     def test_delete_shown_disabled_in_toolbar(self):
         doc = lxml_html.fromstring(self.rendered(self.detail(self.viewer)))
         (btn,) = doc.cssselect('[cv-context-container] [cv-key="delete"]')
-        self.assertEqual(btn.get("aria-disabled"), "true")
+        self.assertEqual(btn.tag, "button")
+        self.assertIsNotNone(btn.get("disabled"))
         self.assertEqual(btn.get("data-cv-disabled"), "permission")
         self.assertIsNone(btn.get("href"))
 

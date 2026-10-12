@@ -17,7 +17,7 @@ def _card(client, url):
 
 
 def _by_text(card, text):
-    return [a for a in card.cssselect("a.btn") if text in a.text_content()]
+    return [a for a in card.cssselect(".btn") if text in a.text_content()]
 
 
 @pytest.mark.django_db
@@ -31,8 +31,8 @@ def test_card_key_action_disabled(client_user_author_view, author_douglas_adams,
     monkeypatch.setattr(AuthorUpdateView, "cv_inaccessible_actions", "disable")
     content, card = _card(client_user_author_view, "/author/card/")
     (btn,) = _by_text(card, "Edit")
-    assert "disabled" in btn.get("class").split()
-    assert btn.get("aria-disabled") == "true"
+    assert btn.tag == "button"
+    assert btn.get("disabled") is not None
     assert btn.get("data-cv-disabled") == "permission"
     assert btn.get("href") is None
     assert f"/author/{author_douglas_adams.pk}/update/" not in content
@@ -71,7 +71,7 @@ def test_child_card_action_disabled_without_child_permission(
     monkeypatch.setattr(BookListView, "cv_inaccessible_actions", "disable")
     content, card = _card(client_publisher_view_only, "/publisher/card/")
     (btn,) = _by_text(card, "Books")
-    assert btn.get("aria-disabled") == "true"
+    assert btn.get("disabled") is not None
     assert btn.get("data-cv-disabled") == "permission"
     assert btn.get("href") is None
     assert f"/publisher/{publisher_penguin.pk}/book/" not in content
@@ -107,4 +107,4 @@ def test_card_action_truthy_non_bool_access_renders_normal_link(
     (btn,) = _by_text(card, "Edit")
     assert btn.get("href") == f"/author/{author_douglas_adams.pk}/update/"
     assert "disabled" not in btn.get("class").split()
-    assert btn.get("aria-disabled") is None
+    assert btn.get("disabled") is None

@@ -263,6 +263,21 @@ Two rules:
   button, the view-level one wins for that view. Declare a same-key button in
   `cv_context_buttons` to customize a single view without touching the ViewSet.
 
+## POST actions
+
+Keys of POST-only views (`ActionView`, `OrderedUpView` / `OrderedDownView`) work in `cv_context_actions` like any
+other key. The toolbar renders a hidden `<form method="post">` for each of them before the button group and a
+`<button data-cv-action="submit-form">` that submits it, as list rows do. Disabled actions render no form.
+
+```python
+class ChoreDetailView(DetailViewPermissionRequired):
+    cv_viewset = cv_chore
+    cv_context_actions = ["home", "update", "done"]  # "done" is an ActionView: the button POSTs
+```
+
+When you place such a button yourself with `{% cv_context_button "done" %}`, also render its form, outside any
+`.btn-group`: `{% cv_context_action_form "done" object %}`.
+
 ## Target check (E255)
 
 A button whose target view is not registered is skipped at render time, so a typo would only make

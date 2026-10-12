@@ -366,8 +366,8 @@ FEATURES: list[Feature] = [
         about=(
             "A chore has eight actions — too many buttons for every table row. The list keeps detail, up and "
             "down as buttons and folds the rest into a ⋯ menu; the toolbar and the cards do the same. Delete opens "
-            "a modal and done / archive are POST actions, all from inside the menu. Log in as bob (may only view): "
-            "archive stays visible but disabled, the other actions disappear."
+            "a modal; done / archive are POST actions in the list rows and cards (the toolbar only links). "
+            "Log in as bob (may only view): archive stays visible but disabled, the other actions disappear."
         ),
         look_at=(
             "cv_list_actions_inline, cv_context_actions_inline and cv_card_actions_inline in views.py, and "

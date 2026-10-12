@@ -63,6 +63,9 @@ from [hide or disable](inaccessible_actions.md), which resolves on each action's
 
 `up` / `down` (ordered views) can be folded but are awkward in a menu — keep them inline.
 
+The context toolbar renders links (GET) only. POST actions such as `ActionView` belong in list rows or cards, where a
+hidden form submits them; listed in `cv_context_actions` they render as plain links (also before #174).
+
 ## Hide and disable
 
 [Inaccessible actions](inaccessible_actions.md) are resolved first, for every action:
@@ -75,8 +78,8 @@ from [hide or disable](inaccessible_actions.md), which resolves on each action's
 ## Labels, icons and the active action
 
 Menu items show the target view's icon (fixed width, `fa-fw`) and a visible text label — the short action label
-(`cv_action_short_label`), or `CardAction.label` on cards. Toolbar items carry the full label as `title`. A context button's own `label_template` / `label_template_code`
-is also used as its menu item text.
+(`cv_action_short_label`), or `CardAction.label` on cards. Toolbar items carry the full label as `title`. A context button's own
+`label_template` / `label_template_code` is also used as its menu item text.
 `CardAction.variant`, `flex` and `no_label` apply to inline card buttons only.
 
 On the context toolbar the current page's action is highlighted: inline with `.active`, inside the menu with

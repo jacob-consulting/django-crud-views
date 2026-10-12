@@ -81,7 +81,7 @@ class ChoreCardListView(BreadcrumbMixin, CardListViewPermissionRequired):
 
 class ChoreDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
     cv_viewset = cv_chore
-    cv_context_actions = ["home", "detail", "update", "done", "archive", "steps", "delete"]
+    cv_context_actions = ["home", "detail", "update", "steps", "delete"]
     cv_context_actions_inline = ["update"]  # the active "detail" shows inside the menu
     cv_property_display = [
         {"title": _("Chore"), "icon": "broom", "properties": ["title", "done", "archived"]},

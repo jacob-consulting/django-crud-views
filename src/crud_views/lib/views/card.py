@@ -49,6 +49,7 @@ class CardListView(CardOrderMixin, CrudView, generic.ListView):
                 "cv_access": bool(child_cls.cv_has_access(user, obj)),
                 "cv_action_enabled": child_cls.cv_action_enabled(user, obj),
                 "cv_inaccessible_actions": child_cls.cv_get_inaccessible_actions(),
+                "cv_key": action.child_name,
                 "cv_url": url,
                 "cv_label": action.label,
                 "cv_icon_action": child_cls.cv_icon_action,

@@ -96,6 +96,7 @@ def test_child_card_action_folds_by_child_name(db, publisher_penguin, monkeypatc
     items = card.cssselect(".dropdown-item")
     assert [i.text_content().strip() for i in items] == ["Books"]
     assert items[0].get("href")
+    assert items[0].get("cv-key") == "book"
     monkeypatch.setattr(PublisherCardListView, "cv_card_actions_inline", ["detail", "book"])
     card = _card(client, reverse(cv_publisher.get_router_name("card")))
     assert card.cssselect(".cv-menu-toggle") == []

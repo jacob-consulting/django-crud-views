@@ -55,12 +55,34 @@ class ChoreListTest(ActionMenusTestCase):
         self.assertContains(resp, 'aria-label="Weitere Aktionen"')
 
 
+class PostActionsTest(ActionMenusTestCase):
+    def assert_post_items(self, doc):
+        items = doc.cssselect('.dropdown-item[cv-key="done"], .dropdown-item[cv-key="archive"]')
+        self.assertTrue(items)
+        for item in items:
+            self.assertEqual(item.tag, "button")
+            self.assertEqual(item.get("data-cv-action"), "submit-form")
+            self.assertIsNone(item.get("href"))
+            self.assertTrue(doc.xpath(f"//*[@id='{item.get('data-cv-target').lstrip('#')}']"))
+
+    def test_list_post_items_submit_forms(self):
+        self.assert_post_items(self.get(self.alice, "chore-list"))
+
+    def test_card_post_items_submit_forms(self):
+        self.assert_post_items(self.get(self.alice, "chore-card"))
+
+
 class ChoreDetailTest(ActionMenusTestCase):
     def test_active_detail_in_menu(self):
         doc = self.get(self.alice, "chore-detail", pk=self.chore.pk)
         toolbar = doc.xpath("//fieldset[@cv-context-container]")[0]
         detail = toolbar.cssselect('.dropdown-item[cv-key="detail"]')[0]
         self.assertEqual(detail.get("aria-current"), "page")
+
+    def test_toolbar_has_no_post_actions(self):
+        doc = self.get(self.alice, "chore-detail", pk=self.chore.pk)
+        toolbar = doc.xpath("//fieldset[@cv-context-container]")[0]
+        self.assertEqual(toolbar.cssselect('[cv-key="done"], [cv-key="archive"]'), [])
 
     def test_steps_item_uses_button_label(self):
         doc = self.get(self.alice, "chore-detail", pk=self.chore.pk)

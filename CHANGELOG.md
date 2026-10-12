@@ -15,11 +15,13 @@
   `CRUD_VIEWS_CARD_ACTIONS_INLINE`, ViewSet fields `*_actions_inline` and view attributes `cv_*_actions_inline`
   (resolved on the rendering view); `None` (default) keeps today's markup. Toggle icon via
   `CRUD_VIEWS_ACTIONS_MENU_ICON`. Overridable templates `actions_menu.html`, `actions_menu_toggle.html`,
-  `actions_menu_item.html`. New system checks `crud_views.E105`, `viewset.E208`, `viewset.W290`. Requires the
+  `actions_menu_item.html`, `actions_menu_item_label.html`. New system checks `crud_views.E105`, `viewset.E208`, `viewset.W290`. Requires the
   Bootstrap JS bundle; a context button's own label also labels its menu item (#174).
 
 ### Changed
 
+- A context button's own `label_template` / `label_template_code` now also sets `cv_action_short_label` in its data
+  (used as the menu item text; visible to custom templates that show the short label) (#174).
 - Child card actions (`CardAction(child_name=...)`) now check the child view's permission like
   `ChildContextButton`. Users without it no longer see the button (previously it rendered and the target answered
   with 403). Guardian child list views still grant access at render time, so their child card actions keep

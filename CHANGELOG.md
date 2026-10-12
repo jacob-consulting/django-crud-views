@@ -1,5 +1,12 @@
 # Django CRUD Views - Changelog
 
+## Unreleased
+
+### Internal
+
+- Demo docs and the example home page no longer claim both demo users have full permissions everywhere: bob may
+  only view in the Context Buttons and Action Menus examples (#180).
+
 ## 0.28.0
 
 ### Added

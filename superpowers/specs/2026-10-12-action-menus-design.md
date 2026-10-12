@@ -143,8 +143,9 @@ action data, so the default path costs nothing extra:
 
 - `CrudView.cv_get_list_action_group(obj)` — over `cv_list_actions`: `cv_get_context(key, obj, user, request)` →
   `cv_resolve_action`; skips keys raising `ViewSetKeyFoundError` and empty/hidden results, as the tags do today.
-- `CrudView.cv_get_context_action_group(obj=None)` — the same over `cv_context_actions`; `obj` defaults to
-  `self.object` like `cv_get_context_buttons()`; passes the foldable rule.
+- `CrudView.cv_get_context_action_group(obj=None)` — the same over `cv_context_actions`, with the `obj` the
+  `cv_context_actions` tag receives (no defaulting to `self.object`, so both branches see the same object); passes
+  the foldable rule.
 - `CardListView.cv_get_card_action_group(obj)` — over `cv_card_actions`, match key `action.key or action.child_name`.
   The data building moves out of the `cv_card_action` tag into
   `CardListView.cv_get_card_action_data(action, obj, user) -> dict` (unresolved data), which the existing tag also
@@ -160,7 +161,7 @@ action data, so the default path costs nothing extra:
 | `cv_render_list_action ctx` | simple tag | renders resolved data with `list_action.html` |
 | `cv_render_list_action_form ctx` | simple tag | renders `list_action_form.html`; nothing for disabled data |
 | `cv_render_card_action ctx` | simple tag | renders resolved data with `card_action.html` |
-| `cv_render_context_button ctx` (existing) | simple tag | already renders resolved context data |
+| `cv_render_context_action ctx` | simple tag | renders resolved context data exactly like `cv_context_action` does (shared helper; `render_to_string` with the request, or `template_code`) |
 | `cv_actions_menu group location` | inclusion tag | renders `actions_menu.html` with the menu items |
 | `cv_render_menu_item ctx location` | simple tag | renders one resolved item with `actions_menu_item.html` (the dict's keys become the template context, plus `cv_location`) |
 
@@ -172,7 +173,7 @@ In group mode each list-row key is resolved once; today `cv_list_action_form` an
 
 - `columns/actions.html` group branch: hidden POST forms for `group.all` (via `cv_render_list_action_form`) before
   the fieldset; inside the fieldset the inline items (`cv_render_list_action`) followed by the menu.
-- `tags/context_actions.html` group branch: inline items (`cv_render_context_button`), then the menu. The outer
+- `tags/context_actions.html` group branch: inline items (`cv_render_context_action`), then the menu. The outer
   `{% if view.cv_context_actions %}` guard stays.
 - `tags/card.html` group branch: inline items (`cv_render_card_action`; inline POST cards keep rendering their own
   form, unchanged); hidden forms for POST menu items (`cv_render_list_action_form`) before the dropdown; then the
@@ -283,7 +284,8 @@ Browser verification (Playwright, on the example app):
 New app `examples/bootstrap5/action_menus/` (bootstrap5), following the other example apps (models, seed, urls, views,
 tests, migrations):
 
-- A model with ~8 row actions: detail, update, delete, two `ActionView`s (one POST, one modal), up/down
+- A model with ~8 row actions: detail, update, delete (`cv_modal = True` — `ActionView` does not support modals;
+  `cv_modal_supported` is delete/detail/custom form only), two POST `ActionView`s, up/down
   (`OrderedUpView` / `OrderedDownView`), a child list.
 - List view with `cv_list_actions_inline = ["detail", "up", "down"]`, rendered with a **responsive table**
   (tables2 `bootstrap5-responsive.html` or equivalent), covering the clipping fix.

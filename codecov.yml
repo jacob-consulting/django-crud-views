@@ -2,8 +2,8 @@
 # gate. See issue #106.
 codecov:
   notify:
-    # One upload per tests matrix row (py3.12, py3.13, py3.14); see issue #105.
-    after_n_builds: 3
+    # One upload per tests matrix row (py3.12, py3.13, py3.14, py3.15); see issue #105.
+    after_n_builds: 4
 
 coverage:
   status:
@@ -18,7 +18,7 @@ coverage:
         target: auto
 
 comment:
-  after_n_builds: 3
+  after_n_builds: 4
 
 ignore:
   - "src/**/migrations/**"

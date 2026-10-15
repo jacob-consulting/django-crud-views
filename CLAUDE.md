@@ -18,7 +18,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 # Setup: create venv and install all deps (requires uv and task)
 task dev
 
-# Run tests via nox (matrix: Python 3.12/3.13/3.14 × Django 4.2/5.2/6.0)
+# Run tests via nox (matrix: Python 3.12/3.13/3.14/3.15 × Django 4.2/5.2/6.0)
 task test
 
 # Run tests directly for quick iteration (from the repo root)

@@ -12,12 +12,13 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     strategy:
       matrix:
-        python-version: ["3.12", "3.13", "3.14"]
+        python-version: ["3.12", "3.13", "3.14", "3.15"]
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
+          allow-prereleases: true
       - run: 'pip install --require-hashes --only-binary :all: -r .github/requirements/ci.txt'
       - run: nox -s "tests-${{ matrix.python-version }}(django='4.2')" "tests-${{ matrix.python-version }}(django='5.2')" "tests-${{ matrix.python-version }}(django='6.0')"
       # Every row uploads one report per Django session; Codecov merges them per commit.

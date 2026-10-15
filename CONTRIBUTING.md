@@ -25,7 +25,7 @@ task dev
    project follows test-driven development).
 3. Run the tests:
    - quick: `pytest tests`
-   - full matrix (Python 3.12/3.13/3.14 × Django 4.2/5.2/6.0): `task test`
+   - full matrix (Python 3.12/3.13/3.14/3.15 × Django 4.2/5.2/6.0): `task test`
    - JS unit tests (requires Node 20+): `task test-js`
 4. Format and lint before committing:
    - `task format` (ruff format)

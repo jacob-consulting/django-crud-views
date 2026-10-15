@@ -3,12 +3,12 @@ import nox
 DJANGO_VERSIONS = ["4.2", "5.2", "6.0"]
 
 
-@nox.session(python=["3.12", "3.13", "3.14"], venv_backend="uv")
+@nox.session(python=["3.12", "3.13", "3.14", "3.15"], venv_backend="uv")
 @nox.parametrize("django", DJANGO_VERSIONS)
 def tests(session, django):
-    # Django 4.2 does not support Python 3.14
-    if django == "4.2" and session.python == "3.14":
-        session.skip("Django 4.2 does not support Python 3.14")
+    # Django 4.2 does not support Python 3.14+
+    if django == "4.2" and session.python in ("3.14", "3.15"):
+        session.skip(f"Django 4.2 does not support Python {session.python}")
 
     session.install(f"django~={django}.0")
     session.install(".[polymorphic,workflow,ordered,test]")
@@ -19,12 +19,12 @@ def tests(session, django):
     session.run("pytest", "tests", "-n", "auto", "--cov", "--cov-report=term-missing", xml_report, *session.posargs)
 
 
-@nox.session(python=["3.12", "3.13", "3.14"], venv_backend="uv")
+@nox.session(python=["3.12", "3.13", "3.14", "3.15"], venv_backend="uv")
 @nox.parametrize("django", DJANGO_VERSIONS)
 def examples(session, django):
-    # Django 4.2 does not support Python 3.14
-    if django == "4.2" and session.python == "3.14":
-        session.skip("Django 4.2 does not support Python 3.14")
+    # Django 4.2 does not support Python 3.14+
+    if django == "4.2" and session.python in ("3.14", "3.15"):
+        session.skip(f"Django 4.2 does not support Python {session.python}")
 
     session.install(f"django~={django}.0")
     session.install(".[all,test,examples]", "-r", "requirements/demo.txt")

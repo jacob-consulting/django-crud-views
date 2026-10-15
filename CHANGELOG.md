@@ -1,5 +1,13 @@
 # Django CRUD Views - Changelog
 
+## Unreleased
+
+### Added
+
+- Python 3.15 support: the package declares the `Programming Language :: Python :: 3.15` classifier, and the CI and
+  release test matrices run Python 3.15 against Django 5.2 and 6.0 (Django 4.2 is skipped, as on 3.14). No code
+  changes were needed.
+
 ## 0.29.0
 
 ### Changed

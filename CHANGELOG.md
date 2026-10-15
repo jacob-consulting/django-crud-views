@@ -1,6 +1,6 @@
 # Django CRUD Views - Changelog
 
-## Unreleased
+## 0.29.1
 
 ### Added
 

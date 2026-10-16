@@ -14,6 +14,8 @@ import sys
 import textwrap
 from pathlib import Path
 
+import pytest
+
 
 def test_templatetags_import_without_app_registry():
     """Regression: previously failed with AppRegistryNotReady (module-level get_user_model)."""
@@ -193,6 +195,82 @@ def test_object_detail_config_helpers_import_without_app_registry():
         from crud_views_object_detail.lib import BadgeConfig, LinkConfig, PropertyConfig, PropertyGroupConfig, x
 
         assert x is not None
+        print("IMPORT-OK")
+        """
+    )
+    result = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+    assert "IMPORT-OK" in result.stdout
+
+
+FIRST_IMPORTS = [
+    "from crud_views.lib.viewset import ViewSet",
+    "from crud_views.lib.viewset import ParentViewSet, PrimaryKeys",
+    "from crud_views.lib.table import Table, LinkChildColumn",
+    "from crud_views.lib.table.columns import NaturalDayColumn",
+    "from crud_views.lib.views import ListViewPermissionRequired, RedirectChildView",
+    "from crud_views.lib.view import CrudView",
+    "from crud_views_polymorphic.lib import PolymorphicCreateViewPermissionRequired",
+    "from crud_views_guardian.lib.viewset import GuardianViewSet",
+]
+
+
+@pytest.mark.parametrize("statement", FIRST_IMPORTS)
+def test_public_module_importable_as_first_crud_views_import(statement):
+    """Regression: `from crud_views.lib.viewset import ViewSet` as the first crud_views import in a
+    process raised a circular ImportError (viewset -> views.manage -> views -> views.child -> viewset,
+    whose PrimaryKeys was not bound yet). Each statement runs first in a fresh interpreter."""
+    code = textwrap.dedent(
+        f"""
+        import django
+        from django.conf import settings
+
+        settings.configure(INSTALLED_APPS=["django.contrib.contenttypes", "django.contrib.auth"])
+        django.setup()
+
+        {statement}
+
+        print("IMPORT-OK")
+        """
+    )
+    result = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+    assert "IMPORT-OK" in result.stdout
+
+
+def test_resource_with_viewset_pk_in_models_module(tmp_path):
+    """A Resource defined in a consumer models.py using ViewSet.PK is imported while Django
+    populates apps -- before any other crud_views module is loaded -- and must not raise."""
+    app = tmp_path / "storageapp"
+    app.mkdir()
+    (app / "__init__.py").write_text("")
+    (app / "models.py").write_text(
+        textwrap.dedent(
+            """
+            from crud_views.lib.resource import Resource
+            from crud_views.lib.viewset import ViewSet
+
+
+            class S3File(Resource):
+                key: str
+
+                class Meta:
+                    pk_field = "key"
+                    pk_type = ViewSet.PK.STR
+            """
+        )
+    )
+    code = textwrap.dedent(
+        f"""
+        import sys
+
+        sys.path.insert(0, {str(tmp_path)!r})
+
+        import django
+        from django.conf import settings
+
+        settings.configure(INSTALLED_APPS=["django.contrib.contenttypes", "django.contrib.auth", "storageapp"])
+        django.setup()
         print("IMPORT-OK")
         """
     )

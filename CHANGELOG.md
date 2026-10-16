@@ -1,5 +1,15 @@
 # Django CRUD Views - Changelog
 
+## 0.29.2
+
+### Fixed
+
+- `from crud_views.lib.viewset import ViewSet` (or `crud_views.lib.table`) as the first `crud_views` import in a process
+  raised a circular `ImportError: cannot import name 'PrimaryKeys' from partially initialized module`. This hit consumer
+  `models.py` modules, which load during app population before anything else imports crud_views — e.g. a `Resource`
+  using `ViewSet.PK` for its `pk_type`. `crud_views.lib.views.child` and `crud_views_polymorphic.lib.create` now import
+  `PrimaryKeys` from the `path_regs` submodule (#192).
+
 ## 0.29.1
 
 ### Added

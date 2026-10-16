@@ -53,6 +53,7 @@ Default context actions for CRUD views.
 | CRUD_VIEWS_DELETE_CONTEXT_ACTIONS        | Global switch | `List[str]` | `home, detail, update, delete` |
 | CRUD_VIEWS_MANAGE_CONTEXT_ACTIONS        | Global switch | `List[str]` | `home`                         |
 | CRUD_VIEWS_CREATE_SELECT_CONTEXT_ACTIONS | Global switch | `List[str]` | `home, create_select`          |
+| CRUD_VIEWS_POLYMORPHIC_CREATE_CONTEXT_ACTIONS | Global switch | `List[str]` | `home`                    |
 
 ## List Actions
 

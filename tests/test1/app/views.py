@@ -560,7 +560,6 @@ class VehicleCreateSelectView(CrispyViewMixin, PolymorphicCreateSelectViewPermis
 
 class VehicleCreateView(CrispyViewMixin, PolymorphicCreateViewPermissionRequired):
     cv_viewset = cv_vehicle
-    cv_context_actions = ["home"]
     polymorphic_forms = {
         Car: CarForm,
         Truck: TruckForm,

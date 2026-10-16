@@ -2,7 +2,11 @@ from django.views import generic
 from django.views.generic.detail import SingleObjectMixin
 
 from crud_views.lib.view import CrudView
-from crud_views.lib.viewset import PrimaryKeys, path_regs
+
+# import from the submodule, not the package: crud_views.lib.viewset imports this module while it
+# is still initializing, so PrimaryKeys is not yet bound on the package (circular ImportError)
+from crud_views.lib.viewset import path_regs
+from crud_views.lib.viewset.path_regs import PrimaryKeys
 
 
 class RedirectChildView(CrudView, SingleObjectMixin, generic.RedirectView):

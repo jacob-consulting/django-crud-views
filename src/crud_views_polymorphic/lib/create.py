@@ -1,6 +1,10 @@
 from crud_views.lib.view import CrudViewPermissionRequiredMixin
 from crud_views.lib.views import CreateView
-from crud_views.lib.viewset import PrimaryKeys, path_regs
+
+# import from the submodule, not the package: PrimaryKeys is bound late in crud_views.lib.viewset,
+# so the package import fails while it is still initializing (see crud_views.lib.views.child)
+from crud_views.lib.viewset import path_regs
+from crud_views.lib.viewset.path_regs import PrimaryKeys
 
 from .utils import PolymorphicCrudViewMixin
 

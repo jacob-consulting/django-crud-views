@@ -1,6 +1,7 @@
 import pytest
 from django.contrib.contenttypes.models import ContentType
 from django.test.client import Client
+from django.urls import reverse
 
 from crud_views.lib.viewset import ViewSet
 from tests.lib.helper.boostrap5 import Table
@@ -75,7 +76,7 @@ def test_create_select_redirects_to_create(client_user_vehicle_add: Client, cv_v
     car_ct = ContentType.objects.get_for_model(Car)
     response = client_user_vehicle_add.post("/vehicle/create/select/", {"polymorphic_ctype_id": car_ct.id})
     assert response.status_code == 302
-    assert f"/vehicle/create//ct/{car_ct.id}/" in response.url
+    assert f"/vehicle/create/ct/{car_ct.id}/" in response.url
 
 
 @pytest.mark.django_db
@@ -84,11 +85,11 @@ def test_create_car(client_user_vehicle_add: Client, cv_vehicle):
     car_ct = ContentType.objects.get_for_model(Car)
 
     # GET the form
-    response = client_user_vehicle_add.get(f"/vehicle/create//ct/{car_ct.id}/")
+    response = client_user_vehicle_add.get(f"/vehicle/create/ct/{car_ct.id}/")
     assert response.status_code == 200
 
     # POST the form
-    response = client_user_vehicle_add.post(f"/vehicle/create//ct/{car_ct.id}/", {"name": "Coupe", "doors": 2})
+    response = client_user_vehicle_add.post(f"/vehicle/create/ct/{car_ct.id}/", {"name": "Coupe", "doors": 2})
     assert response.status_code == 302
 
     car = Car.objects.get(name="Coupe")
@@ -98,13 +99,33 @@ def test_create_car(client_user_vehicle_add: Client, cv_vehicle):
 
 
 @pytest.mark.django_db
+def test_create_legacy_double_slash_url_still_resolves(client_user_vehicle_add: Client, cv_vehicle):
+    """URLs generated before 0.29.3 contained a double slash (create//ct/<id>/); keep them working."""
+    car_ct = ContentType.objects.get_for_model(Car)
+    response = client_user_vehicle_add.get(f"/vehicle/create//ct/{car_ct.id}/")
+    assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_create_url_has_no_double_slash(cv_vehicle):
+    car_ct = ContentType.objects.get_for_model(Car)
+    url = reverse(cv_vehicle.get_router_name("create"), kwargs={"polymorphic_ctype_id": car_ct.id})
+    assert url == f"/vehicle/create/ct/{car_ct.id}/"
+
+
+def test_create_default_context_actions_need_no_ctype():
+    """The inherited "create" action can't be reversed without the content type, so it must not be a default."""
+    from crud_views_polymorphic.lib import PolymorphicCreateView
+
+    assert "create" not in PolymorphicCreateView.cv_context_actions
+
+
+@pytest.mark.django_db
 def test_create_truck(client_user_vehicle_add: Client, cv_vehicle):
     """Creating a Truck through the polymorphic create view."""
     truck_ct = ContentType.objects.get_for_model(Truck)
 
-    response = client_user_vehicle_add.post(
-        f"/vehicle/create//ct/{truck_ct.id}/", {"name": "Pickup", "payload_tons": 5}
-    )
+    response = client_user_vehicle_add.post(f"/vehicle/create/ct/{truck_ct.id}/", {"name": "Pickup", "payload_tons": 5})
     assert response.status_code == 302
 
     truck = Truck.objects.get(name="Pickup")

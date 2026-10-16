@@ -152,8 +152,10 @@ Creating a polymorphic instance requires two steps:
    registered subtypes. On submit it redirects to the `create` URL, passing `polymorphic_ctype_id`
    as a URL parameter.
 
-2. **`create`** — `PolymorphicCreateView` reads `polymorphic_ctype_id` from the URL, resolves the
-   subtype model via the content-type framework, and renders the matching form from `polymorphic_forms`.
+2. **`create`** — `PolymorphicCreateView` reads `polymorphic_ctype_id` from the URL
+   (`<prefix>/create/ct/<id>/`), resolves the subtype model via the content-type framework, and renders the
+   matching form from `polymorphic_forms`. Its context actions default to `["home"]`
+   (`CRUD_VIEWS_POLYMORPHIC_CREATE_CONTEXT_ACTIONS`): a `"create"` button can't be built without a content type.
 
 ### Filtering available subtypes
 

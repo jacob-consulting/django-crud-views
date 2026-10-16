@@ -83,6 +83,9 @@ class CrudViewsSettings(BaseModel):
     create_select_context_actions: list[str] = from_settings(
         "CRUD_VIEWS_CREATE_SELECT_CONTEXT_ACTIONS", default=["home", "create_select"]
     )
+    polymorphic_create_context_actions: list[str] = from_settings(
+        "CRUD_VIEWS_POLYMORPHIC_CREATE_CONTEXT_ACTIONS", default=["home"]
+    )
 
     @property
     def check_messages(self) -> list[CheckMessage]:

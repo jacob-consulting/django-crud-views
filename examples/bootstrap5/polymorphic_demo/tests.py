@@ -36,7 +36,7 @@ class VehicleCreateSelectTest(PolymorphicTestCase):
 
     def test_create_car_through_typed_form(self):
         car_ct = ContentType.objects.get_for_model(Car)
-        resp = self.client.post(f"/polymorphic/vehicle/create//ct/{car_ct.id}/", {"name": "Family Van", "doors": 5})
+        resp = self.client.post(f"/polymorphic/vehicle/create/ct/{car_ct.id}/", {"name": "Family Van", "doors": 5})
         self.assertEqual(resp.status_code, 302)
         car = Car.objects.get(name="Family Van")
         self.assertEqual(car.doors, 5)

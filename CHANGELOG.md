@@ -1,5 +1,16 @@
 # Django CRUD Views - Changelog
 
+## 0.29.3
+
+### Fixed
+
+- The polymorphic create view's form page (step 2) raised `NoReverseMatch: Reverse for '<name>-create' with no
+  arguments not found`. `PolymorphicCreateView` inherited `CreateView`'s context actions `["home", "create"]`, and the
+  `"create"` button can't be reversed without `polymorphic_ctype_id`. It now defaults to `["home"]`, configurable via
+  the new `CRUD_VIEWS_POLYMORPHIC_CREATE_CONTEXT_ACTIONS` setting (#193).
+- The polymorphic create URL no longer contains a double slash: it is `<prefix>/create/ct/<id>/` instead of
+  `<prefix>/create//ct/<id>/`. Old double-slash URLs still resolve (#193).
+
 ## 0.29.2
 
 ### Fixed

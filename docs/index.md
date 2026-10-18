@@ -74,4 +74,4 @@ API only happen in major releases, and deprecations are announced ahead of remov
 
 # Version
 
-Current version: 0.29.3
+Current version: 0.29.4

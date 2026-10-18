@@ -71,6 +71,15 @@ describe("tooltip.js", () => {
         expect(fake.instances.has(content.querySelector("[data-cv-tooltip]"))).toBe(true);
     });
 
+    it("initializes triggers in a formset row added via cv:formset:row-added", () => {
+        domReady();
+        const content = document.getElementById("cv-modal-content");
+        content.innerHTML = '<div class="cv-formset-row"><button type="button" data-cv-tooltip data-bs-title="in row"></button></div>';
+        const row = content.querySelector(".cv-formset-row");
+        row.dispatchEvent(new CustomEvent("cv:formset:row-added", { bubbles: true }));
+        expect(fake.instances.has(row.querySelector("[data-cv-tooltip]"))).toBe(true);
+    });
+
     it("does nothing (and does not throw) without Bootstrap's JavaScript", () => {
         vi.stubGlobal("bootstrap", undefined);
         expect(() => domReady()).not.toThrow();

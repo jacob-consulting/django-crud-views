@@ -1,5 +1,15 @@
 # Django CRUD Views - Changelog
 
+## Unreleased
+
+### Fixed
+
+- Widgets in formset rows added via the add button were never initialized: scripts that set up widgets on
+  `DOMContentLoaded` or `cv:modal:loaded` (tooltips, conditional field-groups, date pickers, select widgets) never saw
+  the AJAX-inserted row. `formset.js` now dispatches a bubbling `cv:formset:row-added` CustomEvent on each new row
+  (`detail: {prefix, rows}`; nested rows inside a new parent row get no separate event), and the package's own
+  `tooltip.js` and `toggle.js` re-initialize on it.
+
 ## 0.29.3
 
 ### Fixed

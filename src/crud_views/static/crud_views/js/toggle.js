@@ -59,4 +59,9 @@
     document.addEventListener("cv:modal:loaded", function (event) {
         wireGroups(event.target);
     });
+
+    // Same for formset rows added by formset.js after page load.
+    document.addEventListener("cv:formset:row-added", function (event) {
+        wireGroups(event.target);
+    });
 })();

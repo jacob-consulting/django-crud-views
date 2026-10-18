@@ -49,3 +49,6 @@ document.getElementById("cv-modal").addEventListener("cv:modal:loaded", function
     // initialize widgets inside the injected modal content
 });
 ```
+
+Rows that formsets add after page load get the analogous `cv:formset:row-added` event; see
+[Formsets](formsets.md#initializing-widgets-in-added-rows).

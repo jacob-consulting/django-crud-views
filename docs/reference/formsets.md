@@ -143,6 +143,29 @@ beyond placing `Formsets()` in the form layout as shown above. The script insert
 row at the right position, increments the formset's `TOTAL_FORMS` management value, and
 re-attaches the row's add/delete/order controls.
 
+### Initializing widgets in added rows
+
+A row added this way arrives after page load, so scripts that initialize widgets on
+`DOMContentLoaded` never see it. After inserting a row, `formset.js` therefore dispatches a
+bubbling `cv:formset:row-added` CustomEvent on the new `div.cv-formset-row` element — the
+formset counterpart of the [modal's `cv:modal:loaded`](modals.md#extending). Listen on
+`document` and initialize inside `event.target`:
+
+```javascript
+document.addEventListener("cv:formset:row-added", function (event) {
+    // event.target: the new row element
+    // event.detail.prefix: its form prefix, e.g. "questions-None-0-3"
+    // event.detail.rows: every form prefix the server returned for this add
+    initMyWidgets(event.target);
+});
+```
+
+When the new row contains rows of nested formsets, only the outermost row gets the event —
+its `event.target` already contains the nested rows, so a listener never initializes the same
+element twice. The package's own scripts (tooltips, [conditional field-groups](conditional.md))
+listen for this event already; widget packages such as
+[django-crud-views-extensions](https://django-crud-views-extensions.readthedocs.io/) do too.
+
 ## Conditional formsets
 
 A first-level formset can be toggled on/off from a checkbox on the parent form — hidden and

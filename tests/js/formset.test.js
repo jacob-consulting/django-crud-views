@@ -179,6 +179,41 @@ describe("formset.js", () => {
                 ajax.mockRestore();
             });
 
+            it("dispatches a bubbling cv:formset:row-added event on the inserted row", () => {
+                formsetFixture({ rows: 2 });
+                const ajax = stubAjax(2);
+                const ctl = { add_form_control_for_new_rows: vi.fn() };
+                const events = [];
+                const listener = (e) => events.push(e);
+                document.addEventListener("cv:formset:row-added", listener);
+                new window.cv.XForm(ctl, "book-None-0-1").add();
+                document.removeEventListener("cv:formset:row-added", listener);
+                expect(events).toHaveLength(1);
+                expect(events[0].target.getAttribute("cv-data-formset-form-prefix")).toBe("book-None-0-2");
+                expect(events[0].detail).toEqual({ prefix: "book-None-0-2", rows: ["book-None-0-2"] });
+                ajax.mockRestore();
+            });
+
+            it("dispatches no separate event for nested rows inside a new parent row", () => {
+                formsetFixture({ rows: 2 });
+                const ajax = vi.spyOn($, "ajax").mockImplementation((options) => {
+                    const html = rowHtml(2).replace(
+                        /<\/div>\s*$/,
+                        `<div class="cv-formset-row" cv-data-formset-form-prefix="child-0"></div></div>`,
+                    );
+                    options.success({ html, rows: ["book-None-0-2", "child-0"] });
+                });
+                const ctl = { add_form_control_for_new_rows: vi.fn() };
+                const targets = [];
+                const listener = (e) => targets.push(e.target.getAttribute("cv-data-formset-form-prefix"));
+                document.addEventListener("cv:formset:row-added", listener);
+                new window.cv.XForm(ctl, "book-None-0-1").add();
+                document.removeEventListener("cv:formset:row-added", listener);
+                expect(document.querySelector('[cv-data-formset-form-prefix="child-0"]')).not.toBeNull();
+                expect(targets).toEqual(["book-None-0-2"]);
+                ajax.mockRestore();
+            });
+
             it("inserts before the next row when adding from a middle row", () => {
                 formsetFixture({ rows: 2 });
                 const ajax = stubAjax(2);

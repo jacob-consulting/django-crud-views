@@ -111,6 +111,21 @@ describe("toggle.js", () => {
         expect(content.querySelector("[cv-data-toggle-group]").style.display).toBe("none");
     });
 
+    it("wires groups in a formset row added via cv:formset:row-added", () => {
+        document.body.innerHTML = `
+            <form>
+                <input type="checkbox" name="active">
+                <div class="cv-formset-row"></div>
+            </form>`;
+        const row = document.querySelector(".cv-formset-row");
+        row.innerHTML = `
+            <div cv-data-toggle-group cv-data-toggle-field="active">
+                <input type="text" name="title">
+            </div>`;
+        row.dispatchEvent(new CustomEvent("cv:formset:row-added", { bubbles: true }));
+        expect(row.querySelector("[cv-data-toggle-group]").style.display).toBe("none");
+    });
+
     it("does not double-bind an already-wired group", () => {
         const { checkbox } = fixture();
         const spy = vi.spyOn(checkbox, "addEventListener");

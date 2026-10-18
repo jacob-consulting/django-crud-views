@@ -32,6 +32,8 @@
     // Modal content is injected via innerHTML after page load; modal.js
     // dispatches this event exactly so scripts can re-initialize inside it.
     document.addEventListener("cv:modal:loaded", (event) => initTooltips(event.target));
+    // Same for formset rows added by formset.js after page load.
+    document.addEventListener("cv:formset:row-added", (event) => initTooltips(event.target));
 
     globalThis.cv = globalThis.cv || {};
     globalThis.cv.initTooltips = initTooltips;

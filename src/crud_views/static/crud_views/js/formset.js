@@ -19,6 +19,10 @@ const CVFSConst = Object.freeze({
     sel: {
         content: "div.cv-formset-content",
         row: "div.cv-formset-row"
+    },
+    // events dispatched
+    event: {
+        row_added: "cv:formset:row-added"
     }
 });
 
@@ -334,6 +338,7 @@ class XForm extends XBase {
                 this.formset.increment_total_forms();
                 this.reorder();
                 this.ctl.add_form_control_for_new_rows(rows);
+                this.dispatch_row_added(rows);
 
                 // highlight created rows
                 rows.forEach((row) => {
@@ -348,6 +353,30 @@ class XForm extends XBase {
                 this.debug('Error:', error);
             }
         });
+    }
+
+    /**
+     * Dispatch "cv:formset:row-added" on each inserted row so scripts can initialize
+     * widgets inside it (the formset counterpart of "cv:modal:loaded").
+     *
+     * Rows of nested formsets that arrive inside a new parent row get no event of their
+     * own: the parent's event target already contains them, and a listener running
+     * init(event.target) twice on the same element would double-bind.
+     *
+     * @param rows form prefixes of the inserted rows, as returned by the server
+     */
+    dispatch_row_added(rows) {
+        let elements = rows
+            .map((prefix) => document.querySelector(`${CVFSConst.sel.row}[${CVFSConst.attr.form_prefix}="${prefix}"]`))
+            .filter((el) => el !== null);
+        elements
+            .filter((el) => !elements.some((other) => other !== el && other.contains(el)))
+            .forEach((el) => {
+                el.dispatchEvent(new CustomEvent(CVFSConst.event.row_added, {
+                    bubbles: true,
+                    detail: {prefix: el.getAttribute(CVFSConst.attr.form_prefix), rows: rows},
+                }));
+            });
     }
 
     /**

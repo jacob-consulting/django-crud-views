@@ -224,6 +224,14 @@ REMOVED_SETTINGS: dict[str, str] = {
 }
 
 
+ICON_VALUE_HINT = "Use a semantic name, 'prefix:name', a raw CSS class, or None for no icon."
+
+
+def is_icon_value(value: object) -> bool:
+    """True for the accepted icon value types: None (no icon) and str. Checks report anything else (E356)."""
+    return value is None or isinstance(value, str)
+
+
 def unregistered_prefix(value: str | None) -> str | None:
     """Return the prefix of a ``prefix:name`` value when no library is registered for it, else None."""
     if not value or not isinstance(value, str) or ":" not in value:
@@ -303,6 +311,15 @@ def icon_check_messages() -> list[CheckMessage]:
 
     icons = get_icons()
     for key, value in icons.items():
+        if not is_icon_value(value):
+            messages.append(
+                Error(
+                    f"Icon {key!r} = {value!r} is not a str.",
+                    hint=ICON_VALUE_HINT,
+                    id="crud_views.E356",
+                )
+            )
+            continue
         missing = unregistered_prefix(value)
         if missing is not None:
             messages.append(

@@ -22,7 +22,8 @@ order:
 3. **Raw CSS class** - anything else without a colon (`"fa-solid fa-truck"`) renders as `<i class="...">`.
 
 An empty, whitespace-only or `None` value renders nothing. The same holds for a table value, so
-`CRUD_VIEWS_ICONS = {"field-marker": None}` (or `""`) switches that icon off.
+`CRUD_VIEWS_ICONS = {"field-marker": None}` (or `""`) switches that icon off. Any other non-string value renders
+nothing and is reported by `crud_views.E356`.
 
 !!! warning "Colons and raw classes"
     A value containing a colon is always read as `prefix:name`. A raw CSS class that contains a colon (for example a
@@ -217,6 +218,7 @@ register the same key, the one whose `ready()` runs later wins, which is the one
 | `crud_views.E351` | error | the `renderer` dotted path of a library cannot be imported |
 | `crud_views.E354` | error | a library with the `font` renderer has no `class` entry, or its `class` is not a valid format string |
 | `crud_views.E355` | error | a library config is not a dict, or its `renderer` is neither `font`, a dotted path nor a callable |
+| `crud_views.E356` | error | a `CRUD_VIEWS_ICONS` value, `cv_icon_action` or `cv_icon_header` is neither a str nor `None` |
 | `crud_views.W352` | warning | a `CRUD_VIEWS_ICONS` entry uses an unregistered library prefix, or points to another semantic name |
 | `crud_views.W353` | warning | `cv_icon_action`, `cv_icon_header` or `ViewSet.icon_header` uses an unregistered library prefix |
 

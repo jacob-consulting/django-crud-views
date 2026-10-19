@@ -122,7 +122,7 @@ def test_e354_not_for_custom_renderer_or_with_class():
         assert "crud_views.E354" not in ids(check_icons())
 
 
-def test_w353_skips_non_str_values():
+def test_e356_non_str_view_attributes():
     from crud_views.lib.view import CrudView
 
     name = "icon_check_probe_nonstr"
@@ -136,9 +136,24 @@ def test_w353_skips_non_str_values():
             cv_icon_action = 5
             cv_icon_header = ("xy:eye",)
 
-        assert [m for m in check_icons() if m.id == "crud_views.W353"] == []
+        messages = [m for m in check_icons() if m.id in ("crud_views.E356", "crud_views.W353")]
+        assert ids(messages) == ["crud_views.E356", "crud_views.E356"]
+        text = " ".join(m.msg for m in messages)
+        assert "cv_icon_action" in text and "cv_icon_header" in text
     finally:
         _REGISTRY.pop(name, None)
+
+
+def test_e356_non_str_table_value():
+    with override_settings(CRUD_VIEWS_ICONS={"list": 5}):
+        messages = check_icons()
+    assert ids(messages) == ["crud_views.E356"]
+    assert "'list'" in messages[0].msg
+
+
+def test_table_value_none_is_allowed():
+    with override_settings(CRUD_VIEWS_ICONS={"filter-close": None}):
+        assert check_icons() == []
 
 
 def _boom(path):

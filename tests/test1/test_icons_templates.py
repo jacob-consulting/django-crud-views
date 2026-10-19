@@ -13,7 +13,7 @@ from tests.lib.helper.user import user_viewset_permission
 from tests.test1.app.views import AuthorListView, cv_author
 
 # a Font Awesome / Bootstrap Icons class token: "fa-" or "bi-" not preceded by a word character or a hyphen
-HARDCODED_ICON_CLASS = re.compile(r"(?<![\w-])(fa|bi)-[a-z]")
+HARDCODED_ICON_CLASS = re.compile(r"(?<![\w-])(fa|bi)-[a-z0-9]")
 
 
 @pytest.fixture
@@ -67,6 +67,7 @@ def test_menu_item_label_icon_is_fixed_width(client_full, author_douglas_adams, 
     [
         ('class="fa-solid fa-eye"', True),
         ('class="bi bi-eye"', True),
+        ('class="fa-2x"', True),
         ("combi-box", False),
         ("data-fa-x", False),
         ("cv-icon-fw", False),

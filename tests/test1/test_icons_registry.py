@@ -191,3 +191,24 @@ def test_renderer_import_raising_any_exception_renders_nothing(monkeypatch):
     monkeypatch.setattr(icons_module, "import_string", _boom)
     with override_settings(CRUD_VIEWS_ICON_LIBRARIES={"xy": {"renderer": "some.module.render"}}):
         assert render_icon("xy:a") == ""
+
+
+def test_dotted_path_to_non_callable_renders_nothing():
+    with override_settings(CRUD_VIEWS_ICON_LIBRARIES={"xy": {"renderer": "os.sep"}}):
+        assert render_icon("xy:a") == ""
+
+
+@pytest.mark.parametrize("template", ["x-{size} {name}", "x-{} {name}", 5])
+def test_bad_font_class_renders_nothing(template):
+    with override_settings(CRUD_VIEWS_ICON_LIBRARIES={"xy": {"renderer": "font", "class": template}}):
+        assert render_icon("xy:a") == ""
+
+
+@pytest.mark.parametrize("value", ["  detail ", "\tdetail\n"])
+def test_surrounding_whitespace_is_ignored(value):
+    assert render_icon(value) == '<i class="fa-regular fa-eye" aria-hidden="true"></i>'
+
+
+def test_surrounding_whitespace_in_table_value_is_ignored():
+    with override_settings(CRUD_VIEWS_ICONS={"detail": "  fas:eye "}):
+        assert render_icon("detail") == '<i class="fa-solid fa-eye" aria-hidden="true"></i>'

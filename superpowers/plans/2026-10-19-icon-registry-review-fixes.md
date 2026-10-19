@@ -45,7 +45,8 @@ plan was written.
 - **No heuristic for unmigrated bare group icons** (`icon="truck"`): bare values are raw CSS classes by the documented
   rule and a single-token raw class is legitimate (IcoMoon-style fonts). `viewset.W246` covers `prefix:name` only.
 - **Render never raises on bad config; checks never raise.** A font `class` that is not a valid format string is an
-  E354 error at check time and left to raise at render time (the check gates it, like a missing template).
+  E354 error at check time. (Originally left to raise at render time; the post-review follow-up made the font
+  renderer fail soft as well, so the first sentence now holds without exception.)
 
 ## Global Constraints
 

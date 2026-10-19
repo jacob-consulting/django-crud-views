@@ -1,6 +1,6 @@
 # Django CRUD Views - Changelog
 
-## Unreleased
+## 0.30.0
 
 ### Breaking
 

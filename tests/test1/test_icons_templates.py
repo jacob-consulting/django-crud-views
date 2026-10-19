@@ -1,5 +1,6 @@
 """Task 4: core views and templates render icons through the registry."""
 
+import re
 from pathlib import Path
 
 import pytest
@@ -10,6 +11,9 @@ from lxml import html as lxml_html
 
 from tests.lib.helper.user import user_viewset_permission
 from tests.test1.app.views import AuthorListView, cv_author
+
+# a Font Awesome / Bootstrap Icons class token: "fa-" or "bi-" not preceded by a word character or a hyphen
+HARDCODED_ICON_CLASS = re.compile(r"(?<![\w-])(fa|bi)-[a-z]")
 
 
 @pytest.fixture
@@ -58,15 +62,25 @@ def test_menu_item_label_icon_is_fixed_width(client_full, author_douglas_adams, 
     assert "fa-fw" not in html
 
 
+@pytest.mark.parametrize(
+    "text, hit",
+    [
+        ('class="fa-solid fa-eye"', True),
+        ('class="bi bi-eye"', True),
+        ("combi-box", False),
+        ("data-fa-x", False),
+        ("cv-icon-fw", False),
+    ],
+)
+def test_hardcoded_icon_class_regex(text, hit):
+    assert bool(HARDCODED_ICON_CLASS.search(text)) is hit
+
+
 def test_no_hardcoded_icon_classes_in_templates_and_js():
     src = Path(__file__).resolve().parents[2] / "src"
-    files = list(src.glob("*/templates/**/*.html")) + list((src / "crud_views/static/crud_views/js").rglob("*.js"))
+    files = list(src.glob("*/templates/**/*.html")) + list(src.glob("*/static/**/*.js"))
     assert files
-    offenders = [
-        str(f.relative_to(src))
-        for f in files
-        if any(token in f.read_text(encoding="utf-8") for token in ('"fa-', "fa-", '"bi-', "bi-"))
-    ]
+    offenders = [str(f.relative_to(src)) for f in files if HARDCODED_ICON_CLASS.search(f.read_text(encoding="utf-8"))]
     assert offenders == []
 
 

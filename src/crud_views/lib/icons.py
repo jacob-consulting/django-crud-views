@@ -88,9 +88,10 @@ _libraries_cache: dict[str, dict] | None = None
 
 
 def reset_icon_cache() -> None:
-    global _icons_cache, _libraries_cache
+    global _icons_cache, _libraries_cache, _renderers_cache
     _icons_cache = None
     _libraries_cache = None
+    _renderers_cache = None
 
 
 @receiver(setting_changed)
@@ -111,20 +112,50 @@ def register_icons(icons: dict[str, str]) -> None:
 
 def get_icons() -> dict[str, str]:
     global _icons_cache
-    if _icons_cache is None:
-        _icons_cache = {**DEFAULT_ICONS, **_THEME_ICONS, **getattr(settings, "CRUD_VIEWS_ICONS", {})}
-    return _icons_cache
+    icons = _icons_cache
+    if icons is None:
+        icons = {**DEFAULT_ICONS, **_THEME_ICONS, **(getattr(settings, "CRUD_VIEWS_ICONS", None) or {})}
+        _icons_cache = icons
+    return icons
 
 
 def get_libraries() -> dict[str, dict]:
     global _libraries_cache
-    if _libraries_cache is None:
-        _libraries_cache = {
+    libraries = _libraries_cache
+    if libraries is None:
+        libraries = {
             **BUILTIN_LIBRARIES,
             **_THEME_LIBRARIES,
-            **getattr(settings, "CRUD_VIEWS_ICON_LIBRARIES", {}),
+            **(getattr(settings, "CRUD_VIEWS_ICON_LIBRARIES", None) or {}),
         }
-    return _libraries_cache
+        _libraries_cache = libraries
+    return libraries
+
+
+def _resolve_renderer(renderer) -> Callable | None:
+    """A callable for a library's ``renderer`` value; None when a dotted path cannot be imported."""
+    if renderer == "font":
+        return font_renderer
+    if isinstance(renderer, str):
+        try:
+            return import_string(renderer)
+        except ImportError:
+            return None
+    return renderer
+
+
+_renderers_cache: dict[str, Callable | None] | None = None
+
+
+def _get_renderers() -> dict[str, Callable | None]:
+    global _renderers_cache
+    renderers = _renderers_cache
+    if renderers is None:
+        renderers = {
+            prefix: _resolve_renderer(config.get("renderer", "font")) for prefix, config in get_libraries().items()
+        }
+        _renderers_cache = renderers
+    return renderers
 
 
 def resolve_icon(value: str | None) -> tuple[str, str] | None:
@@ -139,7 +170,10 @@ def resolve_icon(value: str | None) -> tuple[str, str] | None:
 
 
 def font_renderer(name: str, *, css: str, config: dict) -> SafeString:
-    classes = config["class"].format(name=name)
+    template = config.get("class")
+    if not template:
+        return SafeString("")
+    classes = template.format(name=name)
     if css:
         classes = f"{classes} {css}"
     return format_html('<i class="{}" aria-hidden="true"></i>', classes)
@@ -152,14 +186,13 @@ def render_icon(value: str | None, css: str = "") -> SafeString:
     prefix, name = resolved
     if not prefix:
         return font_renderer(name, css=css, config={"class": "{name}"})
-    config = get_libraries().get(prefix)
+    libraries = get_libraries()
+    config = libraries.get(prefix)
     if config is None:
         return SafeString("")
-    renderer = config.get("renderer", "font")
-    if renderer == "font":
-        renderer = font_renderer
-    elif isinstance(renderer, str):
-        renderer = import_string(renderer)
+    renderer = _get_renderers().get(prefix)
+    if renderer is None:
+        return SafeString("")
     return renderer(name, css=css, config=config)
 
 
@@ -176,7 +209,7 @@ REMOVED_SETTINGS: dict[str, str] = {
 
 def unregistered_prefix(value: str | None) -> str | None:
     """Return the prefix of a ``prefix:name`` value when no library is registered for it, else None."""
-    if not value or ":" not in value:
+    if not value or not isinstance(value, str) or ":" not in value:
         return None
     prefix = value.split(":", 1)[0]
     return None if prefix in get_libraries() else prefix
@@ -194,6 +227,14 @@ def icon_check_messages() -> list[CheckMessage]:
     libraries = get_libraries()
     for prefix, config in libraries.items():
         renderer = config.get("renderer", "font")
+        if renderer == "font" and not config.get("class"):
+            messages.append(
+                Error(
+                    f"Icon library {prefix!r} uses the font renderer but has no 'class'.",
+                    hint="Add a 'class' format string such as 'fa-solid fa-{name}'.",
+                    id="crud_views.E354",
+                )
+            )
         if isinstance(renderer, str) and renderer != "font":
             try:
                 import_string(renderer)

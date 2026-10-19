@@ -108,3 +108,50 @@ def test_bootstrap_preset_covers_exactly_default_names():
 
 def test_defaults_are_font_awesome_only():
     assert all(v.split(":", 1)[0] in ("far", "fas") for v in DEFAULT_ICONS.values())
+
+
+def test_font_library_without_class_renders_empty():
+    with override_settings(CRUD_VIEWS_ICON_LIBRARIES={"xy": {"renderer": "font"}}):
+        assert render_icon("xy:rocket") == ""
+
+
+def test_none_settings_do_not_raise():
+    with override_settings(CRUD_VIEWS_ICONS=None, CRUD_VIEWS_ICON_LIBRARIES=None):
+        assert render_icon("detail") == '<i class="fa-regular fa-eye" aria-hidden="true"></i>'
+
+
+def test_failing_dotted_renderer_import_renders_empty():
+    with override_settings(CRUD_VIEWS_ICON_LIBRARIES={"xy": {"renderer": "no.such.module.render"}}):
+        assert render_icon("xy:rocket") == ""
+
+
+def test_dotted_renderer_imported_once(monkeypatch):
+    calls = []
+    real = icons_module.import_string
+
+    def counting(path):
+        calls.append(path)
+        return real(path)
+
+    monkeypatch.setattr(icons_module, "import_string", counting)
+    with override_settings(
+        CRUD_VIEWS_ICON_LIBRARIES={"xy": {"renderer": "tests.test1.test_icons_registry.xy_renderer"}}
+    ):
+        render_icon("xy:a")
+        render_icon("xy:b")
+    assert calls.count("tests.test1.test_icons_registry.xy_renderer") == 1
+
+
+def test_get_icons_never_returns_none_on_concurrent_reset(monkeypatch):
+    real = icons_module.DEFAULT_ICONS
+
+    class Resetting(dict):
+        def __iter__(self):
+            icons_module.reset_icon_cache()
+            return super().__iter__()
+
+    monkeypatch.setattr(icons_module, "DEFAULT_ICONS", Resetting(real))
+    icons_module.reset_icon_cache()
+    assert icons_module.get_icons() is not None
+    icons_module.reset_icon_cache()
+    assert icons_module.get_libraries() is not None

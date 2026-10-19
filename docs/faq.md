@@ -29,7 +29,7 @@ The button template is rendered with the resolved button context, which includes
 - `cv_url` — the target URL
 - `cv_key` — the action key
 - `cv_action_label` — the rendered label
-- `cv_icon_action` — the icon CSS class
+- `cv_icon_action` — the icon value (render with `{% cv_icon %}`)
 - `cv_access` — `True` when the user may access the target
 - `cv_action_enabled` — `False` hides the button
 - `cv_is_active` — `True` when the button points at the current view
@@ -56,7 +56,7 @@ cv_author = ViewSet(
             key_target="update",
             template_code=(
                 '<a href="{{ cv_url }}" class="btn btn-primary btn-lg" cv-key="{{ cv_key }}">'
-                '<i class="{{ cv_icon_action }}"></i> {{ cv_action_label }}</a>'
+                '{% load crud_views %}{% cv_icon cv_icon_action %} {{ cv_action_label }}</a>'
             ),
         ),
     ],

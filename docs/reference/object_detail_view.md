@@ -44,7 +44,7 @@ from .models import Book
 cv_book = ViewSet(
     model=Book,
     name="book",
-    icon_header="far:book",
+    icon_header="fas:book",
 )
 
 

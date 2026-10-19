@@ -120,8 +120,8 @@ cv_author = ViewSet(model=Author, name="author", icon_header="fa-regular fa-user
 That's the whole ViewSet declaration. `ViewSet` auto-detects the primary
 key's type from the model — `UUIDField` here, so it generates URL patterns
 that match a UUID rather than an integer or slug. `name` is the URL
-namespace/prefix for this ViewSet's views, and `icon_header` is an icon
-(`prefix:name`, see [Icons](../reference/icons.md)) shown next to the page heading.
+namespace/prefix for this ViewSet's views, and `icon_header` is an icon value (here a raw Font Awesome class; `prefix:name`, e.g. `far:user`, is preferred, see
+[Icons](../reference/icons.md)) shown next to the page heading.
 
 It's declared alongside a small unmarked import block:
 

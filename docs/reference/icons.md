@@ -74,7 +74,7 @@ so list only what you change or add:
 
 ```python
 CRUD_VIEWS_ICONS = {
-    "detail": "far:magnifying-glass",   # override a default
+    "detail": "fas:magnifying-glass",   # override a default
     "person": "far:user",               # your own name, usable anywhere an icon value is accepted
 }
 ```
@@ -195,7 +195,8 @@ class MyAppThemeConfig(AppConfig):
 ```
 
 `register_icon_library(prefix, renderer="font", **config)` takes `"font"`, a dotted path or a callable;
-`register_icons(icons)` takes a dict of name to icon value. Both reset the resolved cache.
+`register_icons(icons)` takes a dict of name to icon value. Both reset the resolved cache. `class` is a Python
+keyword, so pass it with the dict form: `register_icon_library("ti", **{"class": "ti ti-{name}"})`.
 
 ### Precedence
 
@@ -213,6 +214,7 @@ register the same key, the one whose `ready()` runs later wins, which is the one
 |---|---|---|
 | `crud_views.E350` | error | a removed setting is still defined (see the changelog); the hint names the replacement |
 | `crud_views.E351` | error | the `renderer` dotted path of a library cannot be imported |
+| `crud_views.E354` | error | a library with the `font` renderer has no `class` entry |
 | `crud_views.W352` | warning | a `CRUD_VIEWS_ICONS` entry uses an unregistered library prefix, or points to another semantic name |
 | `crud_views.W353` | warning | `cv_icon_action`, `cv_icon_header` or `ViewSet.icon_header` uses an unregistered library prefix |
 

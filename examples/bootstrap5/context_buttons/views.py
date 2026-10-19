@@ -29,8 +29,9 @@ cv_ticket = ViewSet(
             key="edit_big",
             key_target="update",
             template_code=(
+                "{% load crud_views %}"
                 '<a href="{{ cv_url }}" class="btn btn-primary btn-lg cv-demo-edit-big" cv-key="{{ cv_key }}">'
-                '<i class="{{ cv_icon_action }}" aria-hidden="true"></i> {{ cv_action_label }}</a>'
+                "{% cv_icon cv_icon_action %} {{ cv_action_label }}</a>"
             ),
         ),
         # whole-button template, from a file: a pill-shaped edit button (templates/context_buttons/)

@@ -21,8 +21,13 @@
       ```python
       from crud_views.lib.icons import BOOTSTRAP_ICONS
 
-      CRUD_VIEWS_ICONS = BOOTSTRAP_ICONS
+      CRUD_VIEWS_ICONS = {
+          k: BOOTSTRAP_ICONS[k] for k in ("boolean-true", "boolean-false", "property-detail", "text-icon")
+      }
       ```
+
+      `CRUD_VIEWS_ICONS = BOOTSTRAP_ICONS` switches every icon in the package to Bootstrap Icons (load the Bootstrap
+      Icons CSS).
 
 - Object detail group icons are no longer auto-prefixed. `icon="truck"` must become `icon="fas:truck"` (or
   `"bi:truck"`), or `"truck"` must be added to `CRUD_VIEWS_ICONS`. An unmigrated bare name is not flagged by any
@@ -35,9 +40,13 @@
   check / circle xmark) instead of the square check icons.
 - Table sort icons are now Font Awesome 6 (`table-sort-asc` = `fas:angles-up`, `table-sort-desc` =
   `fas:angles-down`); ascending now points up. Before, they used Font Awesome 4 class names with inverted direction.
+- The context values `cv_icon_action`, `cv_icon_header` and `cv_menu_icon` now carry icon values (semantic names or
+  `prefix:name`), not CSS classes. Custom button and menu templates must render them with `{% cv_icon %}`
+  (`{% load crud_views %}{% cv_icon cv_icon_action %}`); `<i class="{{ cv_icon_action }}">` renders an invisible icon.
 - Icons are rendered with `aria-hidden="true"` by default.
 - The Font Awesome fixed-width class `fa-fw` in action menus is replaced by the library-neutral `cv-icon-fw`
   (`crud_views/css/icons.css`). Custom templates using `fa-fw` for menu icons should switch.
+  `crud_views/css/icons.css` is a new core CSS asset: projects that list the CSS files by hand must add it.
 
 ### Fixed
 
@@ -51,7 +60,7 @@
   (`CRUD_VIEWS_ICON_LIBRARIES`, built-in `far`, `fas`, `bi`), pluggable renderers (for example SVG), a complete
   Bootstrap Icons preset `crud_views.lib.icons.BOOTSTRAP_ICONS`, the `{% cv_icon %}` tag (also in
   `crud_views_object_detail` tags), theme registration via `register_icon_library` / `register_icons`, and the
-  system checks `crud_views.E350`, `E351`, `W352` and `W353`.
+  system checks `crud_views.E350`, `E351`, `E354`, `W352` and `W353`.
 
 ## 0.29.4
 

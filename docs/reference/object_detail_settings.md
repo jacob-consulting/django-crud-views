@@ -13,12 +13,15 @@ semantic names it uses are `boolean-true`, `boolean-false`, `property-detail` an
 (see the [default table](icons.md#default-table)). Group `icon` values are icon values and are **not** auto-prefixed:
 write `bi:person` / `far:user` or add the name to `CRUD_VIEWS_ICONS`.
 
-To keep the previous Bootstrap Icons look, restore it with one line:
+To keep the previous Bootstrap Icons look for object detail, restore the four names it uses:
 
 ```python
 from crud_views.lib.icons import BOOTSTRAP_ICONS
 
-CRUD_VIEWS_ICONS = BOOTSTRAP_ICONS
+CRUD_VIEWS_ICONS = {k: BOOTSTRAP_ICONS[k] for k in ("boolean-true", "boolean-false", "property-detail", "text-icon")}
 ```
+
+`CRUD_VIEWS_ICONS = BOOTSTRAP_ICONS` instead switches every icon in the package to Bootstrap Icons (load the Bootstrap
+Icons CSS).
 
 See [Icons](icons.md).

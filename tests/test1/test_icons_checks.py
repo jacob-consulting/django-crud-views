@@ -107,3 +107,35 @@ def test_w353_viewset_and_view_attributes():
         assert "cv_icon_header" not in text
     finally:
         _REGISTRY.pop(name, None)
+
+
+def test_e354_font_library_without_class():
+    with override_settings(CRUD_VIEWS_ICON_LIBRARIES={"xy": {"renderer": "font"}}):
+        messages = check_icons()
+    assert ids(messages) == ["crud_views.E354"]
+    assert "'xy'" in messages[0].msg
+
+
+def test_e354_not_for_custom_renderer_or_with_class():
+    libs = {"xy": {"renderer": "crud_views.lib.icons.font_renderer"}, "ab": {"renderer": "font", "class": "a-{name}"}}
+    with override_settings(CRUD_VIEWS_ICON_LIBRARIES=libs):
+        assert "crud_views.E354" not in ids(check_icons())
+
+
+def test_w353_skips_non_str_values():
+    from crud_views.lib.view import CrudView
+
+    name = "icon_check_probe_nonstr"
+    viewset = ViewSet(model=Publisher, name=name)
+    try:
+
+        class ProbeView(CrudView):
+            cv_viewset = viewset
+            cv_key = "probe"
+            cv_path = "probe"
+            cv_icon_action = 5
+            cv_icon_header = ("xy:eye",)
+
+        assert [m for m in check_icons() if m.id == "crud_views.W353"] == []
+    finally:
+        _REGISTRY.pop(name, None)

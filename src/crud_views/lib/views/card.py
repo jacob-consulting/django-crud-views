@@ -88,10 +88,6 @@ class CardListView(CardOrderMixin, CrudView, generic.ListView):
                 items.append((action.key or action.child_name, ctx))
         return cv_split_actions(items, inline)
 
-    @staticmethod
-    def cv_get_filter_icon() -> str:
-        return "filter"
-
     @classmethod
     def cv_get_card_actions_inline(cls):
         """Card action keys (CardAction.key, or child_name) kept as buttons; None: no menu (#174)."""

@@ -36,6 +36,9 @@
 - The template `crud_views/tags/icon.html` and the template tags / context values `cv_header_icon_class` and
   `cv_filter_icon_class` are removed. Render icons with `{% cv_icon value %}` (`{% cv_icon value css="me-2" %}`) or
   `crud_views.lib.icons.render_icon`. The object detail filters `icon_class` and `named_icon_class` are removed too.
+  The tag `{% cv_filter_icon %}` and the hook `cv_get_filter_icon()` of `ListView` / `CardListView` are removed as
+  well: the filter panel header and the toggle button both use the `filter` icon, so change
+  `CRUD_VIEWS_ICONS["filter"]` to change both.
 - The core boolean widget (`detail/widgets/bool.html`) now uses the `boolean-true` / `boolean-false` icons (circle
   check / circle xmark) instead of the square check icons.
 - Table sort icons are now Font Awesome 6 (`table-sort-asc` = `fas:angles-up`, `table-sort-desc` =

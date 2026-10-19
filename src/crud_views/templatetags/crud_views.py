@@ -286,12 +286,6 @@ def cv_header_icon(context):
 
 
 @register.simple_tag(takes_context=True)
-def cv_filter_icon(context):
-    view: CrudView = cv_get_view(context)
-    return render_icon(view.cv_get_filter_icon())
-
-
-@register.simple_tag(takes_context=True)
 def cv_filter_header(context):
     view: CrudView = cv_get_view(context)
     return view.cv_filter_header

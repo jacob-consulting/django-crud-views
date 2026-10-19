@@ -32,13 +32,6 @@ class ListView(CrudView, generic.ListView):
     # icons
     cv_icon_action = "list"
 
-    @staticmethod
-    def cv_get_filter_icon() -> str:
-        """
-        Currently there is only one global filter icon
-        """
-        return "filter"
-
     @property
     def cv_filter_header(self) -> str:
         """

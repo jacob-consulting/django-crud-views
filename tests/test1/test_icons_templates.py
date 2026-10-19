@@ -80,3 +80,27 @@ def test_card_no_label_has_visually_hidden_label(client_full, author_douglas_ada
     assert delete.cssselect("i[aria-hidden='true']")
     hidden = delete.cssselect("span.visually-hidden")
     assert hidden and hidden[0].text_content().strip() == delete.get("title")
+
+
+@pytest.mark.django_db
+def test_filter_header_and_toggle_share_the_filter_icon(client_user_publisher_view, cv_publisher, publisher_penguin):
+    with override_settings(CRUD_VIEWS_ICONS={"filter": "fas:magnifying-glass"}):
+        resp = client_user_publisher_view.get("/publisher/")
+    assert resp.status_code == 200
+    doc = lxml_html.fromstring(resp.content)
+    header = doc.cssselect("#filter-collapse .card-header i")
+    toggle = doc.cssselect("#cv-filter-toggle [data-cv-filter-icon='open'] i")
+    assert [i.get("class") for i in header] == ["fa-solid fa-magnifying-glass"]
+    assert [i.get("class") for i in toggle] == ["fa-solid fa-magnifying-glass"]
+    assert doc.xpath("//i[@class='fa-solid fa-filter']") == []  # no second source of the open icon
+
+
+def test_cv_filter_icon_tag_and_hook_removed():
+    from django.template import Template, TemplateSyntaxError
+
+    from crud_views.lib.views import CardListView, ListView
+
+    assert not hasattr(ListView, "cv_get_filter_icon")
+    assert not hasattr(CardListView, "cv_get_filter_icon")
+    with pytest.raises(TemplateSyntaxError):
+        Template("{% load crud_views %}{% cv_filter_icon %}")

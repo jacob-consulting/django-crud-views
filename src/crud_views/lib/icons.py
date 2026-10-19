@@ -1,0 +1,161 @@
+"""Semantic icon registry: names -> ``prefix:name`` values -> library renderers."""
+
+from collections.abc import Callable
+
+from django.conf import settings
+from django.core.signals import setting_changed
+from django.dispatch import receiver
+from django.utils.html import format_html
+from django.utils.module_loading import import_string
+from django.utils.safestring import SafeString
+
+DEFAULT_ICONS: dict[str, str] = {
+    "list": "far:rectangle-list",
+    "card": "fas:rectangle-list",
+    "detail": "far:eye",
+    "create": "far:square-plus",
+    "update": "far:pen-to-square",
+    "delete": "far:trash-can",
+    "order-up": "far:circle-up",
+    "order-down": "far:circle-down",
+    "manage": "fas:gear",
+    "workflow": "fas:diagram-project",
+    "actions-menu": "fas:ellipsis",
+    "filter": "fas:filter",
+    "filter-close": "fas:filter-circle-xmark",
+    "language": "fas:language",
+    "sort-asc": "fas:arrow-up-short-wide",
+    "sort-desc": "fas:arrow-down-wide-short",
+    "table-sort-asc": "fas:angles-up",
+    "table-sort-desc": "fas:angles-down",
+    "formset-up": "fas:caret-up",
+    "formset-down": "fas:caret-down",
+    "formset-add": "fas:plus",
+    "formset-delete": "fas:square-xmark",
+    "field-marker": "fas:angles-right",
+    "boolean-true": "fas:circle-check",
+    "boolean-false": "fas:circle-xmark",
+    "property-detail": "fas:circle-info",
+    "text-icon": "far:file-lines",
+}
+
+BOOTSTRAP_ICONS: dict[str, str] = {
+    name: f"bi:{icon}"
+    for name, icon in {
+        "list": "list-ul",
+        "card": "card-list",
+        "detail": "eye",
+        "create": "plus-square",
+        "update": "pencil-square",
+        "delete": "trash",
+        "order-up": "arrow-up-circle",
+        "order-down": "arrow-down-circle",
+        "manage": "gear",
+        "workflow": "diagram-3",
+        "actions-menu": "three-dots",
+        "filter": "funnel",
+        "filter-close": "x-circle",
+        "sort-asc": "sort-up",
+        "sort-desc": "sort-down",
+        "table-sort-asc": "chevron-double-up",
+        "table-sort-desc": "chevron-double-down",
+        "formset-up": "caret-up-fill",
+        "formset-down": "caret-down-fill",
+        "formset-add": "plus-lg",
+        "formset-delete": "x-square-fill",
+        "field-marker": "chevron-double-right",
+        "boolean-true": "check-circle-fill",
+        "boolean-false": "x-circle-fill",
+        "property-detail": "info-circle",
+        "text-icon": "journal-text",
+        "language": "translate",
+    }.items()
+}
+
+BUILTIN_LIBRARIES: dict[str, dict] = {
+    "far": {"renderer": "font", "class": "fa-regular fa-{name}"},
+    "fas": {"renderer": "font", "class": "fa-solid fa-{name}"},
+    "bi": {"renderer": "font", "class": "bi bi-{name}"},
+}
+
+_THEME_ICONS: dict[str, str] = {}
+_THEME_LIBRARIES: dict[str, dict] = {}
+
+_icons_cache: dict[str, str] | None = None
+_libraries_cache: dict[str, dict] | None = None
+
+
+def reset_icon_cache() -> None:
+    global _icons_cache, _libraries_cache
+    _icons_cache = None
+    _libraries_cache = None
+
+
+@receiver(setting_changed)
+def _on_setting_changed(sender, setting, **kwargs):
+    if setting in ("CRUD_VIEWS_ICONS", "CRUD_VIEWS_ICON_LIBRARIES"):
+        reset_icon_cache()
+
+
+def register_icon_library(prefix: str, renderer: str | Callable = "font", **config) -> None:
+    _THEME_LIBRARIES[prefix] = {"renderer": renderer, **config}
+    reset_icon_cache()
+
+
+def register_icons(icons: dict[str, str]) -> None:
+    _THEME_ICONS.update(icons)
+    reset_icon_cache()
+
+
+def get_icons() -> dict[str, str]:
+    global _icons_cache
+    if _icons_cache is None:
+        _icons_cache = {**DEFAULT_ICONS, **_THEME_ICONS, **getattr(settings, "CRUD_VIEWS_ICONS", {})}
+    return _icons_cache
+
+
+def get_libraries() -> dict[str, dict]:
+    global _libraries_cache
+    if _libraries_cache is None:
+        _libraries_cache = {
+            **BUILTIN_LIBRARIES,
+            **_THEME_LIBRARIES,
+            **getattr(settings, "CRUD_VIEWS_ICON_LIBRARIES", {}),
+        }
+    return _libraries_cache
+
+
+def resolve_icon(value: str | None) -> tuple[str, str] | None:
+    """Return None for empty, ("", raw_class) for a raw class, else (prefix, name)."""
+    if not value:
+        return None
+    value = get_icons().get(value, value)
+    if ":" not in value:
+        return "", value
+    prefix, name = value.split(":", 1)
+    return prefix, name
+
+
+def font_renderer(name: str, *, css: str, config: dict) -> SafeString:
+    classes = config["class"].format(name=name)
+    if css:
+        classes = f"{classes} {css}"
+    return format_html('<i class="{}" aria-hidden="true"></i>', classes)
+
+
+def render_icon(value: str | None, css: str = "") -> SafeString:
+    resolved = resolve_icon(value)
+    if resolved is None:
+        return SafeString("")
+    prefix, name = resolved
+    if not prefix:
+        return font_renderer(name, css=css, config={"class": "{name}"})
+    config = get_libraries().get(prefix)
+    if config is None:
+        return SafeString("")
+    renderer = config.get("renderer", "font")
+    if renderer == "font":
+        renderer = font_renderer
+    elif isinstance(renderer, str):
+        renderer = import_string(renderer)
+    return renderer(name, css=css, config=config)

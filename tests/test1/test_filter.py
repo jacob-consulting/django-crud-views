@@ -71,3 +71,29 @@ def test_filter_form_rendered(client_user_publisher_view: Client, cv_publisher, 
     response = client_user_publisher_view.get("/publisher/")
     content = response.content.decode("utf-8")
     assert 'id="filter-button"' in content
+
+
+def _filter_icon_states(response) -> dict:
+    from lxml import html
+
+    doc = html.fromstring(response.content)
+    spans = doc.cssselect("#cv-filter-toggle [data-cv-filter-icon]")
+    return {s.get("data-cv-filter-icon"): "d-none" in s.get("class", "").split() for s in spans}
+
+
+@pytest.mark.django_db
+def test_filter_toggle_icon_collapsed(client_user_publisher_view: Client, cv_publisher, publisher_penguin):
+    """Collapsed panel: open icon visible, close icon hidden."""
+    response = client_user_publisher_view.get("/publisher/")
+    assert _filter_icon_states(response) == {"open": False, "close": True}
+
+
+@pytest.mark.django_db
+def test_filter_toggle_icon_expanded(client_user_publisher_view: Client, cv_publisher, publisher_penguin):
+    """Expanded panel (stored in session): close icon visible, open icon hidden."""
+    post = client_user_publisher_view.post(
+        "/publisher/", data='{"filter_expanded": true}', content_type="application/json"
+    )
+    assert post.status_code == 200
+    response = client_user_publisher_view.get("/publisher/")
+    assert _filter_icon_states(response) == {"open": True, "close": False}

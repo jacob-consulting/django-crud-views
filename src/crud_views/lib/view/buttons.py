@@ -6,6 +6,7 @@ from pydantic import BaseModel, Field
 
 from ..check import CheckExpression
 from ..exceptions import ViewSetNotFoundError
+from ..session import SessionData
 from ..settings import crud_views_settings
 from .context import ViewContext
 
@@ -309,6 +310,7 @@ class FilterContextButton(ContextButton):
         data = {"cv_access": True}  # it toggles the filter of the list page the user is already on
         data["cv_action_label"] = "Filter"
         data["cv_icon_action"] = "filter"
+        data["cv_filter_expanded"] = bool(SessionData.from_view(context.view).get("filter_expanded", False))
         data["cv_url"] = list_url
         self._apply_label(data, context)
         self._inject_template(data)

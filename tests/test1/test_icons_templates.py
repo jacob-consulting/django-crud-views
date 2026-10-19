@@ -58,7 +58,6 @@ def test_menu_item_label_icon_is_fixed_width(client_full, author_douglas_adams, 
     assert "fa-fw" not in html
 
 
-@pytest.mark.xfail(strict=True, reason="list.filter.js, Task 5")
 def test_no_hardcoded_icon_classes_in_templates_and_js():
     src = Path(__file__).resolve().parents[2] / "src"
     files = list(src.glob("*/templates/**/*.html")) + list((src / "crud_views/static/crud_views/js").rglob("*.js"))

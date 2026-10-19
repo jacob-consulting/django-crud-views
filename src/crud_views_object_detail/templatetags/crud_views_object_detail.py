@@ -3,11 +3,7 @@ from django.template.loader import select_template
 from django.utils.safestring import mark_safe
 
 from crud_views.lib.icons import render_icon
-from crud_views_object_detail.lib.conf import (
-    build_icon_class,
-    build_named_icon_class,
-    crud_views_object_detail_settings,
-)
+from crud_views_object_detail.lib.conf import crud_views_object_detail_settings
 from crud_views_object_detail.lib.config import parse_property_display
 from crud_views_object_detail.lib.resolvers import resolve_all
 
@@ -99,18 +95,6 @@ def render_property_value(context, prop):
         "property_text_newline": crud_views_object_detail_settings.property_text_newline,
     }
     return tpl.render({"prop": prop, "value": prop.value, "od_settings": od_settings}, context.get("request"))
-
-
-@register.filter
-def icon_class(icon_name):
-    """Return the full CSS class string for an icon name."""
-    return build_icon_class(icon_name)
-
-
-@register.filter
-def named_icon_class(name):
-    """Return the full CSS class string for a named icon."""
-    return build_named_icon_class(name)
 
 
 @register.simple_tag

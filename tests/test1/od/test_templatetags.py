@@ -92,7 +92,7 @@ class TestRenderGroup:
         tpl = Template("{% load crud_views_object_detail %}{% render_group group %}")
         ctx = Context({"group": groups[0]})
         html = tpl.render(ctx)
-        assert "bi-file-text" in html
+        assert '<i class="file-text' in html
 
     def test_no_icon(self, groups):
         tpl = Template("{% load crud_views_object_detail %}{% render_group group %}")
@@ -134,13 +134,13 @@ class TestRenderPropertyValue:
         prop = ResolvedProperty(path="t", label="T", value=True, type="boolean")
         tpl = Template("{% load crud_views_object_detail %}{% render_property_value prop %}")
         html = tpl.render(Context({"prop": prop}))
-        assert "check-circle-fill" in html
+        assert "fa-circle-check" in html
 
     def test_boolean_false(self):
         prop = ResolvedProperty(path="t", label="T", value=False, type="boolean")
         tpl = Template("{% load crud_views_object_detail %}{% render_property_value prop %}")
         html = tpl.render(Context({"prop": prop}))
-        assert "x-circle-fill" in html
+        assert "fa-circle-xmark" in html
 
     def test_none_value(self):
         prop = ResolvedProperty(path="t", label="T", value=None, type="char")
@@ -309,4 +309,4 @@ class TestRenderPropertyBadge:
         tpl = Template("{% load crud_views_object_detail %}{% render_property_value prop %}")
         html = tpl.render(Context({"prop": prop}))
         assert "badge" not in html
-        assert "check-circle-fill" in html
+        assert "fa-circle-check" in html

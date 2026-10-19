@@ -172,7 +172,7 @@ class SupplierDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
     cv_property_display = [
         {
             "title": _("Supplier"),
-            "icon": "truck",
+            "icon": "fas:truck",
             "properties": [
                 "name",
                 "website",
@@ -189,7 +189,7 @@ class SupplierDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
 PRODUCT_DISPLAY = [
     {
         "title": _("Basics"),
-        "icon": "box",
+        "icon": "fas:box",
         "properties": [
             "name",
             "sku",
@@ -217,7 +217,7 @@ PRODUCT_DISPLAY = [
     },
     {
         "title": _("Supplier (FK traversal)"),
-        "icon": "truck",
+        "icon": "fas:truck",
         "properties": [
             # value is a Supplier instance -> links to that supplier's OWN detail page
             # (default LinkConfig branch: reverse(url, kwargs={"pk": value.pk})).
@@ -230,7 +230,7 @@ PRODUCT_DISPLAY = [
     },
     {
         "title": _("Warehouse (O2O traversal)"),
-        "icon": "warehouse",
+        "icon": "fas:warehouse",
         "properties": [
             x("warehouse__code", title=_("Warehouse code")),
             x("warehouse__city", title=_("City")),
@@ -239,7 +239,7 @@ PRODUCT_DISPLAY = [
     },
     {
         "title": _("Tags (M2M) & computed"),
-        "icon": "tags",
+        "icon": "fas:tags",
         "properties": [
             "tags",
             x("margin_label", title=_("Margin")),

@@ -101,8 +101,8 @@ class CrudView(metaclass=CrudViewMetaClass):
     cv_message_template_error_code: str | None = None  # error message template code
 
     # icons
-    cv_icon_action: str | None = None  # font awesome icon
-    cv_icon_header: str | None = None  # font awesome icon
+    cv_icon_action: str | None = None  # icon: semantic name, prefix:name or raw CSS classes
+    cv_icon_header: str | None = None  # icon: semantic name, prefix:name or raw CSS classes
 
     # W280: custom cv_* data attributes to exempt from the unknown-attribute check
     cv_check_ignore_attributes: frozenset[str] = frozenset()

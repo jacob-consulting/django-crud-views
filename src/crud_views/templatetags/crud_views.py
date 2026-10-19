@@ -161,7 +161,7 @@ def cv_actions_menu(context, group, location):
         "cv_location": location,
         "cv_menu_wrapper_class": wrapper_class,
         "cv_toggle_class": toggle_class,
-        "cv_menu_icon": crud_views_settings.actions_menu_icon,
+        "cv_menu_icon": "actions-menu",
     }
 
 
@@ -279,32 +279,16 @@ def cv_delete_button(context, obj=None):
     return {}
 
 
-@register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/icon.html", takes_context=True)
+@register.simple_tag(takes_context=True)
 def cv_header_icon(context):
     view: CrudView = cv_get_view(context)
-    icon = view.cv_get_header_icon()
-    return {"icon": icon}
+    return render_icon(view.cv_get_header_icon())
 
 
 @register.simple_tag(takes_context=True)
-def cv_header_icon_class(context):
-    view: CrudView = cv_get_view(context)
-    icon = view.cv_get_header_icon()
-    return icon
-
-
-@register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/icon.html", takes_context=True)
 def cv_filter_icon(context):
     view: CrudView = cv_get_view(context)
-    icon = view.cv_get_filter_icon()
-    return {"icon": icon}
-
-
-@register.simple_tag(takes_context=True)
-def cv_filter_icon_class(context):
-    view: CrudView = cv_get_view(context)
-    icon = view.cv_get_filter_icon()
-    return icon
+    return render_icon(view.cv_get_filter_icon())
 
 
 @register.simple_tag(takes_context=True)

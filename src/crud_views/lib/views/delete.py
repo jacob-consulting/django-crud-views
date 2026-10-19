@@ -45,7 +45,7 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, generic.DeleteView):
     cv_action_short_label_template: str | None = "crud_views/snippets/action_short/delete.html"
 
     # icons
-    cv_icon_action = "fa-regular fa-trash-can"
+    cv_icon_action = "delete"
 
     # messages
     cv_message_template: str | None = "crud_views/snippets/message/delete.html"

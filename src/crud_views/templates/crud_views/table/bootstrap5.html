@@ -13,8 +13,8 @@
                 {% for column in table.columns %}
                     <th {{ column.attrs.th.as_html }} scope="col">
                         {% if column.orderable %}
-                            {% if request.GET.sort == column.name%}<i class="fa fa-angle-double-down"></i>{% endif %}
-                            {% if request.GET.sort == "-"|add:column.name%}<i class="fa fa-angle-double-up"></i>{% endif %}
+                            {% if request.GET.sort == column.name%}{% cv_icon "table-sort-asc" %}{% endif %}
+                            {% if request.GET.sort == "-"|add:column.name%}{% cv_icon "table-sort-desc" %}{% endif %}
                              <a href="{% cv_querystring table.prefixed_order_by_field=column.order_by_alias.next %}">{{ column.header }}</a>
                         {% else %}
                             {{ column.header }}

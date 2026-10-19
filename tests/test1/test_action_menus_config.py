@@ -18,7 +18,6 @@ def test_settings_defaults():
     assert s.list_actions_inline is None
     assert s.context_actions_inline is None
     assert s.card_actions_inline is None
-    assert s.actions_menu_icon == "fa-solid fa-ellipsis"
 
 
 @pytest.mark.parametrize("field", ["list_actions_inline", "context_actions_inline", "card_actions_inline"])

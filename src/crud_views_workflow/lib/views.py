@@ -26,8 +26,8 @@ class WorkflowView(CustomFormView):
 
     template_name = "crud_views_workflow/view_workflow.html"
 
-    cv_icon_header = "fa-solid fa-diagram-project"
-    cv_icon_action = "fa-solid fa-diagram-project"
+    cv_icon_header = "workflow"
+    cv_icon_action = "workflow"
     cv_message_template_code = _("Successfully processed workflow step on “{{ object }}”")
     cv_header_template_code = _PROCESS_WORKFLOW
     cv_paragraph_template_code = _("Process workflow step on “{{ object }}”")

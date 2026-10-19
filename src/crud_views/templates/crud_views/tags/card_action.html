@@ -1,10 +1,11 @@
+{% load crud_views %}
 {% if cv_disabled %}
 <button type="button"
    class="btn btn-{% if cv_variant == 'primary' %}primary{% elif cv_variant == 'tertiary' %}outline-secondary{% else %}secondary{% endif %} btn-sm{% if cv_flex %} flex-grow-1{% endif %}"
    disabled
    data-cv-disabled="{{ cv_disabled_reason }}"
    {% if cv_no_label %}title="{{ cv_label }}"{% endif %}>
-   {% if cv_no_label %}{% if cv_icon_action %}<i class="{{ cv_icon_action }}"></i>{% endif %}{% else %}<span>{{ cv_label }}</span>{% endif %}
+   {% if cv_no_label %}{% cv_icon cv_icon_action %}<span class="visually-hidden">{{ cv_label }}</span>{% else %}<span>{{ cv_label }}</span>{% endif %}
 </button>
 {% elif cv_access and cv_action_enabled is not False %}
 {% if cv_list_action_method == "post" %}
@@ -23,6 +24,6 @@
    {% endif %}
    class="btn btn-{% if cv_variant == 'primary' %}primary{% elif cv_variant == 'tertiary' %}outline-secondary{% else %}secondary{% endif %} btn-sm{% if cv_flex %} flex-grow-1{% endif %}"
    {% if cv_no_label %}title="{{ cv_label }}"{% endif %}>
-   {% if cv_no_label %}{% if cv_icon_action %}<i class="{{ cv_icon_action }}"></i>{% endif %}{% else %}<span>{{ cv_label }}</span>{% endif %}
+   {% if cv_no_label %}{% cv_icon cv_icon_action %}<span class="visually-hidden">{{ cv_label }}</span>{% else %}<span>{{ cv_label }}</span>{% endif %}
 </a>
 {% endif %}

@@ -1,3 +1,4 @@
+{% load crud_views %}
 {% if cv_disabled %}
 <button type="button"
     class="btn btn-outline-primary btn-xs"
@@ -5,7 +6,7 @@
     data-cv-disabled="{{ cv_disabled_reason }}"
     title="{{ cv_action_label }}"
     cv-key="{{ cv_key }}">
-    {% if cv_icon_action %}<i class="{{ cv_icon_action }}" aria-hidden="true"></i>{% endif %}<span class="visually-hidden">{{ cv_action_label }}</span>
+    {% cv_icon cv_icon_action %}<span class="visually-hidden">{{ cv_action_label }}</span>
 </button>
 {% elif cv_action_enabled is not False and cv_access is True %}
 {% if cv_list_action_method == "post" and not cv_modal %}
@@ -15,7 +16,7 @@
     class="btn btn-outline-primary btn-xs"
     title="{{ cv_action_label }}"
     cv-key="{{ cv_key }}">
-    {% if cv_icon_action %}<i class="{{ cv_icon_action }}" aria-hidden="true"></i>{% endif %}<span class="visually-hidden">{{ cv_action_label }}</span>
+    {% cv_icon cv_icon_action %}<span class="visually-hidden">{{ cv_action_label }}</span>
 </button>
 {% else %}
 <a {% if cv_modal %}
@@ -28,7 +29,7 @@
     class="btn btn-outline-primary btn-xs"
     title="{{ cv_action_label }}"
     cv-key="{{ cv_key }}">
-    {% if cv_icon_action %}<i class="{{ cv_icon_action }}" aria-hidden="true"></i>{% endif %}<span class="visually-hidden">{{ cv_action_label }}</span>
+    {% cv_icon cv_icon_action %}<span class="visually-hidden">{{ cv_action_label }}</span>
 </a>
 {% endif %}
 {% endif %}

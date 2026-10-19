@@ -30,14 +30,14 @@ class ListView(CrudView, generic.ListView):
     cv_filter_header_template_code: str | None = None
 
     # icons
-    cv_icon_action = "fa-regular fa-rectangle-list"
+    cv_icon_action = "list"
 
     @staticmethod
     def cv_get_filter_icon() -> str:
         """
         Currently there is only one global filter icon
         """
-        return crud_views_settings.filter_icon
+        return "filter"
 
     @property
     def cv_filter_header(self) -> str:

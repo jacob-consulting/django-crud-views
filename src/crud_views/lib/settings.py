@@ -51,7 +51,6 @@ class CrudViewsSettings(BaseModel):
     list_actions_inline: Any = from_settings("CRUD_VIEWS_LIST_ACTIONS_INLINE", default=None)
     context_actions_inline: Any = from_settings("CRUD_VIEWS_CONTEXT_ACTIONS_INLINE", default=None)
     card_actions_inline: Any = from_settings("CRUD_VIEWS_CARD_ACTIONS_INLINE", default=None)
-    actions_menu_icon: str = from_settings("CRUD_VIEWS_ACTIONS_MENU_ICON", default="fa-solid fa-ellipsis")
 
     # breadcrumb
     breadcrumb_prefix: list[dict[str, Any]] = from_settings("CRUD_VIEWS_BREADCRUMB_PREFIX", default=[])
@@ -59,7 +58,6 @@ class CrudViewsSettings(BaseModel):
     # filter
     filter_persistence: bool = from_settings("CRUD_VIEWS_FILTER_PERSISTENCE", default=True)
     filter_pinned: bool = from_settings("CRUD_VIEWS_FILTER_PINNED", default=False)
-    filter_icon: str = from_settings("CRUD_VIEWS_FILTER_ICON", default="fa-solid fa-filter")
     filter_reset_button_css_class: str = from_settings(
         "CRUD_VIEWS_FILTER_RESET_BUTTON_CSS_CLASS", default="btn btn-secondary"
     )

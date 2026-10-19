@@ -7,7 +7,6 @@ from django.urls import reverse
 from django.utils import translation
 from lxml import html as lxml_html
 
-from crud_views.lib.settings import crud_views_settings
 from tests.lib.helper.user import user_viewset_permission
 from tests.test1.app.views import AuthorDeleteView, AuthorListView, AuthorUpdateView, cv_author
 
@@ -47,7 +46,7 @@ def test_inline_and_menu(client_full, author_douglas_adams, menu_list):
     assert toggle.get("aria-expanded") == "false"
     assert toggle.get("aria-label") == "More actions"
     assert toggle.get("data-bs-popper-config") == '{"strategy":"fixed"}'
-    assert toggle.cssselect("i")[0].get("class") == crud_views_settings.actions_menu_icon
+    assert toggle.cssselect("i")[0].get("class") == "fa-solid fa-ellipsis"
     items = fieldset.cssselect("ul.dropdown-menu.dropdown-menu-end .dropdown-item")
     assert [i.get("cv-key") for i in items] == ["update", "delete", "up", "ping"]
     # wrapper is a nested button group so borders join the inline buttons
@@ -60,7 +59,7 @@ def test_menu_items_have_visible_labels_and_fixed_width_icons(client_full, autho
     update = td.cssselect('.dropdown-item[cv-key="update"]')[0]
     assert update.tag == "a"
     assert update.get("href").endswith("/update/")
-    assert "fa-fw" in update.cssselect("i")[0].get("class")
+    assert "cv-icon-fw" in update.cssselect("i")[0].get("class")
     assert update.text_content().strip() != ""
 
 
@@ -142,8 +141,8 @@ def test_toggle_shown_when_all_menu_items_disabled(client_user_author_view, auth
 
 
 @pytest.mark.django_db
-def test_custom_menu_icon(client_full, author_douglas_adams, menu_list, monkeypatch):
-    monkeypatch.setattr(crud_views_settings, "actions_menu_icon", "fa-solid fa-bars")
+@override_settings(CRUD_VIEWS_ICONS={"actions-menu": "fas:bars"})
+def test_custom_menu_icon(client_full, author_douglas_adams, menu_list):
     (td,) = _rows(client_full)
     assert td.cssselect(".cv-menu-toggle i")[0].get("class") == "fa-solid fa-bars"
 

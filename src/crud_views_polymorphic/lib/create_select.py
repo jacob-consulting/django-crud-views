@@ -40,7 +40,7 @@ class PolymorphicCreateSelectView(CrudView, generic.FormView):
     cv_action_label_template: str = "crud_views/snippets/action/create_select.html"
     cv_action_short_label_template: str = "crud_views/snippets/action_short/create_select.html"
 
-    cv_icon_action = "fa-regular fa-square-plus"
+    cv_icon_action = "create"
 
     @classmethod
     def checks(cls) -> Iterable[Check]:

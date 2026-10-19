@@ -25,7 +25,7 @@ class OrderedUpView(ActionView):
     cv_action_short_label_template: str | None = "crud_views/snippets/action_short/up.html"
 
     # icons
-    cv_icon_action = "fa-regular fa-circle-up"
+    cv_icon_action = "order-up"
 
     # messages
     cv_message_template: str | None = "crud_views/snippets/message/up.html"
@@ -53,7 +53,7 @@ class OrderedDownView(ActionView):
     cv_action_short_label_template: str | None = "crud_views/snippets/action_short/down.html"
 
     # icons
-    cv_icon_action = "fa-regular fa-circle-down"
+    cv_icon_action = "order-down"
 
     # messages
     cv_message_template: str | None = "crud_views/snippets/message/down.html"

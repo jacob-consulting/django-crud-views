@@ -3,6 +3,8 @@
 from collections.abc import Callable
 
 from django.conf import settings
+from django.core.checks import CheckMessage, Error
+from django.core.checks import Warning as DjangoWarning
 from django.core.signals import setting_changed
 from django.dispatch import receiver
 from django.utils.html import format_html
@@ -159,3 +161,69 @@ def render_icon(value: str | None, css: str = "") -> SafeString:
     elif isinstance(renderer, str):
         renderer = import_string(renderer)
     return renderer(name, css=css, config=config)
+
+
+REMOVED_SETTINGS: dict[str, str] = {
+    "CRUD_VIEWS_ACTIONS_MENU_ICON": 'CRUD_VIEWS_ICONS["actions-menu"]',
+    "CRUD_VIEWS_FILTER_ICON": 'CRUD_VIEWS_ICONS["filter"]',
+    "CRUD_VIEWS_OBJECT_DETAIL_ICONS_LIBRARY": "CRUD_VIEWS_ICONS / BOOTSTRAP_ICONS from crud_views.lib.icons",
+    "CRUD_VIEWS_OBJECT_DETAIL_ICONS_CLASS": "CRUD_VIEWS_ICONS / BOOTSTRAP_ICONS from crud_views.lib.icons",
+    "CRUD_VIEWS_OBJECT_DETAIL_ICONS_TYPE": "CRUD_VIEWS_ICONS / BOOTSTRAP_ICONS from crud_views.lib.icons",
+    "CRUD_VIEWS_OBJECT_DETAIL_ICONS_PREFIX": "CRUD_VIEWS_ICONS / BOOTSTRAP_ICONS from crud_views.lib.icons",
+    "CRUD_VIEWS_OBJECT_DETAIL_NAMED_ICONS": "CRUD_VIEWS_ICONS / BOOTSTRAP_ICONS from crud_views.lib.icons",
+}
+
+
+def unregistered_prefix(value: str | None) -> str | None:
+    """Return the prefix of a ``prefix:name`` value when no library is registered for it, else None."""
+    if not value or ":" not in value:
+        return None
+    prefix = value.split(":", 1)[0]
+    return None if prefix in get_libraries() else prefix
+
+
+def icon_check_messages() -> list[CheckMessage]:
+    messages: list[CheckMessage] = []
+
+    for name, hint in REMOVED_SETTINGS.items():
+        if hasattr(settings, name):
+            messages.append(
+                Error(f"Setting {name} has been removed.", hint=f"Use {hint} instead.", id="crud_views.E350")
+            )
+
+    libraries = get_libraries()
+    for prefix, config in libraries.items():
+        renderer = config.get("renderer", "font")
+        if isinstance(renderer, str) and renderer != "font":
+            try:
+                import_string(renderer)
+            except ImportError as exc:
+                messages.append(
+                    Error(
+                        f"Renderer {renderer!r} of icon library {prefix!r} cannot be imported: {exc}",
+                        hint="Set renderer to 'font', a callable or an importable dotted path.",
+                        id="crud_views.E351",
+                    )
+                )
+
+    icons = get_icons()
+    for key, value in icons.items():
+        missing = unregistered_prefix(value)
+        if missing is not None:
+            messages.append(
+                DjangoWarning(
+                    f"Icon {key!r} = {value!r} uses unregistered library prefix {missing!r}.",
+                    hint="Register the library in CRUD_VIEWS_ICON_LIBRARIES.",
+                    id="crud_views.W352",
+                )
+            )
+        elif value in icons:
+            messages.append(
+                DjangoWarning(
+                    f"Icon {key!r} = {value!r} refers to another icon name; use 'prefix:name' or a raw class.",
+                    hint="Use a 'prefix:name' value or a raw CSS class.",
+                    id="crud_views.W352",
+                )
+            )
+
+    return messages

@@ -44,13 +44,13 @@ from object_detail.models import Product, Supplier
 cv_product = ViewSet(
     model=Product,
     name="product",
-    icon_header="fa-regular fa-box",
+    icon_header="fas:box",  # Font Awesome free has box in the solid style only
 )
 
 cv_supplier = ViewSet(
     model=Supplier,
     name="supplier",
-    icon_header="fa-regular fa-truck",
+    icon_header="fas:truck",  # Font Awesome free has truck in the solid style only
 )
 
 THEMES = [

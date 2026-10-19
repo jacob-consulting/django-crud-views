@@ -13,8 +13,9 @@ Wherever the package accepts an icon (`cv_icon_action`, `cv_icon_header`, `ViewS
 object detail group, the `CRUD_VIEWS_ICONS` table) the value is a string in one of three forms. They are tried in this
 order:
 
-1. **Semantic name** - no colon and present in the resolved icon table (`"detail"`, `"person"`). The table entry is
-   looked up and its result is read as a `prefix:name` value. Only one lookup step is made: a table entry pointing to
+1. **Semantic name** - no colon and present in the resolved icon table (`"detail"`, `"person"`). The table value is
+   looked up and then read as either a `prefix:name` value or, when it has no colon, a raw CSS class. Only one lookup
+   step is made: a table entry pointing to
    another semantic name is not followed (system check `crud_views.W352` flags it).
 2. **`prefix:name`** - `prefix` is looked up in the library registry and its renderer receives `name`
    (`far:eye`, `bi:person`, `xy:rocket`).
@@ -25,7 +26,9 @@ An empty value or `None` renders nothing.
 !!! warning "Colons and raw classes"
     A value containing a colon is always read as `prefix:name`. A raw CSS class that contains a colon (for example a
     Tailwind variant such as `hover:text-red-500`) therefore does not work as a raw class: the part before the colon
-    is taken as a library prefix. Put such classes behind a registered library or a `CRUD_VIEWS_ICONS` entry. A value
+    is taken as a library prefix. This also applies to a `CRUD_VIEWS_ICONS` value, so `"x": "hover:text-red-500"` does
+    not work either. The only route is a registered library, for example
+    `{"tw": {"renderer": "font", "class": "{name}"}}` used as `tw:hover:text-red-500`, or a custom renderer. A value
     with an unknown prefix renders nothing, and the system checks `crud_views.W352` / `crud_views.W353` warn about it.
 
 Icons are rendered with `aria-hidden="true"`; labels are provided as visually hidden text where needed.

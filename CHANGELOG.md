@@ -25,7 +25,9 @@
       ```
 
 - Object detail group icons are no longer auto-prefixed. `icon="truck"` must become `icon="fas:truck"` (or
-  `"bi:truck"`), or `"truck"` must be added to `CRUD_VIEWS_ICONS`.
+  `"bi:truck"`), or `"truck"` must be added to `CRUD_VIEWS_ICONS`. An unmigrated bare name is not flagged by any
+  error or system check: bare values are treated as raw CSS classes, so `icon="truck"` renders
+  `<i class="truck" aria-hidden="true"></i>`, which is invisible.
 - The template `crud_views/tags/icon.html` and the template tags / context values `cv_header_icon_class` and
   `cv_filter_icon_class` are removed. Render icons with `{% cv_icon value %}` (`{% cv_icon value css="me-2" %}`) or
   `crud_views.lib.icons.render_icon`. The object detail filters `icon_class` and `named_icon_class` are removed too.

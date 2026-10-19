@@ -133,26 +133,29 @@ def get_libraries() -> dict[str, dict]:
 
 
 def _resolve_renderer(renderer) -> Callable | None:
-    """A callable for a library's ``renderer`` value; None when a dotted path cannot be imported."""
+    """A callable for a library's ``renderer`` value; None when it is unusable (import fails, not callable)."""
     if renderer == "font":
         return font_renderer
     if isinstance(renderer, str):
         try:
-            return import_string(renderer)
-        except ImportError:
+            renderer = import_string(renderer)
+        except Exception:
             return None
-    return renderer
+    return renderer if callable(renderer) else None
 
 
 _renderers_cache: dict[str, Callable | None] | None = None
 
 
 def _get_renderers() -> dict[str, Callable | None]:
+    """Resolved renderer per prefix; library entries that are not a dict are left out (E355 reports them)."""
     global _renderers_cache
     renderers = _renderers_cache
     if renderers is None:
         renderers = {
-            prefix: _resolve_renderer(config.get("renderer", "font")) for prefix, config in get_libraries().items()
+            prefix: _resolve_renderer(config.get("renderer", "font"))
+            for prefix, config in get_libraries().items()
+            if isinstance(config, dict)
         }
         _renderers_cache = renderers
     return renderers
@@ -202,7 +205,7 @@ def render_icon(value: str | None, css: str = "") -> SafeString:
         return font_renderer(name, css=css, config={"class": "{name}"})
     libraries = get_libraries()
     config = libraries.get(prefix)
-    if config is None:
+    if not isinstance(config, dict):
         return SafeString("")
     renderer = _get_renderers().get(prefix)
     if renderer is None:
@@ -229,6 +232,63 @@ def unregistered_prefix(value: str | None) -> str | None:
     return None if prefix in get_libraries() else prefix
 
 
+_RENDERER_HINT = "Set renderer to 'font', a callable or an importable dotted path."
+
+
+def _library_check_messages(prefix: str, config) -> list[CheckMessage]:
+    """E355 (config not a dict / renderer unusable), E354 (font class), E351 (dotted path import) for one library."""
+    if not isinstance(config, dict):
+        return [
+            Error(
+                f"Icon library {prefix!r} config must be a dict, got {type(config).__name__}.",
+                hint="Use e.g. {'renderer': 'font', 'class': 'fa-solid fa-{name}'}.",
+                id="crud_views.E355",
+            )
+        ]
+    renderer = config.get("renderer", "font")
+    if renderer == "font":
+        template = config.get("class")
+        if not template or not isinstance(template, str):
+            return [
+                Error(
+                    f"Icon library {prefix!r} uses the font renderer but has no 'class'.",
+                    hint="Add a 'class' format string such as 'fa-solid fa-{name}'.",
+                    id="crud_views.E354",
+                )
+            ]
+        try:
+            template.format(name="x")
+        except Exception as exc:
+            return [
+                Error(
+                    f"Icon library {prefix!r}: 'class' {template!r} is not a valid format string: {exc}",
+                    hint="The only placeholder is {name}, e.g. 'fa-solid fa-{name}'.",
+                    id="crud_views.E354",
+                )
+            ]
+        return []
+    if isinstance(renderer, str):
+        try:
+            renderer = import_string(renderer)
+        except Exception as exc:
+            return [
+                Error(
+                    f"Renderer {renderer!r} of icon library {prefix!r} cannot be imported: {type(exc).__name__}: {exc}",
+                    hint=_RENDERER_HINT,
+                    id="crud_views.E351",
+                )
+            ]
+    if not callable(renderer):
+        return [
+            Error(
+                f"Icon library {prefix!r}: renderer must be 'font', a dotted path or a callable, got {renderer!r}.",
+                hint=_RENDERER_HINT,
+                id="crud_views.E355",
+            )
+        ]
+    return []
+
+
 def icon_check_messages() -> list[CheckMessage]:
     messages: list[CheckMessage] = []
 
@@ -238,28 +298,8 @@ def icon_check_messages() -> list[CheckMessage]:
                 Error(f"Setting {name} has been removed.", hint=f"Use {hint} instead.", id="crud_views.E350")
             )
 
-    libraries = get_libraries()
-    for prefix, config in libraries.items():
-        renderer = config.get("renderer", "font")
-        if renderer == "font" and not config.get("class"):
-            messages.append(
-                Error(
-                    f"Icon library {prefix!r} uses the font renderer but has no 'class'.",
-                    hint="Add a 'class' format string such as 'fa-solid fa-{name}'.",
-                    id="crud_views.E354",
-                )
-            )
-        if isinstance(renderer, str) and renderer != "font":
-            try:
-                import_string(renderer)
-            except ImportError as exc:
-                messages.append(
-                    Error(
-                        f"Renderer {renderer!r} of icon library {prefix!r} cannot be imported: {exc}",
-                        hint="Set renderer to 'font', a callable or an importable dotted path.",
-                        id="crud_views.E351",
-                    )
-                )
+    for prefix, config in get_libraries().items():
+        messages.extend(_library_check_messages(prefix, config))
 
     icons = get_icons()
     for key, value in icons.items():

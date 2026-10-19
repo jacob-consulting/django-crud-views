@@ -139,3 +139,48 @@ def test_w353_skips_non_str_values():
         assert [m for m in check_icons() if m.id == "crud_views.W353"] == []
     finally:
         _REGISTRY.pop(name, None)
+
+
+def _boom(path):
+    raise RuntimeError("boom")
+
+
+def test_e355_library_config_not_a_dict():
+    with override_settings(CRUD_VIEWS_ICON_LIBRARIES={"xy": "font"}):
+        messages = check_icons()
+    assert ids(messages) == ["crud_views.E355"]
+    assert "'xy'" in messages[0].msg
+
+
+def test_e355_renderer_not_callable():
+    with override_settings(CRUD_VIEWS_ICON_LIBRARIES={"xy": {"renderer": None}}):
+        assert ids(check_icons()) == ["crud_views.E355"]
+
+
+def test_e355_via_register_icon_library(monkeypatch):
+    from crud_views.lib import icons as icons_module
+
+    monkeypatch.setattr(icons_module, "_THEME_LIBRARIES", {})
+    icons_module.register_icon_library("xy", renderer=None)
+    try:
+        assert ids(check_icons()) == ["crud_views.E355"]
+    finally:
+        icons_module.reset_icon_cache()
+
+
+@pytest.mark.parametrize("template", ["x-{} {name}", "x-{size} {name}", "x-{"])
+def test_e354_class_not_a_format_string(template):
+    with override_settings(CRUD_VIEWS_ICON_LIBRARIES={"xy": {"renderer": "font", "class": template}}):
+        messages = check_icons()
+    assert ids(messages) == ["crud_views.E354"]
+    assert "format string" in messages[0].msg
+
+
+def test_e351_renderer_import_raises_other_exception(monkeypatch):
+    from crud_views.lib import icons as icons_module
+
+    monkeypatch.setattr(icons_module, "import_string", _boom)
+    with override_settings(CRUD_VIEWS_ICON_LIBRARIES={"xy": {"renderer": "some.module.render"}}):
+        messages = check_icons()
+    assert ids(messages) == ["crud_views.E351"]
+    assert "RuntimeError: boom" in messages[0].msg

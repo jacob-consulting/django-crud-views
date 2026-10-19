@@ -171,3 +171,23 @@ def test_non_str_value_renders_nothing(value):
 def test_non_str_table_value_renders_nothing():
     with override_settings(CRUD_VIEWS_ICONS={"detail": 5}):
         assert render_icon("detail") == ""
+
+
+def _boom(path):
+    raise RuntimeError("boom")
+
+
+def test_non_dict_library_renders_nothing():
+    with override_settings(CRUD_VIEWS_ICON_LIBRARIES={"xy": "font"}):
+        assert render_icon("xy:a") == ""
+
+
+def test_non_callable_renderer_renders_nothing():
+    with override_settings(CRUD_VIEWS_ICON_LIBRARIES={"xy": {"renderer": None}}):
+        assert render_icon("xy:a") == ""
+
+
+def test_renderer_import_raising_any_exception_renders_nothing(monkeypatch):
+    monkeypatch.setattr(icons_module, "import_string", _boom)
+    with override_settings(CRUD_VIEWS_ICON_LIBRARIES={"xy": {"renderer": "some.module.render"}}):
+        assert render_icon("xy:a") == ""

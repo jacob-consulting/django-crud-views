@@ -215,7 +215,8 @@ register the same key, the one whose `ready()` runs later wins, which is the one
 |---|---|---|
 | `crud_views.E350` | error | a removed setting is still defined (see the changelog); the hint names the replacement |
 | `crud_views.E351` | error | the `renderer` dotted path of a library cannot be imported |
-| `crud_views.E354` | error | a library with the `font` renderer has no `class` entry |
+| `crud_views.E354` | error | a library with the `font` renderer has no `class` entry, or its `class` is not a valid format string |
+| `crud_views.E355` | error | a library config is not a dict, or its `renderer` is neither `font`, a dotted path nor a callable |
 | `crud_views.W352` | warning | a `CRUD_VIEWS_ICONS` entry uses an unregistered library prefix, or points to another semantic name |
 | `crud_views.W353` | warning | `cv_icon_action`, `cv_icon_header` or `ViewSet.icon_header` uses an unregistered library prefix |
 

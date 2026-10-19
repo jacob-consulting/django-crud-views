@@ -60,7 +60,7 @@
   (`CRUD_VIEWS_ICON_LIBRARIES`, built-in `far`, `fas`, `bi`), pluggable renderers (for example SVG), a complete
   Bootstrap Icons preset `crud_views.lib.icons.BOOTSTRAP_ICONS`, the `{% cv_icon %}` tag (also in
   `crud_views_object_detail` tags), theme registration via `register_icon_library` / `register_icons`, and the
-  system checks `crud_views.E350`, `E351`, `E354`, `W352` and `W353`.
+  system checks `crud_views.E350`, `E351`, `E354`, `E355`, `W352` and `W353`.
 
 ## 0.29.4
 

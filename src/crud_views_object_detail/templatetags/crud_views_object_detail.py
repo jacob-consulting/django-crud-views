@@ -2,6 +2,7 @@ from django import template
 from django.template.loader import select_template
 from django.utils.safestring import mark_safe
 
+from crud_views.lib.icons import render_icon
 from crud_views_object_detail.lib.conf import (
     build_icon_class,
     build_named_icon_class,
@@ -110,3 +111,9 @@ def icon_class(icon_name):
 def named_icon_class(name):
     """Return the full CSS class string for a named icon."""
     return build_named_icon_class(name)
+
+
+@register.simple_tag
+def cv_icon(value, css=""):
+    """Render a semantic icon name; delegates to ``render_icon`` (no ``crud_views`` load needed)."""
+    return render_icon(value, css)

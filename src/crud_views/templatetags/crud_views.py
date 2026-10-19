@@ -8,6 +8,7 @@ from django_tables2.templatetags import django_tables2 as _dt2
 
 from crud_views.lib import assets
 from crud_views.lib.exceptions import ViewSetKeyFoundError, ignore_exception
+from crud_views.lib.icons import render_icon
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import CrudView
 from crud_views.lib.view.visibility import cv_resolve_action
@@ -437,3 +438,9 @@ def cv_card(context, obj):
     # Without it, built-in context processors (e.g. csrf) never run, so {% csrf_token %} in any
     # template included from here (e.g. card_action.html's hidden POST form) silently renders empty.
     return mark_safe(t.render(card_context, request=request))
+
+
+@register.simple_tag
+def cv_icon(value, css=""):
+    """Render a semantic icon name, library-prefixed name or raw class string as an <i> element."""
+    return render_icon(value, css)

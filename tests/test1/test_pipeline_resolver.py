@@ -120,7 +120,7 @@ def test_rows_order_js_then_css(asset_registry):
 
     rows = asset_rows({})
     kinds = [r.kind for r in rows]
-    assert kinds == ["js"] * 6 + ["css"] * 3
+    assert kinds == ["js"] * 6 + ["css"] * 4
     assert [r.path for r in rows[:6]] == CORE_JS
 
 

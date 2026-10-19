@@ -10,7 +10,12 @@ CORE_JS = [
     "crud_views/js/toggle.js",
     "crud_views/js/tooltip.js",
 ]
-CORE_CSS = ["crud_views/css/property.css", "crud_views/css/table.css", "crud_views/css/formset.css"]
+CORE_CSS = [
+    "crud_views/css/property.css",
+    "crud_views/css/table.css",
+    "crud_views/css/formset.css",
+    "crud_views/css/icons.css",
+]
 
 
 def test_core_bundle_mirrors_settings(asset_registry):

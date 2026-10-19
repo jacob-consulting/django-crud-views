@@ -261,7 +261,7 @@ def test_nonce_rendered_on_all_script_tags(asset_registry):
 
 def test_nonce_rendered_on_link_tags(asset_registry):
     html = _render_ctx("cv_css", {"request": _request(csp_nonce="abc123")})
-    assert html.count('nonce="abc123"') == 3  # property.css, table.css, formset.css
+    assert html.count('nonce="abc123"') == 4  # property, table, formset, icons css
 
 
 def test_sri_attributes_rendered(asset_registry):

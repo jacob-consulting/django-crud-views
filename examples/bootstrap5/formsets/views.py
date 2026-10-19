@@ -124,7 +124,7 @@ class QuestionnaireDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequire
     cv_property_display = [
         {
             "title": _("Questionnaire"),
-            "icon": "list-check",
+            "icon": "fas:list-check",
             "properties": ["id", "title", {"path": "question_count", "detail": _("Number of questions")}],
         },
     ]

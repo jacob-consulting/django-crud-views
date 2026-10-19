@@ -30,7 +30,7 @@ class AuthorDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
     cv_property_display = [
         {
             "title": _("Author"),
-            "icon": "user",
+            "icon": "fas:user",
             "properties": [
                 "id",
                 "first_name",

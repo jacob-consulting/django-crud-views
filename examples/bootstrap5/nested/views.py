@@ -48,7 +48,7 @@ class CompanyListView(BreadcrumbMixin, ListViewTableMixin, ListViewPermissionReq
 class CompanyDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
     cv_viewset = cv_company
     cv_property_display = [
-        {"title": _("Company"), "icon": "building", "properties": ["id", "name", "city"]},
+        {"title": _("Company"), "icon": "fas:building", "properties": ["id", "name", "city"]},
     ]
 
 
@@ -103,7 +103,7 @@ class DepartmentListView(BreadcrumbMixin, ListViewTableMixin, ListViewPermission
 class DepartmentDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
     cv_viewset = cv_department
     cv_property_display = [
-        {"title": _("Department"), "icon": "people-group", "properties": ["id", "name", "company"]},
+        {"title": _("Department"), "icon": "fas:people-group", "properties": ["id", "name", "company"]},
     ]
 
 
@@ -160,7 +160,7 @@ class EmployeeListView(BreadcrumbMixin, ListViewTableMixin, ListViewPermissionRe
 class EmployeeDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
     cv_viewset = cv_employee
     cv_property_display = [
-        {"title": _("Employee"), "icon": "id-badge", "properties": ["id", "name", "email", "department"]},
+        {"title": _("Employee"), "icon": "fas:id-badge", "properties": ["id", "name", "email", "department"]},
     ]
 
 
@@ -216,7 +216,7 @@ class OfficeListView(BreadcrumbMixin, ListViewTableMixin, ListViewPermissionRequ
 class OfficeDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
     cv_viewset = cv_office
     cv_property_display = [
-        {"title": _("Office"), "icon": "door-open", "properties": ["id", "name", "company"]},
+        {"title": _("Office"), "icon": "fas:door-open", "properties": ["id", "name", "company"]},
     ]
 
 

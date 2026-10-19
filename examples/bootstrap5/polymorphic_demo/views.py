@@ -82,7 +82,7 @@ class VehicleDetailView(BreadcrumbMixin, ObjectDetailMixin, PolymorphicDetailVie
     cv_viewset = cv_vehicle
     model = Vehicle
     cv_property_display = [
-        {"title": _("Vehicle"), "icon": "car", "properties": ["id", "name"]},
+        {"title": _("Vehicle"), "icon": "fas:car", "properties": ["id", "name"]},
     ]
 
 

@@ -44,7 +44,7 @@ class DocumentListView(BreadcrumbMixin, ListViewTableMixin, GuardianListViewPerm
 class DocumentDetailView(BreadcrumbMixin, ObjectDetailMixin, GuardianDetailViewPermissionRequired):
     cv_viewset = cv_document
     cv_property_display = [
-        {"title": _("Document"), "icon": "file-lines", "properties": ["id", "title", "owner", "body"]},
+        {"title": _("Document"), "icon": "fas:file-lines", "properties": ["id", "title", "owner", "body"]},
     ]
 
 

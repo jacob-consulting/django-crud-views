@@ -48,7 +48,7 @@ class AuthorContactForm(CrispyModelForm):
 class AuthorContactView(MessageMixin, CrispyViewMixin, CustomFormViewPermissionRequired):
     cv_key = "contact"
     cv_path = "contact"
-    cv_icon_action = "fa-solid fa-envelope"
+    cv_icon_action = "fas:envelope"
     cv_viewset = cv_author
     form_class = AuthorContactForm
 

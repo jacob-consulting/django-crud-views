@@ -1,11 +1,11 @@
 {% load crud_views %}
 
 <div type="{{ widget.type }}" name="{{ widget.name }}"{% include "django/forms/widgets/attrs.html" %}>
-    <i class="fa-solid fa-angles-right"></i>
+    {% cv_icon "field-marker" %}
     {% if widget.value|cv_is_true %}
-        <i class="fa-regular fa-square-check"></i>
+        {% cv_icon "boolean-true" %}
     {% elif widget.value|cv_is_false %}
-        <i class="fa-regular fa-square"></i>
+        {% cv_icon "boolean-false" %}
     {% else %}
         -
     {% endif %}

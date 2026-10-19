@@ -16,7 +16,7 @@ class DetailView(CrudView, generic.DetailView):
     cv_action_label_template: str | None = "crud_views/snippets/action/detail.html"
     cv_action_short_label_template: str | None = "crud_views/snippets/action_short/detail.html"
 
-    cv_icon_action = "fa-regular fa-eye"
+    cv_icon_action = "detail"
 
 
 class DetailViewPermissionRequired(CrudViewPermissionRequiredMixin, DetailView):

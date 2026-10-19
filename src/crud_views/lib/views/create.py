@@ -23,7 +23,7 @@ class CreateView(CrudViewProcessFormMixin, CrudView, generic.CreateView):
     cv_action_short_label_template: str | None = "crud_views/snippets/action_short/create.html"
 
     # icons
-    cv_icon_action = "fa-regular fa-square-plus"
+    cv_icon_action = "create"
 
     # messages
     cv_message_template: str | None = "crud_views/snippets/message/create.html"

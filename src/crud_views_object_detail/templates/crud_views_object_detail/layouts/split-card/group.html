@@ -5,7 +5,7 @@
             <div class="col-md-4 border-end mb-3 mb-md-0">
                 <div class="pe-md-3">
                     <div class="d-flex align-items-center mb-2">
-                        {% if group.icon %}<i class="{{ group.icon|icon_class }} text-default fs-5 me-2"></i>{% endif %}
+                        {% if group.icon %}{% cv_icon group.icon css="text-default fs-5 me-2" %}{% endif %}
                         <h5 class="card-title mb-0">{{ group.title }}</h5>
                     </div>
                     {% if group.description %}<p class="text-body-secondary small mb-0">{{ group.description }}</p>{% endif %}

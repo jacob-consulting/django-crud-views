@@ -308,7 +308,8 @@ class FilterContextButton(ContextButton):
 
         data = {"cv_access": True}  # it toggles the filter of the list page the user is already on
         data["cv_action_label"] = "Filter"
-        data["cv_icon_action"] = crud_views_settings.filter_icon
+        data["cv_icon_action"] = "filter"
+        data["cv_filter_expanded"] = context.view.cv_filter_expanded
         data["cv_url"] = list_url
         self._apply_label(data, context)
         self._inject_template(data)

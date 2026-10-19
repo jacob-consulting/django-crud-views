@@ -92,7 +92,7 @@ class RegistrationDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired
     cv_property_display = [
         {
             "title": _("Registration"),
-            "icon": "user-plus",
+            "icon": "fas:user-plus",
             "properties": ["id", "name", "with_company", "company_name", "vat_id", "note"],
         },
     ]
@@ -222,7 +222,7 @@ class EventDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
     cv_property_display = [
         {
             "title": _("Event"),
-            "icon": "calendar",
+            "icon": "fas:calendar",
             "properties": [
                 "id",
                 "name",

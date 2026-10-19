@@ -7,6 +7,7 @@ from crud_views.lib import assets
 from crud_views.lib import ordered as ordered_helper
 from crud_views.lib import pipeline as pipeline_helper
 from crud_views.lib.formsets.formsets import FormSet
+from crud_views.lib.icons import ICON_VALUE_HINT, icon_check_messages, is_icon_value, unregistered_prefix
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.views.action_ordered import OrderedDownView, OrderedUpView
 from crud_views.lib.viewset import _REGISTRY, _REGISTRY_LOCK, ViewSet
@@ -358,4 +359,42 @@ def check_asset_pipeline(app_configs=None, **kwargs):
         messages += _check_mixed_bundles()
     else:
         messages += _check_double_load(lazies)
+    return messages
+
+
+@register(TAG)
+def check_icons(app_configs=None, **kwargs):
+    """E350/E351/E354/E355/E356/W352 from the icon registry; W353/E356 for view and ViewSet icon attributes."""
+    messages = icon_check_messages()
+
+    with _REGISTRY_LOCK:
+        viewsets = list(_REGISTRY.values())
+
+    def warn(owner: str, attr: str, value: str, prefix: str) -> None:
+        messages.append(
+            DjangoWarning(
+                f"{owner}.{attr} = {value!r} uses unregistered icon library prefix {prefix!r}.",
+                hint="Register the library in CRUD_VIEWS_ICON_LIBRARIES.",
+                id="crud_views.W353",
+            )
+        )
+
+    def error(owner: str, attr: str, value) -> None:
+        messages.append(Error(f"{owner}.{attr} = {value!r} is not a str.", hint=ICON_VALUE_HINT, id="crud_views.E356"))
+
+    for viewset in viewsets:
+        # ViewSet.icon_header is `str | None`, validated by pydantic: no E356 needed here
+        prefix = unregistered_prefix(viewset.icon_header)
+        if prefix is not None:
+            warn(f"ViewSet {viewset.name!r}", "icon_header", viewset.icon_header, prefix)
+        for key, view in viewset.get_all_views().items():
+            owner = f"ViewSet {viewset.name!r} view {key!r}"
+            for attr in ("cv_icon_action", "cv_icon_header"):
+                value = getattr(view, attr, None)
+                if not is_icon_value(value):
+                    error(owner, attr, value)
+                    continue
+                prefix = unregistered_prefix(value)
+                if prefix is not None:
+                    warn(owner, attr, value, prefix)
     return messages

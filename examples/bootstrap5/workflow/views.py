@@ -48,7 +48,7 @@ class CampaignDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
     cv_property_display = [
         {
             "title": _("Campaign"),
-            "icon": "bullhorn",
+            "icon": "fas:bullhorn",
             "properties": [
                 "id",
                 "name",

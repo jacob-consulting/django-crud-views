@@ -49,7 +49,7 @@ cv_property_display = [
     {
         "title": "Basic Info",
         "description": "Core book metadata",
-        "icon": "bi bi-book",
+        "icon": "bi:book",
         "properties": [
             "title",
             "author__name",
@@ -63,7 +63,7 @@ cv_property_display = [
 |---------------|-------------|
 | `title`       | Group heading (required) |
 | `description` | Subtitle or help text |
-| `icon`        | CSS class for an icon (e.g. Bootstrap Icons) |
+| `icon`        | Icon value: `prefix:name`, a semantic name from `CRUD_VIEWS_ICONS` or a raw CSS class (see [Icons](icons.md)) |
 | `properties`  | List of strings, dicts, or `PropertyConfig` objects |
 
 Properties can be mixed freely — plain strings, dicts with `PropertyConfig` fields, or `x()` / `PropertyConfig` instances.

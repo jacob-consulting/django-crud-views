@@ -67,7 +67,7 @@ class WorkspaceListView(HostNavBreadcrumbMixin, ListViewTableMixin, ListViewPerm
 class WorkspaceDetailView(HostNavBreadcrumbMixin, ObjectDetailViewPermissionRequired):
     cv_viewset = cv_workspace
     cv_property_display = [
-        {"title": _("Workspace"), "icon": "diagram-project", "properties": ["id", "name"]},
+        {"title": _("Workspace"), "icon": "fas:diagram-project", "properties": ["id", "name"]},
     ]
 
 
@@ -113,7 +113,7 @@ class BoardListView(HostNavBreadcrumbMixin, ListViewTableMixin, ListViewPermissi
 class BoardDetailView(HostNavBreadcrumbMixin, ObjectDetailViewPermissionRequired):
     cv_viewset = cv_board
     cv_property_display = [
-        {"title": _("Board"), "icon": "chalkboard", "properties": ["id", "title", "workspace"]},
+        {"title": _("Board"), "icon": "fas:chalkboard", "properties": ["id", "title", "workspace"]},
     ]
 
 

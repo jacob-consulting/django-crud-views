@@ -68,7 +68,7 @@ class AuthorDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
     cv_property_display = [
         {
             "title": _("Author"),
-            "icon": "user",
+            "icon": "fas:user",
             "properties": [
                 "id",
                 "first_name",
@@ -136,7 +136,7 @@ class BookListView(BreadcrumbMixin, ListViewTableMixin, ListViewPermissionRequir
 class BookDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
     cv_viewset = cv_book
     cv_property_display = [
-        {"title": _("Book"), "icon": "book", "properties": ["id", "title", "author", "price"]},
+        {"title": _("Book"), "icon": "fas:book", "properties": ["id", "title", "author", "price"]},
     ]
 
 

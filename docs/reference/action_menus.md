@@ -78,7 +78,7 @@ menu item carries `data-cv-action="submit-form"` and `data-cv-target` to submit 
 
 ## Labels, icons and the active action
 
-Menu items show the target view's icon (fixed width, `fa-fw`) and a visible text label — the short action label
+Menu items show the target view's icon (fixed width, `cv-icon-fw`) and a visible text label — the short action label
 (`cv_action_short_label`), or `CardAction.label` on cards. Toolbar items carry the full label as `title`. A context button's own
 `label_template` / `label_template_code` is also used as its menu item text.
 `CardAction.variant`, `flex` and `no_label` apply to inline card buttons only.
@@ -88,7 +88,8 @@ On the context toolbar the current page's action is highlighted: inline with `.a
 
 ## Menu icon
 
-`CRUD_VIEWS_ACTIONS_MENU_ICON` sets the toggle icon (default `"fa-solid fa-ellipsis"`).
+The toggle icon is the semantic icon `actions-menu` (default `fas:ellipsis`). Change it with
+`CRUD_VIEWS_ICONS = {"actions-menu": "fas:bars"}`; see [Icons](icons.md).
 
 ## Templates
 

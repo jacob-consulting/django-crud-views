@@ -298,7 +298,7 @@ class S3FileDeleteView(ResourceViewMixin, CrispyViewMixin, MessageMixin, CustomF
     cv_viewset = cv_s3file
     cv_permission = "delete"
     form_class = CrispyDeleteForm
-    cv_icon_action = "fa-regular fa-trash-can"
+    cv_icon_action = "far:trash-can"
     cv_action_label_template_code = "Delete"
     cv_action_short_label_template_code = "Delete"
     cv_message_template_code = "Deleted »{{ object }}«"
@@ -335,7 +335,7 @@ class S3FileTouchView(ResourceViewMixin, ActionViewPermissionRequired):
     cv_path = "touch"
     cv_viewset = cv_s3file
     cv_permission = "delete"
-    cv_icon_action = "fa-regular fa-hand-pointer"
+    cv_icon_action = "far:hand-pointer"
     cv_action_label_template_code = "Touch"
     cv_action_short_label_template_code = "Touch"
     cv_message_template_code = "Touched »{{ object }}«"

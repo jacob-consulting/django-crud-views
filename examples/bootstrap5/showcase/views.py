@@ -70,13 +70,13 @@ class RecipeDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
     cv_property_display = [
         {
             "title": _("Basics"),
-            "icon": "utensils",
+            "icon": "fas:utensils",
             "description": _("What and how much"),
             "properties": ["title", "difficulty", "servings", "favorite"],
         },
         {
             "title": _("Details"),
-            "icon": "circle-info",
+            "icon": "fas:circle-info",
             "description": _("Preparation and metadata"),
             "properties": [
                 "description",

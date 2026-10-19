@@ -6,7 +6,7 @@
             {% if prop.link_url %}<a href="{{ prop.link_url }}">{% endif %}{% render_property_value prop %}{% if prop.link_url %}</a>{% endif %}
         </div>
         <div class="col-sm-5 text-body-tertiary small">
-            {% if prop.detail %}<i class="{{ "text-icon"|named_icon_class }} me-1"></i>{{ prop.detail }}{% endif %}
+            {% if prop.detail %}{% cv_icon "text-icon" css="me-1" %}{{ prop.detail }}{% endif %}
         </div>
     </div>
 </li>

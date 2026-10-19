@@ -24,8 +24,8 @@ class ManageView(PermissionRequiredMixin, CrudView, generic.TemplateView):
     cv_action_short_label_template: str | None = "crud_views/snippets/action_short/manage.html"
 
     # icons
-    cv_icon_action = "fa-solid fa-gear"
-    cv_icon_header = "fa-solid fa-gear"
+    cv_icon_action = "manage"
+    cv_icon_header = "manage"
 
     def has_permission(self):
         if crud_views_settings.manage_views_enabled == "yes":

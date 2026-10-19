@@ -24,8 +24,8 @@ $(document).ready(function () {
 
     $("#cv-filter-toggle").click(function (event) {
 
-        // toggle icon
-        $(this).find('i').toggleClass(' fa-filter fa-filter-circle-xmark');
+        // toggle icon (both variants are rendered server side, one is hidden)
+        $(this).find("[data-cv-filter-icon]").toggleClass("d-none");
 
         // get vars
         let collapse = $('#filter-collapse'),

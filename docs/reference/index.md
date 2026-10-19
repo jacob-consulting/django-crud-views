@@ -45,4 +45,5 @@
 - [Base template](templates.md) — control which base template CRUD pages extend
 - [Custom themes](theme.md) — replace crud_views' own templates with a theme app
 - [Asset registry](assets.md) — register JavaScript/CSS bundles and vendor third-party files
+- [Icons](icons.md) — semantic icon names, icon libraries and custom renderers
 - [Settings](settings.md) — all available settings for django-crud-views

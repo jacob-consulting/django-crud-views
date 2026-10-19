@@ -1,3 +1,4 @@
+{% load crud_views %}
 {% load i18n %}
 {% if view.cv_order_fields %}
 <form method="get" id="cv-card-order-form" class="d-flex align-items-center gap-2 mb-3">
@@ -12,12 +13,12 @@
         <button type="submit" name="{{ cv_order_dir_param }}" value="asc"
                 class="btn btn-outline-secondary{% if cv_order_dir == 'asc' %} active{% endif %}"
                 title="{% translate 'Ascending' %}">
-            <i class="fa-solid fa-arrow-up-short-wide"></i>
+            {% cv_icon "sort-asc" %}
         </button>
         <button type="submit" name="{{ cv_order_dir_param }}" value="desc"
                 class="btn btn-outline-secondary{% if cv_order_dir == 'desc' %} active{% endif %}"
                 title="{% translate 'Descending' %}">
-            <i class="fa-solid fa-arrow-down-wide-short"></i>
+            {% cv_icon "sort-desc" %}
         </button>
     </fieldset>
     {% endif %}

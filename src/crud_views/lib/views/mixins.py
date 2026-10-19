@@ -319,13 +319,18 @@ class ListViewTableFilterMixin(FilterView):
             filterset.form.helper = self.formhelper_class(request=self.request, view=self)
         return filterset
 
+    @property
+    def cv_filter_expanded(self) -> bool:
+        """True when the filter panel is shown: pinned, or expanded in the session (the one source for the
+        panel's collapse state and the toggle button's icon)."""
+        if self.cv_filter_pinned:
+            return True
+        return bool(SessionData.from_view(self).get("filter_expanded", False))
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
-        # pinned filter is always shown; the toggle/session-expanded state is moot
-        filter_expanded = True if self.cv_filter_pinned else SessionData.from_view(self).get("filter_expanded", False)
         context["cv_filter_pinned"] = self.cv_filter_pinned
-        context["cv_filter_expanded"] = filter_expanded
+        context["cv_filter_expanded"] = self.cv_filter_expanded
         return context
 
     def post(self, request, *args, **kwargs):

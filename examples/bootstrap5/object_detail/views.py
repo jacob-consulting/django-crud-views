@@ -44,13 +44,13 @@ from object_detail.models import Product, Supplier
 cv_product = ViewSet(
     model=Product,
     name="product",
-    icon_header="fa-regular fa-box",
+    icon_header="fas:box",  # Font Awesome free has box in the solid style only
 )
 
 cv_supplier = ViewSet(
     model=Supplier,
     name="supplier",
-    icon_header="fa-regular fa-truck",
+    icon_header="fas:truck",  # Font Awesome free has truck in the solid style only
 )
 
 THEMES = [
@@ -172,7 +172,7 @@ class SupplierDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
     cv_property_display = [
         {
             "title": _("Supplier"),
-            "icon": "truck",
+            "icon": "fas:truck",
             "properties": [
                 "name",
                 "website",
@@ -189,7 +189,7 @@ class SupplierDetailView(BreadcrumbMixin, ObjectDetailViewPermissionRequired):
 PRODUCT_DISPLAY = [
     {
         "title": _("Basics"),
-        "icon": "box",
+        "icon": "fas:box",
         "properties": [
             "name",
             "sku",
@@ -217,7 +217,7 @@ PRODUCT_DISPLAY = [
     },
     {
         "title": _("Supplier (FK traversal)"),
-        "icon": "truck",
+        "icon": "fas:truck",
         "properties": [
             # value is a Supplier instance -> links to that supplier's OWN detail page
             # (default LinkConfig branch: reverse(url, kwargs={"pk": value.pk})).
@@ -230,7 +230,7 @@ PRODUCT_DISPLAY = [
     },
     {
         "title": _("Warehouse (O2O traversal)"),
-        "icon": "warehouse",
+        "icon": "fas:warehouse",
         "properties": [
             x("warehouse__code", title=_("Warehouse code")),
             x("warehouse__city", title=_("City")),
@@ -239,7 +239,7 @@ PRODUCT_DISPLAY = [
     },
     {
         "title": _("Tags (M2M) & computed"),
-        "icon": "tags",
+        "icon": "fas:tags",
         "properties": [
             "tags",
             x("margin_label", title=_("Margin")),

@@ -5,7 +5,7 @@
                 data-bs-toggle="collapse" data-bs-target="#objectDetailCollapse-{{ group.title|slugify }}"
                 aria-expanded="false"
                 aria-controls="objectDetailCollapse-{{ group.title|slugify }}">
-            {% if group.icon %}<i class="{{ group.icon|icon_class }} me-2"></i>{% endif %}
+            {% if group.icon %}{% cv_icon group.icon css="me-2" %}{% endif %}
             {{ group.title }}
             <span class="badge text-bg-secondary ms-2">{{ group.properties|length }} properties</span>
         </button>

@@ -44,7 +44,7 @@ from .models import Book
 cv_book = ViewSet(
     model=Book,
     name="book",
-    icon_header="fa-regular fa-book",
+    icon_header="fas:book",
 )
 
 
@@ -54,7 +54,7 @@ class BookDetailView(ObjectDetailViewPermissionRequired):
         {
             "title": "Basic Info",
             "description": "Core book metadata",
-            "icon": "bi bi-book",
+            "icon": "bi:book",
             "properties": [
                 "title",
                 "author__name",
@@ -72,7 +72,7 @@ with a title and a list of properties:
 |---------------|-------------|
 | `title`       | Group heading (required) |
 | `description` | Subtitle or help text |
-| `icon`        | CSS class for an icon (e.g. Bootstrap Icons) |
+| `icon`        | Icon value: `prefix:name` (`bi:book`, `fas:user`), a semantic name from `CRUD_VIEWS_ICONS`, or a raw CSS class. No auto-prefix; see [Icons](icons.md) |
 | `properties`  | List of strings, dicts, or `PropertyConfig` objects |
 
 Each entry in `properties` can be:
@@ -154,5 +154,5 @@ Bootstrap 5 modal rendering — see [Modals](modals.md).
 
 ## Settings
 
-`crud_views_object_detail` settings (layout pack, icon library, etc.) are documented in
+`crud_views_object_detail` settings (layout pack, text newlines, etc.) are documented in
 [ObjectDetailView settings](object_detail_settings.md).

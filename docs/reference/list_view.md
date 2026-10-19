@@ -22,7 +22,7 @@ from .models import Author
 cv_author = ViewSet(
     model=Author,
     name="author",
-    icon_header="fa-regular fa-user",
+    icon_header="far:user",
 )
 
 

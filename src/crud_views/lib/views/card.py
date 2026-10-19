@@ -36,7 +36,7 @@ class CardListView(CardOrderMixin, CrudView, generic.ListView):
     cv_filter_header_template_code: str | None = None
 
     # icons
-    cv_icon_action = "fa-solid fa-rectangle-list"
+    cv_icon_action = "card"
 
     def cv_get_card_action_data(self, action: CardAction, obj, user) -> dict:
         """Unresolved button data for one card action (#149, #174); the cv_card_action tag and the menu share it."""
@@ -87,10 +87,6 @@ class CardListView(CardOrderMixin, CrudView, generic.ListView):
             if ctx is not None:
                 items.append((action.key or action.child_name, ctx))
         return cv_split_actions(items, inline)
-
-    @staticmethod
-    def cv_get_filter_icon() -> str:
-        return crud_views_settings.filter_icon
 
     @classmethod
     def cv_get_card_actions_inline(cls):

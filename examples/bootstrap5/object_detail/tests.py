@@ -1,6 +1,7 @@
 import pytest
 from django.contrib.auth import get_user_model
 from django.urls import reverse
+from lxml import html as lxml_html
 from project.seeding import ensure_demo_users
 
 from object_detail.models import Product
@@ -64,3 +65,20 @@ def test_supplier_detail_renders(alice_client, seeded_product):
     response = alice_client.get(reverse("supplier-detail", kwargs={"pk": seeded_product.supplier_id}))
     assert response.status_code == 200
     assert "Acme Corp" in response.content.decode()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "url_name, pk_attr, icon_class",
+    [
+        (detail_url_name(THEMES[0]), "pk", "fa-solid fa-box"),
+        ("supplier-detail", "supplier_id", "fa-solid fa-truck"),
+    ],
+)
+def test_detail_header_icon_is_a_free_solid_icon(alice_client, seeded_product, url_name, pk_attr, icon_class):
+    """Font Awesome free ships box and truck in the solid style only; the regular style shows a missing glyph."""
+    response = alice_client.get(reverse(url_name, kwargs={"pk": getattr(seeded_product, pk_attr)}))
+    assert response.status_code == 200
+    html = response.content.decode()
+    assert "fa-regular fa-box" not in html and "fa-regular fa-truck" not in html
+    assert icon_class in [i.get("class") for i in lxml_html.fromstring(html).cssselect("h3 i")]

@@ -1,3 +1,4 @@
+{% load crud_views %}
 {% load i18n %}
 <div class="cv-form-ctrl">
 
@@ -6,23 +7,23 @@
             <fieldset class="btn-group" aria-label="{% translate 'Order' %}">
                 <button type="button" class="btn btn-light cv-form-ctrl-up" title="up" aria-label="{% translate 'Move up' %}"
                         cv-data-formset-form-prefix="{{ form.prefix }}">
-                    <i class="fa-solid fa-caret-up" aria-hidden="true"></i>
+                    {% cv_icon "formset-up" %}
                 </button>
                 <button type="button" class="btn btn-light cv-form-ctrl-down" title="down" aria-label="{% translate 'Move down' %}"
                         cv-data-formset-form-prefix="{{ form.prefix }}">
-                    <i class="fa-solid fa-caret-down" aria-hidden="true"></i>
+                    {% cv_icon "formset-down" %}
                 </button>
             </fieldset>
         {% endif %}
         <fieldset class="btn-group" aria-label="{% translate 'Add or delete' %}">
             <button type="button" class="btn btn-light cv-form-ctrl-add" title="add" aria-label="{% translate 'Add row' %}"
                     cv-data-formset-form-prefix="{{ form.prefix }}">
-                <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                {% cv_icon "formset-add" %}
             </button>
             {% if formset.can_delete %}
                 <button type="button" class="btn btn-light cv-form-ctrl-delete" title="delete" aria-label="{% translate 'Delete row' %}"
                         cv-data-formset-form-prefix="{{ form.prefix }}">
-                    <i class="fa-solid fa-square-xmark" aria-hidden="true"></i>
+                    {% cv_icon "formset-delete" %}
                 </button>
             {% endif %}
         </fieldset>

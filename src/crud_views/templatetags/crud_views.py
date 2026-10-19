@@ -8,6 +8,7 @@ from django_tables2.templatetags import django_tables2 as _dt2
 
 from crud_views.lib import assets
 from crud_views.lib.exceptions import ViewSetKeyFoundError, ignore_exception
+from crud_views.lib.icons import render_icon
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import CrudView
 from crud_views.lib.view.visibility import cv_resolve_action
@@ -160,7 +161,7 @@ def cv_actions_menu(context, group, location):
         "cv_location": location,
         "cv_menu_wrapper_class": wrapper_class,
         "cv_toggle_class": toggle_class,
-        "cv_menu_icon": crud_views_settings.actions_menu_icon,
+        "cv_menu_icon": "actions-menu",
     }
 
 
@@ -278,32 +279,10 @@ def cv_delete_button(context, obj=None):
     return {}
 
 
-@register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/icon.html", takes_context=True)
+@register.simple_tag(takes_context=True)
 def cv_header_icon(context):
     view: CrudView = cv_get_view(context)
-    icon = view.cv_get_header_icon()
-    return {"icon": icon}
-
-
-@register.simple_tag(takes_context=True)
-def cv_header_icon_class(context):
-    view: CrudView = cv_get_view(context)
-    icon = view.cv_get_header_icon()
-    return icon
-
-
-@register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/icon.html", takes_context=True)
-def cv_filter_icon(context):
-    view: CrudView = cv_get_view(context)
-    icon = view.cv_get_filter_icon()
-    return {"icon": icon}
-
-
-@register.simple_tag(takes_context=True)
-def cv_filter_icon_class(context):
-    view: CrudView = cv_get_view(context)
-    icon = view.cv_get_filter_icon()
-    return icon
+    return render_icon(view.cv_get_header_icon())
 
 
 @register.simple_tag(takes_context=True)
@@ -437,3 +416,9 @@ def cv_card(context, obj):
     # Without it, built-in context processors (e.g. csrf) never run, so {% csrf_token %} in any
     # template included from here (e.g. card_action.html's hidden POST form) silently renders empty.
     return mark_safe(t.render(card_context, request=request))
+
+
+@register.simple_tag
+def cv_icon(value, css=""):
+    """Render a semantic icon name, library-prefixed name or raw class string as an <i> element."""
+    return render_icon(value, css)

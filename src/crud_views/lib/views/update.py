@@ -22,7 +22,7 @@ class UpdateView(CrudViewProcessFormMixin, CrudView, generic.UpdateView):
     cv_action_short_label_template: str | None = "crud_views/snippets/action_short/update.html"
 
     # icons
-    cv_icon_action = "fa-regular fa-pen-to-square"
+    cv_icon_action = "update"
 
     # messages
     cv_message_template: str | None = "crud_views/snippets/message/update.html"

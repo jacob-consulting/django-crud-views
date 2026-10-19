@@ -19,7 +19,7 @@ def test_table_lists_core_and_registered(asset_registry, pipeline_setting):
     assert any(
         line.split()[:2] == ["dtp", "js"] and "tag (CDN)" in line and "cdn.example.com" in line for line in lines
     )
-    assert len(lines) == 1 + 9 + 2
+    assert len(lines) == 1 + 10 + 2
 
 
 def test_external_filter(asset_registry, pipeline_setting):
@@ -33,7 +33,7 @@ def test_external_filter(asset_registry, pipeline_setting):
 def test_kind_filter(asset_registry, pipeline_setting):
     pipeline_setting({})
     lines = _run("--kind", "css").splitlines()
-    assert len(lines) == 1 + 3
+    assert len(lines) == 1 + 4
     assert all(line.split()[1] == "css" for line in lines[1:])
 
 

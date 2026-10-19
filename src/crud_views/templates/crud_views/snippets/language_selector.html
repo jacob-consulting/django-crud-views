@@ -1,9 +1,10 @@
+{% load crud_views %}
 {% load i18n %}
 {% if languages|length > 1 %}
 <div class="dropdown">
   <button class="btn btn-outline-secondary dropdown-toggle" type="button"
           data-bs-toggle="dropdown" aria-expanded="false">
-    <i class="fa-solid fa-language" aria-hidden="true"></i>
+    {% cv_icon "language" %}
     {% for code, name in languages %}{% if code == current %}{{ name }}{% endif %}{% endfor %}
   </button>
   <ul class="dropdown-menu dropdown-menu-end">

@@ -39,6 +39,14 @@ class TicketDetailEditorTest(ContextButtonsTestCase):
         resp = self.detail(self.editor)
         self.assertIn("cv-demo-edit-pill", self.rendered(resp).split('id="manual-toolbar"')[1])
 
+    def test_custom_button_templates_render_the_icon(self):
+        doc = lxml_html.fromstring(self.rendered(self.detail(self.editor)))
+        for selector in (".cv-demo-edit-big", ".cv-demo-edit-pill"):
+            buttons = doc.cssselect(selector)
+            self.assertTrue(buttons, selector)
+            for btn in buttons:
+                self.assertEqual(len(btn.cssselect("i.fa-pen-to-square")), 1, selector)
+
     def test_url_tile_links_to_update(self):
         resp = self.detail(self.editor)
         tile = f'href="{self.update_url}?cv_from=detail" class="card text-decoration-none" id="url-tile"'

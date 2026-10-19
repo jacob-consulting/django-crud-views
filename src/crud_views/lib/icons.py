@@ -162,9 +162,11 @@ def _get_renderers() -> dict[str, Callable | None]:
 
 
 def _icon_str(value: object) -> str | None:
-    """``value`` when it is a str with non-whitespace content, else None (None, "", "  ", 5, ...)."""
-    if isinstance(value, str) and value.strip():
-        return value
+    """``value`` stripped when it is a str with non-whitespace content, else None (None, "", "  ", 5, ...)."""
+    if isinstance(value, str):
+        value = value.strip()
+        if value:
+            return value
     return None
 
 
@@ -187,10 +189,15 @@ def resolve_icon(value: str | None) -> tuple[str, str] | None:
 
 
 def font_renderer(name: str, *, css: str, config: dict) -> SafeString:
+    """Built-in CSS-class renderer. An unusable ``class`` (missing, not a str, not a valid format string) renders
+    nothing; the system check E354 reports it."""
     template = config.get("class")
-    if not template:
+    if not template or not isinstance(template, str):
         return SafeString("")
-    classes = template.format(name=name)
+    try:
+        classes = template.format(name=name)
+    except Exception:
+        return SafeString("")
     if css:
         classes = f"{classes} {css}"
     return format_html('<i class="{}" aria-hidden="true"></i>', classes)
@@ -256,11 +263,19 @@ def _library_check_messages(prefix: str, config) -> list[CheckMessage]:
     renderer = config.get("renderer", "font")
     if renderer == "font":
         template = config.get("class")
-        if not template or not isinstance(template, str):
+        if not template:
             return [
                 Error(
                     f"Icon library {prefix!r} uses the font renderer but has no 'class'.",
                     hint="Add a 'class' format string such as 'fa-solid fa-{name}'.",
+                    id="crud_views.E354",
+                )
+            ]
+        if not isinstance(template, str):
+            return [
+                Error(
+                    f"Icon library {prefix!r}: 'class' must be a str format string, got {type(template).__name__}.",
+                    hint="Use a format string such as 'fa-solid fa-{name}'.",
                     id="crud_views.E354",
                 )
             ]

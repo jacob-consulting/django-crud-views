@@ -21,9 +21,9 @@ order:
    (`far:eye`, `bi:person`, `xy:rocket`).
 3. **Raw CSS class** - anything else without a colon (`"fa-solid fa-truck"`) renders as `<i class="...">`.
 
-An empty, whitespace-only or `None` value renders nothing. The same holds for a table value, so
-`CRUD_VIEWS_ICONS = {"field-marker": None}` (or `""`) switches that icon off. Any other non-string value renders
-nothing and is reported by `crud_views.E356`.
+An empty, whitespace-only or `None` value renders nothing; surrounding whitespace is ignored. The same holds for a
+table value, so `CRUD_VIEWS_ICONS = {"field-marker": None}` (or `""`) switches that icon off. Any other non-string
+value renders nothing and is reported by `crud_views.E356`.
 
 !!! warning "Colons and raw classes"
     A value containing a colon is always read as `prefix:name`. A raw CSS class that contains a colon (for example a
@@ -119,8 +119,9 @@ Built-in libraries:
 ### Font renderer
 
 `"renderer": "font"` is the built-in CSS-class renderer. `class` is a format string with `{name}`; extra `css` classes
-are appended: `far:eye` with `css="me-2"` renders `<i class="fa-regular fa-eye me-2" aria-hidden="true"></i>`. Add
-more Font Awesome styles or another font library as more entries:
+are appended: `far:eye` with `css="me-2"` renders `<i class="fa-regular fa-eye me-2" aria-hidden="true"></i>`. A
+`class` that is missing or not a valid format string renders nothing (`crud_views.E354` reports it). Add more Font
+Awesome styles or another font library as more entries:
 
 ```python
 CRUD_VIEWS_ICON_LIBRARIES = {

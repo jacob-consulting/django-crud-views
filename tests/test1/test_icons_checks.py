@@ -199,3 +199,18 @@ def test_e351_renderer_import_raises_other_exception(monkeypatch):
         messages = check_icons()
     assert ids(messages) == ["crud_views.E351"]
     assert "RuntimeError: boom" in messages[0].msg
+
+
+def test_e355_dotted_path_to_non_callable():
+    """Pins the ruling: a dotted path that imports to a non-callable (os.sep is a str) is E355."""
+    with override_settings(CRUD_VIEWS_ICON_LIBRARIES={"xy": {"renderer": "os.sep"}}):
+        messages = check_icons()
+    assert ids(messages) == ["crud_views.E355"]
+    assert "callable" in messages[0].msg
+
+
+def test_e354_non_str_class_names_the_type():
+    with override_settings(CRUD_VIEWS_ICON_LIBRARIES={"xy": {"renderer": "font", "class": 5}}):
+        messages = check_icons()
+    assert ids(messages) == ["crud_views.E354"]
+    assert "got int" in messages[0].msg

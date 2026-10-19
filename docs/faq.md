@@ -56,7 +56,7 @@ cv_author = ViewSet(
             key_target="update",
             template_code=(
                 '<a href="{{ cv_url }}" class="btn btn-primary btn-lg" cv-key="{{ cv_key }}">'
-                '{% load crud_views %}{% cv_icon cv_icon_action %} {{ cv_action_label }}</a>'
+                "{% load crud_views %}{% cv_icon cv_icon_action %} {{ cv_action_label }}</a>"
             ),
         ),
     ],

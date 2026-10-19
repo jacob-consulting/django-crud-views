@@ -76,8 +76,8 @@ so list only what you change or add:
 
 ```python
 CRUD_VIEWS_ICONS = {
-    "detail": "fas:magnifying-glass",   # override a default
-    "person": "far:user",               # your own name, usable anywhere an icon value is accepted
+    "detail": "fas:magnifying-glass",  # override a default
+    "person": "far:user",  # your own name, usable anywhere an icon value is accepted
 }
 ```
 

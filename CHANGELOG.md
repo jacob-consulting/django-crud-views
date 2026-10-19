@@ -21,9 +21,7 @@
       ```python
       from crud_views.lib.icons import BOOTSTRAP_ICONS
 
-      CRUD_VIEWS_ICONS = {
-          k: BOOTSTRAP_ICONS[k] for k in ("boolean-true", "boolean-false", "property-detail", "text-icon")
-      }
+      CRUD_VIEWS_ICONS = {k: BOOTSTRAP_ICONS[k] for k in ("boolean-true", "boolean-false", "property-detail", "text-icon")}
       ```
 
       `CRUD_VIEWS_ICONS = BOOTSTRAP_ICONS` switches every icon in the package to Bootstrap Icons (load the Bootstrap

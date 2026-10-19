@@ -37,7 +37,6 @@ Settings for filter.
 |-------------------------------|-------------------------------------------------|--------|--------------------|
 | CRUD_VIEWS_FILTER_PERSISTENCE            | Store filter in Django session                  | `bool` | True               |
 | CRUD_VIEWS_FILTER_PINNED                 | When `True`, list/card filters render always-open and the filter toggle button is hidden. Per-view override via `cv_filter_pinned`. | `bool` | False |
-| CRUD_VIEWS_FILTER_ICON                   | Filter icon (bootstrap5 only)                    | `str`  | fa-solid fa-filter |
 | CRUD_VIEWS_FILTER_RESET_BUTTON_CSS_CLASS | Filter reset button css class (bootstrap5 only) | `str`  | btn btn-secondary  |
 
 ## View Context Actions
@@ -76,7 +75,13 @@ Default list actions for list view.
 | CRUD_VIEWS_LIST_ACTIONS_INLINE | List row actions kept as buttons; the rest go into a `⋯` menu. `None`: no menu. See [Action menus](action_menus.md). Invalid values raise `crud_views.E105`. | `list[str] \| None` | `None` |
 | CRUD_VIEWS_CONTEXT_ACTIONS_INLINE | The same for the context toolbar. | `list[str] \| None` | `None` |
 | CRUD_VIEWS_CARD_ACTIONS_INLINE | The same for card actions. | `list[str] \| None` | `None` |
-| CRUD_VIEWS_ACTIONS_MENU_ICON | Icon of the menu toggle (bootstrap5 only) | `str` | `fa-solid fa-ellipsis` |
+
+## Icons
+
+| Key | Description | Type | Default |
+|-----|-------------|------|---------|
+| CRUD_VIEWS_ICONS | Semantic icon name to icon value; merged per key over the defaults. Includes `actions-menu` and `filter`, which replace the removed `CRUD_VIEWS_ACTIONS_MENU_ICON` and `CRUD_VIEWS_FILTER_ICON`. See [Icons](icons.md). | `dict[str, str]` | `{}` |
+| CRUD_VIEWS_ICON_LIBRARIES | Library prefix to library config (renderer, class, ...); merged per prefix over the built-ins `far`, `fas`, `bi`. See [Icons](icons.md#libraries). | `dict[str, dict]` | `{}` |
 
 ## Content Security Policy (CSP)
 

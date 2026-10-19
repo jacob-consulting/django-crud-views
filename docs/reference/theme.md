@@ -58,6 +58,21 @@ overrides never render.
     `crud_views.W110` and ignore it. Do theming with a template-override app as described
     here.
 
+## Icons
+
+A theme registers its icon library and default icons from `AppConfig.ready()`, so projects need no
+configuration. Project settings (`CRUD_VIEWS_ICONS`, `CRUD_VIEWS_ICON_LIBRARIES`) still win over a theme:
+
+```python
+def ready(self):
+    from crud_views.lib.icons import register_icon_library, register_icons
+
+    register_icon_library("tabler", renderer="myapp_theme.icons.render")
+    register_icons({"detail": "tabler:eye", "delete": "tabler:trash"})
+```
+
+If two theme apps register the same key, the one later in `INSTALLED_APPS` wins. See [Icons](icons.md#registering-icons-from-a-theme).
+
 ## Worked example: restyle the submit button
 
 Give your theme app a template at

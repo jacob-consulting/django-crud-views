@@ -1,5 +1,56 @@
 # Django CRUD Views - Changelog
 
+## Unreleased
+
+### Breaking
+
+- Icons now go through one semantic icon registry (see `docs/reference/icons.md`). The package refers to icons by
+  name (`detail`, `delete`, `filter`, ...); `CRUD_VIEWS_ICONS` and `CRUD_VIEWS_ICON_LIBRARIES` configure them.
+  Removed settings raise the system error `crud_views.E350` while they are still defined:
+    - `CRUD_VIEWS_ACTIONS_MENU_ICON` and `CRUD_VIEWS_FILTER_ICON` are replaced by the table entries `actions-menu` and
+      `filter`:
+
+      ```python
+      CRUD_VIEWS_ICONS = {"actions-menu": "fas:bars", "filter": "fas:magnifying-glass"}
+      ```
+
+    - `CRUD_VIEWS_OBJECT_DETAIL_ICONS_LIBRARY`, `_ICONS_CLASS`, `_ICONS_TYPE`, `_ICONS_PREFIX` and
+      `CRUD_VIEWS_OBJECT_DETAIL_NAMED_ICONS` are removed. Object detail now uses Font Awesome by default
+      (`boolean-true`, `boolean-false`, `property-detail`, `text-icon`). To keep Bootstrap Icons:
+
+      ```python
+      from crud_views.lib.icons import BOOTSTRAP_ICONS
+
+      CRUD_VIEWS_ICONS = BOOTSTRAP_ICONS
+      ```
+
+- Object detail group icons are no longer auto-prefixed. `icon="truck"` must become `icon="fas:truck"` (or
+  `"bi:truck"`), or `"truck"` must be added to `CRUD_VIEWS_ICONS`.
+- The template `crud_views/tags/icon.html` and the template tags / context values `cv_header_icon_class` and
+  `cv_filter_icon_class` are removed. Render icons with `{% cv_icon value %}` (`{% cv_icon value css="me-2" %}`) or
+  `crud_views.lib.icons.render_icon`. The object detail filters `icon_class` and `named_icon_class` are removed too.
+- The core boolean widget (`detail/widgets/bool.html`) now uses the `boolean-true` / `boolean-false` icons (circle
+  check / circle xmark) instead of the square check icons.
+- Table sort icons are now Font Awesome 6 (`table-sort-asc` = `fas:angles-up`, `table-sort-desc` =
+  `fas:angles-down`); ascending now points up. Before, they used Font Awesome 4 class names with inverted direction.
+- Icons are rendered with `aria-hidden="true"` by default.
+- The Font Awesome fixed-width class `fa-fw` in action menus is replaced by the library-neutral `cv-icon-fw`
+  (`crud_views/css/icons.css`). Custom templates using `fa-fw` for menu icons should switch.
+
+### Fixed
+
+- The filter toggle icon now matches the state of the filter panel after a page reload: with the panel expanded in
+  the session the `filter-close` icon is shown, not the `filter` icon. The icons are toggled by showing and hiding
+  both, so the JavaScript no longer contains icon class names.
+
+### Added
+
+- Icon registry: semantic icon names (`CRUD_VIEWS_ICONS`), icon libraries addressed as `prefix:name`
+  (`CRUD_VIEWS_ICON_LIBRARIES`, built-in `far`, `fas`, `bi`), pluggable renderers (for example SVG), a complete
+  Bootstrap Icons preset `crud_views.lib.icons.BOOTSTRAP_ICONS`, the `{% cv_icon %}` tag (also in
+  `crud_views_object_detail` tags), theme registration via `register_icon_library` / `register_icons`, and the
+  system checks `crud_views.E350`, `E351`, `W352` and `W353`.
+
 ## 0.29.4
 
 ### Fixed

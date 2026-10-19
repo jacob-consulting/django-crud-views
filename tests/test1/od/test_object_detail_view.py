@@ -1,3 +1,4 @@
+import pytest
 from django.template.loader import render_to_string
 
 from crud_views_object_detail.lib.config import PropertyConfig
@@ -157,3 +158,27 @@ def test_resolve_value_returns_list_when_single_path_fans_out_to_nothing():
     value = _resolve_value(obj, ["child", "absent"], is_many=False)
     assert value is not _MISSING
     assert value == []
+
+
+@pytest.mark.parametrize("icon, flagged", [("xy:truck", True), ("fas:truck", False), ("truck", False), (None, False)])
+def test_group_icon_unregistered_prefix_w246(icon, flagged):
+    from crud_views_object_detail.lib.views import ObjectDetailView
+
+    class V(ObjectDetailView):
+        cv_key = "detail"
+        cv_path = "detail"
+        cv_property_display = [{"title": "A", "icon": icon, "properties": ["name"]}]
+
+    assert ("viewset.W246" in _error_ids(V)) is flagged
+
+
+def test_group_icon_w246_for_property_group_config():
+    from crud_views_object_detail.lib.config import PropertyGroupConfig
+    from crud_views_object_detail.lib.views import ObjectDetailView
+
+    class V(ObjectDetailView):
+        cv_key = "detail"
+        cv_path = "detail"
+        cv_property_display = [PropertyGroupConfig(title="A", icon="xy:truck", properties=["name"])]
+
+    assert "viewset.W246" in _error_ids(V)

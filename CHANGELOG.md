@@ -32,7 +32,8 @@
 - Object detail group icons are no longer auto-prefixed. `icon="truck"` must become `icon="fas:truck"` (or
   `"bi:truck"`), or `"truck"` must be added to `CRUD_VIEWS_ICONS`. An unmigrated bare name is not flagged by any
   error or system check: bare values are treated as raw CSS classes, so `icon="truck"` renders
-  `<i class="truck" aria-hidden="true"></i>`, which is invisible.
+  `<i class="truck" aria-hidden="true"></i>`, which is invisible. A `prefix:name` group icon with an unregistered
+  prefix is reported by `viewset.W246`.
 - The template `crud_views/tags/icon.html` and the template tags / context values `cv_header_icon_class` and
   `cv_filter_icon_class` are removed. Render icons with `{% cv_icon value %}` (`{% cv_icon value css="me-2" %}`) or
   `crud_views.lib.icons.render_icon`. The object detail filters `icon_class` and `named_icon_class` are removed too.
@@ -63,7 +64,7 @@
   (`CRUD_VIEWS_ICON_LIBRARIES`, built-in `far`, `fas`, `bi`), pluggable renderers (for example SVG), a complete
   Bootstrap Icons preset `crud_views.lib.icons.BOOTSTRAP_ICONS`, the `{% cv_icon %}` tag (also in
   `crud_views_object_detail` tags), theme registration via `register_icon_library` / `register_icons`, and the
-  system checks `crud_views.E350`, `E351`, `E354`, `E355`, `E356`, `W352` and `W353`.
+  system checks `crud_views.E350`, `E351`, `E354`, `E355`, `E356`, `W352`, `W353` and `viewset.W246`.
 
 ## 0.29.4
 

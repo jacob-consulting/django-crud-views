@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 
-from crud_views.lib.check import Check, CheckAttribute, CheckExpression
+from crud_views.lib.check import Check, CheckAttribute, CheckExpression, CheckWarningExpression
+from crud_views.lib.icons import unregistered_prefix
 from crud_views_object_detail.lib.config import PropertyConfig, PropertyGroupConfig, parse_property_display
 from crud_views_object_detail.lib.resolvers import resolve_all
 
@@ -68,7 +69,18 @@ class ObjectDetailMixin:
     @classmethod
     def _checks_property_group(cls, i: int, group) -> Iterable[Check]:
         if isinstance(group, PropertyGroupConfig):
-            return  # already validated by pydantic
+            icon = group.icon
+        else:
+            icon = group.get("icon") if isinstance(group, dict) else None
+        prefix = unregistered_prefix(icon)
+        yield CheckWarningExpression(
+            context=cls,
+            id="W246",
+            expression=prefix is None,
+            msg=f"cv_property_display[{i}]['icon'] = {icon!r} uses unregistered icon library prefix {prefix!r}",
+        )
+        if isinstance(group, PropertyGroupConfig):
+            return  # structure already validated by pydantic
         yield CheckExpression(
             context=cls,
             id="E242",

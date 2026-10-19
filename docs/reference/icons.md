@@ -221,6 +221,7 @@ register the same key, the one whose `ready()` runs later wins, which is the one
 | `crud_views.E356` | error | a `CRUD_VIEWS_ICONS` value, `cv_icon_action` or `cv_icon_header` is neither a str nor `None` |
 | `crud_views.W352` | warning | a `CRUD_VIEWS_ICONS` entry uses an unregistered library prefix, or points to another semantic name |
 | `crud_views.W353` | warning | `cv_icon_action`, `cv_icon_header` or `ViewSet.icon_header` uses an unregistered library prefix |
+| `viewset.W246` | warning | an object detail group `icon` uses an unregistered library prefix |
 
 Bare values that are neither a known name nor contain a colon are raw CSS classes and are not flagged.
 

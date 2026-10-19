@@ -27,3 +27,7 @@ def test_cv_icon_no_css():
 def test_cv_css_includes_icons_css():
     html = Template("{% load crud_views %}{% cv_css %}").render(Context({}))
     assert "crud_views/css/icons.css" in html
+
+
+def test_cv_icon_tag_non_str_context_value_renders_nothing():
+    assert _render("crud_views", 5, "{% cv_icon v %}") == ""

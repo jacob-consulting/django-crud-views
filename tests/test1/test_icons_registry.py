@@ -155,3 +155,19 @@ def test_get_icons_never_returns_none_on_concurrent_reset(monkeypatch):
     assert icons_module.get_icons() is not None
     icons_module.reset_icon_cache()
     assert icons_module.get_libraries() is not None
+
+
+@pytest.mark.parametrize("value", [None, "", "  "])
+def test_table_value_blank_renders_nothing(value):
+    with override_settings(CRUD_VIEWS_ICONS={"field-marker": value}):
+        assert render_icon("field-marker", css="cv-icon-fw") == ""
+
+
+@pytest.mark.parametrize("value", [5, ("xy:eye",), object()])
+def test_non_str_value_renders_nothing(value):
+    assert render_icon(value) == ""
+
+
+def test_non_str_table_value_renders_nothing():
+    with override_settings(CRUD_VIEWS_ICONS={"detail": 5}):
+        assert render_icon("detail") == ""

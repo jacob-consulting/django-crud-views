@@ -21,7 +21,8 @@ order:
    (`far:eye`, `bi:person`, `xy:rocket`).
 3. **Raw CSS class** - anything else without a colon (`"fa-solid fa-truck"`) renders as `<i class="...">`.
 
-An empty value or `None` renders nothing.
+An empty, whitespace-only or `None` value renders nothing. The same holds for a table value, so
+`CRUD_VIEWS_ICONS = {"field-marker": None}` (or `""`) switches that icon off.
 
 !!! warning "Colons and raw classes"
     A value containing a colon is always read as `prefix:name`. A raw CSS class that contains a colon (for example a

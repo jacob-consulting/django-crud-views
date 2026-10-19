@@ -158,11 +158,25 @@ def _get_renderers() -> dict[str, Callable | None]:
     return renderers
 
 
+def _icon_str(value: object) -> str | None:
+    """``value`` when it is a str with non-whitespace content, else None (None, "", "  ", 5, ...)."""
+    if isinstance(value, str) and value.strip():
+        return value
+    return None
+
+
 def resolve_icon(value: str | None) -> tuple[str, str] | None:
-    """Return None for empty, ("", raw_class) for a raw class, else (prefix, name)."""
-    if not value:
+    """Return None for empty, ("", raw_class) for a raw class, else (prefix, name).
+
+    Empty applies to the incoming value and to the table value it maps to: a ``CRUD_VIEWS_ICONS`` entry of
+    None or "" switches that icon off. A non-str value (incoming or in the table) renders nothing as well.
+    """
+    value = _icon_str(value)
+    if value is None:
         return None
-    value = get_icons().get(value, value)
+    value = _icon_str(get_icons().get(value, value))
+    if value is None:
+        return None
     if ":" not in value:
         return "", value
     prefix, name = value.split(":", 1)

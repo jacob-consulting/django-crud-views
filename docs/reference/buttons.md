@@ -211,7 +211,7 @@ keys are `LEAF_KEYS`:
 | `cv_label` | the full label (on cards the explicit `label`, else the short label, else the key) |
 | `cv_short_label` | the short label, used for menu items |
 | `cv_label_visible` | show the label as text; true only on cards that have a label and no `no_label` |
-| `cv_title` | the `title` text; present only when the label is not visible |
+| `cv_title` | the `title` text, which also marks the button with `data-cv-tooltip="<cv_location>"` for `tooltip.js`; present only when the label is not visible |
 | `cv_icon` | the icon value (see [Icons](icons.md)) |
 | `cv_variant` | the resolved variant; falls back to `"secondary"` |
 | `cv_flex` | add `flex-grow-1`; true only on cards |
@@ -287,13 +287,14 @@ def ready(self):
     {% if cv_submit_target %}data-cv-action="submit-form" data-cv-target="{{ cv_submit_target }}"{% endif %}
     {% if cv_modal %}data-cv-modal="true" data-cv-modal-size="{{ cv_modal_size }}"{% endif %}
     {% if cv_active %}aria-current="page"{% endif %}
-    {% if cv_title %}title="{{ cv_title }}"{% endif %}
+    {% if cv_title %}title="{{ cv_title }}" data-cv-tooltip="{{ cv_location }}"{% endif %}
     cv-key="{{ cv_key }}">{% if cv_label_visible %}<span>{{ cv_label }}</span>{% else %}{% cv_icon cv_icon %}<span{% if cv_variant != "primary" %} class="visually-hidden"{% endif %}>{{ cv_label }}</span>{% endif %}</{{ cv_tag }}>
 ```
 
 The leaf is shared by the context toolbar, list rows and cards: keep the `cv_label_visible` branch (cards with a
 visible label), `cv_flex` and `cv_title`, as the bundled `crud_views/tags/button/action.html` does. Keep the
-`data-cv-*` attributes and `cv-key`: the bundled scripts use them. Keep the `cv_disabled` handling when you
+`data-cv-*` attributes and `cv-key`: the bundled scripts use them; `data-cv-tooltip="{{ cv_location }}"` next to
+`title` is what gives the button a tooltip through `cv.adapters.tooltip`, see [JavaScript](javascript.md#tooltips). Keep the `cv_disabled` handling when you
 override the leaf, otherwise an action disabled by `CRUD_VIEWS_INACCESSIBLE_ACTIONS = "disable"` looks enabled.
 
 ## System checks

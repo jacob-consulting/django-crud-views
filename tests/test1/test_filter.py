@@ -71,6 +71,11 @@ def test_filter_form_rendered(client_user_publisher_view: Client, cv_publisher, 
     response = client_user_publisher_view.get("/publisher/")
     content = response.content.decode("utf-8")
     assert 'id="filter-button"' in content
+    from lxml import html
+
+    (toggle,) = html.fromstring(response.content).cssselect("#cv-filter-toggle")
+    assert toggle.get("data-cv-tooltip") == "context"
+    assert toggle.get("title")
 
 
 def _filter_icon_states(response) -> dict:

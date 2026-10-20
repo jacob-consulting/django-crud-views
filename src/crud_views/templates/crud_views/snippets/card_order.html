@@ -12,12 +12,12 @@
     <fieldset class="{% cv_button_class 'card-order' 'container' %}" aria-label="{% translate 'Sort direction' %}">
         <button type="submit" name="{{ cv_order_dir_param }}" value="asc"
                 class="{% cv_button_class 'card-order' 'toggle' %}{% if cv_order_dir == 'asc' %} active{% endif %}"
-                title="{% translate 'Ascending' %}">
+                title="{% translate 'Ascending' %}" aria-label="{% translate 'Ascending' %}" data-cv-tooltip="card-order">
             {% cv_icon "sort-asc" %}
         </button>
         <button type="submit" name="{{ cv_order_dir_param }}" value="desc"
                 class="{% cv_button_class 'card-order' 'toggle' %}{% if cv_order_dir == 'desc' %} active{% endif %}"
-                title="{% translate 'Descending' %}">
+                title="{% translate 'Descending' %}" aria-label="{% translate 'Descending' %}" data-cv-tooltip="card-order">
             {% cv_icon "sort-desc" %}
         </button>
     </fieldset>

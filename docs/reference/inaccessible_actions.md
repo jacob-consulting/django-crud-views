@@ -43,6 +43,10 @@ returned `False`. Use it to style the two cases differently:
 [data-cv-disabled="state"] { opacity: .35; }
 ```
 
+A disabled icon-only button keeps its `title` and `data-cv-tooltip`, but Bootstrap sets `pointer-events: none` on
+`.btn:disabled`, so neither the native `title` nor a tooltip shows on hover. A theme that needs a tooltip there wraps
+the button in a focusable element in its own leaf override, Bootstrap's documented workaround; the stock leaf does not.
+
 ## Template variables
 
 | Variable | Meaning |

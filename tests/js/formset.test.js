@@ -105,12 +105,27 @@ describe("formset.js", () => {
 
             new window.cv.XForm(null, "book-None-0-0").delete();
             expect(del.getAttribute("value")).toBe("1");
-            expect(btn.classList.contains("btn-danger")).toBe(true);
-            expect(btn.classList.contains("btn-light")).toBe(false);
+            expect(btn.classList.contains("x-danger")).toBe(true);
+            expect(btn.classList.contains("x-ctrl")).toBe(false);
+            expect(btn.classList.contains("cv-form-ctrl-delete")).toBe(true);
 
             new window.cv.XForm(null, "book-None-0-0").delete();
             expect(del.getAttribute("value")).toBe("0");
-            expect(btn.classList.contains("btn-light")).toBe(true);
+            expect(btn.classList.contains("x-ctrl")).toBe(true);
+            expect(btn.classList.contains("x-danger")).toBe(false);
+        });
+
+        it("delete() without data-cv-class attributes only toggles the input", () => {
+            formsetFixture();
+            const del = document.querySelector('input[name="book-None-0-0-DELETE"]');
+            const btn = document.querySelector('button.cv-form-ctrl-delete[cv-data-formset-form-prefix="book-None-0-0"]');
+            btn.removeAttribute("data-cv-class");
+            btn.removeAttribute("data-cv-class-danger");
+            const before = btn.className;
+
+            expect(() => new window.cv.XForm(null, "book-None-0-0").delete()).not.toThrow();
+            expect(del.getAttribute("value")).toBe("1");
+            expect(btn.className).toBe(before);
         });
 
         function rowOrderInDom() {

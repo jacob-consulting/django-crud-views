@@ -58,7 +58,7 @@ export function rowHtml(i, opts = {}) {
         ? ""
         : `<button type="button" class="btn btn-light cv-form-ctrl-add" cv-data-formset-form-prefix="${formPrefix}"></button>`;
     const deleteButton = o.canDelete
-        ? `<button type="button" class="btn btn-light cv-form-ctrl-delete" cv-data-formset-form-prefix="${formPrefix}"></button>`
+        ? `<button type="button" class="x-ctrl cv-form-ctrl-delete" data-cv-class="x-ctrl" data-cv-class-danger="x-danger" cv-data-formset-form-prefix="${formPrefix}"></button>`
         : "";
     return `
         <div class="cv-formset-row" cv-data-formset-form='${formData}'

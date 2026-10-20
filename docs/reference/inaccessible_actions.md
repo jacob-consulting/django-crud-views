@@ -75,8 +75,9 @@ must render it. Add a `cv_disabled` branch when you switch a target view to `"di
 
 Templates you copied from `crud_views/tags/` before 0.28.0 (`list_action.html`, `card_action.html`,
 `context_action.html`) still check `cv_access is True`. In disable mode `cv_access` stays `False`, so these
-templates keep **hiding** the action — never a broken link. Add a `{% if cv_disabled %}` branch (see the shipped
-templates) to render disabled buttons.
+templates keep **hiding** the action — never a broken link. Replace the copy with the shipped one-line logic template
+and override the leaf `crud_views/tags/button/action.html` (or `menu_item.html`) instead: it receives `cv_disabled` and
+`cv_disabled_reason` and must render them, see [Buttons](buttons.md#logic-templates-and-leaves).
 
 ## System checks
 

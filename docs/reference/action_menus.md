@@ -100,13 +100,19 @@ The toggle icon is the semantic icon `actions-menu` (default `fas:ellipsis`). Ch
 | `crud_views/tags/card.html` | card (`CardListView.cv_card_template`) |
 | `crud_views/tags/actions_menu.html` | dropdown wrapper and item list |
 | `crud_views/tags/actions_menu_toggle.html` | the toggle button only |
-| `crud_views/tags/actions_menu_item.html` | one menu item |
-| `crud_views/tags/actions_menu_item_label.html` | icon and label of an item |
+| `crud_views/tags/actions_menu_item.html` | one menu item (logic template) |
+| `crud_views/tags/actions_menu_item_label.html` | icon and label of an item (`cv_icon`, `cv_short_label`) |
+| `crud_views/tags/button/action.html` | leaf: one inline button |
+| `crud_views/tags/button/menu_item.html` | leaf: one dropdown item |
+| `crud_views/tags/button/container.html` | leaf: the inline buttons and the menu of one location |
+
+The logic templates and leaves are described in [Buttons](buttons.md#logic-templates-and-leaves).
 
 Template variables of `actions_menu.html` / `actions_menu_toggle.html`: `cv_menu_items`, `cv_location`
-(`"list"`, `"context"`, `"card"`), `cv_menu_wrapper_class`, `cv_toggle_class`, `cv_menu_icon`. A menu item gets the
-action's resolved data (`cv_url`, `cv_key`, `cv_action_label`, `cv_action_short_label`, `cv_icon_action`,
-`cv_disabled`, `cv_disabled_reason`, `cv_modal`, `cv_is_active`, …) plus `cv_location`.
+(`"list"`, `"context"`, `"card"`), `cv_menu_icon`. The classes come from the [button class table](buttons.md) with
+`{% cv_button_class cv_location "menu-wrapper" %}` and `{% cv_button_class cv_location "menu-toggle" %}`. A menu item
+leaf gets the flat leaf contract (`cv_href`, `cv_key`, `cv_short_label`, `cv_icon`, `cv_disabled`, `cv_modal`,
+`cv_active`, …), see [the leaf contract](buttons.md#the-leaf-contract).
 
 For custom loops, the groups are available on the views: `cv_get_list_action_group(obj)`,
 `cv_get_context_action_group(obj)`, `cv_get_card_action_group(obj)` return an `ActionGroup` (`inline`, `menu`,
@@ -118,8 +124,8 @@ Override `crud_views/tags/actions_menu_toggle.html` to show a caret instead of t
 exactly one inline button — the caret reads as "options for the button on the left":
 
 ```django
-{% load i18n %}
-<button type="button" class="btn {{ cv_toggle_class }} dropdown-toggle dropdown-toggle-split"
+{% load crud_views i18n %}
+<button type="button" class="{% cv_button_class cv_location "menu-toggle" %} dropdown-toggle dropdown-toggle-split"
         data-bs-toggle="dropdown" aria-expanded="false" aria-label="{% translate 'More actions' %}"
         {% if cv_location == "list" %}data-bs-popper-config='{"strategy":"fixed"}'{% endif %}>
     <span class="visually-hidden">{% translate "More actions" %}</span>
@@ -128,9 +134,10 @@ exactly one inline button — the caret reads as "options for the button on the 
 
 ### Overridden containers
 
-Projects that override `columns/actions.html`, `context_actions.html` or `card.html` keep their markup and do not get
-the menu until they adopt the `{% if group is None %} … {% else %} … {% endif %}` structure of the package
-templates.
+The group is always an `ActionGroup` (`inline`, `menu`, `all`). A project that overrides `columns/actions.html`,
+`context_actions.html` or `card.html` includes `crud_views/tags/button/container.html` (with `cv_buttons`, `cv_group`,
+`cv_location` and `cv_container_tag`), or renders `group.inline` and `group.menu` itself. Overrides that predate the
+menu keep their markup and do not get it.
 
 ## Bootstrap JavaScript and clipping
 

@@ -14,7 +14,7 @@ template override by name, resolved through Django's app template loader.
 ## How resolution works
 
 Every crud_views template lives under a `crud_views/` directory, e.g.
-`crud_views/view_list_table.html`, `crud_views/tags/button_submit.html`. Django's
+`crud_views/view_list_table.html`, `crud_views/tags/button/action.html`. Django's
 `app_directories` template loader searches each app in `INSTALLED_APPS` **in order** and
 returns the first template matching a given name.
 
@@ -78,21 +78,33 @@ def ready(self):
 
 If two theme apps register the same key, the one later in `INSTALLED_APPS` wins. See [Icons](icons.md#registering-icons-from-a-theme).
 
-## Worked example: restyle the submit button
+## Buttons
 
-Give your theme app a template at
-`myapp_theme/templates/crud_views/tags/button_submit.html`:
+Button classes live in one table, so a theme registers them from `AppConfig.ready()` and overrides a template only
+where the markup differs. Project settings (`CRUD_VIEWS_BUTTON_CLASSES`) still win over a theme:
 
-```html
-<button type="submit" class="my-fancy-button">{{ label }}</button>
+```python
+def ready(self):
+    from crud_views.lib.button_classes import register_button_classes
+
+    register_button_classes({"card:primary": "button is-primary is-small", "form:submit": "button is-primary"})
 ```
 
-With `myapp_theme` listed before `crud_views` in `INSTALLED_APPS`, every crud_views form now
-renders your button, while all other templates keep the bootstrap5 defaults.
+See [Buttons](buttons.md#registering-classes-from-a-theme).
+
+## Worked example: restyle the buttons
+
+Register the classes as above, then override one leaf, for example a visible label for `primary` buttons. Give your
+theme app a template at `myapp_theme/templates/crud_views/tags/button/action.html` (the full template is in
+[Buttons](buttons.md#a-theme-recipe)). With `myapp_theme` listed before `crud_views` in `INSTALLED_APPS`, every
+action button renders your leaf with the registered classes, while all other templates keep the bootstrap5 defaults.
+
+The thin templates `tags/context_action.html`, `tags/list_action.html`, `tags/card_action.html` and
+`tags/actions_menu_item.html` are logic templates: do not copy them, override the leaves instead.
 
 ## Disabled actions in overridden templates
 
-The shipped `tags/context_action.html`, `tags/list_action.html` and `tags/card_action.html` start with a
-`{% if cv_disabled %}` branch. If you override one of them, keep that branch to support
-`CRUD_VIEWS_INACCESSIBLE_ACTIONS = "disable"`; without it the action stays hidden. See
-[Hide or disable inaccessible actions](inaccessible_actions.md).
+The leaves `tags/button/action.html` and `tags/button/menu_item.html` receive `cv_disabled` and
+`cv_disabled_reason`. If you override one of them, keep the `disabled data-cv-disabled` handling to support
+`CRUD_VIEWS_INACCESSIBLE_ACTIONS = "disable"`; without it a disabled action looks enabled. The logic templates no
+longer carry a branch of their own. See [Hide or disable inaccessible actions](inaccessible_actions.md).

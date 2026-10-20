@@ -128,6 +128,14 @@ class QuestionnaireCreateView(
 The update view mirrors this exactly, mixing `FormSetMixin` in against
 `UpdateViewPermissionRequired` instead.
 
+## Control button classes
+
+The row controls take their classes from the [button class table](buttons.md): `formset:control` for the move and add
+buttons, `formset:container` for the groups and `formset:control-danger` for the delete toggle of a row marked for
+deletion. `formsets/control.html` passes the two delete-toggle classes to `formset.js` in `data-cv-class` and
+`data-cv-class-danger`; a project override of that template needs both attributes for the toggle to change colour.
+Restyle them with `CRUD_VIEWS_BUTTON_CLASSES`.
+
 ## The AJAX template endpoint
 
 Formsets support adding another row without a full page reload. Clicking a row's add control

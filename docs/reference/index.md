@@ -46,4 +46,5 @@
 - [Custom themes](theme.md) — replace crud_views' own templates with a theme app
 - [Asset registry](assets.md) — register JavaScript/CSS bundles and vendor third-party files
 - [Icons](icons.md) — semantic icon names, icon libraries and custom renderers
+- [Buttons](buttons.md) — button variants, the class table, logic templates and leaves
 - [Settings](settings.md) — all available settings for django-crud-views

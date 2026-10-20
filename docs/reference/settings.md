@@ -37,7 +37,6 @@ Settings for filter.
 |-------------------------------|-------------------------------------------------|--------|--------------------|
 | CRUD_VIEWS_FILTER_PERSISTENCE            | Store filter in Django session                  | `bool` | True               |
 | CRUD_VIEWS_FILTER_PINNED                 | When `True`, list/card filters render always-open and the filter toggle button is hidden. Per-view override via `cv_filter_pinned`. | `bool` | False |
-| CRUD_VIEWS_FILTER_RESET_BUTTON_CSS_CLASS | Filter reset button css class (bootstrap5 only) | `str`  | btn btn-secondary  |
 
 ## View Context Actions
 
@@ -82,6 +81,12 @@ Default list actions for list view.
 |-----|-------------|------|---------|
 | CRUD_VIEWS_ICONS | Semantic icon name to icon value; merged per key over the defaults. Includes `actions-menu` and `filter`, which replace the removed `CRUD_VIEWS_ACTIONS_MENU_ICON` and `CRUD_VIEWS_FILTER_ICON`. See [Icons](icons.md). | `dict[str, str]` | `{}` |
 | CRUD_VIEWS_ICON_LIBRARIES | Library prefix to library config (renderer, class, ...); merged per prefix over the built-ins `far`, `fas`, `bi`. See [Icons](icons.md#libraries). | `dict[str, dict]` | `{}` |
+
+## Buttons
+
+| Key | Description | Type | Default |
+|-----|-------------|------|---------|
+| CRUD_VIEWS_BUTTON_CLASSES | `location:slot` key to the CSS classes of a button; merged per key over the defaults, `None` switches the classes off. Replaces the removed `CRUD_VIEWS_FILTER_RESET_BUTTON_CSS_CLASS` (`form:filter-reset`). See [Buttons](buttons.md). | `dict[str, str \| None]` | `{}` |
 
 ## Content Security Policy (CSP)
 

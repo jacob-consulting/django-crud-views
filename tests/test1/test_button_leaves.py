@@ -391,3 +391,27 @@ def test_hidden_action_renders_nothing():
     tpl = Template('{% load crud_views %}{% cv_button "list" %}')
     assert tpl.render(Context({})) == ""
     assert tpl.render(Context({"cv_key": "update", "cv_access": False, "cv_url": "/x/"})) == ""
+
+
+@pytest.mark.parametrize("location", ["context", "list", "card"])
+def test_action_leaf_marks_tooltip_exactly_when_title_is_set(location):
+    a = _one(render_to_string(ACTION_LEAF, _context_get(cv_location=location)), "a")
+    assert a.get("title") == "Details"
+    assert a.get("data-cv-tooltip") == location
+
+    labelled = _context_get(cv_location=location, cv_label_visible=True)
+    del labelled["cv_title"]
+    a = _one(render_to_string(ACTION_LEAF, labelled), "a")
+    assert a.get("title") is None
+    assert a.get("data-cv-tooltip") is None
+
+
+def test_action_leaf_empty_title_renders_no_marker():
+    a = _one(render_to_string(ACTION_LEAF, _context_get(cv_title="", cv_label="")), "a")
+    assert a.get("title") is None
+    assert a.get("data-cv-tooltip") is None
+
+
+def test_menu_item_leaf_has_no_tooltip_marker():
+    item = _context_get(cv_location="context", cv_active=False)
+    assert _one(render_to_string(MENU_ITEM_LEAF, item), "a.dropdown-item").get("data-cv-tooltip") is None

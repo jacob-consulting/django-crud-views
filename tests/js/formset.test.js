@@ -1,4 +1,5 @@
-import { beforeAll, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import jquery from "jquery";
 import { loadScript } from "./helpers/load.js";
 import { formsetFixture, rowHtml } from "./helpers/dom.js";
 
@@ -299,6 +300,59 @@ describe("formset.js", () => {
             const event = new Event("submit", { bubbles: true, cancelable: true });
             form.dispatchEvent(event);
             expect(event.defaultPrevented).toBe(true);
+        });
+    });
+
+    describe("start-up guard", () => {
+        beforeEach(() => {
+            delete window.cv?.formsetController;
+        });
+
+        afterEach(() => {
+            delete document.readyState;
+            vi.restoreAllMocks();
+            vi.stubGlobal("$", jquery);
+            vi.stubGlobal("jQuery", jquery);
+        });
+
+        it("starts the controller when a formset and jQuery are present", async () => {
+            formsetFixture();
+            await loadScript("formset");
+            expect(window.cv.formsetController).toBeDefined();
+        });
+
+        it("stays silent on a page without formsets", async () => {
+            document.body.innerHTML = "";
+            const error = vi.spyOn(console, "error").mockImplementation(() => {});
+            vi.stubGlobal("$", undefined);
+            vi.stubGlobal("jQuery", undefined);
+            await loadScript("formset");
+            expect(error).not.toHaveBeenCalled();
+            expect(window.cv.formsetController).toBeUndefined();
+        });
+
+        it("reports jQuery once when a formset is present and jQuery is not", async () => {
+            formsetFixture();
+            const error = vi.spyOn(console, "error").mockImplementation(() => {});
+            vi.stubGlobal("$", undefined);
+            vi.stubGlobal("jQuery", undefined);
+            await expect(loadScript("formset")).resolves.toBeUndefined();
+            expect(error).toHaveBeenCalledTimes(1);
+            expect(error.mock.calls[0][0]).toMatch(/jQuery/);
+            expect(window.cv.formsetController).toBeUndefined();
+        });
+
+        it("waits for DOMContentLoaded, so jQuery may load after formset.js", async () => {
+            formsetFixture();
+            Object.defineProperty(document, "readyState", { value: "loading", configurable: true });
+            vi.stubGlobal("$", undefined);
+            vi.stubGlobal("jQuery", undefined);
+            await loadScript("formset");
+            expect(window.cv.formsetController).toBeUndefined();
+            vi.stubGlobal("$", jquery);
+            vi.stubGlobal("jQuery", jquery);
+            document.dispatchEvent(new Event("DOMContentLoaded"));
+            expect(window.cv.formsetController).toBeDefined();
         });
     });
 });

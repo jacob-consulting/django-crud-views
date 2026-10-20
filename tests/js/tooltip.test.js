@@ -31,6 +31,7 @@ describe("tooltip.js", () => {
     let fake;
 
     beforeAll(async () => {
+        await loadScript("adapters");
         await loadScript("tooltip");
     });
 
@@ -84,5 +85,18 @@ describe("tooltip.js", () => {
         vi.stubGlobal("bootstrap", undefined);
         expect(() => domReady()).not.toThrow();
         expect(() => window.cv.initTooltips(document)).not.toThrow();
+    });
+
+    it("initializes through cv.adapters.tooltip", () => {
+        const original = window.cv.adapters.tooltip;
+        const init = vi.fn();
+        window.cv.adapters.tooltip = { init };
+        try {
+            domReady();
+            expect(init).toHaveBeenCalledWith(document.querySelector("[data-cv-tooltip]"));
+            expect(init).toHaveBeenCalledTimes(1);
+        } finally {
+            window.cv.adapters.tooltip = original;
+        }
     });
 });

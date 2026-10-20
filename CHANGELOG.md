@@ -53,6 +53,11 @@
 - The Bootstrap `modal.setSize` adapter swaps only the size class and keeps other classes on `#cv-modal-dialog`;
   `collapse.toggle` returns `false` while the panel is animating and the filter toggle then leaves its state alone.
 
+### Fixed
+
+- A Bootstrap tooltip kept open by focus after a mouse click (the filter toggle, the formset controls, any icon-only
+  button) is hidden on the click and shows again on the next hover or focus (#203).
+
 ### Added
 
 - `cv.adapters` (`modal`, `tooltip`, `collapse`) and `cv.bootstrapAdapters(ns)`; see `docs/reference/javascript.md`.
@@ -69,6 +74,11 @@
   `Button` and `Reset` in `crud_views.lib.crispy`.
 - System checks `viewset.E209`, `crud_views.E360`, `crud_views.E361` and `crud_views.W362`; see
   `docs/reference/buttons.md`.
+- `cv.adapters.tooltip.hide(el)` and `dispose(el)`, both optional, with the Bootstrap defaults
+  `Tooltip.getInstance(el)?.hide()` / `?.dispose()`; tooltips inside the modal are disposed before its content is
+  replaced, so Bootstrap's per-tooltip `hide.bs.modal` handlers on `#cv-modal` no longer accumulate (#203).
+- The `cv:modal:unload` event, dispatched on `#cv-modal` before every content replacement while the previous content
+  is still attached: the teardown counterpart of `cv:modal:loaded`; see `docs/reference/modals.md` (#203).
 
 ## 0.30.0
 

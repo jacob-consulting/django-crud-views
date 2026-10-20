@@ -57,6 +57,26 @@ describe("modal.js", () => {
             expect(nav.assign).not.toHaveBeenCalled();
         });
 
+        it("dispatches cv:modal:unload before the swap, with the old content still attached", async () => {
+            stubFetch(textResponse("<p>second</p>"));
+            const modal = document.getElementById("cv-modal"), content = document.getElementById("cv-modal-content");
+            content.innerHTML = "<p>first</p>";
+            const seen = [];
+            modal.addEventListener("cv:modal:unload", (event) => seen.push(["unload", event.target.id, content.innerHTML]));
+            modal.addEventListener("cv:modal:loaded", () => seen.push(["loaded", content.innerHTML]));
+            window.cv.cvModalOpen("/books/create/", "");
+            await vi.waitFor(() => expect(show).toHaveBeenCalled());
+            expect(seen).toEqual([["unload", "cv-modal", "<p>first</p>"], ["loaded", "<p>second</p>"]]);
+            expect(window.cv.CVModalConst.unloadEvent).toBe("cv:modal:unload");
+        });
+
+        it("dispatches cv:modal:unload also while the modal is still empty", () => {
+            const unload = vi.fn();
+            document.getElementById("cv-modal").addEventListener("cv:modal:unload", unload);
+            window.cv.cvModalInject("<p>x</p>");
+            expect(unload).toHaveBeenCalledTimes(1);
+        });
+
         it("passes the empty token when no size is given", async () => {
             stubFetch(textResponse("<p>x</p>"));
             window.cv.cvModalOpen("/books/create/", "");
@@ -112,6 +132,16 @@ describe("modal.js", () => {
             await vi.waitFor(() =>
                 expect(document.getElementById("cv-modal-content").innerHTML).toBe("<form>errors</form>"));
             expect(nav.assign).not.toHaveBeenCalled();
+        });
+
+        it("dispatches cv:modal:unload on the 422 re-render too", async () => {
+            stubFetch(textResponse("<form>errors</form>", { ok: false, status: 422 }));
+            const unload = vi.fn();
+            document.addEventListener("cv:modal:unload", unload, { once: true });
+            window.cv.cvModalSubmit(modalForm());
+            await vi.waitFor(() =>
+                expect(document.getElementById("cv-modal-content").innerHTML).toBe("<form>errors</form>"));
+            expect(unload).toHaveBeenCalledTimes(1);
         });
 
         it("navigates to data-cv-url on an unexpected status", async () => {

@@ -8,6 +8,9 @@
 // init(el, {location}); the tooltip text lives in the trigger's title attribute.
 // App-owned [data-bs-toggle="tooltip"] elements are deliberately left to the host
 // application, so neither side double-initializes the other's tooltips.
+// Lifecycle, through the adapter's optional hide(el) and dispose(el): a click on a
+// trigger hides its tooltip, and markers inside the modal are disposed before the
+// modal content is replaced (cv:modal:unload).
 (function () {
     if (globalThis.__cvTooltipInit) {
         return;
@@ -37,6 +40,32 @@
     document.addEventListener("cv:modal:loaded", (event) => initTooltips(event.target));
     // Same for formset rows added by formset.js after page load.
     document.addEventListener("cv:formset:row-added", (event) => initTooltips(event.target));
+
+    function disposeTooltips(root) {
+        const tooltip = globalThis.cv?.adapters?.tooltip;
+        if (!tooltip?.dispose) {
+            return;
+        }
+        root.querySelectorAll("[data-cv-tooltip]").forEach((el) => tooltip.dispose(el));
+    }
+
+    // modal.js dispatches this before it replaces the modal content, while the old
+    // content is still attached, so instances on it can be torn down (Bootstrap's
+    // Tooltip.dispose() needs the trigger's enclosing .modal to unhook its handler).
+    document.addEventListener("cv:modal:unload", (event) => disposeTooltips(event.target));
+
+    // A tooltip shown by the focus trigger would otherwise stay until focus leaves the
+    // clicked button; Bootstrap's hide() clears all active triggers, so it stays hidden
+    // until the next hover or focus. Keyboard activation synthesises the same click.
+    document.addEventListener("click", (event) => {
+        if (!(event.target instanceof Element)) {
+            return;
+        }
+        const el = event.target.closest("[data-cv-tooltip]");
+        if (el) {
+            globalThis.cv?.adapters?.tooltip?.hide?.(el);
+        }
+    });
 
     globalThis.cv = globalThis.cv || {};
     globalThis.cv.initTooltips = initTooltips;

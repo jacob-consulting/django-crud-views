@@ -21,7 +21,12 @@ globalThis.cv = globalThis.cv || {};
                     if (Object.hasOwn(SIZE_CLASSES, size)) dialogEl.classList.add(SIZE_CLASSES[size]);
                 },
             },
-            tooltip: { init(el) { component(ns, "Tooltip")?.getOrCreateInstance(el); } },
+            tooltip: {
+                init(el) { component(ns, "Tooltip")?.getOrCreateInstance(el); },
+                // getInstance, not getOrCreateInstance: a trigger that was never initialised gains nothing here.
+                hide(el) { component(ns, "Tooltip")?.getInstance(el)?.hide(); },
+                dispose(el) { component(ns, "Tooltip")?.getInstance(el)?.dispose(); },
+            },
             collapse: {
                 toggle(el) {
                     const Collapse = component(ns, "Collapse");

@@ -33,6 +33,8 @@ assignment at any point before the user acts takes effect.
 | `modal` | `hide(modalEl)` | a `[data-cv-modal-dismiss]` element inside the shell is clicked | `Modal.getInstance(modalEl)?.hide()` |
 | `modal` | `setSize(dialogEl, size)` | before `show`, with the view's `cv_modal_size` token | ensures `modal-dialog` and swaps the size class: `modal-sm` / `modal-lg` / `modal-xl` for `sm` / `lg` / `xl`; `""` and unknown tokens remove it. Other classes on the dialog (a shell override's `modal-dialog-centered`) are kept |
 | `tooltip` | `init(el, {location})` | for every `[data-cv-tooltip]` under a root: page load, `cv:modal:loaded`, `cv:formset:row-added`; `location` is the marker's value, see [Tooltips](#tooltips) | `Tooltip.getOrCreateInstance(el)` (the context is ignored); does nothing without `Tooltip` |
+| `tooltip` | `hide(el)` (optional) | a click lands on or inside a `[data-cv-tooltip]`, see [Tooltips](#tooltips) | `Tooltip.getInstance(el)?.hide()`; does nothing without `Tooltip` or without an instance |
+| `tooltip` | `dispose(el)` (optional) | for every `[data-cv-tooltip]` under `#cv-modal` on `cv:modal:unload`, before the content is replaced | `Tooltip.getInstance(el)?.dispose()`; does nothing without `Tooltip` or without an instance |
 | `collapse` | `toggle(el)` | the filter toggle button is clicked, with `#filter-collapse` | `Collapse.getOrCreateInstance(el).toggle()`; throws a clear error when the namespace has no `Collapse`; returns `false` without toggling while the panel is still animating (`.collapsing`), because Bootstrap ignores a toggle then |
 
 A failing `modal.show` is logged with `console.error` and the modal flow falls back to opening the full page. A
@@ -95,6 +97,14 @@ cv.adapters.tooltip = {init() {}};
 
 For markup you inject yourself, call `cv.initTooltips(root)` on the inserted element.
 
+Two optional lifecycle methods complete the adapter. A click on a trigger (with the mouse, or Enter / Space on a
+focused one) calls `hide(el)`, and the tooltip stays hidden until the next hover or focus; without it Bootstrap keeps
+the tooltip up for as long as the clicked button has focus. Before the modal's content is replaced, `cv:modal:unload`
+calls `dispose(el)` on every marker under `#cv-modal`, so Bootstrap's per-tooltip modal handlers and instances do not
+accumulate over repeated opens. An adapter without `hide` or `dispose` is simply not called for that step: the
+native-tooltip opt-out above stays a no-op throughout, and the per-location recipe below keeps both Bootstrap defaults
+because it replaces only `init`. For marked markup you remove yourself, call `cv.adapters.tooltip.dispose?.(el)` first.
+
 Per-location configuration needs no package API: build the adapters, then replace `init` on the tooltip adapter. The
 merge into `cv.adapters` is per adapter, so the reassignment is the whole customisation. Tooltips below the context
 toolbar, for Tabler:
@@ -149,10 +159,13 @@ cv.adapters.tooltip = {
         el.removeAttribute("title");
         tippy(el, {content: text, placement: location === "context" ? "bottom" : "top"});
     },
+    hide(el) { el._tippy?.hide(); },
+    dispose(el) { el._tippy?.destroy(); },
 };
 ```
 
-A `visually-hidden` label or an `aria-label` on every stock trigger keeps the accessible name once `title` is gone.
+`hide` and `dispose` are optional; leave them out and core skips those steps. A `visually-hidden` label or an
+`aria-label` on every stock trigger keeps the accessible name once `title` is gone.
 
 ## jQuery
 
@@ -163,10 +176,11 @@ jQuery, see [Assets](assets.md).
 
 ## Events
 
-Both are bubbling `CustomEvent`s you can listen for on `document`:
+All three are bubbling `CustomEvent`s you can listen for on `document`:
 
 | Event | Dispatched on | When |
 |---|---|---|
+| `cv:modal:unload` | `#cv-modal` | before every content replacement in the modal, while the previous content is still attached, see [Modals](modals.md#extending) |
 | `cv:modal:loaded` | `#cv-modal` | after every content injection into the modal, see [Modals](modals.md#extending) |
 | `cv:formset:row-added` | the new `div.cv-formset-row` | after a formset row was inserted, see [Formsets](formsets.md#initializing-widgets-in-added-rows) |
 

@@ -613,11 +613,18 @@ globalThis.cv = globalThis.cv || {};
 Object.assign(globalThis.cv, {CVFSConst, XBase, XFormset, XForm, CrudViewsFormset});
 
 (function () {
+    let retried = false;
     function start() {
         if (!document.querySelector(".cv-formset-content")) {
             return;
         }
         if (!globalThis.$?.fn?.jquery) {
+            if (document.readyState !== "complete" && !retried) {
+                // deferred scripts run while "interactive": a deferred jQuery may still follow
+                retried = true;
+                globalThis.addEventListener("load", start, {once: true});
+                return;
+            }
             console.error("crud_views formset.js: pages with formsets need jQuery; load it before DOMContentLoaded.");
             return;
         }

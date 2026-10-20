@@ -5,8 +5,13 @@
 
         // The button owns the state in aria-expanded. Collapse first: if the adapter throws
         // (no collapse implementation available), nothing below runs and nothing changes.
-        const next = button.getAttribute("aria-expanded") !== "true";
-        globalThis.cv.adapters.collapse.toggle(document.getElementById("filter-collapse"));
+        // A template override without aria-expanded: read the state off the panel instead.
+        const panel = document.getElementById("filter-collapse");
+        const expanded = button.hasAttribute("aria-expanded")
+            ? button.getAttribute("aria-expanded") === "true"
+            : panel !== null && !panel.hidden && globalThis.getComputedStyle(panel).display !== "none";
+        const next = !expanded;
+        globalThis.cv.adapters.collapse.toggle(panel);
         button.setAttribute("aria-expanded", String(next));
 
         // toggle icon (both variants are rendered server side, one is hidden)

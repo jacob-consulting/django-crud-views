@@ -354,5 +354,34 @@ describe("formset.js", () => {
             document.dispatchEvent(new Event("DOMContentLoaded"));
             expect(window.cv.formsetController).toBeDefined();
         });
+
+        it("retries once on window load when deferred jQuery arrives after formset.js", async () => {
+            formsetFixture();
+            const error = vi.spyOn(console, "error").mockImplementation(() => {});
+            Object.defineProperty(document, "readyState", { value: "interactive", configurable: true });
+            vi.stubGlobal("$", undefined);
+            vi.stubGlobal("jQuery", undefined);
+            await loadScript("formset");
+            expect(error).not.toHaveBeenCalled();
+            expect(window.cv.formsetController).toBeUndefined();
+            vi.stubGlobal("$", jquery);
+            vi.stubGlobal("jQuery", jquery);
+            window.dispatchEvent(new Event("load"));
+            expect(window.cv.formsetController).toBeDefined();
+            expect(error).not.toHaveBeenCalled();
+        });
+
+        it("reports jQuery exactly once when it is still missing at window load", async () => {
+            formsetFixture();
+            const error = vi.spyOn(console, "error").mockImplementation(() => {});
+            Object.defineProperty(document, "readyState", { value: "interactive", configurable: true });
+            vi.stubGlobal("$", undefined);
+            vi.stubGlobal("jQuery", undefined);
+            await loadScript("formset");
+            window.dispatchEvent(new Event("load"));
+            expect(error).toHaveBeenCalledTimes(1);
+            expect(error.mock.calls[0][0]).toMatch(/jQuery/);
+            expect(window.cv.formsetController).toBeUndefined();
+        });
     });
 });

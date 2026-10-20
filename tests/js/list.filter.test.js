@@ -59,6 +59,20 @@ describe("list.filter.js", () => {
         expect(fetchMock.mock.calls[1][1].body).toBe(JSON.stringify({ filter_expanded: false }));
     });
 
+    it.each([
+        ["open", "", true, false],
+        ["closed", "display: none", false, true],
+    ])("derives the state from the panel when the toggle has no aria-expanded (starts %s)", async (_n, style, startsOpen, expected) => {
+        const f = fixture();
+        f.toggle.removeAttribute("aria-expanded");
+        document.getElementById("filter-collapse").setAttribute("style", style);
+        await loadScript("list.filter");
+        f.toggle.click();
+        expect(startsOpen).toBe(!expected);
+        expect(fetchMock.mock.calls[0][1].body).toBe(JSON.stringify({ filter_expanded: expected }));
+        expect(f.toggle.getAttribute("aria-expanded")).toBe(String(expected));
+    });
+
     it("changes nothing when the collapse adapter throws", async () => {
         vi.spyOn(console, "error").mockImplementation(() => {}); // jsdom reports listener errors here
         const swallow = (event) => event.preventDefault(); // ... and as a window "error" event

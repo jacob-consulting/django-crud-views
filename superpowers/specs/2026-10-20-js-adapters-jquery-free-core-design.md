@@ -1,7 +1,7 @@
 # JavaScript adapters and a jQuery-free core
 
 Date: 2026-10-20
-Status: draft, reviewed with the maintainer section by section
+Status: reviewed with the maintainer section by section; builder check done, its two open questions answered below
 
 ## Intent
 
@@ -75,6 +75,8 @@ The goal is that **core pages need neither jQuery nor a global named `bootstrap`
 | `cv_modal_size` | Semantic tokens `""`, `"sm"`, `"lg"`, `"xl"` only; E250 rejects the old class names; no transition period |
 | Scope | Modal, tooltip and filter collapse adapters plus jQuery removal from the three small scripts in one release, so the Tabler theme needs no shim |
 | `formset.js` | Stays on jQuery; guarded so it does not throw at load without jQuery |
+| Release order | This spec ships first, as its own release, before the buttons spec (`2026-10-19-button-variants-and-leaves-design.md`). The buttons spec then starts from this spec's state: the filter toggle carries `aria-expanded` / `aria-controls`, the modal shell is its own template, the goldens are regenerated again there |
+| Tabler acceptance | Verified by hand in `tabler-test` against the dev build, uncommitted; the theme migration itself stays a later task |
 
 ## Design
 
@@ -236,7 +238,8 @@ extensions, which document their own requirement.
   no console errors.
 - The same page with a formset and no jQuery: exactly one console error naming jQuery; everything else works.
 - A Tabler page with `Object.assign(cv.adapters, cv.bootstrapAdapters(() => globalThis.tabler))` after core, no
-  jQuery, no shim, every script deferred: all of the above.
+  jQuery, no shim, every script deferred: all of the above. Verified by hand as described under "Tabler check";
+  nothing is committed in `tabler-test`.
 - `cv_modal_size = "modal-lg"` fails `manage.py check` with E250 and the migration hint; `"lg"` passes and renders
   `data-cv-modal-size="lg"`; the Bootstrap adapter gives the dialog `modal-dialog modal-lg`.
 - A project that does nothing renders the same DOM as 0.30.0 except: the close button attribute
@@ -294,6 +297,17 @@ Against `crud_views_tabler` in `tabler-test` as of its current state, what the t
 
 Not verified: that Tabler's copied Bootstrap components keep `getInstance` and `jQueryInterface` in future versions.
 They are a vendored fork, not an npm dependency on Bootstrap.
+
+**How the acceptance criterion is verified** (local, uncommitted, part of this work's final verification):
+
+1. Install this repository's dev build into `tabler-test`'s virtualenv (editable install from the working tree).
+2. In `tabler-test`, temporarily replace the theme's `shared/js.html` override with the core include plus one deferred
+   script containing the `Object.assign(...)` line above, and remove the jQuery and `bootstrap-shim.js` tags.
+3. In the browser: open a modal view, submit it with and without validation errors, dismiss it; hover a tooltip;
+   toggle the filter panel and reload to see the state persisted; run a POST list action and a cancel button. The
+   console shows no errors.
+4. Revert the `tabler-test` working tree. The theme migration (deleting the shim for good, registering the adapter
+   file through the asset registry) is a separate task after release.
 
 ## Files to change (0.30.0 inventory)
 

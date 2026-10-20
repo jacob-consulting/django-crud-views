@@ -506,20 +506,21 @@ class CrudView(metaclass=CrudViewMetaClass):
                 items.append((key, ctx))
         return items
 
-    def cv_get_list_action_group(self, obj) -> ActionGroup | None:
-        """Row actions split into inline buttons and menu items; None: no menu, render the plain buttons (#174)."""
+    def cv_get_list_action_group(self, obj) -> ActionGroup:
+        """Row actions split into inline buttons and menu items; all inline when no inline keys are set (#174)."""
+        items = self.cv_resolved_actions(self.cv_list_actions, obj)
         inline = self.cv_get_list_actions_inline()
         if inline is None:
-            return None
-        return cv_split_actions(self.cv_resolved_actions(self.cv_list_actions, obj), inline)
+            return ActionGroup(inline=[ctx for _, ctx in items], menu=[])
+        return cv_split_actions(items, inline)
 
-    def cv_get_context_action_group(self, obj=None) -> ActionGroup | None:
+    def cv_get_context_action_group(self, obj=None) -> ActionGroup:
         """Context toolbar split into inline buttons and menu items; buttons with their own template stay inline.
-        None: no menu (#174)."""
+        All inline when no inline keys are set (#174)."""
+        items = self.cv_resolved_actions(self.cv_context_actions, obj)
         inline = self.cv_get_context_actions_inline()
         if inline is None:
-            return None
-        items = self.cv_resolved_actions(self.cv_context_actions, obj)
+            return ActionGroup(inline=[ctx for _, ctx in items], menu=[])
         return cv_split_actions(items, inline, foldable=cv_context_button_foldable)
 
     def cv_get_oid(self, key: str, obj: Model | None = None) -> str | None:

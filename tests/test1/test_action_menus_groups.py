@@ -38,8 +38,10 @@ def detail_view(client_user_author_view, author_douglas_adams):
 
 
 @pytest.mark.django_db
-def test_list_group_none_by_default(list_view, author_douglas_adams):
-    assert list_view.cv_get_list_action_group(author_douglas_adams) is None
+def test_list_group_all_inline_by_default(list_view, author_douglas_adams):
+    group = list_view.cv_get_list_action_group(author_douglas_adams)
+    assert _keys(group.inline) == ["detail"]  # view-only user: update and delete are hidden
+    assert group.menu == []
 
 
 @pytest.mark.django_db
@@ -83,7 +85,9 @@ def test_context_group_resolves_on_rendering_view(detail_view, author_douglas_ad
     # an inline value on the TARGET (list) view must not matter for the detail toolbar
     monkeypatch.setattr(AuthorDetailView, "cv_context_actions", ["home", "detail"])
     monkeypatch.setattr(AuthorListView, "cv_context_actions_inline", [])
-    assert detail_view.cv_get_context_action_group(author_douglas_adams) is None
+    group = detail_view.cv_get_context_action_group(author_douglas_adams)
+    assert _keys(group.inline) == ["list", "detail"]
+    assert group.menu == []
 
 
 @pytest.mark.django_db

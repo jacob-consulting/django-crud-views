@@ -77,17 +77,17 @@ class CardListView(CardOrderMixin, CrudView, generic.ListView):
         data.update(cv_label=label, cv_variant=variant, cv_flex=action.flex, cv_no_label=action.no_label)
         return data
 
-    def cv_get_card_action_group(self, obj) -> ActionGroup | None:
+    def cv_get_card_action_group(self, obj) -> ActionGroup:
         """Card actions split into inline buttons and menu items, matched by CardAction.key or child_name.
-        None: no menu (#174)."""
-        inline = self.cv_get_card_actions_inline()
-        if inline is None:
-            return None
+        All inline when no inline keys are set (#174)."""
         items = []
         for action in self.cv_card_actions:
             ctx = cv_resolve_action(self.cv_get_card_action_data(action, obj, self.request.user))
             if ctx is not None:
                 items.append((action.key or action.child_name, ctx))
+        inline = self.cv_get_card_actions_inline()
+        if inline is None:
+            return ActionGroup(inline=[ctx for _, ctx in items], menu=[])
         return cv_split_actions(items, inline)
 
     @classmethod

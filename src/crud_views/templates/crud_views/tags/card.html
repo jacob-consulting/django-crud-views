@@ -4,20 +4,9 @@
 <div class="card mb-3">
     <div class="card-body">
         <h5 class="card-title">{{ object }}</h5>
-        <div class="d-flex gap-2">
-            {% if group is None %}
-            {% for action in view.cv_card_actions %}
-                {% cv_card_action action object %}
-            {% endfor %}
-            {% else %}
-            {% for ctx in group.inline %}
-                {% cv_render_card_action ctx %}
-            {% endfor %}
-            {% for ctx in group.menu %}
-                {% cv_render_list_action_form ctx %}
-            {% endfor %}
-            {% cv_actions_menu group "card" %}
-            {% endif %}
-        </div>
+        {% for ctx in group.menu %}
+            {% cv_render_list_action_form ctx %}
+        {% endfor %}
+        {% include "crud_views/tags/button/container.html" with cv_buttons=group.inline cv_group=group cv_location="card" cv_container_tag="div" %}
     </div>
 </div>

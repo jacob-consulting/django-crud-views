@@ -1,0 +1,4 @@
+{% load crud_views %}<{{ cv_container_tag }} class="{% cv_button_class cv_location 'container' %}"{% if cv_container_tag == "fieldset" %} aria-label="Actions"{% endif %} cv-{{ cv_location }}-container="true">
+    {% for ctx in cv_buttons %}{% cv_render_button ctx cv_location %}{% endfor %}
+    {% cv_actions_menu cv_group cv_location %}
+</{{ cv_container_tag }}>

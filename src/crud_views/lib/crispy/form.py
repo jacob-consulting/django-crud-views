@@ -127,7 +127,7 @@ class CrispyDeleteForm(CrispyForm):
         """
         Delete button for FormActions
         """
-        return Submit(slot="form:delete", **self.get_delete_button_kwargs())
+        return Submit(**{"slot": "form:delete", **self.get_delete_button_kwargs()})
 
     @property
     def helper(self):

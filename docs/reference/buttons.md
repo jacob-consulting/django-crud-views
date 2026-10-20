@@ -183,9 +183,12 @@ view data:
 | `crud_views/tags/button/action.html` | one action button (`<a>` or `<button>`) |
 | `crud_views/tags/button/menu_item.html` | one dropdown item |
 | `crud_views/tags/button/container.html` | the group of buttons plus the menu; receives `cv_buttons`, `cv_group`, `cv_location` and `cv_container_tag` |
+| `crud_views/tags/button/menu_item_label.html` | icon and label of a menu item, included by `menu_item.html`; reads `cv_icon` and `cv_short_label` |
 
-`crud_views/tags/actions_menu_item_label.html` renders the icon and label of a menu item from `cv_icon` and
-`cv_short_label`.
+`crud_views/tags/actions_menu_item_label.html` is kept with its 0.30 body (raw keys `cv_icon_action`,
+`cv_action_short_label`, `cv_action_label`, `cv_label`) only for 0.30 overrides of `tags/actions_menu_item.html` that
+include it. The stock menu item does not use it, so an override of it no longer changes the stock menu; override
+`tags/button/menu_item_label.html` instead.
 
 ### The leaf contract
 
@@ -279,15 +282,18 @@ def ready(self):
 ```html+django
 {# myapp_theme/templates/crud_views/tags/button/action.html #}
 {% load crud_views %}<{{ cv_tag }}{% if cv_tag == "a" %} href="{{ cv_href }}"{% else %} type="button"{% endif %}
-    class="{% cv_button_class cv_location cv_variant %}{% if cv_active %} is-active{% endif %}"
+    class="{% cv_button_class cv_location cv_variant %}{% if cv_active %} is-active{% endif %}{% if cv_flex %} flex-grow-1{% endif %}"
     {% if cv_disabled %}disabled data-cv-disabled="{{ cv_disabled_reason }}"{% endif %}
     {% if cv_submit_target %}data-cv-action="submit-form" data-cv-target="{{ cv_submit_target }}"{% endif %}
     {% if cv_modal %}data-cv-modal="true" data-cv-modal-size="{{ cv_modal_size }}"{% endif %}
     {% if cv_active %}aria-current="page"{% endif %}
-    cv-key="{{ cv_key }}">{% cv_icon cv_icon %}<span{% if cv_variant != "primary" %} class="visually-hidden"{% endif %}>{{ cv_label }}</span></{{ cv_tag }}>
+    {% if cv_title %}title="{{ cv_title }}"{% endif %}
+    cv-key="{{ cv_key }}">{% if cv_label_visible %}<span>{{ cv_label }}</span>{% else %}{% cv_icon cv_icon %}<span{% if cv_variant != "primary" %} class="visually-hidden"{% endif %}>{{ cv_label }}</span>{% endif %}</{{ cv_tag }}>
 ```
 
-Keep the `data-cv-*` attributes and `cv-key`: the bundled scripts use them. Keep the `cv_disabled` handling when you
+The leaf is shared by the context toolbar, list rows and cards: keep the `cv_label_visible` branch (cards with a
+visible label), `cv_flex` and `cv_title`, as the bundled `crud_views/tags/button/action.html` does. Keep the
+`data-cv-*` attributes and `cv-key`: the bundled scripts use them. Keep the `cv_disabled` handling when you
 override the leaf, otherwise an action disabled by `CRUD_VIEWS_INACCESSIBLE_ACTIONS = "disable"` looks enabled.
 
 ## System checks

@@ -5,4 +5,4 @@
     {% if cv_modal %}data-cv-modal="true" data-cv-modal-size="{{ cv_modal_size }}"{% endif %}
     {% if cv_active %}aria-current="page"{% endif %}
     {% if cv_location == "context" and cv_title %}title="{{ cv_title }}"{% endif %}
-    cv-key="{{ cv_key }}">{% include "crud_views/tags/actions_menu_item_label.html" %}</{{ cv_tag }}>
+    cv-key="{{ cv_key }}">{% include "crud_views/tags/button/menu_item_label.html" %}</{{ cv_tag }}>

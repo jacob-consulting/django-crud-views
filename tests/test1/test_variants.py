@@ -4,17 +4,24 @@ import uuid
 
 import pytest
 from django.contrib.auth.models import User
-from django.test import Client
+from django.test import Client, override_settings
 from lxml import html
 
 from crud_views.lib.view import CardAction, ChildContextButton, ContextButton
+from crud_views.lib.view.buttons import FilterContextButton
 from crud_views.lib.view.variant import VARIANTS, Variant, is_variant
 from crud_views.lib.views import CardListView, CreateView, DeleteView, DetailView, ListView, UpdateView
 from crud_views.lib.views.action_ordered import OrderedUpView
 from crud_views.lib.views.manage import ManageView
 from crud_views_polymorphic.lib.create_select import PolymorphicCreateSelectView
 from tests.lib.helper.user import user_viewset_permission
-from tests.test1.app.views import AuthorCardListView, AuthorDetailView, AuthorUpdateView, PublisherCardListView
+from tests.test1.app.views import (
+    AuthorCardListView,
+    AuthorDetailView,
+    AuthorUpdateView,
+    PublisherCardListView,
+    PublisherListView,
+)
 
 E209 = "viewset.E209"
 
@@ -66,6 +73,24 @@ def test_context_button_override(cv_author, cv_publisher, author_douglas_adams, 
     assert ChildContextButton(key="b", child_name="book").get_context(ctx)["cv_variant"] == "secondary"
     button = ChildContextButton(key="b", child_name="book", variant="primary")
     assert button.get_context(ctx)["cv_variant"] == "primary"
+
+
+@pytest.mark.django_db
+def test_filter_button_override(cv_publisher, monkeypatch):
+    client = _client(cv_publisher, ["view"])
+    view = client.get("/publisher/").context["view"]
+    ctx = view.cv_get_view_context()
+    assert "cv_variant" not in FilterContextButton().get_context(ctx)
+    assert FilterContextButton(variant="primary").get_context(ctx)["cv_variant"] == "primary"
+
+    def toggle_class() -> str:
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"context:primary": "x-primary"}):
+            doc = html.fromstring(client.get("/publisher/").content)
+        return doc.cssselect("#cv-filter-toggle")[0].get("class")
+
+    assert "x-primary" not in toggle_class()
+    monkeypatch.setattr(PublisherListView, "cv_context_buttons", [FilterContextButton(variant="primary")])
+    assert toggle_class() == "x-primary"
 
 
 @pytest.mark.django_db

@@ -197,7 +197,12 @@ def cv_render_button(context, ctx, location):
         return ""
     if location == "context":
         return _render_context_action(context, ctx)
-    return render_to_string(_BUTTON_TEMPLATES[location], ctx, request=context["request"])
+    # render on the bound context like an inclusion tag: context processors run once per page, not per button
+    template = context.template.engine.get_template(_BUTTON_TEMPLATES[location])
+    new_context = context.new(ctx)
+    if (token := context.get("csrf_token")) is not None:
+        new_context["csrf_token"] = token
+    return template.render(new_context)
 
 
 @register.simple_tag(takes_context=True)

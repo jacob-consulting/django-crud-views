@@ -1,6 +1,7 @@
 """Button leaves: presentation-only templates fed the flat leaf contract, thin logic templates, one container."""
 
 import pytest
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.template import Context, Template
 from django.template.loader import render_to_string
@@ -99,6 +100,64 @@ def test_menu_item_leaf_title_only_for_context():
     assert _one(render_to_string(MENU_ITEM_LEAF, item), "a.dropdown-item").get("title") == "Details"
 
 
+# the 0.30 body of tags/actions_menu_item.html, as a project override of it still looks: raw keys, shared label include
+MENU_ITEM_030 = """{% if cv_disabled %}
+<button type="button" class="dropdown-item" disabled
+    data-cv-disabled="{{ cv_disabled_reason }}"
+    {% if cv_location == "context" %}title="{{ cv_action_label }}"{% endif %}
+    cv-key="{{ cv_key }}">{% include "crud_views/tags/actions_menu_item_label.html" %}</button>
+{% elif cv_modal %}
+<a class="dropdown-item" href="{{ cv_url }}"
+    data-cv-modal="true" data-cv-modal-size="{{ cv_modal_size }}"
+    {% if cv_location == "context" %}title="{{ cv_action_label }}"{% endif %}
+    cv-key="{{ cv_key }}">{% include "crud_views/tags/actions_menu_item_label.html" %}</a>
+{% elif cv_list_action_method == "post" %}
+<button type="button" class="dropdown-item"
+    data-cv-action="submit-form" data-cv-target="cv_form_{{ cv_oid }}"
+    {% if cv_location == "context" %}title="{{ cv_action_label }}"{% endif %}
+    cv-key="{{ cv_key }}">{% include "crud_views/tags/actions_menu_item_label.html" %}</button>
+{% else %}
+<a class="dropdown-item{% if cv_is_active %} active{% endif %}" href="{{ cv_url }}"
+    {% if cv_is_active %}aria-current="page"{% endif %}
+    {% if cv_location == "context" %}title="{{ cv_action_label }}"{% endif %}
+    cv-key="{{ cv_key }}">{% include "crud_views/tags/actions_menu_item_label.html" %}</a>
+{% endif %}"""
+
+
+@pytest.mark.parametrize(
+    "extra, label",
+    [
+        ({"cv_location": "list"}, "Det"),
+        ({"cv_location": "list", "cv_action_short_label": None}, "Details"),
+        ({"cv_location": "card", "cv_label": "Card label"}, "Card label"),
+    ],
+)
+def test_legacy_menu_item_override_keeps_icon_and_label(extra, label):
+    raw = {
+        "cv_key": "detail",
+        "cv_access": True,
+        "cv_url": "/author/1/detail/",
+        "cv_icon_action": "detail",
+        "cv_action_short_label": "Det",
+        "cv_action_label": "Details",
+        "cv_list_action_method": "get",
+        "cv_oid": "author_detail_1",
+        **extra,
+    }
+    a = _one(Template(MENU_ITEM_030).render(Context(raw)), "a.dropdown-item")
+    assert len(a.cssselect("i")) == 1
+    assert a.text_content().strip() == label
+
+
+def test_menu_item_leaf_label_from_contract():
+    a = _one(render_to_string(MENU_ITEM_LEAF, _context_get(cv_short_label="Det")), "a.dropdown-item")
+    assert len(a.cssselect("i")) == 1
+    assert a.text_content().strip() == "Det"
+    a = _one(render_to_string(MENU_ITEM_LEAF, _context_get(cv_icon="")), "a.dropdown-item")
+    assert not a.cssselect("i")
+    assert len(a.cssselect("span.cv-icon-fw[aria-hidden=true]")) == 1
+
+
 def test_container_div_has_no_aria_label():
     ctx = {"cv_container_tag": "div", "cv_location": "card", "cv_buttons": [], "cv_group": ActionGroup()}
     div = _one(render_to_string(CONTAINER_LEAF, ctx), "div[cv-card-container]")
@@ -179,6 +238,48 @@ def test_group_always_returned(client_full, author_douglas_adams, monkeypatch):
     assert not doc.cssselect(".cv-menu-toggle")
 
 
+_PROCESSOR_CALLS = []
+
+
+def counting_processor(request) -> dict:
+    _PROCESSOR_CALLS.append(request.path)
+    return {}
+
+
+def _processor_calls(client, name) -> tuple[int, int]:
+    """Context processor runs and inline row buttons of one page."""
+    templates = [{**t, "OPTIONS": {**t["OPTIONS"]}} for t in settings.TEMPLATES]
+    processors = templates[0]["OPTIONS"]["context_processors"]
+    templates[0]["OPTIONS"]["context_processors"] = [*processors, f"{__name__}.counting_processor"]
+    _PROCESSOR_CALLS.clear()
+    with override_settings(TEMPLATES=templates):
+        _, doc = _get(client, name)
+    buttons = doc.cssselect("[cv-list-container] > [cv-key], [cv-card-container] > [cv-key]")
+    return len(_PROCESSOR_CALLS), len(buttons)
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "name, view, attr",
+    [("list", AuthorListView, "cv_list_actions_inline"), ("card", AuthorCardListView, "cv_card_actions_inline")],
+)
+def test_inline_buttons_do_not_rerun_context_processors(
+    client_full, author_douglas_adams, monkeypatch, name, view, attr
+):
+    # table cells and cards render per row on their own; the inline buttons must add no processor runs on top
+    from tests.test1.app.models import Author
+
+    for i in range(3):
+        Author.objects.create(first_name="Extra", last_name=f"Author {i}")
+    monkeypatch.setattr(view, attr, [])
+    calls_without, buttons_without = _processor_calls(client_full, name)
+    monkeypatch.setattr(view, attr, ["detail", "update", "delete"])
+    calls_with, buttons_with = _processor_calls(client_full, name)
+    assert buttons_without == 0
+    assert buttons_with == 12
+    assert calls_with == calls_without
+
+
 @pytest.mark.django_db
 def test_card_post_action_is_a_button(client_full, author_douglas_adams, monkeypatch):
     _with_ping(monkeypatch)
@@ -189,6 +290,8 @@ def test_card_post_action_is_a_button(client_full, author_douglas_adams, monkeyp
     assert buttons[0].get("href") is None
     assert not row.cssselect("a[href='#']")
     form = row.cssselect(f"form#{buttons[0].get('data-cv-target')}")[0]
+    token = form.cssselect("input[name=csrfmiddlewaretoken]")
+    assert len(token) == 1 and token[0].get("value")
     children = list(row)
     assert children.index(form) < children.index(buttons[0])
     assert all(b.get("cv-key") for b in row.cssselect("a, button"))

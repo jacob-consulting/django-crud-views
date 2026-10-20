@@ -59,6 +59,21 @@ def test_delete_button_hook(client_user_author_delete, cv_author, author_douglas
 
 
 @pytest.mark.django_db
+def test_delete_button_kwargs_may_choose_the_slot(
+    client_user_author_delete, cv_author, author_douglas_adams, monkeypatch
+):
+    from tests.test1.app.views import AuthorDeleteView
+
+    class SlotForm(CrispyDeleteForm):
+        def get_delete_button_kwargs(self) -> dict:
+            return {**super().get_delete_button_kwargs(), "slot": "form:cancel"}
+
+    monkeypatch.setattr(AuthorDeleteView, "form_class", SlotForm)
+    html = client_user_author_delete.get(url(cv_author, "delete", author_douglas_adams.pk)).content.decode()
+    assert 'class="btn btn-secondary"' in tag(html, name="delete")
+
+
+@pytest.mark.django_db
 def test_filter_buttons(client_user_publisher_view, cv_publisher):
     html = client_user_publisher_view.get(url(cv_publisher, "list")).content.decode()
     assert 'class="btn btn-primary"' in tag(html, id="filter-button")

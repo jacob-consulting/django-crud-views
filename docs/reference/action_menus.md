@@ -101,9 +101,10 @@ The toggle icon is the semantic icon `actions-menu` (default `fas:ellipsis`). Ch
 | `crud_views/tags/actions_menu.html` | dropdown wrapper and item list |
 | `crud_views/tags/actions_menu_toggle.html` | the toggle button only |
 | `crud_views/tags/actions_menu_item.html` | one menu item (logic template) |
-| `crud_views/tags/actions_menu_item_label.html` | icon and label of an item (`cv_icon`, `cv_short_label`) |
+| `crud_views/tags/actions_menu_item_label.html` | legacy: icon and label from raw keys, kept for 0.30 overrides of `actions_menu_item.html` |
 | `crud_views/tags/button/action.html` | leaf: one inline button |
 | `crud_views/tags/button/menu_item.html` | leaf: one dropdown item |
+| `crud_views/tags/button/menu_item_label.html` | leaf: icon and label of an item (`cv_icon`, `cv_short_label`) |
 | `crud_views/tags/button/container.html` | leaf: the inline buttons and the menu of one location |
 
 The logic templates and leaves are described in [Buttons](buttons.md#logic-templates-and-leaves).

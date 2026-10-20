@@ -439,7 +439,7 @@ class XForm extends XBase {
         // class strings come from the template (data attributes), never from literals here
         let normal = button.attr("data-cv-class");
         let danger = button.attr("data-cv-class-danger");
-        if (normal && danger) {
+        if (normal !== undefined && danger !== undefined) {
             if (value) {
                 button.removeClass(normal);
                 button.addClass(danger);

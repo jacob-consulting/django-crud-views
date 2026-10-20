@@ -115,6 +115,34 @@ describe("formset.js", () => {
             expect(btn.classList.contains("x-danger")).toBe(false);
         });
 
+        it("delete() keeps a token shared by both class strings in both directions", () => {
+            formsetFixture({ deleteClass: "x x-ctrl", deleteDangerClass: "x x-danger" });
+            const btn = document.querySelector('button.cv-form-ctrl-delete[cv-data-formset-form-prefix="book-None-0-0"]');
+
+            new window.cv.XForm(null, "book-None-0-0").delete();
+            expect(btn.classList.contains("x")).toBe(true);
+            expect(btn.classList.contains("x-danger")).toBe(true);
+            expect(btn.classList.contains("x-ctrl")).toBe(false);
+
+            new window.cv.XForm(null, "book-None-0-0").delete();
+            expect(btn.classList.contains("x")).toBe(true);
+            expect(btn.classList.contains("x-ctrl")).toBe(true);
+            expect(btn.classList.contains("x-danger")).toBe(false);
+        });
+
+        it("delete() still recolours when one class string is empty", () => {
+            formsetFixture({ deleteClass: "" });
+            const btn = document.querySelector('button.cv-form-ctrl-delete[cv-data-formset-form-prefix="book-None-0-0"]');
+            expect(btn.getAttribute("data-cv-class")).toBe("");
+
+            new window.cv.XForm(null, "book-None-0-0").delete();
+            expect(btn.classList.contains("x-danger")).toBe(true);
+
+            new window.cv.XForm(null, "book-None-0-0").delete();
+            expect(btn.classList.contains("x-danger")).toBe(false);
+            expect(btn.classList.contains("cv-form-ctrl-delete")).toBe(true);
+        });
+
         it("delete() without data-cv-class attributes only toggles the input", () => {
             formsetFixture();
             const del = document.querySelector('input[name="book-None-0-0-DELETE"]');

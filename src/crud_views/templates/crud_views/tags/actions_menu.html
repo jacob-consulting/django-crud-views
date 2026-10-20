@@ -1,6 +1,6 @@
 {% load crud_views %}
 {% if cv_menu_items %}
-<div class="{{ cv_menu_wrapper_class }}">
+<div class="{% cv_button_class cv_location "menu-wrapper" %}">
     {% include "crud_views/tags/actions_menu_toggle.html" %}
     <ul class="dropdown-menu dropdown-menu-end">
         {% for item in cv_menu_items %}<li>{% cv_render_menu_item item cv_location %}</li>{% endfor %}

@@ -6,6 +6,7 @@ from django.utils.translation import gettext as _
 from django.views import generic
 
 from crud_views.lib.check import Check, CheckTemplateOrCode
+from crud_views.lib.crispy.buttons import Reset, Submit
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import CrudView, CrudViewPermissionRequiredMixin
 
@@ -67,16 +68,9 @@ class ListViewFilterFormHelper(FormHelper):
         self.view = view
         # add filter control buttons
         self.add_input(
-            layout.Submit("submit", _("Apply Filter"), css_id="filter-button"),
+            Submit("submit", _("Apply Filter"), css_id="filter-button", slot="form:filter-submit"),
         )
-        self.add_input(
-            layout.Reset(
-                "reset",
-                _("Reset Filter"),
-                css_id="filter-button-reset",
-                css_class=crud_views_settings.filter_reset_button_css_class,
-            )
-        )
+        self.add_input(Reset("reset", _("Reset Filter"), css_id="filter-button-reset"))
 
         # add hidden fields with control values so a filter submit does not
         # drop the active table sort (ListView) or card order (CardView)

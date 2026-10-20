@@ -1,26 +1,8 @@
 {% load crud_views %}
 {% cv_list_action_group record as group %}
-{% if group is None %}
-
-{% for key in view.cv_list_actions %}
-    {% cv_list_action_form key record %}
-{% endfor %}
-
-<fieldset class="btn-group btn-group-xs" aria-label="Actions" cv-list-container="true">
-    {% for key in view.cv_list_actions %}
-        {% cv_list_action key record %}
-    {% endfor %}
-</fieldset>
-{% else %}
 
 {% for ctx in group.all %}
     {% cv_render_list_action_form ctx %}
 {% endfor %}
 
-<fieldset class="btn-group btn-group-xs" aria-label="Actions" cv-list-container="true">
-    {% for ctx in group.inline %}
-        {% cv_render_list_action ctx %}
-    {% endfor %}
-    {% cv_actions_menu group "list" %}
-</fieldset>
-{% endif %}
+{% include "crud_views/tags/button/container.html" with cv_buttons=group.inline cv_group=group cv_location="list" cv_container_tag="fieldset" %}

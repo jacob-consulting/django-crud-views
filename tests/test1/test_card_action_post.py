@@ -27,7 +27,7 @@ def client_user_author_view_change(client, user_author_view_change) -> Client:
 def test_card_post_action_renders_submit_form(
     client_user_author_view_change: Client, cv_author, author_douglas_adams, monkeypatch
 ):
-    """A CardAction targeting a POST-only view renders a submit-form trigger + hidden POST form, not a GET link."""
+    """A CardAction targeting a POST-only view renders a submit-form button + hidden POST form, not a GET link."""
     from tests.test1.app.views import AuthorCardListView
 
     monkeypatch.setattr(
@@ -42,12 +42,12 @@ def test_card_post_action_renders_submit_form(
     card = doc.cssselect(".card.mb-3")[0]
     pk = author_douglas_adams.pk
 
-    # POST action -> submit-form trigger anchor (href="#", not the action URL)
-    trigger = card.cssselect("a[data-cv-action='submit-form']")
+    # POST action -> submit-form trigger button (no href, not a link to the action URL)
+    trigger = card.cssselect("button[data-cv-action='submit-form']")
     assert len(trigger) == 1
     target = trigger[0].get("data-cv-target")
     assert target.startswith("cv_form_")
-    assert trigger[0].get("href") == "#"
+    assert trigger[0].get("href") is None
 
     # POST action -> hidden form present, tied to the trigger by id, with the action URL and a CSRF token
     form = card.cssselect(f"form#{target}")

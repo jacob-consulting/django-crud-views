@@ -11,6 +11,28 @@
   `crud_views/modal/shell.html`.
 - Custom JS calling `cv.cvModalOpen(url, "modal-lg")` and hand-written `data-cv-modal-size="modal-lg"` in project
   templates must move to the tokens (`"lg"`); `viewset.E250` cannot see them and they silently get the default size.
+- `CRUD_VIEWS_FILTER_RESET_BUTTON_CSS_CLASS` is removed and fails `crud_views.E360` while defined. Use
+  `CRUD_VIEWS_BUTTON_CLASSES = {"form:filter-reset": "..."}`.
+- The tags `cv_submit_button`, `cv_cancel_button` and `cv_delete_button` and their templates are removed; the crispy
+  forms build their buttons with `Submit`, `Button` and `Reset`.
+- `CardAction.variant` defaults to `None`, the target view's variant: a card action on a create view without an
+  explicit variant now renders `btn-primary`.
+- `cv_actions_menu` no longer passes `cv_menu_wrapper_class` / `cv_toggle_class`; theme overrides of
+  `actions_menu.html` / `actions_menu_toggle.html` use `{% cv_button_class %}`.
+- `tags/context_action.html`, `tags/list_action.html`, `tags/card_action.html` and `tags/actions_menu_item.html` are
+  one-line logic templates. Overrides from 0.30 keep working; new overrides go to `tags/button/action.html`,
+  `menu_item.html` and `container.html`.
+- `tags/actions_menu_item_label.html` keeps its 0.30 body and is kept only for 0.30 overrides of
+  `tags/actions_menu_item.html`. The stock menu item leaf uses `tags/button/menu_item_label.html`, so a theme override
+  of the old label include no longer affects the stock menu; move it to `tags/button/menu_item_label.html`.
+- DOM changes: one attribute order for all buttons; card buttons carry `cv-key`; card POST actions render
+  `<button type="button">`; the active toolbar action carries `aria-current="page"`; the card row carries
+  `cv-card-container`; card menu forms render before the row; the crispy cancel button renders `btn btn-secondary`
+  (was `btn btn btn-secondary`) and the filter reset `btn btn-secondary` (was `btn btn-inverse btn btn-secondary`).
+- The Delete label is translatable.
+- `formsets/control.html` overrides without `data-cv-class` / `data-cv-class-danger` no longer recolour the delete
+  toggle.
+- A list or card button whose target is the current view now renders `active`.
 
 ### Changed
 
@@ -28,6 +50,16 @@
 ### Added
 
 - `cv.adapters` (`modal`, `tooltip`, `collapse`) and `cv.bootstrapAdapters(ns)`; see `docs/reference/javascript.md`.
+- Button variants (`primary`, `secondary`, `tertiary`, `danger`): `cv_action_variant` on views, `ContextButton.variant`
+  and `CardAction.variant`.
+- `CRUD_VIEWS_BUTTON_CLASSES`, `register_button_classes` and `{% cv_button_class %}`: every button class comes from one
+  layered `location:slot` table.
+- The leaves `tags/button/action.html`, `menu_item.html`, `menu_item_label.html` and `container.html`, the leaf contract
+  (`cv_button_data`) and the tags `{% cv_button %}` and `{% cv_render_button %}`.
+- `CrispyDeleteForm.get_delete_button()` / `get_delete_button_kwargs()` (the kwargs may set `slot`); `Submit`,
+  `Button` and `Reset` in `crud_views.lib.crispy`.
+- System checks `viewset.E209`, `crud_views.E360`, `crud_views.E361` and `crud_views.W362`; see
+  `docs/reference/buttons.md`.
 
 ## 0.30.0
 

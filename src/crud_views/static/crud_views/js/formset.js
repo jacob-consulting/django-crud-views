@@ -435,13 +435,18 @@ class XForm extends XBase {
     }
 
     set_delete(value) {
-        let btn = this.row.find(`button.cv-form-ctrl-delete[${CVFSConst.attr.form_prefix}="${this.prefix}"]`);
-        if (value) {
-            btn.removeClass("btn-light");
-            btn.addClass("btn-danger");
-        } else {
-            btn.removeClass("btn-danger");
-            btn.addClass("btn-light");
+        let button = this.row.find(`button.cv-form-ctrl-delete[${CVFSConst.attr.form_prefix}="${this.prefix}"]`);
+        // class strings come from the template (data attributes), never from literals here
+        let normal = button.attr("data-cv-class");
+        let danger = button.attr("data-cv-class-danger");
+        if (normal !== undefined && danger !== undefined) {
+            if (value) {
+                button.removeClass(normal);
+                button.addClass(danger);
+            } else {
+                button.removeClass(danger);
+                button.addClass(normal);
+            }
         }
         this.delete_input.attr("value", value === true ? "1" : "0");
     }

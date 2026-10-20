@@ -1,6 +1,6 @@
 {% load crud_views %}
 {% load i18n %}
-<button type="button" class="btn {{ cv_toggle_class }} dropdown-toggle cv-menu-toggle"
+<button type="button" class="{% cv_button_class cv_location "menu-toggle" %} dropdown-toggle cv-menu-toggle"
         data-bs-toggle="dropdown" aria-expanded="false" aria-label="{% translate 'More actions' %}"
         {% if cv_location == "list" %}data-bs-popper-config='{"strategy":"fixed"}'{% endif %}>
     {% cv_icon cv_menu_icon %}<span class="visually-hidden">{% translate "More actions" %}</span>

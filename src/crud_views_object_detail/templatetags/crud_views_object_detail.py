@@ -2,6 +2,7 @@ from django import template
 from django.template.loader import select_template
 from django.utils.safestring import mark_safe
 
+from crud_views.lib.button_classes import get_button_class
 from crud_views.lib.icons import render_icon
 from crud_views_object_detail.lib.conf import crud_views_object_detail_settings
 from crud_views_object_detail.lib.config import parse_property_display
@@ -101,3 +102,9 @@ def render_property_value(context, prop):
 def cv_icon(value, css=""):
     """Render a semantic icon name; delegates to ``render_icon`` (no ``crud_views`` load needed)."""
     return render_icon(value, css)
+
+
+@register.simple_tag
+def cv_button_class(location, slot):
+    """Resolved CSS classes for the button slot ``location:slot`` (autoescaped)."""
+    return get_button_class(location, slot)

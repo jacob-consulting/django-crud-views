@@ -46,6 +46,7 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, generic.DeleteView):
 
     # icons
     cv_icon_action = "delete"
+    cv_action_variant = "danger"
 
     # messages
     cv_message_template: str | None = "crud_views/snippets/message/delete.html"

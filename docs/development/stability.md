@@ -24,7 +24,10 @@ Internal APIs may change in any release without notice.
 `ViewSet`, `ParentViewSet`
 
 **View base** — `crud_views.lib.view`:
-`CrudView`, `CrudViewPermissionRequiredMixin`
+`CrudView`, `CrudViewPermissionRequiredMixin`, `Variant` (`crud_views.lib.view.variant`)
+
+**Button classes** — `crud_views.lib.button_classes`:
+`register_button_classes`, `get_button_classes`, `get_button_class`
 
 **Views** — `crud_views.lib.views`:
 `ListView`, `DetailView`, `CreateView`, `UpdateView`, `DeleteView`,
@@ -38,7 +41,7 @@ optional `crud_views_object_detail` app as `ObjectDetailView`
 (`from crud_views_object_detail.lib import ObjectDetailView`).
 
 **Crispy forms integration** — `crud_views.lib.crispy`:
-`CrispyViewMixin`, `CrispyModelForm`, `CrispyForm`, `CrispyDeleteForm`,
+`CrispyViewMixin`, `CrispyModelForm`, `CrispyForm`, `CrispyDeleteForm`, `Submit`, `Button`, `Reset`,
 `Column1` … `Column12`
 
 **Formsets (declaration surface)** — `crud_views.lib.formsets`:

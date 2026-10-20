@@ -7,10 +7,12 @@ from django.utils.translation import get_language, get_language_info
 from django_tables2.templatetags import django_tables2 as _dt2
 
 from crud_views.lib import assets
+from crud_views.lib.button_classes import get_button_class
 from crud_views.lib.exceptions import ViewSetKeyFoundError, ignore_exception
 from crud_views.lib.icons import render_icon
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import CrudView
+from crud_views.lib.view.button_data import cv_button_data
 from crud_views.lib.view.visibility import cv_resolve_action
 
 register = template.Library()
@@ -124,7 +126,7 @@ def cv_list_action_form(context, key, obj=None):
 
 @register.simple_tag(takes_context=True)
 def cv_list_action_group(context, obj):
-    """Row actions split into inline buttons and menu items; None: no menu (#174)."""
+    """Row actions split into inline buttons and menu items (#174)."""
     return cv_get_view(context).cv_get_list_action_group(obj)
 
 
@@ -142,27 +144,12 @@ def cv_render_list_action_form(context, ctx):
     return ctx
 
 
-# (wrapper class, toggle button classes) per location: the toggle matches its neighbouring buttons (#174)
-_ACTIONS_MENU_STYLE = {
-    "list": ("btn-group", "btn-outline-primary btn-xs"),
-    "context": ("btn-group", "btn-outline-primary btn-lg"),
-    "card": ("dropdown", "btn-secondary btn-sm"),
-}
-
-
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/actions_menu.html", takes_context=True)
 def cv_actions_menu(context, group, location):
     """The dropdown for a group's menu items; renders nothing when there are none (#174)."""
     if group is None or not group.menu:
         return {}
-    wrapper_class, toggle_class = _ACTIONS_MENU_STYLE[location]
-    return {
-        "cv_menu_items": group.menu,
-        "cv_location": location,
-        "cv_menu_wrapper_class": wrapper_class,
-        "cv_toggle_class": toggle_class,
-        "cv_menu_icon": "actions-menu",
-    }
+    return {"cv_menu_items": group.menu, "cv_location": location, "cv_menu_icon": "actions-menu"}
 
 
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/actions_menu_item.html")
@@ -178,6 +165,44 @@ def _render_context_action(context, ctx) -> str:
         return view.render_snippet(ctx, template_code=ctx["cv_template_code"])
     template = ctx.get("cv_template") or crud_views_settings.context_button_template
     return render_to_string(template, context=ctx, request=context["request"])
+
+
+_BUTTON_LEAVES = {
+    "action": f"{crud_views_settings.theme_path}/tags/button/action.html",
+    "menu-item": f"{crud_views_settings.theme_path}/tags/button/menu_item.html",
+}
+
+_BUTTON_TEMPLATES = {
+    "list": f"{crud_views_settings.theme_path}/tags/list_action.html",
+    "card": f"{crud_views_settings.theme_path}/tags/card_action.html",
+}
+
+
+@register.simple_tag(takes_context=True)
+def cv_button(context, location, kind="action"):
+    """The action data in context as one button (kind "action") or menu item (kind "menu-item").
+
+    The leaf template receives only the flat leaf contract of cv_button_data; hidden actions render nothing.
+    """
+    ctx = cv_resolve_action(context.flatten())
+    if ctx is None:
+        return ""
+    return render_to_string(_BUTTON_LEAVES[kind], cv_button_data(ctx, location))
+
+
+@register.simple_tag(takes_context=True)
+def cv_render_button(context, ctx, location):
+    """Render resolved action data for a container the way the per-key tags do; nothing for empty data."""
+    if not ctx:
+        return ""
+    if location == "context":
+        return _render_context_action(context, ctx)
+    # render on the bound context like an inclusion tag: context processors run once per page, not per button
+    template = context.template.engine.get_template(_BUTTON_TEMPLATES[location])
+    new_context = context.new(ctx)
+    if (token := context.get("csrf_token")) is not None:
+        new_context["csrf_token"] = token
+    return template.render(new_context)
 
 
 @register.simple_tag(takes_context=True)
@@ -258,25 +283,6 @@ def cv_context_actions(context, obj=None):
     view: CrudView = cv_get_view(context)
     group = view.cv_get_context_action_group(obj if obj else None)
     return {"view": view, "request": context["request"], "object": obj, "group": group}
-
-
-@register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/button_cancel.html", takes_context=True)
-def cv_cancel_button(context, obj=None):
-    view: CrudView = cv_get_view(context)
-    context = view.get_cancel_button_context(obj=obj, user=context["request"].user, request=context["request"])
-    return context
-
-
-@register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/button_submit.html", takes_context=True)
-def cv_submit_button(context, obj=None):
-    cv_get_view(context)
-    return {}
-
-
-@register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/button_delete.html", takes_context=True)
-def cv_delete_button(context, obj=None):
-    cv_get_view(context)
-    return {}
 
 
 @register.simple_tag(takes_context=True)
@@ -384,7 +390,7 @@ def cv_card_action(context, action, obj=None):
 
 @register.simple_tag(takes_context=True)
 def cv_card_action_group(context, obj):
-    """Card actions split into inline buttons and menu items; None: no menu (#174)."""
+    """Card actions split into inline buttons and menu items (#174); None for a view without card actions."""
     get_group = getattr(cv_get_view(context), "cv_get_card_action_group", None)
     return get_group(obj) if get_group else None
 
@@ -422,3 +428,9 @@ def cv_card(context, obj):
 def cv_icon(value, css=""):
     """Render a semantic icon name, library-prefixed name or raw class string as an <i> element."""
     return render_icon(value, css)
+
+
+@register.simple_tag
+def cv_button_class(location, slot):
+    """Resolved CSS classes for the button slot ``location:slot`` (autoescaped)."""
+    return get_button_class(location, slot)

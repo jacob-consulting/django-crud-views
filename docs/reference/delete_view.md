@@ -57,6 +57,20 @@ class AuthorDeleteView(CrispyViewMixin, MessageMixin, DeleteViewPermissionRequir
 You can create a custom delete form if you need additional fields or different confirmation
 logic.
 
+### Delete button
+
+The submit button of `CrispyDeleteForm` is built by two hooks. `get_delete_button_kwargs()` returns the crispy
+arguments (default `{"name": "delete", "value": _("Delete")}`) and `get_delete_button()` returns the `Submit` from them,
+with its classes from the button class key `form:delete`. Override the kwargs to change the label:
+
+```python
+class AuthorDeleteForm(CrispyDeleteForm):
+    def get_delete_button_kwargs(self) -> dict:
+        return {**super().get_delete_button_kwargs(), "value": _("Delete author")}
+```
+
+See [Buttons](buttons.md#forms).
+
 ## Messages
 
 Add `MessageMixin` to show a success message after deletion:

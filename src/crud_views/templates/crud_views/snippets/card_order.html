@@ -9,14 +9,14 @@
         {% endfor %}
     </select>
     {% if not cv_order_signed %}
-    <fieldset class="btn-group btn-group-sm" aria-label="{% translate 'Sort direction' %}">
+    <fieldset class="{% cv_button_class 'card-order' 'container' %}" aria-label="{% translate 'Sort direction' %}">
         <button type="submit" name="{{ cv_order_dir_param }}" value="asc"
-                class="btn btn-outline-secondary{% if cv_order_dir == 'asc' %} active{% endif %}"
+                class="{% cv_button_class 'card-order' 'toggle' %}{% if cv_order_dir == 'asc' %} active{% endif %}"
                 title="{% translate 'Ascending' %}">
             {% cv_icon "sort-asc" %}
         </button>
         <button type="submit" name="{{ cv_order_dir_param }}" value="desc"
-                class="btn btn-outline-secondary{% if cv_order_dir == 'desc' %} active{% endif %}"
+                class="{% cv_button_class 'card-order' 'toggle' %}{% if cv_order_dir == 'desc' %} active{% endif %}"
                 title="{% translate 'Descending' %}">
             {% cv_icon "sort-desc" %}
         </button>

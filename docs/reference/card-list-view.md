@@ -48,7 +48,7 @@ You do not configure this on `CardAction`; the method and modal behaviour derive
 | `key` | `str` | (required) | View key in the ViewSet (`"detail"`, `"update"`, `"delete"`, etc.) |
 | `label` | `str \| None` | `None` | Explicit button label. If None, falls back to the target view's short label. |
 | `no_label` | `bool` | `False` | Render as icon-only button |
-| `variant` | `str` | `"secondary"` | Button style: `"primary"`, `"secondary"`, `"tertiary"` |
+| `variant` | `str \| None` | `None` | Button style: `"primary"`, `"secondary"`, `"tertiary"`, `"danger"`. If None, falls back to the target view's `cv_action_variant` (`primary` for create, `danger` for delete, else `secondary`). See [Buttons](buttons.md#variants). |
 | `flex` | `bool` | `False` | If True, button gets `flex-grow-1` |
 | `child_name` | `str \| None` | `None` | Child viewset name for cross-viewset links (like `LinkChildColumn`). When set, `key` is ignored for URL resolution. |
 | `child_key` | `str` | `"list"` | View key within the child viewset (e.g., `"list"`, `"card"`) |

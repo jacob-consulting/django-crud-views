@@ -37,6 +37,7 @@ ContextButton(
     label_template_code=None,  # inline Django template string for the label
     template=None,  # path to a Django template for the whole button
     template_code=None,  # inline Django template string for the whole button
+    variant=None,  # primary, secondary, tertiary or danger; None: the target view's variant
 )
 ```
 
@@ -48,6 +49,7 @@ ContextButton(
 | `label_template_code` | `str \| None` | `None`   | Inline Django template string for the label      |
 | `template`            | `str \| None` | `None`   | Path to a Django template for the whole button   |
 | `template_code`       | `str \| None` | `None`   | Inline Django template string for the whole button |
+| `variant`             | `str \| None` | `None`   | Semantic variant; `None` uses the target view's `cv_action_variant`, see [Buttons](buttons.md#variants) |
 
 Access is checked via the target view's `cv_has_access(user, obj)`.
 

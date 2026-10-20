@@ -8,6 +8,7 @@ from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import CrudView, CrudViewPermissionRequiredMixin
 from crud_views.lib.view.action_menu import ActionGroup, cv_inline_checks, cv_split_actions
 from crud_views.lib.view.card import CardAction
+from crud_views.lib.view.variant import variant_check
 from crud_views.lib.view.visibility import cv_resolve_action
 from crud_views.lib.views.mixins import CardOrderMixin
 
@@ -53,7 +54,7 @@ class CardListView(CardOrderMixin, CrudView, generic.ListView):
                 "cv_url": url,
                 "cv_label": action.label,
                 "cv_icon_action": child_cls.cv_icon_action,
-                "cv_variant": action.variant,
+                "cv_variant": action.variant if action.variant is not None else child_cls.cv_action_variant,
                 "cv_flex": action.flex,
                 "cv_no_label": action.no_label,
                 "cv_list_action_method": "get",
@@ -72,20 +73,21 @@ class CardListView(CardOrderMixin, CrudView, generic.ListView):
             cv_access=bool(cls.cv_has_access(user, obj)),
             cv_action_enabled=cls.cv_action_enabled(user, obj),
         )
-        data.update(cv_label=label, cv_variant=action.variant, cv_flex=action.flex, cv_no_label=action.no_label)
+        variant = action.variant if action.variant is not None else cls.cv_action_variant
+        data.update(cv_label=label, cv_variant=variant, cv_flex=action.flex, cv_no_label=action.no_label)
         return data
 
-    def cv_get_card_action_group(self, obj) -> ActionGroup | None:
+    def cv_get_card_action_group(self, obj) -> ActionGroup:
         """Card actions split into inline buttons and menu items, matched by CardAction.key or child_name.
-        None: no menu (#174)."""
-        inline = self.cv_get_card_actions_inline()
-        if inline is None:
-            return None
+        All inline when no inline keys are set (#174)."""
         items = []
         for action in self.cv_card_actions:
             ctx = cv_resolve_action(self.cv_get_card_action_data(action, obj, self.request.user))
             if ctx is not None:
                 items.append((action.key or action.child_name, ctx))
+        inline = self.cv_get_card_actions_inline()
+        if inline is None:
+            return ActionGroup(inline=[ctx for _, ctx in items], menu=[])
         return cv_split_actions(items, inline)
 
     @classmethod
@@ -98,6 +100,9 @@ class CardListView(CardOrderMixin, CrudView, generic.ListView):
         yield from super().checks()
         keys = [action.key or action.child_name for action in cls.cv_card_actions]
         yield from cv_inline_checks(cls, "cv_card_actions_inline", keys)
+        for action in cls.cv_card_actions:
+            if action.variant is not None:
+                yield variant_check(cls, f"card action {action.key or action.child_name!r}", action.variant)
 
     @property
     def cv_filter_header(self) -> str:

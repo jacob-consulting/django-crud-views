@@ -1,5 +1,26 @@
 # Django CRUD Views - Changelog
 
+## Unreleased
+
+### Breaking
+
+- `cv_modal_size` takes the semantic tokens `""`, `"sm"`, `"lg"` and `"xl"`. `modal-*` values fail `viewset.E250`
+  with the replacement in the message.
+- The modal partial's close button uses `data-cv-modal-dismiss` (a project override of `crud_views/modal/content.html`
+  with `data-bs-dismiss` keeps working under the Bootstrap adapter). `{% cv_config %}` renders the shell through
+  `crud_views/modal/shell.html`.
+
+### Changed
+
+- jQuery is no longer required by core pages (formsets and jQuery-based extensions only).
+- `adapters.js` is the first core script (pipeline bundles pick it up through `cv_sources`).
+- The filter toggle carries `aria-expanded` / `aria-controls`.
+- `modal.js`, `list.filter.js` and `viewset.js` use the DOM API.
+
+### Added
+
+- `cv.adapters` (`modal`, `tooltip`, `collapse`) and `cv.bootstrapAdapters(ns)`; see `docs/reference/javascript.md`.
+
 ## 0.30.0
 
 ### Breaking

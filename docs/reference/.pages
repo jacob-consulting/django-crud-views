@@ -39,5 +39,6 @@ nav:
         - templates.md
         - theme.md
         - assets.md
+        - javascript.md
         - icons.md
     - settings.md

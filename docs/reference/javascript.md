@@ -1,0 +1,110 @@
+# JavaScript
+
+crud_views ships a handful of classic scripts (no modules, no build step, no inline code, so they work under a strict
+CSP). Core pages need **neither jQuery nor a global named `bootstrap`**: every call into a UI library goes through
+a small adapter object on `cv.adapters`, pre-filled with a Bootstrap 5 default.
+
+## What the scripts need
+
+The scripts render in this order from `{% cv_js %}` (and `cv_sources("js")` for django-pipeline):
+
+| Script | Needs at load | Needs at use |
+|---|---|---|
+| `adapters.js` | nothing | nothing |
+| `viewset.js` | `cv` | nothing |
+| `formset.js` | nothing | jQuery, on pages with formsets |
+| `list.filter.js` | `cvGetConfig` | `cv.adapters.collapse` |
+| `modal.js` | `cv` | `cv.adapters.modal` |
+| `toggle.js` | nothing | nothing |
+| `tooltip.js` | nothing | `cv.adapters.tooltip` |
+
+Bootstrap's bundle may load anywhere on the page for the default adapters (the namespace is resolved when an adapter is
+called, not when the script loads); it still has to be present for Bootstrap's own data-API components. jQuery is
+needed only on pages with formsets and by jQuery-based extensions, see [jQuery](#jquery).
+
+## `cv.adapters`
+
+`adapters.js` defines `cv.adapters`. Core calls adapters only through `cv.adapters.<name>`, looked up at call time, so an
+assignment at any point before the user acts takes effect.
+
+| Adapter | Method | Called by core when | Bootstrap default |
+|---|---|---|---|
+| `modal` | `show(modalEl)` | the partial is injected | `Modal.getOrCreateInstance(modalEl).show()`; throws a clear error when the namespace has no `Modal` |
+| `modal` | `hide(modalEl)` | a `[data-cv-modal-dismiss]` element inside the shell is clicked | `Modal.getInstance(modalEl)?.hide()` |
+| `modal` | `setSize(dialogEl, size)` | before `show`, with the view's `cv_modal_size` token | `dialogEl.className = "modal-dialog"` plus `modal-sm` / `modal-lg` / `modal-xl` for `sm` / `lg` / `xl`; `""` and unknown tokens give the bare base class |
+| `tooltip` | `init(el)` | for every `[data-cv-tooltip]` under a root: page load, `cv:modal:loaded`, `cv:formset:row-added` | `Tooltip.getOrCreateInstance(el)`; does nothing without `Tooltip` |
+| `collapse` | `toggle(el)` | the filter toggle button is clicked, with `#filter-collapse` | `Collapse.getOrCreateInstance(el).toggle()`; throws a clear error when the namespace has no `Collapse` |
+
+A failing `modal.show` is logged with `console.error` and the modal flow falls back to opening the full page.
+
+Replace an adapter from any script that loads after core:
+
+```javascript
+cv.adapters.tooltip = {init(el) { /* your tooltip library */ }};
+```
+
+Adapters assigned **before** `adapters.js` loads are kept, so a hand-written object may also be set earlier. The merge is
+shallow, per adapter: assigning `cv.adapters.modal = {...}` replaces the whole default `modal` adapter, so provide
+`show`, `hide` and `setSize` together.
+
+## Bootstrap under another name
+
+`cv.bootstrapAdapters(ns)` builds all three adapters for any Bootstrap-compatible namespace. `ns` is an object or a
+function returning one; a function is resolved on every call, so load order does not matter.
+
+**Tabler** exposes Bootstrap's components as `window.tabler`. Register one small script as an asset (loaded after core,
+see [Assets](assets.md)) containing:
+
+```javascript
+Object.assign(cv.adapters, cv.bootstrapAdapters(() => globalThis.tabler));
+```
+
+**ES modules / bundlers** have no global at all. In your bundle entry point:
+
+```javascript
+import * as bootstrap from "bootstrap";
+
+cv.adapters = cv.bootstrapAdapters(bootstrap);
+```
+
+## A non-Bootstrap modal
+
+To use a native `<dialog>`, override the shell template `crud_views/modal/shell.html`. The three ids
+`cv-modal`, `cv-modal-dialog` and `cv-modal-content` are the contract, core finds the shell through them:
+
+```html
+<dialog id="cv-modal">
+    <div id="cv-modal-dialog">
+        <div id="cv-modal-content"></div>
+    </div>
+</dialog>
+```
+
+Then assign the modal adapter in a script loaded after core:
+
+```javascript
+cv.adapters.modal = {
+    show(modalEl) { modalEl.showModal(); },
+    hide(modalEl) { modalEl.close(); },
+    setSize(dialogEl, size) { dialogEl.dataset.size = size; },
+};
+```
+
+The partial's close button carries `data-cv-modal-dismiss`, which calls `hide`. See [Modals](modals.md) for the
+partial and the size tokens.
+
+## jQuery
+
+Core scripts do not use jQuery, except `formset.js`. Pages with formsets need jQuery loaded by `DOMContentLoaded`
+(before or after `{% cv_js %}`); without it `formset.js` logs one `console.error` naming jQuery. jQuery-based
+extensions (the datetimepicker and typeahead apps) document their own requirement. The asset registry does not manage
+jQuery, see [Assets](assets.md).
+
+## Events
+
+Both are bubbling `CustomEvent`s you can listen for on `document`:
+
+| Event | Dispatched on | When |
+|---|---|---|
+| `cv:modal:loaded` | `#cv-modal` | after every content injection into the modal, see [Modals](modals.md#extending) |
+| `cv:formset:row-added` | the new `div.cv-formset-row` | after a formset row was inserted, see [Formsets](formsets.md#initializing-widgets-in-added-rows) |

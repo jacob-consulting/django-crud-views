@@ -112,7 +112,7 @@ The `{% cv_const_js %}` tag still works as a backwards-compatible alias but rend
 
 ### JavaScript architecture
 
-All interactive behavior (list action form submissions, cancel button navigation, filter toggling) is handled via event delegation in the external `viewset.js` static file. Dynamic data is passed from Django to JavaScript through `data-*` attributes:
+All interactive behavior is handled via event delegation in external static files: list action form submissions and cancel button navigation in `viewset.js`, the filter toggle in `list.filter.js`, modals in `modal.js`. Calls into Bootstrap go through `cv.adapters`, see [JavaScript](javascript.md). Dynamic data is passed from Django to JavaScript through `data-*` attributes:
 
 - `#cv-config` element carries `data-request-path` and `data-query-string`
 - `[data-cv-action="submit-form"]` elements trigger form submission

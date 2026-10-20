@@ -39,8 +39,9 @@ Rules:
   Vendored bundles are validated separately via `check_vendored()`, which an
   extension app wires into its own system checks; it is not run automatically.
 - The key `crud_views` is reserved for the package's own assets.
-- jQuery is **not** managed by the registry. As with core's own scripts, the project
-  loads jQuery in its base template before `{% cv_js %}`.
+- jQuery is **not** managed by the registry and core no longer needs it; pages with formsets
+  (and jQuery-based extensions) load it anywhere before `DOMContentLoaded`.
+  See [JavaScript](javascript.md#jquery).
 
 ## Vendoring third-party files
 
@@ -106,7 +107,7 @@ Arguments:
 | Argument | Meaning |
 |---|---|
 | `kind` | `"js"` or `"css"` |
-| `before` / `after` | static paths placed around the registry entries (e.g. jQuery, which the registry does not manage) |
+| `before` / `after` | static paths placed around the registry entries (e.g. jQuery, which the registry does not manage and which only formsets and jQuery-based extensions need) |
 | `keys` | only these bundle keys (`"crud_views"` = core); `None` = all, `[]` = none |
 | `exclude` | drop these bundle keys |
 
@@ -124,7 +125,7 @@ Split across packages by calling it more than once, e.g.
   would get its local init script bundled while its plugin stays a CDN tag (check W345).
   For `crud_views_widget_datetimepicker`: `SOURCE="vendored"` plus `manage.py cv_vendor_datetimepicker`.
 - Re-minifying already-minified vendor files with pipeline's compressors is harmless.
-- Template order in bundled mode: project CDN dependencies (Bootstrap, jQuery) →
+- Template order in bundled mode: project CDN dependencies (Bootstrap; jQuery if you use formsets) →
   `{% cv_css %}{% cv_js %}` → `{% stylesheet "main" %}{% javascript "main" %}`.
 
 ### Listing assets: `cv_assets`
@@ -132,7 +133,7 @@ Split across packages by calling it more than once, e.g.
 ```
 $ python manage.py cv_assets
 KEY             KIND  DELIVERY        PATH
-crud_views      js    pipeline:main   crud_views/js/viewset.js
+crud_views      js    pipeline:main   crud_views/js/adapters.js
 ...
 datetimepicker  js    tag (CDN)       https://cdn.jsdelivr.net/npm/jquery-datetimepicker@2.5.21/build/jquery.datetimepicker.full.min.js
 datetimepicker  js    pipeline:main   crud_views_widget_datetimepicker/init.js

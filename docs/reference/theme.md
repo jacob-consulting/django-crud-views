@@ -37,6 +37,11 @@ A theme app is an ordinary Django app:
 3. Optionally, static assets under `static/` (register JS/CSS via the asset registry — see
    [Assets](assets.md) — if your theme needs its own).
 
+## JavaScript
+
+The scripts call Bootstrap through replaceable adapters (`cv.adapters`), so a theme for a Bootstrap-compatible or
+non-Bootstrap UI library swaps them from its own registered asset. See [JavaScript](javascript.md).
+
 ## INSTALLED_APPS ordering (the one rule that matters)
 
 Your theme app **must be listed before `crud_views`** so its templates are found first:

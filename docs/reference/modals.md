@@ -12,7 +12,7 @@ class AuthorDeleteView(CrispyViewMixin, MessageMixin, DeleteViewPermissionRequir
     form_class = CrispyDeleteForm
     cv_viewset = cv_author
     cv_modal = True  # opt in
-    cv_modal_size = "modal-lg"  # optional: "", "modal-sm", "modal-lg", "modal-xl"
+    cv_modal_size = "lg"  # optional: "", "sm", "lg", "xl"
 ```
 
 ## Supported views
@@ -36,8 +36,18 @@ other view types raises system check error `viewset.E251`. Create/update support
 
 ## Requirements
 
-Your base template must load Bootstrap 5's JavaScript bundle and jQuery (both are already
-required for the Bootstrap 5 theme), plus the standard `{% cv_config %}` / `{% cv_js %}` tags.
+Your base template must provide the standard `{% cv_config %}` / `{% cv_js %}` tags and either Bootstrap 5's
+JavaScript bundle on `window.bootstrap` or a replacement [adapter](javascript.md#cvadapters). jQuery is not needed.
+
+`cv_modal_size` takes the tokens `""` (default), `"sm"`, `"lg"` and `"xl"`; the adapter maps them to the dialog's
+size. Bootstrap class names such as `"modal-lg"` fail system check `viewset.E250`, whose message names the replacement.
+
+## Theming the modal
+
+`{% cv_config %}` renders the shell through `crud_views/modal/shell.html`, with the ids `cv-modal`, `cv-modal-dialog`
+and `cv-modal-content`. The partial `crud_views/modal/content.html` fills `cv-modal-content`; its close button carries
+`data-cv-modal-dismiss`. Override either template by name (see [Custom themes](theme.md)); for a non-Bootstrap
+dialog see [JavaScript](javascript.md#a-non-bootstrap-modal).
 
 ## Extending
 

@@ -78,7 +78,7 @@ vitest + jsdom (Node 22), MkDocs.
 
 **Interfaces:**
 - Produces (all in `crud_views.lib.button_classes`):
-  - `DEFAULT_BUTTON_CLASSES: dict[str, str]` — exactly the spec's "Default table" (section 2), 30 keys:
+  - `DEFAULT_BUTTON_CLASSES: dict[str, str]` — exactly the spec's "Default table" (section 2), 34 keys:
     `context:primary|secondary|tertiary|danger` = `btn btn-outline-primary btn-lg`;
     `list:primary|secondary|tertiary|danger` = `btn btn-outline-primary btn-xs`;
     `card:primary` = `btn btn-primary btn-sm`; `card:secondary`, `card:danger` = `btn btn-secondary btn-sm`;

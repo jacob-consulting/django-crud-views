@@ -1,4 +1,5 @@
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { listenerErrors } from "./helpers/errors.js";
 import { loadScript } from "./helpers/load.js";
 
 // Minimal stand-in for bootstrap.Tooltip: one instance per element, like the real
@@ -85,7 +86,7 @@ describe("tooltip.js", () => {
 
     it("does nothing (and does not throw) without Bootstrap's JavaScript", () => {
         vi.stubGlobal("bootstrap", undefined);
-        expect(() => domReady()).not.toThrow();
+        expect(listenerErrors(() => domReady())).toEqual([]);
         expect(() => window.cv.initTooltips(document)).not.toThrow();
     });
 
@@ -109,7 +110,7 @@ describe("tooltip.js", () => {
         const seen = [];
         window.cv.adapters.tooltip = { init(el) { seen.push(el); } };
         try {
-            expect(() => domReady()).not.toThrow();
+            expect(listenerErrors(() => domReady())).toEqual([]);
             expect(seen).toEqual([...document.querySelectorAll("[data-cv-tooltip]")]);
         } finally {
             window.cv.adapters.tooltip = original;
@@ -136,13 +137,13 @@ describe("tooltip.js", () => {
         it("does nothing for a trigger without an instance", () => {
             // no domReady(): nothing was initialised
             const button = document.querySelector("[data-cv-tooltip]");
-            expect(() => button.click()).not.toThrow();
+            expect(listenerErrors(() => button.click())).toEqual([]);
             expect(fake.instances.size).toBe(0);
         });
 
         it("does not throw when the click target is not an element", () => {
             domReady();
-            expect(() => document.dispatchEvent(new Event("click", { bubbles: true }))).not.toThrow();
+            expect(listenerErrors(() => document.dispatchEvent(new Event("click", { bubbles: true })))).toEqual([]);
         });
 
         it("binds the click listener once even when the script is loaded twice", async () => {
@@ -174,7 +175,7 @@ describe("tooltip.js", () => {
                 button.click();
                 expect(hide).toHaveBeenCalledWith(button);
                 window.cv.adapters.tooltip = { init() {} };
-                expect(() => button.click()).not.toThrow();
+                expect(listenerErrors(() => button.click())).toEqual([]);
             } finally {
                 window.cv.adapters.tooltip = original;
             }
@@ -207,7 +208,7 @@ describe("tooltip.js", () => {
 
         it("does nothing on an empty modal (first open)", () => {
             domReady();
-            expect(() => unload()).not.toThrow();
+            expect(listenerErrors(() => unload())).toEqual([]);
             expect(fake.bootstrap.Tooltip.getInstance).not.toHaveBeenCalled();
         });
 
@@ -221,7 +222,7 @@ describe("tooltip.js", () => {
                 expect(dispose).toHaveBeenCalledTimes(1);
                 expect(dispose).toHaveBeenCalledWith(content.querySelector("[data-cv-tooltip]"));
                 window.cv.adapters.tooltip = { init() {} };
-                expect(() => unload()).not.toThrow();
+                expect(listenerErrors(() => unload())).toEqual([]);
             } finally {
                 window.cv.adapters.tooltip = original;
             }
@@ -231,8 +232,8 @@ describe("tooltip.js", () => {
             vi.stubGlobal("bootstrap", undefined);
             domReady();
             markedModalContent();
-            expect(() => unload()).not.toThrow();
-            expect(() => document.querySelector("[data-cv-tooltip]").click()).not.toThrow();
+            expect(listenerErrors(() => unload())).toEqual([]);
+            expect(listenerErrors(() => document.querySelector("[data-cv-tooltip]").click())).toEqual([]);
         });
     });
 });

@@ -7,6 +7,7 @@ from django.utils.translation import get_language, get_language_info
 from django_tables2.templatetags import django_tables2 as _dt2
 
 from crud_views.lib import assets
+from crud_views.lib.button_classes import get_button_class
 from crud_views.lib.exceptions import ViewSetKeyFoundError, ignore_exception
 from crud_views.lib.icons import render_icon
 from crud_views.lib.settings import crud_views_settings
@@ -422,3 +423,9 @@ def cv_card(context, obj):
 def cv_icon(value, css=""):
     """Render a semantic icon name, library-prefixed name or raw class string as an <i> element."""
     return render_icon(value, css)
+
+
+@register.simple_tag
+def cv_button_class(location, slot):
+    """Resolved CSS classes for the button slot ``location:slot`` (autoescaped)."""
+    return get_button_class(location, slot)

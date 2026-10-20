@@ -6,6 +6,7 @@ from django.core.checks import Warning as DjangoWarning
 from crud_views.lib import assets
 from crud_views.lib import ordered as ordered_helper
 from crud_views.lib import pipeline as pipeline_helper
+from crud_views.lib.button_classes import button_class_check_messages
 from crud_views.lib.formsets.formsets import FormSet
 from crud_views.lib.icons import ICON_VALUE_HINT, icon_check_messages, is_icon_value, unregistered_prefix
 from crud_views.lib.settings import crud_views_settings
@@ -398,3 +399,9 @@ def check_icons(app_configs=None, **kwargs):
                 if prefix is not None:
                     warn(owner, attr, value, prefix)
     return messages
+
+
+@register(TAG)
+def check_button_classes(app_configs=None, **kwargs):
+    """E360/E361/W362 from the button class table."""
+    return button_class_check_messages()

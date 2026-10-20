@@ -9,12 +9,17 @@
 - The modal partial's close button uses `data-cv-modal-dismiss` (a project override of `crud_views/modal/content.html`
   with `data-bs-dismiss` keeps working under the Bootstrap adapter). `{% cv_config %}` renders the shell through
   `crud_views/modal/shell.html`.
+- Custom JS calling `cv.cvModalOpen(url, "modal-lg")` and hand-written `data-cv-modal-size="modal-lg"` in project
+  templates must move to the tokens (`"lg"`); `viewset.E250` cannot see them and they silently get the default size.
 
 ### Changed
 
 - jQuery is no longer required by core pages (formsets and jQuery-based extensions only).
 - `adapters.js` is the first core script (pipeline bundles pick it up through `cv_sources`).
-- The filter toggle carries `aria-expanded` / `aria-controls`.
+- The filter toggle carries `aria-expanded` / `aria-controls`. Overrides of `crud_views/tags/context_action_filter.html`
+  should add both (`aria-controls="filter-collapse"`; the `#filter-collapse` id is a contract). Without
+  `aria-expanded` the state is read from the panel's visibility.
+- `formset.js` retries once on `window` `load` when jQuery is not there yet, so a deferred jQuery works.
 - `modal.js`, `list.filter.js` and `viewset.js` use the DOM API.
 
 ### Added

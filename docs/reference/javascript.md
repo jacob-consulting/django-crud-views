@@ -13,7 +13,7 @@ The scripts render in this order from `{% cv_js %}` (and `cv_sources("js")` for 
 | `adapters.js` | nothing | nothing |
 | `viewset.js` | `cv` | nothing |
 | `formset.js` | nothing | jQuery, on pages with formsets |
-| `list.filter.js` | `cvGetConfig` | `cv.adapters.collapse` |
+| `list.filter.js` | nothing | `cvGetConfig`, `cv.adapters.collapse` |
 | `modal.js` | `cv` | `cv.adapters.modal` |
 | `toggle.js` | nothing | nothing |
 | `tooltip.js` | nothing | `cv.adapters.tooltip` |
@@ -43,7 +43,8 @@ Replace an adapter from any script that loads after core:
 cv.adapters.tooltip = {init(el) { /* your tooltip library */ }};
 ```
 
-Adapters assigned **before** `adapters.js` loads are kept, so a hand-written object may also be set earlier. The merge is
+Adapters assigned **before** `adapters.js` loads are kept, so a hand-written object may also be set earlier. Create the
+namespace first: `globalThis.cv ??= {}; cv.adapters ??= {};`. The merge is
 shallow, per adapter: assigning `cv.adapters.modal = {...}` replaces the whole default `modal` adapter, so provide
 `show`, `hide` and `setSize` together.
 
@@ -64,7 +65,7 @@ Object.assign(cv.adapters, cv.bootstrapAdapters(() => globalThis.tabler));
 ```javascript
 import * as bootstrap from "bootstrap";
 
-cv.adapters = cv.bootstrapAdapters(bootstrap);
+Object.assign(cv.adapters, cv.bootstrapAdapters(bootstrap));
 ```
 
 ## A non-Bootstrap modal
@@ -108,3 +109,11 @@ Both are bubbling `CustomEvent`s you can listen for on `document`:
 |---|---|---|
 | `cv:modal:loaded` | `#cv-modal` | after every content injection into the modal, see [Modals](modals.md#extending) |
 | `cv:formset:row-added` | the new `div.cv-formset-row` | after a formset row was inserted, see [Formsets](formsets.md#initializing-widgets-in-added-rows) |
+
+## The filter toggle contract
+
+`list.filter.js` drives the element with id `filter-collapse` from the button `#cv-filter-toggle`, like the modal shell
+ids this id is a contract. A project or theme overriding `crud_views/tags/context_action_filter.html` should render the
+toggle with `aria-expanded` and `aria-controls="filter-collapse"`. Without `aria-expanded` the script falls back to the
+panel's visibility (`hidden` or computed `display: none`) to decide the state it persists, then writes `aria-expanded`
+back.

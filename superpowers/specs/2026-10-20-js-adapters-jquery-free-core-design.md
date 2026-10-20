@@ -120,8 +120,8 @@ Rules:
 - Errors thrown by `show` and `toggle` are the developer's signal that the page has no usable Bootstrap. The modal's
   open flow catches them like any other failure: it logs the error with `console.error` and falls back to full-page
   navigation, so the user is never stranded. (Today the missing-Bootstrap check runs before the fetch and nothing
-  falls back.) The filter toggle lets the error surface; the icon and `aria-expanded` are flipped back so the button
-  does not lie.
+  falls back.) The filter toggle calls the adapter before it touches any state, so the error surfaces and neither
+  the icon, `aria-expanded` nor the persisted state changes.
 
 ### 2. Modal
 
@@ -176,9 +176,11 @@ becomes `cv.adapters.tooltip.init(el)`. The "no Bootstrap, do nothing" rule move
 
 - Wiring runs at DOMContentLoaded, or immediately when the script executes after it (same pattern as `tooltip.js`).
 - The toggle handler computes the new state from the button's own `aria-expanded` (open or closed is core's
-  knowledge, not a visibility test), writes it back, flips the two icon spans' `d-none`, posts
-  `{"filter_expanded": <bool>}` as JSON with `fetch` (`X-CSRFToken` from `cvGetConfig()`, same endpoint and body as
-  today), and calls `cv.adapters.collapse.toggle(document.getElementById("filter-collapse"))`.
+  knowledge, not a visibility test), then, in this order: calls
+  `cv.adapters.collapse.toggle(document.getElementById("filter-collapse"))`, writes the state back, flips the two
+  icon spans' `d-none`, and posts `{"filter_expanded": <bool>}` as JSON with `fetch` (`X-CSRFToken` from
+  `cvGetConfig()`, read inside the handler, same endpoint and body as today). The adapter call comes first so that a
+  throw never persists a state the panel does not have.
 - The reset handler keeps its behaviour: navigate to the list path with `reset_filter=true`, preserving `sort`.
 - The click handler on the Apply Filter button (`#filter-button`) is removed. It reads `aria-expanded` from a submit
   button that never has it and writes to a form field that does not exist; it is dead code from an earlier design.
@@ -202,8 +204,8 @@ Only the tail changes. The `$(function () { ... })` start-up block becomes a DOM
 already loaded) that:
 
 1. returns when the page has no `.cv-formset-content`;
-2. otherwise, without `globalThis.jQuery`, logs one `console.error` naming the requirement ("formsets need jQuery on
-   this page; load it before DOMContentLoaded") and returns;
+2. otherwise, without a jQuery `$` (`globalThis.$?.fn?.jquery`, the symbol the file uses), logs one `console.error`
+   naming the requirement ("formsets need jQuery on this page; load it before DOMContentLoaded") and returns;
 3. otherwise constructs `CrudViewsFormset` as today.
 
 Nothing else in the file runs `$` at load time (every other use is inside a method), so the file loads cleanly on a
@@ -253,10 +255,10 @@ JavaScript (vitest, `tests/js/`):
   with `#cv-modal`; `setSize` receives the token; an adapter error during open logs and falls back to navigation.
 - `list.filter.test.js`: `fetch` mock instead of `$.post`; `aria-expanded` flips and the JSON body carries the new
   state; `cv.adapters.collapse.toggle` receives `#filter-collapse`; reset navigation with and without `sort`; the
-  adapter error path restores icon and `aria-expanded`.
+  adapter error path leaves icon, `aria-expanded` and the `fetch` mock untouched.
 - `viewset.test.js`: the existing cases against the vanilla handlers; `submit-form` uses `requestSubmit`.
-- `formset.test.js`: without `jQuery` on the global, loading logs one error when formset markup is present and
-  nothing otherwise; existing cases unchanged.
+- `formset.test.js`: without `$` on the global, loading logs one error when formset markup is present and nothing
+  otherwise; existing cases unchanged.
 - `tooltip.test.js`: against `cv.adapters.tooltip`.
 - `helpers/load.js`: the jQuery-ready wait applies only to `formset`; the other scripts are awaited via
   DOMContentLoaded semantics. jQuery stays a devDependency for the formset tests.
@@ -266,10 +268,14 @@ Python (pytest, `tests/test1/`):
 - E250 accepts `""`, `"sm"`, `"lg"`, `"xl"` and rejects `"modal-lg"` with the hint in the message.
 - `{% cv_config %}` renders the shell with the three ids; `modal/content.html` renders `data-cv-modal-dismiss` and no
   `data-bs-dismiss`; the filter toggle renders `aria-expanded` matching `cv_filter_expanded`.
-- `test_pipeline_sources.py`: `adapters.js` is the first core entry; the settings order is
-  adapters, viewset, formset, list_filter, modal, toggle, tooltip.
+- Every test that hard-codes the core JS list or its length gains `adapters.js` as the first entry:
+  `test_pipeline_sources.py` (seven entries become eight), `test_assets_bundles.py`, `test_pipeline_integration.py`,
+  `test_pipeline_resolver.py`, `test_cv_assets_command.py` (`lines[1]` is no longer `viewset.js`). The settings order
+  is adapters, viewset, formset, list_filter, modal, toggle, tooltip.
 - Existing tests that set `cv_modal_size = "modal-lg"` (`test_modal.py`, `od/test_object_detail_view.py`,
-  `test_card_action_post.py`, `app/views.py`) move to `"lg"`.
+  `app/views.py`) move to `"lg"`; `test_card_action_post.py` already uses `"lg"`.
+- Golden fixtures under `tests/test1/golden/action_menus/` that contain the filter toggle or `data-cv-modal-size`
+  (`toolbar_publisher_list.html`, `list_full.html`) are regenerated once, after the template changes.
 
 Manual: the bootstrap5 example with the jQuery tag removed from `base.html` (formset pages then show the one error),
 and again with it present.
@@ -301,8 +307,8 @@ Python: `lib/settings.py` (`javascript()`), `lib/view/base.py` (`cv_modal_size` 
 
 Tests: as listed under Testing; `tests/js/helpers/dom.js` modal skeleton (close button fixture).
 
-Examples: every `cv_modal_size = "modal-*"` under `examples/`; `examples/bootstrap5/project/templates/project/base.html`
-keeps its jQuery tag (the examples use formsets) with a comment saying why.
+Examples: none set `cv_modal_size`. `examples/bootstrap5/project/templates/project/base.html` keeps its jQuery tag
+(the examples use formsets) with a comment saying why.
 
 ## Documentation
 
@@ -353,6 +359,9 @@ keeps its jQuery tag (the examples use formsets) with a comment saying why.
 - `submit-form` uses `requestSubmit()` so `submit` listeners keep firing as they did with jQuery's `.submit()`.
 - The Apply Filter click handler is removed as dead code; `console.log` chatter in `list.filter.js` goes.
 - `aria-expanded` and `aria-controls` are added to the filter toggle; the state lives there.
-- The formset guard logs only when formset markup is present, so pages without formsets stay silent.
+- The formset guard logs only when formset markup is present, so pages without formsets stay silent; it tests `$`
+  with `.fn.jquery`, the symbol the file uses.
+- In the filter toggle the adapter is called before state and persistence, so a throw changes nothing.
+- `list.filter.js` reads `cvGetConfig()` inside the handlers, not at wiring time.
 - No system check inspects the overridden shell for the three ids.
 - Shipped as the next release with breaking entries, following the 0.30.0 precedent for breaking changes in 0.x.

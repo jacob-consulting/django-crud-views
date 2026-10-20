@@ -30,6 +30,12 @@
   `cv-card-container`; card menu forms render before the row; the crispy cancel button renders `btn btn-secondary`
   (was `btn btn btn-secondary`) and the filter reset `btn btn-secondary` (was `btn btn-inverse btn btn-secondary`).
 - The Delete label is translatable.
+- DOM changes for tooltips (#202): icon-only action buttons, the filter toggle, the card-order toggles and the formset
+  controls carry `data-cv-tooltip="<location>"` next to their `title`; the formset controls' `title` is the translated
+  text of their `aria-label` (`Move up`, `Move down`, `Add row`, `Delete row`), no longer `up` / `down` / `add` /
+  `delete`; the object-detail property-detail button uses `title` instead of `data-bs-title`. With Bootstrap's
+  JavaScript loaded these buttons now show Bootstrap tooltips instead of the browser's `title` tooltip; opt out with
+  `cv.adapters.tooltip = {init() {}}`.
 - `formsets/control.html` overrides without `data-cv-class` / `data-cv-class-danger` no longer recolour the delete
   toggle.
 - A list or card button whose target is the current view now renders `active`.
@@ -50,6 +56,9 @@
 ### Added
 
 - `cv.adapters` (`modal`, `tooltip`, `collapse`) and `cv.bootstrapAdapters(ns)`; see `docs/reference/javascript.md`.
+- `cv.adapters.tooltip.init(el, {location})`: the marker's value, the button's location, reaches the adapter;
+  adapters written for `init(el)` keep working. Per-location configuration is a recipe in
+  `docs/reference/javascript.md` (#202).
 - Button variants (`primary`, `secondary`, `tertiary`, `danger`): `cv_action_variant` on views, `ContextButton.variant`
   and `CardAction.variant`.
 - `CRUD_VIEWS_BUTTON_CLASSES`, `register_button_classes` and `{% cv_button_class %}`: every button class comes from one

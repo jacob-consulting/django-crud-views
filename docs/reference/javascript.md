@@ -32,7 +32,7 @@ assignment at any point before the user acts takes effect.
 | `modal` | `show(modalEl)` | the partial is injected | `Modal.getOrCreateInstance(modalEl).show()`; throws a clear error when the namespace has no `Modal` |
 | `modal` | `hide(modalEl)` | a `[data-cv-modal-dismiss]` element inside the shell is clicked | `Modal.getInstance(modalEl)?.hide()` |
 | `modal` | `setSize(dialogEl, size)` | before `show`, with the view's `cv_modal_size` token | ensures `modal-dialog` and swaps the size class: `modal-sm` / `modal-lg` / `modal-xl` for `sm` / `lg` / `xl`; `""` and unknown tokens remove it. Other classes on the dialog (a shell override's `modal-dialog-centered`) are kept |
-| `tooltip` | `init(el)` | for every `[data-cv-tooltip]` under a root: page load, `cv:modal:loaded`, `cv:formset:row-added` | `Tooltip.getOrCreateInstance(el)`; does nothing without `Tooltip` |
+| `tooltip` | `init(el, {location})` | for every `[data-cv-tooltip]` under a root: page load, `cv:modal:loaded`, `cv:formset:row-added`; `location` is the marker's value, see [Tooltips](#tooltips) | `Tooltip.getOrCreateInstance(el)` (the context is ignored); does nothing without `Tooltip` |
 | `collapse` | `toggle(el)` | the filter toggle button is clicked, with `#filter-collapse` | `Collapse.getOrCreateInstance(el).toggle()`; throws a clear error when the namespace has no `Collapse`; returns `false` without toggling while the panel is still animating (`.collapsing`), because Bootstrap ignores a toggle then |
 
 A failing `modal.show` is logged with `console.error` and the modal flow falls back to opening the full page. A
@@ -42,7 +42,7 @@ state untouched; any other return value counts as toggled, so a custom adapter m
 Replace an adapter from any script that loads after core:
 
 ```javascript
-cv.adapters.tooltip = {init(el) { /* your tooltip library */ }};
+cv.adapters.tooltip = {init(el, {location}) { /* your tooltip library */ }};
 ```
 
 Adapters assigned **before** `adapters.js` loads are kept, so a hand-written object may also be set earlier. Create the
@@ -70,6 +70,43 @@ import * as bootstrap from "bootstrap";
 Object.assign(cv.adapters, cv.bootstrapAdapters(bootstrap));
 ```
 
+## Tooltips
+
+`tooltip.js` initialises every element marked `data-cv-tooltip` through `cv.adapters.tooltip.init(el, {location})`,
+on page load, after `cv:modal:loaded` and after `cv:formset:row-added`. The tooltip text is the element's `title`;
+the marker's value names where the trigger sits:
+
+| `location` | Trigger |
+|---|---|
+| `context` | icon-only context toolbar buttons and the filter toggle |
+| `list` | list row buttons |
+| `card` | icon-only card buttons (a card button with a visible label has no marker) |
+| `card-order` | the ascending / descending toggles of the card ordering bar |
+| `formset` | the formset row controls (move up, move down, add, delete) |
+| `object-detail` | the property-detail button of `crud_views_object_detail` |
+| `""` | a bare `data-cv-tooltip` in your own templates |
+
+Menu items and the `⋯` toggle carry no marker. With Bootstrap's JavaScript loaded, the default adapter turns every
+marked `title` into a Bootstrap tooltip. To keep the browser's native tooltips instead:
+
+```javascript
+cv.adapters.tooltip = {init() {}};
+```
+
+For markup you inject yourself, call `cv.initTooltips(root)` on the inserted element.
+
+Per-location configuration needs no package API: build the adapters, then replace `init` on the tooltip adapter. The
+merge into `cv.adapters` is per adapter, so the reassignment is the whole customisation. Tooltips below the context
+toolbar, for Tabler:
+
+```javascript
+Object.assign(cv.adapters, cv.bootstrapAdapters(() => globalThis.tabler));
+cv.adapters.tooltip.init = (el, {location} = {}) =>
+    globalThis.tabler.Tooltip.getOrCreateInstance(el, {placement: location === "context" ? "bottom" : "top"});
+```
+
+An adapter written as `init(el)` keeps working; the context is an extra argument.
+
 ## A non-Bootstrap modal
 
 To use a native `<dialog>`, override the shell template `crud_views/modal/shell.html`. The three ids
@@ -95,6 +132,27 @@ cv.adapters.modal = {
 
 The partial's close button carries `data-cv-modal-dismiss`, which calls `hide`. See [Modals](modals.md) for the
 partial and the size tokens.
+
+## A non-Bootstrap tooltip
+
+The stock markup carries only `title` and the marker, so any tooltip library fits. Read the text from `title` and
+remove the attribute, otherwise the browser shows its native tooltip as well (Bootstrap does the same internally). With
+a Tippy-style library:
+
+```javascript
+cv.adapters.tooltip = {
+    init(el, {location} = {}) {
+        const text = el.getAttribute("title");
+        if (!text) {
+            return; // already initialised, or nothing to show
+        }
+        el.removeAttribute("title");
+        tippy(el, {content: text, placement: location === "context" ? "bottom" : "top"});
+    },
+};
+```
+
+The `visually-hidden` label inside the button keeps the accessible name once `title` is gone.
 
 ## jQuery
 

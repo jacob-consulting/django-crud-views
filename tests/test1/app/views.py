@@ -896,7 +896,7 @@ class AuthorModalDeleteView(CrispyViewMixin, MessageMixin, DeleteViewPermissionR
     form_class = CrispyDeleteForm
     cv_viewset = cv_author_modal
     cv_modal = True
-    cv_modal_size = "modal-lg"
+    cv_modal_size = "lg"
 
 
 class AuthorModalContactForm(CrispyModelForm):

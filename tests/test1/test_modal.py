@@ -153,6 +153,10 @@ def check_ids(view_cls) -> list:
     return [m.id for c in view_cls.checks() for m in c.messages()]
 
 
+def check_messages(view_cls) -> list:
+    return [m for c in view_cls.checks() for m in c.messages()]
+
+
 def test_check_modal_size_invalid():
     from crud_views.lib.views import DeleteView
 
@@ -166,7 +170,7 @@ def test_check_modal_size_invalid():
 def test_check_modal_size_valid_values():
     from crud_views.lib.views import DeleteView
 
-    for size in ("", "modal-sm", "modal-lg", "modal-xl"):
+    for size in ("", "sm", "lg", "xl"):
 
         class GoodSizeDeleteView(DeleteView):
             cv_modal = True
@@ -203,7 +207,7 @@ def test_list_buttons_carry_modal_attributes(client_user_author_modal: Client, a
     response = client_user_author_modal.get("/author_modal/")
     content = response.content.decode()
     assert 'data-cv-modal="true"' in content
-    assert 'data-cv-modal-size="modal-lg"' in content  # AuthorModalDeleteView
+    assert 'data-cv-modal-size="lg"' in content  # AuthorModalDeleteView
 
 
 @pytest.mark.django_db
@@ -271,3 +275,49 @@ def test_modal_custom_form_invalid_keeps_cancel_origin(
     html = response.content.decode()
     assert re.search(r'action="' + re.escape(origin_url) + '"', html)
     assert f'data-cv-cancel-url="/author_modal/{pk}/detail/"' in html
+
+
+def test_check_modal_size_rejects_bootstrap_class_names():
+    from crud_views.lib.views import DeleteView
+
+    class OldSizeDeleteView(DeleteView):
+        cv_modal = True
+        cv_modal_size = "modal-lg"
+
+    messages = [m for m in check_messages(OldSizeDeleteView) if m.id == "viewset.E250"]
+    assert len(messages) == 1
+    assert "'modal-lg'" in messages[0].msg and "use 'lg'" in messages[0].msg
+
+
+def test_check_modal_size_none_is_reported_not_crashed():
+    from crud_views.lib.views import DeleteView
+
+    class NoneSizeDeleteView(DeleteView):
+        cv_modal = True
+        cv_modal_size = None
+
+    assert "viewset.E250" in check_ids(NoneSizeDeleteView)
+
+
+@pytest.mark.django_db
+def test_modal_partial_close_button_dismisses_through_crud_views(
+    client_user_author_modal: Client, author_douglas_adams
+):
+    response = client_user_author_modal.get(f"/author_modal/{author_douglas_adams.pk}/delete/", headers=MODAL_HEADERS)
+    content = response.content.decode()
+    assert 'class="btn-close" data-cv-modal-dismiss' in content
+    assert "data-bs-dismiss" not in content
+
+
+@pytest.mark.django_db
+def test_modal_trigger_renders_size_token(client_user_author_modal: Client, author_douglas_adams):
+    response = client_user_author_modal.get("/author_modal/")
+    assert 'data-cv-modal-size="lg"' in response.content.decode()
+
+
+def test_modal_shell_template_renders_the_three_ids():
+    from django.template.loader import render_to_string
+
+    html = render_to_string("crud_views/modal/shell.html")
+    for element_id in ("cv-modal", "cv-modal-dialog", "cv-modal-content"):
+        assert f'id="{element_id}"' in html

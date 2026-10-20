@@ -35,8 +35,22 @@ PUBLISHER_PK = 174
 LIST_ACTIONS = ["detail", "update", "delete", "up", "down", "ping"]
 
 
+def _canonical(node):
+    """Sort each element's attributes by name and the tokens of every class attribute: order is not the contract."""
+    for el in node.iter():
+        if not isinstance(el.tag, str):
+            continue
+        attrs = sorted(el.attrib.items())
+        el.attrib.clear()
+        for name, value in attrs:
+            if name == "class":
+                value = " ".join(sorted(value.split()))
+            el.set(name, value)
+    return node
+
+
 def _norm(markup: str) -> str:
-    markup = re.sub(r'name="csrfmiddlewaretoken" value="[^"]*"', 'name="csrfmiddlewaretoken" value="CSRF"', markup)
+    markup = re.sub(r'(name="csrfmiddlewaretoken"[^>]*? value=")[^"]*"', r'\1CSRF"', markup)
     markup = re.sub(r">\s+<", "><", markup)
     return re.sub(r"\s+", " ", markup).strip()
 
@@ -57,7 +71,7 @@ def _fragments(client, url, xpath) -> str:
     doc = lxml_html.fromstring(resp.content)
     nodes = doc.xpath(xpath)
     assert nodes, f"no node for {xpath} at {url}"
-    return "\n".join(_norm(lxml_html.tostring(n, encoding="unicode")) for n in nodes)
+    return "\n".join(_norm(lxml_html.tostring(_canonical(n), encoding="unicode")) for n in nodes)
 
 
 def _compare(name: str, actual: str):

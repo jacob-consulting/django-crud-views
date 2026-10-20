@@ -24,6 +24,7 @@ class CreateView(CrudViewProcessFormMixin, CrudView, generic.CreateView):
 
     # icons
     cv_icon_action = "create"
+    cv_action_variant = "primary"
 
     # messages
     cv_message_template: str | None = "crud_views/snippets/message/create.html"

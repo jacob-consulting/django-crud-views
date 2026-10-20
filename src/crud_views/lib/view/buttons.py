@@ -8,6 +8,7 @@ from ..check import CheckExpression
 from ..exceptions import ViewSetNotFoundError
 from ..settings import crud_views_settings
 from .context import ViewContext
+from .variant import variant_check
 
 
 def _is_registered(viewset, key: str) -> bool:
@@ -26,6 +27,7 @@ class ContextButton(BaseModel):
     label_template_code: str | None = None
     template: str | None = None
     template_code: str | None = None
+    variant: str | None = None  # None: the target view's cv_action_variant
 
     @staticmethod
     def _resolve_container_key(viewset, key_target: str) -> str:
@@ -66,6 +68,11 @@ class ContextButton(BaseModel):
             data["cv_action_label"] = cv_action_label
             data["cv_action_short_label"] = cv_action_label
 
+    def _apply_variant(self, data: dict) -> None:
+        """Override the target view's default variant when this button declares its own."""
+        if self.variant is not None:
+            data["cv_variant"] = self.variant
+
     def _inject_template(self, data: dict) -> None:
         if self.template_code:
             data["cv_template_code"] = self.template_code
@@ -102,6 +109,7 @@ class ContextButton(BaseModel):
 
         # render action label
         self._apply_label(data, context)
+        self._apply_variant(data)
 
         self._inject_template(data)
 
@@ -171,6 +179,7 @@ class ParentContextButton(ContextButton):
         data = cls.cv_get_dict(context=context, **dict_kwargs)
 
         self._apply_label(data, context)
+        self._apply_variant(data)
 
         self._inject_template(data)
         return data
@@ -219,6 +228,7 @@ class ChildContextButton(ContextButton):
         data = cls.cv_get_dict(context=context, **dict_kwargs)
 
         self._apply_label(data, context)
+        self._apply_variant(data)
 
         self._inject_template(data)
 
@@ -275,6 +285,7 @@ class SiblingContextButton(ContextButton):
         data = cls.cv_get_dict(context=context, **dict_kwargs)
 
         self._apply_label(data, context)
+        self._apply_variant(data)
 
         self._inject_template(data)
 
@@ -312,6 +323,7 @@ class FilterContextButton(ContextButton):
         data["cv_filter_expanded"] = context.view.cv_filter_expanded
         data["cv_url"] = list_url
         self._apply_label(data, context)
+        self._apply_variant(data)
         self._inject_template(data)
 
         return data
@@ -337,6 +349,8 @@ def context_button_checks(context, viewset, buttons: list[ContextButton] | None)
     """
     defaults = context_buttons_default()
     for button in buttons or []:
+        if button.variant is not None:
+            yield variant_check(context, f"context button {button.key!r}", button.variant)
         if button in defaults:
             continue
         problem = button.cv_check_target(viewset)

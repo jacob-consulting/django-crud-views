@@ -7,7 +7,7 @@ class CardAction(BaseModel):
     key: str = ""
     label: LazyStr | None = None
     no_label: bool = False
-    variant: str = "secondary"
+    variant: str | None = None  # None: the target view's cv_action_variant
     flex: bool = False
     child_name: str | None = None
     child_key: str = "list"

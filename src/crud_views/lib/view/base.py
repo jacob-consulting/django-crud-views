@@ -42,6 +42,7 @@ from .action_menu import ActionGroup, cv_context_button_foldable, cv_inline_chec
 from .buttons import ContextButton, context_button_checks
 from .context import ViewContext
 from .meta import CrudViewMetaClass
+from .variant import variant_check
 from .visibility import cv_resolve_action
 
 
@@ -104,6 +105,9 @@ class CrudView(metaclass=CrudViewMetaClass):
     cv_icon_action: str | None = None  # icon: semantic name, prefix:name or raw CSS classes
     cv_icon_header: str | None = None  # icon: semantic name, prefix:name or raw CSS classes
 
+    # semantic variant of the action button that targets this view: primary, secondary, tertiary or danger
+    cv_action_variant: str = "secondary"
+
     # W280: custom cv_* data attributes to exempt from the unknown-attribute check
     cv_check_ignore_attributes: frozenset[str] = frozenset()
 
@@ -158,6 +162,7 @@ class CrudView(metaclass=CrudViewMetaClass):
             expression=cls.cv_inaccessible_actions in (None, "hide", "disable"),
             msg=f"cv_inaccessible_actions must be None, 'hide' or 'disable', got {cls.cv_inaccessible_actions!r}",
         )
+        yield variant_check(cls, "cv_action_variant", cls.cv_action_variant)
         yield from cv_inline_checks(cls, "cv_list_actions_inline", cls.cv_list_actions)
         yield from cv_inline_checks(cls, "cv_context_actions_inline", cls.cv_context_actions)
         if cls.cv_viewset is not None:
@@ -360,6 +365,7 @@ class CrudView(metaclass=CrudViewMetaClass):
             "cv_cancel_keys": cls.cv_cancel_keys,
             "cv_icon_action": cls.cv_icon_action,
             "cv_icon_header": cls.cv_icon_header,
+            "cv_variant": cls.cv_action_variant,
             "cv_modal": cls.cv_modal,
             "cv_modal_size": cls.cv_modal_size,
             "cv_inaccessible_actions": cls.cv_get_inaccessible_actions(),

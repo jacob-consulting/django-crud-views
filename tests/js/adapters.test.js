@@ -3,11 +3,12 @@ import { loadScript } from "./helpers/load.js";
 
 function fakeNamespace() {
     const instance = { show: vi.fn(), hide: vi.fn() };
+    const tooltip = { hide: vi.fn(), dispose: vi.fn() };
     const collapse = { toggle: vi.fn() };
     return {
-        instance, collapse,
+        instance, tooltip, collapse,
         Modal: { getOrCreateInstance: vi.fn(() => instance), getInstance: vi.fn(() => instance) },
-        Tooltip: { getOrCreateInstance: vi.fn((el) => ({ el })) },
+        Tooltip: { getOrCreateInstance: vi.fn((el) => ({ el })), getInstance: vi.fn(() => tooltip) },
         Collapse: { getOrCreateInstance: vi.fn(() => collapse) },
     };
 }
@@ -64,6 +65,28 @@ describe("adapters.js", () => {
         window.cv.bootstrapAdapters(ns).tooltip.init(t);
         expect(ns.Tooltip.getOrCreateInstance).toHaveBeenCalledWith(t);
         expect(() => window.cv.bootstrapAdapters({}).tooltip.init(t)).not.toThrow();
+    });
+
+    it("tooltip.hide / dispose drive Tooltip.getInstance and never create an instance", async () => {
+        await loadScript("adapters");
+        const ns = fakeNamespace(), t = document.getElementById("t");
+        const a = window.cv.bootstrapAdapters(ns);
+        a.tooltip.hide(t);
+        a.tooltip.dispose(t);
+        expect(ns.Tooltip.getInstance).toHaveBeenCalledWith(t);
+        expect(ns.tooltip.hide).toHaveBeenCalledTimes(1);
+        expect(ns.tooltip.dispose).toHaveBeenCalledTimes(1);
+        expect(ns.Tooltip.getOrCreateInstance).not.toHaveBeenCalled();
+    });
+
+    it("tooltip.hide / dispose are silent without an instance and without Tooltip", async () => {
+        await loadScript("adapters");
+        const ns = fakeNamespace(), t = document.getElementById("t");
+        ns.Tooltip.getInstance = vi.fn(() => null);
+        const a = window.cv.bootstrapAdapters(ns);
+        expect(() => { a.tooltip.hide(t); a.tooltip.dispose(t); }).not.toThrow();
+        const none = window.cv.bootstrapAdapters({});
+        expect(() => { none.tooltip.hide(t); none.tooltip.dispose(t); }).not.toThrow();
     });
 
     it("collapse.toggle uses Collapse.getOrCreateInstance(el).toggle() and returns true", async () => {

@@ -60,5 +60,14 @@ document.getElementById("cv-modal").addEventListener("cv:modal:loaded", function
 });
 ```
 
+Before every content replacement (an open, a 422 re-render) the shell dispatches `cv:modal:unload` on `#cv-modal`,
+while the previous content is still attached, so a listener can tear down what it set up on `cv:modal:loaded`:
+
+```javascript
+const modal = document.getElementById("cv-modal");
+modal.addEventListener("cv:modal:loaded", function () { /* initialize widgets inside the injected content */ });
+modal.addEventListener("cv:modal:unload", function () { /* tear them down; the old content is still in the DOM */ });
+```
+
 Rows that formsets add after page load get the analogous `cv:formset:row-added` event; see
 [Formsets](formsets.md#initializing-widgets-in-added-rows).

@@ -152,7 +152,7 @@ cv.adapters.tooltip = {
 };
 ```
 
-The `visually-hidden` label inside the button keeps the accessible name once `title` is gone.
+A `visually-hidden` label or an `aria-label` on every stock trigger keeps the accessible name once `title` is gone.
 
 ## jQuery
 

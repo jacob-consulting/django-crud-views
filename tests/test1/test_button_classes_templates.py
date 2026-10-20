@@ -101,6 +101,9 @@ def test_card_order_and_language_from_table(client):
     assert asc.get("data-cv-tooltip") == "card-order"
     assert desc.get("data-cv-tooltip") == "card-order"
     assert asc.get("title") == "Ascending"
+    # the accessible name must not depend on title: a non-Bootstrap adapter removes it (see javascript.md)
+    assert asc.get("aria-label") == "Ascending"
+    assert desc.get("aria-label") == "Descending"
     assert doc.cssselect("#cv-card-order-form fieldset")[0].get("class") == "btn-group btn-group-sm"
 
     request = RequestFactory().get("/some/path/")

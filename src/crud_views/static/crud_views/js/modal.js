@@ -7,8 +7,10 @@
  *                                 -> 422 + re-rendered partial   (validation errors: swap)
  * Anything else falls back to a full-page navigation — never strand the user in a broken modal.
  *
- * After every injection a "cv:modal:loaded" CustomEvent is dispatched on #cv-modal
- * (hook for re-initializing scripts inside modal content).
+ * Before every content replacement a "cv:modal:unload" CustomEvent is dispatched on #cv-modal
+ * while the previous content is still attached (hook for tearing down scripts inside modal
+ * content); after every injection a "cv:modal:loaded" CustomEvent follows (hook for
+ * re-initializing them).
  *
  * Showing, hiding and sizing the dialog goes through cv.adapters.modal (adapters.js).
  */
@@ -19,6 +21,7 @@ const CVModalConst = Object.freeze({
     content: "cv-modal-content",
     urlAttr: "data-cv-url",
     loadedEvent: "cv:modal:loaded",
+    unloadEvent: "cv:modal:unload",
     dismissAttr: "data-cv-modal-dismiss",
     sizeAttr: "data-cv-modal-size",
     trigger: "[data-cv-modal='true']",
@@ -38,6 +41,8 @@ function cvModalElements() {
 
 function cvModalInject(html) {
     const els = cvModalElements();
+    // unload first: listeners (tooltips, widgets) tear down while their elements are still attached
+    els.modal.dispatchEvent(new CustomEvent(CVModalConst.unloadEvent, {bubbles: true}));
     els.content.innerHTML = html;
     els.modal.dispatchEvent(new CustomEvent(CVModalConst.loadedEvent, {bubbles: true}));
 }

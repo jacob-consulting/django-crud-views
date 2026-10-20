@@ -48,6 +48,10 @@ it). Background: `tabler-test/docs/crud_views_upstream_questions.md` point 3.
   bump the version.
 - Keep `console.log` out of shipped scripts (`list.filter.js` loses its chatter); `console.error` is the only
   logging the scripts do, for the two documented failure cases.
+- JS harness: `tests/js/helpers/setup.js` stubs `$` and `jQuery` once per test file at import time. A test that
+  removes them (`vi.stubGlobal("$", undefined)`) restores them afterwards with `vi.stubGlobal("$", $)` and
+  `vi.stubGlobal("jQuery", $)` from `import $ from "jquery"`; `vi.unstubAllGlobals()` alone leaves them undefined for
+  the rest of the file. `loadScript(name)` re-evaluates the shipped file on every call.
 
 ## Review Focus
 
@@ -347,8 +351,8 @@ def test_modal_shell_template_renders_the_three_ids():
         assert f'id="{element_id}"' in html
 ```
 
-(`check_messages` does not exist yet: add it next to `check_ids` in the same file, returning the message objects
-`check_ids` derives its ids from.)
+(`check_messages` does not exist yet; add it next to `check_ids`:
+`def check_messages(view_cls) -> list: return [m for c in view_cls.checks() for m in c.messages()]`.)
 
 - [ ] **Step 2: Run them to verify they fail**
 
@@ -451,7 +455,7 @@ it("leaves modified clicks to the browser", () => {                         // R
 it("loads and wires its handlers without jQuery", async () => {
     vi.stubGlobal("$", undefined); vi.stubGlobal("jQuery", undefined);
     await expect(loadScript("modal")).resolves.toBeUndefined();
-    vi.unstubAllGlobals();   // then re-stub $ and jQuery from the jquery import if later tests in the file need them
+    vi.stubGlobal("$", $); vi.stubGlobal("jQuery", $);      // import $ from "jquery" at the top of the file
 });
 ```
 
@@ -935,7 +939,7 @@ jQuery. Restore the jQuery tag.
 
 - [ ] **Step 3: Tabler page, no shim, no jQuery** (spec "Tabler check"): in `tabler-test`, `uv pip install -e
 /home/alex/projects/alex/django-crud-views`; replace `crud_views_tabler/templates/crud_views/shared/js.html` with the
-core loop plus one deferred inline-free script file containing
+core loop plus one deferred `<script src>` file containing
 `Object.assign(cv.adapters, cv.bootstrapAdapters(() => globalThis.tabler));`; remove the jQuery and
 `bootstrap-shim.js` tags. Repeat the Step 2 checks. Then `git checkout -- .` and `git clean -fd` in `tabler-test` and
 reinstall its pinned crud_views.

@@ -11,12 +11,12 @@ The scripts render in this order from `{% cv_js %}` (and `cv_sources("js")` for 
 | Script | Needs at load | Needs at use |
 |---|---|---|
 | `adapters.js` | nothing | nothing |
-| `viewset.js` | `cv` | nothing |
+| `viewset.js` | nothing | nothing |
 | `formset.js` | nothing | jQuery, on pages with formsets |
 | `list.filter.js` | nothing | `cvGetConfig`, `cv.adapters.collapse` |
-| `modal.js` | `cv` | `cv.adapters.modal` |
+| `modal.js` | nothing | `cv.adapters.modal` |
 | `toggle.js` | nothing | nothing |
-| `tooltip.js` | nothing | `cv.adapters.tooltip` |
+| `tooltip.js` | nothing | `cv.adapters.tooltip` (does nothing without it) |
 
 Bootstrap's bundle may load anywhere on the page for the default adapters (the namespace is resolved when an adapter is
 called, not when the script loads); it still has to be present for Bootstrap's own data-API components. jQuery is
@@ -31,11 +31,13 @@ assignment at any point before the user acts takes effect.
 |---|---|---|---|
 | `modal` | `show(modalEl)` | the partial is injected | `Modal.getOrCreateInstance(modalEl).show()`; throws a clear error when the namespace has no `Modal` |
 | `modal` | `hide(modalEl)` | a `[data-cv-modal-dismiss]` element inside the shell is clicked | `Modal.getInstance(modalEl)?.hide()` |
-| `modal` | `setSize(dialogEl, size)` | before `show`, with the view's `cv_modal_size` token | `dialogEl.className = "modal-dialog"` plus `modal-sm` / `modal-lg` / `modal-xl` for `sm` / `lg` / `xl`; `""` and unknown tokens give the bare base class |
+| `modal` | `setSize(dialogEl, size)` | before `show`, with the view's `cv_modal_size` token | ensures `modal-dialog` and swaps the size class: `modal-sm` / `modal-lg` / `modal-xl` for `sm` / `lg` / `xl`; `""` and unknown tokens remove it. Other classes on the dialog (a shell override's `modal-dialog-centered`) are kept |
 | `tooltip` | `init(el)` | for every `[data-cv-tooltip]` under a root: page load, `cv:modal:loaded`, `cv:formset:row-added` | `Tooltip.getOrCreateInstance(el)`; does nothing without `Tooltip` |
-| `collapse` | `toggle(el)` | the filter toggle button is clicked, with `#filter-collapse` | `Collapse.getOrCreateInstance(el).toggle()`; throws a clear error when the namespace has no `Collapse` |
+| `collapse` | `toggle(el)` | the filter toggle button is clicked, with `#filter-collapse` | `Collapse.getOrCreateInstance(el).toggle()`; throws a clear error when the namespace has no `Collapse`; returns `false` without toggling while the panel is still animating (`.collapsing`), because Bootstrap ignores a toggle then |
 
-A failing `modal.show` is logged with `console.error` and the modal flow falls back to opening the full page.
+A failing `modal.show` is logged with `console.error` and the modal flow falls back to opening the full page. A
+`collapse.toggle` that throws or returns exactly `false` leaves the filter toggle's icon, `aria-expanded` and persisted
+state untouched; any other return value counts as toggled, so a custom adapter may simply return nothing.
 
 Replace an adapter from any script that loads after core:
 

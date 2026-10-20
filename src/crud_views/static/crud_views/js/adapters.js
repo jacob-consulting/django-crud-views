@@ -14,10 +14,25 @@ globalThis.cv = globalThis.cv || {};
             modal: {
                 show(modalEl) { const Modal = component(ns, "Modal"); if (!Modal) throw missing("Modal"); Modal.getOrCreateInstance(modalEl).show(); },
                 hide(modalEl) { component(ns, "Modal")?.getInstance(modalEl)?.hide(); },
-                setSize(dialogEl, size) { dialogEl.className = "modal-dialog" + (SIZE_CLASSES[size] ? " " + SIZE_CLASSES[size] : ""); },
+                setSize(dialogEl, size) {
+                    // only the size classes change: a shell override may carry modal-dialog-centered etc.
+                    dialogEl.classList.remove(...Object.values(SIZE_CLASSES));
+                    dialogEl.classList.add("modal-dialog");
+                    if (Object.hasOwn(SIZE_CLASSES, size)) dialogEl.classList.add(SIZE_CLASSES[size]);
+                },
             },
             tooltip: { init(el) { component(ns, "Tooltip")?.getOrCreateInstance(el); } },
-            collapse: { toggle(el) { const Collapse = component(ns, "Collapse"); if (!Collapse) throw missing("Collapse"); Collapse.getOrCreateInstance(el).toggle(); } },
+            collapse: {
+                toggle(el) {
+                    const Collapse = component(ns, "Collapse");
+                    if (!Collapse) throw missing("Collapse");
+                    // Bootstrap ignores toggle() while the panel is still animating; report that
+                    // so the caller does not flip its own state against an unchanged panel.
+                    if (el.classList.contains("collapsing")) return false;
+                    Collapse.getOrCreateInstance(el).toggle();
+                    return true;
+                },
+            },
         };
     };
     cv.adapters = Object.assign(cv.bootstrapAdapters(() => globalThis.bootstrap), cv.adapters || {});

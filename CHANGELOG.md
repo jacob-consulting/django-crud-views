@@ -20,7 +20,10 @@
   should add both (`aria-controls="filter-collapse"`; the `#filter-collapse` id is a contract). Without
   `aria-expanded` the state is read from the panel's visibility.
 - `formset.js` retries once on `window` `load` when jQuery is not there yet, so a deferred jQuery works.
-- `modal.js`, `list.filter.js` and `viewset.js` use the DOM API.
+- `modal.js`, `list.filter.js` and `viewset.js` use the DOM API. The modal submit forwards the clicked submit button
+  (`event.submitter`) in the posted form data; the filter reset keeps `sort`, `order` and `dir` (URL-encoded).
+- The Bootstrap `modal.setSize` adapter swaps only the size class and keeps other classes on `#cv-modal-dialog`;
+  `collapse.toggle` returns `false` while the panel is animating and the filter toggle then leaves its state alone.
 
 ### Added
 

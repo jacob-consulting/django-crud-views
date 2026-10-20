@@ -4,14 +4,17 @@
         event.preventDefault();
 
         // The button owns the state in aria-expanded. Collapse first: if the adapter throws
-        // (no collapse implementation available), nothing below runs and nothing changes.
+        // (no collapse implementation available) or returns false (the panel is still animating
+        // and the toggle was ignored), nothing below runs and nothing changes.
         // A template override without aria-expanded: read the state off the panel instead.
         const panel = document.getElementById("filter-collapse");
         const expanded = button.hasAttribute("aria-expanded")
             ? button.getAttribute("aria-expanded") === "true"
             : panel !== null && !panel.hidden && globalThis.getComputedStyle(panel).display !== "none";
         const next = !expanded;
-        globalThis.cv.adapters.collapse.toggle(panel);
+        if (globalThis.cv.adapters.collapse.toggle(panel) === false) {
+            return;
+        }
         button.setAttribute("aria-expanded", String(next));
 
         // toggle icon (both variants are rendered server side, one is hidden)
@@ -26,17 +29,18 @@
         }).catch(() => {});
     }
 
-    // filter reset button: reset filter but keep sort
+    // filter reset button: reset filter but keep the table sort / card order (the server keeps the same keys)
     function onReset() {
         const config = cvGetConfig(),
-            url = config.request.path,
             params = new URLSearchParams(config.request.query_string),
-            reset_param = "reset_filter=true";
-        if (params.has("sort")) {
-            globalThis.location.href = url + "?sort=" + params.get("sort") + "&" + reset_param;
-        } else {
-            globalThis.location.href = url + "?" + reset_param;
+            keep = new URLSearchParams();
+        for (const key of ["sort", "order", "dir"]) {
+            if (params.has(key)) {
+                keep.set(key, params.get(key));
+            }
         }
+        keep.set("reset_filter", "true");
+        globalThis.location.href = config.request.path + "?" + keep.toString();
     }
 
     function wire() {

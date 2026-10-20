@@ -12,10 +12,14 @@
     globalThis.__cvTooltipInit = true;
 
     function initTooltips(root) {
-        // Without a tooltip implementation the adapter does nothing; the
-        // trigger's aria-label still carries the text for assistive technology.
+        // Without a tooltip implementation (or without adapters.js) nothing happens;
+        // the trigger's aria-label still carries the text for assistive technology.
+        const tooltip = globalThis.cv?.adapters?.tooltip;
+        if (!tooltip) {
+            return;
+        }
         root.querySelectorAll("[data-cv-tooltip]").forEach((el) => {
-            globalThis.cv.adapters.tooltip.init(el);
+            tooltip.init(el);
         });
     }
 

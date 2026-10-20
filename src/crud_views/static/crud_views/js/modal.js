@@ -67,13 +67,14 @@ function cvModalOpen(url, size) {
         });
 }
 
-function cvModalSubmit(form) {
+function cvModalSubmit(form, submitter) {
     const els = cvModalElements(),
         url = form.getAttribute("action"),
         fallback = els.modal.getAttribute(CVModalConst.urlAttr) || url;
     fetch(url, {
         method: "POST",
-        body: new FormData(form),
+        // the submitter keeps the clicked button's name/value, as a native submit would
+        body: new FormData(form, submitter || undefined),
         headers: {"X-CV-Modal": "true"},
     })
         .then(function (response) {
@@ -113,8 +114,11 @@ document.addEventListener("click", function (event) {
         return;
     }
     const dismiss = event.target.closest("[" + CVModalConst.dismissAttr + "]");
+    if (!dismiss) {
+        return;
+    }
     const modal = document.getElementById(CVModalConst.modal);
-    if (dismiss && modal && modal.contains(dismiss)) {
+    if (modal && modal.contains(dismiss)) {
         event.preventDefault();
         cv.adapters.modal.hide(modal);
     }
@@ -125,7 +129,7 @@ document.addEventListener("submit", function (event) {
         return;
     }
     event.preventDefault();
-    cvModalSubmit(event.target);
+    cvModalSubmit(event.target, event.submitter);
 });
 
 // Test seam: expose the modal API on a shared namespace. The functions above

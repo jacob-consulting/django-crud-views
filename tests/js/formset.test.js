@@ -310,7 +310,7 @@ describe("formset.js", () => {
 
         afterEach(() => {
             delete document.readyState;
-            vi.restoreAllMocks();
+            console.error.mockRestore?.(); // only this spy; setup.js keeps console.log silenced
             vi.stubGlobal("$", jquery);
             vi.stubGlobal("jQuery", jquery);
         });

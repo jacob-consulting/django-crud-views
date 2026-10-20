@@ -163,6 +163,17 @@ describe("modal.js", () => {
             expect(fetchMock.mock.calls[0][1].method).toBe("POST");
         });
 
+        it("keeps the clicked submit button in the posted form data", async () => {
+            const fetchMock = stubFetch(new Response(null, { status: 204, headers: { "X-CV-Redirect": "/done/" } }));
+            document.getElementById("cv-modal-content").innerHTML =
+                '<form action="/books/1/delete/" method="post"><button type="submit" name="confirm" value="yes">ok</button></form>';
+            const form = document.querySelector("#cv-modal-content form");
+            const button = form.querySelector("button");
+            form.dispatchEvent(new SubmitEvent("submit", { bubbles: true, cancelable: true, submitter: button }));
+            await vi.waitFor(() => expect(nav.assign).toHaveBeenCalledWith("/done/"));
+            expect(fetchMock.mock.calls[0][1].body.get("confirm")).toBe("yes");
+        });
+
         it("dismiss clicks inside the shell call adapter.hide with #cv-modal", () => {
             document.getElementById("cv-modal-content").innerHTML =
                 '<button type="button" data-cv-modal-dismiss></button>';

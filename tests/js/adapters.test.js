@@ -46,6 +46,18 @@ describe("adapters.js", () => {
         expect(d.className).toBe(cls);
     });
 
+    it("setSize keeps classes that are not size classes (shell overrides)", async () => {
+        await loadScript("adapters");
+        const d = document.getElementById("d"); d.className = "modal-dialog modal-dialog-centered modal-sm";
+        const a = window.cv.bootstrapAdapters(fakeNamespace());
+        a.modal.setSize(d, "lg");
+        expect(d.classList.contains("modal-dialog-centered")).toBe(true);
+        expect(d.classList.contains("modal-sm")).toBe(false);
+        expect(d.classList.contains("modal-lg")).toBe(true);
+        a.modal.setSize(d, "");
+        expect(d.className).toBe("modal-dialog modal-dialog-centered");
+    });
+
     it("tooltip.init uses Tooltip.getOrCreateInstance and is silent without it", async () => {
         await loadScript("adapters");
         const ns = fakeNamespace(), t = document.getElementById("t");
@@ -54,12 +66,20 @@ describe("adapters.js", () => {
         expect(() => window.cv.bootstrapAdapters({}).tooltip.init(t)).not.toThrow();
     });
 
-    it("collapse.toggle uses Collapse.getOrCreateInstance(el).toggle()", async () => {
+    it("collapse.toggle uses Collapse.getOrCreateInstance(el).toggle() and returns true", async () => {
         await loadScript("adapters");
         const ns = fakeNamespace(), d = document.getElementById("d");
-        window.cv.bootstrapAdapters(ns).collapse.toggle(d);
+        expect(window.cv.bootstrapAdapters(ns).collapse.toggle(d)).toBe(true);
         expect(ns.Collapse.getOrCreateInstance).toHaveBeenCalledWith(d);
         expect(ns.collapse.toggle).toHaveBeenCalledTimes(1);
+    });
+
+    it("collapse.toggle returns false and does not toggle while the panel is still animating", async () => {
+        await loadScript("adapters");
+        const ns = fakeNamespace(), d = document.getElementById("d");
+        d.className = "collapsing";
+        expect(window.cv.bootstrapAdapters(ns).collapse.toggle(d)).toBe(false);
+        expect(ns.collapse.toggle).not.toHaveBeenCalled();
     });
 
     it("modal.show and collapse.toggle throw a clear error without the namespace", async () => {

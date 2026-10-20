@@ -71,6 +71,13 @@ describe("viewset.js", () => {
         });
     });
 
+    it("ignores events whose target is not an element", () => {
+        document.body.innerHTML = "";
+        for (const type of ["click", "change"]) {
+            expect(() => document.dispatchEvent(new Event(type, { bubbles: true }))).not.toThrow();
+        }
+    });
+
     describe("data-cv-cancel-url", () => {
         it("navigates to the cancel url instead of following the href", () => {
             document.body.innerHTML = `<a href="/wrong/" data-cv-cancel-url="/books/">cancel</a>`;

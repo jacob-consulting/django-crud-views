@@ -89,6 +89,17 @@ describe("list.filter.js", () => {
         expect(fetchMock).not.toHaveBeenCalled();
     });
 
+    it("changes nothing when the collapse adapter refuses the toggle (panel still animating)", async () => {
+        toggle.mockImplementation(() => false);
+        const f = fixture();
+        await loadScript("list.filter");
+        f.toggle.click();
+        expect(toggle).toHaveBeenCalledTimes(1);
+        expect(f.toggle.getAttribute("aria-expanded")).toBe("false");
+        expect(f.open.classList.contains("d-none")).toBe(false);
+        expect(fetchMock).not.toHaveBeenCalled();
+    });
+
     it("still toggles when the state POST fails", async () => {
         fetchMock.mockImplementation(() => Promise.reject(new Error("offline")));
         const f = fixture();
@@ -102,6 +113,8 @@ describe("list.filter.js", () => {
     it.each([
         ["sort=name&page=2", "/books/?sort=name&reset_filter=true"],
         ["", "/books/?reset_filter=true"],
+        ["order=title&dir=desc&title=x", "/books/?order=title&dir=desc&reset_filter=true"],
+        ["sort=a%26b", "/books/?sort=a%26b&reset_filter=true"],
     ])("reset navigates with %j", async (queryString, expected) => {
         fixture({ queryString });
         await loadScript("list.filter");

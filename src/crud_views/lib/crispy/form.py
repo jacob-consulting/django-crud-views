@@ -1,9 +1,10 @@
 from crispy_forms.bootstrap import FormActions
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import BaseInput, Button, Layout, LayoutObject, Row, Submit
+from crispy_forms.layout import BaseInput, Layout, LayoutObject, Row
 from django.forms import BooleanField, Form, ModelForm
 from django.utils.translation import gettext_lazy as _
 
+from crud_views.lib.crispy.buttons import Button, Submit
 from crud_views.lib.crispy.table import Column4
 
 
@@ -74,7 +75,6 @@ class CrispyFormMixin:
         return {
             "name": "reset",
             "value": context["cv_action_label"],
-            "css_class": "btn btn-secondary",
             "data_cv_cancel_url": url,
         }
 
@@ -120,13 +120,22 @@ class CrispyDeleteForm(CrispyForm):
 
     confirm = BooleanField(label=_("Confirm deletion"))
 
+    def get_delete_button_kwargs(self) -> dict:
+        return {"name": "delete", "value": _("Delete")}
+
+    def get_delete_button(self) -> Submit:
+        """
+        Delete button for FormActions
+        """
+        return Submit(slot="form:delete", **self.get_delete_button_kwargs())
+
     @property
     def helper(self):
         helper = FormHelper()
         helper.layout = Layout(
             Row(Column4("confirm")),
             FormActions(
-                Submit("delete", "Delete"),
+                self.get_delete_button(),
                 self.get_cancel_button(),
             ),
         )

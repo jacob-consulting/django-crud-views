@@ -30,12 +30,12 @@ def hrefs(response) -> list[str]:
 
 
 def render_cancel_tag(response) -> str:
-    """Render {% cv_cancel_button %} against the response's view; return the href."""
-    tpl = Template("{% load crud_views %}{% cv_cancel_button %}")
-    html = tpl.render(Context({"view": response.context["view"], "request": response.context["request"]}))
-    match = re.search(r'href="([^"]+)"', html)
-    assert match, html
-    return match.group(1)
+    """The cancel target the view resolves for the response; return the URL."""
+    view = response.context["view"]
+    request = response.context["request"]
+    return view.get_cancel_button_context(obj=getattr(view, "object", None), user=request.user, request=request)[
+        "cv_url"
+    ]
 
 
 # ---------------------------------------------------------------------------

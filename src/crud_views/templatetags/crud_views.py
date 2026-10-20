@@ -280,25 +280,6 @@ def cv_context_actions(context, obj=None):
     return {"view": view, "request": context["request"], "object": obj, "group": group}
 
 
-@register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/button_cancel.html", takes_context=True)
-def cv_cancel_button(context, obj=None):
-    view: CrudView = cv_get_view(context)
-    context = view.get_cancel_button_context(obj=obj, user=context["request"].user, request=context["request"])
-    return context
-
-
-@register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/button_submit.html", takes_context=True)
-def cv_submit_button(context, obj=None):
-    cv_get_view(context)
-    return {}
-
-
-@register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/button_delete.html", takes_context=True)
-def cv_delete_button(context, obj=None):
-    cv_get_view(context)
-    return {}
-
-
 @register.simple_tag(takes_context=True)
 def cv_header_icon(context):
     view: CrudView = cv_get_view(context)

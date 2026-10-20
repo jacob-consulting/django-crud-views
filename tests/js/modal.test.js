@@ -1,3 +1,4 @@
+import $ from "jquery";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { loadScript, nav } from "./helpers/load.js";
 import { modalSkeleton } from "./helpers/dom.js";
@@ -21,7 +22,7 @@ function stubFetch(responseOrError) {
 }
 
 describe("modal.js", () => {
-    let show;
+    let show, hide, setSize;
 
     beforeAll(async () => {
         await loadScript("modal");
@@ -30,7 +31,9 @@ describe("modal.js", () => {
     beforeEach(() => {
         modalSkeleton();
         show = vi.fn();
-        vi.stubGlobal("bootstrap", { Modal: { getOrCreateInstance: vi.fn(() => ({ show })) } });
+        hide = vi.fn();
+        setSize = vi.fn();
+        window.cv = { ...window.cv, adapters: { modal: { show, hide, setSize } } };
     });
 
     describe("cvModalOpen", () => {
@@ -45,21 +48,20 @@ describe("modal.js", () => {
             stubFetch(textResponse("<p>partial</p>"));
             const loaded = vi.fn();
             document.getElementById("cv-modal").addEventListener("cv:modal:loaded", loaded);
-            window.cv.cvModalOpen("/books/create/", "modal-lg");
+            window.cv.cvModalOpen("/books/create/", "lg");
             await vi.waitFor(() => expect(show).toHaveBeenCalled());
             expect(document.getElementById("cv-modal-content").innerHTML).toBe("<p>partial</p>");
-            expect(document.getElementById("cv-modal-dialog").className).toBe("modal-dialog modal-lg");
+            expect(setSize).toHaveBeenCalledWith(document.getElementById("cv-modal-dialog"), "lg");
             expect(document.getElementById("cv-modal").getAttribute("data-cv-url")).toBe("/books/create/");
             expect(loaded).toHaveBeenCalled();
             expect(nav.assign).not.toHaveBeenCalled();
         });
 
-        it("resets the dialog class when no size is given", async () => {
+        it("passes the empty token when no size is given", async () => {
             stubFetch(textResponse("<p>x</p>"));
-            document.getElementById("cv-modal-dialog").className = "modal-dialog modal-lg";
             window.cv.cvModalOpen("/books/create/", "");
             await vi.waitFor(() => expect(show).toHaveBeenCalled());
-            expect(document.getElementById("cv-modal-dialog").className).toBe("modal-dialog");
+            expect(setSize).toHaveBeenCalledWith(document.getElementById("cv-modal-dialog"), "");
         });
 
         it("falls back to full-page navigation on a non-OK response", async () => {
@@ -137,21 +139,17 @@ describe("modal.js", () => {
             expect(() => window.cv.cvModalElements()).toThrow(/#cv-modal not found/);
         });
 
-        it("throws a descriptive error when Bootstrap is missing", () => {
-            vi.stubGlobal("bootstrap", undefined);
-            expect(() => window.cv.cvModalElements()).toThrow(/Bootstrap 5 JavaScript not loaded/);
-        });
     });
 
     describe("delegated handlers", () => {
         it("opens the modal from a [data-cv-modal] link click", async () => {
             const fetchMock = stubFetch(textResponse("<p>x</p>"));
             document.body.insertAdjacentHTML("beforeend",
-                `<a href="/books/1/delete/" data-cv-modal="true" data-cv-modal-size="modal-xl">del</a>`);
+                `<a href="/books/1/delete/" data-cv-modal="true" data-cv-modal-size="xl">del</a>`);
             document.querySelector("a[data-cv-modal]").click();
-            await vi.waitFor(() => expect(show).toHaveBeenCalled());
+            await vi.waitFor(() => expect(show).toHaveBeenCalledWith(document.getElementById("cv-modal")));
             expect(fetchMock).toHaveBeenCalledWith("/books/1/delete/", { headers: { "X-CV-Modal": "true" } });
-            expect(document.getElementById("cv-modal-dialog").className).toBe("modal-dialog modal-xl");
+            expect(setSize).toHaveBeenCalledWith(document.getElementById("cv-modal-dialog"), "xl");
         });
 
         it("intercepts form submits inside the modal content", async () => {
@@ -163,6 +161,50 @@ describe("modal.js", () => {
             expect(event.defaultPrevented).toBe(true);
             await vi.waitFor(() => expect(nav.assign).toHaveBeenCalledWith("/done/"));
             expect(fetchMock.mock.calls[0][1].method).toBe("POST");
+        });
+
+        it("dismiss clicks inside the shell call adapter.hide with #cv-modal", () => {
+            document.getElementById("cv-modal-content").innerHTML =
+                '<button type="button" data-cv-modal-dismiss></button>';
+            const button = document.querySelector("[data-cv-modal-dismiss]");
+            const event = new MouseEvent("click", { bubbles: true, cancelable: true });
+            button.dispatchEvent(event);
+            expect(event.defaultPrevented).toBe(true);
+            expect(hide).toHaveBeenCalledWith(document.getElementById("cv-modal"));
+        });
+
+        it("logs and falls back to navigation when adapter.show throws", async () => {
+            const error = vi.spyOn(console, "error").mockImplementation(() => {});
+            show.mockImplementation(() => { throw new Error("no adapter"); });
+            stubFetch(textResponse("<p>x</p>"));
+            window.cv.cvModalOpen("/books/create/", "");
+            await vi.waitFor(() => expect(nav.assign).toHaveBeenCalledWith("/books/create/"));
+            expect(error).toHaveBeenCalledTimes(1);
+            error.mockRestore();
+        });
+
+        it("leaves modified clicks to the browser", () => {
+            stubFetch(textResponse("<p>x</p>"));
+            document.body.insertAdjacentHTML("beforeend",
+                `<a href="/books/1/delete/" data-cv-modal="true" data-cv-modal-size="lg">del</a>`);
+            const link = document.querySelector("a[data-cv-modal]");
+            for (const init of [{ ctrlKey: true }, { metaKey: true }, { shiftKey: true }, { button: 1 }]) {
+                const event = new MouseEvent("click", { bubbles: true, cancelable: true, ...init });
+                link.dispatchEvent(event);
+                expect(event.defaultPrevented).toBe(false);
+            }
+            expect(fetch).not.toHaveBeenCalled();
+        });
+    });
+
+    // Keep last: re-loading the script registers a second set of document listeners.
+    describe("without jQuery", () => {
+        it("loads and wires its handlers without jQuery", async () => {
+            vi.stubGlobal("$", undefined);
+            vi.stubGlobal("jQuery", undefined);
+            await expect(loadScript("modal")).resolves.toBeUndefined();
+            vi.stubGlobal("$", $);
+            vi.stubGlobal("jQuery", $);
         });
     });
 });

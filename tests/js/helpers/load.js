@@ -34,7 +34,10 @@ export async function loadScript(name) {
     const win = testWindow();
     // Evaluates the package's own static JS inside the test window, as a <script> tag would.
     new Function("window", "globalThis", code)(win, win); // NOSONAR S1523
-    // jQuery defers $(document).ready() callbacks by a microtask even when the
-    // document is already complete; wait for them so wiring is done on return.
-    await new Promise((resolve) => window.jQuery(resolve));
+    // Only formset.js still queues its start-up on jQuery's ready, which jQuery defers by a
+    // microtask even when the document is complete; wait for it so wiring is done on return.
+    // The other scripts need no jQuery, so tests may stub it away.
+    if (typeof window.jQuery === "function") {
+        await new Promise((resolve) => window.jQuery(resolve));
+    }
 }

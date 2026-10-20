@@ -15,11 +15,11 @@ def test_table_lists_core_and_registered(asset_registry, pipeline_setting):
     asset_registry.register_assets(key="dtp", js=["https://cdn.example.com/dtp.js", "dtp/init.js"])
     lines = _run().splitlines()
     assert lines[0].split() == ["KEY", "KIND", "DELIVERY", "PATH"]
-    assert lines[1].split() == ["crud_views", "js", "tag", "crud_views/js/viewset.js"]
+    assert lines[1].split() == ["crud_views", "js", "tag", "crud_views/js/adapters.js"]
     assert any(
         line.split()[:2] == ["dtp", "js"] and "tag (CDN)" in line and "cdn.example.com" in line for line in lines
     )
-    assert len(lines) == 1 + 10 + 2
+    assert len(lines) == 1 + 11 + 2
 
 
 def test_external_filter(asset_registry, pipeline_setting):

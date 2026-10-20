@@ -1,7 +1,8 @@
 # Buttons: variants, a class table and a logic/markup split
 
-Date: 2026-10-19
-Status: draft, reviewed with the maintainer section by section
+Date: 2026-10-19 (refreshed 2026-10-20 against `main` after PR #200)
+Status: reviewed with the maintainer section by section; builder check done 2026-10-20, its findings answered under
+"Builder check", the one open question (formset delete toggle) decided with the maintainer the same day
 
 ## Intent
 
@@ -26,6 +27,14 @@ The goal is **one button mechanism** in which:
   made **once, in Python**, and handed to small **leaf templates** that only draw. Themes override leaves and never
   copy logic.
 
+## Baseline
+
+`main` after PR #200 (commit 440ac55): 0.30.0 plus the unreleased JavaScript adapters change, which ships as its own
+release before this one (`2026-10-20-js-adapters-jquery-free-core-design.md`, "Release order"). State inherited
+from it: the filter toggle carries `aria-expanded` / `aria-controls`, the modal shell is `crud_views/modal/shell.html`,
+and the goldens were regenerated there. This spec touches neither the filter toggle nor the modal beyond a class
+attribute, and regenerates the goldens once more. "Today" below means this baseline.
+
 ## Goals
 
 - `cv_action_variant` on every `CrudView`, flowing into context, list, card and menu-item buttons.
@@ -35,13 +44,17 @@ The goal is **one button mechanism** in which:
   documented context contract.
 - The three Python-held class sites (menu toggle dict, crispy buttons, filter reset setting) read the table.
 - `CrispyDeleteForm` gets the missing `get_delete_button()` hook.
-- A project that does nothing renders the same DOM as 0.30.0, up to the five listed markup differences
+- A project that does nothing renders the same DOM as the baseline, up to the listed markup differences
   (see "Acceptance").
 
 ## Non-goals
 
 - Changing the stock look. Create stays an outline icon button, delete stays blue. Opinionated defaults are a
   possible later release, not this one.
+- Icons next to visible card labels. The contract carries `cv_icon` for every button; the stock leaf draws it only
+  when the label is hidden, which is today's output. Drawing both later is a one-line change to the stock leaf plus
+  regenerated goldens (or a `CardAction` flag if it should be per button), and a theme can do it now by overriding
+  the leaf. Not an API change.
 - Updating `crud_views_tabler` (in the `tabler-test` repo). That comes later; this spec includes a written check
   of what the theme would need instead.
 - jQuery or the global `bootstrap` (point 3 of the upstream questions).
@@ -74,6 +87,8 @@ The goal is **one button mechanism** in which:
 4. **Shared leaves with the location passed in**, not one leaf per location: one action leaf, one menu item leaf, one
    container leaf.
 5. **Upstream only, with a written Tabler check** (below). The theme is migrated in a follow-up.
+6. **The formset delete toggle is in scope** (builder check, item 3): the two classes `formset.js` swaps come from
+   the table, so a theme restyles formset controls without touching JavaScript.
 
 ## Design
 
@@ -89,16 +104,18 @@ discoverability and the check.
 cv_action_variant: str = "secondary"
 ```
 
-Overrides in core: `CreateView` and `crud_views_polymorphic` `CreateSelectView` set `"primary"`, `DeleteView` sets
-`"danger"`. Ordered up/down, manage, workflow, detail, update, list and card stay `"secondary"`. Projects override
+Overrides in core: `CreateView` and `PolymorphicCreateSelectView` (`crud_views_polymorphic`) set `"primary"`,
+`DeleteView` sets `"danger"`. Ordered up/down, manage, workflow, detail, update, list and card stay `"secondary"`. Projects override
 it per view like any `cv_` attribute. The filter toggle button is `secondary`.
 
 **Flow into buttons.** `CrudView.cv_get_dict()` adds `"cv_variant": cls.cv_action_variant`. That dict is the base of
-every list action, menu item and plain-key context action, so they get `cv_variant` with no further change. The
-parent, child and sibling buttons in `lib/view/buttons.py` build their own dicts; each copies `cv_variant` from the
-target view class on the same line where it copies `cv_icon_action`. Card action data (`cv_get_card_action_data`)
-already sets `cv_variant`; it now sets `action.variant` if given, else the target view's `cv_action_variant`
-(for `child_name` actions: the child view's).
+every list action, menu item and context action, so they get `cv_variant` with no further change. The parent,
+child and sibling buttons in `lib/view/buttons.py` also end in `cls.cv_get_dict(...)` on the target view class, so
+they need no change either (their `cv_icon_action` comes from the ViewSet's `icon_header`, a separate concern).
+`FilterContextButton` is the one button that builds its dict without `cv_get_dict`; it carries no `cv_variant` and
+its own template renders `secondary` directly (section 3). Card action data (`cv_get_card_action_data`) already
+sets `cv_variant`; it now sets `action.variant` if given, else the target view's `cv_action_variant` (for
+`child_name` actions: the child view's).
 
 **Per-button override.**
 
@@ -140,7 +157,7 @@ themes override values. The table holds style classes only. Structural classes t
 depend on (`dropdown-toggle`, `cv-menu-toggle`, `d-none`, `flex-grow-1`, `active`, `visually-hidden`) stay in the
 leaves.
 
-**Default table** (reproduces 0.30.0):
+**Default table** (reproduces today's classes; the two form-button token differences are listed under Acceptance):
 
 | Key | Default |
 |---|---|
@@ -164,7 +181,10 @@ leaves.
 | `form:filter-submit` | `btn btn-primary` (what crispy renders today) |
 | `form:filter-reset` | `btn btn-secondary` |
 | `formset:control` | `btn btn-light` |
+| `formset:container` | `btn-group` |
+| `formset:control-danger` | `btn btn-danger` (the delete button of a row marked for deletion) |
 | `card-order:toggle` | `btn btn-outline-secondary` |
+| `card-order:container` | `btn-group btn-group-sm` |
 | `language:toggle` | `btn btn-outline-secondary` |
 | `object-detail:property-detail` | `btn btn-link p-0 ms-1 align-baseline text-muted` |
 
@@ -190,25 +210,37 @@ renders nothing at render time; `W362` reports it at startup.
   `tags/actions_menu.html` uses `{% cv_button_class cv_location "menu-wrapper" %}` and
   `tags/actions_menu_toggle.html` uses `{% cv_button_class cv_location "menu-toggle" %}` followed by the structural
   `dropdown-toggle cv-menu-toggle`.
-- crispy: crispy's `Submit` has `field_classes = "btn btn-primary"` and **appends** `css_class` rather than
-  replacing it. The package therefore ships `crud_views.lib.crispy.buttons.Submit` and `Button` subclasses whose
-  base classes come from the table (`form:submit` for `Submit`, the caller passes the slot for others) and which
-  still append a `css_class` given by a project. `CrispyFormMixin.get_submit_button()`, `get_cancel_button()`, the
-  new `CrispyDeleteForm.get_delete_button()` and the filter form (`lib/views/list.py:70-77`) use them with
-  `form:submit`, `form:cancel`, `form:delete`, `form:filter-submit`, `form:filter-reset`. The `css_class` key
-  disappears from `get_cancel_button_kwargs()`; a project that overrides the kwargs hooks and passes `css_class`
-  gets it appended as before.
+- crispy: crispy's inputs carry base classes (`Submit`: `btn btn-primary`, `Button`: `btn`, `Reset`:
+  `btn btn-inverse`) and **append** `css_class` rather than replacing it, so today the cancel button renders
+  `btn btn btn-secondary` and the filter reset `btn btn-inverse btn btn-secondary`. The package therefore ships
+  `Submit`, `Button` and `Reset` subclasses (module placement left to the builder) whose base classes come from the
+  table (`form:submit` for `Submit`; the caller passes the slot for the others) and which still append a
+  `css_class` given by a project. `CrispyFormMixin.get_submit_button()`, `get_cancel_button()`, the new
+  `CrispyDeleteForm.get_delete_button()` and the filter form helper (`ListViewFilterFormHelper` in
+  `lib/views/list.py`) use them with `form:submit`, `form:cancel`, `form:delete`, `form:filter-submit`,
+  `form:filter-reset`. The `css_class` key disappears from `get_cancel_button_kwargs()`; a project that overrides
+  the kwargs hooks and passes `css_class` gets it appended as before. The duplicate `btn` and the dead
+  `btn-inverse` token disappear (Acceptance).
 - `CrispyDeleteForm`: `get_delete_button_kwargs()` returns `{"name": "delete", "value": _("Delete")}`,
   `get_delete_button()` builds the button, `helper` uses `self.get_delete_button()` instead of the inline
   `Submit("delete", "Delete")`. The label becomes translatable as a side effect; changelog line.
+
+- `formset.js`: `set_delete()` (lines 438-446 today) swaps the literals `btn-light` / `btn-danger` on
+  `.cv-form-ctrl-delete`; they are the only class literals in the file. `formsets/control.html` renders the delete
+  button with `data-cv-class="{% cv_button_class 'formset' 'control' %}"` and
+  `data-cv-class-danger="{% cv_button_class 'formset' 'control-danger' %}"`; `set_delete()` removes every token of
+  the attribute being left and adds every token of the one being entered, and leaves the structural
+  `cv-form-ctrl-delete` alone. The script stays on jQuery as decided in the adapters spec.
 
 **Removed.**
 
 - `CRUD_VIEWS_FILTER_RESET_BUTTON_CSS_CLASS` and `CrudViewsSettings.filter_reset_button_css_class`. `E360` while the
   setting is still defined, hint names `CRUD_VIEWS_BUTTON_CLASSES["form:filter-reset"]`.
 - The tags `cv_submit_button`, `cv_cancel_button`, `cv_delete_button` and the templates `tags/button_submit.html`,
-  `tags/button_cancel.html`, `tags/button_delete.html`. No shipped template uses them (verified on 0.30.0). The
-  view hooks `get_cancel_button_context()` etc. that the crispy mixin uses stay.
+  `tags/button_cancel.html`, `tags/button_delete.html`. No shipped template uses them. The one user is the test
+  helper `render_cancel_tag` in `tests/test1/test_cancel_origin.py`, which reads the cancel href through
+  `{% cv_cancel_button %}`; it is rewritten to call the view hook `get_cancel_button_context()` directly. The view
+  hooks `get_cancel_button_context()` etc. that the crispy mixin uses stay.
 
 **Checks** (`crud_views/checks.py`, registered like `check_icons`):
 
@@ -255,22 +287,27 @@ Input: a resolved action dict as the tags produce it today after `cv_resolve_act
 | `cv_submit_target` | str or absent | the hidden form id (`cv_form_<oid>`) for POST without modal |
 | `cv_modal`, `cv_modal_size` | bool, str | modal trigger data, unchanged |
 | `cv_disabled`, `cv_disabled_reason` | bool, str | disabled state, unchanged |
-| `cv_active` | bool | the button targets the current view; context location only, else false |
+| `cv_active` | bool | the button targets the current view (`cv_is_active`), in every location |
 | `cv_key` | str | the action key (always present; card buttons gain it, see Acceptance) |
 | `cv_label` | str | card: `cv_label` if set, else the short label; context and list: the action label |
+| `cv_short_label` | str | the menu item text: card: the same as `cv_label`; context and list: the short action label, else the action label |
 | `cv_label_visible` | bool | true for card buttons that have a label and `no_label` is false; false otherwise |
-| `cv_title` | str or absent | the full action label, set whenever the label is not visible |
+| `cv_title` | str or absent | set whenever the label is not visible: context and list: the full action label; card: `cv_label` (today's card title) |
 | `cv_icon` | str or None | the icon value (`cv_icon_action`) |
-| `cv_variant` | str | section 1 |
+| `cv_variant` | str | section 1; `"secondary"` when the input dict carries none (dicts built without `cv_get_dict`) |
 | `cv_flex` | bool | card only; false elsewhere |
 
 These keys and the three leaf names are public API, documented on the theme page one sentence per key. Changing
-them later is a breaking change.
+them later is a breaking change. The leaves receive **only** the contract keys (plus Django's standard context),
+never the raw action dict: a leaf that reads an undocumented key fails in the leaf unit tests instead of quietly
+coupling a theme to internals. Custom button templates (`template`, `template_code`, whole-template overrides of
+the logic templates) keep receiving the raw dict as today.
 
 The decisions encoded today in `tags/context_action.html`, `tags/list_action.html`, `tags/card_action.html` and
 `tags/actions_menu_item.html` (the `cv_disabled` / `cv_access` / `cv_action_enabled` / `cv_list_action_method` /
-`cv_modal` / `cv_is_active` branches) move into this function and nowhere else. The function also handles the two
-per-location differences that exist today: card buttons may show a label; only context buttons can be active.
+`cv_modal` / `cv_is_active` branches) move into this function and nowhere else. The function also handles the
+per-location differences that exist today: card buttons may show a label, and a card button's title and hidden
+text are its card label, not the full action label.
 
 **Leaves.** New presentation-only templates under `crud_views/tags/button/`:
 
@@ -278,10 +315,13 @@ per-location differences that exist today: card buttons may show a label; only c
   `{% cv_button_class cv_location cv_variant %}{% if cv_active %} active{% endif %}{% if cv_flex %} flex-grow-1{% endif %}`.
   Attributes: `href` or `type="button"`, `disabled` + `data-cv-disabled`, `data-cv-action="submit-form"` +
   `data-cv-target`, `data-cv-modal` + `data-cv-modal-size`, `aria-current="page"` when active, `title`, `cv-key`.
-  Content: `{% cv_icon cv_icon %}` then either the visible label or `<span class="visually-hidden">`.
+  Content: when `cv_label_visible`, `<span>{{ cv_label }}</span>` and no icon (today's card button with a label
+  draws none; a theme leaf may draw both); otherwise `{% cv_icon cv_icon %}` followed by
+  `<span class="visually-hidden">{{ cv_label }}</span>`.
 - `menu_item.html`: the dropdown entry from the same contract, class `{% cv_button_class "menu" "item" %}` plus
-  `active`, same attributes as today's `actions_menu_item.html` (title only for the context location). Includes the
-  existing `tags/actions_menu_item_label.html`, which stays as it is.
+  `active`, same attributes as today's `actions_menu_item.html` (title only for the context location). Includes
+  `tags/actions_menu_item_label.html`, rewritten to the contract keys (`cv_icon` with `css="cv-icon-fw"`, else the
+  empty `cv-icon-fw` placeholder; then `cv_short_label`); its output is unchanged.
 - `container.html`: the wrapper and the loop:
 
   ```django
@@ -294,9 +334,13 @@ per-location differences that exist today: card buttons may show a label; only c
   `cv_render_button` renders a resolved dict exactly as the per-key tags do (custom `template` / `template_code`
   buttons included), so the loop is not logic. The card container is the same leaf with `card:container`; its
   element is a `div` today and a `fieldset` would change the DOM, so the leaf takes `cv_container_tag`
-  (`fieldset` for context and list, `div` for card) from the logic template. Hidden POST forms are rendered by the
-  logic template **before** the wrapper, outside it (a hidden child inside the `btn-group` breaks Bootstrap's
-  first/last-child corner rounding; see `test_context_actions_post.py`).
+  (`fieldset` for context and list, `div` for card) from the logic template. `aria-label="Actions"` is written for
+  the `fieldset` tag only (on a plain `div` it has no role to attach to); `cv-{{ cv_location }}-container="true"` is
+  written for every location, so the card row gains it (Acceptance). Hidden POST forms are rendered by the logic
+  template **before** the wrapper, outside it, for all three locations (a hidden child inside the `btn-group` breaks
+  Bootstrap's first/last-child corner rounding; see `test_context_actions_post.py`). Today the card renders its
+  menu-item forms inside the `d-flex` row, so they move (Acceptance; a `d-none` form has no layout effect either
+  way).
 
 **Thin logic templates at the old names.** A new tag `{% cv_button location %}` takes the current template context
 (the resolved dict), calls `cv_button_data`, and renders `tags/button/action.html` with the result.
@@ -347,9 +391,14 @@ only these differences, each with a changelog line:
 | card buttons gain `cv-key` | one leaf; list and context buttons already carry it |
 | card POST actions render `<button type="button">` instead of `<a href="#">` | the `data-cv-action="submit-form"` handler in `viewset.js` is attribute based and works on either; the anchor was the odd one out |
 | `aria-current="page"` on the active context action | a11y; the Tabler override already does it |
+| the crispy cancel button renders `btn btn-secondary` instead of `btn btn btn-secondary`; the filter reset `btn btn-secondary` instead of `btn btn-inverse btn btn-secondary` | base classes from the table instead of crispy's defaults plus an appended `css_class`; forms are not in the goldens |
+| the card action row gains `cv-card-container="true"` | one container leaf; the context and list rows already carry theirs |
+| the hidden forms of card **menu** items move from inside the `d-flex` row to before it | one placement rule for all three containers |
 
-Anything else in the diff is a bug. The 11 class assertions in `test_card.py`, `test_action_menus_*.py` and
-`test_context_actions_post.py`, the a11y tests, the POST tests and the examples project tests pass **unmodified**.
+Anything else in the diff is a bug. The class assertions in `test_card.py`, `test_action_menus_*.py` and
+`test_context_actions_post.py`, the a11y tests, the POST tests and the examples project tests pass **unmodified**,
+with one exception: `test_card_action_post.py` asserts today's `<a href="#" data-cv-action="submit-form">` and
+changes to the `<button>` (fourth row above).
 
 The golden normaliser (`_norm`) is extended to sort attributes and class tokens, so that future leaf edits which
 only reorder attributes stop churning the files. Order is not part of the contract.
@@ -358,6 +407,8 @@ only reorder attributes stop churning the files. Order is not part of the contra
 
 - `cv_button_data`: every branch (disabled, POST, POST + modal, modal, GET, active) for each of the three locations,
   as plain unit tests with no rendering.
+- Leaves: each of the three rendered from a contract-only context (every branch), so a leaf that reads a raw key
+  fails here.
 - Table: defaults, theme layer, project layer, per-key merge, cache reset on `setting_changed` and on registration,
   `None` / `""` entries, each check (`E360`, `E361`, `W362`).
 - Guard test like the hard-coded icon class test (`test_icons_templates.py`): no `btn-` token in any shipped template
@@ -373,6 +424,12 @@ only reorder attributes stop churning the files. Order is not part of the contra
   renders no toggle.
 - Theme registration: an app registering classes in `ready()` changes the rendered classes; a project setting wins
   over it.
+- `render_cancel_tag` in `test_cancel_origin.py` reads the href from `get_cancel_button_context()`; the tests
+  themselves stay.
+- `formset.js`: the existing vitest case "delete() toggles the hidden DELETE input and button styling" in
+  `tests/js/formset.test.js` gets the two data attributes in its fixture and asserts the class list follows them
+  (non-Bootstrap strings in the fixture, so a leftover literal fails). Runs under Node 22 (see
+  `2026-07-21-js-test-harness-design.md`).
 - Goldens regenerated once with the diff reviewed against the Acceptance table.
 
 ## Tabler check
@@ -404,11 +461,12 @@ tell.
 |---|---|
 | `tags/context_action.html`, `tags/list_action.html`, `tags/card_action.html` | thin logic template, `{% cv_button %}` |
 | `tags/actions_menu_item.html` | thin, menu item leaf |
+| `tags/actions_menu_item_label.html` | contract keys (`cv_icon`, `cv_short_label`), same output |
 | `tags/context_actions.html`, `columns/actions.html`, `tags/card.html` | no `group is None` branch, container leaf include |
 | `tags/actions_menu.html`, `tags/actions_menu_toggle.html` | classes from the table |
 | `tags/context_action_filter.html` | `{% cv_button_class "context" "secondary" %}` |
-| `formsets/control.html` | `formset:control` (4 buttons) |
-| `snippets/card_order.html` | `card-order:toggle` (2 buttons, keep `active`) |
+| `formsets/control.html` | `formset:control` (4 buttons), `formset:container` (3 `btn-group` wrappers), `data-cv-class` / `data-cv-class-danger` on the delete button |
+| `snippets/card_order.html` | `card-order:toggle` (2 buttons, keep `active`), `card-order:container` (the `btn-group btn-group-sm` wrapper) |
 | `snippets/language_selector.html` | `language:toggle` plus structural `dropdown-toggle` |
 | `tags/button_submit.html`, `tags/button_cancel.html`, `tags/button_delete.html` | removed |
 | `crud_views_object_detail/.../layouts/card-rows/property.html` | `object-detail:property-detail` |
@@ -422,11 +480,17 @@ it afterwards.
 - New reference page `docs/reference/buttons.md`: variants and view defaults, `ContextButton.variant`,
   `CardAction.variant`, the default table, `CRUD_VIEWS_BUTTON_CLASSES`, `register_button_classes`, the leaf
   contract (one sentence per key), the three leaves, a theme recipe (registration plus leaf override).
-- `docs/reference/theme.md`: replace the "restyle the submit button" example with the table plus leaf recipe; a
-  section on which templates are logic templates and should not be copied.
+- `docs/reference/theme.md`: replace the "restyle the submit button" example (and the `tags/button_submit.html`
+  mention in its override list) with the table plus leaf recipe; a section on which templates are logic templates
+  and should not be copied.
 - `docs/reference/card-list-view.md` (`variant` default `None`, fallback), `docs/reference/action_menus.md`
   (containers, menu classes), `docs/reference/settings.md` (remove the filter reset setting, add
-  `CRUD_VIEWS_BUTTON_CLASSES`), the crispy page (`get_delete_button`), `docs/reference/system-checks` entries.
+  `CRUD_VIEWS_BUTTON_CLASSES`), `docs/reference/delete_view.md` (`CrispyDeleteForm.get_delete_button()`; there is
+  no separate crispy page), `docs/reference/templates.md` (removed and added template names). The checks are
+  documented on the buttons page, as `icons.md` and `action_menus.md` document theirs; there is no central
+  system-checks page.
+- `docs/reference/formsets.md`: the row controls and the delete toggle take their classes from `formset:control`,
+  `formset:control-danger` and `formset:container`.
 - CHANGELOG: breaking (removed setting with snippet, removed tags, `CardAction.variant` default, the five DOM
   changes, translatable Delete label), added (variants, table, leaves, hooks, checks).
 - The django-crud-views skill in the `skills` repo (`references/actions-and-buttons.md`, `settings.md`,
@@ -446,9 +510,33 @@ it afterwards.
 - Exact check ids within the stated ranges if `E209` or `E360`-`W362` are taken.
 - The `cv_button` tag's argument form for the menu item kind.
 - Attribute order inside the leaves (then fixed by the regenerated goldens).
-- Module placement of the crispy `Submit` / `Button` subclasses.
+- Module placement of the crispy `Submit` / `Button` / `Reset` subclasses.
 - Whether `cv_render_button` is a new tag or `cv_render_context_action` / `cv_render_list_action` /
   `cv_render_card_action` generalised with a location argument.
+
+## Builder check (2026-10-20)
+
+A fresh reviewer read this document against the baseline and asked four questions.
+
+1. **Card markup under one leaf.** As first written, the card leaf would have drawn an icon next to visible labels,
+   used the full action label as the card title, put `aria-label` on the card `div` and moved the card menu forms.
+   Decision 1 (stock output unchanged) settles the first two: the stock action leaf draws the icon only when the
+   label is hidden, and a card button's title and hidden text are its card label (`cv_title`, `cv_label`). The other
+   two are accepted DOM changes, now in the Acceptance table: `aria-label` on `fieldset` only, `cv-card-container`
+   on the card row, card menu forms before the row.
+2. **Leaf context.** Leaves receive only the contract keys. `cv_short_label` was added for the menu item text and
+   `tags/actions_menu_item_label.html` is rewritten to the contract with the same output. Raw dicts keep going to
+   custom templates only.
+3. **`formset.js` hard-codes `btn-light` / `btn-danger`.** `set_delete()` swaps the two classes on
+   `.cv-form-ctrl-delete` when a row is marked for deletion, so a theme that sets `formset:control` gets Bootstrap
+   classes back at runtime, and the template guard test cannot see it. Decided with the maintainer the same day:
+   in scope (decision 6). A `formset:control-danger` entry (default `btn btn-danger`); `formsets/control.html`
+   renders both strings on the delete button as `data-cv-class` and `data-cv-class-danger`; `set_delete()` swaps
+   between them (the attribute values, not literals); the existing vitest case in `tests/js/formset.test.js` asserts
+   it (section 2, "Python consumers", and Testing).
+4. **`active` on menu items outside the toolbar.** `cv_active` is `cv_is_active` in every location, as the menu
+   item behaves today. A list or card button whose target is the current view (no stock page has one) now also
+   renders `active`; a changelog line, no special case.
 
 ## Calls I made (not discussed with the maintainer)
 
@@ -459,3 +547,13 @@ it afterwards.
 - `ActionGroup` always returned instead of `None`.
 - The Delete label becoming translatable.
 - Sorting attributes and class tokens in the golden normaliser.
+- `formset:container` and `card-order:container` entries, so the `btn-group` wrappers in `formsets/control.html`
+  and `snippets/card_order.html` pass the guard test (refresh, 2026-10-20).
+- `cv_variant` defaulting to `secondary` in the normaliser (refresh, 2026-10-20).
+- Dropping crispy's duplicate `btn` and dead `btn-inverse` tokens from the cancel and filter reset buttons
+  (refresh, 2026-10-20).
+- Leaves get only the contract keys; `cv_short_label`; the menu label include rewritten to the contract
+  (builder check 2).
+- `aria-label` on `fieldset` containers only; `cv-card-container` on the card row; card menu forms before the row
+  (builder check 1).
+- `cv_active` = `cv_is_active` in every location (builder check 4).

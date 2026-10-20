@@ -80,7 +80,7 @@ class CrudView(metaclass=CrudViewMetaClass):
 
     # modal rendering (Bootstrap 5 theme; see superpowers/specs/2026-07-14-bootstrap-modals-design.md)
     cv_modal: bool = False  # opt-in: action buttons open this view in a modal
-    cv_modal_size: str = ""  # "" | "modal-sm" | "modal-lg" | "modal-xl"
+    cv_modal_size: str = ""  # "" | "sm" | "lg" | "xl" (semantic; the modal adapter maps them)
     cv_modal_supported: bool = False  # phase gate: which view types may set cv_modal
     cv_content_template: str | None = None  # the view's body partial, shared by full page and modal
 
@@ -127,8 +127,12 @@ class CrudView(metaclass=CrudViewMetaClass):
         yield CheckExpression(
             context=cls,
             id="E250",
-            expression=cls.cv_modal_size in ("", "modal-sm", "modal-lg", "modal-xl"),
-            msg=f"cv_modal_size must be one of '', 'modal-sm', 'modal-lg', 'modal-xl', got {cls.cv_modal_size!r}",
+            expression=cls.cv_modal_size in ("", "sm", "lg", "xl"),
+            msg=(
+                "cv_modal_size must be one of '', 'sm', 'lg', 'xl' "
+                "(Bootstrap class names such as 'modal-lg' are no longer accepted, use 'lg'), "
+                f"got {cls.cv_modal_size!r}"
+            ),
         )
         yield CheckExpression(
             context=cls,

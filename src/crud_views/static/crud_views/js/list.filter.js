@@ -1,53 +1,57 @@
-$(document).ready(function () {
+(function () {
+    function onToggle(event) {
+        const button = event.currentTarget;
+        event.preventDefault();
 
-    const config = cvGetConfig();
-
-    // add event listener to the filter button
-    $('#filter-button').click(function () {
-        let expanded = $('#filter-button').attr('aria-expanded');
-        $('#filter-form')[0].elements["filter_expanded"].value = expanded;
-        setFilterExpanded(expanded);
-    });
-
-    // filter reset button: reset filter but keep sort
-    $('#filter-button-reset').click(function () {
-        let url = config.request.path,
-            query_string = config.request.query_string,
-            params = new URLSearchParams(query_string),
-            reset_param = "reset_filter=true";
-        if (params.has("sort")) {
-            globalThis.location.href = url + "?sort=" + params.get("sort") + "&" + reset_param;
-        } else {
-            globalThis.location.href = url + "?" + reset_param;
+        // The button owns the state in aria-expanded. Collapse first: if the adapter throws
+        // (no collapse implementation available) or returns false (the panel is still animating
+        // and the toggle was ignored), nothing below runs and nothing changes.
+        // A template override without aria-expanded: read the state off the panel instead.
+        const panel = document.getElementById("filter-collapse");
+        const expanded = button.hasAttribute("aria-expanded")
+            ? button.getAttribute("aria-expanded") === "true"
+            : panel !== null && !panel.hidden && globalThis.getComputedStyle(panel).display !== "none";
+        const next = !expanded;
+        if (globalThis.cv.adapters.collapse.toggle(panel) === false) {
+            return;
         }
-    });
-
-    $("#cv-filter-toggle").click(function (event) {
+        button.setAttribute("aria-expanded", String(next));
 
         // toggle icon (both variants are rendered server side, one is hidden)
-        $(this).find("[data-cv-filter-icon]").toggleClass("d-none");
+        button.querySelectorAll("[data-cv-filter-icon]").forEach((icon) => icon.classList.toggle("d-none"));
 
-        // get vars
-        let collapse = $('#filter-collapse'),
-            visible = collapse.is(":visible"),
-            data = {
-                filter_expanded: !visible,
-            };
+        // persist the state server side; a failed request must not undo the toggle
+        const config = cvGetConfig();
+        fetch(config.request.path, {
+            method: "POST",
+            headers: {"X-CSRFToken": config.csrfToken, "Content-Type": "application/json; charset=utf-8"},
+            body: JSON.stringify({filter_expanded: next}),
+        }).catch(() => {});
+    }
 
-        console.log('visible', visible);
-
-        $.post({
-                url: config.request.path,
-                headers: {"X-CSRFToken": config.csrfToken},
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify(data),
-            },
-            function (data, status) {
-                console.log("Data: " + data + "\nStatus: " + status);
+    // filter reset button: reset filter but keep the table sort / card order (the server keeps the same keys)
+    function onReset() {
+        const config = cvGetConfig(),
+            params = new URLSearchParams(config.request.query_string),
+            keep = new URLSearchParams();
+        for (const key of ["sort", "order", "dir"]) {
+            if (params.has(key)) {
+                keep.set(key, params.get(key));
             }
-        );
+        }
+        keep.set("reset_filter", "true");
+        globalThis.location.href = config.request.path + "?" + keep.toString();
+    }
 
-        collapse.collapse("toggle");
-        event.preventDefault();
-    });
-});
+    function wire() {
+        document.getElementById("cv-filter-toggle")?.addEventListener("click", onToggle);
+        document.getElementById("filter-button-reset")?.addEventListener("click", onReset);
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", wire);
+    } else {
+        // loaded after DOMContentLoaded already fired (deferred or injected script)
+        wire();
+    }
+})();

@@ -12,22 +12,33 @@ function cvGetConfig() {
     };
 }
 
-$(document).ready(function () {
-    // list action form submit via data-cv-action="submit-form"
-    $(document).on("click", "[data-cv-action='submit-form']", function (e) {
-        e.preventDefault();
-        const targetId = $(this).attr("data-cv-target");
-        $("#" + targetId).submit();
-    });
+// list action form submit via data-cv-action="submit-form"
+document.addEventListener("click", function (e) {
+    if (!(e.target instanceof Element)) return;
+    const el = e.target.closest("[data-cv-action='submit-form']");
+    if (!el) return;
+    e.preventDefault();
+    const form = document.getElementById(el.getAttribute("data-cv-target"));
+    if (!form) return;
+    if (typeof form.requestSubmit === "function") {
+        form.requestSubmit();
+    } else {
+        form.submit();
+    }
+});
 
-    // auto-submit a form control (e.g. the card order combo) via data-cv-action="submit-on-change"
-    $(document).on("change", "[data-cv-action='submit-on-change']", function () {
-        this.form.submit();
-    });
+// auto-submit a form control (e.g. the card order combo) via data-cv-action="submit-on-change"
+document.addEventListener("change", function (e) {
+    if (!(e.target instanceof Element)) return;
+    const el = e.target.closest("[data-cv-action='submit-on-change']");
+    if (el && el.form) el.form.submit();
+});
 
-    // cancel button navigation via data-cv-cancel-url
-    $(document).on("click", "[data-cv-cancel-url]", function (e) {
-        e.preventDefault();
-        globalThis.location.href = $(this).attr("data-cv-cancel-url");
-    });
+// cancel button navigation via data-cv-cancel-url
+document.addEventListener("click", function (e) {
+    if (!(e.target instanceof Element)) return;
+    const el = e.target.closest("[data-cv-cancel-url]");
+    if (!el) return;
+    e.preventDefault();
+    globalThis.location.href = el.getAttribute("data-cv-cancel-url");
 });

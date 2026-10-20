@@ -81,6 +81,23 @@ def _filter_icon_states(response) -> dict:
     return {s.get("data-cv-filter-icon"): "d-none" in s.get("class", "").split() for s in spans}
 
 
+def _filter_toggle_attrs(response) -> dict:
+    from lxml import html
+
+    (toggle,) = html.fromstring(response.content).cssselect("#cv-filter-toggle")
+    return {"aria-expanded": toggle.get("aria-expanded"), "aria-controls": toggle.get("aria-controls")}
+
+
+@pytest.mark.django_db
+def test_filter_toggle_aria_expanded_follows_state(client_user_publisher_view: Client, cv_publisher, publisher_penguin):
+    assert _filter_toggle_attrs(client_user_publisher_view.get("/publisher/")) == {
+        "aria-expanded": "false",
+        "aria-controls": "filter-collapse",
+    }
+    client_user_publisher_view.post("/publisher/", data='{"filter_expanded": true}', content_type="application/json")
+    assert _filter_toggle_attrs(client_user_publisher_view.get("/publisher/"))["aria-expanded"] == "true"
+
+
 @pytest.mark.django_db
 def test_filter_toggle_icon_collapsed(client_user_publisher_view: Client, cv_publisher, publisher_penguin):
     """Collapsed panel: open icon visible, close icon hidden."""

@@ -3,6 +3,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.template import Context, Template
 
 CORE_JS = [
+    "crud_views/js/adapters.js",
     "crud_views/js/viewset.js",
     "crud_views/js/formset.js",
     "crud_views/js/list.filter.js",
@@ -36,7 +37,7 @@ def test_collect_core_first_then_registration_order(asset_registry):
     asset_registry.register_assets(key="b", js=["b/two.js"], css=["b/two.css"])
     entries = asset_registry.collect("js")
     assert [e.asset.path for e in entries] == [*CORE_JS, "a/one.js", "b/two.js"]
-    assert [e.key for e in entries] == ["crud_views"] * 6 + ["a", "b"]
+    assert [e.key for e in entries] == ["crud_views"] * 7 + ["a", "b"]
     assert [e.asset.path for e in asset_registry.collect("css")] == [*CORE_CSS, "b/two.css"]
 
 
@@ -107,4 +108,4 @@ def test_bundled_core_only_renders_nothing(asset_registry, bundled):
 def test_not_bundled_renders_local_and_external(asset_registry):
     asset_registry.register_assets(key="a", js=["a/one.js", "https://cdn.example.com/x.js"])
     html = _render("cv_js")
-    assert html.count("<script") == 8
+    assert html.count("<script") == 9

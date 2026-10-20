@@ -1,5 +1,34 @@
 # Django CRUD Views - Changelog
 
+## Unreleased
+
+### Breaking
+
+- `cv_modal_size` takes the semantic tokens `""`, `"sm"`, `"lg"` and `"xl"`. `modal-*` values fail `viewset.E250`
+  with the replacement in the message.
+- The modal partial's close button uses `data-cv-modal-dismiss` (a project override of `crud_views/modal/content.html`
+  with `data-bs-dismiss` keeps working under the Bootstrap adapter). `{% cv_config %}` renders the shell through
+  `crud_views/modal/shell.html`.
+- Custom JS calling `cv.cvModalOpen(url, "modal-lg")` and hand-written `data-cv-modal-size="modal-lg"` in project
+  templates must move to the tokens (`"lg"`); `viewset.E250` cannot see them and they silently get the default size.
+
+### Changed
+
+- jQuery is no longer required by core pages (formsets and jQuery-based extensions only).
+- `adapters.js` is the first core script (pipeline bundles pick it up through `cv_sources`).
+- The filter toggle carries `aria-expanded` / `aria-controls`. Overrides of `crud_views/tags/context_action_filter.html`
+  should add both (`aria-controls="filter-collapse"`; the `#filter-collapse` id is a contract). Without
+  `aria-expanded` the state is read from the panel's visibility.
+- `formset.js` retries once on `window` `load` when jQuery is not there yet, so a deferred jQuery works.
+- `modal.js`, `list.filter.js` and `viewset.js` use the DOM API. The modal submit forwards the clicked submit button
+  (`event.submitter`) in the posted form data; the filter reset keeps `sort`, `order` and `dir` (URL-encoded).
+- The Bootstrap `modal.setSize` adapter swaps only the size class and keeps other classes on `#cv-modal-dialog`;
+  `collapse.toggle` returns `false` while the panel is animating and the filter toggle then leaves its state alone.
+
+### Added
+
+- `cv.adapters` (`modal`, `tooltip`, `collapse`) and `cv.bootstrapAdapters(ns)`; see `docs/reference/javascript.md`.
+
 ## 0.30.0
 
 ### Breaking

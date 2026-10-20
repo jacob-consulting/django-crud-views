@@ -6,6 +6,7 @@ import pytest
 from django.core.exceptions import AppRegistryNotReady
 
 CORE_JS = [
+    "crud_views/js/adapters.js",
     "crud_views/js/viewset.js",
     "crud_views/js/formset.js",
     "crud_views/js/list.filter.js",
@@ -35,7 +36,7 @@ def test_resolution_is_lazy(asset_registry):
     sources = cv_sources("js")  # created before the bundle exists, like in settings.py
     asset_registry.register_assets(key="late", js=["late/x.js"])
     assert "late/x.js" in list(sources)
-    assert len(sources) == 7
+    assert len(sources) == 8
     assert sources[-1] == "late/x.js"
 
 
@@ -137,3 +138,10 @@ def test_importable_without_django_settings():
     result = subprocess.run([sys.executable, "-c", code], env=env, capture_output=True, text=True, check=False)
     assert result.returncode == 0, result.stderr
     assert "LazySources kind='js'" in result.stdout
+
+
+def test_adapters_is_the_first_core_script():
+    from crud_views.lib.settings import crud_views_settings
+
+    keys = list(crud_views_settings.javascript().keys())
+    assert keys == ["adapters", "viewset", "formset", "list_filter", "modal", "toggle", "tooltip"]

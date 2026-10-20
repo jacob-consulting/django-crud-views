@@ -6,6 +6,7 @@ import pytest
 pytest.importorskip("pipeline.packager")
 
 CORE_JS = [
+    "crud_views/js/adapters.js",
     "crud_views/js/viewset.js",
     "crud_views/js/formset.js",
     "crud_views/js/list.filter.js",

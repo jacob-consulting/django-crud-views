@@ -3,6 +3,7 @@ from pathlib import Path
 import pytest
 
 CORE_JS = [
+    "crud_views/js/adapters.js",
     "crud_views/js/viewset.js",
     "crud_views/js/formset.js",
     "crud_views/js/list.filter.js",
@@ -120,8 +121,8 @@ def test_rows_order_js_then_css(asset_registry):
 
     rows = asset_rows({})
     kinds = [r.kind for r in rows]
-    assert kinds == ["js"] * 6 + ["css"] * 4
-    assert [r.path for r in rows[:6]] == CORE_JS
+    assert kinds == ["js"] * 7 + ["css"] * 4
+    assert [r.path for r in rows[:7]] == CORE_JS
 
 
 @pytest.mark.parametrize(

@@ -141,7 +141,8 @@ This round trip is handled entirely by the bundled `formset.js` script, which sh
 automatically with the theme's JavaScript — no template or client-side wiring is required
 beyond placing `Formsets()` in the form layout as shown above. The script inserts the returned
 row at the right position, increments the formset's `TOTAL_FORMS` management value, and
-re-attaches the row's add/delete/order controls.
+re-attaches the row's add/delete/order controls. `formset.js` is built on jQuery, so pages with formsets
+need jQuery loaded by `DOMContentLoaded`; see [JavaScript](javascript.md#jquery).
 
 ### Initializing widgets in added rows
 

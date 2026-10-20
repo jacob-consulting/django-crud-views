@@ -1,53 +1,48 @@
-$(document).ready(function () {
+(function () {
+    function onToggle(event) {
+        const button = event.currentTarget;
+        event.preventDefault();
 
-    const config = cvGetConfig();
+        // The button owns the state in aria-expanded. Collapse first: if the adapter throws
+        // (no collapse implementation available), nothing below runs and nothing changes.
+        const next = button.getAttribute("aria-expanded") !== "true";
+        globalThis.cv.adapters.collapse.toggle(document.getElementById("filter-collapse"));
+        button.setAttribute("aria-expanded", String(next));
 
-    // add event listener to the filter button
-    $('#filter-button').click(function () {
-        let expanded = $('#filter-button').attr('aria-expanded');
-        $('#filter-form')[0].elements["filter_expanded"].value = expanded;
-        setFilterExpanded(expanded);
-    });
+        // toggle icon (both variants are rendered server side, one is hidden)
+        button.querySelectorAll("[data-cv-filter-icon]").forEach((icon) => icon.classList.toggle("d-none"));
+
+        // persist the state server side; a failed request must not undo the toggle
+        const config = cvGetConfig();
+        fetch(config.request.path, {
+            method: "POST",
+            headers: {"X-CSRFToken": config.csrfToken, "Content-Type": "application/json; charset=utf-8"},
+            body: JSON.stringify({filter_expanded: next}),
+        }).catch(() => {});
+    }
 
     // filter reset button: reset filter but keep sort
-    $('#filter-button-reset').click(function () {
-        let url = config.request.path,
-            query_string = config.request.query_string,
-            params = new URLSearchParams(query_string),
+    function onReset() {
+        const config = cvGetConfig(),
+            url = config.request.path,
+            params = new URLSearchParams(config.request.query_string),
             reset_param = "reset_filter=true";
         if (params.has("sort")) {
             globalThis.location.href = url + "?sort=" + params.get("sort") + "&" + reset_param;
         } else {
             globalThis.location.href = url + "?" + reset_param;
         }
-    });
+    }
 
-    $("#cv-filter-toggle").click(function (event) {
+    function wire() {
+        document.getElementById("cv-filter-toggle")?.addEventListener("click", onToggle);
+        document.getElementById("filter-button-reset")?.addEventListener("click", onReset);
+    }
 
-        // toggle icon (both variants are rendered server side, one is hidden)
-        $(this).find("[data-cv-filter-icon]").toggleClass("d-none");
-
-        // get vars
-        let collapse = $('#filter-collapse'),
-            visible = collapse.is(":visible"),
-            data = {
-                filter_expanded: !visible,
-            };
-
-        console.log('visible', visible);
-
-        $.post({
-                url: config.request.path,
-                headers: {"X-CSRFToken": config.csrfToken},
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify(data),
-            },
-            function (data, status) {
-                console.log("Data: " + data + "\nStatus: " + status);
-            }
-        );
-
-        collapse.collapse("toggle");
-        event.preventDefault();
-    });
-});
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", wire);
+    } else {
+        // loaded after DOMContentLoaded already fired (deferred or injected script)
+        wire();
+    }
+})();

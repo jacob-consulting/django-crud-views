@@ -87,6 +87,8 @@ def test_filter_toggle_is_a_labelled_button(client):
     assert toggle.tag == "button"
     assert toggle.get("type") == "button"
     assert toggle.get("role") is None
+    assert toggle.get("aria-expanded") in ("true", "false")
+    assert toggle.get("aria-controls") == "filter-collapse"
     _assert_icon_action_named(toggle)
 
 

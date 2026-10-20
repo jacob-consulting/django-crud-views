@@ -49,5 +49,6 @@ Performed interactively where noted; seed run first (`migrate`, `seed`).
 
 ## Findings
 1. `test_no_button_class_literal_in_shipped_templates_python_or_js` fails under nox (non-editable install scans site-packages); needs `SRC` derived from the repo or package files rather than the parent of the package dir.
+   Fixed in the Task 5 fix round (commit: see `git log`, "fix(tests): button class guard scans the repository src tree, not the installed package"): `SRC` is now `Path(__file__).resolve().parents[2] / "src"`; `uv run nox -r -s "tests-3.12(django='6.0')"` passes (1504 passed).
 2. Examples suite needs `django-ratelimit` in the root venv (use `requirements/demo.txt`); passes with it.
 3. Unsigned card-order toggle is unreachable in the examples project.

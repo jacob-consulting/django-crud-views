@@ -9,11 +9,10 @@ from django.test import RequestFactory, override_settings
 from django.utils import translation
 from lxml import html
 
-import crud_views
 from crud_views.lib.button_classes import DEFAULT_BUTTON_CLASSES
 from tests.lib.helper.user import user_viewset_permission
 
-SRC = Path(crud_views.__file__).resolve().parent.parent
+SRC = Path(__file__).resolve().parents[2] / "src"
 TOKEN = re.compile(r"(?<![\w-])btn(?:-[\w-]+)?(?![\w-])")
 LITERAL = re.compile(r"""\{%\s*cv_button_class\s+(["'])([^"']+)\1\s+(["'])([^"']+)\3""")
 EXEMPT_TOKENS = {"btn-close"}

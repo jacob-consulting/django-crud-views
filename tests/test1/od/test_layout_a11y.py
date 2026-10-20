@@ -37,7 +37,8 @@ def test_card_rows_detail_tooltip_trigger_is_a_labelled_button():
 
 def test_card_rows_detail_trigger_is_marked_for_tooltip_js():
     """#125: the trigger carries data-cv-tooltip (initialised by crud_views/js/tooltip.js),
-    not data-bs-toggle, so app-level `[data-bs-toggle=tooltip]` initialisers don't collide."""
+    not data-bs-toggle, so app-level `[data-bs-toggle=tooltip]` initialisers don't collide.
+    #202: the text is in `title` (driver-neutral), the marker value names the location."""
     prop = ResolvedProperty(path="s", label="Status", value="Active", type="char", detail="Currently active")
     with override_settings(CRUD_VIEWS_OBJECT_DETAIL_TEMPLATE_PACK_LAYOUT="card-rows"):
         rendered = Template("{% load crud_views_object_detail %}{% render_property prop %}").render(
@@ -45,7 +46,10 @@ def test_card_rows_detail_trigger_is_marked_for_tooltip_js():
         )
     (trigger,) = html.fromstring(rendered).cssselect("[data-cv-tooltip]")
     assert trigger.get("data-bs-toggle") is None
-    assert trigger.get("data-bs-title") == "Currently active"
+    assert trigger.get("data-cv-tooltip") == "object-detail"
+    assert trigger.get("title") == "Currently active"
+    assert trigger.get("aria-label") == "Currently active"
+    assert trigger.get("data-bs-title") is None
 
 
 def test_tooltip_js_is_a_core_script():

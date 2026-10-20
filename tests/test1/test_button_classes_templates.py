@@ -68,6 +68,13 @@ def test_formset_controls_from_table():
     delete = doc.cssselect("button.cv-form-ctrl-delete")[0]
     assert delete.get("data-cv-class") == "btn btn-light"
     assert delete.get("data-cv-class-danger") == "btn btn-danger"
+    assert [(b.get("title"), b.get("data-cv-tooltip")) for b in buttons] == [
+        ("Move up", "formset"),
+        ("Move down", "formset"),
+        ("Add row", "formset"),
+        ("Delete row", "formset"),
+    ]
+    assert all(b.get("title") == b.get("aria-label") for b in buttons)
 
     with override_settings(
         CRUD_VIEWS_BUTTON_CLASSES={"formset:control": "x-ctrl", "formset:control-danger": "x-danger"}
@@ -91,6 +98,9 @@ def test_card_order_and_language_from_table(client):
     desc = doc.cssselect('button[name="dir"][value="desc"]')[0]
     assert asc.get("class") == "btn btn-outline-secondary"
     assert desc.get("class") == "btn btn-outline-secondary active"
+    assert asc.get("data-cv-tooltip") == "card-order"
+    assert desc.get("data-cv-tooltip") == "card-order"
+    assert asc.get("title") == "Ascending"
     assert doc.cssselect("#cv-card-order-form fieldset")[0].get("class") == "btn-group btn-group-sm"
 
     request = RequestFactory().get("/some/path/")

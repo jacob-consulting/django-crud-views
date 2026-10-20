@@ -5,6 +5,7 @@
    aria-expanded="{% if cv_filter_expanded %}true{% else %}false{% endif %}"
    aria-controls="filter-collapse"
    title="{{ cv_action_label }}"
+   data-cv-tooltip="context"
    cv-key="{{ cv_key }}">
     <span data-cv-filter-icon="open"{% if cv_filter_expanded %} class="d-none"{% endif %}>{% cv_icon "filter" %}</span>
     <span data-cv-filter-icon="close"{% if not cv_filter_expanded %} class="d-none"{% endif %}>{% cv_icon "filter-close" %}</span>

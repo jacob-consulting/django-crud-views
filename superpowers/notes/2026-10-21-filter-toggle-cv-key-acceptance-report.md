@@ -50,6 +50,13 @@ Both tests were watched failing first, for the right reason (`assert '' == 'filt
 - `CV_UPDATE_GOLDEN=1 pytest tests/test1/test_action_menus_golden.py` — 8 passed, one golden line changed.
 - `uvx "ruff>=0.16,<0.17" format --check .` — 483 files already formatted; `ruff check .` — all checks passed.
 
+## Correction
+
+The first CHANGELOG wording said the empty attribute shipped "since 0.29", which overstated what the issue
+established (it only showed 0.29.4 as a lower bound). `git log -S'cv-key="{{ cv_key }}"'` on the template dates the
+attribute to `abd5bab` (2025-01-30, version 0.0.4 in `pyproject.toml`), first released in `v0.4.0`. The bullet now
+makes no version claim.
+
 ## Noted, not fixed
 
 While answering "why is this context hand-built", a separate upstream concern came up and is **not** part of this

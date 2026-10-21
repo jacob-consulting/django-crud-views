@@ -318,6 +318,8 @@ class FilterContextButton(ContextButton):
         list_url = context.view.cv_get_url(key=context.view.cv_key)
 
         data = {"cv_access": True}  # it toggles the filter of the list page the user is already on
+        # no target view, so cv_key is the button's own key, not a view key like every other button (#208)
+        data["cv_key"] = self.key
         data["cv_action_label"] = "Filter"
         data["cv_icon_action"] = "filter"
         data["cv_filter_expanded"] = context.view.cv_filter_expanded

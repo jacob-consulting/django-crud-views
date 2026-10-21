@@ -57,6 +57,9 @@
 
 - A Bootstrap tooltip kept open by focus after a mouse click (the filter toggle, the formset controls, any icon-only
   button) is hidden on the click and shows again on the next hover or focus (#203).
+- The stock filter toggle renders `cv-key="filter"` instead of the empty `cv-key=""` it has carried since 0.29, so
+  every button in `[cv-context-container]` has a key and attribute selectors over the toolbar are reliable. It has no
+  target view, so it renders its own key; a `FilterContextButton` subclass with another `key` renders that key (#208).
 
 ### Added
 

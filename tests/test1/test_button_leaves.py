@@ -15,7 +15,7 @@ from crud_views.lib.view import CardAction, ContextButton
 from crud_views.lib.view.action_menu import ActionGroup
 from crud_views.lib.view.button_data import LEAF_KEYS
 from tests.lib.helper.user import user_viewset_permission
-from tests.test1.app.views import AuthorCardListView, AuthorDetailView, AuthorListView, cv_author
+from tests.test1.app.views import AuthorCardListView, AuthorDetailView, AuthorListView, cv_author, cv_publisher
 
 ACTION_LEAF = "crud_views/tags/button/action.html"
 MENU_ITEM_LEAF = "crud_views/tags/button/menu_item.html"
@@ -319,6 +319,29 @@ def test_active_context_button_has_aria_current(client_full, author_douglas_adam
     update = toolbar.cssselect("a[cv-key=update]")[0]
     assert update.get("aria-current") is None
     assert "active" not in update.get("class").split()
+
+
+def _publisher_list(client):
+    """The publisher list is the one stock page whose toolbar has a filter toggle."""
+    resp = client.get(reverse(cv_publisher.get_router_name("list")))
+    assert resp.status_code == 200
+    return lxml_html.fromstring(resp.content)
+
+
+@pytest.mark.django_db
+def test_filter_toggle_carries_its_own_key(client_user_publisher_view):
+    # the toggle has no target view, so cv-key is the button's own key (#208)
+    toggle = _toolbar(_publisher_list(client_user_publisher_view)).cssselect("button#cv-filter-toggle")
+    assert len(toggle) == 1
+    assert toggle[0].get("cv-key") == "filter"
+
+
+@pytest.mark.django_db
+def test_every_context_button_has_a_key(client_user_publisher_view):
+    toolbar = _toolbar(_publisher_list(client_user_publisher_view))
+    buttons = toolbar.cssselect("a, button")
+    assert len(buttons) > 1
+    assert all(b.get("cv-key") for b in buttons), [(b.tag, b.get("cv-key")) for b in buttons]
 
 
 PILL = ContextButton(

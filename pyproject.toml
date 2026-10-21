@@ -59,7 +59,7 @@ all = [
 ]
 
 dev = [
-    "ruff>=0.16,<0.17",
+    "ruff>=0.17,<0.18",
     "pre-commit",
     "bump-my-version",
     "mkdocs (>=1.6.1)",

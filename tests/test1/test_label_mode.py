@@ -4,8 +4,8 @@ from crud_views.lib.view.label_mode import LABEL_MODES, LabelMode, is_label_mode
 
 
 def test_label_modes():
-    assert {"label", "icon", "both"} == LABEL_MODES
-    assert {mode.value for mode in LabelMode} == LABEL_MODES
+    assert sorted(LABEL_MODES) == ["both", "icon", "label"]
+    assert sorted(LABEL_MODES) == sorted(mode.value for mode in LabelMode)
     assert LabelMode.LABEL == "label"
     assert LabelMode.ICON == "icon"
     assert LabelMode.BOTH == "both"

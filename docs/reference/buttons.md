@@ -302,7 +302,7 @@ def ready(self):
 
 The `primary` guard works because every non-card location resolves `cv_label_mode` to `"icon"`, so the `"icon"` branch
 is the one the toolbar and list rows take. The card half of this trick is no longer a reason to override the leaf: a
-card shows icon and text with `CardListView.cv_card_action_label_mode = "both"` (the default). The toolbar half stops
+card shows icon and text with `CardListView.cv_card_actions_label_mode = "both"` (the default). The toolbar half stops
 being one when #216 lands.
 
 The leaf is shared by the context toolbar, list rows and cards: branch on `cv_label_mode` (`"icon"`, `"both"` and
@@ -321,4 +321,4 @@ override the leaf, otherwise an action disabled by `CRUD_VIEWS_INACCESSIBLE_ACTI
 | `crud_views.E361` | error | a `CRUD_VIEWS_BUTTON_CLASSES` value or registered theme value is neither a str nor `None` |
 | `crud_views.W362` | warning | a `CRUD_VIEWS_BUTTON_CLASSES` or theme key is not in the default table (typo?) |
 | `viewset.E209` | error | a `cv_action_variant`, `ContextButton.variant` or `CardAction.variant` is not one of the four variants |
-| `viewset.E210` | error | a `CardAction.label_mode` or `cv_card_action_label_mode` is not one of `"label"`, `"icon"`, `"both"` |
+| `viewset.E210` | error | a `CardAction.label_mode` or `cv_card_actions_label_mode` is not one of `"label"`, `"icon"`, `"both"` |

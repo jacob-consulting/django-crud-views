@@ -9,7 +9,7 @@ class CardAction(BaseModel):
     key: str = ""
     label: LazyStr | None = None
     no_label: bool = False  # superseded by label_mode="icon"; kept working, and an error alongside label_mode
-    label_mode: str | None = None  # None: the view's cv_card_action_label_mode; one of LABEL_MODES
+    label_mode: str | None = None  # None: the view's cv_card_actions_label_mode; one of LABEL_MODES
     variant: str | None = None  # None: the target view's cv_action_variant
     flex: bool = False
     child_name: str | None = None

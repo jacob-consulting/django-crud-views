@@ -99,13 +99,13 @@ These were settled in the brainstorming conversation and are not open:
 `CardListView` gains:
 
 ```python
-cv_card_action_label_mode: str = "both"   # default label mode for this view's inline card buttons
+cv_card_actions_label_mode: str = "both"   # default label mode for this view's inline card buttons
 ```
 
 `CardAction` (`src/crud_views/lib/view/card.py`) gains:
 
 ```python
-label_mode: str | None = None   # None: inherit the view's cv_card_action_label_mode
+label_mode: str | None = None   # None: inherit the view's cv_card_actions_label_mode
 no_label: bool = False          # superseded: equivalent to label_mode="icon"
 ```
 
@@ -113,7 +113,7 @@ Written out, the Tabler case becomes:
 
 ```python
 class CustomerCardListView(...):
-    cv_card_action_label_mode = "both"          # or omitted: it is the default
+    cv_card_actions_label_mode = "both"          # or omitted: it is the default
     cv_card_actions = [
         CardAction(key="detail", label="Open", variant="primary", flex=True),
         CardAction(key="update", label="Edit"),
@@ -125,7 +125,7 @@ and the project with the designer:
 
 ```python
 class ProjectCardListView(CardListViewPermissionRequired):
-    cv_card_action_label_mode = "label"
+    cv_card_actions_label_mode = "label"
 ```
 
 ### Resolution
@@ -138,7 +138,7 @@ places and writes `cv_label_mode` instead:
 ```
 action.label_mode if action.label_mode is not None
 else "icon" if action.no_label
-else self.cv_card_action_label_mode
+else self.cv_card_actions_label_mode
 ```
 
 `cv_button_data()` (`button_data.py`) then:
@@ -196,12 +196,12 @@ template, not a third one in.
 
 - `src/crud_views/lib/view/card.py` — `CardAction.label_mode`; a `model_validator` rejecting `no_label=True`
   together with an explicit `label_mode`, and an unknown `label_mode` value.
-- `src/crud_views/lib/views/card.py` — `cv_card_action_label_mode`; resolution in both branches of
+- `src/crud_views/lib/views/card.py` — `cv_card_actions_label_mode`; resolution in both branches of
   `cv_get_card_action_data()`.
 - `src/crud_views/lib/view/button_data.py` — `cv_label_mode` in `LEAF_KEYS`, `cv_label_visible` out; the
   resolution above; `cv_title` keyed on `"icon"`.
 - `src/crud_views/templates/crud_views/tags/button/action.html` — the three-way branch.
-- A system check for `cv_card_action_label_mode` on a card view, alongside the existing card checks in
+- A system check for `cv_card_actions_label_mode` on a card view, alongside the existing card checks in
   `CardListView.checks()`.
 
 ### Tests
@@ -243,7 +243,7 @@ commit would silently absorb the very non-card regression this is guarding again
   override the leaf, and that the toolbar half stops being one when #216 lands.
 - The prose under that recipe (line 299, "keep the `cv_label_visible` branch (cards with a visible label)") is
   overrider guidance that goes stale with the key; rewrite it for `cv_label_mode`.
-- `docs/reference/card-list-view.md` — `cv_card_action_label_mode` in the view attribute table; replace the
+- `docs/reference/card-list-view.md` — `cv_card_actions_label_mode` in the view attribute table; replace the
   `no_label` row (line 50) with `label_mode` and mark `no_label` superseded; update the example at line 30.
 - `docs/reference/action_menus.md:84` — `CardAction.variant`, `flex` and `label_mode` apply to inline card
   buttons only.
@@ -267,12 +267,12 @@ commit would silently absorb the very non-card regression this is guarding again
   its primary-label-next-to-icon behaviour, because the intro prose promises both and the variant guard still
   works off cards. The alternative readings — flatten it to stock, or re-point it at a different reason to
   override the leaf — are bigger docs rewrites than this change needs.
-- **The view attribute is named `cv_card_action_label_mode` (singular `action`).** This name was never put to
-  you — `label_mode` was agreed, the attribute wrapping it was not. The neighbour that is also a view-wide
-  setting over all of a card's actions is plural (`cv_card_actions_inline`); the singular form belongs to the
-  template tags (`cv_card_action`, `cv_card_action_group`). By that reading `cv_card_actions_label_mode` is the
-  consistent choice and this is the wrong one. Rename it if you agree; it appears in one class, the docs and the
-  tests.
+- **The view attribute is named `cv_card_actions_label_mode` (plural `actions`).** Resolved after the first
+  implementation shipped under the singular `cv_card_action_label_mode`: the question was raised here, the plan
+  then treated the singular as settled without answering it, and the rename landed separately once it was put
+  to the author. The plural matches the neighbouring view-wide setting over all of a card's actions
+  (`cv_card_actions_inline`); the singular belongs to the template tags (`cv_card_action`,
+  `cv_card_action_group`). Nothing had been released under the old name, so no alias was kept.
 - **`cv_label_visible` is removed from `LEAF_KEYS` rather than kept as a derived alias.** Note this is the one
   place the design contradicts #213's own text, which proposed keeping `cv_label_visible` as-is and adding a
   second flag beside it. The three-state decision is what changed it. Keeping both would mean

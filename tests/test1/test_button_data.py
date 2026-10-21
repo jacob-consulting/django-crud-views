@@ -106,9 +106,11 @@ def test_card_empty_label_forces_icon():
     assert data["cv_label_mode"] == "icon"
 
 
-def test_cv_no_label_in_ctx_raises():
+@pytest.mark.parametrize("value", [True, False])
+def test_cv_no_label_in_ctx_raises(value):
+    # presence, not truthiness: cv_no_label=False is the shape the old card-label tests passed
     with pytest.raises(ValueError, match="cv_no_label"):
-        cv_button_data(base(cv_label="Details", cv_no_label=True), "card")
+        cv_button_data(base(cv_label="Details", cv_no_label=value), "card")
 
 
 def test_card_label_falls_back_to_key():

@@ -78,8 +78,11 @@ def test_three_states_on_one_card(author_douglas_adams, monkeypatch):
 
     both = _inline(card, "detail")
     assert len(_icons(both)) == 1
+    # the visible span is the only accessible name: the icon is hidden, and nothing duplicates or overrides it
+    assert all(i.get("aria-hidden") == "true" for i in _icons(both))
     assert _text(both) == "Details"
     assert both.cssselect("span.visually-hidden") == []
+    assert both.get("aria-label") is None
     assert both.get("title") is None
 
     label = _inline(card, "update")

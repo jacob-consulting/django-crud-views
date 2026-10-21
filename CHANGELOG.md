@@ -50,6 +50,15 @@
   toggle.
 - A list or card button whose target is the current view now renders `active`.
 
+### Removed
+
+- The unused `crud_views/detail/` templates (`field.html` and `widgets/attrs.html`, `widgets/bool.html`,
+  `widgets/display.html`) are gone, together with the `cv_is_true`, `cv_is_false` and `cv_is_list` template
+  filters that only those templates used (#217). They were leftovers of the crispy property-display draft whose
+  only consumer, `lib/views/detail_layout.py`, was removed in 33584ff; `crud_views_object_detail` renders detail
+  pages today. `field.html` also hardcoded four `bootstrap5/layout/*` includes, so it ignored
+  `CRISPY_TEMPLATE_PACK` — a new test keeps any `bootstrap5/` template path out of the shipped templates.
+
 ### Changed
 
 - jQuery is no longer required by core pages (formsets and jQuery-based extensions only).

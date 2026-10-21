@@ -4,6 +4,22 @@ Every crud_views frontend template renders `{% extends cv_extends %}`, where
 `cv_extends` is resolved per view. This lets you control which base template
 your CRUD pages extend — globally, per ViewSet, or per view.
 
+## What to put in it
+
+The base template is yours; crud_views only extends it. A few of its features are rendered by
+tags *you* place, so they stay silent until you do:
+
+| Tag | Put it | For |
+|---|---|---|
+| `{% cv_css %}` / `{% cv_js %}` | in `<head>` / before `</body>` | the [registered CSS and JS bundles](assets.md) |
+| `{% cv_config %}` | in `<head>`, before `{% cv_js %}` | the [JavaScript config and modal shell](javascript.md) |
+| `{% cv_messages %}` | top of the content area | [flash messages](messages.md), including the ones create, update, delete and action views emit themselves |
+| `{% cv_breadcrumb %}` | above the content | the [breadcrumb trail](breadcrumb.md) |
+
+All four `{% load crud_views %}` and render nothing when they have nothing to show, so they are
+safe to place unconditionally. Bootstrap's own CSS and JavaScript are not a Python dependency —
+load them in this template from a CDN or your own static files.
+
 ## Resolution order
 
 `cv_extends` is resolved from the first of these that is set:

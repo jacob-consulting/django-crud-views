@@ -99,7 +99,8 @@ See [Request lifecycle, transactions & hooks](request_lifecycle.md) for the full
 
 ## Adding a Success Message
 
-Combine with `MessageMixin` to display a flash message after a successful submission:
+Combine with `MessageMixin` to display a flash message after a successful submission
+(rendered by `{% cv_messages %}` in your base template — see [Flash messages](messages.md)):
 
 ```python
 class AuthorContactView(MessageMixin, CrispyViewMixin, CustomFormViewPermissionRequired):

@@ -84,3 +84,4 @@ The up/down views ship with default move messages (`cv_message_template` →
 `crud_views/snippets/message/up.html` / `down.html`) and emit them automatically after a
 successful move — no extra mixin required. Override `cv_message_template` /
 `cv_message_template_code` to customize, or set `cv_action_messages = False` to disable.
+Your base template renders the queued messages with `{% cv_messages %}` — see [Flash messages](messages.md).

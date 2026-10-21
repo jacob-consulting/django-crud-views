@@ -79,6 +79,11 @@
 
 ### Fixed
 
+- Docs: the pages that document message production — create, update, delete, action, custom-form and ordered
+  views, plus tutorial parts 1 and 3 — now say that the host template renders the queue with `{% cv_messages %}`,
+  and the [Base template](docs/reference/templates.md) reference lists the four host-placed tags (`cv_css`,
+  `cv_js`/`cv_config`, `cv_messages`, `cv_breadcrumb`) with where each one goes. Tutorial part 1 also shows the
+  Bootstrap CDN tags it expects in the base template (#221).
 - A Bootstrap tooltip kept open by focus after a mouse click (the filter toggle, the formset controls, any icon-only
   button) is hidden on the click and shows again on the next hover or focus (#203).
 - The stock filter toggle renders `cv-key="filter"` instead of an empty `cv-key=""`, so every button in

@@ -8,6 +8,7 @@ from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import CrudView, CrudViewPermissionRequiredMixin
 from crud_views.lib.view.action_menu import ActionGroup, cv_inline_checks, cv_split_actions
 from crud_views.lib.view.card import CardAction
+from crud_views.lib.view.label_mode import label_mode_check
 from crud_views.lib.view.variant import variant_check
 from crud_views.lib.view.visibility import cv_resolve_action
 from crud_views.lib.views.mixins import CardOrderMixin
@@ -24,6 +25,7 @@ class CardListView(CardOrderMixin, CrudView, generic.ListView):
     paginate_by = None  # set per-view to enable pagination
     cv_card_actions: ClassVar[list[CardAction]] = []
     cv_card_actions_inline: list[str] | None = None  # card action keys kept as buttons (#174)
+    cv_card_action_label_mode: str = "both"  # view default for CardAction.label_mode: label, icon or both (#213)
     cv_card_container_class: str = "col-md-6"
     cv_card_template: str = "crud_views/tags/card.html"
     cv_context_actions = crud_views_settings.list_context_actions
@@ -100,9 +102,13 @@ class CardListView(CardOrderMixin, CrudView, generic.ListView):
         yield from super().checks()
         keys = [action.key or action.child_name for action in cls.cv_card_actions]
         yield from cv_inline_checks(cls, "cv_card_actions_inline", keys)
+        yield label_mode_check(cls, "cv_card_action_label_mode", cls.cv_card_action_label_mode)
         for action in cls.cv_card_actions:
+            owner = f"card action {action.key or action.child_name!r}"
             if action.variant is not None:
-                yield variant_check(cls, f"card action {action.key or action.child_name!r}", action.variant)
+                yield variant_check(cls, owner, action.variant)
+            if action.label_mode is not None:
+                yield label_mode_check(cls, owner, action.label_mode)
 
     @property
     def cv_filter_header(self) -> str:

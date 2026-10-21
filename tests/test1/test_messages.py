@@ -175,3 +175,14 @@ def test_cv_messages_escapes_even_with_autoescape_off():
     html = template.render(Context({"messages": [Message(constants.ERROR, "<script>x</script>", extra_tags='">')]}))
     assert "<script>x</script>" not in html
     assert '<div class="alert alert-danger alert-dismissible fade show &quot;&gt;"' in html
+
+
+@pytest.mark.parametrize("body", [None, ""])
+def test_message_alerts_blanks_a_falsy_body(body):
+    """The replaced tag rendered `message.message|default:""`, i.e. an empty alert rather than the text "None".
+
+    Only reachable without a storage round-trip: Message._prepare() str()s the body, so after a redirect a None
+    body has already become the string "None" before it reaches us.
+    """
+    (alert,) = message_alerts([Message(constants.INFO, body)])
+    assert alert["message"] == ""

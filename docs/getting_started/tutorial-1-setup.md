@@ -19,9 +19,10 @@ pip install django-crud-views
 ```
 
 This pulls in the core dependencies you'll need for the whole tutorial:
-django-tables2 (list tables), django-filter (list filtering),
-django-crispy-forms and crispy-bootstrap5 (form rendering), and
-django-bootstrap5 (Bootstrap 5 widgets and pagination). Part 6 adds one more
+django-tables2 (list tables and pagination), django-filter (list filtering),
+django-crispy-forms and crispy-bootstrap5 (form rendering and widgets).
+Bootstrap itself is not a Python dependency — your base template loads its CSS
+and JS, from a CDN or from your own static files. Part 6 adds one more
 feature — reordering rows — which needs an extra: `pip install
 django-crud-views[ordered]`. We'll call that out again when we get there.
 
@@ -33,7 +34,6 @@ Add these apps to `INSTALLED_APPS`:
 INSTALLED_APPS = [
     ...
     "django.contrib.humanize",
-    "django_bootstrap5",
     "crispy_forms",
     "crispy_bootstrap5",
     "django_tables2",

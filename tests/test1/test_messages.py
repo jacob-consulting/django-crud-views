@@ -167,3 +167,11 @@ def test_create_message_renders_as_an_alert(client_publisher_add_view: Client, c
     assert 'class="alert alert-success alert-dismissible fade show"' in html
     assert 'data-bs-dismiss="alert"' in html
     assert "<strong>Penguin</strong>" in html
+
+
+def test_cv_messages_escapes_even_with_autoescape_off():
+    """The replaced library built alerts with format_html, which escapes unconditionally; keep that guarantee."""
+    template = Template("{% load crud_views %}{% autoescape off %}{% cv_messages %}{% endautoescape %}")
+    html = template.render(Context({"messages": [Message(constants.ERROR, "<script>x</script>", extra_tags='">')]}))
+    assert "<script>x</script>" not in html
+    assert '<div class="alert alert-danger alert-dismissible fade show &quot;&gt;"' in html

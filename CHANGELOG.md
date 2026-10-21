@@ -2,18 +2,6 @@
 
 ## Unreleased
 
-### Added
-
-- `{% cv_messages %}` renders `django.contrib.messages` as Bootstrap 5 alerts, so a project no longer needs a
-  second library to display the messages crud_views itself emits (`cv_message_template`, `ActionView`). The host
-  places the tag in its own base template, like `{% cv_breadcrumb %}`; it renders nothing without messages, or
-  without `messages` in the context. Levels map to `secondary`/`info`/`success`/`warning`/`danger`, `extra_tags`
-  become extra CSS classes, and safe message bodies stay unescaped. Markup lives in
-  `crud_views/tags/messages.html` (theme-overridable) and the mapping in `crud_views.lib.messages`. Five new
-  semantic icons — `message-success`, `message-info`, `message-warning`, `message-error`, `message-debug` — ship in
-  both the Font Awesome defaults and the `BOOTSTRAP_ICONS` preset, and switch off per level with
-  `CRUD_VIEWS_ICONS = {"message-info": ""}`. See `docs/reference/messages.md` (#221).
-
 ### Breaking
 
 - `django-bootstrap5` is no longer a dependency. Nothing in the shipped packages used it — only the example and
@@ -99,6 +87,15 @@
 
 ### Added
 
+- `{% cv_messages %}` renders `django.contrib.messages` as Bootstrap 5 alerts, so a project no longer needs a
+  second library to display the messages crud_views itself emits (`cv_message_template`, `ActionView`). The host
+  places the tag in its own base template, like `{% cv_breadcrumb %}`; it renders nothing without messages, or
+  without `messages` in the context. Levels map to `secondary`/`info`/`success`/`warning`/`danger`, `extra_tags`
+  become extra CSS classes, and safe message bodies stay unescaped. Markup lives in
+  `crud_views/tags/messages.html` (theme-overridable) and the mapping in `crud_views.lib.messages`. Five new
+  semantic icons — `message-success`, `message-info`, `message-warning`, `message-error`, `message-debug` — ship in
+  both the Font Awesome defaults and the `BOOTSTRAP_ICONS` preset, and switch off per level with
+  `CRUD_VIEWS_ICONS = {"message-info": ""}`. See `docs/reference/messages.md` (#221).
 - `cv.adapters` (`modal`, `tooltip`, `collapse`) and `cv.bootstrapAdapters(ns)`; see `docs/reference/javascript.md`.
 - `cv.adapters.tooltip.init(el, {location})`: the marker's value, the button's location, reaches the adapter;
   adapters written for `init(el)` keep working. Per-location configuration is a recipe in

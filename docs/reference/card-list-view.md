@@ -27,7 +27,7 @@ class AuthorCardListView(CardListViewPermissionRequired):
     cv_card_actions = [
         CardAction(key="detail", label="Details", variant="primary", flex=True),
         CardAction(key="update", label="Edit"),
-        CardAction(key="delete", no_label=True, variant="tertiary"),
+        CardAction(key="delete", label_mode="icon", variant="tertiary"),
     ]
 ```
 
@@ -47,11 +47,35 @@ You do not configure this on `CardAction`; the method and modal behaviour derive
 |---|---|---|---|
 | `key` | `str` | (required) | View key in the ViewSet (`"detail"`, `"update"`, `"delete"`, etc.) |
 | `label` | `str \| None` | `None` | Explicit button label. If None, falls back to the target view's short label. |
-| `no_label` | `bool` | `False` | Render as icon-only button |
+| `label_mode` | `str \| None` | `None` | `"label"`, `"icon"` or `"both"`. If None, inherits the view's `cv_card_action_label_mode`. See [Label mode](#label-mode). |
+| `no_label` | `bool` | `False` | Superseded by `label_mode="icon"`, which it equals. Setting it together with `label_mode` is a validation error. |
 | `variant` | `str \| None` | `None` | Button style: `"primary"`, `"secondary"`, `"tertiary"`, `"danger"`. If None, falls back to the target view's `cv_action_variant` (`primary` for create, `danger` for delete, else `secondary`). See [Buttons](buttons.md#variants). |
 | `flex` | `bool` | `False` | If True, button gets `flex-grow-1` |
 | `child_name` | `str \| None` | `None` | Child viewset name for cross-viewset links (like `LinkChildColumn`). When set, `key` is ignored for URL resolution. |
 | `child_key` | `str` | `"list"` | View key within the child viewset (e.g., `"list"`, `"card"`) |
+
+## Label mode
+
+`label_mode` decides how an inline card button shows its label:
+
+| Mode | Renders |
+|---|---|
+| `"label"` | the text only |
+| `"icon"` | the icon only; the label becomes a visually hidden text and the `title` tooltip |
+| `"both"` | the icon followed by the text |
+
+The view attribute sets the default for every action; `CardAction.label_mode` overrides it per button.
+
+| Attribute | Type | Default | Description |
+|---|---|---|---|
+| `cv_card_action_label_mode` | `str` | `"both"` | Label mode of every card action without its own `label_mode` |
+
+The order is `CardAction.label_mode`, then `"icon"` when `no_label=True`, then `cv_card_action_label_mode`. An action
+with an empty label is always rendered `"icon"`, and a `"both"` button whose view has no icon renders like `"label"`.
+`viewset.E210` rejects an unknown `label_mode` or `cv_card_action_label_mode`.
+
+To get one policy everywhere, set `cv_card_action_label_mode` once on a base card view class of your project and
+subclass it, rather than setting it on every view.
 
 ## Card Container Class
 

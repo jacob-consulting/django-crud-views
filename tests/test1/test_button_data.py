@@ -83,17 +83,42 @@ def test_active(location):
     assert cv_button_data(base(), location)["cv_active"] is False
 
 
-def test_card_label_visible():
-    data = cv_button_data(base(cv_label="Details", cv_no_label=False), "card")
+def test_card_label_mode_defaults_to_both():
+    data = cv_button_data(base(cv_label="Details"), "card")
     assert data["cv_label"] == "Details"
-    assert data["cv_label_visible"] is True
+    assert data["cv_label_mode"] == "both"
     assert "cv_title" not in data
 
 
-def test_card_label_hidden():
-    data = cv_button_data(base(cv_label="Details", cv_no_label=True), "card")
-    assert data["cv_label_visible"] is False
+@pytest.mark.parametrize("mode", ["label", "icon", "both"])
+def test_card_label_mode_passes_through(mode):
+    data = cv_button_data(base(cv_label="Details", cv_label_mode=mode), "card")
+    assert data["cv_label_mode"] == mode
+
+
+def test_card_icon_mode_gets_title():
+    data = cv_button_data(base(cv_label="Details", cv_label_mode="icon"), "card")
     assert data["cv_title"] == "Details"
+
+
+def test_card_empty_label_forces_icon():
+    data = cv_button_data({"cv_label": "", "cv_key": "", "cv_url": "/u/", "cv_label_mode": "both"}, "card")
+    assert data["cv_label_mode"] == "icon"
+
+
+@pytest.mark.parametrize("value", [True, False])
+def test_cv_no_label_in_ctx_raises(value):
+    # presence, not truthiness: cv_no_label=False is the shape the old card-label tests passed
+    ctx = base(cv_label="Details", cv_no_label=value)
+    with pytest.raises(ValueError, match="cv_no_label"):
+        cv_button_data(ctx, "card")
+
+
+@pytest.mark.parametrize("value", ["lable", "icons", "Both", 1, ["both"]])
+def test_unknown_cv_label_mode_on_card_raises(value):
+    ctx = base(cv_label="Details", cv_label_mode=value)
+    with pytest.raises(ValueError, match="cv_label_mode"):
+        cv_button_data(ctx, "card")
 
 
 def test_card_label_falls_back_to_key():
@@ -104,9 +129,9 @@ def test_card_label_falls_back_to_key():
 
 
 @pytest.mark.parametrize("location", ["context", "list"])
-def test_label_never_visible(location):
-    data = cv_button_data(base(), location)
-    assert data["cv_label_visible"] is False
+def test_label_mode_always_icon_off_cards(location):
+    data = cv_button_data(base(cv_label_mode="both"), location)
+    assert data["cv_label_mode"] == "icon"
     assert data["cv_title"] == "Show"
 
 

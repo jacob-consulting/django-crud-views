@@ -55,12 +55,14 @@ def author_card_actions(monkeypatch):
 
 
 @pytest.mark.django_db
-def test_inline_card_button_unchanged_and_menu(db, author_douglas_adams, author_card_actions):
+def test_inline_card_button_keeps_classes_gains_icon_and_menu(db, author_douglas_adams, author_card_actions):
     card = _card(_client([(cv_author, ("view", "change"))]), reverse(cv_author.get_router_name("card")))
     row = card.cssselect(".d-flex.gap-2")[0]
     detail = row.xpath("./a")[0]
     assert "btn-primary" in detail.get("class")
     assert "flex-grow-1" in detail.get("class")
+    # the inline button gained its icon in #213 (default label mode "both"), so the name stays honest only if pinned
+    assert detail.cssselect("i[aria-hidden=true]")
     wrapper = row.xpath("./div[contains(@class, 'dropdown')]")[0]
     toggle = wrapper.cssselect(".cv-menu-toggle")[0]
     assert "btn-secondary" in toggle.get("class")

@@ -60,7 +60,7 @@ class RecipeCardListView(BreadcrumbMixin, CardListViewPermissionRequired):
         CardAction(key="detail", label=_("Details"), variant="primary", flex=True),
         CardAction(key="update", label=_("Edit")),
         CardAction(key="favorite", label=_("Favorite")),
-        CardAction(key="delete", no_label=True, variant="tertiary"),
+        CardAction(key="delete", label_mode="icon", variant="tertiary"),
     ]
 
 

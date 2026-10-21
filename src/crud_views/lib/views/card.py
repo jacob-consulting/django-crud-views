@@ -8,6 +8,7 @@ from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import CrudView, CrudViewPermissionRequiredMixin
 from crud_views.lib.view.action_menu import ActionGroup, cv_inline_checks, cv_split_actions
 from crud_views.lib.view.card import CardAction
+from crud_views.lib.view.label_mode import label_mode_check
 from crud_views.lib.view.variant import variant_check
 from crud_views.lib.view.visibility import cv_resolve_action
 from crud_views.lib.views.mixins import CardOrderMixin
@@ -24,6 +25,7 @@ class CardListView(CardOrderMixin, CrudView, generic.ListView):
     paginate_by = None  # set per-view to enable pagination
     cv_card_actions: ClassVar[list[CardAction]] = []
     cv_card_actions_inline: list[str] | None = None  # card action keys kept as buttons (#174)
+    cv_card_action_label_mode: str = "both"  # view default for CardAction.label_mode: label, icon or both (#213)
     cv_card_container_class: str = "col-md-6"
     cv_card_template: str = "crud_views/tags/card.html"
     cv_context_actions = crud_views_settings.list_context_actions
@@ -41,6 +43,13 @@ class CardListView(CardOrderMixin, CrudView, generic.ListView):
 
     def cv_get_card_action_data(self, action: CardAction, obj, user) -> dict:
         """Unresolved button data for one card action (#149, #174); the cv_card_action tag and the menu share it."""
+        # resolved once for both branches: the action's own mode, then no_label, then the view default (#213)
+        if action.label_mode is not None:
+            label_mode = action.label_mode
+        elif action.no_label:
+            label_mode = "icon"
+        else:
+            label_mode = self.cv_card_action_label_mode
         if action.child_name:
             url = self.cv_get_child_url(action.child_name, action.child_key, obj)
             child_viewset = self.cv_viewset.get_viewset(action.child_name)
@@ -56,7 +65,7 @@ class CardListView(CardOrderMixin, CrudView, generic.ListView):
                 "cv_icon_action": child_cls.cv_icon_action,
                 "cv_variant": action.variant if action.variant is not None else child_cls.cv_action_variant,
                 "cv_flex": action.flex,
-                "cv_no_label": action.no_label,
+                "cv_label_mode": label_mode,
                 "cv_list_action_method": "get",
             }
 
@@ -74,7 +83,7 @@ class CardListView(CardOrderMixin, CrudView, generic.ListView):
             cv_action_enabled=cls.cv_action_enabled(user, obj),
         )
         variant = action.variant if action.variant is not None else cls.cv_action_variant
-        data.update(cv_label=label, cv_variant=variant, cv_flex=action.flex, cv_no_label=action.no_label)
+        data.update(cv_label=label, cv_variant=variant, cv_flex=action.flex, cv_label_mode=label_mode)
         return data
 
     def cv_get_card_action_group(self, obj) -> ActionGroup:
@@ -100,9 +109,13 @@ class CardListView(CardOrderMixin, CrudView, generic.ListView):
         yield from super().checks()
         keys = [action.key or action.child_name for action in cls.cv_card_actions]
         yield from cv_inline_checks(cls, "cv_card_actions_inline", keys)
+        yield label_mode_check(cls, "cv_card_action_label_mode", cls.cv_card_action_label_mode)
         for action in cls.cv_card_actions:
+            owner = f"card action {action.key or action.child_name!r}"
             if action.variant is not None:
-                yield variant_check(cls, f"card action {action.key or action.child_name!r}", action.variant)
+                yield variant_check(cls, owner, action.variant)
+            if action.label_mode is not None:
+                yield label_mode_check(cls, owner, action.label_mode)
 
     @property
     def cv_filter_header(self) -> str:

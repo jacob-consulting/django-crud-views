@@ -4,6 +4,16 @@
 
 ### Breaking
 
+- Labelled inline card buttons now render their icon as well as their text (#213).
+  `CardListView.cv_card_action_label_mode = "label"` restores the old markup for a view;
+  `CardAction(label_mode="label")` for one button.
+- `cv_label_visible` has left the leaf contract; `cv_label_mode` (`"label"`, `"icon"` or `"both"`) replaces it. A
+  project override of `crud_views/tags/button/action.html` must branch on the new key.
+- `cv_no_label` is no longer a `cv_button_data()` input and raises `ValueError` naming the replacement.
+  `cv_button` passes the whole template context to `cv_button_data()`, so this also fires at every location, the
+  non-card ones included, for a page that carries a `cv_no_label` context variable.
+  `CardAction(no_label=True)` is unaffected.
+- A new `viewset.E210` rejects an unknown `label_mode` or `cv_card_action_label_mode`.
 - `cv_modal_size` takes the semantic tokens `""`, `"sm"`, `"lg"` and `"xl"`. `modal-*` values fail `viewset.E250`
   with the replacement in the message.
 - The modal partial's close button uses `data-cv-modal-dismiss` (a project override of `crud_views/modal/content.html`

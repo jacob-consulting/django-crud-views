@@ -81,7 +81,7 @@ menu item carries `data-cv-action="submit-form"` and `data-cv-target` to submit 
 Menu items show the target view's icon (fixed width, `cv-icon-fw`) and a visible text label — the short action label
 (`cv_action_short_label`), or `CardAction.label` on cards. Toolbar items carry the full label as `title`. A context button's own
 `label_template` / `label_template_code` is also used as its menu item text.
-`CardAction.variant`, `flex` and `no_label` apply to inline card buttons only.
+`CardAction.variant`, `flex` and `label_mode` apply to inline card buttons only.
 
 On the context toolbar the current page's action is highlighted: inline with `.active`, inside the menu with
 `.active` and `aria-current="page"`.

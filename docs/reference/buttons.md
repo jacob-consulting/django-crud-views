@@ -210,7 +210,7 @@ keys are `LEAF_KEYS`:
 | `cv_key` | the action key, rendered as `cv-key` |
 | `cv_label` | the full label (on cards the explicit `label`, else the short label, else the key) |
 | `cv_short_label` | the short label, used for menu items |
-| `cv_label_mode` | how the label shows: `"label"` (text only), `"icon"` (icon with a visually hidden label) or `"both"` (icon and text); always present. Always `"icon"` for `"context"` and `"list"`; on cards it comes from [`CardAction.label_mode`](card-list-view.md#label-mode), and an empty label forces `"icon"` |
+| `cv_label_mode` | how the label shows: `"label"` (text only), `"icon"` (icon with a visually hidden label) or `"both"` (icon and text); always present. Always `"icon"` for `"context"` and `"list"`; on cards it is the resolved [card action label mode](card-list-view.md#label-mode), and an empty label forces `"icon"` |
 | `cv_title` | the `title` text, which also marks the button with `data-cv-tooltip="<cv_location>"` for `tooltip.js`; present only when `cv_label_mode` is `"icon"` |
 | `cv_icon` | the icon value (see [Icons](icons.md)) |
 | `cv_variant` | the resolved variant; falls back to `"secondary"` |
@@ -297,7 +297,7 @@ def ready(self):
     {% if cv_modal %}data-cv-modal="true" data-cv-modal-size="{{ cv_modal_size }}"{% endif %}
     {% if cv_active %}aria-current="page"{% endif %}
     {% if cv_title %}title="{{ cv_title }}" data-cv-tooltip="{{ cv_location }}"{% endif %}
-    cv-key="{{ cv_key }}">{% if cv_label_mode == "icon" %}{% cv_icon cv_icon %}<span{% if cv_variant != "primary" %} class="visually-hidden"{% endif %}>{{ cv_label }}</span>{% else %}<span>{{ cv_label }}</span>{% endif %}</{{ cv_tag }}>
+    cv-key="{{ cv_key }}">{% if cv_label_mode == "icon" %}{% cv_icon cv_icon %}<span{% if cv_variant != "primary" %} class="visually-hidden"{% endif %}>{{ cv_label }}</span>{% elif cv_label_mode == "both" %}{% if cv_icon %}{% cv_icon cv_icon %} {% endif %}<span>{{ cv_label }}</span>{% else %}<span>{{ cv_label }}</span>{% endif %}</{{ cv_tag }}>
 ```
 
 The `primary` guard works because every non-card location resolves `cv_label_mode` to `"icon"`, so the `"icon"` branch

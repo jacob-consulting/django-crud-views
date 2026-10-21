@@ -14,7 +14,6 @@
   non-card ones included, for a page that carries a `cv_no_label` context variable.
   `CardAction(no_label=True)` is unaffected.
 - A new `viewset.E210` rejects an unknown `label_mode` or `cv_card_action_label_mode`.
-
 - `cv_modal_size` takes the semantic tokens `""`, `"sm"`, `"lg"` and `"xl"`. `modal-*` values fail `viewset.E250`
   with the replacement in the message.
 - The modal partial's close button uses `data-cv-modal-dismiss` (a project override of `crud_views/modal/content.html`

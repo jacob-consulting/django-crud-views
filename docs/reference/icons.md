@@ -64,6 +64,9 @@ yourself.
 | `boolean-true` / `boolean-false` | `fas:circle-check` / `fas:circle-xmark` | boolean values in object detail |
 | `property-detail` | `fas:circle-info` | object detail, card-rows layout |
 | `text-icon` | `far:file-lines` | object detail, list-group-3col layout |
+| `message-success` / `message-info` | `fas:circle-check` / `fas:circle-info` | [flash messages](messages.md) |
+| `message-warning` / `message-error` | `fas:triangle-exclamation` / `fas:circle-exclamation` | [flash messages](messages.md) |
+| `message-debug` | `fas:bug` | [flash messages](messages.md) |
 
 The filter button renders both `filter` and `filter-close` and toggles which one is visible, so the icon reflects the
 state of the filter panel (`filter` = closed, click to open; `filter-close` = open, click to close). On reload the

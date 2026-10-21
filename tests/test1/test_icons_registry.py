@@ -212,3 +212,28 @@ def test_surrounding_whitespace_is_ignored(value):
 def test_surrounding_whitespace_in_table_value_is_ignored():
     with override_settings(CRUD_VIEWS_ICONS={"detail": "  fas:eye "}):
         assert render_icon("detail") == '<i class="fa-solid fa-eye" aria-hidden="true"></i>'
+
+
+MESSAGE_ICONS = {
+    "message-success": ("fas:circle-check", "bi:check-circle-fill"),
+    "message-info": ("fas:circle-info", "bi:info-circle-fill"),
+    "message-warning": ("fas:triangle-exclamation", "bi:exclamation-triangle-fill"),
+    "message-error": ("fas:circle-exclamation", "bi:exclamation-octagon-fill"),
+    "message-debug": ("fas:bug", "bi:bug-fill"),
+}
+
+
+@pytest.mark.parametrize("name,fa,bi", [(name, *values) for name, values in MESSAGE_ICONS.items()])
+def test_message_icon_defaults(name, fa, bi):
+    assert DEFAULT_ICONS[name] == fa
+    assert BOOTSTRAP_ICONS[name] == bi
+
+
+def test_message_icon_renders_font_awesome_by_default():
+    assert render_icon("message-success") == '<i class="fa-solid fa-circle-check" aria-hidden="true"></i>'
+
+
+def test_message_icon_can_be_switched_off():
+    assert "fa-circle-info" in render_icon("message-info")  # resolves through the registry, not as a raw class
+    with override_settings(CRUD_VIEWS_ICONS={"message-info": ""}):
+        assert render_icon("message-info") == ""

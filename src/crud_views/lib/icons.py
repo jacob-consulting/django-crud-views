@@ -39,6 +39,11 @@ DEFAULT_ICONS: dict[str, str] = {
     "boolean-false": "fas:circle-xmark",
     "property-detail": "fas:circle-info",
     "text-icon": "far:file-lines",
+    "message-success": "fas:circle-check",
+    "message-info": "fas:circle-info",
+    "message-warning": "fas:triangle-exclamation",
+    "message-error": "fas:circle-exclamation",
+    "message-debug": "fas:bug",
 }
 
 BOOTSTRAP_ICONS: dict[str, str] = {
@@ -71,6 +76,11 @@ BOOTSTRAP_ICONS: dict[str, str] = {
         "property-detail": "info-circle",
         "text-icon": "journal-text",
         "language": "translate",
+        "message-success": "check-circle-fill",
+        "message-info": "info-circle-fill",
+        "message-warning": "exclamation-triangle-fill",
+        "message-error": "exclamation-octagon-fill",
+        "message-debug": "bug-fill",
     }.items()
 }
 

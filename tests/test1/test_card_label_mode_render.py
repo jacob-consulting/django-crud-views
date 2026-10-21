@@ -84,6 +84,8 @@ def test_three_states_on_one_card(author_douglas_adams, monkeypatch):
     assert both.cssselect("span.visually-hidden") == []
     assert both.get("aria-label") is None
     assert both.get("title") is None
+    # the literal space between glyph and text is invisible to the whitespace-normalising goldens
+    assert _icons(both)[0].tail == " "
 
     label = _inline(card, "update")
     assert _icons(label) == []

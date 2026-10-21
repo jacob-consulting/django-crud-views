@@ -76,6 +76,7 @@ class AuthorCardListView(CardListViewPermissionRequired):
     cv_card_actions = [
         CardAction(key="detail", label="Details", variant="primary", flex=True),
         CardAction(key="update", label="Edit"),
+        # no_label stays on purpose: keeps the superseded alias exercised by the default suite (see #213)
         CardAction(key="delete", no_label=True, variant="tertiary"),
     ]
 

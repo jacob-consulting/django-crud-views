@@ -1,5 +1,7 @@
 """Normalise a resolved action dict into the flat leaf contract used by the button templates."""
 
+from .label_mode import LABEL_MODES, is_label_mode
+
 LOCATIONS = frozenset({"context", "list", "card"})
 
 LEAF_KEYS = frozenset(
@@ -33,6 +35,11 @@ def cv_button_data(ctx: dict, location: str) -> dict:
     """
     if location not in LOCATIONS:
         raise ValueError(f"location must be one of {sorted(LOCATIONS)}, got {location!r}")
+    if "cv_no_label" in ctx:
+        raise ValueError(
+            "cv_no_label is no longer a leaf input; use CardAction.label_mode or cv_label_mode"
+            " (it is also picked up from the page template context, so check for a stray cv_no_label variable there)"
+        )
     card = location == "card"
 
     disabled = bool(ctx.get("cv_disabled"))
@@ -48,10 +55,10 @@ def cv_button_data(ctx: dict, location: str) -> dict:
     else:
         label = ctx.get("cv_action_label", "") or ""
         short_label = ctx.get("cv_action_short_label") or ctx.get("cv_action_label") or ""
-    if "cv_no_label" in ctx:
-        raise ValueError("cv_no_label is no longer a leaf input; use CardAction.label_mode or cv_label_mode")
     if card:
         label_mode = ctx.get("cv_label_mode") or "both"
+        if not is_label_mode(label_mode):
+            raise ValueError(f"cv_label_mode must be one of {sorted(LABEL_MODES)}, got {label_mode!r}")
         if not label:
             label_mode = "icon"
     else:

@@ -113,6 +113,12 @@ def test_cv_no_label_in_ctx_raises(value):
         cv_button_data(base(cv_label="Details", cv_no_label=value), "card")
 
 
+@pytest.mark.parametrize("value", ["lable", "icons", "Both", 1, ["both"]])
+def test_unknown_cv_label_mode_on_card_raises(value):
+    with pytest.raises(ValueError, match="cv_label_mode"):
+        cv_button_data(base(cv_label="Details", cv_label_mode=value), "card")
+
+
 def test_card_label_falls_back_to_key():
     data = cv_button_data({"cv_label": None, "cv_key": "book", "cv_url": "/u/"}, "card")
     assert data["cv_label"] == "book"

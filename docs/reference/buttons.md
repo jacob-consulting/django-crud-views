@@ -321,3 +321,4 @@ override the leaf, otherwise an action disabled by `CRUD_VIEWS_INACCESSIBLE_ACTI
 | `crud_views.E361` | error | a `CRUD_VIEWS_BUTTON_CLASSES` value or registered theme value is neither a str nor `None` |
 | `crud_views.W362` | warning | a `CRUD_VIEWS_BUTTON_CLASSES` or theme key is not in the default table (typo?) |
 | `viewset.E209` | error | a `cv_action_variant`, `ContextButton.variant` or `CardAction.variant` is not one of the four variants |
+| `viewset.E210` | error | a `CardAction.label_mode` or `cv_card_action_label_mode` is not one of `"label"`, `"icon"`, `"both"` |

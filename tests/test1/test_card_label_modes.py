@@ -1,4 +1,4 @@
-"""CardListView.cv_card_action_label_mode and its viewset.E210 check."""
+"""CardListView.cv_card_actions_label_mode and its viewset.E210 check."""
 
 from crud_views.lib.view import CardAction
 from crud_views.lib.views import CardListView
@@ -12,16 +12,16 @@ def e210(checks) -> list[str]:
 
 
 def test_default_is_both():
-    assert CardListView.cv_card_action_label_mode == "both"
+    assert CardListView.cv_card_actions_label_mode == "both"
 
 
 def test_bad_view_label_mode_raises_e210(monkeypatch):
     assert e210(AuthorCardListView.checks()) == []
-    monkeypatch.setattr(AuthorCardListView, "cv_card_action_label_mode", "nope")
+    monkeypatch.setattr(AuthorCardListView, "cv_card_actions_label_mode", "nope")
     messages = e210(AuthorCardListView.checks())
     assert len(messages) == 1
     assert "'nope'" in messages[0]
-    assert "cv_card_action_label_mode" in messages[0]
+    assert "cv_card_actions_label_mode" in messages[0]
 
 
 def test_bad_action_label_mode_raises_e210(monkeypatch):
@@ -44,5 +44,5 @@ def test_good_values_yield_no_check(monkeypatch):
     ]
     monkeypatch.setattr(AuthorCardListView, "cv_card_actions", actions)
     for mode in ("label", "icon", "both"):
-        monkeypatch.setattr(AuthorCardListView, "cv_card_action_label_mode", mode)
+        monkeypatch.setattr(AuthorCardListView, "cv_card_actions_label_mode", mode)
         assert e210(AuthorCardListView.checks()) == []

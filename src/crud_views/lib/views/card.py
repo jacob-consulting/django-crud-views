@@ -25,7 +25,7 @@ class CardListView(CardOrderMixin, CrudView, generic.ListView):
     paginate_by = None  # set per-view to enable pagination
     cv_card_actions: ClassVar[list[CardAction]] = []
     cv_card_actions_inline: list[str] | None = None  # card action keys kept as buttons (#174)
-    cv_card_action_label_mode: str = "both"  # view default for CardAction.label_mode: label, icon or both (#213)
+    cv_card_actions_label_mode: str = "both"  # view default for CardAction.label_mode: label, icon or both (#213)
     cv_card_container_class: str = "col-md-6"
     cv_card_template: str = "crud_views/tags/card.html"
     cv_context_actions = crud_views_settings.list_context_actions
@@ -49,7 +49,7 @@ class CardListView(CardOrderMixin, CrudView, generic.ListView):
         elif action.no_label:
             label_mode = "icon"
         else:
-            label_mode = self.cv_card_action_label_mode
+            label_mode = self.cv_card_actions_label_mode
         if action.child_name:
             url = self.cv_get_child_url(action.child_name, action.child_key, obj)
             child_viewset = self.cv_viewset.get_viewset(action.child_name)
@@ -109,7 +109,7 @@ class CardListView(CardOrderMixin, CrudView, generic.ListView):
         yield from super().checks()
         keys = [action.key or action.child_name for action in cls.cv_card_actions]
         yield from cv_inline_checks(cls, "cv_card_actions_inline", keys)
-        yield label_mode_check(cls, "cv_card_action_label_mode", cls.cv_card_action_label_mode)
+        yield label_mode_check(cls, "cv_card_actions_label_mode", cls.cv_card_actions_label_mode)
         for action in cls.cv_card_actions:
             owner = f"card action {action.key or action.child_name!r}"
             if action.variant is not None:

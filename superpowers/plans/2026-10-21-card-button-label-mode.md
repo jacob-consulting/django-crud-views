@@ -4,7 +4,7 @@
 
 **Goal:** Give inline card buttons a three-state label mode — label, icon, or both — selected by the card view and overridable per `CardAction`, with label + icon as the new default.
 
-**Architecture:** One tri-valued vocabulary (`"label"` / `"icon"` / `"both"`) runs the whole depth: a `LabelMode` StrEnum beside the existing `Variant` one, `CardAction.label_mode` and `CardListView.cv_card_action_label_mode` as the author-facing layer, `cv_label_mode` as the single leaf-contract key replacing `cv_label_visible`, and a three-way branch in `tags/button/action.html`. `cv_get_card_action_data()` resolves the author layer into `cv_label_mode`; `cv_button_data()` reads only that key and raises if the removed `cv_no_label` reaches it.
+**Architecture:** One tri-valued vocabulary (`"label"` / `"icon"` / `"both"`) runs the whole depth: a `LabelMode` StrEnum beside the existing `Variant` one, `CardAction.label_mode` and `CardListView.cv_card_actions_label_mode` as the author-facing layer, `cv_label_mode` as the single leaf-contract key replacing `cv_label_visible`, and a three-way branch in `tags/button/action.html`. `cv_get_card_action_data()` resolves the author layer into `cv_label_mode`; `cv_button_data()` reads only that key and raises if the removed `cv_no_label` reaches it.
 
 **Tech Stack:** Python 3.12–3.15, Django 4.2 / 5.2 / 6.0, Pydantic v2, pytest + pytest-django, lxml for markup assertions, ruff.
 
@@ -20,7 +20,7 @@
 - Every key `cv_button_data()` returns must be in `LEAF_KEYS`; `tests/test1/test_button_data.py:136` asserts `set(data) <= LEAF_KEYS`.
 - Non-card locations resolve to `"icon"` unconditionally. This is what keeps #216 out of scope; the five non-card goldens must not move.
 - New system check id: `E210` (free; `E209` is `variant_check`, the neighbouring vocabulary check).
-- Author-facing names are fixed by the spec: `CardAction.label_mode`, `CardListView.cv_card_action_label_mode`.
+- Author-facing names are fixed by the spec: `CardAction.label_mode`, `CardListView.cv_card_actions_label_mode`.
 
 ## Review Focus
 
@@ -103,7 +103,7 @@ The field only; nothing reads it yet, so rendering is unchanged and the tree sta
 
 **Interfaces:**
 - Consumes: Task 1's `is_label_mode`
-- Produces: `CardAction.label_mode: str | None = None` — `None` means "inherit the view's `cv_card_action_label_mode`"
+- Produces: `CardAction.label_mode: str | None = None` — `None` means "inherit the view's `cv_card_actions_label_mode`"
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -156,7 +156,7 @@ git commit -m "feat(cards): CardAction.label_mode, with no_label kept as an alia
 
 ---
 
-### Task 3: `cv_card_action_label_mode` on the card view
+### Task 3: `cv_card_actions_label_mode` on the card view
 
 The view attribute and its system check. Still unconsumed by rendering, so the tree stays green.
 
@@ -166,7 +166,7 @@ The view attribute and its system check. Still unconsumed by rendering, so the t
 
 **Interfaces:**
 - Consumes: Task 1's `label_mode_check`
-- Produces: `CardListView.cv_card_action_label_mode: str = "both"`
+- Produces: `CardListView.cv_card_actions_label_mode: str = "both"`
 
 - [ ] **Step 1: Write the failing tests**
 
@@ -174,10 +174,10 @@ The view attribute and its system check. Still unconsumed by rendering, so the t
 
 ```python
 def test_default_is_both():
-    assert CardListView.cv_card_action_label_mode == "both"
+    assert CardListView.cv_card_actions_label_mode == "both"
 
 def test_bad_view_label_mode_raises_e210():
-    # a CardListView subclass with cv_card_action_label_mode = "nope" yields one E210
+    # a CardListView subclass with cv_card_actions_label_mode = "nope" yields one E210
 def test_bad_action_label_mode_raises_e210():
     # a view whose CardAction carries a label_mode that bypassed the field validator
 def test_good_values_yield_no_check():
@@ -186,11 +186,11 @@ def test_good_values_yield_no_check():
 - [ ] **Step 2: Run to verify it fails**
 
 Run: `pytest tests/test1/test_card_label_modes.py -v`
-Expected: FAIL, `AttributeError: cv_card_action_label_mode`
+Expected: FAIL, `AttributeError: cv_card_actions_label_mode`
 
 - [ ] **Step 3: Add the attribute and wire the check**
 
-Add `cv_card_action_label_mode: str = "both"` to `CardListView`, next to `cv_card_actions_inline`. In `checks()`, after the existing `variant_check` loop, yield `label_mode_check(cls, "cv_card_action_label_mode", cls.cv_card_action_label_mode)`, and inside the same `for action in cls.cv_card_actions` loop yield one for each action whose `label_mode is not None`, with the owner string in the existing style (`f"card action {action.key or action.child_name!r}"`).
+Add `cv_card_actions_label_mode: str = "both"` to `CardListView`, next to `cv_card_actions_inline`. In `checks()`, after the existing `variant_check` loop, yield `label_mode_check(cls, "cv_card_actions_label_mode", cls.cv_card_actions_label_mode)`, and inside the same `for action in cls.cv_card_actions` loop yield one for each action whose `label_mode is not None`, with the owner string in the existing style (`f"card action {action.key or action.child_name!r}"`).
 
 - [ ] **Step 4: Run to verify it passes**
 
@@ -201,7 +201,7 @@ Expected: PASS
 
 ```bash
 git add src/crud_views/lib/views/card.py tests/test1/test_card_label_modes.py
-git commit -m "feat(cards): cv_card_action_label_mode on the card view, checked by E210 (#213)"
+git commit -m "feat(cards): cv_card_actions_label_mode on the card view, checked by E210 (#213)"
 ```
 
 ---
@@ -219,7 +219,7 @@ The whole behaviour change, atomic. The system is consistent before and after bu
 - Modify: `tests/test1/golden/action_menus/cards_author_full.html`, `cards_author_disabled.html`, `cards_publisher_child.html`
 
 **Interfaces:**
-- Consumes: Task 2's `CardAction.label_mode`, Task 3's `cv_card_action_label_mode`
+- Consumes: Task 2's `CardAction.label_mode`, Task 3's `cv_card_actions_label_mode`
 - Produces: `cv_label_mode` in `LEAF_KEYS` (one of `"label"` / `"icon"` / `"both"`, always present); `cv_label_visible` is gone from the contract
 
 - [ ] **Step 1: Write the failing unit tests in `tests/test1/test_button_data.py`**
@@ -272,7 +272,7 @@ def test_no_label_still_means_icon_only():
     # CardAction(key="delete", no_label=True) renders exactly as label_mode="icon"
 
 def test_view_default_applies_and_action_overrides_it():
-    # cv_card_action_label_mode = "label" on the view; one action with label_mode="both" wins
+    # cv_card_actions_label_mode = "label" on the view; one action with label_mode="both" wins
 
 def test_both_without_an_icon_renders_label_only():
     # monkeypatch.setattr(AuthorPingView, "cv_icon_action", None) -- every concrete view class in the test
@@ -321,7 +321,7 @@ Emit `"cv_label_mode": label_mode` in `data` where `cv_label_visible` was, and c
 
 - [ ] **Step 5: Resolve the author layer in `views/card.py`**
 
-In both branches of `cv_get_card_action_data()`, replace `cv_no_label` with `cv_label_mode`, resolved as the spec states: `action.label_mode` if not `None`, else `"icon"` if `action.no_label`, else `self.cv_card_action_label_mode`. Extract it to one local or a small helper so the two branches cannot drift apart again — that drift is Review Focus 1.
+In both branches of `cv_get_card_action_data()`, replace `cv_no_label` with `cv_label_mode`, resolved as the spec states: `action.label_mode` if not `None`, else `"icon"` if `action.no_label`, else `self.cv_card_actions_label_mode`. Extract it to one local or a small helper so the two branches cannot drift apart again — that drift is Review Focus 1.
 
 - [ ] **Step 6: Switch the leaf template**
 
@@ -379,15 +379,15 @@ This block is **not** a stale copy of the bundled leaf; it is a deliberate `myap
 
 - [ ] **Step 3: `card-list-view.md` and `action_menus.md`**
 
-Replace the `no_label` row (line 50) with `label_mode` (`str | None`, `None`, inherits the view) and keep a `no_label` row marked superseded — equivalent to `label_mode="icon"`, and an error if both are set. Document `cv_card_action_label_mode` (`str`, `"both"`) in the view attribute table, with the base-card-view-class note: a project that wants one policy everywhere subclasses rather than setting it per view. Update the example at line 30 to use `label_mode="icon"` on the delete action. In `action_menus.md:84`, list `label_mode` alongside `variant` and `flex` as inline-card-only.
+Replace the `no_label` row (line 50) with `label_mode` (`str | None`, `None`, inherits the view) and keep a `no_label` row marked superseded — equivalent to `label_mode="icon"`, and an error if both are set. Document `cv_card_actions_label_mode` (`str`, `"both"`) in the view attribute table, with the base-card-view-class note: a project that wants one policy everywhere subclasses rather than setting it per view. Update the example at line 30 to use `label_mode="icon"` on the delete action. In `action_menus.md:84`, list `label_mode` alongside `variant` and `flex` as inline-card-only.
 
 - [ ] **Step 4: `CHANGELOG.md`**
 
 Under `## Unreleased` → `### Breaking`, matching the existing entries' style:
-- Labelled inline card buttons now render their icon as well as their text. `CardListView.cv_card_action_label_mode = "label"` restores the old markup for a view; `CardAction(label_mode="label")` for one button.
+- Labelled inline card buttons now render their icon as well as their text. `CardListView.cv_card_actions_label_mode = "label"` restores the old markup for a view; `CardAction(label_mode="label")` for one button.
 - `cv_label_visible` has left the leaf contract; `cv_label_mode` replaces it. A project override of `crud_views/tags/button/action.html` must branch on the new key.
 - `cv_no_label` is no longer a `cv_button_data()` input and raises `ValueError` naming the replacement. `CardAction(no_label=True)` is unaffected.
-- A new `viewset.E210` rejects an unknown `label_mode` or `cv_card_action_label_mode`.
+- A new `viewset.E210` rejects an unknown `label_mode` or `cv_card_actions_label_mode`.
 
 - [ ] **Step 5: Verify the docs build and the examples still match**
 

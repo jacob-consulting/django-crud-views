@@ -47,7 +47,7 @@ You do not configure this on `CardAction`; the method and modal behaviour derive
 |---|---|---|---|
 | `key` | `str` | (required) | View key in the ViewSet (`"detail"`, `"update"`, `"delete"`, etc.) |
 | `label` | `str \| None` | `None` | Explicit button label. If None, falls back to the target view's short label. |
-| `label_mode` | `str \| None` | `None` | `"label"`, `"icon"` or `"both"`. If None, inherits the view's `cv_card_action_label_mode`. See [Label mode](#label-mode). |
+| `label_mode` | `str \| None` | `None` | `"label"`, `"icon"` or `"both"`. If None, inherits the view's `cv_card_actions_label_mode`. See [Label mode](#label-mode). |
 | `no_label` | `bool` | `False` | Superseded by `label_mode="icon"`, which it equals. Setting it together with `label_mode` is a validation error. |
 | `variant` | `str \| None` | `None` | Button style: `"primary"`, `"secondary"`, `"tertiary"`, `"danger"`. If None, falls back to the target view's `cv_action_variant` (`primary` for create, `danger` for delete, else `secondary`). See [Buttons](buttons.md#variants). |
 | `flex` | `bool` | `False` | If True, button gets `flex-grow-1` |
@@ -68,13 +68,13 @@ The view attribute sets the default for every action; `CardAction.label_mode` ov
 
 | Attribute | Type | Default | Description |
 |---|---|---|---|
-| `cv_card_action_label_mode` | `str` | `"both"` | Label mode of every card action without its own `label_mode` |
+| `cv_card_actions_label_mode` | `str` | `"both"` | Label mode of every card action without its own `label_mode` |
 
-The order is `CardAction.label_mode`, then `"icon"` when `no_label=True`, then `cv_card_action_label_mode`. An action
+The order is `CardAction.label_mode`, then `"icon"` when `no_label=True`, then `cv_card_actions_label_mode`. An action
 with an empty label is always rendered `"icon"`, and a `"both"` button whose view has no icon renders like `"label"`.
-`viewset.E210` rejects an unknown `label_mode` or `cv_card_action_label_mode`.
+`viewset.E210` rejects an unknown `label_mode` or `cv_card_actions_label_mode`.
 
-To get one policy everywhere, set `cv_card_action_label_mode` once on a base card view class of your project and
+To get one policy everywhere, set `cv_card_actions_label_mode` once on a base card view class of your project and
 subclass it, rather than setting it on every view.
 
 ## Card Container Class

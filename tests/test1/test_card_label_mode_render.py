@@ -118,7 +118,7 @@ def test_no_label_still_means_icon_only(author_douglas_adams, monkeypatch):
 
 @pytest.mark.django_db
 def test_view_default_applies_and_action_overrides_it(author_douglas_adams, monkeypatch):
-    monkeypatch.setattr(AuthorCardListView, "cv_card_action_label_mode", "label")
+    monkeypatch.setattr(AuthorCardListView, "cv_card_actions_label_mode", "label")
     card = _author_card(
         _client([AUTHOR_FULL]),
         [

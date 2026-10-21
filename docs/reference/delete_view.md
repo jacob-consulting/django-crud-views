@@ -83,6 +83,7 @@ class AuthorDeleteView(CrispyViewMixin, MessageMixin, DeleteViewPermissionRequir
 ```
 
 `cv_message_template_code` is a Django template string; `{{ object }}` renders to the string representation of the deleted instance.
+Your base template renders the queued messages with `{% cv_messages %}` — see [Flash messages](messages.md).
 
 ## Form Processing Hooks
 

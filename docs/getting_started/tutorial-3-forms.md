@@ -61,6 +61,10 @@ message, so it reads "Created author “Ursula Le Guin”". Wrapping the string 
 `cv_message_template` does the same job but points at a template snippet
 file instead of an inline string.
 
+The mixin only *queues* the message. Your base template decides where it
+appears, with `{% cv_messages %}` — see [Flash messages](../reference/messages.md).
+If you see no confirmation after saving, that tag is what's missing.
+
 ![Author create view](assets/tutorial-author-create.png)
 
 ![Author update view](assets/tutorial-author-update.png)

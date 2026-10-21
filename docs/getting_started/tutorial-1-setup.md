@@ -65,6 +65,25 @@ base template lives at
 [`examples/bootstrap5/project/templates/project/crud_views.html`](https://github.com/jacob-consulting/django-crud-views/tree/main/examples/bootstrap5/project/templates/project/crud_views.html)
 if you want to see a working one.
 
+Two things that template has to supply, because crud_views does not inject
+them: Bootstrap itself, and a place to render flash messages. The example
+loads Bootstrap from a CDN —
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"/>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+```
+
+— and renders messages with `{% cv_messages %}` at the top of its content
+area. Part 3 adds the views that emit those messages; without the tag they
+are created and then silently dropped. See
+[Flash messages](../reference/messages.md) and
+[What to put in it](../reference/templates.md#what-to-put-in-it).
+
 ## The model
 
 Here's the `Author` model we'll build the rest of the tutorial around:

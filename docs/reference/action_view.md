@@ -38,6 +38,7 @@ After the action runs, `ActionView` evaluates its result and emits a Django mess
 
 A message is only emitted when the relevant template is configured. Templates are rendered
 with the view metadata in context, including `{{ object }}`.
+Your base template renders the queued messages with `{% cv_messages %}` — see [Flash messages](messages.md).
 
 ### Disabling messages
 

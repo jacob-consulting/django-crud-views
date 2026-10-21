@@ -146,7 +146,8 @@ class AuthorUpdateForm(AuthorCreateForm):
 
 ## Messages
 
-Add `MessageMixin` to show a success message after updating:
+Add `MessageMixin` to show a success message after updating, rendered by
+`{% cv_messages %}` in your base template — see [Flash messages](messages.md):
 
 ```python
 class AuthorUpdateView(CrispyViewMixin, MessageMixin, UpdateViewPermissionRequired):

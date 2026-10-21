@@ -216,6 +216,11 @@ keys are `LEAF_KEYS`:
 | `cv_variant` | the resolved variant; falls back to `"secondary"` |
 | `cv_flex` | add `flex-grow-1`; true only on cards |
 
+`cv_key` is the key of the view a button targets, not the button's own key: `ContextButton(key="home",
+key_target="list")` renders `cv-key="list"`. The filter toggle is the exception — it toggles the filter of the page the
+user is already on and has no target view, so it renders its own key, `cv-key="filter"` (a `FilterContextButton`
+subclass with another `key` renders that key).
+
 ### `cv_button` and `cv_render_button`
 
 `{% cv_button "context" %}` renders the action data in the template context as one button through the leaf

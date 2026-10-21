@@ -16,6 +16,11 @@
 
 ### Breaking
 
+- `django-bootstrap5` is no longer a dependency. Nothing in the shipped packages used it — only the example and
+  test base templates did — so it is gone from `pyproject.toml` rather than moved to an extra. A project that
+  renders flash messages with `{% bootstrap_messages %}` should switch to `{% cv_messages %}`; one that uses
+  `{% bootstrap_css %}`, `{% bootstrap_javascript %}` or any other `django_bootstrap5` tag must now install
+  `django-bootstrap5` itself and keep `django_bootstrap5` in `INSTALLED_APPS` (#221).
 - Labelled inline card buttons now render their icon as well as their text (#213).
   `CardListView.cv_card_actions_label_mode = "label"` restores the old markup for a view;
   `CardAction(label_mode="label")` for one button.

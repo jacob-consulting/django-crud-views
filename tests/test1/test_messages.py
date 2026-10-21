@@ -158,3 +158,12 @@ def test_cv_messages_escapes_unsafe_markup():
 
 def test_cv_messages_renders_nothing_without_messages_in_the_context():
     assert Template("{% load crud_views %}{% cv_messages %}").render(Context({})).strip() == ""
+
+
+@pytest.mark.django_db
+def test_create_message_renders_as_an_alert(client_publisher_add_view: Client, cv_publisher):
+    response = client_publisher_add_view.post("/publisher/create/", {"name": "Penguin"}, follow=True)
+    html = response.content.decode()
+    assert 'class="alert alert-success alert-dismissible fade show"' in html
+    assert 'data-bs-dismiss="alert"' in html
+    assert "<strong>Penguin</strong>" in html

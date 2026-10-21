@@ -42,7 +42,7 @@ def _context_get(**extra) -> dict:
         "cv_key": "detail",
         "cv_label": "Details",
         "cv_short_label": "Details",
-        "cv_label_visible": False,
+        "cv_label_mode": "icon",
         "cv_title": "Details",
         "cv_icon": "detail",
         "cv_variant": "secondary",
@@ -70,11 +70,18 @@ def test_action_leaf_renders_from_contract_only():
     assert len(a.cssselect("i")) == 1
     assert len(a.cssselect("span.visually-hidden")) == 1
 
-    card = _context_get(cv_location="card", cv_active=False, cv_label_visible=True, cv_variant="primary")
+    card = _context_get(cv_location="card", cv_active=False, cv_label_mode="label", cv_variant="primary")
     del card["cv_title"]
     a = _one(render_to_string(ACTION_LEAF, card), "a")
     assert lxml_html.tostring(a.cssselect("span")[0], encoding="unicode") == "<span>Details</span>"
     assert not a.cssselect("i")
+    assert a.get("title") is None
+
+    both = {**card, "cv_label_mode": "both"}
+    a = _one(render_to_string(ACTION_LEAF, both), "a")
+    assert len(a.cssselect("i")) == 1
+    assert lxml_html.tostring(a.cssselect("span")[0], encoding="unicode") == "<span>Details</span>"
+    assert not a.cssselect("span.visually-hidden")
     assert a.get("title") is None
 
     post = _context_get(cv_tag="button", cv_active=False, cv_submit_target="cv_form_o1")
@@ -433,7 +440,7 @@ def test_action_leaf_marks_tooltip_exactly_when_title_is_set(location):
     assert a.get("title") == "Details"
     assert a.get("data-cv-tooltip") == location
 
-    labelled = _context_get(cv_location=location, cv_label_visible=True)
+    labelled = _context_get(cv_location=location, cv_label_mode="label")
     del labelled["cv_title"]
     a = _one(render_to_string(ACTION_LEAF, labelled), "a")
     assert a.get("title") is None

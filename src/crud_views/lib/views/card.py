@@ -43,6 +43,12 @@ class CardListView(CardOrderMixin, CrudView, generic.ListView):
 
     def cv_get_card_action_data(self, action: CardAction, obj, user) -> dict:
         """Unresolved button data for one card action (#149, #174); the cv_card_action tag and the menu share it."""
+        # resolved once for both branches: the action's own mode, then no_label, then the view default (#213)
+        label_mode = (
+            action.label_mode
+            if action.label_mode is not None
+            else ("icon" if action.no_label else self.cv_card_action_label_mode)
+        )
         if action.child_name:
             url = self.cv_get_child_url(action.child_name, action.child_key, obj)
             child_viewset = self.cv_viewset.get_viewset(action.child_name)
@@ -58,7 +64,7 @@ class CardListView(CardOrderMixin, CrudView, generic.ListView):
                 "cv_icon_action": child_cls.cv_icon_action,
                 "cv_variant": action.variant if action.variant is not None else child_cls.cv_action_variant,
                 "cv_flex": action.flex,
-                "cv_no_label": action.no_label,
+                "cv_label_mode": label_mode,
                 "cv_list_action_method": "get",
             }
 
@@ -76,7 +82,7 @@ class CardListView(CardOrderMixin, CrudView, generic.ListView):
             cv_action_enabled=cls.cv_action_enabled(user, obj),
         )
         variant = action.variant if action.variant is not None else cls.cv_action_variant
-        data.update(cv_label=label, cv_variant=variant, cv_flex=action.flex, cv_no_label=action.no_label)
+        data.update(cv_label=label, cv_variant=variant, cv_flex=action.flex, cv_label_mode=label_mode)
         return data
 
     def cv_get_card_action_group(self, obj) -> ActionGroup:

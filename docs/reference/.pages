@@ -37,6 +37,7 @@ nav:
         - resources.md
     - Theming:
         - templates.md
+        - messages.md
         - theme.md
         - assets.md
         - javascript.md

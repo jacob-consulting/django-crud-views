@@ -10,6 +10,7 @@ from crud_views.lib import assets
 from crud_views.lib.button_classes import get_button_class
 from crud_views.lib.exceptions import ViewSetKeyFoundError, ignore_exception
 from crud_views.lib.icons import render_icon
+from crud_views.lib.messages import message_alerts
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import CrudView
 from crud_views.lib.view.button_data import cv_button_data
@@ -307,6 +308,11 @@ def cv_header(context):
 def cv_breadcrumb(context):
     breadcrumb = context.get("cv_breadcrumb")
     return {"items": breadcrumb.resolve_items() if breadcrumb else []}
+
+
+@register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/messages.html", takes_context=True)
+def cv_messages(context):
+    return {"cv_message_alerts": message_alerts(context.get("messages"))}
 
 
 @register.simple_tag(takes_context=True)

@@ -359,21 +359,6 @@ def cv_language_selector(context):
 
 
 @register.filter
-def cv_is_false(arg):
-    return arg is False
-
-
-@register.filter
-def cv_is_true(arg):
-    return arg is True
-
-
-@register.filter
-def cv_is_list(arg):
-    return isinstance(arg, (list, tuple))
-
-
-@register.filter
 def cv_context_has_permission(view, key) -> bool:
     try:
         cls = view.cv_viewset.get_view_class(key)

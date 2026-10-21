@@ -60,8 +60,8 @@ yourself.
 | `table-sort-asc` / `table-sort-desc` | `fas:angles-up` / `fas:angles-down` | sortable table headers |
 | `formset-up` / `formset-down` | `fas:caret-up` / `fas:caret-down` | formset row controls |
 | `formset-add` / `formset-delete` | `fas:plus` / `fas:square-xmark` | formset row controls |
-| `field-marker` | `fas:angles-right` | detail widgets |
-| `boolean-true` / `boolean-false` | `fas:circle-check` / `fas:circle-xmark` | boolean values (core widget and object detail) |
+| `field-marker` | `fas:angles-right` | no built-in consumer, available to project templates |
+| `boolean-true` / `boolean-false` | `fas:circle-check` / `fas:circle-xmark` | boolean values in object detail |
 | `property-detail` | `fas:circle-info` | object detail, card-rows layout |
 | `text-icon` | `far:file-lines` | object detail, list-group-3col layout |
 

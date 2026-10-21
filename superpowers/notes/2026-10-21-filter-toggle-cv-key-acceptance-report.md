@@ -28,7 +28,7 @@ not through `cv_button_data()`. The assignment therefore reaches the template di
 | Criterion (#208) | Status |
 |---|---|
 | The stock filter toggle renders `cv-key="filter"` | `test_filter_toggle_carries_its_own_key` |
-| A test asserts every `a`/`button` in `[cv-context-container]` has a non-empty `cv-key` | `test_every_context_button_has_a_key` |
+| A test asserts every `a`/`button` in `[cv-context-container]` has a non-empty `cv-key` | `test_every_context_action_has_a_key`, parametrized over `cv_context_actions_inline` `None` and `["list"]` |
 | Golden HTML updated | `toolbar_publisher_list.html`, the single changed line |
 | `docs/reference/buttons.md` mentions the toggle's `cv-key` | paragraph after the `LEAF_KEYS` table |
 
@@ -49,6 +49,19 @@ Both tests were watched failing first, for the right reason (`assert '' == 'filt
 - `pytest tests` — 1513 passed, 3 skipped.
 - `CV_UPDATE_GOLDEN=1 pytest tests/test1/test_action_menus_golden.py` — 8 passed, one golden line changed.
 - `uvx "ruff>=0.16,<0.17" format --check .` — 483 files already formatted; `ruff check .` — all checks passed.
+
+## Correction, and a limit on the invariant
+
+The overflow menu toggle (`.cv-menu-toggle`) is an `a`/`button` inside `[cv-context-container]` and carries **no**
+`cv-key`: it is a disclosure control, not an action. The issue's criterion read literally is therefore false, and the
+first version of the invariant test would have started failing the day the publisher list toolbar grew a menu. The
+test now excludes the toggle, says why, and is parametrized over `cv_context_actions_inline` `None` and `["list"]` so
+it covers both the all-inline toolbar and the one with a menu. Both parametrizations were watched failing with the
+fix commented out.
+
+The same holds on cards: the card menu toggle has no `cv-key` either, while
+`test_card_post_action_is_a_button`'s `assert all(b.get("cv-key") ...)` happens to run on a row with no menu.
+Untouched here — it passes and is not what #208 is about.
 
 ## Correction
 

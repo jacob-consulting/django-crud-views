@@ -1,10 +1,14 @@
 import pytest
 
-from crud_views.lib.view.label_mode import LABEL_MODES, is_label_mode, label_mode_check
+from crud_views.lib.view.label_mode import LABEL_MODES, LabelMode, is_label_mode, label_mode_check
 
 
 def test_label_modes():
     assert {"label", "icon", "both"} == LABEL_MODES
+    assert {mode.value for mode in LabelMode} == LABEL_MODES
+    assert LabelMode.LABEL == "label"
+    assert LabelMode.ICON == "icon"
+    assert LabelMode.BOTH == "both"
 
 
 @pytest.mark.parametrize("value", ["label", "icon", "both"])

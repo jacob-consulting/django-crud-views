@@ -1,32 +1,9 @@
 {% extends "crud_views/view_manage.html" %}
-{% load i18n %}
+{% load crud_views i18n %}
 
 {% block guardian_config %}
 <h4>{% translate "Guardian Configuration" %}</h4>
-<div class="alert alert-warning">
-    <table class="table table-striped mb-0">
-        <tr>
-            <th scope="col">{% translate "Setting" %}</th>
-            <th scope="col">{% translate "Value" %}</th>
-        </tr>
-        <tr>
-            <td>cv_guardian_parent_permission</td>
-            <td>{{ guardian_config.cv_guardian_parent_permission }}</td>
-        </tr>
-        <tr>
-            <td>cv_guardian_parent_create_permission</td>
-            <td>{{ guardian_config.cv_guardian_parent_create_permission }}</td>
-        </tr>
-        <tr>
-            <td>cv_guardian_accept_global_perms</td>
-            <td>{{ guardian_config.cv_guardian_accept_global_perms }}</td>
-        </tr>
-        <tr>
-            <td>parent_viewset</td>
-            <td>{{ guardian_config.parent_viewset }}</td>
-        </tr>
-    </table>
-</div>
+{% cv_alert "warning" body_template="crud_views/snippets/guardian/config_table.html" %}
 {% endblock guardian_config %}
 
 {% block permission_holders %}

@@ -1,5 +1,7 @@
 """#250: one alert frame, fed by alert_data(), renders every alert in the package."""
 
+from pathlib import Path
+
 import pytest
 from django.template import Context, Template
 from django.test import override_settings
@@ -123,3 +125,18 @@ def test_alert_colours_follow_the_class_table():
     with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"alert:error": "notification is-danger"}):
         html = _render('{% cv_alert "error" text="t" %}')
     assert 'class="notification is-danger"' in html
+
+
+def test_only_the_alert_templates_write_alert_markup():
+    """#250: every alert in all five apps goes through tags/alert.html and its body snippets."""
+    src = Path(__file__).resolve().parents[2] / "src"
+    files = list(src.glob("crud_views*/templates/**/*.html"))
+    assert files
+    offenders = []
+    for path in files:
+        name = path.as_posix().split("/templates/", 1)[1]
+        if name == "crud_views/tags/alert.html" or name.startswith("crud_views/snippets/alert/"):
+            continue
+        if 'class="alert' in path.read_text():
+            offenders.append(name)
+    assert offenders == []

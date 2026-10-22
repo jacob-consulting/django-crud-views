@@ -1,8 +1,8 @@
-{% load i18n crud_views_object_detail %}
+{% load i18n crud_views crud_views_object_detail %}
 <div class="card mb-3">
     <div class="card-header bg-primary text-white d-flex align-items-center">
         {% if group.icon %}{% cv_icon group.icon css="me-2" %}{% endif %}
-        <h5 class="mb-0 text-white">{{ group.title }}</h5>
+        {% cv_heading level=5 class="mb-0 text-white" %}{{ group.title }}{% endcv_heading %}
     </div>
     <div class="card-body p-0">
         <table class="table table-striped table-hover mb-0">

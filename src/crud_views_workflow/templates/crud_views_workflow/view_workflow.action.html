@@ -4,7 +4,7 @@
 
 
 {% if has_workflow_choices %}
-    <h5>{% translate "Workflow Action" %}</h5>
+    {% cv_heading level=5 %}{% translate "Workflow Action" %}{% endcv_heading %}
     <form class="cv-form" method="post" novalidate>
         {% csrf_token %}
 

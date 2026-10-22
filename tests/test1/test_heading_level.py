@@ -16,6 +16,7 @@ from django.test import Client
 from django.urls import reverse
 from lxml import html as lxml_html
 
+from crud_views.lib.settings import crud_views_settings
 from crud_views_object_detail.lib.resolvers import ResolvedGroup
 from tests.lib.helper.user import user_viewset_permission
 from tests.test1.app.models import Author, Campaign
@@ -95,3 +96,72 @@ def test_heading_golden_default(name):
     actual = _headings(SURFACES[name]())
     assert actual
     _compare(name, actual)
+
+
+# --- with the setting: one level below the header, today's look --------------------------------------------------
+
+# today's classes of each object-detail group heading (Desc set, so the mb-{1,0} branch is the description one)
+OD_CLASSES = {
+    "card-rows": "card-title mb-1",
+    "list-group-3col": "card-title mb-1",
+    "split-card": "card-title mb-0",
+    "striped-rows": "mb-0 text-white",
+    "table-inline": "card-title mb-1",
+    "tabs-vertical": "mb-1",
+}
+
+
+@pytest.fixture(params=[1, 2])
+def header_level(request, monkeypatch):
+    monkeypatch.setattr(crud_views_settings, "header_level", request.param)
+    return request.param
+
+
+def _doc(markup: str):
+    return lxml_html.fromstring(f"<div>{markup}</div>")
+
+
+def _heading(doc, text: str):
+    (heading,) = doc.xpath(f"({HEADINGS})[normalize-space()='{text}']")
+    return heading
+
+
+@pytest.mark.django_db
+def test_card_title_follows_setting(header_level):
+    (title,) = _doc(_card_page()).cssselect(".card-title")
+    assert title.tag == f"h{header_level + 1}"
+    assert title.get("class") == "h5 card-title"
+    assert title.text_content() == "Douglas Adams"
+
+
+@pytest.mark.django_db
+def test_workflow_sections_follow_setting(header_level):
+    doc = _doc(_workflow_page())
+    for text in ("Workflow History", "Workflow Action"):
+        heading = _heading(doc, text)
+        assert heading.tag == f"h{header_level + 1}"
+        assert heading.get("class") == "h5"
+
+
+@pytest.mark.parametrize("layout", list(OD_CLASSES))
+def test_od_group_heading_follows_setting(header_level, layout):
+    heading = _heading(_doc(_render_group(layout)), "Test")
+    assert heading.tag == f"h{header_level + 1}"
+    assert heading.get("class") == f"h5 {OD_CLASSES[layout]}"
+
+
+def test_od_accordion_header_follows_setting(header_level):
+    (heading,) = _doc(_render_group("accordion")).cssselect(".accordion-header")
+    assert heading.tag == f"h{header_level + 1}"
+    expected = "accordion-header" if header_level == 1 else "h2 accordion-header"
+    assert heading.get("class") == expected
+
+
+@pytest.mark.django_db
+def test_modal_title_is_the_header(header_level):
+    doc = _doc(_modal_detail())
+    (title,) = doc.cssselect(".modal-title")
+    assert title.tag == f"h{header_level}"
+    assert title.get("class") == "h5 modal-title"
+    group = _heading(doc, "Attributes")
+    assert group.tag == f"h{header_level + 1}"

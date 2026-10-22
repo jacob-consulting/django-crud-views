@@ -98,6 +98,9 @@
 
 ### Fixed
 
+- The create view emitted widget `Media` (JS and CSS) twice: `view_create.content.html` still rendered
+  `{{ form.media }}` after the form although crispy-forms already includes it. Create now emits it once, like update
+  and custom-form, so widget JS that is not idempotent no longer initialises twice on create pages (#191).
 - Docs: the pages that document message production — create, update, delete, action, custom-form and ordered
   views, plus tutorial parts 1 and 3 — now say that the host template renders the queue with `{% cv_messages %}`,
   and the [Base template](docs/reference/templates.md) reference lists the four host-placed tags (`cv_css`,

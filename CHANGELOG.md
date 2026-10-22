@@ -4,6 +4,14 @@
 
 ### Breaking
 
+- Card list pagination (`crud_views/snippets/pagination.html`) has accessible markup, and its arrows come from the
+  icon registry. The `&laquo;` / `&raquo;` text arrows are now the `page-previous` / `page-next` icons
+  (`fas:chevron-left` / `fas:chevron-right`; `chevron-left` / `chevron-right` in `BOOTSTRAP_ICONS`), each followed or
+  preceded by a visually hidden, translated `previous` / `next` label. The current page's `.page-item` carries
+  `aria-current="page"`. A disabled end is `<a class="page-link" aria-disabled="true">` without `href` instead of a
+  `<span>`, and the `<nav>`'s `aria-label` is translated. CSS or tests that target `.disabled > span.page-link` or
+  the arrow characters need updating. A theme that overrode the template only for icons can delete the override and
+  map the two icon names instead (#241).
 - The filter toggle's icon spans are hidden with the `hidden` attribute instead of Bootstrap's `d-none` class, and
   `list.filter.js` flips `hidden`. A project override of `crud_views/tags/context_action_filter.html` that still
   renders `class="d-none"` shows the wrong icon after the first click: render `hidden` instead (#232).

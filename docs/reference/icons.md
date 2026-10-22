@@ -58,6 +58,7 @@ yourself.
 | `language` | `fas:language` | language selector |
 | `sort-asc` / `sort-desc` | `fas:arrow-up-short-wide` / `fas:arrow-down-wide-short` | card list ordering |
 | `table-sort-asc` / `table-sort-desc` | `fas:angles-up` / `fas:angles-down` | sortable table headers |
+| `page-previous` / `page-next` | `fas:chevron-left` / `fas:chevron-right` | [card list](card-list-view.md) pagination |
 | `formset-up` / `formset-down` | `fas:caret-up` / `fas:caret-down` | formset row controls |
 | `formset-add` / `formset-delete` | `fas:plus` / `fas:square-xmark` | formset row controls |
 | `field-marker` | `fas:angles-right` | no built-in consumer, available to project templates |

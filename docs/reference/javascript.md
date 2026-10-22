@@ -164,8 +164,8 @@ cv.adapters.tooltip = {
 };
 ```
 
-`hide` and `dispose` are optional; leave them out and core skips those steps. A `visually-hidden` label or an
-`aria-label` on every stock trigger keeps the accessible name once `title` is gone.
+`hide` and `dispose` are optional; leave them out and core skips those steps. A hidden label
+(`<location>:hidden-label`) or an `aria-label` on every stock trigger keeps the accessible name once `title` is gone.
 
 ## jQuery
 

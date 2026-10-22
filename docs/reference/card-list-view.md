@@ -50,7 +50,7 @@ You do not configure this on `CardAction`; the method and modal behaviour derive
 | `label_mode` | `str \| None` | `None` | `"label"`, `"icon"` or `"both"`. If None, inherits the view's `cv_card_actions_label_mode`. See [Label mode](#label-mode). |
 | `no_label` | `bool` | `False` | Superseded by `label_mode="icon"`, which it equals. Setting it together with `label_mode` is a validation error. |
 | `variant` | `str \| None` | `None` | Button style: `"primary"`, `"secondary"`, `"tertiary"`, `"danger"`. If None, falls back to the target view's `cv_action_variant` (`primary` for create, `danger` for delete, else `secondary`). See [Buttons](buttons.md#variants). |
-| `flex` | `bool` | `False` | If True, button gets `flex-grow-1` |
+| `flex` | `bool` | `False` | If True, the button gets the `card:flex` classes (`flex-grow-1` by default) |
 | `child_name` | `str \| None` | `None` | Child viewset name for cross-viewset links (like `LinkChildColumn`). When set, `key` is ignored for URL resolution. |
 | `child_key` | `str` | `"list"` | View key within the child viewset (e.g., `"list"`, `"card"`) |
 

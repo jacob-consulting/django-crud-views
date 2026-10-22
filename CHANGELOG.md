@@ -69,6 +69,13 @@
 
 ### Changed
 
+- The button leaves `tags/button/action.html`, `tags/button/menu_item.html`, `snippets/card_order.html`,
+  `tags/actions_menu_toggle.html` and `tags/context_action_filter.html` take `active`, `flex-grow-1` and
+  `visually-hidden` from the class table instead of hard-coding them; the rendered defaults are unchanged, and a
+  project override of a leaf keeps rendering whatever it holds. The menu item's icon placeholder drops
+  `d-inline-block`, which `.cv-icon-fw` already provides. A rendering guard in the suite fails on any class in the
+  button chain that is neither a table value nor `cv-`-prefixed; `dropdown-toggle` and `d-none` are the named
+  exemptions, tracked in #232 (#227).
 - jQuery is no longer required by core pages (formsets and jQuery-based extensions only).
 - `adapters.js` is the first core script (pipeline bundles pick it up through `cv_sources`).
 - The filter toggle carries `aria-expanded` / `aria-controls`. Overrides of `crud_views/tags/context_action_filter.html`
@@ -95,6 +102,10 @@
 
 ### Added
 
+- Nine utility slots in the button class table: `context:active` / `list:active` / `card:active` / `menu:active` /
+  `card-order:active` (default `active`), `card:flex` (`flex-grow-1`) and `context:hidden-label` /
+  `list:hidden-label` / `card:hidden-label` (`visually-hidden`). A theme on a framework that spells these utilities
+  differently registers its own words and overrides no leaf (#227).
 - Context toolbar and list row buttons can show a text label: `CRUD_VIEWS_CONTEXT_ACTIONS_LABEL_MODE` /
   `CRUD_VIEWS_LIST_ACTIONS_LABEL_MODE` map an action key to `"label"`, `"icon"` or `"both"`, overridable per ViewSet
   (`context_actions_label_mode`, `list_actions_label_mode`) and per view (`cv_context_actions_label_mode`,

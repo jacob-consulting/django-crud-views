@@ -162,7 +162,7 @@ exactly one inline button — the caret reads as "options for the button on the 
 <button type="button" class="{% cv_button_class cv_location "menu-toggle" %} dropdown-toggle dropdown-toggle-split"
         data-bs-toggle="dropdown" aria-expanded="false" aria-label="{% translate 'More actions' %}"
         {% if cv_location == "list" %}data-bs-popper-config='{"strategy":"fixed"}'{% endif %}>
-    <span class="visually-hidden">{% translate "More actions" %}</span>
+    <span class="{% cv_button_class cv_location 'hidden-label' %}">{% translate "More actions" %}</span>
 </button>
 ```
 

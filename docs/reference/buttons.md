@@ -87,14 +87,24 @@ only once #216 lets those locations show a label.
 | `card-order:container` | `btn-group btn-group-sm` |
 | `language:toggle` | `btn btn-outline-secondary` |
 | `object-detail:property-detail` | `btn btn-link p-0 ms-1 align-baseline text-muted` |
+| `context:active` / `list:active` / `card:active` | `active` |
+| `menu:active` | `active` |
+| `card-order:active` | `active` |
+| `card:flex` | `flex-grow-1` |
+| `context:hidden-label` / `list:hidden-label` / `card:hidden-label` | `visually-hidden` |
 
-The default table has 34 keys: the rows with four variants stand for four keys each. The `context` and `list`
+The default table has 43 keys: the rows with four variants stand for four keys each, the rows with three locations
+for three. The `context` and `list`
 buttons look the same for every variant by default, the `card` buttons distinguish them. Mode keys (`card:tertiary:icon`
-and the like) are addressable but not shipped: none is in the default table, and the count stays 34.
+and the like) are addressable but not shipped: none is in the default table, and the count stays 43.
 
 The table holds what a theme restyles: classes. What the markup needs to work stays in the templates and is not
-configurable here: the element, `href`, `type`, `disabled`, the `data-cv-*` attributes, `aria-*`, `cv-key`, the
-`active` and `flex-grow-1` modifiers, `dropdown-toggle`, `data-bs-toggle` and the like.
+configurable here: the element, `href`, `type`, `disabled`, the `data-cv-*` attributes, `aria-*`, `cv-key`,
+`dropdown-toggle`, `data-bs-toggle` and the like. The presentational words the leaves used to hard-code are keys:
+`<location>:active` for the button that points at the current page, `card:flex` for a stretched card action and
+`<location>:hidden-label` for the screen-reader text of an icon-only button. A theme on another framework registers
+its own words there (`is-active`, `is-sr-only`, `sr-only`) and overrides no leaf. `None` on a `hidden-label` key
+makes that text visible; set the key to your framework's screen-reader-only utility instead.
 
 ## `CRUD_VIEWS_BUTTON_CLASSES`
 
@@ -230,15 +240,15 @@ keys are `LEAF_KEYS`:
 | `cv_submit_target` | the id of the form the button submits (`cv_form_<oid>`); present only for an enabled POST action |
 | `cv_modal` | the button opens a modal; never true for a disabled button |
 | `cv_modal_size` | the semantic modal size (`""`, `"sm"`, `"lg"`, `"xl"`) |
-| `cv_active` | the target is the current view; never true for a disabled button |
+| `cv_active` | the target is the current view; the leaf adds the `<location>:active` classes; never true for a disabled button |
 | `cv_key` | the action key, rendered as `cv-key` |
 | `cv_label` | the label the leaf prints: on cards the explicit `label`, else the short label, else the key; on `context` and `list` the full label in `icon` mode (hidden text and `title`) and the short label in `label` / `both` (the visible text) |
 | `cv_short_label` | the short label, used for menu items |
-| `cv_label_mode` | how the label shows: `"label"` (text only), `"icon"` (icon with a visually hidden label) or `"both"` (icon and text); always present. On `"context"` and `"list"` it is the view's resolved [label mode](action_menus.md#label-mode) for the key (`"icon"` unless a map names it); on cards it is the resolved [card action label mode](card-list-view.md#label-mode), and an empty label forces `"icon"` |
+| `cv_label_mode` | how the label shows: `"label"` (text only), `"icon"` (icon with a hidden label, classes `<location>:hidden-label`) or `"both"` (icon and text); always present. On `"context"` and `"list"` it is the view's resolved [label mode](action_menus.md#label-mode) for the key (`"icon"` unless a map names it); on cards it is the resolved [card action label mode](card-list-view.md#label-mode), and an empty label forces `"icon"` |
 | `cv_title` | the `title` text, which also marks the button with `data-cv-tooltip="<cv_location>"` for `tooltip.js`; present only when `cv_label_mode` is `"icon"` |
 | `cv_icon` | the icon value (see [Icons](icons.md)) |
 | `cv_variant` | the resolved variant; falls back to `"secondary"` |
-| `cv_flex` | add `flex-grow-1`; true only on cards |
+| `cv_flex` | the leaf adds the `card:flex` classes; true only on cards |
 
 A renderer registered through the icon library config must emit `aria-hidden="true"` on the icon, as `render_icon()` does.
 The `"both"` branch of the bundled leaf relies on it: the visible `<span>` must be the button's only accessible name.
@@ -294,8 +304,8 @@ The row controls of [formsets](formsets.md) use `formset:control`, `formset:cont
 
 ## A theme recipe
 
-Register the classes, then override one leaf where the markup differs. Classes that differ by label mode need no
-override at all — register `card:tertiary:icon` and the like instead. Which toolbar and row buttons show text is not
+Register the classes; override a leaf only where the markup itself differs. Classes that differ by label mode need
+no override at all — register `card:tertiary:icon` and the like instead. Which toolbar and row buttons show text is not
 a theme decision either: the project names them in a [label mode map](action_menus.md#label-mode). This example
 restyles the buttons for a framework that wants `button is-*` classes, with a square variant for the icon-only
 toolbar buttons and the label shown on the primary action:
@@ -317,30 +327,21 @@ def ready(self):
             "context:secondary": "button is-link is-light is-square",
             "context:tertiary": "button is-text is-square",
             "context:danger": "button is-danger is-square",
+            "context:active": "is-active",
+            "context:hidden-label": "is-sr-only",
         }
     )
 ```
 
-```html+django
-{# myapp_theme/templates/crud_views/tags/button/action.html #}
-{% load crud_views %}<{{ cv_tag }}{% if cv_tag == "a" %} href="{{ cv_href }}"{% else %} type="button"{% endif %}
-    class="{% cv_button_class cv_location cv_variant cv_label_mode %}{% if cv_active %} is-active{% endif %}{% if cv_flex %} flex-grow-1{% endif %}"
-    {% if cv_disabled %}disabled data-cv-disabled="{{ cv_disabled_reason }}"{% endif %}
-    {% if cv_submit_target %}data-cv-action="submit-form" data-cv-target="{{ cv_submit_target }}"{% endif %}
-    {% if cv_modal %}data-cv-modal="true" data-cv-modal-size="{{ cv_modal_size }}"{% endif %}
-    {% if cv_active %}aria-current="page"{% endif %}
-    {% if cv_title %}title="{{ cv_title }}" data-cv-tooltip="{{ cv_location }}"{% endif %}
-    cv-key="{{ cv_key }}">{% if cv_label_mode == "icon" %}{% cv_icon cv_icon %}<span class="visually-hidden">{{ cv_label }}</span>{% elif cv_label_mode == "both" %}{% if cv_icon %}{% cv_icon cv_icon %} {% endif %}<span>{{ cv_label }}</span>{% else %}<span>{{ cv_label }}</span>{% endif %}</{{ cv_tag }}>
-```
+Nothing is overridden: the active state and the hidden label come from the two extra keys. Showing a label is not a
+reason to override either: a card shows icon and text with `CardListView.cv_card_actions_label_mode = "both"` (the
+default), a toolbar or row button with its key in the label mode map.
 
-The override changes one word, `active` to `is-active`; everything else is the bundled leaf. Showing a label is not a
-reason to override: a card shows icon and text with `CardListView.cv_card_actions_label_mode = "both"` (the default),
-a toolbar or row button with its key in the label mode map.
-
-The leaf is shared by the context toolbar, list rows and cards: branch on `cv_label_mode` (`"icon"`, `"both"` and
-`"label"`; the bundled leaf treats `"label"` as the fallback branch and shows the icon in `"both"` only when `cv_icon`
-is set), and keep `cv_flex` and `cv_title`, as the bundled `crud_views/tags/button/action.html` does. `cv_title` is
-present only in `"icon"` mode; the visible label is the accessible name otherwise. Keep the
+When you do override the leaf, for markup that differs, remember it is shared by the context toolbar, list rows and
+cards: branch on `cv_label_mode` (`"icon"`, `"both"` and `"label"`; the bundled leaf treats `"label"` as the fallback
+branch and shows the icon in `"both"` only when `cv_icon` is set), and keep `cv_active` and `cv_flex` through their
+table keys and `cv_title`, as the bundled `crud_views/tags/button/action.html` does. `cv_title` is present only in
+`"icon"` mode; the visible label is the accessible name otherwise. Keep the
 `data-cv-*` attributes and `cv-key`: the bundled scripts use them; `data-cv-tooltip="{{ cv_location }}"` next to
 `title` is what gives the button a tooltip through `cv.adapters.tooltip`, see [JavaScript](javascript.md#tooltips). Keep the `cv_disabled` handling when you
 override the leaf, otherwise an action disabled by `CRUD_VIEWS_INACCESSIBLE_ACTIONS = "disable"` looks enabled.

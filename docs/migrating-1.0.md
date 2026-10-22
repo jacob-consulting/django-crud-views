@@ -211,6 +211,11 @@ Go through your theme's `templates/crud_views/` directory. Delete each of these 
   `<form>` has no `enctype="multipart/form-data"`, so file fields upload nothing on create and custom-form pages
   (#236), and the create copy renders `{{ form.media }}` twice (#191). The delete page's protection alert moved to
   `snippets/delete/protection_errors.html`.
+- **Copies made only to change a heading level** (#251): `tags/card.html`, `modal/content.html`,
+  `crud_views_workflow/view_workflow.action.html` and `view_workflow.history.html`, and the object-detail
+  `crud_views_object_detail/layouts/*/group.html`. Set `CRUD_VIEWS_HEADER_LEVEL` to the level of your
+  `{% cv_header %}` instead. These headings then render one level below it and keep their look
+  ([Heading levels](reference/templates.md#heading-levels)).
 - **`snippets/pagination.html`**, if you overrode it only for the arrows (#241). Register the `page-previous` and
   `page-next` icons instead. If you keep it for other markup, take over the accessible markup described under
   [CSS and tests](#css-and-tests-that-select-on-markup).
@@ -268,6 +273,8 @@ Register these from your theme's `AppConfig.ready()`; a project's own settings s
 - **The card:** extend `tags/card.html` and fill `card_title`, `card_content` and `card_actions` (#243). A copy of
   `view_card.content.html` misses the translated empty state, "No items found." (#246).
 - **The alert frame:** `tags/alert.html` and its two bodies (#250).
+- **Heading levels:** `CRUD_VIEWS_HEADER_LEVEL`, plus `{% cv_heading %}` for the headings in your theme's own
+  templates, so they follow the same setting (#251, [Heading levels](reference/templates.md#heading-levels)).
 - **JavaScript:** `cv.adapters.modal`, `cv.adapters.tooltip` and `cv.adapters.collapse` replace Bootstrap's API for a
   theme on another framework ([`cv.adapters`](reference/javascript.md#cvadapters)).
 

@@ -1,5 +1,7 @@
+{% extends "crud_views/snippets/form_frame.html" %}
 {% load crud_views %}
 
+{% block cv_form_body %}
 <form class="cv-form" method="post" action="{{ request.get_full_path }}" enctype="multipart/form-data" novalidate>
     {% csrf_token %}
 
@@ -7,3 +9,4 @@
 
     {% cv_render_form %}
 </form>
+{% endblock %}

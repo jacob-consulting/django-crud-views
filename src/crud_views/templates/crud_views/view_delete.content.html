@@ -1,14 +1,9 @@
-{% load crud_views i18n %}
+{% extends "crud_views/snippets/form_frame.html" %}
+{% load crud_views %}
 
+{% block cv_form_body %}
 {% if delete_protection_errors %}
-    <div class="alert alert-danger">
-        <strong>{% translate "This object cannot be deleted:" %}</strong>
-        <ul class="mb-0 mt-2">
-            {% for error in delete_protection_errors %}
-                <li>{{ error }}</li>
-            {% endfor %}
-        </ul>
-    </div>
+    {% include "crud_views/snippets/delete/protection_errors.html" %}
 {% else %}
     {% if related_summary or protected_objects %}
         {% include "crud_views/snippets/delete/related_objects.html" %}
@@ -22,3 +17,4 @@
         {% cv_render_form %}
     </form>
 {% endif %}
+{% endblock %}

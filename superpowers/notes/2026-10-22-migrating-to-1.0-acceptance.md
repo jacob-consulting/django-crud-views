@@ -21,7 +21,7 @@ Loud = a system check or an exception; silent = renders wrong and raises nothing
 | 9 | 0.30 | `fa-fw` → `cv-icon-fw`; `css/icons.css` new core asset | `static/crud_views/css/icons.css` | app, theme | silent for hand-listed CSS | 3, 4 |
 | 10 | unrel. | Alerts through `tags/alert.html`; message dicts `level`/`text` | `tags/messages.html` is a loop over `tags/alert.html`; `ALERT_CLASSES`, `ICON_NAMES` gone | theme | silent | 4, 5 |
 | 11 | unrel. | Pagination markup, `page-previous` / `page-next` icons | `snippets/pagination.html`, `lib/icons.py` | app, theme | silent (markup) | 3, 4, 5 |
-| 12 | unrel. | Filter toggle `hidden` instead of `d-none` | `tags/context_action_filter.html`, `list.filter.js` | theme | silent | 4, 5 |
+| 12 | unrel. | Filter toggle `hidden` instead of `d-none`; a 0.29 copy has one `<i class="{{ cv_icon_action }}">` that the new `list.filter.js` no longer toggles | `tags/context_action_filter.html`, `list.filter.js` | theme | silent | 4, 5 |
 | 13 | unrel. | `cv_get_context()` keyword-only `location` | `lib/view/base.py:579` | app | TypeError | 2, 3 |
 | 14 | unrel. | `django-bootstrap5` dropped | `pyproject.toml`; `{% cv_messages %}` | app | TemplateSyntaxError (`{% load django_bootstrap5 %}`) | 3 |
 | 15 | unrel. | Card buttons render icon + label | `cv_card_actions_label_mode = "both"` (`lib/views/card.py:28`) | app | markup | 3 |

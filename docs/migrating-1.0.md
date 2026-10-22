@@ -76,47 +76,51 @@ Your base template, settings, views, JavaScript, and the CSS and tests that sele
 
 ### Settings
 
-- **Icon settings [0.30]** (`crud_views.E350`). The icons now come from one table, `CRUD_VIEWS_ICONS`
-  ([Icons](reference/icons.md#crud_views_icons)):
+**Icon settings [0.30]** (`crud_views.E350`). The icons now come from one table, `CRUD_VIEWS_ICONS`
+([Icons](reference/icons.md#crud_views_icons)). Before, in 0.29:
 
-    ```python
-    # 0.29
-    CRUD_VIEWS_ACTIONS_MENU_ICON = "fa-solid fa-bars"
-    CRUD_VIEWS_FILTER_ICON = "fa-solid fa-magnifying-glass"
+```python
+CRUD_VIEWS_ACTIONS_MENU_ICON = "fa-solid fa-bars"
+CRUD_VIEWS_FILTER_ICON = "fa-solid fa-magnifying-glass"
+```
 
-    # 1.0
-    CRUD_VIEWS_ICONS = {"actions-menu": "fas:bars", "filter": "fas:magnifying-glass"}
-    ```
+After, in 1.0:
 
-    The `CRUD_VIEWS_OBJECT_DETAIL_ICONS_*` settings and `CRUD_VIEWS_OBJECT_DETAIL_NAMED_ICONS` are gone too. Object
-    detail now uses Font Awesome like the rest of the package. To keep Bootstrap Icons there:
+```python
+CRUD_VIEWS_ICONS = {"actions-menu": "fas:bars", "filter": "fas:magnifying-glass"}
+```
 
-    ```python
-    from crud_views.lib.icons import BOOTSTRAP_ICONS
+The `CRUD_VIEWS_OBJECT_DETAIL_ICONS_*` settings and `CRUD_VIEWS_OBJECT_DETAIL_NAMED_ICONS` are gone too. Object
+detail now uses Font Awesome like the rest of the package. To keep Bootstrap Icons there:
 
-    CRUD_VIEWS_ICONS = {k: BOOTSTRAP_ICONS[k] for k in ("boolean-true", "boolean-false", "property-detail", "text-icon")}
-    ```
+```python
+from crud_views.lib.icons import BOOTSTRAP_ICONS
 
-    `CRUD_VIEWS_ICONS = BOOTSTRAP_ICONS` switches every icon of the package to Bootstrap Icons
-    ([Bootstrap Icons preset](reference/icons.md#bootstrap-icons-preset)).
+CRUD_VIEWS_ICONS = {k: BOOTSTRAP_ICONS[k] for k in ("boolean-true", "boolean-false", "property-detail", "text-icon")}
+```
 
-- **`CRUD_VIEWS_FILTER_RESET_BUTTON_CSS_CLASS`** (`crud_views.E360`) moves into the button class table:
+`CRUD_VIEWS_ICONS = BOOTSTRAP_ICONS` switches every icon of the package to Bootstrap Icons
+([Bootstrap Icons preset](reference/icons.md#bootstrap-icons-preset)).
+
+**`CRUD_VIEWS_FILTER_RESET_BUTTON_CSS_CLASS`** (`crud_views.E360`) moves into the button class table:
   `CRUD_VIEWS_BUTTON_CLASSES = {"form:filter-reset": "btn btn-secondary"}` ([Buttons](reference/buttons.md#crud_views_button_classes)).
 
 ### Views and Python code
 
+**If you override `cv_get_context()`:** it takes a keyword-only `location`, and every button path passes it. An
+override with the old signature raises `TypeError` on the first toolbar. Accept it and pass it on (#216):
+
+```python
+def cv_get_context(self, key=None, obj=None, user=None, request=None, *, location=None):
+    context = super().cv_get_context(key, obj, user, request, location=location)
+    ...
+    return context
+```
+
+The other changes to views:
+
 - **`cv_modal_size`** (`viewset.E250`) takes the tokens `""`, `"sm"`, `"lg"` and `"xl"`: `cv_modal_size = "modal-lg"`
   becomes `cv_modal_size = "lg"` ([Modals](reference/modals.md)).
-- **If you override `cv_get_context()`:** it takes a keyword-only `location`, and every button path passes it. An
-  override with the old signature raises `TypeError` on the first toolbar. Accept it and pass it on (#216):
-
-    ```python
-    def cv_get_context(self, key=None, obj=None, user=None, request=None, *, location=None):
-        context = super().cv_get_context(key, obj, user, request, location=location)
-        ...
-        return context
-    ```
-
 - **If anything puts `cv_no_label` into a button's context** (a `cv_get_context()` override, a dict passed to
   `{% cv_render_button %}`, or a `cv_no_label` variable in the page's template context): it raises `ValueError`.
   Use `cv_label_mode` (`"label"`, `"icon"` or `"both"`) instead. `CardAction(no_label=True)` keeps working.
@@ -130,6 +134,9 @@ Your base template, settings, views, JavaScript, and the CSS and tests that sele
   `icon="fas:truck"` (or `"bi:truck"`), or `"truck"` must be added to `CRUD_VIEWS_ICONS`. Nothing flags a bare name:
   it is read as a raw CSS class and renders an invisible `<i class="truck">`
   ([Groups](reference/object_detail_configuration.md#groups)).
+- **If you override `cv_get_filter_icon()` on a list or card view [0.30]:** nothing calls it any more, and nothing
+  says so. The filter toggle and the filter panel header both use the `filter` icon; set
+  `CRUD_VIEWS_ICONS["filter"]` instead.
 - `cv_icon_action` and `cv_icon_header` on your views need no change: a raw CSS class such as
   `"fa-solid fa-truck"` still renders as before. Semantic names (`"detail"`) and `prefix:name` values
   (`"fas:truck"`) work too ([Icon values](reference/icons.md#icon-values)).
@@ -213,7 +220,23 @@ Go through your theme's `templates/crud_views/` directory. Delete each of these 
 The 0.29 templates that rendered one button are **logic templates** now: one line that calls a tag. Old copies still
 render, but they bypass the leaf contract, so new options (label modes, variants, disabled actions) don't reach
 them. Move the markup into the leaves and delete the copies
-([Logic templates and leaves](reference/buttons.md#logic-templates-and-leaves)):
+([Logic templates and leaves](reference/buttons.md#logic-templates-and-leaves)).
+
+The leaves receive the flat [leaf contract](reference/buttons.md#the-leaf-contract), not the keys your 0.29 copy
+reads. Markup moved over unchanged renders `href=""` and no icon, and raises nothing. Rename as you move:
+
+| 0.29 key | Leaf key |
+|---|---|
+| `cv_url` | `cv_href` (present only when `cv_tag` is `"a"`) |
+| `cv_icon_action` | `cv_icon`, rendered with `{% cv_icon cv_icon %}` |
+| `cv_action_label`, `cv_label` | `cv_label` |
+| `cv_action_short_label` | `cv_short_label` |
+| `cv_is_active` | `cv_active` |
+| `cv_form_{{ cv_oid }}`, `cv_list_action_method` | `cv_submit_target` (present only for a POST action) |
+| `cv_access`, `cv_action_enabled` | gone: an action the user may not see never reaches the leaf; `cv_disabled` and `cv_disabled_reason` mark a disabled one |
+| `cv_no_label` | `cv_label_mode` |
+
+Which template takes the markup:
 
 | 0.29 copy | Move the markup to |
 |---|---|
@@ -260,15 +283,21 @@ Register these from your theme's `AppConfig.ready()`; a project's own settings s
   `tags/actions_menu.html` and `tags/actions_menu_toggle.html`; use `{% cv_button_class cv_location "menu-wrapper" %}`
   and `"menu-toggle"`. These two templates are still the ones to override for a framework with a different dropdown
   ([Templates that follow Bootstrap's DOM](reference/theme.md#templates-that-follow-bootstraps-dom)).
-- **The filter toggle** (`tags/context_action_filter.html`): hide the inactive icon with the `hidden` attribute, not
-  `class="d-none"`, because `list.filter.js` flips `hidden` (#232). Render `aria-expanded` and
+- **The filter toggle** (`tags/context_action_filter.html`). A 0.29 copy renders one
+  `<i class="{{ cv_icon_action }}">`, and 0.29's `list.filter.js` swapped its Font Awesome classes. In 1.0
+  `cv_icon_action` is the icon name `"filter"`, so that `<i>` is invisible, and the script toggles two marked spans
+  instead: render `<span data-cv-filter-icon="open">{% cv_icon "filter" %}</span>` and
+  `<span data-cv-filter-icon="close">{% cv_icon "filter-close" %}</span>`, and hide the inactive one with the
+  `hidden` attribute (#232). A 0.30 copy already has the two spans but hides them with `class="d-none"`: switch to
+  `hidden`. Render `aria-expanded` and
   `aria-controls="filter-collapse"`; the `#filter-collapse` id is a contract
   ([The filter toggle contract](reference/javascript.md#the-filter-toggle-contract)).
 - **The modal:** the close button in `modal/content.html` uses `data-cv-modal-dismiss`. A copy with `data-bs-dismiss`
   keeps working under the Bootstrap adapter only. `{% cv_config %}` renders the modal shell from `modal/shell.html`,
   which you can override on its own ([Theming the modal](reference/modals.md#theming-the-modal)).
-- **Formset controls** (`formsets/control.html`): keep `data-cv-class` and `data-cv-class-danger` on the delete
-  toggle, or it is no longer recoloured. Keep `data-cv-tooltip="formset"` and the translated `title`s.
+- **Formset controls** (`formsets/control.html`): add `data-cv-class` and `data-cv-class-danger` to the delete
+  toggle (`formset.js` reads the classes from them), or it is no longer recoloured. Add `data-cv-tooltip="formset"`
+  and the translated `title`s.
 - **Object detail property-detail button:** `title` and `data-cv-tooltip="object-detail"` instead of `data-bs-title`,
   classes from the `object-detail:property-detail` key.
 - **Table sort icons [0.30]** in `table/bootstrap5.html`: `{% cv_icon "table-sort-asc" %}` and
@@ -287,9 +316,10 @@ about these.
   use `"fas:truck"` ([Views and Python code](#views-and-python-code)).
 - [ ] `cv.cvModalOpen(url, "modal-lg")` and `data-cv-modal-size="modal-lg"` open the default size: use `"lg"`
   ([JavaScript](#javascript)).
-- [ ] **[0.30]** Hand-listed static files without `crud_views/css/icons.css` or `crud_views/js/adapters.js` lose the
-  menu icon width and the modal, filter and tooltip behaviour
+- [ ] Hand-listed static files without `crud_views/js/adapters.js` lose the modal, filter and tooltip behaviour
   ([Base template and your own templates](#base-template-and-your-own-templates)).
+- [ ] **[0.30]** Hand-listed static files without `crud_views/css/icons.css` lose the menu icon width.
+- [ ] **[0.30]** An overridden `cv_get_filter_icon()` is no longer called ([Views and Python code](#views-and-python-code)).
 - [ ] CSS, JavaScript selectors and tests that match the old markup: sort icons, pagination
   (`.disabled > span.page-link`, `&laquo;` / `&raquo;`), `d-none`, button attribute order and class strings,
   formset control titles ([CSS and tests that select on markup](#css-and-tests-that-select-on-markup)).
@@ -306,13 +336,14 @@ about these.
   are no longer rendered ([Templates to delete](#templates-to-delete)).
 - [ ] A `tags/card_action.html` copy that branches on `cv_no_label` shows the label on icon-only buttons
   ([Templates to move](#templates-to-move)).
+- [ ] Markup moved into a leaf with its 0.29 keys renders `href=""` and no icon ([Templates to move](#templates-to-move)).
 - [ ] A `tags/actions_menu_item_label.html` copy no longer changes the stock menu
   ([Templates to move](#templates-to-move)).
 - [ ] **[0.30]** `<i class="{{ cv_icon_action }}">` (or `cv_icon_header`, `cv_menu_icon`) renders an invisible icon
   ([Contract changes](#contract-changes-in-templates-you-still-override)).
 - [ ] `tags/actions_menu.html` and `tags/actions_menu_toggle.html` copies that read `cv_menu_wrapper_class` or
   `cv_toggle_class` render an empty `class` ([Contract changes](#contract-changes-in-templates-you-still-override)).
-- [ ] A `tags/context_action_filter.html` copy with `class="d-none"` shows the wrong icon after the first click
+- [ ] A `tags/context_action_filter.html` copy shows no icon (0.29) or the wrong icon after the first click (0.30)
   ([Contract changes](#contract-changes-in-templates-you-still-override)).
 - [ ] A `formsets/control.html` copy without `data-cv-class` / `data-cv-class-danger` no longer recolours the delete
   toggle ([Contract changes](#contract-changes-in-templates-you-still-override)).

@@ -45,7 +45,9 @@ Spec: `superpowers/specs/2026-10-22-action-label-mode-context-list-design.md`. P
   (`icon`) item keeps its `title`. Documented under "Labels, icons and the active action".
 - **Manual placement honours the map.** `test_manual_placement_follows_the_view`: `{% cv_context_button 'update' %}`
   renders the labelled button. Documented in `context_buttons.md`.
-- **The guardian override forwards `location`.** `tests/test1/test_guardian*.py` render pages through it; green.
+- **The guardian override forwards `location`.** `test_guardian_override_forwards_the_location`: a labelled row
+  on the guardian list page, whose rows go through `GuardianQuerysetMixin.cv_get_context()`; it fails when the
+  override drops `location=location` (checked by mutation during the final review).
 
 ## Review Focus (plan)
 
@@ -57,9 +59,29 @@ Spec: `superpowers/specs/2026-10-22-action-label-mode-context-list-design.md`. P
 5. `cv_get_context()` without `location` is unstamped; `{}` stays `{}`; `cv_get_context_buttons()` stamps:
    `test_cv_get_context_without_location_is_unstamped`.
 
+## Final review (fresh reviewer, whole branch)
+
+No Critical findings. Fixed in one pass, each test proven by mutation (the test fails when the line it pins is
+reverted):
+
+- The two per-key tags were unpinned: `test_plain_list_view_rows_render_through_the_per_key_tag` (a plain
+  `ListView` renders rows through `{% cv_list_action %}`) and `test_per_key_context_action_tag_follows_the_view`
+  (`{% cv_context_action 'update' object %}`).
+- The guardian override was unpinned: the test above.
+- `action_menus.md`: the new "Label mode" section had landed between "Configuration" and its "Resolved on the
+  rendering view" subsection; moved after it.
+- `CHANGELOG.md`: a Breaking line for projects that override `cv_get_context()` with the old signature — they
+  get a `TypeError` on the first toolbar after upgrading, which is where they will look. The spec had filed the
+  whole change under Added.
+
+Deferred as minor (the maintainer decides): `viewset.W291` warns on a view with `cv_context_actions = []` that
+places a labelled key by hand with `{% cv_context_button %}`; the POST row-action test does not assert the hidden
+`<form id="cv_form_…">` exists on the page; a `cv_label_mode` variable in a project's own page context is now
+honoured by `{% cv_button %}` for toolbar and row buttons, where it used to be forced to `icon`.
+
 ## Verification
 
-- `pytest tests -n auto -q` → 2425 passed, 2 skipped (Task 4, 5 and 6 runs, same tree plus the docs and this note).
+- `pytest tests -n auto -q` → 2428 passed, 2 skipped after the review fixes (2425 before them).
 - `ruff check src tests` and `ruff format --check src tests docs` clean; pre-commit ran on every commit.
 - `mkdocs build -q` clean after the docs commit.
 

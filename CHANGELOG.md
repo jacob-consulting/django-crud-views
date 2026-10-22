@@ -4,6 +4,9 @@
 
 ### Breaking
 
+- `CrudView.cv_get_context()` takes a keyword-only `location` parameter, and every button path passes it. A project
+  override with the old four-parameter signature raises `TypeError` on the first toolbar after upgrading: accept
+  `location` (or `**kwargs`) and pass it on to `super()` (#216).
 - `django-bootstrap5` is no longer a dependency. Nothing in the shipped packages used it — only the example and
   test base templates did — so it is gone from `pyproject.toml` rather than moved to an extra. A project that
   renders flash messages with `{% bootstrap_messages %}` should switch to `{% cv_messages %}`; one that uses
@@ -96,9 +99,9 @@
   `CRUD_VIEWS_LIST_ACTIONS_LABEL_MODE` map an action key to `"label"`, `"icon"` or `"both"`, overridable per ViewSet
   (`context_actions_label_mode`, `list_actions_label_mode`) and per view (`cv_context_actions_label_mode`,
   `cv_list_actions_label_mode`). Keys not named stay icon-only, so nothing renders differently until a project names
-  one; a labelled button shows its short label and has no tooltip, inline or folded. `cv_get_context()` takes a
-  keyword-only `location`, which an override must accept and pass on. Checks `crud_views.E106`, `viewset.E211`,
-  `viewset.W291`. See `docs/reference/action_menus.md` (#216).
+  one; a labelled button shows its short label and has no tooltip, inline or folded. Checks `crud_views.E106`,
+  `viewset.E211`, `viewset.W291`. See `docs/reference/action_menus.md` and the `cv_get_context()` entry under
+  Breaking (#216).
 - The button class table takes `location:variant:mode` keys (`mode` one of `label`, `icon`, `both`), read by the action
   leaf and the filter toggle with a one-step fallback to `location:variant`; `get_button_class()` and
   `{% cv_button_class %}` gain an optional third argument, and `crud_views.W362` accepts the shape and names an unknown

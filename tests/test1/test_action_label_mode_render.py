@@ -10,8 +10,17 @@ from django.urls import reverse
 from lxml import html as lxml_html
 
 from crud_views.lib.view import ContextButton
+from tests.lib.helper.guardian import user_guardian_object_perm
 from tests.lib.helper.user import user_viewset_permission
-from tests.test1.app.views import AuthorCreateView, AuthorDetailView, AuthorListView, cv_author
+from tests.test1.app.views import (
+    AuthorCreateView,
+    AuthorCustomDetailListView,
+    AuthorDetailView,
+    AuthorListView,
+    GuardianAuthorListView,
+    cv_author,
+    cv_author_custom_detail,
+)
 
 AUTHOR_FULL = (cv_author, ("view", "add", "change", "delete"))
 AUTHOR_VIEW = (cv_author, ("view",))
@@ -49,9 +58,9 @@ def _detail_view(client, author):
     return resp.context["view"], resp.context["request"]
 
 
-def _render(view, request, snippet):
+def _render(view, request, snippet, **extra):
     tpl = Template("{% load crud_views %}" + snippet)
-    return tpl.render(Context({"view": view, "request": request})).strip()
+    return tpl.render(Context({"view": view, "request": request, **extra})).strip()
 
 
 def _buttons(container) -> dict[str, bytes]:
@@ -202,3 +211,42 @@ def test_cv_get_context_without_location_is_unstamped(author_douglas_adams, monk
     assert view.cv_get_context("no_such_key", location="context", **kwargs) == {}
     (custom_loop,) = view.cv_get_context_buttons(["update"], obj=author_douglas_adams)
     assert custom_loop["cv_label_mode"] == "both"
+
+
+# the per-key tags and the guardian override each pass the location themselves (final review)
+
+
+@pytest.mark.django_db
+def test_plain_list_view_rows_render_through_the_per_key_tag(author_douglas_adams, monkeypatch):
+    # view_list.content.html loops {% cv_list_action key object %}: no table, no container
+    monkeypatch.setattr(AuthorCustomDetailListView, "cv_list_actions_label_mode", {"detail": "both"})
+    resp = _client([(cv_author_custom_detail, ("view",))]).get(reverse(cv_author_custom_detail.get_router_name("list")))
+    assert resp.status_code == 200
+    (detail,) = lxml_html.fromstring(resp.content).xpath('//td/*[@cv-key="detail"]')
+    assert detail.get("title") is None
+    assert [span.text for span in detail.xpath("./span")] == ["Detail"]
+
+
+@pytest.mark.django_db
+def test_per_key_context_action_tag_follows_the_view(author_douglas_adams, monkeypatch):
+    monkeypatch.setattr(AuthorDetailView, "cv_context_actions_label_mode", {"update": "both"})
+    view, request = _detail_view(_client([(cv_author, ("view", "change"))]), author_douglas_adams)
+    html = _render(view, request, "{% cv_context_action 'update' object %}", object=author_douglas_adams)
+    assert ">Update</span>" in html
+    assert "visually-hidden" not in html
+    assert "title=" not in html
+
+
+@pytest.mark.django_db
+def test_guardian_override_forwards_the_location(
+    client_guardian, user_guardian, cv_guardian_author, author_douglas_adams, monkeypatch
+):
+    # GuardianQuerysetMixin (list and card views) overrides cv_get_context(); the row path goes through it
+    monkeypatch.setattr(GuardianAuthorListView, "cv_list_actions_label_mode", {"detail": "both"})
+    user_guardian_object_perm(user_guardian, cv_guardian_author, "view", author_douglas_adams)
+    resp = client_guardian.get(reverse(cv_guardian_author.get_router_name("list")))
+    assert resp.status_code == 200
+    (td,) = lxml_html.fromstring(resp.content).xpath("//td[.//fieldset[@cv-list-container]]")
+    detail = _button(td.cssselect("fieldset")[0], "detail")
+    assert detail.get("title") is None
+    assert [span.text for span in detail.xpath("./span")] == ["Detail"]

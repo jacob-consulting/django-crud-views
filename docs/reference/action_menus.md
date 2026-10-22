@@ -49,6 +49,12 @@ keep theirs. Cards match an inline key against `CardAction.key`, or `child_name`
 and the toolbar match the key as written in `cv_list_actions` / `cv_context_actions` (e.g. `"home"`, not its target
 `"list"`).
 
+### Resolved on the rendering view
+
+The inline keys belong to the **container**, so they resolve on the view that renders the group: the list view for
+its row actions and toolbar, the card view for its cards, the detail/update/… view for its own toolbar. This differs
+from [hide or disable](inaccessible_actions.md), which resolves on each action's **target** view.
+
 ## Label mode
 
 Toolbar and row buttons are icon-only by default. A **label mode map** names the action keys that show text instead,
@@ -80,12 +86,6 @@ A labelled button shows its short label (`"Create"`, not `"Create new author"`),
 the visible text is its only accessible name. A theme styles the modes apart with `context:primary:both` and the
 like in the [class table](buttons.md#the-class-table). The map applies to inline buttons; an action folded into the
 menu renders icon and short label in every mode.
-
-### Resolved on the rendering view
-
-The inline keys belong to the **container**, so they resolve on the view that renders the group: the list view for
-its row actions and toolbar, the card view for its cards, the detail/update/… view for its own toolbar. This differs
-from [hide or disable](inaccessible_actions.md), which resolves on each action's **target** view.
 
 ## What is never folded
 

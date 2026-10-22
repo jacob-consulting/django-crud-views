@@ -48,6 +48,12 @@ A value other than the four variants fails the system check `viewset.E209`.
 The classes of a button are looked up by a `location:slot` key. The **location** says where the button sits, the
 **slot** says which part of it.
 
+Action buttons take a third segment, the label mode: `location:variant:mode` with `mode` one of `label`, `icon`, `both`
+(see [Card list view](card-list-view.md) for how a card button gets its mode; toolbar and row buttons are `icon`). The
+lookup reads `location:variant:mode` when that key is defined and falls back to `location:variant` otherwise — one
+step, no chaining. No default defines a mode key: the table below is still the full list of shipped keys. A theme
+defines only the modes that differ from its base entry.
+
 | Key | Default |
 |---|---|
 | `context:primary` / `context:secondary` / `context:tertiary` / `context:danger` | `btn btn-outline-primary btn-lg` |
@@ -79,7 +85,8 @@ The classes of a button are looked up by a `location:slot` key. The **location**
 | `object-detail:property-detail` | `btn btn-link p-0 ms-1 align-baseline text-muted` |
 
 The default table has 34 keys: the rows with four variants stand for four keys each. The `context` and `list`
-buttons look the same for every variant by default, the `card` buttons distinguish them.
+buttons look the same for every variant by default, the `card` buttons distinguish them. Mode keys (`card:tertiary:icon`
+and the like) are addressable but not shipped: none is in the default table, and the count stays 34.
 
 The table holds what a theme restyles: classes. What the markup needs to work stays in the templates and is not
 configurable here: the element, `href`, `type`, `disabled`, the `data-cv-*` attributes, `aria-*`, `cv-key`, the
@@ -100,14 +107,22 @@ CRUD_VIEWS_BUTTON_CLASSES = {
 ```
 
 `None` (or `""`) switches the classes of that key off. Any other non-string value renders nothing and is reported by
-`crud_views.E361`. A key that is not in the table above is reported by `crud_views.W362` (a typo, most likely).
+`crud_views.E361`. A key that is neither in the table above nor a valid `location:variant:mode` is reported by
+`crud_views.W362` (a typo, or an unknown label mode).
+
+A mode key set to `None` switches that mode off; it does not fall back to the base key.
+
+Layers merge per key before the mode fallback runs, so a more specific key wins over a more specific layer. Given a
+theme that registers `card:tertiary:icon`, a project setting `"card:tertiary": "btn btn-sm btn-success"` recolours the
+labelled tertiary card buttons and **not** the icon-only one — override `card:tertiary:icon` as well.
 
 Project entries always win. `CRUD_VIEWS_FILTER_RESET_BUTTON_CSS_CLASS` was replaced by
 `CRUD_VIEWS_BUTTON_CLASSES["form:filter-reset"]`; while the old setting is defined the system check
 `crud_views.E360` fails.
 
-`get_button_classes()` returns the resolved, cached dict; do not mutate it. `get_button_class(location, slot)` returns
-one resolved string (`""` for `None`, an unknown key or a non-string value).
+`get_button_classes()` returns the resolved, cached dict; do not mutate it. `get_button_class(location, slot, mode=None)`
+returns one resolved string (`""` for `None`, an unknown key or a non-string value), reading `location:slot:mode` when
+`mode` is given and that key is present.
 
 ## Registering classes from a theme
 
@@ -146,14 +161,19 @@ register the same key, the one whose `ready()` runs later wins, which is the one
 
 ## Rendering
 
-`{% cv_button_class location slot %}` renders the resolved classes of one key (autoescaped). It is available in
+`{% cv_button_class location slot [mode] %}` renders the resolved classes of one key (autoescaped). It is available in
 `{% load crud_views %}` and in `{% load crud_views_object_detail %}`:
 
 ```html+django
 {% load crud_views %}
 <button type="button" class="{% cv_button_class 'card' 'primary' %}">...</button>
 <a href="{{ url }}" class="{% cv_button_class cv_location cv_variant %}">...</a>
+<a href="{{ url }}" class="{% cv_button_class cv_location cv_variant cv_label_mode %}">...</a>
 ```
+
+The bundled action leaf passes `cv_label_mode` as the third argument; the filter toggle
+(`crud_views/tags/context_action_filter.html`) passes `"icon"`, so `context:<variant>:icon` reaches it like any other
+icon-only context button.
 
 Use it in templates you write or override instead of a literal class, and the button follows the table. A literal
 class in a `template_code` keeps working; it is simply not themed.
@@ -270,7 +290,8 @@ The row controls of [formsets](formsets.md) use `formset:control`, `formset:cont
 
 ## A theme recipe
 
-Register the classes, then override one leaf where the markup differs. This example restyles the buttons for a
+Register the classes, then override one leaf where the markup differs. Classes that differ by label mode need no
+override at all — register `context:primary:both` and the like instead. This example restyles the buttons for a
 framework that wants `button is-*` classes and shows the label of `primary` buttons next to the icon:
 
 ```python
@@ -291,7 +312,7 @@ def ready(self):
 ```html+django
 {# myapp_theme/templates/crud_views/tags/button/action.html #}
 {% load crud_views %}<{{ cv_tag }}{% if cv_tag == "a" %} href="{{ cv_href }}"{% else %} type="button"{% endif %}
-    class="{% cv_button_class cv_location cv_variant %}{% if cv_active %} is-active{% endif %}{% if cv_flex %} flex-grow-1{% endif %}"
+    class="{% cv_button_class cv_location cv_variant cv_label_mode %}{% if cv_active %} is-active{% endif %}{% if cv_flex %} flex-grow-1{% endif %}"
     {% if cv_disabled %}disabled data-cv-disabled="{{ cv_disabled_reason }}"{% endif %}
     {% if cv_submit_target %}data-cv-action="submit-form" data-cv-target="{{ cv_submit_target }}"{% endif %}
     {% if cv_modal %}data-cv-modal="true" data-cv-modal-size="{{ cv_modal_size }}"{% endif %}
@@ -319,6 +340,6 @@ override the leaf, otherwise an action disabled by `CRUD_VIEWS_INACCESSIBLE_ACTI
 |---|---|---|
 | `crud_views.E360` | error | a removed setting is still defined (`CRUD_VIEWS_FILTER_RESET_BUTTON_CSS_CLASS`); the hint names the replacement |
 | `crud_views.E361` | error | a `CRUD_VIEWS_BUTTON_CLASSES` value or registered theme value is neither a str nor `None` |
-| `crud_views.W362` | warning | a `CRUD_VIEWS_BUTTON_CLASSES` or theme key is not in the default table (typo?) |
+| `crud_views.W362` | warning | a `CRUD_VIEWS_BUTTON_CLASSES` or theme key is neither in the default table nor a valid `location:variant:mode` (typo, or an unknown label mode) |
 | `viewset.E209` | error | a `cv_action_variant`, `ContextButton.variant` or `CardAction.variant` is not one of the four variants |
 | `viewset.E210` | error | a `CardAction.label_mode` or `cv_card_actions_label_mode` is not one of `"label"`, `"icon"`, `"both"` |

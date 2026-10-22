@@ -62,6 +62,11 @@ except for targets that render inaccessible actions disabled, see
 [Hide or disable inaccessible actions](inaccessible_actions.md#custom-button-templates). For placing buttons by hand in a custom layout, see
 [Manual Placement (Template Tags)](#manual-placement-template-tags) below.
 
+A custom `template` or `template_code` is rendered from the resolved action data, which carries no `cv_label_mode`.
+One that resolves its classes with `{% cv_button_class "context" cv_variant %}` should pass its own mode as the third
+argument — `"icon"` for an icon-only button — the way the bundled `crud_views/tags/context_action_filter.html` does, so
+a theme's per-mode classes reach it. See [Buttons](buttons.md#the-class-table).
+
 ### Active state
 
 Every context button's template context includes `cv_is_active` — `True` when the button

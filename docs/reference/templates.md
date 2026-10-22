@@ -41,8 +41,8 @@ moves to another level also gets the size class of its stock level, e.g. `<h2 cl
 [modal](modals.md) the modal title is the view header, so it renders at the setting's level and the content one
 below, the same outline as the full page.
 
-Render the view title with `{% cv_heading "header" %}` and it follows the same setting, so the two cannot drift
-apart:
+Render the view title with `{% cv_heading "header" %}` and it follows the same setting. Write `level=` as the
+number you set, so your own `class` alone sizes the title:
 
 ```django
 {% load crud_views %}
@@ -60,7 +60,7 @@ apart:
 - Without `"header"` (a content heading) it renders at `CRUD_VIEWS_HEADER_LEVEL + 1`; with `"header"`, at
   `CRUD_VIEWS_HEADER_LEVEL`.
 - When the rendered level differs from `level`, `h{level}` is prepended to `class`.
-- `class` takes a literal or a variable and is escaped. The body renders with the template's context, and blocks
+- `class` takes a literal or a variable and is escaped (a value already marked safe is kept as it is). The body renders with the template's context, and blocks
   inside it can be overridden as usual.
 
 A theme or project template that writes its own headings can use the same tag.

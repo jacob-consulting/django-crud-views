@@ -356,7 +356,10 @@ def cv_heading(parser, token):
         raise template.TemplateSyntaxError(f"{name} got unknown arguments: {', '.join(sorted(unknown))}")
     if "level" not in kwargs:
         raise template.TemplateSyntaxError(f"{name} requires level=")
-    level = kwargs["level"].resolve({})
+    # only a number literal: a Variable without lookups, no filters (a variable or "5" is rejected below)
+    var = kwargs["level"].var
+    is_literal = isinstance(var, template.Variable) and var.lookups is None and not kwargs["level"].filters
+    level = var.literal if is_literal else None
     if type(level) is not int or not 1 <= level <= 6:
         raise template.TemplateSyntaxError(f"{name} level= must be an int literal from 1 to 6")
     nodelist = parser.parse(("endcv_heading",))

@@ -98,6 +98,9 @@
 
 ### Fixed
 
+- The create and custom-form views now post as `multipart/form-data`, like update. Their `<form>` lacked the
+  `enctype`, so a browser sent the POST url-encoded and a `FileField` or `ImageField` arrived without its file: it
+  failed `required` or saved empty. The attribute is unconditional, so file fields in formsets upload too (#236).
 - The create view emitted widget `Media` (JS and CSS) twice: `view_create.content.html` still rendered
   `{{ form.media }}` after the form although crispy-forms already includes it. Create now emits it once, like update
   and custom-form, so widget JS that is not idempotent no longer initialises twice on create pages (#191).

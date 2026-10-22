@@ -117,8 +117,9 @@ def test_cv_no_label_in_ctx_raises(value):
 @pytest.mark.parametrize("location", LOCATIONS)
 @pytest.mark.parametrize("value", ["lable", "icons", "Both", 1, ["both"]])
 def test_unknown_cv_label_mode_raises_everywhere(location, value):
+    ctx = base(cv_label="Details", cv_label_mode=value)
     with pytest.raises(ValueError, match="cv_label_mode"):
-        cv_button_data(base(cv_label="Details", cv_label_mode=value), location)
+        cv_button_data(ctx, location)
 
 
 def test_card_label_falls_back_to_key():

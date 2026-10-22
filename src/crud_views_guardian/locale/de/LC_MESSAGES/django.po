@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-22 04:12-0500\n"
+"POT-Creation-Date: 2026-10-22 10:16-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,49 +17,49 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#: templates/crud_views/snippets/guardian/config_table.html:4
+msgid "Setting"
+msgstr "Einstellung"
+
+#: templates/crud_views/snippets/guardian/config_table.html:5
+msgid "Value"
+msgstr "Wert"
+
 #: templates/crud_views/view_guardian_manage.html:5
 msgid "Guardian Configuration"
 msgstr "Guardian-Konfiguration"
 
-#: templates/crud_views/view_guardian_manage.html:9
-msgid "Setting"
-msgstr "Einstellung"
-
 #: templates/crud_views/view_guardian_manage.html:10
-msgid "Value"
-msgstr "Wert"
-
-#: templates/crud_views/view_guardian_manage.html:33
 msgid "Permission Holders"
 msgstr "Berechtigungsinhaber"
 
-#: templates/crud_views/view_guardian_manage.html:37
+#: templates/crud_views/view_guardian_manage.html:14
 msgid "Group"
 msgstr "Gruppe"
 
-#: templates/crud_views/view_guardian_manage.html:38
+#: templates/crud_views/view_guardian_manage.html:15
 msgid "Permission"
 msgstr "Berechtigung"
 
-#: templates/crud_views/view_guardian_manage.html:39
+#: templates/crud_views/view_guardian_manage.html:16
 msgid "Model-level"
 msgstr "Modellebene"
 
-#: templates/crud_views/view_guardian_manage.html:40
+#: templates/crud_views/view_guardian_manage.html:17
 msgid "Objects (guardian)"
 msgstr "Objekte (Guardian)"
 
-#: templates/crud_views/view_guardian_manage.html:41
+#: templates/crud_views/view_guardian_manage.html:18
 msgid "Users"
 msgstr "Benutzer"
 
-#: templates/crud_views/view_guardian_manage.html:48
+#: templates/crud_views/view_guardian_manage.html:25
 #, python-format
 msgid "%(count)s object"
 msgid_plural "%(count)s objects"
 msgstr[0] "%(count)s Objekt"
 msgstr[1] "%(count)s Objekte"
 
-#: templates/crud_views/view_guardian_manage.html:54
+#: templates/crud_views/view_guardian_manage.html:31
 msgid "No permission holders found."
 msgstr "Keine Berechtigungsinhaber gefunden."

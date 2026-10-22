@@ -1,3 +1,5 @@
+import re
+
 import pytest
 
 from tests.lib.helper.guardian import user_guardian_object_perm
@@ -644,6 +646,14 @@ def test_guardian_manage_context_has_guardian_config(client_guardian, cv_guardia
     assert "parent_viewset" in config
     # cv_guardian_author has no parent, so parent_viewset should be None
     assert config["parent_viewset"] is None
+
+
+@pytest.mark.django_db
+def test_guardian_manage_config_renders_in_an_alert(client_guardian, cv_guardian_author):
+    """#250: the guardian config table is the body of a warning alert from tags/alert.html."""
+    content = re.sub(r"\s+", " ", client_guardian.get("/guardian_author/manage/").content.decode())
+    assert re.search(r'class="alert alert-warning" role="alert">.*?<table class="table table-striped mb-0">', content)
+    assert "cv_guardian_parent_permission" in content
 
 
 @pytest.mark.django_db

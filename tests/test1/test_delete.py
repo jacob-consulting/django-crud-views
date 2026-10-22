@@ -1,3 +1,5 @@
+import re
+
 import pytest
 from django.test.client import Client
 
@@ -276,3 +278,53 @@ def test_related_objects_no_linking_when_disabled(
     import re
 
     assert not re.search(r"<a\s[^>]*>Unlinked Book</a>", content)
+
+
+def _grant_view_publisher_and_book():
+    from django.contrib.auth.models import Permission, User
+
+    user_obj = User.objects.get(username="user_publisher_cascade_delete")
+    for codename in ("view_publisher", "view_book"):
+        user_obj.user_permissions.add(Permission.objects.get(codename=codename))
+
+
+@pytest.mark.django_db
+def test_related_summary_items_are_ready_strings(
+    client_user_publisher_cascade_delete, cv_publisher_cascade, publisher_penguin
+):
+    from tests.test1.app.models import Book
+
+    Book.objects.create(title="Book A", publisher=publisher_penguin)
+    Book.objects.create(title="Book B", publisher=publisher_penguin)
+    response = client_user_publisher_cascade_delete.get(f"/publisher_cascade/{publisher_penguin.pk}/delete/")
+    assert response.context["related_summary_items"] == ["book: 2"]
+
+
+@pytest.mark.django_db
+def test_delete_alerts_render_through_the_frame(
+    client_user_publisher_cascade_delete, cv_publisher_cascade, publisher_penguin
+):
+    """#250: the protected, summary and tree alerts all come out of tags/alert.html."""
+    from tests.test1.app.models import Book, Contract
+
+    _grant_view_publisher_and_book()
+    Book.objects.create(title="Book A", publisher=publisher_penguin)
+    Contract.objects.create(title="Publishing Contract", publisher=publisher_penguin)
+    response = client_user_publisher_cascade_delete.get(f"/publisher_cascade/{publisher_penguin.pk}/delete/")
+    content = re.sub(r"\s+", " ", response.content.decode())
+    assert content.count('class="alert alert-danger" role="alert"') == 1
+    assert content.count('class="alert alert-warning" role="alert"') == 2
+    assert "<li>book: 1</li>" in content
+    assert "Book A" in content
+
+
+def test_delete_alert_headings_translate():
+    from django.template.loader import render_to_string
+    from django.utils import translation
+
+    with translation.override("de"):
+        html = render_to_string(
+            "crud_views/snippets/delete/protection_errors.html", {"delete_protection_errors": ["x"]}
+        )
+    assert "Dieses Objekt kann nicht gelöscht werden:" in html
+    assert 'role="alert"' in html

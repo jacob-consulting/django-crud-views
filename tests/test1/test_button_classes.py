@@ -51,6 +51,11 @@ EXPECTED_KEYS = {
     "card:root",
     "card:body",
     "card:title",
+    "alert:error",
+    "alert:warning",
+    "alert:success",
+    "alert:info",
+    "alert:debug",
 }
 
 
@@ -65,7 +70,7 @@ def _isolate_registry():
 
 
 def test_default_table_is_complete():
-    assert len(EXPECTED_KEYS) == 46
+    assert len(EXPECTED_KEYS) == 51
     assert set(DEFAULT_BUTTON_CLASSES) == EXPECTED_KEYS
     assert get_button_class("context", "primary") == "btn btn-outline-primary btn-lg"
     assert get_button_class("card", "danger") == "btn btn-secondary btn-sm"
@@ -89,6 +94,21 @@ def test_default_table_is_complete():
 def test_utility_slots_default_to_the_bootstrap_word(location, slot, default):
     # the words the leaves used to hard-code (#227)
     assert get_button_class(location, slot) == default
+
+
+@pytest.mark.parametrize(
+    ("level", "default"),
+    [
+        ("error", "alert alert-danger"),
+        ("warning", "alert alert-warning"),
+        ("success", "alert alert-success"),
+        ("info", "alert alert-info"),
+        ("debug", "alert alert-secondary"),
+    ],
+)
+def test_alert_levels_default_to_bootstrap_alerts(level, default):
+    # the alert frame's colours (#250); the level is the slot
+    assert get_button_class("alert", level) == default
 
 
 def test_unknown_key_renders_nothing():

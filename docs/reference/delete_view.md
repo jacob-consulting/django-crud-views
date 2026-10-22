@@ -141,6 +141,11 @@ The related objects display uses two overridable templates:
 - `crud_views/snippets/delete/related_objects.html` — main container with summary, tree, and warnings
 - `crud_views/snippets/delete/related_objects_tree.html` — recursive nested tree of individual objects
 
+Each alert in `related_objects.html` is a `{% cv_alert %}` call, so it renders through the one alert frame,
+`crud_views/tags/alert.html` (see [Flash messages](messages.md)). The summary alert lists
+`related_summary_items`, the summary as ready strings (`"book: 3"`); `related_summary` (a `{verbose_name: count}`
+dict) stays in the context for overrides that read it.
+
 Override these in your project's template directory to customize the rendering.
 
 ## Delete Protection

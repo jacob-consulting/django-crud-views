@@ -4,6 +4,13 @@
 
 ### Breaking
 
+- Every alert renders through one frame, `crud_views/tags/alert.html` (#250). The dicts `{% cv_messages %}` hands
+  to `tags/messages.html` drop `css_class` and `message`; they are `crud_views.lib.messages.alert_data()` dicts
+  with `level` (`error`, `warning`, `success`, `info`, `debug`) and `text` instead. `ALERT_CLASSES` and
+  `ICON_NAMES` are gone; `LEVELS` maps the message levels onto the five words, and the icon name is
+  `message-<level>`. A project or theme override of `tags/messages.html` that reads the old keys renders
+  `class="alert alert-"` with an empty body and raises nothing: delete it and override `tags/alert.html` instead
+  (crud_views_tabler ships its update with this release).
 - Card list pagination (`crud_views/snippets/pagination.html`) has accessible markup, and its arrows come from the
   icon registry. The `&laquo;` / `&raquo;` text arrows are now the `page-previous` / `page-next` icons
   (`fas:chevron-left` / `fas:chevron-right`; `chevron-left` / `chevron-right` in `BOOTSTRAP_ICONS`), each followed or
@@ -81,6 +88,9 @@
 
 ### Changed
 
+- The delete page's protection and related-objects alerts and the guardian manage page's config alert render
+  through `tags/alert.html`, so they gain `role="alert"` and the level's `message-*` icon before the heading. Their
+  markup is otherwise unchanged (#250).
 - The hidden POST forms behind list and card actions (`tags/list_action_form.html`) carry the `hidden` attribute
   instead of Bootstrap's `d-none` class, so no shipped template uses `d-none` any more (#232).
 - `docs/reference/theme.md` lists the templates that follow Bootstrap's dropdown DOM (`tags/actions_menu.html`,
@@ -131,6 +141,12 @@
 
 ### Added
 
+- `{% cv_alert level heading=… text=… items=… body_template=… dismissible=… extra_tags=… %}` renders one alert
+  through the alert frame, and `alert_data()` builds its dict from Python. Three templates are themeable on their
+  own: the frame `tags/alert.html`, the text body `snippets/alert/text.html` and the list body
+  `snippets/alert/list.html`. Five class keys colour it: `alert:error` (`alert alert-danger`), `alert:warning`,
+  `alert:success`, `alert:info` and `alert:debug` (`alert alert-secondary`). The delete view adds
+  `related_summary_items` (the summary as `"book: 3"` strings) to its context (#250).
 - The stock card (`crud_views/tags/card.html`) has `card_title`, `card_content` and `card_actions` blocks. A view's
   `cv_card_template` extends it and fills `card_content` (and `card_title`) instead of copying the template, the
   action forms and the container include. Three class keys style the card itself: `card:root` (`card mb-3`),

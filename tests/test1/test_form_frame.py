@@ -98,7 +98,7 @@ def test_theme_frame_leaves_the_modal_bare(name):
 def test_theme_frame_wraps_the_protection_alert():
     with _theme_templates({"crud_views/snippets/form_frame.html": THEME_FRAME}):
         html = _norm(_render(FORM_TEMPLATES["delete"], delete_protection_errors=PROTECTION_ERRORS))
-    assert html.startswith('<div class="theme-card"><div class="alert alert-danger">')
+    assert html.startswith('<div class="theme-card"><div class="alert alert-danger" role="alert">')
 
 
 def test_protection_alert_overridable_on_its_own():

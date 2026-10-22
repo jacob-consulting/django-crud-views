@@ -10,7 +10,7 @@ from crud_views.lib import assets
 from crud_views.lib.button_classes import get_button_class
 from crud_views.lib.exceptions import ViewSetKeyFoundError, ignore_exception
 from crud_views.lib.icons import render_icon
-from crud_views.lib.messages import message_alerts
+from crud_views.lib.messages import alert_data, message_alerts
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import CrudView
 from crud_views.lib.view.button_data import cv_button_data
@@ -315,6 +315,23 @@ def cv_breadcrumb(context):
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/messages.html", takes_context=True)
 def cv_messages(context):
     return {"cv_message_alerts": message_alerts(context.get("messages"))}
+
+
+@register.simple_tag(takes_context=True)
+def cv_alert(context, level, heading="", text="", items=None, body_template=None, dismissible=False, extra_tags=""):
+    """One alert through ``tags/alert.html``, rendered in the caller's context so the body template sees it."""
+    alert = alert_data(
+        level,
+        heading=heading,
+        text=text,
+        items=items,
+        body_template=body_template,
+        dismissible=dismissible,
+        extra_tags=extra_tags,
+    )
+    template = get_template(f"{crud_views_settings.theme_path}/tags/alert.html")
+    with context.push(alert=alert):
+        return mark_safe(template.template.render(context))
 
 
 @register.simple_tag(takes_context=True)

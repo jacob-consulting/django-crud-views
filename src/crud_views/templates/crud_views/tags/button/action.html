@@ -5,4 +5,4 @@
     {% if cv_modal %}data-cv-modal="true" data-cv-modal-size="{{ cv_modal_size }}"{% endif %}
     {% if cv_active %}aria-current="page"{% endif %}
     {% if cv_title %}title="{{ cv_title }}" data-cv-tooltip="{{ cv_location }}"{% endif %}
-    cv-key="{{ cv_key }}">{% if cv_label_mode == "icon" %}{% cv_icon cv_icon %}<span class="visually-hidden">{{ cv_label }}</span>{% elif cv_label_mode == "both" %}{% if cv_icon %}{% cv_icon cv_icon %} {% endif %}<span>{{ cv_label }}</span>{% else %}<span>{{ cv_label }}</span>{% endif %}</{{ cv_tag }}>
+    cv-key="{{ cv_key }}">{% if cv_label_mode == "icon" %}{% cv_icon cv_icon %}<span class="{% cv_button_class cv_location 'hidden-label' %}">{{ cv_label }}</span>{% elif cv_label_mode == "both" %}{% if cv_icon %}{% cv_icon cv_icon %} {% endif %}<span>{{ cv_label }}</span>{% else %}<span>{{ cv_label }}</span>{% endif %}</{{ cv_tag }}>

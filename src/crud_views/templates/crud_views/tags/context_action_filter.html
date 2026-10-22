@@ -9,5 +9,5 @@
    cv-key="{{ cv_key }}">
     <span data-cv-filter-icon="open"{% if cv_filter_expanded %} class="d-none"{% endif %}>{% cv_icon "filter" %}</span>
     <span data-cv-filter-icon="close"{% if not cv_filter_expanded %} class="d-none"{% endif %}>{% cv_icon "filter-close" %}</span>
-    <span class="visually-hidden">{{ cv_action_label }}</span>
+    <span class="{% cv_button_class 'context' 'hidden-label' %}">{{ cv_action_label }}</span>
 </button>

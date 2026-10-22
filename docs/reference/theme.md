@@ -105,6 +105,30 @@ templates keep the bootstrap5 defaults.
 The thin templates `tags/context_action.html`, `tags/list_action.html`, `tags/card_action.html` and
 `tags/actions_menu_item.html` are logic templates: do not copy them, override the leaves instead.
 
+## Framing the form pages
+
+The create, update, custom-form and delete pages share one frame, `snippets/form_frame.html`:
+
+```django
+{% block cv_form_frame %}{% block cv_form_body %}{% endblock %}{% endblock %}
+```
+
+Their content templates extend it and fill `cv_form_body` with the `<form>`, so a theme that only wants to frame the
+form overrides the frame and nothing else. The form's `enctype`, its `action` (which keeps `cv_from`) and the media
+handling stay upstream's. A modal request carries the `X-CV-Modal: true` header; read it to leave the modal bare:
+
+```django
+{% block cv_form_frame %}
+{% if request.headers.x_cv_modal != "true" %}<div class="card"><div class="card-body">{% endif %}
+{% block cv_form_body %}{% endblock %}
+{% if request.headers.x_cv_modal != "true" %}</div></div>{% endif %}
+{% endblock %}
+```
+
+The delete page's "cannot be deleted" alert is `snippets/delete/protection_errors.html` (it renders
+`delete_protection_errors`); override it to restyle the alert without touching the form. The related-objects
+summary next to it is `snippets/delete/related_objects.html`.
+
 ## Templates that follow Bootstrap's DOM
 
 A dropdown is more than a set of classes: the nesting, the element types and the opening script differ between

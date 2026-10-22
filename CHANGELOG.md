@@ -120,6 +120,13 @@
 
 ### Added
 
+- Two theme hooks around the form pages. `crud_views/snippets/form_frame.html` is the frame that
+  `view_create.content.html`, `view_update.content.html`, `view_custom_form.content.html` and
+  `view_delete.content.html` extend: a theme overrides its `cv_form_frame` block to wrap the form (a card on a full
+  page, bare in the modal) and no longer copies the `<form>` element, its `enctype` or its media handling. The delete
+  page's protection-error alert moved to `crud_views/snippets/delete/protection_errors.html`, so it restyles on its
+  own. Stock markup is unchanged (#239).
+
 - Nine utility slots in the button class table: `context:active` / `list:active` / `card:active` / `menu:active` /
   `card-order:active` (default `active`), `card:flex` (`flex-grow-1`) and `context:hidden-label` /
   `list:hidden-label` / `card:hidden-label` (`visually-hidden`). A theme on a framework that spells these utilities

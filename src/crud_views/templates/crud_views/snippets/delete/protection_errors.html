@@ -1,0 +1,9 @@
+{% load i18n %}
+<div class="alert alert-danger">
+    <strong>{% translate "This object cannot be deleted:" %}</strong>
+    <ul class="mb-0 mt-2">
+        {% for error in delete_protection_errors %}
+            <li>{{ error }}</li>
+        {% endfor %}
+    </ul>
+</div>

@@ -302,7 +302,7 @@ msgstr "weiter"
 msgid "More actions"
 msgstr "Weitere Aktionen"
 
-#: templates/crud_views/view_delete.content.html:5
+#: templates/crud_views/snippets/delete/protection_errors.html:3
 msgid "This object cannot be deleted:"
 msgstr "Dieses Objekt kann nicht gelöscht werden:"
 

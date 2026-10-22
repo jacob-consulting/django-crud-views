@@ -60,3 +60,20 @@ New checks that only fire on a misconfigured new feature (table rows in step zer
 A read-only scan of the maintainer's downstream projects was run against this inventory. It found one unrecorded break
 (row 40) and confirmed hits for rows 1, 3, 4, 6, 7, 9, 11, 12, 14, 17, 19, 21, 22, 23, 26 and 39. Details stay outside the
 repository.
+
+## Result
+
+- Every inventory row is cited in the guide: section 2 (step zero), 3 (`An app on the stock bootstrap5 theme`),
+  4 (`A downstream theme`) or 5 (`Silent breaks`), as its "Sec." column says. Row 16 (`cv_label_visible`) is the one
+  exception by design: the key existed in neither 0.29.4 nor 0.30.0, so it is not part of the net change.
+- Every row marked silent appears in the `Silent breaks` checklist.
+- No *[0.30]* step describes an overtaken state: the boolean widget, `actions_menu_item_label.html` and
+  `tags/messages.html` are described at their 1.0 state.
+- CHANGELOG/code mismatch: `### Breaking` says the 0.30 overrides of the logic templates "keep working". For
+  `tags/card_action.html` that is not true when the override branches on `cv_no_label` (row 40). A new
+  `### Breaking` bullet records it; the original line is left as it is.
+- CHANGELOG additions: the row-40 bullet under `### Breaking`, the guide under `### Added`, and a pointer under
+  `## Unreleased`.
+- Reference pages fixed: none needed. Every linked page and anchor matched the code; `mkdocs build --strict` passes.
+- `CLAUDE.md` carries the keep-current rule under Conventions.
+- `git diff main...` contains no downstream project or client name (guard grep, run before every commit).

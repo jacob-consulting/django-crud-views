@@ -1,0 +1,6 @@
+{% load crud_views i18n %}
+<div class="{% cv_button_class "alert" alert.level %}{% if alert.dismissible %} alert-dismissible fade show{% endif %}{% if alert.extra_tags %} {{ alert.extra_tags }}{% endif %}"
+     role="alert">
+    {% cv_icon alert.icon_name "me-2" %}{% if alert.heading %}<strong>{{ alert.heading }}</strong>{% endif %}{% include alert.body_template %}
+    {% if alert.dismissible %}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{% translate 'Close' %}"></button>{% endif %}
+</div>

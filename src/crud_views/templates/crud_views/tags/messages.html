@@ -1,8 +1,1 @@
-{% load crud_views i18n %}
-{% for alert in cv_message_alerts %}
-    <div class="alert alert-{{ alert.css_class }} alert-dismissible fade show{% if alert.extra_tags %} {{ alert.extra_tags }}{% endif %}"
-         role="alert">
-        {% cv_icon alert.icon_name "me-2" %}{{ alert.message }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{% translate 'Close' %}"></button>
-    </div>
-{% endfor %}
+{% for alert in cv_message_alerts %}{% include "crud_views/tags/alert.html" %}{% endfor %}

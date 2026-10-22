@@ -87,21 +87,22 @@ def test_no_message_on_get(client_user_publisher_view: Client, cv_publisher, pub
 
 
 @pytest.mark.parametrize(
-    "level,css_class,icon_name",
+    "level,alert_level,icon_name",
     [
-        (constants.DEBUG, "secondary", "message-debug"),
+        (constants.DEBUG, "debug", "message-debug"),
         (constants.INFO, "info", "message-info"),
         (constants.SUCCESS, "success", "message-success"),
         (constants.WARNING, "warning", "message-warning"),
-        (constants.ERROR, "danger", "message-error"),
+        (constants.ERROR, "error", "message-error"),
     ],
 )
-def test_message_alerts_maps_every_level(level, css_class, icon_name):
+def test_message_alerts_maps_every_level(level, alert_level, icon_name):
     (alert,) = message_alerts([Message(level, "hello")])
-    assert alert["message"] == "hello"
-    assert alert["css_class"] == css_class
+    assert alert["text"] == "hello"
+    assert alert["level"] == alert_level
     assert alert["icon_name"] == icon_name
     assert alert["extra_tags"] == ""
+    assert alert["dismissible"] is True
 
 
 def test_message_alerts_keeps_extra_tags():
@@ -111,14 +112,14 @@ def test_message_alerts_keeps_extra_tags():
 
 def test_message_alerts_falls_back_to_info_for_unknown_level():
     (alert,) = message_alerts([Message(50, "hello")])
-    assert alert["css_class"] == "info"
+    assert alert["level"] == "info"
     assert alert["icon_name"] == "message-info"
 
 
 def test_message_alerts_falls_back_to_info_without_a_level():
     (alert,) = message_alerts(["a plain string"])
-    assert alert["message"] == "a plain string"
-    assert alert["css_class"] == "info"
+    assert alert["text"] == "a plain string"
+    assert alert["level"] == "info"
 
 
 @pytest.mark.parametrize("messages", [None, []])
@@ -185,4 +186,4 @@ def test_message_alerts_blanks_a_falsy_body(body):
     body has already become the string "None" before it reaches us.
     """
     (alert,) = message_alerts([Message(constants.INFO, body)])
-    assert alert["message"] == ""
+    assert alert["text"] == ""

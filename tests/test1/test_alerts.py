@@ -1,9 +1,12 @@
 """#250: one alert frame, fed by alert_data(), renders every alert in the package."""
 
 import pytest
+from django.template import Context, Template
+from django.test import override_settings
 from django.utils.safestring import mark_safe
 
 from crud_views.lib.messages import alert_data
+from tests.test1.test_form_frame import _norm, _theme_templates
 
 
 @pytest.mark.parametrize("level", ["error", "warning", "success", "info", "debug"])
@@ -60,3 +63,63 @@ def test_alert_data_escapes_extra_tags_and_defaults():
     assert data["extra_tags"] == "&quot;&gt;"
     assert data["dismissible"] is False
     assert data["items"] == []
+
+
+def _render(source, context=None):
+    return Template("{% load crud_views %}" + source).render(Context(context or {}))
+
+
+def test_cv_alert_renders_the_frame_with_a_list():
+    html = _norm(_render('{% cv_alert "error" heading="H" items=errs %}', {"errs": ["a", "b"]}))
+    assert html == (
+        '<div class="alert alert-danger" role="alert"><i class="fa-solid fa-circle-exclamation me-2" '
+        'aria-hidden="true"></i><strong>H</strong><ul class="mb-0 mt-2"><li>a</li><li>b</li></ul></div>'
+    )
+
+
+def test_cv_alert_body_template_sees_the_callers_context():
+    with _theme_templates({"body.html": "[{{ outer }}]"}):
+        html = _render('{% cv_alert "info" body_template="body.html" %}', {"outer": "OUTER"})
+    assert "[OUTER]" in html
+
+
+def test_cv_alert_restores_the_callers_alert():
+    html = _render('{% for alert in xs %}{% cv_alert "info" text="t" %}[{{ alert }}]{% endfor %}', {"xs": ["mine"]})
+    assert "[mine]" in html
+
+
+def test_cv_alert_escapes_with_autoescape_off():
+    html = _render(
+        '{% autoescape off %}{% cv_alert "error" heading=h items=i %}{% cv_alert "info" text=t %}{% endautoescape %}',
+        {"h": "<h>", "i": ["<i>"], "t": "<t>"},
+    )
+    assert "<h>" not in html
+    assert "<i>" not in html
+    assert "<t>" not in html
+    assert "&lt;h&gt;" in html
+
+
+def test_cv_alert_is_not_dismissible_by_default():
+    html = _render('{% cv_alert "warning" text="t" %}')
+    assert "btn-close" not in html
+    assert "alert-dismissible" not in html
+
+
+def test_frame_is_overridable_on_its_own():
+    with _theme_templates({"crud_views/tags/alert.html": "<x-theme>{{ alert.level }}</x-theme>"}):
+        html = _norm(_render('{% cv_alert "error" items=errs %}', {"errs": ["a"]}))
+    assert html == "<x-theme>error</x-theme>"
+
+
+def test_list_body_is_overridable_on_its_own():
+    with _theme_templates({"crud_views/snippets/alert/list.html": "<x-theme>{{ alert.items|join:',' }}</x-theme>"}):
+        html = _norm(_render('{% cv_alert "error" items=errs %}', {"errs": ["a", "b"]}))
+    assert html.startswith('<div class="alert alert-danger" role="alert">')
+    assert "<x-theme>a,b</x-theme>" in html
+    assert "<ul" not in html
+
+
+def test_alert_colours_follow_the_class_table():
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"alert:error": "notification is-danger"}):
+        html = _render('{% cv_alert "error" text="t" %}')
+    assert 'class="notification is-danger"' in html

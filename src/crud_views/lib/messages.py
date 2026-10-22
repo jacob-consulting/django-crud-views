@@ -5,22 +5,6 @@ from collections.abc import Iterable
 from django.contrib.messages import constants
 from django.utils.html import conditional_escape, escape
 
-ALERT_CLASSES: dict[int, str] = {
-    constants.DEBUG: "secondary",
-    constants.INFO: "info",
-    constants.SUCCESS: "success",
-    constants.WARNING: "warning",
-    constants.ERROR: "danger",
-}
-
-ICON_NAMES: dict[int, str] = {
-    constants.DEBUG: "message-debug",
-    constants.INFO: "message-info",
-    constants.SUCCESS: "message-success",
-    constants.WARNING: "message-warning",
-    constants.ERROR: "message-error",
-}
-
 LEVELS: dict[int, str] = {
     constants.DEBUG: "debug",
     constants.INFO: "info",
@@ -71,7 +55,7 @@ def alert_data(
 
 
 def message_alerts(messages: Iterable[object] | None) -> list[dict]:
-    """Render-ready dicts for a message queue, one per message.
+    """``alert_data()`` dicts for a message queue, one dismissible alert per message.
 
     A missing or unknown level falls back to ``INFO``, so a plain string or a custom level renders as an
     info alert instead of raising.
@@ -87,16 +71,14 @@ def message_alerts(messages: Iterable[object] | None) -> list[dict]:
     """
     alerts = []
     for message in messages or ():
-        level = getattr(message, "level", None)
-        if level not in ALERT_CLASSES:
-            level = constants.INFO
+        level = LEVELS.get(getattr(message, "level", None), "info")
         body = getattr(message, "message", message)
         alerts.append(
-            {
-                "message": conditional_escape(body) if body else "",
-                "css_class": ALERT_CLASSES[level],
-                "icon_name": ICON_NAMES[level],
-                "extra_tags": escape(getattr(message, "extra_tags", None) or ""),
-            }
+            alert_data(
+                level,
+                text=body,
+                dismissible=True,
+                extra_tags=getattr(message, "extra_tags", None) or "",
+            )
         )
     return alerts

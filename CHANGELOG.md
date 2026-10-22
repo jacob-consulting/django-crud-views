@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
+
 ### Breaking
 
 - Every alert renders through one frame, `crud_views/tags/alert.html` (#250). The dicts `{% cv_messages %}` hands

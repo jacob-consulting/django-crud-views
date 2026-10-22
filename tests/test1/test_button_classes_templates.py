@@ -124,8 +124,7 @@ SENTINEL_CLASSES = {key: "x-" + key.replace(":", "-") for key in DEFAULT_BUTTON_
 SENTINELS = frozenset(SENTINEL_CLASSES.values())
 # Bootstrap tokens the chain still carries because they are behaviour hooks, not looks. #232 is the list to empty.
 BEHAVIOUR_TOKENS = {
-    "dropdown-toggle": "Bootstrap's dropdown hook on the menu toggle, kept with data-bs-toggle (#232)",
-    "d-none": "toggled by list.filter.js on the filter toggle's icon spans (#232)",
+    "dropdown-toggle": "Bootstrap dropdown markup; a theme with a different dropdown DOM overrides the template (#232)",
 }
 
 

@@ -6,8 +6,8 @@ function fixture({ expanded = false, queryString = "" } = {}) {
     document.body.innerHTML = `
         <div id="cv-config" data-request-path="/books/" data-query-string="${queryString}" data-csrf-token="test-token" hidden></div>
         <button type="button" id="cv-filter-toggle" aria-expanded="${expanded}" aria-controls="filter-collapse">
-            <span data-cv-filter-icon="open" class="${expanded ? "d-none" : ""}"><i class="x"></i></span>
-            <span data-cv-filter-icon="close" class="${expanded ? "" : "d-none"}"><i class="y"></i></span>
+            <span data-cv-filter-icon="open"${expanded ? " hidden" : ""}><i class="x"></i></span>
+            <span data-cv-filter-icon="close"${expanded ? "" : " hidden"}><i class="y"></i></span>
         </button>
         <button type="button" id="filter-button-reset"></button>
         <div id="filter-collapse"></div>`;
@@ -31,16 +31,16 @@ describe("list.filter.js", () => {
         nav.href = "";
     });
 
-    it("flips icon visibility on click without touching icon classes", async () => {
+    it("flips the hidden attribute on click without touching icon classes", async () => {
         const f = fixture();
         await loadScript("list.filter");
         f.toggle.click();
-        expect(f.open.classList.contains("d-none")).toBe(true);
-        expect(f.close.classList.contains("d-none")).toBe(false);
+        expect(f.open.hidden).toBe(true);
+        expect(f.close.hidden).toBe(false);
         expect(f.open.querySelector("i").className).toBe("x");
         f.toggle.click();
-        expect(f.open.classList.contains("d-none")).toBe(false);
-        expect(f.close.classList.contains("d-none")).toBe(true);
+        expect(f.open.hidden).toBe(false);
+        expect(f.close.hidden).toBe(true);
     });
 
     it("flips aria-expanded, posts the new state as JSON and toggles the panel", async () => {
@@ -85,7 +85,7 @@ describe("list.filter.js", () => {
         f.toggle.click();
         window.removeEventListener("error", swallow);
         expect(f.toggle.getAttribute("aria-expanded")).toBe("false");
-        expect(f.open.classList.contains("d-none")).toBe(false);
+        expect(f.open.hidden).toBe(false);
         expect(fetchMock).not.toHaveBeenCalled();
     });
 
@@ -96,7 +96,7 @@ describe("list.filter.js", () => {
         f.toggle.click();
         expect(toggle).toHaveBeenCalledTimes(1);
         expect(f.toggle.getAttribute("aria-expanded")).toBe("false");
-        expect(f.open.classList.contains("d-none")).toBe(false);
+        expect(f.open.hidden).toBe(false);
         expect(fetchMock).not.toHaveBeenCalled();
     });
 

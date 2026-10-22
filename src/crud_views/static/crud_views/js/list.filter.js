@@ -18,7 +18,7 @@
         button.setAttribute("aria-expanded", String(next));
 
         // toggle icon (both variants are rendered server side, one is hidden)
-        button.querySelectorAll("[data-cv-filter-icon]").forEach((icon) => icon.classList.toggle("d-none"));
+        button.querySelectorAll("[data-cv-filter-icon]").forEach((icon) => (icon.hidden = !icon.hidden));
 
         // persist the state server side; a failed request must not undo the toggle
         const config = cvGetConfig();

@@ -4,6 +4,9 @@
 
 ### Breaking
 
+- The filter toggle's icon spans are hidden with the `hidden` attribute instead of Bootstrap's `d-none` class, and
+  `list.filter.js` flips `hidden`. A project override of `crud_views/tags/context_action_filter.html` that still
+  renders `class="d-none"` shows the wrong icon after the first click: render `hidden` instead (#232).
 - `CrudView.cv_get_context()` takes a keyword-only `location` parameter, and every button path passes it. A project
   override with the old four-parameter signature raises `TypeError` on the first toolbar after upgrading: accept
   `location` (or `**kwargs`) and pass it on to `super()` (#216).
@@ -70,6 +73,11 @@
 
 ### Changed
 
+- The hidden POST forms behind list and card actions (`tags/list_action_form.html`) carry the `hidden` attribute
+  instead of Bootstrap's `d-none` class, so no shipped template uses `d-none` any more (#232).
+- `docs/reference/theme.md` lists the templates that follow Bootstrap's dropdown DOM (`tags/actions_menu.html`,
+  `tags/actions_menu_toggle.html`, `snippets/language_selector.html`): a theme with a different dropdown overrides
+  them rather than registering classes (#232).
 - The button leaves `tags/button/action.html`, `tags/button/menu_item.html`, `snippets/card_order.html`,
   `tags/actions_menu_toggle.html` and `tags/context_action_filter.html` take `active`, `flex-grow-1` and
   `visually-hidden` from the class table instead of hard-coding them; the rendered defaults are unchanged, and a

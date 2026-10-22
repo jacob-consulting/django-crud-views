@@ -83,7 +83,7 @@ def _filter_icon_states(response) -> dict:
 
     doc = html.fromstring(response.content)
     spans = doc.cssselect("#cv-filter-toggle [data-cv-filter-icon]")
-    return {s.get("data-cv-filter-icon"): "d-none" in s.get("class", "").split() for s in spans}
+    return {s.get("data-cv-filter-icon"): s.get("hidden") is not None for s in spans}
 
 
 def _filter_toggle_attrs(response) -> dict:

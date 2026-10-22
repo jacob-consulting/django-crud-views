@@ -52,6 +52,12 @@ class CrudViewsSettings(BaseModel):
     context_actions_inline: Any = from_settings("CRUD_VIEWS_CONTEXT_ACTIONS_INLINE", default=None)
     card_actions_inline: Any = from_settings("CRUD_VIEWS_CARD_ACTIONS_INLINE", default=None)
 
+    # label mode of context / list actions (#216): action key -> "label" | "icon" | "both"; keys not named are
+    # "icon". Overridable per ViewSet (*_actions_label_mode) and per view (cv_*_actions_label_mode), resolved on
+    # the rendering view
+    context_actions_label_mode: Any = from_settings("CRUD_VIEWS_CONTEXT_ACTIONS_LABEL_MODE", default={})
+    list_actions_label_mode: Any = from_settings("CRUD_VIEWS_LIST_ACTIONS_LABEL_MODE", default={})
+
     # breadcrumb
     breadcrumb_prefix: list[dict[str, Any]] = from_settings("CRUD_VIEWS_BREADCRUMB_PREFIX", default=[])
 
@@ -143,6 +149,24 @@ class CrudViewsSettings(BaseModel):
                     Error(
                         id="crud_views.E105",
                         msg=f"setting {setting} must be None or a list of strings, got {value!r}",
+                    )
+                )
+
+        # deferred import, same reason; the setting is the floor of the chain, so None is not allowed here (#216)
+        from crud_views.lib.view.label_mode import LABEL_MODES, is_label_mode_map
+
+        for setting, value in (
+            ("CRUD_VIEWS_CONTEXT_ACTIONS_LABEL_MODE", self.context_actions_label_mode),
+            ("CRUD_VIEWS_LIST_ACTIONS_LABEL_MODE", self.list_actions_label_mode),
+        ):
+            if not isinstance(value, dict) or not is_label_mode_map(value):
+                messages.append(
+                    Error(
+                        id="crud_views.E106",
+                        msg=(
+                            f"setting {setting} must be a dict of action key -> one of {sorted(LABEL_MODES)}, "
+                            f"got {value!r}"
+                        ),
                     )
                 )
 

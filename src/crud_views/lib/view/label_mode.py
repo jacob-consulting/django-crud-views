@@ -18,6 +18,13 @@ def is_label_mode(value: object) -> bool:
     return isinstance(value, str) and value in LABEL_MODES
 
 
+def is_label_mode_map(value: object) -> bool:
+    """True for None, or a dict of action key (str) -> label mode: the context / list label-mode knob (#216)."""
+    if value is None:
+        return True
+    return isinstance(value, dict) and all(isinstance(k, str) and is_label_mode(v) for k, v in value.items())
+
+
 def label_mode_check(context, owner: str, value) -> CheckExpression:
     """System check viewset.E210: value must be one of the label modes."""
     return CheckExpression(

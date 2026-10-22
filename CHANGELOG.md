@@ -92,6 +92,10 @@
 
 ### Added
 
+- The button class table takes `location:variant:mode` keys (`mode` one of `label`, `icon`, `both`), read by the action
+  leaf and the filter toggle with a one-step fallback to `location:variant`; `get_button_class()` and
+  `{% cv_button_class %}` gain an optional third argument, and `crud_views.W362` accepts the shape and names an unknown
+  mode. No default defines a mode key, so nothing renders differently until a theme or project adds one (#209).
 - `{% cv_messages %}` renders `django.contrib.messages` as Bootstrap 5 alerts, so a project no longer needs a
   second library to display the messages crud_views itself emits (`cv_message_template`, `ActionView`). The host
   places the tag in its own base template, like `{% cv_breadcrumb %}`; it renders nothing without messages, or

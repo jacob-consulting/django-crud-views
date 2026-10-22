@@ -105,6 +105,6 @@ def cv_icon(value, css=""):
 
 
 @register.simple_tag
-def cv_button_class(location, slot):
-    """Resolved CSS classes for the button slot ``location:slot`` (autoescaped)."""
-    return get_button_class(location, slot)
+def cv_button_class(location, slot, mode=None):
+    """Resolved CSS classes for ``location:slot``, or ``location:slot:mode`` when that key exists (autoescaped)."""
+    return get_button_class(location, slot, mode)

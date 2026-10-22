@@ -1,4 +1,7 @@
-"""Layered button class table: defaults, theme layer and ``CRUD_VIEWS_BUTTON_CLASSES`` keyed ``location:slot``."""
+"""Layered button class table: defaults, theme layer and ``CRUD_VIEWS_BUTTON_CLASSES``, keyed ``location:slot[:mode]``.
+
+A mode key (``card:tertiary:icon``) is read in preference to its base key when it is present; see get_button_class.
+"""
 
 from django.conf import settings
 from django.core.checks import CheckMessage, Error
@@ -82,10 +85,43 @@ def get_button_classes() -> dict[str, str | None]:
     return classes
 
 
-def get_button_class(location: str, slot: str) -> str:
-    """Resolved classes for ``location:slot``; "" for None, "", an unknown key or a non-str value."""
-    value = get_button_classes().get(f"{location}:{slot}")
+def get_button_class(location: str, slot: str, mode: str | None = None) -> str:
+    """Resolved classes for ``location:slot``, preferring ``location:slot:mode`` when that key is present.
+
+    "" for None, "", an unknown key or a non-str value. Presence decides the fallback, not the value: a mode
+    key set to None switches that mode off instead of falling through to ``location:slot``.
+    """
+    classes = get_button_classes()
+    key = f"{location}:{slot}"
+    if mode and f"{key}:{mode}" in classes:
+        key = f"{key}:{mode}"
+    value = classes.get(key)
     return value if isinstance(value, str) else ""
+
+
+def _action_key_parts(key: str) -> tuple[str, str, str] | None:
+    """``(location, variant, mode)`` for a three-segment key whose location and variant are known, else None.
+
+    The imports are local on purpose: ``lib.view`` needs the app registry, and this module stays importable with
+    bare settings (the checks run after ``django.setup()``).
+    """
+    from .view.button_data import LOCATIONS
+    from .view.variant import VARIANTS
+
+    if not isinstance(key, str):
+        return None
+    parts = key.split(":")
+    if len(parts) == 3 and parts[0] in LOCATIONS and parts[1] in VARIANTS:
+        return parts[0], parts[1], parts[2]
+    return None
+
+
+def _is_action_mode_key(key: str) -> bool:
+    """True for a valid ``location:variant:mode`` key (#209)."""
+    from .view.label_mode import LABEL_MODES
+
+    parts = _action_key_parts(key)
+    return parts is not None and parts[2] in LABEL_MODES
 
 
 def button_class_check_messages() -> list[CheckMessage]:
@@ -107,8 +143,20 @@ def button_class_check_messages() -> list[CheckMessage]:
                 )
             )
 
+    from .view.label_mode import LABEL_MODES
+
     for key in (*_THEME_BUTTON_CLASSES, *_settings_layer()):
-        if key not in DEFAULT_BUTTON_CLASSES:
+        if key in DEFAULT_BUTTON_CLASSES or _is_action_mode_key(key):
+            continue
+        if (parts := _action_key_parts(key)) is not None:
+            messages.append(
+                DjangoWarning(
+                    f"Button class {key!r} has an unknown label mode {parts[2]!r}.",
+                    hint=f"Use one of {sorted(LABEL_MODES)}.",
+                    id="crud_views.W362",
+                )
+            )
+        else:
             messages.append(
                 DjangoWarning(
                     f"Button class {key!r} is not a known key (typo?).",

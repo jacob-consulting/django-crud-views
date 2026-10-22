@@ -58,3 +58,48 @@ def test_w362_unknown_key_in_theme():
     messages = check_button_classes()
     assert ids(messages) == ["crud_views.W362"]
     assert "form:sumbit" in messages[0].msg
+
+
+@pytest.mark.parametrize("key", ["card:tertiary:icon", "context:primary:both", "list:danger:label"])
+def test_w362_accepts_action_mode_keys(key):
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={key: "btn"}):
+        assert check_button_classes() == []
+    register_button_classes({key: "btn"})
+    assert check_button_classes() == []
+
+
+@pytest.mark.parametrize(
+    "key",
+    [
+        "card:tertiary:iconn",
+        "card:container:icon",
+        "menu:item:both",
+        "card:tertiary:icon:extra",
+        "card:tertiary:",
+        "form:submit:icon",
+    ],
+)
+def test_w362_rejects_bad_mode_shape(key):
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={key: "btn"}):
+        messages = check_button_classes()
+    assert ids(messages) == ["crud_views.W362"]
+    assert key in messages[0].msg
+
+
+def test_w362_names_the_bad_mode():
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"card:tertiary:iconn": "btn"}):
+        (message,) = check_button_classes()
+    assert "'iconn'" in message.msg
+    assert "both" in message.hint and "icon" in message.hint and "label" in message.hint
+
+
+def test_mode_key_non_str_is_e361_only():
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"card:tertiary:icon": 3}):
+        assert ids(check_button_classes()) == ["crud_views.E361"]
+
+
+@pytest.mark.parametrize("key", [3, None, ("card", "tertiary")])
+def test_w362_non_str_key_warns_instead_of_raising(key):
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={key: "btn"}):
+        messages = check_button_classes()
+    assert ids(messages) == ["crud_views.W362"]

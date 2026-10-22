@@ -100,3 +100,62 @@ def test_tag_in_both_libraries_escapes():
 def test_tag_accepts_variables():
     tpl = Template("{% load crud_views %}{% cv_button_class cv_location cv_variant %}")
     assert tpl.render(Context({"cv_location": "card", "cv_variant": "primary"})) == "btn btn-primary btn-sm"
+
+
+def test_mode_key_wins_when_present_else_base():
+    register_button_classes({"card:tertiary:icon": "btn btn-sm btn-icon"})
+    assert get_button_class("card", "tertiary", "icon") == "btn btn-sm btn-icon"
+    assert get_button_class("card", "tertiary", "both") == "btn btn-outline-secondary btn-sm"
+    assert get_button_class("card", "tertiary") == "btn btn-outline-secondary btn-sm"
+
+
+def test_mode_key_none_switches_off_and_does_not_fall_through():
+    register_button_classes({"card:tertiary:icon": "btn btn-sm btn-icon"})
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"card:tertiary:icon": None}):
+        assert get_button_class("card", "tertiary", "icon") == ""
+        assert get_button_class("card", "tertiary") == "btn btn-outline-secondary btn-sm"
+
+
+@pytest.mark.parametrize("mode", ["", "iconn", None, True, 3])
+def test_unknown_or_empty_mode_falls_back(mode):
+    register_button_classes({"card:tertiary:icon": "btn btn-sm btn-icon"})
+    assert get_button_class("card", "tertiary", mode) == "btn btn-outline-secondary btn-sm"
+
+
+def test_settings_base_key_does_not_beat_theme_mode_key():
+    register_button_classes({"card:tertiary:icon": "btn btn-sm btn-icon"})
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"card:tertiary": "btn btn-sm btn-success"}):
+        assert get_button_class("card", "tertiary", "icon") == "btn btn-sm btn-icon"
+        assert get_button_class("card", "tertiary", "both") == "btn btn-sm btn-success"
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"card:tertiary:icon": "btn x"}):
+        assert get_button_class("card", "tertiary", "icon") == "btn x"
+
+
+def test_tag_third_argument_in_both_libraries():
+    for lib in ("crud_views", "crud_views_object_detail"):
+        tpl = Template("{% load " + lib + ' %}{% cv_button_class "card" "tertiary" "icon" %}')
+        assert tpl.render(Context()) == "btn btn-outline-secondary btn-sm"
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"card:tertiary:icon": "x-icon"}):
+            assert tpl.render(Context()) == "x-icon"
+
+
+def test_tag_accepts_mode_variable():
+    tpl = Template("{% load crud_views %}{% cv_button_class cv_location cv_variant cv_label_mode %}")
+    ctx = {"cv_location": "card", "cv_variant": "tertiary", "cv_label_mode": "icon"}
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"card:tertiary:icon": "x-icon"}):
+        assert tpl.render(Context(ctx)) == "x-icon"
+        assert tpl.render(Context({**ctx, "cv_label_mode": "both"})) == "btn btn-outline-secondary btn-sm"
+
+
+def test_button_classes_module_has_no_module_level_view_import():
+    import ast
+    from pathlib import Path
+
+    tree = ast.parse(Path(bc.__file__).read_text())
+    offenders = [
+        node.module
+        for node in tree.body
+        if isinstance(node, ast.ImportFrom)
+        and ("lib.view" in (node.module or "") or (node.level and (node.module or "").split(".")[0] == "view"))
+    ]
+    assert offenders == []

@@ -1,15 +1,20 @@
 import re
+import uuid
 from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
 from django.contrib.auth.models import User
 from django.template import Context, Template
-from django.test import RequestFactory, override_settings
+from django.template.loader import render_to_string
+from django.test import Client, RequestFactory, override_settings
+from django.urls import reverse
 from django.utils import translation
 from lxml import html
 
 from crud_views.lib.button_classes import DEFAULT_BUTTON_CLASSES
+from crud_views.lib.view.button_data import LOCATIONS
+from crud_views.lib.view.label_mode import LABEL_MODES
 from tests.lib.helper.user import user_viewset_permission
 
 SRC = Path(__file__).resolve().parents[2] / "src"
@@ -47,7 +52,7 @@ def test_every_literal_slot_in_templates_is_a_default_key():
     for path in SRC.glob("*/templates/**/*.html"):
         for m in LITERAL.finditer(path.read_text()):
             pairs.append(f"{m.group(2)}:{m.group(4)}")
-    assert len(pairs) >= 15, pairs
+    assert len(pairs) >= 20, pairs
     assert sorted(set(pairs) - set(DEFAULT_BUTTON_CLASSES)) == []
 
 
@@ -111,3 +116,112 @@ def test_card_order_and_language_from_table(client):
         rendered = Template("{% load crud_views %}{% cv_language_selector %}").render(Context({"request": request}))
     toggle = html.fromstring(rendered).cssselect("button.dropdown-toggle")[0]
     assert toggle.get("class") == "btn btn-outline-secondary dropdown-toggle"
+
+
+# --- the rendering guard (#227): every class in the button chain comes from the table or the cv- namespace -------
+
+SENTINEL_CLASSES = {key: "x-" + key.replace(":", "-") for key in DEFAULT_BUTTON_CLASSES}
+SENTINELS = frozenset(SENTINEL_CLASSES.values())
+# Bootstrap tokens the chain still carries because they are behaviour hooks, not looks. #232 is the list to empty.
+BEHAVIOUR_TOKENS = {
+    "dropdown-toggle": "Bootstrap's dropdown hook on the menu toggle, kept with data-bs-toggle (#232)",
+    "d-none": "toggled by list.filter.js on the filter toggle's icon spans (#232)",
+}
+
+
+def _tokens(el) -> list[str]:
+    return (el.get("class") or "").split()
+
+
+def _styled(doc):
+    """The elements the table styles: those carrying a sentinel class."""
+    return [el for el in doc.iter() if isinstance(el.tag, str) and SENTINELS.intersection(_tokens(el))]
+
+
+def _offenders(doc) -> list[tuple[str, str]]:
+    """(tag, token) for every class token on a sentinel-styled element or one of its span descendants that is
+    neither a sentinel, nor cv- prefixed, nor an exempted behaviour token. Icons are <i>, so never visited."""
+    found = set()
+    for el in _styled(doc):
+        for node in (el, *el.iter("span")):
+            for token in _tokens(node):
+                if token in SENTINELS or token.startswith("cv-") or token in BEHAVIOUR_TOKENS:
+                    continue
+                found.add((node.tag, token))
+    return sorted(found)
+
+
+def _leaf_contract(location: str, mode: str) -> dict:
+    """A flat leaf contract with every flag on (the shape of cv_button_data()'s output)."""
+    return {
+        "cv_location": location,
+        "cv_disabled": False,
+        "cv_disabled_reason": "",
+        "cv_tag": "a",
+        "cv_href": "/author/1/detail/",
+        "cv_modal": False,
+        "cv_modal_size": "",
+        "cv_active": True,
+        "cv_key": "detail",
+        "cv_label": "Details",
+        "cv_short_label": "Details",
+        "cv_label_mode": mode,
+        "cv_title": "Details",
+        "cv_icon": "detail",
+        "cv_variant": "secondary",
+        "cv_flex": location == "card",
+    }
+
+
+def _guard_client(grants) -> Client:
+    user = User.objects.create_user(username=f"guard_{uuid.uuid4().hex[:8]}", password="pw")
+    for viewset, perms in grants:
+        for perm in perms:
+            user_viewset_permission(user, viewset, perm)
+    client = Client()
+    client.force_login(user)
+    return client
+
+
+@pytest.mark.django_db
+def test_button_chain_renders_only_table_classes(monkeypatch):
+    from tests.test1.app.models import Author, Publisher
+    from tests.test1.app.views import AuthorListView, cv_author, cv_publisher, cv_publisher_order
+
+    author = Author.objects.create(first_name="Douglas", last_name="Adams")
+    Publisher.objects.create(name="Penguin")
+    # row menus on the author list
+    monkeypatch.setattr(AuthorListView, "cv_list_actions", ["detail", "update", "delete", "up", "ping"])
+    monkeypatch.setattr(AuthorListView, "cv_list_actions_inline", ["detail"])
+    full = _guard_client([(cv_author, ("view", "add", "change", "delete"))])
+    publisher = _guard_client([(cv_publisher, ("view", "add")), (cv_publisher_order, ("view",))])
+    pages = [
+        (publisher, reverse(cv_publisher.get_router_name("list"))),  # active list button, filter toggle, create
+        (full, reverse(cv_author.get_router_name("list"))),  # rows with overflow menus
+        (full, reverse(cv_author.get_router_name("card"))),  # the flex=True card action
+        (publisher, "/publisher_order/card/?order=name&dir=asc"),  # sort toggles
+        (publisher, "/publisher_order/card/?order=name&dir=desc"),
+        (full, reverse(cv_author.get_router_name("detail"), kwargs={"pk": author.pk})),
+    ]
+
+    offenders: dict[str, list] = {}
+    styled: dict[str, int] = {}
+
+    def check(name, doc):
+        offenders[name] = _offenders(doc)
+        styled[name] = len(_styled(doc))
+
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES=SENTINEL_CLASSES):
+        for location in sorted(LOCATIONS):
+            for mode in sorted(LABEL_MODES):
+                markup = render_to_string("crud_views/tags/button/action.html", _leaf_contract(location, mode))
+                check(f"action.html:{location}:{mode}", html.fromstring(f"<div>{markup}</div>"))
+            markup = render_to_string("crud_views/tags/button/menu_item.html", _leaf_contract(location, "icon"))
+            check(f"menu_item.html:{location}", html.fromstring(f"<div>{markup}</div>"))
+        for client, url in pages:
+            resp = client.get(url)
+            assert resp.status_code == 200, url
+            check(url, html.fromstring(resp.content))
+
+    assert all(styled.values()), styled  # every render had table-styled elements to check
+    assert {name: found for name, found in offenders.items() if found} == {}

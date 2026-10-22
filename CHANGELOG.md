@@ -147,6 +147,8 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Added
 
+- [Migrating to 1.0.0](docs/migrating-1.0.md): the route from 0.29.x for an app on the stock theme and for a
+  downstream theme, with a checklist of the breaks that raise nothing (#253).
 - `{% cv_alert level heading=… text=… items=… body_template=… dismissible=… extra_tags=… %}` renders one alert
   through the alert frame, and `alert_data()` builds its dict from Python. Three templates are themeable on their
   own: the frame `tags/alert.html`, the text body `snippets/alert/text.html` and the list body

@@ -278,4 +278,42 @@ Register these from your theme's `AppConfig.ready()`; a project's own settings s
 
 ## Silent breaks
 
-Everything that renders differently and raises nothing, as one checklist.
+Everything that renders differently and raises nothing, as one checklist. A clean `manage.py check` says nothing
+about these.
+
+**In your project:**
+
+- [ ] **[0.30]** Object detail group icons with a bare name (`icon="truck"`) render an invisible `<i class="truck">`:
+  use `"fas:truck"` ([Views and Python code](#views-and-python-code)).
+- [ ] `cv.cvModalOpen(url, "modal-lg")` and `data-cv-modal-size="modal-lg"` open the default size: use `"lg"`
+  ([JavaScript](#javascript)).
+- [ ] **[0.30]** Hand-listed static files without `crud_views/css/icons.css` or `crud_views/js/adapters.js` lose the
+  menu icon width and the modal, filter and tooltip behaviour
+  ([Base template and your own templates](#base-template-and-your-own-templates)).
+- [ ] CSS, JavaScript selectors and tests that match the old markup: sort icons, pagination
+  (`.disabled > span.page-link`, `&laquo;` / `&raquo;`), `d-none`, button attribute order and class strings,
+  formset control titles ([CSS and tests that select on markup](#css-and-tests-that-select-on-markup)).
+- [ ] Card buttons show their icon next to the label, and card actions without a `variant` take the target view's
+  variant ([Views and Python code](#views-and-python-code)).
+
+**In a theme, or in project template overrides:**
+
+- [ ] A `tags/messages.html` copy renders `class="alert alert-"` with an empty body
+  ([Templates to delete](#templates-to-delete)).
+- [ ] A copy of a form page's content template uploads no files on create and custom-form pages
+  ([Templates to delete](#templates-to-delete)).
+- [ ] Copies of `tags/button_submit.html`, `tags/button_cancel.html`, `tags/button_delete.html` and `tags/icon.html`
+  are no longer rendered ([Templates to delete](#templates-to-delete)).
+- [ ] A `tags/card_action.html` copy that branches on `cv_no_label` shows the label on icon-only buttons
+  ([Templates to move](#templates-to-move)).
+- [ ] A `tags/actions_menu_item_label.html` copy no longer changes the stock menu
+  ([Templates to move](#templates-to-move)).
+- [ ] **[0.30]** `<i class="{{ cv_icon_action }}">` (or `cv_icon_header`, `cv_menu_icon`) renders an invisible icon
+  ([Contract changes](#contract-changes-in-templates-you-still-override)).
+- [ ] `tags/actions_menu.html` and `tags/actions_menu_toggle.html` copies that read `cv_menu_wrapper_class` or
+  `cv_toggle_class` render an empty `class` ([Contract changes](#contract-changes-in-templates-you-still-override)).
+- [ ] A `tags/context_action_filter.html` copy with `class="d-none"` shows the wrong icon after the first click
+  ([Contract changes](#contract-changes-in-templates-you-still-override)).
+- [ ] A `formsets/control.html` copy without `data-cv-class` / `data-cv-class-danger` no longer recolours the delete
+  toggle ([Contract changes](#contract-changes-in-templates-you-still-override)).
+- [ ] A `view_card.content.html` copy keeps the untranslated "No items found." ([Hooks instead of copies](#hooks-instead-of-copies)).

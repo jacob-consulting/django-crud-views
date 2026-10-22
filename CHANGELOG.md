@@ -100,6 +100,9 @@
 - The stock filter toggle renders `cv-key="filter"` instead of an empty `cv-key=""`, so every button in
   `[cv-context-container]` has a key and attribute selectors over the toolbar are reliable. It has no target view, so
   it renders its own key; a `FilterContextButton` subclass with another `key` renders that key (#208).
+- Tests: the test project's base template renders `{% cv_css %}` in place of a `<link>` to the stale
+  `viewset/css/property.css`, so the suite's pages load the package stylesheets the way the documented base template
+  does (#231).
 
 ### Added
 

@@ -140,3 +140,8 @@ def test_only_the_alert_templates_write_alert_markup():
         if 'class="alert' in path.read_text():
             offenders.append(name)
     assert offenders == []
+
+
+def test_cv_alert_separates_heading_and_text():
+    html = _render('{% cv_alert "warning" heading="Note:" text="Something" %}')
+    assert "<strong>Note:</strong> Something" in html

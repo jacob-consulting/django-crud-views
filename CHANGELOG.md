@@ -98,6 +98,9 @@
 
 ### Fixed
 
+- The card list's empty state, "No items found.", is translated: `view_card.content.html` now loads `i18n` and
+  wraps the text in `{% translate %}`, and the German catalog says "Keine Einträge gefunden." The markup is unchanged
+  (#246).
 - The create and custom-form views now post as `multipart/form-data`, like update. Their `<form>` lacked the
   `enctype`, so a browser sent the POST url-encoded and a `FileField` or `ImageField` arrived without its file: it
   failed `required` or saved empty. The attribute is unconditional, so file fields in formsets upload too (#236).

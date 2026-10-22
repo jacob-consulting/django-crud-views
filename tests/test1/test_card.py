@@ -1,5 +1,7 @@
 import pytest
+from django.test import override_settings
 from django.test.client import Client
+from django.utils import translation
 from lxml import html
 
 from crud_views.lib.view import CardAction
@@ -48,6 +50,17 @@ def test_card_list_empty(client_user_author_view: Client, cv_author):
     cards = doc.cssselect(".card.mb-3")
     assert len(cards) == 0
     assert "No items found." in response.content.decode()
+
+
+@pytest.mark.django_db
+@override_settings(LANGUAGES=[("en", "English"), ("de", "German")])
+def test_card_list_empty_german(client_user_author_view: Client, cv_author):
+    # the test project has no LocaleMiddleware: activate German around the request (as test_i18n.py does)
+    with translation.override("de"):
+        response = client_user_author_view.get("/author/card/")
+    content = response.content.decode()
+    assert '<p class="text-muted">Keine Einträge gefunden.</p>' in content
+    assert "No items found." not in content
 
 
 @pytest.mark.django_db

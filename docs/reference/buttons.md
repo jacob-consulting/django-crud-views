@@ -95,11 +95,16 @@ only once #216 lets those locations show a label.
 | `card:root` | `card mb-3` |
 | `card:body` | `card-body` |
 | `card:title` | `card-title` |
+| `alert:error` | `alert alert-danger` |
+| `alert:warning` | `alert alert-warning` |
+| `alert:success` | `alert alert-success` |
+| `alert:info` | `alert alert-info` |
+| `alert:debug` | `alert alert-secondary` |
 
-The default table has 46 keys: the rows with four variants stand for four keys each, the rows with three locations
+The default table has 51 keys: the rows with four variants stand for four keys each, the rows with three locations
 for three. The `context` and `list`
 buttons look the same for every variant by default, the `card` buttons distinguish them. Mode keys (`card:tertiary:icon`
-and the like) are addressable but not shipped: none is in the default table, and the count stays 46.
+and the like) are addressable but not shipped: none is in the default table, and the count stays 51.
 
 The table holds what a theme restyles: classes. What the markup needs to work stays in the templates and is not
 configurable here: the element, `href`, `type`, `disabled`, the `data-cv-*` attributes, `aria-*`, `cv-key`,
@@ -113,6 +118,9 @@ Three keys style the stock card itself rather than a button: `card:root` is the 
 `<div>` inside it, and `card:title` the `<h5>` heading. The actions inside the card keep `card:container`. Where the
 actions sit (in the body or in a footer) is structure, not classes: see
 [Custom Card Template](card-list-view.md#custom-card-template).
+
+The five `alert:*` keys colour the one alert frame, `tags/alert.html`, which renders every alert in the package:
+the slot is the alert's level (`error`, `warning`, `success`, `info`, `debug`). See [Flash messages](messages.md).
 
 ## `CRUD_VIEWS_BUTTON_CLASSES`
 

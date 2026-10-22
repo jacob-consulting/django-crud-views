@@ -54,6 +54,12 @@ DEFAULT_BUTTON_CLASSES: dict[str, str] = {
     "card:root": "card mb-3",
     "card:body": "card-body",
     "card:title": "card-title",
+    # alert frames (#250); the level is the slot
+    "alert:error": "alert alert-danger",
+    "alert:warning": "alert alert-warning",
+    "alert:success": "alert alert-success",
+    "alert:info": "alert alert-info",
+    "alert:debug": "alert alert-secondary",
     "context:hidden-label": "visually-hidden",
     "list:hidden-label": "visually-hidden",
     "card:hidden-label": "visually-hidden",

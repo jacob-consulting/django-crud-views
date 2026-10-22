@@ -50,6 +50,10 @@ DEFAULT_BUTTON_CLASSES: dict[str, str] = {
     "menu:active": "active",
     "card-order:active": "active",
     "card:flex": "flex-grow-1",
+    # the stock card's own parts (#243); the actions inside it are styled by card:container
+    "card:root": "card mb-3",
+    "card:body": "card-body",
+    "card:title": "card-title",
     "context:hidden-label": "visually-hidden",
     "list:hidden-label": "visually-hidden",
     "card:hidden-label": "visually-hidden",

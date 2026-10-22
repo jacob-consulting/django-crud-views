@@ -131,6 +131,10 @@
 
 ### Added
 
+- The stock card (`crud_views/tags/card.html`) has `card_title`, `card_content` and `card_actions` blocks. A view's
+  `cv_card_template` extends it and fills `card_content` (and `card_title`) instead of copying the template, the
+  action forms and the container include. Three class keys style the card itself: `card:root` (`card mb-3`),
+  `card:body` (`card-body`) and `card:title` (`card-title`). The stock card's markup is unchanged (#243).
 - Two theme hooks around the form pages. `crud_views/snippets/form_frame.html` is the frame that
   `view_create.content.html`, `view_update.content.html`, `view_custom_form.content.html` and
   `view_delete.content.html` extend: a theme overrides its `cv_form_frame` block to wrap the form (a card on a full

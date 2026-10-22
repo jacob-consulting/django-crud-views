@@ -84,6 +84,12 @@ Default list actions for list view.
 | CRUD_VIEWS_ICONS | Semantic icon name to icon value; merged per key over the defaults. Includes `actions-menu` and `filter`, which replace the removed `CRUD_VIEWS_ACTIONS_MENU_ICON` and `CRUD_VIEWS_FILTER_ICON`. See [Icons](icons.md). | `dict[str, str]` | `{}` |
 | CRUD_VIEWS_ICON_LIBRARIES | Library prefix to library config (renderer, class, ...); merged per prefix over the built-ins `far`, `fas`, `bi`. See [Icons](icons.md#libraries). | `dict[str, dict]` | `{}` |
 
+## Headings
+
+| Key | Description | Type | Default |
+|-----|-------------|------|---------|
+| CRUD_VIEWS_HEADER_LEVEL | The level of your `{% cv_header %}` in the base template (1–5). The package's own headings (card titles, workflow sections, object-detail groups, the accordion) render one level below it and keep their look; the modal title renders at it. `None` leaves every heading at its stock level. See [Heading levels](templates.md#heading-levels). Invalid values raise `crud_views.E107`. | `int \| None` | `None` |
+
 ## Buttons
 
 | Key | Description | Type | Default |

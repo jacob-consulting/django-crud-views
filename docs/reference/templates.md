@@ -20,6 +20,51 @@ All four `{% load crud_views %}` and render nothing when they have nothing to sh
 safe to place unconditionally. Bootstrap's own CSS and JavaScript are not a Python dependency —
 load them in this template from a CDN or your own static files.
 
+## Heading levels
+
+The base template renders the view title (`{% cv_header %}`) in whatever element you choose. Tell crud_views which
+level that is, and its own headings fit under it:
+
+```python
+CRUD_VIEWS_HEADER_LEVEL = 1  # my {% cv_header %} is the page h1
+```
+
+| Your view title is… | Setting | crud_views headings |
+|---|---|---|
+| the page `h1` | `1` | `h2` |
+| an `h2` under a site `h1` | `2` | `h3` |
+| not set | `None` | unchanged (`h5`; the object-detail accordion `h2`) |
+
+This covers card titles in a card list, the workflow page's "Workflow Action" and "Workflow History", and the group
+headings of every object-detail layout. They keep their look: Bootstrap sizes headings by tag, so a heading that
+moves to another level also gets the size class of its stock level, e.g. `<h2 class="h5 card-title">`. In a
+[modal](modals.md) the modal title is the view header, so it renders at the setting's level and the content one
+below, the same outline as the full page.
+
+Render the view title with `{% cv_heading "header" %}` and it follows the same setting, so the two cannot drift
+apart:
+
+```django
+{% load crud_views %}
+<div class="d-flex justify-content-between align-items-center mb-2">
+    {% cv_heading "header" level=1 class="h3 mb-0" %}
+        {% cv_header_icon %} {% cv_header %}
+    {% endcv_heading %}
+    {% cv_context_actions object %}
+</div>
+```
+
+`{% cv_heading ["header"] level=N [class=…] %}…{% endcv_heading %}`:
+
+- `level` (an int 1–6) is the level the heading has while `CRUD_VIEWS_HEADER_LEVEL` is unset.
+- Without `"header"` (a content heading) it renders at `CRUD_VIEWS_HEADER_LEVEL + 1`; with `"header"`, at
+  `CRUD_VIEWS_HEADER_LEVEL`.
+- When the rendered level differs from `level`, `h{level}` is prepended to `class`.
+- `class` takes a literal or a variable and is escaped. The body renders with the template's context, and blocks
+  inside it can be overridden as usual.
+
+A theme or project template that writes its own headings can use the same tag.
+
 ## Resolution order
 
 `cv_extends` is resolved from the first of these that is set:

@@ -99,6 +99,29 @@ def get_button_class(location: str, slot: str, mode: str | None = None) -> str:
     return value if isinstance(value, str) else ""
 
 
+def _action_key_parts(key: str) -> tuple[str, str, str] | None:
+    """``(location, variant, mode)`` for a three-segment key whose location and variant are known, else None.
+
+    The imports are local on purpose: ``lib.view`` needs the app registry, and this module stays importable with
+    bare settings (the checks run after ``django.setup()``).
+    """
+    from .view.button_data import LOCATIONS
+    from .view.variant import VARIANTS
+
+    parts = key.split(":")
+    if len(parts) == 3 and parts[0] in LOCATIONS and parts[1] in VARIANTS:
+        return parts[0], parts[1], parts[2]
+    return None
+
+
+def _is_action_mode_key(key: str) -> bool:
+    """True for a valid ``location:variant:mode`` key (#209)."""
+    from .view.label_mode import LABEL_MODES
+
+    parts = _action_key_parts(key)
+    return parts is not None and parts[2] in LABEL_MODES
+
+
 def button_class_check_messages() -> list[CheckMessage]:
     messages: list[CheckMessage] = []
 
@@ -118,8 +141,20 @@ def button_class_check_messages() -> list[CheckMessage]:
                 )
             )
 
+    from .view.label_mode import LABEL_MODES
+
     for key in (*_THEME_BUTTON_CLASSES, *_settings_layer()):
-        if key not in DEFAULT_BUTTON_CLASSES:
+        if key in DEFAULT_BUTTON_CLASSES or _is_action_mode_key(key):
+            continue
+        if (parts := _action_key_parts(key)) is not None:
+            messages.append(
+                DjangoWarning(
+                    f"Button class {key!r} has an unknown label mode {parts[2]!r}.",
+                    hint=f"Use one of {sorted(LABEL_MODES)}.",
+                    id="crud_views.W362",
+                )
+            )
+        else:
             messages.append(
                 DjangoWarning(
                     f"Button class {key!r} is not a known key (typo?).",

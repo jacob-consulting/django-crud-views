@@ -145,3 +145,17 @@ def test_tag_accepts_mode_variable():
     with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"card:tertiary:icon": "x-icon"}):
         assert tpl.render(Context(ctx)) == "x-icon"
         assert tpl.render(Context({**ctx, "cv_label_mode": "both"})) == "btn btn-outline-secondary btn-sm"
+
+
+def test_button_classes_module_has_no_module_level_view_import():
+    import ast
+    from pathlib import Path
+
+    tree = ast.parse(Path(bc.__file__).read_text())
+    offenders = [
+        node.module
+        for node in tree.body
+        if isinstance(node, ast.ImportFrom)
+        and ("lib.view" in (node.module or "") or (node.level and (node.module or "").split(".")[0] == "view"))
+    ]
+    assert offenders == []

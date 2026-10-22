@@ -96,3 +96,10 @@ def test_w362_names_the_bad_mode():
 def test_mode_key_non_str_is_e361_only():
     with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"card:tertiary:icon": 3}):
         assert ids(check_button_classes()) == ["crud_views.E361"]
+
+
+@pytest.mark.parametrize("key", [3, None, ("card", "tertiary")])
+def test_w362_non_str_key_warns_instead_of_raising(key):
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={key: "btn"}):
+        messages = check_button_classes()
+    assert ids(messages) == ["crud_views.W362"]

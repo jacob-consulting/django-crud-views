@@ -108,6 +108,8 @@ def _action_key_parts(key: str) -> tuple[str, str, str] | None:
     from .view.button_data import LOCATIONS
     from .view.variant import VARIANTS
 
+    if not isinstance(key, str):
+        return None
     parts = key.split(":")
     if len(parts) == 3 and parts[0] in LOCATIONS and parts[1] in VARIANTS:
         return parts[0], parts[1], parts[2]

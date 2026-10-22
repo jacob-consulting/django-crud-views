@@ -23,4 +23,4 @@ Spec: `superpowers/specs/2026-10-22-heading-level-design.md`. Plan: `superpowers
 | System check rejects values outside 1–5 | `test_header_level_valid` (None, 1, 3, 5), `test_header_level_invalid` (0, 6, "2", True, 2.0 → E107) |
 | Example shows the intended setup | outline checked on `/`, author list, od accordion and split-card, workflow page, recipe card list: `h1` → `h2` (→ `h3` snippet accordion); `examples/bootstrap5`: 301 passed |
 | Docs and CHANGELOG | `docs/reference/settings.md` "Headings", `docs/reference/templates.md` "Heading levels", `### Added` bullet under Unreleased; no `### Breaking`, `docs/migrating-1.0.md` unchanged; `mkdocs build --strict` clean |
-| Nothing else moves | `pytest tests -n auto`: 2616 passed, 2 skipped; ruff check / format clean |
+| Nothing else moves | `pytest tests -n auto`: 2619 passed, 2 skipped; ruff check / format clean; final review: non-literal `level=` now a parse-time error |

@@ -4,6 +4,9 @@
 
 ### Breaking
 
+- The filter toggle's icon spans are hidden with the `hidden` attribute instead of Bootstrap's `d-none` class, and
+  `list.filter.js` flips `hidden`. A project override of `crud_views/tags/context_action_filter.html` that still
+  renders `class="d-none"` shows the wrong icon after the first click: render `hidden` instead (#232).
 - `CrudView.cv_get_context()` takes a keyword-only `location` parameter, and every button path passes it. A project
   override with the old four-parameter signature raises `TypeError` on the first toolbar after upgrading: accept
   `location` (or `**kwargs`) and pass it on to `super()` (#216).

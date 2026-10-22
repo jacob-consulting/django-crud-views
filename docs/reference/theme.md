@@ -105,6 +105,20 @@ templates keep the bootstrap5 defaults.
 The thin templates `tags/context_action.html`, `tags/list_action.html`, `tags/card_action.html` and
 `tags/actions_menu_item.html` are logic templates: do not copy them, override the leaves instead.
 
+## Templates that follow Bootstrap's DOM
+
+A dropdown is more than a set of classes: the nesting, the element types and the opening script differ between
+frameworks, so the class table has no keys for it. These templates carry Bootstrap 5 dropdown markup
+(`dropdown-toggle`, `data-bs-toggle="dropdown"`, `dropdown-menu`, `dropdown-item`) and are the ones to override when
+your framework builds dropdowns differently:
+
+- `tags/actions_menu.html` — the menu wrapper and its `<ul>`
+- `tags/actions_menu_toggle.html` — the toggle button
+- `snippets/language_selector.html` — the language dropdown
+
+The button classes they use (`*:menu-wrapper`, `*:menu-toggle`, `*:hidden-label`) still come from the table, so an
+override can keep calling `{% cv_button_class %}` for them.
+
 ## Disabled actions in overridden templates
 
 The leaves `tags/button/action.html` and `tags/button/menu_item.html` receive `cv_disabled` and

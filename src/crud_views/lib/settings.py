@@ -17,6 +17,8 @@ def from_settings(name, default=None) -> Any:
 class CrudViewsSettings(BaseModel):
     MANAGE_VIEWS_ENABLED_VALUES: ClassVar[tuple[str, ...]] = ("no", "yes", "debug_only")
     INACCESSIBLE_ACTIONS_VALUES: ClassVar[tuple[str, ...]] = ("hide", "disable")
+    # the package's headings render one below the header, and h6 is the deepest
+    HEADER_LEVEL_MAX: ClassVar[int] = 5
 
     # basic
     extends: str | None = from_settings(
@@ -45,6 +47,10 @@ class CrudViewsSettings(BaseModel):
     # actions the user may not use: "hide" (default) or "disable" (rendered greyed out); see ViewSet /
     # CrudView overrides (cv_get_inaccessible_actions)
     inaccessible_actions: str = from_settings("CRUD_VIEWS_INACCESSIBLE_ACTIONS", default="hide")
+
+    # level of the host's {% cv_header %} (#251): 1-5; the package's headings render one below and keep their look.
+    # None = every template keeps its own level. Typed Any so check_messages sees the raw value
+    header_level: Any = from_settings("CRUD_VIEWS_HEADER_LEVEL", default=None)
 
     # overflow menu (#174): keys that stay inline buttons; None = no menu. Overridable per ViewSet
     # (*_actions_inline) and per view (cv_*_actions_inline), resolved on the rendering view
@@ -168,6 +174,19 @@ class CrudViewsSettings(BaseModel):
                     msg=(
                         f"setting CRUD_VIEWS_INACCESSIBLE_ACTIONS must be one of "
                         f"{self.INACCESSIBLE_ACTIONS_VALUES}, got {self.inaccessible_actions!r}"
+                    ),
+                )
+            )
+
+        if self.header_level is not None and (
+            type(self.header_level) is not int or not 1 <= self.header_level <= self.HEADER_LEVEL_MAX
+        ):
+            messages.append(
+                Error(
+                    id="crud_views.E107",
+                    msg=(
+                        f"setting CRUD_VIEWS_HEADER_LEVEL must be None or an int from 1 to {self.HEADER_LEVEL_MAX}, "
+                        f"got {self.header_level!r}"
                     ),
                 )
             )

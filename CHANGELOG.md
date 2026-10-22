@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
+
 ### Breaking
 
 - Every alert renders through one frame, `crud_views/tags/alert.html` (#250). The dicts `{% cv_messages %}` hands
@@ -33,6 +35,10 @@
 - Labelled inline card buttons now render their icon as well as their text (#213).
   `CardListView.cv_card_actions_label_mode = "label"` restores the old markup for a view;
   `CardAction(label_mode="label")` for one button.
+- A 0.29 or 0.30 override of `crud_views/tags/card_action.html` that branches on `cv_no_label` no longer gets that
+  key: the card action context carries `cv_label_mode` instead, so the override renders the label on every button,
+  the `CardAction(no_label=True)` ones included, and raises nothing. Move the markup into `tags/button/action.html`,
+  which branches on `cv_label_mode` (#253).
 - `cv_label_visible` has left the leaf contract; `cv_label_mode` (`"label"`, `"icon"` or `"both"`) replaces it. A
   project override of `crud_views/tags/button/action.html` must branch on the new key.
 - `cv_no_label` is no longer a `cv_button_data()` input and raises `ValueError` naming the replacement.
@@ -141,6 +147,8 @@
 
 ### Added
 
+- [Migrating to 1.0.0](docs/migrating-1.0.md): the route from 0.29.x for an app on the stock theme and for a
+  downstream theme, with a checklist of the breaks that raise nothing (#253).
 - `{% cv_alert level heading=… text=… items=… body_template=… dismissible=… extra_tags=… %}` renders one alert
   through the alert frame, and `alert_data()` builds its dict from Python. Three templates are themeable on their
   own: the frame `tags/alert.html`, the text body `snippets/alert/text.html` and the list body

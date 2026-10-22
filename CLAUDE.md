@@ -102,3 +102,4 @@ Test fixtures follow naming convention: `cv_<model>` for ViewSets, `user_<model>
 - Quote style: double quotes
 - Build system: hatchling
 - Version management: bump-my-version (syncs pyproject.toml, `__init__.py`, docs, README)
+- Until 1.0.0 ships, a change that adds a `### Breaking` entry to `CHANGELOG.md` also updates `docs/migrating-1.0.md`.

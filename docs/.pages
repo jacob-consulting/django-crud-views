@@ -1,5 +1,6 @@
 nav:
     - Home: index.md
+    - Migrating to 1.0.0: migrating-1.0.md
     - getting_started
     - reference
     - FAQ: faq.md

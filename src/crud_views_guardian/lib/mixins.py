@@ -108,7 +108,7 @@ class GuardianQuerysetMixin:
     def cv_has_access(cls, user, obj=None):
         return True
 
-    def cv_get_context(self, key=None, obj=None, user=None, request=None):
+    def cv_get_context(self, key=None, obj=None, user=None, request=None, *, location=None):
         """
         Override to fix create button visibility for child viewsets under guardian.
 
@@ -125,7 +125,7 @@ class GuardianQuerysetMixin:
         """
         assert not isinstance(user, str)
 
-        ctx = super().cv_get_context(key=key, obj=obj, user=user, request=request)
+        ctx = super().cv_get_context(key=key, obj=obj, user=user, request=request, location=location)
 
         if obj is None and key is not None and self.cv_viewset.has_parent:
             # A custom ContextButton may target the create view via key_target while

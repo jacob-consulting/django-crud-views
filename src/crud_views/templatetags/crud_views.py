@@ -74,9 +74,11 @@ def cv_get_view(context) -> CrudView:
     return view
 
 
-def cv_get_context(context, key, obj=None) -> dict:
+def cv_get_context(context, key, obj=None, *, location=None) -> dict:
     view: CrudView = cv_get_view(context)
-    context = view.cv_get_context(key, obj=obj, user=context["request"].user, request=context["request"])
+    context = view.cv_get_context(
+        key, obj=obj, user=context["request"].user, request=context["request"], location=location
+    )
     return context
 
 
@@ -113,7 +115,7 @@ def cv_config(context):
 
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/list_action.html", takes_context=True)
 def cv_list_action(context, key, obj=None):
-    return cv_resolve_action(cv_get_context(context=context, key=key, obj=obj)) or {}
+    return cv_resolve_action(cv_get_context(context=context, key=key, obj=obj, location="list")) or {}
 
 
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/list_action_form.html", takes_context=True)
@@ -212,7 +214,7 @@ def cv_context_action(context, key, obj=None):
     obj = obj if obj else None  # fix empty string from template
     # gate here, not only in the default template: per-button template / template_code must not show a
     # button the user may not use (#147); in disable mode they get cv_disabled data instead (#149)
-    ctx = cv_resolve_action(cv_get_context(context=context, key=key, obj=obj))
+    ctx = cv_resolve_action(cv_get_context(context=context, key=key, obj=obj, location="context"))
     if ctx is None:
         return ""
     return _render_context_action(context, ctx)
@@ -244,7 +246,7 @@ def cv_context_button(context, key, obj=None):
     view = cv_get_view(context)
     if obj is None:
         obj = getattr(view, "object", None)
-    ctx = cv_get_context(context=context, key=key, obj=obj)
+    ctx = cv_get_context(context=context, key=key, obj=obj, location="context")
     return _render_context_button(view, ctx)
 
 

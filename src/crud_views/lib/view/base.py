@@ -525,18 +525,24 @@ class CrudView(metaclass=CrudViewMetaClass):
             obj = getattr(self, "object", None)
         result: list[dict] = []
         for key in keys:
-            ctx = cv_resolve_action(self.cv_get_context(key=key, obj=obj, user=self.request.user, request=self.request))
+            ctx = cv_resolve_action(
+                self.cv_get_context(key=key, obj=obj, user=self.request.user, request=self.request, location="context")
+            )
             if ctx is not None:
                 result.append(ctx)
         return result
 
-    def cv_resolved_actions(self, keys: list[str] | None, obj=None) -> list[tuple[str, dict]]:
+    def cv_resolved_actions(
+        self, keys: list[str] | None, obj=None, *, location: str | None = None
+    ) -> list[tuple[str, dict]]:
         """(configured key, resolved data) for each usable or disabled action; hidden and unregistered keys are
-        skipped, as the per-key tags do (#174)."""
+        skipped, as the per-key tags do (#174). location stamps the label mode of the button, see cv_get_context()."""
         items: list[tuple[str, dict]] = []
         for key in keys or []:
             try:
-                ctx = self.cv_get_context(key=key, obj=obj, user=self.request.user, request=self.request)
+                ctx = self.cv_get_context(
+                    key=key, obj=obj, user=self.request.user, request=self.request, location=location
+                )
             except ViewSetKeyFoundError:
                 continue
             ctx = cv_resolve_action(ctx)
@@ -546,7 +552,7 @@ class CrudView(metaclass=CrudViewMetaClass):
 
     def cv_get_list_action_group(self, obj) -> ActionGroup:
         """Row actions split into inline buttons and menu items; all inline when no inline keys are set (#174)."""
-        items = self.cv_resolved_actions(self.cv_list_actions, obj)
+        items = self.cv_resolved_actions(self.cv_list_actions, obj, location="list")
         inline = self.cv_get_list_actions_inline()
         if inline is None:
             return ActionGroup(inline=[ctx for _, ctx in items], menu=[])
@@ -555,7 +561,7 @@ class CrudView(metaclass=CrudViewMetaClass):
     def cv_get_context_action_group(self, obj=None) -> ActionGroup:
         """Context toolbar split into inline buttons and menu items; buttons with their own template stay inline.
         All inline when no inline keys are set (#174)."""
-        items = self.cv_resolved_actions(self.cv_context_actions, obj)
+        items = self.cv_resolved_actions(self.cv_context_actions, obj, location="context")
         inline = self.cv_get_context_actions_inline()
         if inline is None:
             return ActionGroup(inline=[ctx for _, ctx in items], menu=[])
@@ -571,11 +577,27 @@ class CrudView(metaclass=CrudViewMetaClass):
         return f"{self.cv_viewset.name}_{key}_{pk}"
 
     def cv_get_context(
-        self, key: str | None = None, obj: Model | None = None, user: User | None = None, request=None
+        self,
+        key: str | None = None,
+        obj: Model | None = None,
+        user: User | None = None,
+        request=None,
+        *,
+        location: str | None = None,
     ) -> dict[str, Any]:
         """
-        Get template context for this view for a key and an optional object
+        Get template context for this view for a key and an optional object.
+
+        location ("context" or "list") stamps cv_label_mode for the configured key onto a non-empty result, so the
+        button leaf renders the mode the view resolved (#216); callers that are not rendering a button leave it None.
         """
+        data = self._cv_get_action_context(key, obj, user)
+        if location is not None and data:
+            data = {**data, "cv_label_mode": self.cv_get_action_label_mode(location, key)}
+        return data
+
+    def _cv_get_action_context(self, key: str | None, obj: Model | None, user: User | None) -> dict[str, Any]:
+        """The unstamped action context of cv_get_context()."""
 
         # first get the view context
         context = self.cv_get_view_context(object=obj)

@@ -392,6 +392,8 @@ before anything is created on the tracker.
 - **No change to `cv_button_data()` or `LEAF_KEYS`.** `cv_label_mode` is already there and already validated;
   this design only routes it to the lookup. The mode reaching the table is therefore exactly the mode reaching
   the markup, by construction rather than by agreement.
-- **`context:*:*` and `list:*:*` keys are valid and unreachable until #216.** The alternative — reject them
-  until they can be produced — means #216 reopens the check and the docs. The cost is that a theme can define a
-  key that does nothing yet, which is a smaller surprise than a key shape that changes under it.
+- **`context:*:label`, `context:*:both`, `list:*:label` and `list:*:both` are valid and unreachable until #216.**
+  (The `:icon` keys in those locations are live from day one, because every non-card button is `icon` — see
+  decision 4.) The alternative — reject the unreachable ones until they can be produced — means #216 reopens the
+  check and the docs. The cost is that a theme can define a key that does nothing yet, which is a smaller surprise
+  than a key shape that changes under it.

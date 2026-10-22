@@ -82,7 +82,7 @@ If two theme apps register the same key, the one later in `INSTALLED_APPS` wins.
 
 Button classes live in one table, so a theme registers them from `AppConfig.ready()` — per-label-mode keys such as
 `card:tertiary:icon` included, see [Buttons](buttons.md#the-class-table) — and overrides a template only where the
-markup differs. Project settings (`CRUD_VIEWS_BUTTON_CLASSES`) still win over a theme:
+markup differs. Project settings (`CRUD_VIEWS_BUTTON_CLASSES`) still win over a theme, key by key:
 
 ```python
 def ready(self):

@@ -54,6 +54,10 @@ lookup reads `location:variant:mode` when that key is defined and falls back to 
 step, no chaining. No default defines a mode key: the table below is still the full list of shipped keys. A theme
 defines only the modes that differ from its base entry.
 
+Because every toolbar and row button is `icon` today, `context:<variant>:icon` and `list:<variant>:icon` take effect
+immediately — registering them restyles every toolbar and row button — while their `:label` and `:both` keys are read
+only once #216 lets those locations show a label.
+
 | Key | Default |
 |---|---|
 | `context:primary` / `context:secondary` / `context:tertiary` / `context:danger` | `btn btn-outline-primary btn-lg` |
@@ -112,11 +116,11 @@ CRUD_VIEWS_BUTTON_CLASSES = {
 
 A mode key set to `None` switches that mode off; it does not fall back to the base key.
 
-Layers merge per key before the mode fallback runs, so a more specific key wins over a more specific layer. Given a
+Layers merge per key before the mode fallback runs, so key specificity beats layer order. Given a
 theme that registers `card:tertiary:icon`, a project setting `"card:tertiary": "btn btn-sm btn-success"` recolours the
 labelled tertiary card buttons and **not** the icon-only one — override `card:tertiary:icon` as well.
 
-Project entries always win. `CRUD_VIEWS_FILTER_RESET_BUTTON_CSS_CLASS` was replaced by
+Project entries win per key. `CRUD_VIEWS_FILTER_RESET_BUTTON_CSS_CLASS` was replaced by
 `CRUD_VIEWS_BUTTON_CLASSES["form:filter-reset"]`; while the old setting is defined the system check
 `crud_views.E360` fails.
 
@@ -291,8 +295,9 @@ The row controls of [formsets](formsets.md) use `formset:control`, `formset:cont
 ## A theme recipe
 
 Register the classes, then override one leaf where the markup differs. Classes that differ by label mode need no
-override at all — register `context:primary:both` and the like instead. This example restyles the buttons for a
-framework that wants `button is-*` classes and shows the label of `primary` buttons next to the icon:
+override at all — register `card:tertiary:icon` and the like instead (for the toolbar and rows only the `:icon` keys
+are read until #216). This example restyles the buttons for a framework that wants `button is-*` classes and shows
+the label of `primary` buttons next to the icon:
 
 ```python
 # myapp_theme/apps.py

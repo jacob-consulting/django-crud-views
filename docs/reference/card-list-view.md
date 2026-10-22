@@ -77,6 +77,9 @@ with an empty label is always rendered `"icon"`, and a `"both"` button whose vie
 To get one policy everywhere, set `cv_card_actions_label_mode` once on a base card view class of your project and
 subclass it, rather than setting it on every view.
 
+Toolbar and row buttons have their own, key-based knob — a map of action key to mode in settings, on the ViewSet or
+on the view; see [Action menus](action_menus.md#label-mode).
+
 ## Card Container Class
 
 Control the Bootstrap grid class on each card's wrapper `<div>`. Defaults to `col-md-6` (two cards per row).

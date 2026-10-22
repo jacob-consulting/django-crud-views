@@ -74,6 +74,8 @@ Default list actions for list view.
 | CRUD_VIEWS_LIST_ACTIONS_INLINE | List row actions kept as buttons; the rest go into a `⋯` menu. `None`: no menu. See [Action menus](action_menus.md). Invalid values raise `crud_views.E105`. | `list[str] \| None` | `None` |
 | CRUD_VIEWS_CONTEXT_ACTIONS_INLINE | The same for the context toolbar. | `list[str] \| None` | `None` |
 | CRUD_VIEWS_CARD_ACTIONS_INLINE | The same for card actions. | `list[str] \| None` | `None` |
+| CRUD_VIEWS_CONTEXT_ACTIONS_LABEL_MODE | Label mode per context toolbar action key (`"label"`, `"icon"`, `"both"`); keys not named are `icon`. See [Action menus](action_menus.md#label-mode). Invalid values raise `crud_views.E106`. | `dict[str, str]` | `{}` |
+| CRUD_VIEWS_LIST_ACTIONS_LABEL_MODE | The same for list row actions. | `dict[str, str]` | `{}` |
 
 ## Icons
 

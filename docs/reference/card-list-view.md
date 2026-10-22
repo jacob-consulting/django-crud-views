@@ -138,24 +138,29 @@ class ProjektCardListView(CardListViewPermissionRequired):
     cv_card_actions = [...]
 ```
 
-The custom template receives `object`, `view`, and `request` in its context.
-Use `{% cv_card_action action object %}` to render action buttons:
+The template receives `object`, `view`, and `request` in its context. Extend the stock card and fill only the blocks
+you need; the card's actions (inline buttons and overflow menu) keep rendering without being repeated:
 
 ```html
-{% load crud_views %}
+{% extends "crud_views/tags/card.html" %}
 
-<div class="card mb-3">
-    <div class="card-body">
-        <h5 class="card-title">{{ object.name }}</h5>
-        <p>{{ object.description|truncatewords:20 }}</p>
-        <div class="d-flex gap-2">
-            {% for action in view.cv_card_actions %}
-                {% cv_card_action action object %}
-            {% endfor %}
-        </div>
-    </div>
-</div>
+{% block card_title %}{{ object.name }}{% endblock card_title %}
+
+{% block card_content %}
+    <p>{{ object.description|truncatewords:20 }}</p>
+{% endblock card_content %}
 ```
+
+| Block | Default | Contains |
+|---|---|---|
+| `card_title` | `{{ object }}` | the text of the `<h5>` heading |
+| `card_content` | empty | anything between the heading and the actions, inside the card body |
+| `card_actions` | the menu's hidden action forms and the actions container | override only to move or drop the actions |
+
+The card's own classes are keys in the [button class table](buttons.md): `card:root` (`card mb-3`), `card:body`
+(`card-body`) and `card:title` (`card-title`); the actions container is `card:container`. A theme that puts the actions
+in a footer overrides `crud_views/tags/card.html` with its own structure and keeps the three block names, so a
+project template that extends `crud_views/tags/card.html` works unchanged under that theme.
 
 ## Filter Integration
 

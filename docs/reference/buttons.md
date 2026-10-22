@@ -92,11 +92,14 @@ only once #216 lets those locations show a label.
 | `card-order:active` | `active` |
 | `card:flex` | `flex-grow-1` |
 | `context:hidden-label` / `list:hidden-label` / `card:hidden-label` | `visually-hidden` |
+| `card:root` | `card mb-3` |
+| `card:body` | `card-body` |
+| `card:title` | `card-title` |
 
-The default table has 43 keys: the rows with four variants stand for four keys each, the rows with three locations
+The default table has 46 keys: the rows with four variants stand for four keys each, the rows with three locations
 for three. The `context` and `list`
 buttons look the same for every variant by default, the `card` buttons distinguish them. Mode keys (`card:tertiary:icon`
-and the like) are addressable but not shipped: none is in the default table, and the count stays 43.
+and the like) are addressable but not shipped: none is in the default table, and the count stays 46.
 
 The table holds what a theme restyles: classes. What the markup needs to work stays in the templates and is not
 configurable here: the element, `href`, `type`, `disabled`, the `data-cv-*` attributes, `aria-*`, `cv-key`,
@@ -105,6 +108,11 @@ configurable here: the element, `href`, `type`, `disabled`, the `data-cv-*` attr
 `<location>:hidden-label` for the screen-reader text of an icon-only button. A theme on another framework registers
 its own words there (`is-active`, `is-sr-only`, `sr-only`) and overrides no leaf. `None` on a `hidden-label` key
 makes that text visible; set the key to your framework's screen-reader-only utility instead.
+
+Three keys style the stock card itself rather than a button: `card:root` is the outer `<div>`, `card:body` the
+`<div>` inside it, and `card:title` the `<h5>` heading. The actions inside the card keep `card:container`. Where the
+actions sit (in the body or in a footer) is structure, not classes: see
+[Custom Card Template](card-list-view.md#custom-card-template).
 
 ## `CRUD_VIEWS_BUTTON_CLASSES`
 

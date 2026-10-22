@@ -125,9 +125,21 @@ handling stay upstream's. A modal request carries the `X-CV-Modal: true` header;
 {% endblock %}
 ```
 
-The delete page's "cannot be deleted" alert is `snippets/delete/protection_errors.html` (it renders
-`delete_protection_errors`); override it to restyle the alert without touching the form. The related-objects
-summary next to it is `snippets/delete/related_objects.html`.
+## Alerts
+
+Every alert in the package (flash messages, the delete page's protection and related-objects alerts, the guardian
+manage page) renders through one frame, `tags/alert.html`. A theme restyles alerts in three independent places:
+
+- **The frame**, `tags/alert.html`: box, icon, heading, close button. It includes `alert.body_template`.
+- **The list body**, `snippets/alert/list.html`: every alert with `items` follows it. The text body is
+  `snippets/alert/text.html`.
+- **The colours**, the class keys `alert:error`, `alert:warning`, `alert:success`, `alert:info` and `alert:debug`
+  (defaults `alert alert-danger` … `alert alert-secondary`).
+
+`tags/messages.html` is a loop, and the delete snippets (`snippets/delete/protection_errors.html`,
+`snippets/delete/related_objects.html`) only decide which alerts the page shows by calling
+`{% cv_alert %}`; none of them needs a theme override. See [Flash messages](messages.md) for the tag and the
+frame's context.
 
 ## Templates that follow Bootstrap's DOM
 

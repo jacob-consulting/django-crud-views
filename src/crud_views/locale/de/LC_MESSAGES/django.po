@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: django-crud-views\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-12 07:17-0500\n"
+"POT-Creation-Date: 2026-10-22 10:16-0500\n"
 "PO-Revision-Date: 2026-04-01 00:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: German\n"
@@ -16,13 +16,18 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: lib/crispy/form.py:34 templates/crud_views/tags/button_submit.html:3
+#: lib/crispy/form.py:35
 msgid "Save"
 msgstr "Speichern"
 
 #: lib/crispy/form.py:121
 msgid "Confirm deletion"
 msgstr "Löschen bestätigen"
+
+#: lib/crispy/form.py:124
+#: templates/crud_views/snippets/action_short/delete.html:3
+msgid "Delete"
+msgstr "Löschen"
 
 #: lib/formsets/inline_formset.py:19
 msgid "Cannot add entries here without filling in the parent."
@@ -34,24 +39,24 @@ msgstr ""
 msgid "Actions"
 msgstr "Aktionen"
 
-#: lib/view/base.py:536
+#: lib/view/base.py:737
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: lib/views/list.py:77
+#: lib/views/list.py:71
 msgid "Apply Filter"
 msgstr "Filter anwenden"
 
-#: lib/views/list.py:82
+#: lib/views/list.py:73
 msgid "Reset Filter"
 msgstr "Filter zurücksetzen"
 
-#: lib/views/mixins.py:231
+#: lib/views/mixins.py:243
 #, python-format
 msgid "%(field)s (descending)"
 msgstr "%(field)s (absteigend)"
 
-#: lib/views/mixins.py:232
+#: lib/views/mixins.py:244
 #, python-format
 msgid "%(field)s (ascending)"
 msgstr "%(field)s (aufsteigend)"
@@ -61,35 +66,36 @@ msgstr "%(field)s (aufsteigend)"
 msgid "Go to %(verbose_name_plural)s"
 msgstr "Gehe zu %(verbose_name_plural)s"
 
-#: templates/crud_views/formsets/control.html:4
+#: templates/crud_views/formsets/control.html:5
 msgid "Row controls"
 msgstr "Zeilensteuerung"
 
-#: templates/crud_views/formsets/control.html:6
+#: templates/crud_views/formsets/control.html:7
 msgid "Order"
 msgstr "Reihenfolge"
 
-#: templates/crud_views/formsets/control.html:7
+#: templates/crud_views/formsets/control.html:8
 msgid "Move up"
 msgstr "Nach oben verschieben"
 
-#: templates/crud_views/formsets/control.html:11
+#: templates/crud_views/formsets/control.html:12
 msgid "Move down"
 msgstr "Nach unten verschieben"
 
-#: templates/crud_views/formsets/control.html:17
+#: templates/crud_views/formsets/control.html:18
 msgid "Add or delete"
 msgstr "Hinzufügen oder löschen"
 
-#: templates/crud_views/formsets/control.html:18
+#: templates/crud_views/formsets/control.html:19
 msgid "Add row"
 msgstr "Zeile hinzufügen"
 
-#: templates/crud_views/formsets/control.html:23
+#: templates/crud_views/formsets/control.html:25
 msgid "Delete row"
 msgstr "Zeile löschen"
 
 #: templates/crud_views/modal/content.html:4
+#: templates/crud_views/tags/alert.html:5
 msgid "Close"
 msgstr "Schließen"
 
@@ -167,10 +173,6 @@ msgstr "%(verbose_name_translate)s"
 msgid "Create"
 msgstr "Erstellen"
 
-#: templates/crud_views/snippets/action_short/delete.html:3
-msgid "Delete"
-msgstr "Löschen"
-
 #: templates/crud_views/snippets/action_short/detail.html:3
 msgid "Detail"
 msgstr "Details"
@@ -195,31 +197,35 @@ msgstr "Nach oben"
 msgid "Update"
 msgstr "Bearbeiten"
 
-#: templates/crud_views/snippets/card_order.html:4
+#: templates/crud_views/snippets/card_order.html:5
 msgid "Order by"
 msgstr "Sortieren nach"
 
-#: templates/crud_views/snippets/card_order.html:11
+#: templates/crud_views/snippets/card_order.html:12
 msgid "Sort direction"
 msgstr "Sortierrichtung"
 
-#: templates/crud_views/snippets/card_order.html:14
+#: templates/crud_views/snippets/card_order.html:15
 msgid "Ascending"
 msgstr "Aufsteigend"
 
-#: templates/crud_views/snippets/card_order.html:19
+#: templates/crud_views/snippets/card_order.html:20
 msgid "Descending"
 msgstr "Absteigend"
 
-#: templates/crud_views/snippets/delete/related_objects.html:6
+#: templates/crud_views/snippets/delete/protection_errors.html:2
+msgid "This object cannot be deleted:"
+msgstr "Dieses Objekt kann nicht gelöscht werden:"
+
+#: templates/crud_views/snippets/delete/related_objects.html:5
 msgid "Deletion is blocked by protected relationships:"
 msgstr "Das Löschen wird durch geschützte Beziehungen verhindert:"
 
-#: templates/crud_views/snippets/delete/related_objects.html:16
+#: templates/crud_views/snippets/delete/related_objects.html:8
 msgid "The following related objects will also be deleted:"
 msgstr "Die folgenden verknüpften Objekte werden ebenfalls gelöscht:"
 
-#: templates/crud_views/snippets/delete/related_objects.html:24
+#: templates/crud_views/snippets/delete/related_objects.html:10
 msgid "Details about the related objects to be deleted:"
 msgstr "Details zu den zu löschenden verknüpften Objekten:"
 
@@ -264,6 +270,22 @@ msgstr ""
 msgid "Updated %(verbose_name_translate)s <strong>%(object)s</strong>"
 msgstr "%(verbose_name_translate)s <strong>%(object)s</strong> aktualisiert"
 
+#: templates/crud_views/snippets/pagination.html:3
+msgid "pagination"
+msgstr "Seitennavigation"
+
+#: templates/crud_views/snippets/pagination.html:7
+#: templates/crud_views/snippets/pagination.html:11
+#: templates/crud_views/table/bootstrap5.html:70
+msgid "previous"
+msgstr "zurück"
+
+#: templates/crud_views/snippets/pagination.html:25
+#: templates/crud_views/snippets/pagination.html:29
+#: templates/crud_views/table/bootstrap5.html:90
+msgid "next"
+msgstr "weiter"
+
 #: templates/crud_views/snippets/paragraph/card.html:3
 #, python-format
 msgid "Cards of all %(verbose_name_plural_translate)s"
@@ -289,30 +311,10 @@ msgstr "Details des ViewSets <strong>%(cv)s</strong> verwalten"
 msgid "Update %(verbose_name_translate)s <strong>%(object)s</strong>"
 msgstr "%(verbose_name_translate)s <strong>%(object)s</strong> bearbeiten"
 
-#: templates/crud_views/snippets/pagination.html:3
-msgid "pagination"
-msgstr "Seitennavigation"
-
-#: templates/crud_views/snippets/pagination.html:7
-#: templates/crud_views/snippets/pagination.html:11
-#: templates/crud_views/table/bootstrap5.html:70
-msgid "previous"
-msgstr "zurück"
-
-#: templates/crud_views/snippets/pagination.html:25
-#: templates/crud_views/snippets/pagination.html:29
-#: templates/crud_views/table/bootstrap5.html:90
-msgid "next"
-msgstr "weiter"
-
-#: templates/crud_views/tags/actions_menu_toggle.html:3
-#: templates/crud_views/tags/actions_menu_toggle.html:5
+#: templates/crud_views/tags/actions_menu_toggle.html:4
+#: templates/crud_views/tags/actions_menu_toggle.html:6
 msgid "More actions"
 msgstr "Weitere Aktionen"
-
-#: templates/crud_views/snippets/delete/protection_errors.html:3
-msgid "This object cannot be deleted:"
-msgstr "Dieses Objekt kann nicht gelöscht werden:"
 
 #: templates/crud_views/view_card.content.html:12
 msgid "No items found."

@@ -39,17 +39,19 @@ X does nothing.
 
 ## Levels
 
-| Django level | Alert class | Icon |
+| Django level | Class key (default) | Icon |
 |---|---|---|
-| `DEBUG` | `alert-secondary` | `message-debug` |
-| `INFO` | `alert-info` | `message-info` |
-| `SUCCESS` | `alert-success` | `message-success` |
-| `WARNING` | `alert-warning` | `message-warning` |
-| `ERROR` | `alert-danger` | `message-error` |
+| `DEBUG` | `alert:debug` (`alert alert-secondary`) | `message-debug` |
+| `INFO` | `alert:info` (`alert alert-info`) | `message-info` |
+| `SUCCESS` | `alert:success` (`alert alert-success`) | `message-success` |
+| `WARNING` | `alert:warning` (`alert alert-warning`) | `message-warning` |
+| `ERROR` | `alert:error` (`alert alert-danger`) | `message-error` |
 
-A message with no level, or with a custom level the table does not cover, renders as `info`.
+A message with no level, or with a custom level the table does not cover, renders as `info`. The colours are
+[class table](buttons.md) keys, so a theme on another framework registers its own `alert:*` classes instead of
+overriding a template.
 
-`DEBUG` maps to `alert-secondary`, which differs from django-bootstrap5's `{% bootstrap_messages %}`
+`DEBUG` maps to `alert-secondary` by default, which differs from django-bootstrap5's `{% bootstrap_messages %}`
 (it mapped `DEBUG` to `warning`). Debug messages are hidden by the default message level anyway, so
 this only shows up in a project that lowers `MESSAGE_LEVEL`.
 
@@ -78,11 +80,48 @@ from crud_views.lib.icons import BOOTSTRAP_ICONS
 CRUD_VIEWS_ICONS = BOOTSTRAP_ICONS
 ```
 
+## A single alert: `{% cv_alert %}`
+
+The same frame renders one alert from a template, which is how the delete page and the guardian manage page draw
+theirs:
+
+```django
+{% load crud_views i18n %}
+
+{% cv_alert "error" heading=_("This object cannot be deleted:") items=delete_protection_errors %}
+{% cv_alert "info" text=_("Nothing to show yet.") %}
+{% cv_alert "warning" body_template="myapp/snippets/quota.html" %}
+```
+
+| Argument | Meaning |
+|---|---|
+| `level` | `error`, `warning`, `success`, `info` or `debug`; anything else renders as `info` |
+| `heading` | bold text before the body |
+| `text` | the body of a text alert |
+| `items` | a list; the alert renders it as a `<ul>` |
+| `body_template` | a template rendered as the body instead; it sees the calling template's context |
+| `dismissible` | add the close button (default `False`; `{% cv_messages %}` alerts are dismissible) |
+| `extra_tags` | classes appended to the alert's class list |
+
+The body is the list body when `items` is non-empty, the text body otherwise, unless `body_template` names
+another. A custom body template reads the caller's variables, so wrap the tag in `{% with %}` to hand it data.
+`heading`, `text` and each item are escaped unless they are safe strings, also inside
+`{% autoescape off %}`.
+
+From Python, `crud_views.lib.messages.alert_data(level, heading=…, text=…, items=…, body_template=…,
+dismissible=…, extra_tags=…)` builds the dict the frame reads (`alert` in the template), and
+`message_alerts(messages)` builds one per message.
+
 ## Theming
 
-The markup lives in `crud_views/tags/messages.html` and resolves through the theme path, so a
-[theme app](theme.md) overrides it by shipping its own template at that path. The context is a
-single key, `cv_message_alerts`, a list of dicts with `message`, `css_class` (the Bootstrap
-contextual class, without the `alert-` prefix), `icon_name` and `extra_tags`. The level mapping
-itself lives in `crud_views.lib.messages` (`ALERT_CLASSES`, `ICON_NAMES`) and is reusable from a
-custom template tag.
+Every alert in the package goes through one frame. Three templates, each overridable on its own through a
+[theme app](theme.md):
+
+- `crud_views/tags/alert.html` — the frame: the box, the icon, the heading and the close button. It includes
+  `alert.body_template` and never branches on the body type.
+- `crud_views/snippets/alert/text.html` — the text body (`{{ alert.text }}`).
+- `crud_views/snippets/alert/list.html` — the list body, `<ul class="mb-0 mt-2"><li>` by default.
+
+The frame reads one dict, `alert`, with `level`, `icon_name`, `heading`, `text`, `items`, `body_template`,
+`dismissible` and `extra_tags`, all escaped already. `crud_views/tags/messages.html` is a loop that includes the
+frame once per message; a theme does not override it.

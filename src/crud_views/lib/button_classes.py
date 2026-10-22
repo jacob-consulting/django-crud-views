@@ -42,6 +42,17 @@ DEFAULT_BUTTON_CLASSES: dict[str, str] = {
     "formset:control-danger": "btn btn-danger",
     "card-order:toggle": "btn btn-outline-secondary",
     "card-order:container": "btn-group btn-group-sm",
+    # utility slots the leaves used to hard-code (#227): the current page's button, a stretched card action and
+    # the screen-reader text of an icon-only button; a theme registers its framework's words here
+    "context:active": "active",
+    "list:active": "active",
+    "card:active": "active",
+    "menu:active": "active",
+    "card-order:active": "active",
+    "card:flex": "flex-grow-1",
+    "context:hidden-label": "visually-hidden",
+    "list:hidden-label": "visually-hidden",
+    "card:hidden-label": "visually-hidden",
     "language:toggle": "btn btn-outline-secondary",
     "object-detail:property-detail": "btn btn-link p-0 ms-1 align-baseline text-muted",
 }

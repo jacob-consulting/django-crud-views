@@ -39,6 +39,15 @@ EXPECTED_KEYS = {
     "card-order:container",
     "language:toggle",
     "object-detail:property-detail",
+    "context:active",
+    "list:active",
+    "card:active",
+    "menu:active",
+    "card-order:active",
+    "card:flex",
+    "context:hidden-label",
+    "list:hidden-label",
+    "card:hidden-label",
 }
 
 
@@ -53,11 +62,30 @@ def _isolate_registry():
 
 
 def test_default_table_is_complete():
-    assert len(EXPECTED_KEYS) == 34
+    assert len(EXPECTED_KEYS) == 43
     assert set(DEFAULT_BUTTON_CLASSES) == EXPECTED_KEYS
     assert get_button_class("context", "primary") == "btn btn-outline-primary btn-lg"
     assert get_button_class("card", "danger") == "btn btn-secondary btn-sm"
     assert get_button_class("menu", "item") == "dropdown-item"
+
+
+@pytest.mark.parametrize(
+    ("location", "slot", "default"),
+    [
+        ("context", "active", "active"),
+        ("list", "active", "active"),
+        ("card", "active", "active"),
+        ("menu", "active", "active"),
+        ("card-order", "active", "active"),
+        ("card", "flex", "flex-grow-1"),
+        ("context", "hidden-label", "visually-hidden"),
+        ("list", "hidden-label", "visually-hidden"),
+        ("card", "hidden-label", "visually-hidden"),
+    ],
+)
+def test_utility_slots_default_to_the_bootstrap_word(location, slot, default):
+    # the words the leaves used to hard-code (#227)
+    assert get_button_class(location, slot) == default
 
 
 def test_unknown_key_renders_nothing():

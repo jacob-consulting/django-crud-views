@@ -1,6 +1,6 @@
 {% load crud_views %}
 <button type="button"
-   class="{% cv_button_class "context" cv_variant|default:"secondary" %}"
+   class="{% cv_button_class "context" cv_variant|default:"secondary" "icon" %}"
    id="cv-filter-toggle"
    aria-expanded="{% if cv_filter_expanded %}true{% else %}false{% endif %}"
    aria-controls="filter-collapse"

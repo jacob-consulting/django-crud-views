@@ -1,4 +1,7 @@
-"""Layered button class table: defaults, theme layer and ``CRUD_VIEWS_BUTTON_CLASSES`` keyed ``location:slot``."""
+"""Layered button class table: defaults, theme layer and ``CRUD_VIEWS_BUTTON_CLASSES``, keyed ``location:slot[:mode]``.
+
+A mode key (``card:tertiary:icon``) is read in preference to its base key when it is present; see get_button_class.
+"""
 
 from django.conf import settings
 from django.core.checks import CheckMessage, Error
@@ -82,9 +85,17 @@ def get_button_classes() -> dict[str, str | None]:
     return classes
 
 
-def get_button_class(location: str, slot: str) -> str:
-    """Resolved classes for ``location:slot``; "" for None, "", an unknown key or a non-str value."""
-    value = get_button_classes().get(f"{location}:{slot}")
+def get_button_class(location: str, slot: str, mode: str | None = None) -> str:
+    """Resolved classes for ``location:slot``, preferring ``location:slot:mode`` when that key is present.
+
+    "" for None, "", an unknown key or a non-str value. Presence decides the fallback, not the value: a mode
+    key set to None switches that mode off instead of falling through to ``location:slot``.
+    """
+    classes = get_button_classes()
+    key = f"{location}:{slot}"
+    if mode and f"{key}:{mode}" in classes:
+        key = f"{key}:{mode}"
+    value = classes.get(key)
     return value if isinstance(value, str) else ""
 
 

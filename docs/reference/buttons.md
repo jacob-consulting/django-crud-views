@@ -220,8 +220,9 @@ view data:
 | `crud_views/tags/button/menu_item_label.html` | icon and label of a menu item, included by `menu_item.html`; reads `cv_icon` and `cv_short_label` |
 
 `crud_views/tags/actions_menu_item_label.html` is kept with its 0.30 body (raw keys `cv_icon_action`,
-`cv_action_short_label`, `cv_action_label`, `cv_label`) only for 0.30 overrides of `tags/actions_menu_item.html` that
-include it. The stock menu item does not use it, so an override of it no longer changes the stock menu; override
+`cv_action_short_label`, `cv_action_label`, `cv_label`), minus the `d-inline-block` on its icon placeholder that
+`.cv-icon-fw` already provides, only for 0.30 overrides of `tags/actions_menu_item.html` that include it. The stock
+menu item does not use it, so an override of it no longer changes the stock menu; override
 `tags/button/menu_item_label.html` instead.
 
 ### The leaf contract

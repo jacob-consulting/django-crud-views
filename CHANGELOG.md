@@ -40,9 +40,10 @@
 - `tags/context_action.html`, `tags/list_action.html`, `tags/card_action.html` and `tags/actions_menu_item.html` are
   one-line logic templates. Overrides from 0.30 keep working; new overrides go to `tags/button/action.html`,
   `menu_item.html` and `container.html`.
-- `tags/actions_menu_item_label.html` keeps its 0.30 body and is kept only for 0.30 overrides of
-  `tags/actions_menu_item.html`. The stock menu item leaf uses `tags/button/menu_item_label.html`, so a theme override
-  of the old label include no longer affects the stock menu; move it to `tags/button/menu_item_label.html`.
+- `tags/actions_menu_item_label.html` keeps its 0.30 body, minus the `d-inline-block` on its icon placeholder
+  (#227, `.cv-icon-fw` provides the display), and is kept only for 0.30 overrides of `tags/actions_menu_item.html`.
+  The stock menu item leaf uses `tags/button/menu_item_label.html`, so a theme override of the old label include no
+  longer affects the stock menu; move it to `tags/button/menu_item_label.html`.
 - DOM changes: one attribute order for all buttons; card buttons carry `cv-key`; card POST actions render
   `<button type="button">`; the active toolbar action carries `aria-current="page"`; the card row carries
   `cv-card-container`; card menu forms render before the row; the crispy cancel button renders `btn btn-secondary`

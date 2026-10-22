@@ -129,3 +129,19 @@ def test_settings_base_key_does_not_beat_theme_mode_key():
         assert get_button_class("card", "tertiary", "both") == "btn btn-sm btn-success"
     with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"card:tertiary:icon": "btn x"}):
         assert get_button_class("card", "tertiary", "icon") == "btn x"
+
+
+def test_tag_third_argument_in_both_libraries():
+    for lib in ("crud_views", "crud_views_object_detail"):
+        tpl = Template("{% load " + lib + ' %}{% cv_button_class "card" "tertiary" "icon" %}')
+        assert tpl.render(Context()) == "btn btn-outline-secondary btn-sm"
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"card:tertiary:icon": "x-icon"}):
+            assert tpl.render(Context()) == "x-icon"
+
+
+def test_tag_accepts_mode_variable():
+    tpl = Template("{% load crud_views %}{% cv_button_class cv_location cv_variant cv_label_mode %}")
+    ctx = {"cv_location": "card", "cv_variant": "tertiary", "cv_label_mode": "icon"}
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"card:tertiary:icon": "x-icon"}):
+        assert tpl.render(Context(ctx)) == "x-icon"
+        assert tpl.render(Context({**ctx, "cv_label_mode": "both"})) == "btn btn-outline-secondary btn-sm"

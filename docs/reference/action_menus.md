@@ -55,6 +55,38 @@ The inline keys belong to the **container**, so they resolve on the view that re
 its row actions and toolbar, the card view for its cards, the detail/update/… view for its own toolbar. This differs
 from [hide or disable](inaccessible_actions.md), which resolves on each action's **target** view.
 
+## Label mode
+
+Toolbar and row buttons are icon-only by default. A **label mode map** names the action keys that show text instead,
+or as well:
+
+| Level | List rows | Context toolbar |
+|---|---|---|
+| Django settings | `CRUD_VIEWS_LIST_ACTIONS_LABEL_MODE` | `CRUD_VIEWS_CONTEXT_ACTIONS_LABEL_MODE` |
+| `ViewSet` | `list_actions_label_mode` | `context_actions_label_mode` |
+| `CrudView` | `cv_list_actions_label_mode` | `cv_context_actions_label_mode` |
+
+Each is a dict of action key to `"label"` (text only), `"icon"` (icon with a visually hidden label and a tooltip) or
+`"both"` (icon and text). Any key not named is `"icon"`, so an empty dict is today's markup.
+
+```python
+class AuthorListView(ListViewTableMixin, ListViewPermissionRequired):
+    cv_viewset = cv_author
+    cv_context_actions_label_mode = {"create": "both"}  # "Create" with its icon; the rest stay icon-only
+```
+
+Order: `CrudView` → `ViewSet` → setting; the first value that is not `None` wins, whole — the layers are not merged,
+and `{}` on a view makes every action of that view icon-only whatever its ViewSet says. Keys are the configured keys,
+as for the inline lists (`"home"`, not its target `"list"`). The getters `cv_get_list_actions_label_mode()` and
+`cv_get_context_actions_label_mode()` return the resolved dict, `cv_get_action_label_mode(location, key)` the mode of
+one key. Cards do not use the map: a card button's mode is `CardAction.label_mode`, see
+[Card list view](card-list-view.md#label-mode).
+
+A labelled button shows its short label (`"Create"`, not `"Create new author"`), has no `title` and no tooltip, and
+the visible text is its only accessible name. A theme styles the modes apart with `context:primary:both` and the
+like in the [class table](buttons.md#the-class-table). The map applies to inline buttons; an action folded into the
+menu renders icon and short label in every mode.
+
 ## What is never folded
 
 - Context buttons with their own `template=` or `template_code=`: they render a whole button, which cannot become a
@@ -79,8 +111,9 @@ menu item carries `data-cv-action="submit-form"` and `data-cv-target` to submit 
 ## Labels, icons and the active action
 
 Menu items show the target view's icon (fixed width, `cv-icon-fw`) and a visible text label — the short action label
-(`cv_action_short_label`), or `CardAction.label` on cards. Toolbar items carry the full label as `title`. A context button's own
-`label_template` / `label_template_code` is also used as its menu item text.
+(`cv_action_short_label`), or `CardAction.label` on cards — in every [label mode](#label-mode). A context menu item
+carries the full label as `title` only when its action is `icon`, so a labelled action has no tooltip inline or
+folded. A context button's own `label_template` / `label_template_code` is also used as its menu item text.
 `CardAction.variant`, `flex`, `label_mode` and the superseded alias `no_label` apply to inline card buttons only.
 
 On the context toolbar the current page's action is highlighted: inline with `.active`, inside the menu with
@@ -155,6 +188,9 @@ a `.table-responsive` wrapper.
 | `crud_views.E105` | a `CRUD_VIEWS_*_ACTIONS_INLINE` setting is not `None` or a list of strings |
 | `viewset.E208` | a `cv_*_actions_inline` attribute is not `None` or a list of strings |
 | `viewset.W290` | a view's own `cv_*_actions_inline` names a key that is not among that location's actions (typo?) |
+| `crud_views.E106` | a `CRUD_VIEWS_*_ACTIONS_LABEL_MODE` setting is not a dict of action key → `"label"` / `"icon"` / `"both"` |
+| `viewset.E211` | a `cv_*_actions_label_mode` attribute is not `None` or such a dict (`cv_card_actions_label_mode` is the string-valued card attribute) |
+| `viewset.W291` | a view's own `cv_*_actions_label_mode` names a key that is not among that location's actions (typo?) |
 
-W290 checks only values set on the view class. ViewSet and setting values are shared defaults and may name keys some
-views lack.
+W290 and W291 check only values set on the view class. ViewSet and setting values are shared defaults and may name
+keys some views lack.

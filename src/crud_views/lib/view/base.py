@@ -38,7 +38,13 @@ from crud_views.lib.check import (
 from crud_views.lib.exceptions import CrudViewError, ParentViewSetError, ViewSetKeyFoundError, cv_raise
 
 from ..settings import crud_views_settings
-from .action_menu import ActionGroup, cv_context_button_foldable, cv_inline_checks, cv_split_actions
+from .action_menu import (
+    ActionGroup,
+    cv_context_button_foldable,
+    cv_inline_checks,
+    cv_label_mode_checks,
+    cv_split_actions,
+)
 from .buttons import ContextButton, context_button_checks
 from .context import ViewContext
 from .meta import CrudViewMetaClass
@@ -78,6 +84,9 @@ class CrudView(metaclass=CrudViewMetaClass):
     cv_inaccessible_actions: str | None = None  # "hide" | "disable"; None: ViewSet, then setting
     cv_list_actions_inline: list[str] | None = None  # list row keys kept as buttons; None: ViewSet, then setting
     cv_context_actions_inline: list[str] | None = None  # toolbar keys kept as buttons; None: ViewSet, then setting
+    # label mode per action key (#216): "label" / "icon" / "both"; unnamed keys are "icon"; None: ViewSet, then setting
+    cv_list_actions_label_mode: dict[str, str] | None = None
+    cv_context_actions_label_mode: dict[str, str] | None = None
 
     # modal rendering (Bootstrap 5 theme; see superpowers/specs/2026-07-14-bootstrap-modals-design.md)
     cv_modal: bool = False  # opt-in: action buttons open this view in a modal
@@ -165,6 +174,8 @@ class CrudView(metaclass=CrudViewMetaClass):
         yield variant_check(cls, "cv_action_variant", cls.cv_action_variant)
         yield from cv_inline_checks(cls, "cv_list_actions_inline", cls.cv_list_actions)
         yield from cv_inline_checks(cls, "cv_context_actions_inline", cls.cv_context_actions)
+        yield from cv_label_mode_checks(cls, "cv_list_actions_label_mode", cls.cv_list_actions)
+        yield from cv_label_mode_checks(cls, "cv_context_actions_label_mode", cls.cv_context_actions)
         if cls.cv_viewset is not None:
             yield from context_button_checks(cls, cls.cv_viewset, cls.cv_context_buttons)
         yield CheckUnknownAttributes(context=cls)
@@ -233,7 +244,10 @@ class CrudView(metaclass=CrudViewMetaClass):
 
     @classmethod
     def cv_first_inline_keys(cls, view_value, viewset_field: str):
-        """First inline-keys value that is not None: view, then ViewSet, then setting (#174)."""
+        """First inline-keys value that is not None: view, then ViewSet, then setting (#174).
+
+        Also resolves the label-mode maps, which share the three layers and their names (#216).
+        """
         if view_value is not None:
             return view_value
         if cls.cv_viewset is not None and getattr(cls.cv_viewset, viewset_field) is not None:
@@ -249,6 +263,30 @@ class CrudView(metaclass=CrudViewMetaClass):
     def cv_get_context_actions_inline(cls):
         """Context toolbar keys kept as buttons, the rest go into the menu; None: no menu (#174)."""
         return cls.cv_first_inline_keys(cls.cv_context_actions_inline, "context_actions_inline")
+
+    @classmethod
+    def cv_get_list_actions_label_mode(cls) -> dict[str, str]:
+        """Row action key -> label mode; keys not named are "icon" (#216)."""
+        return cls.cv_first_inline_keys(cls.cv_list_actions_label_mode, "list_actions_label_mode")
+
+    @classmethod
+    def cv_get_context_actions_label_mode(cls) -> dict[str, str]:
+        """Context toolbar action key -> label mode; keys not named are "icon" (#216)."""
+        return cls.cv_first_inline_keys(cls.cv_context_actions_label_mode, "context_actions_label_mode")
+
+    @classmethod
+    def cv_get_action_label_mode(cls, location: str, key: str) -> str:
+        """The label mode of one configured context or list action key; "icon" for a key not in the map (#216).
+
+        Cards resolve their mode per CardAction in cv_get_card_action_data() and never come through here.
+        """
+        if location == "context":
+            mapping = cls.cv_get_context_actions_label_mode()
+        elif location == "list":
+            mapping = cls.cv_get_list_actions_label_mode()
+        else:
+            raise ValueError(f"location must be 'context' or 'list', got {location!r}")
+        return mapping.get(key, "icon")
 
     @classmethod
     def cv_has_access(cls, user: User, obj: Model | None = None) -> bool:
@@ -487,18 +525,24 @@ class CrudView(metaclass=CrudViewMetaClass):
             obj = getattr(self, "object", None)
         result: list[dict] = []
         for key in keys:
-            ctx = cv_resolve_action(self.cv_get_context(key=key, obj=obj, user=self.request.user, request=self.request))
+            ctx = cv_resolve_action(
+                self.cv_get_context(key=key, obj=obj, user=self.request.user, request=self.request, location="context")
+            )
             if ctx is not None:
                 result.append(ctx)
         return result
 
-    def cv_resolved_actions(self, keys: list[str] | None, obj=None) -> list[tuple[str, dict]]:
+    def cv_resolved_actions(
+        self, keys: list[str] | None, obj=None, *, location: str | None = None
+    ) -> list[tuple[str, dict]]:
         """(configured key, resolved data) for each usable or disabled action; hidden and unregistered keys are
-        skipped, as the per-key tags do (#174)."""
+        skipped, as the per-key tags do (#174). location stamps the label mode of the button, see cv_get_context()."""
         items: list[tuple[str, dict]] = []
         for key in keys or []:
             try:
-                ctx = self.cv_get_context(key=key, obj=obj, user=self.request.user, request=self.request)
+                ctx = self.cv_get_context(
+                    key=key, obj=obj, user=self.request.user, request=self.request, location=location
+                )
             except ViewSetKeyFoundError:
                 continue
             ctx = cv_resolve_action(ctx)
@@ -508,7 +552,7 @@ class CrudView(metaclass=CrudViewMetaClass):
 
     def cv_get_list_action_group(self, obj) -> ActionGroup:
         """Row actions split into inline buttons and menu items; all inline when no inline keys are set (#174)."""
-        items = self.cv_resolved_actions(self.cv_list_actions, obj)
+        items = self.cv_resolved_actions(self.cv_list_actions, obj, location="list")
         inline = self.cv_get_list_actions_inline()
         if inline is None:
             return ActionGroup(inline=[ctx for _, ctx in items], menu=[])
@@ -517,7 +561,7 @@ class CrudView(metaclass=CrudViewMetaClass):
     def cv_get_context_action_group(self, obj=None) -> ActionGroup:
         """Context toolbar split into inline buttons and menu items; buttons with their own template stay inline.
         All inline when no inline keys are set (#174)."""
-        items = self.cv_resolved_actions(self.cv_context_actions, obj)
+        items = self.cv_resolved_actions(self.cv_context_actions, obj, location="context")
         inline = self.cv_get_context_actions_inline()
         if inline is None:
             return ActionGroup(inline=[ctx for _, ctx in items], menu=[])
@@ -533,11 +577,27 @@ class CrudView(metaclass=CrudViewMetaClass):
         return f"{self.cv_viewset.name}_{key}_{pk}"
 
     def cv_get_context(
-        self, key: str | None = None, obj: Model | None = None, user: User | None = None, request=None
+        self,
+        key: str | None = None,
+        obj: Model | None = None,
+        user: User | None = None,
+        request=None,
+        *,
+        location: str | None = None,
     ) -> dict[str, Any]:
         """
-        Get template context for this view for a key and an optional object
+        Get template context for this view for a key and an optional object.
+
+        location ("context" or "list") stamps cv_label_mode for the configured key onto a non-empty result, so the
+        button leaf renders the mode the view resolved (#216); callers that are not rendering a button leave it None.
         """
+        data = self._cv_get_action_context(key, obj, user)
+        if location is not None and data:
+            data = {**data, "cv_label_mode": self.cv_get_action_label_mode(location, key)}
+        return data
+
+    def _cv_get_action_context(self, key: str | None, obj: Model | None, user: User | None) -> dict[str, Any]:
+        """The unstamped action context of cv_get_context()."""
 
         # first get the view context
         context = self.cv_get_view_context(object=obj)

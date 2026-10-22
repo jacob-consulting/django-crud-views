@@ -232,9 +232,9 @@ keys are `LEAF_KEYS`:
 | `cv_modal_size` | the semantic modal size (`""`, `"sm"`, `"lg"`, `"xl"`) |
 | `cv_active` | the target is the current view; never true for a disabled button |
 | `cv_key` | the action key, rendered as `cv-key` |
-| `cv_label` | the full label (on cards the explicit `label`, else the short label, else the key) |
+| `cv_label` | the label the leaf prints: on cards the explicit `label`, else the short label, else the key; on `context` and `list` the full label in `icon` mode (hidden text and `title`) and the short label in `label` / `both` (the visible text) |
 | `cv_short_label` | the short label, used for menu items |
-| `cv_label_mode` | how the label shows: `"label"` (text only), `"icon"` (icon with a visually hidden label) or `"both"` (icon and text); always present. Always `"icon"` for `"context"` and `"list"`; on cards it is the resolved [card action label mode](card-list-view.md#label-mode), and an empty label forces `"icon"` |
+| `cv_label_mode` | how the label shows: `"label"` (text only), `"icon"` (icon with a visually hidden label) or `"both"` (icon and text); always present. On `"context"` and `"list"` it is the view's resolved [label mode](action_menus.md#label-mode) for the key (`"icon"` unless a map names it); on cards it is the resolved [card action label mode](card-list-view.md#label-mode), and an empty label forces `"icon"` |
 | `cv_title` | the `title` text, which also marks the button with `data-cv-tooltip="<cv_location>"` for `tooltip.js`; present only when `cv_label_mode` is `"icon"` |
 | `cv_icon` | the icon value (see [Icons](icons.md)) |
 | `cv_variant` | the resolved variant; falls back to `"secondary"` |
@@ -295,9 +295,15 @@ The row controls of [formsets](formsets.md) use `formset:control`, `formset:cont
 ## A theme recipe
 
 Register the classes, then override one leaf where the markup differs. Classes that differ by label mode need no
-override at all — register `card:tertiary:icon` and the like instead (for the toolbar and rows only the `:icon` keys
-are read until #216). This example restyles the buttons for a framework that wants `button is-*` classes and shows
-the label of `primary` buttons next to the icon:
+override at all — register `card:tertiary:icon` and the like instead. Which toolbar and row buttons show text is not
+a theme decision either: the project names them in a [label mode map](action_menus.md#label-mode). This example
+restyles the buttons for a framework that wants `button is-*` classes, with a square variant for the icon-only
+toolbar buttons and the label shown on the primary action:
+
+```python
+# settings.py
+CRUD_VIEWS_CONTEXT_ACTIONS_LABEL_MODE = {"create": "both"}
+```
 
 ```python
 # myapp_theme/apps.py
@@ -307,9 +313,10 @@ def ready(self):
     register_button_classes(
         {
             "context:primary": "button is-primary",
-            "context:secondary": "button is-link is-light",
-            "context:tertiary": "button is-text",
-            "context:danger": "button is-danger",
+            "context:primary:icon": "button is-primary is-square",
+            "context:secondary": "button is-link is-light is-square",
+            "context:tertiary": "button is-text is-square",
+            "context:danger": "button is-danger is-square",
         }
     )
 ```
@@ -323,13 +330,12 @@ def ready(self):
     {% if cv_modal %}data-cv-modal="true" data-cv-modal-size="{{ cv_modal_size }}"{% endif %}
     {% if cv_active %}aria-current="page"{% endif %}
     {% if cv_title %}title="{{ cv_title }}" data-cv-tooltip="{{ cv_location }}"{% endif %}
-    cv-key="{{ cv_key }}">{% if cv_label_mode == "icon" %}{% cv_icon cv_icon %}<span{% if cv_variant != "primary" %} class="visually-hidden"{% endif %}>{{ cv_label }}</span>{% elif cv_label_mode == "both" %}{% if cv_icon %}{% cv_icon cv_icon %} {% endif %}<span>{{ cv_label }}</span>{% else %}<span>{{ cv_label }}</span>{% endif %}</{{ cv_tag }}>
+    cv-key="{{ cv_key }}">{% if cv_label_mode == "icon" %}{% cv_icon cv_icon %}<span class="visually-hidden">{{ cv_label }}</span>{% elif cv_label_mode == "both" %}{% if cv_icon %}{% cv_icon cv_icon %} {% endif %}<span>{{ cv_label }}</span>{% else %}<span>{{ cv_label }}</span>{% endif %}</{{ cv_tag }}>
 ```
 
-The `primary` guard works because every non-card location resolves `cv_label_mode` to `"icon"`, so the `"icon"` branch
-is the one the toolbar and list rows take. The card half of this trick is no longer a reason to override the leaf: a
-card shows icon and text with `CardListView.cv_card_actions_label_mode = "both"` (the default). The toolbar half stops
-being one when #216 lands.
+The override changes one word, `active` to `is-active`; everything else is the bundled leaf. Showing a label is not a
+reason to override: a card shows icon and text with `CardListView.cv_card_actions_label_mode = "both"` (the default),
+a toolbar or row button with its key in the label mode map.
 
 The leaf is shared by the context toolbar, list rows and cards: branch on `cv_label_mode` (`"icon"`, `"both"` and
 `"label"`; the bundled leaf treats `"label"` as the fallback branch and shows the icon in `"both"` only when `cv_icon`
@@ -348,3 +354,5 @@ override the leaf, otherwise an action disabled by `CRUD_VIEWS_INACCESSIBLE_ACTI
 | `crud_views.W362` | warning | a `CRUD_VIEWS_BUTTON_CLASSES` or theme key is neither in the default table nor a valid `location:variant:mode` (typo, or an unknown label mode) |
 | `viewset.E209` | error | a `cv_action_variant`, `ContextButton.variant` or `CardAction.variant` is not one of the four variants |
 | `viewset.E210` | error | a `CardAction.label_mode` or `cv_card_actions_label_mode` is not one of `"label"`, `"icon"`, `"both"` |
+| `viewset.E211` | error | a `cv_context_actions_label_mode` or `cv_list_actions_label_mode` is not `None` or a dict of action key → label mode |
+| `viewset.W291` | warning | a view's own `cv_*_actions_label_mode` names a key that is not among that location's actions |

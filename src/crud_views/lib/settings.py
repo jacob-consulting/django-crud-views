@@ -52,6 +52,12 @@ class CrudViewsSettings(BaseModel):
     context_actions_inline: Any = from_settings("CRUD_VIEWS_CONTEXT_ACTIONS_INLINE", default=None)
     card_actions_inline: Any = from_settings("CRUD_VIEWS_CARD_ACTIONS_INLINE", default=None)
 
+    # label mode of context / list actions (#216): action key -> "label" | "icon" | "both"; keys not named are
+    # "icon". Overridable per ViewSet (*_actions_label_mode) and per view (cv_*_actions_label_mode), resolved on
+    # the rendering view
+    context_actions_label_mode: Any = from_settings("CRUD_VIEWS_CONTEXT_ACTIONS_LABEL_MODE", default={})
+    list_actions_label_mode: Any = from_settings("CRUD_VIEWS_LIST_ACTIONS_LABEL_MODE", default={})
+
     # breadcrumb
     breadcrumb_prefix: list[dict[str, Any]] = from_settings("CRUD_VIEWS_BREADCRUMB_PREFIX", default=[])
 
@@ -81,6 +87,42 @@ class CrudViewsSettings(BaseModel):
     polymorphic_create_context_actions: list[str] = from_settings(
         "CRUD_VIEWS_POLYMORPHIC_CREATE_CONTEXT_ACTIONS", default=["home"]
     )
+
+    def _action_settings_messages(self) -> list[CheckMessage]:
+        """E105 / E106: the shape of the inline-keys lists (#174) and the label-mode maps (#216)."""
+        # deferred imports: settings.py must not import the view package at module level
+        from crud_views.lib.view.action_menu import cv_is_inline_keys
+        from crud_views.lib.view.label_mode import LABEL_MODES, is_label_mode_map
+
+        messages: list[CheckMessage] = []
+        for setting, value in (
+            ("CRUD_VIEWS_LIST_ACTIONS_INLINE", self.list_actions_inline),
+            ("CRUD_VIEWS_CONTEXT_ACTIONS_INLINE", self.context_actions_inline),
+            ("CRUD_VIEWS_CARD_ACTIONS_INLINE", self.card_actions_inline),
+        ):
+            if not cv_is_inline_keys(value):
+                messages.append(
+                    Error(
+                        id="crud_views.E105",
+                        msg=f"setting {setting} must be None or a list of strings, got {value!r}",
+                    )
+                )
+        # the setting is the floor of the chain, so None is not allowed here
+        for setting, value in (
+            ("CRUD_VIEWS_CONTEXT_ACTIONS_LABEL_MODE", self.context_actions_label_mode),
+            ("CRUD_VIEWS_LIST_ACTIONS_LABEL_MODE", self.list_actions_label_mode),
+        ):
+            if not isinstance(value, dict) or not is_label_mode_map(value):
+                messages.append(
+                    Error(
+                        id="crud_views.E106",
+                        msg=(
+                            f"setting {setting} must be a dict of action key -> one of {sorted(LABEL_MODES)}, "
+                            f"got {value!r}"
+                        ),
+                    )
+                )
+        return messages
 
     @property
     def check_messages(self) -> list[CheckMessage]:
@@ -130,21 +172,7 @@ class CrudViewsSettings(BaseModel):
                 )
             )
 
-        # deferred import: settings.py must not import the view package at module level
-        from crud_views.lib.view.action_menu import cv_is_inline_keys
-
-        for setting, value in (
-            ("CRUD_VIEWS_LIST_ACTIONS_INLINE", self.list_actions_inline),
-            ("CRUD_VIEWS_CONTEXT_ACTIONS_INLINE", self.context_actions_inline),
-            ("CRUD_VIEWS_CARD_ACTIONS_INLINE", self.card_actions_inline),
-        ):
-            if not cv_is_inline_keys(value):
-                messages.append(
-                    Error(
-                        id="crud_views.E105",
-                        msg=f"setting {setting} must be None or a list of strings, got {value!r}",
-                    )
-                )
+        messages.extend(self._action_settings_messages())
 
         # deferred import: settings.py must not import check.py at module level
         from crud_views.lib.check import REGS

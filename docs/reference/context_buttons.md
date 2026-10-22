@@ -62,10 +62,12 @@ except for targets that render inaccessible actions disabled, see
 [Hide or disable inaccessible actions](inaccessible_actions.md#custom-button-templates). For placing buttons by hand in a custom layout, see
 [Manual Placement (Template Tags)](#manual-placement-template-tags) below.
 
-A custom `template` or `template_code` is rendered from the resolved action data, which carries no `cv_label_mode`.
-One that resolves its classes with `{% cv_button_class "context" cv_variant %}` should pass its own mode as the third
-argument — `"icon"` for an icon-only button — the way the bundled `crud_views/tags/context_action_filter.html` does, so
-a theme's per-mode classes reach it. See [Buttons](buttons.md#the-class-table).
+A custom `template` or `template_code` is rendered from the resolved action data, which carries `cv_label_mode` as
+the view resolved it for the button's configured key (see [Action menus](action_menus.md#label-mode)); the template
+decides what to do with it. One that resolves its classes with `{% cv_button_class "context" cv_variant %}` should
+pass a mode as the third argument so a theme's per-mode classes reach it: `cv_label_mode` to follow the map, or a
+literal `"icon"` for a button that is icon-only by construction, the way the bundled
+`crud_views/tags/context_action_filter.html` does. See [Buttons](buttons.md#the-class-table).
 
 ### Active state
 
@@ -364,6 +366,9 @@ disabled — or a disabled button when the target view uses `cv_inaccessible_act
 
 {% cv_context_button "update" %}
 ```
+
+The button follows the view's [label mode](action_menus.md#label-mode) for that key, exactly as the toolbar would
+render it.
 
 ### `cv_context_has_permission` — gate surrounding markup
 

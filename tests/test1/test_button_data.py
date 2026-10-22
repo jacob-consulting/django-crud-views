@@ -114,11 +114,12 @@ def test_cv_no_label_in_ctx_raises(value):
         cv_button_data(ctx, "card")
 
 
+@pytest.mark.parametrize("location", LOCATIONS)
 @pytest.mark.parametrize("value", ["lable", "icons", "Both", 1, ["both"]])
-def test_unknown_cv_label_mode_on_card_raises(value):
+def test_unknown_cv_label_mode_raises_everywhere(location, value):
     ctx = base(cv_label="Details", cv_label_mode=value)
     with pytest.raises(ValueError, match="cv_label_mode"):
-        cv_button_data(ctx, "card")
+        cv_button_data(ctx, location)
 
 
 def test_card_label_falls_back_to_key():
@@ -129,9 +130,20 @@ def test_card_label_falls_back_to_key():
 
 
 @pytest.mark.parametrize("location", ["context", "list"])
-def test_label_mode_always_icon_off_cards(location):
-    data = cv_button_data(base(cv_label_mode="both"), location)
+@pytest.mark.parametrize("mode", ["both", "label"])
+def test_label_mode_stamped_off_cards_shows_short_label(location, mode):
+    data = cv_button_data(base(cv_label_mode=mode), location)
+    assert data["cv_label_mode"] == mode
+    assert data["cv_label"] == "Detail"
+    assert data["cv_short_label"] == "Detail"
+    assert "cv_title" not in data
+
+
+@pytest.mark.parametrize("location", ["context", "list"])
+def test_label_mode_icon_off_cards_keeps_full_label_and_title(location):
+    data = cv_button_data(base(cv_label_mode="icon"), location)
     assert data["cv_label_mode"] == "icon"
+    assert data["cv_label"] == "Show"
     assert data["cv_title"] == "Show"
 
 

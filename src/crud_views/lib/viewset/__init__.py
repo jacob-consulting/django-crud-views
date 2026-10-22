@@ -10,7 +10,7 @@ from django.db.models import Model, Q, QuerySet
 from django.urls import URLResolver, re_path
 from django.utils.text import capfirst
 from django.utils.translation import gettext as _
-from pydantic import BaseModel, Field, PrivateAttr, model_validator
+from pydantic import BaseModel, Field, PrivateAttr, field_validator, model_validator
 
 from crud_views.lib.exceptions import ViewSetKeyFoundError, ViewSetNotFoundError, cv_raise
 from crud_views.lib.resource import Resource
@@ -28,6 +28,7 @@ from ..view import (
     CrudViewPermissionRequiredMixin as CrudViewPermissionRequiredMixin,
 )
 from ..view.buttons import context_button_checks, context_buttons_default
+from ..view.label_mode import LABEL_MODES, is_label_mode_map
 from ..views.manage import ManageView
 from .parentviewset import ParentViewSet
 from .path_regs import PrimaryKeys
@@ -79,6 +80,10 @@ class ViewSet(BaseModel):
     list_actions_inline: list[str] | tuple[str, ...] | None = None
     context_actions_inline: list[str] | tuple[str, ...] | None = None
     card_actions_inline: list[str] | tuple[str, ...] | None = None
+    # label mode of context / list actions (#216): action key -> "label" | "icon" | "both";
+    # None: CRUD_VIEWS_*_ACTIONS_LABEL_MODE
+    context_actions_label_mode: dict[str, str] | None = None
+    list_actions_label_mode: dict[str, str] | None = None
     # Resource-based ViewSets only: explicit permission map, e.g.
     # {"view": "storage.view_s3object", "delete": "storage.delete_s3object"}.
     # None means: no permissions declared (only non-PermissionRequired views).
@@ -96,6 +101,14 @@ class ViewSet(BaseModel):
     @property
     def is_resource(self) -> bool:
         return issubclass(self.model, Resource)
+
+    @field_validator("context_actions_label_mode", "list_actions_label_mode")
+    @classmethod
+    def check_label_mode_map(cls, value):
+        """The dict shape is Pydantic's; the values must be label modes (#216)."""
+        if not is_label_mode_map(value):
+            raise ValueError(f"must map action keys to one of {sorted(LABEL_MODES)}, got {value!r}")
+        return value
 
     @model_validator(mode="after")
     def register(self) -> Self:

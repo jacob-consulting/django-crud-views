@@ -1,9 +1,2 @@
-{% load i18n %}
-<div class="alert alert-danger">
-    <strong>{% translate "This object cannot be deleted:" %}</strong>
-    <ul class="mb-0 mt-2">
-        {% for error in delete_protection_errors %}
-            <li>{{ error }}</li>
-        {% endfor %}
-    </ul>
-</div>
+{% load crud_views i18n %}
+{% cv_alert "error" heading=_("This object cannot be deleted:") items=delete_protection_errors %}

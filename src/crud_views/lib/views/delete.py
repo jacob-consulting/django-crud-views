@@ -180,6 +180,7 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, generic.DeleteView):
             related = self.cv_get_related_objects()
             related = self.cv_filter_related_objects(self.request.user, related)
             context["related_summary"] = related.summary
+            context["related_summary_items"] = [f"{name}: {count}" for name, count in related.summary.items()]
             context["protected_objects"] = related.protected
 
             urls = {}

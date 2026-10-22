@@ -35,6 +35,10 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 - Labelled inline card buttons now render their icon as well as their text (#213).
   `CardListView.cv_card_actions_label_mode = "label"` restores the old markup for a view;
   `CardAction(label_mode="label")` for one button.
+- A 0.29 or 0.30 override of `crud_views/tags/card_action.html` that branches on `cv_no_label` no longer gets that
+  key: the card action context carries `cv_label_mode` instead, so the override renders the label on every button,
+  the `CardAction(no_label=True)` ones included, and raises nothing. Move the markup into `tags/button/action.html`,
+  which branches on `cv_label_mode` (#253).
 - `cv_label_visible` has left the leaf contract; `cv_label_mode` (`"label"`, `"icon"` or `"both"`) replaces it. A
   project override of `crud_views/tags/button/action.html` must branch on the new key.
 - `cv_no_label` is no longer a `cv_button_data()` input and raises `ValueError` naming the replacement.

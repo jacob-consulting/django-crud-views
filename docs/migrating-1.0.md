@@ -177,6 +177,105 @@ None of these raise anything. Check your stylesheets, your JavaScript selectors 
 
 Templates to delete or move, the hooks that replace copied templates, and contract changes in templates you still override.
 
+Most of 1.0's theme work replaces copied templates with registered values and small leaves: the
+[button class table](reference/buttons.md#the-class-table), the [icon registry](reference/icons.md#registering-icons-from-a-theme),
+the [form frame](reference/theme.md#framing-the-form-pages), the [alert frame](reference/theme.md#alerts) and the
+[card blocks](reference/card-list-view.md#custom-card-template). Upgrading a theme is mostly deleting copies.
+`crud_views_tabler` ships its own update for 1.0.
+
+### Templates to delete
+
+Go through your theme's `templates/crud_views/` directory. Delete each of these copies:
+
+- **`tags/messages.html`** (#250). It is a loop over `tags/alert.html` now, and the dicts it receives have `level`
+  and `text` instead of `css_class` and `message`. A copy that reads the old keys renders `class="alert alert-"` with
+  an empty body. Override `tags/alert.html` (box, icon, heading, close button), `snippets/alert/text.html` or
+  `snippets/alert/list.html`, and register the colours as `alert:error`, `alert:warning`, `alert:success`,
+  `alert:info` and `alert:debug` ([Alerts](reference/theme.md#alerts)). Python code that imports `ALERT_CLASSES` or
+  `ICON_NAMES` from `crud_views.lib.messages` uses `LEVELS` and the `message-<level>` icon names instead.
+- **`tags/button_submit.html`, `tags/button_cancel.html`, `tags/button_delete.html`.** Nothing renders them any more;
+  the form buttons come from crispy's `Submit`, `Button` and `Reset` and take their classes from the `form:*` keys
+  ([Forms](reference/buttons.md#forms)).
+- **`tags/icon.html` [0.30]** and **`crud_views/detail/`** (#217). Nothing renders them.
+- **`view_create.content.html`, `view_update.content.html`, `view_custom_form.content.html`,
+  `view_delete.content.html`**, if you copied them to wrap the form in a card or similar (#239). They extend
+  `snippets/form_frame.html` now: override its `cv_form_frame` block instead
+  ([Framing the form pages](reference/theme.md#framing-the-form-pages)). A 0.29 copy also misses two fixes: its
+  `<form>` has no `enctype="multipart/form-data"`, so file fields upload nothing on create and custom-form pages
+  (#236), and the create copy renders `{{ form.media }}` twice (#191). The delete page's protection alert moved to
+  `snippets/delete/protection_errors.html`.
+- **`snippets/pagination.html`**, if you overrode it only for the arrows (#241). Register the `page-previous` and
+  `page-next` icons instead. If you keep it for other markup, take over the accessible markup described under
+  [CSS and tests](#css-and-tests-that-select-on-markup).
+
+### Templates to move
+
+The 0.29 templates that rendered one button are **logic templates** now: one line that calls a tag. Old copies still
+render, but they bypass the leaf contract, so new options (label modes, variants, disabled actions) don't reach
+them. Move the markup into the leaves and delete the copies
+([Logic templates and leaves](reference/buttons.md#logic-templates-and-leaves)):
+
+| 0.29 copy | Move the markup to |
+|---|---|
+| `tags/context_action.html`, `tags/list_action.html`, `tags/card_action.html` | `tags/button/action.html`, one leaf for all three locations (`cv_location`) |
+| `tags/actions_menu_item.html` | `tags/button/menu_item.html` |
+| `tags/actions_menu_item_label.html` | `tags/button/menu_item_label.html`; the stock menu no longer includes the old one |
+| `tags/context_actions.html`, `columns/actions.html` | `tags/button/container.html` (receives `cv_buttons`, `cv_group`, `cv_location`, `cv_container_tag`) |
+
+- **`tags/card_action.html` copies that branch on `cv_no_label`** break silently. The card action context no longer
+  carries `cv_no_label`; it carries `cv_label_mode`. So a copy renders the label on every button, the icon-only ones
+  (`CardAction(no_label=True)`) included. The leaf branches on `cv_label_mode` (`"label"`, `"icon"`, `"both"`)
+  ([The leaf contract](reference/buttons.md#the-leaf-contract)).
+
+### Hooks instead of copies
+
+Register these from your theme's `AppConfig.ready()`; a project's own settings still win over them.
+
+- **Button classes:** `register_button_classes({...})` with `location:slot` keys, optionally
+  `location:variant:mode` ([The class table](reference/buttons.md#the-class-table)). 1.0 adds the utility slots
+  `*:active`, `card:flex` and `*:hidden-label` (#227), the card keys `card:root`, `card:body`, `card:title` (#243),
+  the alert keys `alert:*` (#250), and the `form:*` keys for the crispy buttons. A theme on a framework that spells
+  `active` or `visually-hidden` differently registers its own words and overrides no leaf
+  ([A theme recipe](reference/buttons.md#a-theme-recipe)).
+- **Icons [0.30]:** `register_icon_library(prefix, renderer=..., **config)` and `register_icons({...})`
+  ([Registering icons from a theme](reference/icons.md#registering-icons-from-a-theme)). 1.0 adds the names
+  `page-previous`, `page-next` and `message-success`, `message-info`, `message-warning`, `message-error`,
+  `message-debug` ([Default table](reference/icons.md#default-table)).
+- **The form frame:** `snippets/form_frame.html`, block `cv_form_frame` (#239).
+- **The card:** extend `tags/card.html` and fill `card_title`, `card_content` and `card_actions` (#243). A copy of
+  `view_card.content.html` misses the translated empty state, "No items found." (#246).
+- **The alert frame:** `tags/alert.html` and its two bodies (#250).
+- **JavaScript:** `cv.adapters.modal`, `cv.adapters.tooltip` and `cv.adapters.collapse` replace Bootstrap's API for a
+  theme on another framework ([`cv.adapters`](reference/javascript.md#cvadapters)).
+
+### Contract changes in templates you still override
+
+- **Icon values [0.30].** `cv_icon_action`, `cv_icon_header` and `cv_menu_icon` hold icon values (`"detail"`,
+  `"fas:truck"`), not CSS classes. Render them with `{% cv_icon cv_icon_action %}`; `<i class="{{ cv_icon_action }}">`
+  renders an invisible icon for every stock action. The object-detail filters `icon_class` and `named_icon_class`
+  are gone: an old copy of an object-detail layout or type template fails with `TemplateSyntaxError`. Use
+  `{% cv_icon group.icon css="me-2" %}` and `{% cv_icon "boolean-true" %}`.
+- **`fa-fw` [0.30]** in menu icons becomes `cv-icon-fw` from `crud_views/css/icons.css`.
+- **Action menus:** `cv_menu_wrapper_class` and `cv_toggle_class` are no longer in the context of
+  `tags/actions_menu.html` and `tags/actions_menu_toggle.html`; use `{% cv_button_class cv_location "menu-wrapper" %}`
+  and `"menu-toggle"`. These two templates are still the ones to override for a framework with a different dropdown
+  ([Templates that follow Bootstrap's DOM](reference/theme.md#templates-that-follow-bootstraps-dom)).
+- **The filter toggle** (`tags/context_action_filter.html`): hide the inactive icon with the `hidden` attribute, not
+  `class="d-none"`, because `list.filter.js` flips `hidden` (#232). Render `aria-expanded` and
+  `aria-controls="filter-collapse"`; the `#filter-collapse` id is a contract
+  ([The filter toggle contract](reference/javascript.md#the-filter-toggle-contract)).
+- **The modal:** the close button in `modal/content.html` uses `data-cv-modal-dismiss`. A copy with `data-bs-dismiss`
+  keeps working under the Bootstrap adapter only. `{% cv_config %}` renders the modal shell from `modal/shell.html`,
+  which you can override on its own ([Theming the modal](reference/modals.md#theming-the-modal)).
+- **Formset controls** (`formsets/control.html`): keep `data-cv-class` and `data-cv-class-danger` on the delete
+  toggle, or it is no longer recoloured. Keep `data-cv-tooltip="formset"` and the translated `title`s.
+- **Object detail property-detail button:** `title` and `data-cv-tooltip="object-detail"` instead of `data-bs-title`,
+  classes from the `object-detail:property-detail` key.
+- **Table sort icons [0.30]** in `table/bootstrap5.html`: `{% cv_icon "table-sort-asc" %}` and
+  `{% cv_icon "table-sort-desc" %}` instead of Font Awesome 4 classes.
+- **Active state:** `snippets/card_order.html` and the leaves take `active` from the `*:active` keys (#227). A copy
+  with a hard-coded `active` keeps working.
+
 ## Silent breaks
 
 Everything that renders differently and raises nothing, as one checklist.

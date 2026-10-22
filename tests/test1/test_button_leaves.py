@@ -100,6 +100,82 @@ def test_action_leaf_renders_from_contract_only():
     assert button.get("data-cv-action") is None
 
 
+def test_active_and_flex_come_from_the_table(theme_layer):
+    register_button_classes({"context:active": "is-active", "card:active": "is-current", "card:flex": "is-expanded"})
+    a = _one(render_to_string(ACTION_LEAF, _context_get()), "a")
+    assert a.get("class") == "btn btn-outline-primary btn-lg is-active"
+    card = _context_get(cv_location="card", cv_variant="primary", cv_flex=True)
+    a = _one(render_to_string(ACTION_LEAF, card), "a")
+    assert a.get("class") == "btn btn-primary btn-sm is-current is-expanded"
+
+
+def test_menu_item_active_comes_from_the_table(theme_layer):
+    register_button_classes({"menu:active": "is-active"})
+    a = _one(render_to_string(MENU_ITEM_LEAF, _context_get(cv_location="list")), "a")
+    assert a.get("class") == "dropdown-item is-active"
+
+
+@pytest.mark.parametrize(
+    ("key", "extra", "base"),
+    [
+        ("context:active", {}, ["btn", "btn-outline-primary", "btn-lg"]),
+        (
+            "card:flex",
+            {"cv_location": "card", "cv_variant": "primary", "cv_active": False, "cv_flex": True},
+            ["btn", "btn-primary", "btn-sm"],
+        ),
+    ],
+)
+def test_utility_key_set_to_none_renders_no_token(key, extra, base):
+    # the flag is on, the key is None, so only the base classes render (a trailing space is fine)
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={key: None}):
+        a = _one(render_to_string(ACTION_LEAF, _context_get(**extra)), "a")
+    assert a.get("class").split() == base
+
+
+def test_hidden_label_comes_from_the_table(theme_layer):
+    register_button_classes({"list:hidden-label": "sr-only"})
+    a = _one(render_to_string(ACTION_LEAF, _context_get(cv_location="list", cv_active=False)), "a")
+    (hidden,) = a.cssselect("span")
+    assert hidden.get("class") == "sr-only"
+    assert hidden.text == "Details"
+
+
+def test_menu_item_without_icon_renders_the_fixed_width_placeholder():
+    a = _one(render_to_string(MENU_ITEM_LEAF, _context_get(cv_location="list", cv_active=False, cv_icon=None)), "a")
+    (placeholder,) = a.cssselect("span")
+    assert placeholder.get("class") == "cv-icon-fw"
+    assert placeholder.get("aria-hidden") == "true"
+
+
+@pytest.mark.django_db
+def test_toggles_hidden_label_comes_from_the_table(client_full, author_douglas_adams, monkeypatch):
+    monkeypatch.setattr(AuthorListView, "cv_list_actions", ["detail", "update", "delete", "up", "ping"])
+    monkeypatch.setattr(AuthorListView, "cv_list_actions_inline", ["detail"])
+    user = User.objects.create_user(username="leaves_publisher_view", password="pw")
+    user_viewset_permission(user, cv_publisher, "view")
+    publisher_client = Client()
+    publisher_client.force_login(user)
+    classes = {"list:hidden-label": "sr-only", "context:hidden-label": "sr-label"}
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES=classes):
+        _, doc = _get(client_full, "list")
+        resp = publisher_client.get(reverse(cv_publisher.get_router_name("list")))
+    menu_toggle = doc.cssselect("fieldset[cv-list-container] button.cv-menu-toggle")[0]
+    assert menu_toggle.cssselect("span")[0].get("class") == "sr-only"
+    assert resp.status_code == 200
+    filter_toggle = lxml_html.fromstring(resp.content).cssselect("#cv-filter-toggle")[0]
+    assert filter_toggle.cssselect("span")[-1].get("class") == "sr-label"
+
+
+@pytest.mark.django_db
+def test_card_icon_mode_hidden_label_comes_from_the_table(client_full, author_douglas_adams, monkeypatch):
+    monkeypatch.setattr(AuthorCardListView, "cv_card_actions", [CardAction(key="detail", label_mode="icon")])
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"card:hidden-label": "sr-only"}):
+        _, doc = _get(client_full, "card")
+    a = doc.cssselect("div[cv-card-container] a[cv-key=detail]")[0]
+    assert a.cssselect("span")[0].get("class") == "sr-only"
+
+
 def test_action_leaf_with_empty_variant_class():
     with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"context:secondary": None}):
         markup = render_to_string(ACTION_LEAF, _context_get())

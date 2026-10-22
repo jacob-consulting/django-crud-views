@@ -1,8 +1,8 @@
 {% load crud_views %}<{{ cv_tag }}{% if cv_tag == "a" %} href="{{ cv_href }}"{% else %} type="button"{% endif %}
-    class="{% cv_button_class cv_location cv_variant cv_label_mode %}{% if cv_active %} active{% endif %}{% if cv_flex %} flex-grow-1{% endif %}"
+    class="{% cv_button_class cv_location cv_variant cv_label_mode %}{% if cv_active %} {% cv_button_class cv_location 'active' %}{% endif %}{% if cv_flex %} {% cv_button_class 'card' 'flex' %}{% endif %}"
     {% if cv_disabled %}disabled data-cv-disabled="{{ cv_disabled_reason }}"{% endif %}
     {% if cv_submit_target %}data-cv-action="submit-form" data-cv-target="{{ cv_submit_target }}"{% endif %}
     {% if cv_modal %}data-cv-modal="true" data-cv-modal-size="{{ cv_modal_size }}"{% endif %}
     {% if cv_active %}aria-current="page"{% endif %}
     {% if cv_title %}title="{{ cv_title }}" data-cv-tooltip="{{ cv_location }}"{% endif %}
-    cv-key="{{ cv_key }}">{% if cv_label_mode == "icon" %}{% cv_icon cv_icon %}<span class="visually-hidden">{{ cv_label }}</span>{% elif cv_label_mode == "both" %}{% if cv_icon %}{% cv_icon cv_icon %} {% endif %}<span>{{ cv_label }}</span>{% else %}<span>{{ cv_label }}</span>{% endif %}</{{ cv_tag }}>
+    cv-key="{{ cv_key }}">{% if cv_label_mode == "icon" %}{% cv_icon cv_icon %}<span class="{% cv_button_class cv_location 'hidden-label' %}">{{ cv_label }}</span>{% elif cv_label_mode == "both" %}{% if cv_icon %}{% cv_icon cv_icon %} {% endif %}<span>{{ cv_label }}</span>{% else %}<span>{{ cv_label }}</span>{% endif %}</{{ cv_tag }}>

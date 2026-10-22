@@ -77,6 +77,10 @@ def test_w362_accepts_action_mode_keys(key):
         "card:tertiary:icon:extra",
         "card:tertiary:",
         "form:submit:icon",
+        "context:active:icon",
+        "card:flex:both",
+        "list:hidden-label:icon",
+        "context:flex",
     ],
 )
 def test_w362_rejects_bad_mode_shape(key):

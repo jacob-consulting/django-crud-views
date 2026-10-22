@@ -95,10 +95,12 @@ See [Buttons](buttons.md#registering-classes-from-a-theme).
 
 ## Worked example: restyle the buttons
 
-Register the classes as above, then override one leaf, for example a visible label for `primary` buttons. Give your
-theme app a template at `myapp_theme/templates/crud_views/tags/button/action.html` (the full template is in
-[Buttons](buttons.md#a-theme-recipe)). With `myapp_theme` listed before `crud_views` in `INSTALLED_APPS`, every
-action button renders your leaf with the registered classes, while all other templates keep the bootstrap5 defaults.
+Register the classes as above — the `*:active` and `*:hidden-label` keys included when your framework spells those
+utilities differently — and override nothing for looks (the worked registration is in
+[Buttons](buttons.md#a-theme-recipe)). Override a leaf only where the markup itself differs: give your theme app a
+template at `myapp_theme/templates/crud_views/tags/button/action.html`, and with `myapp_theme` listed before
+`crud_views` in `INSTALLED_APPS` every action button renders your leaf with the registered classes, while all other
+templates keep the bootstrap5 defaults.
 
 The thin templates `tags/context_action.html`, `tags/list_action.html`, `tags/card_action.html` and
 `tags/actions_menu_item.html` are logic templates: do not copy them, override the leaves instead.

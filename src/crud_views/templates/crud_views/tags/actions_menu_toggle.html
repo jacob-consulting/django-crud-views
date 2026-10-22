@@ -3,5 +3,5 @@
 <button type="button" class="{% cv_button_class cv_location "menu-toggle" %} dropdown-toggle cv-menu-toggle"
         data-bs-toggle="dropdown" aria-expanded="false" aria-label="{% translate 'More actions' %}"
         {% if cv_location == "list" %}data-bs-popper-config='{"strategy":"fixed"}'{% endif %}>
-    {% cv_icon cv_menu_icon %}<span class="visually-hidden">{% translate "More actions" %}</span>
+    {% cv_icon cv_menu_icon %}<span class="{% cv_button_class cv_location 'hidden-label' %}">{% translate "More actions" %}</span>
 </button>

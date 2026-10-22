@@ -2,6 +2,7 @@ from types import SimpleNamespace
 
 import pytest
 from django.contrib.auth.models import User
+from django.test import override_settings
 from django.test.client import Client
 from lxml import html
 
@@ -144,6 +145,17 @@ def test_card_order_toolbar_marks_active_direction(client_publisher_order, publi
     asc_btn = doc.cssselect("#cv-card-order-form button[name=dir][value=asc]")[0]
     assert "active" in desc_btn.get("class")
     assert "active" not in asc_btn.get("class")
+
+
+@pytest.mark.django_db
+def test_card_order_toolbar_active_class_comes_from_the_table(client_publisher_order, publishers):
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"card-order:active": "is-active"}):
+        response = client_publisher_order.get("/publisher_order/card/?order=name&dir=desc")
+    doc = html.fromstring(response.content)
+    desc_btn = doc.cssselect("#cv-card-order-form button[name=dir][value=desc]")[0]
+    asc_btn = doc.cssselect("#cv-card-order-form button[name=dir][value=asc]")[0]
+    assert desc_btn.get("class") == "btn btn-outline-secondary is-active"
+    assert asc_btn.get("class") == "btn btn-outline-secondary"
 
 
 @pytest.mark.django_db

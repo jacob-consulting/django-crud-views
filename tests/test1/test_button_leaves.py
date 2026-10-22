@@ -100,6 +100,39 @@ def test_action_leaf_renders_from_contract_only():
     assert button.get("data-cv-action") is None
 
 
+def test_active_and_flex_come_from_the_table(theme_layer):
+    register_button_classes({"context:active": "is-active", "card:active": "is-current", "card:flex": "is-expanded"})
+    a = _one(render_to_string(ACTION_LEAF, _context_get()), "a")
+    assert a.get("class") == "btn btn-outline-primary btn-lg is-active"
+    card = _context_get(cv_location="card", cv_variant="primary", cv_flex=True)
+    a = _one(render_to_string(ACTION_LEAF, card), "a")
+    assert a.get("class") == "btn btn-primary btn-sm is-current is-expanded"
+
+
+def test_menu_item_active_comes_from_the_table(theme_layer):
+    register_button_classes({"menu:active": "is-active"})
+    a = _one(render_to_string(MENU_ITEM_LEAF, _context_get(cv_location="list")), "a")
+    assert a.get("class") == "dropdown-item is-active"
+
+
+@pytest.mark.parametrize(
+    ("key", "extra", "base"),
+    [
+        ("context:active", {}, ["btn", "btn-outline-primary", "btn-lg"]),
+        (
+            "card:flex",
+            {"cv_location": "card", "cv_variant": "primary", "cv_active": False, "cv_flex": True},
+            ["btn", "btn-primary", "btn-sm"],
+        ),
+    ],
+)
+def test_utility_key_set_to_none_renders_no_token(key, extra, base):
+    # the flag is on, the key is None, so only the base classes render (a trailing space is fine)
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={key: None}):
+        a = _one(render_to_string(ACTION_LEAF, _context_get(**extra)), "a")
+    assert a.get("class").split() == base
+
+
 def test_action_leaf_with_empty_variant_class():
     with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"context:secondary": None}):
         markup = render_to_string(ACTION_LEAF, _context_get())

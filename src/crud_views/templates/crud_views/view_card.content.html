@@ -1,4 +1,4 @@
-{% load crud_views %}
+{% load i18n crud_views %}
 
 {% include "crud_views/snippets/card_order.html" %}
 
@@ -9,7 +9,7 @@
         </div>
         {% empty %}
         <div class="col-12">
-            <p class="text-muted">No items found.</p>
+            <p class="text-muted">{% translate "No items found." %}</p>
         </div>
     {% endfor %}
 </div>

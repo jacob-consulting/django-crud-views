@@ -306,6 +306,10 @@ msgstr "Weitere Aktionen"
 msgid "This object cannot be deleted:"
 msgstr "Dieses Objekt kann nicht gelöscht werden:"
 
+#: templates/crud_views/view_card.content.html:12
+msgid "No items found."
+msgstr "Keine Einträge gefunden."
+
 #: templates/crud_views/view_manage.html:9
 msgid "Properties"
 msgstr "Eigenschaften"

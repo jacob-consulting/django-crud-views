@@ -147,6 +147,12 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Added
 
+- `CRUD_VIEWS_HEADER_LEVEL`: the level of your `{% cv_header %}` (1–5). Card titles, the workflow sections, the
+  object-detail group headings (accordion included) render one level below it and keep their look through
+  Bootstrap's size class (`<h2 class="h5 card-title">`); the modal title renders at it. Unset (the default), every
+  heading keeps its stock level, so the output is unchanged. `{% cv_heading ["header"] level=N class=… %}` renders
+  such a heading, also for the view title in your base template. Invalid values raise `crud_views.E107`. The example
+  project's view title is now the page `h1` with the setting at `1` (#251).
 - [Migrating to 1.0.0](docs/migrating-1.0.md): the route from 0.29.x for an app on the stock theme and for a
   downstream theme, with a checklist of the breaks that raise nothing (#253).
 - `{% cv_alert level heading=… text=… items=… body_template=… dismissible=… extra_tags=… %}` renders one alert

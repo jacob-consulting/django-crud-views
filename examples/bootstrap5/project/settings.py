@@ -124,6 +124,8 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 # django-crud-views
 CRUD_VIEWS_EXTENDS = "project/crud_views.html"
 CRUD_VIEWS_BREADCRUMB_PREFIX = [{"title": _("Home"), "url_name": "home"}]
+# the view title in project/crud_views.html is the page h1; the package's headings render as h2
+CRUD_VIEWS_HEADER_LEVEL = 1
 
 # public demo (see settings_demo.py); False for local runs
 DEMO_MODE = False

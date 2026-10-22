@@ -5,6 +5,8 @@ crashing on get_template(None), an invalid CRUD_VIEWS_MANAGE_VIEWS_ENABLED
 value is reported, and repeated check runs do not accumulate duplicates.
 """
 
+import pytest
+
 from crud_views.lib.settings import CrudViewsSettings
 
 
@@ -66,3 +68,16 @@ def test_origin_param_invalid_name_reported():
         assert len(messages) == 1, bad
         assert messages[0].id == "crud_views.E103"
         assert "CRUD_VIEWS_ORIGIN_PARAM" in messages[0].msg
+
+
+@pytest.mark.parametrize("value", [None, 1, 3, 5])
+def test_header_level_valid(value):
+    assert CrudViewsSettings(header_level=value).check_messages == []
+
+
+@pytest.mark.parametrize("value", [0, 6, "2", True, 2.0])
+def test_header_level_invalid(value):
+    messages = CrudViewsSettings(header_level=value).check_messages
+    assert len(messages) == 1
+    assert messages[0].id == "crud_views.E107"
+    assert "CRUD_VIEWS_HEADER_LEVEL" in messages[0].msg

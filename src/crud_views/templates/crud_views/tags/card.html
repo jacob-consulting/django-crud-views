@@ -3,7 +3,7 @@
 
 <div class="{% cv_button_class "card" "root" %}">
     <div class="{% cv_button_class "card" "body" %}">
-        <h5 class="{% cv_button_class "card" "title" %}">{% block card_title %}{{ object }}{% endblock card_title %}</h5>
+        {% cv_button_class "card" "title" as cv_card_title_class %}{% cv_heading level=5 class=cv_card_title_class %}{% block card_title %}{{ object }}{% endblock card_title %}{% endcv_heading %}
         {% block card_content %}{% endblock card_content %}
         {% block card_actions %}
         {% for ctx in group.menu %}

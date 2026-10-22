@@ -1,6 +1,7 @@
 from django import template
 from django.conf import settings
 from django.template.loader import get_template, render_to_string
+from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
 from django.utils.text import capfirst
 from django.utils.translation import get_language, get_language_info
@@ -304,6 +305,66 @@ def cv_filter_header(context):
 def cv_header(context):
     view: CrudView = cv_get_view(context)
     return view.cv_header
+
+
+class CvHeadingNode(template.Node):
+    child_nodelists = ("nodelist",)
+
+    def __init__(self, nodelist, level: int, css, header: bool):
+        self.nodelist = nodelist
+        self.level = level
+        self.css = css
+        self.header = header
+
+    def render(self, context):
+        # read at render time, so a changed setting applies without re-parsing templates
+        header_level = crud_views_settings.header_level
+        if header_level is None:
+            rendered = self.level
+        elif self.header:
+            rendered = header_level
+        else:
+            rendered = header_level + 1
+        classes = [f"h{self.level}"] if rendered != self.level else []
+        css = conditional_escape(self.css.resolve(context)) if self.css is not None else ""
+        if css:
+            classes.append(css)
+        attr = f' class="{" ".join(classes)}"' if classes else ""
+        return mark_safe(f"<h{rendered}{attr}>{self.nodelist.render(context)}</h{rendered}>")
+
+
+@register.tag(name="cv_heading")
+def cv_heading(parser, token):
+    """``{% cv_heading ["header"] level=N [class=…] %}…{% endcv_heading %}``: a heading that follows
+    CRUD_VIEWS_HEADER_LEVEL (#251).
+
+    ``level`` is the template's own level, used while the setting is unset. Set, a content heading renders one below
+    the header, and ``"header"`` renders exactly at the header level. When the rendered level differs from ``level``,
+    Bootstrap's ``h{level}`` size class keeps the look.
+    """
+    bits = token.split_contents()
+    name, bits = bits[0], bits[1:]
+    header = False
+    if bits and bits[0] in ('"header"', "'header'"):
+        header = True
+        bits = bits[1:]
+    kwargs = template.base.token_kwargs(bits, parser)
+    if bits:
+        raise template.TemplateSyntaxError(f"{name} accepts only an optional 'header', level= and class=")
+    unknown = set(kwargs) - {"level", "class"}
+    if unknown:
+        raise template.TemplateSyntaxError(f"{name} got unknown arguments: {', '.join(sorted(unknown))}")
+    if "level" not in kwargs:
+        raise template.TemplateSyntaxError(f"{name} requires level=")
+    # only a number literal: a Variable without lookups, no filters (a variable or "5" is rejected below)
+    var = kwargs["level"].var
+    is_literal = isinstance(var, template.Variable) and var.lookups is None and not kwargs["level"].filters
+    level = var.literal if is_literal else None
+    if type(level) is not int or not 1 <= level <= 6:
+        raise template.TemplateSyntaxError(f"{name} level= must be an int literal from 1 to 6")
+    nodelist = parser.parse(("endcv_heading",))
+    parser.delete_first_token()
+    return CvHeadingNode(nodelist, level, kwargs.get("class"), header)
 
 
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/breadcrumb.html", takes_context=True)

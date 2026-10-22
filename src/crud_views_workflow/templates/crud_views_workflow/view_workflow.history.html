@@ -1,7 +1,7 @@
-{% load i18n %}
+{% load i18n crud_views %}
 
 {% if object.workflow_data %}
-    <h5>{% translate "Workflow History" %}</h5>
+    {% cv_heading level=5 %}{% translate "Workflow History" %}{% endcv_heading %}
 
     <table class="table">
         <thead>

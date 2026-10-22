@@ -1,7 +1,7 @@
-{% load crud_views_object_detail %}
+{% load crud_views crud_views_object_detail %}
 <div class="card mb-3">
     <div class="card-header">
-        <h5 class="card-title mb-{% if group.description %}1{% else %}0{% endif %}">{{ group.title }}</h5>
+        {% cv_heading level=5 class=group.description|yesno:"card-title mb-1,card-title mb-0" %}{{ group.title }}{% endcv_heading %}
         {% if group.description %}<small class="text-body-secondary">{{ group.description }}</small>{% endif %}
     </div>
     <div class="card-body">

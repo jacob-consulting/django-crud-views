@@ -1,6 +1,6 @@
-{% load i18n crud_views_object_detail %}
+{% load i18n crud_views crud_views_object_detail %}
 <div class="accordion-item">
-    <h2 class="accordion-header">
+    {% cv_heading level=2 class="accordion-header" %}
         <button class="accordion-button collapsed" type="button"
                 data-bs-toggle="collapse" data-bs-target="#objectDetailCollapse-{{ group.title|slugify }}"
                 aria-expanded="false"
@@ -9,7 +9,7 @@
             {{ group.title }}
             <span class="badge text-bg-secondary ms-2">{{ group.properties|length }} properties</span>
         </button>
-    </h2>
+    {% endcv_heading %}
     <div id="objectDetailCollapse-{{ group.title|slugify }}"
          class="accordion-collapse collapse"
          data-bs-parent="#objectDetailAccordion">

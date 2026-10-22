@@ -81,4 +81,4 @@ def test_detail_header_icon_is_a_free_solid_icon(alice_client, seeded_product, u
     assert response.status_code == 200
     html = response.content.decode()
     assert "fa-regular fa-box" not in html and "fa-regular fa-truck" not in html
-    assert icon_class in [i.get("class") for i in lxml_html.fromstring(html).cssselect("h3 i")]
+    assert icon_class in [i.get("class") for i in lxml_html.fromstring(html).cssselect("h1 i")]

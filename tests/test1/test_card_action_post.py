@@ -54,7 +54,7 @@ def test_card_post_action_renders_submit_form(
     assert len(form) == 1
     assert form[0].get("action") == f"/author/{pk}/up/"
     assert form[0].get("method") == "post"
-    assert "d-none" in form[0].get("class")
+    assert form[0].get("hidden") is not None
     assert len(form[0].cssselect("input[name='csrfmiddlewaretoken']")) == 1
 
     # The "Up" button must NOT be a bare GET link to the action URL
@@ -86,7 +86,7 @@ def test_card_modal_action_renders_modal_trigger(
 
     # A modal action is neither a submit-form trigger nor does it emit a hidden form
     assert len(card.cssselect("a[data-cv-action='submit-form']")) == 0
-    assert len(card.cssselect("form.d-none")) == 0
+    assert len(card.cssselect("form[hidden]")) == 0
 
 
 @pytest.mark.django_db

@@ -27,7 +27,7 @@ Spec: `superpowers/specs/2026-10-22-button-utility-class-keys-design.md`. Plan:
 3. **A rendering guard proves every class on a table-styled button element comes from the table or the `cv-`
    namespace.** `test_button_chain_renders_only_table_classes` (`tests/test1/test_button_classes_templates.py`):
    a sentinel table for all 43 keys, the action leaf at every location × mode with `cv_active` and `cv_flex` on,
-   the menu item leaf, and four pages (publisher list with the active `list` button and the filter toggle, author
+   the menu item leaf, and five pages over six URLs (publisher list with the active `list` button and the filter toggle, author
    list with row menus, author cards with the `flex` action, the order card page in both directions, author
    detail). Mutation evidence during Task 4: a literal ` active` put back into the action leaf fails it with
    `('a', 'active')` on every page and leaf render; emptying `BEHAVIOUR_TOKENS` surfaces exactly
@@ -62,10 +62,37 @@ Spec: `superpowers/specs/2026-10-22-button-utility-class-keys-design.md`. Plan:
 - Table keys with Bootstrap defaults instead of a package stylesheet rule (the maintainer's answer to the builder
   check): no file under `src/crud_views/static/` changed.
 
+## Final review (fresh reviewer, whole branch)
+
+No Critical findings. The reviewer reproduced the guard's bite with six mutations of its own in a detached worktree
+(literal `active` in the leaf, `visually-hidden` on the menu toggle, on the filter toggle and in the leaf's icon
+branch, `d-inline-block` on the placeholder, `active` on a sort toggle), each failing the guard with the tag and
+token named, and confirmed the ledger's "no deviation from the plan" claim against the diff.
+
+Fixed in one pass (commit `356cf2c`, docs only): `CHANGELOG.md` and `buttons.md` said the legacy
+`tags/actions_menu_item_label.html` "keeps its 0.30 body", which commit `dc735b1` had made false by dropping
+`d-inline-block` from its placeholder. Both sentences now say "minus the `d-inline-block` on its icon placeholder".
+Verified by grep (prose has no unit test): the old wording is gone, the amended wording is present in both files;
+`ruff format --check` and `mkdocs build` clean.
+
+Deferred as minor (the maintainer decides): `BEHAVIOUR_TOKENS` exempts by token alone, so a future literal `d-none` on
+a hidden-label span or `dropdown-toggle` on any styled element would pass; keying the two exemptions by
+`(selector, token)` would close that. The legacy include's placeholder branch (`cv_icon_action=None` through
+`actions_menu_item_label.html`) has no test of its own; the stock placeholder has one. `buttons.md` lines 92–93 wrap a
+sentence mid-way (renders fine). The "four pages" wording in Goal 3 above was corrected to five pages over six URLs.
+
+Rulings on what the reviewer set aside: the Bootstrap words outside the button chain (pagination, breadcrumb, the
+table pager, the language selector items, the object-detail tabs and table heads), the dropdown's behaviour hooks
+(#232), `.cv-icon-fw` reaching a page only through `{% cv_css %}` (#231), the menu toggle's `aria-label` beside its
+hidden span, the example project's own markup and the leading space when a variant key is `None` all stand as
+pre-existing or named non-goals. The guard renders `container.html` and `card_order.html` at page level rather than
+leaf level as the spec's guard step listed; the plan made that call and the reviewer's sort-toggle mutation confirms
+the coverage is equivalent.
+
 ## Verification
 
 - `pytest tests -n auto -q` → 2451 passed, 2 skipped (2441 at the end of Task 1, 2446 after Task 2, 2450 after
-  Task 3).
+  Task 3). Unchanged by the review fix, which touched prose only.
 - `ruff check src tests` and `ruff format --check src tests docs` clean; pre-commit ran on every commit.
 - `mkdocs build -q` clean after the docs commit.
 - `git diff main --stat -- src/crud_views/static src/crud_views/lib` lists `button_classes.py` only.

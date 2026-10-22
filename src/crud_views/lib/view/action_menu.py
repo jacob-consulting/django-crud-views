@@ -7,6 +7,8 @@ from typing import Any
 from crud_views.lib.check import Check, CheckExpression, CheckWarningExpression
 from crud_views.lib.settings import crud_views_settings
 
+from .label_mode import LABEL_MODES, is_label_mode_map
+
 
 def cv_is_inline_keys(value: Any) -> bool:
     """True for a valid inline-keys value: None, or a list/tuple of strings."""
@@ -36,6 +38,34 @@ def cv_inline_checks(cls, attribute: str, known_keys: Iterable[str] | None) -> I
     yield CheckWarningExpression(
         context=cls,
         id="W290",
+        expression=not unknown,
+        msg=f"{attribute} names {unknown!r}, which are not among this view's actions {known!r} (typo?)",
+    )
+
+
+def cv_label_mode_checks(cls, attribute: str, known_keys: Iterable[str] | None) -> Iterator[Check]:
+    """viewset.E211 / viewset.W291 for a view's own cv_*_actions_label_mode attribute (#216).
+
+    Same rule as cv_inline_checks: only the attribute set on the view class is checked for unknown keys.
+    """
+    value = getattr(cls, attribute)
+    valid = is_label_mode_map(value)
+    yield CheckExpression(
+        context=cls,
+        id="E211",
+        expression=valid,
+        msg=(
+            f"{attribute} must be None or a dict of action key -> one of {sorted(LABEL_MODES)}, got {value!r} "
+            f"(cv_card_actions_label_mode is the string-valued default of card views)"
+        ),
+    )
+    if not valid or value is None:
+        return
+    known = list(known_keys or [])
+    unknown = [key for key in value if key not in known]
+    yield CheckWarningExpression(
+        context=cls,
+        id="W291",
         expression=not unknown,
         msg=f"{attribute} names {unknown!r}, which are not among this view's actions {known!r} (typo?)",
     )

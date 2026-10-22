@@ -249,6 +249,11 @@ The selected value is **whitelisted** against `cv_order_fields`, so an arbitrary
 Set Django's `paginate_by` to enable pagination. A Bootstrap pagination control renders
 below the grid; its links preserve the active filter and order.
 
+The previous and next arrows are the `page-previous` and `page-next` [icons](icons.md), so a theme swaps them through
+`CRUD_VIEWS_ICONS` or `register_icons()` without overriding the template. Each arrow carries a visually hidden,
+translated label; the current page has `aria-current="page"`, and a disabled end is a link without `href` and with
+`aria-disabled="true"`.
+
 ```python
 class BookCardListView(CardListViewPermissionRequired):
     cv_viewset = cv_book

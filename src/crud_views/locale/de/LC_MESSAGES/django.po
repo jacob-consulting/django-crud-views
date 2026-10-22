@@ -289,10 +289,18 @@ msgstr "Details des ViewSets <strong>%(cv)s</strong> verwalten"
 msgid "Update %(verbose_name_translate)s <strong>%(object)s</strong>"
 msgstr "%(verbose_name_translate)s <strong>%(object)s</strong> bearbeiten"
 
+#: templates/crud_views/snippets/pagination.html:3
+msgid "pagination"
+msgstr "Seitennavigation"
+
+#: templates/crud_views/snippets/pagination.html:7
+#: templates/crud_views/snippets/pagination.html:11
 #: templates/crud_views/table/bootstrap5.html:70
 msgid "previous"
 msgstr "zurück"
 
+#: templates/crud_views/snippets/pagination.html:25
+#: templates/crud_views/snippets/pagination.html:29
 #: templates/crud_views/table/bootstrap5.html:90
 msgid "next"
 msgstr "weiter"

@@ -1,9 +1,13 @@
+import os
+import re
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
 from django.contrib.auth.models import User
 from django.test import override_settings
 from django.test.client import Client
+from django.utils import translation
 from lxml import html
 
 from tests.lib.helper.user import user_viewset_permission
@@ -186,13 +190,78 @@ def test_card_pagination_second_page(client_publisher_order, publishers):
 def test_card_pagination_links_preserve_order_and_filter(client_publisher_order, publishers):
     response = client_publisher_order.get("/publisher_order/card/?order=name&dir=desc")
     doc = html.fromstring(response.content)
-    hrefs = [a.get("href") for a in doc.cssselect("nav .pagination a.page-link")]
+    hrefs = [a.get("href") for a in doc.cssselect("nav .pagination a.page-link[href]")]
     assert hrefs, "expected page links"
     # every page link keeps order + dir and never duplicates page
     for href in hrefs:
         assert "order=name" in href
         assert "dir=desc" in href
         assert href.count("page=") == 1
+
+
+# #241: accessible pagination markup, arrows from the icon registry.
+# Regenerate the goldens ONLY when a change to the stock markup is intended:
+# CV_UPDATE_GOLDEN=1 pytest tests/test1/test_card_order.py
+GOLDEN_DIR = Path(__file__).parent / "golden" / "card_pagination"
+
+
+def _pagination(client, page: int):
+    response = client.get(f"/publisher_order/card/?page={page}")
+    (ul,) = html.fromstring(response.content).cssselect("nav > ul.pagination")
+    nav = ul.getparent()
+    return nav
+
+
+def _check_golden(name: str, nav):
+    markup = re.sub(r"\s+", " ", re.sub(r">\s+<", "><", html.tostring(nav, encoding="unicode"))).strip()
+    path = GOLDEN_DIR / f"{name}.html"
+    if os.environ.get("CV_UPDATE_GOLDEN"):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(markup + "\n")
+    assert markup == path.read_text().strip()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("page", [1, 2])
+def test_card_pagination_golden(client_publisher_order, publishers, page):
+    _check_golden(f"page{page}", _pagination(client_publisher_order, page))
+
+
+@pytest.mark.django_db
+def test_card_pagination_current_page_aria_current(client_publisher_order, publishers):
+    nav = _pagination(client_publisher_order, 2)
+    (current,) = nav.cssselect('.page-item[aria-current="page"]')
+    assert "active" in current.get("class")
+    assert current.text_content().strip() == "2"
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("page, end", [(1, 0), (2, -1)])
+def test_card_pagination_disabled_end_is_aria_disabled_link(client_publisher_order, publishers, page, end):
+    item = _pagination(client_publisher_order, page).cssselect(".page-item")[end]
+    assert "disabled" in item.get("class")
+    (link,) = item.cssselect("a.page-link")
+    assert link.get("aria-disabled") == "true"
+    assert link.get("href") is None
+
+
+@pytest.mark.django_db
+@override_settings(LANGUAGES=[("en", "English"), ("de", "German")])
+def test_card_pagination_labels_translated(client_publisher_order, publishers):
+    # the test project has no LocaleMiddleware: activate German around the request (as test_i18n.py does)
+    with translation.override("de"):
+        nav = _pagination(client_publisher_order, 1)
+    assert nav.get("aria-label") == "Seitennavigation"
+    labels = [s.text_content() for s in nav.cssselect(".page-link .visually-hidden")]
+    assert labels == ["zurück", "weiter"]
+
+
+@pytest.mark.django_db
+@override_settings(CRUD_VIEWS_ICONS={"page-previous": "bi:arrow-left", "page-next": "bi:arrow-right"})
+def test_card_pagination_arrows_from_icon_registry(client_publisher_order, publishers):
+    items = _pagination(client_publisher_order, 1).cssselect(".page-item")
+    assert items[0].cssselect("i")[0].get("class") == "bi bi-arrow-left"
+    assert items[-1].cssselect("i")[0].get("class") == "bi bi-arrow-right"
 
 
 @pytest.mark.django_db

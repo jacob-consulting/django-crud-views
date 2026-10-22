@@ -55,14 +55,16 @@ def cv_button_data(ctx: dict, location: str) -> dict:
     else:
         label = ctx.get("cv_action_label", "") or ""
         short_label = ctx.get("cv_action_short_label") or ctx.get("cv_action_label") or ""
-    if card:
-        label_mode = ctx.get("cv_label_mode") or "both"
-        if not is_label_mode(label_mode):
-            raise ValueError(f"cv_label_mode must be one of {sorted(LABEL_MODES)}, got {label_mode!r}")
-        if not label:
-            label_mode = "icon"
-    else:
+    # cards default to both; context and list to icon, unless the view stamped a mode for the key (#216)
+    label_mode = ctx.get("cv_label_mode") or ("both" if card else "icon")
+    if not is_label_mode(label_mode):
+        raise ValueError(f"cv_label_mode must be one of {sorted(LABEL_MODES)}, got {label_mode!r}")
+    if not label:
         label_mode = "icon"
+    if not card and label_mode != "icon":
+        # the visible text of a labelled toolbar or row button is the short label; icon mode keeps the full
+        # label as the hidden text and the title (#216)
+        label = short_label
 
     data = {
         "cv_location": location,

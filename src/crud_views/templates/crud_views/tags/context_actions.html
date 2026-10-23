@@ -6,6 +6,6 @@
         {% cv_render_list_action_form ctx %}
     {% endfor %}
 
-    {% include "crud_views/tags/button/container.html" with cv_buttons=group.inline cv_group=group cv_location="context" cv_container_tag="fieldset" %}
+    {% include "crud_views/tags/button/container.html" with cv_buttons=group.inline cv_group=group cv_location="context" %}
 
 {% endif %}

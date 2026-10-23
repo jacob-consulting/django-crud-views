@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.template import Context, Template
 from django.test import Client, override_settings
 from django.urls import reverse
+from django.utils import translation
 from lxml import html as lxml_html
 
 from crud_views.lib.view import CardAction
@@ -194,19 +195,80 @@ def test_standalone_context_button_never_li(client_full, author_douglas_adams):
     assert "<li" not in out
 
 
+# --- #265 / #266: an empty group renders nothing; tag and label from the class table ----------------------------
+
+
+@pytest.mark.parametrize("loc", ["context", "list", "card"])
 @pytest.mark.parametrize("group", [None, "empty"])
-def test_zero_items_render_as_today_whatever_the_keys(group):
+@pytest.mark.parametrize("keys", [False, True])
+def test_zero_items_render_nothing_whatever_the_keys(group, loc, keys):
     from django.template.loader import render_to_string
 
     from crud_views.lib.view.action_menu import ActionGroup
 
-    ctx = {
-        "cv_container_tag": "div",
-        "cv_location": "card",
-        "cv_buttons": [],
-        "cv_group": ActionGroup() if group else None,
-    }
-    expected = render_to_string("crud_views/tags/button/container.html", ctx)
-    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={**_list_keys("card"), **_bare("card")}):
-        assert render_to_string("crud_views/tags/button/container.html", ctx) == expected
-    assert "cv-card-container" in expected
+    ctx = {"cv_location": loc, "cv_buttons": [], "cv_group": ActionGroup() if group else None}
+    classes = {**_list_keys(loc), **_bare(loc)} if keys else {}
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES=classes):
+        assert render_to_string("crud_views/tags/button/container.html", ctx).strip() == ""
+
+
+@pytest.mark.django_db
+def test_menu_only_group_keeps_container(client_full, author_douglas_adams, monkeypatch):
+    _list_actions(monkeypatch, ["detail", "update"], inline=[])
+    doc = _page(client_full, "list")
+    (container,) = _containers(doc, "list")
+    assert container.cssselect(".cv-menu-toggle")
+
+
+@pytest.mark.django_db
+def test_list_row_without_actions_has_no_container(client_full, author_douglas_adams, monkeypatch):
+    _list_actions(monkeypatch, [])
+    doc = _page(client_full, "list")
+    assert _containers(doc, "list") == []
+    assert not doc.cssselect("td fieldset")
+
+
+@pytest.mark.django_db
+def test_tag_and_label_from_settings(client_full, author_douglas_adams, monkeypatch):
+    _list_actions(monkeypatch, ["detail", "update"])
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"list:container-tag": "div", "list:container-label": "Row"}):
+        doc = _page(client_full, "list")
+    (container,) = _containers(doc, "list")
+    assert container.tag == "div"
+    assert container.get("aria-label") == "Row"
+
+
+@pytest.mark.django_db
+def test_tag_none_renders_div(client_full, author_douglas_adams):
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"context:container-tag": None}):
+        doc = _page(client_full, "detail", author_douglas_adams)
+    (container,) = _containers(doc, "context")
+    assert container.tag == "div"
+
+
+@pytest.mark.django_db
+def test_label_none_renders_no_aria_label(client_full, author_douglas_adams):
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"context:container-label": None}):
+        doc = _page(client_full, "detail", author_douglas_adams)
+    (container,) = _containers(doc, "context")
+    assert container.get("aria-label") is None
+
+
+@pytest.mark.django_db
+def test_label_is_escaped(client_full, author_douglas_adams):
+    label = 'A "b" <c>'
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"context:container-label": label}):
+        resp = client_full.get(reverse(cv_author.get_router_name("detail"), kwargs={"pk": author_douglas_adams.pk}))
+    assert "&quot;b&quot; &lt;c&gt;" in resp.content.decode()
+    (container,) = _containers(lxml_html.fromstring(resp.content), "context")
+    assert container.get("aria-label") == label
+
+
+@pytest.mark.django_db
+@override_settings(LANGUAGES=[("en", "English"), ("de", "German")])
+def test_context_label_german(client_full, author_douglas_adams):
+    # the test project has no LocaleMiddleware: activate German around the request (as test_i18n.py does)
+    with translation.override("de"):
+        doc = _page(client_full, "detail", author_douglas_adams)
+    (container,) = _containers(doc, "context")
+    assert container.get("aria-label") == "Aktionen"

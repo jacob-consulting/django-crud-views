@@ -26,7 +26,7 @@ from tests.test1.test_action_label_mode_render import (
     _rows,
     _toolbar,
 )
-from tests.test1.test_context_button_label_mode import _is_text_only, _with_viewset_buttons
+from tests.test1.test_context_button_label_mode import _is_text_only, _messages, _target, _w292, _with_viewset_buttons
 
 
 def _set_target(monkeypatch, view, mode):
@@ -155,3 +155,60 @@ def test_menu_folded_key_keeps_icon_and_short_label(author_douglas_adams, monkey
     assert item.xpath("./i[@aria-hidden='true']")
     assert item.text_content().strip() == "Update"
     assert item.get("title") is None
+
+
+# checks
+
+
+def test_e210_invalid_target_attribute(monkeypatch):
+    _set_target(monkeypatch, AuthorUpdateView, "text")
+    (msg,) = _messages(AuthorUpdateView.checks(), "viewset.E210")
+    assert "cv_context_action_label_mode" in msg
+    assert "'text'" in msg
+
+
+def test_e210_dict_on_target_attribute_names_the_map(monkeypatch):
+    _set_target(monkeypatch, AuthorUpdateView, {"update": "label"})
+    (msg,) = _messages(AuthorUpdateView.checks(), "viewset.E210")
+    assert "cv_context_actions_label_mode" in msg
+
+
+@pytest.mark.parametrize("mode", [None, "label", "icon", "both"])
+def test_no_e210_for_valid_or_unset_target_attribute(monkeypatch, mode):
+    _set_target(monkeypatch, AuthorUpdateView, mode)
+    assert _messages(AuthorUpdateView.checks(), "viewset.E210") == []
+
+
+def test_e211_string_on_map_names_target_attribute(monkeypatch):
+    monkeypatch.setattr(AuthorDetailView, "cv_context_actions_label_mode", "label")
+    (msg,) = _messages(AuthorDetailView.checks(), "viewset.E211")
+    assert "cv_context_action_label_mode" in msg
+
+
+@pytest.mark.parametrize("mode", ["label", "both"])
+def test_w292_silent_with_target_label_mode(monkeypatch, mode):
+    monkeypatch.setattr(_target("update"), "cv_icon_action", None)
+    _set_target(monkeypatch, _target("update"), mode)
+    assert _w292() == []
+
+
+def test_w292_explicit_target_icon_still_warns(monkeypatch):
+    monkeypatch.setattr(_target("update"), "cv_icon_action", None)
+    _set_target(monkeypatch, _target("update"), "icon")
+    (msg,) = _w292()
+    assert "'update'" in msg
+
+
+def test_w292_registered_button_follows_target(monkeypatch):
+    monkeypatch.setattr(_target("update"), "cv_icon_action", None)
+    _set_target(monkeypatch, _target("update"), "label")
+    _with_viewset_buttons(monkeypatch, ContextButton(key="edit", key_target="update"))
+    monkeypatch.setattr(AuthorDetailView, "cv_context_actions", ["edit"])
+    assert _w292() == []
+
+
+def test_w292_invalid_target_attribute_does_not_crash(monkeypatch):
+    monkeypatch.setattr(_target("update"), "cv_icon_action", None)
+    _set_target(monkeypatch, _target("update"), "text")
+    (msg,) = _w292()  # a non-mode value counts as unset; E210 reports it on the target view
+    assert "'update'" in msg

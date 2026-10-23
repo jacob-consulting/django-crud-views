@@ -56,7 +56,8 @@ def cv_label_mode_checks(cls, attribute: str, known_keys: Iterable[str] | None) 
         expression=valid,
         msg=(
             f"{attribute} must be None or a dict of action key -> one of {sorted(LABEL_MODES)}, got {value!r} "
-            f"(cv_card_actions_label_mode is the string-valued default of card views)"
+            f"(cv_card_actions_label_mode is the string-valued default of card views, cv_context_action_label_mode "
+            f"the string-valued default of a target view)"
         ),
     )
     if not valid or value is None:

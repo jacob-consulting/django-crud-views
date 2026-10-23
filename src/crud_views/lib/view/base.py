@@ -47,6 +47,7 @@ from .action_menu import (
 )
 from .buttons import ContextButton, context_button_checks, cv_icon_mode_checks
 from .context import ViewContext
+from .label_mode import label_mode_check
 from .meta import CrudViewMetaClass
 from .variant import variant_check
 from .visibility import cv_resolve_action
@@ -177,6 +178,11 @@ class CrudView(metaclass=CrudViewMetaClass):
             msg=f"cv_inaccessible_actions must be None, 'hide' or 'disable', got {cls.cv_inaccessible_actions!r}",
         )
         yield variant_check(cls, "cv_action_variant", cls.cv_action_variant)
+        if cls.cv_context_action_label_mode is not None:
+            hint = ""
+            if isinstance(cls.cv_context_action_label_mode, dict):
+                hint = " (cv_context_actions_label_mode is the per-key dict of the page showing the toolbar)"
+            yield label_mode_check(cls, "cv_context_action_label_mode", cls.cv_context_action_label_mode, hint)
         yield from cv_inline_checks(cls, "cv_list_actions_inline", cls.cv_list_actions)
         yield from cv_inline_checks(cls, "cv_context_actions_inline", cls.cv_context_actions)
         yield from cv_label_mode_checks(cls, "cv_list_actions_label_mode", cls.cv_list_actions)

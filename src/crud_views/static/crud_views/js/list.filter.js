@@ -17,8 +17,17 @@
         }
         button.setAttribute("aria-expanded", String(next));
 
-        // toggle icon (both variants are rendered server side, one is hidden)
-        button.querySelectorAll("[data-cv-filter-icon]").forEach((icon) => (icon.hidden = !icon.hidden));
+        // toggle icon: a host-placed icon (#258) is a class on the button itself, swap it; otherwise both variants
+        // are rendered server side as spans and one is hidden
+        if (button.dataset.cvFilterIconOpen !== undefined) {
+            const classes = (value) => (value || "").split(/\s+/).filter(Boolean);
+            const open = classes(button.dataset.cvFilterIconOpen),
+                close = classes(button.dataset.cvFilterIconClose);
+            button.classList.remove(...(next ? open : close));
+            button.classList.add(...(next ? close : open));
+        } else {
+            button.querySelectorAll("[data-cv-filter-icon]").forEach((icon) => (icon.hidden = !icon.hidden));
+        }
 
         // persist the state server side; a failed request must not undo the toggle
         const config = cvGetConfig();

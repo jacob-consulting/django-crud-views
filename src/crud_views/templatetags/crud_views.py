@@ -14,7 +14,7 @@ from crud_views.lib.icons import render_icon
 from crud_views.lib.messages import alert_data, message_alerts
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import CrudView
-from crud_views.lib.view.button_data import cv_button_data
+from crud_views.lib.view.button_data import cv_button_data, icon_host_keys
 from crud_views.lib.view.visibility import cv_resolve_action
 
 register = template.Library()
@@ -153,7 +153,14 @@ def cv_actions_menu(context, group, location):
     """The dropdown for a group's menu items; renders nothing when there are none (#174)."""
     if group is None or not group.menu:
         return {}
-    return {"cv_menu_items": group.menu, "cv_location": location, "cv_menu_icon": "actions-menu"}
+    icon_class, icon_inline = icon_host_keys("actions-menu", location)
+    return {
+        "cv_menu_items": group.menu,
+        "cv_location": location,
+        "cv_menu_icon": "actions-menu",
+        "cv_menu_icon_class": icon_class,
+        "cv_menu_icon_inline": icon_inline,
+    }
 
 
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/actions_menu_item.html")

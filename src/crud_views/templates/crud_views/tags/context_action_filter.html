@@ -1,13 +1,14 @@
-{% load crud_views %}
+{% load crud_views %}{% cv_icon_class "filter" "context" as cv_open_class %}{% cv_icon_class "filter-close" "context" as cv_close_class %}
 <button type="button"
-   class="{% cv_button_class "context" cv_variant|default:"secondary" "icon" %}"
+   class="{% cv_button_class "context" cv_variant|default:"secondary" "icon" %}{% if cv_open_class and cv_close_class %} {% if cv_filter_expanded %}{{ cv_close_class }}{% else %}{{ cv_open_class }}{% endif %}{% endif %}"
    id="cv-filter-toggle"
    aria-expanded="{% if cv_filter_expanded %}true{% else %}false{% endif %}"
    aria-controls="filter-collapse"
    title="{{ cv_action_label }}"
    data-cv-tooltip="context"
-   cv-key="{{ cv_key }}">
-    <span data-cv-filter-icon="open"{% if cv_filter_expanded %} hidden{% endif %}>{% cv_icon "filter" %}</span>
+   {% if cv_open_class and cv_close_class %}data-cv-filter-icon-open="{{ cv_open_class }}" data-cv-filter-icon-close="{{ cv_close_class }}"
+   {% endif %}cv-key="{{ cv_key }}">
+    {% if not cv_open_class or not cv_close_class %}<span data-cv-filter-icon="open"{% if cv_filter_expanded %} hidden{% endif %}>{% cv_icon "filter" %}</span>
     <span data-cv-filter-icon="close"{% if not cv_filter_expanded %} hidden{% endif %}>{% cv_icon "filter-close" %}</span>
-    <span class="{% cv_button_class 'context' 'hidden-label' %}">{{ cv_action_label }}</span>
+    {% endif %}<span class="{% cv_button_class 'context' 'hidden-label' %}">{{ cv_action_label }}</span>
 </button>

@@ -104,7 +104,8 @@ def test_card_icon_mode_gets_title():
 
 
 def test_card_empty_label_forces_icon():
-    data = cv_button_data({"cv_label": "", "cv_key": "", "cv_url": "/u/", "cv_label_mode": "both"}, "card")
+    ctx = {"cv_label": "", "cv_key": "", "cv_url": "/u/", "cv_label_mode": "both", "cv_icon_action": "detail"}
+    data = cv_button_data(ctx, "card")
     assert data["cv_label_mode"] == "icon"
 
 
@@ -219,6 +220,7 @@ def test_host_slot_none_switches_icon_off():
 
 
 @host_icons
+@override_settings(CRUD_VIEWS_STRICT=False)  # icon mode without an icon is a strict error (#264)
 def test_host_without_icon():
     data = cv_button_data(base(cv_icon_action=None), "context")
     assert data["cv_icon_class"] == ""
@@ -228,3 +230,59 @@ def test_host_without_icon():
 def test_unknown_kind_raises():
     with pytest.raises(ValueError):
         cv_button_data(base(), "context", kind="pill")
+
+
+# #264: an icon-only action button needs an icon
+
+
+@pytest.mark.parametrize("location", LOCATIONS)
+@pytest.mark.parametrize("icon", [None, ""])
+def test_icon_mode_without_icon_raises_strict(location, icon):
+    with override_settings(CRUD_VIEWS_STRICT=True), pytest.raises(ValueError, match=r"'detail'.*icon"):
+        cv_button_data(base(cv_icon_action=icon, cv_label_mode="icon"), location)
+
+
+@pytest.mark.parametrize("location", LOCATIONS)
+@pytest.mark.parametrize("icon", [None, ""])
+def test_icon_mode_without_icon_falls_back_to_label(location, icon, caplog):
+    with override_settings(CRUD_VIEWS_STRICT=False):
+        data = cv_button_data(base(cv_icon_action=icon, cv_label_mode="icon"), location)
+    assert data["cv_label_mode"] == "label"
+    assert "cv_title" not in data
+    assert data["cv_label"] == "Detail"  # the short label, as for any labelled button
+    assert "'detail'" in caplog.text
+
+
+def test_menu_item_without_icon_untouched():
+    with override_settings(CRUD_VIEWS_STRICT=True):
+        data = cv_button_data(base(cv_icon_action=None, cv_label_mode="icon"), "context", kind="menu-item")
+    assert data["cv_label_mode"] == "icon"
+
+
+@pytest.mark.parametrize("location", LOCATIONS)
+def test_icon_present_unchanged(location):
+    with override_settings(CRUD_VIEWS_STRICT=True):
+        data = cv_button_data(base(cv_label_mode="icon"), location)
+    assert data["cv_label_mode"] == "icon"
+
+
+@pytest.mark.parametrize("location", LOCATIONS)
+@pytest.mark.parametrize("mode", ["label", "both"])
+def test_label_and_both_without_icon_untouched(location, mode):
+    with override_settings(CRUD_VIEWS_STRICT=True):
+        data = cv_button_data(base(cv_icon_action=None, cv_label_mode=mode), location)
+    assert data["cv_label_mode"] == mode
+
+
+def test_empty_label_and_icon_raises_strict():
+    ctx = base(cv_icon_action=None, cv_action_label="", cv_action_short_label="", cv_label_mode="label")
+    with override_settings(CRUD_VIEWS_STRICT=True), pytest.raises(ValueError, match="'detail'"):
+        cv_button_data(ctx, "context")
+
+
+def test_empty_label_and_icon_stays_icon_and_logs(caplog):
+    ctx = base(cv_icon_action=None, cv_action_label="", cv_action_short_label="", cv_label_mode="label")
+    with override_settings(CRUD_VIEWS_STRICT=False):
+        data = cv_button_data(ctx, "context")
+    assert data["cv_label_mode"] == "icon"
+    assert "'detail'" in caplog.text

@@ -102,6 +102,11 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Changed
 
+- An icon-only action button (context toolbar, list row or card) whose icon is empty no longer renders as an
+  invisible button (#264). Under `CRUD_VIEWS_STRICT` (default `DEBUG`) `cv_button_data()` raises `ValueError`;
+  otherwise the button renders its label, as in `"label"` mode, and a warning is logged. pytest-django runs tests
+  with `DEBUG=False`, so set `CRUD_VIEWS_STRICT = True` in your test settings to make such buttons fail the tests.
+  `CRUD_VIEWS_STRICT` is now documented in the settings reference.
 - The delete page's protection and related-objects alerts and the guardian manage page's config alert render
   through `tags/alert.html`, so they gain `role="alert"` and the level's `message-*` icon before the heading. Their
   markup is otherwise unchanged (#250).

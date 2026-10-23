@@ -90,6 +90,12 @@ the visible text is its only accessible name. A theme styles the modes apart wit
 like in the [class table](buttons.md#the-class-table). The map applies to inline buttons; an action folded into the
 menu renders icon and short label in every mode.
 
+An icon-only button needs an icon. A toolbar, row or card button whose mode is `"icon"` while its icon is empty would
+render nothing visible, so it raises under [`CRUD_VIEWS_STRICT`](settings.md#basic-settings) (default `DEBUG`) and
+otherwise renders as `"label"` with a logged warning. pytest-django runs tests with `DEBUG=False`: set
+`CRUD_VIEWS_STRICT = True` in your test settings so such a button fails the tests. System check `viewset.W292` reports
+the toolbar cases it can see at startup.
+
 ## What is never folded
 
 - Context buttons with their own `template=` or `template_code=`: they render a whole button, which cannot become a

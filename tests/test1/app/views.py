@@ -135,6 +135,7 @@ class AuthorPingView(ActionViewPermissionRequired):
     cv_key = "ping"
     cv_path = "ping"
     cv_viewset = cv_author
+    cv_icon_action = "fa-solid fa-bolt"  # an icon-only row button needs an icon (#264)
     cv_backend_only = True
     cv_action_label_template_code = "Ping"
     cv_action_short_label_template_code = "Ping"
@@ -1098,6 +1099,7 @@ class AuthorOriginContactView(CrispyViewMixin, MessageMixin, CustomFormViewPermi
     cv_key = "contact"
     cv_path = "contact"
     cv_viewset = cv_author_origin
+    cv_icon_action = "fa-solid fa-envelope"  # an icon-only toolbar button needs an icon (#264)
     form_class = AuthorContactForm
     cv_cancel_key = "card"
     cv_cancel_keys = ["list", "detail"]

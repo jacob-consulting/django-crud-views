@@ -275,7 +275,7 @@ keys are `LEAF_KEYS`:
 | `cv_variant` | the resolved variant; falls back to `"secondary"` |
 | `cv_flex` | the leaf adds the `card:flex` classes; true only on cards |
 | `cv_icon_class` | the class a [host-placed icon](icons.md#host-placement) adds to the button (the `<location>:icon-host` slot, `menu:icon-host` for a menu item), else `""`; `""` for an action button in `"label"` mode |
-| `cv_icon_inline` | render `{% cv_icon cv_icon %}` inside the button; `False` for a host-placed icon |
+| `cv_icon_inline` | render `{% cv_icon cv_icon %}` inside the button; `False` for a host-placed icon. The leaves test `is not False`, so a dict without the key renders the icon as before |
 
 A renderer registered through the icon library config must emit `aria-hidden="true"` on the icon, as `render_icon()` does.
 The `"both"` branch of the bundled leaf relies on it: the visible `<span>` must be the button's only accessible name.

@@ -169,7 +169,6 @@ def _leaf_contract(location: str, mode: str) -> dict:
         "cv_icon": "detail",
         "cv_variant": "secondary",
         "cv_flex": location == "card",
-        "cv_icon_inline": True,
     }
 
 

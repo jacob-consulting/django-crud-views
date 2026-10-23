@@ -1,1 +1,1 @@
-{% load crud_views %}{% if not cv_icon_inline %}{{ cv_short_label }}{% elif cv_icon %}{% cv_icon cv_icon css="cv-icon-fw" %} {{ cv_short_label }}{% else %}<span class="cv-icon-fw" aria-hidden="true"></span> {{ cv_short_label }}{% endif %}
+{% load crud_views %}{% if cv_icon_inline is False %}{{ cv_short_label }}{% elif cv_icon %}{% cv_icon cv_icon css="cv-icon-fw" %} {{ cv_short_label }}{% else %}<span class="cv-icon-fw" aria-hidden="true"></span> {{ cv_short_label }}{% endif %}

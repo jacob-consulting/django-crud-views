@@ -300,8 +300,7 @@ Register these from your theme's `AppConfig.ready()`; a project's own settings s
   `cv_icon_inline` is true ([The leaf contract](reference/buttons.md#the-leaf-contract)). The menu toggle reads
   `cv_menu_icon_class` / `cv_menu_icon_inline`. A filter-toggle copy renders, for a host library, the current state's
   class on the button plus `data-cv-filter-icon-open` / `data-cv-filter-icon-close` instead of the two spans
-  ([The filter toggle contract](reference/javascript.md#the-filter-toggle-contract)). A copy that passes its own
-  hand-built dict to a leaf must add `cv_icon_inline: True`, or the leaf renders no icon.
+  ([The filter toggle contract](reference/javascript.md#the-filter-toggle-contract)).
 - **Action menus:** `cv_menu_wrapper_class` and `cv_toggle_class` are no longer in the context of
   `tags/actions_menu.html` and `tags/actions_menu_toggle.html`; use `{% cv_button_class cv_location "menu-wrapper" %}`
   and `"menu-toggle"`. These two templates are still the ones to override for a framework with a different dropdown

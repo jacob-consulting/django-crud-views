@@ -48,7 +48,6 @@ def _context_get(**extra) -> dict:
         "cv_icon": "detail",
         "cv_variant": "secondary",
         "cv_flex": False,
-        "cv_icon_inline": True,
     }
     data.update(extra)
     return data
@@ -593,3 +592,21 @@ def test_filter_toggle_mixed_placement_uses_spans():
     assert button.get("data-cv-filter-icon-open") is None
     assert len(button.cssselect("[data-cv-filter-icon]")) == 2
     assert button.cssselect('[data-cv-filter-icon="open"] i')[0].get("class") == "icon icon-funnel"
+
+
+def test_leaf_dict_without_icon_inline_keeps_the_icon():
+    # a hand-built leaf dict from before #258 has no cv_icon_inline: a missing key means inline, not "no icon"
+    ctx = {k: v for k, v in _context_get().items() if k != "cv_icon_inline"}
+    assert len(_one(render_to_string(ACTION_LEAF, ctx), "a").cssselect("i")) == 1
+    both = {**ctx, "cv_label_mode": "both"}
+    assert len(_one(render_to_string(ACTION_LEAF, both), "a").cssselect("i")) == 1
+    item = _one(render_to_string(MENU_ITEM_LEAF, {**ctx, "cv_location": "list"}), "a")
+    assert len(item.cssselect("i.cv-icon-fw")) == 1
+    placeholder = _one(render_to_string(MENU_ITEM_LEAF, {**ctx, "cv_location": "list", "cv_icon": None}), "a")
+    assert placeholder.cssselect("span")[0].get("class") == "cv-icon-fw"
+
+
+def test_menu_toggle_without_inline_key_keeps_the_icon():
+    ctx = {"cv_location": "list", "cv_menu_icon": "actions-menu"}
+    toggle = _one(render_to_string("crud_views/tags/actions_menu_toggle.html", ctx), "button")
+    assert toggle.cssselect("i")[0].get("class") == "fa-solid fa-ellipsis"

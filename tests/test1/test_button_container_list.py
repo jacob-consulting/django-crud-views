@@ -192,3 +192,21 @@ def test_standalone_context_button_never_li(client_full, author_douglas_adams):
         )
     assert 'cv-key="update"' in out
     assert "<li" not in out
+
+
+@pytest.mark.parametrize("group", [None, "empty"])
+def test_zero_items_render_as_today_whatever_the_keys(group):
+    from django.template.loader import render_to_string
+
+    from crud_views.lib.view.action_menu import ActionGroup
+
+    ctx = {
+        "cv_container_tag": "div",
+        "cv_location": "card",
+        "cv_buttons": [],
+        "cv_group": ActionGroup() if group else None,
+    }
+    expected = render_to_string("crud_views/tags/button/container.html", ctx)
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={**_list_keys("card"), **_bare("card")}):
+        assert render_to_string("crud_views/tags/button/container.html", ctx) == expected
+    assert "cv-card-container" in expected

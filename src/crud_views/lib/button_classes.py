@@ -171,13 +171,14 @@ def get_container_layout(location: str, item_count: int) -> ContainerLayout:
     """The ``location:container-*`` keys for a container of ``item_count`` rendered items (#261).
 
     Reads the raw values: unlike get_button_class(), ``container-list`` keeps "" (a list without class) apart from
-    None (no list). Non-str values fall back to the defaults' meaning; ``bare`` only ever applies to one item.
+    None (no list). Non-str values fall back to the defaults' meaning. ``bare`` only ever applies to one item, and an
+    empty container gets no list: zero items render as without the keys.
     """
     classes = get_button_classes()
     list_class = classes.get(f"{location}:container-list")
     item_class = classes.get(f"{location}:container-item")
     return ContainerLayout(
-        list_class=list_class if isinstance(list_class, str) else None,
+        list_class=list_class if isinstance(list_class, str) and item_count > 0 else None,
         item_class=item_class if isinstance(item_class, str) else "",
         bare=item_count == 1 and classes.get(f"{location}:container-single") == "bare",
     )

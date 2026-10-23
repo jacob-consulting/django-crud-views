@@ -7,7 +7,7 @@ module-level STRICT = False, so misconfigurations fail loudly in development.
 import pytest
 from django.test import override_settings
 
-from crud_views.lib.exceptions import ignore_exception
+from crud_views.lib.exceptions import ignore_exception, is_strict
 
 
 @ignore_exception(KeyError, default_value="fallback")
@@ -25,13 +25,29 @@ def test_ignore_exception_swallows_when_not_strict():
         assert _boom() == "fallback"
 
 
-def test_strict_defaults_to_debug_on():
+def test_strict_defaults_to_debug_on(settings):
     # without CRUD_VIEWS_STRICT set, strictness follows DEBUG
     # (note: pytest-django forces DEBUG=False during tests, so set it explicitly)
+    del settings.CRUD_VIEWS_STRICT
     with override_settings(DEBUG=True), pytest.raises(KeyError):
         _boom()
 
 
-def test_strict_defaults_to_swallow_when_debug_off():
+def test_strict_defaults_to_swallow_when_debug_off(settings):
+    del settings.CRUD_VIEWS_STRICT
     with override_settings(DEBUG=False):
         assert _boom() == "fallback"
+
+
+def test_is_strict_follows_the_setting_before_debug():
+    with override_settings(CRUD_VIEWS_STRICT=False, DEBUG=True):
+        assert is_strict() is False
+    with override_settings(CRUD_VIEWS_STRICT=True, DEBUG=False):
+        assert is_strict() is True
+
+
+def test_suite_runs_strict():
+    # #264: pytest-django runs with DEBUG=False, so the test settings turn strict mode on explicitly
+    from django.conf import settings
+
+    assert settings.CRUD_VIEWS_STRICT is True

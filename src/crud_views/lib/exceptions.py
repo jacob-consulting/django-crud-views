@@ -29,6 +29,13 @@ def cv_raise(expression: bool, msg: str, exception: type[Exception] = ViewSetErr
         raise exception(msg)
 
 
+def is_strict() -> bool:
+    """Strict mode: setting CRUD_VIEWS_STRICT, defaulting to DEBUG; misconfigurations raise instead of being skipped."""
+    from django.conf import settings
+
+    return bool(getattr(settings, "CRUD_VIEWS_STRICT", settings.DEBUG))
+
+
 def ignore_exception(exception_type, default_value=None, default_empty_dict: bool = False):
     """
     Ignore exception and return a default value.
@@ -42,9 +49,7 @@ def ignore_exception(exception_type, default_value=None, default_empty_dict: boo
             try:
                 return func(*args, **kwargs)
             except exception_type:
-                from django.conf import settings
-
-                if getattr(settings, "CRUD_VIEWS_STRICT", settings.DEBUG):
+                if is_strict():
                     raise
                 logger.warning("ignoring exception in %s", func.__qualname__, exc_info=True)
                 if default_empty_dict:

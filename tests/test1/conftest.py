@@ -25,6 +25,8 @@ def pytest_configure():
         BASE_DIR=Path(__file__).resolve().parent.parent,
         SECRET_KEY="django-testing",
         DEBUG=True,
+        # pytest-django runs tests with DEBUG=False; misconfigurations must still raise (#264)
+        CRUD_VIEWS_STRICT=True,
         ALLOWED_HOSTS=[],
         INSTALLED_APPS=[
             "django.contrib.admin",

@@ -224,6 +224,101 @@ class BookListView(ListViewPermissionRequired):
 
 On `/author/<author_pk>/book/`, the `"articles"` button links to `/author/<author_pk>/article/`.
 
+## How a context button is rendered
+
+Whether a toolbar button shows an icon, a label or both, and where that label and icon come from, is decided per key
+in `cv_context_actions`, in this order:
+
+```mermaid
+---
+config:
+  look: handDrawn
+  theme: neutral
+  flowchart:
+    wrappingWidth: 400
+---
+flowchart TD
+    KEY(["key in cv_context_actions"]) --> ISBTN{"a context button<br/>with this key?"}
+    ISBTN -- "no" --> VIEW["target: the view registered<br/>under the key"]
+    ISBTN -- "yes" --> BTN["target: key_target, or the parent /<br/>child / sibling ViewSet's view"]
+    VIEW --> FOLD
+    BTN --> OWN{"button has template<br/>or template_code?"}
+    OWN -- "yes" --> CUSTOM(["your template renders the whole button,<br/>nothing below applies<br/>(e.g. the filter toggle)"])
+    OWN -- "no" --> FOLD{"key folded into the ⋯ menu?<br/>(cv_context_actions_inline<br/>does not name it)"}
+    FOLD -- "yes" --> MENU(["menu item: icon + short label,<br/>label mode is ignored"])
+    FOLD -- "no" --> M1
+
+    subgraph MODE ["1 · label mode"]
+        M1{"the page's own<br/>cv_context_actions_label_mode"}
+        M1 -- "no" --> M2{"ContextButton.label_mode"}
+        M2 -- "no" --> M3{"ViewSet context_actions_label_mode,<br/>then setting<br/>CRUD_VIEWS_CONTEXT_ACTIONS_LABEL_MODE"}
+        M3 -- "no" --> M4{"target view's<br/>cv_context_action_label_mode"}
+        M4 -- "no" --> MICON["icon"]
+    end
+    M1 -- "yes" --> L1
+    M2 -- "yes" --> L1
+    M3 -- "yes" --> L1
+    M4 -- "yes" --> L1
+    MICON --> L1
+
+    subgraph LABEL ["2 · label"]
+        L1{"ContextButton has label_template<br/>or label_template_code?"}
+        L1 -- "yes" --> LBTN["label = short label =<br/>the rendered button label"]
+        L1 -- "no" --> LVIEW["label: target view's cv_action_label_template[_code]<br/>short label: cv_action_short_label_template[_code],<br/>else the label"]
+    end
+    LBTN --> I1
+    LVIEW --> I1
+
+    subgraph ICON ["3 · icon"]
+        I1{"Parent-, Child- or<br/>SiblingContextButton?"}
+        I1 -- "yes" --> IVS["icon: icon_header of<br/>the target's ViewSet"]
+        I1 -- "no" --> IVIEW["icon: target view's<br/>cv_icon_action"]
+    end
+    IVS --> C1
+    IVIEW --> C1
+
+    subgraph FIX ["4 · corrections"]
+        C1{"label empty?"}
+        C1 -- "yes" --> CFORCE["mode = icon"]
+        C1 -- "no" --> C2
+        CFORCE --> C2{"mode icon,<br/>but no icon?"}
+        C2 -- "yes" --> C3{"CRUD_VIEWS_STRICT?"}
+        C3 -- "yes" --> CERR(["ValueError"])
+        C3 -- "no" --> CLABEL["mode = label,<br/>a warning is logged"]
+    end
+    C2 -- "no" --> OUT
+    CLABEL --> OUT
+
+    OUT{"final mode"}
+    OUT -- "icon" --> RICON(["icon only; the full label is<br/>hidden text and the tooltip"])
+    OUT -- "both" --> RBOTH(["icon + short label"])
+    OUT -- "label" --> RLABEL(["short label, no icon"])
+
+    classDef start fill:#1e293b,stroke:#1e293b,color:#fff,font-weight:bold
+    classDef decision fill:#fef3c7,stroke:#d97706,color:#78350f
+    classDef step fill:#e0f2fe,stroke:#0284c7,color:#0c4a6e
+    classDef result fill:#dcfce7,stroke:#16a34a,color:#14532d,font-weight:bold
+    classDef exit fill:#f1f5f9,stroke:#94a3b8,color:#475569,stroke-dasharray:4 3
+    classDef error fill:#fee2e2,stroke:#dc2626,color:#7f1d1d,font-weight:bold
+    class KEY start
+    class ISBTN,OWN,FOLD,M1,M2,M3,M4,L1,I1,C1,C2,C3,OUT decision
+    class VIEW,BTN,MICON,LBTN,LVIEW,IVS,IVIEW,CFORCE,CLABEL step
+    class RICON,RBOTH,RLABEL result
+    class CUSTOM,MENU exit
+    class CERR error
+    style MODE fill:#fafaf9,stroke:#a8a29e
+    style LABEL fill:#fafaf9,stroke:#a8a29e
+    style ICON fill:#fafaf9,stroke:#a8a29e
+    style FIX fill:#fafaf9,stroke:#a8a29e
+```
+
+The label mode is taken from the first of the four places that names the key, else it is `icon`
+(`cv_get_action_label_mode()`). The label and icon come from the button's `get_context()`, or from the target view's
+`cv_get_dict()` for a plain view key; `cv_button_data()` applies the corrections, and the leaf
+`crud_views/tags/button/action.html` renders the result. See [Action menus](action_menus.md#label-mode) for the
+label-mode maps and [Buttons](buttons.md#the-leaf-contract) for the leaf. System check `viewset.W292` reports the
+"icon mode but no icon" case at startup where it can be known statically.
+
 ## Customizing Default Buttons
 
 Override the default buttons by passing a custom list to the ViewSet:

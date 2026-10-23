@@ -271,6 +271,12 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 - The `cv:modal:unload` event, dispatched on `#cv-modal` before every content replacement while the previous content
   is still attached: the teardown counterpart of `cv:modal:loaded`; see `docs/reference/modals.md` (#203).
 
+### Internal
+
+- The docs render Mermaid diagrams (`pymdownx.superfences` with Mermaid from the jsDelivr CDN). The first one,
+  "How a context button is rendered" in `docs/reference/context_buttons.md`, traces where a toolbar button's label
+  mode, label and icon come from.
+
 ## 0.30.0
 
 ### Breaking

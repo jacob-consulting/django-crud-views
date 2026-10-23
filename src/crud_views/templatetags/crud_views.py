@@ -8,7 +8,7 @@ from django.utils.translation import get_language, get_language_info
 from django_tables2.templatetags import django_tables2 as _dt2
 
 from crud_views.lib import assets
-from crud_views.lib.button_classes import get_button_class, get_icon_host_class
+from crud_views.lib.button_classes import get_button_class, get_container_layout, get_icon_host_class
 from crud_views.lib.exceptions import ViewSetKeyFoundError, ignore_exception
 from crud_views.lib.icons import render_icon
 from crud_views.lib.messages import alert_data, message_alerts
@@ -161,6 +161,13 @@ def cv_actions_menu(context, group, location):
         "cv_menu_icon_class": icon_class,
         "cv_menu_icon_inline": icon_inline,
     }
+
+
+@register.simple_tag
+def cv_container_layout(location, buttons, group):
+    """The container structure for ``buttons`` plus the group's menu toggle, which counts as one item (#261)."""
+    count = len(buttons or ()) + (1 if group is not None and group.menu else 0)
+    return get_container_layout(location, count)
 
 
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/actions_menu_item.html")

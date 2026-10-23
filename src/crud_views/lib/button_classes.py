@@ -3,13 +3,15 @@
 A mode key (``card:tertiary:icon``) is read in preference to its base key when it is present; see get_button_class.
 """
 
+from dataclasses import dataclass
+
 from django.conf import settings
 from django.core.checks import CheckMessage, Error
 from django.core.checks import Warning as DjangoWarning
 from django.core.signals import setting_changed
 from django.dispatch import receiver
 
-DEFAULT_BUTTON_CLASSES: dict[str, str] = {
+DEFAULT_BUTTON_CLASSES: dict[str, str | None] = {
     "context:primary": "btn btn-outline-primary btn-lg",
     "context:secondary": "btn btn-outline-primary btn-lg",
     "context:tertiary": "btn btn-outline-primary btn-lg",
@@ -25,6 +27,17 @@ DEFAULT_BUTTON_CLASSES: dict[str, str] = {
     "context:container": "btn-group btn-group-lg",
     "list:container": "btn-group btn-group-xs",
     "card:container": "d-flex gap-2",
+    # container structure (#261): the items in a <ul class=container-list> (None: no list), each in an
+    # <li class=container-item>; container-single "bare" renders a lone item without container and list
+    "context:container-list": None,
+    "list:container-list": None,
+    "card:container-list": None,
+    "context:container-item": "",
+    "list:container-item": "",
+    "card:container-item": "",
+    "context:container-single": "container",
+    "list:container-single": "container",
+    "card:container-single": "container",
     "context:menu-toggle": "btn btn-outline-primary btn-lg",
     "list:menu-toggle": "btn btn-outline-primary btn-xs",
     "card:menu-toggle": "btn btn-secondary btn-sm",
@@ -142,6 +155,35 @@ def get_icon_host_class(location: str, value: str | None) -> str:
         return ""
 
 
+CONTAINER_SINGLE_MODES: tuple[str, ...] = ("container", "bare")
+
+
+@dataclass(frozen=True)
+class ContainerLayout:
+    """Structure of one button container (#261): list class (None: no list), item class, lone item bare."""
+
+    list_class: str | None
+    item_class: str
+    bare: bool
+
+
+def get_container_layout(location: str, item_count: int) -> ContainerLayout:
+    """The ``location:container-*`` keys for a container of ``item_count`` rendered items (#261).
+
+    Reads the raw values: unlike get_button_class(), ``container-list`` keeps "" (a list without class) apart from
+    None (no list). Non-str values fall back to the defaults' meaning. ``bare`` only ever applies to one item, and an
+    empty container gets no list: zero items render as without the keys.
+    """
+    classes = get_button_classes()
+    list_class = classes.get(f"{location}:container-list")
+    item_class = classes.get(f"{location}:container-item")
+    return ContainerLayout(
+        list_class=list_class if isinstance(list_class, str) and item_count > 0 else None,
+        item_class=item_class if isinstance(item_class, str) else "",
+        bare=item_count == 1 and classes.get(f"{location}:container-single") == "bare",
+    )
+
+
 def _action_key_parts(key: str) -> tuple[str, str, str] | None:
     """``(location, variant, mode)`` for a three-segment key whose location and variant are known, else None.
 
@@ -196,6 +238,16 @@ def button_class_check_messages() -> list[CheckMessage]:
                         id="crud_views.E363",
                     )
                 )
+        elif (
+            isinstance(key, str) and key.endswith(":container-single") and value and value not in CONTAINER_SINGLE_MODES
+        ):
+            messages.append(
+                Error(
+                    f"Button class {key!r} = {value!r} is not a container mode.",
+                    hint=f"Use one of {list(CONTAINER_SINGLE_MODES)}.",
+                    id="crud_views.E364",
+                )
+            )
 
     from .view.label_mode import LABEL_MODES
 

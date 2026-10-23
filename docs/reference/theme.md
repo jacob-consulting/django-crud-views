@@ -107,6 +107,20 @@ def ready(self):
 
 See [Buttons](buttons.md#registering-classes-from-a-theme).
 
+A design system that builds a button row as a list, and drops the row for a single button, needs no template either:
+
+```python
+register_button_classes(
+    {
+        **{f"{loc}:container": "btn-row" for loc in ("context", "list", "card")},
+        **{f"{loc}:container-list": "" for loc in ("context", "list", "card")},
+        **{f"{loc}:container-single": "bare" for loc in ("context", "list", "card")},
+    }
+)
+```
+
+See [Button row as a list](buttons.md#button-row-as-a-list).
+
 ## Worked example: restyle the buttons
 
 Register the classes as above — the `*:active` and `*:hidden-label` keys included when your framework spells those

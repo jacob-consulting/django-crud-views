@@ -135,8 +135,11 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Fixed
 
-- A breadcrumb item whose title is a rendered label (a short action label or the new breadcrumb label containing
-  `&` or `{{ object }}`) is no longer escaped twice: `BreadcrumbItem` keeps a safe title safe (#271).
+- `BreadcrumbItem` keeps a safe title (`mark_safe`, `format_html`, a rendered label) safe instead of turning it into a
+  plain string, so it is no longer escaped twice (#271). A rendered label with an escaped variable, such as
+  `{{ object }}` or `{{ verbose_name }}` containing `&` or `'`, showed `&amp;amp;`. This applies to every item: an
+  object label whose `__str__` returns a safe string, a `mark_safe` container label or prefix title now renders as
+  HTML where it used to show as literal text. Plain strings are escaped as before.
 
 - The card list's empty state, "No items found.", is translated: `view_card.content.html` now loads `i18n` and
   wraps the text in `{% translate %}`, and the German catalog says "Keine Einträge gefunden." The markup is unchanged

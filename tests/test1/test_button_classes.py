@@ -22,7 +22,11 @@ EXPECTED_KEYS = {
     "context:container",
     "list:container",
     "card:container",
-    *(f"{loc}:container-{slot}" for loc in ("context", "list", "card") for slot in ("list", "item", "single")),
+    *(
+        f"{loc}:container-{slot}"
+        for loc in ("context", "list", "card")
+        for slot in ("list", "item", "single", "tag", "label")
+    ),
     "context:menu-toggle",
     "list:menu-toggle",
     "card:menu-toggle",
@@ -77,7 +81,7 @@ def _isolate_registry():
 
 
 def test_default_table_is_complete():
-    assert len(EXPECTED_KEYS) == 64
+    assert len(EXPECTED_KEYS) == 70
     assert set(DEFAULT_BUTTON_CLASSES) == EXPECTED_KEYS
     assert get_button_class("context", "primary") == "btn btn-outline-primary btn-lg"
     assert get_button_class("card", "danger") == "btn btn-secondary btn-sm"

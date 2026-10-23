@@ -10,6 +10,7 @@ from django.core.checks import CheckMessage, Error
 from django.core.checks import Warning as DjangoWarning
 from django.core.signals import setting_changed
 from django.dispatch import receiver
+from django.utils.translation import gettext, gettext_noop
 
 DEFAULT_BUTTON_CLASSES: dict[str, str | None] = {
     "context:primary": "btn btn-outline-primary btn-lg",
@@ -38,6 +39,13 @@ DEFAULT_BUTTON_CLASSES: dict[str, str | None] = {
     "context:container-single": "container",
     "list:container-single": "container",
     "card:container-single": "container",
+    # container element and its aria-label (#266); the label is translated at render
+    "context:container-tag": "fieldset",
+    "list:container-tag": "fieldset",
+    "card:container-tag": "div",
+    "context:container-label": gettext_noop("Actions"),
+    "list:container-label": gettext_noop("Actions"),
+    "card:container-label": None,
     "context:menu-toggle": "btn btn-outline-primary btn-lg",
     "list:menu-toggle": "btn btn-outline-primary btn-xs",
     "card:menu-toggle": "btn btn-secondary btn-sm",
@@ -160,11 +168,17 @@ CONTAINER_SINGLE_MODES: tuple[str, ...] = ("container", "bare")
 
 @dataclass(frozen=True)
 class ContainerLayout:
-    """Structure of one button container (#261): list class (None: no list), item class, lone item bare."""
+    """Structure of one button container (#261): list class (None: no list), item class, lone item bare.
+
+    #265/#266: no items at all (render nothing), the container element and its aria-label ("": none).
+    """
 
     list_class: str | None
     item_class: str
     bare: bool
+    empty: bool
+    tag: str
+    label: str
 
 
 def get_container_layout(location: str, item_count: int) -> ContainerLayout:
@@ -172,15 +186,21 @@ def get_container_layout(location: str, item_count: int) -> ContainerLayout:
 
     Reads the raw values: unlike get_button_class(), ``container-list`` keeps "" (a list without class) apart from
     None (no list). Non-str values fall back to the defaults' meaning. ``bare`` only ever applies to one item, and an
-    empty container gets no list: zero items render as without the keys.
+    empty container gets no list: zero items render as without the keys. ``container-tag`` falls back to "div" and
+    ``container-label`` to "" (no aria-label) for None, "" or a non-str; a label is passed through gettext().
     """
     classes = get_button_classes()
     list_class = classes.get(f"{location}:container-list")
     item_class = classes.get(f"{location}:container-item")
+    tag = classes.get(f"{location}:container-tag")
+    label = classes.get(f"{location}:container-label")
     return ContainerLayout(
         list_class=list_class if isinstance(list_class, str) and item_count > 0 else None,
         item_class=item_class if isinstance(item_class, str) else "",
         bare=item_count == 1 and classes.get(f"{location}:container-single") == "bare",
+        empty=item_count == 0,
+        tag=tag if isinstance(tag, str) and tag else "div",
+        label=gettext(label) if isinstance(label, str) and label else "",
     )
 
 

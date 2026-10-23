@@ -147,6 +147,12 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Added
 
+- Button containers can render their items as a list and a single item without container (#261). The new button
+  class keys `<location>:container-list` (default `None`: no list), `<location>:container-item` (default `""`) and
+  `<location>:container-single` (default `"container"`, or `"bare"`) for `context`, `list` and `card` put the buttons
+  and the "More actions" menu in a `<ul>`, each in its own `<li>`, and render a lone rendered item without container.
+  Hidden actions don't count; the defaults keep today's markup. System check `crud_views.E364` flags an unknown
+  `container-single` value.
 - Icon libraries with `placement: "host"` (#258): the icon class goes on the button itself, for design systems that
   paint icons with `::before` and have no element inside the button. `CRUD_VIEWS_ICON_LIBRARIES = {"ui": {"renderer":
   "font", "class": "icon-{name}", "placement": "host", "standalone": "icon {name_class}"}}` puts `icon-edit` on

@@ -69,6 +69,9 @@ only once #216 lets those locations show a label.
 | `context:container` | `btn-group btn-group-lg` |
 | `list:container` | `btn-group btn-group-xs` |
 | `card:container` | `d-flex gap-2` |
+| `context:container-list` / `list:container-list` / `card:container-list` | `None` |
+| `context:container-item` / `list:container-item` / `card:container-item` | `""` |
+| `context:container-single` / `list:container-single` / `card:container-single` | `"container"` |
 | `context:menu-toggle` | `btn btn-outline-primary btn-lg` |
 | `list:menu-toggle` | `btn btn-outline-primary btn-xs` |
 | `card:menu-toggle` | `btn btn-secondary btn-sm` |
@@ -102,10 +105,10 @@ only once #216 lets those locations show a label.
 | `alert:debug` | `alert alert-secondary` |
 | `context:icon-host` / `list:icon-host` / `card:icon-host` / `menu:icon-host` | `{name_class}` |
 
-The default table has 55 keys: the rows with four variants stand for four keys each, the rows with three locations
+The default table has 64 keys: the rows with four variants stand for four keys each, the rows with three locations
 for three, the `*:icon-host` row for four. The `context` and `list`
 buttons look the same for every variant by default, the `card` buttons distinguish them. Mode keys (`card:tertiary:icon`
-and the like) are addressable but not shipped: none is in the default table, and the count stays 55.
+and the like) are addressable but not shipped: none is in the default table, and the count stays 64.
 
 The table holds what a theme restyles: classes. What the markup needs to work stays in the templates and is not
 configurable here: the element, `href`, `type`, `disabled`, the `data-cv-*` attributes, `aria-*`, `cv-key`,
@@ -119,6 +122,39 @@ Three keys style the stock card itself rather than a button: `card:root` is the 
 `<div>` inside it, and `card:title` the `<h5>` heading. The actions inside the card keep `card:container`. Where the
 actions sit (in the body or in a footer) is structure, not classes: see
 [Custom Card Template](card-list-view.md#custom-card-template).
+
+### Button row as a list
+
+Three keys per container location (`context`, `list`, `card`) set the structure of the button container, for design
+systems that build a button row as a list and leave the row out for a single button:
+
+| Key | Default | Meaning |
+|---|---|---|
+| `<location>:container` | see above | class of the outer element (unchanged) |
+| `<location>:container-list` | `None` | `None`: the buttons are direct children of the container. A str: they sit in a `<ul>` with that class inside the container; `""` renders `<ul>` without a `class` attribute |
+| `<location>:container-item` | `""` | class of each `<li>`; read only when `container-list` is a str |
+| `<location>:container-single` | `"container"` | `"container"`: a single item renders inside the container as usual. `"bare"`: a single item renders on its own, with no container and no list |
+
+With `container-list` set, two buttons and a menu render as:
+
+```html
+<fieldset class="btn-row" aria-label="Actions" cv-context-container="true">
+    <ul class="btn-row-list">
+        <li class="btn-row-item"><a class="btn …" cv-key="update">…</a></li>
+        <li class="btn-row-item"><a class="btn …" cv-key="delete">…</a></li>
+        <li class="btn-row-item"><div class="btn-group">… the "More actions" menu …</div></li>
+    </ul>
+</fieldset>
+```
+
+An item is an inline button or the [action menu](action_menus.md) toggle, which gets its own `<li>` only when the
+group has menu items. "Single" means one *rendered* item: inaccessible actions that are hidden don't count, and one
+inline button plus a menu are two items and keep the container. A group whose only item is the menu renders the
+menu bare. A container with no items renders as before. A bare item carries no `cv-<location>-container` attribute.
+
+The `<li>` comes from the container leaf, never from a button leaf, so a button rendered on its own with
+`{% cv_context_button %}` never gets one. A `container-single` value other than `"container"` or `"bare"` is the
+system check error `crud_views.E364`. These keys have no label-mode variants.
 
 The five `alert:*` keys colour the one alert frame, `tags/alert.html`, which renders every alert in the package:
 the slot is the alert's level (`error`, `warning`, `success`, `info`, `debug`). See [Flash messages](messages.md).
@@ -239,7 +275,7 @@ view data:
 |---|---|
 | `crud_views/tags/button/action.html` | one action button (`<a>` or `<button>`) |
 | `crud_views/tags/button/menu_item.html` | one dropdown item |
-| `crud_views/tags/button/container.html` | the group of buttons plus the menu; receives `cv_buttons`, `cv_group`, `cv_location` and `cv_container_tag` |
+| `crud_views/tags/button/container.html` | the group of buttons plus the menu; receives `cv_buttons`, `cv_group`, `cv_location` and `cv_container_tag`, and reads its structure with `{% cv_container_layout cv_location cv_buttons cv_group %}` (see [Button row as a list](#button-row-as-a-list)) |
 | `crud_views/tags/button/menu_item_label.html` | icon and label of a menu item, included by `menu_item.html`; reads `cv_icon` and `cv_short_label` |
 
 `crud_views/tags/actions_menu_item_label.html` is kept with its 0.30 body (raw keys `cv_icon_action`,
@@ -380,6 +416,7 @@ override the leaf, otherwise an action disabled by `CRUD_VIEWS_INACCESSIBLE_ACTI
 | `crud_views.E360` | error | a removed setting is still defined (`CRUD_VIEWS_FILTER_RESET_BUTTON_CSS_CLASS`); the hint names the replacement |
 | `crud_views.E361` | error | a `CRUD_VIEWS_BUTTON_CLASSES` value or registered theme value is neither a str nor `None` |
 | `crud_views.E363` | error | an `*:icon-host` value is not a valid format string with `{name_class}` as its only placeholder |
+| `crud_views.E364` | error | a `*:container-single` value is neither `"container"` nor `"bare"` (`None` and `""` mean `"container"`) |
 | `crud_views.W362` | warning | a `CRUD_VIEWS_BUTTON_CLASSES` or theme key is neither in the default table nor a valid `location:variant:mode` (typo, or an unknown label mode) |
 | `viewset.E209` | error | a `cv_action_variant`, `ContextButton.variant` or `CardAction.variant` is not one of the four variants |
 | `viewset.E210` | error | a `CardAction.label_mode` or `cv_card_actions_label_mode` is not one of `"label"`, `"icon"`, `"both"` |

@@ -86,7 +86,12 @@ class CrudView(metaclass=CrudViewMetaClass):
     cv_context_actions_inline: list[str] | None = None  # toolbar keys kept as buttons; None: ViewSet, then setting
     # label mode per action key (#216): "label" / "icon" / "both"; unnamed keys are "icon"; None: ViewSet, then setting
     cv_list_actions_label_mode: dict[str, str] | None = None
+    # set on the page showing the toolbar: "on my toolbar, key X looks like this"
     cv_context_actions_label_mode: dict[str, str] | None = None
+    # label mode as a target view (#269), set on the view the button opens: "wherever a toolbar points at me, I look
+    # like this"; "label" / "icon" / "both"; None: "icon". Context toolbar only, the last fallback after the maps and
+    # the button's label_mode (not to be confused with the per-key dict cv_context_actions_label_mode above)
+    cv_context_action_label_mode: str | None = None
 
     # modal rendering (Bootstrap 5 theme; see superpowers/specs/2026-07-14-bootstrap-modals-design.md)
     cv_modal: bool = False  # opt-in: action buttons open this view in a modal
@@ -276,13 +281,16 @@ class CrudView(metaclass=CrudViewMetaClass):
         return cls.cv_first_inline_keys(cls.cv_context_actions_label_mode, "context_actions_label_mode")
 
     @classmethod
-    def cv_get_action_label_mode(cls, location: str, key: str, button: ContextButton | None = None) -> str:
+    def cv_get_action_label_mode(
+        cls, location: str, key: str, button: ContextButton | None = None, target_default: str | None = None
+    ) -> str:
         """The label mode of one configured context or list action key; "icon" for a key not in the map (#216).
 
         A context key takes the view's own map if it names the key, then the label_mode of its context button, then
-        the resolved map (#264); row actions never read the button. button is the key's context button as the
-        rendering view sees it; None looks it up on the class. Cards resolve their mode per CardAction in
-        cv_get_card_action_data() and never come through here.
+        the resolved map (#264), then target_default, the target view's cv_context_action_label_mode (#269); row
+        actions never read the button or the target. button is the key's context button as the rendering view sees
+        it; None looks it up on the class. Cards resolve their mode per CardAction in cv_get_card_action_data() and
+        never come through here.
         """
         if location == "context":
             if cls.cv_context_actions_label_mode is not None and key in cls.cv_context_actions_label_mode:
@@ -292,6 +300,9 @@ class CrudView(metaclass=CrudViewMetaClass):
             if button is not None and button.label_mode is not None:
                 return button.label_mode
             mapping = cls.cv_get_context_actions_label_mode()
+            if key in mapping:
+                return mapping[key]
+            return target_default or "icon"
         elif location == "list":
             mapping = cls.cv_get_list_actions_label_mode()
         else:
@@ -414,6 +425,7 @@ class CrudView(metaclass=CrudViewMetaClass):
             "cv_icon_action": cls.cv_icon_action,
             "cv_icon_header": cls.cv_icon_header,
             "cv_variant": cls.cv_action_variant,
+            "cv_context_label_mode": cls.cv_context_action_label_mode,  # read by cv_get_context() (#269)
             "cv_modal": cls.cv_modal,
             "cv_modal_size": cls.cv_modal_size,
             "cv_inaccessible_actions": cls.cv_get_inaccessible_actions(),
@@ -609,7 +621,7 @@ class CrudView(metaclass=CrudViewMetaClass):
         data = self._cv_get_action_context(key, obj, user)
         if location is not None and data:
             button = self.cv_get_context_button(key) if location == "context" else None
-            mode = self.cv_get_action_label_mode(location, key, button)
+            mode = self.cv_get_action_label_mode(location, key, button, data.get("cv_context_label_mode"))
             # cv_action_key: the configured key, which a button's cv_key (its target) may differ from (#264)
             data = {**data, "cv_label_mode": mode, "cv_action_key": key}
         return data

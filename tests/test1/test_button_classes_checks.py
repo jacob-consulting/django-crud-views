@@ -1,4 +1,4 @@
-"""System checks crud_views.E360/E361/W362 for the button class table."""
+"""System checks crud_views.E360/E361/W362/E363 for the button class table."""
 
 import pytest
 from django.test import override_settings
@@ -107,3 +107,15 @@ def test_w362_non_str_key_warns_instead_of_raising(key):
     with override_settings(CRUD_VIEWS_BUTTON_CLASSES={key: "btn"}):
         messages = check_button_classes()
     assert ids(messages) == ["crud_views.W362"]
+
+
+def test_e363_icon_host_bad_placeholder():
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"list:icon-host": "{name}"}):
+        messages = check_button_classes()
+    assert ids(messages) == ["crud_views.E363"]
+    assert "'list:icon-host'" in messages[0].msg
+
+
+def test_icon_host_none_and_base_are_valid():
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"list:icon-host": None, "card:icon-host": "icon {name_class}"}):
+        assert check_button_classes() == []

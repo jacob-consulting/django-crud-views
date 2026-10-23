@@ -8,7 +8,7 @@ from django.utils.translation import get_language, get_language_info
 from django_tables2.templatetags import django_tables2 as _dt2
 
 from crud_views.lib import assets
-from crud_views.lib.button_classes import get_button_class
+from crud_views.lib.button_classes import get_button_class, get_icon_host_class
 from crud_views.lib.exceptions import ViewSetKeyFoundError, ignore_exception
 from crud_views.lib.icons import render_icon
 from crud_views.lib.messages import alert_data, message_alerts
@@ -499,6 +499,12 @@ def cv_card(context, obj):
 def cv_icon(value, css=""):
     """Render a semantic icon name, library-prefixed name or raw class string as an <i> element."""
     return render_icon(value, css)
+
+
+@register.simple_tag
+def cv_icon_class(value, location):
+    """The class a host-placed icon adds to its element at ``location`` (``location:icon-host``), else "" (#258)."""
+    return get_icon_host_class(location, value)
 
 
 @register.simple_tag

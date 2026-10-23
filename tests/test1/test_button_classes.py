@@ -7,9 +7,11 @@ from crud_views.lib.button_classes import (
     DEFAULT_BUTTON_CLASSES,
     get_button_class,
     get_button_classes,
+    get_icon_host_class,
     register_button_classes,
     reset_button_classes_cache,
 )
+from tests.lib.helper.icons import HOST_ICONS, HOST_LIBRARY
 
 EXPECTED_KEYS = {
     *(f"{loc}:{slot}" for loc in ("context", "list") for slot in ("primary", "secondary", "tertiary", "danger")),
@@ -56,6 +58,10 @@ EXPECTED_KEYS = {
     "alert:success",
     "alert:info",
     "alert:debug",
+    "context:icon-host",
+    "list:icon-host",
+    "card:icon-host",
+    "menu:icon-host",
 }
 
 
@@ -70,7 +76,7 @@ def _isolate_registry():
 
 
 def test_default_table_is_complete():
-    assert len(EXPECTED_KEYS) == 51
+    assert len(EXPECTED_KEYS) == 55
     assert set(DEFAULT_BUTTON_CLASSES) == EXPECTED_KEYS
     assert get_button_class("context", "primary") == "btn btn-outline-primary btn-lg"
     assert get_button_class("card", "danger") == "btn btn-secondary btn-sm"
@@ -210,3 +216,41 @@ def test_button_classes_module_has_no_module_level_view_import():
         and ("lib.view" in (node.module or "") or (node.level and (node.module or "").split(".")[0] == "view"))
     ]
     assert offenders == []
+
+
+# icon-host slots (#258)
+
+host_icons = override_settings(CRUD_VIEWS_ICON_LIBRARIES=HOST_LIBRARY, CRUD_VIEWS_ICONS=HOST_ICONS)
+
+
+def test_icon_host_default_slots():
+    for location in ("context", "list", "card", "menu"):
+        assert DEFAULT_BUTTON_CLASSES[f"{location}:icon-host"] == "{name_class}"
+
+
+@host_icons
+def test_get_icon_host_class():
+    assert get_icon_host_class("context", "update") == "icon-edit"
+    assert get_icon_host_class("menu", "ui:trash") == "icon-trash"
+    assert get_icon_host_class("context", "fas:pen") == ""
+    assert get_icon_host_class("context", "create") == ""  # the default table: an element icon
+    assert get_icon_host_class("context", None) == ""
+
+
+@host_icons
+def test_get_icon_host_class_with_base():
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"card:icon-host": "icon {name_class}"}):
+        assert get_icon_host_class("card", "update") == "icon icon-edit"
+        assert get_icon_host_class("list", "update") == "icon-edit"
+
+
+@host_icons
+def test_get_icon_host_class_slot_none():
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"menu:icon-host": None}):
+        assert get_icon_host_class("menu", "update") == ""
+
+
+@host_icons
+def test_get_icon_host_class_unusable_slot():
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"list:icon-host": "{name}"}):
+        assert get_icon_host_class("list", "update") == ""

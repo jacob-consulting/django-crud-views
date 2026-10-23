@@ -1,4 +1,7 @@
 from django.template import Context, Template
+from django.test import override_settings
+
+from tests.lib.helper.icons import HOST_ICONS, HOST_LIBRARY
 
 EXPECTED = '<i class="fa-regular fa-eye me-2" aria-hidden="true"></i>'
 
@@ -31,3 +34,10 @@ def test_cv_css_includes_icons_css():
 
 def test_cv_icon_tag_non_str_context_value_renders_nothing():
     assert _render("crud_views", 5, "{% cv_icon v %}") == ""
+
+
+@override_settings(CRUD_VIEWS_ICON_LIBRARIES=HOST_LIBRARY, CRUD_VIEWS_ICONS=HOST_ICONS)
+def test_cv_icon_class_tag():
+    assert _render("crud_views", "update", "{% cv_icon_class v 'context' %}") == "icon-edit"
+    assert _render("crud_views", "create", "{% cv_icon_class v 'context' %}") == ""
+    assert _render("crud_views", "update", "{% cv_icon_class v 'menu' as c %}[{{ c }}]") == "[icon-edit]"

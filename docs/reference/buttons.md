@@ -170,9 +170,10 @@ Two more keys per container location set the container's element and its accessi
 | `<location>:container-label` | `"Actions"` for `context` and `list`, `None` for `card` | `aria-label` of the container; `None` or `""` renders none |
 
 The label is passed through `gettext` when the container renders, so the default reads "Aktionen" on a German page,
-and a label of your own is translated when your catalogue has it as a msgid. The label renders whatever the tag: a
-theme that switches a location to `div` sets its label to `None` too, since `aria-label` on a plain `div` has no role
-to name.
+and a label of your own is translated when your catalogue has it as a msgid: mark it with `gettext_noop("…")` so
+`makemessages` finds it (a `gettext_lazy` value is not a str and fails check `crud_views.E361`). The label renders
+whatever the tag: a theme that switches a location to `div` sets its label to `None` too, since `aria-label` on a
+plain `div` has no role to name.
 
 ```python
 CRUD_VIEWS_BUTTON_CLASSES = {"list:container-tag": "div", "list:container-label": None}

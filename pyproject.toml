@@ -63,7 +63,8 @@ dev = [
     "bump-my-version",
     "mkdocs (>=1.6.1)",
     "mkdocs-awesome-pages-plugin (>=2.10.1)",
-    "mkdocs-get-deps (>=0.2.0)"
+    "mkdocs-get-deps (>=0.2.0)",
+    "pymdown-extensions (>=10.0)"
 ]
 
 test = [

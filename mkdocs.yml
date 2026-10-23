@@ -11,6 +11,15 @@ edit_uri: blob/master/docs/
 
 markdown_extensions:
     - admonition
+    - pymdownx.superfences:
+        custom_fences:
+            - name: mermaid
+              class: mermaid
+              format: !!python/name:pymdownx.superfences.fence_div_format
+
+extra_javascript:
+    - https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.min.js
+    - js/mermaid-init.js
 
 validation:
     anchors: warn

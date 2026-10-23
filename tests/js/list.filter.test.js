@@ -19,6 +19,18 @@ function fixture({ expanded = false, queryString = "" } = {}) {
     };
 }
 
+function hostFixture() {
+    document.body.innerHTML = `
+        <div id="cv-config" data-request-path="/books/" data-query-string="" data-csrf-token="test-token" hidden></div>
+        <button type="button" id="cv-filter-toggle" aria-expanded="false" aria-controls="filter-collapse"
+                class="btn icon-funnel" data-cv-filter-icon-open="icon-funnel" data-cv-filter-icon-close="icon icon-x">
+            <span class="visually-hidden">Filter</span>
+        </button>
+        <div id="filter-collapse"></div>`;
+    vi.stubGlobal("cvGetConfig", () => ({ request: { path: "/books/", query_string: "" }, csrfToken: "t" }));
+    return { toggle: document.querySelector("#cv-filter-toggle") };
+}
+
 describe("list.filter.js", () => {
     let fetchMock;
     let toggle;
@@ -29,6 +41,16 @@ describe("list.filter.js", () => {
         toggle = vi.fn();
         window.cv = { ...window.cv, adapters: { collapse: { toggle } } };
         nav.href = "";
+    });
+
+    it("swaps the host icon classes on the button", async () => {
+        const f = hostFixture();
+        await loadScript("list.filter");
+        f.toggle.click();
+        expect(f.toggle.classList.contains("icon-funnel")).toBe(false);
+        expect([...f.toggle.classList]).toEqual(expect.arrayContaining(["btn", "icon", "icon-x"]));
+        f.toggle.click();
+        expect(f.toggle.className).toBe("btn icon-funnel");
     });
 
     it("flips the hidden attribute on click without touching icon classes", async () => {

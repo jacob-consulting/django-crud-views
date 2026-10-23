@@ -14,6 +14,7 @@ from crud_views.lib.button_classes import register_button_classes
 from crud_views.lib.view import CardAction, ContextButton
 from crud_views.lib.view.action_menu import ActionGroup
 from crud_views.lib.view.button_data import LEAF_KEYS
+from tests.lib.helper.icons import HOST_ICONS, HOST_LIBRARY
 from tests.lib.helper.user import user_viewset_permission
 from tests.test1.app.views import (
     AuthorCardListView,
@@ -532,3 +533,80 @@ def test_action_leaf_empty_title_renders_no_marker():
 def test_menu_item_leaf_has_no_tooltip_marker():
     item = _context_get(cv_location="context", cv_active=False)
     assert _one(render_to_string(MENU_ITEM_LEAF, item), "a.dropdown-item").get("data-cv-tooltip") is None
+
+
+# host-placed icons on the menu and filter toggles (#258)
+
+host_icons = override_settings(CRUD_VIEWS_ICON_LIBRARIES=HOST_LIBRARY, CRUD_VIEWS_ICONS=HOST_ICONS)
+FILTER_TOGGLE = "crud_views/tags/context_action_filter.html"
+
+
+def _filter_toggle(expanded: bool):
+    ctx = {"cv_filter_expanded": expanded, "cv_action_label": "Filter", "cv_key": "filter"}
+    return _one(render_to_string(FILTER_TOGGLE, ctx), "button#cv-filter-toggle")
+
+
+@pytest.mark.django_db
+@host_icons
+def test_host_menu_toggle(client_full, author_douglas_adams, monkeypatch):
+    monkeypatch.setattr(AuthorListView, "cv_list_actions", ["detail", "update", "delete", "up", "ping"])
+    monkeypatch.setattr(AuthorListView, "cv_list_actions_inline", ["detail"])
+    _, doc = _get(client_full, "list")
+    toggle = doc.cssselect("fieldset[cv-list-container] button.cv-menu-toggle")[0]
+    assert "icon-dots" in toggle.get("class").split()
+    assert not toggle.cssselect("i")
+    assert toggle.cssselect("span.visually-hidden")[0].text == "More actions"
+
+
+@pytest.mark.django_db
+def test_element_menu_toggle_unchanged(client_full, author_douglas_adams, monkeypatch):
+    monkeypatch.setattr(AuthorListView, "cv_list_actions", ["detail", "update", "delete", "up", "ping"])
+    monkeypatch.setattr(AuthorListView, "cv_list_actions_inline", ["detail"])
+    _, doc = _get(client_full, "list")
+    toggle = doc.cssselect("fieldset[cv-list-container] button.cv-menu-toggle")[0]
+    assert toggle.cssselect("i")[0].get("class") == "fa-solid fa-ellipsis"
+
+
+@host_icons
+def test_host_filter_toggle_closed():
+    button = _filter_toggle(False)
+    classes = button.get("class").split()
+    assert "icon-funnel" in classes and "icon-x" not in classes
+    assert button.get("data-cv-filter-icon-open") == "icon-funnel"
+    assert button.get("data-cv-filter-icon-close") == "icon-x"
+    assert not button.cssselect("[data-cv-filter-icon]")
+    assert not button.cssselect("i")
+    assert button.cssselect("span")[-1].text == "Filter"
+
+
+@host_icons
+def test_host_filter_toggle_open():
+    classes = _filter_toggle(True).get("class").split()
+    assert "icon-x" in classes and "icon-funnel" not in classes
+
+
+@host_icons
+def test_filter_toggle_mixed_placement_uses_spans():
+    with override_settings(CRUD_VIEWS_ICONS={**HOST_ICONS, "filter-close": "fas:xmark"}):
+        button = _filter_toggle(False)
+    assert button.get("data-cv-filter-icon-open") is None
+    assert len(button.cssselect("[data-cv-filter-icon]")) == 2
+    assert button.cssselect('[data-cv-filter-icon="open"] i')[0].get("class") == "icon icon-funnel"
+
+
+def test_leaf_dict_without_icon_inline_keeps_the_icon():
+    # a hand-built leaf dict from before #258 has no cv_icon_inline: a missing key means inline, not "no icon"
+    ctx = {k: v for k, v in _context_get().items() if k != "cv_icon_inline"}
+    assert len(_one(render_to_string(ACTION_LEAF, ctx), "a").cssselect("i")) == 1
+    both = {**ctx, "cv_label_mode": "both"}
+    assert len(_one(render_to_string(ACTION_LEAF, both), "a").cssselect("i")) == 1
+    item = _one(render_to_string(MENU_ITEM_LEAF, {**ctx, "cv_location": "list"}), "a")
+    assert len(item.cssselect("i.cv-icon-fw")) == 1
+    placeholder = _one(render_to_string(MENU_ITEM_LEAF, {**ctx, "cv_location": "list", "cv_icon": None}), "a")
+    assert placeholder.cssselect("span")[0].get("class") == "cv-icon-fw"
+
+
+def test_menu_toggle_without_inline_key_keeps_the_icon():
+    ctx = {"cv_location": "list", "cv_menu_icon": "actions-menu"}
+    toggle = _one(render_to_string("crud_views/tags/actions_menu_toggle.html", ctx), "button")
+    assert toggle.cssselect("i")[0].get("class") == "fa-solid fa-ellipsis"

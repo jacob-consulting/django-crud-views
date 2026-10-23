@@ -100,11 +100,12 @@ only once #216 lets those locations show a label.
 | `alert:success` | `alert alert-success` |
 | `alert:info` | `alert alert-info` |
 | `alert:debug` | `alert alert-secondary` |
+| `context:icon-host` / `list:icon-host` / `card:icon-host` / `menu:icon-host` | `{name_class}` |
 
-The default table has 51 keys: the rows with four variants stand for four keys each, the rows with three locations
-for three. The `context` and `list`
+The default table has 55 keys: the rows with four variants stand for four keys each, the rows with three locations
+for three, the `*:icon-host` row for four. The `context` and `list`
 buttons look the same for every variant by default, the `card` buttons distinguish them. Mode keys (`card:tertiary:icon`
-and the like) are addressable but not shipped: none is in the default table, and the count stays 51.
+and the like) are addressable but not shipped: none is in the default table, and the count stays 55.
 
 The table holds what a theme restyles: classes. What the markup needs to work stays in the templates and is not
 configurable here: the element, `href`, `type`, `disabled`, the `data-cv-*` attributes, `aria-*`, `cv-key`,
@@ -121,6 +122,12 @@ actions sit (in the body or in a footer) is structure, not classes: see
 
 The five `alert:*` keys colour the one alert frame, `tags/alert.html`, which renders every alert in the package:
 the slot is the alert's level (`error`, `warning`, `success`, `info`, `debug`). See [Flash messages](messages.md).
+
+The four `*:icon-host` keys are format strings: the class a [host-placed icon](icons.md#host-placement) adds to
+its button, with `{name_class}` standing for the icon library's name class. `"card:icon-host": "icon {name_class}"`
+adds a base class on card buttons only; `None` or `""` switches host icons off at that location (no class and
+nothing inline). The filter toggle is the exception: with `context:icon-host` off it falls back to its two icon spans,
+which show the standalone icons. The keys have no effect for an icon library without `placement: "host"`.
 
 ## `CRUD_VIEWS_BUTTON_CLASSES`
 
@@ -243,7 +250,8 @@ menu item does not use it, so an override of it no longer changes the stock menu
 
 ### The leaf contract
 
-`crud_views.lib.view.button_data.cv_button_data(ctx, location)` turns a resolved action into the flat dict the leaves
+`crud_views.lib.view.button_data.cv_button_data(ctx, location, kind="action")` (`kind` is `"action"` or
+`"menu-item"`) turns a resolved action into the flat dict the leaves
 receive. Every decision (element, disabled, form post or modal, label mode, title) is taken there once. The
 keys are `LEAF_KEYS`:
 
@@ -266,6 +274,8 @@ keys are `LEAF_KEYS`:
 | `cv_icon` | the icon value (see [Icons](icons.md)) |
 | `cv_variant` | the resolved variant; falls back to `"secondary"` |
 | `cv_flex` | the leaf adds the `card:flex` classes; true only on cards |
+| `cv_icon_class` | the class a [host-placed icon](icons.md#host-placement) adds to the button (the `<location>:icon-host` slot, `menu:icon-host` for a menu item), else `""`; `""` for an action button in `"label"` mode |
+| `cv_icon_inline` | render `{% cv_icon cv_icon %}` inside the button; `False` for a host-placed icon. The leaves test `is not False`, so a dict without the key renders the icon as before |
 
 A renderer registered through the icon library config must emit `aria-hidden="true"` on the icon, as `render_icon()` does.
 The `"both"` branch of the bundled leaf relies on it: the visible `<span>` must be the button's only accessible name.
@@ -369,6 +379,7 @@ override the leaf, otherwise an action disabled by `CRUD_VIEWS_INACCESSIBLE_ACTI
 |---|---|---|
 | `crud_views.E360` | error | a removed setting is still defined (`CRUD_VIEWS_FILTER_RESET_BUTTON_CSS_CLASS`); the hint names the replacement |
 | `crud_views.E361` | error | a `CRUD_VIEWS_BUTTON_CLASSES` value or registered theme value is neither a str nor `None` |
+| `crud_views.E363` | error | an `*:icon-host` value is not a valid format string with `{name_class}` as its only placeholder |
 | `crud_views.W362` | warning | a `CRUD_VIEWS_BUTTON_CLASSES` or theme key is neither in the default table nor a valid `location:variant:mode` (typo, or an unknown label mode) |
 | `viewset.E209` | error | a `cv_action_variant`, `ContextButton.variant` or `CardAction.variant` is not one of the four variants |
 | `viewset.E210` | error | a `CardAction.label_mode` or `cv_card_actions_label_mode` is not one of `"label"`, `"icon"`, `"both"` |

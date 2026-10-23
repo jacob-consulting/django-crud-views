@@ -147,6 +147,18 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Added
 
+- Icon libraries with `placement: "host"` (#258): the icon class goes on the button itself, for design systems that
+  paint icons with `::before` and have no element inside the button. `CRUD_VIEWS_ICON_LIBRARIES = {"ui": {"renderer":
+  "font", "class": "icon-{name}", "placement": "host", "standalone": "icon {name_class}"}}` puts `icon-edit` on
+  context, list and card buttons, the "More actions" toggle, menu items and the filter toggle (which swaps its two
+  classes in `list.filter.js`); every other icon renders as a standalone `<i>` with the `standalone` classes. The new
+  button class keys `context:icon-host`, `list:icon-host`, `card:icon-host` and `menu:icon-host` (default
+  `"{name_class}"`) set what a host adds, so a theme can add a base class per kind of button. The leaf contract gains
+  `cv_icon_class` and `cv_icon_inline`, `cv_button_data()` a `kind` argument, and `{% cv_icon_class value location %}`
+  returns the class for project templates. New checks: `crud_views.E354` / `E355` cover `standalone` and
+  `placement`, `crud_views.E363` an invalid `*:icon-host` value. Libraries without `placement` render as before.
+  Headings follow in #259.
+
 - `CRUD_VIEWS_HEADER_LEVEL`: the level of your `{% cv_header %}` (1–5). Card titles, the workflow sections, the
   object-detail group headings (accordion included) render one level below it and keep their look through
   Bootstrap's size class (`<h2 class="h5 card-title">`); the modal title renders at it. Unset (the default), every

@@ -133,6 +133,59 @@ CRUD_VIEWS_ICON_LIBRARIES = {
 }
 ```
 
+### Host placement
+
+Some design systems draw an icon as a class on the element that holds it, painted by `::before`, with no markup inside
+the element: `<a class="btn btn-icon-only icon-edit">`. A `font` library declares that with `placement: "host"`:
+
+```python
+CRUD_VIEWS_ICON_LIBRARIES = {
+    "ui": {
+        "renderer": "font",
+        "class": "icon-{name}",  # the bare name class
+        "placement": "host",  # default "element": an <i> inside the button
+        "standalone": "icon {name_class}",  # default "{name_class}"
+    },
+}
+CRUD_VIEWS_ICONS = {"update": "ui:edit", "create": "ui:plus"}
+```
+
+- **On a button** (context, list and card buttons, the "More actions" toggle, menu items and the filter toggle) the
+  button gets the class and renders no icon element. Which class it gets comes from the button class table: the
+  `context:icon-host`, `list:icon-host`, `card:icon-host` and `menu:icon-host` slots, each `"{name_class}"` by
+  default, where `{name_class}` is the formatted `class`. A theme that needs a base class next to the name class on
+  one kind of host writes e.g. `"menu:icon-host": "link-icon {name_class}"`; `None` switches the icon off there. The
+  mode markers (`btn-with-icon`, `btn-icon-only`) belong in the `location:variant:mode` keys
+  ([Buttons](buttons.md#the-class-table)).
+- **Everywhere else** (`{% cv_icon %}`: alerts, pagination, formset controls, table sort, object detail, ...) the
+  icon is a standalone element. `standalone` is a format string with `{name_class}`; it gives the classes of that
+  element.
+
+```html
+<!-- context button, icon mode: hidden label and title as for any icon-only button -->
+<a href="..." class="btn btn-icon-only icon-edit" title="Edit" data-cv-tooltip="context" cv-key="update"><span class="visually-hidden">Edit</span></a>
+<!-- card button, both mode -->
+<a href="..." class="btn btn-with-icon icon-plus" cv-key="create"><span>New item</span></a>
+<!-- standalone -->
+<i class="icon icon-check me-2" aria-hidden="true"></i>
+```
+
+Placement is decided per icon: on the same page a `fas:` icon or a raw class still renders inline. A button in `label`
+mode shows no icon either way. The filter toggle uses host placement only when both `filter` and `filter-close` are
+host icons; it then carries `data-cv-filter-icon-open` / `data-cv-filter-icon-close` and `list.filter.js` swaps the
+two classes on the button ([JavaScript](javascript.md#the-filter-toggle-contract)). Headings and modal titles are
+not hosts yet (#259).
+
+For your own templates, `{% cv_icon_class value location %}` returns the class a host icon adds at `location`
+(`""` for any other icon), and supports `as`:
+
+```django
+{% cv_icon_class "update" "context" as icon_class %}
+<a class="btn{% if icon_class %} {{ icon_class }}{% endif %}">{% if not icon_class %}{% cv_icon "update" %}{% endif %}Edit</a>
+```
+
+Host placement needs the `font` renderer; a custom renderer returns markup for inside the element.
+
 ### Custom renderer
 
 A renderer is a callable with this contract and returns a `SafeString`:
@@ -203,7 +256,8 @@ class MyAppThemeConfig(AppConfig):
 
 `register_icon_library(prefix, renderer="font", **config)` takes `"font"`, a dotted path or a callable;
 `register_icons(icons)` takes a dict of name to icon value. Both reset the resolved cache. `class` is a Python
-keyword, so pass it with the dict form: `register_icon_library("ti", **{"class": "ti ti-{name}"})`.
+keyword, so pass it with the dict form: `register_icon_library("ti", **{"class": "ti ti-{name}"})`. A host library
+the same way: `register_icon_library("ui", placement="host", **{"class": "icon-{name}", "standalone": "icon {name_class}"})`.
 
 ### Precedence
 
@@ -221,8 +275,8 @@ register the same key, the one whose `ready()` runs later wins, which is the one
 |---|---|---|
 | `crud_views.E350` | error | a removed setting is still defined (see the changelog); the hint names the replacement |
 | `crud_views.E351` | error | the `renderer` dotted path of a library cannot be imported |
-| `crud_views.E354` | error | a library with the `font` renderer has no `class` entry, or its `class` is not a valid format string |
-| `crud_views.E355` | error | a library config is not a dict, or its `renderer` is neither `font`, a dotted path nor a callable |
+| `crud_views.E354` | error | a library with the `font` renderer has no `class` entry, or its `class` is not a valid format string, or a host library's `standalone` is not a valid format string with `{name_class}` |
+| `crud_views.E355` | error | a library config is not a dict, its `renderer` is neither `font`, a dotted path nor a callable, its `placement` is neither `element` nor `host`, or `host` is used without the `font` renderer |
 | `crud_views.E356` | error | a `CRUD_VIEWS_ICONS` value, `cv_icon_action` or `cv_icon_header` is neither a str nor `None` |
 | `crud_views.W352` | warning | a `CRUD_VIEWS_ICONS` entry uses an unregistered library prefix, or points to another semantic name |
 | `crud_views.W353` | warning | `cv_icon_action`, `cv_icon_header` or `ViewSet.icon_header` uses an unregistered library prefix |

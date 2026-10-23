@@ -210,6 +210,9 @@ def font_renderer(name: str, *, css: str, config: dict) -> SafeString:
         return SafeString("")
     try:
         classes = template.format(name=name)
+        if config.get("placement") == "host":
+            # a host library's class is the bare name class; a standalone icon wraps it (#258)
+            classes = config.get("standalone", "{name_class}").format(name_class=classes)
     except Exception:
         return SafeString("")
     if css:
@@ -232,6 +235,28 @@ def render_icon(value: str | None, css: str = "") -> SafeString:
     if renderer is None:
         return SafeString("")
     return renderer(name, css=css, config=config)
+
+
+def resolve_icon_name_class(value: str | None) -> str | None:
+    """The bare name class of a host-placed icon (``placement: "host"``, #258), else None.
+
+    None for an empty value, a raw class, an unknown prefix and any library that is not a usable ``font`` library
+    with host placement: those icons render as an element.
+    """
+    resolved = resolve_icon(value)
+    if resolved is None or not resolved[0]:
+        return None
+    prefix, name = resolved
+    config = get_libraries().get(prefix)
+    if not isinstance(config, dict) or config.get("placement") != "host" or config.get("renderer", "font") != "font":
+        return None
+    template = config.get("class")
+    if not isinstance(template, str):
+        return None
+    try:
+        return template.format(name=name)
+    except Exception:
+        return None
 
 
 REMOVED_SETTINGS: dict[str, str] = {
@@ -261,6 +286,34 @@ def unregistered_prefix(value: str | None) -> str | None:
     return None if prefix in get_libraries() else prefix
 
 
+PLACEMENTS = frozenset({"element", "host"})
+
+_STANDALONE_HINT = "The only placeholder is {name_class}, e.g. 'icon {name_class}'."
+
+
+def _standalone_check_messages(prefix: str, standalone) -> list[CheckMessage]:
+    """E354 for a host library's ``standalone`` value: a str format string with ``{name_class}`` only (#258)."""
+    if not isinstance(standalone, str):
+        return [
+            Error(
+                f"Icon library {prefix!r}: 'standalone' must be a str format string, got {type(standalone).__name__}.",
+                hint=_STANDALONE_HINT,
+                id="crud_views.E354",
+            )
+        ]
+    try:
+        standalone.format(name_class="x")
+    except Exception as exc:
+        return [
+            Error(
+                f"Icon library {prefix!r}: 'standalone' {standalone!r} is not a valid format string: {exc}",
+                hint=_STANDALONE_HINT,
+                id="crud_views.E354",
+            )
+        ]
+    return []
+
+
 _RENDERER_HINT = "Set renderer to 'font', a callable or an importable dotted path."
 
 
@@ -275,6 +328,23 @@ def _library_check_messages(prefix: str, config) -> list[CheckMessage]:
             )
         ]
     renderer = config.get("renderer", "font")
+    placement = config.get("placement", "element")
+    if placement not in PLACEMENTS:
+        return [
+            Error(
+                f"Icon library {prefix!r}: placement must be one of {sorted(PLACEMENTS)}, got {placement!r}.",
+                hint="Use 'element' (an icon element inside the button) or 'host' (the icon class on the button).",
+                id="crud_views.E355",
+            )
+        ]
+    if placement == "host" and renderer != "font":
+        return [
+            Error(
+                f"Icon library {prefix!r}: placement 'host' needs the 'font' renderer.",
+                hint="Use renderer 'font' with a 'class' format string, or placement 'element'.",
+                id="crud_views.E355",
+            )
+        ]
     if renderer == "font":
         template = config.get("class")
         if not template:
@@ -303,6 +373,8 @@ def _library_check_messages(prefix: str, config) -> list[CheckMessage]:
                     id="crud_views.E354",
                 )
             ]
+        if placement == "host":
+            return _standalone_check_messages(prefix, config.get("standalone", "{name_class}"))
         return []
     if isinstance(renderer, str):
         try:

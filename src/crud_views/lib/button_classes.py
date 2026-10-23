@@ -63,6 +63,12 @@ DEFAULT_BUTTON_CLASSES: dict[str, str] = {
     "context:hidden-label": "visually-hidden",
     "list:hidden-label": "visually-hidden",
     "card:hidden-label": "visually-hidden",
+    # the class a host-placed icon (#258) adds to its button: {name_class} is the icon library's name class; a theme
+    # that needs a base class next to it writes e.g. "icon {name_class}", None switches the icon off there
+    "context:icon-host": "{name_class}",
+    "list:icon-host": "{name_class}",
+    "card:icon-host": "{name_class}",
+    "menu:icon-host": "{name_class}",
     "language:toggle": "btn btn-outline-secondary",
     "object-detail:property-detail": "btn btn-link p-0 ms-1 align-baseline text-muted",
 }
@@ -120,6 +126,22 @@ def get_button_class(location: str, slot: str, mode: str | None = None) -> str:
     return value if isinstance(value, str) else ""
 
 
+def get_icon_host_class(location: str, value: str | None) -> str:
+    """The ``location:icon-host`` slot formatted with the name class of a host-placed icon (#258).
+
+    "" when ``value`` is not a host icon, or the slot is None, "", not a str or not a valid format string.
+    """
+    from .icons import resolve_icon_name_class
+
+    name_class = resolve_icon_name_class(value)
+    if name_class is None:
+        return ""
+    try:
+        return get_button_class(location, "icon-host").format(name_class=name_class)
+    except Exception:
+        return ""
+
+
 def _action_key_parts(key: str) -> tuple[str, str, str] | None:
     """``(location, variant, mode)`` for a three-segment key whose location and variant are known, else None.
 
@@ -163,6 +185,17 @@ def button_class_check_messages() -> list[CheckMessage]:
                     id="crud_views.E361",
                 )
             )
+        elif isinstance(key, str) and isinstance(value, str) and key.endswith(":icon-host"):
+            try:
+                value.format(name_class="x")
+            except Exception as exc:
+                messages.append(
+                    Error(
+                        f"Button class {key!r} = {value!r} is not a valid format string: {exc}",
+                        hint="The only placeholder is {name_class}, e.g. 'icon {name_class}'.",
+                        id="crud_views.E363",
+                    )
+                )
 
     from .view.label_mode import LABEL_MODES
 

@@ -8,13 +8,13 @@ from django.utils.translation import get_language, get_language_info
 from django_tables2.templatetags import django_tables2 as _dt2
 
 from crud_views.lib import assets
-from crud_views.lib.button_classes import get_button_class
+from crud_views.lib.button_classes import get_button_class, get_icon_host_class
 from crud_views.lib.exceptions import ViewSetKeyFoundError, ignore_exception
 from crud_views.lib.icons import render_icon
 from crud_views.lib.messages import alert_data, message_alerts
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import CrudView
-from crud_views.lib.view.button_data import cv_button_data
+from crud_views.lib.view.button_data import cv_button_data, icon_host_keys
 from crud_views.lib.view.visibility import cv_resolve_action
 
 register = template.Library()
@@ -153,7 +153,14 @@ def cv_actions_menu(context, group, location):
     """The dropdown for a group's menu items; renders nothing when there are none (#174)."""
     if group is None or not group.menu:
         return {}
-    return {"cv_menu_items": group.menu, "cv_location": location, "cv_menu_icon": "actions-menu"}
+    icon_class, icon_inline = icon_host_keys("actions-menu", location)
+    return {
+        "cv_menu_items": group.menu,
+        "cv_location": location,
+        "cv_menu_icon": "actions-menu",
+        "cv_menu_icon_class": icon_class,
+        "cv_menu_icon_inline": icon_inline,
+    }
 
 
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/actions_menu_item.html")
@@ -191,7 +198,7 @@ def cv_button(context, location, kind="action"):
     ctx = cv_resolve_action(context.flatten())
     if ctx is None:
         return ""
-    return render_to_string(_BUTTON_LEAVES[kind], cv_button_data(ctx, location))
+    return render_to_string(_BUTTON_LEAVES[kind], cv_button_data(ctx, location, kind))
 
 
 @register.simple_tag(takes_context=True)
@@ -499,6 +506,12 @@ def cv_card(context, obj):
 def cv_icon(value, css=""):
     """Render a semantic icon name, library-prefixed name or raw class string as an <i> element."""
     return render_icon(value, css)
+
+
+@register.simple_tag
+def cv_icon_class(value, location):
+    """The class a host-placed icon adds to its element at ``location`` (``location:icon-host``), else "" (#258)."""
+    return get_icon_host_class(location, value)
 
 
 @register.simple_tag

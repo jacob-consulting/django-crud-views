@@ -87,10 +87,11 @@ def cv_button_data(ctx: dict, location: str, kind: str = "action") -> dict:
         label_mode = "icon"
     if kind == "action" and label_mode == "icon" and not ctx.get("cv_icon_action"):
         # an icon-only button without an icon renders nothing visible: fail in strict mode, else show the label (#264)
-        where = f"{location} action {ctx.get('cv_key', '')!r}"
+        where = f"{location} action {ctx.get('cv_action_key') or ctx.get('cv_key', '')!r}"
         if is_strict():
             raise ValueError(
-                f"{where} renders icon-only but has no icon; give it an icon, or a label mode of 'label' or 'both'"
+                f"{where} renders icon-only but has no icon; give it an icon (cv_icon_action, or icon_header of the"
+                " ViewSet a parent, child or sibling button points to), or a label mode of 'label' or 'both'"
                 " (ContextButton.label_mode or a label-mode map)"
             )
         if label:

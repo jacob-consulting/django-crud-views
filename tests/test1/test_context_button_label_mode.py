@@ -224,3 +224,22 @@ def test_w292_skips_get_context_override(monkeypatch):
 def test_w292_skips_unregistered_target(monkeypatch):
     monkeypatch.setattr(AuthorDetailView, "cv_context_actions", ["nope"])
     assert _w292() == []
+
+
+# final review fixes
+
+
+@pytest.mark.django_db
+def test_strict_error_names_the_configured_key(author_douglas_adams, monkeypatch):
+    monkeypatch.setattr(_target("update"), "cv_icon_action", None)
+    _with_viewset_buttons(monkeypatch, ContextButton(key="edit", key_target="update"))
+    monkeypatch.setattr(AuthorDetailView, "cv_context_actions", ["edit"])
+    with pytest.raises(ValueError, match=r"context action 'edit' "):
+        _client([AUTHOR_FULL]).get(_detail_url(author_douglas_adams))
+
+
+@pytest.mark.parametrize("inline", [5, "update"])
+def test_w292_does_not_crash_on_invalid_inline(monkeypatch, inline):
+    monkeypatch.setattr(AuthorDetailView, "cv_context_actions_inline", inline)
+    ids = [m.id for c in AuthorDetailView.checks() for m in c.messages()]
+    assert "viewset.W292" not in ids

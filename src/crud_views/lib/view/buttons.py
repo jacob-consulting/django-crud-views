@@ -7,6 +7,7 @@ from pydantic import BaseModel, Field
 from ..check import CheckExpression, CheckWarningExpression
 from ..exceptions import ViewSetNotFoundError
 from ..settings import crud_views_settings
+from .action_menu import cv_is_inline_keys
 from .context import ViewContext
 from .label_mode import is_label_mode_map, label_mode_check
 from .variant import variant_check
@@ -373,6 +374,8 @@ def cv_icon_mode_checks(cls):
     """
     if not is_label_mode_map(cls.cv_get_context_actions_label_mode()):
         return  # viewset.E211 / crud_views.E106 report it
+    if not cv_is_inline_keys(cls.cv_get_context_actions_inline()):
+        return  # the inline-keys checks report it
     viewset = cls.cv_viewset
     inline = cls.cv_get_context_actions_inline()
     for key in cls.cv_context_actions or []:

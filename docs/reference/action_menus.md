@@ -76,7 +76,10 @@ class AuthorListView(ListViewTableMixin, ListViewPermissionRequired):
 ```
 
 Order: `CrudView` → `ViewSet` → setting; the first value that is not `None` wins, whole — the layers are not merged,
-and `{}` on a view makes every action of that view icon-only whatever its ViewSet says. Keys are the configured keys,
+and `{}` on a view makes every action of that view icon-only whatever its ViewSet says. A context toolbar key can also
+take its mode from its context button, [`ContextButton.label_mode`](context_buttons.md#contextbutton): the view's own
+map wins if it names the key, then the button's `label_mode`, then the map resolved as above. Row actions never read
+the button's `label_mode`. Keys are the configured keys,
 as for the inline lists (`"home"`, not its target `"list"`). The getters `cv_get_list_actions_label_mode()` and
 `cv_get_context_actions_label_mode()` return the resolved dict, `cv_get_action_label_mode(location, key)` the mode of
 one key. Cards do not use the map: a card button's mode is `CardAction.label_mode`, see

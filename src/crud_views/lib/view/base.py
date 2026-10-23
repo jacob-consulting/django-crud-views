@@ -275,12 +275,21 @@ class CrudView(metaclass=CrudViewMetaClass):
         return cls.cv_first_inline_keys(cls.cv_context_actions_label_mode, "context_actions_label_mode")
 
     @classmethod
-    def cv_get_action_label_mode(cls, location: str, key: str) -> str:
+    def cv_get_action_label_mode(cls, location: str, key: str, button: ContextButton | None = None) -> str:
         """The label mode of one configured context or list action key; "icon" for a key not in the map (#216).
 
-        Cards resolve their mode per CardAction in cv_get_card_action_data() and never come through here.
+        A context key takes the view's own map if it names the key, then the label_mode of its context button, then
+        the resolved map (#264); row actions never read the button. button is the key's context button as the
+        rendering view sees it; None looks it up on the class. Cards resolve their mode per CardAction in
+        cv_get_card_action_data() and never come through here.
         """
         if location == "context":
+            if cls.cv_context_actions_label_mode is not None and key in cls.cv_context_actions_label_mode:
+                return cls.cv_context_actions_label_mode[key]
+            if button is None:
+                button = cls._cv_find_context_button(cls.cv_context_buttons, cls.cv_viewset, key)
+            if button is not None and button.label_mode is not None:
+                return button.label_mode
             mapping = cls.cv_get_context_actions_label_mode()
         elif location == "list":
             mapping = cls.cv_get_list_actions_label_mode()
@@ -505,11 +514,15 @@ class CrudView(metaclass=CrudViewMetaClass):
         return ViewContext(**kwargs)
 
     def cv_get_context_button(self, key: str) -> ContextButton | None:
+        return self._cv_find_context_button(self.cv_context_buttons, self.cv_viewset, key)
+
+    @staticmethod
+    def _cv_find_context_button(view_buttons, viewset, key: str) -> ContextButton | None:
         # view-level buttons take precedence over ViewSet-level buttons (issue #27)
-        for cb in self.cv_context_buttons or []:
+        for cb in view_buttons or []:
             if cb.key == key:
                 return cb
-        for cb in self.cv_viewset.context_buttons:
+        for cb in viewset.context_buttons:
             if cb.key == key:
                 return cb
         return None
@@ -593,7 +606,8 @@ class CrudView(metaclass=CrudViewMetaClass):
         """
         data = self._cv_get_action_context(key, obj, user)
         if location is not None and data:
-            data = {**data, "cv_label_mode": self.cv_get_action_label_mode(location, key)}
+            button = self.cv_get_context_button(key) if location == "context" else None
+            data = {**data, "cv_label_mode": self.cv_get_action_label_mode(location, key, button)}
         return data
 
     def _cv_get_action_context(self, key: str | None, obj: Model | None, user: User | None) -> dict[str, Any]:

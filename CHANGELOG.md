@@ -155,6 +155,10 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Added
 
+- `ContextButton.label_mode` (`"label"`, `"icon"` or `"both"`; `None` by default) sets a button's label mode in the
+  context toolbar for every view of the ViewSet. A view's own `cv_context_actions_label_mode` naming the key still
+  wins; the ViewSet map and the setting come after the button. Row actions keep following the list maps. An invalid
+  value fails `viewset.E210` (#264).
 - Button class keys `<location>:container-tag` (default `"fieldset"` for `context` and `list`, `"div"` for `card`)
   and `<location>:container-label` (default `"Actions"` for `context` and `list`, `None` for `card`) set the
   container's element and its `aria-label`, which is passed through `gettext` (#266).

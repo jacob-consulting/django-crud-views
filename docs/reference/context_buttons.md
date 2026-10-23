@@ -38,6 +38,7 @@ ContextButton(
     template=None,  # path to a Django template for the whole button
     template_code=None,  # inline Django template string for the whole button
     variant=None,  # primary, secondary, tertiary or danger; None: the target view's variant
+    label_mode=None,  # label, icon or both; None: the view's label mode map
 )
 ```
 
@@ -50,8 +51,15 @@ ContextButton(
 | `template`            | `str \| None` | `None`   | Path to a Django template for the whole button   |
 | `template_code`       | `str \| None` | `None`   | Inline Django template string for the whole button |
 | `variant`             | `str \| None` | `None`   | Semantic variant; `None` uses the target view's `cv_action_variant`, see [Buttons](buttons.md#variants) |
+| `label_mode`          | `str \| None` | `None`   | `"label"`, `"icon"` or `"both"` in the context toolbar; `None` follows the view's [label mode map](action_menus.md#label-mode) |
 
 Access is checked via the target view's `cv_has_access(user, obj)`.
+
+`label_mode` is the button's mode in the context toolbar of every view of the ViewSet, so a text-only button type
+does not need its key in a map on every ViewSet. A view's own `cv_context_actions_label_mode` that names the key still
+wins; see [Action menus](action_menus.md#label-mode) for the full order. It applies to the toolbar, the action menu
+and `{% cv_context_button %}`, not to row actions, which follow the list maps even when they resolve through the same
+button. An invalid value fails `viewset.E210`.
 
 When neither `template` nor `template_code` is set, the button uses the
 `CRUD_VIEWS_CONTEXT_BUTTON_TEMPLATE` setting (default

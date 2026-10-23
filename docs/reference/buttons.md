@@ -442,6 +442,6 @@ override the leaf, otherwise an action disabled by `CRUD_VIEWS_INACCESSIBLE_ACTI
 | `crud_views.E364` | error | a `*:container-single` value is neither `"container"` nor `"bare"` (`None` and `""` mean `"container"`) |
 | `crud_views.W362` | warning | a `CRUD_VIEWS_BUTTON_CLASSES` or theme key is neither in the default table nor a valid `location:variant:mode` (typo, or an unknown label mode) |
 | `viewset.E209` | error | a `cv_action_variant`, `ContextButton.variant` or `CardAction.variant` is not one of the four variants |
-| `viewset.E210` | error | a `CardAction.label_mode` or `cv_card_actions_label_mode` is not one of `"label"`, `"icon"`, `"both"` |
+| `viewset.E210` | error | a `CardAction.label_mode`, `cv_card_actions_label_mode` or `ContextButton.label_mode` is not one of `"label"`, `"icon"`, `"both"` |
 | `viewset.E211` | error | a `cv_context_actions_label_mode` or `cv_list_actions_label_mode` is not `None` or a dict of action key → label mode |
 | `viewset.W291` | warning | a view's own `cv_*_actions_label_mode` names a key that is not among that location's actions |

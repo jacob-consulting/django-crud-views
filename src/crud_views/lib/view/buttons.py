@@ -8,6 +8,7 @@ from ..check import CheckExpression
 from ..exceptions import ViewSetNotFoundError
 from ..settings import crud_views_settings
 from .context import ViewContext
+from .label_mode import label_mode_check
 from .variant import variant_check
 
 
@@ -28,6 +29,7 @@ class ContextButton(BaseModel):
     template: str | None = None
     template_code: str | None = None
     variant: str | None = None  # None: the target view's cv_action_variant
+    label_mode: str | None = None  # None: the view's context label-mode maps; one of LABEL_MODES (#264)
 
     @staticmethod
     def _resolve_container_key(viewset, key_target: str) -> str:
@@ -346,13 +348,16 @@ def context_buttons_default(*args, **kwargs) -> Any:
 
 def context_button_checks(context, viewset, buttons: list[ContextButton] | None):
     """
-    System check viewset.E255 for explicitly configured context buttons. Buttons equal to a default
+    System checks viewset.E255 for explicitly configured context buttons, and the variant and label mode (E210) of
+    every button. Buttons equal to a default
     are skipped: their target is legitimately absent on e.g. a detail-only or root ViewSet (#132).
     """
     defaults = context_buttons_default()
     for button in buttons or []:
         if button.variant is not None:
             yield variant_check(context, f"context button {button.key!r}", button.variant)
+        if button.label_mode is not None:
+            yield label_mode_check(context, f"context button {button.key!r}", button.label_mode)
         if button in defaults:
             continue
         problem = button.cv_check_target(viewset)

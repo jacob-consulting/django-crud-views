@@ -1,4 +1,4 @@
-"""System checks crud_views.E360/E361/W362/E363 for the button class table."""
+"""System checks crud_views.E360/E361/W362/E363/E364 for the button class table."""
 
 import pytest
 from django.test import override_settings
@@ -119,3 +119,23 @@ def test_e363_icon_host_bad_placeholder():
 def test_icon_host_none_and_base_are_valid():
     with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"list:icon-host": None, "card:icon-host": "icon {name_class}"}):
         assert check_button_classes() == []
+
+
+def test_e364_container_single_bad_value():
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"list:container-single": "naked"}):
+        messages = check_button_classes()
+    assert ids(messages) == ["crud_views.E364"]
+    assert "'list:container-single'" in messages[0].msg
+    assert "bare" in messages[0].hint and "container" in messages[0].hint
+
+
+def test_container_keys_valid_no_messages():
+    register_button_classes(
+        {
+            "context:container-list": "",
+            "context:container-item": "li",
+            "context:container-single": "bare",
+            "card:container-single": None,
+        }
+    )
+    assert check_button_classes() == []

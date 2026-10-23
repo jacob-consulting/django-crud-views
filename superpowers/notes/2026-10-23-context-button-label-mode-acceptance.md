@@ -43,3 +43,19 @@ plan `superpowers/plans/2026-10-23-context-button-label-mode.md`.
   `cv_get_context()` passes.
 - `cv_icon_mode_checks()` lives in `buttons.py`, and returns nothing when the label-mode map is invalid (`E211`
   reports that).
+
+## Final review
+
+Fresh reviewer, whole branch: no Critical findings. Fixed in one pass (`pytest tests -n auto` → 2795 passed, 2
+skipped):
+
+- The strict error named the target's key (`'update'`, or `'list'` for a parent button) instead of the configured
+  toolbar key; `cv_get_context(location=...)` now also stamps `cv_action_key`, and the remedy mentions
+  `icon_header` for parent / child / sibling buttons (`test_strict_error_names_the_configured_key`).
+- `W292` raised `TypeError` on an invalid `cv_context_actions_inline`, breaking the whole check run; it now returns
+  early like for an invalid map (`test_w292_does_not_crash_on_invalid_inline`).
+- `context_buttons.md` no longer says the button's mode applies to the action menu.
+
+Deferred minors: a second class-level button lookup when the instance found none; one warning per button per render
+in the non-strict fallback; an empty full label with a short label stays empty; an invalid `ContextButton.label_mode`
+breaks pages with strict off (only `E210` catches it, as for `variant`).

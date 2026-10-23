@@ -1,4 +1,8 @@
-{% load crud_views %}<{{ cv_container_tag }} class="{% cv_button_class cv_location 'container' %}"{% if cv_container_tag == "fieldset" %} aria-label="Actions"{% endif %} cv-{{ cv_location }}-container="true">
-    {% for ctx in cv_buttons %}{% cv_render_button ctx cv_location %}{% endfor %}
+{% load crud_views %}{% cv_container_layout cv_location cv_buttons cv_group as cv_layout %}{% if cv_layout.bare %}{% for ctx in cv_buttons %}{% cv_render_button ctx cv_location %}{% endfor %}{% cv_actions_menu cv_group cv_location %}{% else %}<{{ cv_container_tag }} class="{% cv_button_class cv_location 'container' %}"{% if cv_container_tag == "fieldset" %} aria-label="Actions"{% endif %} cv-{{ cv_location }}-container="true">
+{% if cv_layout.list_class is None %}    {% for ctx in cv_buttons %}{% cv_render_button ctx cv_location %}{% endfor %}
     {% cv_actions_menu cv_group cv_location %}
-</{{ cv_container_tag }}>
+{% else %}    <ul{% if cv_layout.list_class %} class="{{ cv_layout.list_class }}"{% endif %}>
+        {% for ctx in cv_buttons %}<li{% if cv_layout.item_class %} class="{{ cv_layout.item_class }}"{% endif %}>{% cv_render_button ctx cv_location %}</li>{% endfor %}
+        {% if cv_group.menu %}<li{% if cv_layout.item_class %} class="{{ cv_layout.item_class }}"{% endif %}>{% cv_actions_menu cv_group cv_location %}</li>{% endif %}
+    </ul>
+{% endif %}</{{ cv_container_tag }}>{% endif %}

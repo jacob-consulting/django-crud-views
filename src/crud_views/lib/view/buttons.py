@@ -9,7 +9,7 @@ from ..exceptions import ViewSetNotFoundError
 from ..settings import crud_views_settings
 from .action_menu import cv_is_inline_keys
 from .context import ViewContext
-from .label_mode import is_label_mode_map, label_mode_check
+from .label_mode import is_label_mode, is_label_mode_map, label_mode_check
 from .variant import variant_check
 
 
@@ -368,6 +368,8 @@ def context_button_checks(context, viewset, buttons: list[ContextButton] | None)
 def cv_icon_mode_checks(cls):
     """System check viewset.W292: a context toolbar key that renders icon-only although its target has no icon (#264).
 
+    The mode is resolved as at render time, including the target view's cv_context_action_label_mode (#269).
+
     Only what is known statically: keys folded into the action menu (a menu item always shows its label), buttons
     with their own template or get_context() and unregistered targets are skipped; cv_button_data() covers the rest
     at render time.
@@ -379,8 +381,6 @@ def cv_icon_mode_checks(cls):
     viewset = cls.cv_viewset
     inline = cls.cv_get_context_actions_inline()
     for key in cls.cv_context_actions or []:
-        if cls.cv_get_action_label_mode("context", key) != "icon":
-            continue
         if inline is not None and key not in inline:
             continue
         button = cls._cv_find_context_button(cls.cv_context_buttons, viewset, key)
@@ -397,10 +397,17 @@ def cv_icon_mode_checks(cls):
             target = ContextButton._resolve_container_key(viewset, button.key_target)
         if not _is_registered(viewset, target):
             continue
+        target_cls = viewset.get_view_class(target)
+        # the target view's own toolbar mode (#269); an invalid value counts as unset, viewset.E210 reports it
+        target_default = target_cls.cv_context_action_label_mode
+        if not is_label_mode(target_default):
+            target_default = None
+        if cls.cv_get_action_label_mode("context", key, button, target_default) != "icon":
+            continue
         yield CheckWarningExpression(
             context=cls,
             id="W292",
-            expression=bool(viewset.get_view_class(target).cv_icon_action),
+            expression=bool(target_cls.cv_icon_action),
             msg=(
                 f"context action {key!r} of {cls.__name__} renders icon-only but has no icon; give it an icon or a "
                 "label mode ('label' or 'both')"

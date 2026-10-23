@@ -25,11 +25,11 @@ def is_label_mode_map(value: object) -> bool:
     return isinstance(value, dict) and all(isinstance(k, str) and is_label_mode(v) for k, v in value.items())
 
 
-def label_mode_check(context, owner: str, value) -> CheckExpression:
-    """System check viewset.E210: value must be one of the label modes."""
+def label_mode_check(context, owner: str, value, hint: str = "") -> CheckExpression:
+    """System check viewset.E210: value must be one of the label modes; hint is appended to the message."""
     return CheckExpression(
         context=context,
         id="E210",
         expression=is_label_mode(value),
-        msg=f"{owner} label_mode must be one of {sorted(LABEL_MODES)}, got {value!r}",
+        msg=f"{owner} label_mode must be one of {sorted(LABEL_MODES)}, got {value!r}{hint}",
     )

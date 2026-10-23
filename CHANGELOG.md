@@ -160,6 +160,11 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Added
 
+- `cv_context_action_label_mode` (`"label"`, `"icon"` or `"both"`; `None` by default) on a view sets the label mode
+  of every context toolbar button that opens it, including `home`, `parent`, child and sibling buttons (#269). It is
+  the last fallback before `"icon"`: a page's map, the button's `label_mode`, the ViewSet map and the setting win for
+  a key they name. Table rows never read it. An invalid value fails `viewset.E210`; `viewset.W292` takes it into
+  account.
 - `ContextButton.label_mode` (`"label"`, `"icon"` or `"both"`; `None` by default) sets a button's label mode in the
   context toolbar for every view of the ViewSet. A view's own `cv_context_actions_label_mode` naming the key still
   wins; the ViewSet map and the setting come after the button. Row actions keep following the list maps. An invalid

@@ -59,7 +59,8 @@ class CrudViewsSettings(BaseModel):
     card_actions_inline: Any = from_settings("CRUD_VIEWS_CARD_ACTIONS_INLINE", default=None)
 
     # label mode of context / list actions (#216): action key -> "label" | "icon" | "both"; keys not named are
-    # "icon". Overridable per ViewSet (*_actions_label_mode) and per view (cv_*_actions_label_mode), resolved on
+    # "icon" (in the toolbar, the target view's cv_context_action_label_mode first, #269). Overridable per ViewSet
+    # (*_actions_label_mode) and per view (cv_*_actions_label_mode), resolved on
     # the rendering view
     context_actions_label_mode: Any = from_settings("CRUD_VIEWS_CONTEXT_ACTIONS_LABEL_MODE", default={})
     list_actions_label_mode: Any = from_settings("CRUD_VIEWS_LIST_ACTIONS_LABEL_MODE", default={})

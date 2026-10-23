@@ -1,8 +1,13 @@
 """Normalise a resolved action dict into the flat leaf contract used by the button templates."""
 
+import logging
+
 from ..button_classes import get_icon_host_class
+from ..exceptions import is_strict
 from ..icons import resolve_icon_name_class
 from .label_mode import LABEL_MODES, is_label_mode
+
+logger = logging.getLogger(__name__)
 
 LOCATIONS = frozenset({"context", "list", "card"})
 
@@ -80,6 +85,20 @@ def cv_button_data(ctx: dict, location: str, kind: str = "action") -> dict:
         raise ValueError(f"cv_label_mode must be one of {sorted(LABEL_MODES)}, got {label_mode!r}")
     if not label:
         label_mode = "icon"
+    if kind == "action" and label_mode == "icon" and not ctx.get("cv_icon_action"):
+        # an icon-only button without an icon renders nothing visible: fail in strict mode, else show the label (#264)
+        where = f"{location} action {ctx.get('cv_action_key') or ctx.get('cv_key', '')!r}"
+        if is_strict():
+            raise ValueError(
+                f"{where} renders icon-only but has no icon; give it an icon (cv_icon_action, or icon_header of the"
+                " ViewSet a parent, child or sibling button points to), or a label mode of 'label' or 'both'"
+                " (ContextButton.label_mode or a label-mode map)"
+            )
+        if label:
+            label_mode = "label"
+            logger.warning("%s has no icon; rendered with its label instead", where)
+        else:
+            logger.warning("%s has neither an icon nor a label and renders empty", where)
     if not card and label_mode != "icon":
         # the visible text of a labelled toolbar or row button is the short label; icon mode keeps the full
         # label as the hidden text and the title (#216)

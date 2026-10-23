@@ -328,7 +328,7 @@ keys are `LEAF_KEYS`:
 | `cv_key` | the action key, rendered as `cv-key` |
 | `cv_label` | the label the leaf prints: on cards the explicit `label`, else the short label, else the key; on `context` and `list` the full label in `icon` mode (hidden text and `title`) and the short label in `label` / `both` (the visible text) |
 | `cv_short_label` | the short label, used for menu items |
-| `cv_label_mode` | how the label shows: `"label"` (text only), `"icon"` (icon with a hidden label, classes `<location>:hidden-label`) or `"both"` (icon and text); always present. On `"context"` and `"list"` it is the view's resolved [label mode](action_menus.md#label-mode) for the key (`"icon"` unless a map names it); on cards it is the resolved [card action label mode](card-list-view.md#label-mode), and an empty label forces `"icon"` |
+| `cv_label_mode` | how the label shows: `"label"` (text only), `"icon"` (icon with a hidden label, classes `<location>:hidden-label`) or `"both"` (icon and text); always present. On `"context"` and `"list"` it is the view's resolved [label mode](action_menus.md#label-mode) for the key (`"icon"` unless a map names it); on cards it is the resolved [card action label mode](card-list-view.md#label-mode), and an empty label forces `"icon"`. An `"icon"` mode with an empty icon (`None` or `""`) raises `ValueError` under [`CRUD_VIEWS_STRICT`](settings.md#basic-settings), otherwise it becomes `"label"` and a warning is logged (menu items always show their label and are not affected) |
 | `cv_title` | the `title` text, which also marks the button with `data-cv-tooltip="<cv_location>"` for `tooltip.js`; present only when `cv_label_mode` is `"icon"` |
 | `cv_icon` | the icon value (see [Icons](icons.md)) |
 | `cv_variant` | the resolved variant; falls back to `"secondary"` |
@@ -442,6 +442,7 @@ override the leaf, otherwise an action disabled by `CRUD_VIEWS_INACCESSIBLE_ACTI
 | `crud_views.E364` | error | a `*:container-single` value is neither `"container"` nor `"bare"` (`None` and `""` mean `"container"`) |
 | `crud_views.W362` | warning | a `CRUD_VIEWS_BUTTON_CLASSES` or theme key is neither in the default table nor a valid `location:variant:mode` (typo, or an unknown label mode) |
 | `viewset.E209` | error | a `cv_action_variant`, `ContextButton.variant` or `CardAction.variant` is not one of the four variants |
-| `viewset.E210` | error | a `CardAction.label_mode` or `cv_card_actions_label_mode` is not one of `"label"`, `"icon"`, `"both"` |
+| `viewset.E210` | error | a `CardAction.label_mode`, `cv_card_actions_label_mode` or `ContextButton.label_mode` is not one of `"label"`, `"icon"`, `"both"` |
 | `viewset.E211` | error | a `cv_context_actions_label_mode` or `cv_list_actions_label_mode` is not `None` or a dict of action key → label mode |
 | `viewset.W291` | warning | a view's own `cv_*_actions_label_mode` names a key that is not among that location's actions |
+| `viewset.W292` | warning | a context toolbar key resolves to `"icon"` while its target view has no `cv_icon_action` (keys folded into the menu, buttons with their own template or `get_context()` and unregistered targets are not checked; the render-time rule covers them) |

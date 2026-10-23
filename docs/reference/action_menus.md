@@ -76,7 +76,10 @@ class AuthorListView(ListViewTableMixin, ListViewPermissionRequired):
 ```
 
 Order: `CrudView` → `ViewSet` → setting; the first value that is not `None` wins, whole — the layers are not merged,
-and `{}` on a view makes every action of that view icon-only whatever its ViewSet says. Keys are the configured keys,
+and `{}` on a view makes every action of that view icon-only whatever its ViewSet says. A context toolbar key can also
+take its mode from its context button, [`ContextButton.label_mode`](context_buttons.md#contextbutton): the view's own
+map wins if it names the key, then the button's `label_mode`, then the map resolved as above. Row actions never read
+the button's `label_mode`. Keys are the configured keys,
 as for the inline lists (`"home"`, not its target `"list"`). The getters `cv_get_list_actions_label_mode()` and
 `cv_get_context_actions_label_mode()` return the resolved dict, `cv_get_action_label_mode(location, key)` the mode of
 one key. Cards do not use the map: a card button's mode is `CardAction.label_mode`, see
@@ -86,6 +89,12 @@ A labelled button shows its short label (`"Create"`, not `"Create new author"`),
 the visible text is its only accessible name. A theme styles the modes apart with `context:primary:both` and the
 like in the [class table](buttons.md#the-class-table). The map applies to inline buttons; an action folded into the
 menu renders icon and short label in every mode.
+
+An icon-only button needs an icon. A toolbar, row or card button whose mode is `"icon"` while its icon is empty would
+render nothing visible, so it raises under [`CRUD_VIEWS_STRICT`](settings.md#basic-settings) (default `DEBUG`) and
+otherwise renders as `"label"` with a logged warning. pytest-django runs tests with `DEBUG=False`: set
+`CRUD_VIEWS_STRICT = True` in your test settings so such a button fails the tests. System check `viewset.W292` reports
+the toolbar cases it can see at startup.
 
 ## What is never folded
 
@@ -196,6 +205,7 @@ a `.table-responsive` wrapper.
 | `crud_views.E106` | a `CRUD_VIEWS_*_ACTIONS_LABEL_MODE` setting is not a dict of action key → `"label"` / `"icon"` / `"both"` |
 | `viewset.E211` | a `cv_*_actions_label_mode` attribute is not `None` or such a dict (`cv_card_actions_label_mode` is the string-valued card attribute) |
 | `viewset.W291` | a view's own `cv_*_actions_label_mode` names a key that is not among that location's actions (typo?) |
+| `viewset.W292` | a context toolbar key resolves to `"icon"` while its target view has no `cv_icon_action` (keys folded into the menu, buttons with their own template or `get_context()` and unregistered targets are not checked; the render-time rule covers them) |
 
 W290 and W291 check only values set on the view class. ViewSet and setting values are shared defaults and may name
 keys some views lack.

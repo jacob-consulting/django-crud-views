@@ -1,6 +1,7 @@
 import hashlib
 
 import pytest
+from django.test import override_settings
 from django.test.client import Client
 
 
@@ -233,6 +234,7 @@ def test_list_sorting_via_querystring(client_user_s3file_view: Client):
 
 
 @pytest.mark.django_db
+@override_settings(CRUD_VIEWS_STRICT=False)  # touch has no icon: a strict error since #264, rendered as its label
 def test_list_action_icons(client: Client, cv_s3file):
     """Delete declares an icon; touch deliberately has none — the icon tag must
     be skipped entirely for icon-less actions, never rendered as class="None".

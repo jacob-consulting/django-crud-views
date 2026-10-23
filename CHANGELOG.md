@@ -102,6 +102,11 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Changed
 
+- An icon-only action button (context toolbar, list row or card) whose icon is empty no longer renders as an
+  invisible button (#264). Under `CRUD_VIEWS_STRICT` (default `DEBUG`) `cv_button_data()` raises `ValueError`;
+  otherwise the button renders its label, as in `"label"` mode, and a warning is logged. pytest-django runs tests
+  with `DEBUG=False`, so set `CRUD_VIEWS_STRICT = True` in your test settings to make such buttons fail the tests.
+  `CRUD_VIEWS_STRICT` is now documented in the settings reference.
 - The delete page's protection and related-objects alerts and the guardian manage page's config alert render
   through `tags/alert.html`, so they gain `role="alert"` and the level's `message-*` icon before the heading. Their
   markup is otherwise unchanged (#250).
@@ -155,6 +160,12 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Added
 
+- `ContextButton.label_mode` (`"label"`, `"icon"` or `"both"`; `None` by default) sets a button's label mode in the
+  context toolbar for every view of the ViewSet. A view's own `cv_context_actions_label_mode` naming the key still
+  wins; the ViewSet map and the setting come after the button. Row actions keep following the list maps. An invalid
+  value fails `viewset.E210` (#264).
+- System check `viewset.W292` warns when a context toolbar key resolves to `"icon"` while its target view has no
+  `cv_icon_action`, so the button would render with no visible content (#264).
 - Button class keys `<location>:container-tag` (default `"fieldset"` for `context` and `list`, `"div"` for `card`)
   and `<location>:container-label` (default `"Actions"` for `context` and `list`, `None` for `card`) set the
   container's element and its `aria-label`, which is passed through `gettext` (#266).

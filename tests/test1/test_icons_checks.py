@@ -5,6 +5,7 @@ from django.test import override_settings
 
 from crud_views.checks import check_icons
 from crud_views.lib.viewset import _REGISTRY, ViewSet
+from tests.lib.helper.icons import HOST_LIBRARY
 from tests.test1.app.models import Publisher
 
 
@@ -214,3 +215,36 @@ def test_e354_non_str_class_names_the_type():
         messages = check_icons()
     assert ids(messages) == ["crud_views.E354"]
     assert "got int" in messages[0].msg
+
+
+def test_e355_unknown_placement():
+    libs = {"ui": {"renderer": "font", "class": "icon-{name}", "placement": "inline"}}
+    with override_settings(CRUD_VIEWS_ICON_LIBRARIES=libs):
+        messages = check_icons()
+    assert ids(messages) == ["crud_views.E355"]
+    assert "'inline'" in messages[0].msg
+
+
+def test_e355_host_needs_font_renderer():
+    libs = {"ui": {"renderer": "crud_views.lib.icons.font_renderer", "placement": "host"}}
+    with override_settings(CRUD_VIEWS_ICON_LIBRARIES=libs):
+        assert ids(check_icons()) == ["crud_views.E355"]
+
+
+def test_e354_standalone_not_str():
+    libs = {"ui": {"renderer": "font", "class": "icon-{name}", "placement": "host", "standalone": 5}}
+    with override_settings(CRUD_VIEWS_ICON_LIBRARIES=libs):
+        assert ids(check_icons()) == ["crud_views.E354"]
+
+
+def test_e354_standalone_bad_placeholder():
+    libs = {"ui": {"renderer": "font", "class": "icon-{name}", "placement": "host", "standalone": "icon {name}"}}
+    with override_settings(CRUD_VIEWS_ICON_LIBRARIES=libs):
+        messages = check_icons()
+    assert ids(messages) == ["crud_views.E354"]
+    assert "{name_class}" in messages[0].hint
+
+
+def test_host_library_ok():
+    with override_settings(CRUD_VIEWS_ICON_LIBRARIES=HOST_LIBRARY):
+        assert check_icons() == []

@@ -12,7 +12,9 @@ from crud_views.lib.icons import (
     render_icon,
     reset_icon_cache,
     resolve_icon,
+    resolve_icon_name_class,
 )
+from tests.lib.helper.icons import HOST_LIBRARY
 
 
 def xy_renderer(name, *, css, config):
@@ -237,3 +239,51 @@ def test_message_icon_can_be_switched_off():
     assert "fa-circle-info" in render_icon("message-info")  # resolves through the registry, not as a raw class
     with override_settings(CRUD_VIEWS_ICONS={"message-info": ""}):
         assert render_icon("message-info") == ""
+
+
+# host placement (#258)
+
+
+def test_host_standalone_renders_standalone_classes():
+    with override_settings(CRUD_VIEWS_ICON_LIBRARIES=HOST_LIBRARY):
+        assert render_icon("ui:check") == '<i class="icon icon-check" aria-hidden="true"></i>'
+
+
+def test_host_standalone_with_css():
+    with override_settings(CRUD_VIEWS_ICON_LIBRARIES=HOST_LIBRARY):
+        assert render_icon("ui:check", css="me-2") == '<i class="icon icon-check me-2" aria-hidden="true"></i>'
+
+
+def test_host_standalone_default_is_name_class():
+    libs = {"ui": {"renderer": "font", "class": "icon-{name}", "placement": "host"}}
+    with override_settings(CRUD_VIEWS_ICON_LIBRARIES=libs):
+        assert render_icon("ui:check") == '<i class="icon-check" aria-hidden="true"></i>'
+
+
+def test_element_library_ignores_standalone():
+    libs = {"ui": {"renderer": "font", "class": "icon-{name}", "standalone": "icon {name_class}"}}
+    with override_settings(CRUD_VIEWS_ICON_LIBRARIES=libs):
+        assert render_icon("ui:check") == '<i class="icon-check" aria-hidden="true"></i>'
+
+
+def test_host_standalone_unusable_renders_nothing():
+    libs = {"ui": {"renderer": "font", "class": "icon-{name}", "placement": "host", "standalone": "{oops}"}}
+    with override_settings(CRUD_VIEWS_ICON_LIBRARIES=libs):
+        assert render_icon("ui:check") == ""
+
+
+def test_resolve_icon_name_class():
+    with override_settings(CRUD_VIEWS_ICON_LIBRARIES=HOST_LIBRARY, CRUD_VIEWS_ICONS={"detail": "ui:eye"}):
+        assert resolve_icon_name_class("ui:check") == "icon-check"
+        assert resolve_icon_name_class("detail") == "icon-eye"
+        assert resolve_icon_name_class("fas:check") is None
+        assert resolve_icon_name_class("fa-solid fa-x") is None
+        assert resolve_icon_name_class("zz:check") is None
+        assert resolve_icon_name_class(None) is None
+        assert resolve_icon_name_class("") is None
+
+
+def test_resolve_icon_name_class_needs_font_renderer():
+    libs = {"ui": {"renderer": "crud_views.lib.icons.font_renderer", "class": "icon-{name}", "placement": "host"}}
+    with override_settings(CRUD_VIEWS_ICON_LIBRARIES=libs):
+        assert resolve_icon_name_class("ui:check") is None

@@ -13,9 +13,10 @@ from django.core.checks import Warning as CheckWarning
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
 from django.urls import reverse
+from django.utils.safestring import SafeData
 from pydantic import BaseModel, field_validator, model_validator
 
-from crud_views.lib.check import Check
+from crud_views.lib.check import Check, CheckTemplate
 from crud_views.lib.exceptions import CrudViewError, cv_raise
 from crud_views.lib.settings import crud_views_settings
 
@@ -26,10 +27,13 @@ class BreadcrumbItem(BaseModel):
     args: tuple = ()
     kwargs: dict = {}
 
-    @field_validator("title", mode="before")
+    @field_validator("title", mode="plain")
     @classmethod
     def coerce_title(cls, value: Any) -> str:
+        # keep rendered snippets safe (str validation would drop SafeString and escape them twice);
         # accept gettext_lazy promises
+        if isinstance(value, SafeData):
+            return value
         return str(value)
 
     @model_validator(mode="after")
@@ -88,6 +92,8 @@ class CrudViewBreadcrumbMixin:
 
     cv_breadcrumb_key_object: str = "detail"  # view key object items link to
     cv_breadcrumb_container_label: str | None = None  # overrides the container (list/card) label
+    cv_breadcrumb_label_template: str | None = None  # template snippet for the current-page item
+    cv_breadcrumb_label_template_code: str | None = None  # template code for the current-page item
 
     @classmethod
     def checks(cls) -> Iterable[Check]:
@@ -97,6 +103,7 @@ class CrudViewBreadcrumbMixin:
             key=cls.cv_breadcrumb_key_object,
             default_key=CrudViewBreadcrumbMixin.cv_breadcrumb_key_object,
         )
+        yield CheckTemplate(context=cls, id="E111", attribute="cv_breadcrumb_label_template")
 
     # -- extension points -------------------------------------------------
 
@@ -107,6 +114,17 @@ class CrudViewBreadcrumbMixin:
     def cv_breadcrumb_object_label(self, obj) -> str:
         """Label for an object item; override to avoid expensive __str__ implementations."""
         return str(obj)
+
+    @classmethod
+    def cv_get_breadcrumb_label(cls, context) -> str:
+        """Current-page label; falls back to the short action label when no breadcrumb label is set."""
+        if cls.cv_breadcrumb_label_template or cls.cv_breadcrumb_label_template_code:
+            return cls.render_snippet(
+                cls.cv_viewset.get_meta(context),
+                cls.cv_breadcrumb_label_template,
+                cls.cv_breadcrumb_label_template_code,
+            )
+        return cls.cv_get_action_short_label(context=context)
 
     # -- helpers ----------------------------------------------------------
 
@@ -149,7 +167,7 @@ class CrudViewBreadcrumbMixin:
                 # action label (current page) + object item linking to the detail view
                 name, _, kwargs = self.cv_get_router_and_args(self.cv_key, obj=obj)
                 items.append(
-                    BreadcrumbItem(title=self.cv_get_action_short_label(context=context), url_name=name, kwargs=kwargs)
+                    BreadcrumbItem(title=self.cv_get_breadcrumb_label(context=context), url_name=name, kwargs=kwargs)
                 )
                 name, _, kwargs = self.cv_get_router_and_args(self.cv_breadcrumb_key_object, obj=obj)
                 items.append(BreadcrumbItem(title=self.cv_breadcrumb_object_label(obj), url_name=name, kwargs=kwargs))
@@ -161,13 +179,13 @@ class CrudViewBreadcrumbMixin:
                 # no detail view: action label (current page) + unlinked object item
                 name, _, kwargs = self.cv_get_router_and_args(self.cv_key, obj=obj)
                 items.append(
-                    BreadcrumbItem(title=self.cv_get_action_short_label(context=context), url_name=name, kwargs=kwargs)
+                    BreadcrumbItem(title=self.cv_get_breadcrumb_label(context=context), url_name=name, kwargs=kwargs)
                 )
                 items.append(BreadcrumbItem(title=self.cv_breadcrumb_object_label(obj)))
         else:
             container_key = self.cv_breadcrumb_container_key(viewset)
             if self.cv_key != container_key:
-                items.append(BreadcrumbItem(title=self.cv_get_action_short_label(context=context)))
+                items.append(BreadcrumbItem(title=self.cv_get_breadcrumb_label(context=context)))
 
         # container item of this viewset
         container_key = self.cv_breadcrumb_container_key(viewset)

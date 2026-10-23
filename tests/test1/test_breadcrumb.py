@@ -4,6 +4,7 @@ import pytest
 from django.http import Http404
 from django.template import Context, Template
 from django.test import RequestFactory
+from django.utils.safestring import SafeString, mark_safe
 from django.utils.translation import gettext_lazy
 from pydantic import ValidationError
 
@@ -23,6 +24,23 @@ class TestBreadcrumbItem:
         item = BreadcrumbItem(title=gettext_lazy("Home"))
         assert isinstance(item.title, str)
         assert item.title == "Home"
+
+    def test_safe_title_stays_safe(self):
+        item = BreadcrumbItem(title=mark_safe("A &amp; B"))
+        assert isinstance(item.title, SafeString)
+
+    def test_safe_title_rendered_escaped_once(self):
+        html = Template("{% load crud_views %}{% cv_breadcrumb %}").render(
+            Context({"cv_breadcrumb": Breadcrumb(items=(BreadcrumbItem(title=mark_safe("A &amp; B")),))})
+        )
+        assert "A &amp; B" in html
+        assert "&amp;amp;" not in html
+
+    def test_plain_title_rendered_escaped(self):
+        html = Template("{% load crud_views %}{% cv_breadcrumb %}").render(
+            Context({"cv_breadcrumb": Breadcrumb(items=(BreadcrumbItem(title="R&D"),))})
+        )
+        assert "R&amp;D" in html
 
     def test_args_and_kwargs_cleared_without_url_name(self):
         item = BreadcrumbItem(title="Home", args=(1,), kwargs={"pk": 1})
@@ -372,3 +390,119 @@ class TestBreadcrumbCheck:
         from tests.test1.app.views import PublisherBcDetailView
 
         assert not any(m.id == "viewset.W270" for m in self._messages(PublisherBcDetailView))
+
+
+@pytest.mark.django_db
+class TestBreadcrumbLabel:
+    """cv_breadcrumb_label_template[_code] labels the current-page item only (#271)."""
+
+    def test_create_uses_breadcrumb_label(self):
+        from tests.test1.app.views import PublisherBcCreateView
+
+        class View(PublisherBcCreateView):
+            cv_breadcrumb_label_template_code = "New"  # default create short label is "Create"
+
+        bc = make_view(View, "/publisher_bc/create").cv_breadcrumb()
+        assert titles(bc) == ["Publishers", "New"]
+
+    def test_update_with_detail_uses_breadcrumb_label(self, publisher_penguin):
+        from tests.test1.app.views import PublisherBcUpdateView
+
+        class View(PublisherBcUpdateView):
+            cv_breadcrumb_label_template_code = "Edit"
+
+        url = f"/publisher_bc/{publisher_penguin.pk}/update"
+        bc = make_view(View, url, publisher_penguin, pk=publisher_penguin.pk).cv_breadcrumb()
+        assert titles(bc) == ["Publishers", str(publisher_penguin), "Edit"]
+
+    def test_update_without_detail_uses_breadcrumb_label(self, publisher_penguin):
+        from tests.test1.app.views import PublisherBcNodetailUpdateView
+
+        class View(PublisherBcNodetailUpdateView):
+            cv_breadcrumb_label_template_code = "Edit"
+
+        url = f"/publisher_bc_nodetail/{publisher_penguin.pk}/update"
+        bc = make_view(View, url, publisher_penguin, pk=publisher_penguin.pk).cv_breadcrumb()
+        assert titles(bc)[-1] == "Edit"
+        assert bc.items[1].url_name is None
+
+    def test_breadcrumb_label_template(self):
+        from tests.test1.app.views import PublisherBcCreateView
+
+        class View(PublisherBcCreateView):
+            cv_breadcrumb_label_template = "app/breadcrumb_label.html"
+
+        bc = make_view(View, "/publisher_bc/create").cv_breadcrumb()
+        assert titles(bc)[-1] == "Edit Publisher"
+
+    def test_code_wins_over_template(self):
+        from tests.test1.app.views import PublisherBcCreateView
+
+        class View(PublisherBcCreateView):
+            cv_breadcrumb_label_template = "app/breadcrumb_label.html"
+            cv_breadcrumb_label_template_code = "New"
+
+        bc = make_view(View, "/publisher_bc/create").cv_breadcrumb()
+        assert titles(bc)[-1] == "New"
+
+    def test_object_in_template_code_escaped_once(self):
+        from tests.test1.app.views import PublisherBcUpdateView
+
+        class View(PublisherBcUpdateView):
+            cv_breadcrumb_label_template_code = "Edit {{ object }}"
+
+        publisher = Publisher.objects.create(name="A & B")
+        url = f"/publisher_bc/{publisher.pk}/update"
+        title = titles(make_view(View, url, publisher, pk=publisher.pk).cv_breadcrumb())[-1]
+        assert title == "Edit A &amp; B"
+        assert isinstance(title, SafeString)
+
+    def test_short_label_unchanged(self):
+        from tests.test1.app.views import PublisherBcCreateView
+
+        class View(PublisherBcCreateView):
+            cv_breadcrumb_label_template_code = "New"
+
+        context = make_view(View, "/publisher_bc/create").cv_get_view_context()
+        assert View.cv_get_action_short_label(context=context) == "Create"
+        assert View.cv_get_breadcrumb_label(context=context) == "New"
+
+    def test_detail_view_unaffected(self, publisher_penguin):
+        from tests.test1.app.views import PublisherBcDetailView
+
+        class View(PublisherBcDetailView):
+            cv_breadcrumb_label_template_code = "XXX"
+
+        url = f"/publisher_bc/{publisher_penguin.pk}/detail"
+        bc = make_view(View, url, publisher_penguin, pk=publisher_penguin.pk).cv_breadcrumb()
+        assert titles(bc) == ["Publishers", str(publisher_penguin)]
+
+    def test_list_view_unaffected(self):
+        from tests.test1.app.views import PublisherBcListView
+
+        class View(PublisherBcListView):
+            cv_breadcrumb_label_template_code = "XXX"
+
+        bc = make_view(View, "/publisher_bc/").cv_breadcrumb()
+        assert titles(bc) == ["Publishers"]
+
+
+class TestBreadcrumbLabelCheck:
+    @staticmethod
+    def _e111(view_class):
+        return [m for c in view_class.checks() for m in c.messages() if m.id == "viewset.E111"]
+
+    def test_missing_breadcrumb_label_template(self):
+        from tests.test1.app.views import PublisherBcCreateView
+
+        class View(PublisherBcCreateView):
+            cv_breadcrumb_label_template = "does-not-exist.html"
+
+        messages = self._e111(View)
+        assert len(messages) == 1
+        assert "does-not-exist.html" in messages[0].msg
+
+    def test_unset_breadcrumb_label_template(self):
+        from tests.test1.app.views import PublisherBcCreateView
+
+        assert self._e111(PublisherBcCreateView) == []

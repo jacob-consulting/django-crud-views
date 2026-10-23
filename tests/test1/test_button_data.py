@@ -1,8 +1,10 @@
 import copy
 
 import pytest
+from django.test import override_settings
 
 from crud_views.lib.view.button_data import LEAF_KEYS, cv_button_data
+from tests.lib.helper.icons import HOST_ICONS, HOST_LIBRARY
 
 LOCATIONS = ["context", "list", "card"]
 
@@ -171,3 +173,58 @@ def test_pure_and_within_leaf_keys(location):
     data = cv_button_data(ctx, location)
     assert ctx == before
     assert set(data) <= LEAF_KEYS
+
+
+# host-placed icons (#258)
+
+host_icons = override_settings(CRUD_VIEWS_ICON_LIBRARIES=HOST_LIBRARY, CRUD_VIEWS_ICONS=HOST_ICONS)
+
+
+@host_icons
+@pytest.mark.parametrize("location", LOCATIONS)
+def test_host_icon_keys(location):
+    data = cv_button_data(base(), location)
+    assert data["cv_icon_class"] == "icon-eye"
+    assert data["cv_icon_inline"] is False
+
+
+@pytest.mark.parametrize("location", LOCATIONS)
+def test_element_icon_keys(location):
+    data = cv_button_data(base(), location)
+    assert data["cv_icon_class"] == ""
+    assert data["cv_icon_inline"] is True
+
+
+@host_icons
+def test_host_label_mode_no_class():
+    data = cv_button_data(base(cv_label="Details", cv_label_mode="label"), "card")
+    assert data["cv_icon_class"] == ""
+    assert data["cv_icon_inline"] is False
+
+
+@host_icons
+def test_menu_item_uses_menu_slot_and_ignores_label_mode():
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"menu:icon-host": "m {name_class}"}):
+        data = cv_button_data(base(cv_label="Details", cv_label_mode="label"), "card", kind="menu-item")
+    assert data["cv_icon_class"] == "m icon-eye"
+    assert data["cv_icon_inline"] is False
+
+
+@host_icons
+def test_host_slot_none_switches_icon_off():
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"context:icon-host": None}):
+        data = cv_button_data(base(), "context")
+    assert data["cv_icon_class"] == ""
+    assert data["cv_icon_inline"] is False
+
+
+@host_icons
+def test_host_without_icon():
+    data = cv_button_data(base(cv_icon_action=None), "context")
+    assert data["cv_icon_class"] == ""
+    assert data["cv_icon_inline"] is True
+
+
+def test_unknown_kind_raises():
+    with pytest.raises(ValueError):
+        cv_button_data(base(), "context", kind="pill")

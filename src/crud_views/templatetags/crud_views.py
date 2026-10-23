@@ -191,7 +191,7 @@ def cv_button(context, location, kind="action"):
     ctx = cv_resolve_action(context.flatten())
     if ctx is None:
         return ""
-    return render_to_string(_BUTTON_LEAVES[kind], cv_button_data(ctx, location))
+    return render_to_string(_BUTTON_LEAVES[kind], cv_button_data(ctx, location, kind))
 
 
 @register.simple_tag(takes_context=True)

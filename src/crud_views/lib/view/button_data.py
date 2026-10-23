@@ -1,8 +1,12 @@
 """Normalise a resolved action dict into the flat leaf contract used by the button templates."""
 
+from ..button_classes import get_icon_host_class
+from ..icons import resolve_icon_name_class
 from .label_mode import LABEL_MODES, is_label_mode
 
 LOCATIONS = frozenset({"context", "list", "card"})
+
+KINDS = frozenset({"action", "menu-item"})
 
 LEAF_KEYS = frozenset(
     {
@@ -23,11 +27,24 @@ LEAF_KEYS = frozenset(
         "cv_icon",
         "cv_variant",
         "cv_flex",
+        "cv_icon_class",
+        "cv_icon_inline",
     }
 )
 
 
-def cv_button_data(ctx: dict, location: str) -> dict:
+def icon_host_keys(icon: str | None, location: str) -> tuple[str, bool]:
+    """``(cv_icon_class, cv_icon_inline)`` for an icon on a button at ``location`` (#258).
+
+    A host-placed icon puts the ``location:icon-host`` class on the button and renders nothing inside it (a slot
+    set to None switches it off: no class, nothing inline); any other icon renders inline as an element.
+    """
+    if resolve_icon_name_class(icon) is None:
+        return "", True
+    return get_icon_host_class(location, icon), False
+
+
+def cv_button_data(ctx: dict, location: str, kind: str = "action") -> dict:
     """Turn a resolved action dict into a flat leaf contract dict. Never mutates ctx.
 
     Every decision the button templates used to take in branches (element, disabled, form post
@@ -35,6 +52,8 @@ def cv_button_data(ctx: dict, location: str) -> dict:
     """
     if location not in LOCATIONS:
         raise ValueError(f"location must be one of {sorted(LOCATIONS)}, got {location!r}")
+    if kind not in KINDS:
+        raise ValueError(f"kind must be one of {sorted(KINDS)}, got {kind!r}")
     if "cv_no_label" in ctx:
         raise ValueError(
             "cv_no_label is no longer a leaf input; use CardAction.label_mode or cv_label_mode"
@@ -82,6 +101,12 @@ def cv_button_data(ctx: dict, location: str) -> dict:
         "cv_variant": ctx.get("cv_variant") or "secondary",
         "cv_flex": card and bool(ctx.get("cv_flex")),
     }
+    # a menu item always shows its icon and uses the menu slot; a text-only action button shows none (#258)
+    icon_class, icon_inline = icon_host_keys(data["cv_icon"], "menu" if kind == "menu-item" else location)
+    if kind == "action" and label_mode == "label":
+        icon_class = ""
+    data["cv_icon_class"] = icon_class
+    data["cv_icon_inline"] = icon_inline
     if tag == "a":
         data["cv_href"] = ctx["cv_url"]
     elif not disabled:

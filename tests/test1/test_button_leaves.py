@@ -47,6 +47,7 @@ def _context_get(**extra) -> dict:
         "cv_icon": "detail",
         "cv_variant": "secondary",
         "cv_flex": False,
+        "cv_icon_inline": True,
     }
     data.update(extra)
     return data

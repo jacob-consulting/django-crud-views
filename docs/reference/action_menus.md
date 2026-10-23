@@ -67,7 +67,8 @@ or as well:
 | `CrudView` | `cv_list_actions_label_mode` | `cv_context_actions_label_mode` |
 
 Each is a dict of action key to `"label"` (text only), `"icon"` (icon with a visually hidden label and a tooltip) or
-`"both"` (icon and text). Any key not named is `"icon"`, so an empty dict is today's markup.
+`"both"` (icon and text). Any key not named is `"icon"`, so an empty dict is today's markup — unless, in the context
+toolbar, the view the button opens sets a [target-view default](#target-view-default).
 
 ```python
 class AuthorListView(ListViewTableMixin, ListViewPermissionRequired):

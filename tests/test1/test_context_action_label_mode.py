@@ -5,15 +5,19 @@ from django.urls import reverse
 from lxml import html as lxml_html
 
 from crud_views.lib.settings import crud_views_settings
-from crud_views.lib.view import ContextButton
+from crud_views.lib.view import ChildContextButton, ContextButton, SiblingContextButton
 from tests.test1.app.views import (
     AuthorDeleteView,
     AuthorDetailView,
     AuthorListView,
     AuthorUpdateView,
+    BookListView,
+    ContractListView,
+    PublisherDetailView,
     PublisherListView,
     cv_author,
     cv_book,
+    cv_contract,
     cv_publisher,
 )
 from tests.test1.test_action_label_mode_render import (
@@ -135,6 +139,29 @@ def test_parent_button_follows_parent_list_view(publisher_penguin, monkeypatch):
     toolbar = _toolbar(client, url)
     (parent,) = toolbar.xpath(f"./*[@href='{reverse(cv_publisher.get_router_name('list'))}']")
     assert _is_text_only(parent)
+
+
+@pytest.mark.django_db
+def test_child_button_follows_child_list_view(publisher_penguin, monkeypatch):
+    _set_target(monkeypatch, BookListView, "label")
+    monkeypatch.setattr(PublisherDetailView, "cv_context_buttons", [ChildContextButton(key="books", child_name="book")])
+    monkeypatch.setattr(PublisherDetailView, "cv_context_actions", ["books"])
+    client = _client([(cv_publisher, ("view",)), (cv_book, ("view",))])
+    toolbar = _toolbar(client, reverse(cv_publisher.get_router_name("detail"), kwargs={"pk": publisher_penguin.pk}))
+    (el,) = toolbar.xpath("./*[@cv-key]")
+    assert _is_text_only(el)
+
+
+@pytest.mark.django_db
+def test_sibling_button_follows_sibling_list_view(publisher_penguin, monkeypatch):
+    _set_target(monkeypatch, ContractListView, "label")
+    button = SiblingContextButton(key="contracts", sibling_name="contract")
+    monkeypatch.setattr(BookListView, "cv_context_buttons", [button])
+    monkeypatch.setattr(BookListView, "cv_context_actions", ["contracts"])
+    client = _client([(cv_publisher, ("view",)), (cv_book, ("view",)), (cv_contract, ("view",))])
+    toolbar = _toolbar(client, reverse(cv_book.get_router_name("list"), kwargs={"publisher_pk": publisher_penguin.pk}))
+    (el,) = toolbar.xpath("./*[@cv-key]")
+    assert _is_text_only(el)
 
 
 @pytest.mark.django_db

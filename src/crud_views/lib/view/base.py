@@ -87,7 +87,8 @@ class CrudView(metaclass=CrudViewMetaClass):
     cv_context_actions_inline: list[str] | None = None  # toolbar keys kept as buttons; None: ViewSet, then setting
     # label mode per action key (#216): "label" / "icon" / "both"; unnamed keys are "icon"; None: ViewSet, then setting
     cv_list_actions_label_mode: dict[str, str] | None = None
-    # set on the page showing the toolbar: "on my toolbar, key X looks like this"
+    # (#216) set on the page showing the toolbar: "on my toolbar, key X looks like this"; unnamed keys fall to the
+    # target view's cv_context_action_label_mode, then "icon"
     cv_context_actions_label_mode: dict[str, str] | None = None
     # label mode as a target view (#269), set on the view the button opens: "wherever a toolbar points at me, I look
     # like this"; "label" / "icon" / "both"; None: "icon". Context toolbar only, the last fallback after the maps and
@@ -283,14 +284,14 @@ class CrudView(metaclass=CrudViewMetaClass):
 
     @classmethod
     def cv_get_context_actions_label_mode(cls) -> dict[str, str]:
-        """Context toolbar action key -> label mode; keys not named are "icon" (#216)."""
+        """Context toolbar action key -> label mode (#216); keys not named fall to the target view's default (#269)."""
         return cls.cv_first_inline_keys(cls.cv_context_actions_label_mode, "context_actions_label_mode")
 
     @classmethod
     def cv_get_action_label_mode(
         cls, location: str, key: str, button: ContextButton | None = None, target_default: str | None = None
     ) -> str:
-        """The label mode of one configured context or list action key; "icon" for a key not in the map (#216).
+        """The label mode of one configured context or list action key; "icon" when nothing names it (#216).
 
         A context key takes the view's own map if it names the key, then the label_mode of its context button, then
         the resolved map (#264), then target_default, the target view's cv_context_action_label_mode (#269); row

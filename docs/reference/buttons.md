@@ -445,3 +445,4 @@ override the leaf, otherwise an action disabled by `CRUD_VIEWS_INACCESSIBLE_ACTI
 | `viewset.E210` | error | a `CardAction.label_mode`, `cv_card_actions_label_mode` or `ContextButton.label_mode` is not one of `"label"`, `"icon"`, `"both"` |
 | `viewset.E211` | error | a `cv_context_actions_label_mode` or `cv_list_actions_label_mode` is not `None` or a dict of action key → label mode |
 | `viewset.W291` | warning | a view's own `cv_*_actions_label_mode` names a key that is not among that location's actions |
+| `viewset.W292` | warning | a context toolbar key resolves to `"icon"` while its target view has no `cv_icon_action` (keys folded into the menu, buttons with their own template or `get_context()` and unregistered targets are not checked; the render-time rule covers them) |

@@ -3,7 +3,7 @@
 import pytest
 from lxml import html as lxml_html
 
-from crud_views.lib.view import ContextButton
+from crud_views.lib.view import ContextButton, ParentContextButton
 from tests.test1.app.views import AuthorDetailView, AuthorListView, cv_author
 from tests.test1.test_action_label_mode_render import (
     AUTHOR_FULL,
@@ -147,3 +147,80 @@ def test_instance_level_button_mode_reaches_rendering(author_douglas_adams):
     view.cv_context_buttons = [_update_button("label")]
     data = view.cv_get_context(key="update", obj=author_douglas_adams, user=request.user, location="context")
     assert data["cv_label_mode"] == "label"
+
+
+# viewset.W292: an icon-only toolbar key whose target has no icon
+
+W292 = "viewset.W292"
+
+
+def _target(key):
+    return cv_author.get_view_class(key)
+
+
+def _w292(view=AuthorDetailView):
+    return _messages(view.checks(), W292)
+
+
+@pytest.mark.parametrize("icon", [None, ""])
+def test_w292_key_without_button(monkeypatch, icon):
+    monkeypatch.setattr(_target("update"), "cv_icon_action", icon)
+    (msg,) = _w292()
+    assert "'update'" in msg
+    assert "AuthorDetailView" in msg
+
+
+def test_w292_plain_button_target_without_icon(monkeypatch):
+    monkeypatch.setattr(_target("update"), "cv_icon_action", None)
+    _with_viewset_buttons(monkeypatch, ContextButton(key="edit", key_target="update"))
+    monkeypatch.setattr(AuthorDetailView, "cv_context_actions", ["edit"])
+    (msg,) = _w292()
+    assert "'edit'" in msg
+
+
+def test_w292_silent_with_button_label_mode(monkeypatch):
+    monkeypatch.setattr(_target("update"), "cv_icon_action", None)
+    _with_viewset_buttons(monkeypatch, ContextButton(key="edit", key_target="update", label_mode="label"))
+    monkeypatch.setattr(AuthorDetailView, "cv_context_actions", ["edit"])
+    assert _w292() == []
+
+
+def test_w292_silent_with_map(monkeypatch):
+    monkeypatch.setattr(_target("update"), "cv_icon_action", None)
+    monkeypatch.setattr(AuthorDetailView, "cv_context_actions_label_mode", {"update": "both"})
+    assert _w292() == []
+
+
+def test_w292_silent_with_icon():
+    assert _w292() == []
+
+
+def test_w292_skips_menu_folded_key(monkeypatch):
+    monkeypatch.setattr(_target("update"), "cv_icon_action", None)
+    monkeypatch.setattr(AuthorDetailView, "cv_context_actions_inline", ["detail"])
+    assert _w292() == []
+
+
+def test_w292_checks_inline_key(monkeypatch):
+    monkeypatch.setattr(_target("update"), "cv_icon_action", None)
+    monkeypatch.setattr(AuthorDetailView, "cv_context_actions_inline", ["update"])
+    assert len(_w292()) == 1
+
+
+def test_w292_skips_custom_template_button(monkeypatch):
+    monkeypatch.setattr(_target("update"), "cv_icon_action", None)
+    _with_viewset_buttons(monkeypatch, ContextButton(key="edit", key_target="update", template_code="<b>x</b>"))
+    monkeypatch.setattr(AuthorDetailView, "cv_context_actions", ["edit"])
+    assert _w292() == []
+
+
+def test_w292_skips_get_context_override(monkeypatch):
+    monkeypatch.setattr(_target("list"), "cv_icon_action", None)
+    _with_viewset_buttons(monkeypatch, ParentContextButton(key="up", key_target="list"))
+    monkeypatch.setattr(AuthorDetailView, "cv_context_actions", ["up", "filter"])
+    assert _w292() == []
+
+
+def test_w292_skips_unregistered_target(monkeypatch):
+    monkeypatch.setattr(AuthorDetailView, "cv_context_actions", ["nope"])
+    assert _w292() == []

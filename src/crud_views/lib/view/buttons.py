@@ -4,11 +4,11 @@ from django.http import Http404
 from django.urls import reverse
 from pydantic import BaseModel, Field
 
-from ..check import CheckExpression
+from ..check import CheckExpression, CheckWarningExpression
 from ..exceptions import ViewSetNotFoundError
 from ..settings import crud_views_settings
 from .context import ViewContext
-from .label_mode import label_mode_check
+from .label_mode import is_label_mode_map, label_mode_check
 from .variant import variant_check
 
 
@@ -362,3 +362,44 @@ def context_button_checks(context, viewset, buttons: list[ContextButton] | None)
             continue
         problem = button.cv_check_target(viewset)
         yield CheckExpression(context=context, id="E255", expression=problem is None, msg=problem or "")
+
+
+def cv_icon_mode_checks(cls):
+    """System check viewset.W292: a context toolbar key that renders icon-only although its target has no icon (#264).
+
+    Only what is known statically: keys folded into the action menu (a menu item always shows its label), buttons
+    with their own template or get_context() and unregistered targets are skipped; cv_button_data() covers the rest
+    at render time.
+    """
+    if not is_label_mode_map(cls.cv_get_context_actions_label_mode()):
+        return  # viewset.E211 / crud_views.E106 report it
+    viewset = cls.cv_viewset
+    inline = cls.cv_get_context_actions_inline()
+    for key in cls.cv_context_actions or []:
+        if cls.cv_get_action_label_mode("context", key) != "icon":
+            continue
+        if inline is not None and key not in inline:
+            continue
+        button = cls._cv_find_context_button(cls.cv_context_buttons, viewset, key)
+        if button is None:
+            target = key
+        elif (
+            type(button).get_context is not ContextButton.get_context
+            or button.template
+            or button.template_code
+            or button.key_target is None
+        ):
+            continue
+        else:
+            target = ContextButton._resolve_container_key(viewset, button.key_target)
+        if not _is_registered(viewset, target):
+            continue
+        yield CheckWarningExpression(
+            context=cls,
+            id="W292",
+            expression=bool(viewset.get_view_class(target).cv_icon_action),
+            msg=(
+                f"context action {key!r} of {cls.__name__} renders icon-only but has no icon; give it an icon or a "
+                "label mode ('label' or 'both')"
+            ),
+        )

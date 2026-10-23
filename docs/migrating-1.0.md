@@ -179,6 +179,10 @@ None of these raise anything. Check your stylesheets, your JavaScript selectors 
   property-detail button uses `title` instead of `data-bs-title`.
 - **Alerts** (#250): the delete page's protection and related-objects alerts and the guardian manage page's config
   alert gain `role="alert"` and an icon before the heading.
+- **Empty button containers** (#265): a toolbar, list row or card whose actions are all hidden for the user renders
+  no container at all, so `[cv-list-container]` (or `cv-context-container`, `cv-card-container`) is not in every row
+  any more. Selectors that expect it must handle its absence.
+- **Container label** (#266): the toolbar and list row `aria-label` is translated ("Aktionen" on a German page).
 
 ## A downstream theme
 
@@ -253,7 +257,7 @@ Which template takes the markup:
 | `tags/context_action.html`, `tags/list_action.html`, `tags/card_action.html` | `tags/button/action.html`, one leaf for all three locations (`cv_location`) |
 | `tags/actions_menu_item.html` | `tags/button/menu_item.html` |
 | `tags/actions_menu_item_label.html` | `tags/button/menu_item_label.html`; the stock menu no longer includes the old one |
-| `tags/context_actions.html`, `columns/actions.html` | `tags/button/container.html` (receives `cv_buttons`, `cv_group`, `cv_location`, `cv_container_tag`) |
+| `tags/context_actions.html`, `columns/actions.html` | `tags/button/container.html` (receives `cv_buttons`, `cv_group`, `cv_location`; the element is the `<location>:container-tag` key) |
 
 - **`tags/card_action.html` copies that branch on `cv_no_label`** break silently. The card action context no longer
   carries `cv_no_label`; it carries `cv_label_mode`. So a copy renders the label on every button, the icon-only ones
@@ -324,6 +328,11 @@ Register these from your theme's `AppConfig.ready()`; a project's own settings s
   classes from the `object-detail:property-detail` key.
 - **Table sort icons [0.30]** in `table/bootstrap5.html`: `{% cv_icon "table-sort-asc" %}` and
   `{% cv_icon "table-sort-desc" %}` instead of Font Awesome 4 classes.
+- **Button container** (`tags/button/container.html`, #266): `cv_container_tag` is gone; the three logic templates
+  no longer pass it. A copy of the container leaf that reads it renders `<>`: read `cv_layout.tag` and
+  `cv_layout.label` from `{% cv_container_layout %}`, and render nothing when `cv_layout.empty`. A copy of
+  `context_actions.html`, `columns/actions.html` or `card.html` that passed another tag sets
+  `<location>:container-tag` instead ([Container element and label](reference/buttons.md#container-element-and-label)).
 - **Active state:** `snippets/card_order.html` and the leaves take `active` from the `*:active` keys (#227). A copy
   with a hard-coded `active` keeps working.
 
@@ -344,7 +353,8 @@ about these.
 - [ ] **[0.30]** An overridden `cv_get_filter_icon()` is no longer called ([Views and Python code](#views-and-python-code)).
 - [ ] CSS, JavaScript selectors and tests that match the old markup: sort icons, pagination
   (`.disabled > span.page-link`, `&laquo;` / `&raquo;`), `d-none`, button attribute order and class strings,
-  formset control titles ([CSS and tests that select on markup](#css-and-tests-that-select-on-markup)).
+  formset control titles, empty button containers that no longer render
+  ([CSS and tests that select on markup](#css-and-tests-that-select-on-markup)).
 - [ ] Card buttons show their icon next to the label, and card actions without a `variant` take the target view's
   variant ([Views and Python code](#views-and-python-code)).
 
@@ -356,6 +366,8 @@ about these.
   ([Templates to delete](#templates-to-delete)).
 - [ ] Copies of `tags/button_submit.html`, `tags/button_cancel.html`, `tags/button_delete.html` and `tags/icon.html`
   are no longer rendered ([Templates to delete](#templates-to-delete)).
+- [ ] A `tags/button/container.html` copy that reads `cv_container_tag` renders `<>`, and a logic-template copy that
+  passes `cv_container_tag` loses its tag ([Contract changes](#contract-changes-in-templates-you-still-override)).
 - [ ] A `tags/card_action.html` copy that branches on `cv_no_label` shows the label on icon-only buttons
   ([Templates to move](#templates-to-move)).
 - [ ] Markup moved into a leaf with its 0.29 keys renders `href=""` and no icon ([Templates to move](#templates-to-move)).

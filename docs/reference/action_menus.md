@@ -174,8 +174,8 @@ exactly one inline button — the caret reads as "options for the button on the 
 ### Overridden containers
 
 The group is always an `ActionGroup` (`inline`, `menu`, `all`). A project that overrides `columns/actions.html`,
-`context_actions.html` or `card.html` includes `crud_views/tags/button/container.html` (with `cv_buttons`, `cv_group`,
-`cv_location` and `cv_container_tag`), or renders `group.inline` and `group.menu` itself. Overrides that predate the
+`context_actions.html` or `card.html` includes `crud_views/tags/button/container.html` (with `cv_buttons`, `cv_group`
+and `cv_location`), or renders `group.inline` and `group.menu` itself. Overrides that predate the
 menu keep their markup and do not get it.
 
 ## Bootstrap JavaScript and clipping

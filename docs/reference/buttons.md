@@ -72,6 +72,10 @@ only once #216 lets those locations show a label.
 | `context:container-list` / `list:container-list` / `card:container-list` | `None` |
 | `context:container-item` / `list:container-item` / `card:container-item` | `""` |
 | `context:container-single` / `list:container-single` / `card:container-single` | `"container"` |
+| `context:container-tag` / `list:container-tag` | `"fieldset"` |
+| `card:container-tag` | `"div"` |
+| `context:container-label` / `list:container-label` | `"Actions"` (translated) |
+| `card:container-label` | `None` |
 | `context:menu-toggle` | `btn btn-outline-primary btn-lg` |
 | `list:menu-toggle` | `btn btn-outline-primary btn-xs` |
 | `card:menu-toggle` | `btn btn-secondary btn-sm` |
@@ -150,11 +154,29 @@ With `container-list` set, two buttons and a menu render as:
 An item is an inline button or the [action menu](action_menus.md) toggle, which gets its own `<li>` only when the
 group has menu items. "Single" means one *rendered* item: inaccessible actions that are hidden don't count, and one
 inline button plus a menu are two items and keep the container. A group whose only item is the menu renders the
-menu bare. A container with no items renders as before. A bare item carries no `cv-<location>-container` attribute.
+menu bare. A group with no items renders nothing: no container, no list (#265). A bare item carries no `cv-<location>-container` attribute.
 
 The `<li>` comes from the container leaf, never from a button leaf, so a button rendered on its own with
 `{% cv_context_button %}` never gets one. A `container-single` value other than `"container"` or `"bare"` is the
 system check error `crud_views.E364`. These keys have no label-mode variants.
+
+### Container element and label
+
+Two more keys per container location set the container's element and its accessible name (#266):
+
+| Key | Default | Meaning |
+|---|---|---|
+| `<location>:container-tag` | `"fieldset"` for `context` and `list`, `"div"` for `card` | element of the container; `None`, `""` or a non-str renders `div` |
+| `<location>:container-label` | `"Actions"` for `context` and `list`, `None` for `card` | `aria-label` of the container; `None` or `""` renders none |
+
+The label is passed through `gettext` when the container renders, so the default reads "Aktionen" on a German page,
+and a label of your own is translated when your catalogue has it as a msgid. The label renders whatever the tag: a
+theme that switches a location to `div` sets its label to `None` too, since `aria-label` on a plain `div` has no role
+to name.
+
+```python
+CRUD_VIEWS_BUTTON_CLASSES = {"list:container-tag": "div", "list:container-label": None}
+```
 
 The five `alert:*` keys colour the one alert frame, `tags/alert.html`, which renders every alert in the package:
 the slot is the alert's level (`error`, `warning`, `success`, `info`, `debug`). See [Flash messages](messages.md).
@@ -275,7 +297,7 @@ view data:
 |---|---|
 | `crud_views/tags/button/action.html` | one action button (`<a>` or `<button>`) |
 | `crud_views/tags/button/menu_item.html` | one dropdown item |
-| `crud_views/tags/button/container.html` | the group of buttons plus the menu; receives `cv_buttons`, `cv_group`, `cv_location` and `cv_container_tag`, and reads its structure with `{% cv_container_layout cv_location cv_buttons cv_group %}` (see [Button row as a list](#button-row-as-a-list)) |
+| `crud_views/tags/button/container.html` | the group of buttons plus the menu; receives `cv_buttons`, `cv_group` and `cv_location`, and reads its structure, element and label with `{% cv_container_layout cv_location cv_buttons cv_group %}` (see [Button row as a list](#button-row-as-a-list) and [Container element and label](#container-element-and-label)) |
 | `crud_views/tags/button/menu_item_label.html` | icon and label of a menu item, included by `menu_item.html`; reads `cv_icon` and `cv_short_label` |
 
 `crud_views/tags/actions_menu_item_label.html` is kept with its 0.30 body (raw keys `cv_icon_action`,

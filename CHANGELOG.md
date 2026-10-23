@@ -6,6 +6,14 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Breaking
 
+- A button container with no items renders nothing (#265). A toolbar, list row or card whose actions are all hidden
+  for the user no longer renders an empty `<fieldset aria-label="Actions">` (or `div`) with its
+  `cv-<location>-container` attribute; JavaScript or CSS that expects that attribute in every row must handle its
+  absence.
+- `tags/button/container.html` no longer receives `cv_container_tag` (#266). The element comes from the new
+  `<location>:container-tag` key; an override of the leaf reads `cv_layout.tag` and `cv_layout.label`, and an
+  override of `context_actions.html`, `columns/actions.html` or `card.html` that passed another tag sets the key
+  instead. The default `aria-label` "Actions" is now translated.
 - Every alert renders through one frame, `crud_views/tags/alert.html` (#250). The dicts `{% cv_messages %}` hands
   to `tags/messages.html` drop `css_class` and `message`; they are `crud_views.lib.messages.alert_data()` dicts
   with `level` (`error`, `warning`, `success`, `info`, `debug`) and `text` instead. `ALERT_CLASSES` and
@@ -147,6 +155,9 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Added
 
+- Button class keys `<location>:container-tag` (default `"fieldset"` for `context` and `list`, `"div"` for `card`)
+  and `<location>:container-label` (default `"Actions"` for `context` and `list`, `None` for `card`) set the
+  container's element and its `aria-label`, which is passed through `gettext` (#266).
 - Button containers can render their items as a list and a single item without container (#261). The new button
   class keys `<location>:container-list` (default `None`: no list), `<location>:container-item` (default `""`) and
   `<location>:container-single` (default `"container"`, or `"bare"`) for `context`, `list` and `card` put the buttons

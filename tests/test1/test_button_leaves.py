@@ -250,13 +250,14 @@ def test_menu_item_leaf_label_from_contract():
 
 
 def test_container_div_has_no_aria_label():
-    ctx = {"cv_container_tag": "div", "cv_location": "card", "cv_buttons": [], "cv_group": ActionGroup()}
+    group = ActionGroup(menu=[{"cv_key": "x"}])
+    ctx = {"cv_location": "card", "cv_buttons": [], "cv_group": group}
     div = _one(render_to_string(CONTAINER_LEAF, ctx), "div[cv-card-container]")
     assert div.get("class") == "d-flex gap-2"
     assert div.get("cv-card-container") == "true"
     assert div.get("aria-label") is None
 
-    ctx = {"cv_container_tag": "fieldset", "cv_location": "list", "cv_buttons": [], "cv_group": ActionGroup()}
+    ctx = {"cv_location": "list", "cv_buttons": [], "cv_group": group}
     fieldset = _one(render_to_string(CONTAINER_LEAF, ctx), "fieldset")
     assert fieldset.get("aria-label") == "Actions"
     assert fieldset.get("cv-list-container") == "true"

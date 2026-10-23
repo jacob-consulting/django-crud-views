@@ -76,14 +76,51 @@ class AuthorListView(ListViewTableMixin, ListViewPermissionRequired):
 ```
 
 Order: `CrudView` → `ViewSet` → setting; the first value that is not `None` wins, whole — the layers are not merged,
-and `{}` on a view makes every action of that view icon-only whatever its ViewSet says. A context toolbar key can also
-take its mode from its context button, [`ContextButton.label_mode`](context_buttons.md#contextbutton): the view's own
-map wins if it names the key, then the button's `label_mode`, then the map resolved as above. Row actions never read
-the button's `label_mode`. Keys are the configured keys,
+and `{}` on a view replaces whatever its ViewSet says. A context toolbar key can also
+take its mode from its context button, [`ContextButton.label_mode`](context_buttons.md#contextbutton), and from the
+view it opens (see [below](#target-view-default)): the view's own
+map wins if it names the key, then the button's `label_mode`, then the map resolved as above if it names the key,
+then the target view's `cv_context_action_label_mode`, then `"icon"`. Row actions never read
+the button's `label_mode` or the target view's default. Keys are the configured keys,
 as for the inline lists (`"home"`, not its target `"list"`). The getters `cv_get_list_actions_label_mode()` and
 `cv_get_context_actions_label_mode()` return the resolved dict, `cv_get_action_label_mode(location, key)` the mode of
 one key. Cards do not use the map: a card button's mode is `CardAction.label_mode`, see
 [Card list view](card-list-view.md#label-mode).
+
+### Target-view default
+
+A toolbar button already takes its variant, icon and short label from the view it opens. A view can also say how it
+looks in a toolbar, with `cv_context_action_label_mode` (`"label"`, `"icon"` or `"both"`; `None` by default):
+
+```python
+class ProjectUpdateView(UpdateViewPermissionRequired):
+    cv_action_variant = "tertiary"
+    cv_action_short_label_template_code = "Edit"
+    cv_context_action_label_mode = "label"  # text in a toolbar, still icon-only in table rows
+
+
+class ProjectCreateView(CreateViewPermissionRequired):
+    cv_action_variant = "primary"
+    cv_action_short_label_template_code = "New project"
+    cv_context_action_label_mode = "both"  # icon + text in a toolbar
+```
+
+Set on base classes, this describes a project's toolbars without a map per ViewSet or a registered button per key.
+It is the most generic level: a page's map, a button's `label_mode`, the ViewSet map and the setting all win over it
+for a key they name. It applies to the context toolbar and `{% cv_context_button %}` only; table rows pointing at the
+same view keep following the list maps. Every button that builds its data from the view it opens follows it, across
+ViewSets too: `home`, `parent`, a `ChildContextButton` or a `SiblingContextButton`.
+
+The two attributes differ by one letter and do different jobs:
+
+| Attribute | Type | Set on | Meaning |
+|---|---|---|---|
+| `cv_context_actions_label_mode` | dict | the page showing the toolbar | "on my toolbar, key X looks like this" |
+| `cv_context_action_label_mode` | str | the view the button opens | "wherever a toolbar points at me, I look like this" |
+
+An invalid value fails `viewset.E210`.
+
+### Rendering
 
 A labelled button shows its short label (`"Create"`, not `"Create new author"`), has no `title` and no tooltip, and
 the visible text is its only accessible name. A theme styles the modes apart with `context:primary:both` and the
@@ -203,9 +240,9 @@ a `.table-responsive` wrapper.
 | `viewset.E208` | a `cv_*_actions_inline` attribute is not `None` or a list of strings |
 | `viewset.W290` | a view's own `cv_*_actions_inline` names a key that is not among that location's actions (typo?) |
 | `crud_views.E106` | a `CRUD_VIEWS_*_ACTIONS_LABEL_MODE` setting is not a dict of action key → `"label"` / `"icon"` / `"both"` |
-| `viewset.E211` | a `cv_*_actions_label_mode` attribute is not `None` or such a dict (`cv_card_actions_label_mode` is the string-valued card attribute) |
+| `viewset.E211` | a `cv_*_actions_label_mode` attribute is not `None` or such a dict (`cv_card_actions_label_mode` is the string-valued card attribute, `cv_context_action_label_mode` the string-valued target-view default) |
 | `viewset.W291` | a view's own `cv_*_actions_label_mode` names a key that is not among that location's actions (typo?) |
-| `viewset.W292` | a context toolbar key resolves to `"icon"` while its target view has no `cv_icon_action` (keys folded into the menu, buttons with their own template or `get_context()` and unregistered targets are not checked; the render-time rule covers them) |
+| `viewset.W292` | a context toolbar key resolves to `"icon"` (target-view default included) while its target view has no `cv_icon_action` (keys folded into the menu, buttons with their own template or `get_context()` and unregistered targets are not checked; the render-time rule covers them) |
 
 W290 and W291 check only values set on the view class. ViewSet and setting values are shared defaults and may name
 keys some views lack.

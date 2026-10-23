@@ -57,7 +57,9 @@ Access is checked via the target view's `cv_has_access(user, obj)`.
 
 `label_mode` is the button's mode in the context toolbar of every view of the ViewSet, so a text-only button type
 does not need its key in a map on every ViewSet. A view's own `cv_context_actions_label_mode` that names the key still
-wins; see [Action menus](action_menus.md#label-mode) for the full order. It applies to inline toolbar buttons and
+wins; below the maps, the target view's `cv_context_action_label_mode` applies, so a button with no `label_mode` of
+its own follows the view it opens (`parent`, child and sibling buttons too); see
+[Action menus](action_menus.md#target-view-default) for the full order. It applies to inline toolbar buttons and
 `{% cv_context_button %}` (an action folded into the menu shows icon and label in every mode), not to row actions, which follow the list maps even when they resolve through the same
 button. An invalid value fails `viewset.E210`.
 

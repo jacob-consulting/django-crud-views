@@ -16,7 +16,7 @@ from django.urls import reverse
 from django.utils.safestring import SafeData
 from pydantic import BaseModel, field_validator, model_validator
 
-from crud_views.lib.check import Check
+from crud_views.lib.check import Check, CheckTemplate
 from crud_views.lib.exceptions import CrudViewError, cv_raise
 from crud_views.lib.settings import crud_views_settings
 
@@ -103,6 +103,7 @@ class CrudViewBreadcrumbMixin:
             key=cls.cv_breadcrumb_key_object,
             default_key=CrudViewBreadcrumbMixin.cv_breadcrumb_key_object,
         )
+        yield CheckTemplate(context=cls, id="E111", attribute="cv_breadcrumb_label_template")
 
     # -- extension points -------------------------------------------------
 

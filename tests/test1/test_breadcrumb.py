@@ -485,3 +485,24 @@ class TestBreadcrumbLabel:
 
         bc = make_view(View, "/publisher_bc/").cv_breadcrumb()
         assert titles(bc) == ["Publishers"]
+
+
+class TestBreadcrumbLabelCheck:
+    @staticmethod
+    def _e111(view_class):
+        return [m for c in view_class.checks() for m in c.messages() if m.id == "viewset.E111"]
+
+    def test_missing_breadcrumb_label_template(self):
+        from tests.test1.app.views import PublisherBcCreateView
+
+        class View(PublisherBcCreateView):
+            cv_breadcrumb_label_template = "does-not-exist.html"
+
+        messages = self._e111(View)
+        assert len(messages) == 1
+        assert "does-not-exist.html" in messages[0].msg
+
+    def test_unset_breadcrumb_label_template(self):
+        from tests.test1.app.views import PublisherBcCreateView
+
+        assert self._e111(PublisherBcCreateView) == []

@@ -135,6 +135,9 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Fixed
 
+- A breadcrumb item whose title is a rendered label (a short action label or the new breadcrumb label containing
+  `&` or `{{ object }}`) is no longer escaped twice: `BreadcrumbItem` keeps a safe title safe (#271).
+
 - The card list's empty state, "No items found.", is translated: `view_card.content.html` now loads `i18n` and
   wraps the text in `{% translate %}`, and the German catalog says "Keine Einträge gefunden." The markup is unchanged
   (#246).
@@ -159,6 +162,10 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
   does (#231).
 
 ### Added
+
+- `cv_breadcrumb_label_template` / `cv_breadcrumb_label_template_code` on `CrudViewBreadcrumbMixin` label the
+  current-page breadcrumb item separately from the view's short action label, which stays the text of every button
+  pointing to the view (#271). Unset, the breadcrumb reads as before; a missing template triggers `viewset.E111`.
 
 - `cv_context_action_label_mode` (`"label"`, `"icon"` or `"both"`; `None` by default) on a view sets the label mode
   of every context toolbar button that opens it, including `home`, `parent`, child and sibling buttons (#269). It is

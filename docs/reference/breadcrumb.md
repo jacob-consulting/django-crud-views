@@ -58,12 +58,30 @@ class MyBreadcrumbMixin(CrudViewBreadcrumbMixin):
         ]
 ```
 
+## Current-page label
+
+The last item of an action page (create, update, delete, …) is the view's short action label, the same text as
+every button that opens the view. When the breadcrumb should read differently, set a breadcrumb label on the view:
+
+```python
+class NoteCreateView(CrudViewBreadcrumbMixin, CreateView):
+    cv_viewset = cv_note
+    cv_action_short_label_template_code = "New note"  # every button pointing here
+    cv_breadcrumb_label_template_code = "Create"  # Notes › Create
+```
+
+The template gets the same variables as the short label: `verbose_name`, `verbose_name_plural` (and their
+`*_translate` variants), `viewset`, and `object` on object views (`"Edit {{ object }}"`). It labels the view's own
+item only, so it has no effect on detail and container (list/card) views, which have none.
+
 ## Reference
 
 | Member | Default | Description |
 |---|---|---|
 | `cv_breadcrumb_key_object` | `"detail"` | View key object items link to. A typo'd override triggers check `viewset.W270`. |
 | `cv_breadcrumb_container_label` | `None` | Overrides the container (list/card) label; set it on the container view — it also applies where the viewset appears as an ancestor. |
+| `cv_breadcrumb_label_template` / `cv_breadcrumb_label_template_code` | `None` | Label of the view's own current-page item, as a template snippet or template code (code wins). Unset, the view's short action label is used. A missing template triggers check `viewset.E111`. |
+| `cv_get_breadcrumb_label(context)` | short label | Classmethod rendering the current-page label. |
 | `cv_breadcrumb_prefix()` | reads setting | Returns the leading `BreadcrumbItem` list. |
 | `cv_breadcrumb_object_label(obj)` | `str(obj)` | Label for object items. |
 | `cv_breadcrumb_get()` | — | Builds the `Breadcrumb`; override for full control. |

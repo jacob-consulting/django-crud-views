@@ -78,6 +78,20 @@ def ready(self):
 
 If two theme apps register the same key, the one later in `INSTALLED_APPS` wins. See [Icons](icons.md#registering-icons-from-a-theme).
 
+A design system that paints icons as a class on the button itself (`<a class="btn icon-edit">`) registers its library
+with `placement: "host"` and, where a kind of button needs a base class next to the name class, the
+`*:icon-host` button classes. The stock leaves then put the class on the button; no leaf is copied
+([Host placement](icons.md#host-placement)):
+
+```python
+def ready(self):
+    from crud_views.lib.button_classes import register_button_classes
+    from crud_views.lib.icons import register_icon_library
+
+    register_icon_library("ui", placement="host", **{"class": "icon-{name}", "standalone": "icon {name_class}"})
+    register_button_classes({"context:secondary:icon": "btn btn-icon-only", "menu:icon-host": "link-icon {name_class}"})
+```
+
 ## Buttons
 
 Button classes live in one table, so a theme registers them from `AppConfig.ready()` — per-label-mode keys such as

@@ -124,6 +124,10 @@ On the context toolbar the current page's action is highlighted: inline with `.a
 The toggle icon is the semantic icon `actions-menu` (default `fas:ellipsis`). Change it with
 `CRUD_VIEWS_ICONS = {"actions-menu": "fas:bars"}`; see [Icons](icons.md).
 
+With a [host-placed](icons.md#host-placement) icon library the toggle and the menu items carry the icon class
+themselves and render no icon element: the toggle takes its location's `*:icon-host` class, every menu item the
+`menu:icon-host` class (`"{name_class}"` by default; e.g. `"link-icon {name_class}"` for a base class).
+
 ## Templates
 
 | Template | Renders |
@@ -143,7 +147,8 @@ The toggle icon is the semantic icon `actions-menu` (default `fas:ellipsis`). Ch
 The logic templates and leaves are described in [Buttons](buttons.md#logic-templates-and-leaves).
 
 Template variables of `actions_menu.html` / `actions_menu_toggle.html`: `cv_menu_items`, `cv_location`
-(`"list"`, `"context"`, `"card"`), `cv_menu_icon`. The classes come from the [button class table](buttons.md) with
+(`"list"`, `"context"`, `"card"`), `cv_menu_icon`, and for the toggle `cv_menu_icon_class` / `cv_menu_icon_inline`
+(the host class, and whether to render `{% cv_icon cv_menu_icon %}` inside it). The classes come from the [button class table](buttons.md) with
 `{% cv_button_class cv_location "menu-wrapper" %}` and `{% cv_button_class cv_location "menu-toggle" %}`. A menu item
 leaf gets the flat leaf contract (`cv_href`, `cv_key`, `cv_short_label`, `cv_icon`, `cv_disabled`, `cv_modal`,
 `cv_active`, …), see [the leaf contract](buttons.md#the-leaf-contract).

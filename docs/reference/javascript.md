@@ -191,3 +191,9 @@ ids this id is a contract. A project or theme overriding `crud_views/tags/contex
 toggle with `aria-expanded` and `aria-controls="filter-collapse"`. Without `aria-expanded` the script falls back to the
 panel's visibility (`hidden` or computed `display: none`) to decide the state it persists, then writes `aria-expanded`
 back.
+
+The icon switch has two forms. With element icons the button holds two spans, `[data-cv-filter-icon="open"]` and
+`[data-cv-filter-icon="close"]`, and the script flips their `hidden` attributes. With a
+[host-placed](icons.md#host-placement) icon library the button carries `data-cv-filter-icon-open` and
+`data-cv-filter-icon-close` (each a class string) and the current state's classes in `class`; the script removes one
+and adds the other. The presence of `data-cv-filter-icon-open` picks the second form.

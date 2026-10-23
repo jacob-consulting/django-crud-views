@@ -216,6 +216,11 @@ Go through your theme's `templates/crud_views/` directory. Delete each of these 
   `crud_views_object_detail/layouts/*/group.html`. Set `CRUD_VIEWS_HEADER_LEVEL` to the level of your
   `{% cv_header %}` instead. These headings then render one level below it and keep their look
   ([Heading levels](reference/templates.md#heading-levels)).
+- **Copies of `tags/button/action.html`, `tags/button/menu_item.html`, `tags/actions_menu_toggle.html` or
+  `tags/context_action_filter.html` made only to put the icon class on the button itself** (an icon library that
+  paints `::before` on the button, #258). Register the library with `placement: "host"` instead; the stock leaves
+  then add the icon's class to the button, and the `*:icon-host` button classes add a base class where a kind of
+  button needs one ([Host placement](reference/icons.md#host-placement)).
 - **`snippets/pagination.html`**, if you overrode it only for the arrows (#241). Register the `page-previous` and
   `page-next` icons instead. If you keep it for other markup, take over the accessible markup described under
   [CSS and tests](#css-and-tests-that-select-on-markup).
@@ -262,13 +267,16 @@ Register these from your theme's `AppConfig.ready()`; a project's own settings s
 - **Button classes:** `register_button_classes({...})` with `location:slot` keys, optionally
   `location:variant:mode` ([The class table](reference/buttons.md#the-class-table)). 1.0 adds the utility slots
   `*:active`, `card:flex` and `*:hidden-label` (#227), the card keys `card:root`, `card:body`, `card:title` (#243),
-  the alert keys `alert:*` (#250), and the `form:*` keys for the crispy buttons. A theme on a framework that spells
+  the alert keys `alert:*` (#250), the `*:icon-host` keys for host-placed icons (#258), and the `form:*` keys for the
+  crispy buttons. A theme on a framework that spells
   `active` or `visually-hidden` differently registers its own words and overrides no leaf
   ([A theme recipe](reference/buttons.md#a-theme-recipe)).
 - **Icons [0.30]:** `register_icon_library(prefix, renderer=..., **config)` and `register_icons({...})`
   ([Registering icons from a theme](reference/icons.md#registering-icons-from-a-theme)). 1.0 adds the names
   `page-previous`, `page-next` and `message-success`, `message-info`, `message-warning`, `message-error`,
-  `message-debug` ([Default table](reference/icons.md#default-table)).
+  `message-debug` ([Default table](reference/icons.md#default-table)), and the library keys `placement` and
+  `standalone` for an icon library that puts the icon class on the button itself (#258,
+  [Host placement](reference/icons.md#host-placement)).
 - **The form frame:** `snippets/form_frame.html`, block `cv_form_frame` (#239).
 - **The card:** extend `tags/card.html` and fill `card_title`, `card_content` and `card_actions` (#243). A copy of
   `view_card.content.html` misses the translated empty state, "No items found." (#246).
@@ -286,6 +294,14 @@ Register these from your theme's `AppConfig.ready()`; a project's own settings s
   are gone: an old copy of an object-detail layout or type template fails with `TemplateSyntaxError`. Use
   `{% cv_icon group.icon css="me-2" %}` and `{% cv_icon "boolean-true" %}`.
 - **`fa-fw` [0.30]** in menu icons becomes `cv-icon-fw` from `crud_views/css/icons.css`.
+- **Host-placed icons** (#258). A leaf you still override renders today's markup for every library without
+  `placement: "host"`. To support a host library too, take over what the stock leaves do: append
+  `{{ cv_icon_class }}` to the button's `class` when it is set, and render `{% cv_icon cv_icon %}` only when
+  `cv_icon_inline` is true ([The leaf contract](reference/buttons.md#the-leaf-contract)). The menu toggle reads
+  `cv_menu_icon_class` / `cv_menu_icon_inline`. A filter-toggle copy renders, for a host library, the current state's
+  class on the button plus `data-cv-filter-icon-open` / `data-cv-filter-icon-close` instead of the two spans
+  ([The filter toggle contract](reference/javascript.md#the-filter-toggle-contract)). A copy that passes its own
+  hand-built dict to a leaf must add `cv_icon_inline: True`, or the leaf renders no icon.
 - **Action menus:** `cv_menu_wrapper_class` and `cv_toggle_class` are no longer in the context of
   `tags/actions_menu.html` and `tags/actions_menu_toggle.html`; use `{% cv_button_class cv_location "menu-wrapper" %}`
   and `"menu-toggle"`. These two templates are still the ones to override for a framework with a different dropdown

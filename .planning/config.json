@@ -67,7 +67,6 @@
   },
   "mode": "interactive",
   "granularity": "standard",
-  "quick_branch_template": null,
   "intel": {
     "enabled": true
   },
@@ -106,5 +105,6 @@
       "opencode": "openrouter/x-ai/grok-4.7",
       "claude": "claude-fable-5-1"
     }
-  }
+  },
+  "runtime": "opencode"
 }

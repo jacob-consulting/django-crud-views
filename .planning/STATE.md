@@ -66,6 +66,12 @@ Recent decisions affecting current work:
 - Roadmap: Phases 4 and 5 (plan 3A/3B) can be dropped if 1.0.0 ships early.
 - Research: the 1A setting is read lazily from `django.conf.settings`, not as a Pydantic snapshot, so
   `override_settings` works.
+- Phase 1 review B3: enforce `feat/label-mode-defaults` with the read-only HEAD assertion in
+  `01-01-PLAN.md` before every implementation task across all four plans. Config still selects the generic
+  `gsd/phase-{phase}-{slug}` branch; plan prose does not override it. On mismatch, execution stops before edits
+  or task commits until the user or authorized execution workflow prepares the required branch. No task changes
+  config or switches/renames branches. This supersedes the research's current-branch execution recommendation;
+  planning remains on `introduce-gsd` and commits only the requested planning artifacts.
 
 ### Pending Todos
 
@@ -73,6 +79,8 @@ None yet.
 
 ### Blockers/Concerns
 
+- Phase 1 execution precondition: current planning branch is `introduce-gsd`, not `feat/label-mode-defaults`.
+  The B3 branch gate must pass in the executor's worktree before implementation; no branch operation was performed.
 - Phase 2: KEYS-01 grammar (A vs B) is an open maintainer decision; settle it in the phase discussion.
 - Phase 3, 6, 7: each needs a spec or maintainer decision before planning.
 - Phase 7: the label-mode pair rename and the `no_label` removal must each be either done or marked

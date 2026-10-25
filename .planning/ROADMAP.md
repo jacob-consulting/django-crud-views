@@ -13,6 +13,7 @@ crud_views leaf (plan 2). The milestone closes by freezing the whole theme surfa
 ## Phases
 
 **Phase Numbering:**
+
 - Integer phases (1–7): planned milestone work. Each maps to one source-plan phase (noted as "plan 1A" etc.).
 - Decimal phases (2.1, 2.2): urgent insertions (marked with INSERTED).
 
@@ -29,6 +30,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 ## Phase Details
 
 ### Phase 1: Label-mode defaults
+
 **Goal**: A project sets the label-mode default for each location in one place, and every location reads that floor
 from a single accessor. With no configuration, output is unchanged.
 **Source**: plan 1A · branch `feat/label-mode-defaults`
@@ -39,6 +41,7 @@ discussion because Phase 7 depends on them: the `cv_context_action(s)_label_mode
 for unknown keys.
 **Requirements**: LMOD-01, LMOD-02, LMOD-03, LMOD-04, LMOD-05, LMOD-06
 **Success Criteria** (what must be TRUE):
+
   1. With `CRUD_VIEWS_LABEL_MODE_DEFAULTS = {"context": "both"}`, every unmapped toolbar button renders icon + text on
      every page. Rows and cards are unchanged, and W292 stops firing for those keys.
   2. `{"card": "label"}` restores the 0.29 card look without touching a view. An explicit
@@ -49,10 +52,26 @@ for unknown keys.
      the set of locations, not from a literal.
   5. `grep -n '"both" if card\|or "icon"\|get(key, "icon")' src/crud_views/lib/view/*.py` returns nothing. Goldens
      stay byte-identical, and the docs state per-key merge vs whole-dict replacement for each knob.
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+**Wave 1**
+
+- [ ] 01-01-PLAN.md — Lazy defaults through the real button leaf, strict/log recovery and E108
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 01-02-PLAN.md — Toolbar/list integration, precedence preservation and W292 check safety
+- [ ] 01-03-PLAN.md — Card resolver, None attribute and compatibility migration
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
+- [ ] 01-04-PLAN.md — Canonical configuration docs, decision handoff and final quality gates
+
 **UI hint**: no (settings and resolution only; no markup change)
 
 ### Phase 2: Form key grammar
+
 **Goal**: The class table has one documented, check-enforced rule for what the second key segment means and which
 keys take a mode, so form buttons can get mode keys without loosening W362.
 **Source**: plan 1C · branch `feat/form-key-grammar`
@@ -62,6 +81,7 @@ keys take a mode, so form buttons can get mode keys without loosening W362.
 maintainer decision for this phase's discussion and is not pre-decided here.**
 **Requirements**: KEYS-01, KEYS-02, KEYS-03, KEYS-04
 **Success Criteria** (what must be TRUE):
+
   1. `docs/reference/buttons.md#the-class-table` states the chosen grammar: the meanings of the second segment and
      which of them take a mode.
   2. W362 accepts form mode keys of the chosen shape and rejects malformed ones such as `form:submitt:icon` and
@@ -74,6 +94,7 @@ maintainer decision for this phase's discussion and is not pre-decided here.**
 **UI hint**: no (checks and docs only)
 
 ### Phase 3: Filter toggle label mode
+
 **Goal**: The list filter toggle follows the configured label mode like every other context button, and stays
 accessible in each mode.
 **Source**: plan 1B (#262) · branch `feat/filter-toggle-label-mode`
@@ -84,16 +105,19 @@ combined with the two icon placements (element and host), the host swap in JS, w
 means for this button, and whether `both` swaps only the icon.
 **Requirements**: FILT-01, FILT-02, FILT-03, FILT-04
 **Success Criteria** (what must be TRUE):
+
   1. `CRUD_VIEWS_CONTEXT_ACTIONS_LABEL_MODE = {"filter": "both"}` renders icon + "Filter" with no `title`. `"label"`
      renders the text only. The default `icon` output is byte-identical (`toolbar_publisher_list.html` golden).
   2. In `label` mode (no icon spans), clicking the toggle still flips `aria-expanded` and persists the open/closed
      state (vitest label-only case).
   3. The toggle's visible text never changes between states. Only `aria-expanded` and the icon change.
   4. "Filter" is a translated msgid and renders in German with the German catalog.
+
 **Plans**: TBD
 **UI hint**: no (template branch in an existing component; no new screens)
 
 ### Phase 4: Alert dismiss adapter
+
 **Goal**: Dismissible alerts close through the `cv.adapters` seam, so a non-Bootstrap theme no longer copies the
 alert frame for a single `data-bs-*` attribute.
 **Source**: plan 3A · branch `feat/alert-dismiss-adapter`
@@ -105,6 +129,7 @@ Bootstrap-DOM template in `theme.md`.
 document the frame override in `theme.md` (LATER-06 tracks the keys).
 **Requirements**: ALRT-01, ALRT-02, ALRT-03, ALRT-04
 **Success Criteria** (what must be TRUE):
+
   1. A golden of today's dismissible alert is committed first, so the PR shows the markup diff.
   2. Clicking an alert's close button closes it through `cv.adapters.alert.close`, with Bootstrap's `Alert` present.
      Without it, the alert is removed. Alerts injected after page load (e.g. inside a modal) close too.
@@ -116,6 +141,7 @@ document the frame override in `theme.md` (LATER-06 tracks the keys).
 **UI hint**: no (one DOM attribute and JS adapter; no new screens)
 
 ### Phase 5: Table pagination parity
+
 **Goal**: Table and card pagination look and behave the same: registry icons, hidden labels and the same accessible
 structure.
 **Source**: plan 3B · branch `feat/table-pagination-icons`
@@ -127,6 +153,7 @@ structure.
 freezes it.
 **Requirements**: PAGE-01, PAGE-02, PAGE-03, PAGE-04
 **Success Criteria** (what must be TRUE):
+
   1. A golden of today's paginated table is committed first, so the PR shows the markup diff.
   2. A paginated table shows `page-previous` / `page-next` registry icons with translated hidden labels,
      `aria-current="page"` on the active page, non-focusable disabled ends (`aria-disabled="true"`), and a translated
@@ -139,6 +166,7 @@ freezes it.
 **UI hint**: no (markup parity in an existing template; no new screens)
 
 ### Phase 6: Form-button leaf
+
 **Goal**: Crispy form buttons render as real `<button>` elements through a crud_views leaf, share the action-button
 label-mode and class-table contract, and are safe against template injection. With no configuration, POST data is
 unchanged.
@@ -146,6 +174,7 @@ unchanged.
 **Depends on**: Phase 1 (the `"form"` floor) and Phase 2 (form mode keys, location split)
 **Parallel with**: None. This is the last code phase. Start its spec only after Phases 1 and 2 are on `main`.
 **Research/spec**: **Needs its own spec** (brainstorm) before implementation; highest risk. The spec must settle:
+
   - the filter buttons' move from `add_input()` into `FormActions`, and a user `formhelper_class` that still calls
     `add_input`
   - the view lookup order
@@ -159,6 +188,7 @@ It must also verify Django 6.0's `format_html` removal and jsdom `SubmitEvent.su
 **Requirements**: FORM-01, FORM-02, FORM-03, FORM-04, FORM-05, FORM-06, FORM-07, FORM-08, FORM-09, FORM-10,
 FORM-11, FORM-12, FORM-13
 **Success Criteria** (what must be TRUE):
+
   1. With nothing configured, create, update, delete, cancel and both filter buttons render as `<button type="…">`
      with the same text, classes, `name`, `value` and `id`. `test_delete` posts `{"delete": "Delete"}` unchanged, and
      `#filter-button-reset` is preserved. Before-change goldens show the diff.
@@ -176,6 +206,7 @@ FORM-11, FORM-12, FORM-13
 **UI hint**: no (new leaf template replaces existing button markup; no new screens)
 
 ### Phase 7: Theme-surface stability policy
+
 **Goal**: Theme authors can see exactly which names they may rely on at 1.0.0, and a test stops any public theme name
 from shipping undocumented or being documented without existing.
 **Source**: plan 4 · branch `docs/stability-theme-surface`
@@ -183,12 +214,15 @@ from shipping undocumented or being documented without existing.
 bump. If Phases 4/5 are dropped, it depends on Phase 6 only and documents the surface as it is.
 **Parallel with**: None
 **Research/spec**: **Needs a maintainer decision/spec**:
+
   - the tier assignments
   - a public `is_library_renderer` helper
   - whether the reference theme's private imports are acceptable
   - how to mark the undecided label-mode pair and `no_label` (done, or provisional/deprecated)
+
 **Requirements**: STAB-01, STAB-02, STAB-03, STAB-04, STAB-05, STAB-06
 **Success Criteria** (what must be TRUE):
+
   1. `docs/development/stability.md` names every theme-surface item explicitly, with no wildcards, and classifies each
      as stable, provisional or internal. Items: icons, class-table keys, leaf templates and their context, alerts,
      `cv.adapters` methods, events, DOM contract, theme hooks, check IDs, `CRUD_VIEWS_*` settings and dependency
@@ -219,7 +253,7 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Label-mode defaults | 0/TBD | Not started | - |
+| 1. Label-mode defaults | 0/4 | Not started | - |
 | 2. Form key grammar | 0/TBD | Not started | - |
 | 3. Filter toggle label mode | 0/TBD | Not started | - |
 | 4. Alert dismiss adapter | 0/TBD | Not started | - |

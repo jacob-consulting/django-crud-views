@@ -458,11 +458,11 @@ See Patterns 1-4 above. They are derived from the verified in-repo code (`button
 | A3 | The E108 unknown-key message ends with `got {value!r}` | Pattern 4 | Low. Pin it in a test; the wording becomes frozen surface in Phase 7 |
 | A4 | Clearing the warn-once set on a `CRUD_VIEWS_STRICT` change as well | Pattern 1 | None functionally; it only helps test hygiene |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **Branch name.** The plan says `feat/label-mode-defaults`. `.planning/config.json` has `git.branching_strategy: "phase"` with the template `gsd/phase-{phase}-{slug}`. The current branch is `introduce-gsd`. Recommendation: follow ROADMAP/plan (`feat/label-mode-defaults`) and confirm with the user at execute time.
-2. **E108 unknown-key wording** (A3). Recommendation: `setting CRUD_VIEWS_LABEL_MODE_DEFAULTS key 'cotext' must be one of ['card', 'context', 'list'], got 'both'`.
-3. **Should `invalid_label_mode` be public?** It is needed by `button_data`. Recommendation: name it with a leading underscore and import it within the package. It is not part of the D-21 public set.
+1. **Branch name.** **RESOLVED:** Keep the current branch (`introduce-gsd`); branch operations are excluded by `01-01-PLAN.md`'s context, with the same constraint in `01-02-PLAN.md` and `01-03-PLAN.md`. The revision instructions also prohibit branch changes. The source phase names `feat/label-mode-defaults` and the configured template is `gsd/phase-{phase}-{slug}`, but neither requires a branch operation in this plan set; the earlier execute-time confirmation recommendation is superseded by the current-branch constraint.
+2. **E108 unknown-key wording** (A3). **RESOLVED:** `01-01-PLAN.md` task `01-01-02` pins `setting CRUD_VIEWS_LABEL_MODE_DEFAULTS key 'cotext' must be one of ['card', 'context', 'list'], got 'both'` and requires an exact-message test. The diagnostic names the key and ends with the value's repr, per D-04 and D-05.
+3. **Should `invalid_label_mode` be public?** **RESOLVED:** `01-01-PLAN.md`'s artifact inventory and task `01-01-01` choose private `_invalid_label_mode`, imported within the package by `button_data`. It does not expand the D-21 public API.
 
 ## Environment Availability
 

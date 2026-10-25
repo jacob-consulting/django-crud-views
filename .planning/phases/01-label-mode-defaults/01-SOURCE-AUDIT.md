@@ -17,7 +17,7 @@ Planning only. No implementation, branch operation or commit performed. Existing
 
 Wave 1: 01-01. Wave 2: 01-02 and 01-03 in parallel, with zero modified-file overlap. Wave 3: 01-04.
 01-02 reuses the configuration test file from 01-01, so it explicitly depends on that earlier plan.
-01-04 consumes all prior runtime contracts and completes links introduced by card documentation.
+01-04 consumes all prior runtime contracts and retargets card documentation links only when their canonical anchors exist. 01-03 uses existing anchors and verifies a strict docs build before wave 3.
 All plans have two tasks; no task modifies more than five files. Estimates use calibration factor 1 and low confidence from zero samples, not self-rated certainty.
 
 ## Multi-source coverage audit
@@ -36,14 +36,14 @@ All plans have two tasks; no task modifies more than five files. Estimates use c
 | REQ | LMOD-04 | Call-time settings read | 01-01-01 | COVERED | No value cache or Pydantic snapshot |
 | REQ | LMOD-05 | Strict raise / non-strict log and fallback | 01-01-01 | COVERED | Settings and stamps; unhashable values |
 | REQ | LMOD-06 | E108 invalid key/value and complete check reporting | 01-01-02, 01-02-01 | COVERED | W292 integration prevents exception loss |
-| RESEARCH | R-01 | Circular imports / deferred LOCATIONS | 01-01 | COVERED | Import-safety regression command |
+| RESEARCH | R-01 | Circular imports / deferred LOCATIONS | 01-01-02 | COVERED | New subprocess settings import test asserts button_data absent before checks and loaded by E108 checks |
 | RESEARCH | R-02 | W292 exception can discard E108 | 01-02-01 | COVERED | Full check_viewsets test, not only view-level checks |
-| RESEARCH | R-03 | Unhashable values and hot-path warning flood | 01-01-01 | COVERED | repr key plus Lock; both sources tested |
+| RESEARCH | R-03 | Unhashable values and hot-path warning flood | 01-01-01 | COVERED | repr key plus Lock only around check/add; fallback and logging outside lock; bounded nested-recovery test |
 | RESEARCH | R-04 | Lazy settings and unset-versus-None distinction | 01-01 | COVERED | Sentinel; same settings object reads new values |
 | RESEARCH | R-05 | Eager dict.get fallback can defeat explicit mode | 01-02-02 | COVERED | Membership branch, invalid-floor bypass test |
 | RESEARCH | R-06 | Falsey stamp and empty-label/icon-less compatibility | 01-01-01 | COVERED | Existing behavior retained and exercised |
 | RESEARCH | R-07 | Card old-default tests, None check and model comment | 01-03-01 | COVERED | All updated with new resolver |
-| RESEARCH | R-08 | Cross-test log-state isolation / random order | 01-01-01 | COVERED | Tests monkeypatch private seen-set; no production reset |
+| RESEARCH | R-08 | Cross-test log-state isolation / random order | 01-01-01/02, 01-02-02 | COVERED | Initial warning tests isolate private seen-set; shared conftest autouse fixture covers all later tests, with seeded xdist gate and no production reset |
 | RESEARCH | R-09 | Target-view mode beats floor; filter separate | 01-02-01, 01-04-01 | COVERED | Explicit precedence tests and scope note |
 | RESEARCH | R-10 | All docs touchpoints and valid anchors | 01-03, 01-04 | COVERED | Includes buttons.md, corrected Mermaid file and PROJECT.md |
 | RESEARCH | R-11 | E108 exact wording, level and no hint | 01-01-02 | COVERED | Unknown-key message ends with repr(value) |
@@ -74,7 +74,7 @@ All plans have two tasks; no task modifies more than five files. Estimates use c
 | CONTEXT | D-21 | Four new names public, constant read-only | 01-01-01, 01-03, 01-04 | COVERED | No accidental extra public helper |
 | CONTEXT | D-22 | Exact setting name | 01-01, 01-04 | COVERED | No alternate spelling |
 | CONTEXT | D-23 | PROJECT Key Decisions | 01-04-02 | COVERED | Rows already exist; update without duplication |
-| CONTEXT | D-24 | Canonical merge/replace table and links | 01-04-01, 01-03-01 | COVERED | Existing map semantics unchanged |
+| CONTEXT | D-24 | Canonical merge/replace table and links | 01-04-01, 01-03-01 | COVERED | Existing map semantics unchanged; card links retargeted in 01-04-01 with anchor creation |
 | CONTEXT | D-25 | Canonical orders; Mermaid MICON defaults map | 01-04 | COVERED | Correct context_buttons.md target |
 | CONTEXT | D-26 | Example project untouched | All plans; 01-04 final diff | COVERED | Protected path |
 
@@ -84,7 +84,7 @@ No source items are missing. Excluded by scope: real form location/button leaf (
 
 - Read settings per call without a merged-map cache. MappingProxyType enforces the documented read-only package floor.
 - Use private `_invalid_label_mode` with a lazy fallback callback; this prevents an invalid floor from masking a strict malformed-stamp error.
-- Unlike the research sketch, warning identity has no source dimension and is not reset on setting_changed. This honors D-11 literally across sources and override_settings; isolated tests monkeypatch `_warned`. No receiver or public warning-reset API is needed.
+- Unlike the research sketch, warning identity has no source dimension and is not reset on setting_changed. This honors D-11 literally across sources and override_settings; isolated tests monkeypatch `_warned`, with a shared function-scoped autouse fixture added in 01-01-02. No receiver or public warning-reset API is needed. Fallback and logging stay outside the dedup lock.
 - Non-dict runtime configuration follows strict raise / non-strict package-floor fallback (research A2, chosen explicitly).
 - E108 unknown-key wording ends with repr(value); one diagnostic per entry, input order; choices sorted.
 - Research's optional merged-map helper is not introduced: all consumers require only the location accessor. No required capability is omitted.
@@ -130,7 +130,34 @@ Both are descriptor-less, status unresolved, explicitly flagged-unverified. No c
 - Existing quick pytest command: 182 passed in 2.30s during planning.
 - `npm --prefix . test`: 8 test files / 126 tests passed with local Node v20.20.2. Existing navigation-not-implemented messages were nonfatal; no package install performed.
 - No prior phase history; history digest is empty. No project `.claude/skills/` or `.agents/skills/`, and no `.planning/graphs/graph.json`. The installed django-crud-views skill was read; current tracked source/locked decisions override its older package-version defaults.
-- Baseline protected-path comparison uses the STATE.md recorded revision ebc7c23259ae35b2e4f34047d0da903e68a48ac8, not a moving task HEAD.
+- Baseline protected-path comparison uses fixed revision ebc7c23259ae35b2e4f34047d0da903e68a48ac8 (verified subject: `docs(01): capture phase context`), not a moving task HEAD. Current STATE.md records 02342703bcb65a94dcb8d1117721c828850a81fa; the earlier provenance claim was corrected during review revision.
+
+## Reviews-mode revision — Round 1, c1546c2
+
+All 14 current actionable findings are incorporated into the four existing plans; per-plan Review Dispositions Ledgers carry the canonical dispositions. No source coverage or probe-derived predicate/prohibition was removed. No deferred feature was implemented or added to scope.
+
+| Finding | Coverage |
+|---|---|
+| R1 warning isolation | 01-01-02 shared autouse fixture; 01-02-02 explicitly consumes it; seeded xdist gates |
+| R2 frozenset replacement | 01-01-02 module-attribute monkeypatch |
+| R3 stock card no_label exception | 01-03-01 detail/update text-only, delete icon-only assertions |
+| R4 docs anchor ordering | 01-03 existing anchors + strict build; 01-04-01 creates/retargets canonical links together |
+| R5 re-entrant lock deadlock | 01-01-01 fallback/logging outside lock and timeout-bounded nested-recovery regression |
+| R6 settings import boundary | 01-01-02 fresh-process before/after-check assertions |
+| R7 stale settings row | 01-04-01 row rewrite and scoped negative assertion |
+| R8 baseline provenance | 01-04 verification and this audit identify actual commit subject |
+| R9 authorized icon-bearing doc tracer | 01-04-01 exact context fields plus icon-bearing control render |
+| R10 class-attribute comments | 01-02-01/02 all three comments, no forbidden grep literals in action prose |
+| R11 optional scalar wording | 01-02-02 source E211 + test; 01-04-01/02 reference wording |
+| R12 check reference completeness | 01-04-02 E106/E108 error rows and E210 None note + test |
+| R13 #213 recipe consistency | 01-03-02 existing bullet rewrite; 01-04-02 order assertion |
+| R14 example selection stability | 01-04-01 unique card-key literal assignment rather than positional selection |
+
+Live-source qualifications: random-order is installed but opt-in (`addopts` only enables strict markers); existing import tests cover several modules, but none directly guards the settings boundary. The deadlock and positional-selector issues are prospective plan risks because those new symbols/tests do not exist yet. The source-qualified dedup/reset alternative remains explicitly rejected in 01-01's ledger in favor of the existing D-11 contract, without blocking the test-isolation fix.
+
+File ownership additions: 01-01 owns tests/test1/conftest.py and tests/test1/test_import_safety.py; 01-02 owns src/crud_views/lib/view/action_menu.py; 01-04 additionally owns docs/reference/card-list-view.md after 01-03. Wave 2 remains disjoint; waves and dependency IDs are unchanged. Each plan still has two tasks and no task modifies more than five files. Estimates recalibrated with factor=1, sample_count=0, confidence=low; 01-01 and 01-04 allow for their extra reads/tests.
+
+Revision validation: all four frontmatter and structure checks pass (zero errors; only the pre-existing already-locked one-way checkpoint warnings). Every automated command retains an immediately following observable fails_when; all eight tasks retain read_first and acceptance_criteria. git ls-files --error-unmatch confirms all existing named source/doc/test inputs, including added ownership paths. git diff --check passes. The new seeded cross-module command was run against the current, unimplemented baseline: 148 passed in 0.72s. This grounds the command/plugins, not the future fixture or new regression tests. No source implementation, branch operation or commit was performed.
 
 ## Plan validation results
 

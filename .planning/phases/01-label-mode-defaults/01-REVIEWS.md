@@ -1,10 +1,10 @@
 ---
 phase: 01
-cycle: 2
+cycle: 3
 reviewers: [opencode-gemini, opencode-grok, claude-fable]
-reviewed_at: 2026-10-25T17:15:45Z
+reviewed_at: 2026-10-25T18:02:00Z
 plans_reviewed: [01-01-PLAN.md, 01-02-PLAN.md, 01-03-PLAN.md, 01-04-PLAN.md]
-plans_revision: 0e15093
+plans_revision: bdd445c
 models:
   opencode-gemini: "openrouter/google/gemini-4-argon (reasoning=high)"
   opencode-grok: "openrouter/x-ai/grok-4.7 (reasoning=high)"
@@ -23,403 +23,381 @@ model_sources:
 ## Plan-Revision Conflicts
 <!-- gsd:plan-revision-conflicts:end -->
 
-> Convergence cycle 2. This review covers the plans as revised in `0e15093`, which address cycle-1 findings R1–R14. The full cycle-1 review text is at commit `c1546c2` (`docs: cross-AI review for phase 01`). Its dispositions are summarized under "Cycle-1 findings: resolution status" below.
+> Convergence cycle 3 (final). This review covers the plans as revised in `bdd445c`, which address the cycle-2 findings A1–A19. The cycle-2 review text is at commit `bbbf16a` and the cycle-1 text at `c1546c2`. Cycle-1 findings R1–R14 were confirmed resolved in cycle 2. New findings in this cycle are numbered B1–B6.
 
 ## OpenCode Review (opencode-gemini)
 
 ## 01-01
 
 ### 1. Summary
-Plan `01-01` introduces the lazy project-wide floor accessor `default_label_mode(location)` and immutable `LABEL_MODE_DEFAULTS` in `src/crud_views/lib/view/label_mode.py`, wires `cv_button_data()` in `src/crud_views/lib/view/button_data.py:83-85` to use the accessor and recover from malformed truthy stamped modes in non-strict mode, and adds `crud_views.E108` in `src/crud_views/lib/settings.py:98-132`. Cycle-1 findings R1 (cross-test `_warned` state isolation), R2 (`frozenset` replacement for `LOCATIONS`), R5 (re-entrant lock deadlock when both stamp and floor are invalid), and R6 (fresh-process verification of deferred imports in `settings.py`) are all properly resolved and grounded in the live source.
+Plan `01-01` introduces `LABEL_MODE_DEFAULTS`, the lazy `default_label_mode(location)` accessor, and private `_invalid_label_mode` strict/warn-once recovery in `src/crud_views/lib/view/label_mode.py`, wires `cv_button_data` in `src/crud_views/lib/view/button_data.py:82-85` to use them, and adds lazy `crud_views.E108` validation in `src/crud_views/lib/settings.py:98-132`. All cycle-2 dispositions assigned to this plan (A1–A6, A19) are accurately incorporated against the live codebase. One LOW lint-interaction detail remains around the Greek-omicron lookalike test literal (`"bοth"`).
 
 ### 2. Strengths
-- **Re-entrant fallback deadlock eliminated (R5):** In `01-01-01`, `_invalid_label_mode` checks `is_strict()` (`src/crud_views/lib/exceptions.py:32-36`) before evaluating `fallback()`, and in non-strict mode evaluates `fallback()` *before* acquiring `_warned_lock` and logs *after* releasing it. When `cv_button_data()` (`src/crud_views/lib/view/button_data.py:83-85`) has a truthy invalid `cv_label_mode` and `CRUD_VIEWS_LABEL_MODE_DEFAULTS` also has an invalid floor for that location, `ctx.get("cv_label_mode") or default_label_mode(location)` short-circuits to the truthy stamp, fails `is_label_mode(label_mode)`, and enters `_invalid_label_mode` with `lambda: default_label_mode(location)`. Resolving `fallback()` outside `_warned_lock` prevents self-deadlock on the non-reentrant `threading.Lock` while preserving the `"cv_label_mode"` substring required by `test_unknown_cv_label_mode_raises_everywhere` (`tests/test1/test_button_data.py:120-125`).
-- **Fresh-process import boundary proof (R6):** `src/crud_views/lib/view/__init__.py:1` eagerly imports `.base`, which imports `django.contrib.auth.mixins` (`src/crud_views/lib/view/base.py:16`) and fails with `AppRegistryNotReady` if imported before `django.setup()` (documented at `tests/test1/test_import_safety.py:6-9`). Task `01-01-02`'s `test_settings_defers_button_data_until_checks` verifies in a child interpreter that importing `crud_views.lib.settings` before `django.setup()` keeps `crud_views.lib.view` and `crud_views.lib.view.button_data` out of `sys.modules` until `crud_views_settings.check_messages` (`src/crud_views/lib/settings.py:135`) executes `_action_settings_messages()`.
-- **Autouse test isolation without weakening production dedup (R1):** Adding `isolate_label_mode_warnings(monkeypatch)` as a function-scoped `autouse=True` fixture in `tests/test1/conftest.py` (analogous to `asset_registry` at `tests/test1/conftest.py:11-21`) gives every test a fresh `_warned` set while keeping D-11's process-lifetime once-per-`(location, repr(value))` contract intact across `override_settings` transitions within a test.
-- **Immutable `LOCATIONS` monkeypatching (R2):** Because `LOCATIONS = frozenset({"context", "list", "card"})` at `src/crud_views/lib/view/button_data.py:12` is immutable, `01-01-02` specifies `monkeypatch.setattr(button_data, "LOCATIONS", button_data.LOCATIONS | {"test_loc"})` so the deferred `from crud_views.lib.view.button_data import LOCATIONS` inside `_action_settings_messages` picks up the patched module attribute.
+- **Non-recursive setting fallback (A1) and lock-free fallback evaluation (R5):** `.planning/phases/01-label-mode-defaults/01-01-PLAN.md:107-115` specifies that invalid-setting recovery returns `LABEL_MODE_DEFAULTS[location]` directly without calling `default_label_mode` again, and evaluates `fallback()` before acquiring `_warned_lock`, preventing both recursion and re-entrant lock deadlock when `cv_button_data` recovers a bad stamp over a bad floor.
+- **Structured warning verification in subprocess deadlock test (A2):** `.planning/phases/01-label-mode-defaults/01-01-PLAN.md:122-124` uses `unittest.TestCase().assertLogs("crud_views.lib.view.label_mode", level="WARNING")` inside the child process to assert 1 warning for equal bad values and 2 for distinct bad values.
+- **Input matrices separated by validation level (A3) and non-dict fanout pinned (A5):** `.planning/phases/01-label-mode-defaults/01-01-PLAN.md:107-112,128-131` separates whole-setting non-dicts (`{}` valid), per-location setting entries (`{}` invalid), and stamped `cv_label_mode` values (falsey `None`/`""`/`[]`/`{}` keep unset fallback at `src/crud_views/lib/view/button_data.py:83`), while pinning cumulative warning counts `1/2/3` across `context`, `list`, and `card` for a non-dict setting.
+- **Unused import removal (A4) and realistic raw context tracer keys (A6):** `.planning/phases/01-label-mode-defaults/01-01-PLAN.md:126,133` removes the otherwise-unused `LABEL_MODES` import at `src/crud_views/lib/view/button_data.py:8` (whose only current use is `:85`) and feeds `{% cv_button "context" %}` the exact raw context keys required by `src/crud_views/lib/view/visibility.py:14` (`cv_access=True`) and `src/crud_views/lib/view/button_data.py:80-81` (`cv_action_label`, `cv_action_short_label`, `cv_icon_action`), matching `tests/test1/test_button_leaves.py:490-500`.
+- **Verified D-07 import boundary test (R6):** `src/crud_views/lib/settings.py:98-132` currently defers `crud_views.lib.view.action_menu` and `label_mode`, neither of which imports `button_data.py`, so `test_settings_defers_button_data_until_checks` in `tests/test1/test_import_safety.py` (`.planning/phases/01-label-mode-defaults/01-01-PLAN.md:166`) genuinely proves that `crud_views.lib.view.button_data` is absent before `check_messages` and loaded when E108 runs.
 
 ### 3. Concerns
-- **[LOW] Log capture inside the child subprocess of `test_invalid_stamp_and_floor_recovers_without_deadlock` (`tests/test1/test_button_data.py`):** Task `01-01-01` runs `cv_button_data` in a fresh `subprocess.run([sys.executable, "-c", ...], timeout=10, capture_output=True, text=True)` with `INSTALLED_APPS=["django.contrib.contenttypes", "django.contrib.auth"]` and `django.setup()`, and requires asserting "one warning for the equal pair versus two for distinct pairs." In a standalone child script, pytest's `caplog` fixture is not active and Django's default `LOGGING` configuration does not attach a stderr handler for `WARNING` records on the `"crud_views.lib.view.label_mode"` logger unless configured in the child.
+- **[LOW] Literal `"bοth"` (Greek omicron) in test files will trigger Ruff `RUF001` at the phase gate:** `.planning/phases/01-label-mode-defaults/01-01-PLAN.md:128-131` instructs adding `"bοth"` (with U+03BF GREEK SMALL LETTER OMICRON) to the invalid-input matrices in `tests/test1/test_label_mode.py` and `tests/test1/test_button_data.py`. In `pyproject.toml:118-127`, Ruff enables `"RUF"` with `allowed-confusables = ["›"]` and only ignores `["RUF012"]` for `"tests/**"`. Because `01-01-01`'s verify step (`.planning/phases/01-label-mode-defaults/01-01-PLAN.md:139`) runs `ruff check` only on `src/crud_views/lib/view/label_mode.py src/crud_views/lib/view/button_data.py`, a raw `"bοth"` literal in the test files will pass Wave 1 and fail Wave 3's repo-wide `.venv/bin/ruff check` (`.planning/phases/01-label-mode-defaults/01-04-PLAN.md:214`) with `RUF001` unless written as `"b\u03bfth"` or annotated with `# noqa: RUF001`.
 
 ### 4. Suggestions
-- In `test_invalid_stamp_and_floor_recovers_without_deadlock` (`tests/test1/test_button_data.py`), capture warnings inside the child script using `unittest.TestCase().assertLogs("crud_views.lib.view.label_mode", level="WARNING")` (or attach a `logging.Handler` to `logging.getLogger("crud_views.lib.view.label_mode")`) before asserting the record count (1 for equal bad values, 2 for distinct bad values).
+- Write the Greek-omicron lookalike string as `"b\u03bfth"` (or add `# noqa: RUF001`) in `tests/test1/test_label_mode.py` and `tests/test1/test_button_data.py`, and include the modified test files in `01-01-01`'s `ruff check` command.
 
 ### 5. Risk Assessment
-**LOW** — All cycle-1 concurrency, import-cycle, and state-leakage hazards in `label_mode.py`, `button_data.py`, and `settings.py` have been resolved with concrete mechanisms and bounded subprocess tests.
+**LOW** — All runtime, concurrency, and system-check mechanics are grounded in `src/crud_views/lib/view/label_mode.py`, `src/crud_views/lib/view/button_data.py`, and `src/crud_views/lib/settings.py`.
 
 ---
 
 ## 01-02
 
 ### 1. Summary
-Plan `01-02` wires `CrudView.cv_get_action_label_mode()` in `src/crud_views/lib/view/base.py:291-317` to `default_label_mode("context")` and `default_label_mode("list")`, guards `cv_icon_mode_checks()` in `src/crud_views/lib/view/buttons.py:405` against strict-mode `ValueError` exceptions from an invalid floor so `check_viewsets` (`src/crud_views/checks.py:20-28`) still returns `crud_views.E108`, and updates stale comments/docstrings in `base.py` and `action_menu.py` (R1, R10, R11).
+Plan `01-02` replaces the hardcoded `"icon"` fallbacks in `CrudView.cv_get_action_label_mode` (`src/crud_views/lib/view/base.py:312,317`) with `default_label_mode("context")` and `default_label_mode("list")`, updates stale class-attribute comments (`src/crud_views/lib/view/base.py:88-96`) and the `viewset.E211` scalar description (`src/crud_views/lib/view/action_menu.py:59-60`), and guards `cv_icon_mode_checks` (`src/crud_views/lib/view/buttons.py:405`) against strict `ValueError` raises from an invalid floor so `check_viewsets` (`src/crud_views/checks.py:20-28`) still returns `crud_views.E108`. All cycle-2 dispositions (A7, A8, A9, A19) are cleanly integrated.
 
 ### 2. Strengths
-- **Preserves lazy floor evaluation when an explicit mode wins:** In `src/crud_views/lib/view/base.py:312`, `return target_default or default_label_mode("context")` short-circuits when `target_default` is set, and at `src/crud_views/lib/view/base.py:317`, replacing `mapping.get(key, "icon")` with `mapping[key] if key in mapping else default_label_mode("list")` avoids eagerly evaluating `default_label_mode("list")` when `key` is present in `mapping`. Thus an invalid strict floor never raises or warns when a higher-precedence layer resolves the key.
-- **Protects `check_viewsets` from strict-mode floor crashes:** `check_viewsets` (`src/crud_views/checks.py:20-28`) collects `crud_views_settings.check_messages` (including `E108`) at line 23 and then iterates `ViewSet.checks_all()` at lines 25-27 in the same function. Wrapping `cls.cv_get_action_label_mode("context", key, button, target_default)` in `try ... except ValueError: continue` at `src/crud_views/lib/view/buttons.py:405` prevents an invalid floor under `CRUD_VIEWS_STRICT=True` (`tests/test1/conftest.py:29`) from aborting `check_viewsets` and discarding `E108`.
-- **Clean resolution of R10 and R11:** Updating the class-attribute comments at `src/crud_views/lib/view/base.py:88-96` and the `viewset.E211` message at `src/crud_views/lib/view/action_menu.py:58-61` ("string or None") aligns the diagnostic text with the optional scalar types while keeping existing `test_e211_message_names_the_card_attribute` (`tests/test1/test_action_label_mode_config.py:113-116`) and `test_e211_string_on_map_names_target_attribute` (`tests/test1/test_context_action_label_mode.py:209-212`) passing.
-- **Verified acceptance grep coverage:** Across `src/crud_views/lib/view/*.py`, the three matches of `"both" if card\|or "icon"\|get(key, "icon")` are `button_data.py:83`, `base.py:312`, and `base.py:317`. After `01-01` and `01-02`, the negative grep gate in `01-02-02` is guaranteed to return exit code 1 (zero matches).
+- **End-to-end non-strict recovery test for invalid target-view `cv_context_action_label_mode` (A7):** `.planning/phases/01-label-mode-defaults/01-02-PLAN.md:83,94` traces the exact path where `src/crud_views/lib/view/base.py:435,631` passes `cls.cv_context_action_label_mode` (`"nope"`) into `cv_get_action_label_mode`, which returns `target_default` truthily at `src/crud_views/lib/view/base.py:312` and stamps `cv_label_mode="nope"` (`base.py:633`) for `cv_button_data` (`src/crud_views/lib/view/button_data.py:83-85`) to recover to `default_label_mode("context")` (`"both"`) with a single warning across two HTTP GETs.
+- **Explicit filter toggle exclusion in multi-route toolbar tests (A8):** `.planning/phases/01-label-mode-defaults/01-02-PLAN.md:90` excludes `@cv-key="filter"` and `@id="cv-filter-toggle"` (matching `src/crud_views/templates/crud_views/tags/context_action_filter.html:4,10`, which hardcodes `"icon"` until Phase 3) and asserts a nonempty remaining action set on every route (`tests/test1/app/views.py:63-124`).
+- **Short-circuit floor evaluation on mapped keys:** `.planning/phases/01-label-mode-defaults/01-02-PLAN.md:112` replaces `mapping.get(key, "icon")` at `src/crud_views/lib/view/base.py:317` with `mapping[key] if key in mapping else default_label_mode("list")`, avoiding eager argument evaluation when a key is explicitly mapped.
+- **Deliberate three-surface consistency contract for E211 wording (A9):** `.planning/phases/01-label-mode-defaults/01-02-PLAN.md:116` pins only the short `"string or None"` phrase for `src/crud_views/lib/view/action_menu.py:59-60` rather than coupling tests to the full sentence.
 
 ### 3. Concerns
-- None identified. All cycle-1 findings assigned to `01-02` (R1, R10, R11) are completely addressed, and `01-02`'s `files_modified` list is completely disjoint from parallel Wave 2 plan `01-03`.
+- None. All mechanisms and selectors match the live views and templates.
 
 ### 4. Suggestions
-- In `01-02-01`'s multi-route toolbar test (`test_context_floor_renders_unmapped_toolbar` in `tests/test1/test_context_action_label_mode.py`), when comparing card/row action bodies under `CRUD_VIEWS_LABEL_MODE_DEFAULTS = {"context": "both"}`, scope the card comparison to `//div[@cv-card-container]` (or the `CardAction` elements inside it) rather than the whole card page, since the card page's top-right `[cv-context-container]` toolbar legitimately switches to `"both"`. (The plan action already notes this distinction; keeping the XPath scoped to `@cv-card-container` makes it airtight.)
+- None.
 
 ### 5. Risk Assessment
-**LOW** — Changes in `base.py`, `buttons.py`, and `action_menu.py` are small, localized, and well-tested against both unit and client-rendered HTML assertions.
+**LOW** — Changes are confined to two fallback lines, comments/docstrings, one diagnostic string, and a narrow `try/except ValueError` in `src/crud_views/lib/view/buttons.py:405`, with zero file overlap against parallel plan `01-03`.
 
 ---
 
 ## 01-03
 
 ### 1. Summary
-Plan `01-03` changes `CardListView.cv_card_actions_label_mode` in `src/crud_views/lib/views/card.py:28` from `"both"` to `str | None = None`, adds the `@classmethod` resolver `cv_get_card_actions_label_mode()`, skips `viewset.E210` when the attribute is `None` (`src/crud_views/lib/views/card.py:112`), updates `docs/reference/card-list-view.md`, and adds the breaking/migration and changelog entries in `docs/migrating-1.0.md` and `CHANGELOG.md`. Cycle-1 findings R3 (`AuthorCardListView`'s `no_label=True` delete button), R4 (using existing anchors in Wave 2 so `mkdocs build --strict` passes), and R13 (updating the existing `#213` bullet in `CHANGELOG.md:43-45`) are all resolved.
+Plan `01-03` changes `CardListView.cv_card_actions_label_mode` from `"both"` to `str | None = None` (`src/crud_views/lib/views/card.py:28`), adds the `@classmethod` resolver `cv_get_card_actions_label_mode()`, skips `viewset.E210` when the attribute is `None` (`src/crud_views/lib/views/card.py:112`), and updates `docs/reference/card-list-view.md`, `docs/migrating-1.0.md`, and `CHANGELOG.md`. Dispositions A10, A11, A12, and A19 are thoroughly addressed.
 
 ### 2. Strengths
-- **Accurate handling of stock `AuthorCardListView` (R3):** In `tests/test1/app/views.py:76-81`, `AuthorCardListView.cv_card_actions` defines `detail` and `update` with `label_mode=None`, and `delete` with `no_label=True`. In `src/crud_views/lib/views/card.py:47-52`, `elif action.no_label: label_mode = "icon"` precedes the `else:` branch. Task `01-03-01` now tests the unmodified `AuthorCardListView` under `{"card": "label"}` by asserting `detail` and `update` render text-only while `delete` remains icon-only with its visually hidden label and `title`, directly verifying both LMOD-03 and D-18.
-- **Wave-safe strict docs build (R4):** Because `mkdocs.yml:24-25` configures `validation: anchors: warn`, `mkdocs build --strict` aborts on any missing target anchor. Linking `docs/reference/card-list-view.md` to the already-existing `action_menus.md#label-mode` (`docs/reference/action_menus.md:58`) and `settings.md#action-menus` (`docs/reference/settings.md:71`) in `01-03-01` allows `mkdocs build --strict` to pass at the end of Wave 2 before `01-04-01` creates and retargets the new sub-anchors.
-- **Consistent 0.29 card restoration recipe across both changelog and migration guide (R13):** Task `01-03-02` updates both `docs/migrating-1.0.md:127-129` and the existing `#213` bullet at `CHANGELOG.md:43-45` so that `CRUD_VIEWS_LABEL_MODE_DEFAULTS = {"card": "label"}` comes first, `CardListView.cv_card_actions_label_mode = "label"` second, and `CardAction(label_mode="label")` third, alongside the new `"Card label-mode attribute"` breaking entry.
+- **Complete `card-list-view.md` table updates and Wave-2-safe anchors (R4, A12):** `.planning/phases/01-label-mode-defaults/01-03-PLAN.md:86-88` updates both the `CardAction` fields table (`docs/reference/card-list-view.md:50`) and the view attribute table (`docs/reference/card-list-view.md:71`), and links only to existing anchors (`action_menus.md#label-mode` at `docs/reference/action_menus.md:58` and `settings.md#action-menus` at `docs/reference/settings.md:71`) so `.venv/bin/mkdocs build --strict` (`mkdocs.yml:24-25`) passes at the end of Wave 2.
+- **Stock `AuthorCardListView` render test preserves D-18 `no_label=True` behavior (R3):** `.planning/phases/01-label-mode-defaults/01-03-PLAN.md:84` tests `AuthorCardListView` (`tests/test1/app/views.py:74-81`) directly via `_card` (`tests/test1/test_card_label_mode_render.py:38-41`), asserting that `detail` and `update` become text-only under `{"card": "label"}` while `CardAction(key="delete", no_label=True, variant="tertiary")` stays icon-only.
+- **Comprehensive Wave-2 verify script and anchor discipline for migration/changelog (A10, A11):** `.planning/phases/01-label-mode-defaults/01-03-PLAN.md:105-127` uses existing anchors (`settings.md#action-menus`, `action_menus.md#label-mode`) in `docs/migrating-1.0.md` and `CHANGELOG.md` and verifies setting-before-view-before-button order in both `docs/migrating-1.0.md:127-129` and `CHANGELOG.md:43-45` (`(#213)`), the `None`/`both`/resolver disclosure in both `"Card label-mode attribute"` bullets, and the `"Malformed stamped label modes"` bullet inside `### Fixed` (`CHANGELOG.md:136`).
 
 ### 3. Concerns
-- None identified. All code, check, test, and documentation changes in `01-03` match the live repository state.
+- **[LOW] Unicode-lookalike mode literal in `tests/test1/test_card_label_modes.py` can trigger Ruff `RUF001`:** `.planning/phases/01-label-mode-defaults/01-03-PLAN.md:45,77` requires testing Unicode-lookalike modes in `test_card_attribute_exact_modes`. As in `01-01`, a raw confusable character literal in `tests/test1/test_card_label_modes.py` will fail `.venv/bin/ruff check` (`pyproject.toml:118-120`) in Wave 3 unless written with a `\u` escape (`"b\u03bfth"`) or `# noqa: RUF001`.
 
 ### 4. Suggestions
-- In `src/crud_views/lib/views/card.py:52`, call `self.cv_get_card_actions_label_mode()` (which resolves via the classmethod on `self`'s class or instance override of `cv_card_actions_label_mode` if accessed as `cls.cv_card_actions_label_mode`), and ensure `test_view_default_applies_and_action_overrides_it` (`tests/test1/test_card_label_mode_render.py:120-138`, which uses `monkeypatch.setattr(AuthorCardListView, "cv_card_actions_label_mode", "label")`) continues to pass unchanged.
+- Use `"b\u03bfth"` (or `# noqa: RUF001`) in `tests/test1/test_card_label_modes.py::test_card_attribute_exact_modes`.
 
 ### 5. Risk Assessment
-**LOW** — The card attribute change is clean, isolated from `01-02`, and thoroughly covered by unit, check, render, and migration-contract checks.
+**LOW** — The runtime change in `src/crud_views/lib/views/card.py` is small and self-contained, and Wave 2 verification enforces both `mkdocs build --strict` and the full changelog/migration contract.
 
 ---
 
 ## 01-04
 
 ### 1. Summary
-Plan `01-04` completes the reference documentation across `docs/reference/settings.md`, `docs/reference/action_menus.md`, `docs/reference/card-list-view.md`, `docs/reference/context_buttons.md`, `docs/reference/buttons.md`, and `.planning/PROJECT.md`, adds executable documentation contract tests in `tests/test1/test_label_mode_docs.py`, and runs all phase-wide quality gates (`pytest`, `npm --prefix . test`, `mkdocs build --strict`, `ruff check`, `ruff format --check`, and the protected-path `git diff` check). Cycle-1 findings R4, R7, R8, R9, R11, R12, R13, and R14 are all addressed.
+Plan `01-04` publishes the canonical configuration table in `docs/reference/settings.md`, the three canonical resolution-order sections in `docs/reference/action_menus.md`, retargets the Wave-2 links in `docs/reference/card-list-view.md`, `docs/migrating-1.0.md`, and `CHANGELOG.md`, updates `docs/reference/context_buttons.md`, `docs/reference/buttons.md`, and `.planning/PROJECT.md`, adds `tests/test1/test_label_mode_docs.py`, and runs all phase-level quality gates. All cycle-2 dispositions (A9, A10, A13–A19) are properly incorporated.
 
 ### 2. Strengths
-- **Non-vacuous, position-independent executable docs test (R9, R14):** Task `01-04-01` parses Python fenced blocks in `docs/reference/settings.md` with `ast.parse` + `ast.literal_eval`, selects the standalone `CRUD_VIEWS_LABEL_MODE_DEFAULTS` dict containing the `"card"` key, and renders `{% cv_button "card" %}` (`src/crud_views/templatetags/crud_views.py:200-208`) with `cv_access=True` (required by `cv_resolve_action` at `src/crud_views/lib/view/visibility.py:14-18`) and `cv_icon_action="detail"` (required by `tags/button/action.html:8`), paired with an empty-defaults control render that proves the icon renders when the setting is `{}`.
-- **Complete cleanup of stale fixed-floor prose in `settings.md` (R7):** Task `01-04-01` rewrites `docs/reference/settings.md:78-79` (`CRUD_VIEWS_CONTEXT_ACTIONS_LABEL_MODE` and `CRUD_VIEWS_LIST_ACTIONS_LABEL_MODE`) so neither row claims unnamed keys are fixed to `icon` or conflates list resolution with the context-only target-view step.
-- **Complete system-checks reference table alignment (R11, R12):** Task `01-04-01` and `01-04-02` update `docs/reference/action_menus.md:238-246` and `docs/reference/buttons.md:437-448` to include `crud_views.E106` and `crud_views.E108`, clarify that `viewset.E210` accepts `None` as unset on optional attributes (`cv_card_actions_label_mode`, `cv_context_action_label_mode`, `CardAction.label_mode`, `ContextButton.label_mode`), and align `viewset.E211`'s scalar description with `"string or None"`.
-- **Immutable baseline revision for protected paths (R8):** Verification compares `tests/test1/golden`, `src/crud_views/templates`, and `examples` against commit `ebc7c23259ae35b2e4f34047d0da903e68a48ac8` (`docs(01): capture phase context`) and checks for untracked files in those directories.
+- **Prefiltered AST extraction and non-vacuous template-tag tracer (R9, R14, A14):** `.planning/phases/01-label-mode-defaults/01-04-PLAN.md:105-107` prefilters Python fences in `docs/reference/settings.md` for `CRUD_VIEWS_LABEL_MODE_DEFAULTS`, parses matching blocks strictly with `ast.parse`/`ast.literal_eval`, selects the dict containing `"card"`, and renders `{% cv_button "card" %}` with `cv_access=True` and `cv_icon_action="detail"` alongside an empty-defaults control render.
+- **Two-column vs three-column checks tables respected (R12, A17) and bracket-free Mermaid label (A18):** `.planning/phases/01-label-mode-defaults/01-04-PLAN.md:104,137,142` keeps `docs/reference/action_menus.md:238-246` as a two-column `ID | Meaning` table with `"error"` in the `Meaning` text while adding `Level = error` rows to the three-column table in `docs/reference/buttons.md:437-448`, and uses `MICON["defaults map (default icon)"]` in `docs/reference/context_buttons.md:256`.
+- **Permanent test suite decoupled from `.planning/` (A13) and release-header-resilient changelog test (A15):** `.planning/phases/01-label-mode-defaults/01-04-PLAN.md:148,154,160` checks `.planning/PROJECT.md:96-97` via a one-off `<verify>` grep rather than a permanent pytest test, and selects the target release block in `CHANGELOG.md` by locating the `### Breaking` section containing `"Card label-mode attribute"` (ignoring `## 0.30.0`'s `### Breaking` at `CHANGELOG.md:282` and surviving the `## Unreleased` → `## 1.0.0` rename).
+- **Protected-path diff and untracked-file status gates (R8, A16):** `.planning/phases/01-label-mode-defaults/01-04-PLAN.md:218-221` combines `git diff --exit-code ebc7c23259ae35b2e4f34047d0da903e68a48ac8` with `git status --porcelain -- tests/test1/golden src/crud_views/templates examples`.
 
 ### 3. Concerns
-- **[LOW] Table column count difference between `docs/reference/action_menus.md:238` and `docs/reference/buttons.md:437`:** In `docs/reference/action_menus.md:238-246`, the `## System checks` table has **2 columns** (`| ID | Meaning |`), whereas in `docs/reference/buttons.md:437-448`, the `## System checks` table has **3 columns** (`| ID | Level | Meaning |`). Task `01-04-01` states "add the E108 Error row" in `action_menus.md` and its acceptance criteria state "E108 is documented as Error." If the executor or `test_label_mode_docs.py` expects an explicit `error` level column in `action_menus.md` (or adds a 3rd column to `action_menus.md`'s 2-column table), the Markdown table formatting or test assertion could mismatch.
+- **[LOW] Staging of `test_label_mode_docs.py` functions across tasks `01-04-01` and `01-04-02`:** `.planning/phases/01-label-mode-defaults/01-04-PLAN.md:65-72` lists all six test functions in the plan-level artifact inventory, and task `01-04-01` runs `.venv/bin/pytest tests/test1/test_label_mode_docs.py -q` (`.planning/phases/01-label-mode-defaults/01-04-PLAN.md:110`) before task `01-04-02` edits `docs/reference/context_buttons.md`, `docs/reference/buttons.md`, and `CHANGELOG.md`. While lines 102 and 107 note that `CHANGELOG.md` link retargeting and diagram/remaining-reference assertions belong to `01-04-02`, writing `test_button_label_mode_check_reference` or the `CHANGELOG.md` canonical-anchor check inside `01-04-01` would fail `01-04-01`'s pytest run before `01-04-02` executes.
 
 ### 4. Suggestions
-- In `01-04-01`, keep `docs/reference/action_menus.md:238-246` as a 2-column `| ID | Meaning |` table matching its existing rows (e.g., `| \`crud_views.E108\` | error: `CRUD_VIEWS_LABEL_MODE_DEFAULTS` is not a dict, or names an unknown location or invalid label mode |` or assert the level column in `buttons.md:437-448` where the `| ID | Level | Meaning |` table lives).
+- In `01-04-01`, define only `test_documented_card_floor_renders_label_only`, `test_label_mode_configuration_table`, `test_canonical_label_mode_resolution_sections`, and the `card-list-view.md`/`migrating-1.0.md` link assertions in `tests/test1/test_label_mode_docs.py`, then add `test_button_label_mode_check_reference`, `test_card_migration_contract`, and the `context_buttons.md`/`CHANGELOG.md` assertions in `01-04-02`.
 
 ### 5. Risk Assessment
-**LOW** — Documentation changes, cross-page anchor retargeting, and AST-parsed doc tests are well-specified and verified by `pytest` and `mkdocs build --strict`.
+**LOW** — Documentation anchors, tables, and verification gates are tightly aligned with the live files and tested against both `pytest` and `mkdocs build --strict`.
 
 ---
 
-## Cross-Plan Assessment & Convergence Summary
+## Cross-Plan Assessment & Overall Risk
 
-All 14 cycle-1 review findings (`R1`–`R14`) have been verified against the live codebase and are properly resolved in the revised plans:
-- **Wave & file isolation:** Wave 1 (`01-01`), Wave 2 (`01-02` and `01-03` in parallel with zero overlapping `files_modified`), and Wave 3 (`01-04`) have clean dependency edges and no race conditions.
-- **No new high or medium risks:** Only two minor (`LOW`) implementation notes remain (using `assertLogs` or a custom handler inside the child script in `01-01-01`, and respecting the 2-column vs 3-column check table layout between `action_menus.md` and `buttons.md` in `01-04`). The plans are ready for execution.
+- **Cycle-2 Disposition Verification (A1–A19):** All 19 findings from cycle 2 are verified as incorporated across `.planning/phases/01-label-mode-defaults/01-01-PLAN.md` through `01-04-PLAN.md`, with single branch authority (A19) centralized in `01-01-PLAN.md:72`.
+- **Overall Risk Level:** **LOW** — No HIGH or MEDIUM concerns remain; the only two LOW items are execution hygiene notes (`"b\u03bfth"` escape for Ruff `RUF001` and staged test additions between `01-04-01` and `01-04-02`). The plans are ready to execute.
 
 ---
 
 ## OpenCode Review (opencode-grok)
 
-> Lane note: attempt 1 ended in `spawn error: ETIMEDOUT` at the 660 s lane floor (its stub carried `[reviewed-without-source-citations]` only because it contained no review). The lane was re-run per the timeout guidance with a raised `review.timeouts.opencode`; the review below is the successful retry and cites `file:line` evidence, so no discount marker applies.
-
-I'll verify the revised plans against the source, starting with the files the cycle-1 fixes claim to touch.
-I'll read the source the plans cite so the review is against the code, not the plan text.
-Cycle-1 fixes R1–R14 match the source. Remaining issues are specification gaps, not wrong mechanisms.
+I'll verify the four plans against the source they cite, then check that the A1–A19 revisions actually landed.
+The plans cite specific source lines. I'll check those against the current files before judging the dispositions.
+A1–A19 are in the plan text and match the current source. Residual risk is low. Two documentation leftovers are new.
 
 ## 01-01
 
-The lazy floor, private recovery helper, and E108 design match the locked decisions and the import graph. R1, R2, R5, and R6 are actually fixed, not just labeled fixed.
+The floor, the strict/log recovery, and E108 are specified against the real leaf and the real check method. The cycle-2 hazards (re-entrant fallback, unhashable values, import boundary, test isolation) are turned into executable tests, not comments.
 
-**Strengths**
-- Deferred `LOCATIONS` import is required: `button_data.py:8` already imports `label_mode`, and `LOCATIONS` is a `frozenset` at `button_data.py:12`. Patching `button_data.LOCATIONS` is the only way the E108 test can see a new key.
-- Sentinel plus call-time `getattr` matches `from_settings` (`settings.py:13-14`) without adding a Pydantic field. `check_messages` is an uncached `@property` (`settings.py:134`), so the same instance sees `override_settings`.
-- R5 is specified correctly: fallback before a non-reentrant lock, log after release, and a 10s subprocess so a held lock fails the test instead of hanging pytest.
-- R1 matches the suite: `pytest-xdist` and `pytest-random-order` are installed (`pyproject.toml:74,77`) but not in `addopts` (`pyproject.toml:130`). The autouse fixture plus an explicit `--random-order` gate is the right isolation.
-- Keeping `ctx.get("cv_label_mode") or …` preserves the falsey-stamp contract at `button_data.py:83-85`. Strict tests still match `cv_label_mode` (`test_button_data.py:122-125`) because `CRUD_VIEWS_STRICT=True` (`conftest.py:27-29`).
+- The accessor stays off the Pydantic model. `settings.py:279` builds `CrudViewsSettings()` at import, so a typed field would still beat E108. The `_UNSET` sentinel matches D-03. `getattr(..., None)` would hide an explicit `None`.
+- `button_data.py:8` already imports `label_mode`, and `LOCATIONS` is a `frozenset` at `button_data.py:12`. The deferred import and the `monkeypatch.setattr` of the module attribute are the only ways E108 can track that object.
+- `button_data.py:83-85` still raises on every bad stamp. Routing only truthy stamps through `_invalid_label_mode`, and keeping the `or`, preserves the falsey-unset contract. `LABEL_MODES` is used only in that error, so dropping the import is safe.
+- Dedup key `(location, repr(value))` matches D-11, not the research suggestion. The lock is held only around check-and-add. The equal-pair subprocess test is the right bound for the re-entry the plan itself introduces.
+- The tracer keys match `test_button_leaves.py:490-500`. `visibility.py:14` treats a missing `cv_action_enabled` as usable when `cv_access is True`.
 
-**Concerns**
-- **MEDIUM.** The setting-path fallback must return `LABEL_MODE_DEFAULTS[location]` and must not call `default_label_mode` again. The stamp path’s callable is `default_label_mode(location)`, which re-enters `_invalid_label_mode` on a bad floor. If that inner fallback calls `default_label_mode` too, non-strict recovery recurses. The subprocess timeout turns that into a failed test, but the action text never states the termination.
-- **LOW.** The context tracer does not pin raw keys. A context render with only `cv_label` (the card key, `button_data.py:74-78`) gets an empty short label and is forced back to icon mode (`button_data.py:80-87` and `:102-105`). The existing raw tag context is `test_button_leaves.py:490-499` (`cv_action_label`, `cv_icon_action`, `cv_access`).
+- **LOW** — `.planning/phases/01-label-mode-defaults/01-01-PLAN.md:122` says non-dict settings follow “the same strict/non-strict policy as invalid location values.” D-12 and the task’s own behavior block say an unknown location always raises. Read as “invalid mode for a location,” the sentence is fine. Read literally, it tells the executor to log-and-fallback on `default_label_mode("nope")`.
 
-**Suggestions**
-- State that the setting fallback callable is `lambda: LABEL_MODE_DEFAULTS[location]`.
-- Copy the `test_button_leaves.py:490-499` keys into the tracer acceptance text, and require a visible short label that is not the icon-mode hidden span.
+- Treat `01-01-PLAN.md:122` as invalid mode values only. Keep the behavior-block rule: unknown caller locations raise in every mode.
 
-**Risk Assessment:** LOW. Core contracts are right; the recursion footgun is the only new executor trap.
+**Risk: LOW.** Acceptance criteria already require the D-12 raise. The sentence is the only new trap.
 
 ## 01-02
 
-Toolbar and row floors are wired at the real final fallbacks, and the W292 exception path is the one that would discard E108.
+This plan is the one that makes LMOD-02 true for ordinary pages. It changes only the final fallbacks and keeps whole-map replacement. That matches `base.py:302-317`.
 
-**Strengths**
-- Literals are exactly `base.py:312` (`target_default or "icon"`) and `base.py:317` (`mapping.get(key, "icon")`). A membership test is required: `dict.get(key, default_label_mode("list"))` evaluates the floor even when the key exists.
-- `target_default or default_label_mode("context")` short-circuits, so a truthy explicit mode never reads a bad floor. Empty view maps still replace lower maps because `cv_first_inline_keys` treats `{}` as set (`base.py:264-265`).
-- W292 is the only check-time caller (`buttons.py:405`, reached from `base.py:193`). `check_viewsets` appends viewset messages after `check_messages` (`checks.py:23-28`), so a `ValueError` there drops E108. Catching only that call is the right scope. Default detail actions are unmapped (`detail.py:12`, settings default `home/detail/update/delete`), so the integration test will hit the raise.
-- Helpers the tracer names exist (`test_context_action_label_mode.py:40-41`, `test_action_label_mode_render.py:29-70`). Filter buttons are skipped by W292 because `FilterContextButton.get_context` is overridden (`buttons.py:389-395`, `:298-306`).
+- `target_default or default_label_mode("context")` short-circuits, so a truthy explicit mode never evaluates a bad floor. The list side correctly refuses `dict.get(key, default_label_mode(...))`, which would call the accessor even on a hit.
+- `base.py:631` stamps `data.get("cv_context_label_mode")` raw. `buttons.py:402-404` already turns an invalid target into `None` for W292 only. A7’s non-strict GET is the render path, not a second sanitizer. Two requests plus the autouse fixture are enough to prove one warning.
+- `context_action_filter.html:4` and `:10` are `id="cv-filter-toggle"` and `cv-key="{{ cv_key }}"`. Excluding both, and requiring a nonempty remainder, matches the fixed icon mode at `:3`.
+- `checks.py:23-28` appends E108, then runs viewset checks in the same function. A `ValueError` from `buttons.py:405` drops E108. Catching only that call is the right width. `_cv_find_context_button` (`base.py:540-548`) does not raise.
+- Comments at `base.py:88-95` are the three fixed-floor strings. E211’s “string-valued” wording is `action_menu.py:59-60`. The literal gate does not match `then "icon"`, so the “don’t copy the grep expressions” note is necessary.
 
-**Concerns**
-- **LOW.** “Exclude filter/custom-template controls” does not name the node. List and card toolbars include `filter` (`settings.py:77-78`, `buttons.py:346`). `context_action_filter.html:3` hardcodes mode `"icon"`, so an assertion over every `fieldset[cv-context-container]` child fails on list and card routes even when ordinary actions are correct.
-- **LOW.** `except ValueError: continue` also skips W292 if a future bug in `cv_get_action_label_mode` raises. Today the context path only raises from the floor (`base.py:316` is not taken for `"context"`).
+- No new functional gap. Filter and custom templates are excluded on purpose. Menu items already render icon plus text (`action_menus.md:128`), so success criterion 1 still holds.
 
-**Suggestions**
-- Exclude `[@cv-key="filter"]` by selector, and assert the remaining set is nonempty.
-- Comment the `except` as “invalid floor is `crud_views.E108`”; do not catch around the `yield`.
+- None.
 
-**Risk Assessment:** LOW. Precedence and the check-survival path match the code.
+**Risk: LOW.** Precedence, W292, and the golden constraint are pinned to the current call chain.
 
 ## 01-03
 
-The card attribute change, resolver, and stock-page assertion match the view that actually ships. R3 and R4 are fixed.
+The card slice is the only intentional Python break, and the plan discloses it on both required surfaces. Rendered output stays on the existing leaf.
 
-**Strengths**
-- Stock actions are `detail`/`update` plus `CardAction(key="delete", no_label=True)` (`tests/test1/app/views.py:76-80`). Using `_card` instead of `_author_card` is required: `_author_card` replaces `cv_card_actions` (`test_card_label_mode_render.py:62-64`).
-- Resolution order in `views/card.py:46-52` is the chain D-14 keeps. E210 today always runs `label_mode_check` (`views/card.py:112`); `is_label_mode(None)` is false (`label_mode.py:17-18`), so the `is not None` guard is mandatory. `test_default_is_both` (`test_card_label_modes.py:14-15`) must change in the same task.
-- Docs links used before wave 3 exist: `action_menus.md:58` (`#label-mode`), `settings.md:71` (`#action-menus`). `mkdocs.yml:24-25` promotes missing anchors to warnings, and this plan now runs `mkdocs build --strict`.
-- The `#213` bullet is inside Unreleased `### Breaking` (`CHANGELOG.md:7`, `:43-45`), so the setting-first rewrite and the later order pin target the same bullet. No template in `src/` reads the raw attribute.
+- `views/card.py:28` is `str = "both"`. `:46-52` is label_mode, then `no_label` to `"icon"`, then the attribute. `:112` always yields E210. The resolver and the `is not None` guard match that chain. `AuthorCardListView` at `tests/test1/app/views.py:76-80` has `no_label=True` on delete and explicit labels on detail/update, so the stock-page assertion is real.
+- `view/card.py:12` still says the attribute is the resolved mode. A12 names that Fields row (`card-list-view.md:50`).
+- Wave-2 links target anchors that exist today: `settings.md:71` (`## Action menus`) and `action_menus.md:58` (`## Label mode`). `CHANGELOG.md:43-45` is the `#213` recipe. `### Fixed` is at `CHANGELOG.md:136`. The one-off script can see those sections.
+- `button_data.py:125-126` clears the icon for `"label"`, so a text-only DOM assertion is meaningful. `no_label` is left in the chain, per D-18.
 
-**Concerns**
-- **LOW.** The 01-03 changelog script only checks that `"Card label-mode attribute"` sits between the first `### Breaking` and the next heading. It does not check setting-before-view-before-button on the `#213` bullet. That pin is deferred to 01-04, so a wave-2 stop can ship the old recipe.
-- **LOW.** `card-list-view.md:50` still says `label_mode` inherits the raw attribute. The task updates the attribute table and the order paragraph (`:71-78`) but does not name line 50.
+- **LOW** — `CHANGELOG.md:175` (Unreleased `#269`) still says the target-view mode “is the last fallback before `"icon"`.” `01-03-02` rewrites `#213` and adds the new bullets. It does not touch this adjacent sentence, and `01-04` only retargets links. A 1.0 reader of the same Unreleased block still sees the old floor.
 
-**Suggestions**
-- Point line 50 at the resolver, and add the setting-first order to the 01-03 verify script so wave 2 does not depend on wave 3 for D-17.
+- Add one clause to that `#269` bullet, or point it at the new setting, in `01-03-02` or `01-04-02`.
 
-**Risk Assessment:** LOW. The breaking attribute change is disclosed and the render contract is testable on the stock page.
+**Risk: LOW.** Behavior, checks, and the migration contract are covered. The leftover sentence is documentation drift, not a render bug.
 
 ## 01-04
 
-The docs plan now rewrites the stale sentences and binds one example to a real render. R7, R9, R11–R14 match the files they cite.
+The docs plan is the right place for the single merge/replace table and the three resolution headings. The executable example is data, not `exec`. The protected-path gates match the repo.
 
-**Strengths**
-- `settings.md:78-79` still says unnamed context keys are `` `icon` `` and the list row says “The same”. Rewriting both rows, and rejecting that sentence in the context row only, is the right regression.
-- Card tracer keys match `cv_button` (`templatetags/crud_views.py:199-208`) and `cv_resolve_action` (`visibility.py:14-16`): `cv_access=True` is required or the tag returns `""`. For location `"card"`, `cv_label` is the label (`button_data.py:74-78`). `"detail"` is a real icon (`icons.py:17`). Empty `{}` stays `both`, so the control render proves the missing icon comes from the setting. `action.html:8` has no icon and no `title` in the label branch.
-- Mermaid node id `MICON` is at `context_buttons.md:256` and referenced at `:262`. Keeping the id is required.
-- E211 text to update is `action_menu.py:59-60`, `action_menus.md:244`, and `buttons.md:445-446`. E106/E108 are absent from that buttons table.
-- Baseline `ebc7c232` exists, message is `docs(01): capture phase context`, and `git diff` of `tests/test1/golden`, `src/crud_views/templates`, and `examples` against it is empty. `npm --prefix . test` matches `package.json:11`.
-- `PROJECT.md:55` still says the rename is “tracked separately” while `:96-97` already record D-19/D-20. Updating in place avoids a second decision row.
+- `ebc7c232` is `docs(01): capture phase context`. `git diff` of `tests/test1/golden`, `src/crud_views/templates`, and `examples` against it is empty. `git status --porcelain` on those paths is empty. `npm --prefix . test` is `vitest run` (`package.json:11`).
+- `action_menus.md:238` is ID/Meaning only. `buttons.md:437` has a Level column. A17 matches both.
+- `context_buttons.md:256` is `MICON["icon"]`. `:262` and `:305` reference the id. A bracket-free label keeps those edges valid.
+- `PROJECT.md:55` still says the rename is “tracked separately,” while `:96-97` already record D-19 and D-20. The one-off grep is right. A permanent test must not read `.planning/`.
+- Selecting the `#213` bullet by content, not by the `## Unreleased` heading, matters: `CHANGELOG.md:280` starts 0.30.0, which has its own Breaking section.
 
-**Concerns**
-- **LOW.** `mkdocs build --strict` will not catch a broken Mermaid node. Fences are client-side (`mkdocs.yml:16-18`). `CRUD_VIEWS_LABEL_MODE_DEFAULTS['context']` puts `]` inside `MICON["…"]`.
-- **LOW.** `test_card_migration_contract` must scope to the Unreleased `#213` bullet (`CHANGELOG.md:43-45`), not a later release. The plan says so; the heading split is easy to get wrong because `### Breaking` also appears at `CHANGELOG.md:282`.
+- **LOW** — `01-04-PLAN.md:144` updates the card paragraph (`buttons.md:423`) and the checks table, not the leaf-contract cell. `buttons.md:331` still says context/list mode is `'"icon" unless a map...'`. That restates the old floor on the page theme authors use. D-25 and this plan’s must-have say secondary pages should link, not restate.
 
-**Suggestions**
-- Put the setting name in the prose link under the diagram, and keep the node label free of `]`.
-- Select the `#213` bullet only from the slice before the next `## ` after Unreleased.
+- In `01-04-02`, replace that parenthetical with a link to `#context-label-mode-resolution` / `#list-label-mode-resolution`. Do not edit the class-key sections.
 
-**Risk Assessment:** LOW. The doc contract is executable and the stale rows are named.
+**Risk: LOW.** Gates, anchors, and the decision handoff are executable. The leaf-contract cell is the remaining public contradiction.
 
 ## Cross-plan
 
-R1–R14 are incorporated against the current tree, not merely restated. Wave order is sound: 01-02 and 01-03 do not share files; 01-04 retargets anchors only after creating them; goldens stay valid because unconfigured floors remain `icon`/`icon`/`both` and real pages stamp `cv_label_mode` before the leaf (`base.py:631`, `views/card.py:86`).
+No dependency or file-overlap problem. `01-02` and `01-03` do not share files. `01-04` retargets links only after the headings exist. `01-02`’s E211 wording can land before `01-03` accepts `None`. The new test pins the message text, not the card check.
 
-**Overall risk: LOW.** No wrong mechanism. The one item that can still waste an executor is the non-strict fallback calling `default_label_mode` recursively (01-01). Filter-button exclusion on list/card routes (01-02) is the other likely red test.
+A1–A19 are incorporated and should not be re-opened. The deferred choices (no source dimension on the warning key, no production `setting_changed` reset, no `no_label` removal) match D-11 and D-18. Overall phase risk is **LOW**. Fix the two stale sentences (`buttons.md:331`, `CHANGELOG.md:175`) in the existing docs tasks so 1.0 readers do not keep the old floor.
 
 ---
 
 ## Claude Review (claude-fable)
 
-# Cross-AI plan review, cycle 2 — Phase 01 (label-mode defaults)
+Source verification is complete except for one dry-run the sandbox would not approve. I'm writing the review now.
 
-Reviewed against the working tree at `0e15093` on `introduce-gsd`. Every `file:line` claim in the four plans was checked against source; the ones below are the ones that matter. Two things I could not run in this sandbox (permission-denied): the seeded xdist command and a subprocess probe of the settings import boundary. Where a finding depends on those, I say so.
+# Cross-AI Plan Review — Phase 01 (cycle 3, plans at `bdd445c`)
+
+All findings below were checked against the working tree. Every cited `file:line` was opened this session. One check could not run: the sandbox declined to execute a bare-process Python child, so the premise of 01-01-02's subprocess test is reasoned from source, not executed (noted under 01-01).
 
 ## 01-01
 
-**Summary.** The core design is right and the cycle-1 fixes landed where claimed. The lazy accessor, sentinel read, deferred `LOCATIONS` import, `repr`-keyed dedup and private `_invalid_label_mode` with a lazy fallback all match the verified code shape (`button_data.py:8` imports `label_mode`, so the import must be deferred; `button_data.py:83-85` is the production crash site; `test_button_data.py:121` already passes `["both"]`, so `repr` keying is required). The remaining issue is that one cycle-1 fix (R5) solved a problem the plan created for itself: the `_warned_lock` is unnecessary, and removing it removes the deadlock argument, the lock-ordering prose and a `django.setup()` subprocess per parametrised case.
+**Summary.** The core slice is mechanically correct and every A1–A6 disposition is present in the task text. The accessor's short-circuits, the D-10 recovery path and the E108 placement all match the live code they modify (`button_data.py:83-85`, `settings.py:98-132`, `checks.py:23-27`). The one thing that did not change with A19 is tooling: the plan declares a branch "authority" that the configured workflow will not honour.
 
-**Strengths**
-- E108 placement and wording copy the live E106 block exactly (`settings.py:98-132`), and the deferred-import comment already exists at `:100`. `{key!r}` on a non-str key `1` gives `key 1 must be one of […]`, consistent with D-04.
-- R2 is correctly fixed, and for the right reason: both E108 and `default_label_mode` import `LOCATIONS` at call time, so `monkeypatch.setattr(button_data, "LOCATIONS", …)` is observed. `button_data.py:12` is a `frozenset`, so the `| {"test_loc"}` replacement is the only way.
-- R1's autouse fixture is sound on one condition the plan satisfies: `_invalid_label_mode` must read `_warned` as a module global at call time. The artifact list keeps `_warned` in `label_mode.py` and only `_invalid_label_mode` touches it, so `monkeypatch.setattr(label_mode, "_warned", set())` is seen.
-- The tracer uses the real tag path. `cv_button` (`templatetags/crud_views.py:200-208`) goes through `cv_resolve_action`, which hides anything without `cv_access is True` (`visibility.py:14`). Requiring `cv_access=True` in the raw context is the right guard against a vacuous pass. `test_button_leaves.py:492-500` is the exact existing pattern.
-- Keeping the `or` in `ctx.get("cv_label_mode") or default_label_mode(location)` preserves the empty-string-means-unset behaviour that `test_card_empty_label_forces_icon` (`test_button_data.py:106-109`) and the goldens depend on.
-- D-07 precondition holds: `src/crud_views/__init__.py` is a version string and `src/crud_views/lib/__init__.py` is empty, so importing `crud_views.lib.settings` before `django.setup()` cannot drag in `lib.view`. Its module-level imports (`settings.py:1-10`) are Django, box and pydantic only.
+**Strengths.**
+- A1 is real, not cosmetic: the setting-level fallback returns `LABEL_MODE_DEFAULTS[location]` directly and only the stamp path calls the accessor, so recovery terminates at an immutable value. Combined with `button_data.py:83`'s `or`, an explicit valid stamp never evaluates a bad floor.
+- A4 verified: `LABEL_MODES` is imported at `button_data.py:8` and used only at `:85`; moving that error into `_invalid_label_mode` leaves it unused, and the scoped `ruff check` gate will catch a leftover F401.
+- A3's three-level matrix is consistent with existing behaviour: falsey stamps (`None`, `""`, `[]`, `{}`) already fall through at `:83`; the existing strict test uses only truthy bad values (`test_button_data.py:121`). Goldens cannot move.
+- A6 tracer keys match `test_button_leaves.py:490-499`, and the visible text will be the short label per `button_data.py:102-105`, so asserting "Detail" is correct.
 
-**Concerns**
-- **MEDIUM (over-engineering): `_warned_lock` should go.** A check-then-add race on a `set` without a lock costs, at worst, one duplicate warning line on the very first concurrent render. D-11 says "once per process", and a one-line duplicate under a race is not what that decision guards against (log flooding on a hot path). The lock is the sole reason R5 exists, the sole reason for "resolve fallback before acquiring" prose, and the sole reason for `test_invalid_stamp_and_floor_recovers_without_deadlock`, which spins up a configured Django in a child process per parametrised value. Delete the lock and all three disappear. If the maintainer insists on atomicity, a plain `set.add` is already atomic under the GIL for the "add" half; the membership check is the only race, and it is benign.
-- **LOW: the bad-value list conflates two levels.** The 01-01-01 action lists `None, "", [], {}, nested dict, ["both"], 1, "Both", " both ", "bοth"` as values to test. `{}` as the *whole setting* is valid (the must-haves say it resolves to package defaults), but `{}` as a *mode value* for one location is invalid. The text does not say which level each value is exercised at. An executor who feeds `{}` into the strict-raise case as the setting contradicts the LMOD-01 truth. State the two levels explicitly.
-- **LOW: ruff F401 at the gate.** After the change, `LABEL_MODES` at `button_data.py:8` is unused (the raise moves into `_invalid_label_mode`). `ruff check` fails the phase gate unless the import is dropped. PATTERNS.md notes it; the plan does not.
-- **LOW (open, not re-verified): R6 test proves the boundary, not E108's own deferral.** `check_messages` → `_action_settings_messages` already imports `action_menu` → `lib.view` package → `buttons.py` → `button_data` (`buttons.py` is in the `button_data` importer list). So "button_data is loaded after check_messages" is true today, regardless of E108. That is fine for D-07, which is about the module-level boundary, but the test's docstring should not claim it proves E108's deferred import.
-- **LOW: non-dict setting at render fans out.** With the dedup key `(location, repr(value))` and a non-dict setting, each of the three locations warns once. Three lines for one bad setting is acceptable, but say so in the action text so the test asserts three, not one.
+**Concerns.**
+- **LOW — A19 is documentation, not an incorporated fix.** `.planning/config.json` still has `git.branching_strategy: "phase"` with `phase_branch_template: "gsd/phase-{phase}-{slug}"`. The execute-phase workflow reads config, not plan prose, so execution will land on `gsd/phase-01-label-mode-defaults`, not `feat/label-mode-defaults` as `PROJECT.md:77` and the plan's execution_context claim. Recoverable (rename, or `gsd-pr-branch`), but the ledger marks it addressed when it is only asserted. `01-RESEARCH.md:463` still says the opposite ("keep `introduce-gsd`").
+- **LOW — subprocess boundary test premise unverified by execution.** `check_messages` (`settings.py:195-223`) also imports `crud_views.lib.check` and `crud_views.lib.breadcrumb` after `_action_settings_messages`. From source these have no app-registry dependency and the child runs after `django.setup()`, so the test should pass, but I could not run the child here. If it trips, the fix is in the test fixture, not production.
+- **LOW — dedup collapses two different problems.** Keying `(location, repr(value))` without a source dimension means a bad setting `"nope"` and a bad stamped `"nope"` for the same location log once between them. This is the plan's explicit reading of D-11; acceptable, but the single warning's text must then be generic enough not to mislead (the plan already includes `source` in the message, which is fine).
+- **LOW — accepted over-engineering.** `_warned_lock` plus a per-case subprocess deadlock test survives from round 1 by explicit decision. With the fallback resolved before lock acquisition, re-entrancy is impossible by construction, so the test guards a path that cannot occur. Not re-raised; noted as cost.
 
-**Suggestions**
-- Drop `_warned_lock`, delete `test_invalid_stamp_and_floor_recovers_without_deadlock`, and replace the R5 ledger row with "resolved by removing the lock". Keep the in-process "same pair reached from both sources warns once" test, which covers the real re-entrancy case (bad stamp whose fallback floor is also bad).
-- Split the bad-value list into "whole-setting values" and "per-location mode values" in the action text.
-- Add "remove the now-unused `LABEL_MODES` import from `button_data.py`" to the task.
+**Suggestions.**
+- Either change `phase_branch_template` in config or drop the override claim and let `gsd-pr-branch` produce the `feat/` branch at ship time. Pick one and say so in STATE.md.
+- In the autouse fixture, assert `_warned` is referenced as a module global by `_invalid_label_mode` (a one-line test that monkeypatching changes behaviour), otherwise a future refactor to a closure silently breaks isolation.
 
-**Risk: LOW–MEDIUM.** Mechanically correct; the medium is self-inflicted complexity, not a functional gap.
+**Risk: LOW.** No source claim in the ledger was wrong; residual risk is process (branch) and one unexecuted test premise.
 
 ## 01-02
 
-**Summary.** Two literal replacements plus one narrow guard, with the cycle-1 wording fixes applied where the live files actually say the stale thing. All cited lines exist: `base.py:312` (`target_default or "icon"`), `base.py:317` (`mapping.get(key, "icon")`), the three attribute comments at `base.py:88-96`, the W292 call at `buttons.py:405` and the E211 wording at `action_menu.py:58-60`. The membership-branch instruction for the list fallback is the correct fix for eager evaluation of `dict.get`'s default.
+**Summary.** The toolbar/row integration is the smallest change surface and A7/A8 are grounded in real mechanisms. The Pitfall-2 fix is correctly scoped. EDGE-LMOD-02 can be closed: the whole-tree scan confirms the consumer set.
 
-**Strengths**
-- The W292 guard is the right shape. `checks.py:23-27` runs `crud_views_settings.check_messages` and then iterates `ViewSet.checks_all()` in the same function; `checks_all` is a generator (`viewset/__init__.py:155-162`), so a `ValueError` escaping `cv_icon_mode_checks` discards the already-collected E108. Wrapping only the `cv_get_action_label_mode` call and continuing mirrors the existing "invalid counts as unset" pattern at `buttons.py:400-403`.
-- Precedence is preserved by construction: the plan changes only the two terminal returns, and the test map reuses the existing helpers (`_client`, `_toolbar`, `_rows`, `_has_icon_and_text` at `test_action_label_mode_render.py:28-75` and `test_context_action_label_mode.py:40-41`).
-- R10 and R11 edits target live stale text. `base.py:91` says `then "icon"`; `base.py:96`'s comment says `None: "icon"`; `action_menu.py:59-60` calls both scalars "string-valued". The existing `test_e211_message_names_the_card_attribute` (`test_action_label_mode_config.py:113-116`) asserts only that the attribute name is present, so the rewording cannot break it.
-- The filter-toggle exclusion is stated rather than claimed as supported, matching Pitfall 6 in research.
+**Strengths.**
+- A7 trace is correct end to end: `base.py:435` puts the raw `cv_context_action_label_mode` into the dict, `base.py:631` hands it unsanitized to the resolver, `:312` returns it, and `button_data.py:84` is the first validator. Only `buttons.py:400-403` sanitizes, and only at check time. Two GETs with one captured warning is exactly what the D-10 path produces.
+- Pitfall 2 is real and the fix is minimal: `checks.py:23-27` builds settings messages then iterates `ViewSet.checks_all()` in the same function, so an uncaught `ValueError` from `buttons.py:405` discards E108. Wrapping only that call preserves every other message.
+- A8's selector matches `context_action_filter.html:3-4` (`id="cv-filter-toggle"`, `cv-key="{{ cv_key }}"`, hard-coded `"icon"` class slot), and the nonempty-remainder assertion stops the test passing vacuously.
+- The membership branch for `:317` is necessary: `dict.get(key, default_label_mode("list"))` would evaluate the accessor and could raise in strict mode even for mapped keys.
 
-**Concerns**
-- **LOW: strict-mode asymmetry the plan quietly relies on.** `base.py:631` passes the raw `cv_context_action_label_mode` as `target_default` into `cv_get_action_label_mode`, while `buttons.py:400-403` sanitises an invalid value to `None` before the same call. Today an invalid target default therefore reaches `cv_button_data` as the stamped mode and raises at `button_data.py:85`. After 01-01 it falls back under D-10 in non-strict mode. That is the intended fix, but 01-02's "explicit value bypasses an invalid floor" tests should include this case so the two call sites are covered together.
-- **LOW: the literal gate's grep.** `or "icon"` also matches comment text. The plan says "describe the chain in words without copying expressions matched by the gate", which is the correct precaution; just make sure the rewritten `base.py:91` comment does not keep `then "icon"`.
-- **LOW: `test_e211_describes_optional_scalar_modes` pins a phrase.** Pinning the literal `"string or None"` in a test turns diagnostic prose into a contract. Acceptable, but 01-04 pins the same phrase in docs, so one wording change needs three edits. Consider asserting on a shorter token (`"or None"`).
+**Concerns.**
+- **LOW — EDGE-LMOD-02 is resolvable now; the plan leaves it flagged.** A scan of all five packages (`.py` and `.html`) for `"both" if`, `or "icon"`, `get(key, "icon")` and `cv_card_actions_label_mode` returns only `button_data.py:83`, `base.py:312`, `base.py:317`, `views/card.py:28/52/112`, plus comments at `action_menu.py:59` and `view/card.py:12`. No extension app reads the card attribute or hardcodes a floor. The consumer set is complete; the plan should record this rather than carry the flag to verification.
+- **LOW — A9 duplication accepted.** Pinning "string or None" in `action_menu.py`, `action_menus.md` and `buttons.md` is a three-surface coupling by choice. Fine, but a future wording tweak will fail three tests at once; the ledger says as much.
 
-**Suggestions**
-- Add one render test with `cv_context_action_label_mode = "nope"` on a target view under `CRUD_VIEWS_STRICT=False`, asserting the floor is used and one warning is logged. This is the D-10 path reached through `base.py:631`.
+**Suggestions.**
+- Replace the "Flagged assumptions" paragraph with the grep result above and mark EDGE-LMOD-02 resolved.
+- In the W292 integration test, also assert the message count for E108 equals one for `{"context": "nope"}` so a future change that reports it twice (check plus render) is caught.
 
-**Risk: LOW.** Smallest change surface in the phase; disjoint from 01-03 (`base.py`, `buttons.py`, `action_menu.py` vs `views/card.py`, `view/card.py`, docs).
+**Risk: LOW.** Disjoint files from 01-03, mechanisms verified, no incorrect claims.
 
 ## 01-03
 
-**Summary.** The card slice is correct and the R3 fix is exactly right: `tests/test1/app/views.py:76-80` has `detail` ("Details"), `update` ("Edit") and `delete` with `no_label=True`, so a stock-view render under `{"card": "label"}` must show two text-only buttons and one icon-only button. R4 is fixed for `card-list-view.md`: both fallback anchors exist (`action_menus.md:58` → `#label-mode`, `settings.md:71` → `#action-menus`), and `mkdocs.yml:24-25` (`anchors: warn`) makes a bad one fatal under `--strict`. The gap is that the same anchor discipline is not stated for the two other docs files this plan edits.
+**Summary.** The card slice is small and R3/A10–A12 are correctly grounded. The test-app fixture really does exercise the D-18 exception, and the wave-2 doc links target anchors that exist today. The verification script is sound for the current CHANGELOG, with one self-detecting fragility.
 
-**Strengths**
-- The resolver as a `@classmethod` beside `cv_get_card_actions_inline` (`views/card.py:102-105`) and the conditional E210 yield mirror the existing per-action pattern at `:117-118`. `cv_get_card_action_data` is an instance method, so `self.cv_get_card_actions_label_mode()` is fine.
-- `test_default_is_both` (`test_card_label_modes.py:14-15`) is the only test that pins the old default; the plan replaces it by name. `test_good_values_yield_no_check` (`:38-48`) is extended with `None`.
-- Using `_card(_client([AUTHOR_FULL]), reverse(...))` instead of `_author_card` for the stock test is correct: `_author_card` monkeypatches `cv_card_actions` (`test_card_label_mode_render.py:62-64`), which would hide the D-18 exception.
-- The CHANGELOG work is correctly split: a new Breaking bullet plus a rewrite of the existing #213 bullet at `CHANGELOG.md:43-45`, which today lists only the per-view and per-button options.
-- No template in `src/crud_views/templates` reads `cv_card_actions_label_mode` (grep empty), so the acceptance note's "no Tabler template change needed" is grounded.
+**Strengths.**
+- R3 is correctly targeted: `tests/test1/app/views.py:75-79` defines `detail` ("Details"), `update` ("Edit") and `delete` with `no_label=True`. Under `{"card": "label"}` the first two go text-only and delete stays icon-only through `views/card.py:49-50`. Using `_card` with the stock view (not `_author_card`, which monkeypatches actions at `test_card_label_mode_render.py:62-64`) is the right call.
+- A10 anchors exist: `action_menus.md:58` (`## Label mode`), `settings.md:71` (`## Action menus`), `card-list-view.md:57`. `mkdocs.yml:24-25` has `validation: anchors: warn`, so `--strict` would fail on a forward link; running the strict build here is justified.
+- A12 confirmed at `card-list-view.md:50`: the `label_mode` row says "inherits the view's `cv_card_actions_label_mode`", which becomes wrong once the attribute is `None`.
+- The verification script's section regex splits only on `^## ` / `^### `, nested sub-bullets (e.g. `CHANGELOG.md:287`) fold into their parent, and `(#213)` appears once in each target (`CHANGELOG.md:43`, `migrating-1.0.md:127`).
 
-**Concerns**
-- **LOW–MEDIUM: anchor discipline stated for one file, needed for three.** 01-03-02 edits `docs/migrating-1.0.md` (adds E108 to the checks list at `:44-48`, adds the Breaking bullet near `:127-129`) and `CHANGELOG.md`. Neither task says which anchors those bullets may link to. The canonical targets (`settings.md#label-mode-configuration`, `action_menus.md#card-label-mode-resolution`) do not exist until 01-04. `migrating-1.0.md` is in the mkdocs nav, so the 01-03 strict build would catch a forward link there; `CHANGELOG.md` is not in `mkdocs.yml`, so a forward link there is never checked by any gate. Pin "existing anchors only" for both files, with 01-04 retargeting.
-- **LOW: the migration bullet's "no Python compatibility change" prohibition is only prose.** The verify command asserts the lead-in and three names exist; nothing checks that the bullet says `None`. Since the prohibition is flagged unverified anyway, add `"None"` to the `all(x in …)` tuple.
-- **LOW: CHANGELOG Fixed bullet.** `### Fixed` is at `CHANGELOG.md:136` and `### Added` at `:167`, both under Unreleased. The plan's verify splits on `### Breaking` only, so a Fixed bullet placed under the wrong heading passes. Minor.
+**Concerns.**
+- **LOW — new bullets must not contain the literal `(#213)`.** The script asserts exactly one `(#213)` bullet per target. If the new "Card label-mode attribute" bullet cross-references #213 (natural, since it explains the same change), the gate fails. Self-detecting, but the task text should say so.
+- **LOW — `test_good_values_yield_no_check` extension needs the E210 guard first.** `test_card_label_modes.py:46-48` loops `monkeypatch.setattr(...)`; adding `None` to the tuple only passes once `views/card.py:112` is conditional. The task does both in one slice, so ordering inside the task matters for TDD red/green but not for the outcome.
 
-**Suggestions**
-- Add one sentence to 01-03-02: "Links in `migrating-1.0.md` and `CHANGELOG.md` use `action_menus.md#label-mode` and `settings.md#action-menus`; 01-04-02 retargets them."
-- Extend the verify tuple with `"None"` and `"### Fixed"` presence.
+**Suggestions.**
+- Add to 01-03-02: "neither new bullet may contain `(#213)`".
+- The acceptance note should state the Tabler result already known from research (`01-RESEARCH.md:240`: no template reads the attribute), so the downstream audit is a confirmation, not a search.
 
-**Risk: LOW.** Small code change, existing scaffolding, one process gap in docs linking.
+**Risk: LOW.** Small code change, docs discipline fixed, prohibition correctly carried as unverified.
 
 ## 01-04
 
-**Summary.** Documentation, decision handoff and final gates. The executable docs example via `ast.literal_eval` with content-based selection (R14) is a good design, and R9's five-field raw context is sufficient for the `cv_button` path. R7, R11, R12 and R13 all target live stale text: `settings.md:78` ("keys not named are `icon`"), `action_menus.md:245` and `buttons.md:446` ("string-valued"), `buttons.md:435-448` (no E106/E108 rows). R8's baseline provenance is now correct: `ebc7c23` is "docs(01): capture phase context", the protected-path diff against it is empty, and `STATE.md:10` records `0234270`. The one real problem is a new test that reads `.planning/`.
+**Summary.** The docs and gate plan incorporates A13–A18 correctly. The permanent test no longer reads `.planning/`, the changelog selector is release-name independent, and the protected-path gates have a verified baseline. The remaining concerns are about what the gates assume rather than what they check.
 
-**Strengths**
-- `test_documented_card_floor_renders_label_only` binds the recipe to rendering. For location `"card"`, `cv_button_data` reads `cv_label` (`button_data.py:74-78`), so `cv_label="Details"` is the right key; `cv_icon_action="detail"` plus the empty-defaults control render proves the missing icon is caused by the setting, not a missing icon.
-- Keeping the Mermaid node id `MICON` is required: it is referenced at `context_buttons.md:262` and in the class list at `:305`.
-- The D-23 handling is correct against the live file: `PROJECT.md:96-97` already has the D-19 and D-20 rows, so "retain, do not duplicate, fix the stale Out of Scope bullet at `:55`" is the right instruction.
-- `npm --prefix . test` maps to `vitest run` (`package.json:11`) and avoids the package-fetching `npx` wrapper the source plan used.
+**Strengths.**
+- A13 verified: no permanent test references `.planning/`; D-23 is a one-off grep. `PROJECT.md:96-97` rows exist and the grep for "removed in 1.0.0" in row 97 is an intended red state the task must turn green.
+- A15 verified against structure: `CHANGELOG.md` has `## Unreleased`:3, `### Breaking`:7, `### Fixed`:136, `### Added`:167, and a second `### Breaking`:282 under 0.30.0. Selecting the release via the stable bullet avoids both the heading rename and the older Breaking section.
+- A16/R8 verified: `ebc7c23` is "docs(01): capture phase context" and its protected-path diff is empty today; `git status --porcelain` on those paths is also empty. Both gates start green.
+- A17 verified: `action_menus.md:238` is two-column (ID / Meaning); `buttons.md:437` has a Level column. Putting "error" in the Meaning cell is the right accommodation.
+- R9 tracer is sound: `cv_button` (`templatetags/crud_views.py:200-208`) routes through `cv_resolve_action` (`visibility.py:14`), which hides anything without `cv_access=True`; the card path takes `cv_label` and needs no `cv_oid` for an `a` tag.
 
-**Concerns**
-- **MEDIUM: `test_label_mode_decision_handoff` reads `.planning/PROJECT.md` from the package test suite.** `tests/test1/test_label_mode_docs.py` is a permanent repo test. `.planning/` is planning state: `gsd-pr-branch` filters `.planning/` commits out of the PR branch, and milestone cleanup archives phase directories. A test that reads `PROJECT.md` fails on every clean PR branch and after archival, and it ties the package's test suite to the GSD workflow. Move the D-23 check into the plan's `<verify>` block as a one-off grep and keep `test_label_mode_docs.py` scoped to `docs/`, `CHANGELOG.md` and `migrating-1.0.md`.
-- **LOW: `ast.parse` over every Python fence in `settings.md`.** Any fence on that page that is illustrative rather than parseable (a `...` placeholder, a shell line in a `python` fence) raises `SyntaxError` and fails the test for an unrelated reason. Parse only fences containing the setting name, or catch `SyntaxError` per block and skip.
-- **LOW: scoping on `## Unreleased`.** `test_card_migration_contract` selects the #213 bullet "inside Unreleased Breaking". At the 1.0.0 bump that heading becomes `## 1.0.0` and the test breaks. Scope by the bullet's lead-in text or by "the first `### Breaking` after the top heading".
-- **LOW: the protected-path gate misses untracked files.** The plan already says to inspect `git status` for new files; make it a command (`git status --porcelain -- tests/test1/golden src/crud_views/templates examples` must print nothing) with its own `fails_when`, since prose steps are skipped.
+**Concerns.**
+- **LOW — `settings.md` row scan is only as good as its negative phrase.** The acceptance says the context-map row "must not contain `keys not named are \`icon\``" (live text at `settings.md:78`). A rewrite that keeps the idea in different words passes the gate while still being stale. Pair the negative with a positive: the row must name the target-view step and `CRUD_VIEWS_LABEL_MODE_DEFAULTS`.
+- **LOW — EDGE-LMOD-04 can be closed.** Nothing caches the merged value; the only persistent state is `_warned`, which is process-lifetime by decision and reset per test by the autouse fixture. Nested `override_settings` enter/exit is covered by 01-01's tests. There is no further lifecycle case; the flag should be resolved, not carried.
+- **LOW — vitest gate runs unchanged JS.** Harmless, but the plan should say the gate is a regression guard, not evidence for this phase.
 
-**Suggestions**
-- Remove `test_label_mode_decision_handoff` from the artifact list; replace with a `<verify>` grep on `PROJECT.md` for the two decision rows.
-- Pre-filter fences by `"CRUD_VIEWS_LABEL_MODE_DEFAULTS" in block` before `ast.parse`.
+**Suggestions.**
+- Resolve both unclassified edges in the final summary with the evidence above instead of carrying them.
+- Add the positive assertion to `test_label_mode_configuration_table`.
 
-**Risk: LOW–MEDIUM.** Docs-only, but one test as specified is guaranteed to break outside the planning branch.
+**Risk: LOW–MEDIUM.** Medium only because this plan carries every full-suite gate and the branch-name question surfaces here at PR time.
 
-## Cross-plan
+## Cross-plan assessment
 
-- **Wave ordering and ownership are correct.** 01-02 owns `base.py`, `buttons.py`, `action_menu.py` and four context/list test files; 01-03 owns `views/card.py`, `view/card.py`, two card test files, `card-list-view.md`, `migrating-1.0.md`, `CHANGELOG.md`. No overlap. 01-04 takes `card-list-view.md` after 01-03, which is sequential by wave.
-- **The acceptance grep will be clean after 01-02.** The three current matches are `button_data.py:83` (01-01), `base.py:312` and `:317` (01-02). `views/card.py:50` (`no_label` → `"icon"`) is not matched by the pattern and stays per D-18.
-- **Branch naming has three answers.** Config says `branching_strategy: "phase"` with template `gsd/phase-{phase}-{slug}`; the plans say "keep current branch"; PROJECT.md says `feat/label-mode-defaults`. The executor will follow config. Research "Open Question 1" claims this is resolved, but it is resolved by assertion. State once, in STATE.md or the first plan, which one wins, so the summary does not record a surprise.
-- **Deferred research items are correctly refused.** The source-qualified dedup key and `setting_changed` reset are rejected in favour of D-11's literal wording. That is defensible; with the lock removed (01-01 concern), the remaining design is simpler than the research sketch, not more complex.
-- **Not re-verified here.** The seeded xdist run ("148 passed" in the audit) and the subprocess import-boundary probe were permission-denied in this session. Both designs check out by reading the code (`pyproject.toml:74,77` installs both plugins; `addopts` enables only `--strict-markers`, so `--random-order` is opt-in as the plan says), but the execution evidence is the audit's, not mine.
+**Dispositions A1–A19:** 18 are incorporated as described. A19 is asserted in plan text but not enforced; `config.json` still drives the opposite branch name. No cycle-2 fix introduced a regression in another plan.
 
-**Overall risk: LOW–MEDIUM.** No HIGH findings. The phase goal is achieved by the four plans as written. Three items change what the executor does: drop the lock and its subprocess test (01-01), state existing-anchor discipline for the two other docs files (01-03), and keep `.planning/` out of the committed test suite (01-04). Everything else is wording or test-scoping hygiene.
+**New issues this cycle:** the config/plan branch mismatch (LOW), the `(#213)` token fragility in 01-03-02's gate (LOW), and two unclassified edges that the source now allows you to close (LOW).
+
+**Dependency order** is sound: 01-02 and 01-03 share no files; 01-04 retargets links only after 01-04-01 creates the anchors; 01-03 links only to anchors that exist today.
+
+**Phase goal:** achieved by the plans as written. Every literal the acceptance grep names (`button_data.py:83`, `base.py:312`, `:317`) has a specific replacement, the card attribute change is disclosed in both required surfaces, E108 survives strict mode through the W292 guard, and goldens are protected by two gates against a verified baseline.
+
+**Overall risk: LOW.** No HIGH or MEDIUM findings remain. The phase can proceed to execution. Before it does, decide the branch question once and record it in STATE.md, because the plans and the tooling currently disagree.
 
 ---
 
 ## Consensus Summary
 
-Three reviewers ran: opencode-gemini, opencode-grok, and claude-fable. All three received the prompt, worked from the source, and cited `file:line` evidence. None carries a discount marker. The opencode-grok lane hit `spawn error: ETIMEDOUT` again at the 660 s lane floor. It was re-run once with `review.timeouts.opencode` temporarily raised, and that retry is the review above. The config change was reverted byte-for-byte afterwards. All three reviewers covered every plan id (01-01 … 01-04).
+Three reviewers ran: opencode-gemini, opencode-grok and claude-fable. All three worked from the source and cited `file:line` evidence. None carries a discount marker. All three covered every plan id (01-01 to 01-04). This cycle opencode-grok completed on its **first attempt** (no ETIMEDOUT), so no retry was needed and `.planning/config.json` was never modified. Its SHA-256 is unchanged at `95c21cfe…`.
 
-**No reviewer raised a HIGH concern.** Overall risk: gemini LOW, grok LOW, claude LOW–MEDIUM. All three independently confirmed that the cycle-1 findings R1–R14 are incorporated against the live tree, not only labelled as fixed. The remaining items are specification gaps, test-scoping hygiene and wording. No reviewer found a wrong mechanism.
+**No reviewer raised a HIGH or MEDIUM concern.** Overall risk: gemini LOW, grok LOW, claude LOW (claude rates 01-04 LOW–MEDIUM only because it carries the full-suite gates). All three independently confirm that A1–A19 are present in the plan text and grounded in live source. claude qualifies A19 (see B3). No reviewer found a wrong mechanism or a regression introduced by the `bdd445c` revisions.
 
-### Cycle-1 findings: resolution status
+### Cycle-2 findings: resolution status
 
-| Cycle-1 concern | Plan(s) | Status in cycle 2 |
+| Cycle-2 concern | Plan(s) | Status in cycle 3 |
 |---|---|---|
-| R1 `_warned` leaks across tests | 01-01-02, 01-02-02 | Resolved. All three confirm the autouse fixture and the seeded xdist gate. |
-| R2 `LOCATIONS` is a frozenset | 01-01-02 | Resolved (all three). |
-| R3 stock delete stays icon-only | 01-03-01 | Resolved (all three). |
-| R4 forward anchors before wave 3 | 01-03-01, 01-04-01 | Resolved for `card-list-view.md` (all three). claude notes the same discipline is unstated for `migrating-1.0.md`/`CHANGELOG.md` (new item A10). |
-| R5 deadlock under `_warned_lock` | 01-01-01 | Resolved (gemini, grok). claude would rather delete the lock, but 01-01's Deferred table explicitly retains it, so this is an explicit rejection and is not re-counted. |
-| R6 D-07 import boundary unproven | 01-01-02 | Resolved. See the source-grounding note on claude's counter-claim. |
-| R7 stale `settings.md:78` row | 01-04-01 | Resolved (all three). |
-| R8 baseline provenance | 01-04 verification | Resolved (claude, grok). |
-| R9 docs tracer access/icon data | 01-04-01 | Resolved (all three). |
-| R10 stale `base.py:88-96` comments | 01-02 | Resolved (all three). |
-| R11 E211 "string-valued" wording | 01-02-02, 01-04-01 | Resolved (all three). |
-| R12 `buttons.md` checks table | 01-04-02 | Resolved (gemini, grok). |
-| R13 #213 bullet setting-first order | 01-03-02, 01-04-02 | Resolved. The wave-2 verify script does not yet pin it (A11). |
-| R14 example selection by position | 01-04-01 | Resolved. The parse robustness of the selector is a new item (A14). |
+| A1 setting fallback must not recurse | 01-01-01 | Resolved (all three). |
+| A2 child-process log capture | 01-01-01 | Resolved. `assertLogs` is used in the child (gemini). |
+| A3 bad-value levels split | 01-01-01 | Resolved (gemini, claude). |
+| A4 unused `LABEL_MODES` import | 01-01-01 | Resolved, with a scoped ruff gate (all three). |
+| A5 non-dict warning fanout 1/2/3 | 01-01-01 | Resolved (gemini). |
+| A6 context tracer raw keys | 01-01-01 | Resolved (all three). |
+| A7 invalid target mode render test | 01-02-01 | Resolved (all three). |
+| A8 filter toggle selector | 01-02-01 | Resolved (all three). |
+| A9 `"string or None"` pinned three times | 01-02-02, 01-04 | Explicitly accepted in the plans (all three). |
+| A10 existing-anchor discipline and retargeting | 01-03-02, 01-04 | Resolved (all three). |
+| A11 wave-2 verify script strength | 01-03-02 | Resolved. claude flags the `(#213)` token fragility (B4). |
+| A12 `card-list-view.md:50` row | 01-03-01 | Resolved (all three). |
+| A13 no `.planning/` reads in permanent tests | 01-04-02 | Resolved (all three). |
+| A14 fence prefilter | 01-04-01 | Resolved (gemini). |
+| A15 release-name-independent selector | 01-04-02 | Resolved (all three). |
+| A16 `git status --porcelain` gate | 01-04 verification | Resolved (all three). |
+| A17 two-column `action_menus.md` table | 01-04-01 | Resolved (all three). |
+| A18 bracket-free Mermaid label | 01-04-02 | Resolved (gemini, grok). |
+| A19 single branch authority | all | Resolved in plan text. claude notes that config still drives the other branch name (B3). |
 
 ### Agreed Strengths
-- R1–R14 are incorporated against live source (all three).
-- The lazy floor, `_UNSET` sentinel, deferred `LOCATIONS` import and `repr`-keyed dedup match the import graph. `button_data.py:8` imports `label_mode`, and `button_data.py:12` holds the frozenset (all three).
-- In the R5 fix, `fallback()` runs before the lock and the log call runs after release, and the bounded subprocess test catches a held lock (gemini, grok).
-- The W292 guard is correctly scoped. `checks.py:23-28` collects E108 before it iterates `checks_all()`, and `buttons.py:405` is the only check-time caller (all three).
-- The membership branch avoids eager `dict.get` default evaluation, and `target_default or default_label_mode("context")` short-circuits (all three).
-- The stock-page card test uses `_card` rather than `_author_card`, which keeps the D-18 `no_label` exception visible (all three).
-- Existing anchors `action_menus.md:58` (`#label-mode`) and `settings.md:71` (`#action-menus`) keep the wave-2 `mkdocs --strict` green (all three).
-- The `ast.literal_eval` docs tracer uses `cv_access=True`, `cv_icon_action`, and an empty-defaults control render, so it cannot pass vacuously (all three).
-- Wave and file ownership are disjoint between 01-02 and 01-03 (all three).
+- All of A1–A19 are present in the plan text and grounded in live source (all three).
+- A7 traces the real path end to end. `base.py:435`/`:631` passes the raw target mode, `:312` returns it, and `button_data.py:83-85` is the first validator (all three).
+- The A8 selectors match `context_action_filter.html:4,10`, and a nonempty remainder is asserted (all three).
+- The W292 guard is correctly scoped. `checks.py:23-28` collects E108 before it iterates `checks_all()` (all three).
+- The membership branch for `base.py:317` avoids eager evaluation of the `dict.get` default (all three).
+- The stock `AuthorCardListView` test keeps the D-18 `no_label` exception visible (all three).
+- The protected-path gates start green against the verified baseline `ebc7c23` (claude, grok).
 
 ### Agreed Concerns
-No HIGH. Concerns raised by two or more reviewers:
-1. **[LOW] The 01-03-02 verify script is weaker than its acceptance criteria.** It checks only the lead-in and the three names. It does not check the setting-first order of the #213 bullet (that check waits until 01-04), the `None` disclosure, or Fixed-bullet placement (claude, grok).
-2. **[LOW] The `CHANGELOG.md` Unreleased/#213 section selection is fragile.** `### Breaking` also appears at `CHANGELOG.md:282` (0.30.0), and `## Unreleased` gets renamed at the 1.0 bump (claude, grok).
-3. **[LOW] The filter toggle exclusion in 01-02 does not name a selector.** `context_action_filter.html:3` hardcodes `"icon"`. An assertion over all `[cv-context-container]` children fails on list and card routes (grok this cycle; grok and claude in cycle 1, not taken into the ledger).
+None. No concern was raised by two or more reviewers this cycle. Every new item below is single-reviewer and LOW.
 
 ### Divergent Views
-- **`_warned_lock`.** claude (MEDIUM, over-engineering) wants the lock and the deadlock subprocess test removed. gemini and grok accept the R5 design. 01-01's "Review Feedback Deferred" table already rejects this ("Retain the lock for atomic check-and-add"), so it is not counted as unresolved.
-- **Is 01-02 finished?** gemini reports no concerns. claude and grok each add LOW test-coverage items (A7, A8).
-- **Single-reviewer items** (all counted as actionable unless noted):
-  - grok [MEDIUM] (judgment): the non-strict invalid-setting fallback must be `LABEL_MODE_DEFAULTS[location]`. If it is not, it re-enters `default_label_mode` and recurses (A1).
-  - claude [MEDIUM] (judgment): `test_label_mode_decision_handoff` reads `.planning/PROJECT.md` from the permanent package test suite. Verified: no existing test under `tests/` references `.planning`, and `gsd-pr-branch` filters `.planning/` commits (A13).
-  - claude [LOW] (existence): **refuted by source-grounding, not counted.** claude says `check_messages` already loads `button_data` through `action_menu`, so the R6 test cannot prove that E108 defers its import. A fresh-interpreter probe shows otherwise. After `django.setup()` and `crud_views_settings.check_messages`, `sys.modules` contains `crud_views.lib.view.{action_menu,base,buttons,card,context,label_mode,meta,variant,visibility}` but **not** `crud_views.lib.view.button_data`. The planned assertion therefore does prove the new deferred import.
+- **Single-reviewer items** (all LOW and actionable unless marked otherwise):
+  - **B1** gemini (existence; **confirmed by source-grounding**): the Greek-omicron literal `"bοth"` in the new test matrices (01-01, 01-03) triggers ruff `RUF001`. `pyproject.toml` selects `RUF` and allows only `›` as a confusable, and `tests/**` ignores only `RUF012`. A probe `ruff check` on a file holding `"bοth"` reports `RUF001`. The scoped 01-01-01 ruff gate covers only `src/`, so the failure would first appear at the 01-04 repo-wide gate.
+  - **B2** grok (judgment): `01-01-PLAN.md:122` says "Non-dict settings use the same strict/non-strict policy as invalid location values". Read literally, this conflicts with D-12 and the behaviour block (an unknown caller location always raises). It should say "invalid per-location mode values".
+  - **B3** claude (judgment): A19 is asserted, not enforced. `.planning/config.json` keeps `branching_strategy: "phase"` with `gsd/phase-{phase}-{slug}`, so execute-phase will create `gsd/phase-01-label-mode-defaults`, not `feat/label-mode-defaults`. The plans should state the concrete mechanism, for example a pre-execution check that `HEAD` is `feat/label-mode-defaults`, or a `gsd-pr-branch` rename at ship time, recorded in STATE.md. Because the config carries the user's uncommitted edits, the fix belongs in plan or STATE text, not in a config commit.
+  - **B4** claude (judgment): the 01-03-02 verify script requires exactly one `(#213)` bullet per target. The new "Card label-mode attribute" bullet must therefore not contain the literal `(#213)`. The task text should say so.
+  - **B5** grok (existence; **confirmed**): `CHANGELOG.md:173-177` (Unreleased #269 bullet) still says the target-view mode "is the last fallback before `"icon"`". Neither 01-03-02 nor 01-04-02 names this bullet.
+  - **B6** grok (existence; **confirmed**): the leaf-contract `cv_label_mode` cell at `docs/reference/buttons.md:331` says context/list mode is `"icon"` unless a map, a button or the target view says otherwise. 01-04-02 edits only the card paragraph and the checks table. Source-grounding also found `buttons.md:52` ("toolbar and row buttons are `icon`"). That line sits in the class-key grammar section, which 01-04-02 reserves for Phase 2. Either name it as a one-phrase floor fix that is explicitly outside the grammar change, or defer it to Phase 2 explicitly.
+  - claude, **not counted (already incorporated):** the `settings.md` context row needs a positive assertion. `01-04-PLAN.md:108` and the acceptance at `:131` already require the replacement to name the target-view step and the configured floor.
+  - gemini, **not counted (already incorporated):** split the docs-test functions across 01-04-01 and 01-04-02. `01-04-PLAN.md:116` ("add diagram/remaining-reference assertions in 01-04-02") and the A10 note (CHANGELOG retargeting is not expected in 01-04-01) already stage them.
+  - claude, **not counted (accepted decisions or informational):** a single dedup entry covers both setting and stamp (D-11, accepted); `_warned_lock` cost (rejected in round 1); A9 coupling (accepted); TDD ordering inside 01-03-01; the vitest gate being a regression guard only; optional suggestions (a module-global `_warned` self-test, an E108 count of one).
+  - claude, **reviewer confirmation for the flagged edges (no plan change required):** claude's whole-tree scan confirms that the EDGE-LMOD-02 consumer set is complete. claude also finds no further EDGE-LMOD-04 lifecycle case. The plans deliberately carry these rows to verification ("never auto-dismiss"), and this confirmation is evidence for that step.
+  - claude, **open premise now verified by source-grounding:** claude could not run the R6 subprocess premise. A fresh-interpreter probe ran: `settings.configure(...)` → `import crud_views.lib.settings` → `django.setup()` → `check_messages`. It raises no `AppRegistryNotReady`, `crud_views.lib.view` and `button_data` are absent throughout today, and only `crud_views.E100` is returned. The test is therefore red before E108's deferred `LOCATIONS` import and green after it, as designed.
 
 ---
 
 ## Verification coverage
 
-**Source-grounding pass** (`plan_review.source_grounding: true`). `gsd_run drift-guard authority --raw` returns **`intel`**. Config names `grep`, but `intel.enabled: true` takes precedence. `.planning/intel/API-SURFACE.md` reports *"api-map.json has no entries"*, and every cited symbol is Python. Under the effective authority every symbol is therefore **UNCHECKABLE → INFO, hardBlock false** (`drift-guard severity --status UNCHECKABLE --authority intel` → `{"severity":"INFO","hardBlock":false}`). UNCHECKABLE is not counted as verified. As supplementary evidence, each symbol below was also resolved with grep or a Python probe against tracked source. No MISSING or AMBIGUOUS symbol was found.
+**Source-grounding pass** (`plan_review.source_grounding: true`). `gsd_run drift-guard authority --raw` returns **`intel`** (config names `grep`, but `intel.enabled: true` takes precedence). `.planning/intel/API-SURFACE.md` has no entries, and every cited symbol is Python. Under the effective authority every symbol is therefore **UNCHECKABLE → INFO, hardBlock false** (`drift-guard severity --status UNCHECKABLE --authority intel` → `{"severity":"INFO","hardBlock":false}`). UNCHECKABLE is not counted as verified. As supplementary evidence, each symbol below was resolved with grep, ruff or a Python probe against tracked source. No MISSING or AMBIGUOUS symbol was found.
 
-Excluded as "Artifacts this phase produces": `LABEL_MODE_DEFAULTS`, `default_label_mode`, `_UNSET`, `_raw_label_mode_defaults`, `logger`, `_warned`, `_warned_lock`, `_invalid_label_mode`, `crud_views.E108`, `CardListView.cv_get_card_actions_label_mode`, `isolate_label_mode_warnings`, `test_settings_defers_button_data_until_checks`, `tests/test1/test_label_mode_docs.py`, every listed new test function, and the four new doc anchors.
+Excluded as "Artifacts this phase produces": `LABEL_MODE_DEFAULTS`, `default_label_mode`, `_UNSET`, `_raw_label_mode_defaults`, `logger`, `_warned`, `_warned_lock`, `_invalid_label_mode`, `crud_views.E108`, `CardListView.cv_get_card_actions_label_mode`, `isolate_label_mode_warnings`, `test_settings_defers_button_data_until_checks`, `test_invalid_stamp_and_floor_recovers_without_deadlock`, `test_invalid_target_mode_renders_configured_floor`, `tests/test1/test_label_mode_docs.py` and its test functions, every other listed new test, and the four new doc anchors.
 
-Cycle-1 symbols (all still present, unchanged since `c1546c2`): `button_data.LOCATIONS` (`button_data.py:12`), `is_label_mode`/`LABEL_MODES` (`label_mode.py:17`, `:14`), `is_strict` (`exceptions.py:32`), `cv_button_data` (`button_data.py:52`), `_action_settings_messages` (`settings.py:98`), `cv_get_action_label_mode` (`base.py:291`), `cv_icon_mode_checks` (`buttons.py:368`), `check_viewsets` (`checks.py:20`), `cv_first_inline_keys`, `CardListView.*`, `CardAction.*`, E106/E210/E211, setting names, ViewSet fields. All UNCHECKABLE under `intel`, and grep confirms each one.
-
-Symbols newly cited by the cycle-2 revisions:
+The symbols from cycles 1 and 2 are unchanged since `bbbf16a` (no `src/`, `tests/` or `docs/` commits since then) and were re-confirmed by grep. The table below lists symbols newly cited by the `bdd445c` revisions or by cycle-3 findings:
 
 | Symbol (kind) | Cited by | Authority verdict | Supplementary evidence |
 |---|---|---|---|
-| `test_import_safety.py` subprocess/textwrap pattern | 01-01-02 | UNCHECKABLE | `tests/test1/test_import_safety.py:12,14,22,33` |
-| D-07 boundary (`crud_views.lib.settings` imports no view module) | 01-01-02 | UNCHECKABLE | Probe: after import and `django.setup()`, neither `crud_views.lib.view` nor `button_data` is in `sys.modules`. `check_messages` loads `lib.view.*` but not `button_data`. |
-| `check_messages` is an uncached `@property` | 01-01-02 | UNCHECKABLE | `settings.py:134-135` |
-| `tests/test1/conftest.py` (autouse fixture host) | 01-01-02 | UNCHECKABLE | exists; `pytest_configure` at `:23` |
-| `pytest-random-order` / `pytest-xdist` (`--random-order`, `-n`) | 01-01-02, 01-02-02 | UNCHECKABLE | `pyproject.toml:74,77`; both importable in `.venv`; `addopts` at `:130` is `--strict-markers` only |
-| `tests/test1/test_settings_checks.py` | 01-01-02 | UNCHECKABLE | exists |
-| `_card`, `_inline`, `_author_card`, `AUTHOR_FULL`, `author_douglas_adams` | 01-03-01 | UNCHECKABLE | `test_card_label_mode_render.py:38,44,62,24`; `conftest.py:172` |
-| `action_menu.py` E211 message | 01-02-02 | UNCHECKABLE | `src/crud_views/lib/view/action_menu.py:55-61` ("string-valued") |
-| `base.py` attribute comments | 01-02 | UNCHECKABLE | `base.py:88-96` |
-| `base.py:631` raw `target_default` pass-through | (claude A7) | UNCHECKABLE | `base.py:631` |
-| Anchors `settings.md#action-menus`, `action_menus.md#label-mode` | 01-03-01 | UNCHECKABLE (doc anchors) | `docs/reference/settings.md:71`, `docs/reference/action_menus.md:58` |
-| `card-list-view.md` CardAction `label_mode` row | (grok A12) | UNCHECKABLE | `docs/reference/card-list-view.md:50`, which says "inherits the view's `cv_card_actions_label_mode`" |
-| `action_menus.md` System checks table (2 columns) | 01-04-01 | UNCHECKABLE | `docs/reference/action_menus.md:238-246` |
-| `CHANGELOG.md` headings | 01-03-02, 01-04-02 | UNCHECKABLE | `## Unreleased` :3, `### Breaking` :7 and :282, `### Fixed` :136, `### Added` :167 |
-| `button_data.py` `LABEL_MODES` import (F401 after change) | (claude A4) | UNCHECKABLE | `button_data.py:8` import; sole use at `:85` |
-| `.planning/` read by tests | (claude A13) | UNCHECKABLE | no file under `tests/` references `.planning` today |
-| Baseline `ebc7c23259ae…` | 01-04 | UNCHECKABLE (git object) | commit "docs(01): capture phase context" |
-| Function signatures | all | UNCHECKABLE | not assertable under grep/intel |
+| Raw tracer keys `cv_action_label`, `cv_icon_action`, `cv_list_action_method`, `cv_oid`, `cv_access`, `cv_url` | 01-01-01 (A6) | UNCHECKABLE | `tests/test1/test_button_leaves.py:490-499` |
+| `cv_action_short_label` (context short label) | 01-01-01 (A6) | UNCHECKABLE | `button_data.py:80-81`; becomes visible text at `:102-105` |
+| `LABEL_MODES` import / sole use | 01-01-01 (A4) | UNCHECKABLE | `button_data.py:8`, `:85` |
+| `unittest.TestCase().assertLogs` | 01-01-01 (A2) | UNCHECKABLE (stdlib) | standard library |
+| `id="cv-filter-toggle"`, `cv-key="{{ cv_key }}"` | 01-02-01 (A8) | UNCHECKABLE (template) | `src/crud_views/templates/crud_views/tags/context_action_filter.html:4,10` |
+| `base.py:631` raw target default | 01-02-01 (A7) | UNCHECKABLE | `base.py:631` |
+| CHANGELOG structure for the 01-03-02 regex script | 01-03-02 (A11) | UNCHECKABLE | First `## ` is `Unreleased` (:3). Its subsections are Breaking/Removed/Changed/Fixed/Added/Internal, each unique. `(#213)` occurs once in Breaking (:43) and once in `migrating-1.0.md:127`. Dry run: the script parses today's tree and fails on the missing setting-first token (intended red). |
+| Link targets `reference/settings.md#action-menus`, `reference/action_menus.md#label-mode` (and the `docs/`-prefixed forms from CHANGELOG) | 01-03-02 (A10) | UNCHECKABLE (doc anchors) | `docs/reference/settings.md:71`, `docs/reference/action_menus.md:58` |
+| `PROJECT.md` decision rows for the one-off grep | 01-04-02 (A13) | UNCHECKABLE | `.planning/PROJECT.md:96-97`. Row 97 lacks "removed in 1.0.0" today, which is the intended red state. |
+| `git status --porcelain -- tests/test1/golden src/crud_views/templates examples` | 01-04 (A16) | UNCHECKABLE (git) | empty output today |
+| Ruff `RUF001` on the `"bοth"` literal | B1 | UNCHECKABLE (lint rule) | `pyproject.toml` `select` includes `RUF`, `allowed-confusables = ["›"]`, `tests/**` ignores only `RUF012`. The probe `ruff check` reports `RUF001 String contains ambiguous ο`. No existing file under `tests/` or `src/` contains U+03BF. |
+| `CHANGELOG.md` #269 "last fallback before `"icon"`" | B5 | UNCHECKABLE | `CHANGELOG.md:175` |
+| `buttons.md` leaf-contract `cv_label_mode` cell | B6 | UNCHECKABLE | `docs/reference/buttons.md:331`; also `:52` (class-key section) |
+| D-07 boundary premise (R6 test) | claude (open) | UNCHECKABLE | Probe after `settings.configure`, import and `django.setup()`, then `check_messages`: no view module loaded, returns `[crud_views.E100]` |
+| Function signatures | all | UNCHECKABLE | cannot be asserted under grep/intel |
 
 **Cross-artifact fact-drift pass** (advisory, never counted):
 - Phase status: `gsd_run drift-guard phase-status --phase 01` → `verdict: lag` (STATE.md "Ready to execute" vs ROADMAP.md "Not started"). Lag is not a finding.
-- ROADMAP Success Criteria ↔ PLAN `must_haves.truths`: no contradiction. The filter toggle narrowing of "every page" is Phase 3 scope, which is `gsd-plan-checker` territory and not drift.
+- ROADMAP Success Criteria ↔ PLAN `must_haves.truths`: no contradiction.
 - ROADMAP requirements (LMOD-01…06) ↔ plan `requirements:`: the union covers all six, with no contradiction.
-- CONTEXT.md Decisions ↔ PLAN term usage: no contradiction. 01-01 keeps the D-11 `(location, repr(value))` key.
-- Advisory, not a judgment pair: branch naming. `.planning/config.json` uses `branching_strategy: "phase"` (`gsd/phase-{phase}-{slug}`), PROJECT.md:77 says `feat/label-mode-defaults`, and the plans say "keep current branch" (current: `introduce-gsd`). This is also listed as A19.
+- CONTEXT.md Decisions ↔ PLAN term usage: one possible wording contradiction. The `01-01-PLAN.md:122` sentence on non-dict settings sits next to D-12 (unknown location always raises). This is the same item as B2. It is advisory here and counted once, in the actionable list.
+- Advisory, not a judgment pair: branch naming. `.planning/config.json` (`gsd/phase-{phase}-{slug}`) disagrees with the plans' A19 authority (`feat/label-mode-defaults`). This is the same item as B3. `01-RESEARCH.md:463` still recommends the current branch, and 01-01's execution_context explicitly supersedes it.
 - Nothing was skipped: STATE.md, ROADMAP.md and CONTEXT.md were present.
 
-**Lane diagnostics:** opencode-grok attempt 1 failed with `spawn error: ETIMEDOUT` at the 660 s floor, the same failure mode as cycle 1. Its stub carried `[reviewed-without-source-citations]` only because it contained no review, and it is preserved in `.review-diagnostics/`. The retry succeeded and cites `file:line` evidence, so no discount marker applies. The plan coverage check is complete for all three graded lanes (4/4 ids each).
+**Lane diagnostics:** all three lanes succeeded on their first attempt: gemini 18:32→18:38, claude 18:38→18:46 and grok 18:46→18:54 local time. Their `.err` captures are empty. Plan coverage is complete for all three graded lanes (4/4 ids each), so the `plan_coverage` frontmatter key is omitted. No lane was trimmed, so `trimmed_reviewers` is omitted.
 
 ## Current HIGH Concerns
 
@@ -427,22 +405,9 @@ None.
 
 ## Current Actionable Non-HIGH Concerns
 
-- **A1 [MEDIUM] 01-01-01** (grok): state that the non-strict invalid-*setting* fallback callable is `LABEL_MODE_DEFAULTS[location]` and never calls `default_label_mode` again. Otherwise recovery for a bad stamp combined with a bad floor recurses.
-- **A2 [LOW] 01-01-01** (gemini): the deadlock subprocess child has no `caplog`. Specify a handler or `assertLogs` on the `label_mode` logger inside the child to count 1 versus 2 warnings.
-- **A3 [LOW] 01-01-01** (claude): split the bad-value list by level: whole setting, per-location mode, and stamped value. `{}` is valid as the whole setting.
-- **A4 [LOW] 01-01-01** (claude): remove the now-unused `LABEL_MODES` import at `button_data.py:8`, or the ruff F401 gate fails.
-- **A5 [LOW] 01-01** (claude; cycle-1 grok): a non-dict setting warns once per location queried. State the expected count (up to three) in the action and tests.
-- **A6 [LOW] 01-01-01** (grok): pin the context tracer's raw keys to `test_button_leaves.py:490-499` (`cv_action_label`, `cv_icon_action`, `cv_access`). The context location does not use `cv_label`.
-- **A7 [LOW] 01-02** (claude): add a non-strict render test for an invalid target-view `cv_context_action_label_mode`, which reaches the leaf raw via `base.py:631`.
-- **A8 [LOW] 01-02-01** (grok; cycle-1 grok/claude): exclude the filter toggle by an explicit selector (`[@cv-key="filter"]` / `#cv-filter-toggle`) and assert a nonempty remainder.
-- **A9 [LOW] 01-02-02/01-04** (claude): `"string or None"` is pinned in three places. Pin a shorter token, or accept this explicitly.
-- **A10 [LOW–MEDIUM] 01-03-02/01-04** (claude): restrict links in `migrating-1.0.md` and `CHANGELOG.md` to existing anchors, and extend 01-04's retargeting scope to them. `CHANGELOG.md` is outside the mkdocs gate.
-- **A11 [LOW] 01-03-02** (claude, grok): extend the verify script to check the #213 setting-before-view-before-button order, the `None` disclosure, and the Fixed bullet under the Unreleased `### Fixed`.
-- **A12 [LOW] 01-03-01** (grok): update `card-list-view.md:50` (CardAction `label_mode` "inherits the view's `cv_card_actions_label_mode`") to point at the resolver or floor.
-- **A13 [MEDIUM] 01-04-02** (claude): `test_label_mode_decision_handoff` reads `.planning/PROJECT.md` from the permanent test suite. Move the D-23 check to a `<verify>` grep.
-- **A14 [LOW] 01-04-01** (claude): parse only Python fences that contain `CRUD_VIEWS_LABEL_MODE_DEFAULTS`, or skip `SyntaxError` per block.
-- **A15 [LOW] 01-04-02** (claude, grok): scope the #213 and Unreleased selection so it survives the 1.0 heading rename and ignores `### Breaking` at `CHANGELOG.md:282`.
-- **A16 [LOW] 01-04 verification** (claude): make `git status --porcelain -- tests/test1/golden src/crud_views/templates examples` an automated command with its own `fails_when`.
-- **A17 [LOW] 01-04-01** (gemini): the `action_menus.md` checks table has 2 columns. Say that the E108 row expresses "error" in the Meaning column.
-- **A18 [LOW] 01-04-02** (grok): no gate validates Mermaid. Keep the `MICON` label simple (no `[`/`]`) and put the setting name in the prose link.
-- **A19 [LOW] cross-plan** (claude): branch naming conflicts between config `gsd/phase-…`, PROJECT.md `feat/label-mode-defaults`, and the plans' "keep current branch". State once which one wins.
+- **B1 [LOW] 01-01-01, 01-03-01** (gemini; confirmed by source-grounding): write the Greek-omicron case as `"b\u03bfth"` (or add `# noqa: RUF001`) in the new test matrices, and add the touched test files to 01-01-01's scoped ruff gate.
+- **B2 [LOW] 01-01-01** (grok): reword `01-01-PLAN.md:122` to "the same strict/non-strict policy as invalid per-location mode values". Unknown caller locations still raise in every mode (D-12).
+- **B3 [LOW] cross-plan** (claude): give A19 a concrete mechanism. Config still selects `gsd/phase-…`. Add a pre-execution assertion that `HEAD` is `feat/label-mode-defaults`, or state that `gsd-pr-branch` or a rename produces it at ship time, and record the choice in STATE.md. Do not change the config.
+- **B4 [LOW] 01-03-02** (claude): state that the new "Card label-mode attribute" bullets must not contain the literal `(#213)`, because the verify script requires exactly one `(#213)` bullet per target.
+- **B5 [LOW] 01-03-02 or 01-04-02** (grok; confirmed): update the Unreleased #269 bullet at `CHANGELOG.md:175` ("last fallback before `"icon"`") so that it names the configurable context floor, and assert it in the docs test.
+- **B6 [LOW] 01-04-02** (grok; confirmed): replace the old-floor parenthetical in the `buttons.md:331` leaf-contract cell with links to `#context-label-mode-resolution` / `#list-label-mode-resolution`. Either fix `buttons.md:52` ("toolbar and row buttons are `icon`") as a phrase-only floor correction, or explicitly defer it to Phase 2's class-key section.

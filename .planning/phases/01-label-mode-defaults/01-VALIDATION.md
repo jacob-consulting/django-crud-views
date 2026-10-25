@@ -50,7 +50,9 @@ created: "2026-10-25"
 | 01-03-02 | 01-03 | 2 | LMOD-03 | T-01-09 | Attribute break disclosed with resolver migration | doc source assertions | Exact pathlib assertion command in 01-03-PLAN.md; non-zero or missing success line rejects | ✅ | ⬜ pending |
 | 01-03 final | 01-03 | 2 | LMOD-03 | T-01-09 | Card documentation links existing anchors before wave 3 creates canonical targets | docs build | `.venv/bin/mkdocs build --strict` | ✅ | ⬜ pending |
 | 01-04-01 | 01-04 | 3 | LMOD-01–LMOD-06 | T-01-10/11 | Documentation example parsed as data, rendered through real tag | executable docs + build | `.venv/bin/pytest tests/test1/test_label_mode_docs.py -q`; `.venv/bin/mkdocs build --strict` | New test file created in task | ⬜ pending |
-| 01-04-02 | 01-04 | 3 | LMOD-01–LMOD-06 | T-01-10/12 | Accurate migration/decision handoff, no project data | doc contracts + build | `.venv/bin/pytest tests/test1/test_label_mode_docs.py -q`; `.venv/bin/mkdocs build --strict` | Created by 01-04-01 | ⬜ pending |
+| 01-04-02 | 01-04 | 3 | LMOD-01–LMOD-06 | T-01-10/12 | Accurate migration, release-name-independent selector and checked changelog anchors | doc contracts + build | `.venv/bin/pytest tests/test1/test_label_mode_docs.py -q`; `.venv/bin/mkdocs build --strict` | Created by 01-04-01 | ⬜ pending |
+| 01-04-02 | 01-04 | 3 | LMOD-03 | T-01-12 | D-23 handoff verified without permanent tests depending on planning state | one-off planning grep | Exact PROJECT.md row-count/outcome grep in 01-04-PLAN.md, with its own fails_when | ✅ | ⬜ pending |
+| 01-04 final | 01-04 | 3 | all | T-01-10 | Protected paths have no new/untracked or modified files | git status | `git status --porcelain -- tests/test1/golden src/crud_views/templates examples` must print nothing, in addition to baseline diff | ✅ | ⬜ pending |
 | All tasks / final 01-04 | 01-01–04 | 1–3 | all | T-01-06/08 | Existing permission/rendering contracts preserved | golden | `.venv/bin/pytest tests/test1/test_action_menus_golden.py tests/test1/test_card_label_mode_render.py tests/test1/test_card_blocks.py tests/test1/test_card_order.py tests/test1/test_form_frame.py tests/test1/test_heading_level.py -q` | ✅ | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
@@ -64,6 +66,8 @@ Task IDs match the eight tasks in 01-01 through 01-04. Every PLAN automated comm
 Existing infrastructure covers all phase requirements. No infrastructure scaffold is needed. Task 01-04-01 creates the new docs-contract test before invoking it; the existing leaf test file gains the tracer before its targeted command runs.
 
 Review revision c1546c2: 01-01-01 adds a timeout-bounded subprocess regression for simultaneous invalid stamp/floor recovery; a lock held across fallback must fail rather than hang the suite. 01-01-02 adds shared function-scoped isolate_label_mode_warnings and the fresh-process settings-boundary test. 01-04-01 explicitly supplies access and icon context to the docs tracer and selects the card example by dict content; 01-04-02 tests check-reference completeness and both setting-first migration recipes. These are planned tests, not executed feature evidence.
+
+Review revision bbbf16a: child assertLogs makes nested warning counts deterministic; whole-setting/location/stamp cases and 1/2/3 location fanout are distinct. 01-02 adds the invalid-target scalar HTTP regression and a concrete filter selector. 01-03's one-off script now enforces recipe order, None disclosure, Fixed placement and existing-anchor links before wave 3. 01-04 tests canonical links including root CHANGELOG.md, filters relevant Python fences, survives the release heading rename and checks the simple diagram label. D-23 is a one-off planning grep, not a permanent test dependency. No new feature test is claimed to have run during planning.
 
 ---
 

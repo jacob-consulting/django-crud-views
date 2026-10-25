@@ -17,7 +17,7 @@ Planning only. No implementation, branch operation or commit performed. Existing
 
 Wave 1: 01-01. Wave 2: 01-02 and 01-03 in parallel, with zero modified-file overlap. Wave 3: 01-04.
 01-02 reuses the configuration test file from 01-01, so it explicitly depends on that earlier plan.
-01-04 consumes all prior runtime contracts and retargets card documentation links only when their canonical anchors exist. 01-03 uses existing anchors and verifies a strict docs build before wave 3.
+01-04 consumes all prior runtime contracts and retargets card documentation links only when their canonical anchors exist: card-list-view.md and migrating-1.0.md in task 01, CHANGELOG.md in task 02. 01-03 uses existing anchors in all three files and verifies a strict docs build plus exact phase-owned changelog link destinations before wave 3.
 All plans have two tasks; no task modifies more than five files. Estimates use calibration factor 1 and low confidence from zero samples, not self-rated certainty.
 
 ## Multi-source coverage audit
@@ -88,7 +88,7 @@ No source items are missing. Excluded by scope: real form location/button leaf (
 - Non-dict runtime configuration follows strict raise / non-strict package-floor fallback (research A2, chosen explicitly).
 - E108 unknown-key wording ends with repr(value); one diagnostic per entry, input order; choices sorted.
 - Research's optional merged-map helper is not introduced: all consumers require only the location accessor. No required capability is omitted.
-- Research branch uncertainty is overridden by the invocation: do not create, rename or switch branches.
+- Planning performs no branch operation. Execution branch authority is centralized in 01-01-PLAN.md execution_context (A19); all other plans reference it, and it supersedes the research's earlier current-branch execution recommendation.
 - Existing local npm test passed; use that non-installing command rather than fetching a Node package.
 
 ## Spec-less edge accounting
@@ -158,6 +158,38 @@ Live-source qualifications: random-order is installed but opt-in (`addopts` only
 File ownership additions: 01-01 owns tests/test1/conftest.py and tests/test1/test_import_safety.py; 01-02 owns src/crud_views/lib/view/action_menu.py; 01-04 additionally owns docs/reference/card-list-view.md after 01-03. Wave 2 remains disjoint; waves and dependency IDs are unchanged. Each plan still has two tasks and no task modifies more than five files. Estimates recalibrated with factor=1, sample_count=0, confidence=low; 01-01 and 01-04 allow for their extra reads/tests.
 
 Revision validation: all four frontmatter and structure checks pass (zero errors; only the pre-existing already-locked one-way checkpoint warnings). Every automated command retains an immediately following observable fails_when; all eight tasks retain read_first and acceptance_criteria. git ls-files --error-unmatch confirms all existing named source/doc/test inputs, including added ownership paths. git diff --check passes. The new seeded cross-module command was run against the current, unimplemented baseline: 148 passed in 0.72s. This grounds the command/plugins, not the future fixture or new regression tests. No source implementation, branch operation or commit was performed.
+
+## Reviews-mode revision — Round 2, bbbf16a
+
+All A1–A19 are incorporated in task instructions or verification, with per-finding evidence/dispositions appended to the affected PLAN.md ledgers. A9 takes the explicit-acceptance option: the short optional-scalar phrase remains a deliberate source/docs consistency assertion. No current finding is deferred or rejected; factual qualifications on Python log fallback and Mermaid quoting are recorded without losing the actionable checks. Round-1 ledger text and fixes R1–R14 remain intact.
+
+| Finding | Coverage |
+|---|---|
+| A1 | 01-01-01 setting recovery terminates at LABEL_MODE_DEFAULTS[location] |
+| A2 | 01-01-01 child assertLogs counts structured warning records |
+| A3 | 01-01-01 separate whole-setting/location/stamp matrices; {} whole setting is valid |
+| A4 | 01-01-01 unused import removal and scoped ruff gate |
+| A5 | 01-01-01 non-dict runtime warning counts 1/2/3 by queried location |
+| A6 | 01-01-01 exact raw context fields and visible short-label assertion |
+| A7 | 01-02-01 invalid target scalar reaches non-strict real HTTP leaf with one warning |
+| A8 | 01-02-01 concrete filter exclusion and nonempty ordinary-action remainder |
+| A9 | 01-02-02 and 01-04 explicitly accept short phrase duplication |
+| A10 | 01-03-02 existing-only links; 01-04-01/02 retarget migration/changelog and test exact links/targets |
+| A11 | 01-03-02 automated recipe order, None/both disclosure and Fixed placement assertions |
+| A12 | 01-03-01 CardAction Fields row names resolver/floor |
+| A13 | 01-04-02 D-23 one-off grep; permanent tests read no planning artifacts |
+| A14 | 01-04-01 parses only setting-bearing Python fences |
+| A15 | 01-04-02 release-name-independent section selection and in-memory rename regression |
+| A16 | 01-04 protected-path status gate with explicit nonempty-output failure |
+| A17 | 01-04-01 E108 error in two-column Meaning cell |
+| A18 | 01-04-02 simple displayed MICON label; setting named in linked prose |
+| A19 | 01-01 execution_context central branch authority, referenced by every plan |
+
+Multi-source reconciliation: GOAL/SC-1–5, LMOD-01–06, RESEARCH R-01–15 and CONTEXT D-01–26 remain COVERED by the preceding audit table. D-23 verification moves out of the permanent test suite but still enforces single settled decision rows. No probe truth/prohibition is removed or silently resolved; exclusions and deferred phase boundaries remain unchanged.
+
+Ownership: 01-04 now includes docs/migrating-1.0.md and CHANGELOG.md sequentially after 01-03; its two tasks each touch five files. Wave 2 remains disjoint. Estimates retain factor=1/confidence=low from the fresh zero-sample calibration; 01-04 increases raw/calibrated estimate to 21000 for the additional retargeting and checks. No implementation, branch operation or commit is performed by this revision.
+
+Round-2 validation: all four frontmatter/structure validators pass with zero errors; only the retained warnings for already-locked one-way decisions remain. A read-only revision check confirms all A1–A19 have current ledger rows, all Round-1 ledger text and probe-derived truths/prohibitions are byte-preserved, all requirements are present, every task retains its required fields and at most five modified files, wave-2 ownership is disjoint, and every automated command has an immediate fails_when. Shell syntax and embedded Python compilation pass. Synthetic positive/negative cases exercise the new wave-2 script (recipe order, None disclosure, Fixed placement and link destinations) and the D-23 grep (valid, duplicate and incomplete rows); these validate the gates, not the unimplemented feature. Protected-path diff/status and git diff --check are clean. Pre-existing unrelated working-tree changes remain untouched.
 
 ## Plan validation results
 

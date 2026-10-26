@@ -193,6 +193,37 @@ def test_settings_base_key_does_not_beat_theme_mode_key():
         assert get_button_class("card", "tertiary", "icon") == "btn x"
 
 
+@pytest.mark.parametrize("kind", ["submit", "cancel", "delete", "filter-submit", "filter-reset"])
+def test_form_mode_presence_and_base_fallback(kind):
+    register_button_classes({f"form:{kind}": "theme-base", f"form:{kind}:icon": "theme-icon"})
+    assert get_button_class("form", kind, "icon") == "theme-icon"
+    assert get_button_class("form", kind, "both") == "theme-base"
+    assert get_button_class("form", kind) == "theme-base"
+
+
+@pytest.mark.parametrize("value", [None, ""])
+def test_form_mode_none_or_empty_suppresses_base(value):
+    register_button_classes({"form:submit": "theme-base", "form:submit:icon": value})
+    assert get_button_class("form", "submit", "icon") == ""
+    assert get_button_class("form", "submit", "label") == "theme-base"
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"form:submit:icon": "settings-icon"}):
+        assert get_button_class("form", "submit", "icon") == "settings-icon"
+    register_button_classes({"form:submit:icon": "theme-icon"})
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"form:submit:icon": value}):
+        assert get_button_class("form", "submit", "icon") == ""
+        assert get_button_class("form", "submit", "label") == "theme-base"
+
+
+def test_form_theme_mode_beats_settings_base_and_settings_wins_same_key():
+    register_button_classes({"form:submit": "theme-base", "form:submit:icon": "theme-icon"})
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"form:submit": "settings-base"}):
+        assert get_button_class("form", "submit", "icon") == "theme-icon"
+        assert get_button_class("form", "submit", "both") == "settings-base"
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"form:submit:icon": "settings-icon"}):
+        assert get_button_class("form", "submit", "icon") == "settings-icon"
+        assert get_button_class("form", "submit", "both") == "theme-base"
+
+
 def test_tag_third_argument_in_both_libraries():
     for lib in ("crud_views", "crud_views_object_detail"):
         tpl = Template("{% load " + lib + ' %}{% cv_button_class "card" "tertiary" "icon" %}')

@@ -24,3 +24,6 @@ examples/bootstrap5/staticfiles/
 
 .superpowers/
 .playwright-mcp/
+
+# local GSD install (opencode agents with pinned models)
+.opencode/

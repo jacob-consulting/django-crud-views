@@ -52,7 +52,7 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 ### Out of Scope
 
 - Removing `CardAction.no_label` / `cv_no_label` guard (#254 adjacent) — tracked for 1.0.0, not among the five findings
-- Renaming the `cv_context_actions_label_mode` / `cv_context_action_label_mode` pair — tracked separately
+- Renaming the `cv_context_actions_label_mode` / `cv_context_action_label_mode` pair — rejected, not deferred: both names stay stable (Phase 1 decision, LATER-02 won't rename)
 - E36x check for `container-tag` — tracked separately
 - #259 host placement for headings, #211 stale-override detection — tracked separately
 - Tabler theme changes in its own repository — each phase only writes the Tabler follow-up into its acceptance note
@@ -94,7 +94,7 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 | Phase 3 (Bootstrap leak fixes) is the droppable one if 1.0.0 ships early | Additive DOM changes with a one-line migration note each | — Pending |
 | Milestone limited to the five findings | Keep scope reviewable; other 1.0.0 items tracked separately | — Pending |
 | Keep `cv_context_actions_label_mode` / `cv_context_action_label_mode` names; freeze as stable (LATER-02 → won't rename) | No renames before freeze; docs sharpen the distinction | Decided (Phase 1 discussion) |
-| `CardAction.no_label` / `cv_no_label` removed before 1.0 (LATER-01); Phase 7 lists it as deprecated, never stable | Superseded by `label_mode="icon"` | Decided (Phase 1 discussion) |
+| `CardAction.no_label` / `cv_no_label` removed before 1.0 (LATER-01), outside Phase 1; Phase 7 lists it as "deprecated, removed in 1.0.0", never stable | Superseded by `label_mode="icon"` | Decided (Phase 1 discussion) |
 | E108 is an Error for unknown location keys and invalid modes; valid keys derive from `LOCATIONS` | Typos fail loudly; Phase 6's `"form"` extends it automatically | Decided (Phase 1 discussion) |
 
 ## Evolution

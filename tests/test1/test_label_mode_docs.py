@@ -14,6 +14,11 @@ ROOT = Path(__file__).resolve().parents[2]
 DOCS = ROOT / "docs"
 SETTINGS_MD = DOCS / "reference" / "settings.md"
 ACTION_MENUS_MD = DOCS / "reference" / "action_menus.md"
+BUTTONS_MD = DOCS / "reference" / "buttons.md"
+CARD_MD = DOCS / "reference" / "card-list-view.md"
+CONTEXT_BUTTONS_MD = DOCS / "reference" / "context_buttons.md"
+MIGRATING_MD = DOCS / "migrating-1.0.md"
+CHANGELOG_MD = ROOT / "CHANGELOG.md"
 
 SETTING = "CRUD_VIEWS_LABEL_MODE_DEFAULTS"
 FENCE = re.compile(r"^```python\n(.*?)^```", re.MULTILINE | re.DOTALL)
@@ -54,6 +59,23 @@ def _anchors(path: Path) -> set[str]:
         slug = re.sub(r"[^\w\s-]", "", m.group(2).strip().lower())
         anchors.add(re.sub(r"[\s]+", "-", slug))
     return anchors
+
+
+def _flat(text: str) -> str:
+    """Text without inline-code backticks and with whitespace normalized, for wrap-independent phrase checks."""
+    return " ".join(text.replace("`", "").split())
+
+
+def _bullets(text: str) -> list[str]:
+    """The top-level list items of a markdown block, each up to the next unindented item or heading."""
+    return re.findall(r"^- .*?(?=^- |^#|\Z)", text, re.MULTILINE | re.DOTALL)
+
+
+def _subsection(release: str, heading: str) -> str:
+    """A "### " subsection of a changelog release body, bounded at the next level-three heading."""
+    found = re.findall(rf"^{re.escape(heading)}\n(.*?)(?=^### |\Z)", release, re.MULTILINE | re.DOTALL)
+    assert len(found) <= 1, heading
+    return found[0] if found else ""
 
 
 def _render_card_button(defaults: dict):
@@ -217,15 +239,26 @@ def test_canonical_label_mode_resolution_sections():
 
 
 def test_label_mode_reference_links_and_diagram():
-    # phase-owned links point at the canonical sections, and those sections exist as headings
+    # phase-owned links point at the canonical sections, and those sections exist as headings; the changelog is
+    # outside the mkdocs build, so nothing else checks its links
     links = {
-        DOCS / "reference" / "card-list-view.md": (
+        CARD_MD: (
             "(settings.md#label-mode-configuration)",
             "(action_menus.md#card-label-mode-resolution)",
         ),
-        DOCS / "migrating-1.0.md": (
+        MIGRATING_MD: (
             "(reference/settings.md#label-mode-configuration)",
             "(reference/action_menus.md#card-label-mode-resolution)",
+        ),
+        CHANGELOG_MD: (
+            "(docs/reference/settings.md#label-mode-configuration)",
+            "(docs/reference/action_menus.md#card-label-mode-resolution)",
+        ),
+        CONTEXT_BUTTONS_MD: ("(action_menus.md#context-label-mode-resolution)",),
+        BUTTONS_MD: (
+            "(action_menus.md#context-label-mode-resolution)",
+            "(action_menus.md#list-label-mode-resolution)",
+            "(action_menus.md#card-label-mode-resolution)",
         ),
     }
     for source, targets in links.items():
@@ -235,3 +268,135 @@ def test_label_mode_reference_links_and_diagram():
             page, anchor = target.strip("()").split("#")
             assert anchor in _anchors((source.parent / page).resolve()), (source.name, target)
     assert {"label-mode", "target-view-default"} <= _anchors(ACTION_MENUS_MD)
+
+    # the diagram keeps node MICON, now labelled as the defaults map; the prose below it names the setting and links
+    rendered = _section(CONTEXT_BUTTONS_MD.read_text(), "## How a context button is rendered")
+    diagram, below = rendered.split("```mermaid", 1)[1].split("```", 1)
+    assert '        M4 -- "no" --> MICON["defaults map (default icon)"]\n' in diagram
+    assert "MICON --> L1" in diagram and re.search(r"^    class .*\bMICON\b.* step$", diagram, re.MULTILINE)
+    label = re.search(r'MICON\["([^"]*)"\]', diagram).group(1)
+    assert "[" not in label and "]" not in label
+    paragraph = _flat(below.strip().split("\n\n")[0])
+    assert '"context" entry of CRUD_VIEWS_LABEL_MODE_DEFAULTS' in paragraph
+    assert "(action_menus.md#context-label-mode-resolution)" in paragraph
+    assert "plural cv_context_actions_label_mode" in paragraph and "singular cv_context_action_label_mode" in paragraph
+
+    # buttons.md, leaf contract: the cv_label_mode cell links both resolutions instead of restating a fixed floor
+    buttons = BUTTONS_MD.read_text()
+    leaf = _row(_section(buttons, "### The leaf contract"), "`cv_label_mode`")[1]
+    for anchor in ("context-label-mode-resolution", "list-label-mode-resolution"):
+        assert f"(action_menus.md#{anchor})" in leaf
+    assert '"icon" unless a map' not in _flat(leaf)
+    assert "always present" in leaf and "empty label forces" in leaf and "CRUD_VIEWS_STRICT" in leaf
+    assert "(card-list-view.md#label-mode)" in leaf
+
+    # buttons.md, class table introduction: icon is the package floor, mode keys apply to resolved modes today
+    intro = _section(buttons, "## The class table").split("\n| Key | Default |")[0]
+    for anchor in ("context-label-mode-resolution", "list-label-mode-resolution"):
+        assert f"(action_menus.md#{anchor})" in intro
+    flat_intro = _flat(intro)
+    assert "icon as the package floor" in flat_intro
+    assert "toolbar and row buttons are icon)" not in flat_intro
+    assert "#216" not in flat_intro and "today" not in flat_intro
+    assert "whose mode resolves to that mode" in flat_intro
+
+    # card reference: the raw attribute is None, the floor is the setting's card entry, the resolver gives the mode
+    card = CARD_MD.read_text()
+    attribute = _row(card, "`cv_card_actions_label_mode`")
+    assert attribute[1:3] == ["`str \\| None`", "`None`"]
+    assert '"card"` entry of `CRUD_VIEWS_LABEL_MODE_DEFAULTS`' in attribute[3]
+    field = _row(_section(card, "## CardAction Fields"), "`label_mode`")
+    assert "`cv_get_card_actions_label_mode()`" in field[3]
+    assert "cv_get_card_actions_label_mode()" in _section(card, "## Label mode")
+    recipe = _flat(_section(buttons, "## A theme recipe"))
+    assert 'cv_card_actions_label_mode = "both" (the default)' not in recipe
+    assert 'package card floor in CRUD_VIEWS_LABEL_MODE_DEFAULTS is "both"' in recipe
+    assert "is None unless a view sets it" in recipe and "cv_get_card_actions_label_mode()" in recipe
+
+
+def _card_release_contract(changelog: str) -> None:
+    """The card label-mode disclosure of the release that carries it, wherever that release's heading points."""
+    releases = re.split(r"^## ", changelog, flags=re.MULTILINE)[1:]
+    selected = [r for r in releases if "**Card label-mode attribute:**" in _subsection(r, "### Breaking")]
+    assert len(selected) == 1, [r.splitlines()[0] for r in selected]
+    release = selected[0]
+
+    breaking = _bullets(_subsection(release, "### Breaking"))
+    recipe = [b for b in breaking if "(#213)" in b]
+    assert len(recipe) == 1
+    recipe = recipe[0]
+    setting = recipe.index('CRUD_VIEWS_LABEL_MODE_DEFAULTS = {"card": "label"}')
+    view = recipe.index('cv_card_actions_label_mode = "label"')
+    button = recipe.index('CardAction(label_mode="label")')
+    assert setting < view < button
+
+    attribute = [b for b in breaking if "**Card label-mode attribute:**" in b]
+    assert len(attribute) == 1
+    flat = _flat(attribute[0])
+    assert "reads None by default" in flat and 'resolved string "both"' in flat
+    assert "cv_get_card_actions_label_mode()" in flat
+
+    fixed = [b for b in _bullets(_subsection(release, "### Fixed")) if "**Malformed stamped label modes:**" in b]
+    assert len(fixed) == 1
+    assert "non-strict" in fixed[0] and "one warning" in fixed[0] and "configured floor" in fixed[0]
+
+    added = _bullets(_subsection(release, "### Added"))
+    names = [b for b in added if b.startswith(f"- `{SETTING}` sets")]
+    assert len(names) == 1
+    for name in (
+        "default_label_mode(location)",
+        "crud_views.lib.view.label_mode.LABEL_MODE_DEFAULTS",
+        "CardListView.cv_get_card_actions_label_mode()",
+        "crud_views.E108",
+    ):
+        assert name in names[0], name
+    target = [b for b in added if "(#269)" in b and "cv_context_action_label_mode" in b]
+    assert len(target) == 1
+    flat = _flat(target[0])
+    assert 'CRUD_VIEWS_LABEL_MODE_DEFAULTS["context"] (package default "icon")' in flat
+    assert 'last fallback before "icon"' not in flat
+    assert "Table rows never read it" in flat and "viewset.E210" in flat and "viewset.W292" in flat
+
+
+def test_card_migration_contract():
+    changelog = CHANGELOG_MD.read_text()
+    assert changelog.startswith("# Django CRUD Views - Changelog\n\n## ")
+    _card_release_contract(changelog)
+    # the release keeps passing once it is named and an empty Unreleased section opens above it (in memory only)
+    top = re.search(r"^## .+\n", changelog, re.MULTILINE).group(0)
+    renamed = changelog.replace(top, "## Unreleased\n\n## 1.0.0\n", 1)
+    assert renamed != changelog
+    _card_release_contract(renamed)
+
+    # the migration guide: the same setting-first recipe and the same attribute disclosure
+    views = _bullets(_section(MIGRATING_MD.read_text(), "### Views and Python code"))
+    recipe = [b for b in views if "(#213)" in b]
+    assert len(recipe) == 1
+    recipe = recipe[0]
+    setting = recipe.index('CRUD_VIEWS_LABEL_MODE_DEFAULTS = {"card": "label"}')
+    view = recipe.index('cv_card_actions_label_mode = "label"')
+    button = recipe.index('CardAction(label_mode="label")')
+    assert setting < view < button
+    attribute = [b for b in views if "**Card label-mode attribute:**" in b]
+    assert len(attribute) == 1
+    flat = _flat(attribute[0])
+    assert "reads None by default" in flat and 'resolved string "both"' in flat
+    assert "cv_get_card_actions_label_mode()" in flat and "Python-level change" in flat
+
+
+def test_button_label_mode_check_reference():
+    checks = _section(BUTTONS_MD.read_text(), "## System checks")
+    assert "| ID | Level | Meaning |" in checks
+    for check_id, setting in (("E106", "CRUD_VIEWS_CONTEXT_ACTIONS_LABEL_MODE"), ("E108", SETTING)):
+        cells = _row(checks, f"`crud_views.{check_id}`")
+        assert cells[1] == "error", check_id
+        assert setting in cells[2], check_id
+    e210 = _row(checks, "`viewset.E210`")
+    assert e210[1] == "error"
+    assert "`None` is accepted as unset" in e210[2] and "`cv_card_actions_label_mode`" in e210[2]
+    e211 = _row(checks, "`viewset.E211`")[2]
+    assert e211.count("string or None") == 2
+    menus = _row(_section(ACTION_MENUS_MD.read_text(), "## System checks"), "`viewset.E211`")[1]
+    for scalar in ("cv_card_actions_label_mode", "cv_context_action_label_mode"):
+        assert re.search(rf"`{scalar}` (is )?the string or None ", e211), scalar
+        assert re.search(rf"`{scalar}` (is )?the string or None ", menus), scalar

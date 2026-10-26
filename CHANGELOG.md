@@ -46,7 +46,8 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
   button.
 - **Card label-mode attribute:** `CardListView.cv_card_actions_label_mode` now reads `None` by default instead of the
   resolved string `"both"`; `None` means the `"card"` entry of `CRUD_VIEWS_LABEL_MODE_DEFAULTS`
-  ([setting](docs/reference/settings.md#action-menus), [resolution](docs/reference/action_menus.md#label-mode)).
+  ([setting](docs/reference/settings.md#label-mode-configuration),
+  [resolution](docs/reference/action_menus.md#card-label-mode-resolution)).
   Without configuration the resolved mode is still `"both"` and the rendered output is unchanged, but Python code or a
   template that reads the raw attribute as a mode gets `None`: call `cv_get_card_actions_label_mode()` instead, or
   read the `cv_label_mode` stamped on the button context. A view that assigns the attribute keeps its value.
@@ -188,8 +189,9 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 - `cv_context_action_label_mode` (`"label"`, `"icon"` or `"both"`; `None` by default) on a view sets the label mode
   of every context toolbar button that opens it, including `home`, `parent`, child and sibling buttons (#269). It is
-  the last fallback before `"icon"`: a page's map, the button's `label_mode`, the ViewSet map and the setting win for
-  a key they name. Table rows never read it. An invalid value fails `viewset.E210`; `viewset.W292` takes it into
+  the last override before the configurable context floor `CRUD_VIEWS_LABEL_MODE_DEFAULTS["context"]` (package
+  default `"icon"`): a page's map, the button's `label_mode`, the ViewSet map and the setting win for a key they name.
+  Table rows never read it. An invalid value fails `viewset.E210`; `viewset.W292` takes it into
   account.
 - `ContextButton.label_mode` (`"label"`, `"icon"` or `"both"`; `None` by default) sets a button's label mode in the
   context toolbar for every view of the ViewSet. A view's own `cv_context_actions_label_mode` naming the key still

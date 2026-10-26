@@ -247,7 +247,8 @@ def test_w292_invalid_target_attribute_does_not_crash(monkeypatch):
 # CRUD_VIEWS_LABEL_MODE_DEFAULTS["context"]: the floor after the view map, button, resolved map and target view
 
 BOTH = {"context": "both"}
-# ordinary toolbar actions; the filter toggle renders its own template with a fixed mode (Phase 3)
+# ordinary toolbar actions only: the filter toggle renders its own leaf with its own markup, so its resolved modes,
+# floor and placements are covered in test_filter_toggle_label_mode.py (#262)
 ELIGIBLE = './*[@cv-key][not(@cv-key="filter") and not(@id="cv-filter-toggle")]'
 ROUTES = ["list", "card", "create", "detail", "update"]
 

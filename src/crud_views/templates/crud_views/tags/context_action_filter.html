@@ -1,14 +1,14 @@
-{% load crud_views %}{% cv_icon_class "filter" "context" as cv_open_class %}{% cv_icon_class "filter-close" "context" as cv_close_class %}
+{% load crud_views %}{% if cv_label_mode != "label" %}{% cv_icon_class "filter" "context" as cv_open_class %}{% cv_icon_class "filter-close" "context" as cv_close_class %}{% endif %}
 <button type="button"
-   class="{% if cv_label_mode == "both" %}{% cv_button_class "context" cv_variant|default:"secondary" cv_label_mode %}{% else %}{% cv_button_class "context" cv_variant|default:"secondary" "icon" %}{% endif %}{% if cv_open_class and cv_close_class %} {% if cv_filter_expanded %}{{ cv_close_class }}{% else %}{{ cv_open_class }}{% endif %}{% endif %}"
+   class="{% if cv_label_mode == "both" or cv_label_mode == "label" %}{% cv_button_class "context" cv_variant|default:"secondary" cv_label_mode %}{% else %}{% cv_button_class "context" cv_variant|default:"secondary" "icon" %}{% endif %}{% if cv_open_class and cv_close_class %} {% if cv_filter_expanded %}{{ cv_close_class }}{% else %}{{ cv_open_class }}{% endif %}{% endif %}"
    id="cv-filter-toggle"
    aria-expanded="{% if cv_filter_expanded %}true{% else %}false{% endif %}"
    aria-controls="filter-collapse"
-   {% if cv_label_mode != "both" %}title="{{ cv_action_label }}"
+   {% if cv_label_mode != "both" and cv_label_mode != "label" %}title="{{ cv_action_label }}"
    data-cv-tooltip="context"
    {% endif %}{% if cv_open_class and cv_close_class %}data-cv-filter-icon-open="{{ cv_open_class }}" data-cv-filter-icon-close="{{ cv_close_class }}"
    {% endif %}cv-key="{{ cv_key }}">
-    {% if not cv_open_class or not cv_close_class %}<span data-cv-filter-icon="open"{% if cv_filter_expanded %} hidden{% endif %}>{% cv_icon "filter" %}</span>
+    {% if cv_label_mode != "label" %}{% if not cv_open_class or not cv_close_class %}<span data-cv-filter-icon="open"{% if cv_filter_expanded %} hidden{% endif %}>{% cv_icon "filter" %}</span>
     <span data-cv-filter-icon="close"{% if not cv_filter_expanded %} hidden{% endif %}>{% cv_icon "filter-close" %}</span>
-    {% endif %}{% if cv_label_mode == "both" %} <span>{{ cv_action_label }}</span>{% else %}<span class="{% cv_button_class 'context' 'hidden-label' %}">{{ cv_action_label }}</span>{% endif %}
+    {% endif %}{% endif %}{% if cv_label_mode == "both" %} <span>{{ cv_action_label }}</span>{% elif cv_label_mode == "label" %}<span>{{ cv_action_label }}</span>{% else %}<span class="{% cv_button_class 'context' 'hidden-label' %}">{{ cv_action_label }}</span>{% endif %}
 </button>

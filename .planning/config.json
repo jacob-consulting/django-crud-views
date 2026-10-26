@@ -82,13 +82,13 @@
     "runtime_tiers": {
       "claude": {
         "opus": {
-          "model": "claude-fable-5-1"
+          "model": "fable"
         },
         "sonnet": {
-          "model": "claude-opus-5-5"
+          "model": "opus"
         },
         "haiku": {
-          "model": "claude-sonnet-5-5"
+          "model": "sonnet"
         }
       },
       "codex": {
@@ -141,6 +141,7 @@
   "models": {
     "planning": "opus",
     "discuss": "opus",
-    "execution": "sonnet"
+    "execution": "sonnet",
+    "verification": "opus"
   }
 }

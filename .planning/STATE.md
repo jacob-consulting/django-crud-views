@@ -3,16 +3,16 @@ gsd_state_version: "1.0"
 current_phase: 01
 current_phase_name: Label-mode defaults
 status: executing
-stopped_at: Completed 01-04-PLAN.md
-last_updated: "2026-10-26T10:52:40.603Z"
+stopped_at: Completed 01-05-PLAN.md; awaiting phase re-verification
+last_updated: "2026-10-26T11:03:09.172Z"
 last_activity: 2026-10-26
 last_activity_desc: Phase 01 execution started
-state_head: 6c4d6ed831e4324e36833636a19d51e320ad72f9
+state_head: 36c86b9e185b544bb6693188a676e9eb9b342c94
 progress:
   total_phases: 7
   completed_phases: 0
   total_plans: 5
-  completed_plans: 4
+  completed_plans: 5
   percent: 0
 ---
 
@@ -27,10 +27,10 @@ See: .planning/PROJECT.md (updated 2026-10-25)
 
 ## Current Position
 
-Phase: 01 (Label-mode defaults) — READY TO EXECUTE
-Plan: 4 of 4
-Status: Ready to execute
-Last activity: 2026-10-26 — Phase 01 execution started
+Phase: 01 (Label-mode defaults) — AWAITING RE-VERIFICATION
+Plan: 5 of 5
+Status: Plan execution complete; phase review and verification pending
+Last activity: 2026-10-26 — Plan 01-05 closed CR-01 render gaps; awaiting independent verification
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -62,6 +62,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 01 P02 | 6 min | 2 tasks | 7 files |
 | Phase 01 P03 | 4 min | 2 tasks | 7 files |
 | Phase 01 P04 | 10 min | 2 tasks | 9 files |
+| Phase 01 P05 | 8 min | 3 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -88,6 +89,7 @@ Recent decisions affecting current work:
 - [Phase 01]: A valid explicit cv_card_actions_label_mode short-circuits the floor read, so an invalid strict card floor never raises for that view
 - [Phase 01]: Label-mode precedence is stated once per location in action_menus.md (context/list/card resolution sections); other pages link instead of restating
 - [Phase 01]: settings.md#label-mode-configuration is the single merge-or-replace table: CRUD_VIEWS_LABEL_MODE_DEFAULTS merges per location, per-action maps replace whole
+- [Phase 01]: Card action rendering honors own instance values before the class resolver; own None reads the live card floor, while absent own values retain subclass fallback hooks.
 
 ### Pending Todos
 
@@ -113,6 +115,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-26T08:50:13.344Z
-Stopped at: Completed 01-04-PLAN.md
+Last session: 2026-10-26T11:03:09.150Z
+Stopped at: Completed 01-05-PLAN.md; awaiting phase re-verification
 Resume file: None

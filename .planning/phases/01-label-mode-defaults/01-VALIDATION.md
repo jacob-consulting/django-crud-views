@@ -53,11 +53,14 @@ created: "2026-10-25"
 | 01-04-02 | 01-04 | 3 | LMOD-01–LMOD-06 | T-01-10/12 | Accurate migration, release-name-independent selector and checked changelog anchors | doc contracts + build | `.venv/bin/pytest tests/test1/test_label_mode_docs.py -q`; `.venv/bin/mkdocs build --strict` | Created by 01-04-01 | ✅ green |
 | 01-04-02 | 01-04 | 3 | LMOD-03 | T-01-12 | D-23 handoff verified without permanent tests depending on planning state | one-off planning grep | Exact PROJECT.md row-count/outcome grep in 01-04-PLAN.md, with its own fails_when | ✅ | ✅ green |
 | 01-04 final | 01-04 | 3 | all | T-01-10 | Protected paths have no new/untracked or modified files | git status | `git status --porcelain -- tests/test1/golden src/crud_views/templates examples` must print nothing, in addition to baseline diff | ✅ | ✅ green |
+| 01-05-01 | 01-05 | 4 | LMOD-02, LMOD-03 | T-01-13/14 | Real as_view instance mode reaches the leaf; unchanged no-setting control | tracer render | `.venv/bin/pytest tests/test1/test_card_label_mode_render.py::test_card_initkwargs_label_without_setting -q` | ✅ | ✅ green (1 passed; valid RED captured first) |
+| 01-05-02 | 01-05 | 4 | LMOD-02, LMOD-03, LMOD-04 | T-01-13/14/15/16 | Request isolation, strict-floor bypass, own None, subclass hooks and child permissions | unit + HTTP render | `.venv/bin/pytest tests/test1/test_card_label_modes.py tests/test1/test_card_label_mode_render.py -q` | ✅ | ✅ green (45 passed) |
+| 01-05-03 | 01-05 | 4 | LMOD-03 | T-01-13 | Class-level resolver distinguished from effective stamped mode in all four docs surfaces | docs contracts + build | `.venv/bin/pytest tests/test1/test_label_mode_docs.py -q`; `.venv/bin/mkdocs build --strict` | ✅ | ✅ green (6 passed; strict build clean) |
 | All tasks / final 01-04 | 01-01–04 | 1–3 | all | T-01-06/08 | Existing permission/rendering contracts preserved | golden | `.venv/bin/pytest tests/test1/test_action_menus_golden.py tests/test1/test_card_label_mode_render.py tests/test1/test_card_blocks.py tests/test1/test_card_order.py tests/test1/test_form_frame.py tests/test1/test_heading_level.py -q` | ✅ | ✅ green |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
-Task IDs match the eight tasks in 01-01 through 01-04. Every PLAN automated command has an adjacent fails_when signal. A non-zero pytest exit or zero passed tests rejects a test gate. Status remains draft until execution/validation; planning is not evidence that the new tests pass.
+Task IDs cover the eight tasks in 01-01 through 01-04 and three gap-closure tasks in 01-05. Every PLAN automated command has an adjacent fails_when signal. A non-zero pytest exit or zero passed tests rejects a test gate. Plan 01-05's automated results are recorded; independent phase re-verification remains pending.
 
 ---
 
@@ -76,6 +79,17 @@ Review revision bbbf16a: child assertLogs makes nested warning counts determinis
 All map commands were re-run after execution on `feat/label-mode-defaults`: 213 / 122 / 298 (seeded random order, -n 2) / 97 / 102 / 25 / 6 / 93 passed; literal grep gate exit 1 as required; `mkdocs build --strict` clean; protected paths unchanged; D-23 PROJECT.md grep passes. Full suite: 3056 passed, 1 skipped.
 
 01-03-02's one-off pathlib script was a pre-wave-3 interim contract: its line-20 link assertion (`settings.md#action-menus`, `action_menus.md#label-mode`) now fails by design because 01-04 retargeted the card entry to the canonical `settings.md#label-mode-configuration` and `action_menus.md#card-label-mode-resolution` anchors. Those targets, and every other clause of the 01-03 contract, are pinned permanently by `tests/test1/test_label_mode_docs.py`. Status: superseded, not a gap.
+
+## Gap-Closure Execution Evidence (01-05, 2026-10-26)
+
+The new as_view tracer failed its intended icon-count assertion before the repair, then passed. The expanded
+matrix was green on that repair; all 18 new rendered cases failed against the exact recorded pre-fix card.py.
+Both persisted JUnit evidence records were accepted as RED_EVIDENCE_OK. The current card suite passes 45 tests.
+Final gates: 112 focused rendering/golden tests passed; full suite 3076 passed with one existing Django<6 CSP
+skip; Vitest 126 passed across 8 files; docs contracts 6 passed; strict MkDocs build clean; repository ruff check
+and the four owned Python-file format checks clean; protected-path diff and status empty. No golden regeneration.
+CR-01 is ready for independent re-verification. This does not certify the two carried assumptions/prohibitions,
+change nyquist_compliant, or mark Phase 1 complete.
 
 ## Manual-Only Verifications
 

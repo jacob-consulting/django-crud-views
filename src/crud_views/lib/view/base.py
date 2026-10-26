@@ -633,14 +633,17 @@ class CrudView(metaclass=CrudViewMetaClass):
         """
         Get template context for this view for a key and an optional object.
 
-        location ("context" or "list") stamps cv_label_mode for the configured key onto a non-empty result, so the
-        button leaf renders the mode the view resolved (#216), and that key as cv_action_key (#264); callers that are
-        not rendering a button leave it None.
+        location ("context" or "list") stamps cv_label_mode for the configured key onto a non-empty result, unless
+        the button already resolved it (e.g. before rendering its label template). The leaf and label template then
+        share one mode. Also stamps that key as cv_action_key (#264); callers not rendering a button leave it None.
         """
         data = self._cv_get_action_context(key, obj, user)
         if location is not None and data:
-            button = self.cv_get_context_button(key) if location == "context" else None
-            mode = self.cv_get_action_label_mode(location, key, button, data.get("cv_context_label_mode"))
+            if "cv_label_mode" in data:
+                mode = data["cv_label_mode"]
+            else:
+                button = self.cv_get_context_button(key) if location == "context" else None
+                mode = self.cv_get_action_label_mode(location, key, button, data.get("cv_context_label_mode"))
             # cv_action_key: the configured key, which a button's cv_key (its target) may differ from (#264)
             data = {**data, "cv_label_mode": mode, "cv_action_key": key}
         return data

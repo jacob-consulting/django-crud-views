@@ -12,6 +12,7 @@ from django.utils import translation
 from lxml import html as lxml_html
 
 from crud_views.lib.settings import CrudViewsSettings, crud_views_settings
+from crud_views.lib.view.base import CrudView
 from crud_views.lib.view.buttons import FilterContextButton, context_button_checks
 from crud_views.lib.viewset import ViewSet
 from tests.lib.helper.icons import HOST_ICONS, HOST_LIBRARY
@@ -359,6 +360,35 @@ def test_filter_ignores_list_singular_default(client_user_publisher_view, monkey
     _select_settings_map(monkeypatch, {})
     monkeypatch.setattr(PublisherListView, "cv_context_action_label_mode", singular)
     assert _resolve(client_user_publisher_view) == ("icon", "icon")
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("mode", MODES)
+def test_filter_toolbar_resolves_mode_once(client_user_publisher_view, monkeypatch, mode):
+    """The label template and leaf use the same resolution, even if a subclass adds target-view defaults."""
+    _select_settings_map(monkeypatch, {})
+
+    class TargetDefaultFilterButton(FilterContextButton):
+        def get_context(self, context):
+            data = super().get_context(context)
+            data["cv_context_label_mode"] = "both"
+            return data
+
+    _register_buttons(monkeypatch, TargetDefaultFilterButton(label_template_code="{{ cv_label_mode }}:{{ cv_key }}"))
+    resolve = CrudView.cv_get_action_label_mode.__func__
+    calls = []
+
+    def counted(cls, location, key, button=None, target_default=None):
+        if key == "filter":
+            calls.append((location, target_default))
+        return resolve(cls, location, key, button, target_default)
+
+    monkeypatch.setattr(CrudView, "cv_get_action_label_mode", classmethod(counted))
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"context": mode}):
+        toggle = _page_toggle(client_user_publisher_view)
+    assert calls == [("context", None)]
+    _assert_label(toggle, mode, f"{mode}:filter")
+    assert _rendered_mode(toggle) == mode
 
 
 @pytest.mark.django_db

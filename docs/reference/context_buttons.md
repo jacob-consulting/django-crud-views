@@ -119,8 +119,10 @@ now changes the stock toggle too, unless an earlier step decides the key.
 | `"label"` | the visible label only: no icon spans, no host icon classes, no icon-swap attributes |
 
 The label stays the same when the panel opens or closes; only the icon and `aria-expanded` change. The default label
-`Filter` is translated; `label_template` / `label_template_code` replace it, and `variant` and the per-mode class
-keys (`context:<variant>:<mode>`) apply as for any context button. In the icon-bearing modes the icons are placed on
+`Filter` is translated; `label_template` / `label_template_code` replace it and receive the resolved `cv_label_mode`,
+the same value the button template receives. The filter resolves this mode once before rendering its label template.
+`variant` and the per-mode class keys (`context:<variant>:<mode>`) apply as for any context button.
+In the icon-bearing modes the icons are placed on
 the button when both resolve to [host classes](icons.md#host-placement), and render as two icon spans otherwise. A
 whole-button `template` / `template_code` receives the resolved `cv_label_mode` and owns its markup, including
 whether it renders icons; it keeps the IDs and ARIA attributes of

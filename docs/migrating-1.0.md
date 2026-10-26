@@ -45,7 +45,13 @@ The new features bring their own checks. They only fire on a misconfigured new s
 project that uses none of them never sees them: `crud_views.E351`, `E354`, `E355`, `E356`, `W352`, `W353`
 ([icon libraries](reference/icons.md)), `crud_views.E361`, `W362` ([button classes](reference/buttons.md)),
 `viewset.E209` ([variants](reference/buttons.md)), `viewset.E210` ([card label mode](reference/card-list-view.md)),
-`crud_views.E106`, `viewset.E211`, `W291` ([toolbar and row label modes](reference/action_menus.md)).
+`crud_views.E106`, `viewset.E211`, `W291` ([toolbar and row label modes](reference/action_menus.md)),
+`crud_views.E108` ([label-mode defaults](reference/settings.md#action-menus)).
+
+`crud_views.E108` reports a `CRUD_VIEWS_LABEL_MODE_DEFAULTS` that is not a dict, a key that is not a button location
+(`"context"`, `"list"`, `"card"`) and a mode that is not exactly `"label"`, `"icon"` or `"both"`. At render an
+unknown key is ignored. An invalid mode raises `ValueError` in strict mode (`CRUD_VIEWS_STRICT`, which defaults to
+`DEBUG`); otherwise it logs one warning and the location falls back to its package floor.
 
 A clean `check` is not the end: some changes render differently and raise nothing. They are collected under
 [Silent breaks](#silent-breaks).
@@ -124,9 +130,19 @@ The other changes to views:
 - **If anything puts `cv_no_label` into a button's context** (a `cv_get_context()` override, a dict passed to
   `{% cv_render_button %}`, or a `cv_no_label` variable in the page's template context): it raises `ValueError`.
   Use `cv_label_mode` (`"label"`, `"icon"` or `"both"`) instead. `CardAction(no_label=True)` keeps working.
-- **Card buttons show their icon next to their label** (#213). To get the 0.29 label-only buttons back, set
-  `cv_card_actions_label_mode = "label"` on the card view, or `CardAction(label_mode="label")` on one button
-  ([Label mode](reference/card-list-view.md#label-mode)). An unknown value fails `viewset.E210`.
+- **Card buttons show their icon next to their label** (#213). To get the 0.29 label-only buttons back on every card
+  view of the project, set `CRUD_VIEWS_LABEL_MODE_DEFAULTS = {"card": "label"}` in your settings. For one view, set
+  `cv_card_actions_label_mode = "label"` on the card view; for one button, `CardAction(label_mode="label")`
+  ([Label mode](reference/card-list-view.md#label-mode)). An unknown value fails `viewset.E210`, an unknown setting
+  entry `crud_views.E108`.
+- **Card label-mode attribute:** `CardListView.cv_card_actions_label_mode` now reads `None` by default instead of
+  the resolved string `"both"`; `None` means the `"card"` entry of `CRUD_VIEWS_LABEL_MODE_DEFAULTS`
+  ([setting](reference/settings.md#action-menus), [resolution](reference/action_menus.md#label-mode)). Without
+  configuration cards still resolve to `"both"` and render as before, but this is a Python-level change: a subclass,
+  override or template that reads the raw attribute as a mode now gets `None`. Call
+  `cv_get_card_actions_label_mode()` for the resolved mode, or read the `cv_label_mode` stamped on the button
+  context. A view that assigns the attribute keeps its value, and `CardAction(no_label=True)` still renders
+  icon-only.
 - **`CardAction.variant` defaults to the target view's variant.** A card action pointing at a create view without an
   explicit `variant` now renders `btn-primary`; set `variant="secondary"` to keep the 0.29 look
   ([Variants](reference/buttons.md#variants)).

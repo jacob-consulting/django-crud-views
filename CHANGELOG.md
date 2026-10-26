@@ -40,9 +40,16 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
   renders flash messages with `{% bootstrap_messages %}` should switch to `{% cv_messages %}`; one that uses
   `{% bootstrap_css %}`, `{% bootstrap_javascript %}` or any other `django_bootstrap5` tag must now install
   `django-bootstrap5` itself and keep `django_bootstrap5` in `INSTALLED_APPS` (#221).
-- Labelled inline card buttons now render their icon as well as their text (#213).
-  `CardListView.cv_card_actions_label_mode = "label"` restores the old markup for a view;
-  `CardAction(label_mode="label")` for one button.
+- Labelled inline card buttons now render their icon as well as their text (#213). Earlier releases showed the text
+  only. `CRUD_VIEWS_LABEL_MODE_DEFAULTS = {"card": "label"}` restores the old markup for every card view of the
+  project; `CardListView.cv_card_actions_label_mode = "label"` for one view; `CardAction(label_mode="label")` for one
+  button.
+- **Card label-mode attribute:** `CardListView.cv_card_actions_label_mode` now reads `None` by default instead of the
+  resolved string `"both"`; `None` means the `"card"` entry of `CRUD_VIEWS_LABEL_MODE_DEFAULTS`
+  ([setting](docs/reference/settings.md#action-menus), [resolution](docs/reference/action_menus.md#label-mode)).
+  Without configuration the resolved mode is still `"both"` and the rendered output is unchanged, but Python code or a
+  template that reads the raw attribute as a mode gets `None`: call `cv_get_card_actions_label_mode()` instead, or
+  read the `cv_label_mode` stamped on the button context. A view that assigns the attribute keeps its value.
 - A 0.29 or 0.30 override of `crud_views/tags/card_action.html` that branches on `cv_no_label` no longer gets that
   key: the card action context carries `cv_label_mode` instead, so the override renders the label on every button,
   the `CardAction(no_label=True)` ones included, and raises nothing. Move the markup into `tags/button/action.html`,
@@ -53,7 +60,7 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
   `cv_button` passes the whole template context to `cv_button_data()`, so this also fires at every location, the
   non-card ones included, for a page that carries a `cv_no_label` context variable.
   `CardAction(no_label=True)` is unaffected.
-- A new `viewset.E210` rejects an unknown `label_mode` or `cv_card_actions_label_mode`.
+- A new `viewset.E210` rejects an unknown `label_mode` or a set `cv_card_actions_label_mode`.
 - `cv_modal_size` takes the semantic tokens `""`, `"sm"`, `"lg"` and `"xl"`. `modal-*` values fail `viewset.E250`
   with the replacement in the message.
 - The modal partial's close button uses `data-cv-modal-dismiss` (a project override of `crud_views/modal/content.html`
@@ -135,6 +142,9 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Fixed
 
+- **Malformed stamped label modes:** a malformed truthy `cv_label_mode` on a button context no longer crashes a
+  non-strict render. With `CRUD_VIEWS_STRICT` off it logs one warning per location and value and renders the
+  location's configured floor; strict mode still raises `ValueError` naming `cv_label_mode`.
 - `BreadcrumbItem` keeps a safe title (`mark_safe`, `format_html`, a rendered label) safe instead of turning it into a
   plain string, so it is no longer escaped twice (#271). A rendered label with an escaped variable, such as
   `{{ object }}` or `{{ verbose_name }}` containing `&` or `'`, showed `&amp;amp;`. This applies to every item: an
@@ -166,6 +176,12 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Added
 
+- `CRUD_VIEWS_LABEL_MODE_DEFAULTS` sets the label-mode floor per button location (`"context"`, `"list"`, `"card"`):
+  the mode of a button that nothing more specific names. Unset entries keep the package floors, `"icon"` for the
+  toolbar and rows and `"both"` for cards, held read-only in `crud_views.lib.view.label_mode.LABEL_MODE_DEFAULTS`.
+  The public `default_label_mode(location)` returns the merged floor, and
+  `CardListView.cv_get_card_actions_label_mode()` the resolved mode of a card view. `crud_views.E108` reports a
+  setting that is not a dict, an unknown location key or an invalid mode.
 - `cv_breadcrumb_label_template` / `cv_breadcrumb_label_template_code` on `CrudViewBreadcrumbMixin` label the
   current-page breadcrumb item separately from the view's short action label, which stays the text of every button
   pointing to the view (#271). Unset, the breadcrumb reads as before; a missing template triggers `viewset.E111`.

@@ -1,9 +1,9 @@
 ---
 phase: "02"
 slug: "form-key-grammar"
-status: draft
-nyquist_compliant: false
-wave_0_complete: false
+status: executed
+nyquist_compliant: true
+wave_0_complete: true
 created: "2026-10-26"
 ---
 
@@ -32,10 +32,10 @@ Plan 02-01 executes three serial tasks in wave 1. Every task gate includes an ex
 
 | Requirement | Task | Threat Ref | Secure Behavior | Test Type | Automated Command | File Exists | Status |
 |-------------|------|------------|-----------------|-----------|-------------------|-------------|--------|
-| KEYS-01 | 02-01-03 | T-02-03 | Accurate grammar; unchanged rendering | Docs build + prose review | `.venv/bin/mkdocs build --strict` | Yes | Pending execution |
-| KEYS-02 | 02-01-01, 02-01-02 | T-02-01, T-02-03 | Finite grammar; malformed keys diagnose safely; escaping retained | Real check tracer + matrix | `.venv/bin/pytest tests/test1/test_button_classes_checks.py -q` | Yes; add cases | Pending execution |
-| KEYS-03 | 02-01-01, 02-01-02 | T-02-02 | Future button-data locations cannot broaden grammar | Unit + import smoke | Quick command above; import command below | Yes; add isolation case | Pending execution |
-| KEYS-04 | 02-01-03 | — | One exact count equals the actual table | Documentation contract | `.venv/bin/pytest tests/test1/test_button_classes.py -q` | Yes; add count assertion | Pending execution |
+| KEYS-01 | 02-01-03 | T-02-03 | Accurate grammar; unchanged rendering | Docs build + prose review | `.venv/bin/mkdocs build --strict` | Yes | Automated pass; human prose review pending |
+| KEYS-02 | 02-01-01, 02-01-02 | T-02-01, T-02-03 | Finite grammar; malformed keys diagnose safely; escaping retained | Real check tracer + matrix | `.venv/bin/pytest tests/test1/test_button_classes_checks.py -q` | Yes | Pass |
+| KEYS-03 | 02-01-01, 02-01-02 | T-02-02 | Future button-data locations cannot broaden grammar | Unit + import smoke | Quick command above; import command below | Yes | Pass |
+| KEYS-04 | 02-01-03 | — | One exact count equals the actual table | Documentation contract | `.venv/bin/pytest tests/test1/test_button_classes.py -q` | Yes | Pass; missing/duplicate/off-by-one mutations rejected |
 
 ## Per-Task Verification Map
 
@@ -77,11 +77,33 @@ constraints as part of this phase.
 
 ## Validation Sign-Off
 
-- [ ] Finalized tasks each have automated verification
-- [ ] No three consecutive tasks without automated checks
-- [ ] All planned test references exist or are created by an earlier task
-- [ ] No watch-mode flags
-- [ ] Focused feedback latency under 30 seconds
-- [ ] nyquist_compliant: true set after validation
+- [x] Finalized tasks each have automated verification
+- [x] No three consecutive tasks without automated checks
+- [x] All planned test references exist or are created by an earlier task
+- [x] No watch-mode flags
+- [x] Focused feedback latency under 30 seconds
+- [x] nyquist_compliant: true set after validation
 
-**Approval:** Pending execution and validation.
+**Approval:** Automated task acceptance complete; end-of-phase prose review and the two unclassified probe assumptions remain visible for review.
+
+## Execution Evidence — 2026-10-26
+
+- Tracer RED: one intentional W362 acceptance failure; `02-01-RED-tracer.json` classified `RED_EVIDENCE_OK`.
+- Tracer GREEN: 28 checks passed in 0.05s; fresh bare-settings module import passed.
+- Matrix: 501 focused checks passed in 0.52s; 26 rendering/crispy/golden/docs regressions passed in 2.99s.
+- Boundary sensitivity: exact pre-phase helper loaded only in an isolated interpreter makes the future-location
+  test fail (15 warnings versus 8); `02-01-RED-matrix.json` classified `RED_EVIDENCE_OK`. Current implementation
+  passed this test in the focused and full runs. No source file was replaced for this probe.
+- Count RED: exact integer assertion 64 versus 70 failed; `02-01-RED-count.json` classified `RED_EVIDENCE_OK`.
+- Count/docs GREEN: 53 tests passed in 0.10s; missing, duplicate, one-below and one-above claims were each rejected
+  by invoking the actual guard with an in-memory document replacement.
+- Strict MkDocs build passed in 0.60s.
+- Full Python suite: 3360 passed, 1 skipped in 22.17s on Python 3.12.3 / Django 5.2.14. The existing
+  `test_django6_builtin_csp_nonce_roundtrip` requires Django 6.0 and remains skipped. Other matrix environments
+  were not executed in this plan.
+- Vitest: 8 files / 126 tests passed in 4.62s.
+- Ruff 0.16.10 lint passed; `ruff format --check src tests` passed (287 files). Repository-wide format check
+  reports seven existing planning Markdown files, listed in `deferred-items.md`. This is not a manifest-aligned
+  Ruff >=0.17,<0.18 gate; no dependency constraint or package installation changed.
+- Preservation: `DEFAULT_BUTTON_CLASSES` and `get_button_class` ASTs are identical to the plan-start revision;
+  templates, goldens, crispy adapters, button-data locations and label floors have no diff. Branch is introduce-gsd.

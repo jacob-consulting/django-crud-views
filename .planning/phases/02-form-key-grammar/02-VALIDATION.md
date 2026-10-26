@@ -1,7 +1,7 @@
 ---
 phase: "02"
 slug: "form-key-grammar"
-status: executed
+status: validated
 nyquist_compliant: true
 wave_0_complete: true
 created: "2026-10-26"
@@ -32,7 +32,7 @@ Plan 02-01 executes three serial tasks in wave 1. Every task gate includes an ex
 
 | Requirement | Task | Threat Ref | Secure Behavior | Test Type | Automated Command | File Exists | Status |
 |-------------|------|------------|-----------------|-----------|-------------------|-------------|--------|
-| KEYS-01 | 02-01-03 | T-02-03 | Accurate grammar; unchanged rendering | Docs build + prose review | `.venv/bin/mkdocs build --strict` | Yes | Automated pass; human prose review pending |
+| KEYS-01 | 02-01-03 | T-02-03 | Accurate grammar; unchanged rendering | Docs build + prose review | `.venv/bin/mkdocs build --strict` | Yes | Automated pass; human prose review passed in 02-UAT.md |
 | KEYS-02 | 02-01-01, 02-01-02 | T-02-01, T-02-03 | Finite grammar; malformed keys diagnose safely; escaping retained | Real check tracer + matrix | `.venv/bin/pytest tests/test1/test_button_classes_checks.py -q` | Yes | Pass |
 | KEYS-03 | 02-01-01, 02-01-02 | T-02-02 | Future button-data locations cannot broaden grammar | Unit + import smoke | Quick command above; import command below | Yes | Pass |
 | KEYS-04 | 02-01-03 | — | One exact count equals the actual table | Documentation contract | `.venv/bin/pytest tests/test1/test_button_classes.py -q` | Yes | Pass; missing/duplicate/off-by-one mutations rejected |
@@ -84,7 +84,7 @@ constraints as part of this phase.
 - [x] Focused feedback latency under 30 seconds
 - [x] nyquist_compliant: true set after validation
 
-**Approval:** Automated task acceptance complete; end-of-phase prose review and the two unclassified probe assumptions remain visible for review.
+**Approval:** Automated task acceptance complete; human prose review passed in 02-UAT.md. Both unclassified source-probe assumptions remain visible classifier limitations, not resolved probe findings.
 
 ## Execution Evidence — 2026-10-26
 
@@ -107,3 +107,11 @@ constraints as part of this phase.
   Ruff >=0.17,<0.18 gate; no dependency constraint or package installation changed.
 - Preservation: `DEFAULT_BUTTON_CLASSES` and `get_button_class` ASTs are identical to the plan-start revision;
   templates, goldens, crispy adapters, button-data locations and label floors have no diff. Branch is introduce-gsd.
+
+## Validation Audit 2026-10-26
+
+| Metric | Count |
+|---|---|
+| Gaps found | 0 |
+| Resolved | 0 |
+| Escalated | 0 |

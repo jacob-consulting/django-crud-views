@@ -39,7 +39,8 @@ A click hands the alert's `role="alert"` frame to `cv.adapters.alert.close`. Wit
 default adapter closes it through Bootstrap's `Alert` component, fade included; without it the adapter removes the
 alert from the page, so the X works with or without Bootstrap's JavaScript. A theme can replace the adapter, see
 [Dismissible alerts](javascript.md#dismissible-alerts). Without the core scripts the alert still renders and reads
-correctly; only the X does nothing.
+correctly, but the X does not close it: with neither script it does nothing, and with `viewset.js` but no
+`adapters.js` each click throws a `TypeError` in the console.
 
 The classes are unchanged: `alert-dismissible fade show` and `btn-close` are still Bootstrap CSS classes, so the
 stock look still needs Bootstrap's CSS. A theme that styles alerts differently overrides the frame, see

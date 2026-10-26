@@ -209,9 +209,11 @@ your framework builds dropdowns differently:
 The button classes they use (`*:menu-wrapper`, `*:menu-toggle`, `*:hidden-label`) still come from the table, so an
 override can keep calling `{% cv_button_class %}` for them.
 
-These dropdown templates are the only stock templates with Bootstrap `data-bs-*` attributes. The alert frame has
-none: its close control uses `data-cv-alert-dismiss` and the alert adapter, see
-[Dismissible alerts](javascript.md#dismissible-alerts).
+In the core `crud_views` templates, these dropdown templates are the only ones with Bootstrap `data-bs-*`
+attributes. The alert frame has none: its close control uses `data-cv-alert-dismiss` and the alert adapter, see
+[Dismissible alerts](javascript.md#dismissible-alerts). Outside core, the `crud_views_object_detail` layouts
+`layouts/accordion/group.html` and `layouts/tabs-vertical/object_detail.html` still use Bootstrap's collapse and tab
+attributes.
 
 ## Disabled actions in overridden templates
 

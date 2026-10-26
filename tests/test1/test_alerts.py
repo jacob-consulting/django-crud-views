@@ -325,7 +325,7 @@ def _assert_core_bootstrap_data_attributes(root: Path) -> None:
 
 
 def test_stock_bootstrap_data_attributes_are_dropdown_only():
-    """ALRT-04: only the dropdown templates named in theme.md keep data-bs-* attributes; the alert frame has none."""
+    """ALRT-04: core crud_views templates keep data-bs-* only in the dropdowns named in theme.md; the alert has none."""
     _assert_core_bootstrap_data_attributes(CORE_TEMPLATES)
 
 

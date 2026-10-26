@@ -4,7 +4,7 @@ slug: "label-mode-defaults"
 # status lifecycle: draft (seeded by plan-phase) → validated (set by validate-phase §6)
 # audit-milestone §5.5 distinguishes NOT-VALIDATED (draft) from PARTIAL (validated + nyquist_compliant: true) (#2117)
 status: validated
-nyquist_compliant: false
+nyquist_compliant: true
 wave_0_complete: true
 created: "2026-10-25"
 ---
@@ -115,3 +115,7 @@ All specified phase behaviors have automated verification. Spec-less probe retai
 | Gaps found | 0 |
 | Resolved | 0 |
 | Escalated | 0 |
+
+## Gap-Closure Coverage Audit
+
+All six requirements retain automated behavioral coverage across completed plans 01-01 through 01-05. The new three-task map includes passing rendered, class-API, lifecycle and documentation checks, with RED evidence for the regression. No automated validation gap remains. The separate product-intent prohibitions and unclassified completeness assumptions remain explicitly flagged for phase verification; Nyquist compliance does not certify them.

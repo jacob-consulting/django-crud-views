@@ -5,7 +5,7 @@ titles: json
 findings:
   - id: CR-01
     severity: critical
-    disposition: open
+    disposition: fixed
     title: "Card label mode set on the view instance is now ignored"
   - id: WR-01
     severity: warning
@@ -47,7 +47,7 @@ findings:
     severity: info
     disposition: open
     title: "Some floor tests depend on the test app's default maps instead of clearing them"
-open: 11
+open: 10
 total: 11
 recorded: 2026-10-26T08:59:26.046Z
 ---
@@ -56,7 +56,7 @@ recorded: 2026-10-26T08:59:26.046Z
 
 | Finding | Severity | Disposition | Source |
 |---------|----------|-------------|--------|
-| CR-01 | critical | open | - |
+| CR-01 | critical | fixed | e1bd559 + rendered regressions; independently confirmed by the gap-scope code review |
 | WR-01 | warning | open | - |
 | WR-02 | warning | open | - |
 | WR-03 | warning | open | - |
@@ -71,3 +71,5 @@ recorded: 2026-10-26T08:59:26.046Z
 Dispositions: `open` (recorded, not yet triaged), `fixed`, `skipped`, `deferred`.
 Set `deferred` by hand and put the reason in the Source cell; both are preserved. A `|` in the reason is kept as prose and escaped on the next run.
 Re-running the gate keeps every row it can. A row the current review no longer reports is kept and its Source cell flagged, so a finding does not leave this record silently. ONE exception: when a finding id is REUSED by a different finding, the earlier decision cannot keep a row — the id is taken — and it is dropped. A RECORDED decision (anything but `open`) is named on the console when that happens; a row still at `open` is replaced silently, because `open` records no decision to lose.
+
+Gap-closure review: CR-01 fixed. The ten earlier advisory findings remain open and outside this repair scope; none is claimed fixed by the clean eight-file review.

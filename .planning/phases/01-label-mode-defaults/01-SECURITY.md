@@ -40,6 +40,12 @@ created: "2026-10-26"
 | T-01-11 | Elevation of privilege | docs contract test | low | mitigate | `ast.literal_eval` only, never `exec` (`tests/test1/test_label_mode_docs.py:96`) | closed |
 | T-01-12 | Information disclosure | published docs / acceptance notes | low | mitigate | Added doc/changelog lines contain only generic examples; no secrets, tokens or downstream project names | closed |
 
+| T-01-13 | Tampering | Instance/card-floor precedence | medium | mitigate | Own-instance branch in `views/card.py`; `test_card_instance_mode_precedence` renders explicit/action/no_label choices against conflicting floors | closed |
+| T-01-14 | Information disclosure | Shared class mutation | medium | mitigate | Resolver only reads `vars(self)`; `test_card_request_assignment_is_local` and reset-to-None tests verify sequential request isolation without class mutation | closed |
+| T-01-15 | Denial of service | Eager strict-floor evaluation | high | mitigate | Instance non-None branch does not call floor accessor; parameterized strict-invalid-floor render regressions pass | closed |
+| T-01-16 | Elevation of privilege | Card access/method gating | low | accept | Permission/method branches unchanged; `test_card_instance_mode_reaches_child_action` asserts granted/denied child rendering, and existing POST/disabled tests pass | closed |
+| T-01-SC | Tampering | Dependency supply chain | high | mitigate | No dependency installation or dependency file changes in 01-05 | closed |
+
 *Status: open · closed · open — below high threshold (non-blocking)*
 *Severity: critical > high > medium > low — only open threats at or above workflow.security_block_on count toward threats_open*
 *Disposition: mitigate (implementation required) · accept (documented risk) · transfer (third-party)*
@@ -51,6 +57,8 @@ created: "2026-10-26"
 | Risk ID | Threat Ref | Rationale | Accepted By | Date |
 |---------|------------|-----------|-------------|------|
 | AR-01-01 | T-01-06 | Phase changes label rendering only; no permission code is touched. Existing authorized-render and permission tests are the regression guard. | Plan 01-02 threat model (planning) | 2026-10-25 |
+
+| AR-01-02 | T-01-16 | Label-mode repair preserves permission and method code; child permission and existing action regressions pass. | Plan 01-05 threat model | 2026-10-26 |
 
 *Accepted risks do not resurface in future audit runs.*
 
@@ -72,3 +80,15 @@ created: "2026-10-26"
 - [x] `status: verified` set in frontmatter
 
 **Approval:** verified 2026-10-26
+
+## Security Audit 2026-10-26
+
+| Metric | Count |
+|---|---|
+| Threats found | 17 |
+| Closed | 17 |
+| Open | 0 |
+
+## Gap-Closure Security Evidence
+
+L1 source inspection confirms the four new threat dispositions and shared supply-chain row. The 01-05 summary records 45 card tests and 3,076 full-suite tests passing. Existing T-01-01 through T-01-12 mitigations remain unchanged; no blocking threat remains.

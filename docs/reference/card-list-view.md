@@ -47,7 +47,7 @@ You do not configure this on `CardAction`; the method and modal behaviour derive
 |---|---|---|---|
 | `key` | `str` | (required) | View key in the ViewSet (`"detail"`, `"update"`, `"delete"`, etc.) |
 | `label` | `str \| None` | `None` | Explicit button label. If None, falls back to the target view's short label. |
-| `label_mode` | `str \| None` | `None` | `"label"`, `"icon"` or `"both"`. If None, inherits the view's `cv_card_actions_label_mode`. See [Label mode](#label-mode). |
+| `label_mode` | `str \| None` | `None` | `"label"`, `"icon"` or `"both"`. If None (and `no_label` is not set), the button gets the view's `cv_get_card_actions_label_mode()`: the view's `cv_card_actions_label_mode`, else the project's card floor, else the package floor `"both"`. See [Label mode](#label-mode). |
 | `no_label` | `bool` | `False` | Superseded by `label_mode="icon"`, which it equals. Setting it together with `label_mode` is a validation error. |
 | `variant` | `str \| None` | `None` | Button style: `"primary"`, `"secondary"`, `"tertiary"`, `"danger"`. If None, falls back to the target view's `cv_action_variant` (`primary` for create, `danger` for delete, else `secondary`). See [Buttons](buttons.md#variants). |
 | `flex` | `bool` | `False` | If True, the button gets the `card:flex` classes (`flex-grow-1` by default) |
@@ -64,18 +64,29 @@ You do not configure this on `CardAction`; the method and modal behaviour derive
 | `"icon"` | the icon only; the label becomes a visually hidden text and the `title` tooltip |
 | `"both"` | the icon followed by the text |
 
-The view attribute sets the default for every action; `CardAction.label_mode` overrides it per button.
+To set one look for every card page of the project, use the setting; the package card floor is `"both"`:
+
+```python
+# settings.py
+CRUD_VIEWS_LABEL_MODE_DEFAULTS = {"card": "label"}
+```
+
+See [Settings](settings.md#action-menus) for the setting. A view attribute overrides it for one view, and
+`CardAction.label_mode` overrides both for one button:
 
 | Attribute | Type | Default | Description |
 |---|---|---|---|
-| `cv_card_actions_label_mode` | `str` | `"both"` | Label mode of every card action without its own `label_mode` |
+| `cv_card_actions_label_mode` | `str \| None` | `None` | Label mode of every card action without its own `label_mode`. None uses the `"card"` entry of `CRUD_VIEWS_LABEL_MODE_DEFAULTS`, else `"both"` |
 
-The order is `CardAction.label_mode`, then `"icon"` when `no_label=True`, then `cv_card_actions_label_mode`. An action
+The raw attribute stays `None` unless a view sets it. To read the mode a card action actually gets, call the
+classmethod `cv_get_card_actions_label_mode()` in Python, or read the `cv_label_mode` stamped on the button context in
+a template.
+
+How explicit choices and defaults combine is described in [Action menus](action_menus.md#label-mode). For cards,
+`CardAction(no_label=True)` currently still renders icon-only, ahead of the view attribute and the setting. An action
 with an empty label is always rendered `"icon"`, and a `"both"` button whose view has no icon renders like `"label"`.
-`viewset.E210` rejects an unknown `label_mode` or `cv_card_actions_label_mode`.
-
-To get one policy everywhere, set `cv_card_actions_label_mode` once on a base card view class of your project and
-subclass it, rather than setting it on every view.
+`viewset.E210` rejects an unknown `label_mode`, or a `cv_card_actions_label_mode` that is set but not exactly
+`"label"`, `"icon"` or `"both"`.
 
 Toolbar and row buttons have their own, key-based knob — a map of action key to mode in settings, on the ViewSet or
 on the view; see [Action menus](action_menus.md#label-mode).

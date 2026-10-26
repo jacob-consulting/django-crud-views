@@ -5,8 +5,8 @@ import warnings
 
 import pytest
 from django.contrib.auth.models import User
-from django.test import Client, override_settings
-from django.urls import reverse
+from django.test import Client, RequestFactory, override_settings
+from django.urls import resolve, reverse
 from lxml import html as lxml_html
 
 from crud_views.lib.view import CardAction
@@ -40,6 +40,19 @@ def _card(client, url):
     resp = client.get(url)
     assert resp.status_code == 200
     return lxml_html.fromstring(resp.content).xpath(CARD)[0]
+
+
+def _render_card_view(view_class, user, *, initkwargs=None, query=None):
+    """Render an actual card response, including action groups and the button leaf."""
+    url = reverse(view_class.cv_viewset.get_router_name("card"))
+    request = RequestFactory().get(url, data=query or {})
+    request.user = user
+    request.resolver_match = resolve(url)
+    response = view_class.as_view(**(initkwargs or {}))(request)
+    assert response.status_code == 200
+    response.render()
+    (card,) = lxml_html.fromstring(response.content).xpath(CARD)
+    return card
 
 
 def _inline(card, key):
@@ -238,6 +251,26 @@ def _assert_icon_only(button):
     label = hidden.text_content().strip()
     assert label
     assert button.get("title") == label
+
+
+@pytest.mark.django_db
+def test_card_initkwargs_label_without_setting(author_douglas_adams, user_author_view, settings):
+    if hasattr(settings, "CRUD_VIEWS_LABEL_MODE_DEFAULTS"):
+        del settings.CRUD_VIEWS_LABEL_MODE_DEFAULTS
+    assert not hasattr(settings, "CRUD_VIEWS_LABEL_MODE_DEFAULTS")
+
+    label = _inline(
+        _render_card_view(AuthorCardListView, user_author_view, initkwargs={"cv_card_actions_label_mode": "label"}),
+        "detail",
+    )
+    _assert_label_only(label, "Details")
+
+    control = _inline(_render_card_view(AuthorCardListView, user_author_view), "detail")
+    assert len(_icons(control)) == 1
+    assert _icons(control)[0].get("aria-hidden") == "true"
+    assert _text(control) == "Details"
+    assert control.cssselect("span.visually-hidden") == []
+    assert control.get("title") is None
 
 
 @pytest.mark.django_db

@@ -2,17 +2,17 @@
 gsd_state_version: "1.0"
 current_phase: 02
 current_phase_name: Form key grammar
-status: executing
-stopped_at: Phase 02 context gathered
-last_updated: "2026-10-26T12:16:59.409Z"
+status: verifying
+stopped_at: Completed 02-01-PLAN.md; Phase 02 awaiting external review and verification
+last_updated: "2026-10-26T12:42:14.649Z"
 last_activity: 2026-10-26
-last_activity_desc: Phase 01 complete, transitioned to Phase 2
-state_head: a2aaafe266b1a3f3663352c958296fe05c0904a5
+last_activity_desc: Phase 02 plan implemented; awaiting external review and verification
+state_head: 398006457ff00eb9169bf0b30894b4ec304e9293
 progress:
   total_phases: 7
   completed_phases: 1
   total_plans: 6
-  completed_plans: 5
+  completed_plans: 6
   percent: 14
 ---
 
@@ -23,14 +23,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-10-26)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 2 — Form key grammar
+**Current focus:** Phase 02 — Form key grammar
 
 ## Current Position
 
-Phase: 02 (Form key grammar) — READY TO EXECUTE
-Plan: Not started
-Status: Ready to execute
-Last activity: 2026-10-26 — Phase 01 complete, transitioned to Phase 2
+Phase: 02 (Form key grammar) — AWAITING REVIEW
+Plan: 1 of 1
+Status: Plan implemented — awaiting external review and phase verification
+Last activity: 2026-10-26 — Phase 02 plan implemented; awaiting external review and verification
 
 Progress: [█░░░░░░░░░] 14%
 
@@ -63,6 +63,7 @@ Progress: [█░░░░░░░░░] 14%
 | Phase 01 P03 | 4 min | 2 tasks | 7 files |
 | Phase 01 P04 | 10 min | 2 tasks | 9 files |
 | Phase 01 P05 | 8 min | 3 tasks | 10 files |
+| Phase 02 P01 | 20 min | 3 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -85,6 +86,8 @@ Recent decisions affecting current work:
 - [Phase 01]: Label-mode precedence is stated once per location in action_menus.md (context/list/card resolution sections); other pages link instead of restating
 - [Phase 01]: settings.md#label-mode-configuration is the single merge-or-replace table: CRUD_VIEWS_LABEL_MODE_DEFAULTS merges per location, per-action maps replace whole
 - [Phase 01]: Card action rendering honors own instance values before the class resolver; own None reads the live card floor, while absent own values retain subclass fallback hooks.
+- [Phase 02]: Form kinds accept all three class-key modes; context/list/card retain variants under independent immutable location allow-lists.
+- [Phase 02]: Form class keys do not enable form label floors or change crispy rendering; those remain Phase 6 work.
 
 ### Pending Todos
 
@@ -92,7 +95,9 @@ None yet.
 
 ### Blockers/Concerns
 
-- Phase 2: KEYS-01 grammar (A vs B) is an open maintainer decision; settle it in the phase discussion.
+- Phase 2: Option A is implemented; external-AI review, phase verification and human prose review remain pending.
+- Phase 2: Ruff 0.16.10 is below the manifest range and global formatting flags seven pre-existing planning
+  Markdown files; product formatting passes. See phase deferred-items.md and WINDOWS entry 4.
 - Phase 3, 6, 7: each needs a spec or maintainer decision before planning.
 - Phase 7: retain the decided stable label-mode names; track the separately planned `no_label` removal before 1.0.
 - Phase 5: confirm the hidden-label key name (`pagination:hidden-label` vs `table:hidden-label`) before Phase 7.
@@ -107,6 +112,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-26T11:50:33.993Z
-Stopped at: Phase 02 context gathered
-Resume file: .planning/phases/02-form-key-grammar/02-CONTEXT.md
+Last session: 2026-10-26T12:42:14.551Z
+Stopped at: Completed 02-01-PLAN.md; Phase 02 awaiting external review and verification
+Resume file: None

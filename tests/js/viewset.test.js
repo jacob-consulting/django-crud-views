@@ -1,6 +1,17 @@
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import $ from "jquery";
+import { listenerErrors } from "./helpers/errors.js";
 import { loadScript, nav } from "./helpers/load.js";
+
+// The Python-proven render of a stock dismissible alert (tests/test1/test_alerts.py owns its bytes); resolved
+// from this file's own directory, as load.js resolves the shipped scripts from its own.
+const DISMISSIBLE_ALERT_HTML = fs.readFileSync(
+    path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../test1/golden/alerts/dismissible.html"),
+    "utf-8",
+);
 
 function orderForm({ autoSubmit = true } = {}) {
     document.body.innerHTML = `
@@ -85,6 +96,63 @@ describe("viewset.js", () => {
             document.querySelector("a").dispatchEvent(event);
             expect(event.defaultPrevented).toBe(true);
             expect(nav.href).toBe("/books/");
+        });
+    });
+
+    describe("rendered alert dismissal tracer", () => {
+        const GLOBALS = ["cv", "bootstrap"];
+
+        // Fresh real defaults per case: clear only cv/bootstrap so the adapters' preservation merge cannot keep an
+        // earlier case's fake, then restore exactly the original descriptors (setup.js's $/jQuery stay untouched).
+        async function withFreshDefaults(bootstrap, fn) {
+            const saved = GLOBALS.map((name) => [name, Object.getOwnPropertyDescriptor(window, name)]);
+            try {
+                for (const name of GLOBALS) delete window[name];
+                if (bootstrap !== undefined) window.bootstrap = bootstrap;
+                await loadScript("adapters");
+                document.body.innerHTML = `${DISMISSIBLE_ALERT_HTML}<p id="sibling">kept</p>`;
+                await fn();
+            } finally {
+                for (const [name, descriptor] of saved) {
+                    if (descriptor) Object.defineProperty(window, name, descriptor);
+                    else delete window[name];
+                }
+            }
+        }
+
+        function clickClose() {
+            const control = document.querySelector("[data-cv-alert-dismiss]");
+            expect(control).not.toBeNull();
+            const frame = control.closest('[role="alert"]');
+            expect(frame).not.toBeNull();
+            const event = new MouseEvent("click", { bubbles: true, cancelable: true });
+            const errors = listenerErrors(() => control.dispatchEvent(event));
+            return { frame, event, errors };
+        }
+
+        it("delegates to a present Alert component with the nearest frame", async () => {
+            const instance = { close: vi.fn() }; // a no-op close: the component owns the outcome
+            const Alert = { getOrCreateInstance: vi.fn(() => instance) };
+            await withFreshDefaults({ Alert }, () => {
+                const { frame, event, errors } = clickClose();
+                expect(errors).toEqual([]);
+                expect(event.defaultPrevented).toBe(true);
+                expect(Alert.getOrCreateInstance).toHaveBeenCalledTimes(1);
+                expect(Alert.getOrCreateInstance.mock.calls[0][0]).toBe(frame);
+                expect(instance.close).toHaveBeenCalledTimes(1);
+                expect(frame.isConnected).toBe(true);
+            });
+        });
+
+        it("removes the frame when no Alert component is loaded", async () => {
+            await withFreshDefaults(undefined, () => {
+                const { frame, event, errors } = clickClose();
+                expect(errors).toEqual([]);
+                expect(event.defaultPrevented).toBe(true);
+                expect(frame.isConnected).toBe(false);
+                expect(document.querySelector('[role="alert"]')).toBeNull();
+                expect(document.getElementById("sibling").isConnected).toBe(true);
+            });
         });
     });
 

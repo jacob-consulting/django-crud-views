@@ -1,3 +1,6 @@
+import re
+from pathlib import Path
+
 import pytest
 from django.template import Context, Template
 from django.test import override_settings
@@ -86,6 +89,13 @@ def test_default_table_is_complete():
     assert get_button_class("context", "primary") == "btn btn-outline-primary btn-lg"
     assert get_button_class("card", "danger") == "btn btn-secondary btn-sm"
     assert get_button_class("menu", "item") == "dropdown-item"
+
+
+def test_documented_default_key_count_matches_table():
+    document = (Path(__file__).resolve().parents[2] / "docs/reference/buttons.md").read_text()
+    counts = re.findall(r"The default table has (\d+) keys\b", document)
+    assert len(counts) == 1, "Expected exactly one canonical default-key count sentence"
+    assert int(counts[0]) == len(DEFAULT_BUTTON_CLASSES)
 
 
 @pytest.mark.parametrize(

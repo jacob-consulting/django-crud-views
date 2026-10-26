@@ -47,7 +47,7 @@ from .action_menu import (
 )
 from .buttons import ContextButton, context_button_checks, cv_icon_mode_checks
 from .context import ViewContext
-from .label_mode import label_mode_check
+from .label_mode import default_label_mode, label_mode_check
 from .meta import CrudViewMetaClass
 from .variant import variant_check
 from .visibility import cv_resolve_action
@@ -88,11 +88,13 @@ class CrudView(metaclass=CrudViewMetaClass):
     # label mode per action key (#216): "label" / "icon" / "both"; unnamed keys are "icon"; None: ViewSet, then setting
     cv_list_actions_label_mode: dict[str, str] | None = None
     # (#216) set on the page showing the toolbar: "on my toolbar, key X looks like this"; unnamed keys fall to the
-    # target view's cv_context_action_label_mode, then "icon"
+    # target view's cv_context_action_label_mode, then to the context floor of the defaults map
+    # (CRUD_VIEWS_LABEL_MODE_DEFAULTS, package default icon)
     cv_context_actions_label_mode: dict[str, str] | None = None
     # label mode as a target view (#269), set on the view the button opens: "wherever a toolbar points at me, I look
-    # like this"; "label" / "icon" / "both"; None: "icon". Context toolbar only, the last fallback after the maps and
-    # the button's label_mode (not to be confused with the per-key dict cv_context_actions_label_mode above)
+    # like this"; "label" / "icon" / "both"; None: the context floor of the defaults map, not a fixed value. Context
+    # toolbar only, after the maps and the button's label_mode and before that floor (not to be confused with the
+    # per-key dict cv_context_actions_label_mode above)
     cv_context_action_label_mode: str | None = None
 
     # modal rendering (Bootstrap 5 theme; see superpowers/specs/2026-07-14-bootstrap-modals-design.md)
@@ -284,20 +286,25 @@ class CrudView(metaclass=CrudViewMetaClass):
 
     @classmethod
     def cv_get_context_actions_label_mode(cls) -> dict[str, str]:
-        """Context toolbar action key -> label mode (#216); keys not named fall to the target view's default (#269)."""
+        """Context toolbar action key -> label mode (#216).
+
+        Keys not named fall to the target view's default (#269), then to default_label_mode("context"), the context
+        floor of CRUD_VIEWS_LABEL_MODE_DEFAULTS.
+        """
         return cls.cv_first_inline_keys(cls.cv_context_actions_label_mode, "context_actions_label_mode")
 
     @classmethod
     def cv_get_action_label_mode(
         cls, location: str, key: str, button: ContextButton | None = None, target_default: str | None = None
     ) -> str:
-        """The label mode of one configured context or list action key; "icon" when nothing names it (#216).
+        """The label mode of one configured context or list action key (#216).
 
         A context key takes the view's own map if it names the key, then the label_mode of its context button, then
-        the resolved map (#264), then target_default, the target view's cv_context_action_label_mode (#269); row
-        actions never read the button or the target. button is the key's context button as the rendering view sees
-        it; None looks it up on the class. Cards resolve their mode per CardAction in cv_get_card_action_data() and
-        never come through here.
+        the resolved map (#264), then target_default, the target view's cv_context_action_label_mode (#269), and
+        finally default_label_mode("context"), the context floor of CRUD_VIEWS_LABEL_MODE_DEFAULTS; the floor is read
+        only when nothing before it names the key. Row actions never read the button or the target. button is the
+        key's context button as the rendering view sees it; None looks it up on the class. Cards resolve their mode
+        per CardAction in cv_get_card_action_data() and never come through here.
         """
         if location == "context":
             if cls.cv_context_actions_label_mode is not None and key in cls.cv_context_actions_label_mode:
@@ -309,7 +316,7 @@ class CrudView(metaclass=CrudViewMetaClass):
             mapping = cls.cv_get_context_actions_label_mode()
             if key in mapping:
                 return mapping[key]
-            return target_default or "icon"
+            return target_default or default_label_mode("context")
         elif location == "list":
             mapping = cls.cv_get_list_actions_label_mode()
         else:

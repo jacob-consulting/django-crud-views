@@ -52,7 +52,7 @@ for unknown keys.
      the set of locations, not from a literal.
   5. `grep -n '"both" if card\|or "icon"\|get(key, "icon")' src/crud_views/lib/view/*.py` returns nothing. Goldens
      stay byte-identical, and the docs state per-key merge vs whole-dict replacement for each knob.
-**Plans**: 4/4 plans executed
+**Plans**: 5 plans (4 executed; 1 gap-closure plan ready)
 
 Plans:
 **Wave 1**
@@ -67,6 +67,10 @@ Plans:
 **Wave 3** *(blocked on Wave 2 completion)*
 
 - [x] 01-04-PLAN.md — Canonical configuration docs, decision handoff and final quality gates
+
+**Wave 4** *(gap closure after completed Waves 1–3)*
+
+- [ ] 01-05-PLAN.md — Restore instance card modes, preserve resolver hooks and clarify effective-mode guidance
 
 **UI hint**: no (settings and resolution only; no markup change)
 

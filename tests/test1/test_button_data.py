@@ -294,16 +294,6 @@ LABEL_MODE_LOGGER = "crud_views.lib.view.label_mode"
 CONFIGURED = {"context": "both", "list": "label", "card": "icon"}
 
 
-@pytest.fixture
-def warned(monkeypatch):
-    """A fresh once-per-pair warning register for this test (the production register lives for the process)."""
-    from crud_views.lib.view import label_mode
-
-    fresh: set = set()
-    monkeypatch.setattr(label_mode, "_warned", fresh)
-    return fresh
-
-
 def _label_mode_records(caplog) -> list:
     return [record for record in caplog.records if record.name == LABEL_MODE_LOGGER]
 
@@ -325,7 +315,7 @@ def test_configured_leaf_floor(location):
 
 @pytest.mark.parametrize("location", LOCATIONS)
 @pytest.mark.parametrize("value", [{"filter": "both"}, ["both"], 1, "Both", " both ", "b\u03bfth", "lable"], ids=repr)
-def test_invalid_stamped_mode_falls_back(location, value, warned, caplog):
+def test_invalid_stamped_mode_falls_back(location, value, caplog):
     ctx = base(cv_label="Details", cv_label_mode=value)
     strict = override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS=CONFIGURED, CRUD_VIEWS_STRICT=True)
     with strict, pytest.raises(ValueError, match="cv_label_mode must be one of"):
@@ -343,7 +333,7 @@ def test_invalid_stamped_mode_falls_back(location, value, warned, caplog):
 @pytest.mark.parametrize("strict", [True, False])
 @pytest.mark.parametrize("location", LOCATIONS)
 @pytest.mark.parametrize("value", [None, "", [], {}], ids=repr)
-def test_falsey_stamped_mode_uses_floor(strict, location, value, warned, caplog):
+def test_falsey_stamped_mode_uses_floor(strict, location, value, caplog):
     # a falsey stamp means unset, as before: the floor, no malformed-stamp warning
     ctx = base(cv_label="Details", cv_label_mode=value)
     with override_settings(CRUD_VIEWS_STRICT=strict):
@@ -364,7 +354,7 @@ def test_strict_stamped_error_precedes_invalid_floor(location):
     assert "'Both'" in str(excinfo.value)
 
 
-def test_same_bad_pair_warns_once_across_sources(warned, caplog):
+def test_same_bad_pair_warns_once_across_sources(caplog):
     from crud_views.lib.view.label_mode import default_label_mode
 
     with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"context": "Both"}, CRUD_VIEWS_STRICT=False):

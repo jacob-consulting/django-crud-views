@@ -1,10 +1,13 @@
 """#216: label-mode maps — settings, ViewSet fields, view attributes, resolution and checks."""
 
 import pytest
+from django.conf import settings
+from django.core.checks import ERROR
+from django.test import override_settings
 from pydantic import ValidationError
 
 from crud_views.lib.settings import CrudViewsSettings, crud_views_settings
-from crud_views.lib.view.label_mode import is_label_mode_map
+from crud_views.lib.view.label_mode import LABEL_MODES, is_label_mode_map
 from crud_views.lib.viewset import ViewSet
 from tests.test1.app.models import Author
 from tests.test1.app.views import AuthorDetailView, AuthorListView, cv_author
@@ -142,3 +145,101 @@ def test_w291_never_for_viewset_or_setting(monkeypatch):
     monkeypatch.setattr(crud_views_settings, "context_actions_label_mode", {"nonexistent": "both"})
     for view_cls in (AuthorListView, AuthorDetailView):
         assert "viewset.W291" not in _ids(view_cls)
+
+
+# E108: CRUD_VIEWS_LABEL_MODE_DEFAULTS, the per-location floor (read raw, at check time)
+
+E108_LOCATIONS = "['card', 'context', 'list']"
+E108_MODES = "['both', 'icon', 'label']"
+
+
+def _e108(configured=None, *, absent=False) -> list:
+    if absent:
+        with override_settings():
+            del settings.CRUD_VIEWS_LABEL_MODE_DEFAULTS
+            messages = crud_views_settings.check_messages
+    else:
+        with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS=configured):
+            messages = crud_views_settings.check_messages
+    return [m for m in messages if m.id == "crud_views.E108"]
+
+
+def _key_msg(key, allowed, value) -> str:
+    return f"setting CRUD_VIEWS_LABEL_MODE_DEFAULTS key {key!r} must be one of {allowed}, got {value!r}"
+
+
+@pytest.mark.parametrize(
+    "configured",
+    [{}, {"context": "both"}, {"card": "label"}, {"context": "label", "list": "both", "card": "icon"}],
+)
+def test_e108_valid_defaults(configured):
+    assert _e108(absent=True) == []
+    assert _e108(configured) == []
+
+
+@pytest.mark.parametrize("configured", [None, "both", "", ["context"], [], 1, ("context", "both")], ids=repr)
+def test_e108_non_dict(configured):
+    messages = _e108(configured)
+    assert len(messages) == 1
+    (message,) = messages
+    assert message.level == ERROR
+    assert message.hint is None
+    assert message.msg == (
+        f"setting CRUD_VIEWS_LABEL_MODE_DEFAULTS must be a dict of location -> one of {E108_MODES}, got {configured!r}"
+    )
+
+
+@pytest.mark.parametrize(
+    "configured,expected",
+    [
+        ({"cotext": "both"}, [_key_msg("cotext", E108_LOCATIONS, "both")]),
+        # the form location arrives with Phase 6, through LOCATIONS
+        ({"form": "both"}, [_key_msg("form", E108_LOCATIONS, "both")]),
+        ({1: "both"}, [_key_msg(1, E108_LOCATIONS, "both")]),
+        ({"card": "nope"}, [_key_msg("card", E108_MODES, "nope")]),
+        ({"card": None}, [_key_msg("card", E108_MODES, None)]),
+        ({"list": "Both"}, [_key_msg("list", E108_MODES, "Both")]),
+        ({"context": {"filter": "both"}}, [_key_msg("context", E108_MODES, {"filter": "both"})]),
+        ({"context": ["both"]}, [_key_msg("context", E108_MODES, ["both"])]),
+        # an unknown key with an invalid mode: one message, for the key
+        ({"cotext": "nope"}, [_key_msg("cotext", E108_LOCATIONS, "nope")]),
+        (
+            {"context": "both", "cotext": "nope", "card": "nope"},
+            [_key_msg("cotext", E108_LOCATIONS, "nope"), _key_msg("card", E108_MODES, "nope")],
+        ),
+    ],
+    ids=repr,
+)
+def test_e108_bad_entries(configured, expected):
+    messages = _e108(configured)
+    assert [m.msg for m in messages] == expected
+    assert all(m.level == ERROR and m.hint is None for m in messages)
+
+
+def test_e108_entry_order():
+    forward = {"list": "x", "zzz": "both", "card": {"a": 1}}
+    backward = dict(reversed(list(forward.items())))
+    assert [m.msg for m in _e108(forward)] == [
+        _key_msg("list", E108_MODES, "x"),
+        _key_msg("zzz", E108_LOCATIONS, "both"),
+        _key_msg("card", E108_MODES, {"a": 1}),
+    ]
+    assert [m.msg for m in _e108(backward)] == list(reversed([m.msg for m in _e108(forward)]))
+
+
+def test_e108_same_settings_instance_observes_changes():
+    assert _e108({"card": "nope"}) != []
+    assert _e108({"card": "label"}) == []
+    assert len(_e108({"card": "nope", "list": "nope"})) == 2
+
+
+def test_e108_uses_button_locations(monkeypatch):
+    from crud_views.lib.view import button_data
+
+    assert len(_e108({"test_loc": "both"})) == 1
+    monkeypatch.setattr(button_data, "LOCATIONS", button_data.LOCATIONS | {"test_loc"})
+    assert _e108({"test_loc": "both"}) == []
+    (message,) = _e108({"test_lok": "both"})
+    assert message.msg == _key_msg("test_lok", sorted(button_data.LOCATIONS), "both")
+    (message,) = _e108({"test_loc": "nope"})
+    assert message.msg == _key_msg("test_loc", sorted(LABEL_MODES), "nope")

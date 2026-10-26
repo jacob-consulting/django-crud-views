@@ -15,6 +15,8 @@ from crud_views.lib.view.label_mode import (
 
 LOGGER = "crud_views.lib.view.label_mode"
 PACKAGE = {"context": "icon", "list": "icon", "card": "both"}
+# the process-lifetime register as seen at collection, before any test-scoped isolation
+PROCESS_WARNED = label_mode._warned
 
 
 def test_label_modes():
@@ -43,14 +45,6 @@ def test_label_mode_check_message():
 
 
 # CRUD_VIEWS_LABEL_MODE_DEFAULTS: the per-location floor, merged per key over the package defaults
-
-
-@pytest.fixture
-def warned(monkeypatch):
-    """A fresh once-per-pair warning register for this test (the production register lives for the process)."""
-    fresh: set = set()
-    monkeypatch.setattr(label_mode, "_warned", fresh)
-    return fresh
 
 
 @pytest.fixture
@@ -152,7 +146,7 @@ PER_LOCATION_INVALID = [None, "", [], {}, {"filter": "both"}, ["both"], 1, "Both
 
 
 @pytest.mark.parametrize("configured", WHOLE_SETTING_INVALID, ids=repr)
-def test_default_label_mode_invalid_setting_whole(configured, warned, caplog):
+def test_default_label_mode_invalid_setting_whole(configured, caplog):
     strict = override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS=configured, CRUD_VIEWS_STRICT=True)
     with strict, pytest.raises(ValueError, match="CRUD_VIEWS_LABEL_MODE_DEFAULTS must be a dict"):
         default_label_mode("context")
@@ -162,7 +156,7 @@ def test_default_label_mode_invalid_setting_whole(configured, warned, caplog):
 
 
 @pytest.mark.parametrize("value", PER_LOCATION_INVALID, ids=repr)
-def test_default_label_mode_invalid_setting(value, warned, caplog):
+def test_default_label_mode_invalid_setting(value, caplog):
     configured = {"context": value, "list": "label"}
     with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS=configured, CRUD_VIEWS_STRICT=True):
         with pytest.raises(ValueError, match="CRUD_VIEWS_LABEL_MODE_DEFAULTS key 'context' must be one of"):
@@ -181,7 +175,7 @@ def test_default_label_mode_invalid_setting(value, warned, caplog):
     assert "'context'" in records[0].getMessage()
 
 
-def test_default_label_mode_warns_once(warned, caplog):
+def test_default_label_mode_warns_once(caplog):
     # a non-dict setting: one warning per distinct location queried, repeats add none
     with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS="both", CRUD_VIEWS_STRICT=False):
         counts = []
@@ -220,11 +214,23 @@ def test_default_label_mode_exact_strings_valid(mode):
 @pytest.mark.parametrize(
     "value", ["Both", "BOTH", " both ", "both\n", "b\u03bfth", "ic\u043en", "label\u200b"], ids=repr
 )
-def test_default_label_mode_exact_strings(value, warned, caplog):
+def test_default_label_mode_exact_strings(value, caplog):
     # modes are exact, case-sensitive strings: no strip, no casefold, no Unicode normalisation
     strict = override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"list": value}, CRUD_VIEWS_STRICT=True)
     with strict, pytest.raises(ValueError, match=r"key 'list' must be one of \['both', 'icon', 'label'\]"):
         default_label_mode("list")
     with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"list": value}, CRUD_VIEWS_STRICT=False):
         assert default_label_mode("list") == "icon"
+    assert len(_records(caplog)) == 1
+
+
+@pytest.mark.parametrize("attempt", [1, 2])
+def test_warning_register_is_isolated_per_test(attempt, caplog):
+    # conftest's autouse fixture hands each test a fresh register, so a pair warned in one test warns again in
+    # the next, while repeats within a test stay suppressed
+    assert label_mode._warned is not PROCESS_WARNED
+    assert label_mode._warned == set()
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"card": "isolated"}, CRUD_VIEWS_STRICT=False):
+        default_label_mode("card")
+        default_label_mode("card")
     assert len(_records(caplog)) == 1

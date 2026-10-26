@@ -16,7 +16,7 @@ The stale generated API-SURFACE.md (zero symbols) is not source authority.
 | REQ | ALRT-01 | Golden history precedes product change | 04-01-01; 04-03-03 history evidence | COVERED |
 | REQ | ALRT-02 | Shared hook and one delegated current-adapter call | 04-01-02/03; 04-02-02 | COVERED |
 | REQ | ALRT-03 | Present-component close and absent-only default removal with Vitest | 04-01-02; 04-02-01/02 | COVERED |
-| REQ | ALRT-04 | Dropdown audit, three references, Breaking and migration | 04-03-01/02 | COVERED |
+| REQ | ALRT-04 | Dropdown audit, references, template-fence recipe, aligned Added/Breaking and load-order migration | 04-03-01/02 | COVERED |
 | CONTEXT | D-01 | Literal default classes; no new frame class keys | 04-01-02/03; 04-03-01 | COVERED |
 | CONTEXT | D-02 | Complete compact custom-class frame recipe retaining hooks | 04-03-01 | COVERED |
 | CONTEXT | D-03 | Custom errors surface; no core log/removal/rollback | 04-01-02; 04-02-02; 04-03-01 | COVERED |
@@ -26,7 +26,7 @@ The stale generated API-SURFACE.md (zero symbols) is not source authority.
 | CONTEXT | D-07 | Separate baseline commit; preserved other output | 04-01-01/02/03; 04-03-03 | COVERED |
 | CONTEXT | D-08 | Dynamic nearest-role delegation; current lookup; namespace/preassignment | 04-01-02; 04-02 | COVERED |
 | CONTEXT | D-09 | Three references, four adapters, paired Breaking/migration, dropdown boundary | 04-03-01/02 | COVERED |
-| CONTEXT | D-10 | All paths/errors tested, real example browser, quality gates | 04-01 through 04-03 | COVERED |
+| CONTEXT | D-10 | All paths/errors tested, three fresh browser messages with identified adapters, quality gates | 04-01 through 04-03 | COVERED |
 | RESEARCH | R1 | Existing classic scripts, factory, shallow merge and fixed selectors | 04-01-02; 04-02 | COVERED |
 | RESEARCH | R2 | Present no-op/throw never selects fallback; Bootstrap owns transitions | 04-02-01/02; 04-03-03 | COVERED |
 | RESEARCH | R3 | Missing namespace vs missing component; object/function/late globals | 04-02-01 | COVERED |
@@ -67,7 +67,9 @@ before the single product tracer, not a layer of unfinished product scaffolding.
 
 ## Spec-less Edge Coverage
 
-Source: /tmp/phase04-edge-coverage.json; seven rows received. No SPEC exists.
+Latest source: /tmp/django-phase4-edge-coverage.json; seven rows received, identical to the prior probe's
+requirement/category rows. No SPEC exists. The raw probe reports all seven unresolved; the planner's
+explicit dispositions below retain two resolved acceptance predicates and five flagged assumptions.
 
 | Requirement | Category | Disposition | Verification / carried assumption |
 |---|---|---|---|
@@ -103,10 +105,13 @@ survive; all plans correctly emit prohibitions: []. No wired-check descriptors a
 
 - API detector run on the three plans plus Phase 4 ROADMAP section: detected=false, signals=[]; no external
   API coverage matrix needed. Bootstrap is an existing local browser component.
-- Assumption-delta scan 4: detected=false, signals=[]; no new architecture question.
+- Latest assumption-delta scan 4: detected=true with chosen/custom from the roadmap's existing plan list.
+  04-01 records no-change in assumption_delta_decision: alert dismissal uses the already-generalized
+  cv.adapters abstraction; Bootstrap remains one implementation. No new identity or product decision.
 - Schema scan: no in-scope ORM/schema paths; no push task.
 - Security: ASVS level 1, high blocking threshold; unique T-04-01 through T-04-06, reserved T-04-SC repeated.
-- Graph status: absent; project source is authority. No configured planner/project skills.
+- Graph status: absent; project source is authority. No configured planner/project skills. The supplied
+  planner-skills file was a fallback persona; the fresh --skills-only query returned empty.
 - Calibration: factor=1, sample_count=0, confidence=low; projections 24000 / 18000 / 18000 tokens.
 - Frontmatter and plan-structure validation passed for all three plans. Only one-way warnings are the
   existing D-05/D-06/D-09 public DOM decision; already-settled exception applies, no checkpoint inserted.
@@ -137,3 +142,30 @@ historical evidence. C2-A2 requires each new JS case to own a fresh cv/adapters 
 so restoring global descriptors cannot retain a deleted original key. C2-A3 explicitly verifies an
 unmarked body click inside role=alert causes no call, error or removal. Round 2 ledgers are appended in
 04-02/04-03; the three-plan structure, locked decisions and all prior dispositions remain intact.
+
+## Round 3 review incorporation — 0860fcf
+
+| Review | Executable disposition | Acceptance / verification |
+|---|---|---|
+| R04-01 | 04-03-01/02 distinguish safe pre-load merging from post-load whole-map replacement; document alert.close and default-preserving alternatives | Load-order guidance appears in must-haves, both task acceptances and a specific rendered documentation review; 04-02's missing-key behavioral test remains authoritative |
+| R04-02 | 04-03-03 creates messages A/B/C, restores Bootstrap before creating/cloning C, records each active adapter | Three explicit browser observations or per-case blockers; no fallback observation counts as restored-Bootstrap evidence |
+| R04-03 | 04-03-02 updates the existing Unreleased Added enumeration alongside Breaking/migration | Acceptance and documentation review compare all four adapter names with the canonical reference |
+| R04-04 | 04-03-01 names the full heading and unique django/html fence extraction | The actual documented recipe renders under pytest; absent/ambiguous heading or fence fails |
+
+All current raw implementation notes also have PLAN dispositions: explicit test-only RED/coordinated GREEN,
+locale/byte docstring/full SHA, fixture path, partial namespace, orphan default prevention, keep-it-last
+comment, seeded example permissions and accurate settings artifact. Existing scoped cleanup, intentional
+golden/icon coupling, translation sentinel, error-identity evidence and Git-independent permanent negative
+test remain; optional/rejected alternatives are in append-only Round 3 ledgers. No decision conflict was found.
+
+Fresh planning checks: frontmatter and plan structure pass for all three plans (3/2/3 tasks); existing
+already-settled one-way warnings are unchanged. API detector inspected the revised plans plus roadmap and
+returned detected=false; no COVERAGE.md is needed. Calibration remains factor 1, sample_count 0, low.
+The native decision-coverage gate passes 10/10. A local structural audit confirms all four ALRT IDs in
+requirements, all ten D-IDs in must-have truths, eight fully specified tasks, 17 unchanged automated
+commands each immediately followed by fails_when, the same three waves and six unique numbered threats.
+All existing task read/modify paths are tracked; only the already-declared golden, acceptance artifact and
+future plan summaries are new. Prior-round ledger text is byte-identical, and git diff --check passes.
+Focused baseline rerun: 50 Python tests passed in 1.14 s and 25 JS tests passed in 578 ms on installed
+Vitest 4.1.10. These checks precede implementation and do not prove new dismissal behavior, browser
+acceptance or manifest-version compatibility. No product code, configuration or branch was changed.

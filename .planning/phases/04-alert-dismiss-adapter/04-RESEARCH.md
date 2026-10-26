@@ -538,13 +538,24 @@ implementation choices; tool-version drift and browser smoke are disclosed valid
 |---|---|---|---|
 | — | No unverified product assumption | — | — |
 
-## Open Questions
+## Open Questions — RESOLVED in planning
 
-- Installed JS and Ruff versions differ from declarations; report or reconcile before claiming manifest-environment
-  verification. Do not infer version incompatibility from this drift.
+Both planning questions are resolved by task 04-03-03; execution evidence remains pending.
+
+- **RESOLVED — installed-tool drift:** task 04-03-03 requires rechecking installed JS/Ruff versions,
+  recording every required full-gate outcome, and explicitly dispositioning drift and pre-existing failures.
+  Do not change manifests to conceal drift, infer incompatibility, or claim manifest-environment verification.
+  Execution-time version checks and full-gate evidence remain pending; this disposition is not a passing result.
   [VERIFIED: session version probes] [VERIFIED: package.json:15-21] [VERIFIED: pyproject.toml:60-64]
-- Interactive example dismissal is not yet observed; retain as execution acceptance.
+  [VERIFIED: .planning/phases/04-alert-dismiss-adapter/04-03-PLAN.md:242-250,273-287]
+- **RESOLVED — interactive example acceptance:** task 04-03-03 specifies three fresh messages A/B/C for
+  real Bootstrap close, missing-Alert removal, and dynamic-content close after restoring Bootstrap. Record
+  actual browser/version, active adapter and observed outcomes, or the concrete blocker for each unavailable
+  case and retain it for end-of-phase human verification. Browser observations remain pending; no tooling
+  availability or successful dismissal is inferred. D-10 is not verified until browser acceptance and all
+  required quality gates have evidence; system checks and jsdom results cannot replace browser observations.
   [VERIFIED: session example probes] [VERIFIED: .planning/phases/04-alert-dismiss-adapter/04-CONTEXT.md:58-60]
+  [VERIFIED: .planning/phases/04-alert-dismiss-adapter/04-03-PLAN.md:255-310]
 
 ## Sources
 

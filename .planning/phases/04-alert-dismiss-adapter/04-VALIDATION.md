@@ -41,9 +41,9 @@ without claiming manifest-version validation. See 04-RESEARCH.md. No new framewo
 | 04-01-03 | 04-01 | 1 | ALRT-02 | T-04-01 | Escaping, translated name and non-dismissible behavior | render/response | Quick Python | Extend existing suites | pending |
 | 04-02-01 | 04-02 | 2 | ALRT-03 | T-04-03 | Present component owns no-op/throw; lazy namespace preserved | JS regression | Quick JS | Extend existing suite | pending |
 | 04-02-02 | 04-02 | 2 | ALRT-02, ALRT-03 | T-04-03, T-04-04 | Dynamic/nearest selection; two controls; surfaced errors/missing key; repeated clicks | JS regression | Quick JS followed by `npm --prefix . test` | Extend suite; reuse listenerErrors | pending |
-| 04-03-01 | 04-03 | 3 | ALRT-04 | T-04-05 | Recipe preserves colour/escaping; core-only nonempty subset audit; settings hook list | render/docs/audit | Quick Python and `.venv/bin/mkdocs build --strict` | Suite/docs exist; new recipe/guard tests | pending |
-| 04-03-02 | 04-03 | 3 | ALRT-04 | T-04-06 | Paired migration states scripts and legacy behavior accurately | docs | `.venv/bin/mkdocs build --strict` | Existing | pending |
-| 04-03-03 | 04-03 | 3 | ALRT-01..04 | T-04-01..06 | Real browser behavior and all quality gates evidenced | smoke/full suite/history | Full gates below | Existing tools; new acceptance artifact | pending |
+| 04-03-01 | 04-03 | 3 | ALRT-04 | T-04-05 | Unique full heading/template fence; recipe colour/escaping; core-only subset audit; settings hook list | render/docs/audit | Quick Python and `.venv/bin/mkdocs build --strict` | Suite/docs exist; new recipe/guard tests | pending |
+| 04-03-02 | 04-03 | 3 | ALRT-04 | T-04-06 | Migration distinguishes pre-load defaults from post-load replacement; Added/Breaking enumerate four adapters | docs | `.venv/bin/mkdocs build --strict` plus semantic documentation review | Existing | pending |
+| 04-03-03 | 04-03 | 3 | ALRT-01..04 | T-04-01..06 | Three fresh browser messages with active adapter/restoration recorded; all quality gates evidenced | smoke/full suite/history | Full gates below | Existing tools; new acceptance artifact | pending |
 
 Regression matrix: Bootstrap instance close; no component removal; late global/object/function namespaces;
 preassigned and call-time replacement adapters; no-op and throwing custom adapters (including mutation before
@@ -54,6 +54,8 @@ original errors or an empty array. Include two controls in one frame, outer/sibl
 missing-adapter TypeError and an unmarked alert-body click with no call/error/removal. Each new JS case owns
 a fresh cv/adapters object before nested mutation; restore untouched original descriptors and console spies,
 preserving shared jQuery stubs.
+The orphan-control click explicitly leaves defaultPrevented=false. The detached-subtree case proves only
+the declared DOM-propagation boundary; attached matched-event cases prove handler dispatch.
 
 ## Wave 0 Requirements
 
@@ -64,14 +66,17 @@ preserving shared jQuery stubs.
 
 The before-change golden is task 04-01-01's separate first commit. The product tracer is 04-01-02 and
 shares that exact golden between Python rendering and jsdom interaction. Both message assertion updates
-belong to the tracer, whose combined Python/JS gates must pass before its commit. The six-file tracer is
+belong to the tracer's GREEN stage, whose combined Python/JS gates must pass before its implementation
+commit. RED first changes only viewset.test.js and fails against the committed legacy golden; a RED commit,
+when required by execution, is test-only and follows the baseline. The six-file tracer is
 deliberate; 04-01-03 adds broader regressions afterward. No framework/scaffold installation is needed.
 
 ## Manual-Only Verifications
 
 | Behavior | Requirement | Why Manual | Test Instructions |
 |----------|-------------|------------|-------------------|
-| Real example flash messages close | ALRT-02, ALRT-04 | Browser transition and script integration | Create/update an object in examples/bootstrap5; inspect new marker and core script order; click and wait for close; repeat with namespace lacking Alert and a dynamically inserted alert. Record observations or an actual browser blocker. |
+| Real example flash messages close | ALRT-02, ALRT-04 | Browser transition and script integration | Produce three fresh messages A/B/C. Close A with real Bootstrap; close B with only the alert entry replaced by the missing-Alert factory; restore/reload before creating C, clone C into dynamic content and close the clone with restored Bootstrap. Record the adapter, outcome and console errors for each case or its actual blocker. |
+| Migration load order and release enumeration | ALRT-04 | Semantic documentation accuracy beyond a successful build | Compare rendered migration with the adapter reference: pre-load maps receive missing defaults, post-load whole replacements must supply alert.close, and per-entry/default-preserving fixes are named. Compare existing Unreleased Added with all four reference adapters and the new Breaking entry. |
 | Golden chronology | ALRT-01 | Commit ordering | Confirm a baseline-only commit precedes template change; final golden diff changes only dismissal attribute. |
 
 Run example docs sync from examples/bootstrap5: `../../.venv/bin/pytest test_docs_sync.py -q`.
@@ -91,6 +96,11 @@ Permanent negative coverage: `test_core_bootstrap_data_attribute_guard_rejects_f
 allowed tree under tmp_path and confirms success, adds a forbidden alert file, and requires AssertionError
 naming that relative path. This lasts independently of the one-time historical git-show probe.
 
+Recipe verification uses the full heading `### Custom alert frame` below `## Alerts` and exactly one
+django/html fence. The Python-only FENCE matcher from the analogous docs test does not apply; missing or
+ambiguous headings/fences fail before the real recipe render. Record the historical probe's rejected path
+and full baseline SHA separately in acceptance evidence; no permanent pytest may depend on Git history.
+
 ## Final Execution Gates and Evidence
 
 Run from repository root unless stated otherwise:
@@ -104,14 +114,18 @@ Run from repository root unless stated otherwise:
 - From examples/bootstrap5: `../../.venv/bin/pytest test_docs_sync.py -q`
 
 Record actual browser/version, page/action, rendered marker/script order, Bootstrap transition close,
-fresh-message missing-Alert close and post-load inserted message close in `04-ACCEPTANCE.md`.
+fresh-message missing-Alert close and post-load inserted message close in `04-ACCEPTANCE.md`. Identify A/B/C,
+each active adapter, and restoration before creating/cloning C. The original C must remain attached while
+the dynamically inserted clone closes with the restored Bootstrap adapter. Record unavailable cases separately.
 Plan 04-03 contains the exact reproducible browser procedure. Missing browser/server/CDN evidence stays
 unverified and routes to end-of-phase human verification. System check/docs sync are not browser evidence.
 Retain all five unresolved classifier assumptions from `04-SOURCE-AUDIT.md`; two resolved ALRT-03
 repeated-call/click predicates are explicit 04-02 must-haves. No new lifecycle guarantee is claimed.
 
 Planning verification: all three plans passed frontmatter/structure checks; baseline focused suites passed
-50 Python / 25 JS tests. Product implementation and browser acceptance remain pending. Installed-tool drift
+50 Python / 25 JS tests again during Round 3 review incorporation (0860fcf); these are pre-change results.
+All four R04-01..04 findings now have executable plan actions and verification/acceptance. Product
+implementation, the documentation semantic review and browser acceptance remain pending. Installed-tool drift
 and any pre-existing full-gate failures must be recorded honestly, without weakening gates or changing manifests.
 
 ## Validation Sign-Off

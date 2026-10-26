@@ -3,16 +3,16 @@ gsd_state_version: "1.0"
 current_phase: 01
 current_phase_name: Label-mode defaults
 status: executing
-stopped_at: Phase 1 context gathered
-last_updated: "2026-10-25T21:14:07.518Z"
-last_activity: 2026-10-25
-last_activity_desc: Roadmap created (7 phases, 41/41 requirements mapped)
-state_head: 19b8c5d704d517f111886e7c47a26941999acf99
+stopped_at: Completed 01-01-PLAN.md
+last_updated: "2026-10-26T08:22:43.707Z"
+last_activity: 2026-10-26
+last_activity_desc: Phase 01 execution started
+state_head: dc40098d7101663d345cc6e2ffd1f97893f25539
 progress:
   total_phases: 7
   completed_phases: 0
   total_plans: 4
-  completed_plans: 0
+  completed_plans: 1
   percent: 0
 ---
 
@@ -23,14 +23,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-10-25)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 1 — Label-mode defaults (plan 1A); Phase 2 — Form key grammar (plan 1C) can run in parallel
+**Current focus:** Phase 01 — Label-mode defaults
 
 ## Current Position
 
-Phase: 01 (Label-mode defaults) — READY TO EXECUTE
-Plan: 0 of TBD in current phase
+Phase: 01 (Label-mode defaults) — EXECUTING
+Plan: 2 of 4
 Status: Ready to execute
-Last activity: 2026-10-25 — Roadmap created (7 phases, 41/41 requirements mapped)
+Last activity: 2026-10-26 — Phase 01 execution started
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -54,6 +54,11 @@ Progress: [░░░░░░░░░░] 0%
 - Trend: -
 
 *Updated after each plan completion*
+**Per-Plan Metrics:**
+
+| Plan | Duration | Tasks | Files |
+|------|----------|-------|-------|
+| Phase 01 P01 | 7 min | 2 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -72,6 +77,9 @@ Recent decisions affecting current work:
   or task commits until the user or authorized execution workflow prepares the required branch. No task changes
   config or switches/renames branches. This supersedes the research's current-branch execution recommendation;
   planning remains on `introduce-gsd` and commits only the requested planning artifacts.
+- [Phase 01]: 01-01: Label-mode warn-once dedup is process-lifetime, keyed (location, repr(value)), no source dimension, no setting_changed reset; tests isolate via autouse conftest fixture
+- [Phase 01]: 01-01: default_label_mode reads the raw setting every call (no merged-map cache); setting fallbacks return LABEL_MODE_DEFAULTS[location] directly so nested recovery terminates
+- [Phase 01]: 01-01: E108 (Error, no hint) gives one message per bad entry in insertion order, unknown location before invalid mode; keys from button_data.LOCATIONS imported at check time
 
 ### Pending Todos
 
@@ -97,6 +105,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-25T13:34:28.157Z
-Stopped at: Phase 1 context gathered
-Resume file: .planning/phases/01-label-mode-defaults/01-CONTEXT.md
+Last session: 2026-10-26T08:22:43.688Z
+Stopped at: Completed 01-01-PLAN.md
+Resume file: None

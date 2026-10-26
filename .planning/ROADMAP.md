@@ -52,12 +52,12 @@ for unknown keys.
      the set of locations, not from a literal.
   5. `grep -n '"both" if card\|or "icon"\|get(key, "icon")' src/crud_views/lib/view/*.py` returns nothing. Goldens
      stay byte-identical, and the docs state per-key merge vs whole-dict replacement for each knob.
-**Plans**: 4 plans
+**Plans**: 1/4 plans executed
 
 Plans:
 **Wave 1**
 
-- [ ] 01-01-PLAN.md — Lazy defaults through the real button leaf, strict/log recovery and E108
+- [x] 01-01-PLAN.md — Lazy defaults through the real button leaf, strict/log recovery and E108
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
@@ -253,7 +253,7 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Label-mode defaults | 0/4 | Not started | - |
+| 1. Label-mode defaults | 1/4 | In Progress | - |
 | 2. Form key grammar | 0/TBD | Not started | - |
 | 3. Filter toggle label mode | 0/TBD | Not started | - |
 | 4. Alert dismiss adapter | 0/TBD | Not started | - |

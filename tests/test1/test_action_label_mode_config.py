@@ -1,5 +1,8 @@
 """#216: label-mode maps — settings, ViewSet fields, view attributes, resolution and checks."""
 
+import logging
+import re
+
 import pytest
 from django.conf import settings
 from django.core.checks import ERROR
@@ -96,6 +99,114 @@ def test_card_location_raises():
         AuthorDetailView.cv_get_action_label_mode("card", "detail")
 
 
+# CRUD_VIEWS_LABEL_MODE_DEFAULTS["list"]: the floor for keys the selected whole-layer map does not name
+
+LIST_LABEL = {"list": "label"}
+INVALID_FLOORS = pytest.mark.parametrize("floor", [{"list": "nope"}, None], ids=["bad-mode", "non-dict"])
+
+
+def _list_mode(key):
+    return AuthorListView.cv_get_action_label_mode("list", key)
+
+
+def _no_list_maps(monkeypatch):
+    monkeypatch.setattr(AuthorListView, "cv_list_actions_label_mode", None)
+    monkeypatch.setattr(cv_author, "list_actions_label_mode", None)
+    monkeypatch.setattr(crud_views_settings, "list_actions_label_mode", {})
+
+
+@pytest.mark.parametrize(
+    "layer",
+    [
+        lambda mp: mp.setattr(AuthorListView, "cv_list_actions_label_mode", {"detail": "both"}),
+        lambda mp: mp.setattr(cv_author, "list_actions_label_mode", {"detail": "both"}),
+        lambda mp: mp.setattr(crud_views_settings, "list_actions_label_mode", {"detail": "both"}),
+    ],
+    ids=["view", "viewset", "setting"],
+)
+def test_list_floor_used_only_for_unmapped_key(monkeypatch, layer):
+    _no_list_maps(monkeypatch)
+    layer(monkeypatch)
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS=LIST_LABEL):
+        assert _list_mode("detail") == "both"  # the named key wins over the floor
+        assert _list_mode("update") == "label"  # the floor for keys the map does not name
+        # the context floor is independent
+        assert AuthorDetailView.cv_get_action_label_mode("context", "update") == "icon"
+    assert _list_mode("update") == "icon"  # unconfigured: the package floor
+
+
+def test_list_floor_unconfigured_layers(monkeypatch):
+    _no_list_maps(monkeypatch)
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS=LIST_LABEL):
+        assert [_list_mode(k) for k in ("detail", "update", "delete")] == ["label", "label", "label"]
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"context": "both", "card": "label"}):
+        assert _list_mode("detail") == "icon"
+
+
+def test_list_floor_preserves_whole_map_replacement(monkeypatch):
+    _no_list_maps(monkeypatch)
+    monkeypatch.setattr(crud_views_settings, "list_actions_label_mode", {"detail": "both"})
+    monkeypatch.setattr(cv_author, "list_actions_label_mode", {"update": "icon"})
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS=LIST_LABEL):
+        # the ViewSet map replaces the setting map whole: detail is unnamed and takes the floor
+        assert AuthorListView.cv_get_list_actions_label_mode() == {"update": "icon"}
+        assert _list_mode("detail") == "label"
+        assert _list_mode("update") == "icon"
+        # an empty view map replaces the ViewSet map whole, then the floor supplies every key
+        monkeypatch.setattr(AuthorListView, "cv_list_actions_label_mode", {})
+        assert AuthorListView.cv_get_list_actions_label_mode() == {}
+        assert _list_mode("update") == "label"
+        assert _list_mode("detail") == "label"
+
+
+def test_list_malformed_mapped_value_keeps_selection(monkeypatch, caplog):
+    # a named key is returned as configured; viewset.E211 and the button leaf validate it, not the floor
+    _no_list_maps(monkeypatch)
+    monkeypatch.setattr(AuthorListView, "cv_list_actions_label_mode", {"detail": "text", "update": ""})
+    with (
+        caplog.at_level(logging.WARNING, logger="crud_views.lib.view.label_mode"),
+        override_settings(CRUD_VIEWS_STRICT=True, CRUD_VIEWS_LABEL_MODE_DEFAULTS={"list": "nope"}),
+    ):
+        assert _list_mode("detail") == "text"
+        assert _list_mode("update") == ""
+    assert caplog.records == []
+
+
+@pytest.mark.parametrize(
+    "layer",
+    [
+        lambda mp: mp.setattr(AuthorListView, "cv_list_actions_label_mode", {"detail": "both"}),
+        lambda mp: mp.setattr(cv_author, "list_actions_label_mode", {"detail": "both"}),
+        lambda mp: mp.setattr(crud_views_settings, "list_actions_label_mode", {"detail": "both"}),
+    ],
+    ids=["view", "viewset", "setting"],
+)
+@INVALID_FLOORS
+def test_explicit_list_mode_bypasses_invalid_floor(monkeypatch, caplog, layer, floor):
+    _no_list_maps(monkeypatch)
+    layer(monkeypatch)
+    with caplog.at_level(logging.WARNING, logger="crud_views.lib.view.label_mode"):
+        with override_settings(CRUD_VIEWS_STRICT=True, CRUD_VIEWS_LABEL_MODE_DEFAULTS=floor):
+            assert _list_mode("detail") == "both"  # the floor is never read for a mapped key
+        assert caplog.records == []
+        # a genuinely unmapped key reads the floor: strict raises ...
+        with (
+            override_settings(CRUD_VIEWS_STRICT=True, CRUD_VIEWS_LABEL_MODE_DEFAULTS=floor),
+            pytest.raises(ValueError, match="CRUD_VIEWS_LABEL_MODE_DEFAULTS"),
+        ):
+            _list_mode("update")
+        # ... non-strict falls back to the package floor and warns once, across calls and settings contexts
+        with override_settings(CRUD_VIEWS_STRICT=False, CRUD_VIEWS_LABEL_MODE_DEFAULTS=floor):
+            assert _list_mode("update") == "icon"
+            assert _list_mode("delete") == "icon"
+            assert _list_mode("detail") == "both"
+        with override_settings(CRUD_VIEWS_STRICT=False, CRUD_VIEWS_LABEL_MODE_DEFAULTS=floor):
+            assert _list_mode("update") == "icon"
+    records = [r for r in caplog.records if r.name == "crud_views.lib.view.label_mode"]
+    assert len(records) == 1
+    assert "CRUD_VIEWS_LABEL_MODE_DEFAULTS" in records[0].getMessage()
+
+
 # checks
 
 
@@ -117,6 +228,21 @@ def test_e211_message_names_the_card_attribute(monkeypatch):
     monkeypatch.setattr(AuthorDetailView, "cv_context_actions_label_mode", "both")
     (message,) = [m for c in AuthorDetailView.checks() for m in c.messages() if m.id == "viewset.E211"]
     assert "cv_card_actions_label_mode" in message.msg
+
+
+@pytest.mark.parametrize(
+    ("view_cls", "attr"),
+    [(AuthorListView, "cv_list_actions_label_mode"), (AuthorDetailView, "cv_context_actions_label_mode")],
+)
+def test_e211_describes_optional_scalar_modes(monkeypatch, view_cls, attr):
+    # both scalar knobs are optional (None: the defaults map); the exact phrase is pinned in the docs tests too
+    monkeypatch.setattr(view_cls, attr, "both")
+    (message,) = [m for c in view_cls.checks() for m in c.messages() if m.id == "viewset.E211"]
+    assert message.level == ERROR
+    assert message.msg.startswith(f"{attr} must be None or a dict of action key -> one of {sorted(LABEL_MODES)}")
+    for scalar in ("cv_card_actions_label_mode", "cv_context_action_label_mode"):
+        assert re.search(rf"{scalar} (is )?the string or None ", message.msg), (scalar, message.msg)
+    assert "string-valued" not in message.msg
 
 
 def test_no_label_mode_messages_by_default():

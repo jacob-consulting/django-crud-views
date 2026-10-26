@@ -45,16 +45,45 @@ A value other than the four variants fails the system check `viewset.E209`.
 
 ## The class table
 
-The classes of a button are looked up by a `location:slot` key. The **location** says where the button sits, the
-**slot** says which part of it.
+The classes of a button are looked up by a `location:slot` key. The **location** says where the button sits; the
+**slot** is an action variant, a form kind, or a structural/utility part, according to this grammar:
 
-Action buttons take a third segment, the label mode: `location:variant:mode` with `mode` one of `label`, `icon`, `both`
-(see [Card list view](card-list-view.md) for how a card button gets its mode; toolbar and row buttons follow
+| Family | Locations | Second segment | Accepted shape |
+|---|---|---|---|
+| Action variants | `context`, `list`, `card` | `primary`, `secondary`, `tertiary`, `danger` | `location:variant` or `location:variant:mode` |
+| Form kinds | `form` | `submit`, `cancel`, `delete`, `filter-submit`, `filter-reset` | `form:kind` or `form:kind:mode` |
+| Structural and utility slots | locations in the default table below | the listed slot, such as `container`, `active`, or `icon-host` | `location:slot`, with no mode suffix |
+
+The modes are `icon`, `both`, and `label`. Every form kind accepts all three, so `form:submit:icon`,
+`form:cancel:both`, and `form:filter-reset:label` are valid keys in both theme registrations and
+`CRUD_VIEWS_BUTTON_CLASSES`. A class key does not require an icon to be configured. `form:submitt:icon` has an
+unknown kind, `form:container:icon` adds a mode to a structural slot, and `form:primary:icon` puts an action
+variant where a form kind is required: all receive the unknown-key W362 warning. `form:submit:iconn` has a known
+kind but an unknown mode, so W362 names that mode and lists the valid modes instead.
+
+For how a card button gets its mode, see [Card list view](card-list-view.md); toolbar and row buttons follow
 [Context label-mode resolution](action_menus.md#context-label-mode-resolution) and
 [List label-mode resolution](action_menus.md#list-label-mode-resolution), with `icon` as the package floor when nothing
-is configured). The lookup reads `location:variant:mode` when that key is defined and falls back to `location:variant` otherwise — one
-step, no chaining. No default defines a mode key: the table below is still the full list of shipped keys. A theme
-defines only the modes that differ from its base entry.
+is configured. Lookup reads `location:slot:mode` when that key is present and falls back to `location:slot`
+otherwise, in one step. A present mode entry of `None` or `""` suppresses classes for that mode; it does not fall
+through to the base. No default defines a mode key: a theme defines only the modes that differ from its base entry.
+
+For example, a caller supplying a form mode can use this settings override:
+
+```python
+CRUD_VIEWS_BUTTON_CLASSES = {
+    "form:submit": "btn-submit",
+    "form:submit:icon": "btn-submit-icon",
+}
+# get_button_class("form", "submit", "icon") -> "btn-submit-icon"
+# get_button_class("form", "submit", "both") -> "btn-submit"
+```
+
+Removing `form:submit:icon` makes the icon lookup use `form:submit` too; setting it to `None` or `""` returns
+no classes for that mode. Settings override theme values at the same exact key, while a theme mode entry still
+wins over a settings base entry. These keys are available to callers that supply a mode. Crispy form buttons
+continue using their existing `slot=` calls without choosing a mode, so their rendering is unchanged. Form label
+floors, form button leaves, and missing-icon rendering checks belong to Phase 6.
 
 A `context:<variant>:<mode>` or `list:<variant>:<mode>` key applies to every toolbar or row button whose mode resolves
 to that mode. Without label-mode configuration every toolbar and row button resolves to the package floor `icon`, so
@@ -112,10 +141,11 @@ apply to the buttons a map, a context button, a target view or `CRUD_VIEWS_LABEL
 | `alert:debug` | `alert alert-secondary` |
 | `context:icon-host` / `list:icon-host` / `card:icon-host` / `menu:icon-host` | `{name_class}` |
 
-The default table has 64 keys: the rows with four variants stand for four keys each, the rows with three locations
+The default table has 70 keys: the rows with four variants stand for four keys each, the rows with three locations
 for three, the `*:icon-host` row for four. The `context` and `list`
-buttons look the same for every variant by default, the `card` buttons distinguish them. Mode keys (`card:tertiary:icon`
-and the like) are addressable but not shipped: none is in the default table, and the count stays 64.
+buttons look the same for every variant by default, the `card` buttons distinguish them. Mode keys such as
+`card:tertiary:icon` and `form:submit:icon` are addressable but not shipped; their possible combinations are excluded
+from the default-table count.
 
 The table holds what a theme restyles: classes. What the markup needs to work stays in the templates and is not
 configurable here: the element, `href`, `type`, `disabled`, the `data-cv-*` attributes, `aria-*`, `cv-key`,
@@ -446,7 +476,7 @@ override the leaf, otherwise an action disabled by `CRUD_VIEWS_INACCESSIBLE_ACTI
 | `crud_views.E361` | error | a `CRUD_VIEWS_BUTTON_CLASSES` value or registered theme value is neither a str nor `None` |
 | `crud_views.E363` | error | an `*:icon-host` value is not a valid format string with `{name_class}` as its only placeholder |
 | `crud_views.E364` | error | a `*:container-single` value is neither `"container"` nor `"bare"` (`None` and `""` mean `"container"`) |
-| `crud_views.W362` | warning | a `CRUD_VIEWS_BUTTON_CLASSES` or theme key is neither in the default table nor a valid `location:variant:mode` (typo, or an unknown label mode) |
+| `crud_views.W362` | warning | a `CRUD_VIEWS_BUTTON_CLASSES` or theme key is neither in the default table nor a valid `location:variant:mode` at `context`/`list`/`card` or `form:kind:mode` (typo, or an unknown label mode) |
 | `viewset.E209` | error | a `cv_action_variant`, `ContextButton.variant` or `CardAction.variant` is not one of the four variants |
 | `crud_views.E106` | error | a `CRUD_VIEWS_CONTEXT_ACTIONS_LABEL_MODE` or `CRUD_VIEWS_LIST_ACTIONS_LABEL_MODE` setting is not a dict of action key → `"label"` / `"icon"` / `"both"` |
 | `crud_views.E108` | error | `CRUD_VIEWS_LABEL_MODE_DEFAULTS` is not a dict, names a key that is not a button location (`"context"`, `"list"`, `"card"`), or maps one to a mode that is not exactly `"label"`, `"icon"` or `"both"` |

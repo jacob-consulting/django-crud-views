@@ -184,6 +184,9 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Added
 
+- Theme and `CRUD_VIEWS_BUTTON_CLASSES` validation accepts `form:<kind>:<mode>` for all five form kinds and all
+  three label modes, retaining the existing W362 diagnostics for invalid keys and modes. The buttons reference
+  documents the variant/kind grammar and corrects the shipped-key count. Existing form rendering is unchanged.
 - `CRUD_VIEWS_LABEL_MODE_DEFAULTS` sets the label-mode floor per button location (`"context"`, `"list"`, `"card"`):
   the mode of a button that nothing more specific names. Unset entries keep the package floors, `"icon"` for the
   toolbar and rows and `"both"` for cards, held read-only in `crud_views.lib.view.label_mode.LABEL_MODE_DEFAULTS`.

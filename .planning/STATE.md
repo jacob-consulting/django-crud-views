@@ -2,8 +2,8 @@
 gsd_state_version: "1.0"
 current_phase: 01
 current_phase_name: Label-mode defaults
-status: executing
-stopped_at: Completed 01-05-PLAN.md; awaiting phase re-verification
+status: awaiting_human_verification
+stopped_at: Completed 01-05-PLAN.md; four human verification items pending
 last_updated: "2026-10-26T11:03:09.172Z"
 last_activity: 2026-10-26
 last_activity_desc: Phase 01 execution started
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-10-25)
 
 Phase: 01 (Label-mode defaults) — AWAITING RE-VERIFICATION
 Plan: 5 of 5
-Status: Plan execution complete; phase review and verification pending
+Status: Implementation verified (35/35); four human dispositions pending in 01-UAT.md
 Last activity: 2026-10-26 — Plan 01-05 closed CR-01 render gaps; awaiting independent verification
 
 Progress: [░░░░░░░░░░] 0%
@@ -97,6 +97,8 @@ None yet.
 
 ### Blockers/Concerns
 
+- Phase 01: both CR-01 code gaps are closed; four human dispositions remain in 01-UAT.md. Resume with `$gsd-verify-work 01`.
+
 - Phase 1 execution precondition: current planning branch is `introduce-gsd`, not `feat/label-mode-defaults`.
   The B3 branch gate must pass in the executor's worktree before implementation; no branch operation was performed.
 - Phase 2: KEYS-01 grammar (A vs B) is an open maintainer decision; settle it in the phase discussion.
@@ -116,5 +118,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-10-26T11:03:09.150Z
-Stopped at: Completed 01-05-PLAN.md; awaiting phase re-verification
+Stopped at: Completed 01-05-PLAN.md; four human verification items pending
 Resume file: None

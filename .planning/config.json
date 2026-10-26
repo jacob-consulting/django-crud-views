@@ -136,7 +136,7 @@
       "gemini-review",
       "deepseek-review"
     ],
-    "parallel_lanes": false
+    "parallel_lanes": true
   },
   "models": {
     "planning": "opus",

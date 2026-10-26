@@ -204,25 +204,30 @@ def get_container_layout(location: str, item_count: int) -> ContainerLayout:
     )
 
 
+VARIANT_LOCATIONS: frozenset[str] = frozenset({"context", "list", "card"})
+FORM_KINDS: frozenset[str] = frozenset({"submit", "cancel", "delete", "filter-submit", "filter-reset"})
+
+
 def _action_key_parts(key: str) -> tuple[str, str, str] | None:
-    """``(location, variant, mode)`` for a three-segment key whose location and variant are known, else None.
+    """``(location, variant-or-kind, mode)`` for a known three-segment button key, else None.
 
     The imports are local on purpose: ``lib.view`` needs the app registry, and this module stays importable with
     bare settings (the checks run after ``django.setup()``).
     """
-    from .view.button_data import LOCATIONS
     from .view.variant import VARIANTS
 
     if not isinstance(key, str):
         return None
     parts = key.split(":")
-    if len(parts) == 3 and parts[0] in LOCATIONS and parts[1] in VARIANTS:
+    if len(parts) == 3 and (
+        (parts[0] in VARIANT_LOCATIONS and parts[1] in VARIANTS) or (parts[0] == "form" and parts[1] in FORM_KINDS)
+    ):
         return parts[0], parts[1], parts[2]
     return None
 
 
 def _is_action_mode_key(key: str) -> bool:
-    """True for a valid ``location:variant:mode`` key (#209)."""
+    """True for a valid ``location:variant-or-kind:mode`` key (#209)."""
     from .view.label_mode import LABEL_MODES
 
     parts = _action_key_parts(key)

@@ -21,6 +21,18 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
   `message-<level>`. A project or theme override of `tags/messages.html` that reads the old keys renders
   `class="alert alert-"` with an empty body and raises nothing: delete it and override `tags/alert.html` instead
   (crud_views_tabler ships its update with this release).
+- The dismissible alert's close control in `crud_views/tags/alert.html` carries `data-cv-alert-dismiss` instead of
+  `data-bs-dismiss="alert"`. `viewset.js` hands the control's nearest `role="alert"` frame to the new
+  `cv.adapters.alert.close(el)`, whose default uses Bootstrap's `Alert` component when the namespace has one and
+  otherwise removes the frame, so the X also closes without Bootstrap's JavaScript and in alerts inserted after page
+  load. Closing needs the core scripts `adapters.js` and then `viewset.js`, which `{% cv_js %}` renders. A copy of the
+  frame that keeps only `data-bs-dismiss="alert"` still closes through Bootstrap's own data API while its Bootstrap
+  frame markup and Bootstrap's JavaScript are there, but never reaches the adapter; replace the attribute instead of
+  adding the new one next to it. A theme that replaces the whole `cv.adapters` map after core loads must now provide
+  `alert.close(el)` (for example `cv.bootstrapAdapters(ns).alert`), or the close control throws a `TypeError`; a
+  partial map assigned before `adapters.js` loads gets the default. The frame's Bootstrap classes are unchanged; see
+  [Migrating to 1.0.0](docs/migrating-1.0.md#contract-changes-in-templates-you-still-override) and the
+  [custom alert frame](docs/reference/theme.md#custom-alert-frame) recipe.
 - Card list pagination (`crud_views/snippets/pagination.html`) has accessible markup, and its arrows come from the
   icon registry. The `&laquo;` / `&raquo;` text arrows are now the `page-previous` / `page-next` icons
   (`fas:chevron-left` / `fas:chevron-right`; `chevron-left` / `chevron-right` in `BOOTSTRAP_ICONS`), each followed or
@@ -291,7 +303,8 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
   semantic icons — `message-success`, `message-info`, `message-warning`, `message-error`, `message-debug` — ship in
   both the Font Awesome defaults and the `BOOTSTRAP_ICONS` preset, and switch off per level with
   `CRUD_VIEWS_ICONS = {"message-info": ""}`. See `docs/reference/messages.md` (#221).
-- `cv.adapters` (`modal`, `tooltip`, `collapse`) and `cv.bootstrapAdapters(ns)`; see `docs/reference/javascript.md`.
+- `cv.adapters` (`modal`, `tooltip`, `collapse`, `alert`) and `cv.bootstrapAdapters(ns)`; see
+  `docs/reference/javascript.md`.
 - `cv.adapters.tooltip.init(el, {location})`: the marker's value, the button's location, reaches the adapter;
   adapters written for `init(el)` keep working. Per-location configuration is a recipe in
   `docs/reference/javascript.md` (#202).

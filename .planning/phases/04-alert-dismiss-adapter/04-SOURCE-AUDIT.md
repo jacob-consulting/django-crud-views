@@ -30,10 +30,10 @@ The stale generated API-SURFACE.md (zero symbols) is not source authority.
 | RESEARCH | R1 | Existing classic scripts, factory, shallow merge and fixed selectors | 04-01-02; 04-02 | COVERED |
 | RESEARCH | R2 | Present no-op/throw never selects fallback; Bootstrap owns transitions | 04-02-01/02; 04-03-03 | COVERED |
 | RESEARCH | R3 | Missing namespace vs missing component; object/function/late globals | 04-02-01 | COVERED |
-| RESEARCH | R4 | Error-event observation and finally cleanup; reload case remains last | 04-02-02 | COVERED |
+| RESEARCH | R4 | Existing listenerErrors, error identity/no-call assertions and scoped cleanup; reload case remains last | 04-02-02 | COVERED |
 | RESEARCH | R5 | Raw fixed-locale golden, unchanged non-dismissible/escaping/translated labels | 04-01-01/03 | COVERED |
 | RESEARCH | R6 | Real message response and complete documented override render | 04-01-03; 04-03-01 | COVERED |
-| RESEARCH | R7 | Script needs table; factory count distinct from lifecycle-event count | 04-03-01 | COVERED |
+| RESEARCH | R7 | Script needs table; factory count distinct from lifecycle events; existing settings/migration lists aligned | 04-03-01/02 | COVERED |
 | RESEARCH | R8 | No persistent state/schema/secret migration, installs or new framework | All plans remain existing local DOM scope | COVERED |
 | RESEARCH | R9 | Exact dropdown allowlist and non-vacuous audit | 04-03-01 | COVERED |
 | RESEARCH | R10 | Installed JS/Ruff drift disclosed, not inferred incompatibility | 04-03-03 | COVERED |
@@ -51,7 +51,7 @@ The older source plan places removal in the handler; D-04 explicitly supersedes 
 | Task | Needs | Creates/proves | Checkpoint |
 |---|---|---|---|
 | 04-01-01 | Current frame and pytest renderer | Standalone legacy golden/test commit | none |
-| 04-01-02 | Baseline commit | Complete rendered-to-adapter tracer and new hook | none; settled public decision |
+| 04-01-02 | Baseline commit | Complete rendered-to-adapter tracer and new hook; both message assertion updates in the same green commit | none; settled public decision |
 | 04-01-03 | Tracer | Message/escaping/translated control regression coverage | none |
 | 04-02-01 | 04-01 | Namespace and present/absent ownership matrix | none |
 | 04-02-02 | 04-02-01 and 04-01 listener | Dynamic/error/repeated click matrix | none |
@@ -60,8 +60,9 @@ The older source plan places removal in the handler; D-04 explicitly supersedes 
 | 04-03-03 | All preceding work | Full gates and real browser acceptance record | end-phase human-check only |
 
 Waves: 1 = 04-01; 2 = 04-02; 3 = 04-03. No same-wave overlap. Shared test/product files force
-the 04-01→04-02 edge; final combined quality evidence waits for both. Each plan has 2–3 tasks;
-each task modifies at most five files. The baseline is an explicitly required evidence prerequisite
+the 04-01→04-02 edge; final combined quality evidence waits for both. Each plan has 2–3 tasks.
+The tracer deliberately modifies six files to keep both message assertions green with the template;
+other tasks modify at most five. The baseline is an explicitly required evidence prerequisite
 before the single product tracer, not a layer of unfinished product scaffolding.
 
 ## Spec-less Edge Coverage
@@ -111,7 +112,20 @@ survive; all plans correctly emit prohibitions: []. No wired-check descriptors a
   existing D-05/D-06/D-09 public DOM decision; already-settled exception applies, no checkpoint inserted.
 - Focused baseline rerun: 50 Python tests passed; 25 JS tests passed. These are pre-change results, not feature evidence.
 - Stock attribute audit baseline: four matching lines, three paths (alert, actions_menu_toggle, language_selector).
-  Final guard must reject the alert path and accept only the exact documented dropdown allowlist.
+  Final guard scans exactly src/crud_views/templates and requires a nonempty subset of the three allowed
+  relative paths; actions_menu.html need not match. A temporary copy with the baseline alert template
+  proves historical red without changing the checkout or giving lasting tests a Git-history dependency.
 - Existing implementation/docs/test command paths were checked against git-tracked files. New files/symbols/tests
   are declared in each PLAN's "Artifacts this phase produces" section.
 - Planning commits and branch management belong to the orchestrator; this planner made no product edits or commits.
+
+## Round 1 review incorporation — a8f425e
+
+Executable PLAN ledgers cover H1 and A1–A10. H1 fixes core-only scan scope, subset semantics and historical
+red. A1 keeps the tracer commit green; A2 rejects a branch switch and preserves introduce-gsd. A3/A4 use
+scoped globals and the existing listenerErrors helper. A5/A6 add multiple-control, nested-survivor and
+missing-adapter cases. A7 updates existing settings/migration lists; A8 preserves recipe imports and
+the colour accessor; A9 requires only the new hook on migrated controls; A10 names Django's actual
+translation delegate. Refuted or already-covered suggestions and extension-hook scope debt have explicit
+PLAN ledger dispositions. Three plans and their wave dependencies remain unchanged. Review conflict
+markers in 04-REVIEWS.md remain untouched.

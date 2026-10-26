@@ -37,11 +37,11 @@ without claiming manifest-version validation. See 04-RESEARCH.md. No new framewo
 | Task ID | Plan | Wave | Requirement | Threat Ref | Secure Behavior | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|------------|-----------------|-----------|-------------------|-------------|--------|
 | 04-01-01 | 04-01 | 1 | ALRT-01 | T-04-01 | Exact baseline before product edits | golden/history | `.venv/bin/pytest tests/test1/test_alerts.py tests/test1/test_messages.py -q` | Suite exists; new golden/test | pending |
-| 04-01-02 | 04-01 | 1 | ALRT-02, ALRT-03 | T-04-02 | Marker selects nearest frame; fallback belongs to adapter | rendered tracer | `.venv/bin/pytest tests/test1/test_alerts.py -q` followed by Quick JS | Suites exist; new tracer | pending |
+| 04-01-02 | 04-01 | 1 | ALRT-02, ALRT-03 | T-04-02 | Marker selects nearest frame; fallback belongs to adapter; message assertions move with template | rendered tracer | Quick Python followed by Quick JS | Suites exist; new tracer | pending |
 | 04-01-03 | 04-01 | 1 | ALRT-02 | T-04-01 | Escaping, translated name and non-dismissible behavior | render/response | Quick Python | Extend existing suites | pending |
 | 04-02-01 | 04-02 | 2 | ALRT-03 | T-04-03 | Present component owns no-op/throw; lazy namespace preserved | JS regression | Quick JS | Extend existing suite | pending |
-| 04-02-02 | 04-02 | 2 | ALRT-02, ALRT-03 | T-04-03, T-04-04 | Dynamic semantic selection; surfaced custom errors; repeated clicks | JS regression | Quick JS followed by `npm --prefix . test` | Extend existing suite | pending |
-| 04-03-01 | 04-03 | 3 | ALRT-04 | T-04-05 | Actual documented recipe safely renders; exact dropdown allowlist | render/docs/audit | Quick Python and `.venv/bin/mkdocs build --strict` | Suite/docs exist; new recipe/guard tests | pending |
+| 04-02-02 | 04-02 | 2 | ALRT-02, ALRT-03 | T-04-03, T-04-04 | Dynamic/nearest selection; two controls; surfaced errors/missing key; repeated clicks | JS regression | Quick JS followed by `npm --prefix . test` | Extend suite; reuse listenerErrors | pending |
+| 04-03-01 | 04-03 | 3 | ALRT-04 | T-04-05 | Recipe preserves colour/escaping; core-only nonempty subset audit; settings hook list | render/docs/audit | Quick Python and `.venv/bin/mkdocs build --strict` | Suite/docs exist; new recipe/guard tests | pending |
 | 04-03-02 | 04-03 | 3 | ALRT-04 | T-04-06 | Paired migration states scripts and legacy behavior accurately | docs | `.venv/bin/mkdocs build --strict` | Existing | pending |
 | 04-03-03 | 04-03 | 3 | ALRT-01..04 | T-04-01..06 | Real browser behavior and all quality gates evidenced | smoke/full suite/history | Full gates below | Existing tools; new acceptance artifact | pending |
 
@@ -49,7 +49,9 @@ Regression matrix: Bootstrap instance close; no component removal; late global/o
 preassigned and call-time replacement adapters; no-op and throwing custom adapters (including mutation before
 throw); throwing present Bootstrap component; nested click, nearest role, orphan marker, unrelated/non-Element
 targets; dynamic modal-like insertion; non-dismissible output; escaping, translated labels and frame/body overrides.
-For listener exceptions use a temporary window error listener and cleanup, following list.filter.test.js.
+For listener exceptions and ignored targets reuse listenerErrors from tests/js/helpers/errors.js; assert
+original errors or an empty array. Include two controls in one frame, outer/sibling retention and the
+missing-adapter TypeError. Restore console spies and only cv/bootstrap globals, preserving shared jQuery stubs.
 
 ## Wave 0 Requirements
 
@@ -59,9 +61,9 @@ For listener exceptions use a temporary window error listener and cleanup, follo
 - [x] Final planner task IDs and phase-unique threat references replace provisional mapping above.
 
 The before-change golden is task 04-01-01's separate first commit. The product tracer is 04-01-02 and
-shares that exact golden between Python rendering and jsdom interaction. Its focused Python command omits
-the two legacy message assertions until 04-01-03 updates them; the plan does not claim a green full suite
-at that intermediate point. No new framework/scaffold installation is needed.
+shares that exact golden between Python rendering and jsdom interaction. Both message assertion updates
+belong to the tracer, whose combined Python/JS gates must pass before its commit. The six-file tracer is
+deliberate; 04-01-03 adds broader regressions afterward. No framework/scaffold installation is needed.
 
 ## Manual-Only Verifications
 
@@ -75,9 +77,13 @@ The plain `rg -n 'data-bs-' src/crud_views/templates` command is an audit: valid
 the exact dropdown paths named in theme.md, not merely its exit status.
 
 Automated allowlist coverage is planned in `test_stock_bootstrap_data_attributes_are_dropdown_only`:
-only `crud_views/tags/actions_menu.html`, `crud_views/tags/actions_menu_toggle.html` and
-`crud_views/snippets/language_selector.html` are allowed; require actual matches. Baseline: four matching
-lines in alert.html, actions_menu_toggle.html and language_selector.html, so the old alert must fail the guard.
+scan exactly `src/crud_views/templates`, using paths relative to that root. Only
+`crud_views/tags/actions_menu.html`, `crud_views/tags/actions_menu_toggle.html` and
+`crud_views/snippets/language_selector.html` are allowed; require nonempty matches and matches <= ALLOWED,
+not equality. The wrapper need not match. Report forbidden paths. For historical red, copy the core tree
+to a temporary directory and replace its alert template with the baseline commit's snapshot via git show;
+invoke the same helper there and confirm the alert path fails, without changing the checkout. Baseline:
+four matching lines in alert.html, actions_menu_toggle.html and language_selector.html.
 
 ## Final Execution Gates and Evidence
 

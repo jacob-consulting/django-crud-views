@@ -1,6 +1,6 @@
 ---
 phase: 04-alert-dismiss-adapter
-reviewed: 2026-10-26T20:51:14Z
+reviewed: 2026-10-26T21:04:34Z
 depth: deep
 files_reviewed: 14
 files_reviewed_list:
@@ -20,76 +20,50 @@ files_reviewed_list:
   - tests/test1/test_messages.py
 findings:
   critical: 0
-  warning: 1
-  info: 3
+  warning: 0
+  info: 4
   total: 4
 status: issues_found
 ---
 
 # Phase 04: Code Review Report
 
-**Reviewed:** 2026-10-26T20:51:14Z
+**Reviewed:** 2026-10-26T21:04:34Z
 **Depth:** deep
 **Files Reviewed:** 14
 **Status:** issues_found
 
 ## Summary
 
-Reviewed the phase diff (`1b77934..HEAD`, 8 commits) for the alert-dismiss adapter: the new `alert.close(el)`
-entry in `cv.bootstrapAdapters`, the delegated `[data-cv-alert-dismiss]` click handler in `viewset.js`, the
-`tags/alert.html` attribute swap, the golden, the Python and vitest coverage, and the six documentation files.
-Both test suites were executed against the working tree (57 Python tests in `test_alerts.py`/`test_messages.py`
-and 59 vitest cases in `adapters.test.js`/`viewset.test.js` pass).
+Incremental re-review after the disposition of the first pass (2026-10-26T20:51:14Z). The only non-planning change
+since `6228776` is commit `b7b49ae` (`docs/reference/theme.md`, `docs/reference/messages.md`,
+`tests/test1/test_alerts.py`; `git diff --stat 6228776..HEAD -- . ':!.planning'` shows nothing else). This pass
+re-read those three files in full and re-verified every claim they make against the shipped sources
+(`src/crud_views/static/crud_views/js/viewset.js`, `adapters.js`, `modal.js`, `formset.js`, `tooltip.js`,
+`src/crud_views/lib/settings.py`, and every `*.html` under `src/`). Findings against files unchanged since the first
+pass are carried over and were re-checked at the cited lines in the current working tree.
 
-Cross-file tracing done at deep depth:
+Verification of the two fixes:
 
-- `{% cv_js %}` order (`src/crud_views/lib/settings.py:288-289`) renders `adapters.js` before `viewset.js`, matching
-  the claim in `messages.md`, `javascript.md` and `CHANGELOG.md`.
-- `viewset.js:54` resolves `globalThis.cv.adapters.alert` at click time, the same convention as
-  `list.filter.js:15`; the preassigned-adapter merge at `adapters.js:52` keeps a partial early map and fills `alert`.
-- No `data-bs-dismiss="alert"` survives in `src/`, `examples/` or the reference docs outside the deliberate
-  before/after migration snippet; the core-template guard in `test_alerts.py` confirms the attribute set under
-  `src/crud_views/templates`.
-- Every intra-doc anchor the phase introduced (`#dismissible-alerts`, `#custom-alert-frame`, `#cvadapters`,
-  `#what-the-scripts-need`, `#contract-changes-in-templates-you-still-override`, `#hooks-instead-of-copies`, and
-  the checklist anchors) resolves to an existing heading.
-- The `cv.adapters` "Added" wording change in `CHANGELOG.md` (line ~306) sits under `## Unreleased`, not a
-  released section.
-- Locked decisions D-03/D-04 (no catch/log/fallback after a custom-adapter or component failure, `el.remove()`
-  only inside the default adapter) are implemented as specified and are not reported as defects.
+- **WR-01 (theme.md data-bs-* claim) — resolved.** `grep -rn "data-bs-" src/ --include=*.html` returns exactly
+  `crud_views/snippets/language_selector.html:6`, `crud_views/tags/actions_menu_toggle.html:4-5`,
+  `crud_views_object_detail/.../layouts/accordion/group.html:5,15` (collapse) and
+  `crud_views_object_detail/.../layouts/tabs-vertical/object_detail.html:10-11` (pill, i.e. Bootstrap's Tab plugin).
+  The rewritten paragraph (`theme.md:212-216`) scopes "the only ones" to the core `crud_views` templates, which is
+  now true, and names both object-detail layouts with the right component families. The guard docstring
+  (`test_alerts.py:328`) now asserts the same core-only fact as the doc and as `CORE_TEMPLATES` (line 22). Dropped.
+- **IN-03 (messages.md "does nothing") — resolved.** `messages.md:41-43` now separates the two cases. Both are
+  accurate: with neither script the `type="button"` control has no handler; with `viewset.js` alone,
+  `viewset.js:54` evaluates `globalThis.cv.adapters.alert.close(frame)`. If no other core script ran,
+  `globalThis.cv` is `undefined` (TypeError reading `adapters`); if `modal.js:143`, `formset.js:617` or
+  `tooltip.js:70` created the namespace, `cv.adapters` is `undefined` (TypeError reading `alert`). Either way an
+  uncaught `TypeError` surfaces in the console on every click, after `e.preventDefault()` at line 53. Dropped.
 
-No correctness or security defect was found in the shipped JavaScript or template. The one warning is a
-documentation claim that is false for the distribution as shipped and that the accompanying test guard is scoped
-too narrowly to catch.
-
-## Warnings
-
-### WR-01: `theme.md` claims the dropdown templates are the only stock templates with `data-bs-*`, but the object-detail layouts also carry them
-
-**File:** `docs/reference/theme.md:212-214`; guard at `tests/test1/test_alerts.py:306-313,320-327`
-**Issue:** The new paragraph states "These dropdown templates are the only stock templates with Bootstrap
-`data-bs-*` attributes." That is only true for `src/crud_views/templates`. The distribution also ships
-`src/crud_views_object_detail/templates/crud_views_object_detail/layouts/accordion/group.html:5,15`
-(`data-bs-toggle="collapse"`, `data-bs-target`, `data-bs-parent`) and
-`layouts/tabs-vertical/object_detail.html:10-11` (`data-bs-toggle="pill"`, `data-bs-target`). A theme author on a
-non-Bootstrap framework who trusts this sentence will override the three dropdown templates and still get
-non-functional accordion/tab layouts from `ObjectDetailView`. The guard test
-`test_stock_bootstrap_data_attributes_are_dropdown_only` only walks `CORE_TEMPLATES`
-(`src/crud_views/templates`), so it validates the narrower fact while the docstring and the doc assert the
-broader one; `theme.md` never mentions the object-detail package at all (grep for `object_detail`, `accordion`,
-`tabs-vertical`, `pill` returns nothing).
-**Fix:** Either scope the sentence or widen the truth. Minimal doc fix:
-
-```markdown
-These dropdown templates are the only `crud_views` core templates with Bootstrap `data-bs-*` attributes. The
-alert frame has none: its close control uses `data-cv-alert-dismiss` and the alert adapter, see
-[Dismissible alerts](javascript.md#dismissible-alerts). `crud_views_object_detail`'s `accordion` and
-`tabs-vertical` layouts still use Bootstrap's collapse and pill data API; override those layout templates
-on another framework.
-```
-
-And align the guard's docstring with its actual scope (or extend it to the object-detail root with those two
-layouts in `BOOTSTRAP_DATA_ALLOWED`) so the test and the doc assert the same fact.
+Other checks on the change: the two anchors the edited text links to (`javascript.md#what-the-scripts-need`,
+`javascript.md#dismissible-alerts`) resolve to headings at `javascript.md:7` and `:188`; `{% cv_js %}` still renders
+`adapters.js` before `viewset.js` (`settings.py:288-289`); `tests/test1/test_alerts.py` passes (34 tests,
+`pytest tests/test1/test_alerts.py -q -n auto`). No correctness or security defect in the shipped JavaScript or
+template; all remaining findings are robustness and doc/test-drift items.
 
 ## Info
 
@@ -99,32 +73,69 @@ layouts in `BOOTSTRAP_DATA_ALLOWED`) so the test and the doc assert the same fac
 **Issue:** `control.closest('[role="alert"]')` is an exact-value match. The WAI-ARIA `role` attribute is a
 space-separated token list (fallback roles, e.g. `role="alert status"`); such a frame would be silently ignored
 (no adapter call, no error), even though it is a valid alert. The docs consistently say `role="alert"`, so this is
-a robustness nit, not a contract breach.
+a robustness nit, not a contract breach. Unchanged since the first pass.
 **Fix:** `control.closest('[role~="alert"]')` accepts the token form at no cost; update the three doc mentions if
 you adopt it.
 
 ### IN-02: The `BOOTSTRAP_DATA_ALLOWED` allowlist is hand-copied from `theme.md` rather than derived from it
 
-**File:** `tests/test1/test_alerts.py:19-25`; docstring at line 334 says "named in theme.md"
-**Issue:** The allowlist duplicates the bullet list under `## Templates that follow Bootstrap's DOM`. If the doc
-list changes (a template is added or renamed) the guard keeps passing and the two drift apart silently. The suite
-already parses doc sections with `_section` (used in this same file for the frame recipe).
+**File:** `tests/test1/test_alerts.py:24-30`; docstring at line 328 says "named in theme.md"
+**Issue:** The allowlist duplicates the bullet list under `## Templates that follow Bootstrap's DOM`
+(`theme.md:205-207`). If the doc list changes (a template is added or renamed) the guard keeps passing and the two
+drift apart silently. The suite already parses doc sections with `_section` (used in this same file for the frame
+recipe, line 251). Unchanged since the first pass; only the line numbers moved.
 **Fix:** Build the allowlist from the doc: `_section(THEME_MD.read_text(), "## Templates that follow Bootstrap's DOM")`
 and extract the backticked `tags/...` / `snippets/...` paths, prefixing `crud_views/`.
 
-### IN-03: `messages.md` understates the `viewset.js`-without-`adapters.js` case
+### IN-04: The new `theme.md` sentence about non-core `data-bs-*` templates has no guard
 
-**File:** `docs/reference/messages.md:40-41`
-**Issue:** "Without the core scripts the alert still renders and reads correctly; only the X does nothing." is
-accurate when both scripts are absent, but a page that hand-lists `viewset.js` without `adapters.js` gets an
-uncaught `TypeError` (`globalThis.cv` is undefined at `viewset.js:54`) on every click, not a silent no-op. The
-migration checklist (`docs/migrating-1.0.md:133-134`) says such pages "lose ... alert dismissal" without naming
-the error; only the whole-map-replacement case names the `TypeError`.
-**Fix:** One clause: "...only the X does nothing (with `viewset.js` but no `adapters.js` the click throws a
-`TypeError`, see [What the scripts need](javascript.md#what-the-scripts-need))."
+**File:** `docs/reference/theme.md:214-216`; guard at `tests/test1/test_alerts.py:319-329`
+**Issue:** The WR-01 fix added a factual claim about the distribution outside core ("the `crud_views_object_detail`
+layouts `layouts/accordion/group.html` and `layouts/tabs-vertical/object_detail.html` still use Bootstrap's collapse
+and tab attributes"). It is true today (those are the only two non-core templates with `data-bs-*`), but
+`test_stock_bootstrap_data_attributes_are_dropdown_only` only walks `CORE_TEMPLATES`, so a `data-bs-*` attribute
+added to a workflow, polymorphic, guardian or third object-detail layout template, or removed from one of the two
+named layouts, leaves the sentence stale with no failing test. This is the same drift class as IN-02, now with a
+second doc location. `_assert_core_bootstrap_data_attributes` is already root-parametrised, so the extension is
+cheap.
+**Fix:** Add a second guard over the object-detail package and assert the other packages carry none:
+
+```python
+OBJECT_DETAIL_TEMPLATES = ROOT / "src" / "crud_views_object_detail" / "templates"
+OBJECT_DETAIL_DATA_ALLOWED = frozenset(
+    {
+        "crud_views_object_detail/layouts/accordion/group.html",
+        "crud_views_object_detail/layouts/tabs-vertical/object_detail.html",
+    }
+)
+
+
+def test_non_core_bootstrap_data_attributes_are_the_two_object_detail_layouts():
+    """theme.md: outside core, only the accordion and tabs-vertical layouts carry data-bs-*."""
+    found = {
+        p.relative_to(p.parents[len(p.relative_to(ROOT / "src").parts) - 2]).as_posix()
+        for p in (ROOT / "src").glob("crud_views_*/templates/**/*.html")
+        if "data-bs-" in p.read_text()
+    }
+    assert found == OBJECT_DETAIL_DATA_ALLOWED
+```
+
+(or, simpler, pass `OBJECT_DETAIL_TEMPLATES` to a variant of `_assert_core_bootstrap_data_attributes` that takes
+the allowlist as a parameter, and assert `"data-bs-"` is absent under the workflow/polymorphic/guardian roots).
+
+### IN-05: `messages.md` enumerates two of the three missing-script combinations
+
+**File:** `docs/reference/messages.md:41-43`
+**Issue:** The IN-03 fix reads "with neither script it does nothing, and with `viewset.js` but no `adapters.js`
+each click throws a `TypeError`". The third combination, `adapters.js` without `viewset.js`, also does nothing
+(no delegated click handler is registered; `adapters.js` only builds `cv.adapters`), but a reader in that
+situation matches neither named case. The behaviour is correct; the sentence just reads as a complete enumeration
+and is not one.
+**Fix:** Fold the two no-op cases together: "...but the X does not close it: without `viewset.js` it does nothing,
+and with `viewset.js` but no `adapters.js` each click throws a `TypeError` in the console."
 
 ---
 
-_Reviewed: 2026-10-26T20:51:14Z_
+_Reviewed: 2026-10-26T21:04:34Z_
 _Reviewer: Claude (gsd-code-reviewer)_
 _Depth: deep_

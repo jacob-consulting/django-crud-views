@@ -94,7 +94,9 @@ maintainer decision for this phase's discussion and is not pre-decided here.**
      button-data locations cannot make W362 accept `form:<variant>:<mode>`.
   4. The key count quoted in `buttons.md` is correct, and a test fails whenever it drifts from
      `len(DEFAULT_BUTTON_CLASSES)`. There is no runtime or golden change.
-**Plans**: TBD
+**Plans**: 0/1 plans executed
+- [ ] 02-01-PLAN.md
+
 **UI hint**: no (checks and docs only)
 
 ### Phase 3: Filter toggle label mode
@@ -258,7 +260,7 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Label-mode defaults | 5/5 | Complete    | 2026-10-26 |
-| 2. Form key grammar | 0/TBD | Not started | - |
+| 2. Form key grammar | 0/1 | Planned     | - |
 | 3. Filter toggle label mode | 0/TBD | Not started | - |
 | 4. Alert dismiss adapter | 0/TBD | Not started | - |
 | 5. Table pagination parity | 0/TBD | Not started | - |

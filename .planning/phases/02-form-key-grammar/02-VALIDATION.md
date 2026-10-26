@@ -28,14 +28,26 @@ created: "2026-10-26"
 
 ## Per-Requirement Verification Map
 
-Task IDs and threat references will be reconciled with the finalized plans.
+Plan 02-01 executes three serial tasks in wave 1. Every task gate includes an explicit failure predicate.
 
-| Requirement | Secure Behavior | Test Type | Automated Command | File Exists | Status |
-|-------------|-----------------|-----------|-------------------|-------------|--------|
-| KEYS-01 | No new rendering or template evaluation | Docs build + prose review | `.venv/bin/mkdocs build --strict` | Yes | Pending |
-| KEYS-02 | Finite key grammar; malformed/non-string keys do not crash checks | Unit/check integration | `.venv/bin/pytest tests/test1/test_button_classes_checks.py -q` | Yes; add cases | Pending |
-| KEYS-03 | Future location additions do not broaden the class grammar | Unit + import smoke | Quick command above | Yes; add future-location guard | Pending |
-| KEYS-04 | Documented count matches actual shipped keys | Documentation contract | `.venv/bin/pytest tests/test1/test_button_classes.py -q` | Yes; add count assertion | Pending |
+| Requirement | Task | Threat Ref | Secure Behavior | Test Type | Automated Command | File Exists | Status |
+|-------------|------|------------|-----------------|-----------|-------------------|-------------|--------|
+| KEYS-01 | 02-01-03 | T-02-03 | Accurate grammar; unchanged rendering | Docs build + prose review | `.venv/bin/mkdocs build --strict` | Yes | Pending execution |
+| KEYS-02 | 02-01-01, 02-01-02 | T-02-01, T-02-03 | Finite grammar; malformed keys diagnose safely; escaping retained | Real check tracer + matrix | `.venv/bin/pytest tests/test1/test_button_classes_checks.py -q` | Yes; add cases | Pending execution |
+| KEYS-03 | 02-01-01, 02-01-02 | T-02-02 | Future button-data locations cannot broaden grammar | Unit + import smoke | Quick command above; import command below | Yes; add isolation case | Pending execution |
+| KEYS-04 | 02-01-03 | — | One exact count equals the actual table | Documentation contract | `.venv/bin/pytest tests/test1/test_button_classes.py -q` | Yes; add count assertion | Pending execution |
+
+## Per-Task Verification Map
+
+| Task | First proof | Automated gate | Failure predicate |
+|------|-------------|----------------|-------------------|
+| 02-01-01 | New settings/check/lookup tracer first fails with W362 | `.venv/bin/pytest tests/test1/test_button_classes_checks.py::test_form_submit_icon_key_reaches_checks_and_lookup tests/test1/test_button_classes_checks.py -q` | Tracer/existing checks fail after implementation; new test is created first |
+| 02-01-02 | Complete dual-source kind/mode and boundary matrix | Quick command above; rendering regression below | Accepted key warns; invalid shape passes/crashes; diagnostics/floors/fallback/rendering drift |
+| 02-01-03 | Count guard first fails with 64 versus live 70 | `.venv/bin/pytest tests/test1/test_button_classes.py tests/test1/test_label_mode_docs.py -q`; strict docs build | Count missing/duplicate/unequal or documentation/build regressions |
+
+Five classified edge predicates are explicit in the plan. KEYS-01 and KEYS-02 remain flagged unresolved
+unclassified probe assumptions for end-of-phase review. See `02-SOURCE-AUDIT.md` for all seven rows
+and the zero-kept-prohibitions precision result.
 
 ## Wave 0 Requirements
 

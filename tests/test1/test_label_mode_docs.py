@@ -222,7 +222,11 @@ def test_canonical_label_mode_resolution_sections():
     for step, marker in zip(card, markers, strict=True):
         assert marker in step, (marker, step)
     assert '"both"' in card[3]
-    assert "`CardListView.cv_get_card_actions_label_mode()`" in _section(text, "### Card label-mode resolution")
+    card_body = _section(text, "### Card label-mode resolution")
+    assert "`CardListView.cv_get_card_actions_label_mode()`" in card_body
+    assert "own instance" in _flat(card[2]) and "class-level" in _flat(card[2])
+    for marker in ("own instance None", "inherited class", "fallback hooks", "cv_label_mode"):
+        assert marker in _flat(card_body), marker
 
     target = _section(text, "### Target-view default")
     assert "above the project floor" in target
@@ -307,7 +311,12 @@ def test_label_mode_reference_links_and_diagram():
     assert '"card"` entry of `CRUD_VIEWS_LABEL_MODE_DEFAULTS`' in attribute[3]
     field = _row(_section(card, "## CardAction Fields"), "`label_mode`")
     assert "`cv_get_card_actions_label_mode()`" in field[3]
-    assert "cv_get_card_actions_label_mode()" in _section(card, "## Label mode")
+    assert "cv_label_mode" in field[3] and "instance" in field[3]
+    card_mode = _section(card, "## Label mode")
+    assert "cv_get_card_actions_label_mode()" in card_mode
+    assert 'as_view(cv_card_actions_label_mode="label")' in card_mode
+    for marker in ("class-level", "through an instance", "cv_label_mode", "setup", "dispatch", "get_queryset"):
+        assert marker in _flat(card_mode), marker
     recipe = _flat(_section(buttons, "## A theme recipe"))
     assert 'cv_card_actions_label_mode = "both" (the default)' not in recipe
     assert 'package card floor in CRUD_VIEWS_LABEL_MODE_DEFAULTS is "both"' in recipe
@@ -335,6 +344,11 @@ def _card_release_contract(changelog: str) -> None:
     flat = _flat(attribute[0])
     assert "reads None by default" in flat and 'resolved string "both"' in flat
     assert "cv_get_card_actions_label_mode()" in flat
+    assert "class-level" in flat and "cv_label_mode" in flat and "class or instance" in flat
+
+    instance_fix = [b for b in _bullets(_subsection(release, "### Fixed")) if "**Instance card label modes:**" in b]
+    assert len(instance_fix) == 1
+    assert "as_view" in instance_fix[0] and "per-request" in instance_fix[0]
 
     fixed = [b for b in _bullets(_subsection(release, "### Fixed")) if "**Malformed stamped label modes:**" in b]
     assert len(fixed) == 1
@@ -382,6 +396,7 @@ def test_card_migration_contract():
     flat = _flat(attribute[0])
     assert "reads None by default" in flat and 'resolved string "both"' in flat
     assert "cv_get_card_actions_label_mode()" in flat and "Python-level change" in flat
+    assert "class-level" in flat and "cv_label_mode" in flat and "class or instance" in flat
 
 
 def test_button_label_mode_check_reference():

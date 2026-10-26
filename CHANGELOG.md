@@ -49,8 +49,11 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
   ([setting](docs/reference/settings.md#label-mode-configuration),
   [resolution](docs/reference/action_menus.md#card-label-mode-resolution)).
   Without configuration the resolved mode is still `"both"` and the rendered output is unchanged, but Python code or a
-  template that reads the raw attribute as a mode gets `None`: call `cv_get_card_actions_label_mode()` instead, or
-  read the `cv_label_mode` stamped on the button context. A view that assigns the attribute keeps its value.
+  template that reads the raw attribute as a mode gets `None`. `cv_get_card_actions_label_mode()` resolves
+  class-level defaults and stays callable on the class; calling it through an instance still reads class
+  configuration. Read the effective per-action `cv_label_mode` stamped on the button context or returned by
+  `cv_get_card_action_data()`. A view that assigns the attribute on a class or instance keeps its choice, including
+  `as_view()` and per-request assignment.
 - A 0.29 or 0.30 override of `crud_views/tags/card_action.html` that branches on `cv_no_label` no longer gets that
   key: the card action context carries `cv_label_mode` instead, so the override renders the label on every button,
   the `CardAction(no_label=True)` ones included, and raises nothing. Move the markup into `tags/button/action.html`,
@@ -143,6 +146,10 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Fixed
 
+- **Instance card label modes:** `as_view(cv_card_actions_label_mode=...)` and per-request assignments retain their
+  explicit choices ahead of the project floor. An instance reset to `None` uses the current card floor; subclass
+  resolver hooks still handle instances without their own value. See
+  [Card label-mode resolution](docs/reference/action_menus.md#card-label-mode-resolution).
 - **Malformed stamped label modes:** a malformed truthy `cv_label_mode` on a button context no longer crashes a
   non-strict render. With `CRUD_VIEWS_STRICT` off it logs one warning per location and value and renders the
   location's configured floor; strict mode still raises `ValueError` naming `cv_label_mode`.

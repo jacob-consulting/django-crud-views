@@ -47,7 +47,7 @@ You do not configure this on `CardAction`; the method and modal behaviour derive
 |---|---|---|---|
 | `key` | `str` | (required) | View key in the ViewSet (`"detail"`, `"update"`, `"delete"`, etc.) |
 | `label` | `str \| None` | `None` | Explicit button label. If None, falls back to the target view's short label. |
-| `label_mode` | `str \| None` | `None` | `"label"`, `"icon"` or `"both"`. If None (and `no_label` is not set), the button gets the view's `cv_get_card_actions_label_mode()`: the view's `cv_card_actions_label_mode`, else the project's card floor, else the package floor `"both"`. See [Label mode](#label-mode). |
+| `label_mode` | `str \| None` | `None` | `"label"`, `"icon"` or `"both"`. If None (and `no_label` is not set), the button uses the effective view mode, including instance choices and the class-level `cv_get_card_actions_label_mode()` fallback. The action's `cv_label_mode` records the result. See [Card label-mode resolution](action_menus.md#card-label-mode-resolution). |
 | `no_label` | `bool` | `False` | Superseded by `label_mode="icon"`, which it equals. Setting it together with `label_mode` is a validation error. |
 | `variant` | `str \| None` | `None` | Button style: `"primary"`, `"secondary"`, `"tertiary"`, `"danger"`. If None, falls back to the target view's `cv_action_variant` (`primary` for create, `danger` for delete, else `secondary`). See [Buttons](buttons.md#variants). |
 | `flex` | `bool` | `False` | If True, the button gets the `card:flex` classes (`flex-grow-1` by default) |
@@ -78,9 +78,21 @@ it for one view, and `CardAction.label_mode` overrides both for one button:
 |---|---|---|---|
 | `cv_card_actions_label_mode` | `str \| None` | `None` | Label mode of every card action without its own `label_mode`. None uses the `"card"` entry of `CRUD_VIEWS_LABEL_MODE_DEFAULTS`, else `"both"` |
 
-The raw attribute stays `None` unless a view sets it. To read the mode a card action actually gets, call the
-classmethod `cv_get_card_actions_label_mode()` in Python, or read the `cv_label_mode` stamped on the button context in
-a template.
+The raw attribute stays `None` unless a view sets it. The public classmethod `cv_get_card_actions_label_mode()`
+resolves class-level configuration and stays callable on the class. Calling it through an instance still reads
+class configuration; it does not incorporate instance or per-action choices. Read the effective per-action
+`cv_label_mode` returned by `cv_get_card_action_data()` or stamped on the button context in a template.
+
+Django's `as_view()` can select a mode for one URL configuration:
+
+```python
+card_view = ProjectCardListView.as_view(cv_card_actions_label_mode="label")
+```
+
+For a per-request choice, assign `self.cv_card_actions_label_mode` in `setup`, `dispatch` or `get_queryset`.
+Assigning `None` opts that instance into the project floor even when the class sets a mode. Each request keeps its
+own choice; the class attribute is unchanged. Subclass resolver overrides remain fallback hooks for instances
+without their own value.
 
 How explicit choices and defaults combine is described in
 [Card label-mode resolution](action_menus.md#card-label-mode-resolution). For cards,

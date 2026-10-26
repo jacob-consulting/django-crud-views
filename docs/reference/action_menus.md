@@ -115,12 +115,19 @@ Cards do not use the maps. For one inline card button:
 
 1. `CardAction.label_mode`, if it is not `None`;
 2. `CardAction(no_label=True)` renders `"icon"`;
-3. the card view's `cv_card_actions_label_mode`, if it is not `None`;
+3. the card view's own instance `cv_card_actions_label_mode`, if it is not `None`; without an own instance value,
+   the class-level resolver uses the class attribute if it is not `None`;
 4. `default_label_mode("card")`: the `"card"` entry of `CRUD_VIEWS_LABEL_MODE_DEFAULTS`, package default `"both"`.
 
-Steps 3 and 4 are the public resolver `CardListView.cv_get_card_actions_label_mode()`; read the resolved mode through
-it, not through the raw attribute, which is `None` unless the view sets it. See
-[Card list view](card-list-view.md#label-mode).
+An own instance `None` opts directly into step 4, bypassing an inherited class value. This includes an explicit
+`None` passed to `as_view()` or assigned to `self` during a request. The floor is read lazily, only when needed.
+
+The public classmethod `CardListView.cv_get_card_actions_label_mode()` resolves class-level defaults (class
+attribute, otherwise step 4) and stays callable on the class. Calling it through an instance still reads class
+configuration. Subclass resolver overrides remain fallback hooks when there is no own instance value; an explicit
+instance choice, including `None`, takes precedence over them. To read the effective mode of one action, use its
+stamped `cv_label_mode` from `cv_get_card_action_data()` or the rendered button context. See
+[Card list view](card-list-view.md#label-mode) for instance configuration examples.
 
 ### Target-view default
 

@@ -140,10 +140,12 @@ The other changes to views:
   ([setting](reference/settings.md#label-mode-configuration),
   [resolution](reference/action_menus.md#card-label-mode-resolution)). Without
   configuration cards still resolve to `"both"` and render as before, but this is a Python-level change: a subclass,
-  override or template that reads the raw attribute as a mode now gets `None`. Call
-  `cv_get_card_actions_label_mode()` for the resolved mode, or read the `cv_label_mode` stamped on the button
-  context. A view that assigns the attribute keeps its value, and `CardAction(no_label=True)` still renders
-  icon-only.
+  override or template that reads the raw attribute as a mode now gets `None`.
+  `cv_get_card_actions_label_mode()` resolves class-level defaults and stays callable on the class; calling it
+  through an instance still reads class configuration. Read the effective per-action `cv_label_mode` stamped on
+  the button context or returned by `cv_get_card_action_data()`. A view that assigns the attribute on a class or
+  instance keeps its choice, including `as_view()` and per-request assignment. `CardAction(no_label=True)` still
+  renders icon-only.
 - **`CardAction.variant` defaults to the target view's variant.** A card action pointing at a create view without an
   explicit `variant` now renders `btn-primary`; set `variant="secondary"` to keep the 0.29 look
   ([Variants](reference/buttons.md#variants)).

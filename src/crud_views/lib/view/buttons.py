@@ -10,7 +10,14 @@ from ..exceptions import ViewSetNotFoundError
 from ..settings import crud_views_settings
 from .action_menu import cv_is_inline_keys
 from .context import ViewContext
-from .label_mode import is_label_mode, is_label_mode_map, label_mode_check
+from .label_mode import (
+    LABEL_MODES,
+    _invalid_label_mode,
+    default_label_mode,
+    is_label_mode,
+    is_label_mode_map,
+    label_mode_check,
+)
 from .variant import variant_check
 
 
@@ -326,7 +333,15 @@ class FilterContextButton(ContextButton):
         data["cv_key"] = self.key
         # the resolved mode of the button's declared key (#262); no target view, so no target default: the view's
         # own map, this button's label_mode, the first map of view / ViewSet / setting, then the context floor
-        data["cv_label_mode"] = context.view.cv_get_action_label_mode("context", self.key, self)
+        mode = context.view.cv_get_action_label_mode("context", self.key, self)
+        if not is_label_mode(mode):
+            mode = _invalid_label_mode(
+                f"context action {self.key!r} cv_label_mode must be one of {sorted(LABEL_MODES)}",
+                "context",
+                mode,
+                lambda: default_label_mode("context"),
+            )
+        data["cv_label_mode"] = mode
         data["cv_action_label"] = _("Filter")  # translated per render, in the active language
         data["cv_icon_action"] = "filter"
         data["cv_filter_expanded"] = context.view.cv_filter_expanded

@@ -581,12 +581,11 @@ def _check_ids(checks) -> list[str]:
 
 @pytest.mark.django_db
 def test_filter_invalid_configuration_policy(client_user_publisher_view, monkeypatch, caplog):
-    """Malformed configuration is diagnosed by the existing checks; this phase adds no runtime normalizer.
+    """Static configuration checks and the runtime floor guard retain their existing diagnostics.
 
     Four separate paths: a button label_mode (viewset.E210), the view's own map (viewset.E211), the settings map
-    (crud_views.E106) and a ViewSet map, which pydantic rejects at construction. A malformed map or button value that
-    still reaches rendering is returned raw by the resolver and the stock leaf renders its legacy icon form; that is a
-    limitation, not a supported configuration. An invalid floor keeps its strict / warn-once policy.
+    (crud_views.E106) and a ViewSet map, which pydantic rejects at construction. An invalid floor keeps its
+    strict / warn-once policy.
     """
     bogus = FilterContextButton(label_mode="text")
     assert _check_ids(context_button_checks(PublisherListView, cv_publisher, [bogus])) == ["viewset.E210"]
@@ -602,14 +601,9 @@ def test_filter_invalid_configuration_policy(client_user_publisher_view, monkeyp
     with pytest.raises(pydantic.ValidationError):
         ViewSet(model=Author, name="author_bad_filter_map_262", context_actions_label_mode={"filter": "text"})
 
-    # the unvalidated raw value reaches the leaf, which renders the legacy icon form
-    _select_settings_map(monkeypatch, {"filter": "text"})
-    view = _publisher_view(client_user_publisher_view)
-    assert FilterContextButton().get_context(view.cv_get_view_context())["cv_label_mode"] == "text"
-    assert _rendered_mode(_page_toggle(client_user_publisher_view)) == "icon"
-
     # an invalid floor reached with nothing named before it: strict raises, non-strict warns once and uses "icon"
     _select_settings_map(monkeypatch, {})
+    view = _publisher_view(client_user_publisher_view)
     context = view.cv_get_view_context()
     with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"context": "Both"}):
         with pytest.raises(ValueError, match="CRUD_VIEWS_LABEL_MODE_DEFAULTS"):
@@ -621,3 +615,48 @@ def test_filter_invalid_configuration_policy(client_user_publisher_view, monkeyp
             assert FilterContextButton().get_context(context)["cv_label_mode"] == "icon"
     warnings = [r for r in caplog.records if r.name == "crud_views.lib.view.label_mode"]
     assert len(warnings) == 1
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("source", ["view", "viewset", "settings", "button"])
+@pytest.mark.parametrize("invalid", ["text", "Label"])
+@pytest.mark.parametrize("floor", MODES)
+def test_filter_malformed_resolved_mode(client_user_publisher_view, monkeypatch, caplog, source, invalid, floor):
+    """Runtime validation covers bypassed startup checks, before either custom labels or the leaf sees the mode."""
+    _select_settings_map(monkeypatch, {})
+    view = _publisher_view(client_user_publisher_view)
+    context = view.cv_get_view_context()
+    button = FilterContextButton(
+        label_mode=invalid if source == "button" else None,
+        label_template_code="Search ({{ cv_label_mode }})",
+    )
+    _register_buttons(monkeypatch, button)
+    if source == "view":
+        monkeypatch.setattr(PublisherListView, "cv_context_actions_label_mode", {"filter": invalid})
+    elif source == "viewset":
+        monkeypatch.setattr(cv_publisher, "context_actions_label_mode", {"filter": invalid})
+    elif source == "settings":
+        monkeypatch.setattr(crud_views_settings, "context_actions_label_mode", {"filter": invalid})
+
+    with override_settings(CRUD_VIEWS_STRICT=True, CRUD_VIEWS_LABEL_MODE_DEFAULTS={"context": floor}):
+        with pytest.raises(ValueError, match=r"filter.*cv_label_mode"):
+            button.get_context(context)
+        with pytest.raises(ValueError, match=r"filter.*cv_label_mode"):
+            _page_toggle(client_user_publisher_view)
+
+    with (
+        override_settings(CRUD_VIEWS_STRICT=False, CRUD_VIEWS_LABEL_MODE_DEFAULTS={"context": floor}),
+        caplog.at_level(logging.WARNING, logger="crud_views.lib.view.label_mode"),
+    ):
+        for _ in range(2):
+            data = button.get_context(context)
+            assert data["cv_label_mode"] == floor
+            assert data["cv_action_label"] == f"Search ({floor})"
+            toggle = _page_toggle(client_user_publisher_view)
+            assert _rendered_mode(toggle) == floor
+            _assert_label(toggle, floor, f"Search ({floor})")
+
+    warnings = [r for r in caplog.records if r.name == "crud_views.lib.view.label_mode"]
+    assert len(warnings) == 1
+    assert "cv_label_mode" in warnings[0].message
+    assert repr(invalid) in warnings[0].message

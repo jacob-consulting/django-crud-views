@@ -305,8 +305,10 @@ register the same key, the one whose `ready()` runs later wins, which is the one
 
 The bundled action leaf passes `cv_label_mode` as the third argument, and so does the filter toggle
 (`crud_views/tags/context_action_filter.html`): it follows the resolved mode of its key, so
-`context:<variant>:<mode>` reaches it like any other context button. A mode it does not know renders the icon form
-with `context:<variant>:icon`. See [The filter toggle](context_buttons.md#the-filter-toggle).
+`context:<variant>:<mode>` reaches it like any other context button. A malformed resolved `cv_label_mode` raises
+`ValueError` in strict mode (`CRUD_VIEWS_STRICT`); otherwise it logs one warning per location and value and uses
+the configured context floor, just like the stock action leaf. A hand-built context without a mode keeps the icon
+form. See [The filter toggle](context_buttons.md#the-filter-toggle).
 
 Use it in templates you write or override instead of a literal class, and the button follows the table. A literal
 class in a `template_code` keeps working; it is simply not themed.

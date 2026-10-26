@@ -1,14 +1,18 @@
 """#250: one alert frame, fed by alert_data(), renders every alert in the package."""
 
+import os
 from pathlib import Path
 
 import pytest
 from django.template import Context, Template
 from django.test import override_settings
+from django.utils import translation
 from django.utils.safestring import mark_safe
 
 from crud_views.lib.messages import alert_data
 from tests.test1.test_form_frame import _norm, _theme_templates
+
+ALERT_GOLDEN_DIR = Path(__file__).parent / "golden" / "alerts"
 
 
 @pytest.mark.parametrize("level", ["error", "warning", "success", "info", "debug"])
@@ -140,6 +144,24 @@ def test_only_the_alert_templates_write_alert_markup():
         if 'class="alert' in path.read_text():
             offenders.append(name)
     assert offenders == []
+
+
+def test_dismissible_alert_golden():
+    """ALRT-01 / D-07: the exact rendered bytes of a stock dismissible alert.
+
+    Byte convention: the golden holds ``markup.encode("utf-8")`` of the real ``cv_alert`` render under the English
+    locale, compared with ``read_bytes()``. There is no whitespace normalization and no appended trailing newline, so
+    any byte of drift in the shared frame fails here. Regenerate ONLY when a change to the stock markup is intended:
+    CV_UPDATE_GOLDEN=1 pytest tests/test1/test_alerts.py::test_dismissible_alert_golden
+    """
+    with translation.override("en"):
+        markup = _render('{% cv_alert "success" heading="Saved:" text="The record was saved." dismissible=True %}')
+    data = markup.encode("utf-8")
+    path = ALERT_GOLDEN_DIR / "dismissible.html"
+    if os.environ.get("CV_UPDATE_GOLDEN"):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(data)
+    assert data == path.read_bytes()
 
 
 def test_cv_alert_separates_heading_and_text():

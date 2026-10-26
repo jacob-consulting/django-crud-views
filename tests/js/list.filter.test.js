@@ -35,6 +35,87 @@ function hostFixture() {
     return { toggle: document.querySelector("#cv-filter-toggle") };
 }
 
+// The three server-rendered bodies of the filter leaf (#262). icon and both carry element icon wrappers or, with
+// placement "host", the host classes plus their swap hooks; label carries no icon hook at all. The host open/close
+// class strings share their "icon" token, the way a theme's "icon {name_class}" icon-host slot renders them.
+const HOST = { open: "icon icon-funnel", close: "icon icon-x" };
+
+function modeFixture({ mode = "label", placement = "element", expanded = false, label = "Filter" } = {}) {
+    const host = placement === "host" && mode !== "label";
+    const icons =
+        mode === "label" || host
+            ? ""
+            : `<span data-cv-filter-icon="open"${expanded ? " hidden" : ""}><i class="x"></i></span>
+               <span data-cv-filter-icon="close"${expanded ? "" : " hidden"}><i class="y"></i></span>`;
+    const hostAttrs = host ? ` data-cv-filter-icon-open="${HOST.open}" data-cv-filter-icon-close="${HOST.close}"` : "";
+    const classes = host ? `btn m-${mode} ${expanded ? HOST.close : HOST.open}` : `btn m-${mode}`;
+    const text =
+        mode === "icon" ? `<span class="visually-hidden">${label}</span>` : `${mode === "both" ? " " : ""}<span>${label}</span>`;
+    document.body.innerHTML = `
+        <div id="cv-config" data-request-path="/books/" data-query-string="" data-csrf-token="test-token" hidden></div>
+        <button type="button" id="cv-filter-toggle" class="${classes}" aria-expanded="${expanded}"
+                aria-controls="filter-collapse"${hostAttrs}>
+            ${icons}
+            ${text}
+        </button>
+        <div id="filter-collapse"></div>`;
+    vi.stubGlobal("cvGetConfig", () => ({ request: { path: "/books/", query_string: "" }, csrfToken: "t" }));
+    const toggle = document.querySelector("#cv-filter-toggle");
+    return { toggle, label: visibleLabel(toggle), host };
+}
+
+// the visible label: a child span that is neither an icon wrapper nor the hidden label
+function visibleLabel(toggle) {
+    const labels = toggle.querySelectorAll(":scope > span:not([data-cv-filter-icon]):not(.visually-hidden)");
+    expect(labels).toHaveLength(1);
+    return labels[0];
+}
+
+// the icon state a fixture shows for one expansion state
+function expectIcons(f, mode, expanded) {
+    if (mode === "label") {
+        expect(f.toggle.querySelectorAll("[data-cv-filter-icon], i")).toHaveLength(0);
+        expect(f.toggle.hasAttribute("data-cv-filter-icon-open")).toBe(false);
+        expect(f.toggle.className).toBe("btn m-label");
+    } else if (f.host) {
+        const active = (expanded ? HOST.close : HOST.open).split(" ");
+        const inactive = expanded ? "icon-funnel" : "icon-x";
+        expect([...f.toggle.classList]).toEqual(expect.arrayContaining(["btn", `m-${mode}`, ...active]));
+        expect(f.toggle.classList.contains(inactive)).toBe(false);
+    } else {
+        const open = f.toggle.querySelector('[data-cv-filter-icon="open"]');
+        const close = f.toggle.querySelector('[data-cv-filter-icon="close"]');
+        expect([open.hidden, close.hidden]).toEqual([expanded, !expanded]);
+        expect(f.toggle.className).toBe(`btn m-${mode}`);
+    }
+}
+
+function expectPost(call, expanded) {
+    expect(call).toEqual([
+        "/books/",
+        {
+            method: "POST",
+            headers: { "X-CSRFToken": "t", "Content-Type": "application/json; charset=utf-8" },
+            body: JSON.stringify({ filter_expanded: expanded }),
+        },
+    ]);
+}
+
+function deferred() {
+    let resolve, reject;
+    const promise = new Promise((res, rej) => {
+        resolve = res;
+        reject = rej;
+    });
+    return { promise, resolve, reject };
+}
+
+const LAYOUTS = [
+    ["label", "element"],
+    ["both", "element"],
+    ["both", "host"],
+];
+
 describe("list.filter.js", () => {
     let fetchMock;
     let toggle;
@@ -161,6 +242,116 @@ describe("list.filter.js", () => {
         await loadScript("list.filter");
         document.getElementById("filter-button-reset").click();
         expect(nav.href).toBe(expected);
+    });
+
+    describe.each(LAYOUTS)("a %s-mode toggle with %s icons (#262)", (mode, placement) => {
+        it.each([
+            ["Filter", false],
+            ["Filter", true],
+            ["Ünïcødé ✓ 搜索", false],
+            ["Ünïcødé ✓ 搜索", true],
+        ])("keeps the label %j over two clicks (starts expanded: %s)", async (text, expanded) => {
+            const f = modeFixture({ mode, placement, expanded, label: text });
+            await loadScript("list.filter");
+            for (const [click, state] of [
+                [1, !expanded],
+                [2, expanded],
+            ]) {
+                f.toggle.click();
+                expect(toggle).toHaveBeenCalledTimes(click);
+                expect(f.toggle.getAttribute("aria-expanded")).toBe(String(state));
+                expect(visibleLabel(f.toggle)).toBe(f.label); // the same node, never re-rendered
+                expect(f.label.textContent).toBe(text);
+                expectIcons(f, mode, state);
+                expect(fetchMock).toHaveBeenCalledTimes(click);
+                expectPost(fetchMock.mock.calls[click - 1], state);
+            }
+        });
+
+        it("collapses before it changes the DOM or persists", async () => {
+            const f = modeFixture({ mode, placement });
+            const seen = [];
+            toggle.mockImplementation(() => {
+                seen.push([f.toggle.getAttribute("aria-expanded"), f.toggle.className, fetchMock.mock.calls.length]);
+                expectIcons(f, mode, false);
+            });
+            await loadScript("list.filter");
+            const before = f.toggle.className;
+            f.toggle.click();
+            expect(seen).toEqual([["false", before, 0]]);
+            expect(f.toggle.getAttribute("aria-expanded")).toBe("true");
+        });
+
+        it("never rolls back the latest state when persistence settles out of order", async () => {
+            const requests = [deferred(), deferred()];
+            fetchMock.mockImplementation(() => requests[fetchMock.mock.calls.length - 1].promise);
+            const f = modeFixture({ mode, placement, label: "Ünïcødé ✓" });
+            await loadScript("list.filter");
+            f.toggle.click();
+            f.toggle.click();
+            expect(fetchMock.mock.calls.map((call) => call[1].body)).toEqual([
+                JSON.stringify({ filter_expanded: true }),
+                JSON.stringify({ filter_expanded: false }),
+            ]);
+            // the latest request fails first, then the earlier one succeeds late: neither may touch the DOM
+            requests[1].reject(new Error("offline"));
+            await new Promise((r) => setTimeout(r, 0));
+            requests[0].resolve({ ok: true, json: () => Promise.resolve({ filter_expanded: true }) });
+            await new Promise((r) => setTimeout(r, 0));
+            expect(f.toggle.getAttribute("aria-expanded")).toBe("false");
+            expectIcons(f, mode, false);
+            expect(visibleLabel(f.toggle)).toBe(f.label);
+            expect(f.label.textContent).toBe("Ünïcødé ✓");
+            expect(fetchMock).toHaveBeenCalledTimes(2);
+        });
+    });
+
+    it("changes nothing on a label-only toggle when the collapse adapter throws", async () => {
+        vi.spyOn(console, "error").mockImplementation(() => {});
+        const swallow = (event) => event.preventDefault();
+        window.addEventListener("error", swallow);
+        toggle.mockImplementation(() => {
+            throw new Error("no bootstrap");
+        });
+        const f = modeFixture({ mode: "label" });
+        await loadScript("list.filter");
+        f.toggle.click();
+        window.removeEventListener("error", swallow);
+        expect(f.toggle.getAttribute("aria-expanded")).toBe("false");
+        expectIcons(f, "label", false);
+        expect(f.label.textContent).toBe("Filter");
+        expect(fetchMock).not.toHaveBeenCalled();
+    });
+
+    it("changes nothing on a label-only toggle when the collapse adapter refuses the toggle", async () => {
+        toggle.mockImplementation(() => false);
+        const f = modeFixture({ mode: "label", expanded: true });
+        await loadScript("list.filter");
+        f.toggle.click();
+        expect(toggle).toHaveBeenCalledTimes(1);
+        expect(f.toggle.getAttribute("aria-expanded")).toBe("true");
+        expect(f.label.textContent).toBe("Filter");
+        expect(fetchMock).not.toHaveBeenCalled();
+    });
+
+    it("keeps a successful label-only toggle when the state POST fails", async () => {
+        fetchMock.mockImplementation(() => Promise.reject(new Error("offline")));
+        const f = modeFixture({ mode: "label" });
+        await loadScript("list.filter");
+        f.toggle.click();
+        await new Promise((r) => setTimeout(r, 0));
+        expect(f.toggle.getAttribute("aria-expanded")).toBe("true");
+        expect(visibleLabel(f.toggle)).toBe(f.label);
+        expect(f.label.textContent).toBe("Filter");
+        expectPost(fetchMock.mock.calls[0], true);
+    });
+
+    it("loads harmlessly on a page without a toggle (no filter, or a pinned filter)", async () => {
+        document.body.innerHTML = `<div id="filter-collapse" class="show"></div>`;
+        await loadScript("list.filter");
+        expect(document.getElementById("cv-filter-toggle")).toBeNull();
+        expect(toggle).not.toHaveBeenCalled();
+        expect(fetchMock).not.toHaveBeenCalled();
     });
 
     it("loads and works without jQuery", async () => {

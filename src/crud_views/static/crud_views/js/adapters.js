@@ -1,6 +1,6 @@
 // src/crud_views/static/crud_views/js/adapters.js
 // cv.adapters: the only place crud_views scripts touch a UI library. Themes replace entries;
-// cv.bootstrapAdapters(ns) builds all three for any Bootstrap-compatible namespace.
+// cv.bootstrapAdapters(ns) builds all four for any Bootstrap-compatible namespace.
 globalThis.cv = globalThis.cv || {};
 (function (cv) {
     const SIZE_CLASSES = Object.freeze({sm: "modal-sm", lg: "modal-lg", xl: "modal-xl"});
@@ -36,6 +36,15 @@ globalThis.cv = globalThis.cv || {};
                     if (el.classList.contains("collapsing")) return false;
                     Collapse.getOrCreateInstance(el).toggle();
                     return true;
+                },
+            },
+            alert: {
+                // without an Alert component the default adapter removes the frame itself; a present
+                // component (or a theme's own adapter) owns the outcome, including its errors.
+                close(el) {
+                    const Alert = component(ns, "Alert");
+                    if (Alert) Alert.getOrCreateInstance(el).close();
+                    else el.remove();
                 },
             },
         };

@@ -136,7 +136,7 @@ def test_cv_messages_renders_a_dismissible_alert():
     assert 'class="alert alert-success alert-dismissible fade show"' in html
     assert 'role="alert"' in html
     assert '<i class="fa-solid fa-circle-check' in html
-    assert 'data-bs-dismiss="alert"' in html
+    assert "data-cv-alert-dismiss" in html
     assert 'class="btn-close"' in html
     assert "Saved" in html
 
@@ -166,7 +166,7 @@ def test_create_message_renders_as_an_alert(client_publisher_add_view: Client, c
     response = client_publisher_add_view.post("/publisher/create/", {"name": "Penguin"}, follow=True)
     html = response.content.decode()
     assert 'class="alert alert-success alert-dismissible fade show"' in html
-    assert 'data-bs-dismiss="alert"' in html
+    assert "data-cv-alert-dismiss" in html
     assert "<strong>Penguin</strong>" in html
 
 

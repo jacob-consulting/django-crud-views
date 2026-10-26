@@ -146,15 +146,15 @@
     "research": "opus"
   },
   "model_overrides": {
-    "gsd-nyquist-auditor": "opus",
-    "gsd-integration-checker": "opus",
-    "gsd-pattern-mapper": "opus",
-    "gsd-doc-verifier": "opus",
-    "gsd-research-synthesizer": "opus",
-    "gsd-codebase-mapper": "sonnet",
-    "gsd-intel-updater": "sonnet",
-    "gsd-doc-classifier": "sonnet",
-    "gsd-user-profiler": "sonnet",
-    "gsd-mempalace-curator": "sonnet"
+    "gsd-nyquist-auditor": "gpt-6.1-sol",
+    "gsd-integration-checker": "gpt-6.1-sol",
+    "gsd-pattern-mapper": "gpt-6.1-sol",
+    "gsd-doc-verifier": "gpt-6.1-sol",
+    "gsd-research-synthesizer": "gpt-6.1-sol",
+    "gsd-codebase-mapper": "gpt-6-luna",
+    "gsd-intel-updater": "gpt-6-luna",
+    "gsd-doc-classifier": "gpt-6-luna",
+    "gsd-user-profiler": "gpt-6-luna",
+    "gsd-mempalace-curator": "gpt-6-luna"
   }
 }

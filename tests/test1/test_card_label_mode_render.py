@@ -1,10 +1,11 @@
 """#213: the three label modes as rendered by crud_views/tags/button/action.html on card buttons."""
 
 import uuid
+import warnings
 
 import pytest
 from django.contrib.auth.models import User
-from django.test import Client
+from django.test import Client, override_settings
 from django.urls import reverse
 from lxml import html as lxml_html
 
@@ -219,3 +220,91 @@ def test_menu_item_ignores_label_mode(author_douglas_adams, monkeypatch):
     assert _text(item) == "Delete"
     assert item.cssselect("span.visually-hidden") == []
     assert item.get("title") is None
+
+
+CARD_LABEL = {"card": "label"}
+
+
+def _assert_label_only(button, text):
+    assert _text(button) == text
+    assert _icons(button) == []
+    assert button.cssselect("span.visually-hidden") == []
+    assert button.get("title") is None
+
+
+def _assert_icon_only(button):
+    assert len(_icons(button)) == 1
+    (hidden,) = button.cssselect("span.visually-hidden")
+    label = hidden.text_content().strip()
+    assert label
+    assert button.get("title") == label
+
+
+@pytest.mark.django_db
+def test_card_floor_renders_label_only(author_douglas_adams):
+    # the stock AuthorCardListView, no attribute or action-list change: the project setting alone (LMOD-03)
+    client = _client([AUTHOR_FULL])
+    url = reverse(cv_author.get_router_name("card"))
+    with warnings.catch_warnings(record=True) as caught, override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS=CARD_LABEL):
+        warnings.simplefilter("always")
+        card = _card(client, url)
+
+    _assert_label_only(_inline(card, "detail"), "Details")
+    _assert_label_only(_inline(card, "update"), "Edit")
+    # the stock delete action keeps no_label=True, which still means icon-only with an accessible name (D-18)
+    _assert_icon_only(_inline(card, "delete"))
+    assert [w for w in caught if issubclass(w.category, DeprecationWarning)] == []
+
+
+@pytest.mark.django_db
+def test_card_mode_precedence_with_floor(author_douglas_adams, monkeypatch):
+    client = _client([AUTHOR_FULL])
+    # CardAction validates at construction, so bypass the validator to model label_mode alongside no_label
+    explicit_over_no_label = CardAction(key="delete", label="Delete", no_label=True)
+    object.__setattr__(explicit_over_no_label, "label_mode", "label")
+    actions = [
+        CardAction(key="detail", label="Details"),
+        CardAction(key="update", label="Edit", label_mode="both"),
+        explicit_over_no_label,
+        CardAction(key="up", label="Up", no_label=True),
+    ]
+
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS=CARD_LABEL):
+        card = _author_card(client, actions, monkeypatch)
+    # unset action: the card floor; explicit action mode wins over the floor and over no_label
+    _assert_label_only(_inline(card, "detail"), "Details")
+    update = _inline(card, "update")
+    assert len(_icons(update)) == 1
+    assert _text(update) == "Edit"
+    _assert_label_only(_inline(card, "delete"), "Delete")
+    # no_label beats the floor
+    _assert_icon_only(_inline(card, "up"))
+
+    # an explicitly assigned view attribute beats the floor; no_label still beats the view attribute
+    monkeypatch.setattr(AuthorCardListView, "cv_card_actions_label_mode", "both")
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS=CARD_LABEL):
+        card = _author_card(client, actions, monkeypatch)
+    detail = _inline(card, "detail")
+    assert len(_icons(detail)) == 1
+    assert _text(detail) == "Details"
+    _assert_icon_only(_inline(card, "up"))
+
+
+@pytest.mark.django_db
+def test_empty_card_actions_with_floor(author_douglas_adams, monkeypatch):
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS=CARD_LABEL):
+        card = _author_card(_client([AUTHOR_FULL]), [], monkeypatch)
+    # no default button is invented
+    assert card.xpath(".//*[@cv-key]") == []
+    assert card.xpath(".//a | .//button") == []
+
+
+@pytest.mark.django_db
+def test_context_override_keeps_card_action_body(author_douglas_adams):
+    # a context/list floor may change the page toolbar, but never the card action body
+    client = _client([AUTHOR_FULL])
+    url = reverse(cv_author.get_router_name("card"))
+    baseline = _markup(_card(client, url))
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"context": "both", "list": "label"}):
+        overridden = _markup(_card(client, url))
+    assert overridden == baseline

@@ -32,6 +32,21 @@ def test_card_resolver_reads_setting():
     assert CardListView.cv_card_actions_label_mode is None
 
 
+def test_card_resolver_subclass_super_compatibility():
+    class DelegatingView(AuthorCardListView):
+        @classmethod
+        def cv_get_card_actions_label_mode(cls):
+            return super().cv_get_card_actions_label_mode()
+
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"card": "label"}):
+        assert DelegatingView.cv_get_card_actions_label_mode() == "label"
+        assert DelegatingView().cv_get_card_actions_label_mode() == "label"
+        with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"card": "icon"}):
+            assert DelegatingView.cv_get_card_actions_label_mode() == "icon"
+        assert DelegatingView.cv_get_card_actions_label_mode() == "label"
+    assert DelegatingView.cv_get_card_actions_label_mode() == "both"
+
+
 def test_card_explicit_mode_bypasses_floor(monkeypatch):
     monkeypatch.setattr(AuthorCardListView, "cv_card_actions_label_mode", "both")
     with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"card": "label"}):

@@ -40,12 +40,13 @@ the existing fixture harness. All icon-less, label-stability, adapter-failure an
 | 03-01-01 | FILT-01, FILT-02, FILT-03 | T-03-02 | Existing CSRF-bearing POST; raw output preservation | Python + JS | `.venv/bin/pytest tests/test1/test_filter_toggle_label_mode.py tests/test1/test_action_menus_golden.py tests/test1/test_button_leaves.py -q`; `npm --prefix . test -- tests/js/list.filter.test.js` | New Python module created first in task | Pending |
 | 03-01-02 | FILT-01, FILT-02, FILT-03 | T-03-01, T-03-02, T-03-03, T-03-04 | Escaping, visibility, exact request, collapse-first and rejection behavior | Python + JS | Full focused matrix command in 03-01-PLAN.md; `npm --prefix . test -- tests/js/list.filter.test.js` | Existing files plus Task 1 module | Pending |
 | 03-01-03 | FILT-04 | T-03-01 | Ordinary interpolation; catalog/runtime proof | Python + gettext | `msgfmt --check --check-format -o /dev/null src/crud_views/locale/de/LC_MESSAGES/django.po`; `.venv/bin/pytest tests/test1/test_i18n.py tests/test1/test_filter_toggle_label_mode.py tests/test1/test_context_button_template.py tests/test1/test_action_menus_golden.py -q` | Existing files plus Task 1 module | Pending |
-| 03-02-01 | FILT-01, FILT-02, FILT-03, FILT-04 | T-03-05 | Accurate optional-hook and failure contract | Docs + Python | `.venv/bin/mkdocs build --strict`; `.venv/bin/pytest tests/test1/test_filter_toggle_label_mode.py tests/test1/test_label_mode_docs.py -q` | Existing files plus Wave 1 module | Pending |
-| 03-02-02 | FILT-01, FILT-02, FILT-03, FILT-04 | T-03-SC | No installs or unreported failing gates | Focused + full phase gates | Focused commands and all five full project commands in 03-02-PLAN.md | Existing harnesses | Pending |
+| 03-02-01 | FILT-01, FILT-02, FILT-03, FILT-04 | T-03-05 | Accurate renderer contract and doc-test assertions | Docs + Python | `.venv/bin/mkdocs build --strict`; `.venv/bin/pytest tests/test1/test_filter_toggle_label_mode.py tests/test1/test_label_mode_docs.py -q` | Existing doc test is modified alongside references; Wave 1 module | Pending |
+| 03-02-02 | FILT-01, FILT-02, FILT-03 | T-03-05 | Optional icon hooks and unchanged failure semantics | Docs + JS | `.venv/bin/mkdocs build --strict`; `npm --prefix . test -- tests/js/list.filter.test.js` | Existing harnesses | Pending |
+| 03-02-03 | FILT-01, FILT-02, FILT-03, FILT-04 | T-03-SC | No installs or unreported failing gates | Focused + full phase gates | Focused commands and all five full project commands in 03-02-PLAN.md | Existing harnesses | Pending |
 
 ## Wave 0 Requirements
 
-- [ ] 03-01-01 creates the dedicated module before invoking it, captures two raw default strings and commits the passing baseline before production edits.
+- [ ] 03-01-01 creates the dedicated module before invoking it, captures two raw default strings with both mode-less and explicit-icon assertions and commits the passing baseline before production edits.
 - [ ] 03-01-01 writes and observes the failing both-mode integration test before implementing the tracer.
 - [ ] 03-01-02 extends existing JS fixtures for label-only/visible labels, both initial states, adapter errors and outstanding requests.
 - [ ] 03-01-03 adds explicit PO/MO membership and a distinct Unicode translation sentinel before catalog edits.
@@ -60,6 +61,20 @@ are the opening steps of their owning tasks; wave_0_complete remains false until
 auto-dismissed. All 11 locked decisions and all four requirements have task owners. Raw golden compatibility and
 translation invocation are independent of normalized HTML and identical English/German spelling. Prohibition
 precision retained zero bespoke items; canonical encoding/CSRF concerns are covered by the threats above.
+
+## Review Round 1 Evidence Boundaries
+
+- A1: direct absent/None/empty/unknown modes retain complete icon markup and icon classes; existing E210/E211/E106
+  checks diagnose malformed button/map configuration. Runtime normalization expansion is rejected, not implemented.
+  Reached invalid floors retain strict ValueError/non-strict warn-once package fallback; valid modes short-circuit.
+- A2/A3/A5/A6: snapshot-map monkeypatch and signal-restored class overrides are explicit; filter selectors separate
+  wrappers/icons from visible text. Raw boundary whitespace and both-mode separation have dedicated assertions.
+- A4: PO/MO membership, gettext sentinel and active-language render are independent evidence; a German page render
+  cannot identify the source catalog by identical spelling.
+- H1/A7/A8: 03-02-01 changes the obsolete doc assertion, preserves tested diagram/paragraph invariants, and pins
+  the exact import and icon-bearing-only fallback contract.
+- A9/A10: 03-02-03 includes floor-impact release wording, a copied-template checklist note and accurate current
+  branch provenance. A11 explicitly retains the generic wrapper's duplicate and hidden-context behavior.
 
 ## Manual-Only Verifications
 

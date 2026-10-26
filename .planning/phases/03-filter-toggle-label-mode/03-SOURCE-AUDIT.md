@@ -20,26 +20,28 @@ results. Maintainer discussion supplies the roadmap's design clarification; no s
 | CONTEXT | D-05 | Icon accessibility/default bytes; both no title/tooltip | 03-01-01/02 | COVERED | Baseline committed before runtime edits |
 | CONTEXT | D-06 | Label has no icon hooks; preserve failure semantics | 03-01-02 | COVERED | Adapter false/throw, POST rejection, out-of-order settlement |
 | CONTEXT | D-07 | Labels, variants and whole templates retain control | 03-01-01/02/03 | COVERED | File/code templates get mode; custom labels still win |
-| CONTEXT | D-08 | Compact docs/examples and canonical-order link | 03-02-01 | COVERED | Five reference pages; no custom-template tutorial |
+| CONTEXT | D-08 | Compact docs/examples and canonical-order link | 03-02-01/02 | COVERED | Five reference pages and doc-contract assertions; no custom-template tutorial |
 | CONTEXT | D-09 | Translate seed and preserve custom labels | 03-01-01/03 | COVERED | Runtime gettext and core PO/MO |
 | CONTEXT | D-10 | Visibility, IDs, collapse, persistence and reset unchanged | 03-01-01/02 | COVERED | Existing regression suites plus direct absence and POST/GET cases |
-| CONTEXT | D-11 | Changelog and full quality gates | 03-02-02 | COVERED | Fixed classification; actual new Breaking change would need migration companion |
+| CONTEXT | D-11 | Changelog and full quality gates | 03-02-03 | COVERED | Fixed classification, existing-floor impact and copied-template checklist; actual new Breaking change would need migration companion |
 | RESEARCH | R-01 | Reuse context resolver without target argument | 03-01-01/02 | COVERED | No duplicate resolver, no cv_button_data routing |
 | RESEARCH | R-02 | Resolved mode reaches class lookup | 03-01-01/02 | COVERED | Distinct per-mode classes in rendered tests |
 | RESEARCH | R-03 | Server context/template owns mode, client owns toggle | 03-01-01/02 | COVERED | Architectural responsibility map retained |
 | RESEARCH | R-04 | Existing JS empty icon loop already works | 03-01-01/02 | COVERED | Test-only JS scope exercises the unchanged real handler, including all failure and label-stability cases |
 | RESEARCH | R-05 | Normalized golden cannot prove raw bytes | 03-01-01 | COVERED | Two exact pre-change inline raw fixtures, source HEAD/commit evidence |
 | RESEARCH | R-06 | German spelling alone cannot prove translation | 03-01-03 | COVERED | Distinct Unicode gettext sentinel and compiled membership |
-| RESEARCH | R-07 | Direct leaf tests need explicit resolved mode | 03-01-01 | COVERED | Update tracked test_button_leaves.py helper |
+| RESEARCH | R-07 | Direct leaf compatibility and resolved-mode matrix | 03-01-01/02 | COVERED | Retain mode-less helper; same raw baselines for explicit icon; unknown direct-mode icon classes; explicit modes for matrix |
 | RESEARCH | R-08 | Existing floor tests intentionally exclude filter | 03-01-02 | COVERED | Dedicated filter floor tests; correct obsolete comment |
 | RESEARCH | R-09 | Lazy floor and strict short-circuit | 03-01-02 | COVERED | override_settings restore; explicit mode with invalid strict floor |
 | RESEARCH | R-10 | 24 presentation combinations and unusable host slots | 03-01-02 | COVERED | 3 modes × 2 states × 4 placements plus fallback |
 | RESEARCH | R-11 | Template customization and access visibility | 03-01-02 | COVERED | Both file/code hooks, variants, pinned/non-filter absence |
 | RESEARCH | R-12 | Catalog compilation uses installed tooling | 03-01-03 | COVERED | Core PO/MO only; msgfmt available; no dependency change |
-| RESEARCH | R-13 | Stale fixed-icon docs across references | 03-02-01 | COVERED | Compact contract, tooltip table, class and icon descriptions |
-| RESEARCH | R-14 | ASVS1 encoding/CSRF/state integrity | 03-01-02, 03-02-01 | COVERED | Threats T-03-01 through T-03-05; SC reserved in both plans |
-| RESEARCH | R-15 | Full gates and installed-version caveats | 03-02-02 | COVERED | Prior commands retained; baseline failures never presented green |
+| RESEARCH | R-13 | Stale fixed-icon docs across references | 03-02-01/02 | COVERED | Doc assertion, diagram, compact contract, tooltip table, class and icon descriptions |
+| RESEARCH | R-14 | ASVS1 encoding/CSRF/state integrity | 03-01-02, 03-02-01/02 | COVERED | Threats T-03-01 through T-03-05; SC reserved in both plans |
+| RESEARCH | R-15 | Full gates and installed-version caveats | 03-02-03 | COVERED | Prior commands retained; baseline failures never presented green |
 | RESEARCH | R-16 | No new dependencies, version bump or downstream edits | Both plans | COVERED | Scope notes and generic follow-up in execution summary |
+| RESEARCH | R-17 | Existing malformed configuration checks vs direct-leaf fallback | 03-01-02 | COVERED | E210/E211/E106 checks and unchanged invalid-floor strict/log behavior; new runtime normalization rejected explicitly |
+| RESEARCH | R-18 | Snapshot settings, precise selectors, spacing and evidence limits | 03-01-01/02/03 | COVERED | Isolated configuration, icon-wrapper-aware selectors and separate i18n proof |
 
 No source item is missing. Form leaves, other adapters, stability freeze, downstream implementation and dependency
 upgrades belong outside this phase. Rejected always-child both placement and a full custom-template tutorial are
@@ -52,17 +54,27 @@ not planned. Source-plan literal filter-key guidance is superseded by locked D-0
 | 03-01-01 | Completed Phase 1 resolver and existing harnesses | Raw baseline; real both-mode render/toggle/POST-GET slice | No; public behavior already locked |
 | 03-01-02 | Tracer context/template/tests | Label mode and full placement/customization/failure coverage | No |
 | 03-01-03 | Tracer gettext call and completed mode behavior | Compiled German catalog and anti-false-positive tests | No |
-| 03-02-01 | Completed implementation and its summary | Accurate compact reference contract | No |
-| 03-02-02 | Completed references and behavior | Release note and full gate evidence | No |
+| 03-02-01 | Completed implementation and its summary | Accurate configuration/renderer references and doc-contract tests | No |
+| 03-02-02 | Compact filter contract from preceding task | Accurate optional-icon and browser reference contract | No |
+| 03-02-03 | Completed references and behavior | Release/migration notes and full gate evidence | No |
 
-Wave 1: 03-01 (three tasks). Wave 2: 03-02 depends on 03-01 (two tasks). Each task modifies at most five files.
-Plan 03-01 modifies nine files, including the compiled MO; Plan 03-02 modifies six. The existing production filter
+Wave 1: 03-01 (three tasks). Wave 2: 03-02 depends on 03-01 (three tasks). Each task modifies at most five files.
+Plan 03-01 modifies nine files, including the compiled MO; Plan 03-02 modifies eight. The existing production filter
 script remains a read/test dependency, with all browser coverage retained in tests/js/list.filter.test.js.
 There are no same-wave file or mutable-resource conflicts. Calibration query returned factor 1, 0 samples, low
-confidence; estimates are 36,000 and 15,000 tokens. No source omission or phase split is needed.
+confidence; estimates are 39,000 and 19,000 tokens. No source omission or phase split is needed.
 
 Research's three open-question entries are explicitly RESOLVED: Fixed classification and environment reporting
-belong to 03-02-02; inline RAW_DEFAULT_FILTER baseline capture belongs to 03-01-01. No product decision remains open.
+belong to 03-02-03; inline RAW_DEFAULT_FILTER baseline capture belongs to 03-01-01. No product decision remains open.
+
+## Review Round 1 Coverage — 8120782
+
+H1 and A1–A11 all have canonical dispositions in the affected PLAN.md ledgers. H1 and documentation groups
+A7–A10 belong to 03-02; A1–A6/A11 belong to 03-01. All 12 unique groups are incorporated or explicitly
+adjudicated. Two optional implementation hints are not adopted: A1's new runtime-normalization layer is rejected,
+and A11's generic-wrapper refactor is deferred. These are not omitted source requirements. The selected scope
+retains existing configuration checks, invalid-floor recovery, no-target resolution and early visibility behavior.
+No conflict-slot edit, branch change, product implementation or fresh branch-approval claim is part of this revision.
 
 ## Spec-less edge coverage
 

@@ -198,7 +198,7 @@ File references below identify files inspected in this session, not new filesyst
 | tests/js/list.filter.test.js | Icon-less and constant-label cases including failure semantics |
 | tests/test1/test_i18n.py and core German catalog | Extracted msgid, compiled translation and rendering |
 | Context-buttons, action-menus, buttons and JavaScript reference pages | Compact contract, examples and corrected claims |
-| CHANGELOG.md | Public behavior entry; migration companion only if adding Breaking |
+| CHANGELOG.md and docs/migrating-1.0.md | Fixed behavior entry including existing context-floor impact, plus copied-filter-template checklist note |
 
 ### Pattern 1: Resolve with declared key and no target default
 
@@ -211,6 +211,17 @@ The outer cv_get_context wrapper already stamps the mode, so avoid changing its 
 builder must itself provide the mode before invoking custom label rendering; the current label renderer receives
 the builder's data. [VERIFIED: src/crud_views/lib/view/base.py:640-646;
 src/crud_views/lib/view/buttons.py:55-72,323-332]
+
+Review clarification (8120782, A1/A11): cv_get_action_label_mode returns selected map/button values without runtime
+validation; only its reached floor uses default_label_mode. Ordinary button-data normalization applies the
+strict/log/floor rule, but this specialized filter bypasses that adapter. Keep existing E210/E211/E106 configuration
+checks and the resolver/wrapper behavior; introducing filter normalization is explicitly rejected for this phase.
+Builder-only normalization would be overwritten by the wrapper's second stamp. Direct missing/unknown leaf modes
+use complete legacy icon output and literal icon class lookup; this compatibility behavior is not a new guarantee
+for malformed configuration. Invalid floor strict/log/warn-once recovery and valid-mode short-circuit stay tested.
+The duplicate visible-filter resolution and wrapper evaluation of existing truthy hidden contexts are retained.
+[VERIFIED: src/crud_views/lib/view/base.py:312-322,640-646; src/crud_views/lib/view/button_data.py:85-98;
+src/crud_views/lib/view/buttons.py:350-361; src/crud_views/lib/view/label_mode.py:61-118]
 
 Verbatim resolver evidence:
 <!-- DATA_b3Vq7Hn9_START -->
@@ -294,6 +305,8 @@ passing result cannot prove raw template output equality. Verbatim evidence: "at
 at least collapsed and expanded. Keep an exact string assertion alongside the unchanged canonical toolbar golden.
 Wrap new conditional tags around existing whitespace rather than reformatting the default branch. Do not use the
 golden-update environment variable.
+Keep one mode-less and one explicit-icon assertion against the same two captured strings. Explain that raw
+render_to_string boundary whitespace is intentionally protected even where render_snippet strips it (A5).
 
 The canonical directory is created by "GOLDEN_DIR.mkdir(parents=True, exist_ok=True)" and populated by
 'path.write_text(actual + "\n")'; its definition is 'Path(__file__).parent / "golden" / "action_menus"'.
@@ -307,12 +320,23 @@ rendered word. Assert a non-fuzzy translated catalog entry, verify the compiled 
 the imported gettext callable to return a distinct sentinel in a direct builder test. Verify a custom label still
 wins. The existing i18n tests already validate translated/fuzzy entries and compiled catalog loading.
 [VERIFIED: tests/test1/test_i18n.py:65-81]
+These are separate evidence claims: PO/MO membership proves the shipped entry; the sentinel proves runtime
+gettext; active German rendering proves integration. Identical spelling cannot identify which merged catalog
+supplied the page text (A4); no claim about another app's actual Filter entry is needed.
 
 ### 3. Direct template tests may omit the new mode
 
-**Recommendation:** update new test helpers to pass a real resolved mode; do not silently invent a second mode
-resolver in the template. Prefer the public builder for integration tests and explicit modes for template matrices.
-The builder is the contract boundary in D-07.
+**Recommendation:** retain existing mode-less helper calls and add explicit-icon coverage. The specialized leaf
+selects explicit both/label branches, otherwise the legacy icon branch with literal icon class lookup; it does
+not resolve configuration. Keep immutable mode-less raw assertions and a distinct context:secondary:icon override.
+Prefer the public builder for integration tests and explicit modes for the presentation matrix. The builder is
+the contract boundary in D-07; malformed configuration policy is distinguished above (A1).
+
+For the tracer, monkeypatch crud_views_settings.context_actions_label_mode because it is captured at import time.
+Use override_settings for the live floor and CRUD_VIEWS_BUTTON_CLASSES, whose setting_changed receiver resets
+the cache on entry/exit; avoid persistent theme registration (A2). Select visible filter labels with
+./span[not(@class) and not(@data-cv-filter-icon)] and icons inside data-cv-filter-icon wrappers; generic action
+predicates can confuse those wrappers with text. Both mode includes a space before the label (A3/A6).
 
 ### 4. Stale docs hide the new capability
 
@@ -321,6 +345,13 @@ says it passes "icon"; action-menus says neither maps nor floors change it. Corr
 tooltip table/optional icon contract. Keep the never-folded rule: owning a whole-button template still makes the
 filter special. [VERIFIED: docs/reference/context_buttons.md:77-82; docs/reference/buttons.md:304-306;
 docs/reference/action_menus.md:168-184; docs/reference/javascript.md:83,187-202]
+Task 03-02-01 also owns tests/test1/test_label_mode_docs.py: its Rendering assertion currently requires the old
+exclusion. Replace that assertion with the resolved-mode contract while retaining canonical and never-folded checks.
+Correct the Mermaid CUSTOM node, preserve MICON and the tested first paragraph below the diagram, and insert the
+compact contract after the earlier custom-template paragraph. Qualify the host-fallback prose for icon/both only.
+Show the real import from crud_views.lib.view.buttons import FilterContextButton; the parent module has no export.
+[VERIFIED: tests/test1/test_label_mode_docs.py:236-238,277-287; docs/reference/context_buttons.md:248,502-507;
+docs/reference/buttons.md:218-222; src/crud_views/lib/view/__init__.py:1-17]
 
 ### 5. Existing broad floor tests deliberately exclude the filter
 
@@ -389,7 +420,7 @@ label because D-04/FILT-03 require it, and retain aria-expanded; do not add aria
 | GNU gettext msgfmt | Yes | 0.21 | Compile changed core catalog |
 | uv / Task | Yes | 0.11.32 / 3.54.0 | Existing project tooling |
 | MkDocs | Yes | 1.6.1 | Strict documentation build |
-| Ruff | Present, manifest mismatch | 0.16.10 | Run required gates and report versions/failures; no dependency upgrades in this phase (03-02-02) |
+| Ruff | Present, manifest mismatch | 0.16.10 | Run required gates and report versions/failures; no dependency upgrades in this phase (03-02-03) |
 | Context7 MCP/CLI | Unavailable in this agent | No matching MCP tool; ctx7 absent | Official web documentation used |
 
 [VERIFIED: tool discovery and environment probes, 2026-10-26]
@@ -504,17 +535,20 @@ No [ASSUMED] factual claims are used.
 
 ## Open Questions
 
-1. **RESOLVED — Release-note classification:** Plan 03-02, task 03-02-02 uses Unreleased Fixed because this corrects
+1. **RESOLVED — Release-note classification:** Plan 03-02, task 03-02-03 uses Unreleased Fixed because this corrects
    ignored existing configuration while preserving default output. D-11 still requires a migration companion if
-   execution reveals a separate actual public break.
+   execution reveals a separate actual public break. Also describe already-configured context-floor effects and
+   extend the existing copied-filter-template migration checklist without changing this classification (A9).
 2. **RESOLVED — Strict raw compatibility fixture location:** Plan 03-01, task 03-01-01 stores both untouched default
    renders inline as RAW_DEFAULT_FILTER in tests/test1/test_filter_toggle_label_mode.py and commits the passing
    byte-exact assertions before production edits.
-3. **RESOLVED — Environment reproducibility:** Plan 03-02, task 03-02-02 runs every required gate and reports actual
+3. **RESOLVED — Environment reproducibility:** Plan 03-02, task 03-02-03 runs every required gate and reports actual
    versions and pre-existing failures separately. No dependency upgrades or broad format churn belong to this phase;
    failing gates are never reported as green.
 
 No unresolved open questions remain; these resolutions record choices already encoded in the plans.
+The execution summary records introduce-gsd as the existing workflow-retained branch, without attributing a
+fresh user approval; branch/PR splitting is outside this revision (A10).
 
 ## Sources
 

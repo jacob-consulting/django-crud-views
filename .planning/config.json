@@ -144,5 +144,17 @@
     "execution": "sonnet",
     "verification": "opus",
     "research": "opus"
+  },
+  "model_overrides": {
+    "gsd-nyquist-auditor": "opus",
+    "gsd-integration-checker": "opus",
+    "gsd-pattern-mapper": "opus",
+    "gsd-doc-verifier": "opus",
+    "gsd-research-synthesizer": "opus",
+    "gsd-codebase-mapper": "sonnet",
+    "gsd-intel-updater": "sonnet",
+    "gsd-doc-classifier": "sonnet",
+    "gsd-user-profiler": "sonnet",
+    "gsd-mempalace-curator": "sonnet"
   }
 }

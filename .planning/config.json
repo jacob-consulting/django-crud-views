@@ -142,6 +142,7 @@
     "planning": "opus",
     "discuss": "opus",
     "execution": "sonnet",
-    "verification": "opus"
+    "verification": "opus",
+    "research": "opus"
   }
 }

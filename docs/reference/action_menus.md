@@ -57,8 +57,9 @@ from [hide or disable](inaccessible_actions.md), which resolves on each action's
 
 ## Label mode
 
-Toolbar and row buttons are icon-only by default. A **label mode map** names the action keys that show text instead,
-or as well:
+Toolbar and row buttons are icon-only unless configured: their package floor is `"icon"`, which a project changes per
+location with [`CRUD_VIEWS_LABEL_MODE_DEFAULTS`](settings.md#label-mode-configuration). A **label mode map** names the
+action keys that show text instead, or as well:
 
 | Level | List rows | Context toolbar |
 |---|---|---|
@@ -67,26 +68,66 @@ or as well:
 | `CrudView` | `cv_list_actions_label_mode` | `cv_context_actions_label_mode` |
 
 Each is a dict of action key to `"label"` (text only), `"icon"` (icon with a visually hidden label and a tooltip) or
-`"both"` (icon and text). Any key not named is `"icon"`, so an empty dict is today's markup — unless, in the context
-toolbar, the view the button opens sets a [target-view default](#target-view-default).
+`"both"` (icon and text). A key the map does not name falls through to the next step of its location's resolution
+below; an empty dict names no key.
 
 ```python
 class AuthorListView(ListViewTableMixin, ListViewPermissionRequired):
     cv_viewset = cv_author
-    cv_context_actions_label_mode = {"create": "both"}  # "Create" with its icon; the rest stay icon-only
+    cv_context_actions_label_mode = {"create": "both"}  # "Create" with its icon; the rest follow the floor
 ```
 
-Order: `CrudView` → `ViewSet` → setting; the first value that is not `None` wins, whole — the layers are not merged,
-and `{}` on a view replaces whatever its ViewSet says. A context toolbar key can also
-take its mode from its context button, [`ContextButton.label_mode`](context_buttons.md#contextbutton), and from the
-view it opens (see [below](#target-view-default)): the view's own
-map wins if it names the key, then the button's `label_mode`, then the map resolved as above if it names the key,
-then the target view's `cv_context_action_label_mode`, then `"icon"`. Row actions never read
-the button's `label_mode` or the target view's default. Keys are the configured keys,
-as for the inline lists (`"home"`, not its target `"list"`). The getters `cv_get_list_actions_label_mode()` and
-`cv_get_context_actions_label_mode()` return the resolved dict, `cv_get_action_label_mode(location, key)` the mode of
-one key. Cards do not use the map: a card button's mode is `CardAction.label_mode`, see
-[Card list view](card-list-view.md#label-mode).
+The map is selected whole: `CrudView` → `ViewSet` → setting, the first value that is not `None` wins. The layers are
+not merged, and `{}` on a view replaces whatever its ViewSet says. Only `CRUD_VIEWS_LABEL_MODE_DEFAULTS` merges, per
+location; see [Label-mode configuration](settings.md#label-mode-configuration) for which knob merges and which
+replaces. Keys are the configured keys, as for the inline lists (`"home"`, not its target `"list"`). The getters
+`cv_get_list_actions_label_mode()` and `cv_get_context_actions_label_mode()` return the selected dict,
+`cv_get_action_label_mode(location, key)` the mode of one key.
+
+### Context label-mode resolution
+
+For one key of the context toolbar (and `{% cv_context_button %}`), the first step that gives a mode wins:
+
+1. the rendering view's own `cv_context_actions_label_mode`, if it names the key;
+2. the key's context button, [`ContextButton.label_mode`](context_buttons.md#contextbutton), if it is not `None`;
+3. the map selected whole from `cv_context_actions_label_mode`, `ViewSet.context_actions_label_mode` and
+   `CRUD_VIEWS_CONTEXT_ACTIONS_LABEL_MODE` (the first that is not `None`), if it names the key;
+4. the target view's `cv_context_action_label_mode`, the [target-view default](#target-view-default);
+5. `default_label_mode("context")`: the `"context"` entry of `CRUD_VIEWS_LABEL_MODE_DEFAULTS`, package default
+   `"icon"`.
+
+The floor in step 5 is read only when no earlier step decides the key.
+
+### List label-mode resolution
+
+For one key of a list row:
+
+1. the map selected whole from `cv_list_actions_label_mode`, `ViewSet.list_actions_label_mode` and
+   `CRUD_VIEWS_LIST_ACTIONS_LABEL_MODE` (the first that is not `None`), if it names the key;
+2. otherwise `default_label_mode("list")`: the `"list"` entry of `CRUD_VIEWS_LABEL_MODE_DEFAULTS`, package default
+   `"icon"`.
+
+Row actions never read a context button's `label_mode` or the target view's `cv_context_action_label_mode`.
+
+### Card label-mode resolution
+
+Cards do not use the maps. For one inline card button:
+
+1. `CardAction.label_mode`, if it is not `None`;
+2. `CardAction(no_label=True)` renders `"icon"`;
+3. the card view's own instance `cv_card_actions_label_mode`, if it is not `None`; without an own instance value,
+   the class-level resolver uses the class attribute if it is not `None`;
+4. `default_label_mode("card")`: the `"card"` entry of `CRUD_VIEWS_LABEL_MODE_DEFAULTS`, package default `"both"`.
+
+An own instance `None` opts directly into step 4, bypassing an inherited class value. This includes an explicit
+`None` passed to `as_view()` or assigned to `self` during a request. The floor is read lazily, only when needed.
+
+The public classmethod `CardListView.cv_get_card_actions_label_mode()` resolves class-level defaults (class
+attribute, otherwise step 4) and stays callable on the class. Calling it through an instance still reads class
+configuration. Subclass resolver overrides remain fallback hooks when there is no own instance value; an explicit
+instance choice, including `None`, takes precedence over them. To read the effective mode of one action, use its
+stamped `cv_label_mode` from `cv_get_card_action_data()` or the rendered button context. See
+[Card list view](card-list-view.md#label-mode) for instance configuration examples.
 
 ### Target-view default
 
@@ -107,8 +148,9 @@ class ProjectCreateView(CreateViewPermissionRequired):
 ```
 
 Set on base classes, this describes a project's toolbars without a map per ViewSet or a registered button per key.
-It is the most generic level: a page's map, a button's `label_mode`, the ViewSet map and the setting all win over it
-for a key they name. It applies to the context toolbar and `{% cv_context_button %}` only; table rows pointing at the
+It sits just above the project floor: a page's map, a button's `label_mode`, the ViewSet map and the setting map all
+win over it for a key they name, and it wins over the `"context"` entry of `CRUD_VIEWS_LABEL_MODE_DEFAULTS` (see
+[Context label-mode resolution](#context-label-mode-resolution)). It applies to the context toolbar and `{% cv_context_button %}` only; table rows pointing at the
 same view keep following the list maps. Every button that builds its data from the view it opens follows it, across
 ViewSets too: `home`, `parent`, a `ChildContextButton` or a `SiblingContextButton`.
 
@@ -125,8 +167,9 @@ An invalid value fails `viewset.E210`.
 
 A labelled button shows its short label (`"Create"`, not `"Create new author"`), has no `title` and no tooltip, and
 the visible text is its only accessible name. A theme styles the modes apart with `context:primary:both` and the
-like in the [class table](buttons.md#the-class-table). The map applies to inline buttons; an action folded into the
-menu renders icon and short label in every mode.
+like in the [class table](buttons.md#the-class-table). The maps and the floor apply to inline buttons; an action
+folded into the menu renders icon and short label in every mode. The filter toggle of filtered list views renders from
+its own template and is outside this configuration: neither the maps nor `CRUD_VIEWS_LABEL_MODE_DEFAULTS` change it.
 
 An icon-only button needs an icon. A toolbar, row or card button whose mode is `"icon"` while its icon is empty would
 render nothing visible, so it raises under [`CRUD_VIEWS_STRICT`](settings.md#basic-settings) (default `DEBUG`) and
@@ -241,7 +284,8 @@ a `.table-responsive` wrapper.
 | `viewset.E208` | a `cv_*_actions_inline` attribute is not `None` or a list of strings |
 | `viewset.W290` | a view's own `cv_*_actions_inline` names a key that is not among that location's actions (typo?) |
 | `crud_views.E106` | a `CRUD_VIEWS_*_ACTIONS_LABEL_MODE` setting is not a dict of action key → `"label"` / `"icon"` / `"both"` |
-| `viewset.E211` | a `cv_*_actions_label_mode` attribute is not `None` or such a dict (`cv_card_actions_label_mode` is the string-valued card attribute, `cv_context_action_label_mode` the string-valued target-view default) |
+| `crud_views.E108` | error: `CRUD_VIEWS_LABEL_MODE_DEFAULTS` is not a dict, names a key that is not a button location (`"context"`, `"list"`, `"card"`), or maps one to a mode that is not exactly `"label"`, `"icon"` or `"both"` |
+| `viewset.E211` | a `cv_*_actions_label_mode` attribute is not `None` or such a dict (`cv_card_actions_label_mode` is the string or None default of card views, `cv_context_action_label_mode` the string or None target-view default; both are scalars, not maps) |
 | `viewset.W291` | a view's own `cv_*_actions_label_mode` names a key that is not among that location's actions (typo?) |
 | `viewset.W292` | a context toolbar key resolves to `"icon"` (target-view default included) while its target view has no `cv_icon_action` (keys folded into the menu, buttons with their own template or `get_context()` and unregistered targets are not checked; the render-time rule covers them) |
 

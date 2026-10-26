@@ -504,6 +504,35 @@ def test_no_raw_keys_reach_leaves(monkeypatch):
         assert set(kwargs.get("context") or args[1]) <= LEAF_KEYS
 
 
+@override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"context": "both"})
+def test_defaults_setting_reaches_button_leaf():
+    # setting -> {% cv_button %} -> cv_button_data -> action leaf: an unstamped toolbar button takes the floor
+    raw = {
+        "cv_key": "detail",
+        "cv_access": True,
+        "cv_url": "/author/1/detail/",
+        "cv_action_label": "Details",
+        "cv_action_short_label": "Detail",
+        "cv_icon_action": "detail",
+        "cv_list_action_method": "get",
+        "cv_oid": "author_detail_1",
+    }
+    markup = Template('{% load crud_views %}{% cv_button "context" %}').render(Context(raw))
+    a = _one(markup, 'a[href="/author/1/detail/"]')
+    assert len(a.cssselect("i")) == 1
+    assert [span.text for span in a.cssselect("span")] == ["Detail"]
+    assert a.get("title") is None
+    assert a.get("data-cv-tooltip") is None
+    assert not a.cssselect("span.visually-hidden")
+
+    # without the setting the same raw data renders the package floor: icon-only with a title
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={}):
+        markup = Template('{% load crud_views %}{% cv_button "context" %}').render(Context(raw))
+    a = _one(markup, 'a[href="/author/1/detail/"]')
+    assert a.get("title") == "Details"
+    assert a.cssselect("span.visually-hidden")[0].text == "Details"
+
+
 def test_hidden_action_renders_nothing():
     # cv_list_action / cv_card_action hand {} to the thin templates for a hidden action; unresolved data the user
     # may not use is hidden too, as the old template branches did

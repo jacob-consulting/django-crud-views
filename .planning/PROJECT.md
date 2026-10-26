@@ -33,10 +33,10 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 - ✓ Workflow, polymorphic, guardian, object-detail extension apps — existing
 - ✓ Django system checks for ViewSet/CrudView configuration — existing
 
+- ✓ **1A** Project-wide label-mode floors, lazy accessor, E108 and instance-safe card overrides — Phase 1
+
 ### Active
 
-- [ ] **1A** One label-mode default per location: `CRUD_VIEWS_LABEL_MODE_DEFAULTS` (per-key merge over
-  `{"context": "icon", "list": "icon", "card": "both"}`), one accessor `default_label_mode(location)`, check E108
 - [ ] **1B** Filter toggle honours the label mode (#262): `FilterContextButton` resolves via
   `cv_get_action_label_mode("context", "filter")`; template three-way branch; `list.filter.js` tolerates icon-less toggle
 - [ ] **1C** Decide and implement the `form:*` second-segment grammar (option A: `form:<kind>:<mode>` vs option B:
@@ -52,7 +52,7 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 ### Out of Scope
 
 - Removing `CardAction.no_label` / `cv_no_label` guard (#254 adjacent) — tracked for 1.0.0, not among the five findings
-- Renaming the `cv_context_actions_label_mode` / `cv_context_action_label_mode` pair — tracked separately
+- Renaming the `cv_context_actions_label_mode` / `cv_context_action_label_mode` pair — rejected, not deferred: both names stay stable (Phase 1 decision, LATER-02 won't rename)
 - E36x check for `container-tag` — tracked separately
 - #259 host placement for headings, #211 stale-override detection — tracked separately
 - Tabler theme changes in its own repository — each phase only writes the Tabler follow-up into its acceptance note
@@ -90,12 +90,14 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 |----------|-----------|---------|
 | Group findings into phases by dependency, not rank order or one change | Reviewable units; #257 depends on 1A+1C; stability policy must be last | — Pending |
 | `form:*` grammar (A vs B) decided in the 1C phase discussion | Maintainer decision; plan recommends A (no renames before freeze) | — Pending |
-| Label-mode defaults are a project-wide floor, not per-ViewSet/view | Per-ViewSet/view knobs already exist | — Pending |
+| Label-mode defaults are a project-wide floor, not per-ViewSet/view | Per-ViewSet/view knobs already exist | Validated (Phase 1) |
 | Phase 3 (Bootstrap leak fixes) is the droppable one if 1.0.0 ships early | Additive DOM changes with a one-line migration note each | — Pending |
 | Milestone limited to the five findings | Keep scope reviewable; other 1.0.0 items tracked separately | — Pending |
 | Keep `cv_context_actions_label_mode` / `cv_context_action_label_mode` names; freeze as stable (LATER-02 → won't rename) | No renames before freeze; docs sharpen the distinction | Decided (Phase 1 discussion) |
-| `CardAction.no_label` / `cv_no_label` removed before 1.0 (LATER-01); Phase 7 lists it as deprecated, never stable | Superseded by `label_mode="icon"` | Decided (Phase 1 discussion) |
+| `CardAction.no_label` / `cv_no_label` removed before 1.0 (LATER-01), outside Phase 1; Phase 7 lists it as "deprecated, removed in 1.0.0", never stable | Superseded by `label_mode="icon"` | Decided (Phase 1 discussion) |
 | E108 is an Error for unknown location keys and invalid modes; valid keys derive from `LOCATIONS` | Typos fail loudly; Phase 6's `"form"` extends it automatically | Decided (Phase 1 discussion) |
+
+| Preserve the public classmethod resolver and honor own instance card modes in rendering | Retains subclass hooks and request-local overrides without shared class mutation | Validated (Phase 1 gap closure) |
 
 ## Evolution
 
@@ -115,4 +117,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-10-25 after initialization*
+*Last updated: 2026-10-26 after Phase 1 completion*

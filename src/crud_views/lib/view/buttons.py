@@ -368,7 +368,9 @@ def context_button_checks(context, viewset, buttons: list[ContextButton] | None)
 def cv_icon_mode_checks(cls):
     """System check viewset.W292: a context toolbar key that renders icon-only although its target has no icon (#264).
 
-    The mode is resolved as at render time, including the target view's cv_context_action_label_mode (#269).
+    The mode is resolved as at render time, including the target view's cv_context_action_label_mode (#269) and the
+    context floor of CRUD_VIEWS_LABEL_MODE_DEFAULTS. A key whose resolution raises because that floor is invalid in
+    strict mode is skipped: crud_views.E108 reports the setting, and the other checks still run.
 
     Only what is known statically: keys folded into the action menu (a menu item always shows its label), buttons
     with their own template or get_context() and unregistered targets are skipped; cv_button_data() covers the rest
@@ -402,7 +404,11 @@ def cv_icon_mode_checks(cls):
         target_default = target_cls.cv_context_action_label_mode
         if not is_label_mode(target_default):
             target_default = None
-        if cls.cv_get_action_label_mode("context", key, button, target_default) != "icon":
+        try:
+            mode = cls.cv_get_action_label_mode("context", key, button, target_default)
+        except ValueError:
+            continue  # an invalid CRUD_VIEWS_LABEL_MODE_DEFAULTS floor in strict mode: crud_views.E108 reports it
+        if mode != "icon":
             continue
         yield CheckWarningExpression(
             context=cls,

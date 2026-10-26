@@ -1,9 +1,9 @@
 ---
 phase: "03"
 slug: "filter-toggle-label-mode"
-status: draft
-nyquist_compliant: false
-wave_0_complete: false
+status: validated
+nyquist_compliant: true
+wave_0_complete: true
 created: "2026-10-26"
 ---
 
@@ -37,19 +37,19 @@ the existing fixture harness. All icon-less, label-stability, adapter-failure an
 
 | Task | Requirement | Threat Ref | Secure Behavior | Type | Command | Exists | Status |
 |------|-------------|------------|-----------------|------|---------|--------|--------|
-| 03-01-01 | FILT-01, FILT-02, FILT-03 | T-03-02 | Existing CSRF-bearing POST; raw output preservation | Python + JS | `.venv/bin/pytest tests/test1/test_filter_toggle_label_mode.py tests/test1/test_action_menus_golden.py tests/test1/test_button_leaves.py -q`; `npm --prefix . test -- tests/js/list.filter.test.js` | New Python module created first in task | Pending |
-| 03-01-02 | FILT-01, FILT-02, FILT-03 | T-03-01, T-03-02, T-03-03, T-03-04 | Escaping, visibility, exact request, collapse-first and rejection behavior | Python + JS | Full focused matrix command in 03-01-PLAN.md; `npm --prefix . test -- tests/js/list.filter.test.js` | Existing files plus Task 1 module | Pending |
-| 03-01-03 | FILT-04 | T-03-01 | Ordinary interpolation; catalog/runtime proof | Python + gettext | `msgfmt --check --check-format -o /dev/null src/crud_views/locale/de/LC_MESSAGES/django.po`; `.venv/bin/pytest tests/test1/test_i18n.py tests/test1/test_filter_toggle_label_mode.py tests/test1/test_context_button_template.py tests/test1/test_action_menus_golden.py -q` | Existing files plus Task 1 module | Pending |
-| 03-02-01 | FILT-01, FILT-02, FILT-03, FILT-04 | T-03-05 | Accurate renderer contract and doc-test assertions | Docs + Python | `.venv/bin/mkdocs build --strict`; `.venv/bin/pytest tests/test1/test_filter_toggle_label_mode.py tests/test1/test_label_mode_docs.py -q` | Existing doc test is modified alongside references; Wave 1 module | Pending |
-| 03-02-02 | FILT-01, FILT-02, FILT-03 | T-03-05 | Optional icon hooks and unchanged failure semantics | Docs + JS | `.venv/bin/mkdocs build --strict`; `npm --prefix . test -- tests/js/list.filter.test.js` | Existing harnesses | Pending |
-| 03-02-03 | FILT-01, FILT-02, FILT-03, FILT-04 | T-03-SC | No installs or unreported failing gates | Focused + full phase gates | Focused commands and all five full project commands in 03-02-PLAN.md | Existing harnesses | Pending |
+| 03-01-01 | FILT-01, FILT-02, FILT-03 | T-03-02 | Existing CSRF-bearing POST; raw output preservation | Python + JS | `.venv/bin/pytest tests/test1/test_filter_toggle_label_mode.py tests/test1/test_action_menus_golden.py tests/test1/test_button_leaves.py -q`; `npm --prefix . test -- tests/js/list.filter.test.js` | New Python module created first in task | ✅ green |
+| 03-01-02 | FILT-01, FILT-02, FILT-03 | T-03-01, T-03-02, T-03-03, T-03-04 | Escaping, visibility, exact request, collapse-first and rejection behavior | Python + JS | Full focused matrix command in 03-01-PLAN.md; `npm --prefix . test -- tests/js/list.filter.test.js` | Existing files plus Task 1 module | ✅ green |
+| 03-01-03 | FILT-04 | T-03-01 | Ordinary interpolation; catalog/runtime proof | Python + gettext | `msgfmt --check --check-format -o /dev/null src/crud_views/locale/de/LC_MESSAGES/django.po`; `.venv/bin/pytest tests/test1/test_i18n.py tests/test1/test_filter_toggle_label_mode.py tests/test1/test_context_button_template.py tests/test1/test_action_menus_golden.py -q` | Existing files plus Task 1 module | ✅ green |
+| 03-02-01 | FILT-01, FILT-02, FILT-03, FILT-04 | T-03-05 | Accurate renderer contract and doc-test assertions | Docs + Python | `.venv/bin/mkdocs build --strict`; `.venv/bin/pytest tests/test1/test_filter_toggle_label_mode.py tests/test1/test_label_mode_docs.py -q` | Existing doc test is modified alongside references; Wave 1 module | ✅ green |
+| 03-02-02 | FILT-01, FILT-02, FILT-03 | T-03-05 | Optional icon hooks and unchanged failure semantics | Docs + JS | `.venv/bin/mkdocs build --strict`; `npm --prefix . test -- tests/js/list.filter.test.js` | Existing harnesses | ✅ green |
+| 03-02-03 | FILT-01, FILT-02, FILT-03, FILT-04 | T-03-SC | No installs or unreported failing gates | Focused + full phase gates | Focused commands and all five full project commands in 03-02-PLAN.md | Existing harnesses | ✅ green |
 
 ## Wave 0 Requirements
 
-- [ ] 03-01-01 creates the dedicated module before invoking it, captures two raw default strings with both mode-less and explicit-icon assertions and commits the passing baseline before production edits.
-- [ ] 03-01-01 writes and observes the failing both-mode integration test before implementing the tracer.
-- [ ] 03-01-02 extends existing JS fixtures for label-only/visible labels, both initial states, adapter errors and outstanding requests.
-- [ ] 03-01-03 adds explicit PO/MO membership and a distinct Unicode translation sentinel before catalog edits.
+- [x] 03-01-01 creates the dedicated module before invoking it, captures two raw default strings with both mode-less and explicit-icon assertions and commits the passing baseline before production edits.
+- [x] 03-01-01 writes and observes the failing both-mode integration test before implementing the tracer.
+- [x] 03-01-02 extends existing JS fixtures for label-only/visible labels, both initial states, adapter errors and outstanding requests.
+- [x] 03-01-03 adds explicit PO/MO membership and a distinct Unicode translation sentinel before catalog edits.
 
 Existing frameworks are installed. Record manifest/environment mismatches from research; dependency upgrades are
 outside this phase. No framework installation or separate scaffold plan is needed. The baseline and failing tests
@@ -87,7 +87,15 @@ and translated/custom labels, but does not replace automated assertions.
 - [x] No three consecutive tasks lack automated verification.
 - [x] All new test references have explicit creation before use in task ordering.
 - [x] No watch-mode flags.
-- [ ] Focused feedback time measured.
-- [ ] Nyquist compliance recorded after execution validation.
+- [x] Focused feedback time measured (Python focused ≈15 s, JS ≈1 s; full pytest -n auto ≈17–22 s).
+- [x] Nyquist compliance recorded after execution validation (2026-10-26).
 
-**Approval:** Planning mapping complete; execution evidence and final sign-off pending.
+**Approval:** Validated 2026-10-26 — all six tasks green; FILT-01..04 COVERED by automated tests.
+
+## Validation Audit 2026-10-26
+
+| Metric | Count |
+|---|---|
+| Gaps found | 0 |
+| Resolved | 0 |
+| Escalated | 0 |

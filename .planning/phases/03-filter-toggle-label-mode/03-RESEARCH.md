@@ -94,7 +94,7 @@ Use generic wording for the downstream theme acceptance follow-up. [VERIFIED: .p
 | FILT-03 | Text stays constant; expanded state and icons change | Visible-label identity assertions over two clicks and both starting states |
 | FILT-04 | Filter is translated and German catalog updated | Runtime gettext, PO/MO catalog update, anti-false-positive translation tests |
 
-Requirement descriptions above summarize the supplied requirements. [VERIFIED: .planning/REQUIREMENTS.md:34-39]
+Requirement descriptions above summarize the supplied requirements. [VERIFIED: .planning/REQUIREMENTS.md:31-34]
 </phase_requirements>
 
 ## Summary

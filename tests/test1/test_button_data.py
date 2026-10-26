@@ -286,3 +286,152 @@ def test_empty_label_and_icon_stays_icon_and_logs(caplog):
         data = cv_button_data(ctx, "context")
     assert data["cv_label_mode"] == "icon"
     assert "'detail'" in caplog.text
+
+
+# CRUD_VIEWS_LABEL_MODE_DEFAULTS: the configured floor of an unstamped button, and malformed stamps (LMOD-05)
+
+LABEL_MODE_LOGGER = "crud_views.lib.view.label_mode"
+CONFIGURED = {"context": "both", "list": "label", "card": "icon"}
+
+
+@pytest.fixture
+def warned(monkeypatch):
+    """A fresh once-per-pair warning register for this test (the production register lives for the process)."""
+    from crud_views.lib.view import label_mode
+
+    fresh: set = set()
+    monkeypatch.setattr(label_mode, "_warned", fresh)
+    return fresh
+
+
+def _label_mode_records(caplog) -> list:
+    return [record for record in caplog.records if record.name == LABEL_MODE_LOGGER]
+
+
+@pytest.mark.parametrize("location", LOCATIONS)
+def test_configured_leaf_floor(location):
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS=CONFIGURED):
+        assert cv_button_data(base(), location)["cv_label_mode"] == CONFIGURED[location]
+        # an explicit valid stamp wins over the floor
+        assert cv_button_data(base(cv_label_mode="both"), location)["cv_label_mode"] == "both"
+    # an explicit valid stamp never reads the floor, even an invalid one in strict mode
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={location: "nope"}, CRUD_VIEWS_STRICT=True):
+        assert cv_button_data(base(cv_label_mode="label"), location)["cv_label_mode"] == "label"
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={location: "label"}):
+        data = cv_button_data(base(), location)
+    assert data["cv_label_mode"] == "label"
+    assert "cv_title" not in data
+
+
+@pytest.mark.parametrize("location", LOCATIONS)
+@pytest.mark.parametrize("value", [{"filter": "both"}, ["both"], 1, "Both", " both ", "b\u03bfth", "lable"], ids=repr)
+def test_invalid_stamped_mode_falls_back(location, value, warned, caplog):
+    ctx = base(cv_label="Details", cv_label_mode=value)
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS=CONFIGURED, CRUD_VIEWS_STRICT=True):
+        with pytest.raises(ValueError, match="cv_label_mode must be one of"):
+            cv_button_data(ctx, location)
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS=CONFIGURED, CRUD_VIEWS_STRICT=False):
+        # production renders with the configured floor instead of crashing
+        assert cv_button_data(ctx, location)["cv_label_mode"] == CONFIGURED[location]
+        assert cv_button_data(ctx, location)["cv_label_mode"] == CONFIGURED[location]
+    records = _label_mode_records(caplog)
+    assert len(records) == 1
+    assert "cv_label_mode" in records[0].getMessage()
+    assert repr(value) in records[0].getMessage()
+
+
+@pytest.mark.parametrize("strict", [True, False])
+@pytest.mark.parametrize("location", LOCATIONS)
+@pytest.mark.parametrize("value", [None, "", [], {}], ids=repr)
+def test_falsey_stamped_mode_uses_floor(strict, location, value, warned, caplog):
+    # a falsey stamp means unset, as before: the floor, no malformed-stamp warning
+    ctx = base(cv_label="Details", cv_label_mode=value)
+    with override_settings(CRUD_VIEWS_STRICT=strict):
+        assert cv_button_data(ctx, location)["cv_label_mode"] == {"card": "both"}.get(location, "icon")
+        with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS=CONFIGURED):
+            assert cv_button_data(ctx, location)["cv_label_mode"] == CONFIGURED[location]
+    assert _label_mode_records(caplog) == []
+
+
+@pytest.mark.parametrize("location", LOCATIONS)
+def test_strict_stamped_error_precedes_invalid_floor(location):
+    # the stamp is named, not the (also malformed) floor it would fall back to
+    ctx = base(cv_label="Details", cv_label_mode="Both")
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={location: "nope"}, CRUD_VIEWS_STRICT=True):
+        with pytest.raises(ValueError, match="cv_label_mode") as excinfo:
+            cv_button_data(ctx, location)
+    assert "CRUD_VIEWS_LABEL_MODE_DEFAULTS" not in str(excinfo.value)
+    assert "'Both'" in str(excinfo.value)
+
+
+def test_same_bad_pair_warns_once_across_sources(warned, caplog):
+    from crud_views.lib.view.label_mode import default_label_mode
+
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"context": "Both"}, CRUD_VIEWS_STRICT=False):
+        assert default_label_mode("context") == "icon"
+        assert len(_label_mode_records(caplog)) == 1
+        # the same (location, value) pair reached from a stamp adds nothing
+        data = cv_button_data(base(cv_label_mode="Both"), "context")
+        assert data["cv_label_mode"] == "icon"
+        cv_button_data(base(cv_label_mode="Both"), "context")
+        assert len(_label_mode_records(caplog)) == 1
+    # nor across a settings change
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"list": "label"}, CRUD_VIEWS_STRICT=False):
+        assert cv_button_data(base(cv_label_mode="Both"), "context")["cv_label_mode"] == "icon"
+        assert len(_label_mode_records(caplog)) == 1
+        # another location or another value is its own pair
+        assert cv_button_data(base(cv_label_mode="Both"), "list")["cv_label_mode"] == "label"
+        assert len(_label_mode_records(caplog)) == 2
+        cv_button_data(base(cv_label_mode="BOTH"), "context")
+        assert len(_label_mode_records(caplog)) == 3
+
+
+RECOVERY_CHILD = """
+import unittest
+
+from django.conf import settings
+
+settings.configure(
+    INSTALLED_APPS=["django.contrib.contenttypes", "django.contrib.auth"],
+    CRUD_VIEWS_STRICT=False,
+    CRUD_VIEWS_LABEL_MODE_DEFAULTS={{"context": {floor!r}}},
+)
+
+import django
+
+django.setup()
+
+from crud_views.lib.view.button_data import cv_button_data
+
+ctx = {{
+    "cv_key": "detail",
+    "cv_url": "/author/1/detail/",
+    "cv_action_label": "Details",
+    "cv_action_short_label": "Detail",
+    "cv_icon_action": "detail",
+    "cv_list_action_method": "get",
+    "cv_oid": "author_detail_1",
+    "cv_label_mode": {stamp!r},
+}}
+with unittest.TestCase().assertLogs("crud_views.lib.view.label_mode", level="WARNING") as logs:
+    data = cv_button_data(ctx, "context")
+assert data["cv_label_mode"] == "icon", data
+assert len(logs.records) == {expected}, logs.output
+print("LABEL-MODE-RECOVERY-OK")
+"""
+
+
+@pytest.mark.parametrize(
+    "stamp,floor,expected",
+    [("Both", "Both", 1), ("Both", "nope", 2), (["both"], ["both"], 1), (["both"], {"x": 1}, 2)],
+    ids=["equal", "distinct", "equal-unhashable", "distinct-unhashable"],
+)
+def test_invalid_stamp_and_floor_recovers_without_deadlock(stamp, floor, expected):
+    # a bad stamp falls back to a bad floor, which re-enters the warning helper: must finish, not deadlock
+    import subprocess
+    import sys
+
+    code = RECOVERY_CHILD.format(stamp=stamp, floor=floor, expected=expected)
+    result = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, timeout=10)
+    assert result.returncode == 0, result.stderr
+    assert "LABEL-MODE-RECOVERY-OK" in result.stdout

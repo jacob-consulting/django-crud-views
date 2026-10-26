@@ -21,7 +21,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 
 - [x] **Phase 1: Label-mode defaults** - plan 1A: one project-wide label-mode floor per location (`CRUD_VIEWS_LABEL_MODE_DEFAULTS`, E108) (completed 2026-10-26)
 - [x] **Phase 2: Form key grammar** - plan 1C: Option A form kinds implemented, reviewed and verified (completed 2026-10-26)
-- [ ] **Phase 3: Filter toggle label mode** - plan 1B (#262): the filter toggle honours `icon` / `both` / `label`
+- [x] **Phase 3: Filter toggle label mode** - plan 1B (#262): the filter toggle honours `icon` / `both` / `label` (completed 2026-10-26)
 - [ ] **Phase 4: Alert dismiss adapter** - plan 3A: alerts close through `cv.adapters.alert` with no Bootstrap data API (droppable)
 - [ ] **Phase 5: Table pagination parity** - plan 3B: table pagination gets the same registry icons and accessible markup as card pagination (droppable)
 - [ ] **Phase 6: Form-button leaf** - plan 2 (#257): crispy form buttons render as `<button>` through `tags/button/form.html`
@@ -106,9 +106,9 @@ accessible in each mode.
 **Source**: plan 1B (#262) · branch `feat/filter-toggle-label-mode`
 **Depends on**: Phase 1
 **Parallel with**: Phases 4 and 5
-**Research/spec**: **Needs a short spec** (brainstorm) before implementation. It must cover the three-way branch
-combined with the two icon placements (element and host), the host swap in JS, what "target view default" (#269)
-means for this button, and whether `both` swaps only the icon.
+**Research/spec**: Decisions settled in 03-CONTEXT.md; mode/placement, target-default, constant-label and
+disclosure contracts implemented and verified. Human UAT passed all four checks; review fixes preserve
+independent list-row modes and the shared runtime validation policy.
 **Requirements**: FILT-01, FILT-02, FILT-03, FILT-04
 **Success Criteria** (what must be TRUE):
 
@@ -119,7 +119,7 @@ means for this button, and whether `both` swaps only the icon.
   3. The toggle's visible text never changes between states. Only `aria-expanded` and the icon change.
   4. "Filter" is a translated msgid and renders in German with the German catalog.
 
-**Plans**: 2/2 plans executed
+**Plans**: 2/2 plans complete
 **Wave 1**
 - [x] 03-01-PLAN.md
 
@@ -267,7 +267,7 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 |-------|----------------|--------|-----------|
 | 1. Label-mode defaults | 5/5 | Complete    | 2026-10-26 |
 | 2. Form key grammar | 1/1 | Complete    | 2026-10-26 |
-| 3. Filter toggle label mode | 2/2 | In Progress | - |
+| 3. Filter toggle label mode | 2/2 | Complete    | 2026-10-26 |
 | 4. Alert dismiss adapter | 0/TBD | Not started | - |
 | 5. Table pagination parity | 0/TBD | Not started | - |
 | 6. Form-button leaf | 0/TBD | Not started | - |

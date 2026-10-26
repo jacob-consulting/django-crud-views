@@ -35,11 +35,10 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 - ✓ **1A** Project-wide label-mode floors, lazy accessor, E108 and instance-safe card overrides — Phase 1
 - ✓ **1C** Option A `form:<kind>:<mode>` grammar, finite independent locations, W362 validation and live key-count guard — Phase 2
+- ✓ **1B** Filter toggle label modes, constant translated labels, optional icons and accessible disclosure — Phase 3
 
 ### Active
 
-- [ ] **1B** Filter toggle honours the label mode (#262): `FilterContextButton` resolves via
-  `cv_get_action_label_mode("context", "filter")`; template three-way branch; `list.filter.js` tolerates icon-less toggle
 - [ ] **2** Form buttons through a crud_views leaf (#257): `"form"` in `LOCATIONS`, new leaf `tags/button/form.html`,
   crispy `Submit`/`Button`/`Reset` as thin adapters, escaping, icons `save`/`cancel`/`filter-reset`, checks
   E210/E211/W291/W292, `<input>` → `<button>` (Breaking), example project uses `both`
@@ -97,6 +96,9 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 | E108 is an Error for unknown location keys and invalid modes; valid keys derive from `LOCATIONS` | Typos fail loudly; Phase 6's `"form"` extends it automatically | Decided (Phase 1 discussion) |
 
 | Preserve the public classmethod resolver and honor own instance card modes in rendering | Retains subclass hooks and request-local overrides without shared class mutation | Validated (Phase 1 gap closure) |
+| Resolve the filter's declared key once for the toolbar; keep list-row resolution independent | Label templates and toolbar leaves share the mode without overriding row maps | Validated (Phase 3 review fixes) |
+| Validate resolved filter modes through the shared strict/log-and-floor policy | Runtime configuration errors retain diagnostics before custom label rendering | Validated (Phase 3 review fixes) |
+| Release filter label-mode support as Fixed; document copied-template migration | Default bytes remain unchanged while configured context floors now apply | Validated (Phase 3) |
 
 ## Evolution
 
@@ -116,4 +118,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-10-26 after Phase 2 completion*
+*Last updated: 2026-10-26 after Phase 3 completion*

@@ -153,6 +153,18 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 - **Malformed stamped label modes:** a malformed truthy `cv_label_mode` on a button context no longer crashes a
   non-strict render. With `CRUD_VIEWS_STRICT` off it logs one warning per location and value and renders the
   location's configured floor; strict mode still raises `ValueError` naming `cv_label_mode`.
+- **Filter toggle label mode:** the stock filter toggle follows the context label mode of its declared key, which it
+  used to ignore (#262). `CRUD_VIEWS_CONTEXT_ACTIONS_LABEL_MODE = {"filter": "both"}`, a ViewSet or view map, or
+  `FilterContextButton(label_mode="label")` selects `"icon"` (unchanged markup: hidden label, `title` and tooltip),
+  `"both"` (icon and visible label, no `title` or tooltip) or `"label"` (visible label, without icons, host icon
+  classes or icon-swap attributes), and the per-mode class keys `context:<variant>:<mode>` reach it. It has no target
+  view, so the list view's `cv_context_action_label_mode` does not change it. The label stays constant while the panel
+  opens and closes, and the default `Filter` is now translated (German catalog included). Without configuration the
+  output is unchanged. A project that already sets `CRUD_VIEWS_LABEL_MODE_DEFAULTS["context"]` to `"both"` or
+  `"label"` now gets that mode on the filter toggle too, wherever no page map, button `label_mode` or ViewSet/setting
+  map names its key. A copied `tags/context_action_filter.html` keeps rendering the icon form; to support `"both"` and
+  `"label"`, branch on the `cv_label_mode` its context now carries. See
+  [The filter toggle](docs/reference/context_buttons.md#the-filter-toggle).
 - `BreadcrumbItem` keeps a safe title (`mark_safe`, `format_html`, a rendered label) safe instead of turning it into a
   plain string, so it is no longer escaped twice (#271). A rendered label with an escaped variable, such as
   `{{ object }}` or `{{ verbose_name }}` containing `&` or `'`, showed `&amp;amp;`. This applies to every item: an

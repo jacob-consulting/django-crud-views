@@ -321,22 +321,27 @@ Register these from your theme's `AppConfig.ready()`; a project's own settings s
   `placement: "host"`. To support a host library too, take over what the stock leaves do: append
   `{{ cv_icon_class }}` to the button's `class` when it is set, and render `{% cv_icon cv_icon %}` only when
   `cv_icon_inline` is true ([The leaf contract](reference/buttons.md#the-leaf-contract)). The menu toggle reads
-  `cv_menu_icon_class` / `cv_menu_icon_inline`. A filter-toggle copy renders, for a host library, the current state's
-  class on the button plus `data-cv-filter-icon-open` / `data-cv-filter-icon-close` instead of the two spans
+  `cv_menu_icon_class` / `cv_menu_icon_inline`. A filter-toggle copy renders, for a host library and in the
+  icon-bearing modes, the current state's class on the button plus `data-cv-filter-icon-open` /
+  `data-cv-filter-icon-close` instead of the two spans
   ([The filter toggle contract](reference/javascript.md#the-filter-toggle-contract)).
 - **Action menus:** `cv_menu_wrapper_class` and `cv_toggle_class` are no longer in the context of
   `tags/actions_menu.html` and `tags/actions_menu_toggle.html`; use `{% cv_button_class cv_location "menu-wrapper" %}`
   and `"menu-toggle"`. These two templates are still the ones to override for a framework with a different dropdown
   ([Templates that follow Bootstrap's DOM](reference/theme.md#templates-that-follow-bootstraps-dom)).
-- **The filter toggle** (`tags/context_action_filter.html`). A 0.29 copy renders one
+- **The filter toggle** (`tags/context_action_filter.html`). Its context carries the resolved `cv_label_mode`
+  (#262), which decides whether the toggle has icons; a copy that ignores it renders the icon form in every mode.
+  The icon instructions below apply to the icon-bearing modes, `"icon"` and `"both"`. A 0.29 copy renders one
   `<i class="{{ cv_icon_action }}">`, and 0.29's `list.filter.js` swapped its Font Awesome classes. In 1.0
   `cv_icon_action` is the icon name `"filter"`, so that `<i>` is invisible, and the script toggles two marked spans
   instead: render `<span data-cv-filter-icon="open">{% cv_icon "filter" %}</span>` and
   `<span data-cv-filter-icon="close">{% cv_icon "filter-close" %}</span>`, and hide the inactive one with the
   `hidden` attribute (#232). A 0.30 copy already has the two spans but hides them with `class="d-none"`: switch to
-  `hidden`. Render `aria-expanded` and
+  `hidden`. In `"label"` mode the stock toggle renders its constant visible label without icon spans, host icon
+  classes or `data-cv-filter-icon-*` attributes. In every mode render `aria-expanded` and
   `aria-controls="filter-collapse"`; the `#filter-collapse` id is a contract
-  ([The filter toggle contract](reference/javascript.md#the-filter-toggle-contract)).
+  ([The filter toggle contract](reference/javascript.md#the-filter-toggle-contract)). For adopting the resolved modes,
+  constant labels and optional icon hooks, see [The filter toggle](reference/context_buttons.md#the-filter-toggle).
 - **The modal:** the close button in `modal/content.html` uses `data-cv-modal-dismiss`. A copy with `data-bs-dismiss`
   keeps working under the Bootstrap adapter only. `{% cv_config %}` renders the modal shell from `modal/shell.html`,
   which you can override on its own ([Theming the modal](reference/modals.md#theming-the-modal)).
@@ -396,8 +401,10 @@ about these.
   ([Contract changes](#contract-changes-in-templates-you-still-override)).
 - [ ] `tags/actions_menu.html` and `tags/actions_menu_toggle.html` copies that read `cv_menu_wrapper_class` or
   `cv_toggle_class` render an empty `class` ([Contract changes](#contract-changes-in-templates-you-still-override)).
-- [ ] A `tags/context_action_filter.html` copy shows no icon (0.29) or the wrong icon after the first click (0.30)
-  ([Contract changes](#contract-changes-in-templates-you-still-override)).
+- [ ] A `tags/context_action_filter.html` copy shows no icon (0.29) or the wrong icon after the first click (0.30),
+  and a copy that still ignores `cv_label_mode` stays icon-only where the project configures `"both"` or `"label"`
+  for the toggle ([Contract changes](#contract-changes-in-templates-you-still-override),
+  [The filter toggle](reference/context_buttons.md#the-filter-toggle)).
 - [ ] A `formsets/control.html` copy without `data-cv-class` / `data-cv-class-danger` no longer recolours the delete
   toggle ([Contract changes](#contract-changes-in-templates-you-still-override)).
 - [ ] A `view_card.content.html` copy keeps the untranslated "No items found." ([Hooks instead of copies](#hooks-instead-of-copies)).

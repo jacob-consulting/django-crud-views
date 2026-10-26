@@ -1,19 +1,19 @@
 ---
 gsd_state_version: "1.0"
-current_phase: 04
-current_phase_name: Alert dismiss adapter
-status: verifying
-stopped_at: Completed 04-03-PLAN.md
-last_updated: "2026-10-26T20:40:59.864Z"
+current_phase: 5
+current_phase_name: Table pagination parity
+status: planning
+stopped_at: Phase 04 complete, ready to plan Phase 5
+last_updated: "2026-10-26T21:09:38.322Z"
 last_activity: 2026-10-26
-last_activity_desc: Phase 04 execution started
-state_head: feaedcc7efc51b570cdfbee413710aac82181907
+last_activity_desc: Phase 04 complete, transitioned to Phase 5
+state_head: e603d534d98d0d4731a8cb3ff72c3aa248d8bab6
 progress:
   total_phases: 7
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 11
   completed_plans: 11
-  percent: 43
+  percent: 57
 ---
 
 # Project State
@@ -23,22 +23,22 @@ progress:
 See: .planning/PROJECT.md (updated 2026-10-26)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 04 — Alert dismiss adapter
+**Current focus:** Phase 5 — Table pagination parity
 
 ## Current Position
 
-Phase: 04 (Alert dismiss adapter) — EXECUTING
-Plan: 3 of 3
-Status: Phase complete — ready for verification
-Last activity: 2026-10-26 — Phase 04 execution started
+Phase: 5 — Table pagination parity
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-10-26 — Phase 04 complete, transitioned to Phase 5
 
-Progress: [████░░░░░░] 43%
+Progress: [██████░░░░] 57%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 8
+- Total plans completed: 11
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -49,6 +49,7 @@ Progress: [████░░░░░░] 43%
 | 01 | 5 | - | - |
 | 02 | 1 | - | - |
 | 03 | 2 | - | - |
+| 04 | 3 | - | - |
 
 **Recent Trend:**
 
@@ -107,6 +108,7 @@ Recent decisions affecting current work:
 - [Phase 04]: 04-03: whole-map cv.adapters replacement after core load must provide alert.close(el) (else TypeError); pre-load partial maps get defaults; fix via per-entry assignment, Object.assign or cv.bootstrapAdapters(ns).alert
 - [Phase 04]: 04-03: theme.md '### Custom alert frame' recipe is executable (test_documented_alert_frame_override); core data-bs-* confined to the dropdown allowlist by a tmp_path-tested guard
 - [Phase 04]: 04-03: browser A/B/C acceptance observed in headless Chrome 156 against the example; ruff format --check stays red on 8 pre-existing .planning files
+- [Phase 04]: UAT 2/2 passed; review WR-01/IN-03 fixed in b7b49ae (theme.md data-bs-* claim scoped to core, object-detail layouts named; messages.md TypeError wording); re-verification 21/21 passed
 
 ### Pending Todos
 
@@ -114,13 +116,15 @@ None yet.
 
 ### Blockers/Concerns
 
-- Phase 2: Ruff 0.16.10 is below the manifest range and global formatting flags seven pre-existing planning
+- Phase 2: Ruff 0.16.10 is below the manifest range and global formatting flags eight pre-existing planning
   Markdown files; product formatting passes. See phase deferred-items.md and WINDOWS entry 4.
 - Phases 6 and 7: each needs a spec or maintainer decision before planning.
 - Phase 7: retain the decided stable label-mode names; track the separately planned `no_label` removal before 1.0.
 - Phase 5: confirm the hidden-label key name (`pagination:hidden-label` vs `table:hidden-label`) before Phase 7.
-- Phases 4, 5 and 6 must commit before-change goldens. Today's goldens contain no form buttons, dismissible alerts or
-  table pagination.
+- Phases 5 and 6 must commit before-change goldens. Today's goldens contain no form buttons or table pagination
+  (Phase 4 committed the dismissible alert golden first, f6982bf).
+- [Phase 4] Four open Info review findings (IN-01 `[role~="alert"]`, IN-02 hand-copied allowlist, IN-04 no guard for
+  the non-core data-bs-* sentence, IN-05 missing-script enumeration) — see 04-REVIEW-DISPOSITION.md; candidates for Phase 7.
 - Phase 2: Both source-probe classifier limitations remain documented; explicit tests and completed human prose UAT independently establish acceptance. See 02-VERIFICATION.md.
 
 ## Deferred Items
@@ -132,5 +136,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-10-26T20:40:59.651Z
-Stopped at: Completed 04-03-PLAN.md
+Stopped at: Phase 04 complete, ready to plan Phase 5
 Resume file: None

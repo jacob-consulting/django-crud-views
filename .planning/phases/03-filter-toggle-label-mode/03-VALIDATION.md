@@ -32,6 +32,8 @@ created: "2026-10-26"
 
 Final plan mapping: 03-01 runs in Wave 1; 03-02 depends on it and runs in Wave 2. Each task includes automated
 verification with an immediate fails_when sibling. These commands are acceptance gates to execute, not claimed passes.
+JavaScript scope is test-only: tasks 03-01-01/02 exercise the unchanged production list.filter.js handler through
+the existing fixture harness. All icon-less, label-stability, adapter-failure and persistence assertions remain required.
 
 | Task | Requirement | Threat Ref | Secure Behavior | Type | Command | Exists | Status |
 |------|-------------|------------|-----------------|------|---------|--------|--------|

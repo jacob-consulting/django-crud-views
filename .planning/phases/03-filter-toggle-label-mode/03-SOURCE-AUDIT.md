@@ -27,7 +27,7 @@ results. Maintainer discussion supplies the roadmap's design clarification; no s
 | RESEARCH | R-01 | Reuse context resolver without target argument | 03-01-01/02 | COVERED | No duplicate resolver, no cv_button_data routing |
 | RESEARCH | R-02 | Resolved mode reaches class lookup | 03-01-01/02 | COVERED | Distinct per-mode classes in rendered tests |
 | RESEARCH | R-03 | Server context/template owns mode, client owns toggle | 03-01-01/02 | COVERED | Architectural responsibility map retained |
-| RESEARCH | R-04 | Existing JS empty icon loop already works | 03-01-01/02 | COVERED | Tests first; production JS only if a demonstrated gap requires it |
+| RESEARCH | R-04 | Existing JS empty icon loop already works | 03-01-01/02 | COVERED | Test-only JS scope exercises the unchanged real handler, including all failure and label-stability cases |
 | RESEARCH | R-05 | Normalized golden cannot prove raw bytes | 03-01-01 | COVERED | Two exact pre-change inline raw fixtures, source HEAD/commit evidence |
 | RESEARCH | R-06 | German spelling alone cannot prove translation | 03-01-03 | COVERED | Distinct Unicode gettext sentinel and compiled membership |
 | RESEARCH | R-07 | Direct leaf tests need explicit resolved mode | 03-01-01 | COVERED | Update tracked test_button_leaves.py helper |
@@ -56,8 +56,13 @@ not planned. Source-plan literal filter-key guidance is superseded by locked D-0
 | 03-02-02 | Completed references and behavior | Release note and full gate evidence | No |
 
 Wave 1: 03-01 (three tasks). Wave 2: 03-02 depends on 03-01 (two tasks). Each task modifies at most five files.
+Plan 03-01 modifies nine files, including the compiled MO; Plan 03-02 modifies six. The existing production filter
+script remains a read/test dependency, with all browser coverage retained in tests/js/list.filter.test.js.
 There are no same-wave file or mutable-resource conflicts. Calibration query returned factor 1, 0 samples, low
 confidence; estimates are 36,000 and 15,000 tokens. No source omission or phase split is needed.
+
+Research's three open-question entries are explicitly RESOLVED: Fixed classification and environment reporting
+belong to 03-02-02; inline RAW_DEFAULT_FILTER baseline capture belongs to 03-01-01. No product decision remains open.
 
 ## Spec-less edge coverage
 

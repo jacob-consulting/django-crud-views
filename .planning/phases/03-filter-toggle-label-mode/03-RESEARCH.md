@@ -193,7 +193,7 @@ File references below identify files inspected in this session, not new filesyst
 |-----------|------------------|
 | src/crud_views/lib/view/buttons.py | Translate seeded label; stamp resolved mode using self.key and self |
 | src/crud_views/templates/crud_views/tags/context_action_filter.html | Three presentation modes; retain existing icon placement and default bytes |
-| src/crud_views/static/crud_views/js/list.filter.js | Leave functional behavior unless regression tests expose a gap |
+| src/crud_views/static/crud_views/js/list.filter.js | Existing behavior already supports icon-less toggles; keep source unchanged and add regression tests in tests/js/list.filter.test.js (03-01-01/02) |
 | tests/test1/test_context_button_template.py and a focused filter-mode test module | Direct context, custom templates, precedence, rendered matrix |
 | tests/js/list.filter.test.js | Icon-less and constant-label cases including failure semantics |
 | tests/test1/test_i18n.py and core German catalog | Extracted msgid, compiled translation and rendering |
@@ -389,7 +389,7 @@ label because D-04/FILT-03 require it, and retain aria-expanded; do not add aria
 | GNU gettext msgfmt | Yes | 0.21 | Compile changed core catalog |
 | uv / Task | Yes | 0.11.32 / 3.54.0 | Existing project tooling |
 | MkDocs | Yes | 1.6.1 | Strict documentation build |
-| Ruff | Present, manifest mismatch | 0.16.10 | Record existing mismatch; resolve environment if gate requires |
+| Ruff | Present, manifest mismatch | 0.16.10 | Run required gates and report versions/failures; no dependency upgrades in this phase (03-02-02) |
 | Context7 MCP/CLI | Unavailable in this agent | No matching MCP tool; ctx7 absent | Official web documentation used |
 
 [VERIFIED: tool discovery and environment probes, 2026-10-26]
@@ -504,14 +504,17 @@ No [ASSUMED] factual claims are used.
 
 ## Open Questions
 
-1. **Release-note classification:** use a public behavior entry; if maintainers choose Breaking because configured
-   filters now honor existing modes, add the migration companion. D-11 allows either classification with its rule.
-2. **Strict raw compatibility fixture location:** choose a focused inline expected string or separate fixture;
-   preserve raw bytes in either case. This is implementation discretion.
-3. **Environment reproducibility:** manifest/test-run version drift exists. Focused tests pass with installed packages;
-   final gates must report their actual tooling, without silently upgrading dependencies as phase scope.
+1. **RESOLVED — Release-note classification:** Plan 03-02, task 03-02-02 uses Unreleased Fixed because this corrects
+   ignored existing configuration while preserving default output. D-11 still requires a migration companion if
+   execution reveals a separate actual public break.
+2. **RESOLVED — Strict raw compatibility fixture location:** Plan 03-01, task 03-01-01 stores both untouched default
+   renders inline as RAW_DEFAULT_FILTER in tests/test1/test_filter_toggle_label_mode.py and commits the passing
+   byte-exact assertions before production edits.
+3. **RESOLVED — Environment reproducibility:** Plan 03-02, task 03-02-02 runs every required gate and reports actual
+   versions and pre-existing failures separately. No dependency upgrades or broad format churn belong to this phase;
+   failing gates are never reported as green.
 
-No unresolved product decision blocks planning.
+No unresolved open questions remain; these resolutions record choices already encoded in the plans.
 
 ## Sources
 

@@ -2,17 +2,17 @@
 gsd_state_version: "1.0"
 current_phase: 04
 current_phase_name: Alert dismiss adapter
-status: executing
-stopped_at: Completed 04-02-PLAN.md
-last_updated: "2026-10-26T20:28:18.512Z"
+status: verifying
+stopped_at: Completed 04-03-PLAN.md
+last_updated: "2026-10-26T20:40:59.864Z"
 last_activity: 2026-10-26
 last_activity_desc: Phase 04 execution started
-state_head: 0edf4d6120dc2f794e4d3692eb41c17dbc10acaf
+state_head: feaedcc7efc51b570cdfbee413710aac82181907
 progress:
   total_phases: 7
   completed_phases: 3
   total_plans: 11
-  completed_plans: 10
+  completed_plans: 11
   percent: 43
 ---
 
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-10-26)
 
 Phase: 04 (Alert dismiss adapter) — EXECUTING
 Plan: 3 of 3
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-10-26 — Phase 04 execution started
 
 Progress: [████░░░░░░] 43%
@@ -70,6 +70,7 @@ Progress: [████░░░░░░] 43%
 | Phase 03 P02 | 7 min | 3 tasks | 8 files |
 | Phase 04 P01 | 5 min | 3 tasks | 7 files |
 | Phase 04 P02 | 5 min | 2 tasks | 2 files |
+| Phase 04 P03 | 10 min | 3 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -103,6 +104,9 @@ Recent decisions affecting current work:
 - [Phase 04]: 04-01: delegated alert listener ignores a marker outside a role=alert frame (no preventDefault) and calls globalThis.cv.adapters.alert.close at click time with no catch/log/fallback
 - [Phase 04]: 04-01: dismissible alert golden is raw bytes (encode utf-8 vs read_bytes, no normalization); baseline commit f6982bfef24f4322cfd01f9f21c3bbed517462fe
 - [Phase 04]: 04-02: no product change needed; 32 alert ownership regressions pass against 04-01 adapter/listener and catch every production mutant tried
+- [Phase 04]: 04-03: whole-map cv.adapters replacement after core load must provide alert.close(el) (else TypeError); pre-load partial maps get defaults; fix via per-entry assignment, Object.assign or cv.bootstrapAdapters(ns).alert
+- [Phase 04]: 04-03: theme.md '### Custom alert frame' recipe is executable (test_documented_alert_frame_override); core data-bs-* confined to the dropdown allowlist by a tmp_path-tested guard
+- [Phase 04]: 04-03: browser A/B/C acceptance observed in headless Chrome 156 against the example; ruff format --check stays red on 8 pre-existing .planning files
 
 ### Pending Todos
 
@@ -127,6 +131,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-26T20:28:18.348Z
-Stopped at: Completed 04-02-PLAN.md
+Last session: 2026-10-26T20:40:59.651Z
+Stopped at: Completed 04-03-PLAN.md
 Resume file: None

@@ -2,12 +2,15 @@ import $ from "jquery";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { loadScript, nav } from "./helpers/load.js";
 
-function fixture({ expanded = false, queryString = "" } = {}) {
+// mode mirrors the server-rendered leaf (#262): "icon" a hidden label, "both" the icons plus a visible label
+function fixture({ expanded = false, queryString = "", mode = "icon", label = "Filter" } = {}) {
+    const text = mode === "icon" ? `<span class="visually-hidden">${label}</span>` : ` <span>${label}</span>`;
     document.body.innerHTML = `
         <div id="cv-config" data-request-path="/books/" data-query-string="${queryString}" data-csrf-token="test-token" hidden></div>
         <button type="button" id="cv-filter-toggle" aria-expanded="${expanded}" aria-controls="filter-collapse">
             <span data-cv-filter-icon="open"${expanded ? " hidden" : ""}><i class="x"></i></span>
             <span data-cv-filter-icon="close"${expanded ? "" : " hidden"}><i class="y"></i></span>
+            ${text}
         </button>
         <button type="button" id="filter-button-reset"></button>
         <div id="filter-collapse"></div>`;
@@ -16,6 +19,7 @@ function fixture({ expanded = false, queryString = "" } = {}) {
         open: document.querySelector('[data-cv-filter-icon="open"]'),
         close: document.querySelector('[data-cv-filter-icon="close"]'),
         toggle: document.querySelector("#cv-filter-toggle"),
+        label: document.querySelector("#cv-filter-toggle > span:not([data-cv-filter-icon])"),
     };
 }
 
@@ -63,6 +67,21 @@ describe("list.filter.js", () => {
         f.toggle.click();
         expect(f.open.hidden).toBe(false);
         expect(f.close.hidden).toBe(true);
+    });
+
+    it("keeps the visible label of a both-mode toggle while its element icons flip", async () => {
+        const f = fixture({ mode: "both" });
+        await loadScript("list.filter");
+        f.toggle.click();
+        expect(f.toggle.getAttribute("aria-expanded")).toBe("true");
+        expect([f.open.hidden, f.close.hidden]).toEqual([true, false]);
+        expect(f.toggle.querySelector("#cv-filter-toggle > span:not([data-cv-filter-icon])")).toBe(f.label);
+        expect(f.label.textContent).toBe("Filter");
+        expect(fetchMock).toHaveBeenCalledWith("/books/", {
+            method: "POST",
+            headers: { "X-CSRFToken": "t", "Content-Type": "application/json; charset=utf-8" },
+            body: JSON.stringify({ filter_expanded: true }),
+        });
     });
 
     it("flips aria-expanded, posts the new state as JSON and toggles the panel", async () => {

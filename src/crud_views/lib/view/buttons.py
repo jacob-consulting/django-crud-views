@@ -2,6 +2,7 @@ from typing import Any
 
 from django.http import Http404
 from django.urls import reverse
+from django.utils.translation import gettext as _
 from pydantic import BaseModel, Field
 
 from ..check import CheckExpression, CheckWarningExpression
@@ -323,7 +324,10 @@ class FilterContextButton(ContextButton):
         data = {"cv_access": True}  # it toggles the filter of the list page the user is already on
         # no target view, so cv_key is the button's own key, not a view key like every other button (#208)
         data["cv_key"] = self.key
-        data["cv_action_label"] = "Filter"
+        # the resolved mode of the button's declared key (#262); no target view, so no target default: the view's
+        # own map, this button's label_mode, the first map of view / ViewSet / setting, then the context floor
+        data["cv_label_mode"] = context.view.cv_get_action_label_mode("context", self.key, self)
+        data["cv_action_label"] = _("Filter")  # translated per render, in the active language
         data["cv_icon_action"] = "filter"
         data["cv_filter_expanded"] = context.view.cv_filter_expanded
         data["cv_url"] = list_url

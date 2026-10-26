@@ -129,3 +129,11 @@ the colour accessor; A9 requires only the new hook on migrated controls; A10 nam
 translation delegate. Refuted or already-covered suggestions and extension-hook scope debt have explicit
 PLAN ledger dispositions. Three plans and their wave dependencies remain unchanged. Review conflict
 markers in 04-REVIEWS.md remain untouched.
+
+## Round 2 review incorporation — ddb9461
+
+C2-A1 adds a lasting tmp_path allowed/forbidden-tree regression for the core audit helper, separate from
+historical evidence. C2-A2 requires each new JS case to own a fresh cv/adapters map before nested mutations,
+so restoring global descriptors cannot retain a deleted original key. C2-A3 explicitly verifies an
+unmarked body click inside role=alert causes no call, error or removal. Round 2 ledgers are appended in
+04-02/04-03; the three-plan structure, locked decisions and all prior dispositions remain intact.

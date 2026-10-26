@@ -51,7 +51,9 @@ throw); throwing present Bootstrap component; nested click, nearest role, orphan
 targets; dynamic modal-like insertion; non-dismissible output; escaping, translated labels and frame/body overrides.
 For listener exceptions and ignored targets reuse listenerErrors from tests/js/helpers/errors.js; assert
 original errors or an empty array. Include two controls in one frame, outer/sibling retention and the
-missing-adapter TypeError. Restore console spies and only cv/bootstrap globals, preserving shared jQuery stubs.
+missing-adapter TypeError and an unmarked alert-body click with no call/error/removal. Each new JS case owns
+a fresh cv/adapters object before nested mutation; restore untouched original descriptors and console spies,
+preserving shared jQuery stubs.
 
 ## Wave 0 Requirements
 
@@ -84,6 +86,10 @@ not equality. The wrapper need not match. Report forbidden paths. For historical
 to a temporary directory and replace its alert template with the baseline commit's snapshot via git show;
 invoke the same helper there and confirm the alert path fails, without changing the checkout. Baseline:
 four matching lines in alert.html, actions_menu_toggle.html and language_selector.html.
+
+Permanent negative coverage: `test_core_bootstrap_data_attribute_guard_rejects_forbidden_path` builds an
+allowed tree under tmp_path and confirms success, adds a forbidden alert file, and requires AssertionError
+naming that relative path. This lasts independently of the one-time historical git-show probe.
 
 ## Final Execution Gates and Evidence
 

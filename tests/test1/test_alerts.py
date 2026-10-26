@@ -1,6 +1,7 @@
 """#250: one alert frame, fed by alert_data(), renders every alert in the package."""
 
 import os
+import re
 from pathlib import Path
 
 import pytest
@@ -13,8 +14,20 @@ from lxml import html as lxml_html
 
 from crud_views.lib.messages import alert_data
 from tests.test1.test_form_frame import _norm, _theme_templates
+from tests.test1.test_label_mode_docs import _section
 
+ROOT = Path(__file__).resolve().parents[2]
 ALERT_GOLDEN_DIR = Path(__file__).parent / "golden" / "alerts"
+THEME_MD = ROOT / "docs" / "reference" / "theme.md"
+CORE_TEMPLATES = ROOT / "src" / "crud_views" / "templates"
+TEMPLATE_FENCE = re.compile(r"^```(?:django|html)\n(.*?)^```", re.MULTILINE | re.DOTALL)
+BOOTSTRAP_DATA_ALLOWED = frozenset(
+    {
+        "crud_views/tags/actions_menu.html",
+        "crud_views/tags/actions_menu_toggle.html",
+        "crud_views/snippets/language_selector.html",
+    }
+)
 
 
 @pytest.mark.parametrize("level", ["error", "warning", "success", "info", "debug"])
@@ -231,3 +244,101 @@ def test_dismissible_alert_escapes_heading_text_and_extra_tags():
 def test_cv_alert_separates_heading_and_text():
     html = _render('{% cv_alert "warning" heading="Note:" text="Something" %}')
     assert "<strong>Note:</strong> Something" in html
+
+
+def _documented_alert_frame() -> str:
+    """The single django/html fence below "### Custom alert frame" in theme.md's "## Alerts" section."""
+    section = _section(_section(THEME_MD.read_text(), "## Alerts"), "### Custom alert frame")
+    bodies = TEMPLATE_FENCE.findall(section)
+    assert len(bodies) == 1, f"'### Custom alert frame' must hold exactly one django/html fence, found {len(bodies)}"
+    return bodies[0]
+
+
+def test_documented_alert_frame_override(monkeypatch):
+    """ALRT-04 / D-02: the theme.md frame recipe renders as a real override and keeps every hook dismissal relies on."""
+    recipe = _documented_alert_frame()
+    sentinel = "zz-close-sentinel"
+    original = _trans.gettext
+
+    def gettext(message):
+        return sentinel if message == "Close" else original(message)
+
+    hostile = {
+        "h": "<script>h</script>",
+        "t": "<img src=x onerror=t>",
+        "x": '"><script>x</script>',
+        "items": ["<b>a</b>", mark_safe("<em>b</em>")],
+    }
+    source = (
+        '{% cv_alert "error" heading=h text=t extra_tags=x dismissible=True %}'
+        '{% cv_alert "warning" items=items %}'
+        '{% cv_alert "info" text="plain" %}'
+    )
+    classes = {"alert:error": "notice-danger"}
+    with (
+        monkeypatch.context() as patch,
+        translation.override("en"),
+        override_settings(CRUD_VIEWS_BUTTON_CLASSES=classes),
+        _theme_templates({"crud_views/tags/alert.html": recipe}),
+    ):
+        patch.setattr(_trans, "gettext", gettext)
+        html = _render(source, hostile)
+
+    root = lxml_html.fragment_fromstring(html, create_parent="root")
+    error, warning, info = root.xpath('//*[@role="alert"]')
+
+    # the documented classes replace the stock ones; the level colour still comes from the class table
+    error_classes = error.get("class").split()
+    assert error_classes[:3] == ["notice", "notice-danger", "notice-dismissible"]
+    assert "alert-dismissible" not in error_classes
+    assert error.get("class").endswith(' "><script>x</script>')
+    assert warning.get("class").split() == ["notice", "alert", "alert-warning"]
+
+    # dismissible: one accessible, translated, type=button control with only the core hook
+    (control,) = error.xpath(".//button")
+    assert control.get("type") == "button"
+    assert control.get("class") == "notice-close"
+    assert "data-cv-alert-dismiss" in control.attrib
+    assert "data-bs-dismiss" not in control.attrib
+    assert control.get("aria-label") == sentinel
+
+    # non-dismissible alerts render no control
+    assert warning.xpath(".//button") == []
+    assert info.xpath(".//button") == []
+
+    # escaping is preserved; the list and text bodies are included
+    assert root.xpath("//script") == []
+    assert root.xpath("//img") == []
+    assert error.xpath(".//strong/text()") == ["<script>h</script>"]
+    assert "<img src=x onerror=t>" in error.text_content()
+    assert [li.text_content() for li in warning.xpath(".//li")] == ["<b>a</b>", "b"]
+    assert warning.xpath(".//li/em/text()") == ["b"]
+    assert "plain" in info.text_content()
+
+
+def _assert_core_bootstrap_data_attributes(root: Path) -> None:
+    """Bootstrap data attributes under a core template root are confined to the dropdown templates (D-09)."""
+    matches = {path.relative_to(root).as_posix() for path in root.rglob("*.html") if "data-bs-" in path.read_text()}
+    assert matches, f"no data-bs- attribute found under {root}"
+    forbidden = sorted(matches - BOOTSTRAP_DATA_ALLOWED)
+    assert not forbidden, f"Bootstrap data attributes outside the dropdown templates: {forbidden}"
+
+
+def test_stock_bootstrap_data_attributes_are_dropdown_only():
+    """ALRT-04: only the dropdown templates named in theme.md keep data-bs-* attributes; the alert frame has none."""
+    _assert_core_bootstrap_data_attributes(CORE_TEMPLATES)
+
+
+def test_core_bootstrap_data_attribute_guard_rejects_forbidden_path(tmp_path):
+    """The guard accepts an allowed tree and names a forbidden template once one appears."""
+    with pytest.raises(AssertionError, match="no data-bs- attribute"):
+        _assert_core_bootstrap_data_attributes(tmp_path)
+
+    toggle = tmp_path / "crud_views" / "tags" / "actions_menu_toggle.html"
+    toggle.parent.mkdir(parents=True)
+    toggle.write_text('<button data-bs-toggle="dropdown"></button>')
+    _assert_core_bootstrap_data_attributes(tmp_path)
+
+    (tmp_path / "crud_views" / "tags" / "alert.html").write_text('<button data-bs-dismiss="alert"></button>')
+    with pytest.raises(AssertionError, match=re.escape("crud_views/tags/alert.html")):
+        _assert_core_bootstrap_data_attributes(tmp_path)

@@ -29,13 +29,21 @@ Each message becomes one dismissible alert:
 ```html
 <div class="alert alert-success alert-dismissible fade show" role="alert">
     <i class="fa-solid fa-circle-check me-2" aria-hidden="true"></i>Created publisher <strong>Penguin</strong>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <button type="button" class="btn-close" data-cv-alert-dismiss aria-label="Close"></button>
 </div>
 ```
 
-The close button uses Bootstrap's own `data-bs-dismiss="alert"`, so it needs Bootstrap's
-JavaScript bundle on the page. Without it the alert still renders and reads correctly; only the
-X does nothing.
+The close button carries `data-cv-alert-dismiss`, and closing goes through the core scripts: `adapters.js`, then
+`viewset.js`, both rendered in that order by `{% cv_js %}` (see [What the scripts need](javascript.md#what-the-scripts-need)).
+A click hands the alert's `role="alert"` frame to `cv.adapters.alert.close`. With Bootstrap's JavaScript on the page the
+default adapter closes it through Bootstrap's `Alert` component, fade included; without it the adapter removes the
+alert from the page, so the X works with or without Bootstrap's JavaScript. A theme can replace the adapter, see
+[Dismissible alerts](javascript.md#dismissible-alerts). Without the core scripts the alert still renders and reads
+correctly; only the X does nothing.
+
+The classes are unchanged: `alert-dismissible fade show` and `btn-close` are still Bootstrap CSS classes, so the
+stock look still needs Bootstrap's CSS. A theme that styles alerts differently overrides the frame, see
+[Custom alert frame](theme.md#custom-alert-frame).
 
 ## Levels
 

@@ -181,11 +181,12 @@ The `{% cv_const_js %}` tag still works as a backwards-compatible alias but rend
 
 ### JavaScript architecture
 
-All interactive behavior is handled via event delegation in external static files: list action form submissions and cancel button navigation in `viewset.js`, the filter toggle in `list.filter.js`, modals in `modal.js`. Calls into Bootstrap go through `cv.adapters`, see [JavaScript](javascript.md). Dynamic data is passed from Django to JavaScript through `data-*` attributes:
+All interactive behavior is handled via event delegation in external static files: list action form submissions, cancel button navigation and alert dismissal in `viewset.js`, the filter toggle in `list.filter.js`, modals in `modal.js`. Calls into Bootstrap go through `cv.adapters`, see [JavaScript](javascript.md). Dynamic data is passed from Django to JavaScript through `data-*` attributes:
 
 - `#cv-config` element carries `data-request-path` and `data-query-string`
 - `[data-cv-action="submit-form"]` elements trigger form submission
 - `[data-cv-cancel-url]` elements trigger navigation
+- `[data-cv-alert-dismiss]` elements close their nearest `role="alert"` frame through `cv.adapters.alert`, see [Dismissible alerts](javascript.md#dismissible-alerts)
 
 For host-allowlist policies (`script-src 'self'`) no nonces or hashes are required. Nonce-based policies are supported automatically — see below.
 

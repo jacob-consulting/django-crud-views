@@ -169,6 +169,32 @@ manage page) renders through one frame, `tags/alert.html`. A theme restyles aler
 `{% cv_alert %}`; none of them needs a theme override. See [Flash messages](messages.md) for the tag and the
 frame's context.
 
+### Custom alert frame
+
+The frame's own classes (`alert-dismissible fade show`, `btn-close`) are literal Bootstrap CSS. To style them your
+way, ship `templates/crud_views/tags/alert.html` in your theme app. A complete replacement with its own `notice`
+classes:
+
+```django
+{% load crud_views i18n %}
+<div class="notice {% cv_button_class "alert" alert.level %}{% if alert.dismissible %} notice-dismissible{% endif %}{% if alert.extra_tags %} {{ alert.extra_tags }}{% endif %}"
+     role="alert">
+    {% cv_icon alert.icon_name "notice-icon" %}{% if alert.heading %}<strong>{{ alert.heading }}</strong>{% if alert.text %} {% endif %}{% endif %}{% include alert.body_template %}
+    {% if alert.dismissible %}<button type="button" class="notice-close" data-cv-alert-dismiss aria-label="{% translate 'Close' %}"><span aria-hidden="true">&times;</span></button>{% endif %}
+</div>
+```
+
+The `notice` names are examples; the class names are yours. What closing and accessibility rely on stays:
+
+- `role="alert"` on the frame and `data-cv-alert-dismiss` on the close control. These two hooks are all
+  [dismissal](javascript.md#dismissible-alerts) needs, also for alerts inserted after page load; keep only the new
+  hook, not `data-bs-dismiss="alert"` next to it.
+- The `{% if alert.dismissible %}` condition, so non-dismissible alerts render no control, and a `type="button"`
+  control with the translated `aria-label`.
+- `{% cv_button_class "alert" alert.level %}`, so the level colours keep following the `alert:*` class keys, and
+  `alert.extra_tags`.
+- The icon, the heading and `{% include alert.body_template %}`; the values are escaped already.
+
 ## Templates that follow Bootstrap's DOM
 
 A dropdown is more than a set of classes: the nesting, the element types and the opening script differ between
@@ -182,6 +208,10 @@ your framework builds dropdowns differently:
 
 The button classes they use (`*:menu-wrapper`, `*:menu-toggle`, `*:hidden-label`) still come from the table, so an
 override can keep calling `{% cv_button_class %}` for them.
+
+These dropdown templates are the only stock templates with Bootstrap `data-bs-*` attributes. The alert frame has
+none: its close control uses `data-cv-alert-dismiss` and the alert adapter, see
+[Dismissible alerts](javascript.md#dismissible-alerts).
 
 ## Disabled actions in overridden templates
 

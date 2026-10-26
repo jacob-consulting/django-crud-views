@@ -218,8 +218,10 @@ the slot is the alert's level (`error`, `warning`, `success`, `info`, `debug`). 
 The four `*:icon-host` keys are format strings: the class a [host-placed icon](icons.md#host-placement) adds to
 its button, with `{name_class}` standing for the icon library's name class. `"card:icon-host": "icon {name_class}"`
 adds a base class on card buttons only; `None` or `""` switches host icons off at that location (no class and
-nothing inline). The filter toggle is the exception: with `context:icon-host` off it falls back to its two icon spans,
-which show the standalone icons. The keys have no effect for an icon library without `placement: "host"`.
+nothing inline). The filter toggle is the exception in its icon-bearing modes (`"icon"` and `"both"`): with
+`context:icon-host` off it falls back to its two icon spans, which show the standalone icons. In `"label"` mode it
+renders no icons at all, whatever the host keys say, `None` and `""` included. The keys have no effect for an icon
+library without `placement: "host"`.
 
 ## `CRUD_VIEWS_BUTTON_CLASSES`
 
@@ -301,9 +303,10 @@ register the same key, the one whose `ready()` runs later wins, which is the one
 <a href="{{ url }}" class="{% cv_button_class cv_location cv_variant cv_label_mode %}">...</a>
 ```
 
-The bundled action leaf passes `cv_label_mode` as the third argument; the filter toggle
-(`crud_views/tags/context_action_filter.html`) passes `"icon"`, so `context:<variant>:icon` reaches it like any other
-icon-only context button.
+The bundled action leaf passes `cv_label_mode` as the third argument, and so does the filter toggle
+(`crud_views/tags/context_action_filter.html`): it follows the resolved mode of its key, so
+`context:<variant>:<mode>` reaches it like any other context button. A mode it does not know renders the icon form
+with `context:<variant>:icon`. See [The filter toggle](context_buttons.md#the-filter-toggle).
 
 Use it in templates you write or override instead of a literal class, and the button follows the table. A literal
 class in a `template_code` keeps working; it is simply not themed.

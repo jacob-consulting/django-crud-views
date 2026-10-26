@@ -169,7 +169,9 @@ A labelled button shows its short label (`"Create"`, not `"Create new author"`),
 the visible text is its only accessible name. A theme styles the modes apart with `context:primary:both` and the
 like in the [class table](buttons.md#the-class-table). The maps and the floor apply to inline buttons; an action
 folded into the menu renders icon and short label in every mode. The filter toggle of filtered list views renders from
-its own template and is outside this configuration: neither the maps nor `CRUD_VIEWS_LABEL_MODE_DEFAULTS` change it.
+its own template but follows the resolved mode of its key like any inline button, and passes it to the class lookup.
+It has no target view and therefore no [target-view default](#target-view-default); see
+[The filter toggle](context_buttons.md#the-filter-toggle).
 
 An icon-only button needs an icon. A toolbar, row or card button whose mode is `"icon"` while its icon is empty would
 render nothing visible, so it raises under [`CRUD_VIEWS_STRICT`](settings.md#basic-settings) (default `DEBUG`) and
@@ -181,7 +183,7 @@ the toolbar cases it can see at startup.
 
 - Context buttons with their own `template=` or `template_code=`: they render a whole button, which cannot become a
   dropdown item.
-- The filter toggle of filtered list views (it has its own template).
+- The filter toggle of filtered list views: it has its own template, which renders the resolved label mode inline.
 
 `up` / `down` (ordered views) can be folded but are awkward in a menu — keep them inline.
 

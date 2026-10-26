@@ -78,8 +78,54 @@ A custom `template` or `template_code` is rendered from the resolved action data
 the view resolved it for the button's configured key (see [Action menus](action_menus.md#label-mode)); the template
 decides what to do with it. One that resolves its classes with `{% cv_button_class "context" cv_variant %}` should
 pass a mode as the third argument so a theme's per-mode classes reach it: `cv_label_mode` to follow the map, or a
-literal `"icon"` for a button that is icon-only by construction, the way the bundled
-`crud_views/tags/context_action_filter.html` does. See [Buttons](buttons.md#the-class-table).
+literal `"icon"` for a button that is icon-only by construction. The bundled filter toggle
+`crud_views/tags/context_action_filter.html` passes its resolved `cv_label_mode`, see
+[The filter toggle](#the-filter-toggle). See [Buttons](buttons.md#the-class-table).
+
+### The filter toggle
+
+`FilterContextButton` (key `filter` in `context_buttons_default()`) shows and hides the filter panel of a list view
+that uses `ListViewTableFilterMixin`. It follows the context label mode of its declared key like any other toolbar
+button, through the steps of [Context label-mode resolution](action_menus.md#context-label-mode-resolution). It has no
+target view, so it has no target-view default: the list view's own singular `cv_context_action_label_mode` does not
+change it.
+
+```python
+# settings.py: icon and the visible label "Filter" on every filter toggle
+CRUD_VIEWS_CONTEXT_ACTIONS_LABEL_MODE = {"filter": "both"}
+```
+
+```python
+from crud_views.lib.view.buttons import FilterContextButton
+
+
+class AuthorListView(ListViewTableMixin, ListViewTableFilterMixin, ListViewPermissionRequired):
+    cv_viewset = cv_author
+    filterset_class = AuthorFilter
+    cv_context_buttons = [FilterContextButton(label_mode="label")]  # text only, on this page
+```
+
+A toggle registered under another key resolves that key: `FilterContextButton(key="search")`, named as `"search"` in
+`cv_context_actions`, follows `{"search": "label"}` and ignores a `"filter"` entry. The setting map is project
+configuration read at startup and replaced whole by a ViewSet or view map (see
+[Label-mode configuration](settings.md#label-mode-configuration)). The `"context"` floor of
+`CRUD_VIEWS_LABEL_MODE_DEFAULTS` is read on each render, so a project that already sets it to `"both"` or `"label"`
+now changes the stock toggle too, unless an earlier step decides the key.
+
+| Mode | Stock toggle |
+|---|---|
+| `"icon"` (package floor) | open/close icon, the label as visually hidden text, `title` and tooltip; unchanged markup |
+| `"both"` | open/close icon and the visible label; no `title`, no tooltip |
+| `"label"` | the visible label only: no icon spans, no host icon classes, no icon-swap attributes |
+
+The label stays the same when the panel opens or closes; only the icon and `aria-expanded` change. The default label
+`Filter` is translated; `label_template` / `label_template_code` replace it, and `variant` and the per-mode class
+keys (`context:<variant>:<mode>`) apply as for any context button. In the icon-bearing modes the icons are placed on
+the button when both resolve to [host classes](icons.md#host-placement), and render as two icon spans otherwise. A
+whole-button `template` / `template_code` receives the resolved `cv_label_mode` and owns its markup, including
+whether it renders icons; it keeps the IDs and ARIA attributes of
+[the filter toggle contract](javascript.md#the-filter-toggle-contract). The toggle is
+[never folded](action_menus.md#what-is-never-folded) into the `⋯` menu.
 
 ### Active state
 
@@ -245,7 +291,7 @@ flowchart TD
     ISBTN -- "yes" --> BTN["target: key_target, or the parent /<br/>child / sibling ViewSet's view"]
     VIEW --> FOLD
     BTN --> OWN{"button has template<br/>or template_code?"}
-    OWN -- "yes" --> CUSTOM(["your template renders the whole button,<br/>nothing below applies<br/>(e.g. the filter toggle)"])
+    OWN -- "yes" --> CUSTOM(["the button's template renders it from the<br/>resolved data, cv_label_mode included,<br/>and owns the markup (e.g. the filter toggle)"])
     OWN -- "no" --> FOLD{"key folded into the ⋯ menu?<br/>(cv_context_actions_inline<br/>does not name it)"}
     FOLD -- "yes" --> MENU(["menu item: icon + short label,<br/>label mode is ignored"])
     FOLD -- "no" --> M1
@@ -503,6 +549,7 @@ button in your own markup) rather than one key at a time, see
 
 ```python
 from crud_views.lib.view import ContextButton, ParentContextButton, ChildContextButton
+from crud_views.lib.view.buttons import FilterContextButton  # not re-exported by crud_views.lib.view
 from crud_views.lib.viewset import context_buttons_default
 ```
 

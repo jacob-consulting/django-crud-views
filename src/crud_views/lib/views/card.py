@@ -26,7 +26,7 @@ class CardListView(CardOrderMixin, CrudView, generic.ListView):
     cv_card_actions: ClassVar[list[CardAction]] = []
     cv_card_actions_inline: list[str] | None = None  # card action keys kept as buttons (#174)
     # view default for CardAction.label_mode: label, icon or both; None: CRUD_VIEWS_LABEL_MODE_DEFAULTS["card"]
-    # (#213). Read the resolved mode through cv_get_card_actions_label_mode()
+    # (#213). The class resolver supplies defaults; each action's cv_label_mode also includes instance choices.
     cv_card_actions_label_mode: str | None = None
     cv_card_container_class: str = "col-md-6"
     cv_card_template: str = "crud_views/tags/card.html"
@@ -45,11 +45,15 @@ class CardListView(CardOrderMixin, CrudView, generic.ListView):
 
     def cv_get_card_action_data(self, action: CardAction, obj, user) -> dict:
         """Unresolved button data for one card action (#149, #174); the cv_card_action tag and the menu share it."""
-        # resolved once for both branches: the action's own mode, then no_label, then the view resolver (#213)
+        # resolved once for both branches: action mode, no_label, own instance choice, then class resolver (#213)
         if action.label_mode is not None:
             label_mode = action.label_mode
         elif action.no_label:
             label_mode = "icon"
+        elif "cv_card_actions_label_mode" in vars(self):
+            label_mode = self.cv_card_actions_label_mode
+            if label_mode is None:
+                label_mode = default_label_mode("card")
         else:
             label_mode = self.cv_get_card_actions_label_mode()
         if action.child_name:
@@ -108,8 +112,10 @@ class CardListView(CardOrderMixin, CrudView, generic.ListView):
 
     @classmethod
     def cv_get_card_actions_label_mode(cls) -> str:
-        """Label mode of card actions without their own: cv_card_actions_label_mode when set, else the configured
-        card floor, CRUD_VIEWS_LABEL_MODE_DEFAULTS["card"] over the package default "both"."""
+        """Class-level card default: the class attribute when set, else the configured card floor over "both".
+
+        Action and instance choices are applied separately in cv_get_card_action_data's stamped cv_label_mode.
+        """
         if cls.cv_card_actions_label_mode is not None:
             return cls.cv_card_actions_label_mode
         return default_label_mode("card")

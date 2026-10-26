@@ -1,18 +1,16 @@
 ---
 phase: "04"
-reviewers: [fable-review, grok-review, gemini-review, deepseek-review]
-reviewed_at: 2026-10-26T19:42:43.725003+00:00
-plans_reviewed: [04-01-PLAN.md, 04-02-PLAN.md, 04-03-PLAN.md]
+reviewers: ["fable-review", "gemini-review", "grok-review"]
+reviewed_at: 2026-10-26T19:56:27.404788+00:00
+plans_reviewed: ["04-01-PLAN.md", "04-02-PLAN.md", "04-03-PLAN.md"]
 models:
   fable-review: "claude-fable-5-1 (reasoning=high)"
-  grok-review: "openrouter/x-ai/grok-4.7 (reasoning=high)"
   gemini-review: "openrouter/google/gemini-4-argon (reasoning=high)"
-  deepseek-review: "openrouter/deepseek/deepseek-v3.2 (reasoning=high)"
+  grok-review: "openrouter/x-ai/grok-4.7 (reasoning=high)"
 model_sources:
   fable-review: "pinned"
-  grok-review: "pinned"
   gemini-review: "pinned"
-  deepseek-review: "pinned"
+  grok-review: "pinned"
 ---
 
 # Cross-AI Plan Review — Phase 04
@@ -21,500 +19,359 @@ model_sources:
 ## Plan-Revision Conflicts
 <!-- gsd:plan-revision-conflicts:end -->
 
-> Note: grok-review, gemini-review and deepseek-review share the opencode adapter; their consensus is cross-model, not cross-tool.
+> Note: gemini-review and grok-review share the opencode adapter; their consensus is cross-model, not cross-tool.
 
-Cycle 3 reviewed final plans at `cff77e5`. All four configured instances returned real source-cited reviews and covered all three plans. No prompt trimming was configured; no lane was dropped or retried. Raw reports are preserved mechanically in [.review-diagnostics/20261026T194243Z-gsd-review-etpnrud2](.review-diagnostics/20261026T194243Z-gsd-review-etpnrud2/). Parent orchestrator owns the final report commit and planned-state transition. No product, plan or config file was changed by this review.
+Fresh independent review of all three current plans. Raw reports and per-reviewer diagnostics: [20261026T195627Z-gsd-review-3wyejogb](.review-diagnostics/20261026T195627Z-gsd-review-3wyejogb/).
+
 
 ## Claude Review (fable-review)
 
-# Cross-AI Plan Review — Phase 04, cycle 3 (verification pass at cff77e5)
 
-Repo access: full. Every claim below was checked against the working tree at cff77e5 (plans on disk are identical to HEAD; only `.planning/config.json` is dirty). I could not run throwaway probe scripts (file writes were denied), so two mechanisms were verified by reading library source instead of executing them; both are marked.
+# Cross-AI Plan Review: Phase 04 Alert dismiss adapter
 
-## Prior-finding closure ledger
-
-| ID | Closed? | Evidence |
-|---|---|---|
-| H1 | Yes | 04-03-01 pins the root to `src/crud_views/templates`, requires non-empty matches ⊆ ALLOWED, exempts the wrapper, and proves red with a temp-tree copy of the baseline template. Current live matches are exactly `tags/alert.html:5`, `tags/actions_menu_toggle.html:4-5`, `snippets/language_selector.html:6` (four lines, three files), matching the SOURCE-AUDIT claim. `tags/actions_menu.html` has no `data-bs-` line, so "do not require each allowed path to match" is necessary, not cosmetic. |
-| A1 | Yes | 04-01-02 `files` now includes `tests/test1/test_messages.py`; the two legacy assertions are `test_messages.py:139` and `:169`. No golden under `tests/test1/golden/` contains `data-bs-dismiss` (grep confirmed), so no other fixture moves with the template. |
-| A2 | Yes (rejected, recorded) | 04-01 "Execution ordering" + ledger. Not re-raised. |
-| A3 | Yes | `globalThis.cv` lookup at call time works through `loadScript`'s Proxy (`tests/js/helpers/load.js:25-30`, `:32-36`), and vitest binds `global.window = global` (`node_modules/vitest/dist/chunks/index.DC7d2Pf8.js:274`), so `window.cv` descriptors and `globalThis.cv` are the same slot. Avoiding `vi.unstubAllGlobals()` is correct: `tests/js/helpers/setup.js:7-8` stubs `$`/`jQuery` once for the whole run. |
-| A4 | Yes | `listenerErrors` exists at `tests/js/helpers/errors.js:5-18`, records `event.error ?? event.message`, calls `preventDefault`, removes the listener in `finally`. Already used by `tests/js/tooltip.test.js:89-236`, so vitest tolerates the prevented error events. |
-| A5 | Yes | 04-02-02 names two controls in one frame, nested inner removal, outer/sibling survival. |
-| A6 | Yes | 04-02-02 deletes `cv.adapters.alert` and expects one TypeError via `listenerErrors`, no fallback. |
-| A7 | Yes | `docs/reference/settings.md:184-188` (hook list), `docs/migrating-1.0.md:309-310` (three-adapter enumeration), `:374-375` (missing-adapters checklist) all exist and are targeted. `settings.md` is in 04-03 `files_modified` and `read_first`. |
-| A8 | Yes | Recipe retains `{% load crud_views i18n %}` and `{% cv_button_class "alert" alert.level %}`; `test_alert_colours_follow_the_class_table` (`test_alerts.py:124-127`) is the existing precedent for the colour assertion. `_section`/`_headings` in `tests/test1/test_label_mode_docs.py:29-45` are fence-aware as claimed. |
-| A9 | Yes | 04-03-02 instructs replacement, not dual hooks; `docs/migrating-1.0.md:345-346` (modal) is the existing wording precedent. |
-| A10 | Yes | Verified by source read, not execution: `django/utils/translation/__init__.py:63-82` materialises `_trans.gettext` on first access, and `:95-96` routes `gettext()` through `_trans.gettext` at call time, so a `monkeypatch.setattr(_trans, "gettext", …)` reaches `{% translate 'Close' %}`. |
-| C2-A1 | Yes | 04-03-01 adds the tmp_path allowed/forbidden-tree test, separate from the git-show probe. |
-| C2-A2 | Yes | Both 04-02 tasks require a fresh `window.cv` per case before nested mutation. |
-| C2-A3 | Yes | 04-02-02 names the unmarked-descendant-inside-`role=alert` click with no call/error/removal. |
-
-All thirteen prior findings are closed in the executable task text, not only in the ledgers.
+Repository access was available. Every claim below was checked against the working tree at commit `9f9d234` on `introduce-gsd`. I could not run the installed-tool version probes, so the tool-drift numbers quoted by the research remain an open question rather than a verified fact.
 
 ## 04-01
 
-**Summary.** The plan sequences a baseline-only golden commit, a six-file tracer (template + both scripts + golden + JS tracer + message assertions), and a rendering-regression task. Every referenced seam exists as described: the frame at `src/crud_views/templates/crud_views/tags/alert.html:5`, the factory and shallow merge at `src/crud_views/static/crud_views/js/adapters.js:7-8,43`, the delegated-handler analog at `viewset.js:37-44`, `_render` at `tests/test1/test_alerts.py:70-71`, and the viewset suite's once-only `beforeAll` and last-position reload test at `tests/js/viewset.test.js:27-29,91-101`.
+### Summary
 
-**Strengths.**
-- Byte-exact golden is viable: `.pre-commit-config.yaml` runs only `ruff-check`/`ruff-format`, so no end-of-file or whitespace hook rewrites an `.html` golden, and the frame file already ends in `\n` (verified with `od`), so the raw render ends in a newline without one being appended.
-- The JS tracer consuming the Python golden gives a real contract link; RED is genuine because the committed baseline still carries `data-bs-dismiss`, so the marker-based click cannot reach the adapter until the template changes.
-- The default adapter's absent-only fallback is correct for every namespace shape the factory accepts: `resolve(undefined|null)` → `null`, `resolve({})` → `{}` with no `Alert` → `component` returns `null` (`adapters.js:7-8`).
-- The example project satisfies D-10's precondition: Bootstrap bundle at `examples/bootstrap5/project/templates/project/base.html:19`, `{% cv_js %}` at `:37`, `{% cv_messages %}` at `:56`, and `cv_js` emits `adapters` before `viewset` (`src/crud_views/lib/settings.py:288-289`).
+The plan's description of the existing code is accurate in every detail I checked. The baseline-first ordering, the single shared golden consumed by both pytest and jsdom, and the call-time adapter lookup are sound. The main risks are process friction between the `tracer tdd="true"` task type and the plan's single-commit wording, and a byte-exact golden convention that differs from the repository's existing helper. Neither blocks execution.
 
-**Concerns.**
-- LOW (optional wording): 04-01-01 says "fixed English locale" without naming the mechanism. The golden includes the translated `aria-label`, the German catalog translates `Close` (`src/crud_views/locale/de/LC_MESSAGES/django.po:103`), and `tests/test1/test_i18n.py:36` calls `translation.activate("de")` with a paired `deactivate()` at `:45`. Pairing exists, so this is hardening under `-n auto`, not an evidenced defect: state `translation.override("en")` explicitly, as 04-01-03 already does.
-- LOW (optional wording): `CV_UPDATE_GOLDEN` is shared with `test_form_frame._check_golden` (`tests/test1/test_form_frame.py:50-55`) and the other golden suites. The plan says "scoped to this test only"; naming the `-k test_dismissible_alert_golden` selector would make that unambiguous for the executor.
+### Strengths
 
-**Suggestions.**
-- Add the two phrases above to 04-01-01's action. No structural change.
+- **Existing seams are cited correctly.** `src/crud_views/static/crud_views/js/adapters.js:7-8` defines `resolve` and `component`, and line 43 is the shallow preassignment merge the plan preserves. The cancel handler at `src/crud_views/static/crud_views/js/viewset.js:38-44` is the exact Element-guard, `closest`, `preventDefault` pattern the new listener copies.
+- **Template claim verified.** `src/crud_views/templates/crud_views/tags/alert.html:5` emits `data-bs-dismiss="alert"` only inside `{% if alert.dismissible %}`. Replacing that one attribute leaves `btn-close`, `role="alert"` and the translated label intact, which also keeps `tests/test1/test_button_classes_templates.py:23` happy since `btn-close` stays in `EXEMPT_TOKENS`.
+- **Exactly two message assertions need updating.** `tests/test1/test_messages.py:139` and `tests/test1/test_messages.py:169` are the only `data-bs-dismiss` assertions in the test tree. The plan's "both existing dismiss-attribute assertions" is precise.
+- **Helper claims hold.** `_render` exists at `tests/test1/test_alerts.py:70-71`. `_theme_templates` exists at `tests/test1/test_form_frame.py:58-68`. `viewset.test.js` loads once in `beforeAll` at `tests/js/viewset.test.js:27-29` and the reload test is last at lines 91-101. The path-resolution pattern the plan wants to copy is `tests/js/helpers/load.js:1-8`.
+- **Call-time lookup survives the test harness.** `loadScript` evaluates scripts against a Proxy whose `set` falls through to the real window at `tests/js/helpers/load.js:25-36`, so a listener reading `globalThis.cv.adapters.alert` at click time sees whatever `window.cv` the test installed. Replacing `window.cv` per case works without reloading `viewset.js`.
+- **No pre-commit hook will mangle the golden.** `.pre-commit-config.yaml` has only `ruff-check` and `ruff-format`. There is no end-of-file fixer, so a golden written without a trailing newline survives the commit byte-for-byte.
+- **Locale is pinned.** `tests/test1/conftest.py:98-100` sets `LANGUAGE_CODE="en-us"` and `USE_I18N=True`. Wrapping the render in `translation.override("en")` protects against a test that activates German without deactivating.
 
-**Risk.** LOW. All mechanisms traced to source; the only open items are wording.
+### Concerns
+
+- **MEDIUM. The tracer task's commit wording conflicts with its own `tdd="true"` flag.** The action says "Run the combined Python alert/message suite followed by the JS tracer before committing" as if one commit. The execute workflow routes `tdd="true"` tasks through the RED, GREEN, REFACTOR commit-scope contract. The plan does not say which files land in the RED commit. A RED commit containing only the new JS cases that read the still-legacy golden fails correctly, but an executor could also stage the template in RED and break the D-07 chronology.
+- **MEDIUM. The golden convention diverges from the repository's helper.** `tests/test1/test_form_frame.py:50-55` writes `_norm(markup) + "\n"` and compares with `strip()`. The plan deliberately uses raw bytes with no trailing newline. The reason is good, whitespace drift detection, but the golden will show "No newline at end of file" in every diff and any future contributor who touches it with an editor that appends a newline will break the comparison with no visible change.
+- **LOW. The JS tracer inherits the Python golden's icon markup.** The rendered frame includes `<i class="fa-solid fa-circle-check me-2" aria-hidden="true">` from the default icon library. Any future regeneration of that golden silently changes the fixture the JS test runs against. The plan accepts this coupling by design, but nothing records it.
+- **LOW. Translation patch target is correct but fragile.** Patching `django.utils.translation._trans.gettext` works because `{% translate %}` resolves through `gettext_lazy`, which calls `_trans.gettext` at `str()` time. The first `getattr` triggers the backend import and creates the instance attribute, so `monkeypatch.setattr` succeeds. This is an implementation detail of Django's `Trans` delegate and could move in a future Django version.
+
+### Suggestions
+
+- State the RED commit contents explicitly: only the new `viewset.test.js` cases, which fail because the committed golden still carries `data-bs-dismiss`. State the GREEN commit contents: template, both JS files, regenerated golden, both `test_messages.py` assertions.
+- Add a one-line module docstring to the golden test explaining the no-trailing-newline rule, mirroring the regeneration instructions at `tests/test1/test_form_frame.py:3-4`.
+- Consider pinning `CRUD_VIEWS_ICONS` to the default in the golden test so an icon-registry change elsewhere does not break the dismissal fixture.
+
+### Risk Assessment
+
+**LOW.** All code claims verified. The remaining items are process clarity and fixture hygiene.
 
 ## 04-02
 
-**Summary.** The plan expands the tracer into a namespace/preassignment/error matrix in `adapters.test.js` and a dynamic-dispatch/ownership matrix in `viewset.test.js`, with product edits allowed only if a case exposes a defect. The fixtures and helpers it reuses exist: `fakeNamespace` at `tests/js/adapters.test.js:4-14`, the preassigned-identity precedent at `:133-140`, the lazy-function precedent at `:115-131`, `listenerErrors` at `tests/js/helpers/errors.js:5-18`.
+### Summary
 
-**Strengths.**
-- The isolation story is now mechanically sound: because vitest aliases `window` to `global` (`index.DC7d2Pf8.js:274`) and `loadScript` resolves `globalThis.cv` through a Proxy over `window` at call time (`load.js:25-30`), replacing `window.cv` with a fresh object per case is exactly what the listener observes on the next click.
-- The missing-key TypeError case is observable as specified: jsdom reports listener exceptions as a window `error` event carrying `error`, which `errors.js:7-10` captures.
-- The two edge-probe truths (idempotency, concurrency) are stated as ordinary DOM facts and explicitly disclaim new lifecycle machinery, which keeps D-04 intact.
-- Note for the executor: `adapters.test.js:18` already does `vi.unstubAllGlobals(); delete window.cv` in `afterEach`. New factory cases in that file can rely on it; the fresh-object rule in the plan matters most in `viewset.test.js`, which has no such reset.
+The regression matrix is complete against D-03, D-04 and D-08, and the helpers it names exist. The main weakness is over-specification of test-harness choreography: the descriptor save-and-restore dance is redundant in `adapters.test.js`, whose existing `afterEach` already deletes `window.cv` and unstubs globals. The plan also allows "bounded corrections" to production code, which is the right scope control.
 
-**Concerns.**
-- None evidence-backed. The enumeration test at `adapters.test.js:20-24` lists three names and must gain `alert`; the plan says so.
+### Strengths
 
-**Suggestions.**
-- Optional: in 04-02-01, say that `adapters.test.js`'s existing `afterEach` already clears `window.cv`, so the "save/restore descriptors" instruction is additive there, not a replacement.
+- **`fakeNamespace` and the enumeration test exist exactly as described.** `tests/js/adapters.test.js:4-14` builds the fake namespace and `tests/js/adapters.test.js:20-24` loops over `modal`, `tooltip`, `collapse`. Adding `alert` to both is a two-line change.
+- **Late-global and preassignment precedents exist.** `tests/js/adapters.test.js:115-131` covers a function namespace resolved at call time and `vi.stubGlobal("bootstrap", ns)`. `tests/js/adapters.test.js:133-140` proves preassigned adapter identity survives `loadScript`. The alert cases can copy these shapes directly.
+- **`listenerErrors` exists and does what the plan needs.** `tests/js/helpers/errors.js:5-18` installs a window `error` listener, collects `event.error`, calls `preventDefault` so jsdom's virtual console stays quiet, and removes the listener in `finally`. The plan's instruction not to expect `dispatchEvent` to throw matches the helper's own comment at lines 1-4.
+- **The detached-subtree concurrency truth is correct DOM behavior.** A click dispatched inside a subtree removed from the document bubbles only within that subtree and never reaches the document listener. The test will pass without any production change, which is the point.
+- **Missing-key case has a precedent for the failure mode.** With `cv.adapters.alert` deleted, `globalThis.cv.adapters.alert.close(frame)` throws a `TypeError` after `preventDefault` has already run. The plan's expectation of one captured `TypeError`, frame attached, no logging, matches D-03.
 
-**Risk.** LOW.
+### Concerns
+
+- **MEDIUM. Descriptor save-and-restore is redundant in `adapters.test.js`.** `tests/js/adapters.test.js:18` already runs `vi.unstubAllGlobals(); delete window.cv;` after every test, and every test begins with `await loadScript("adapters")`. There is no "original" `cv` object to protect in that file. Mandating the C2-A2 descriptor dance there adds boilerplate without isolating anything. The discipline matters only in `viewset.test.js`, where `setup.js` stubs for `$` and `jQuery` must survive and the listener is shared across cases.
+- **MEDIUM. A whole-object `cv.adapters` replacement after load becomes a silent breakage for themes.** `docs/reference/javascript.md:50-53` documents hand-written adapter objects. A theme that currently does `cv.adapters = {modal, tooltip, collapse}` after `adapters.js` loads will, after this phase, have every close button throw a `TypeError` with the alert left on screen. Plan 04-02 tests that behavior, which is correct under D-03, but neither 04-02 nor 04-03 explicitly documents this upgrade hazard. See the related 04-03 concern.
+- **LOW. "Namespace with Modal/Tooltip/Collapse but no Alert" is the real Tabler-shaped case and deserves a comment.** `cv.bootstrapAdapters(() => globalThis.tabler)` at `docs/reference/javascript.md:64` is the documented alternate namespace. Tabler does bundle Bootstrap's `Alert`, so the fallback branch fires only for truly partial namespaces, but the test should say which real scenario it models.
+- **LOW. Two listeners after reload.** The final test at `tests/js/viewset.test.js:91-101` reloads `viewset.js` and installs duplicate listeners. The plan correctly places new cases before it. Any future contributor adding alert cases after that test will see double adapter calls and a confusing failure. A comment at the insertion point would prevent that.
+
+### Suggestions
+
+- Scope the descriptor save-and-restore instruction to `viewset.test.js` only. In `adapters.test.js`, rely on the existing `afterEach` and the `vi.stubGlobal("bootstrap", ns)` precedent at line 128.
+- Name the "other components but no Alert" case for what it models: a partial namespace or a Bootstrap build without the alert plugin.
+- Extend the existing "keep it last" comment at `tests/js/viewset.test.js:91` to say that alert dismissal cases must stay above it.
+
+### Risk Assessment
+
+**LOW.** Coverage is thorough and the helpers exist. The concerns are about test ergonomics and one documentation gap handed to 04-03.
 
 ## 04-03
 
-**Summary.** The plan updates four references plus the paired Breaking/migration text, adds an executable recipe test and a two-part data-attribute guard, and records browser acceptance. Every doc anchor it edits exists: the script table at `docs/reference/javascript.md:13-14`, adapter table `:30-38`, "builds all three" `:57`, events "All three" `:179` (correctly left alone), old markup and Bootstrap-only sentence at `docs/reference/messages.md:29-38`, the Alerts and dropdown sections at `docs/reference/theme.md:156-171,172-181`, the Unreleased Breaking list at `CHANGELOG.md:3-7`.
+### Summary
 
-**Strengths.**
-- The grep in ALRT-04 will be satisfied after the change: the remaining `data-bs-` lines in the core root are `tags/actions_menu_toggle.html:4-5` and `snippets/language_selector.html:6`, both named at `theme.md:179-181`.
-- The recipe test uses the existing locmem override (`tests/test1/test_form_frame.py:58-68`), already proven to shadow the frame by `test_frame_is_overridable_on_its_own` (`test_alerts.py:110-113`).
-- The human-check's no-Alert step (`cv.bootstrapAdapters({}).alert`) exercises the real fallback branch, not a jsdom fake.
-- Nothing else in `docs/`, `examples/`, `tests/` or `src/` references the legacy attribute beyond the files the plans already touch (`messages.md:32,36`, `test_messages.py:139,169`, `alert.html:5`; `test_modal.py:309` asserts its absence and `migrating-1.0.md:345` is the modal precedent).
+Every documentation location the plan names was found at the quoted position, the allowlist matches the actual `data-bs-` audit, and the historical-red probe is feasible because the baseline commit contains the unchanged template. Two gaps remain: the plan does not explicitly require documenting the whole-object adapter replacement hazard, and the browser smoke will almost certainly land as "pending" because the executor agent has no browser tooling.
 
-**Concerns.**
-- LOW (optional wording): 04-03-02's only automated verify is `mkdocs build --strict`; the "same commit contains a Breaking entry and the migration example" acceptance has no command. A `git show --stat HEAD` naming both files is enough.
-- LOW (scope note, not re-raised): `src/crud_views_object_detail/.../tabs-vertical/object_detail.html:10-11` and `accordion/group.html:5,15` carry `data-bs-*` outside the core root. The ledger defers this to Phase 7; the guard's root choice keeps it out correctly.
+### Strengths
 
-**Suggestions.**
-- Add the `git show --stat` check to 04-03-02's acceptance. Everything else stands.
+- **Audit baseline verified exactly.** `git grep 'data-bs-' src/crud_views/templates` returns four lines in three files: `crud_views/tags/actions_menu_toggle.html:4-5`, `crud_views/snippets/language_selector.html:6`, and `crud_views/tags/alert.html:5`. After the attribute change, the two remaining files are both named at `docs/reference/theme.md:179-181`. `actions_menu.html` is named there but has no `data-bs-` attribute, so the plan's "subset, not equality" semantics are the only correct contract.
+- **Scan scope matches the roadmap and excludes extension templates on purpose.** `src/crud_views_object_detail/templates/.../accordion/group.html:5,15` and `tabs-vertical/object_detail.html:10-11` carry `data-bs-toggle`. They sit outside `src/crud_views/templates`, which is what ALRT-04 names. The plan's deferral of those to Phase 7 is accurate.
+- **Every stale documentation line is real.** `docs/reference/javascript.md:14` says `viewset.js` needs nothing at use. Line 57 says "builds all three adapters". Line 179 says "All three are bubbling CustomEvents" and correctly must stay, since it counts events. `docs/reference/messages.md:29-38` shows the old markup and claims closing needs Bootstrap's bundle. `docs/reference/settings.md:184,187-188` lists only submit-form and cancel-url hooks. `docs/migrating-1.0.md:309-310` enumerates three adapters and line 374 lists adapters whose absence loses "modal, filter and tooltip behaviour".
+- **A migration precedent already exists for the exact pattern.** `docs/migrating-1.0.md:345-346` documents the modal's `data-cv-modal-dismiss` with the sentence that a copy with `data-bs-dismiss` "keeps working under the Bootstrap adapter only". The alert bullet can mirror it, and `tests/test1/test_modal.py:308-309` shows the matching test shape.
+- **`_section` behaves as the plan assumes.** `tests/test1/test_label_mode_docs.py:35-45` matches a heading string verbatim, requires exactly one occurrence, and the fence-aware `_headings` at lines 29-32 ignores `#` lines inside code blocks. A unique "### Custom alert frame" heading will extract cleanly.
+- **The historical probe is feasible.** The baseline commit from 04-01-01 contains only the golden and test, so `git show <baseline>:src/crud_views/templates/crud_views/tags/alert.html` returns the legacy template with the `data-bs-dismiss` line. Copying the core tree to a temp directory and swapping that file gives a real red specimen without touching the checkout.
+- **Recipe escaping is safe by construction.** `src/crud_views/lib/messages.py:45-54` returns `conditional_escape` results for heading, text and items and unconditional `escape` for `extra_tags`. A recipe that renders `{{ alert.extra_tags }}` cannot introduce injection, and `SafeString` returns prevent double-escaping under autoescape.
+- **Docs-sync exemption is correctly understood.** `examples/bootstrap5/test_docs_sync.py:21-24` only matches fences preceded by a `cv-sync` marker, so the new theme recipe is exempt and the plan rightly adds its own render test instead.
 
-**Risk.** LOW–MEDIUM. The only residual risk is the browser acceptance itself, which the plan already refuses to infer from unit tests.
+### Concerns
+
+- **MEDIUM. The whole-object adapter replacement hazard is not an explicit documentation requirement.** The plan updates the adapter enumeration and the "lost behaviour" checklist, but a theme author reading `docs/reference/javascript.md:50-53` today learns that a hand-written `cv.adapters` object is supported. After this phase, such an object without `alert` makes every close button throw. The migration guide should name this case directly and point to `cv.bootstrapAdapters(ns).alert` as the one-line fix for Bootstrap-compatible namespaces.
+- **MEDIUM. The browser smoke will realistically remain unverified by the executor.** The `gsd-executor` agent's tool set is Read, Write, Edit, Bash, Grep, Glob and Skill. It has no browser automation. The plan's human-check is well written and routes to end-of-phase verification, but the acceptance note should be expected to say "pending" rather than treat that as a surprise. The example is otherwise ready: `examples/bootstrap5/project/templates/project/base.html:19` loads Bootstrap 5.3.3 before `{% cv_js %}` at line 37 and renders `{% cv_messages %}` at line 56.
+- **LOW. D-06's legacy-path statement needs one qualifier.** Bootstrap's dismiss trigger locates the frame with `closest(".alert")`, not `role="alert"`. A copied legacy template that also dropped the `alert` CSS class never closed through Bootstrap either. The migration text should say legacy copies keep working "when the frame still carries Bootstrap's `alert` class".
+- **LOW. Tool-version drift could not be re-verified here.** The sandbox blocked the version probes. `package.json:20-21` declares `jsdom ^30.1.2` and `vitest ^5.0.3`, `pyproject.toml:61` declares `ruff>=0.17,<0.18`, and `.pre-commit-config.yaml` pins `ruff-pre-commit v0.17.1`. If the venv Ruff really is 0.16.10, the hook formats with a different Ruff than `ruff format --check` uses, which can produce check failures that the hook itself introduced. The plan's instruction to disposition drift honestly is the right call.
+- **LOW. `settings.md` appears in `files_modified` but not in the artifact list.** Harmless, but the artifact list is what downstream verification reads.
+
+### Suggestions
+
+- Add to 04-03-02: an explicit migration sentence for projects that assign a whole `cv.adapters` object after load, naming `alert.close(el)` as the required method and `cv.bootstrapAdapters(ns).alert` as the shortcut.
+- Qualify the D-06 statement with the `.alert` class requirement, mirroring the modal wording at `docs/migrating-1.0.md:345-346`.
+- In 04-03-03, pre-authorize the executor to record "browser acceptance pending, procedure recorded" as the expected outcome so it does not spend effort trying to launch a browser it cannot drive.
+
+### Risk Assessment
+
+**LOW to MEDIUM.** Documentation targets are all real and correctly located. The medium items are a missing migration sentence and a predictable "pending" on the browser gate.
 
 ## Cross-plan assessment
 
-- Dependency ordering is correct and forced by shared files (`viewset.test.js`, `test_alerts.py`); the baseline-commit-first chronology is enforceable from git history.
-- No scope creep: no class keys, focus logic, auto-dismiss or events are introduced; `LATER-06` stays deferred (`.planning/REQUIREMENTS.md:84`).
-- Security: escaping stays server-side in `alert_data` (`src/crud_views/lib/messages.py` conditional_escape paths) and the recipe test renders hostile input; the click handler selects only `[data-cv-alert-dismiss]` → nearest `[role="alert"]`.
-- The plans achieve ALRT-01 through ALRT-04 as written in `.planning/REQUIREMENTS.md:54-57`.
+**Dependency ordering is correct.** 04-01 owns the template and both JS files, 04-02 extends the same test files, 04-03 depends on the implemented contract and the baseline hash. No same-wave file overlap exists.
 
-**Overall risk: LOW.** All prior findings are closed in executable text. The three new items are optional wording hardening (explicit `translation.override("en")` in 04-01-01, the `-k` selector for the golden update, a `git show --stat` check in 04-03-02); none blocks execution.
+**The phase achieves its goal.** After 04-01, the stock frame carries no Bootstrap data attribute and the only `data-bs-` templates left under `src/crud_views/templates` are the two dropdown files already documented. After 04-02, the adapter ownership contract is pinned by behavior tests rather than string matching. After 04-03, the public references, Breaking entry and migration guide agree with the code.
 
+**Scope discipline is good.** No new class keys, no focus management, no lifecycle events, no installs. The "bounded corrections only if exposed" clause in 04-02 is the right guard against drift into refactoring.
 
----
+**Where the plans over-reach**, it is in test-harness choreography rather than product scope. The descriptor save-and-restore instruction belongs only in `viewset.test.js`. The seven-row "spec-less edge" bookkeeping and the repeated STRIDE tables add length without changing what the executor does.
 
-## OpenCode Review (grok-review)
+**One accepted deviation to acknowledge.** `.planning/PROJECT.md:75-77` names `feat/alert-dismiss-adapter` as the phase branch. The plans execute on `introduce-gsd` by maintainer decision recorded in the A2 disposition. That is consistent with how Phases 1 to 3 ran.
 
-I'll verify the three plans against the current source and the prior review ledgers, starting with the files those tasks actually touch.
-Plans and prior reviews are on disk. Next I’ll check the source those tasks cite and whether the earlier findings actually closed.
-Prior findings are mapped. I’ll check the tests, docs, and helpers the plans treat as already true.
-The error-spy contract may be unsatisfiable if jsdom logs listener exceptions. I’ll check that against the installed harness.
-## 04-01
-
-The baseline-then-tracer split matches the current frame and the only two legacy assertions. Prior findings A1, A3, and A10 are closed in the task text. A2 stays rejected. No new product gap.
-
-**Strengths**
-- The dismiss attribute is only on the dismissible branch at `src/crud_views/templates/crud_views/tags/alert.html:5`. A byte compare of `{% cv_alert %}` is the right ALRT-01 artifact: `cv_alert` renders that template directly (`src/crud_views/templatetags/crud_views.py:407-409`).
-- A1 is closed. The only `data-bs-dismiss="alert"` assertions are `tests/test1/test_messages.py:139` and `:169`, and `04-01-PLAN.md:189-192` updates both in the tracer commit, with the combined pytest gate before commit.
-- A3 matches the harness. `loadScript` binds `globalThis` to a Proxy that reads `window` at call time (`tests/js/helpers/load.js:25-36`). `04-01-PLAN.md:173-186` clears only `cv`/`bootstrap`, reloads real defaults, and calls `globalThis.cv.adapters.alert.close` inside the listener. That avoids both a stale `Object.assign` merge (`src/crud_views/static/crud_views/js/adapters.js:43`) and `vi.unstubAllGlobals()` wiping `$`/`jQuery` (`tests/js/helpers/setup.js:7-8`).
-- A10 matches Django. `{% translate %}` calls `translation.gettext` (`django/templatetags/i18n.py:177`), which is `_trans.gettext` (`django/utils/translation/__init__.py:95-96`). `04-01-PLAN.md:220-226` patches that delegate and keeps the English golden unpatched. `LANGUAGE_CODE` is already `en-us` (`tests/test1/conftest.py:98`).
-- The reload test is last (`tests/js/viewset.test.js:91-101`). New click cases are required to precede it, so they do not double-register the listener.
-
-**Concerns**
-- None. A2 remains an explicit rejection (`04-01-PLAN.md:116`, `:295`); no branch switch.
-
-**Suggestions**
-- None.
-
-**Risk Assessment**
-- LOW. The tracer commit stays green on the only suites that assert the old attribute, and the handler seam already exists at `src/crud_views/static/crud_views/js/viewset.js:37-44`.
-
-## 04-02
-
-This wave only proves the factory and the one listener from 04-01. A3–A6 and C2-A2/C2-A3 are executable requirements, not ledger notes. No new ownership hole.
-
-**Strengths**
-- Absence is a real branch of `component()` (`src/crud_views/static/crud_views/js/adapters.js:7-8`): a namespace with `Modal`/`Tooltip`/`Collapse` and no `Alert` is null, so removal stays inside `alert.close`. The existing enumeration test is the right place to add the fourth name (`tests/js/adapters.test.js:20-23`). Preassignment is already a whole-object merge (`tests/js/adapters.test.js:133-140` against `adapters.js:43`).
-- A4 is closed. `listenerErrors` records `event.error` and removes its listener in `finally` (`tests/js/helpers/errors.js:5-18`). `04-02-PLAN.md:164-170` reuses it for throws and ignored targets. In this jsdom, `preventDefault` on that error event stops the extra `console.error` report, so a no-call assertion is not vacuous.
-- A5 and A6 are named: two controls, inner removal with outer/sibling survival (`04-02-PLAN.md:158`), and `delete` of `cv.adapters.alert` as a surfaced `TypeError` with no repair (`04-02-PLAN.md:170`).
-- C2-A2 is closed. `04-02-PLAN.md:118-121` and `:175` create a case-owned `cv`/`adapters` object before nested mutation. Restoring a descriptor cannot undo `delete` on a shared map, and `$`/`jQuery` stay untouched.
-- C2-A3 is closed. `04-02-PLAN.md:158-160` clicks an unmarked descendant inside `role="alert"` and requires an empty `listenerErrors` array, zero adapter calls, and a still-connected frame.
-
-**Concerns**
-- None. Repeated close and detached-subtree cases stay ordinary DOM behavior. No new animation or scheduling guarantee is added.
-
-**Suggestions**
-- None.
-
-**Risk Assessment**
-- LOW. Failures here are test failures against the existing factory, not a second close path.
-
-## 04-03
-
-The audit root, recipe, and paired migration match the tree and the docs that would otherwise stay stale. H1, A7–A9, and C2-A1 are closed. Browser acceptance is still an explicit observation, not a unit-test stand-in.
-
-**Strengths**
-- H1 matches the tree. Under `src/crud_views/templates`, `data-bs-` is only `tags/alert.html:5`, `tags/actions_menu_toggle.html:4-5`, and `snippets/language_selector.html:6`. `tags/actions_menu.html` has no `data-bs-` attribute. `theme.md:179-181` names those three paths. `04-03-PLAN.md:139-145` scans only that root, requires a nonempty subset of those relative paths, and does not use the all-app glob at `tests/test1/test_alerts.py:133`. Object-detail hits stay outside that root.
-- C2-A1 is closed. `04-03-PLAN.md:147-152` adds a lasting `tmp_path` test: an allowed toggle file passes, then a forbidden `crud_views/tags/alert.html` raises `AssertionError` naming that relative path. The `git show` red check stays one-time and does not become a CI git dependency. `git show <baseline>:…/alert.html` still has the old attribute, because the baseline commit does not edit the template.
-- A7 targets still exist: three-adapter list at `docs/migrating-1.0.md:309-310`, missing-adapters checklist at `:374`, delegated-hook list at `docs/reference/settings.md:184-189`. `04-03-PLAN.md:122-123` and `:192-194` update them. The factory sentence to change is `docs/reference/javascript.md:57`; the lifecycle sentence to leave alone is `:179`.
-- A8 is the live colour seam. The stock frame already uses `{% load crud_views i18n %}` and `{% cv_button_class "alert" alert.level %}` (`alert.html:1-2`), and `tests/test1/test_alerts.py:124-127` proves that key reaches the class list. `04-03-PLAN.md:129-137` keeps both in the extracted recipe and renders it through `_theme_templates` (`tests/test1/test_form_frame.py:58-68`).
-- A9 is closed. `04-03-PLAN.md:190-192` forbids keeping both dismiss attributes on one control and keeps the old-hook-only Bootstrap path. `{% cv_js %}` already emits `adapters.js` then `viewset.js` (`src/crud_views/lib/settings.py:288-289`), which is the order the migration must name. Example flash messages go through `{% cv_messages %}` (`examples/bootstrap5/project/templates/project/base.html:37,56`).
-
-**Concerns**
-- None. Tool-version drift and the example browser close stay required evidence in `04-03-PLAN.md` task 04-03-03. They are not inferred passes.
-
-**Suggestions**
-- None.
-
-**Risk Assessment**
-- LOW. The lasting allowlist test can fail closed. The only non-automated acceptance is the browser procedure, and the plan forbids marking D-10 verified without it.
-
-## Closure
-
-H1, A1, A3–A10, and C2-A1–C2-A3 are closed against current source. A2 stays rejected. No new materially actionable issue. Overall risk is LOW.
+**Overall risk: LOW.** The code claims are accurate, the tests exist where the plans say they do, and the one behavior change is a single attribute plus an additive adapter. The findings above are refinements, not blockers.
 
 
 ---
+
 
 ## OpenCode Review (gemini-review)
 
+
 ## 04-01
 
 ### 1. Summary
-Plan `04-01` sequences the standalone before-change golden commit (`ALRT-01`), the end-to-end dismissal tracer across the template, adapter factory, and delegated click listener (`ALRT-02`, `ALRT-03`), and the server-side alert/message rendering regressions across three well-isolated tasks. All Round 1 items assigned to `04-01` (`A1`, `A2`, `A3`, `A10`, and the byte-exact golden convention) remain closed in `cff77e5`: Task `04-01-02` updates both `tests/test1/test_messages.py` assertions (`lines 139, 169`) in the same commit as `src/crud_views/templates/crud_views/tags/alert.html:5` so the tracer commit stays green, uses `globalThis.cv.adapters.alert.close(frame)` at call time with scoped descriptor save/restore of `window.cv` and `window.bootstrap`, and Task `04-01-03` patches `django.utils.translation._trans.gettext` via `monkeypatch.context()` for the `{% translate 'Close' %}` render-time sentinel check.
+
+Plan `04-01` sequences the phase's foundational deliverables: committing a byte-exact pre-change golden for a dismissible alert (`ALRT-01`, `D-07`), implementing `cv.bootstrapAdapters(ns).alert.close(el)` in `src/crud_views/static/crud_views/js/adapters.js` and the delegated `[data-cv-alert-dismiss]` click listener in `src/crud_views/static/crud_views/js/viewset.js`, switching `src/crud_views/templates/crud_views/tags/alert.html:5` from `data-bs-dismiss="alert"` to `data-cv-alert-dismiss`, and updating the flash-message assertions in `tests/test1/test_messages.py:139,169` in the same tracer commit so the test suite remains green across commits. Verification against the repository source confirms that all referenced files, template tags, and test helpers match the plan's assumptions.
 
 ### 2. Strengths
-- **Byte-exact baseline golden before product edits (`src/crud_views/templates/crud_views/tags/alert.html:1-6`, `tests/test1/test_alerts.py:70-71`):** Task `04-01-01` (`04-01-PLAN.md:136-146`) writes `markup.encode("utf-8")` without appending a newline and compares via `read_bytes()` under a fixed English locale (`translation.override("en")`), avoiding the whitespace normalization in `tests/test1/test_form_frame.py:44-55` (`_norm()`) and recording `ALRT-01` (`D-07`) as a standalone commit before `alert.html:5` is modified.
-- **Green tracer commit covering both `test_alerts.py` and `test_messages.py` (`tests/test1/test_messages.py:139,169`) [closes A1]:** Updating the two legacy `assert 'data-bs-dismiss="alert"' in html` checks (`test_cv_messages_renders_a_dismissible_alert` at `tests/test1/test_messages.py:139` and `test_create_message_renders_as_an_alert` at `tests/test1/test_messages.py:169`) inside Task `04-01-02` (`04-01-PLAN.md:162,190-193`) and running `.venv/bin/pytest tests/test1/test_alerts.py tests/test1/test_messages.py -q` before committing keeps every commit in the series green.
-- **Scoped JS global cleanup and call-time `globalThis.cv` lookup (`src/crud_views/static/crud_views/js/adapters.js:43`, `tests/js/helpers/load.js:25-36`, `tests/js/helpers/setup.js:7-8`, `tests/js/viewset.test.js:27-33,91-101`) [closes A3]:** Snapshotting and clearing only `window.cv` and `window.bootstrap` descriptors before loading fresh defaults in `tests/js/viewset.test.js` (`04-01-PLAN.md:173-178,185-186`) ensures `adapters.js:43` (`Object.assign(cv.bootstrapAdapters(...), cv.adapters || {})`) does not retain a previous test's custom fake while preserving the module-once `$` / `jQuery` globals installed in `tests/js/helpers/setup.js:7-8`. Placing the new cases before the reload test at `tests/js/viewset.test.js:91-101` prevents duplicate document listeners.
-- **Verified Django template translation seam (`src/crud_views/templates/crud_views/tags/alert.html:5`) [closes A10]:** Task `04-01-03` (`04-01-PLAN.md:223-227`) patches `django.utils.translation._trans.gettext` inside `monkeypatch.context()` under `translation.override("en")`, intercepting `"Close"` when `{% translate 'Close' %}` renders while delegating all other message IDs and restoring state on exit.
+
+- **Strict golden chronology and byte-level fidelity (`ALRT-01`, `D-07`):** Unlike `tests/test1/test_form_frame.py:44-55`, where `_norm()` collapses whitespace via `re.sub(r">\s+<", "><", markup)`, Task `04-01-01` writes raw UTF-8 bytes (`markup.encode("utf-8")`) and compares via `read_bytes()`. Because `src/crud_views/templates/crud_views/tags/alert.html:1-6` begins with `{% load crud_views i18n %}\n`, raw byte comparison preserves leading/interior whitespace and guarantees the subsequent diff in `04-01-02` is strictly the `data-bs-dismiss="alert"` → `data-cv-alert-dismiss` attribute replacement.
+- **Green atomic commits across Python and JS suites:** `tests/test1/test_messages.py:139` (`test_cv_messages_renders_a_dismissible_alert`) and `tests/test1/test_messages.py:169` (`test_create_message_renders_as_an_alert`) currently assert `'data-bs-dismiss="alert"' in html`. Including both updates in Task `04-01-02` alongside `src/crud_views/templates/crud_views/tags/alert.html:5` avoids a broken intermediate commit.
+- **Exact alignment with existing adapter and delegation idioms:**
+  - `src/crud_views/static/crud_views/js/adapters.js:7-8,43` already provides `component(ns, name)` and `cv.adapters = Object.assign(cv.bootstrapAdapters(() => globalThis.bootstrap), cv.adapters || {})`. Adding `alert: { close(el) { ... } }` inside `cv.bootstrapAdapters` with `component(ns, "Alert")` and `el.remove()` fallback only when `Alert` is absent cleanly implements `D-03` and `D-04`.
+  - `src/crud_views/static/crud_views/js/viewset.js:38-44` already uses `if (!(e.target instanceof Element)) return;` and `e.target.closest(...)` before `e.preventDefault()`. Looking up `globalThis.cv.adapters.alert.close(frame)` at click time matches `src/crud_views/static/crud_views/js/list.filter.js:15` (`globalThis.cv.adapters.collapse.toggle(panel)`).
+- **Scoped global cleanup in `viewset.test.js`:** `tests/js/helpers/setup.js:7-8` installs `$` and `jQuery` via `vi.stubGlobal` once at suite startup, and `tests/js/viewset.test.js:91-101` relies on those globals still being present until the final reload test. Saving and restoring only the `window.cv` and `window.bootstrap` property descriptors in `04-01-02` avoids wiping `$` / `jQuery` with `vi.unstubAllGlobals()`.
 
 ### 3. Concerns
-- None. All Round 1 items for `04-01` (`A1`, `A2`, `A3`, `A10`) are closed and no new issues exist.
+
+- **LOW — Relative path depth in `tests/js/viewset.test.js` differs from `tests/js/helpers/load.js`:** The "Artifacts this phase produces" section of `04-01` states that `DISMISSIBLE_ALERT_HTML` in `tests/js/viewset.test.js` is read from `tests/test1/golden/alerts/dismissible.html` using "`node:fs`, `node:path` and `fileURLToPath` (the existing helper's path-resolution pattern)". In `tests/js/helpers/load.js:8`, the file sits under `tests/js/helpers/` (three levels below repo root, using `"../../../..."`), whereas `tests/js/viewset.test.js` sits under `tests/js/` (two levels below repo root, so the relative path to the golden is `"../test1/golden/alerts/dismissible.html"` or `"../../tests/test1/golden/alerts/dismissible.html"`). Copying `../../../` verbatim from `load.js:8` into `viewset.test.js` will resolve outside the repository.
+- **LOW — German translation for `"Close"` already exists in compiled catalog (`src/crud_views/locale/de/LC_MESSAGES/django.po:103-104`):** Task `04-01-03` tests `{% translate 'Close' %}` in `src/crud_views/templates/crud_views/tags/alert.html:5` by monkeypatching `django.utils.translation._trans.gettext` under `translation.override("en")`. While that works (because `django.templatetags.i18n.TranslateNode.render` delegates through `django.utils.translation.gettext` → `_trans.gettext`), `src/crud_views/locale/de/LC_MESSAGES/django.po:103-104` (and compiled `django.mo`) already ships `msgid "Close"` → `msgstr "Schließen"`. Only testing a monkeypatched English sentinel misses a direct check that the shipped German catalog translates `aria-label="Schließen"` under `translation.override("de")`.
 
 ### 4. Suggestions
-- None; the plan is ready for execution as written.
+
+- In Task `04-01-02`, explicitly resolve the golden path in `tests/js/viewset.test.js` as `path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../test1/golden/alerts/dismissible.html")`.
+- In Task `04-01-03`, alongside the `_trans.gettext` sentinel check, assert that rendering a dismissible alert under `with translation.override("de"):` produces `aria-label="Schließen"`, matching the real catalog pattern in `tests/test1/test_i18n.py:84-90`.
 
 ### 5. Risk Assessment
-**Risk Level: LOW**
-The standalone baseline commit, shared golden fixture between pytest and Vitest, atomic green tracer commit, and scoped JS descriptor cleanup eliminate execution risk.
+
+**LOW** — The template change is a single attribute rename (`src/crud_views/templates/crud_views/tags/alert.html:5`), the JS additions follow established seams in `adapters.js` and `viewset.js`, and no existing golden file in `tests/test1/golden/` contains a dismissible alert (verified: `tests/test1/golden/form_frame/delete_protection.html:1` is non-dismissible).
 
 ---
 
 ## 04-02
 
 ### 1. Summary
-Plan `04-02` expands the JavaScript unit and DOM regression suites in `tests/js/adapters.test.js` and `tests/js/viewset.test.js` to cover lazy namespace resolution, preassigned and post-load custom adapter swaps, dynamic and modal-injected alerts, multiple dismiss controls, nested semantic alert frames, unmarked alert-body clicks, missing adapter keys, and custom/component error surfacing (`ALRT-02`, `ALRT-03`, `D-03`, `D-04`, `D-08`, `D-10`). All Round 1 items (`A3`, `A4`, `A5`, `A6`) and Round 2 items (`C2-A2`, `C2-A3`) are closed in `cff77e5`: each test case creates a fresh `window.cv` object before mutating or deleting nested adapter keys (`C2-A2`), and Task `04-02-02` explicitly tests clicking an unmarked body element inside a `role="alert"` frame (`C2-A3`).
+
+Plan `04-02` expands unit and DOM regression coverage in `tests/js/adapters.test.js` and `tests/js/viewset.test.js` to verify lazy namespace resolution (`object`, `function`, late `globalThis.bootstrap`, namespace with `Modal`/`Tooltip`/`Collapse` but no `Alert`), preassigned `cv.adapters.alert` preservation, custom adapter replacement at call time, error surfacing without core logging or fallback removal (`D-03`, `D-04`), dynamic/modal-injected alert dismissal (`D-08`), and repeated-call/rapid-click edge cases (`EDGE-ALRT-03-idempotency`, `EDGE-ALRT-03-concurrency`).
 
 ### 2. Strengths
-- **Case-owned `window.cv` and adapter maps before nested mutation (`src/crud_views/static/crud_views/js/adapters.js:43`, `tests/js/viewset.test.js:27-33`, `tests/js/helpers/setup.js:7-8`) [closes A3, C2-A2]:** Tasks `04-02-01` (`04-02-PLAN.md:118-121`) and `04-02-02` (`04-02-PLAN.md:83,172-175`) save the original `cv` and `bootstrap` property descriptors, assign a fresh `window.cv` object and initialize its adapters for each case before replacing or deleting `cv.adapters.alert`, and restore the descriptors in `finally`. Because mutations happen only on the case-owned object, restoring the descriptor never leaks an in-place `delete cv.adapters.alert` into subsequent tests while keeping `setup.js:7-8`'s shared `$`/`jQuery` globals intact.
-- **Unmarked alert-body click and multi-control/nested-role coverage (`src/crud_views/static/crud_views/js/viewset.js:37-44`, `tests/js/viewset.test.js:59-79`) [closes A5, C2-A3]:** Task `04-02-02` (`04-02-PLAN.md:82,144-145,155-161,180-182`) tests clicking an unmarked descendant inside a `role="alert"` frame—asserting `listenerErrors` returns `[]`, zero adapter calls occur, and the frame stays connected—as well as two `[data-cv-alert-dismiss]` controls in one frame and nested `role="alert"` frames where inner removal leaves outer and sibling frames connected (`isConnected`).
-- **Reuse of `listenerErrors` and clean console spy lifecycle (`tests/js/helpers/errors.js:5-18`, `tests/js/helpers/setup.js:11-12`) [closes A4, A6]:** Task `04-02-02` (`04-02-PLAN.md:164-171`) reuses `listenerErrors(fn)` from `tests/js/helpers/errors.js:5-18` to capture thrown custom adapter errors and the `TypeError` when `cv.adapters.alert` is deleted, while spying on `console.error` and `console.warn`, asserting neither is called by core, and restoring both spies in `finally`.
-- **Strict absent-only fallback and idempotency/concurrency edge verification (`src/crud_views/static/crud_views/js/adapters.js:7-8,12-43`):** Tasks `04-02-01` and `04-02-02` (`04-02-PLAN.md:26-27,100-106,115-118,175-177`) verify that `el.remove()` runs only when `component(ns, "Alert")` is absent, while present no-op or throwing `Alert` instances and repeated/detached clicks behave according to standard DOM semantics without extra lifecycle state.
+
+- **Thorough separation of adapter vs. handler responsibilities (`D-03`, `D-04`):** Task `04-02-01` and Task `04-02-02` explicitly verify that `el.remove()` only runs inside the default adapter when `component(ns, "Alert")` is absent — never when a present `Alert.getOrCreateInstance(el).close()` is a no-op or throws, and never as a fallback in `viewset.js` when a custom `cv.adapters.alert.close(el)` throws or is missing.
+- **Proper observation of uncaught listener exceptions in jsdom:** Because exceptions thrown inside a `document.addEventListener("click", ...)` callback are reported as `window` `"error"` events rather than thrown synchronously out of `dispatchEvent()`, Task `04-02-02` reuses `listenerErrors(fn)` from `tests/js/helpers/errors.js:5-18`, which attaches a temporary `window` `"error"` listener, calls `event.preventDefault()`, and returns the captured `Error` instances.
+- **Preservation of listener count in `tests/js/viewset.test.js`:** `tests/js/viewset.test.js:27-29` loads `viewset.js` once in `beforeAll`, and `tests/js/viewset.test.js:91-101` reloads `viewset.js` at the end of the file (`// reloads the script (adds listeners), so keep it last`). Task `04-02-02` places all new click-delegation tests before line 91 so duplicate listeners cannot mask call-count assertions.
+- **Protection against shared object mutation across tests (Round 2 `C2-A2`):** Assigning a fresh `window.cv` / `adapters` object per test before deleting or mutating `cv.adapters.alert` prevents mutating a shared reference that `Object.defineProperty` descriptor restoration alone would not undo.
 
 ### 3. Concerns
-- None. All Round 1 (`A3`–`A6`) and Round 2 (`C2-A2`, `C2-A3`) items are closed and no new issues exist.
+
+- **LOW — Existing `afterEach` in `tests/js/adapters.test.js:18` already calls `vi.unstubAllGlobals(); delete window.cv;`:** Task `04-02-01` instructs saving and restoring `window.cv` and `window.bootstrap` descriptors and preserving `$/jQuery` in `tests/js/adapters.test.js`. In reality, `tests/js/adapters.test.js:17-18` already defines `afterEach(() => { vi.unstubAllGlobals(); delete window.cv; });` at the top of `describe("adapters.js", ...)` and does not use jQuery, whereas `tests/js/viewset.test.js` has no `afterEach` cleanup and does require `$` / `jQuery` preservation (`tests/js/viewset.test.js:2,91-101`). While saving/restoring descriptors in `finally` in `adapters.test.js` is harmless, the executor should be aware that `adapters.test.js:18` already resets `window.cv` and stubbed globals after every test.
+- **LOW — Orphan `[data-cv-alert-dismiss]` `defaultPrevented` behavior should be asserted explicitly:** In `src/crud_views/static/crud_views/js/viewset.js`, when `[data-cv-alert-dismiss]` has no enclosing `[role="alert"]` (`const frame = el.closest('[role="alert"]'); if (!frame) return;`), returning before `e.preventDefault()` leaves `event.defaultPrevented === false` (matching `modal.js:125-129` where `event.preventDefault()` only runs when `modal && modal.contains(dismiss)`). Task `04-02-02` states "matched controls must prevent the default" and "missing role frame ... call no adapter and change no DOM", which is consistent, but explicitly asserting `expect(event.defaultPrevented).toBe(false)` for an orphan `[data-cv-alert-dismiss]` outside `[role="alert"]` will lock in the guard order (`if (!frame) return;` before `e.preventDefault()`).
 
 ### 4. Suggestions
-- None; the test matrix and isolation mechanics are complete.
+
+- In Task `04-02-02`, use a scoped `beforeEach` / `afterEach` inside `describe("delegated alert ownership", ...)` in `tests/js/viewset.test.js` to snapshot/restore the `window.cv` and `window.bootstrap` descriptors and initialize a fresh `await loadScript("adapters")` per test, rather than duplicating `try / finally` descriptor boilerplate across every individual `it(...)` block.
+- Add `expect(event.defaultPrevented).toBe(false)` to the orphan `[data-cv-alert-dismiss]` test case in `tests/js/viewset.test.js` to verify `if (!frame) return;` precedes `e.preventDefault()`.
 
 ### 5. Risk Assessment
-**Risk Level: LOW**
-Per-case `window.cv` object creation prior to nested key mutation (`C2-A2`) and explicit unmarked in-alert click verification (`C2-A3`) close the remaining test-isolation and selector-precision edge cases.
+
+**LOW** — Plan `04-02` is primarily a JS behavioral test expansion in `tests/js/adapters.test.js` and `tests/js/viewset.test.js` with bounded fixes to `adapters.js` / `viewset.js` only if exposed. All test helpers (`loadScript`, `listenerErrors`, `fakeNamespace`) already exist in the repository.
 
 ---
 
 ## 04-03
 
 ### 1. Summary
-Plan `04-03` updates the four reference documents (`javascript.md`, `messages.md`, `theme.md`, `settings.md`), adds executable tests in `tests/test1/test_alerts.py` for the documented custom alert frame override recipe and the core `data-bs-*` template allowlist guard (both positive/allowlist and permanent `tmp_path` negative rejection), pairs the `CHANGELOG.md` `### Breaking` entry with the `docs/migrating-1.0.md` before/after guide and checklist updates, and runs the full project quality gates and example browser acceptance check (`ALRT-01` through `ALRT-04`, `D-01` through `D-10`). All Round 1 (`H1`, `A7`, `A8`, `A9`) and Round 2 (`C2-A1`) items are closed in `cff77e5`.
+
+Plan `04-03` updates the documentation and release notes (`docs/reference/javascript.md`, `docs/reference/messages.md`, `docs/reference/theme.md`, `docs/reference/settings.md`, `docs/migrating-1.0.md`, `CHANGELOG.md`), adds executable tests in `tests/test1/test_alerts.py` for the documented custom alert frame recipe and the core `data-bs-*` template allowlist (`ALRT-04`), and runs the full project quality gates plus the example project flash-message smoke check (`D-10`).
 
 ### 2. Strengths
-- **Core-only `data-bs-*` allowlist guard plus permanent `tmp_path` negative regression (`tests/test1/test_alerts.py:130-143`, `docs/reference/theme.md:179-181`, `src/crud_views/templates/crud_views/tags/actions_menu.html:1-9`) [closes H1, C2-A1]:** Task `04-03-01` (`04-03-PLAN.md:94-97,139-160,166-168`) scopes `_assert_core_bootstrap_data_attributes(root)` to `src/crud_views/templates`, requires `matches` to be nonempty and a subset of `ALLOWED` (`crud_views/tags/actions_menu.html`, `crud_views/tags/actions_menu_toggle.html`, `crud_views/snippets/language_selector.html`), proves one-time historical red via `git show` on the baseline `alert.html` in a temporary copy, and adds `test_core_bootstrap_data_attribute_guard_rejects_forbidden_path` using `tmp_path` to permanently verify that an allowed tree passes and adding a forbidden `crud_views/tags/alert.html` with `data-bs-` raises `AssertionError` naming `crud_views/tags/alert.html` without any Git dependency.
-- **Executable custom alert frame recipe preserving the colour seam (`docs/reference/theme.md:156-170`, `tests/test1/test_alerts.py:110-128`, `tests/test1/test_label_mode_docs.py:29-45`) [closes A8]:** Task `04-03-01` (`04-03-PLAN.md:127-137`) includes `{% load crud_views i18n %}` and `{% cv_button_class "alert" alert.level %}` in the `Custom alert frame` recipe in `docs/reference/theme.md`, extracts the fenced code block using the fence-aware `_section` pattern from `tests/test1/test_label_mode_docs.py:29-45`, and renders it through `_theme_templates` (`tests/test1/test_form_frame.py:58-68`) with an overridden `alert:*` colour key, dismissible/non-dismissible states, and hostile `extra_tags`/content.
-- **Complete alignment of `settings.md` and `migrating-1.0.md` checklists and single-hook migration rule (`docs/reference/settings.md:184-189`, `docs/migrating-1.0.md:199-200,306,309-310,345-347,374-375,385-410`) [closes A7, A9]:** Task `04-03-01` (`04-03-PLAN.md:122-123`) adds alert dismissal in `viewset.js` and `data-cv-alert-dismiss` to `docs/reference/settings.md:184-189`. Task `04-03-02` (`04-03-PLAN.md:185-196`) updates `docs/migrating-1.0.md`'s adapter enumeration (`lines 309-310`), missing-`adapters.js` checklist item (`lines 374-375`), and alert/markup/override bullets, and warns users to replace `data-bs-dismiss="alert"` rather than keeping both attributes.
-- **Honest quality gates and browser smoke verification (`examples/bootstrap5/project/templates/project/base.html:19-38`, `04-03-PLAN.md:216-265`):** Task `04-03-03` runs all automated gates (`pytest`, `npm test`, `mkdocs build --strict`, `ruff check`, `ruff format --check`, `examples/bootstrap5/manage.py check`, `test_docs_sync.py`), discloses tool-version drift without modifying manifests, and requires real browser observations (or an explicit recorded blocker) for the example flash-message transition check.
+
+- **Accurate scoping of the `data-bs-*` template audit (`ALRT-04`, Round 1 `H1` & Round 2 `C2-A1`):** Grepping `data-bs-` across `src/` shows matches in `src/crud_views_object_detail/templates/crud_views_object_detail/layouts/accordion/group.html:5,15` and `tabs-vertical/object_detail.html:10-11`, whereas `src/crud_views/templates` has matches only in `crud_views/tags/alert.html:5` (removed in `04-01`), `crud_views/tags/actions_menu_toggle.html:4-5`, and `crud_views/snippets/language_selector.html:6` (while `crud_views/tags/actions_menu.html` is the wrapper listed in `docs/reference/theme.md:179` with no `data-bs-` attribute of its own). Scoping `_assert_core_bootstrap_data_attributes(root)` in `04-03-01` to `src/crud_views/templates` with `matches <= ALLOWED` and adding the `tmp_path` negative test (`test_core_bootstrap_data_attribute_guard_rejects_forbidden_path`) makes the check both accurate and permanently non-vacuous without depending on git history at test runtime.
+- **Executable documentation recipe (`D-02`, Review `A8`):** Extracting the `"Custom alert frame"` snippet from `docs/reference/theme.md` and rendering it through `_theme_templates` (`tests/test1/test_form_frame.py:58-68`) with `CRUD_VIEWS_BUTTON_CLASSES={"alert:error": ...}` and hostile inputs verifies that the documented override actually loads `crud_views i18n`, calls `{% cv_button_class "alert" alert.level %}`, includes `alert.body_template`, and preserves `role="alert"` and `data-cv-alert-dismiss`.
+- **Comprehensive cross-reference updates (Review `A7`):** Beyond the three primary docs (`javascript.md`, `messages.md`, `theme.md`), `04-03-01` and `04-03-02` also update `docs/reference/settings.md:184-189` (which enumerates delegated `data-cv-*` attributes handled by `viewset.js`) and `docs/migrating-1.0.md:309,374` (which enumerate `cv.adapters.*` and what breaks when `adapters.js` is missing).
 
 ### 3. Concerns
-- None. All Round 1 (`H1`, `A7`–`A9`) and Round 2 (`C2-A1`) items are closed and no new issues exist.
+
+- **LOW — `_section()` heading format and code-fence language in `test_documented_alert_frame_override` (`tests/test1/test_alerts.py`):** Task `04-03-01` instructs extracting "the fence under the uniquely named 'Custom alert frame' heading using the established fence-aware `_section` pattern in `test_label_mode_docs.py`". In `tests/test1/test_label_mode_docs.py:24,35-45`:
+  1. `_section(text, heading)` matches `m.group(0) == heading` (line 39), which requires the leading markdown hashes (e.g. `"### Custom alert frame"`, not bare `"Custom alert frame"`).
+  2. `FENCE` in `tests/test1/test_label_mode_docs.py:24` is `re.compile(r"^```python\n(.*?)^```", re.MULTILINE | re.DOTALL)`, which only matches `python` blocks, whereas template examples in `docs/reference/theme.md:125,140,148` use ```` ```html ```` or ```` ```django ````. Reusing `FENCE` from `test_label_mode_docs.py` or passing `"Custom alert frame"` without `### ` will fail with an `AssertionError`.
+- **LOW — `CHANGELOG.md:294` under `## Unreleased` → `### Added` still lists only three adapters:** In `CHANGELOG.md:294`, the Unreleased `### Added` bullet currently reads:
+  `- cv.adapters (modal, tooltip, collapse) and cv.bootstrapAdapters(ns); see docs/reference/javascript.md.`
+  While Task `04-03-02` adds a `### Breaking` entry to `CHANGELOG.md` and updates the three-adapter list in `docs/migrating-1.0.md:309`, it does not mention updating `CHANGELOG.md:294` to include `alert` (`modal`, `tooltip`, `collapse`, `alert`).
 
 ### 4. Suggestions
-- None; all tasks and verification steps are complete and grounded in the source tree.
+
+- In Task `04-03-01`, specify the exact markdown heading level in `docs/reference/theme.md` (`### Custom alert frame` under `## Alerts`) and extract its code block with a `django`/`html` fence pattern (`re.compile(r"^```(?:django|html)\n(.*?)^```", re.MULTILINE | re.DOTALL)`).
+- In Task `04-03-02`, also update `CHANGELOG.md:294` from `(`modal`, `tooltip`, `collapse`)` to `(`modal`, `tooltip`, `collapse`, `alert`)` so `CHANGELOG.md`'s Unreleased `### Added` section stays consistent with `### Breaking` and `docs/reference/javascript.md`.
 
 ### 5. Risk Assessment
-**Risk Level: LOW**
-The permanent `tmp_path` negative regression (`C2-A1`) alongside the core-only subset check (`H1`), executable recipe test (`A8`), and cross-document checklist updates (`A7`, `A9`) make `04-03` low-risk and ready for execution.
+
+**LOW** — Documentation, changelog, and guard tests are well-scoped, `examples/bootstrap5/test_docs_sync.py:21-24` only checks `<!-- cv-sync: ... -->` blocks (so adding an unmarked recipe in `docs/reference/theme.md` will not break `test_docs_sync.py`), and `04-03-03` explicitly accounts for environment version drift and browser availability without falsifying verification status.
 
 ---
 
-## Cross-Plan Convergence Verification (Cycle 3 — `cff77e5`)
+## Cross-Plan Assessment & Overall Summary
 
-| Item | Severity | Plan | Status in `cff77e5` | Verification Evidence |
-|---|---|---|---|---|
-| **H1** | HIGH | `04-03` | **Closed** | `04-03-PLAN.md:94-97,139-145,154-160,310` scans strictly `src/crud_views/templates`, asserts nonempty matches `<= ALLOWED`, and proves red via `git show` in a temporary directory. |
-| **A1** | MEDIUM | `04-01` | **Closed** | `04-01-PLAN.md:14,162,190-193,202,286` updates `tests/test1/test_messages.py:139,169` in `04-01-02` and runs both Python suites before commit. |
-| **A2** | MEDIUM | `04-01` | **Closed (Rejected)** | `04-01-PLAN.md:116-118,295` explicitly retains `introduce-gsd` under orchestrator branch management. |
-| **A3** | MEDIUM | `04-01`, `04-02` | **Closed** | `04-01-PLAN.md:173-178,185-186,287` and `04-02-PLAN.md:118-121,163-164,172-175,234` use `globalThis.cv.adapters.alert.close(frame)` and scoped `cv`/`bootstrap` cleanup. |
-| **A4** | MEDIUM | `04-02` | **Closed** | `04-02-PLAN.md:81,87,164-168,235` reuses `listenerErrors` from `tests/js/helpers/errors.js:5-18` and restores `console.error`/`warn` spies in `finally`. |
-| **A5** | MEDIUM | `04-02` | **Closed** | `04-02-PLAN.md:82,145,155-158,181-182,236` tests two controls in one frame and outer/sibling survival on inner nested alert removal. |
-| **A6** | LOW | `04-02` | **Closed** | `04-02-PLAN.md:82,147,169-171,182-183,237` deletes `cv.adapters.alert` and asserts `TypeError` via `listenerErrors` with no fallback or logging. |
-| **A7** | MEDIUM | `04-03` | **Closed** | `04-03-PLAN.md:11,122-123,192-194,201,311` updates `docs/reference/settings.md:184-189` and `docs/migrating-1.0.md:199-200,309-310,374-375`. |
-| **A8** | LOW | `04-03` | **Closed** | `04-03-PLAN.md:127-137,164-166,312` retains `{% load crud_views i18n %}` and `{% cv_button_class "alert" alert.level %}` in the `theme.md` recipe and tests an overridden colour key. |
-| **A9** | MEDIUM | `04-03` | **Closed** | `04-03-PLAN.md:190-192,201-202,313` instructs replacing `data-bs-dismiss="alert"` with only `data-cv-alert-dismiss`. |
-| **A10** | LOW | `04-01` | **Closed** | `04-01-PLAN.md:223-227,288` patches `django.utils.translation._trans.gettext` in `monkeypatch.context()` for `"Close"` under `translation.override("en")`. |
-| **C2-A1** | LOW | `04-03` | **Closed** | `04-03-PLAN.md:94-97,147-152,167-168,329` adds permanent `test_core_bootstrap_data_attribute_guard_rejects_forbidden_path` using `tmp_path`. |
-| **C2-A2** | LOW | `04-02` | **Closed** | `04-02-PLAN.md:83,118-121,172-175,253` creates a fresh case-owned `window.cv` and adapter map before mutating/deleting nested keys and restores descriptors in `finally`. |
-| **C2-A3** | LOW | `04-02` | **Closed** | `04-02-PLAN.md:82,144,158-160,180-181,254` clicks an unmarked body element inside `role="alert"` and asserts no error, no adapter call, and retained frame connection. |
-
-**Overall Risk Assessment: LOW.** All Round 1 (`H1`, `A1`–`A10`) and Round 2 (`C2-A1`–`C2-A3`) items are verified closed, and no new actionable issues exist. The phase plans have converged and are ready for execution.
+- **Dependency & Wave Ordering:** Wave 1 (`04-01`) → Wave 2 (`04-02`) → Wave 3 (`04-03`) is properly ordered. `04-01` establishes the pre-change golden commit first (`04-01-01`), lands the core template/JS implementation and message test updates (`04-01-02`), and completes Python rendering regressions (`04-01-03`); `04-02` deepens the JS unit/delegation matrix on top of `04-01`; `04-03` updates the reference/migration docs, adds the recipe and `data-bs-*` allowlist tests, and runs all final gates.
+- **Goal Achievement:** All four phase requirements (`ALRT-01` through `ALRT-04`) and all ten user decisions (`D-01` through `D-10`) are completely and accurately addressed with no scope creep.
+- **Overall Risk:** **LOW** — All prior high/medium review findings (`H1`, `A1`–`A10`, `C2-A1`–`C2-A3`) have been cleanly integrated into the plans; only minor implementation notes (`LOW` severity) remain.
 
 
 ---
 
-## OpenCode Review (deepseek-review)
 
-I'll review the three implementation plans for the alert dismiss adapter phase. Let me start by examining the current repository structure and the referenced files to verify claims.
-
-
-Now let me check some key source files to understand the current state and verify plan claims:
+## OpenCode Review (grok-review)
 
 
-Now let me check if there are any existing alert tests:
-
-
-
-
-Let me check for existing golden tests:
-
-
-Now let me check the JS test files to understand the existing patterns:
-
-
-
-
-Let me check if there are any existing review files:
-
-
-
-
-Now I'll examine the current alert template to see the exact current state and understand what data attributes it has:
-
-
-
-
-
-
-Now let me check the current git status to understand the baseline:
-
-
-Now let me look at a few key files to understand the project structure better:
-
-
-
-
-
-
-
-
-Based on my examination of the plans and codebase, I'll now provide a comprehensive review of the three implementation plans.
-
-# Cross-AI Plan Review for Alert Dismiss Adapter Phase
-
+I'll verify each plan against the current source, starting with the alert frame, adapters, and the tests the plans claim already exist.
+The planning directory is not in the tree; I'll check the tests, docs, and templates the plans treat as existing.
+The throw-path plan asserts core never logs; I'll check whether jsdom itself writes `console.error` for listener exceptions.
 ## 04-01
 
-**Summary**: This plan establishes a baseline golden of current alert markup, then implements the core alert dismiss adapter feature with both Python and JavaScript components. It correctly addresses ALRT-01 through ALRT-03 with a clear three-task structure.
+The baseline-then-tracer split matches the current code. The stock dismiss hook is only the dismissible branch of `src/crud_views/templates/crud_views/tags/alert.html:5`, the factory is still three adapters with a lazy namespace and a shallow merge (`src/crud_views/static/crud_views/js/adapters.js:3,7-8,43`), and `viewset.js` already delegates clicks with an `Element` guard and `closest()` (`src/crud_views/static/crud_views/js/viewset.js:37-44`). Task 02 is the right place to swap that one attribute and add one listener. ALRT-03 is only started here; custom and error ownership correctly wait for 04-02.
 
-**Strengths**:
-- Clear baseline-first approach (task 04-01-01) ensures ALRT-01 is satisfied via commit history
-- Well-defined tracer task (04-01-02) that covers both Python template changes and JavaScript adapter/viewset implementation
-- Good attention to preservation of existing contracts (frame classes, translation, accessibility) in task 04-01-03
-- Correct identification of key files: `src/crud_views/templates/crud_views/tags/alert.html:5` (current `data-bs-dismiss="alert"`) needs to change to `data-cv-alert-dismiss`
-- Good understanding of existing adapter patterns in `src/crud_views/static/crud_views/js/adapters.js:43` with `Object.assign(cv.bootstrapAdapters(...), cv.adapters || {})`
+**Strengths**
+- The only live `data-bs-dismiss="alert"` assertions are `tests/test1/test_messages.py:139` and `:169`. Putting both in the tracer commit, and running the combined pytest gate before that commit, keeps the series bisectable. No golden under `tests/test1/golden/` contains `data-bs-dismiss`.
+- Raw `read_bytes()` is the right ALRT-01 instrument. `tests/test1/test_form_frame.py:44-55` normalizes whitespace, which would hide a drift this phase must show.
+- Call-time `globalThis.cv.adapters.alert.close` matches the Proxy in `tests/js/helpers/load.js:32-36`. Reloading `adapters.js` after deleting `window.cv` yields fresh defaults without stacking the `viewset.js` listener. The reload test at `tests/js/viewset.test.js:91-101` stays last.
+- `{% translate 'Close' %}` resolves through `gettext_lazy` to `_trans.gettext` (`django/template/base.py:860-867`, `django/utils/translation/__init__.py:95-111`). Patching that seam, not a template-tag alias, is the right test. The msgid is already in `src/crud_views/locale/de/LC_MESSAGES/django.po:103-104`; no catalog change is required.
+- D-04 correctly overrides the source plan. `superpowers/plans/2026-10-24-concept-review-followups.md:234-235` puts `el.remove()` in the handler; this plan keeps removal inside the adapter.
 
-**Concerns**:
-- **MEDIUM**: Task 04-01-02's verification uses `npm --prefix . test -- tests/js/adapters.test.js tests/js/viewset.test.js` but doesn't verify the golden file exists before JavaScript tests run (circular dependency risk)
-- **LOW**: The golden comparison uses byte-level comparison without normalization, which may cause issues with whitespace differences across environments
-- **LOW**: Task doesn't specify how to handle the case where `DISMISSIBLE_ALERT_HTML` golden doesn't exist yet for first run of JS tests
+**Concerns**
+- LOW: Task 01 says "fixed English locale" but does not name `translation.override`. The suite default is `LANGUAGE_CODE="en-us"` (`tests/test1/conftest.py:98`), so an unpinned golden still renders `Close` today. Pin the override in the golden test itself so task 03's gettext patch cannot leak into the bytes.
 
-**Suggestions**:
-1. Add a pre-check in task 04-01-02 to ensure the golden file exists before attempting to load it in JavaScript tests
-2. Consider adding a fallback for JS tests if golden file missing (e.g., inline test markup)
-3. Clarify error handling in adapter: what happens if `globalThis.cv.adapters.alert` doesn't exist?
+**Suggestions**
+- In the tracer, dispatch `MouseEvent("click", {bubbles: true, cancelable: true})` the way `tests/js/viewset.test.js:61-64` already does, or `defaultPrevented` is not meaningful.
+- Record the baseline hash in `04-01-SUMMARY.md` as a full SHA. 04-03's historical probe depends on it.
 
-**Risk Assessment**: **MEDIUM** - The plan is generally sound but has execution dependency issues and potential edge cases with the golden-first approach.
+**Risk Assessment:** LOW. The mechanism, the two message assertions, and the commit split are grounded in the current tree.
 
 ## 04-02
 
-**Summary**: This plan expands test coverage for namespace variations, error handling, and dynamic content scenarios. It builds on 04-01 to prove robustness of the alert adapter implementation.
+This wave is the right place for namespace, preassignment, dynamic content, and error ownership. It reuses `listenerErrors` (`tests/js/helpers/errors.js:5-17`), the existing `fakeNamespace` (`tests/js/adapters.test.js:4-14`), and the once-loaded listener. It does not add a second removal path, which is what D-03 and D-04 require. The source plan's `component(ns, "Alert")?.getOrCreateInstance(el).close()` would not remove on a missing component and would still throw if `getOrCreateInstance` returned null; the explicit branch in 04-01 plus these tests is the safer contract.
 
-**Strengths**:
-- Comprehensive test matrix covering namespace variations (null, object, function, late global)
-- Good attention to error handling per D-03 (custom adapter errors surface without core recovery)
-- Important edge cases covered: nested alerts, multiple controls, missing adapter key, unmarked body clicks
-- Correct reuse of existing test helpers (`listenerErrors`, `fakeNamespace`)
-- Good focus on preserving existing patterns while expanding coverage
+**Strengths**
+- Late namespace lookup is already proven for modal (`tests/js/adapters.test.js:115-123`). Requiring the alert branch to call `component()` inside `close`, not at factory build, extends a real seam.
+- `Object.assign` at `adapters.js:43` keeps a preassigned adapter as a whole object and fills the rest. The existing modal case at `tests/js/adapters.test.js:133-139` is the right pattern for `alert`.
+- Case-owned `window.cv` objects are necessary. Restoring a property descriptor does not undo mutations of the object it pointed at. Avoiding `vi.unstubAllGlobals` is also necessary: `tests/js/helpers/setup.js:7-8` installs `$` / `jQuery` for the whole file, and `adapters.test.js:18` already wipes globals in its own file.
+- An unmarked body inside `role="alert"` is a real miss the earlier "outside the frame" case would not cover. `tags/messages.html:1` only includes the frame, so the nearest-role rule is the whole message contract.
+- Missing `cv.adapters.alert` throws `TypeError` on the planned lookup. `listenerErrors` is the right observer: `dispatchEvent` does not rethrow listener exceptions (`tests/js/helpers/errors.js:1-4`).
 
-**Concerns**:
-- **HIGH**: Task 04-02-01 modifies `src/crud_views/static/crud_views/js/adapters.js` (already modified in 04-01-02), creating potential merge conflicts if tasks run out of order
-- **MEDIUM**: The plan mentions restoring window property descriptors but doesn't specify how to handle cases where original properties were enumerable/configurable differently
-- **LOW**: No specific mention of testing Bootstrap's `Alert.getOrCreateInstance(el).close()` throwing during component failure
+**Concerns**
+- LOW: The detached-subtree click cannot fail if the handler is wrong. A click on a node that is not an ancestor of `document` never reaches the document listener. That case proves jsdom propagation, not the adapter. Do not treat it as handler coverage.
+- LOW: "assert neither console was called by core" is easy to over-assert. `tests/js/list.filter.test.js:199` notes that jsdom reports listener errors on `console.error`. On jsdom 29.1.1, `preventDefault` inside an `error` listener suppresses that report, so `not.toHaveBeenCalled()` currently passes if `listenerErrors` runs. The proof of D-03 is the original error in that array plus an attached frame, not a silent console.
 
-**Suggestions**:
-1. Make 04-02 tasks strictly additive to adapters.js (only add new tests, no modifications to production code already changed in 04-01)
-2. Add explicit test for `Alert.getOrCreateInstance(el).close()` throwing to ensure error surfaces per D-03
-3. Consider adding a test for namespace with `Alert` component that has `getOrCreateInstance` but no `close` method
+**Suggestions**
+- Build the "other components, no Alert" namespace by copying `fakeNamespace()` and deleting `Alert`, rather than a new helper that drifts from `Modal` / `Tooltip` / `Collapse`.
+- For the throw cases, assert `errors[0] === thrown` (same object), not `toBeInstanceOf(Error)`.
 
-**Risk Assessment**: **MEDIUM** - Good test coverage but potential for conflicts with 04-01 and some edge cases not explicitly covered.
+**Risk Assessment:** LOW. The product code should not need to change if 04-01 followed D-03/D-04. These tests are the lock.
 
 ## 04-03
 
-**Summary**: This plan handles documentation updates, migration guidance, and final verification. It completes the phase with proper references and acceptance criteria.
+The doc anchors this plan edits all exist: the script table at `docs/reference/javascript.md:13-14`, "builds all three" at `:57`, the events sentence "All three are bubbling CustomEvents" at `:179` (correctly left alone), the old markup and Bootstrap-only close sentence at `docs/reference/messages.md:29-38`, the Alerts and dropdown sections at `docs/reference/theme.md:156-184`, the settings delegation paragraph at `docs/reference/settings.md:184-188`, and the Unreleased Breaking list at `CHANGELOG.md:7`. The allowlist matches `theme.md:179-181`. After the attribute swap, `src/crud_views/templates` has `data-bs-` only in `tags/actions_menu_toggle.html:4-5` and `snippets/language_selector.html:6`. `tags/actions_menu.html` is a wrapper with no `data-bs-` attribute, so "nonempty subset, do not require every allowed path" is the correct contract. Object-detail `data-bs-*` lives under `src/crud_views_object_detail/templates`, outside ALRT-04's grep root.
 
-**Strengths**:
-- Comprehensive documentation coverage across JavaScript, messages, theme, and migration guides
-- Good integration of frame override recipe that preserves existing colour seam (`{% cv_button_class "alert" alert.level %}`)
-- Correct data attribute audit focusing only on `src/crud_views/templates` per ALRT-04
-- Excellent browser acceptance procedure that actually tests real interactions
-- Good handling of tool version drift disclosure
+**Strengths**
+- Rendering the documented recipe through `_theme_templates` (`tests/test1/test_form_frame.py:58-68`) and fence-aware headings (`tests/test1/test_label_mode_docs.py:29-45`) is the right check. `examples/bootstrap5/test_docs_sync.py:7-10` ignores unmarked fences, so a docs-sync pass would not prove the recipe.
+- Keeping `{% cv_button_class "alert" alert.level %}` matches `alert.html:2`. `tests/test1/test_alerts.py:124-127` already shows that key is overridable.
+- The paired Breaking entry and migration example follow the repo rule, and `docs/migrating-1.0.md:309-310` and `:374` really do still name only three adapters and "modal, filter and tooltip".
+- The lasting `tmp_path` rejection test does not need git. That is the right permanent guard.
+- Browser evidence is not inferred from jsdom. Bootstrap's real `close()` fades and then destroys; a fake `close` that leaves the node attached is a different proof.
 
-**Concerns**:
-- **HIGH**: The data attribute audit in task 04-03-01 could fail if other templates have `data-bs-*` attributes not in the allowlist
-- **MEDIUM**: Browser acceptance test depends on example project running and Bootstrap CDN availability
-- **LOW**: Migration guidance could be confusing about when to upgrade copied templates
+**Concerns**
+- MEDIUM: The human-check consumes the only fresh message before the dynamic case. Step 2 assigns `cv.bootstrapAdapters({}).alert` and closes that message. Step 3 then says to clone "a still-present fresh message" and close it, and only afterwards restore the adapter. Followed literally, there is no node left to clone, and if one is produced it closes through the empty namespace, not through Bootstrap's transition. D-10's injected-alert observation can be skipped or mislabeled without a failing command.
+- MEDIUM: Task 01's acceptance still requires the historical alert to fail the helper in a temporary tree, while the action says that `git show <baseline>` probe must not be a lasting test. The automated verify is only pytest and mkdocs. An executor matching acceptance to a test will put `git show` in pytest. That fails after a squash, rebase, or shallow clone even when the allowlist is correct. The synthetic `tmp_path` forbidden file already proves the helper rejects `crud_views/tags/alert.html`.
+- LOW: The smoke says "authenticated create/update UI" and does not name a user. The example login is `/login/` (`examples/bootstrap5/project/urls.py:24`); seeded users are `alice`/`alice` and `bob`/`bob` (`examples/bootstrap5/project/seeding.py:6-8`), shown on the home page. Neither is a superuser. Create still needs a model `add` permission granted by `seed`.
 
-**Suggestions**:
-1. Double-check ALL `data-bs-*` attributes in the codebase before implementing the audit
-2. Add a fallback plan if browser tests can't run (e.g., manual verification requirement)
-3. Make migration guidance clearer about trade-offs of upgrading vs keeping legacy markup
+**Suggestions**
+- Rewrite the smoke as three separate messages: Bootstrap close and wait for the transition; a new message closed after the empty-namespace assignment; restore or reload; then insert a new message into a modal-like subtree and close it with the restored adapter. Name `alice`/`alice` and the create URL you actually use.
+- Run the baseline `git show` once, record the rejected relative path and hash in `04-ACCEPTANCE.md`, and do not add a pytest that calls git.
+- Extract the recipe with `ANY_FENCE` (`tests/test1/test_label_mode_docs.py:26`), not the python-only `FENCE` at `:24`. A Django template fence will not match ```` ```python ````.
 
-**Risk Assessment**: **MEDIUM** - Documentation and verification are thorough, but audit and browser tests have external dependencies.
+**Risk Assessment:** MEDIUM. The reference and allowlist work is sound. The phase can still be marked done with D-10's browser half incomplete if the smoke is followed as written.
 
-## Overall Risk Assessment: **MEDIUM**
+## Cross-plan
 
-The plans are well-structured and address the phase requirements comprehensively. Key risks include:
-1. Dependency ordering between tasks (golden files, JS tests, production code modifications)
-2. External dependencies (Bootstrap CDN, example project availability for browser tests)
-3. Potential for missed edge cases in error handling
+Waves are ordered correctly: 04-02's regressions need the listener and `alert.close` from 04-01, and 04-03 must describe the implemented contract, not the source plan's handler-side `el.remove()`. ALRT-01 through ALRT-04 are each assigned. No plan adds class-table keys, focus management, or a new lifecycle event. `docs/reference/javascript.md:179` stays three events while the factory becomes four adapters.
 
-The plans demonstrate good understanding of the codebase and phase requirements. With careful execution addressing the concerns above, this phase should successfully implement the alert dismiss adapter feature.
+The implementation path is faithful to the current frame, factory, and click handlers. The residual risk is evidence, not design: do not let a vacuous detached-click test or a git-backed audit, or a smoke script that deletes the node it later clones, stand in for the locked close contract.
 
 
 ---
+
+
 ## Consensus Summary
 
-### Verified closure of prior findings
+All three configured reviewers returned source-cited reviews covering all three plans. No reviewer raised a HIGH concern. Fable and Gemini rate the overall plan LOW risk; Grok rates 04-03 MEDIUM because of the browser-evidence procedure. Source checks support the implementation approach and dependency order. Four bounded follow-ups remain: two MEDIUM documentation/acceptance clarifications and two LOW documentation/test-extraction clarifications. This review does not revise the plans or reopen previously resolved findings automatically.
 
-Gemini and Grok explicitly verify every earlier finding closed and raise no new concerns or suggestions. Fable verifies the same closures and labels its remaining notes optional wording, with no evidenced defect. Independent source checks below refute DeepSeek's two new HIGH claims rather than treating them as unresolved or silently suppressing them. All fourteen earlier items are covered in executable tasks or A2's explicit rejection.
+### Agreed Strengths
 
-| Finding group | Verified executable contract in cff77e5 |
-|---|---|
-| H1 | 04-03-01 scans only src/crud_views/templates; nonempty matches must be a subset of the exact three-path allowlist; the wrapper need not match. Historical red uses baseline alert.html in a temporary tree without changing checkout. |
-| A1–A3 | 04-01 keeps baseline chronology, includes both legacy message assertion updates in the tracer commit, explicitly preserves introduce-gsd and uses scoped fresh real adapters with globalThis.cv lookup. |
-| A4–A6 | 04-02 reuses listenerErrors, restores console spies, covers multiple controls/nested survivors and surfaces missing-adapter TypeError without fallback/logging/repair. |
-| A7–A10 | 04-03 updates stale settings/migration lists, preserves the tested colour seam and single dismiss hook; 04-01 names the actual locally restored template translation delegate. |
-| C2-A1 | 04-03:147–152 permanently tests an allowed tmp_path tree, then adds a forbidden alert file and requires AssertionError naming its relative path; no Git dependency enters the lasting test. |
-| C2-A2 | 04-02:118–121,172–175 creates a case-owned cv/adapters object before nested mutation, then restores untouched original property descriptors; no shared jQuery unstubbing. |
-| C2-A3 | 04-02:144,158–160 clicks an unmarked body inside role=alert and requires no error, call or removal. |
+- **Baseline chronology and real rendered tracer:** all reviewers confirm the existing alert hook and both message assertions, and endorse committing the raw golden before changing the template, then consuming it in JavaScript. Evidence: `src/crud_views/templates/crud_views/tags/alert.html:5`, `tests/test1/test_messages.py:139`, `tests/test1/test_messages.py:169`, and `.planning/phases/04-alert-dismiss-adapter/04-01-PLAN.md:114`.
+- **Adapter ownership and dynamic dispatch:** all endorse lazy namespace resolution, call-time adapter lookup, absence-only removal, and using the existing listener-error observer. Evidence: `src/crud_views/static/crud_views/js/adapters.js:7`, `src/crud_views/static/crud_views/js/adapters.js:43`, `tests/js/helpers/errors.js:5`, and `.planning/phases/04-alert-dismiss-adapter/04-02-PLAN.md:163`.
+- **Correct audit scope and release coverage:** all confirm the core-only template scan, nonempty subset allowlist, permanent synthetic negative test, and paired Breaking/migration update. The wrapper need not contain a data attribute, and extension apps are outside this requirement. Evidence: `.planning/phases/04-alert-dismiss-adapter/04-03-PLAN.md:139`, `docs/reference/theme.md:179`, and `src/crud_views/templates/crud_views/tags/actions_menu_toggle.html:4`.
 
-Prior raw reviews are preserved in [.review-history/04-REVIEWS-cycle1.md](.review-history/04-REVIEWS-cycle1.md) and [.review-history/04-REVIEWS-cycle2.md](.review-history/04-REVIEWS-cycle2.md). Their counts are historical. Current executable tasks and explicit review dispositions control execution.
+### Agreed Concerns
 
-### Current unresolved findings
+- **R04-04 — LOW, template-fence extraction (Gemini, Grok):** task 04-03-01 points to the existing section-extraction pattern, whose companion `FENCE` accepts Python only. Specify the full Markdown heading and a `django`/`html` fence when implementing the recipe test; do not copy the Python-only matcher. Evidence: `tests/test1/test_label_mode_docs.py:24`, `tests/test1/test_label_mode_docs.py:35`, and `.planning/phases/04-alert-dismiss-adapter/04-03-PLAN.md:133`. This is an implementation clarification, not proof the current plan requires the wrong matcher.
+- **Cleanup ergonomics (Fable, Gemini):** `tests/js/adapters.test.js:18` already cleans globals after each case, making additional descriptor restoration partly redundant there. It remains important in the shared-listener suite. This is optional boilerplate reduction, not a correctness gap; preserve the existing fresh-object isolation requirement in `.planning/phases/04-alert-dismiss-adapter/04-02-PLAN.md:172`.
 
-None.
+### Actionable Follow-ups
 
-`CYCLE_SUMMARY: current_high=0 current_actionable=0`
+| ID | Severity | Plan/task | Source-grounded follow-up |
+|---|---|---|---|
+| R04-01 | MEDIUM | 04-03-02 | Explicitly warn that replacing the entire `cv.adapters` map **after** core loads must retain/provide `alert.close(el)`. `src/crud_views/static/crud_views/js/adapters.js:43` fills defaults only during initialization; the planned missing-key case deliberately throws (`04-02-PLAN.md:169`). Document per-entry replacement or preserving defaults; Bootstrap-compatible themes can use `cv.bootstrapAdapters(ns).alert`. The current migration task updates enumerations but does not name this case (`04-03-PLAN.md:185`). Raised by Fable; mechanism independently confirmed. |
+| R04-02 | MEDIUM | 04-03-03 | Make browser acceptance use three explicit fresh messages: real Bootstrap close; absent-Alert fallback; restore/reload, then create and clone a fresh message into dynamically inserted content. Record which adapter each observation exercised. The current prose removes the second message before requesting a still-present fresh one and restores the adapter only afterward (`04-03-PLAN.md:256`). Raised by Grok; this clarifies reproducibility and avoids labeling a fallback observation as a Bootstrap transition. |
+| R04-03 | LOW | 04-03-02 | Add `alert` to the existing Unreleased Added adapter enumeration at `CHANGELOG.md:294`, alongside the planned new Breaking entry and migration changes. Raised by Gemini; stale enumeration independently confirmed. |
+| R04-04 | LOW | 04-03-01 | Use a heading-aware template-fence extractor as described under Agreed Concerns. Raised by Gemini and Grok. |
 
-The fixed plan-revision conflict slot is preserved unchanged and contains zero open conflicts. All four reviewers supplied source citations, so no evidence-quality discount marker was needed. No HIGH remains partially resolved. No actionable MEDIUM/LOW finding remains solely in this review.
+The shortened plan filenames in this table refer to `.planning/phases/04-alert-dismiss-adapter/`. None of these follow-ups requires changing the selected product contract.
 
-### Grounded dispositions of DeepSeek's new claims
+### Divergent Views and Dispositions
 
-- **HIGH: overlapping adapters.js edits might conflict if tasks run out of order — refuted by declared dependencies.** 04-02 has wave2 and depends_on04-01 in frontmatter, and its action permits only bounded corrections if a regression exposes a defect. 04-03 depends on both. Reversing that order would violate the plan. Nothing runs these production edits concurrently, so this is not an unresolved architecture risk.
-- **HIGH: audit could fail on forbidden attributes — intended acceptance behavior, not a defect.** 04-03 explicitly scopes the root and allowlist and permanently proves rejection of forbidden paths. Current rg evidence under the core root is the legacy alert plus the two allowed dropdown files; the tracer removes the legacy hook. Rejecting a later unexpected data-bs attribute is the guard's required purpose. The source and task contract refute the supposed missing audit coverage.
-- **Golden availability/circularity — already resolved by chronology and verification.** 04-01-01 creates and commits the exact baseline before task2. 04-01-02 runs the Python golden comparison before JavaScript consumes the same file. A missing file makes that comparison fail. Inline fallback markup would undermine the required rendered-fixture bridge and is not authorized.
-- **Whitespace across environments — chosen existing contract.** D-07 and04-01 deliberately require raw bytes under a fixed English render and an attribute-only diff, not normalization. No evidence of a new nondeterministic value was cited.
-- **Descriptor flags — already preserved by exact descriptor restoration.** 04-01:173–177 saves/restores the original descriptors or deletes originally absent properties. 04-02 now performs mutations on fresh case-owned objects. Enumerable/configurable flags are part of those descriptors, not a missing separate contract.
-- **Present component errors/missing adapter — already specified.** 04-02:103,115–116 covers throwing getOrCreateInstance and close; :147,169–171 covers a missing alert adapter key with surfaced TypeError and retained frame. A malformed third-party component's missing method follows the same uncaught component-owned failure path; no recovery or lifecycle manager is warranted.
-- **Browser/CDN blocker and copied-template guidance — already explicit.** 04-03:185–196 recommends adopting the new hook even with Bootstrap and distinguishes the legacy-old-hook-only path. :250–265 gives reproducible real-browser steps and an explicit unverified blocker branch. Unit fakes never count as Bootstrap transition evidence.
+- **Whole-map replacement needs a precise load-order qualifier.** Fable cites the existing hand-written adapter guidance, but `docs/reference/javascript.md:50` specifically documents pre-load assignment, which remains safe because defaults are merged at initialization. R04-01 concerns a later whole-map replacement. Per-entry replacement (`docs/reference/javascript.md:44`) also preserves the other defaults.
+- **Historical Git probe is already separated from permanent tests.** Grok's MEDIUM concern is not an unresolved test-design defect: `.planning/phases/04-alert-dismiss-adapter/04-03-PLAN.md:151` explicitly requires the lasting regression to have no Git dependency, and line 158 explicitly keeps the historical probe outside that test. Preserve and execute both instructions; do not add a Git-dependent pytest.
+- **Browser access is an execution-time question.** Fable's prediction that an executor cannot use a browser is not established by repository evidence. The plan already requires an explicit pending result when access is unavailable (`04-03-PLAN.md:225`, `04-03-PLAN.md:261`). Grok's claim that the phase can be marked complete without browser evidence overstates the plan: its action explicitly prohibits marking D-10 fully verified without browser and required-gate evidence. R04-02 improves the procedure without weakening that gate.
+- **TDD commit wording merits care, but baseline chronology is explicit.** Fable requests explicit RED/GREEN file sets. Keep a RED test-only commit if required by the executor's TDD contract and put the coordinated template/adapter/golden/message changes in GREEN. `04-01-PLAN.md:114` already forbids any template or JS edit before the baseline commit. The reviewer’s hypothetical premature staging does not establish a D-07 gap. Do not interpret “green tracer commit” as permission to skip required RED evidence.
+- **Raw bytes and the translation sentinel are intentional.** `04-01-PLAN.md:137` already specifies a fixed English locale, no appended newline, and documentation of that byte convention. The sentinel checks whether the template invokes translation; a real German-catalog assertion is optional additional coverage. Do not normalize the golden to match older helpers. Gemini's relative-path reminder is useful implementation guidance, not an erroneous path specified by the plan.
+- **Error and detached-event evidence have bounded meaning.** `tests/js/helpers/errors.js:8` captures the original exception and prevents the default error report. `04-02-PLAN.md:165` already requires original-error identity, retained DOM/mutations, and no core logging; a silent console alone is insufficient. Detached-subtree clicks establish the explicitly stated DOM-propagation boundary, not independent proof of handler correctness. Other matched-event tests supply that proof.
 
-### Other final-cycle notes
+### Evidence and Limits
 
-Fable's optional wording is already bounded by executable acceptance: 04-01-01 requires a fixed English locale, a golden update scoped to that test only and raw-byte comparison; 04-03-02 requires the paired Breaking/migration change in one commit. Explicit spelling of translation.override("en"), a -k selector or git show --stat is an implementation/verification choice within those existing tasks, not an unplanned behavior. Its note about adapters.test.js's existing afterEach clarifies existing cleanup; C2-A2 already requires fresh case-owned objects and preserved shared jQuery state. No additional plan revision is required for these notes.
+Reviews were collected against commit `9f9d234ec1bec035226f6a24ff62308377e412d4`. Each reviewer covered 04-01, 04-02 and 04-03 and cited repository source. No reviewer required an evidence-quality discount marker. Grok reported that it could not see the planning directory in its source tree; it still received the full plans in the supplied prompt and inspected the implementation files, so this is a limit on direct plan-file access, not a source-free review.
 
-Fable could not run throwaway probes and explicitly verified the translation/error mechanisms by source. Grok verified the installed harness's prevented-error/no-console behavior. This review does not claim a new full pytest/Vitest/docs run. Fable's prose says thirteen prior findings while its table lists all fourteen; that counting typo does not omit a task or change the verified closure set.
+No prompt budget trimming was configured, and no lane failed or was retried. This pass did not execute the implementation, full test suite, docs build, or browser acceptance. Historical environment-version claims remain subject to the planned execution-time recheck. Existing user changes to config and other untracked planning files were left intact.
 
-
-## Verification coverage
-
-### Source authority and limits
-
-The deterministic authority seam again returned intel despite the project's explicit grep preference. The generated API map remains empty, so index-based declaration resolution is **UNCHECKABLE**, not MISSING. Direct repository reads/rg supplement file/declaration existence; unsupported signatures, browser/dependency APIs and dynamic Django translation access remain explicitly UNCHECKABLE. No local declaration was found missing. New hooks, helpers, tests, temporary fixture paths and generated execution summaries are excluded as declared phase products.
-
-The refreshed [source-grounding.json](.review-diagnostics/20261026T194243Z-gsd-review-etpnrud2/source-grounding.json) records 89 reference rows with every current plan-line quote, evidence, exclusion and limit. Severity seams return no block for VERIFIED and INFO/no block for UNCHECKABLE. New code, future execution results, real browser transitions and manifest-version compliance are not certified by plan review.
-
-### Uncheckable and excluded references
-
-| Reference | Verdict | Limit / exclusion |
-|---|---|---|
-| `.planning/phases/04-alert-dismiss-adapter/04-01-SUMMARY.md` | SKIPPED_NEW | Declared new phase artifact or generated execution SUMMARY context. 04-01-PLAN.md:299. |
-| `.planning/phases/04-alert-dismiss-adapter/04-02-SUMMARY.md` | SKIPPED_NEW | Declared new phase artifact or generated execution SUMMARY context. 04-02-PLAN.md:263. |
-| `.planning/phases/04-alert-dismiss-adapter/04-03-SUMMARY.md` | SKIPPED_NEW | Declared new phase artifact or generated execution SUMMARY context. 04-03-PLAN.md:338. |
-| `.planning/phases/04-alert-dismiss-adapter/04-ACCEPTANCE.md` | SKIPPED_NEW | Declared new phase artifact or generated execution SUMMARY context. 04-03-PLAN.md:16. |
-| `tests/test1/golden/alerts/dismissible.html` | SKIPPED_NEW | Declared new phase artifact or generated execution SUMMARY context. 04-01-PLAN.md:9. |
-| `cv.adapters.alert` | SKIPPED_NEW | Declared in Artifacts this phase produces; produced by planned tasks. 04-01-PLAN.md:25. |
-| `alert.close(el)` | SKIPPED_NEW | Declared in Artifacts this phase produces; produced by planned tasks. 04-01-PLAN.md:98. |
-| `data-cv-alert-dismiss` | SKIPPED_NEW | Declared in Artifacts this phase produces; produced by planned tasks. 04-01-PLAN.md:25. |
-| `DISMISSIBLE_ALERT_HTML` | SKIPPED_NEW | Declared in Artifacts this phase produces; produced by planned tasks. 04-01-PLAN.md:48. |
-| `test_dismissible_alert_golden` | SKIPPED_NEW | Declared in Artifacts this phase produces; produced by planned tasks. 04-01-PLAN.md:36. |
-| `test_dismissible_alert_preserves_frame_contract` | SKIPPED_NEW | Declared in Artifacts this phase produces; produced by planned tasks. 04-01-PLAN.md:94. |
-| `test_documented_alert_frame_override` | SKIPPED_NEW | Declared in Artifacts this phase produces; produced by planned tasks. 04-03-PLAN.md:55. |
-| `test_stock_bootstrap_data_attributes_are_dropdown_only` | SKIPPED_NEW | Declared in Artifacts this phase produces; produced by planned tasks. 04-03-PLAN.md:94. |
-| `rendered alert dismissal tracer` | SKIPPED_NEW | Declared in Artifacts this phase produces; produced by planned tasks. 04-01-PLAN.md:97. |
-| `alert adapter ownership` | SKIPPED_NEW | Declared in Artifacts this phase produces; produced by planned tasks. 04-02-PLAN.md:78. |
-| `delegated alert ownership` | SKIPPED_NEW | Declared in Artifacts this phase produces; produced by planned tasks. 04-02-PLAN.md:79. |
-| `Element` | UNCHECKABLE | External platform/library/CLI declaration not defined in repo; use-sites inspected, signatures not asserted by grep/intel. 04-01-PLAN.md:183. |
-| `Object.assign` | UNCHECKABLE | External platform/library/CLI declaration not defined in repo; use-sites inspected, signatures not asserted by grep/intel. 04-01-PLAN.md:105. |
-| `closest` | UNCHECKABLE | External platform/library/CLI declaration not defined in repo; use-sites inspected, signatures not asserted by grep/intel. 04-01-PLAN.md:60. |
-| `dispatchEvent` | UNCHECKABLE | External platform/library/CLI declaration not defined in repo; use-sites inspected, signatures not asserted by grep/intel. 04-02-PLAN.md:171. |
-| `getOrCreateInstance` | UNCHECKABLE | External platform/library/CLI declaration not defined in repo; use-sites inspected, signatures not asserted by grep/intel. 04-01-PLAN.md:166. |
-| `isConnected` | UNCHECKABLE | External platform/library/CLI declaration not defined in repo; use-sites inspected, signatures not asserted by grep/intel. 04-02-PLAN.md:110. |
-| `read_bytes` | UNCHECKABLE | External platform/library/CLI declaration not defined in repo; use-sites inspected, signatures not asserted by grep/intel. 04-01-PLAN.md:53. |
-| `--prefix` | UNCHECKABLE | External platform/library/CLI declaration not defined in repo; use-sites inspected, signatures not asserted by grep/intel. 04-01-PLAN.md:204. |
-| `-q` | UNCHECKABLE | External platform/library/CLI declaration not defined in repo; use-sites inspected, signatures not asserted by grep/intel. 04-01-PLAN.md:153. |
-| `-n auto` | UNCHECKABLE | External platform/library/CLI declaration not defined in repo; use-sites inspected, signatures not asserted by grep/intel. 04-03-PLAN.md:238. |
-| `--strict` | UNCHECKABLE | External platform/library/CLI declaration not defined in repo; use-sites inspected, signatures not asserted by grep/intel. 04-03-PLAN.md:173. |
-| `--check` | UNCHECKABLE | External platform/library/CLI declaration not defined in repo; use-sites inspected, signatures not asserted by grep/intel. 04-03-PLAN.md:246. |
-| `alert_data` | UNCHECKABLE | External translated name; no declaration asserted 04-01-PLAN.md:229. |
-| `crud_views/tags/alert.html` | UNCHECKABLE | Runtime/external citation fragment; no source absence claimed. 04-01-PLAN.md:10. |
-| `_assert_core_bootstrap_data_attributes` | SKIPPED_NEW | Declared private test helper in 04-03 Artifacts section; created by planned task. 04-03-PLAN.md:95. |
-| `monkeypatch.context` | UNCHECKABLE | External pytest API; use local installed API, no repo declaration/signature certified. 04-01-PLAN.md:223. |
-| `django.utils.translation._trans.gettext` | UNCHECKABLE | Django dynamically resolves _trans.gettext through Trans.__getattr__; installed gettext wrapper reads it at call time. No static property declaration exists; explicitly acknowledged dynamically resolved seam. 04-01-PLAN.md:224. |
-| `translation.override` | UNCHECKABLE | External Django context manager; existing repository use-sites, no repo-owned declaration/signature certified. 04-01-PLAN.md:225. |
-| `git show` | UNCHECKABLE | Existing Git command reads a committed snapshot without changing checkout; no repo-owned declaration. 04-03-PLAN.md:155. |
-| `ALLOWED` | SKIPPED_NEW | Declared helper-local set in 04-03 Artifacts section; new test-local name. 04-03-PLAN.md:97. |
-| `test_core_bootstrap_data_attribute_guard_rejects_forbidden_path` | SKIPPED_NEW | Declared new test in04-03 Artifacts section, produced by task04-03-01. 04-03-PLAN.md:94. |
-| `tmp_path` | UNCHECKABLE | External pytest fixture supplied by existing test framework; no repo-owned declaration/signature certified. 04-03-PLAN.md:96. |
-| `AssertionError` | UNCHECKABLE | Python builtin; no repo-owned declaration/signature certified. 04-03-PLAN.md:150. |
-
-### Cross-artifact fact drift
-
-- Deterministic phase status is lag: STATE Ready to plan versus ROADMAP Planned. This single nonterminal step is not a finding.
-- Roadmap criteria and plan truths consistently cover baseline chronology, component/missing-component/dynamic dismissal, the core-only audit, references, paired release/migration changes and actual example acceptance.
-- ALRT-01 through ALRT-04 match the roadmap/requirements and task/frontmatter assignments.
-- D-01 through D-10 remain consistent: unchanged literal frame styling, no new class keys, adapter-owned errors and absence-only fallback, semantic call-time delegation and accurate copied-template migration. No focus/auto-dismiss or new lifecycle events were introduced.
+To incorporate the four follow-ups, run `$gsd-plan-phase 4 --reviews`.

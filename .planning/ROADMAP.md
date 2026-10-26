@@ -52,7 +52,7 @@ for unknown keys.
      the set of locations, not from a literal.
   5. `grep -n '"both" if card\|or "icon"\|get(key, "icon")' src/crud_views/lib/view/*.py` returns nothing. Goldens
      stay byte-identical, and the docs state per-key merge vs whole-dict replacement for each knob.
-**Plans**: 3/4 plans executed
+**Plans**: 4/4 plans executed
 
 Plans:
 **Wave 1**
@@ -66,7 +66,7 @@ Plans:
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
-- [ ] 01-04-PLAN.md — Canonical configuration docs, decision handoff and final quality gates
+- [x] 01-04-PLAN.md — Canonical configuration docs, decision handoff and final quality gates
 
 **UI hint**: no (settings and resolution only; no markup change)
 
@@ -253,7 +253,7 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Label-mode defaults | 3/4 | In Progress | - |
+| 1. Label-mode defaults | 4/4 | In Progress | - |
 | 2. Form key grammar | 0/TBD | Not started | - |
 | 3. Filter toggle label mode | 0/TBD | Not started | - |
 | 4. Alert dismiss adapter | 0/TBD | Not started | - |

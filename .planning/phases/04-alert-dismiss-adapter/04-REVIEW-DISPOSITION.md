@@ -5,7 +5,7 @@ titles: json
 findings:
   - id: WR-01
     severity: warning
-    disposition: open
+    disposition: fixed
     title: "`theme.md` claims the dropdown templates are the only stock templates with `data-bs-*`, but the object-detail layouts also carry them"
   - id: IN-01
     severity: info
@@ -17,9 +17,9 @@ findings:
     title: "The `BOOTSTRAP_DATA_ALLOWED` allowlist is hand-copied from `theme.md` rather than derived from it"
   - id: IN-03
     severity: info
-    disposition: open
+    disposition: fixed
     title: "`messages.md` understates the `viewset.js`-without-`adapters.js` case"
-open: 4
+open: 2
 total: 4
 recorded: 2026-10-26T20:52:14.239Z
 ---
@@ -28,10 +28,10 @@ recorded: 2026-10-26T20:52:14.239Z
 
 | Finding | Severity | Disposition | Source |
 |---------|----------|-------------|--------|
-| WR-01 | warning | open | - |
+| WR-01 | warning | fixed | b7b49ae (user decision in UAT) |
 | IN-01 | info | open | - |
 | IN-02 | info | open | - |
-| IN-03 | info | open | - |
+| IN-03 | info | fixed | b7b49ae (user decision in UAT) |
 
 Dispositions: `open` (recorded, not yet triaged), `fixed`, `skipped`, `deferred`.
 Set `deferred` by hand and put the reason in the Source cell; both are preserved. A `|` in the reason is kept as prose and escaped on the next run.

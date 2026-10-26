@@ -152,8 +152,13 @@ document the frame override in `theme.md` (LATER-06 tracks the keys).
 **Plans**: 3 plans
 
 Plans:
+**Wave 1**
 - [ ] 04-01-PLAN.md — Commit the current golden, deliver the rendered dismiss tracer and preserve message rendering
+
+**Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 04-02-PLAN.md — Prove namespace, dynamic-content and custom/component ownership contracts
+
+**Wave 3** *(blocked on Wave 2 completion)*
 - [ ] 04-03-PLAN.md — Publish references and migration, then record browser acceptance and final quality gates
 
 Execution waves: 1 = 04-01; 2 = 04-02; 3 = 04-03. The first task commits only the baseline before product edits.

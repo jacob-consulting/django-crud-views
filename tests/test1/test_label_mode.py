@@ -153,9 +153,9 @@ PER_LOCATION_INVALID = [None, "", [], {}, {"filter": "both"}, ["both"], 1, "Both
 
 @pytest.mark.parametrize("configured", WHOLE_SETTING_INVALID, ids=repr)
 def test_default_label_mode_invalid_setting_whole(configured, warned, caplog):
-    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS=configured, CRUD_VIEWS_STRICT=True):
-        with pytest.raises(ValueError, match="CRUD_VIEWS_LABEL_MODE_DEFAULTS must be a dict"):
-            default_label_mode("context")
+    strict = override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS=configured, CRUD_VIEWS_STRICT=True)
+    with strict, pytest.raises(ValueError, match="CRUD_VIEWS_LABEL_MODE_DEFAULTS must be a dict"):
+        default_label_mode("context")
     with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS=configured, CRUD_VIEWS_STRICT=False):
         assert _resolved() == PACKAGE
     assert len(_records(caplog)) == 3  # one per location queried
@@ -222,9 +222,9 @@ def test_default_label_mode_exact_strings_valid(mode):
 )
 def test_default_label_mode_exact_strings(value, warned, caplog):
     # modes are exact, case-sensitive strings: no strip, no casefold, no Unicode normalisation
-    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"list": value}, CRUD_VIEWS_STRICT=True):
-        with pytest.raises(ValueError, match=r"key 'list' must be one of \['both', 'icon', 'label'\]"):
-            default_label_mode("list")
+    strict = override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"list": value}, CRUD_VIEWS_STRICT=True)
+    with strict, pytest.raises(ValueError, match=r"key 'list' must be one of \['both', 'icon', 'label'\]"):
+        default_label_mode("list")
     with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"list": value}, CRUD_VIEWS_STRICT=False):
         assert default_label_mode("list") == "icon"
     assert len(_records(caplog)) == 1

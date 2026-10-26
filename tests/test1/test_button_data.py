@@ -327,9 +327,9 @@ def test_configured_leaf_floor(location):
 @pytest.mark.parametrize("value", [{"filter": "both"}, ["both"], 1, "Both", " both ", "b\u03bfth", "lable"], ids=repr)
 def test_invalid_stamped_mode_falls_back(location, value, warned, caplog):
     ctx = base(cv_label="Details", cv_label_mode=value)
-    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS=CONFIGURED, CRUD_VIEWS_STRICT=True):
-        with pytest.raises(ValueError, match="cv_label_mode must be one of"):
-            cv_button_data(ctx, location)
+    strict = override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS=CONFIGURED, CRUD_VIEWS_STRICT=True)
+    with strict, pytest.raises(ValueError, match="cv_label_mode must be one of"):
+        cv_button_data(ctx, location)
     with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS=CONFIGURED, CRUD_VIEWS_STRICT=False):
         # production renders with the configured floor instead of crashing
         assert cv_button_data(ctx, location)["cv_label_mode"] == CONFIGURED[location]
@@ -357,9 +357,9 @@ def test_falsey_stamped_mode_uses_floor(strict, location, value, warned, caplog)
 def test_strict_stamped_error_precedes_invalid_floor(location):
     # the stamp is named, not the (also malformed) floor it would fall back to
     ctx = base(cv_label="Details", cv_label_mode="Both")
-    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={location: "nope"}, CRUD_VIEWS_STRICT=True):
-        with pytest.raises(ValueError, match="cv_label_mode") as excinfo:
-            cv_button_data(ctx, location)
+    strict = override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={location: "nope"}, CRUD_VIEWS_STRICT=True)
+    with strict, pytest.raises(ValueError, match="cv_label_mode") as excinfo:
+        cv_button_data(ctx, location)
     assert "CRUD_VIEWS_LABEL_MODE_DEFAULTS" not in str(excinfo.value)
     assert "'Both'" in str(excinfo.value)
 

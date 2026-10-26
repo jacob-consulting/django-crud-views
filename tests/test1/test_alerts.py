@@ -8,6 +8,8 @@ from django.template import Context, Template
 from django.test import override_settings
 from django.utils import translation
 from django.utils.safestring import mark_safe
+from django.utils.translation import _trans
+from lxml import html as lxml_html
 
 from crud_views.lib.messages import alert_data
 from tests.test1.test_form_frame import _norm, _theme_templates
@@ -109,6 +111,8 @@ def test_cv_alert_is_not_dismissible_by_default():
     html = _render('{% cv_alert "warning" text="t" %}')
     assert "btn-close" not in html
     assert "alert-dismissible" not in html
+    assert "data-cv-alert-dismiss" not in html
+    assert lxml_html.fromstring(html).xpath("//button") == []
 
 
 def test_frame_is_overridable_on_its_own():
@@ -162,6 +166,66 @@ def test_dismissible_alert_golden():
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(data)
     assert data == path.read_bytes()
+
+
+def _dismissible_frame(markup):
+    """The parsed alert frame and its single close control."""
+    (frame,) = lxml_html.fragment_fromstring(markup, create_parent="root").xpath('//*[@role="alert"]')
+    (control,) = frame.xpath(".//button")
+    return frame, control
+
+
+def test_dismissible_alert_preserves_frame_contract():
+    """ALRT-02 / D-01: only the dismiss hook changed; the frame keeps its role, literal classes and close button."""
+    with translation.override("en"):
+        frame, control = _dismissible_frame(_render('{% cv_alert "success" heading="H" text="t" dismissible=True %}'))
+    assert frame.tag == "div"
+    assert frame.get("class") == "alert alert-success alert-dismissible fade show"
+    assert control.get("type") == "button"
+    assert control.get("class") == "btn-close"
+    assert "data-cv-alert-dismiss" in control.attrib
+    assert control.get("data-cv-alert-dismiss") == ""
+    assert "data-bs-dismiss" not in control.attrib
+    assert control.get("aria-label") == "Close"
+
+
+def test_dismissible_alert_close_label_is_translated(monkeypatch):
+    """The close control's accessible name goes through Django's active translation, not a hard-coded string."""
+    sentinel = "zz-close-sentinel"
+    original = _trans.gettext  # resolves (and caches) the real gettext before it is patched
+
+    def gettext(message):
+        return sentinel if message == "Close" else original(message)
+
+    with monkeypatch.context() as patch, translation.override("en"):
+        patch.setattr(_trans, "gettext", gettext)
+        _frame, control = _dismissible_frame(_render('{% cv_alert "info" text="t" dismissible=True %}'))
+    assert control.get("aria-label") == sentinel
+    assert _trans.gettext is original
+
+
+def test_dismissible_alert_escapes_heading_text_and_extra_tags():
+    """The dismissible branch keeps alert_data's escaping: hostile values stay text, safe strings stay markup."""
+    html = _render(
+        '{% cv_alert "error" heading=h text=t extra_tags=x dismissible=True %}'
+        '{% cv_alert "info" text=safe dismissible=True %}',
+        {
+            "h": "<script>h</script>",
+            "t": "<img src=x onerror=t>",
+            "x": '"><script>x</script>',
+            "safe": mark_safe("<b>ok</b>"),
+        },
+    )
+    root = lxml_html.fragment_fromstring(html, create_parent="root")
+    assert root.xpath("//script") == []
+    assert root.xpath("//img") == []
+    assert root.xpath("//b/text()") == ["ok"]
+    hostile, safe = root.xpath('//*[@role="alert"]')
+    assert hostile.get("class") == 'alert alert-danger alert-dismissible fade show "><script>x</script>'
+    assert "<script>h</script>" in hostile.text_content()
+    for frame in (hostile, safe):
+        (control,) = frame.xpath(".//button[@data-cv-alert-dismiss]")
+        assert control.get("aria-label")
 
 
 def test_cv_alert_separates_heading_and_text():

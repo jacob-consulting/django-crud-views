@@ -5,6 +5,7 @@ from django.contrib.messages.storage.base import Message
 from django.template import Context, Template
 from django.test.client import Client
 from django.utils.safestring import mark_safe
+from lxml import html as lxml_html
 
 from crud_views.lib.messages import message_alerts
 from tests.lib.helper.user import user_viewset_permission
@@ -137,6 +138,7 @@ def test_cv_messages_renders_a_dismissible_alert():
     assert 'role="alert"' in html
     assert '<i class="fa-solid fa-circle-check' in html
     assert "data-cv-alert-dismiss" in html
+    assert "data-bs-dismiss" not in html
     assert 'class="btn-close"' in html
     assert "Saved" in html
 
@@ -165,9 +167,18 @@ def test_cv_messages_renders_nothing_without_messages_in_the_context():
 def test_create_message_renders_as_an_alert(client_publisher_add_view: Client, cv_publisher):
     response = client_publisher_add_view.post("/publisher/create/", {"name": "Penguin"}, follow=True)
     html = response.content.decode()
+    assert response.redirect_chain and response.status_code == 200
     assert 'class="alert alert-success alert-dismissible fade show"' in html
     assert "data-cv-alert-dismiss" in html
     assert "<strong>Penguin</strong>" in html
+    (frame,) = lxml_html.fromstring(html).xpath('//*[@role="alert"][.//strong[text()="Penguin"]]')
+    assert frame.get("class") == "alert alert-success alert-dismissible fade show"
+    (control,) = frame.xpath(".//button")
+    assert control.get("type") == "button"
+    assert control.get("class") == "btn-close"
+    assert "data-cv-alert-dismiss" in control.attrib
+    assert "data-bs-dismiss" not in control.attrib
+    assert control.get("aria-label")
 
 
 def test_cv_messages_escapes_even_with_autoescape_off():

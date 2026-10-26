@@ -49,7 +49,9 @@
     "security_asvs_level": 1,
     "security_block_on": "high",
     "tdd_mode": false,
-    "ui_review": true
+    "ui_review": true,
+    "_auto_chain_active": false,
+    "plan_review_convergence": true
   },
   "ship": {
     "pr_body_sections": []
@@ -76,35 +78,69 @@
   },
   "resolve_model_ids": "omit",
   "model_policy": {
-    "provider": "custom",
-    "high": "openrouter/openai/gpt-6-astra-pro",
-    "medium": "openrouter/anthropic/claude-opus-5.5",
-    "low": "openrouter/anthropic/claude-sonnet-5"
+    "provider": "generic",
+    "runtime_tiers": {
+      "claude": {
+        "opus": {
+          "model": "claude-fable-5-1"
+        },
+        "sonnet": {
+          "model": "claude-opus-5-5"
+        },
+        "haiku": {
+          "model": "claude-sonnet-5-5"
+        }
+      },
+      "codex": {
+        "opus": {
+          "model": "gpt-6-astra",
+          "reasoning_effort": "high"
+        },
+        "sonnet": {
+          "model": "gpt-6.1-sol",
+          "reasoning_effort": "medium"
+        },
+        "haiku": {
+          "model": "gpt-6-luna",
+          "reasoning_effort": "low"
+        }
+      }
+    }
   },
   "review": {
-    "default_reviewers": [
-      "opencode-gemini",
-      "opencode-grok",
-      "claude-fable"
-    ],
     "reviewer_instances": {
-      "opencode-gemini": {
-        "cli": "opencode",
-        "model": "openrouter/google/gemini-4-argon"
+      "fable-review": {
+        "cli": "claude",
+        "model": "claude-fable-5-1"
       },
-      "opencode-grok": {
+      "astra-review": {
+        "cli": "codex",
+        "model": "gpt-6-astra"
+      },
+      "grok-review": {
         "cli": "opencode",
         "model": "openrouter/x-ai/grok-4.7"
       },
-      "claude-fable": {
-        "cli": "claude",
-        "model": "claude-fable-5-1"
+      "gemini-review": {
+        "cli": "opencode",
+        "model": "openrouter/google/gemini-4-argon"
+      },
+      "deepseek-review": {
+        "cli": "opencode",
+        "model": "openrouter/deepseek/deepseek-v3.2"
       }
     },
-    "models": {
-      "opencode": "openrouter/x-ai/grok-4.7",
-      "claude": "claude-fable-5-1"
-    }
+    "default_reviewers": [
+      "fable-review",
+      "grok-review",
+      "gemini-review",
+      "deepseek-review"
+    ],
+    "parallel_lanes": false
   },
-  "runtime": "opencode"
+  "models": {
+    "planning": "opus",
+    "discuss": "opus",
+    "execution": "sonnet"
+  }
 }

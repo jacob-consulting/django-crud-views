@@ -119,12 +119,12 @@ means for this button, and whether `both` swaps only the icon.
   3. The toggle's visible text never changes between states. Only `aria-expanded` and the icon change.
   4. "Filter" is a translated msgid and renders in German with the German catalog.
 
-**Plans**: 1/2 plans executed
+**Plans**: 2/2 plans executed
 **Wave 1**
 - [x] 03-01-PLAN.md
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 03-02-PLAN.md
+- [x] 03-02-PLAN.md
 
 **UI hint**: no (template branch in an existing component; no new screens)
 
@@ -267,7 +267,7 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 |-------|----------------|--------|-----------|
 | 1. Label-mode defaults | 5/5 | Complete    | 2026-10-26 |
 | 2. Form key grammar | 1/1 | Complete    | 2026-10-26 |
-| 3. Filter toggle label mode | 1/2 | In Progress | - |
+| 3. Filter toggle label mode | 2/2 | In Progress | - |
 | 4. Alert dismiss adapter | 0/TBD | Not started | - |
 | 5. Table pagination parity | 0/TBD | Not started | - |
 | 6. Form-button leaf | 0/TBD | Not started | - |

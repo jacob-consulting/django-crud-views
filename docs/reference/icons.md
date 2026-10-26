@@ -171,10 +171,13 @@ CRUD_VIEWS_ICONS = {"update": "ui:edit", "create": "ui:plus"}
 ```
 
 Placement is decided per icon: on the same page a `fas:` icon or a raw class still renders inline. A button in `label`
-mode shows no icon either way. The filter toggle uses host placement only when both `filter` and `filter-close` are
-host icons; it then carries `data-cv-filter-icon-open` / `data-cv-filter-icon-close` and `list.filter.js` swaps the
-two classes on the button ([JavaScript](javascript.md#the-filter-toggle-contract)). Headings and modal titles are
-not hosts yet (#259).
+mode shows no icon either way. The filter toggle shows its two icons, `filter` and `filter-close`, only in its
+icon-bearing modes (`"icon"` and `"both"`). It uses host placement only when both resolve to usable host classes at
+`context`; it then carries `data-cv-filter-icon-open` / `data-cv-filter-icon-close` and `list.filter.js` swaps the
+two classes on the button ([JavaScript](javascript.md#the-filter-toggle-contract)). A mixed pair, or
+`context:icon-host` switched off, renders the two icons as standalone elements instead. In `"label"` mode it renders
+no host classes, no icon elements and no icon-swap attributes ([The filter toggle](context_buttons.md#the-filter-toggle)).
+Headings and modal titles are not hosts yet (#259).
 
 For your own templates, `{% cv_icon_class value location %}` returns the class a host icon adds at `location`
 (`""` for any other icon), and supports `as`:

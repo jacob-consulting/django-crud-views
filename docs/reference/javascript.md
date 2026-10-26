@@ -80,7 +80,7 @@ the marker's value names where the trigger sits:
 
 | `location` | Trigger |
 |---|---|
-| `context` | icon-only context toolbar buttons and the filter toggle |
+| `context` | icon-only context toolbar buttons, the filter toggle included (in `"icon"` mode only) |
 | `list` | list row buttons |
 | `card` | icon-only card buttons (a card button with a visible label has no marker) |
 | `card-order` | the ascending / descending toggles of the card ordering bar |
@@ -192,8 +192,28 @@ toggle with `aria-expanded` and `aria-controls="filter-collapse"`. Without `aria
 panel's visibility (`hidden` or computed `display: none`) to decide the state it persists, then writes `aria-expanded`
 back.
 
-The icon switch has two forms. With element icons the button holds two spans, `[data-cv-filter-icon="open"]` and
-`[data-cv-filter-icon="close"]`, and the script flips their `hidden` attributes. With a
-[host-placed](icons.md#host-placement) icon library the button carries `data-cv-filter-icon-open` and
-`data-cv-filter-icon-close` (each a class string) and the current state's classes in `class`; the script removes one
-and adds the other. The presence of `data-cv-filter-icon-open` picks the second form.
+The script collapses first: a `cv.adapters.collapse.toggle` that throws or returns `false` changes nothing, neither
+`aria-expanded`, nor the icon, nor the persisted state. After a successful toggle it updates `aria-expanded` and the
+icon, then posts the new state; a failed request does not undo the toggle. The reset button `#filter-button-reset`
+is unaffected by the label mode.
+
+Icons are optional. The button follows its resolved [label mode](context_buttons.md#the-filter-toggle), which decides
+whether it has an icon at all, and the icon switch has two forms:
+
+- **Element icons:** the button holds two spans, `[data-cv-filter-icon="open"]` and `[data-cv-filter-icon="close"]`,
+  and the script flips their `hidden` attributes.
+- **Host icons:** with a [host-placed](icons.md#host-placement) icon library the button carries
+  `data-cv-filter-icon-open` and `data-cv-filter-icon-close` (each a class string) and the current state's classes in
+  `class`; the script removes one and adds the other. The presence of `data-cv-filter-icon-open` picks this form.
+
+The stock template uses host icons only when both `filter` and `filter-close` resolve to usable host classes at
+`context`. Any other combination (one host icon and one element icon, or `context:icon-host` switched off) renders the
+two element spans, in `"icon"` and `"both"` mode alike. In `"label"` mode the button has neither form: no spans, no
+host classes and no `data-cv-filter-icon-*` attributes, and the script only toggles the panel, updates
+`aria-expanded` and persists the state.
+
+The label never changes with the state. In `"icon"` mode it is visually hidden text, the `title` and the tooltip
+(the button carries `data-cv-tooltip="context"`); in `"both"` and `"label"` mode it is visible text with no `title` and
+no tooltip marker. The default `Filter` label and custom labels alike stay constant; a label is never an icon hook,
+so keep `data-cv-filter-icon` attributes out of custom label markup. A template override owns its markup: it may
+render either icon form or none, as long as it keeps the ids and ARIA attributes above.

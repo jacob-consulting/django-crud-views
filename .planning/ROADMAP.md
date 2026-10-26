@@ -19,7 +19,7 @@ crud_views leaf (plan 2). The milestone closes by freezing the whole theme surfa
 
 Numeric order is a valid execution order. The dependency graph also allows parallel waves (see Progress).
 
-- [ ] **Phase 1: Label-mode defaults** - plan 1A: one project-wide label-mode floor per location (`CRUD_VIEWS_LABEL_MODE_DEFAULTS`, E108)
+- [x] **Phase 1: Label-mode defaults** - plan 1A: one project-wide label-mode floor per location (`CRUD_VIEWS_LABEL_MODE_DEFAULTS`, E108) (completed 2026-10-26)
 - [ ] **Phase 2: Form key grammar** - plan 1C: maintainer decides the `form:*` second segment; W362 enforces it; key count pinned
 - [ ] **Phase 3: Filter toggle label mode** - plan 1B (#262): the filter toggle honours `icon` / `both` / `label`
 - [ ] **Phase 4: Alert dismiss adapter** - plan 3A: alerts close through `cv.adapters.alert` with no Bootstrap data API (droppable)
@@ -52,7 +52,7 @@ for unknown keys.
      the set of locations, not from a literal.
   5. `grep -n '"both" if card\|or "icon"\|get(key, "icon")' src/crud_views/lib/view/*.py` returns nothing. Goldens
      stay byte-identical, and the docs state per-key merge vs whole-dict replacement for each knob.
-**Plans**: 5 plans (4 executed; 1 gap-closure plan ready)
+**Plans**: 5/5 plans complete (4 executed; 1 gap-closure plan ready)
 
 Plans:
 **Wave 1**
@@ -70,7 +70,7 @@ Plans:
 
 **Wave 4** *(gap closure after completed Waves 1–3)*
 
-- [ ] 01-05-PLAN.md — Restore instance card modes, preserve resolver hooks and clarify effective-mode guidance
+- [x] 01-05-PLAN.md — Restore instance card modes, preserve resolver hooks and clarify effective-mode guidance
 
 **UI hint**: no (settings and resolution only; no markup change)
 
@@ -257,7 +257,7 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Label-mode defaults | 4/4 | In Progress | - |
+| 1. Label-mode defaults | 5/5 | Complete    | 2026-10-26 |
 | 2. Form key grammar | 0/TBD | Not started | - |
 | 3. Filter toggle label mode | 0/TBD | Not started | - |
 | 4. Alert dismiss adapter | 0/TBD | Not started | - |

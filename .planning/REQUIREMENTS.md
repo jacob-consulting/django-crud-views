@@ -12,12 +12,12 @@ except where a requirement says the markup changes.
 
 ### Label-mode defaults (plan 1A)
 
-- [ ] **LMOD-01**: Project can set `CRUD_VIEWS_LABEL_MODE_DEFAULTS`, merged per key over `{"context": "icon", "list": "icon", "card": "both"}`; docs state per-key merge vs whole-dict replacement of the per-button maps
-- [ ] **LMOD-02**: `default_label_mode(location)` in `crud_views.lib.view.label_mode` is the single source of the floor default, used by `cv_button_data()`, `cv_get_action_label_mode()` and `CardListView` (no `"both" if card` / `or "icon"` / `get(key, "icon")` literals remain)
-- [ ] **LMOD-03**: `CardListView.cv_card_actions_label_mode` defaults to `None` (= the map); an explicit `"both"` still wins; `{"card": "label"}` restores the 0.29 card look without touching a view
-- [ ] **LMOD-04**: The setting is read at call time, so `override_settings` changes it in tests
-- [ ] **LMOD-05**: An invalid label mode outside strict mode logs and falls back instead of raising
-- [ ] **LMOD-06**: Check `crud_views.E108` reports an unknown location key or invalid mode; valid keys derive from `LOCATIONS`, not a literal list
+- [x] **LMOD-01**: Project can set `CRUD_VIEWS_LABEL_MODE_DEFAULTS`, merged per key over `{"context": "icon", "list": "icon", "card": "both"}`; docs state per-key merge vs whole-dict replacement of the per-button maps
+- [x] **LMOD-02**: `default_label_mode(location)` in `crud_views.lib.view.label_mode` is the single source of the floor default, used by `cv_button_data()`, `cv_get_action_label_mode()` and `CardListView` (no `"both" if card` / `or "icon"` / `get(key, "icon")` literals remain)
+- [x] **LMOD-03**: `CardListView.cv_card_actions_label_mode` defaults to `None` (= the map); an explicit `"both"` still wins; `{"card": "label"}` restores the 0.29 card look without touching a view
+- [x] **LMOD-04**: The setting is read at call time, so `override_settings` changes it in tests
+- [x] **LMOD-05**: An invalid label mode outside strict mode logs and falls back instead of raising
+- [x] **LMOD-06**: Check `crud_views.E108` reports an unknown location key or invalid mode; valid keys derive from `LOCATIONS`, not a literal list
 
 ### Class-key grammar (plan 1C)
 
@@ -104,12 +104,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| LMOD-01 | Phase 1 (plan 1A) | Gaps Found |
-| LMOD-02 | Phase 1 (plan 1A) | Gaps Found |
-| LMOD-03 | Phase 1 (plan 1A) | Gaps Found |
-| LMOD-04 | Phase 1 (plan 1A) | Gaps Found |
-| LMOD-05 | Phase 1 (plan 1A) | Gaps Found |
-| LMOD-06 | Phase 1 (plan 1A) | Gaps Found |
+| LMOD-01 | Phase 1 (plan 1A) | Complete |
+| LMOD-02 | Phase 1 (plan 1A) | Complete |
+| LMOD-03 | Phase 1 (plan 1A) | Complete |
+| LMOD-04 | Phase 1 (plan 1A) | Complete |
+| LMOD-05 | Phase 1 (plan 1A) | Complete |
+| LMOD-06 | Phase 1 (plan 1A) | Complete |
 | KEYS-01 | Phase 2 (plan 1C) | Pending |
 | KEYS-02 | Phase 2 (plan 1C) | Pending |
 | KEYS-03 | Phase 2 (plan 1C) | Pending |

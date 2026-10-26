@@ -1,7 +1,7 @@
 ---
 phase: 01-label-mode-defaults
 verified: 2026-10-26T11:18:45Z
-status: human_needed
+status: passed
 score: 35/35 must-haves verified
 covered_files: [".planning/phases/01-label-mode-defaults/01-01-PLAN.md",".planning/phases/01-label-mode-defaults/01-01-SUMMARY.md",".planning/phases/01-label-mode-defaults/01-02-PLAN.md",".planning/phases/01-label-mode-defaults/01-02-SUMMARY.md",".planning/phases/01-label-mode-defaults/01-03-PLAN.md",".planning/phases/01-label-mode-defaults/01-03-SUMMARY.md",".planning/phases/01-label-mode-defaults/01-04-PLAN.md",".planning/phases/01-label-mode-defaults/01-04-SUMMARY.md",".planning/phases/01-label-mode-defaults/01-05-PLAN.md",".planning/phases/01-label-mode-defaults/01-05-SUMMARY.md","CHANGELOG.md","docs/migrating-1.0.md","docs/reference/action_menus.md","docs/reference/buttons.md","docs/reference/card-list-view.md","docs/reference/context_buttons.md","docs/reference/settings.md","src/crud_views/lib/settings.py","src/crud_views/lib/view/action_menu.py","src/crud_views/lib/view/base.py","src/crud_views/lib/view/button_data.py","src/crud_views/lib/view/buttons.py","src/crud_views/lib/view/card.py","src/crud_views/lib/view/label_mode.py","src/crud_views/lib/views/card.py","src/crud_views/templates/crud_views/tags/button/action.html","src/crud_views/templates/crud_views/tags/card.html","src/crud_views/templatetags/crud_views.py","tests/test1/conftest.py","tests/test1/test_action_label_mode_config.py","tests/test1/test_action_label_mode_render.py","tests/test1/test_action_menus_golden.py","tests/test1/test_button_data.py","tests/test1/test_button_leaves.py","tests/test1/test_card_label_mode_render.py","tests/test1/test_card_label_modes.py","tests/test1/test_context_action_label_mode.py","tests/test1/test_context_button_label_mode.py","tests/test1/test_import_safety.py","tests/test1/test_label_mode.py","tests/test1/test_label_mode_docs.py"]
 covered_digest: "v3:sha256:c4516ecd39bbebaaf8259898aea89551ba3f80969d29b588248abd7722090ce1"
@@ -72,7 +72,6 @@ The previous 28 truths are preserved below; previously passing items received so
 
 ### Observable Truths
 
-
 **Roadmap contract and phase goal**
 
 | # | Truth | Status | Evidence |
@@ -110,7 +109,6 @@ The previous 28 truths are preserved below; previously passing items received so
 | P4-4 | Public accessor, constant, setting, resolver documented with lazy/strict/E108 behavior (01-04) | ✓ VERIFIED | settings.md; docs tests passed; mkdocs `--strict` builds clean |
 | P4-5 | Stable context names kept; PROJECT.md records no_label removal outside this phase (01-04) | ✓ VERIFIED | one-off PROJECT.md grep: 1 / 1 / 1 matching rows |
 | P4-6 | Full Python, JS, strict docs, ruff gates pass; templates/goldens/examples unchanged (01-04) | ✓ VERIFIED (retained verification evidence) | Prior independent full run: 3056 passed/1 skipped and 126 JS passed; no implementation change outside eight 01-05 files. Current executor reports 3076/1 and 126; independent code/UI reviews add 51/96 passes. This verifier did not rerun full suites; fresh protected-path diff/status and one card golden pass |
-
 
 **Additional 01-05 acceptance refinements** (seven explicit plan truths; retained alongside the original 28 so the gap-closure contract is auditable)
 

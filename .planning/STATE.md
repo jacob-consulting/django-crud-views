@@ -1,44 +1,44 @@
 ---
 gsd_state_version: "1.0"
-current_phase: 01
-current_phase_name: Label-mode defaults
-status: awaiting_human_verification
-stopped_at: Completed 01-05-PLAN.md; four human verification items pending
-last_updated: "2026-10-26T11:03:09.172Z"
+current_phase: 2
+current_phase_name: Form key grammar
+status: planning
+stopped_at: Phase 01 complete, ready to plan Phase 2
+last_updated: "2026-10-26T11:27:52.151Z"
 last_activity: 2026-10-26
-last_activity_desc: Phase 01 execution started
-state_head: 36c86b9e185b544bb6693188a676e9eb9b342c94
+last_activity_desc: Phase 01 complete, transitioned to Phase 2
+state_head: 2459b99e6b47e35cdeb619e7cb113069b74825d1
 progress:
   total_phases: 7
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 5
   completed_plans: 5
-  percent: 0
+  percent: 14
 ---
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-10-25)
+See: .planning/PROJECT.md (updated 2026-10-26)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 01 — Label-mode defaults
+**Current focus:** Phase 2 — Form key grammar
 
 ## Current Position
 
-Phase: 01 (Label-mode defaults) — AWAITING RE-VERIFICATION
-Plan: 5 of 5
-Status: Implementation verified (35/35); four human dispositions pending in 01-UAT.md
-Last activity: 2026-10-26 — Plan 01-05 closed CR-01 render gaps; awaiting independent verification
+Phase: 2 — Form key grammar
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-10-26 — Phase 01 complete, transitioned to Phase 2
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [█░░░░░░░░░] 14%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 0
+- Total plans completed: 5
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -46,7 +46,7 @@ Progress: [░░░░░░░░░░] 0%
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| - | - | - | - |
+| 01 | 5 | - | - |
 
 **Recent Trend:**
 
@@ -75,12 +75,7 @@ Recent decisions affecting current work:
 - Roadmap: Phases 4 and 5 (plan 3A/3B) can be dropped if 1.0.0 ships early.
 - Research: the 1A setting is read lazily from `django.conf.settings`, not as a Pydantic snapshot, so
   `override_settings` works.
-- Phase 1 review B3: enforce `feat/label-mode-defaults` with the read-only HEAD assertion in
-  `01-01-PLAN.md` before every implementation task across all four plans. Config still selects the generic
-  `gsd/phase-{phase}-{slug}` branch; plan prose does not override it. On mismatch, execution stops before edits
-  or task commits until the user or authorized execution workflow prepares the required branch. No task changes
-  config or switches/renames branches. This supersedes the research's current-branch execution recommendation;
-  planning remains on `introduce-gsd` and commits only the requested planning artifacts.
+- Phase 1 completed on `feat/label-mode-defaults`; user explicitly requested staying on the current branch.
 - [Phase 01]: 01-01: Label-mode warn-once dedup is process-lifetime, keyed (location, repr(value)), no source dimension, no setting_changed reset; tests isolate via autouse conftest fixture
 - [Phase 01]: 01-01: default_label_mode reads the raw setting every call (no merged-map cache); setting fallbacks return LABEL_MODE_DEFAULTS[location] directly so nested recovery terminates
 - [Phase 01]: 01-01: E108 (Error, no hint) gives one message per bad entry in insertion order, unknown location before invalid mode; keys from button_data.LOCATIONS imported at check time
@@ -97,14 +92,10 @@ None yet.
 
 ### Blockers/Concerns
 
-- Phase 01: both CR-01 code gaps are closed; four human dispositions remain in 01-UAT.md. Resume with `$gsd-verify-work 01`.
 
-- Phase 1 execution precondition: current planning branch is `introduce-gsd`, not `feat/label-mode-defaults`.
-  The B3 branch gate must pass in the executor's worktree before implementation; no branch operation was performed.
 - Phase 2: KEYS-01 grammar (A vs B) is an open maintainer decision; settle it in the phase discussion.
 - Phase 3, 6, 7: each needs a spec or maintainer decision before planning.
-- Phase 7: the label-mode pair rename and the `no_label` removal must each be either done or marked
-  provisional/deprecated. Raise this in the Phase 1 discussion.
+- Phase 7: retain the decided stable label-mode names; track the separately planned `no_label` removal before 1.0.
 - Phase 5: confirm the hidden-label key name (`pagination:hidden-label` vs `table:hidden-label`) before Phase 7.
 - Phases 4, 5 and 6 must commit before-change goldens. Today's goldens contain no form buttons, dismissible alerts or
   table pagination.
@@ -117,6 +108,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-26T11:03:09.150Z
-Stopped at: Completed 01-05-PLAN.md; four human verification items pending
+Last session: 2026-10-26T11:28:24.696440+00:00
+Stopped at: Phase 01 complete, ready to plan Phase 2
 Resume file: None

@@ -1,9 +1,10 @@
 ---
 phase: "04"
 slug: "alert-dismiss-adapter"
-status: draft
-nyquist_compliant: false
-wave_0_complete: false
+status: executed
+nyquist_compliant: true
+wave_0_complete: true
+updated: "2026-10-26"
 created: "2026-10-26"
 ---
 
@@ -36,14 +37,14 @@ without claiming manifest-version validation. See 04-RESEARCH.md. No new framewo
 
 | Task ID | Plan | Wave | Requirement | Threat Ref | Secure Behavior | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|------------|-----------------|-----------|-------------------|-------------|--------|
-| 04-01-01 | 04-01 | 1 | ALRT-01 | T-04-01 | Exact baseline before product edits | golden/history | `.venv/bin/pytest tests/test1/test_alerts.py tests/test1/test_messages.py -q` | Suite exists; new golden/test | pending |
-| 04-01-02 | 04-01 | 1 | ALRT-02, ALRT-03 | T-04-02 | Marker selects nearest frame; fallback belongs to adapter; message assertions move with template | rendered tracer | Quick Python followed by Quick JS | Suites exist; new tracer | pending |
-| 04-01-03 | 04-01 | 1 | ALRT-02 | T-04-01 | Escaping, translated name and non-dismissible behavior | render/response | Quick Python | Extend existing suites | pending |
-| 04-02-01 | 04-02 | 2 | ALRT-03 | T-04-03 | Present component owns no-op/throw; lazy namespace preserved | JS regression | Quick JS | Extend existing suite | pending |
-| 04-02-02 | 04-02 | 2 | ALRT-02, ALRT-03 | T-04-03, T-04-04 | Dynamic/nearest selection; two controls; surfaced errors/missing key; repeated clicks | JS regression | Quick JS followed by `npm --prefix . test` | Extend suite; reuse listenerErrors | pending |
-| 04-03-01 | 04-03 | 3 | ALRT-04 | T-04-05 | Unique full heading/template fence; recipe colour/escaping; core-only subset audit; settings hook list | render/docs/audit | Quick Python and `.venv/bin/mkdocs build --strict` | Suite/docs exist; new recipe/guard tests | pending |
-| 04-03-02 | 04-03 | 3 | ALRT-04 | T-04-06 | Migration distinguishes pre-load defaults from post-load replacement; Added/Breaking enumerate four adapters | docs | `.venv/bin/mkdocs build --strict` plus semantic documentation review | Existing | pending |
-| 04-03-03 | 04-03 | 3 | ALRT-01..04 | T-04-01..06 | Three fresh browser messages with active adapter/restoration recorded; all quality gates evidenced | smoke/full suite/history | Full gates below | Existing tools; new acceptance artifact | pending |
+| 04-01-01 | 04-01 | 1 | ALRT-01 | T-04-01 | Exact baseline before product edits | golden/history | `.venv/bin/pytest tests/test1/test_alerts.py tests/test1/test_messages.py -q` | Suite exists; new golden/test | green (f6982bf baseline-only; 04-ACCEPTANCE §3) |
+| 04-01-02 | 04-01 | 1 | ALRT-02, ALRT-03 | T-04-02 | Marker selects nearest frame; fallback belongs to adapter; message assertions move with template | rendered tracer | Quick Python followed by Quick JS | Suites exist; new tracer | green (RED ca2069c, GREEN 910625b) |
+| 04-01-03 | 04-01 | 1 | ALRT-02 | T-04-01 | Escaping, translated name and non-dismissible behavior | render/response | Quick Python | Extend existing suites | green (3d63404) |
+| 04-02-01 | 04-02 | 2 | ALRT-03 | T-04-03 | Present component owns no-op/throw; lazy namespace preserved | JS regression | Quick JS | Extend existing suite | green (c5327b9) |
+| 04-02-02 | 04-02 | 2 | ALRT-02, ALRT-03 | T-04-03, T-04-04 | Dynamic/nearest selection; two controls; surfaced errors/missing key; repeated clicks | JS regression | Quick JS followed by `npm --prefix . test` | Extend suite; reuse listenerErrors | green (3990826; full JS 183 passed) |
+| 04-03-01 | 04-03 | 3 | ALRT-04 | T-04-05 | Unique full heading/template fence; recipe colour/escaping; core-only subset audit; settings hook list | render/docs/audit | Quick Python and `.venv/bin/mkdocs build --strict` | Suite/docs exist; new recipe/guard tests | green (d3ec24b; 57 focused passed, strict docs clean) |
+| 04-03-02 | 04-03 | 3 | ALRT-04 | T-04-06 | Migration distinguishes pre-load defaults from post-load replacement; Added/Breaking enumerate four adapters | docs | `.venv/bin/mkdocs build --strict` plus semantic documentation review | Existing | green (57da26a; strict docs clean, executor semantic review passed, 04-ACCEPTANCE §7) |
+| 04-03-03 | 04-03 | 3 | ALRT-01..04 | T-04-01..06 | Three fresh browser messages with active adapter/restoration recorded; all quality gates evidenced | smoke/full suite/history | Full gates below | Existing tools; new acceptance artifact | green with exception: all gates run, ruff format red on 8 pre-existing .planning files (04-ACCEPTANCE §2); browser A/B/C observed (§6) |
 
 Regression matrix: Bootstrap instance close; no component removal; late global/object/function namespaces;
 preassigned and call-time replacement adapters; no-op and throwing custom adapters (including mutation before
@@ -59,9 +60,9 @@ the declared DOM-propagation boundary; attached matched-event cases prove handle
 
 ## Wave 0 Requirements
 
-- [ ] Add deterministic dismissible golden/test and commit BEFORE any template change (ALRT-01).
-- [ ] Add meaningful regressions to existing adapter/delegation suites.
-- [ ] Update message and alert attribute assertions together; preserve all other output.
+- [x] Add deterministic dismissible golden/test and commit BEFORE any template change (ALRT-01).
+- [x] Add meaningful regressions to existing adapter/delegation suites.
+- [x] Update message and alert attribute assertions together; preserve all other output.
 - [x] Final planner task IDs and phase-unique threat references replace provisional mapping above.
 
 The before-change golden is task 04-01-01's separate first commit. The product tracer is 04-01-02 and
@@ -133,8 +134,30 @@ and any pre-existing full-gate failures must be recorded honestly, without weake
 - [x] All tasks have automated verification or Wave 0 dependencies.
 - [x] No three consecutive tasks lack automated feedback.
 - [x] Wave 0 covers all missing references; no watch flags.
-- [ ] Focused feedback latency stays under 10 seconds.
-- [ ] Required quality gates and example smoke have evidence.
-- [ ] Set nyquist_compliant only after validation is actually complete.
+- [x] Focused feedback latency stays under 10 seconds (focused Python 1.25 s, full JS 1.80 s).
+- [x] Required quality gates and example smoke have evidence (04-ACCEPTANCE.md). `ruff format --check` exits 1 on
+  the 8 pre-existing `.planning/` Markdown files only; recorded as an exception, not as green.
+- [x] Set nyquist_compliant only after validation is actually complete.
 
-**Approval:** pending execution validation.
+## Execution Results (2026-10-26)
+
+Observed after the final 04-03 edits; details and limits in `04-ACCEPTANCE.md`.
+
+| Gate / evidence | Result |
+|-----------------|--------|
+| Full Python | 3495 passed, 1 skipped |
+| Full JS | 183 passed (Vitest 4.1.10 / jsdom 29.1.1 installed, below `^5.0.3` / `^30.1.2`) |
+| Strict docs | clean |
+| Ruff check | passed (Ruff 0.16.10 installed, below `>=0.17,<0.18`) |
+| Ruff format check | exit 1: 8 pre-existing `.planning/` Markdown files, none touched in Phase 4 |
+| Example system check | no issues |
+| Example docs sync | 36 passed |
+| Golden chronology | baseline `f6982bfef24f4322cfd01f9f21c3bbed517462fe`; later diff is only the dismiss attribute; no other golden changed |
+| Data-attribute audit | only `actions_menu_toggle.html` and `language_selector.html` match; historical baseline `alert.html` rejected in a temporary tree |
+| Browser A (real Bootstrap) | Chrome 156 headless: `show` removed, `closed.bs.alert`, frame removed after 183 ms |
+| Browser B (missing Alert) | only the alert entry swapped to `cv.bootstrapAdapters({}).alert`: frame removed synchronously; other adapters kept identity; restored |
+| Browser C (post-load clone) | fresh page, default adapter: clone removed after 164 ms via Bootstrap; original C and modal-like host still attached |
+
+**Approval:** automated validation complete. The documentation semantic review was run by the executor only.
+Browser acceptance was automated (headless Chrome, not a person watching). Both go to end-of-phase human
+verification.

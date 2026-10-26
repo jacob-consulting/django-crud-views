@@ -3,10 +3,6 @@ phase: 04
 review: 04-REVIEW.md
 titles: json
 findings:
-  - id: WR-01
-    severity: warning
-    disposition: fixed
-    title: "`theme.md` claims the dropdown templates are the only stock templates with `data-bs-*`, but the object-detail layouts also carry them"
   - id: IN-01
     severity: info
     disposition: open
@@ -15,23 +11,37 @@ findings:
     severity: info
     disposition: open
     title: "The `BOOTSTRAP_DATA_ALLOWED` allowlist is hand-copied from `theme.md` rather than derived from it"
+  - id: IN-04
+    severity: info
+    disposition: open
+    title: "The new `theme.md` sentence about non-core `data-bs-*` templates has no guard"
+  - id: IN-05
+    severity: info
+    disposition: open
+    title: "`messages.md` enumerates two of the three missing-script combinations"
+  - id: WR-01
+    severity: warning
+    disposition: fixed
+    title: "`theme.md` claims the dropdown templates are the only stock templates with `data-bs-*`, but the object-detail layouts also carry them"
   - id: IN-03
     severity: info
     disposition: fixed
     title: "`messages.md` understates the `viewset.js`-without-`adapters.js` case"
-open: 2
-total: 4
-recorded: 2026-10-26T20:52:14.239Z
+open: 4
+total: 6
+recorded: 2026-10-26T21:05:36.956Z
 ---
 
 # Phase 04: Code Review Disposition
 
 | Finding | Severity | Disposition | Source |
 |---------|----------|-------------|--------|
-| WR-01 | warning | fixed | b7b49ae (user decision in UAT) |
 | IN-01 | info | open | - |
 | IN-02 | info | open | - |
-| IN-03 | info | fixed | b7b49ae (user decision in UAT) |
+| IN-04 | info | open | - |
+| IN-05 | info | open | - |
+| WR-01 | warning | fixed | b7b49ae (user decision in UAT) (not in the current review) |
+| IN-03 | info | fixed | b7b49ae (user decision in UAT) (not in the current review) |
 
 Dispositions: `open` (recorded, not yet triaged), `fixed`, `skipped`, `deferred`.
 Set `deferred` by hand and put the reason in the Source cell; both are preserved. A `|` in the reason is kept as prose and escaped on the next run.

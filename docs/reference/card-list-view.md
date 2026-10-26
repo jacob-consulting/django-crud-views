@@ -71,8 +71,8 @@ To set one look for every card page of the project, use the setting; the package
 CRUD_VIEWS_LABEL_MODE_DEFAULTS = {"card": "label"}
 ```
 
-See [Settings](settings.md#action-menus) for the setting. A view attribute overrides it for one view, and
-`CardAction.label_mode` overrides both for one button:
+See [Label-mode configuration](settings.md#label-mode-configuration) for the setting. A view attribute overrides
+it for one view, and `CardAction.label_mode` overrides both for one button:
 
 | Attribute | Type | Default | Description |
 |---|---|---|---|
@@ -82,7 +82,8 @@ The raw attribute stays `None` unless a view sets it. To read the mode a card ac
 classmethod `cv_get_card_actions_label_mode()` in Python, or read the `cv_label_mode` stamped on the button context in
 a template.
 
-How explicit choices and defaults combine is described in [Action menus](action_menus.md#label-mode). For cards,
+How explicit choices and defaults combine is described in
+[Card label-mode resolution](action_menus.md#card-label-mode-resolution). For cards,
 `CardAction(no_label=True)` currently still renders icon-only, ahead of the view attribute and the setting. An action
 with an empty label is always rendered `"icon"`, and a `"both"` button whose view has no icon renders like `"label"`.
 `viewset.E210` rejects an unknown `label_mode`, or a `cv_card_actions_label_mode` that is set but not exactly

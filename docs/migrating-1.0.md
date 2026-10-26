@@ -46,7 +46,7 @@ project that uses none of them never sees them: `crud_views.E351`, `E354`, `E355
 ([icon libraries](reference/icons.md)), `crud_views.E361`, `W362` ([button classes](reference/buttons.md)),
 `viewset.E209` ([variants](reference/buttons.md)), `viewset.E210` ([card label mode](reference/card-list-view.md)),
 `crud_views.E106`, `viewset.E211`, `W291` ([toolbar and row label modes](reference/action_menus.md)),
-`crud_views.E108` ([label-mode defaults](reference/settings.md#action-menus)).
+`crud_views.E108` ([label-mode defaults](reference/settings.md#label-mode-configuration)).
 
 `crud_views.E108` reports a `CRUD_VIEWS_LABEL_MODE_DEFAULTS` that is not a dict, a key that is not a button location
 (`"context"`, `"list"`, `"card"`) and a mode that is not exactly `"label"`, `"icon"` or `"both"`. At render an
@@ -137,7 +137,8 @@ The other changes to views:
   entry `crud_views.E108`.
 - **Card label-mode attribute:** `CardListView.cv_card_actions_label_mode` now reads `None` by default instead of
   the resolved string `"both"`; `None` means the `"card"` entry of `CRUD_VIEWS_LABEL_MODE_DEFAULTS`
-  ([setting](reference/settings.md#action-menus), [resolution](reference/action_menus.md#label-mode)). Without
+  ([setting](reference/settings.md#label-mode-configuration),
+  [resolution](reference/action_menus.md#card-label-mode-resolution)). Without
   configuration cards still resolve to `"both"` and render as before, but this is a Python-level change: a subclass,
   override or template that reads the raw attribute as a mode now gets `None`. Call
   `cv_get_card_actions_label_mode()` for the resolved mode, or read the `cv_label_mode` stamped on the button

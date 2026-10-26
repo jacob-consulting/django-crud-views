@@ -34,15 +34,16 @@ without claiming manifest-version validation. See 04-RESEARCH.md. No new framewo
 
 ## Per-Task Verification Map
 
-The planner replaces provisional task IDs with its final decomposition while retaining every behavior below.
-
 | Task ID | Plan | Wave | Requirement | Threat Ref | Secure Behavior | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|------------|-----------------|-----------|-------------------|-------------|--------|
-| baseline | TBD | 1 | ALRT-01 | — | Escaped rendering preserved | golden/history | `.venv/bin/pytest tests/test1/test_alerts.py -q` | Suite exists; add golden | pending |
-| tracer | TBD | 1 | ALRT-02, ALRT-03 | planner assigns | Only marked control dismisses nearest alert | render/DOM/unit | Quick Python and Quick JS above | Extend existing suites | pending |
-| expansion | TBD | subsequent | ALRT-02, ALRT-03 | planner assigns | Ignore unrelated targets; custom errors surface without forced removal | JS regression | Quick JS above | Add cases | pending |
-| documentation | TBD | subsequent | ALRT-04 | — | Accurate public hook and escaping contract | docs/audit | `.venv/bin/mkdocs build --strict` | Existing | pending |
-| example | TBD | final | ALRT-04 | — | Real message remains safely rendered | smoke | `.venv/bin/python examples/bootstrap5/manage.py check` | Existing | pending |
+| 04-01-01 | 04-01 | 1 | ALRT-01 | T-04-01 | Exact baseline before product edits | golden/history | `.venv/bin/pytest tests/test1/test_alerts.py tests/test1/test_messages.py -q` | Suite exists; new golden/test | pending |
+| 04-01-02 | 04-01 | 1 | ALRT-02, ALRT-03 | T-04-02 | Marker selects nearest frame; fallback belongs to adapter | rendered tracer | `.venv/bin/pytest tests/test1/test_alerts.py -q` followed by Quick JS | Suites exist; new tracer | pending |
+| 04-01-03 | 04-01 | 1 | ALRT-02 | T-04-01 | Escaping, translated name and non-dismissible behavior | render/response | Quick Python | Extend existing suites | pending |
+| 04-02-01 | 04-02 | 2 | ALRT-03 | T-04-03 | Present component owns no-op/throw; lazy namespace preserved | JS regression | Quick JS | Extend existing suite | pending |
+| 04-02-02 | 04-02 | 2 | ALRT-02, ALRT-03 | T-04-03, T-04-04 | Dynamic semantic selection; surfaced custom errors; repeated clicks | JS regression | Quick JS followed by `npm --prefix . test` | Extend existing suite | pending |
+| 04-03-01 | 04-03 | 3 | ALRT-04 | T-04-05 | Actual documented recipe safely renders; exact dropdown allowlist | render/docs/audit | Quick Python and `.venv/bin/mkdocs build --strict` | Suite/docs exist; new recipe/guard tests | pending |
+| 04-03-02 | 04-03 | 3 | ALRT-04 | T-04-06 | Paired migration states scripts and legacy behavior accurately | docs | `.venv/bin/mkdocs build --strict` | Existing | pending |
+| 04-03-03 | 04-03 | 3 | ALRT-01..04 | T-04-01..06 | Real browser behavior and all quality gates evidenced | smoke/full suite/history | Full gates below | Existing tools; new acceptance artifact | pending |
 
 Regression matrix: Bootstrap instance close; no component removal; late global/object/function namespaces;
 preassigned and call-time replacement adapters; no-op and throwing custom adapters (including mutation before
@@ -55,7 +56,12 @@ For listener exceptions use a temporary window error listener and cleanup, follo
 - [ ] Add deterministic dismissible golden/test and commit BEFORE any template change (ALRT-01).
 - [ ] Add meaningful regressions to existing adapter/delegation suites.
 - [ ] Update message and alert attribute assertions together; preserve all other output.
-- [ ] Final planner task IDs and phase-unique threat references replace provisional mapping above.
+- [x] Final planner task IDs and phase-unique threat references replace provisional mapping above.
+
+The before-change golden is task 04-01-01's separate first commit. The product tracer is 04-01-02 and
+shares that exact golden between Python rendering and jsdom interaction. Its focused Python command omits
+the two legacy message assertions until 04-01-03 updates them; the plan does not claim a green full suite
+at that intermediate point. No new framework/scaffold installation is needed.
 
 ## Manual-Only Verifications
 
@@ -68,11 +74,39 @@ Run example docs sync from examples/bootstrap5: `../../.venv/bin/pytest test_doc
 The plain `rg -n 'data-bs-' src/crud_views/templates` command is an audit: validate its output against
 the exact dropdown paths named in theme.md, not merely its exit status.
 
+Automated allowlist coverage is planned in `test_stock_bootstrap_data_attributes_are_dropdown_only`:
+only `crud_views/tags/actions_menu.html`, `crud_views/tags/actions_menu_toggle.html` and
+`crud_views/snippets/language_selector.html` are allowed; require actual matches. Baseline: four matching
+lines in alert.html, actions_menu_toggle.html and language_selector.html, so the old alert must fail the guard.
+
+## Final Execution Gates and Evidence
+
+Run from repository root unless stated otherwise:
+
+- `.venv/bin/pytest tests -n auto`
+- `npm --prefix . test`
+- `.venv/bin/mkdocs build --strict`
+- `.venv/bin/ruff check`
+- `.venv/bin/ruff format --check`
+- `.venv/bin/python examples/bootstrap5/manage.py check`
+- From examples/bootstrap5: `../../.venv/bin/pytest test_docs_sync.py -q`
+
+Record actual browser/version, page/action, rendered marker/script order, Bootstrap transition close,
+fresh-message missing-Alert close and post-load inserted message close in `04-ACCEPTANCE.md`.
+Plan 04-03 contains the exact reproducible browser procedure. Missing browser/server/CDN evidence stays
+unverified and routes to end-of-phase human verification. System check/docs sync are not browser evidence.
+Retain all five unresolved classifier assumptions from `04-SOURCE-AUDIT.md`; two resolved ALRT-03
+repeated-call/click predicates are explicit 04-02 must-haves. No new lifecycle guarantee is claimed.
+
+Planning verification: all three plans passed frontmatter/structure checks; baseline focused suites passed
+50 Python / 25 JS tests. Product implementation and browser acceptance remain pending. Installed-tool drift
+and any pre-existing full-gate failures must be recorded honestly, without weakening gates or changing manifests.
+
 ## Validation Sign-Off
 
-- [ ] All tasks have automated verification or Wave 0 dependencies.
-- [ ] No three consecutive tasks lack automated feedback.
-- [ ] Wave 0 covers all missing references; no watch flags.
+- [x] All tasks have automated verification or Wave 0 dependencies.
+- [x] No three consecutive tasks lack automated feedback.
+- [x] Wave 0 covers all missing references; no watch flags.
 - [ ] Focused feedback latency stays under 10 seconds.
 - [ ] Required quality gates and example smoke have evidence.
 - [ ] Set nyquist_compliant only after validation is actually complete.

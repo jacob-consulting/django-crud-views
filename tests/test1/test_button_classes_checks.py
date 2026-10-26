@@ -26,6 +26,12 @@ def test_default_config_has_no_messages():
     assert check_button_classes() == []
 
 
+def test_form_submit_icon_key_reaches_checks_and_lookup():
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"form:submit:icon": "btn-form-submit-icon"}):
+        assert check_button_classes() == []
+        assert bc.get_button_class("form", "submit", "icon") == "btn-form-submit-icon"
+
+
 def test_e360_removed_setting():
     with override_settings(CRUD_VIEWS_FILTER_RESET_BUTTON_CSS_CLASS="x"):
         messages = check_button_classes()
@@ -76,7 +82,6 @@ def test_w362_accepts_action_mode_keys(key):
         "menu:item:both",
         "card:tertiary:icon:extra",
         "card:tertiary:",
-        "form:submit:icon",
         "context:active:icon",
         "card:flex:both",
         "list:hidden-label:icon",

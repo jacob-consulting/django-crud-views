@@ -149,11 +149,11 @@ document the frame override in `theme.md` (LATER-06 tracks the keys).
      src/crud_views/templates` lists only the dropdown templates named in `theme.md`.
   4. The example project's flash messages still close. `javascript.md`, `messages.md`, `theme.md`, the CHANGELOG
      Breaking entry and the migration bullet are updated.
-**Plans**: 3 plans
+**Plans**: 1/3 plans executed
 
 Plans:
 **Wave 1**
-- [ ] 04-01-PLAN.md — Commit the current golden, deliver the rendered dismiss tracer and preserve message rendering
+- [x] 04-01-PLAN.md — Commit the current golden, deliver the rendered dismiss tracer and preserve message rendering
 
 **Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 04-02-PLAN.md — Prove namespace, dynamic-content and custom/component ownership contracts
@@ -281,7 +281,7 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 1. Label-mode defaults | 5/5 | Complete    | 2026-10-26 |
 | 2. Form key grammar | 1/1 | Complete    | 2026-10-26 |
 | 3. Filter toggle label mode | 2/2 | Complete    | 2026-10-26 |
-| 4. Alert dismiss adapter | 0/3 | Planned | - |
+| 4. Alert dismiss adapter | 1/3 | In Progress | - |
 | 5. Table pagination parity | 0/TBD | Not started | - |
 | 6. Form-button leaf | 0/TBD | Not started | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

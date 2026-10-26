@@ -1,18 +1,18 @@
 ---
 gsd_state_version: "1.0"
-current_phase: 4
+current_phase: 04
 current_phase_name: Alert dismiss adapter
 status: executing
-stopped_at: Phase 04 review revisions verified; ready to execute
-last_updated: "2026-10-26T20:10:24.555Z"
+stopped_at: Completed 04-01-PLAN.md
+last_updated: "2026-10-26T20:21:04.664Z"
 last_activity: 2026-10-26
-last_activity_desc: Phase 04 review feedback incorporated; independent checker passed; 3 plans ready to execute
-state_head: 0860fcfa044ec2ed45cdce064dd50ac56c054316
+last_activity_desc: Phase 04 execution started
+state_head: d947523492f82e2f644c7ed7371dbc15008984fa
 progress:
   total_phases: 7
   completed_phases: 3
   total_plans: 11
-  completed_plans: 8
+  completed_plans: 9
   percent: 43
 ---
 
@@ -23,14 +23,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-10-26)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 4 — Alert dismiss adapter
+**Current focus:** Phase 04 — Alert dismiss adapter
 
 ## Current Position
 
-Phase: 4 (Alert dismiss adapter) — READY TO EXECUTE
-Plan: Not started
+Phase: 04 (Alert dismiss adapter) — EXECUTING
+Plan: 2 of 3
 Status: Ready to execute
-Last activity: 2026-10-26 — Phase 04 review feedback incorporated; independent checker passed; 3 plans ready to execute
+Last activity: 2026-10-26 — Phase 04 execution started
 
 Progress: [████░░░░░░] 43%
 
@@ -68,6 +68,7 @@ Progress: [████░░░░░░] 43%
 | Phase 02 P01 | 20 min | 3 tasks | 5 files |
 | Phase 03 P01 | 15 min | 3 tasks | 9 files |
 | Phase 03 P02 | 7 min | 3 tasks | 8 files |
+| Phase 04 P01 | 5 min | 3 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -98,6 +99,8 @@ Recent decisions affecting current work:
 - [Phase 03]: Preserve a button's resolved mode only in context rendering; list rows always resolve their own mode. Review regression fixed in b78b3d1; 4/4 UAT and 22/22 verification checks passed.
 - [Phase 03]: 03-02: filter toggle change is released as Fixed (#262), not Breaking; default output unchanged, migration guide still updated for copied templates
 - [Phase 03]: 03-02: documented per-page filter override is view-level cv_context_buttons with FilterContextButton imported from crud_views.lib.view.buttons (no re-export)
+- [Phase 04]: 04-01: delegated alert listener ignores a marker outside a role=alert frame (no preventDefault) and calls globalThis.cv.adapters.alert.close at click time with no catch/log/fallback
+- [Phase 04]: 04-01: dismissible alert golden is raw bytes (encode utf-8 vs read_bytes, no normalization); baseline commit f6982bfef24f4322cfd01f9f21c3bbed517462fe
 
 ### Pending Todos
 
@@ -122,6 +125,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-26T19:43:16.228Z
-Stopped at: Phase 04 review revisions verified; ready to execute
-Resume file: .planning/phases/04-alert-dismiss-adapter/04-01-PLAN.md
+Last session: 2026-10-26T20:21:04.499Z
+Stopped at: Completed 04-01-PLAN.md
+Resume file: None

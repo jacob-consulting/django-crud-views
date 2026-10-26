@@ -43,6 +43,10 @@ msgstr "Aktionen"
 msgid "Cancel"
 msgstr "Abbrechen"
 
+#: lib/view/buttons.py:330
+msgid "Filter"
+msgstr "Filter"
+
 #: lib/views/list.py:71
 msgid "Apply Filter"
 msgstr "Filter anwenden"

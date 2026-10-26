@@ -57,7 +57,7 @@ The classes of a button are looked up by a `location:slot` key. The **location**
 The modes are `icon`, `both`, and `label`. Every form kind accepts all three, so `form:submit:icon`,
 `form:cancel:both`, and `form:filter-reset:label` are valid keys in both theme registrations and
 `CRUD_VIEWS_BUTTON_CLASSES`. A class key does not require an icon to be configured. `form:submitt:icon` has an
-unknown kind, `form:container:icon` adds a mode to a structural slot, and `form:primary:icon` puts an action
+unknown kind, `form:container:icon` uses `container`, which is not a form kind, and `form:primary:icon` puts an action
 variant where a form kind is required: all receive the unknown-key W362 warning. `form:submit:iconn` has a known
 kind but an unknown mode, so W362 names that mode and lists the valid modes instead.
 
@@ -82,8 +82,8 @@ CRUD_VIEWS_BUTTON_CLASSES = {
 Removing `form:submit:icon` makes the icon lookup use `form:submit` too; setting it to `None` or `""` returns
 no classes for that mode. Settings override theme values at the same exact key, while a theme mode entry still
 wins over a settings base entry. These keys are available to callers that supply a mode. Crispy form buttons
-continue using their existing `slot=` calls without choosing a mode, so their rendering is unchanged. Form label
-floors, form button leaves, and missing-icon rendering checks belong to Phase 6.
+continue using their existing `slot=` calls without choosing a mode, so their rendering is unchanged. Accepting
+these class keys does not enable label-mode selection or icon rendering for crispy form buttons.
 
 A `context:<variant>:<mode>` or `list:<variant>:<mode>` key applies to every toolbar or row button whose mode resolves
 to that mode. Without label-mode configuration every toolbar and row button resolves to the package floor `icon`, so
@@ -236,7 +236,8 @@ CRUD_VIEWS_BUTTON_CLASSES = {
 ```
 
 `None` (or `""`) switches the classes of that key off. Any other non-string value renders nothing and is reported by
-`crud_views.E361`. A key that is neither in the table above nor a valid `location:variant:mode` is reported by
+`crud_views.E361`. A key that is neither in the table above nor a valid mode key from
+[the class-table grammar](#the-class-table) (`location:variant:mode` or `form:kind:mode`) is reported by
 `crud_views.W362` (a typo, or an unknown label mode).
 
 A mode key set to `None` switches that mode off; it does not fall back to the base key.

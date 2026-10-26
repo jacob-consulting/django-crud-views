@@ -20,7 +20,7 @@ crud_views leaf (plan 2). The milestone closes by freezing the whole theme surfa
 Numeric order is a valid execution order. The dependency graph also allows parallel waves (see Progress).
 
 - [x] **Phase 1: Label-mode defaults** - plan 1A: one project-wide label-mode floor per location (`CRUD_VIEWS_LABEL_MODE_DEFAULTS`, E108) (completed 2026-10-26)
-- [ ] **Phase 2: Form key grammar** - plan 1C: Option A form kinds implemented; external review and verification pending
+- [x] **Phase 2: Form key grammar** - plan 1C: Option A form kinds implemented, reviewed and verified (completed 2026-10-26)
 - [ ] **Phase 3: Filter toggle label mode** - plan 1B (#262): the filter toggle honours `icon` / `both` / `label`
 - [ ] **Phase 4: Alert dismiss adapter** - plan 3A: alerts close through `cv.adapters.alert` with no Bootstrap data API (droppable)
 - [ ] **Phase 5: Table pagination parity** - plan 3B: table pagination gets the same registry icons and accessible markup as card pagination (droppable)
@@ -82,7 +82,7 @@ keys take a mode, so form buttons can get mode keys without loosening W362.
 **Depends on**: Nothing. Can run in parallel with Phase 1.
 **Parallel with**: Phase 1
 **Research/spec**: Decision settled in 02-CONTEXT.md: Option A `form:<kind>:<mode>` retains form kinds;
-context/list/card retain variants. Implementation is complete; external review and phase verification remain pending.
+context/list/card retain variants. Implementation, external review, human prose UAT and phase verification are complete.
 **Requirements**: KEYS-01, KEYS-02, KEYS-03, KEYS-04
 **Success Criteria** (what must be TRUE):
 
@@ -94,7 +94,7 @@ context/list/card retain variants. Implementation is complete; external review a
      button-data locations cannot make W362 accept `form:<variant>:<mode>`.
   4. The key count quoted in `buttons.md` is correct, and a test fails whenever it drifts from
      `len(DEFAULT_BUTTON_CLASSES)`. There is no runtime or golden change.
-**Plans**: 1/1 plans executed
+**Plans**: 1/1 plans complete
 - [x] 02-01-PLAN.md
 
 **UI hint**: no (checks and docs only)
@@ -260,7 +260,7 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Label-mode defaults | 5/5 | Complete    | 2026-10-26 |
-| 2. Form key grammar | 1/1 | In Progress | - |
+| 2. Form key grammar | 1/1 | Complete    | 2026-10-26 |
 | 3. Filter toggle label mode | 0/TBD | Not started | - |
 | 4. Alert dismiss adapter | 0/TBD | Not started | - |
 | 5. Table pagination parity | 0/TBD | Not started | - |

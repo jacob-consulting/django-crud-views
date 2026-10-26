@@ -5,11 +5,11 @@ titles: json
 findings:
   - id: WR-01
     severity: warning
-    disposition: open
+    disposition: fixed
     title: "`cv_label_mode` is resolved and stamped twice on every filter render, by two call sites that only coincidentally agree"
   - id: WR-02
     severity: warning
-    disposition: open
+    disposition: fixed
     title: "A malformed stamped `cv_label_mode` is silently rendered as the icon form, in strict mode too, contradicting the documented strict-mode policy"
   - id: IN-01
     severity: info
@@ -27,17 +27,17 @@ findings:
     severity: info
     disposition: open
     title: "`FilterContextButton` is now a documented configuration surface but is not re-exported with its siblings"
-open: 6
+open: 4
 total: 6
-recorded: 2026-10-26T16:16:49.692Z
+recorded: 2026-10-26T16:34:04.598Z
 ---
 
 # Phase 03: Code Review Disposition
 
 | Finding | Severity | Disposition | Source |
 |---------|----------|-------------|--------|
-| WR-01 | warning | open | - |
-| WR-02 | warning | open | - |
+| WR-01 | warning | fixed | 03-REVIEW-FIX.md |
+| WR-02 | warning | fixed | 03-REVIEW-FIX.md |
 | IN-01 | info | open | - |
 | IN-02 | info | open | - |
 | IN-03 | info | open | - |

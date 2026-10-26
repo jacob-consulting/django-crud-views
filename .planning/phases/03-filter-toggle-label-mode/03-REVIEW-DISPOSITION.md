@@ -27,21 +27,26 @@ findings:
     severity: info
     disposition: open
     title: "`FilterContextButton` is now a documented configuration surface but is not re-exported with its siblings"
+  - id: CR-01
+    severity: critical
+    disposition: fixed
+    title: "A context-mode stamp overrides the explicitly configured list-row mode"
 open: 4
-total: 6
-recorded: 2026-10-26T16:34:04.598Z
+total: 7
+recorded: 2026-10-26T16:51:29.296Z
 ---
 
 # Phase 03: Code Review Disposition
 
 | Finding | Severity | Disposition | Source |
 |---------|----------|-------------|--------|
-| WR-01 | warning | fixed | 03-REVIEW-FIX.md |
-| WR-02 | warning | fixed | 03-REVIEW-FIX.md |
-| IN-01 | info | open | - |
-| IN-02 | info | open | - |
-| IN-03 | info | open | - |
-| IN-04 | info | open | - |
+| WR-01 | warning | fixed | 03-REVIEW-FIX.md (not in the current review) |
+| WR-02 | warning | fixed | 03-REVIEW-FIX.md (not in the current review) |
+| IN-01 | info | open | - (not in the current review) |
+| IN-02 | info | open | - (not in the current review) |
+| IN-03 | info | open | - (not in the current review) |
+| IN-04 | info | open | - (not in the current review) |
+| CR-01 | critical | fixed | 03-REVIEW-FIX.iter2.md (not in the current review) |
 
 Dispositions: `open` (recorded, not yet triaged), `fixed`, `skipped`, `deferred`.
 Set `deferred` by hand and put the reason in the Source cell; both are preserved. A `|` in the reason is kept as prose and escaped on the next run.

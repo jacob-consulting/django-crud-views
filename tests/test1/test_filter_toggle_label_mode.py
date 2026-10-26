@@ -13,6 +13,7 @@ from lxml import html as lxml_html
 
 from crud_views.lib.settings import CrudViewsSettings, crud_views_settings
 from crud_views.lib.view.base import CrudView
+from crud_views.lib.view.button_data import cv_button_data
 from crud_views.lib.view.buttons import FilterContextButton, context_button_checks
 from crud_views.lib.viewset import ViewSet
 from tests.lib.helper.icons import HOST_ICONS, HOST_LIBRARY
@@ -389,6 +390,25 @@ def test_filter_toolbar_resolves_mode_once(client_user_publisher_view, monkeypat
     assert calls == [("context", None)]
     _assert_label(toggle, mode, f"{mode}:filter")
     assert _rendered_mode(toggle) == mode
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("context_mode, row_mode", [("label", "both"), ("both", "icon"), ("icon", "label")])
+def test_filter_context_mode_does_not_override_row_mode(
+    client_user_publisher_view, monkeypatch, context_mode, row_mode
+):
+    """A button reused in a row follows the list map, independently of its resolved toolbar mode."""
+    _select_settings_map(monkeypatch, {})
+    _register_buttons(monkeypatch, FilterContextButton(label_mode=context_mode))
+    monkeypatch.setattr(PublisherListView, "cv_list_actions_label_mode", {"filter": row_mode})
+    view = _publisher_view(client_user_publisher_view)
+
+    toolbar = view.cv_get_context("filter", location="context")
+    row = view.cv_get_context("filter", location="list")
+
+    assert toolbar["cv_label_mode"] == context_mode
+    assert row["cv_label_mode"] == row_mode
+    assert cv_button_data(row, "list")["cv_label_mode"] == row_mode
 
 
 @pytest.mark.django_db

@@ -275,18 +275,21 @@ msgid "Updated %(verbose_name_translate)s <strong>%(object)s</strong>"
 msgstr "%(verbose_name_translate)s <strong>%(object)s</strong> aktualisiert"
 
 #: templates/crud_views/snippets/pagination.html:3
+#: templates/crud_views/table/bootstrap5.html:63
 msgid "pagination"
 msgstr "Seitennavigation"
 
 #: templates/crud_views/snippets/pagination.html:7
 #: templates/crud_views/snippets/pagination.html:11
-#: templates/crud_views/table/bootstrap5.html:70
+#: templates/crud_views/table/bootstrap5.html:68
+#: templates/crud_views/table/bootstrap5.html:72
 msgid "previous"
 msgstr "zurück"
 
 #: templates/crud_views/snippets/pagination.html:25
 #: templates/crud_views/snippets/pagination.html:29
-#: templates/crud_views/table/bootstrap5.html:90
+#: templates/crud_views/table/bootstrap5.html:94
+#: templates/crud_views/table/bootstrap5.html:98
 msgid "next"
 msgstr "weiter"
 

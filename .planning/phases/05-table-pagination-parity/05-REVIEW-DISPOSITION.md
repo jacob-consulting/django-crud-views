@@ -13,7 +13,7 @@ findings:
     title: "Ellipsis range item is a non-navigable anchor styled and structured as a live page link"
   - id: IN-01
     severity: info
-    disposition: open
+    disposition: fixed
     title: "Range anchors keep template whitespace that the card's do not"
   - id: IN-02
     severity: info
@@ -29,7 +29,7 @@ findings:
     title: "Hidden-label test asserts on two different responses"
   - id: IN-05
     severity: info
-    disposition: open
+    disposition: fixed
     title: "Card list reference omits the new shared key"
 open: 7total: 7
 recorded: 2026-10-27T13:30:00.000Z
@@ -41,8 +41,8 @@ recorded: 2026-10-27T13:30:00.000Z
 |---------|----------|-------------|--------|
 | WR-01 | warning | fixed | - |
 | WR-02 | warning | fixed | - |
-| IN-01 | info | open | - |
+| IN-01 | info | fixed | - |
 | IN-02 | info | open | - |
 | IN-03 | info | open | - |
 | IN-04 | info | open | - |
-| IN-05 | info | open | - |
+| IN-05 | info | fixed | - |

@@ -45,7 +45,8 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
   arrows are the `page-previous` / `page-next` registry icons with translated hidden `previous` / `next` labels
   instead of visible text with `&laquo;` / `&raquo;`. The current page is a `<span class="page-link">` in an
   `li` with `aria-current="page"` instead of a link. The missing direction renders as a disabled `li` with
-  `<a class="page-link" aria-disabled="true">` and no `href` instead of being left out. The `<nav>`'s
+  `<a class="page-link" aria-disabled="true">` and no `href` instead of being left out, and the range's `...` items
+  use the same disabled markup instead of looking like page links. The `<nav>`'s
   `aria-label` is the translated `pagination` instead of "Table navigation". The new class key
   `pagination:hidden-label` (default `visually-hidden`) styles the hidden labels of the table and card paginations
   alike; the card's default markup is unchanged. The django-tables2 block names stay, but `pagination.previous` and

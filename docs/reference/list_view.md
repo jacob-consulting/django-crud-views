@@ -110,7 +110,7 @@ The table (`crud_views/table/bootstrap5.html`) and the [card list](card-list-vie
   and before the next icon.
 - The current page is a `<span class="page-link">` inside an `li` with `aria-current="page"`, not a link.
 - A direction with no page is still rendered, as `<a class="page-link" aria-disabled="true">` with no `href`; it can
-  be neither followed nor focused.
+  be neither followed nor focused. The table's `...` range items use the same disabled markup.
 
 The hidden labels take their class from the `pagination:hidden-label` key of the
 [class table](buttons.md#the-class-table) (default `visually-hidden`). One setting restyles both components:

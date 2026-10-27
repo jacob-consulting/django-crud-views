@@ -240,7 +240,7 @@ def _pagination_engine(children: dict[str, str] | None = None) -> Engine:
 def _render_table_pagination(table, request, template_name: str = TABLE_TEMPLATE, children=None) -> str:
     """Render ``template_name`` (a stock or locmem child template) for a prepared table and explicit request."""
     children = dict(children or {})
-    assert TABLE_TEMPLATE not in children, "a child must extend the stock template, not shadow it"
+    assert TABLE_TEMPLATE not in children, "the test renders a child under its own name; the stock template is the base"
     engine = _pagination_engine(children)
     # the extended base resolves through the filesystem loader to the package's own tracked template
     base = engine.get_template(TABLE_TEMPLATE)
@@ -558,6 +558,12 @@ def test_table_pagination_range_and_empty_cases(case, rows, page, paginate):
     assert tokens == expected
     numbers = [int(token) for token in tokens if token != "..."]
     assert numbers == sorted(numbers)
+    ellipses = [li for li in _nav(rendered).cssselect("li.page-item") if li.text_content().strip() == "..."]
+    assert len(ellipses) == 2
+    for li in ellipses:
+        (link,) = li.cssselect("a.page-link")
+        assert "disabled" in li.get("class").split()
+        assert (link.get("aria-disabled"), link.get("href")) == ("true", None)
     (current,) = _nav(rendered).cssselect('li[aria-current="page"]')
     assert current.cssselect("span.page-link")[0].text_content() == "15"
     assert [row.text_content().strip() for row in body_rows] == ["row 15"]

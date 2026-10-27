@@ -120,3 +120,72 @@ def test_table_pagination_golden(paginated_author_client, page):
     with translation.override("en"):
         nav = _table_pagination(paginated_author_client, page)
     _check_table_golden(f"page{page}", nav)
+
+
+def _direction(nav, direction: str):
+    """The previous/next li (first/last item) and its single page-link anchor."""
+    items = nav.cssselect("ul.pagination > li")
+    item = items[0] if direction == "previous" else items[-1]
+    (link,) = item.cssselect("a.page-link")
+    return item, link
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("page, disabled, enabled", [(1, "previous", "next"), (2, "next", "previous")])
+def test_table_pagination_accessible_structure(paginated_author_client, page, disabled, enabled):
+    with translation.override("en"):
+        nav = _table_pagination(paginated_author_client, page)
+    assert nav.get("aria-label") == "pagination"
+
+    # the unavailable direction is still rendered: a non-navigable, non-focusable aria-disabled anchor
+    item, link = _direction(nav, disabled)
+    assert item.get("class") == f"{disabled} page-item disabled"
+    assert link.get("aria-disabled") == "true"
+    assert link.get("href") is None
+    assert link.get("tabindex") is None
+
+    # the available direction keeps its prefixed page query link
+    item, link = _direction(nav, enabled)
+    assert item.get("class") == f"{enabled} page-item"
+    assert link.get("aria-disabled") is None
+    assert link.get("href") == f"?page={2 if enabled == 'next' else 1}"
+
+    # registry arrows with translated hidden labels: icon before "previous", "next" before icon
+    for direction in ("previous", "next"):
+        _, link = _direction(nav, direction)
+        children = list(link)
+        tags = [child.tag for child in children]
+        assert tags == (["i", "span"] if direction == "previous" else ["span", "i"])
+        (label,) = link.cssselect("span")
+        assert label.get("class") == "visually-hidden"
+        assert label.text_content() == direction
+        assert link.text_content() == direction
+
+    # exactly one current page: a span, not a link; the other numeric page keeps its href
+    (current,) = nav.cssselect('li[aria-current="page"]')
+    assert current.get("class") == "page-item active"
+    assert current.cssselect("a") == []
+    (number,) = current.cssselect("span.page-link")
+    assert number.text_content().strip() == str(page)
+    other = 2 if page == 1 else 1
+    hrefs = [a.get("href") for a in nav.cssselect("ul.pagination > li:not(.previous):not(.next) a.page-link")]
+    assert hrefs == [f"?page={other}"]
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("page", [1, 2])
+@override_settings(
+    CRUD_VIEWS_BUTTON_CLASSES={"pagination:hidden-label": "sr-only"},
+    CRUD_VIEWS_ICONS={"page-previous": "bi:arrow-left", "page-next": "bi:arrow-right"},
+)
+def test_table_pagination_shared_hidden_label(paginated_author_client, page):
+    """The shared pagination:hidden-label class and the page-* registry icons reach both table arrows."""
+    with translation.override("en"):
+        nav = _table_pagination(paginated_author_client, page)
+    for direction, icon in (("previous", "bi bi-arrow-left"), ("next", "bi bi-arrow-right")):
+        _, link = _direction(nav, direction)
+        (label,) = link.cssselect("span")
+        assert label.get("class") == "sr-only"
+        assert label.text_content() == direction
+        assert link.cssselect("i")[0].get("class") == icon
+    assert nav.cssselect(".visually-hidden") == []

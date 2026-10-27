@@ -41,6 +41,18 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
   `<span>`, and the `<nav>`'s `aria-label` is translated. CSS or tests that target `.disabled > span.page-link` or
   the arrow characters need updating. A theme that overrode the template only for icons can delete the override and
   map the two icon names instead (#241).
+- Table pagination (`crud_views/table/bootstrap5.html`) has the same accessible markup as the card pagination. The
+  arrows are the `page-previous` / `page-next` registry icons with translated hidden `previous` / `next` labels
+  instead of visible text with `&laquo;` / `&raquo;`. The current page is a `<span class="page-link">` in an
+  `li` with `aria-current="page"` instead of a link. The missing direction renders as a disabled `li` with
+  `<a class="page-link" aria-disabled="true">` and no `href` instead of being left out. The `<nav>`'s
+  `aria-label` is the translated `pagination` instead of "Table navigation". The new class key
+  `pagination:hidden-label` (default `visually-hidden`) styles the hidden labels of the table and card paginations
+  alike; the card's default markup is unchanged. The django-tables2 block names stay, but `pagination.previous` and
+  `pagination.next` now also run on the first and the last page: an override that calls
+  `table.page.previous_page_number` or `table.page.next_page_number` must first test `table.page.has_previous` /
+  `table.page.has_next`, or that end raises `EmptyPage`. See
+  [Migrating to 1.0.0](docs/migrating-1.0.md#table-pagination-overrides).
 - The filter toggle's icon spans are hidden with the `hidden` attribute instead of Bootstrap's `d-none` class, and
   `list.filter.js` flips `hidden`. A project override of `crud_views/tags/context_action_filter.html` that still
   renders `class="d-none"` shows the wrong icon after the first click: render `hidden` instead (#232).

@@ -160,7 +160,7 @@ makes that text visible; set the key to your framework's screen-reader-only util
 screen-reader text ("previous", "next") of the arrows in both the table and the card pagination, so one override
 restyles both components. It defaults to `visually-hidden`, resolves per key like every other key (default, then
 theme, then project), and `None` or `""` render the label without a class, so the text shows. It is not a button
-location and has no mode keys. Pagination itself is described in [ListView](list_view.md#table-with-django-tables2).
+location and has no mode keys. Pagination itself is described in [ListView](list_view.md#pagination).
 
 Three keys style the stock card itself rather than a button: `card:root` is the outer `<div>`, `card:body` the
 `<div>` inside it, and `card:title` the `<h5>` heading. The actions inside the card keep `card:container`. Where the

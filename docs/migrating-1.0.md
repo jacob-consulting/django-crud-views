@@ -188,6 +188,11 @@ None of these raise anything. Check your stylesheets, your JavaScript selectors 
   visually hidden "previous" / "next", not `&laquo;` / `&raquo;`. A disabled end is
   `<a class="page-link" aria-disabled="true">` without `href`, not a `<span>`. The current page carries
   `aria-current="page"`.
+- **Table pagination**: the stock django-tables2 template uses the same markup. The visible "previous" / "next"
+  text with `&laquo;` / `&raquo;` becomes the icons with hidden labels. The current page is a
+  `<span class="page-link">` in `li.active[aria-current="page"]` instead of a link. The missing direction is now
+  rendered as a disabled `li` instead of being left out, and the `<nav>`'s label is the translated "pagination"
+  instead of "Table navigation" ([Table pagination overrides](#table-pagination-overrides)).
 - **`hidden` instead of `d-none`** (#232): the filter toggle's icon spans and the hidden POST forms behind list and
   card actions use the `hidden` attribute. The filter toggle carries `aria-expanded`, `aria-controls="filter-collapse"`
   and `cv-key="filter"`.
@@ -401,6 +406,77 @@ Register these from your theme's `AppConfig.ready()`; a project's own settings s
   `<location>:container-tag` instead ([Container element and label](reference/buttons.md#container-element-and-label)).
 - **Active state:** `snippets/card_order.html` and the leaves take `active` from the `*:active` keys (#227). A copy
   with a hard-coded `active` keeps working.
+
+### Table pagination overrides
+
+`crud_views/table/bootstrap5.html` keeps the django-tables2 block names `pagination`, `pagination.previous`,
+`pagination.range` and `pagination.next`. What changed is when `pagination.previous` and `pagination.next` run. Before
+1.0 each block sat inside an availability test, so it rendered only when the page existed. In 1.0 it runs on every
+paginated page, available direction or not, and holds the test itself, so a theme can restyle the disabled end in
+the same block. A copied override that calls `table.page.previous_page_number` or `table.page.next_page_number`
+without a test now raises `django.core.paginator.EmptyPage` on the first or the last page. Test
+`table.page.has_previous` before calling `previous_page_number`, and `table.page.has_next` before calling
+`next_page_number`.
+
+If you overrode the blocks only to swap the `&laquo;` / `&raquo;` arrows, delete the override instead. Map the
+`page-previous` and `page-next` icons in `CRUD_VIEWS_ICONS` and style the hidden labels with the
+`pagination:hidden-label` key. This works for table and card pagination alike ([Pagination](reference/list_view.md#pagination)).
+A structural copy that you keep has to adopt the shared key and the accessible structure:
+
+- The `<nav>` label is the translated msgid `pagination`, which the stock `pagination` block already renders.
+- An available direction is an `li` with the classes `previous page-item` or `next page-item` and a link. A missing
+  direction is an `li` with `previous page-item disabled` or `next page-item disabled` and
+  `<a class="page-link" aria-disabled="true">` without `href` or `tabindex`.
+- Both states render `{% cv_icon "page-previous" %}` before the translated hidden `previous` label, and the hidden
+  `next` label before `{% cv_icon "page-next" %}`. The label's class comes from
+  `{% cv_button_class "pagination" "hidden-label" %}`; `cv_icon` supplies the decorative `aria-hidden` icon.
+- The current page in `pagination.range` is a `<span class="page-link">` in an `li` with `aria-current="page"`. Leave
+  the range block alone unless you need a different range; an override of `pagination.range` works as before.
+
+Save the override as a child template under its own name, for example
+`myproject/templates/myproject/table.html`. It extends `crud_views/table/bootstrap5.html`. Do not save it at
+`crud_views/table/bootstrap5.html` itself, where it would extend itself. Select it at startup in your settings:
+
+```python
+DJANGO_TABLES2_TEMPLATE = "myproject/table.html"
+```
+
+django-tables2 reads that setting when a table class is created, so changing it later does not retarget an existing
+class. A `Meta.template_name` on a table class, or a `template_name` passed to the table, takes precedence; if you
+set one, it must name the same child. This copy overrides both direction blocks, adds `rel` to the available links,
+and keeps every hook of the stock markup:
+
+```django
+{% extends "crud_views/table/bootstrap5.html" %}
+{% load crud_views i18n %}
+
+{% block pagination.previous %}
+{% if table.page.has_previous %}
+    <li class="previous page-item">
+        <a href="{% cv_querystring table.prefixed_page_field=table.page.previous_page_number %}" class="page-link" rel="prev">{% cv_icon "page-previous" %}<span class="{% cv_button_class 'pagination' 'hidden-label' %}">{% translate 'previous' %}</span></a>
+    </li>
+{% else %}
+    <li class="previous page-item disabled">
+        <a class="page-link" aria-disabled="true">{% cv_icon "page-previous" %}<span class="{% cv_button_class 'pagination' 'hidden-label' %}">{% translate 'previous' %}</span></a>
+    </li>
+{% endif %}
+{% endblock pagination.previous %}
+
+{% block pagination.next %}
+{% if table.page.has_next %}
+    <li class="next page-item">
+        <a href="{% cv_querystring table.prefixed_page_field=table.page.next_page_number %}" class="page-link" rel="next"><span class="{% cv_button_class 'pagination' 'hidden-label' %}">{% translate 'next' %}</span>{% cv_icon "page-next" %}</a>
+    </li>
+{% else %}
+    <li class="next page-item disabled">
+        <a class="page-link" aria-disabled="true"><span class="{% cv_button_class 'pagination' 'hidden-label' %}">{% translate 'next' %}</span>{% cv_icon "page-next" %}</a>
+    </li>
+{% endif %}
+{% endblock pagination.next %}
+```
+
+The card pagination (`crud_views/snippets/pagination.html`) has no blocks, and its default markup is unchanged by
+this; its earlier migration is under [CSS and tests that select on markup](#css-and-tests-that-select-on-markup).
 
 ## Silent breaks
 

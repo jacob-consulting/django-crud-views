@@ -99,6 +99,35 @@ class AuthorTable(Table):
 | `NaturalDayColumn` | Date rendered as natural day (e.g. "today", "yesterday") |
 | `NaturalTimeColumn` | DateTime rendered as natural time (e.g. "2 hours ago") |
 
+### Pagination
+
+The table (`crud_views/table/bootstrap5.html`) and the [card list](card-list-view.md)
+(`crud_views/snippets/pagination.html`) paginate with the same accessible markup:
+
+- The `<nav>` carries the translated `aria-label` from the `pagination` msgid.
+- The arrows are the `page-previous` and `page-next` [icons](icons.md#default-table), rendered as decorative
+  standalone icons. Each arrow has a translated hidden label, `previous` or `next`, placed after the previous icon
+  and before the next icon.
+- The current page is a `<span class="page-link">` inside an `li` with `aria-current="page"`, not a link.
+- A direction with no page is still rendered, as `<a class="page-link" aria-disabled="true">` with no `href`; it can
+  be neither followed nor focused.
+
+The hidden labels take their class from the `pagination:hidden-label` key of the
+[class table](buttons.md#the-class-table) (default `visually-hidden`). One setting restyles both components:
+
+```python
+CRUD_VIEWS_BUTTON_CLASSES = {"pagination:hidden-label": "sr-only"}
+```
+
+To change the arrows, map `page-previous` and `page-next` in [`CRUD_VIEWS_ICONS`](icons.md#crud_views_icons); no
+template override is needed. Pagination queries, prefixes and ranges are unchanged. Table links replace only the
+table's own prefixed page parameter (`table.prefixed_page_field`) through `{% cv_querystring %}` and keep every
+other query value. A table `prefix` keeps several tables on one page apart. The range still comes from
+django-tables2's `table_page_range` (`DJANGO_TABLES2_PAGE_RANGE`).
+
+A theme that overrides the table's `pagination.previous` or `pagination.next` block must handle the disabled end
+in that block too. See [Table pagination overrides](../migrating-1.0.md#table-pagination-overrides).
+
 ## Filtering with django-filter
 
 Add `ListViewTableFilterMixin` and configure a filter set and form helper:

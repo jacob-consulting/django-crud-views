@@ -187,12 +187,12 @@ freezes it.
      Changing it changes both.
   4. Table and card pagination produce the same accessible structure. The CHANGELOG Breaking (DOM) entry, the
      migration bullet and the `.po` files are updated.
-**Plans**: 1/3 plans executed
+**Plans**: 2/3 plans executed
 **Wave 1**
 - [x] 05-01-PLAN.md — Commit table baselines, deliver accessible pagination and the shared hidden-label key.
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 05-02-PLAN.md — Verify overrides, query/range behavior and table/card accessibility parity.
+- [x] 05-02-PLAN.md — Verify overrides, query/range behavior and table/card accessibility parity.
 
 **Wave 3** *(blocked on Wave 2 completion)*
 - [ ] 05-03-PLAN.md — Publish migration guidance, refresh catalogs and record acceptance checks.
@@ -291,6 +291,6 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 2. Form key grammar | 1/1 | Complete    | 2026-10-26 |
 | 3. Filter toggle label mode | 2/2 | Complete    | 2026-10-26 |
 | 4. Alert dismiss adapter | 3/3 | Complete    | 2026-10-26 |
-| 5. Table pagination parity | 1/3 | In Progress | - |
+| 5. Table pagination parity | 2/3 | In Progress | - |
 | 6. Form-button leaf | 0/TBD | Not started | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

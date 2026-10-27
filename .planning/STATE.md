@@ -3,16 +3,16 @@ gsd_state_version: "1.0"
 current_phase: 05
 current_phase_name: Table pagination parity
 status: executing
-stopped_at: Completed 05-01-PLAN.md
-last_updated: "2026-10-27T12:42:35.011Z"
+stopped_at: Completed 05-02-PLAN.md
+last_updated: "2026-10-27T12:53:11.102Z"
 last_activity: 2026-10-27
 last_activity_desc: Phase 05 execution started
-state_head: e7c8bc911a22b2767d76823c5c87c3466ccab67d
+state_head: 7b480041412874acc3c1d50b4071ceb8a1a78a95
 progress:
   total_phases: 7
   completed_phases: 4
   total_plans: 14
-  completed_plans: 12
+  completed_plans: 13
   percent: 57
 ---
 
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-10-26)
 ## Current Position
 
 Phase: 05 (Table pagination parity) — EXECUTING
-Plan: 2 of 3
+Plan: 3 of 3
 Status: Ready to execute
 Last activity: 2026-10-27 — Phase 05 execution started
 
@@ -73,6 +73,7 @@ Progress: [██████░░░░] 57%
 | Phase 04 P02 | 5 min | 2 tasks | 2 files |
 | Phase 04 P03 | 10 min | 3 tasks | 9 files |
 | Phase 05 P01 | 5 min | 3 tasks | 10 files |
+| Phase 05 P02 | 8 min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -112,6 +113,8 @@ Recent decisions affecting current work:
 - [Phase 04]: UAT 2/2 passed; review WR-01/IN-03 fixed in b7b49ae (theme.md data-bs-* claim scoped to core, object-detail layouts named; messages.md TypeError wording); re-verification 21/21 passed
 - [Phase 05]: 05-01: table pagination direction blocks enclose their own has_previous/has_next guards; disabled ends render aria-disabled anchors without href/tabindex; pagination:hidden-label (visually-hidden) shared by table and card; table baseline be7daa5, card raw baseline 0275218
 - [Phase 05]: 05-01: table template-origin check resolves the package path from crud_views.__file__ so it holds for editable checkouts and nox installs
+- [Phase 05]: 05-02: no production change needed; tests prove inherited pagination.previous/next overrides run on disabled ends without page-number calls, pin the 11-block contract, and hold card and table to one accessibility contract on a real three-page card endpoint
+- [Phase 05]: 05-02: invalid page inputs keep framework semantics (django-tables2 RequestConfig: non-integer -> 1, empty -> last; Django ListView: missing -> 1, last -> last, out of range/non-integer -> 404); _render_table_pagination is the reusable isolated-Engine override recipe for 05-03
 
 ### Pending Todos
 
@@ -138,6 +141,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-27T12:42:34.777Z
-Stopped at: Completed 05-01-PLAN.md
+Last session: 2026-10-27T12:53:10.883Z
+Stopped at: Completed 05-02-PLAN.md
 Resume file: None

@@ -17,15 +17,15 @@ findings:
     title: "Range anchors keep template whitespace that the card's do not"
   - id: IN-02
     severity: info
-    disposition: open
+    disposition: fixed
     title: "\"Never regenerate\" baseline ships with a regenerate switch"
   - id: IN-03
     severity: info
-    disposition: open
+    disposition: fixed
     title: "Golden-check helper duplicated across two test modules"
   - id: IN-04
     severity: info
-    disposition: open
+    disposition: fixed
     title: "Hidden-label test asserts on two different responses"
   - id: IN-05
     severity: info
@@ -42,7 +42,7 @@ recorded: 2026-10-27T13:30:00.000Z
 | WR-01 | warning | fixed | - |
 | WR-02 | warning | fixed | - |
 | IN-01 | info | fixed | - |
-| IN-02 | info | open | - |
-| IN-03 | info | open | - |
-| IN-04 | info | open | - |
+| IN-02 | info | fixed | - |
+| IN-03 | info | fixed | - |
+| IN-04 | info | fixed | - |
 | IN-05 | info | fixed | - |

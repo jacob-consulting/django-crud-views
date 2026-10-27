@@ -254,9 +254,9 @@ FEATURES: list[Feature] = [
             "from the list. Mix these into your own views as needed."
         ),
         look_at=(
-            "RecipeCardListView (the card grid and its signed cv_order_fields), the cv_property_display "
-            "fieldset groups on RecipeDetailView, cv_modal on RecipeDeleteView, and the RecipeFavoriteView "
-            "custom action in views.py."
+            "RecipeCardListView (the card grid, its paginate_by and its signed cv_order_fields), the "
+            "cv_property_display fieldset groups on RecipeDetailView, cv_modal on RecipeDeleteView, and the "
+            "RecipeFavoriteView custom action in views.py."
         ),
         url_name="recipe-card",
         icon="fa-solid fa-wand-magic-sparkles",

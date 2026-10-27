@@ -79,17 +79,9 @@
                 {% if table.page.number == p %}
                 <li class="page-item active" aria-current="page"><span class="page-link">{{ p }}</span></li>
                 {% elif p == '...' %}
-                <li class="page-item disabled">
-                    <a class="page-link" aria-disabled="true">
-                        {{ p }}
-                    </a>
-                </li>
+                <li class="page-item disabled"><a class="page-link" aria-disabled="true">{{ p }}</a></li>
                 {% else %}
-                <li class="page-item">
-                    <a class="page-link" href="{% cv_querystring table.prefixed_page_field=p %}">
-                        {{ p }}
-                    </a>
-                </li>
+                <li class="page-item"><a class="page-link" href="{% cv_querystring table.prefixed_page_field=p %}">{{ p }}</a></li>
                 {% endif %}
             {% endfor %}
             {% endblock pagination.range %}

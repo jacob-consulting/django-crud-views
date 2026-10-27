@@ -3,16 +3,16 @@ gsd_state_version: "1.0"
 current_phase: 05
 current_phase_name: Table pagination parity
 status: executing
-stopped_at: Phase 5 plans converged after 3 review cycles
-last_updated: "2026-10-27T12:32:31.949Z"
+stopped_at: Completed 05-01-PLAN.md
+last_updated: "2026-10-27T12:42:35.011Z"
 last_activity: 2026-10-27
-last_activity_desc: Phase 05 plans converged; ready to execute
-state_head: 701485e514af65be54d5419ed71bdc32cd981f8a
+last_activity_desc: Phase 05 execution started
+state_head: e7c8bc911a22b2767d76823c5c87c3466ccab67d
 progress:
   total_phases: 7
   completed_phases: 4
   total_plans: 14
-  completed_plans: 11
+  completed_plans: 12
   percent: 57
 ---
 
@@ -23,14 +23,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-10-26)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 5 — Table pagination parity
+**Current focus:** Phase 05 — Table pagination parity
 
 ## Current Position
 
-Phase: 05 (Table pagination parity) — READY TO EXECUTE
-Plan: Not started
+Phase: 05 (Table pagination parity) — EXECUTING
+Plan: 2 of 3
 Status: Ready to execute
-Last activity: 2026-10-27 — Phase 05 plans converged after 3 review cycles; 0 HIGH, 0 actionable findings
+Last activity: 2026-10-27 — Phase 05 execution started
 
 Progress: [██████░░░░] 57%
 
@@ -72,6 +72,7 @@ Progress: [██████░░░░] 57%
 | Phase 04 P01 | 5 min | 3 tasks | 7 files |
 | Phase 04 P02 | 5 min | 2 tasks | 2 files |
 | Phase 04 P03 | 10 min | 3 tasks | 9 files |
+| Phase 05 P01 | 5 min | 3 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -109,6 +110,8 @@ Recent decisions affecting current work:
 - [Phase 04]: 04-03: theme.md '### Custom alert frame' recipe is executable (test_documented_alert_frame_override); core data-bs-* confined to the dropdown allowlist by a tmp_path-tested guard
 - [Phase 04]: 04-03: browser A/B/C acceptance observed in headless Chrome 156 against the example; ruff format --check stays red on 8 pre-existing .planning files
 - [Phase 04]: UAT 2/2 passed; review WR-01/IN-03 fixed in b7b49ae (theme.md data-bs-* claim scoped to core, object-detail layouts named; messages.md TypeError wording); re-verification 21/21 passed
+- [Phase 05]: 05-01: table pagination direction blocks enclose their own has_previous/has_next guards; disabled ends render aria-disabled anchors without href/tabindex; pagination:hidden-label (visually-hidden) shared by table and card; table baseline be7daa5, card raw baseline 0275218
+- [Phase 05]: 05-01: table template-origin check resolves the package path from crud_views.__file__ so it holds for editable checkouts and nox installs
 
 ### Pending Todos
 
@@ -135,6 +138,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-27T11:08:59.632Z
-Stopped at: Phase 5 plans converged after 3 review cycles
-Resume file: .planning/phases/05-table-pagination-parity/05-01-PLAN.md
+Last session: 2026-10-27T12:42:34.777Z
+Stopped at: Completed 05-01-PLAN.md
+Resume file: None

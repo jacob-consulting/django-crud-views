@@ -38,13 +38,14 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 - ✓ **1B** Filter toggle label modes, constant translated labels, optional icons and accessible disclosure — Phase 3
 - ✓ **3A** Alert dismiss through `cv.adapters.alert` (`data-cv-alert-dismiss`, fallback `el.remove()`), golden-first,
   core templates keep `data-bs-*` only in the dropdowns — Phase 4
+- ✓ **3B** Table pagination from the `page-previous`/`page-next` registry icons with the card's accessible markup
+  (#241); one shared `pagination:hidden-label` key (default `visually-hidden`) for both — Phase 5
 
 ### Active
 
 - [ ] **2** Form buttons through a crud_views leaf (#257): `"form"` in `LOCATIONS`, new leaf `tags/button/form.html`,
   crispy `Submit`/`Button`/`Reset` as thin adapters, escaping, icons `save`/`cancel`/`filter-reset`, checks
   E210/E211/W291/W292, `<input>` → `<button>` (Breaking), example project uses `both`
-- [ ] **3B** Table pagination arrows from the registry, same accessible markup as #241 (`table:hidden-label` key recommended)
 - [ ] **4** Theme surface in `docs/development/stability.md` (icons, buttons, alerts, JS, theme hooks) + guard test
   `tests/test1/test_stability_doc.py`; closes the theme part of #89
 
@@ -102,6 +103,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 | Release filter label-mode support as Fixed; document copied-template migration | Default bytes remain unchanged while configured context floors now apply | Validated (Phase 3) |
 | Core performs no catch/log/fallback after a custom alert adapter fails; the `el.remove()` fallback lives only in the default adapter | Adapter owns its outcome and errors; core stays a thin delegated click listener | Validated (Phase 4) |
 | Alert dismiss change released as Breaking with a copied-template migration; `data-bs-*` audit scoped to core templates | Only copied `alert.html` overrides need the one-attribute edit; object-detail layouts keep Bootstrap collapse/tab attributes | Validated (Phase 4) |
+| One shared `pagination:hidden-label` class key for table and card pagination (not `table:hidden-label`) | One setting restyles both components; the default card bytes stay unchanged | Validated (Phase 5) |
+| Table `pagination.previous`/`pagination.next` blocks carry their own availability guards and run on disabled ends; released as Breaking with a tested override recipe | Theme overrides keep all django-tables2 block names; an unguarded copied override is the one thing that must change | Validated (Phase 5) |
 
 ## Evolution
 
@@ -121,4 +124,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-10-26 after Phase 4 completion*
+*Last updated: 2026-10-27 after Phase 5 completion*

@@ -1,44 +1,44 @@
 ---
 gsd_state_version: "1.0"
-current_phase: 05
-current_phase_name: Table pagination parity
-status: verifying
-stopped_at: Completed 05-03-PLAN.md
-last_updated: "2026-10-27T13:04:25.331Z"
+current_phase: 6
+current_phase_name: Form-button leaf
+status: planning
+stopped_at: Phase 05 complete, ready to plan Phase 6
+last_updated: "2026-10-27T13:54:06.447Z"
 last_activity: 2026-10-27
-last_activity_desc: Phase 05 execution started
-state_head: 4772ca5f3ef61cdd271680794c6f1615a6caf74b
+last_activity_desc: Phase 05 complete, transitioned to Phase 6
+state_head: a6a6cb9da9114f9153f5f5eff4ce022f2cb5ceff
 progress:
   total_phases: 7
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 14
   completed_plans: 14
-  percent: 57
+  percent: 71
 ---
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-10-26)
+See: .planning/PROJECT.md (updated 2026-10-27)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 05 — Table pagination parity
+**Current focus:** Phase 6 — Form-button leaf
 
 ## Current Position
 
-Phase: 05 (Table pagination parity) — EXECUTING
-Plan: 3 of 3
-Status: Phase complete — ready for verification
-Last activity: 2026-10-27 — Phase 05 execution started
+Phase: 6 — Form-button leaf
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-10-27 — Phase 05 complete, transitioned to Phase 6
 
-Progress: [██████░░░░] 57%
+Progress: [███████░░░] 71%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 11
+- Total plans completed: 14
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -50,6 +50,7 @@ Progress: [██████░░░░] 57%
 | 02 | 1 | - | - |
 | 03 | 2 | - | - |
 | 04 | 3 | - | - |
+| 05 | 3 | - | - |
 
 **Recent Trend:**
 
@@ -118,6 +119,7 @@ Recent decisions affecting current work:
 - [Phase 05]: 05-02: invalid page inputs keep framework semantics (django-tables2 RequestConfig: non-integer -> 1, empty -> last; Django ListView: missing -> 1, last -> last, out of range/non-integer -> 404); _render_table_pagination is the reusable isolated-Engine override recipe for 05-03
 - [Phase 05]: 05-03: table pagination Breaking entry and migrating-1.0.md 'Table pagination overrides' share commit 09549b2; the guarded myproject/table.html recipe (DJANGO_TABLES2_TEMPLATE at startup) is extracted and rendered by tests/test1/test_pagination_docs.py on pages 1/2/3 with class/icon overrides
 - [Phase 05]: 05-03: German catalog keeps only the pagination/previous/next reference updates for both templates; django.mo byte-identical to a fresh msgfmt build; unrelated makemessages churn deferred (deferred-items.md)
+- [Phase 05]: UAT 2/2 passed; all 7 review findings fixed after review (WR-01/WR-02, IN-01..IN-05, incl. disabled `...` range items and whitespace-free range anchors); re-verification 19/19 passed
 
 ### Pending Todos
 
@@ -129,9 +131,9 @@ None yet.
   Markdown files; product formatting passes. See phase deferred-items.md and WINDOWS entry 4.
 - Phases 6 and 7: each needs a spec or maintainer decision before planning.
 - Phase 7: retain the decided stable label-mode names; track the separately planned `no_label` removal before 1.0.
-- Phase 5: `pagination:hidden-label` is settled by D-01; plans converged with all three reviewers. Carry this name into Phase 7.
-- Phases 5 and 6 must commit before-change goldens. Today's goldens contain no form buttons or table pagination
-  (Phase 4 committed the dismissible alert golden first, f6982bf).
+- Phase 7: carry the Phase 5 class key `pagination:hidden-label` into the stability surface.
+- Phase 6 must commit before-change goldens; today's goldens contain no form buttons (Phase 4 committed the
+  dismissible alert golden first, f6982bf; Phase 5 the table pagination goldens, be7daa5).
 - [Phase 4] Four open Info review findings (IN-01 `[role~="alert"]`, IN-02 hand-copied allowlist, IN-04 no guard for
   the non-core data-bs-* sentence, IN-05 missing-script enumeration) — see 04-REVIEW-DISPOSITION.md; candidates for Phase 7.
 - Phase 2: Both source-probe classifier limitations remain documented; explicit tests and completed human prose UAT independently establish acceptance. See 02-VERIFICATION.md.
@@ -144,6 +146,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-27T13:04:25.068Z
-Stopped at: Completed 05-03-PLAN.md
+Last session: 2026-10-27T14:00:00Z
+Stopped at: Phase 05 complete, ready to plan Phase 6
 Resume file: None

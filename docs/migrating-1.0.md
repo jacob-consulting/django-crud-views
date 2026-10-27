@@ -434,8 +434,10 @@ A structural copy that you keep has to adopt the shared key and the accessible s
   the range block alone unless you need a different range; an override of `pagination.range` works as before.
 
 Save the override as a child template under its own name, for example
-`myproject/templates/myproject/table.html`. It extends `crud_views/table/bootstrap5.html`. Do not save it at
-`crud_views/table/bootstrap5.html` itself, where it would extend itself. Select it at startup in your settings:
+`myproject/templates/myproject/table.html`. It extends `crud_views/table/bootstrap5.html`. A copy saved at
+`crud_views/table/bootstrap5.html` in your project's `DIRS` also works, because Django resolves `{% extends %}` to the
+package's template, but it then replaces the stock template for every table that uses it. Select your own template at
+startup in your settings:
 
 ```python
 DJANGO_TABLES2_TEMPLATE = "myproject/table.html"

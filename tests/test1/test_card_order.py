@@ -271,6 +271,23 @@ def test_card_pagination_disabled_end_is_aria_disabled_link(client_publisher_ord
 
 
 @pytest.mark.django_db
+@pytest.mark.parametrize("page", [1, 2])
+def test_card_pagination_shared_hidden_label(client_publisher_order, publishers, page):
+    """pagination:hidden-label styles the card arrow labels, available and unavailable alike (D-02)."""
+
+    def labels():
+        items = _pagination(client_publisher_order, page).cssselect(".page-item")
+        return [
+            (item.cssselect(".page-link > span")[0].get("class"), "disabled" in item.get("class"))
+            for item in (items[0], items[-1])
+        ]
+
+    assert labels() == [("visually-hidden", page == 1), ("visually-hidden", page == 2)]
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"pagination:hidden-label": "sr-only"}):
+        assert labels() == [("sr-only", page == 1), ("sr-only", page == 2)]
+
+
+@pytest.mark.django_db
 @override_settings(LANGUAGES=[("en", "English"), ("de", "German")])
 def test_card_pagination_labels_translated(client_publisher_order, publishers):
     # the test project has no LocaleMiddleware: activate German around the request (as test_i18n.py does)

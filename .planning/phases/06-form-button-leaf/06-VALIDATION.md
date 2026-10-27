@@ -65,7 +65,7 @@ All tasks map to executable PLAN commands and immediate fails_when conditions. P
 - [ ] Add real `{% crispy %}` fixture coverage, including helper context shadowing and no-layout helpers.
 - [ ] Preserve custom helper constructor signatures; test class layout cloning, two instances and repeated render.
 - [ ] Cover replacement/omission via `get_form_actions()` and legacy `add_input()` without new warnings.
-- [ ] Exercise empty caller Layout() replacement before/between real crispy renders; preparation must precede the dispatch truthiness guard.
+- [ ] Exercise empty caller Layout() replacement before/between real crispy renders; preparation must precede both helper and layout truthiness guards; real-tag dispatch must occur even when len(helper) is zero.
 - [ ] Distinguish singleton-map monkeypatch tests from nested live-floor override_settings tests.
 - [ ] Count custom inline renderer calls and preserve host placement/opt-outs while testing semantic disabled-icon strict/log fallback.
 - [ ] Execute the documented helper.inputs=[] suppression migration to a None-returning hook with unchanged fields/hidden GET values.
@@ -118,3 +118,18 @@ H-OVERLAY-PROVENANCE remains a single-reviewer unconfirmed missing-API claim, ex
 boundary; no new provenance API or ownership redesign is introduced. Locked D-01 through D-18, exact crispy
 floors, before-change goldens and all prior review repairs remain required. Planning validation does not mark
 any feature, floor or browser acceptance gate passed.
+
+## Manual revision after cycle 3 — fcc404f
+
+User chose manual revision after the automatic three-cycle cap. No fourth review was run. The report's
+cycle-3 counts remain historical; the following plan repairs have structural validation only, with execution
+and independent re-review pending.
+
+| Finding | Plan ownership | Required execution evidence |
+|---|---|---|
+| H-HELPER-TRUTHINESS | 06-01 spec; 06-05 tasks 1/2; 06-09 audit | Both helper and prepared layout truthy at len(helper)==0; actual tag reaches render_layout for default/None/empty groups before/between replacement renders |
+| M-OUTER-HELPER-PAGE | 06-01 spec; 06-03 task 2 | Distinct page P/enclosing helper H/current helper None fixture chooses P; page None uses settings; ordinary/falsey owners stop lookup |
+| L-FORMSET-PAGE-CONTEXT | 06-03 task 2 | Actual Formsets -> inclusion -> row crispy and recursive child dispatch retain scoped page fallback without copying whole context or leaking state |
+| L-UNREGISTERED-FORM-ICON | 06-01 spec; 06-06 task 2 | Direct unknown-prefix and unusable renderer produce W292/strict/log fallback; no renderer probe; raw class/valid inline/host opt-out behavior preserved |
+
+Manual planning checks: all 9 frontmatter/structure validations passed; 18/18 decisions and 13/13 requirements covered; dependency waves, task file ownership and same-wave isolation passed; 28 verification blocks have failure conditions. The command-path tool returned no findings but marks Python commands not_applicable. An installed-crispy probe reproduced the layout-only false helper and confirmed both local __bool__ methods admit dispatch with len(helper)==0. These checks do not constitute feature implementation or independent convergence.

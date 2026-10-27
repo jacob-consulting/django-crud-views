@@ -24,6 +24,15 @@ model_sources:
 
 <!-- gsd:plan-revision-conflicts:end -->
 
+## Manual disposition after cycle 3
+
+The user selected manual revision after this review (snapshot fcc404f). All four findings below are now
+incorporated into executable plan tasks and acceptance evidence: H-HELPER-TRUTHINESS in 06-01/05;
+M-OUTER-HELPER-PAGE and L-FORMSET-PAGE-CONTEXT in 06-01/03; L-UNREGISTERED-FORM-ICON in 06-01/06.
+06-09 and VALIDATION require their execution evidence. Original reviewer text and counts are preserved.
+These revisions have not been externally re-reviewed, implemented or accepted as converged.
+
+
 ## Reviewer Execution Record
 
 Reviewed committed plan set `be0aa152408023b669a0a4a1c23f2ffcd36f8b08`, convergence cycle 3. Configured reviewers, pinned models, high effort and canonical lane invocation were preserved. Configured parallel dispatch was used. No plan, product, state, configuration, or runtime source was edited.

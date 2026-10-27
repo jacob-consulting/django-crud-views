@@ -1,6 +1,5235 @@
 ---
 phase: "06"
 reviewers: ["fable-review", "grok-review", "gemini-review"]
+reviewed_at: "2026-10-27T19:32:36.833592+00:00"
+plans_reviewed: ["06-01-PLAN.md", "06-02-PLAN.md", "06-03-PLAN.md", "06-04-PLAN.md", "06-05-PLAN.md", "06-06-PLAN.md", "06-07-PLAN.md", "06-08-PLAN.md", "06-09-PLAN.md"]
+models:
+  fable-review: "claude-fable-5-1 (reasoning=high)"
+  grok-review: "openrouter/x-ai/grok-4.7 (reasoning=high)"
+  gemini-review: "openrouter/google/gemini-4-argon (reasoning=high)"
+model_sources:
+  fable-review: "pinned"
+  grok-review: "pinned"
+  gemini-review: "pinned"
+---
+
+> Grok and Gemini share the OpenCode adapter; their agreement is cross-model, not cross-tool.
+
+# Cross-AI Plan Review — Phase 06
+
+<!-- gsd:plan-revision-conflicts:begin -->
+## Plan-Revision Conflicts
+
+- [x] REVISION_CONFLICT external-prerequisite/06-01 — required_property: Phase 1 and 2 prerequisites exist on authoritative main before spec/execution | conflicts with: ROADMAP.md Phase 6 main prerequisite; main remains 38b0100 | alternatives: retain main gate and wait for maintainer merge; explicitly authorize executing-branch prerequisite and update governing requirement | resolved: User selected working-branch verification (D-18); governing roadmap/context and plans updated; retain dependency evidence, spec-first and baseline-first gates.
+
+<!-- gsd:plan-revision-conflicts:end -->
+
+## Reviewer Execution Record
+
+Review cycle 3 of 3 in the current convergence run, against committed snapshot `8ad67d03730a8f1ec6e44873a915a7d1fb4108db`. The configured default identities fable-review, grok-review and gemini-review ran through the canonical instance/lane runner with their unchanged pinned models and lane-owned high effort. All received the same full nine-plan prompt, current project/roadmap/context/research/requirements, and repository-only read-only source-inspection instructions. Prior review history was not injected. No prompt budget was configured; no input was trimmed. Configured `review.parallel_lanes=true` enabled parallel initial attempts.
+
+| Reviewer | Result | Coverage | Evidence quality |
+|---|---|---|---|
+| fable-review | Substantive first-attempt review | 9/9 | Source citations present |
+| grok-review | Substantive review on one bounded retry | 9/9 | Source citations present |
+| gemini-review | Substantive first-attempt review | 9/9 | Source citations present |
+
+Fable used its canonical 1,200,000 ms deadline. Based on two prior measured empty 660,000 ms Gemini timeouts followed by successful 1,200,000 ms retries, Gemini's initial invocation used that proven longer deadline through a process-local CommonJS preload. Grok's initial canonical 660,000 ms attempt ended `ETIMEDOUT`, with only two progress sentences and zero plan sections. Although the runner returned `ok=true, stubbed=false`, that 434-byte output had a leading `[reviewed-without-source-citations]` marker and was treated as a dropped lane, never as approval. The single Grok retry used the exact same prompt/model/effort/permissions with only its process-local `timeoutMs` extended to 1,200,000 ms. No installed runtime, model/effort settings, permissions or project configuration was modified. The failed first Grok output, stderr and metadata are retained separately in run diagnostics.
+
+The current nine plans remained byte-identical throughout this pass. The writer-owned conflict slot is preserved byte-for-byte (SHA256 `03f805c366d031be9c6450c8231af0fef5f5db27e2e6536b5d018c9b3505b0be`), including the resolved D-18 entry; zero open entries. Only this review report is committed. The convergence orchestrator must independently read the conflict slot before declaring convergence; this review does not update state or implement/replan anything.
+
+Focused current-source verification: `.venv/bin/pytest tests/test1/test_import_safety.py::test_templatetags_import_without_app_registry tests/test1/test_import_safety.py::test_workflow_lib_model_mixin_public_path_imports_without_app_registry tests/test1/test_label_mode_docs.py -q` — **9 passed in 0.29s**. These are existing regressions, not proof that future phase implementation has run.
+
+## Claude Review (fable-review)
+
+Verification is complete. Writing the review now.
+
+# Cross-AI Plan Review — Phase 06 Form-button leaf (cycle 3 of 3, snapshot `8ad67d0`)
+
+All nine plans were checked against the working tree at `8ad67d0` and the installed dependencies (django-crispy-forms 2.6, crispy-bootstrap5 2026.3, Node 20.20.2 with jsdom 29.1.1 / vitest 4.1.10 installed; lock pins jsdom 30.1.2 / vitest 5.0.3). The repaired obligations from earlier cycles (form third-kind policy, two E108 rows, complete filter region, font availability, lazy adapter imports plus bare-settings regressions, `cv_button(form)` rejection, Step-zero E108 inventory) are all present in the current plan text and match the source mechanisms they describe. I found no contrary evidence for any of them. The findings below are new or residual.
+
+Source facts I relied on repeatedly:
+
+- `src/crud_views/lib/crispy/buttons.py:16-18` sets `field_classes` from the table and otherwise defers to crispy; no render override exists today.
+- Installed `crispy_forms/layout.py:255` compiles `self.value` as a Django `Template` and `:257` pushes `{"input": self}` onto the context, so the "input alias in an earlier layer" and "value templating" hazards are real.
+- Installed `crispy_forms/helper.py:99-103` (`__len__` = layout field count), `:208-214` (passing a form rebuilds the layout), `:337-346` (every non-underscore instance attribute, including `view`, is published to the crispy context) and `crispy_forms_tags.py:112,116` (`helper and helper.layout` guard) confirm the truthiness, layout-replacement and page-view shadowing mechanics the plans build on.
+- `crispy_bootstrap5/templates/bootstrap5/inputs.html` includes `baseinput.html` directly, so `add_input()` controls never call an adapter `render()`; `baseinput.html` applies `wordcount > 1 → slugify` to the name.
+- `src/crud_views/lib/view/button_data.py:12-14,58-61` (`LOCATIONS`, `KINDS`, the location/kind guards), `label_mode.py:23` (`LABEL_MODE_DEFAULTS` without `form`), `button_classes.py:209-210` (`VARIANT_LOCATIONS`, `FORM_KINDS`), `settings.py:13-14,320` (import-time `from_settings` snapshot and module singleton), `base.py:263-272,299-329` (whole-map resolver and location dispatch), `action_menu.py:46-72` (E211/W291), `buttons.py:387-440` (W292), `icons.py:187-262` (`resolve_icon`, `font_renderer`, `resolve_icon_name_class`).
+- `tests/test1/test_import_safety.py:20-35,147-165` are the two subprocess regressions that import `crud_views.templatetags.crud_views_formsets` and `crud_views_workflow.lib.WorkflowForm` after `settings.configure()` only; `crud_views/lib/view/__init__.py:1` imports `base`, which pulls Django auth, so any module-level import of `crud_views.lib.view.button_data` from `crispy/buttons.py` would break them.
+- No golden under `tests/test1/golden/` currently contains a submit, reset or filter control (grep over the directory is empty), so no existing golden breaks when `<input>` becomes `<button>`; the new `form_buttons/` baselines are genuinely the first evidence.
+
+---
+
+## 06-01
+
+**Summary.** The prerequisite-and-baseline plan is structurally sound: it verifies the Phase 1/2 contracts that do exist at HEAD (`default_label_mode` at `label_mode.py:84`, `FORM_KINDS`/`VARIANT_LOCATIONS` at `button_classes.py:209-210`), writes the spec with the nine named sections, and commits raw-byte baselines before any product edit, following the convention Phase 4 used (`tests/test1/test_alerts.py:169-181`, baseline commit `be7daa5` in Phase 5). The spec content list is accurate against source. The weak spot is that Task 1 also performs Node runtime acquisition and an `npm ci` reinstall, which is unrelated to writing a spec and turns an environment problem into a wave-1 halt for a phase whose next five waves are Python-only.
+
+**Strengths.**
+- Spec contracts are source-grounded: the helper `__len__` problem (`helper.py:99-103`), the `get_attributes` overlay (`helper.py:340-346`), the pre-dispatch `get_attributes` call site (`crispy_forms_tags.py:147` before `:116`), the `wordcount`/`slugify` name rule (`baseinput.html:2`) and the snapshot settings lifecycle (`settings.py:13-14,320`) are all real.
+- Task 2 correctly keeps `test_crud.py:63` (`{"confirm": True}` only) unchanged and adds the clicked-submitter POST as a separate assertion; the roadmap's "`test_delete` posts `{"delete": "Delete"}`" sentence is not what the suite does, and the plan does not pretend otherwise.
+- Task 3's filter region (`<form id="filter-form" method="get">` at `tags/list_filter.inner.html:14`) is a stable, unique, CSRF-free slice; the helper has `form_tag = False` (`list.py:63`) so crispy emits no inner form tag.
+- The verify command gates on nonempty sections and a 40-hex SHA in "Prerequisite evidence", so a skeleton spec cannot pass.
+
+**Concerns.**
+- **MEDIUM — Node acquisition and `npm ci` are coupled to the spec task and gate wave 1.** Task 1 requires obtaining Node 22/24 (lock engines: jsdom 30.1.2 needs `^22.22.2 || ^24.15.0 || >=26`, vitest 5.0.3 needs `^22.12.0 || ^24.0.0 || >=26`; installed runtime is v20.20.2 via nvm) and running `npm ci` with a node_modules backup, then running the full JS suite "before wave 1 completes". The dependency audit in 06-09 says an unavailable compatible runtime "halt[s] execution" at 06-01. Nothing in 06-02 through 06-06 needs JavaScript. A network or runtime-manager failure therefore blocks six plans of Python work for no technical reason. The research itself classifies JS reconciliation as "validation work, not permission requests".
+- **MEDIUM — the verify wrapper is over-specified for a planning artifact.** `06-js-verify.sh` must re-check "every locked Node engine range using npm's already-bundled semver resolver", package identities against lock entries, a lock hash, and `process.execPath`. That is a lockfile parser plus semver walker written in a spec task. `npm ci --engine-strict` under the selected Node already fails on engine mismatch, and `npm ls --json --depth=0` already reports identity drift. The hand-rolled checker is a second source of truth that can itself be wrong.
+- **LOW — Task 1 verify runs five existing shards, which cannot fail on anything the spec says.** The `fails_when` acknowledges this; it is fine as a tracer of the current path but gives no signal about spec quality beyond section presence.
+- **LOW — Task 2 says "Verify git diff BASELINE^ BASELINE -- src is empty" but Task 3 commits a second baseline.** Both commits must be checked; 06-09 does say "all five baseline commits/diffs", so this is a wording gap in 06-01 only.
+
+**Suggestions.**
+- Move runtime acquisition and `npm ci` into a dedicated wave-1 task that may record a blocker without halting; make the halt condition "blocks 06-07 and 06-09" rather than "blocks 06-02". Keep the D-18 Phase 1/2 verification as the only hard halt.
+- Replace the custom semver/lock checker with: pin Node via the runtime record, `npm ci --engine-strict --ignore-scripts`, then `node -e 'process.exit(process.versions.node.startsWith("22")||...)'`-style version assertion and `sha256sum package-lock.json` comparison. Record `npm ls --depth=0 --json` output as evidence.
+- State explicitly that both baseline commits must satisfy the empty-`src`-diff and ancestry checks.
+
+**Risk: MEDIUM.** The spec and baseline obligations are right; the environment coupling is the risk.
+
+---
+
+## 06-02
+
+**Summary.** The first product tracer is well grounded. The atomic consumer list for adding `"form"` to `LOCATIONS` is complete against source: `test_label_mode.py:67` (`set(LABEL_MODE_DEFAULTS) == LOCATIONS`), `test_action_label_mode_config.py:278,323` (`E108_LOCATIONS` literal and the `{"form": "both"}` invalid case), `test_label_mode_docs.py:126` (literal-eval of the `settings.md:78` default), and `test_button_classes_templates.py:214-218` (iterates `LOCATIONS` into `action.html` with `_leaf_contract`, which would produce zero sentinel classes for `form:<variant>` and fail `assert all(styled.values())`). The key-count move from 71 to 73 is correct (`test_button_classes.py:90`, `buttons.md:145`). The import-safety boundary and the `cv_button` guard are both necessary given `templatetags/crud_views.py:200-208` and `crud_views/lib/view/__init__.py:1`.
+
+**Strengths.**
+- Rejecting `menu-item` for `location="form"` while keeping `kind` as the rendering category is the right reading of `button_data.py:52,60-61`; the plan tests both strict modes, which matters because `conftest.py:41` runs the suite with `CRUD_VIEWS_STRICT=True`.
+- Bypassing `BaseInput.render` entirely (never calling `Template(str(self.value))`, `layout.py:255`) is the only way to satisfy D-15; the plan says so and additionally strips the `input` alias that a previous `BaseInput.render` (`layout.py:257`) or `FormActions.render` (`bootstrap.py:309`) leaves in lower context layers.
+- `_TableClassMixin.__init__` already intercepts kwargs before `super().__init__` (`buttons.py:16-18`), so "retain raw kwargs until safe serialization" is implementable without changing the public constructor, and `flatatt` (`crispy_forms/utils.py:142-149`) remains available for the legacy path.
+- Leaving filter controls on `helper.inputs` until 06-05 is consistent with `inputs.html` including `baseinput.html` directly: the adapter change cannot touch them.
+
+**Concerns.**
+- **MEDIUM — Task 1 is very large for one tracer.** Fifteen files, three distinct mechanisms (location/default migration, form normalizer and leaf, `cv_button` guard and import boundary) and seven behavior bullets. The plan justifies crossing the file heuristic for the atomic location change (H-LOCATIONS), which is right, but the `cv_button` guard, the form third-kind policy and the icon-mode utility keys are separable commits. A failure in the real-crispy tracer at the end of this task leaves a lot of uncommitted surface.
+- **LOW — "Explicitly reject non-form and unknown slot kinds when rendering through the new layout leaf" has an interaction with `slot="form:cancel"` on a delete button.** `test_crispy_buttons.py:62-73` passes `slot="form:cancel"` on a `Submit`; the plan's cv_key becomes `cancel`, which then makes `cv_cancel_url` "cancel-only" semantics apply to a submit-type control. 06-04 task 2 covers this case ("slot=form:cancel uses cancel styling/kind and retains name/value"), but 06-02 should state that cancel-URL emission depends on the presence of `data_cv_cancel_url`, not on `cv_key == "cancel"` alone, or the delete button in that test gains no URL and nothing breaks, while a cancel-keyed submit with a URL would. Pin which it is in the spec.
+- **LOW — `%s` substitution test needs a real alternate pack.** Only `bootstrap5` is installed; the "active pack substitution" test can only assert `%s` resolves to `bootstrap5`. That is sufficient, but the plan should say so to avoid an executor installing another pack.
+
+**Suggestions.**
+- Split Task 1 into (a) location/default/key atomic migration with the consumer tests, (b) normalizer plus leaf plus adapter render, (c) `cv_button` guard and import-safety shard. All three stay in wave 2; each gets its own commit and verify.
+- Write the cancel-URL emission rule once in the spec (06-01) and reference it here.
+
+**Risk: MEDIUM.** Correct design, heavy first task.
+
+---
+
+## 06-03
+
+**Summary.** The map resolver work follows the established pattern exactly (`cv_first_inline_keys` at `base.py:263-272`, `from_settings` snapshot at `settings.py:13-14`, pydantic validator at `viewset/__init__.py:105-111`). The ownership work is the hardest part of the phase and the plan's understanding of the mechanism is correct: `FormHelper.get_attributes` publishes `view` from the helper's `__dict__` (`helper.py:340-346`), `get_response_dict` copies it (`crispy_forms_tags.py:178-180`), and `node_context.update(response_dict)` (`:112`) overlays it. The formset transport need is also real: `Formsets.render` flattens (`lib/formsets/layout.py:17`) and the inclusion tag renders `formset.html` from `context.new(...)`, so the row `{% crispy x_form.form x_form.helper %}` (`formsets/formset.html:46`) sees no page `view`.
+
+**Strengths.**
+- Distinguishing singleton-monkeypatch map tests from `override_settings` floor tests matches the existing suite (`test_action_label_mode_config.py:272-273` already uses `monkeypatch.setattr(crud_views_settings, ...)`).
+- Reading `cv_view` from the adapter's `render(form, ...)` argument rather than `context["form"]` is correct: `BasicNode.get_render` sets `final_context["form"]` only after `render_layout` (`:133`), and inside a formset row the outer `form` variable is the parent's.
+- Rejecting H-OVERLAY-PROVENANCE as a "missing API" claim is defensible: `get_response_dict` does put `is_formset`, `template_pack`, `form_tag` and friends into every overlay (`:153-175`), so an overlay can be recognised by those keys.
+
+**Concerns.**
+- **MEDIUM — overlay classification by response-dict keys is fragile and the plan does not name the discriminator.** Both the "current" helper overlay and an "enclosing" helper overlay carry the same keys (`is_formset`, `template_pack`, `flat_attrs`, ...). The plan asks the executor to "identify the current crispy invocation's helper overlay from response metadata/provenance" and separately to exclude "every enclosing crispy helper response overlay". Without a concrete rule, two reasonable implementations disagree (nearest overlay vs. the one whose `form_attrs`/`form_id` equal the current helper's). Since 06-05 pushes a private helper-owner key for the package filter helper, and 06-03 says "obtain the current helper owner from the package's private pushed context entry when present", the only unsolved case is a third-party helper without the private key. State the rule: the current helper is `BasicNode.actual_helper`-equivalent, recoverable because `get_render` passes the same `node_context` object to `render_layout`; the adapter can read `context.get("is_formset")`-bearing layers from the top down and take the first one whose `flat_attrs` equals `helper.get_attributes()["flat_attrs"]` is still ambiguous for two identical helpers. The cleanest discriminator is identity: compare the overlay's `view` object to `getattr(current_helper, "view", _absent)` only after the current helper is known from the private key or the row helper argument. The plan should commit to one.
+- **MEDIUM — "a real ordinary view stops lookup" versus "page None falls through" needs the sentinel distinction written into the resolver, not just tests.** `get_attributes` publishes `view` only if the helper instance has a `view` attribute. The filter helper always does (`list.py:68`); a `FormHelper()` from `CrispyFormMixin.helper` (`form.py:43`) does not. So three states exist at the helper tier: absent, `None`, object. D-09 treats absent and `None` the same; the plan's behavior bullets do, but the action text says "None overlays fall through" only. Add "absent key" explicitly.
+- **LOW — `cv_get_action_label_mode` currently raises for any location other than context/list (`base.py:329`).** Adding `form` there means callers passing `button`/`target_default` for form must be rejected or ignored; the plan says "No target-view scalar or context-button policy applies to form kinds" but does not say whether passing them raises. Pick ignore (consistent with list) and test it.
+
+**Suggestions.**
+- Write the overlay discriminator as a short algorithm in the spec: (1) explicit private helper-owner key if present; (2) else the row helper passed to the tag, identified by object identity against `context.render_context`-free data is not available, so (3) fall back to the first layer from the top containing `is_formset` and treat its `view` as the current helper's; every lower layer containing `is_formset` is an enclosing helper and is skipped; the first remaining layer with a `view` key is the page tier. Then test that algorithm with the P/H/None fixture already in the plan.
+- Add the absent/None/object tri-state to the behavior list.
+
+**Risk: MEDIUM-HIGH.** Correct mechanism, under-specified discriminator in the one place the phase cannot afford ambiguity.
+
+---
+
+## 06-04
+
+**Summary.** Small and accurate. `save`, `cancel`, `filter-reset` are absent from both registries today (`icons.py:14-103` contain `delete`, `workflow`, `filter` only), and `test_icons_registry.py:107` asserts `BOOTSTRAP_ICONS.keys() == DEFAULT_ICONS.keys()`, so adding to both in one task is required and the plan does so. The sentinel-based `icon=` keyword with explicit `None` suppression is the right shape for "per-form `submit_icon` wins" and for 06-06's missing-icon policy. Slot-from-kind rather than name is consistent with `form.py:123-130` and the existing `slot=` test.
+
+**Strengths.**
+- Builds on 06-02's already-landed utility keys rather than re-adding them; the plan explicitly refuses a second key addition.
+- Host-icon behavior reuses `icon_host_keys` (`button_data.py:41-49`) and `get_icon_host_class` (`button_classes.py:152-165`), so the None-slot opt-out semantics are inherited, not re-implemented.
+- Interleaved-form and language tests catch the lazy-translation and class-attribute mutation hazards (`_TableClassMixin` mutates `self.field_classes` per instance; crispy's `css_class` appends via `self.field_classes += ...` on the instance, `layout.py:244-245`, so this is already instance-local, but the test is cheap insurance).
+
+**Concerns.**
+- **LOW — `icons.md` currently has no test guard, so the three new names can land without documentation.** 06-08 task 2 lists them, but no test asserts `DEFAULT_ICONS` keys are all documented. Phase 7 will add that guard; until then a docs drift is possible between 06-04 and 06-08.
+- **LOW — `CrispyDeleteForm.get_delete_button` builds `Submit(**{"slot": "form:delete", **kwargs})` (`form.py:130`).** With an `icon=` keyword added, a user hook returning `{"slot": "form:cancel"}` plus no icon must resolve the cancel default icon (`cancel`), not the delete one. The plan's "slot wins over the standard hook, then explicit form icon wins over kind default" covers it, but the test for the slot-swap case should assert the icon too, not only classes.
+
+**Suggestions.**
+- Add a one-line assertion in 06-04 task 1 that every name in `{save, cancel, filter-reset}` appears in `docs/reference/icons.md`, as a stopgap until the Phase 7 guard.
+
+**Risk: LOW.**
+
+---
+
+## 06-05
+
+**Summary.** This plan now addresses every lifecycle hazard the source presents, and each claim checks out: the class-level `layout = Layout(...)` on subclasses (`tests/test1/app/views.py:288-289`, docs `list_view.md:143`) is shared state; `FormHelper.__init__(form)` replaces it (`helper.py:212-214`); `helper and helper.layout` (`crispy_forms_tags.py:116`) needs both truthy and `FormHelper.__len__` returns the layout field count (`helper.py:99-103`); `get_attributes` runs before that guard (`:147` vs `:116`) and publishes non-underscore attributes (`helper.py:340-346`), which is why private state must be underscore-prefixed; hidden inputs stay on `inputs.html` and therefore render after the layout (`whole_uni_form.html` order). The `(view, request)` constructor convention at `mixins.py:319` is preserved.
+
+**Strengths.**
+- Preparing the layout in a `get_attributes` override is the only hook crispy offers before the truthiness guard; the plan identifies it precisely.
+- `get_form_actions() -> FormActions | None` with "None omits, empty group retained" is unambiguous and testable, and matches the `CrispyFormMixin.get_form_actions` shape (`form.py:53-54`).
+- Task 2 proves dispatch through the real tag with a spy on `render_layout`, so a constructor-only truthiness fix cannot pass.
+- Reusing 06-01's unchanged extractor and checking its source equality against the baseline commit keeps the before/after diff honest.
+
+**Concerns.**
+- **MEDIUM — the "empty replacement Layout + None hook" case renders every form field through the pack fallback, and the plan's assertion is on the Python layout object, not the HTML.** With an empty prepared layout and no actions, `render_layout` returns `""`, `form.form_html` is falsy, and `display_form.html` falls back to `uni_form.html`, which renders all fields. Task 2 acknowledges this ("this package-helper fix does not promise suppression of that existing pack-owned field fallback"). That is honest, but a consumer reading "the selected layout stays free of discarded fields" would expect the rendered form to be empty. Either document in 06-08 that an empty layout with omitted actions renders the pack default, or have the package helper render a single empty-string-safe placeholder so `form_html` is truthy. The second is a behavior choice outside D-01–D-04; the first is a one-sentence docs obligation that is currently missing from 06-08.
+- **LOW — `len(helper)` semantics after preparation.** The plan requires `len(helper)` to remain the "actual layout field count" and also that the private prepared Layout be truthy even when empty. If the prepared Layout is a subclass overriding `__bool__`, `len()` still reports 0, which is correct; but if the executor instead pads the Layout, `len` changes. The plan is clear enough; flagging only so the executor does not pad.
+- **LOW — `ListViewFilterFormHelper.view` is published to the crispy context by `get_attributes`.** The plan pushes a private helper-owner key during `render_layout`; the public `view` entry still lands in the overlay as today. That is fine for the standard path (view is the list view) but means the helper's `view` is the shadowing overlay 06-03 must handle for a user helper constructed with `view=None`. Cross-reference, not a defect.
+
+**Suggestions.**
+- Add to 06-08 task 2 a sentence under the omission recipe: "An empty layout with `get_form_actions()` returning `None` renders crispy's default field list, because the pack falls back when the layout output is empty."
+- In task 2's `fails_when`, add "or the empty-layout plus None-hook render asserts an empty document".
+
+**Risk: MEDIUM.** The mechanism is right; one consumer-visible edge is under-documented.
+
+---
+
+## 06-06
+
+**Summary.** The diagnostic policy is explicit and consistent with the current helpers: `cv_label_mode_checks` emits E211 for any invalid map and W291 only on the view's own attribute (`action_menu.py:46-72`); settings maps go through E106 (`settings.py:128-141`); ViewSet maps through the pydantic validator (`viewset/__init__.py:105-111`); W292 lives in `view/buttons.py:387-440` and already catches `ValueError` narrowly around mode resolution (`:427-429`). The static-reach rules (delete provider first, polymorphic `polymorphic_forms` dict at `crud_views_polymorphic/lib/utils.py:35,64-72`, never instantiate) are implementable. The availability predicate reusing `resolve_icon` (`icons.py:187-202`), `get_libraries` (`:136-146`) and `_get_renderers` (`:164-175`) without calling `render_icon` is consistent with how `resolve_icon_name_class` (`:240-262`) already works.
+
+**Strengths.**
+- Form E210-per-entry versus E211-shape is a deliberate, documented divergence from context/list, and the plan keeps the existing helper byte-compatible rather than changing it for everyone.
+- The requirement that W292 never warn about an inherited `submit_icon` on a delete form is exactly the trap `CrispyDeleteForm` sets (`form.py:132-142` renders delete plus cancel, not submit).
+- Counting custom-renderer invocations per render closes the "one inline render" contract and is cheap to implement with the existing registry override fixtures.
+- Font-class validation mirrors `_library_check_messages` (`icons.py:347-375`) and `font_renderer` (`:205-220`) without invoking them, and E354 ids/messages are preserved.
+
+**Concerns.**
+- **MEDIUM — static W292 for forms needs a view-class to form-class mapping the plan only sketches.** `DeleteView` has no package `form_class` default (`lib/views/delete.py` declares none; test views set `form_class = CrispyDeleteForm` explicitly at `tests/test1/app/views.py:122`). Create/Update views use `form_class` or `get_form_class()`; a view that sets only `model`/`fields` gets a Django `modelform_factory` form, not a `CrispyFormMixin`, and renders no package buttons. The plan says "inspect concrete statically selected form classes only while the helper property … retain[s] known package implementations", which is right, but it should name the exact attribute read (`cls.form_class`, else skip) and the "known provider" test (`issubclass(form_class, CrispyDeleteForm)` first, then `CrispyFormMixin`, and `type(form_class).helper is CrispyFormMixin.helper` / `CrispyDeleteForm.helper`). Without that, executors may call `get_form_class()` which is request-dependent on polymorphic views.
+- **LOW — Task 2 is as dense as 06-02 task 1.** Static checker, availability predicate, font validation, host regressions, polymorphic traversal and dynamic fallback in one task with one test file. Consider splitting static checks from runtime fallback.
+- **LOW — "logs one warning per render using the existing button-data logger" differs from the once-per-process policy of `_invalid_label_mode` (`label_mode.py:61-81`).** That is acceptable (the existing action path at `button_data.py:106-110` also warns per render), but the docs in 06-08 should say which policy applies to missing icons so a consumer is not surprised by log volume.
+
+**Suggestions.**
+- Write the provider-selection algorithm in the spec: read `cls.form_class` only; `None` → skip; `issubclass(form_class, CrispyDeleteForm)` and `form_class.helper is CrispyDeleteForm.helper` → inspect `delete_icon`, `cancel`; `issubclass(form_class, CrispyFormMixin)` and `form_class.helper is CrispyFormMixin.helper` and `get_form_actions`/`get_submit_button` unchanged → inspect `submit_icon`, `cancel`; anything else → dynamic.
+- Split task 2 into static checks and runtime fallback.
+
+**Risk: MEDIUM.**
+
+---
+
+## 06-07
+
+**Summary.** The browser and floor validation plan is right about the contracts it tests: `modal.js:75-83` already builds `FormData(form, submitter || undefined)`, `viewset.js:38-44` uses `closest("[data-cv-cancel-url]")`, `list.filter.js:57` binds `#filter-button-reset`, and `tests/js/modal.test.js:196-205` already dispatches a native `SubmitEvent` with `submitter`. The nox session design (separate `crispy_floor`, Python 3.12, Django 4.2/6.0, exact crispy 2.0 / bootstrap5 2023.10 pins in one resolver transaction) extends `noxfile.py:6-19` without touching the matrix. The `format_html` concern is correctly reduced to "with arguments stays valid", and the only package use is `icons.py:220` with an argument.
+
+**Strengths.**
+- Treating JS source as conditional bug-fix ownership (leave byte-identical if tests pass) avoids churn.
+- Task 2's reset fixture change (`type="reset"` inside a real form) corrects the current test fixture, which uses `type="button"` (`list.filter.test.js:15`) and therefore never exercised native reset.
+- Rejecting the "Node 20 plus old node_modules" acceptance is consistent with the lock.
+
+**Concerns.**
+- **LOW — the plan overstates what the locked environment adds for `submitter`.** The installed jsdom 29.1.1 already implements `FormData(form, submitter)` (`node_modules/jsdom/lib/jsdom/living/xhr/FormData-impl.js:16-28`) and `SubmitEvent.submitter`. Running on the locked jsdom 30.1.2 is the right policy for provenance, but the plan's language ("cannot establish the locked packages' native browser contract") should not be read as "the feature is untestable until then". If 06-01's runtime acquisition is made non-blocking (see 06-01), 06-07 can still run its tests twice: once on the ambient runtime as early signal, once on the locked runtime as acceptance.
+- **LOW — `crispy_floor` with `uv` backend installing `django-crispy-forms==2.0` on Django 6.0.** crispy 2.0 predates Django 6; whether its templates/`flatatt` import paths still work on 6.0 is exactly what the session proves, but if it fails for reasons unrelated to this phase (an upstream incompatibility), the plan has no disposition. Add: "a floor failure caused by upstream crispy 2.0 on Django 6.0, reproduced on the unchanged `main` wrappers, is a floor decision for LATER-07, not a Phase 6 blocker".
+
+**Suggestions.**
+- Allow an early ambient-runtime run of the three JS suites as a non-acceptance signal.
+- Add the upstream-incompatibility disposition for the floor session.
+
+**Risk: LOW-MEDIUM.** Mostly environment risk, already gated.
+
+---
+
+## 06-08
+
+**Summary.** The documentation obligations are complete and anchored to real rows: `buttons.md:495` and `action_menus.md:289` E108 rows list `("context", "list", "card")`; `migrating-1.0.md:51-52` has the Step-zero paragraph; `settings.md:78` holds the default literal (updated by 06-02); `buttons.md:84-86` carries the now-obsolete "does not enable label-mode selection or icon rendering for crispy form buttons" sentence; `javascript.md:99-107` is the tooltip location table and `tooltip.js:5-7` the header list. `test_label_mode_docs.py` has the `_section`/`_row` helpers (`:35-52`) the new guards need. No existing test pins the obsolete sentence (grep is empty), so replacing it breaks nothing. The executable-recipe approach follows `test_pagination_docs.py` from Phase 5.
+
+**Strengths.**
+- The clearing-inputs regression (old technique keeps stock actions, new recipe omits them) is the right way to document a changed behavior rather than claim compatibility.
+- The E108 inventory guards are row- and paragraph-scoped so a stray mention elsewhere cannot satisfy them.
+- The example change is minimal: `examples/bootstrap5/project/settings.py` has no `CRUD_VIEWS_LABEL_MODE_DEFAULTS` today, so adding `{"form": "both"}` cannot override other locations.
+
+**Concerns.**
+- **MEDIUM — the example's German i18n test asserts `value="Sichern"` (`examples/bootstrap5/test_i18n.py:133-134`).** After migration the submit is `<button name="submit" value="Sichern">` so the substring still matches; but if the executor decides a `both`-mode button should carry the translated text only in the body and drop `value` for non-delete submits, this gate breaks. D-17 says names/values are preserved, so this is a cross-check obligation rather than a defect: 06-08 task 3 should name this assertion as a reason the `value` attribute is retained on every kind.
+- **LOW — task 1's verify runs `test_button_classes.py` but `files_modified` does not include it.** Fine as a regression run; stating it prevents an executor from "fixing" the count test in this plan when 06-02 already moved it to 73.
+- **LOW — missing docs sentence for the empty-layout plus None-hook pack fallback** (see 06-05).
+
+**Suggestions.**
+- Reference `test_i18n.py:134` in task 3 as a preserved consumer contract.
+- Add the pack-fallback sentence to task 2's `list_view.md` recipe.
+
+**Risk: LOW-MEDIUM.**
+
+---
+
+## 06-09
+
+**Summary.** The acceptance plan collects the right gates: full Python suite, the selected-runtime JS gate, ruff check and format (with the known 8-file planning drift called out, consistent with STATE), strict docs, the URLconf-registered `SystemChecksTest` (`examples/bootstrap5/project/tests.py:97-98`), docs sync, and the example-settings run of `test_i18n.py`, `HomePageTest.test_every_feature_landing_page_renders` (`:34,45`) and `test_doc_links.py`, which exist and are selected by `examples/bootstrap5/pytest.ini` (`DJANGO_SETTINGS_MODULE = project.settings`, `pythonpath = .`). It keeps the two unclassified probe rows visible and refuses inherited probes as acceptance.
+
+**Strengths.**
+- Separate citation of the three delete-payload facts (confirm-only test, rendered name/value, confirm-plus-submitter POST) prevents the roadmap's inaccurate "`test_delete` posts `{"delete": "Delete"}`" from being recorded as evidence.
+- Human checks are recorded as pending until observed; browser automation is allowed but not assumed.
+- Single-writer acceptance document and isolated output directories for parallel gates are sensible given 06-07 and 06-08 run in the same wave.
+
+**Concerns.**
+- **LOW — the example gate depends on the example's extra requirements being installed in `.venv`.** The nox `examples` session installs `.[all,test,examples]` plus `requirements/demo.txt` (`noxfile.py:30`); the plan runs `../../.venv/bin/pytest` directly. Phase 4 ran browser acceptance against the example from this venv, so it is probably satisfied, but the plan should state that an `ImportError` here is an environment finding to fix by installing the example extras, not an acceptance failure of the feature.
+- **LOW — "Record generic downstream follow-up: map save to … device-floppy, cancel to x, filter-reset to filter-off".** These glyph names identify a specific icon set. The project hygiene rule forbids downstream project names; glyph names are not project names, so this is compliant, but it is close to the line. Keep it.
+
+**Suggestions.**
+- Add an environment precondition line for the example gate (extras present) with the command to install them from the existing declarations.
+
+**Risk: LOW.**
+
+---
+
+## Cross-plan assessment
+
+**Dependency ordering.** The serial waves 2 through 6 are justified by shared ownership of `crispy/buttons.py`, `button_data.py` and `test_crispy_buttons.py`. 06-07 and 06-08 share no files. The one ordering problem is in 06-01: coupling the Node runtime gate to wave 1 (needed only by 06-07 and 06-09) is the single most likely cause of a stalled phase and is unrelated to Phase 6's correctness.
+
+**Scope and over-engineering.** The `06-js-verify.sh` specification is heavier than the problem; `npm ci --engine-strict` plus recorded versions achieves the same provenance. Everything else in the plan set is traceable to a locked decision or a reproduced hazard.
+
+**Security.** The literal-text boundary (never `Template(str(value))`, unconditional escaping of SafeString and lazy values, one serialization of extra attributes) is correctly placed at the adapter and tested in body, `value`, `title` and attributes with real crispy rendering. The ownership tests prevent one form borrowing another view's configuration. No new auth, session or CSRF path is introduced; `whole_uni_form.html` still emits the CSRF token for POST forms and the filter form is GET.
+
+**Performance.** No concern. Owner recovery walks a handful of context dicts per button; checks never instantiate forms.
+
+**Does the plan set achieve the phase goal?** Yes, if 06-03's overlay discriminator is written down before 06-03 executes and 06-06's provider-selection algorithm is written down before 06-06 executes. Both belong in the 06-01 spec and are currently described by outcome rather than by rule.
+
+**Overall risk: MEDIUM.** No HIGH finding survived verification. The two MEDIUM items that most deserve a plan edit before execution are the wave-1 Node gate in 06-01 and the under-specified overlay discriminator in 06-03.
+
+
+---
+
+## OpenCode Review (grok-review)
+
+I'll verify the nine plans against the current source, starting with the contracts those plans claim already exist.
+The repaired contracts are in the plans. Next I’ll check the source mechanisms those obligations actually depend on.
+## 06-01
+
+The prerequisite plan matches the current branch. Phase 1/2 contracts are present, and the baseline scope matches the real filter form. The spec gate only checks that headings are nonempty.
+
+**Strengths**
+- `FORM_KINDS` and `VARIANT_LOCATIONS` are already split (`src/crud_views/lib/button_classes.py:209-226`). `LOCATIONS` is still only context/list/card (`src/crud_views/lib/view/button_data.py:12`). D-18 is a real source check, not a merge gate.
+- `form#filter-form` wraps the crispy render (`src/crud_views/templates/crud_views/tags/list_filter.inner.html:14-16`). Capturing that whole slice includes fields, actions, and hidden inputs from `add_input` (`src/crud_views/lib/views/list.py:70-86`).
+- Delete today posts `{"confirm": True}` only (`tests/test1/test_crud.py:63`). Keeping that and adding a separate `delete=Delete` POST matches the current view.
+
+**Concerns**
+- LOW: The spec check only requires nonempty `##` sections and a 40-character SHA. A one-line section passes. Third-kind rejection, omission, and the import boundary are not machine-checked.
+
+**Suggestions**
+- Assert the spec names `kind='action'` acceptance, `menu-item` rejection, and deferred `crud_views.lib.view` imports, not only headings.
+
+**Risk Assessment**
+LOW. Ordering is right. The spec body is still an execution-quality risk.
+
+## 06-02
+
+The leaf plan follows the real render path. `cv_button` currently resolves then calls `cv_button_data` (`src/crud_views/templatetags/crud_views.py:200-208`). `BaseInput` is not bypassed today (`src/crud_views/lib/crispy/buttons.py:16-18`). The producing task's pytest gate does not run the file that becomes red when `"form"` is added.
+
+**Strengths**
+- Adding `"form"` to `LOCATIONS` without `VARIANT_LOCATIONS` does not widen W362 (`src/crud_views/lib/button_classes.py:223-226`). `test_future_button_data_locations_cannot_widen_class_key_grammar` already pins that (`tests/test1/test_button_classes_checks.py:228-246`).
+- The action-leaf sentinel loops `sorted(LOCATIONS)` into `action.html` (`tests/test1/test_button_classes_templates.py:214-217`). Switching that loop to `VARIANT_LOCATIONS` is required.
+- Key count is 71 (`tests/test1/test_button_classes.py:90`, `docs/reference/buttons.md:145`). Two new utility keys make 73. `form:hidden-label` and `form:icon-host` are absent (`src/crud_views/lib/button_classes.py:84-94`).
+- WorkflowForm import loads `buttons.py` through `src/crud_views/lib/crispy/__init__.py:1`. Deferring `view` imports and running `test_workflow_lib_model_mixin_public_path_imports_without_app_registry` (`tests/test1/test_import_safety.py:147-158`) actually covers that file.
+
+**Concerns**
+- MEDIUM: Task 1's gate omits `tests/test1/test_label_mode.py`. That file treats `"form"` as an invalid location (`:137`) and expects a three-key map (`PACKAGE` at `:17`, equality at `:68` and `:133`, ignored `{"form": "label"}` at `:94`). Those fail as soon as `"form"` joins `LOCATIONS` and `LABEL_MODE_DEFAULTS`. Task 2's gate includes the file, so the plan fails closed only if task 2 runs.
+- LOW: `tests/test1/test_button_data.py:9` shadows the package set with `LOCATIONS = ["context", "list", "card"]`. Appending `"form"` there feeds action contexts (`cv_url`, `cv_action_label`) into the form branch and breaks those cases. The plan says update that file but does not say this list stays action-only.
+
+**Suggestions**
+- Add `tests/test1/test_label_mode.py` to task 1's verify, and name the `:68` and `:137` updates.
+- Keep the local list action-only. Parametrize form cases separately.
+
+**Risk Assessment**
+MEDIUM. The rendering contract is right. The producing-task gate is incomplete.
+
+## 06-03
+
+Owner resolution matches the current overlay. `ListViewFilterFormHelper` sets `self.view` (`src/crud_views/lib/views/list.py:68`), and `cv_first_inline_keys` already selects the first non-None map (`src/crud_views/lib/view/base.py:263-272`). The import-safety gate does not load the file that will grow the new import.
+
+**Strengths**
+- Map fields are import-time `from_settings` (`src/crud_views/lib/settings.py:67-68`). The floor is a separate lazy read (`src/crud_views/lib/view/label_mode.py:54-58`). The plan keeps that split.
+- `Formsets.render` flattens before the inclusion (`src/crud_views/lib/formsets/layout.py:10-17`). `cv_x_formset` returns only `x_formset` (`src/crud_views/templatetags/crud_views_formsets.py:7-9`). A private key must be captured before flatten and copied into that dict. The plan says that.
+- Row crispy is `{% crispy x_form.form x_form.helper %}` (`src/crud_views/templates/crud_views/formsets/formset.html:42`). `XForm.helper` can return `self.form.helper` (`src/crud_views/lib/formsets/render_tree.py:83-90`), and `CrispyFormMixin.helper` builds a new helper every access (`src/crud_views/lib/crispy/form.py:41-48`). Not re-reading that property is required.
+
+**Concerns**
+- MEDIUM: The bare-settings gate imports `crud_views.templatetags.crud_views_formsets` (`tests/test1/test_import_safety.py:28`), which does not import layout. `crud_views.lib.formsets` does (`src/crud_views/lib/formsets/__init__.py:4-5`), and that package is a public import (`examples/bootstrap5/formsets/views.py:11`). A module-level `crud_views.lib.view` import in `layout.py` passes both named subprocess tests and is not imported by any later gate.
+
+**Suggestions**
+- Extend the subprocess snippet to `import crud_views.lib.formsets` after `settings.configure()`, still without `django.setup()`.
+
+**Risk Assessment**
+MEDIUM. Ownership rules match the source. The new import boundary in `layout.py` is untested.
+
+## 06-04
+
+Icon wiring matches the registries and the delete/cancel name split. No new mechanism error against current source.
+
+**Strengths**
+- `save`, `cancel`, and `filter-reset` are absent from `DEFAULT_ICONS` (`src/crud_views/lib/icons.py:14-39`). `delete`, `filter`, and `workflow` already exist.
+- Delete does not use `get_submit_button`. It uses slot `form:delete` (`src/crud_views/lib/crispy/form.py:123-141`). Cancel's submitted name is `"reset"` (`:76`), same as filter reset (`src/crud_views/lib/views/list.py:73`). Slot-not-name is required.
+- `get_icon_host_class` formats `location:icon-host` (`src/crud_views/lib/button_classes.py:152-163`). Those form keys are correctly owned by 06-02, before this wave renders icons.
+
+**Concerns**
+- LOW: 06-04 edits `form.py` and `buttons.py`, both on the WorkflowForm import path, and does not re-run `test_import_safety.py`. A new module-level `view` import would not fail this wave's gate.
+
+**Suggestions**
+- Re-run the two bare-settings subprocess tests after the icon wiring.
+
+**Risk Assessment**
+LOW. Semantic mapping matches the current hooks.
+
+## 06-05
+
+The helper migration matches the shared class layout and the mixin constructor. Crispy's dispatch internals are not in this repository, so the truthiness hook is an execution proof, not something this review can re-read.
+
+**Strengths**
+- Documented subclasses set a class-level `layout` (`tests/test1/app/views.py:288-289`, `examples/bootstrap5/library/views.py:48-49`) shared by more than one view (`tests/test1/app/views.py:303,374,393`). Deep-copy is required.
+- The mixin calls `formhelper_class(request=self.request, view=self)` and does not pass `form` (`src/crud_views/lib/views/mixins.py:318-319`). Keeping that signature is right.
+- Stock actions are `add_input` today (`src/crud_views/lib/views/list.py:70-73`). Clearing `inputs` currently removes them. The None-hook migration is a real behavior change, not a doc invention.
+- Hidden sort is always added. Order and direction are added only when nonempty (`:77-86`). The plan preserves that.
+
+**Concerns**
+- OPEN QUESTION: `get_attributes` and `if helper and helper.layout` are not in this repository. This review cannot confirm the pre-dispatch hook. The plan's real-tag empty-`Layout()` test is the right proof. Do not treat a direct `render_layout` call as that proof.
+
+**Suggestions**
+- None beyond running the tag-level empty-layout cases on crispy 2.0 as well as the installed version.
+
+**Risk Assessment**
+MEDIUM. The in-repo lifecycle is correct. The crispy guard is the highest remaining implementation risk, and it is tested rather than assumed.
+
+## 06-06
+
+Diagnostics match the existing IDs and the delete helper's actual buttons. The form-only E210/E211 split is a deliberate divergence from `cv_label_mode_checks`, and the plan says so.
+
+**Strengths**
+- Context/list invalid maps, including bad values, are E211 (`src/crud_views/lib/view/action_menu.py:46-62`). E210 today is the scalar helper (`src/crud_views/lib/view/label_mode.py:44-50`). Not reusing `cv_label_mode_checks` unchanged is required.
+- W292 only walks context toolbar keys (`src/crud_views/lib/view/buttons.py:387-436`) and only when `cv_viewset is not None` (`src/crud_views/lib/view/base.py:195-197`). A separate form checker is required.
+- `resolve_icon` returns `None` for table `None`/`""` (`src/crud_views/lib/icons.py:187-198`) and still returns a prefix for `unknown:save` (`:199-202`). A library/renderer check beyond `resolve_icon` is required.
+- `font_renderer` returns empty markup for a missing, non-string, or unformattable `class` and does not raise (`src/crud_views/lib/icons.py:205-217`). E354 stays in `_library_check_messages`. The no-call availability check matches that function.
+- `polymorphic_forms` is a class dict (`src/crud_views_polymorphic/lib/utils.py:35`). `get_form_class` needs the request model (`:64-69`). Inspecting the dict without constructing the form is the only static path.
+
+**Concerns**
+- LOW: The plan does not say the new checker must run when `cv_viewset is None`. Copying the guard at `base.py:195` would skip unregistered probe views. Registered list/delete views still run.
+
+**Suggestions**
+- Yield the form checker outside that `if`, since it reads `form_class` / `formhelper_class` / `polymorphic_forms`, not the viewset.
+
+**Risk Assessment**
+LOW. Static reach matches the providers that exist today.
+
+## 06-07
+
+Browser contracts already exist. The plan extends tests instead of inventing handlers. The lockfile Node ranges are stricter than `package.json`.
+
+**Strengths**
+- Modal submit already uses `new FormData(form, submitter || undefined)` (`src/crud_views/static/crud_views/js/modal.js:75-82,137`). Nested cancel uses `closest("[data-cv-cancel-url]")` (`src/crud_views/static/crud_views/js/viewset.js:38-43`). Reset is an id listener with no `preventDefault` (`src/crud_views/static/crud_views/js/list.filter.js:42-57`). Preserving native reset plus navigation matches current code.
+- `package.json` says `"node": ">=20"` (`package.json:15-16`). The lock has ranges such as `^22.22.2 || ^24.15.0 || >=26.0.0` (`package-lock.json:33`). An isolated newer Node is required. Accepting Node 20 would not satisfy the lock.
+- The floor session does not change `noxfile.py`'s existing matrix (`noxfile.py:6-11`). Django 4.2 on Python 3.12 is still allowed.
+
+**Concerns**
+- None that contradict the source. The floor session is long, but it is the right place for the crispy 2.0 dispatch check.
+
+**Suggestions**
+- Record the selected Node version next to the lock hash in the summary, not only inside the wrapper.
+
+**Risk Assessment**
+LOW. JS behavior is already compatible with real buttons if `id`, `type`, and `data-cv-cancel-url` stay on the button.
+
+## 06-08
+
+Documentation targets the rows and paragraphs that are stale today. The unique-row helper will fail if those rows are duplicated.
+
+**Strengths**
+- Both E108 rows omit `form` (`docs/reference/buttons.md:495`, `docs/reference/action_menus.md:289`). `_row` requires one match (`tests/test1/test_label_mode_docs.py:48-52`). Updating those rows in place is the right edit.
+- The Step zero paragraph is inside `## Step zero: run the checks` (`docs/migrating-1.0.md:20,51-54`), and the next same-level heading is line 59. `_section` (`tests/test1/test_label_mode_docs.py:35-45`) isolates it from a later Form buttons section.
+- `tooltip.js` lists locations and does not special-case them (`src/crud_views/static/crud_views/js/tooltip.js:6-8,27-28`). Adding `form` to the comment and `docs/reference/javascript.md:99-107` does not require a runtime change.
+- Example German create still asserts `value="Sichern"` (`examples/bootstrap5/test_i18n.py:135`). That substring survives `<button value="Sichern">` if the value attribute is kept.
+
+**Concerns**
+- LOW: `test_button_label_mode_check_reference` requires the E210 row to still say `` `None` is accepted as unset `` and the E211 row to contain `"string or None"` twice (`tests/test1/test_label_mode_docs.py:419-427`). Rewriting those rows for the form policy will fail that test unless the old phrases stay.
+
+**Suggestions**
+- Extend the existing E210/E211/W291 sentences. Do not add a second row with the same first cell.
+
+**Risk Assessment**
+LOW. The doc edits are pointed at the actual stale text.
+
+## 06-09
+
+Acceptance is evidence collection, not a second implementation plan. The gates it names exist. It cannot repair code.
+
+**Strengths**
+- Full `pytest tests` does not collect `examples/bootstrap5`. The extra gate is required. `test_every_feature_landing_page_renders` only checks status 200 (`examples/bootstrap5/project/tests.py:45-51`). The German value assertion is the one that sees button markup (`examples/bootstrap5/test_i18n.py:134-135`).
+- No current golden contains `filter-button` or `name="submit"`, so unrelated golden directories should stay untouched if only the new `form_buttons/` files are rewritten.
+- FORM-01/02 stay flagged unclassified. That matches the plan's own ledger.
+
+**Concerns**
+- LOW: `files_modified` is only the acceptance notes. A failing example assertion has to go back to 06-08 or earlier. That is stated, but there is no task here that can fix it.
+
+**Suggestions**
+- If the German `value="Sichern"` assertion fails, fix the value attribute in the leaf, not the example test.
+
+**Risk Assessment**
+LOW. This plan closes the phase only if earlier waves actually ran. It does not hide a missing product test.
+
+## Cross-plan
+
+Repaired items still match source. No contrary evidence:
+
+- Form third-kind: `cv_button_data(ctx, location, kind="action")` and `KINDS` are unchanged (`src/crud_views/lib/view/button_data.py:14,52-61`). 06-01/06-02 still accept only default/`action` for `location="form"`.
+- Both E108 rows and the Step zero paragraph still list only context/list/card, and 06-08 still names all three with section-scoped guards.
+- Filter baseline still wraps crispy output in `form#filter-form`. 06-05 still reuses that extractor.
+- Font availability still matches `font_renderer` (`src/crud_views/lib/icons.py:205-217`) without calling it.
+- Lazy `view` imports are still required on the WorkflowForm path (`src/crud_views/lib/crispy/__init__.py:1`), and 06-02 still runs the unchanged subprocess tests.
+- `cv_button` still has no form guard (`src/crud_views/templatetags/crud_views.py:200-208`). 06-02 still rejects it before dispatch with a real tag test.
+
+**Overall risk: MEDIUM.** The nine plans cover FORM-01 through FORM-13 and D-01 through D-18, and the hard crispy/owner/diagnostic contracts are tied to real call sites. Two verification holes can pass a wave while the contract is wrong: task 1 of 06-02 does not run `test_label_mode.py`, and 06-03's import gate does not import `crud_views.lib.formsets`. Neither is a wrong mechanism in the action text. Both should be closed before execution.
+
+
+---
+
+## OpenCode Review (gemini-review)
+
+## 06-01
+
+### 1. Summary
+Plan `06-01` establishes the pre-implementation design specification (`06-SPEC.md`), the lock-backed JavaScript runtime wrapper (`06-js-verify.sh` and `06-JS-RUNTIME.json`), and the two baseline-only golden commits (`create.html`, `update.html`, `delete.html`, `workflow.html`, `filter.html` plus `tests/test1/test_form_buttons_golden.py`) before any production code is modified. All prior and latest review obligations assigned to the spec and baseline phase—including working-branch prerequisite verification (D-18), `cv_button_data` third-argument `kind` separation (`M-FORM-DATA-KIND`), full `form#filter-form` baseline scope (`L-FILTER-GOLDEN-SCOPE`), built-in `font_renderer` availability (`L-FONT-ICON-AVAILABILITY`), and pre-`django.setup()` import boundaries (`M-IMPORT-SAFETY-CRISPY-FORMSETS`)—are accurately specified.
+
+### 2. Strengths
+- **Pre-`django.setup()` import boundary explicitly recorded (`M-IMPORT-SAFETY-CRISPY-FORMSETS`):** Task 1 accurately reflects `tests/test1/test_import_safety.py:6-10, 20-35, 147-164`, where `import crud_views.templatetags.crud_views_formsets` and `from crud_views_workflow.lib import ... WorkflowForm` run after `settings.configure()` without `django.setup()`. Because `WorkflowForm` (`src/crud_views_workflow/lib/forms.py:6`) imports `crud_views.lib.crispy` (`src/crud_views/lib/crispy/__init__.py:1-2`) and `src/crud_views/lib/crispy/buttons.py`, any module-level import of `crud_views.lib.view.*` would execute `src/crud_views/lib/view/base.py:16` (`from django.contrib.auth.mixins import PermissionRequiredMixin`) and fail with `AppRegistryNotReady`.
+- **Separate `kind` vs `cv_key` contract (`M-FORM-DATA-KIND`):** Task 1 aligns with `src/crud_views/lib/view/button_data.py:14, 52-61` (`KINDS = frozenset({"action", "menu-item"})`), requiring `location="form"` to accept only omitted/default or explicit `kind="action"` while rejecting `kind="menu-item"`, unknown kinds, or semantic form kinds passed as the third parameter in both strict and non-strict modes.
+- **Unchanged full-region filter baseline (`L-FILTER-GOLDEN-SCOPE`):** Task 3 pins `_extract_filter_form_region` to slice the raw `<form id="filter-form" method="get">...</form>` block from `src/crud_views/templates/crud_views/tags/list_filter.inner.html:14-16` before `src/crud_views/lib/views/list.py:65-86` is edited, ensuring the pack-owned hidden-input wrapper and action ordering diff are captured in the same region before and after migration.
+- **Clicked-submitter vs confirmation-only delete POST separation (`M-PAYLOAD`):** Task 2 keeps `tests/test1/test_crud.py:63` (`{"confirm": True}`) untouched and adds a separate `{"confirm": True, "delete": "Delete"}` POST regression alongside DOM assertions on `name="delete"` and `value="Delete"`.
+
+### 3. Concerns
+- **LOW — Raw slice boundary matching in `_extract_filter_form_region`:** In Task 3, `src/crud_views/templates/crud_views/tags/list_filter.inner.html:14-16` renders `<form id="filter-form" method="get">` as the sole `<form>` inside the filter card body, while toolbar/list actions elsewhere on the page may render hidden POST `<form>` elements (`src/crud_views/templatetags/crud_views.py:122-128, 238-248`). A greedy regex could match a later `</form>` on the page if not bounded to the first closing `</form>` after `id="filter-form"`.
+
+### 4. Suggestions
+- Implement `_extract_filter_form_region` in `tests/test1/test_form_buttons_golden.py` using ` start = html.index('<form id="filter-form"')` and `end = html.index("</form>", start) + len("</form>")` (asserting `html.count('id="filter-form"') == 1` and no nested `<form` inside `html[start + 5 : end]`).
+
+### 5. Risk Assessment
+- **LOW** — This plan modifies no production code and has deterministic automated verification gates for spec section completeness, prerequisite tests, JS runtime lock verification, and baseline-only commit ancestry.
+
+---
+
+## 06-02
+
+### 1. Summary
+Plan `06-02` delivers the core form-button leaf (`src/crud_views/templates/crud_views/tags/button/form.html`), the `"form"` branch and `FORM_LEAF_KEYS` in `src/crud_views/lib/view/button_data.py`, the `"form": "label"` floor in `src/crud_views/lib/view/label_mode.py`, the `"form:hidden-label"` and `"form:icon-host"` utility keys in `src/crud_views/lib/button_classes.py`, the `location == "form"` rejection guard in `cv_button` (`src/crud_views/templatetags/crud_views.py`), and the literal-rendering crispy `Submit`/`Button`/`Reset` adapters in `src/crud_views/lib/crispy/buttons.py`. It also updates all coupled location/key-count consumers atomically in Wave 2 and updates the four non-filter golden files.
+
+### 2. Strengths
+- **Atomic update of all `LOCATIONS` and `DEFAULT_BUTTON_CLASSES` consumers (`H-LOCATIONS`, `H-EARLY-UTILITIES`, `H-KEYSET`):** Task 1 updates `LOCATIONS` (`src/crud_views/lib/view/button_data.py:12`), `LABEL_MODE_DEFAULTS` (`src/crud_views/lib/view/label_mode.py:23`), `DEFAULT_BUTTON_CLASSES` (`src/crud_views/lib/button_classes.py:84-94`), `EXPECTED_KEYS` (71 to 73 in `tests/test1/test_button_classes.py:21-91`), `docs/reference/buttons.md:145`, `E108_LOCATIONS` (`tests/test1/test_action_label_mode_config.py:278, 323`), `tests/test1/test_label_mode_docs.py:126`, and `tests/test1/test_button_classes_templates.py:214` in the same task. This prevents `test_every_literal_slot_in_templates_is_a_default_key` (`tests/test1/test_button_classes_templates.py:50-56`) and `test_button_chain_renders_only_table_classes` (`tests/test1/test_button_classes_templates.py:186-226`) from breaking when `form.html` is added.
+- **Explicit `cv_button` guard for `location="form"` (`L-ACTION-TAG-FORM-ROUTING`):** In `src/crud_views/templatetags/crud_views.py:200-209`, `cv_button` runs `ctx = cv_resolve_action(context.flatten())` and then renders `_BUTTON_LEAVES[kind]` (`action.html` or `menu_item.html`), which expects `cv_tag` (`src/crud_views/templates/crud_views/tags/button/action.html:1`). Guarding `if location == "form": raise ValueError(...)` at the top of `cv_button` before `cv_resolve_action` ensures that both hidden (`cv_access=False`) and visible (`cv_access=True`) contexts fail fast with a clear `ValueError`, verified via a real `{% cv_button "form" %}` template render test.
+- **Call-time import deferral in `crispy/buttons.py` (`M-IMPORT-SAFETY-CRISPY-FORMSETS`):** Task 1 explicitly defers importing `cv_button_data` (and any `crud_views.lib.view.*` symbol) inside `render()` in `src/crud_views/lib/crispy/buttons.py` and gates the task on `tests/test1/test_import_safety.py::test_templatetags_import_without_app_registry` and `tests/test1/test_import_safety.py::test_workflow_lib_model_mixin_public_path_imports_without_app_registry`.
+- **Literal escaping and multi-word name parity (`D-15`, `M-NAME`):** Bypassing `BaseInput.render` eliminates Django `Template(str(self.value))` evaluation while preserving crispy's `wordcount > 1` -> `slugify` rule on `name` and stripping `SafeData` markers before single-boundary escaping.
+
+### 3. Concerns
+- **LOW — No-literal-`btn` scan on shipped files:** `tests/test1/test_button_classes_templates.py:20-47` (`test_no_button_class_literal_in_shipped_templates_python_or_js`) scans every `.html`, `.js`, and `.py` file under `src/` (except `crud_views/lib/button_classes.py`) with `TOKEN = re.compile(r"(?<![\w-])btn(?:-[\w-]+)?(?![\w-])")` and fails if any token matching `btn` or `btn-*` appears—even inside Python docstrings, comments, or error messages in `src/crud_views/lib/crispy/buttons.py` or `src/crud_views/lib/view/button_data.py`.
+
+### 4. Suggestions
+- When implementing `src/crud_views/lib/crispy/buttons.py`, `src/crud_views/lib/view/button_data.py`, and `src/crud_views/templates/crud_views/tags/button/form.html`, avoid writing `btn` or `btn-*` tokens in comments, docstrings, or exception strings; `test_button_classes_templates.py` is already in Task 1's `<verify>` command and will catch any accidental match immediately.
+
+### 5. Risk Assessment
+- **LOW** — All cross-module invariants (`LOCATIONS`, `DEFAULT_BUTTON_CLASSES`, `cv_button`, `test_import_safety.py`, and sentinel template tests) are owned and verified together in Task 1.
+
+---
+
+## 06-03
+
+### 1. Summary
+Plan `06-03` wires per-kind form label-mode maps (`CRUD_VIEWS_FORM_ACTIONS_LABEL_MODE`, `ViewSet.form_actions_label_mode`, `CrudView.cv_form_actions_label_mode`, `CrudView.cv_get_form_actions_label_mode()`, and `CrudView.cv_get_action_label_mode("form", key)`) and implements form-owner resolution (`form.cv_view` -> current helper `view` -> genuine page `view`) across standalone forms, multiple `FormActions` groups, and nested `Formsets` / `cv_x_formset` inclusions.
+
+### 2. Strengths
+- **Consistent settings lifecycle (`M-SETTINGS-LIFECYCLE`):** Task 1 matches `src/crud_views/lib/settings.py:67-68, 320` (`context_actions_label_mode` and `list_actions_label_mode` on the `crud_views_settings` singleton) and `tests/test1/test_action_label_mode_config.py:78-94`, testing map overrides via `monkeypatch.setattr(crud_views_settings, ...)` while verifying that `default_label_mode("form")` responds lazily to `override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS=...)`.
+- **Page-owner transport across `Formsets` and `cv_x_formset` (`L-FORMSET-PAGE-CONTEXT`, `M-OUTER-HELPER-PAGE`):** In `src/crud_views/lib/formsets/layout.py:10-17`, `Formsets.render` flattens `context` before calling `render_to_string("crud_views/formsets/formsets.html", context.flatten())`, and `src/crud_views/templatetags/crud_views_formsets.py:6-9` (`@register.inclusion_tag(takes_context=True, filename="crud_views/formsets/formset.html")`) returns only `{"x_formset": x_formset}` into a new inclusion context where `{% crispy x_form.form x_form.helper %}` runs (`src/crud_views/templates/crud_views/formsets/formset.html:42`). Capturing the genuine page-owner fallback before flattening and forwarding it in a private context key through `cv_x_formset` and recursive child formsets (`formset.html:47-49`) ensures ownerless row forms still inherit the page owner without leaking an enclosing helper's `view`.
+- **Import-safety preservation across `crud_views_formsets.py` (`M-IMPORT-SAFETY-CRISPY-FORMSETS`):** `tests/test1/test_import_safety.py:20-35` imports `crud_views.templatetags.crud_views_formsets` directly under bare `settings.configure()`. Deferring any `crud_views.lib.view.*` owner-recovery imports to `Formsets.render()` / `cv_x_formset()` call time and running both subprocess tests in Task 2's `<verify>` block prevents regressions.
+
+### 3. Concerns
+- **LOW — No-arg `test_button_classes_module_has_no_module_level_view_import` and circular imports:** While `src/crud_views/lib/crispy/buttons.py` and `src/crud_views/templatetags/crud_views_formsets.py` defer `crud_views.lib.view.*` imports to call time, if a shared owner-recovery helper is placed in a submodule under `crud_views.lib.view` (such as `crud_views.lib.view.button_data`), importing that helper at module top level in `src/crud_views/lib/formsets/layout.py` or `src/crud_views/templatetags/crud_views_formsets.py` would still trigger `crud_views/lib/view/__init__.py`.
+
+### 4. Suggestions
+- Place the shared owner-recovery helper either in `crud_views.lib.view.button_data` (imported lazily inside `render()` / `cv_x_formset()`) or in `crud_views.lib.crispy.buttons` (which is already pre-`django.setup()` import-safe), and keep `crud_views/templatetags/crud_views_formsets.py`'s top-level imports restricted to `from django import template`.
+
+### 5. Risk Assessment
+- **LOW** — The owner-resolution precedence, crispy context overlay classification, inclusion-tag transport, and pre-`django.setup()` import gates are all explicitly specified and tested against real `{% crispy %}` and `Formsets` rendering paths.
+
+---
+
+## 06-04
+
+### 1. Summary
+Plan `06-04` adds the `save`, `cancel`, and `filter-reset` semantic icons to `DEFAULT_ICONS` and `BOOTSTRAP_ICONS` in `src/crud_views/lib/icons.py`, expands `tests/test1/test_icon_host_leaves.py` to test `crud_views/tags/button/form.html` across inline and host-placed icon libraries, and wires semantic icon defaults and overrides (`CrispyFormMixin.submit_icon = "save"`, `CrispyDeleteForm.delete_icon = "delete"`, `WorkflowForm.submit_icon = "workflow"`, and adapter `icon=` kwargs).
+
+### 2. Strengths
+- **Registry parity preserved (`FORM-09`):** Adding `save`, `cancel`, and `filter-reset` to both `DEFAULT_ICONS` (`src/crud_views/lib/icons.py:14-49`, using `far:`/`fas:` prefixes) and `BOOTSTRAP_ICONS` (`src/crud_views/lib/icons.py:51-89`, using `bi:` prefixes) satisfies `test_bootstrap_preset_covers_exactly_default_names` and `test_defaults_are_font_awesome_only` in `tests/test1/test_icons_registry.py:106-113`.
+- **Import-safe `WorkflowForm.submit_icon` (`M-IMPORT-SAFETY-CRISPY-FORMSETS`):** Setting `submit_icon: str = "workflow"` on `WorkflowForm` (`src/crud_views_workflow/lib/forms.py:20`) and `submit_icon: str = "save"` / `delete_icon: str = "delete"` on `CrispyFormMixin` / `CrispyDeleteForm` (`src/crud_views/lib/crispy/form.py:35, 116`) uses plain string attributes and requires no new imports in `forms.py` or `form.py`.
+- **Slot-driven semantic kind independent of `name` (`D-14`, `D-16`):** Task 2 ensures that `CrispyDeleteForm.get_delete_button()` (`src/crud_views/lib/crispy/form.py:126-130`) and `test_delete_button_kwargs_may_choose_the_slot` (`tests/test1/test_crispy_buttons.py:62-74`, where `name="delete"` uses `slot="form:cancel"`) resolve kind and default icon from the slot (`cancel`), while explicit `icon=None` or `icon=""` suppresses the default icon via a sentinel default.
+
+### 3. Concerns
+- **LOW — Kwargs precedence between `get_submit_button_kwargs()` / `get_delete_button_kwargs()` and class attributes:** In `src/crud_views/lib/crispy/form.py:56-63, 123-130`, a subclass might override `get_submit_button_kwargs()` or `get_delete_button_kwargs()` to return `{"name": ..., "value": ..., "icon": ...}` OR override `submit_icon` / `delete_icon` on the form class/instance.
+
+### 4. Suggestions
+- In `CrispyFormMixin.get_submit_button()` (`src/crud_views/lib/crispy/form.py:59-63`) and `CrispyDeleteForm.get_delete_button()` (`src/crud_views/lib/crispy/form.py:126-130`), pass ` Submit(**{"icon": self.submit_icon, **self.get_submit_button_kwargs()})` and `Submit(**{"slot": "form:delete", "icon": self.delete_icon, **self.get_delete_button_kwargs()})` so that a subclass overriding `submit_icon` / `delete_icon` sets the default while a subclass returning `"icon"` from `get_*_button_kwargs()` overrides it, matching how `"slot": "form:delete"` is already merged in `src/crud_views/lib/crispy/form.py:130`.
+
+### 5. Risk Assessment
+- **LOW** — The icon registry additions and form hook kwargs follow established patterns in `src/crud_views/lib/icons.py` and `src/crud_views/lib/crispy/form.py`.
+
+---
+
+## 06-05
+
+### 1. Summary
+Plan `06-05` migrates `ListViewFilterFormHelper` (`src/crud_views/lib/views/list.py:57-86`) from `self.add_input(Submit(...))` and `self.add_input(Reset(...))` to a `get_form_actions() -> FormActions | None` hook rendered through crispy layout `FormActions`, while preserving hidden `sort`/`order`/`dir` inputs on `self.inputs`, isolating class-level `layout` declarations per helper instance, and updating `tests/test1/golden/form_buttons/filter.html` using the unchanged `_extract_filter_form_region` extractor from `06-01`.
+
+### 2. Strengths
+- **Dual truthiness guard for crispy dispatch (`H-HELPER-TRUTHINESS`, `M-EMPTY-REPLACEMENT`):** Crispy's `BasicNode.get_render` checks `if helper and helper.layout:` after calling `helper.get_attributes()`, and `FormHelper` inherits `__len__` returning `len(self.layout.fields)`. By defining `ListViewFilterFormHelper.__bool__` to return `True`, preparing/cloning `self.layout` into a private truthy `Layout` subclass in `get_attributes()`, and populating default fields (when no layout was declared) plus appending `get_form_actions()` once in `render_layout()`, both no-layout helpers and explicit `helper.layout = Layout()` replacements dispatch through `render_layout()` without mutating shared class attributes.
+- **Constructor signature compatibility (`D-01`, `D-03`):** `src/crud_views/lib/views/mixins.py:318-319` calls `self.formhelper_class(request=self.request, view=self)` without passing `form`. Initializing `super().__init__()` without `form` (while storing `self.form = form` when explicitly passed) prevents `FormHelper.__init__` from overwriting a subclass's class-level `layout = Layout(...)` (`docs/reference/list_view.md:143-146`) and keeps custom `formhelper_class` subclasses that only accept `(self, view, request)` working.
+- **Unchanged filter golden region (`L-FILTER-GOLDEN-SCOPE`, `L-HIDDEN-WRAPPER`):** Task 1 reuses `_extract_filter_form_region` from `06-01` verbatim and verifies its definition against the recorded baseline commit with `git show`, ensuring the diff in `tests/test1/golden/form_buttons/filter.html` reflects only the migration of Apply/Reset into `FormActions` ahead of crispy's hidden-input wrapper.
+
+### 3. Concerns
+- **LOW — Preserving `LayoutObject` pointers when cloning `layout`:** When `ListViewFilterFormHelper` deep-copies a declared class-level `layout`, `copy.deepcopy(cls_layout)` creates a fresh `Layout` and child `LayoutObject` tree per helper instance; if a caller replaces `helper.layout = custom_layout` before or between renders, `get_attributes()` must compare against the prepared layout identity so it deep-copies the caller's `custom_layout` without mutating the caller's object when `render_layout()` appends `FormActions`.
+
+### 4. Suggestions
+- Store the caller-visible layout object id (or reference) alongside the prepared truthy `Layout` clone so `get_attributes()` only re-clones when `self.layout is not self._prepared_layout`, and reset the per-layout `_actions_appended` flag whenever a new replacement layout is prepared.
+
+### 5. Risk Assessment
+- **LOW** — The crispy `FormHelper` dispatch lifecycle hazards (`__len__` truthiness, `FormHelper(form)` overwriting class `layout`, and post-construction `helper.layout = Layout()`) have been reproduced in research and are directly addressed in Tasks 1 and 2.
+
+---
+
+## 06-06
+
+### 1. Summary
+Plan `06-06` extends static system checks (`crud_views.E106`, `viewset.E210`, `viewset.E211`, `viewset.W291`, and `viewset.W292`) and runtime missing-icon handling in `cv_button_data(..., "form")` to cover form label-mode maps and icon-only form buttons, sharing a side-effect-free icon-availability predicate in `src/crud_views/lib/icons.py`.
+
+### 2. Strengths
+- **Clear separation of form map checks from context/list checks (`H-DIAGNOSTIC-CONTRACT`):** Existing `cv_label_mode_checks` (`src/crud_views/lib/view/action_menu.py:46-72`) emits `viewset.E211` for any invalid `cv_context_actions_label_mode` / `cv_list_actions_label_mode` ( tested in `tests/test1/test_action_label_mode_config.py:217-246`). Task 1 leaves context/list untouched and adds a dedicated form-map check on `CrudView.cv_form_actions_label_mode` that emits `viewset.E211` for non-dict / non-`str` keys, `viewset.E210` per invalid mode value, and `viewset.W291` for unknown keys outside `FORM_KINDS` on the view's own attribute, while `CrudViewsSettings._action_settings_messages` (`src/crud_views/lib/settings.py:128-141`) emits `crud_views.E106` and `ViewSet` (`src/crud_views/lib/viewset/__init__.py:105-111`) validates `form_actions_label_mode` on construction.
+- **Provider-first static `W292` inspection (`H-DELETE-STATIC`, `M-POLYMORPHIC`):** Because `CrispyDeleteForm` inherits from `CrispyForm` -> `CrispyFormMixin` (`src/crud_views/lib/crispy/form.py:35, 116-143`), `CrispyDeleteForm` inherits `submit_icon = "save"` even though its `helper` only renders `get_delete_button()` (`delete_icon`) and `get_cancel_button()`. Checking `issubclass(form_cls, CrispyDeleteForm)` before `CrispyFormMixin` prevents false `submit` warnings on delete views, and iterating over concrete `polymorphic_forms` dicts (`src/crud_views_polymorphic/lib/utils.py:35`) checks polymorphic create/update forms without instantiating views or querying `ContentType`.
+- **Complete non-rendering icon availability predicate (`M-ICON-AVAILABILITY`, `L-UNREGISTERED-FORM-ICON`, `L-FONT-ICON-AVAILABILITY`):** Looking at `src/crud_views/lib/icons.py:149-260`, `resolve_icon(value)` alone returns `(prefix, name)` even when `prefix` is unregistered, mapped to a non-dict library (`E355`), has an unimportable/non-callable renderer (`E351`/`E355`), or uses `font_renderer` with a missing, empty, non-`str`, or unformattable `class` template (`E354` at `src/crud_views/lib/icons.py:348-378`). Sharing a side-effect-free availability helper in `src/crud_views/lib/icons.py` that checks `resolve_icon`, library dict/placement validity (`placement in PLACEMENTS`, and `placement == "host"` requiring `renderer == "font"`), `_get_renderers().get(prefix) is not None`, and—when the resolved renderer is `font_renderer`—that `config.get("class")` is a nonempty `str` whose `template.format(name=name)` succeeds (without calling the renderer callable) guarantees exact parity between static `W292` and runtime `cv_button_data(..., "form")` while keeping custom renderer call counts at 0 during checks and 1 during `icon`/`both` rendering.
+
+### 3. Concerns
+- **LOW — `placement` validity on custom or `font` libraries in the availability helper:** In `src/crud_views/lib/icons.py:251, 331-346`, a library with `placement="inline"` (invalid placement, reported by `E355`) or `placement="host"` with a custom renderer (`renderer != "font"`, reported by `E355`) is rejected by `_library_check_messages`. However, in `render_icon` (`src/crud_views/lib/icons.py:223-237`), `render_icon` does not check `config.get("placement")` before calling `renderer(name, css=css, config=config)`. Ensuring the availability predicate aligns with `_library_check_messages` and `resolve_icon_name_class` avoids edge-case discrepancies.
+
+### 4. Suggestions
+- In the private availability helper in `src/crud_views/lib/icons.py`, when `resolved_renderer is font_renderer`, verify `isinstance(template, str) and bool(template.strip())` and that `template.format(name=name).strip()` does not raise and is non-empty, matching `_icon_str` and `_library_check_messages` (`src/crud_views/lib/icons.py:178-184, 348-375`).
+
+### 5. Risk Assessment
+- **LOW** — Static and runtime diagnostics are thoroughly specified and tested against `check_viewsets`, `check_icons`, and real form renders under `CRUD_VIEWS_STRICT=True` and `False`.
+
+---
+
+## 06-07
+
+### 1. Summary
+Plan `06-07` verifies browser-side interactions for `<button>` form controls in `tests/js/modal.test.js`, `tests/js/viewset.test.js`, and `tests/js/list.filter.test.js` using the locked `jsdom 30.1.2` / `vitest 5.0.3` environment via `06-js-verify.sh`, and adds an isolated `crispy_floor` session in `noxfile.py` testing Python 3.12 with Django 4.2 and 6.0 against `django-crispy-forms==2.0` and `crispy-bootstrap5==2023.10`.
+
+### 2. Strengths
+- **Direct verification of `modal.js`, `viewset.js`, and `list.filter.js` DOM contracts:**
+  - `src/crud_views/static/crud_views/js/modal.js:82, 137` passes `event.submitter` to `new FormData(form, submitter || undefined)`; Task 1 tests native `SubmitEvent` + `FormData` with real `<button>` submitters, sibling submitters, and nested `<i>`/`<span>` children.
+  - `src/crud_views/static/crud_views/js/viewset.js:40` uses `e.target.closest("[data-cv-cancel-url]")`, which naturally handles clicks on nested icon/label spans inside `<button type="button" data-cv-cancel-url="...">`; Task 2 pins this across `label`, `both`, and `icon` modes.
+  - `src/crud_views/static/crud_views/js/list.filter.js:57` binds `document.getElementById("filter-button-reset")?.addEventListener("click", onReset)`; Task 2 tests `#filter-button-reset` inside a real `<form>` with nested child clicks and encoded `sort`/`order`/`dir` query strings.
+- **Single-transaction floor pin in `noxfile.py`:** In `noxfile.py:13-14`, `tests` runs `session.install(f"django~={django}.0")` followed by `session.install(".[polymorphic,workflow,ordered,test]")`. Task 3 constrains `django-crispy-forms==2.0` and `crispy-bootstrap5==2023.10` in the same `session.install` call as `.[polymorphic,workflow,ordered,test]` so `uv` does not upgrade crispy when installing package extras.
+
+### 3. Concerns
+- **LOW — Coverage file collision if `crispy_floor` uses pytest's default coverage output:** If `pytest` in `crispy_floor` runs with `--cov` without a distinct `--cov-report=xml:...` filename (compare `noxfile.py:18`), parallel or sequential sessions could overwrite `coverage.xml`.
+
+### 4. Suggestions
+- In `noxfile.py`'s `crispy_floor` session, either omit `--cov` (since `crispy_floor` runs the targeted form/filter/check test shards rather than the full repository coverage suite) or pass a session-specific `--cov-report=xml:coverage-crispy-floor-dj{django}.xml`.
+
+### 5. Risk Assessment
+- **LOW** — The existing JS scripts (`modal.js`, `viewset.js`, `list.filter.js`) already use `.closest(...)`, `#filter-button-reset`, and `new FormData(form, submitter || undefined)`, so the risk of requiring production JS changes is minimal.
+
+---
+
+## 06-08
+
+### 1. Summary
+Plan `06-08` updates the reference documentation (`buttons.md`, `settings.md`, `action_menus.md`, `icons.md`, `theme.md`, `list_view.md`, `tutorial-5-filters-permissions.md`, `javascript.md`), `tooltip.js` header comment, `CHANGELOG.md`, `docs/migrating-1.0.md`, and `examples/bootstrap5/project/settings.py`, and adds executable documentation recipe tests in `tests/test1/test_form_button_docs.py` plus E108 location-inventory guards in `tests/test1/test_label_mode_docs.py`.
+
+### 2. Strengths
+- **Complete E108 location-inventory coverage across all three documentation sites (`L-E108-DOC-INVENTORY`, `L-MIGRATION-E108-INVENTORY`):**
+  - Task 1 updates the `crud_views.E108` rows in `docs/reference/buttons.md:495` and `docs/reference/action_menus.md:289` from `("context", "list", "card")` to include `"form"`, and adds a row-scoped guard in `tests/test1/test_label_mode_docs.py` comparing the extracted location set to `button_data.LOCATIONS`.
+  - Task 3 updates the third `crud_views.E108` location list in `docs/migrating-1.0.md:51-54` under `## Step zero: run the checks` (`a key that is not a button location ("context", "list", "card")`) and adds `test_migration_e108_location_inventory` in `tests/test1/test_label_mode_docs.py` using `_section(MIGRATING_MD.read_text(), "## Step zero: run the checks")` (`tests/test1/test_label_mode_docs.py:35-45`) to assert exact set equality with `button_data.LOCATIONS` while preserving the mode/strict/fallback assertions.
+- **Compatibility with existing `test_label_mode_docs.py` assertions:** Task 1 preserves the existing `test_documented_card_floor_renders_label_only` (`tests/test1/test_label_mode_docs.py:88-100`, which requires a single `CRUD_VIEWS_LABEL_MODE_DEFAULTS` assignment block containing `"card"` in `settings.md`), `test_label_mode_configuration_table` (`tests/test1/test_label_mode_docs.py:120-177`), and `_card_release_contract` (`tests/test1/test_label_mode_docs.py:368`: `names = [b for b in added if b.startswith(f"- `{SETTING}` sets")]`).
+- **Executable custom helper and custom template recipes (`D-01`–`D-08`, `L-SUPPRESSION-MIGRATION`):** Task 2 tests the documented field-only `ListViewFilterFormHelper` subclass (`docs/reference/list_view.md:143-146`), the `get_form_actions() -> None` suppression recipe (and the changed `helper.inputs = []` behavior), and a custom button template reading `cv_value` and `cv_flat_attrs` in `tests/test1/test_form_button_docs.py`.
+
+### 3. Concerns
+- **LOW — Existing strict assertions in `tests/test1/test_label_mode_docs.py` when editing `settings.md` and `action_menus.md`:**
+  - `tests/test1/test_label_mode_docs.py:99-100` asserts that in `docs/reference/settings.md`, only one fenced `python` block assigns `CRUD_VIEWS_LABEL_MODE_DEFAULTS` with `"card"` in the dict literal (`assert len(examples) == 1` and `assert examples[0] == {"card": "label"}`). Any new fenced `CRUD_VIEWS_LABEL_MODE_DEFAULTS` example in `settings.md` must set `"form"` (e.g. `CRUD_VIEWS_LABEL_MODE_DEFAULTS = {"form": "both"}`) without including `"card"` in that new snippet.
+  - `tests/test1/test_label_mode_docs.py:252` and `423` assert `_row(checks, "\`viewset.E211\`")[1].count("string or None") == 2` and `e211.count("string or None") == 2`. When updating the `viewset.E211` rows in `docs/reference/action_menus.md:290` and `docs/reference/buttons.md:497` to mention `cv_form_actions_label_mode`, keep the two `"string or None"` phrases for `cv_card_actions_label_mode` and `cv_context_action_label_mode` intact.
+  - `docs/getting_started/tutorial-5-filters-permissions.md:11, 26, 41, 78` has `<!-- cv-sync: ... -->` markers checked by `examples/bootstrap5/test_docs_sync.py:86-92`; prose around line 32-34 (`ListViewFilterFormHelper is a crispy FormHelper subclass tuned for filter forms...`) is outside the fenced block and safe to update without touching the synced fence.
+
+### 4. Suggestions
+- Run `.venv/bin/pytest tests/test1/test_label_mode_docs.py examples/bootstrap5/test_docs_sync.py -q` immediately after editing `docs/reference/settings.md`, `docs/reference/action_menus.md`, `docs/reference/buttons.md`, and `docs/getting_started/tutorial-5-filters-permissions.md` to confirm all existing structural regex/AST assertions in `test_label_mode_docs.py` remain satisfied.
+
+### 5. Risk Assessment
+- **LOW** — All documentation changes are backed by deterministic AST/section tests (`test_label_mode_docs.py`, `test_form_button_docs.py`, `test_docs_sync.py`, `test_doc_links.py`) and `mkdocs build --strict`.
+
+---
+
+## 06-09
+
+### 1. Summary
+Plan `06-09` executes the full end-of-phase verification suite—full Python tests (`pytest tests -n auto`), strict docs build (`mkdocs build --strict`), full locked-runtime JS suite (`06-js-verify.sh`), `ruff check`, `ruff format --check`, and the three `examples/bootstrap5` test suites (`SystemChecksTest`, `test_docs_sync.py`, and `test_i18n.py` + `HomePageTest::test_every_feature_landing_page_renders` + `test_doc_links.py`)—and writes `06-ACCEPTANCE.md` and `06-VALIDATION.md` with requirement traceability, baseline-commit ancestry proof, and generic downstream theme follow-up notes.
+
+### 2. Strengths
+- **Grounded `examples/bootstrap5` verification under its own `pytest.ini` (`M-EXAMPLE-CHECKS`, `L-EXAMPLE-COVERAGE`):** Running pytest from `examples/bootstrap5` loads `examples/bootstrap5/project/settings.py` (with `CRUD_VIEWS_LABEL_MODE_DEFAULTS = {"form": "both"}` enabled by `06-08`) and exercises `examples/bootstrap5/project/tests.py:97-115` (`SystemChecksTest::test_no_check_errors_with_every_viewset_registered`), `examples/bootstrap5/project/tests.py:45-51` (`HomePageTest::test_every_feature_landing_page_renders`), `examples/bootstrap5/test_i18n.py:121-136` (`test_demo_pages_render_german`, which asserts `'value="Sichern"' in html` on `/library/author/create/`), `examples/bootstrap5/test_docs_sync.py`, and `examples/bootstrap5/test_doc_links.py`.
+- **Strict baseline ancestry and non-mutation verification (`D-17`):** Task 1 verifies that the two baseline commits from `06-01` precede all `src/` changes, that only the five phase-owned golden files under `tests/test1/golden/form_buttons/` changed, and that repeated test/doc runs leave `git status` clean.
+- **Explicit tracking of unclassified specless probe items:** Keeps `FORM-01/unclassified` and `FORM-02/unclassified` explicitly visible in the disposition table while verifying their underlying history and leaf-contract requirements through automated tests.
+
+### 3. Concerns
+- **LOW — Human browser verification gate tracking:** Task 2 includes a `<human-check>` for interactive keyboard/tooltip/modal/cancel/reset verification in a real browser; if run in a headless CLI session without an active browser MCP server, Task 2 appropriately requires recording any unobserved human check as an explicit pending item rather than fabricating completion.
+
+### 4. Suggestions
+- Record the exact command outputs, collected test counts, and commit SHAs for all six `<verify>` blocks in `06-ACCEPTANCE.md` and `06-VALIDATION.md`.
+
+### 5. Risk Assessment
+- **LOW** — Pure verification and documentation-of-evidence plan with single-writer artifact ownership.
+
+---
+
+## Cross-Plan Assessment & Verification of Repaired Obligations
+
+All seven prior and latest review obligations were verified against the repository source at snapshot `8ad67d0` and the current nine plans:
+
+1. **Form data `kind` validation (`M-FORM-DATA-KIND`, `06-01` & `06-02`):** Verified against `src/crud_views/lib/view/button_data.py:14, 52-61`. `cv_button_data(ctx, location, kind="action")` keeps its signature and `KINDS` check, requires `kind == "action"` when `location == "form"`, and rejects `"menu-item"`, unknown values, and semantic form kinds (`"submit"`) in the third argument in both strict and non-strict modes.
+2. **Two E108 System-checks table rows (`L-E108-DOC-INVENTORY`, `06-08` Task 1):** Verified against `docs/reference/buttons.md:495` and `docs/reference/action_menus.md:289` and `tests/test1/test_label_mode_docs.py:250-252, 413-418`. Both rows are updated to list `context`/`list`/`card`/`form` and guarded against `button_data.LOCATIONS`.
+3. **Complete filter baseline region (`L-FILTER-GOLDEN-SCOPE`, `06-01` Task 3 & `06-05` Task 1):** Verified against `src/crud_views/templates/crud_views/tags/list_filter.inner.html:14-16`. `_extract_filter_form_region` captures the entire raw `<form id="filter-form" method="get">...</form>` slice before implementation and is reused unchanged in `06-05`.
+4. **Built-in font icon availability (`L-FONT-ICON-AVAILABILITY`, `06-01` Task 1 & `06-06` Task 2):** Verified against `src/crud_views/lib/icons.py:205-221, 240-260, 348-378`. The shared non-rendering availability predicate validates `font_renderer` `class` presence, `str` type, and `.format(name=name)` formatting without invoking any renderer callable or suppressing `crud_views.E354`.
+5. **Lazy `button_data`/`view` imports and bare-settings regressions (`M-IMPORT-SAFETY-CRISPY-FORMSETS`, `06-01` Task 1, `06-02` Task 1, `06-03` Task 2):** Verified against `tests/test1/test_import_safety.py:20-35, 147-164`, `src/crud_views_workflow/lib/__init__.py:24-41`, `src/crud_views_workflow/lib/forms.py:6`, `src/crud_views/lib/crispy/__init__.py:1-2`, and `src/crud_views/templatetags/crud_views_formsets.py:1-9`. Both `crispy/buttons.py` and `crud_views_formsets.py` defer `crud_views.lib.view.*` imports to call time, and both unchanged subprocess tests run as verification gates in `06-02` Task 1 and `06-03` Task 2.
+6. **`cv_button("form")` rejection with real tag test (`L-ACTION-TAG-FORM-ROUTING`, `06-02` Task 1):** Verified against `src/crud_views/templatetags/crud_views.py:200-209`. `cv_button` rejects `location == "form"` with `ValueError` before `cv_resolve_action` or `_BUTTON_LEAVES` lookup, tested through a real `{% load crud_views %}{% cv_button "form" %}` template render with `cv_access=True` and valid form keys.
+7. **Step zero migration E108 inventory and section-aware guard (`L-MIGRATION-E108-INVENTORY`, `06-08` Task 3):** Verified against `docs/migrating-1.0.md:51-54` and `tests/test1/test_label_mode_docs.py:35-45`. Task 3 updates the Step zero E108 paragraph to include `"form"` and adds `test_migration_e108_location_inventory` scoped to `## Step zero: run the checks`.
+
+**Overall Risk Assessment: LOW** — No HIGH or MEDIUM concerns remain. The nine plans are well-sequenced, source-grounded, and ready for execution.
+
+
+---
+
+## Consensus Summary
+
+Current unresolved counts: **0 HIGH; 0 actionable non-HIGH**. All three configured reviewers completed substantive source-cited sections for all nine plans. They explicitly confirm that the seven recent repairs are incorporated into executable tasks. This is approval of the planning obligations, not evidence that the unimplemented phase or its future environment/browser gates have passed.
+
+### Agreed Strengths
+
+All three reviewers confirm the finite form kind/render-category separation, baseline-before-product ordering and unchanged full filter region, atomic location/key consumers, literal value boundary, current import-safety boundary, early action-only tag rejection, and all three E108 documentation inventories. Their source traces support slot-based semantic icons, whole-map versus lazy-floor separation, production formset page transport and non-rendering font availability. Fable and Gemini inspect installed crispy dispatch details directly; Grok explicitly leaves that external dependency question open and accepts the required real-tag/floor verification.
+
+### Agreed Concerns
+
+No shared concern requires a new PLAN.md obligation. Reviewers identify implementation-sensitive areas—owner-overlay classification, helper truthiness/replacement lifecycle, icon availability and environment provenance—but the plans already assign the corresponding design, behavior and failure gates. Existing documentation-test wording and payload assertions must remain green; those checks are already scheduled.
+
+### Divergent Views
+
+Fable prefers moving/simplifying the Node prerequisite, naming more private algorithms in the plans and splitting large tasks. Grok accepts the locked-runtime policy, but prefers earlier/repeated test sampling and a broader bare-settings import test. Gemini considers the phase low risk and offers additional edge-case suggestions. These are adjudicated individually below. Most are already executable outcomes or implementation preferences. Grok's proposed public formsets-package bare-settings test was independently disproved as an existing contract: the unchanged package already imports CrudView and raises AppRegistryNotReady before reaching layout.py. Its suggested expansion is therefore not a regression safeguard for this phase.
+
+### Previous findings rechecked
+
+| Finding | Current executable disposition and source mechanism |
+|---|---|
+| M-IMPORT-SAFETY-CRISPY-FORMSETS | 06-01:158-165 records the bare-settings boundary; 06-02:108 defers adapter view-package imports and :115 runs both unchanged subprocess tests; 06-03:112 defers owner dependencies inside Formsets.render/cv_x_formset and :120 reruns both tests. Source tests/test1/test_import_safety.py:20-35,147-164 protects the existing safe public paths; view/__init__.py:1 and view/base.py:16 explain the hazard. All reviewers sign off on the assigned constraint. |
+| L-ACTION-TAG-FORM-ROUTING | 06-02:104 explicitly rejects form at the beginning of cv_button, before visibility/normalization/leaf dispatch, with real-tag visible/hidden/strict/kind cases and positive independent form routes. Source templatetags/crud_views.py:200-208 currently routes only action/menu leaves, which require action contract fields. All reviewers confirm the repair. |
+| L-MIGRATION-E108-INVENTORY | 06-08:121 updates the separate Step zero paragraph and adds a section- and paragraph-scoped complete LOCATIONS comparison while retaining modes/strict/fallback semantics and both table guards. Source docs/migrating-1.0.md:51-54 and tests/test1/test_label_mode_docs.py:35-52 provide the actual paragraph and extraction helpers. All reviewers confirm coverage. |
+| M-FORM-DATA-KIND | 06-01:120-123 and 06-02 task 1 preserve kind='action' as the form rendering category, reject menu-item/unknown/semantic third arguments separately from cv_key, and preserve existing locations. Source button_data.py:14,52-61 validates rendering kind independently. |
+| L-E108-DOC-INVENTORY | 06-08:88 updates/tests both exact System checks rows, separately from the migration paragraph. Source docs/reference/buttons.md:495 and docs/reference/action_menus.md:289 are the two rows. |
+| L-FILTER-GOLDEN-SCOPE | 06-01:245-260 captures the raw unique filter form through its matching close, including fields/actions/hidden wrapper, and records both baseline commits; 06-05 task 1 reuses the extractor unchanged. The real outer form is tags/list_filter.inner.html:14 and list.py:63 disables a nested crispy form tag. |
+| L-FONT-ICON-AVAILABILITY | 06-06:121,124 requires the same nonempty-string/format-success class semantics as font_renderer, with E354 retained, static/runtime tests and zero renderer probes. Source icons.py:205-221 and :348-375 supplies the actual behavior. |
+
+Older repaired helper truthiness, enclosing-helper/page distinction, production formset transport, unknown direct icon prefix, template name normalization and settings lifecycle findings remain explicit. Historical HIGH mentions and prior-cycle counts are retained only for audit. No prior finding is reopened without contrary current evidence.
+
+### HIGH consensus gate
+
+No current reviewer raised a HIGH concern. Overall risk headings such as MEDIUM-HIGH do not create HIGH issues. No HIGH was suppressed by the consensus gate. The successful three reports have source citations and no leading evidence-quality discount markers. Grok's timeout-only first attempt remains excluded from consensus and counts.
+
+### Current unresolved findings
+
+None.
+
+```yaml
+issues: []
+current_high: 0
+current_actionable: 0
+```
+
+### Reviewer observations already incorporated or advisory
+
+The ACTIONABLE test asks whether an executor would miss a required outcome because it is absent from the latest PLAN.md files. It does not turn every implementation suggestion or task-splitting preference into a new requirement. All rows below were checked against current executable text rather than against historical resolution labels.
+
+| Reviewer observation | Current disposition and evidence |
+|---|---|
+| Fable: move Node acquisition out of wave 1; simplify the runtime wrapper (MEDIUM) | Workflow/design preferences. 06-01:97-114 explicitly makes compatible runtime acquisition and repeatable lock/engine verification a prerequisite for per-wave JS gates; 06-07's disposition rejects ambient old-package acceptance. The wrapper reuses npm's bundled semver resolver (:109), not a newly invented semver implementation. No demonstrated impossibility or missing acceptance outcome is identified. Moving the gate or weakening verification would revise an already explicit choice, not repair an invisible obligation. |
+| Fable: baseline verifier wording and spec tracer (LOW) | Incorporated: 06-01:256-260 explicitly records BOTH baseline commits, their parent/product blob equality and ancestry. The section/SHA guard checks spec presence while source tracers establish prerequisite behavior; subsequent producing tasks test the contract. The reviewer acknowledges these roles. |
+| Fable: split 06-02/06-06 tasks (MEDIUM/LOW) | Task granularity preference. Atomic location/key consumer updates and their real rendering/import guards are explicit, as are static/runtime availability cases. Splitting commits adds no missing requirement and risks temporarily separating consumers previously required to move together. |
+| Fable: cancel-keyed submit URL; active-pack substitution (LOW) | 06-01:126-137 defines the reserved aliases as the caller's cancel-only URL; 06-02:107,136 implements/tests that collision policy. No URL synthesis is promised merely from kind. 06-04:98-105 tests slot-based kind while preserving submitted name/value and explicit overrides. 06-02:136 explicitly uses an isolated template loader and active-pack substitution, requiring no additional installed pack. |
+| Fable: specify overlay discriminator before implementation (MEDIUM) | Already assigned to the pre-implementation design: 06-01:139-157 requires Context.dicts provenance/response-boundary classification, never a fixed offset, and the distinct enclosing-helper/page proof; 06-03:109-113 implements that spec with real stacked/recursive row renders and explicit helper identity. Installed crispy provides the response metadata at crispy_forms_tags.py:153-180. The historical H-OVERLAY-PROVENANCE disposition in 06-03 rejects a missing-API claim while retaining all tests. Selecting the exact private algorithm is the required spec task, not an absent executable obligation. |
+| Fable: missing versus None helper owner; form button/target_default arguments (MEDIUM/LOW) | 06-03:100 explicitly states missing and None fall through; :110 repeats absent/None/ordinary row cases, and :109 stops only at a non-None owner. The contract excludes context/target-view scalar policy for form kinds in task 1. Restating this as a particular sentinel implementation or an extra unused-argument test is optional detail. |
+| Fable: semantic icon docs guard and slot-swap icon; Gemini: kwargs precedence (LOW) | 06-04:98-105 requires all five kind defaults, explicit suppression, slot-derived kind and custom hook/form/adapter precedence; its acceptance requires correct rendered icons. 06-08:104 explicitly lists new names and override precedence in icons.md. A temporary between-wave docs guard is additional coverage, not a missing final-phase obligation. |
+| Fable: empty layout + None hook pack fallback docs (MEDIUM/LOW) | Existing behavior is expressly preserved in 06-05:109, which disclaims suppression of the pack-owned field fallback and forbids a global template override. 06-08:104-105 documents omission of the ACTION GROUP, retains the field layout and tests that fields/hidden values remain. No published recipe promises empty-form suppression. Adding another sentence about an already explicit, preserved pack edge case is optional explanatory detail; changing rendering with a placeholder would contradict the scoped preservation choice. |
+| Fable: helper len semantics and public view overlay (LOW); Gemini: replacement-layout cloning (LOW) | 06-05:83,104-109 explicitly keeps actual len semantics, isolates caller layouts, follows the current layout identity and tests before/between-render empty replacements. 06-03:109-113 handles helper view overlays; the reviewer labels that observation a cross-reference, not a defect. |
+| Fable: static provider mapping needs a concrete algorithm (MEDIUM) | 06-06:118-119 explicitly selects concrete classes and the delete provider first, distinguishes known inherited hooks from dynamic providers, traverses concrete polymorphic mappings, and forbids request-dependent get_form_class calls or instantiation. The proposed failure is already prohibited and regression-covered. Exact private attribute-reading code is an implementation detail. |
+| Fable: one warning per render rather than once per process (LOW) | 06-06:122 explicitly assigns one warning per render to the existing button-data logger, matching the action path at src/crud_views/lib/view/button_data.py:106-110; 06-08:89 owns missing-icon diagnostics documentation. This policy is visible to execution. A separate log-volume explanation is optional. |
+| Fable: ambient jsdom already supports submitters; upstream floor failure should not block (LOW) | 06-07 explicitly requires authoritative locked-package evidence and rejects old-runtime-only acceptance. Its floor gate at :115-121 tests both declared supported environments and blocks failures without silently changing support declarations. An unobserved upstream failure is not an established defect; pre-authorizing acceptance of failed compatibility would weaken the required gate. |
+| Fable: German translated value cross-check (MEDIUM) | Already explicit: 06-09:85 names test_demo_pages_render_german and its translated create-submit value and requires all example i18n cases after enabling both. D-17 and 06-02 retain name/value on the form contract. Fable itself calls this a cross-check rather than a defect. |
+| Fable: example extras environment, regression-file ownership, downstream glyph names (LOW) | 06-09:84-85 records and retains environment/browser blockers and exact example acceptance; validation failures cannot be mislabeled as passed. 06-08:86 says defaults/count work already landed in 06-02 and verifies it. Generic downstream glyph guidance is explicitly required and compliant, as the reviewer confirms. |
+| Gemini: greedy filter extractor (LOW) | 06-01:245-255 requires the exact unique form opening through its MATCHING closing tag, unrelated content excluded, stable bytes and DOM assertions. A greedy capture of later forms would fail the specified scope. Regex choice is not dictated. |
+| Gemini: no literal btn tokens (LOW) | 06-02 task 1 already updates/runs test_button_classes_templates.py and uses only the centralized class-table contract. The source-wide sentinel at tests/test1/test_button_classes_templates.py:20-47 is an existing regression gate, not an unassigned feature obligation. |
+| Gemini: transitive owner-helper imports (LOW) | Directly incorporated by the latest fix: 06-03:112 loads shared owner dependencies INSIDE Formsets.render/cv_x_formset, preserves the adapter boundary and forbids transitive module-level view imports. Both unchanged bare-settings tests run in :120. |
+| Gemini: stricter placement and whitespace validation in icon availability (LOW) | Optional policy expansion, not an absent renderer path: src/crud_views/lib/icons.py:223-237 renders any usable configured callable while :330-346 separately reports invalid placement as E355. 06-06:120-124 preserves existing registry diagnostics and actual host/font semantics, with no renderer probes. The proposed strip()/nonempty formatted-class check is stricter than font_renderer (:208-221) and E354 (:348-375), which check truthiness/type/format success without stripping. No contrary evidence invalidates the explicit matching-semantics plan. |
+| Gemini: coverage.xml collision (LOW) | Conditional tooling suggestion. 06-07:115 assigns targeted pytest shards without requiring --cov or a shared coverage artifact; the existing test session's coverage report does not force its flags onto the new independent session. No collision is mandated by the plan. |
+| Gemini: existing docs assertions/sync fences and pending browser gates (LOW) | 06-02 and 06-08 own the existing documentation suites and preserve current card/context semantics; 06-09 runs example docs synchronization and reference checks. 06-09:84,90-92 explicitly keeps unobserved browser checks pending and records exact evidence. These are reminders of already required gates. |
+| Grok: spec contents should be machine-checked, not only headings (LOW) | 06-01 task 1 explicitly assigns all named contract decisions before implementation, with nine nonempty sections and source tracers. Subsequent producing tasks have behavioral tests. Adding prose-token assertions would mirror the spec text rather than establish behavior; no required design decision is invisible to execution. |
+| Grok: 06-02 task 1 does not run test_label_mode.py (MEDIUM) | The obligation is explicitly incorporated: 06-02:102 assigns updating test_label_mode.py and test_button_data.py in task 1 BEFORE the tracer; :103 names the atomic location consumers; task 2 :134 retains those assertions and :139 runs test_label_mode.py in the same plan. The plan's completion fails if they remain red. Duplicating that shard in task 1 would provide earlier feedback, but the known consumer migration and its verification are already executable, so this is not ACTIONABLE under the convergence contract. |
+| Grok: local test_button_data.LOCATIONS should remain action-only (LOW) | 06-02:103 expressly preserves established action/menu behavior, uses VARIANT_LOCATIONS for action sentinel coverage and adds separate form cases with valid form data; task 1 runs test_button_data.py. Existing action fixture lists need not become exhaustive public-location lists. The source distinction was already adjudicated in the prior cycle; no new contrary evidence requires a separate policy. |
+| Grok: add bare-settings import crud_views.lib.formsets (MEDIUM) | Rejected on direct baseline evidence. The proposed new import ALREADY raises AppRegistryNotReady on the unchanged tree: src/crud_views/lib/formsets/__init__.py:1 imports formsets.py, whose :19 imports CrudView, reaching view/base.py:16 and Django auth before layout.py is loaded. The current two named regressions intentionally protect the formset tag and workflow public paths that are import-safe; tests/test1/test_import_safety.py:1-9 explicitly excludes auth-dependent view-package imports. Expanding their unchanged snippets would demand an unrelated public-package import redesign. Independently, 06-03:112 already requires owner-recovery imports INSIDE Formsets.render/cv_x_formset, so the new dependency constraint is assigned. |
+| Grok: rerun import tests in 06-04 (LOW) | Additional sampling preference. 06-02:108 explicitly says later ownership/icon work must retain the boundary; 06-03 repeats it, and 06-09's full suite includes test_import_safety.py. The phase-wide contract is not absent merely because every intervening task does not repeat the two-test shard. |
+| Grok: crispy pre-dispatch guard cannot be read in repository source (OPEN QUESTION) | Honest lane-specific dependency-coverage limitation. Fable and Gemini inspected the installed dependency and cite FormHelper.__len__, get_attributes and BasicNode.get_render; 06-05 requires real-tag empty-layout dispatch proof and 06-07 runs expanded cases at both declared floors. No unsupported certainty is inferred from Grok's unverified dependency reading. |
+| Grok: form checker should run on cv_viewset=None probe classes (LOW) | Optional extension of direct-probe scope, not an identified production gap. Registered checks traverse ViewSet.checks_all through src/crud_views/checks.py:20-28; the existing W292 integration has a cv_viewset guard at base.py:195-197. 06-06 assigns real check_viewsets/provider coverage and runtime fallback for standalone/dynamic forms. It does not require promoting unregistered probe views into the system registry. The private checker may be tested directly without adding that policy. |
+| Grok: record Node next to lock hash, preserve existing diagnostic sentences, route acceptance failures (LOW) | Already assigned: 06-01:104,113 records/reports runtime and lock evidence, 06-09:84 requires exact checks and blocker evidence; 06-08:88-89 retains existing diagnostic assertions/messages and unique rows; 06-09:85 explicitly routes a failing example gate to its producing plan without relaxing the assertion. |
+
+### Cross-artifact fact-drift pass
+
+`drift-guard phase-status --phase 06` returned **lag**: STATE `Planning` (rank 0), ROADMAP `Planned` (rank 1). This is the seam's non-contradictory one-step difference, not a finding. STATE remains the status authority; no state artifact was changed.
+
+Compared ROADMAP.md:202-239 to all nine current `must_haves.truths` and requirement declarations, and CONTEXT.md:23-84 to the decision-specific actions. The plan frontmatter covers exactly FORM-01 through FORM-13; the dependency/wave graph agrees. The plans preserve default payloads, real buttons, literal text, three label modes, finite kinds, whole-map selection, semantic icons/checks, paired Breaking/migration changes and the example. The 18 decisions remain consistent: quiet legacy inputs; explicit/subclass/default templates with active-pack substitution; actual form/helper/page ownership; ordinary and falsey owners stopping lookup; absent/None falling through; separate map/floor semantics; working-branch D-18 evidence before the spec; baseline commits before product changes. No authoritative glossary or success-criterion contradiction was found. No status/context axis was skipped.
+
+The already-dispositioned ROADMAP.md:227 source-fact inaccuracy remains advisory: it describes the existing delete test as posting `{"delete": "Delete"}`, while tests/test1/test_crud.py:63 posts `{"confirm": True}`. The plans explicitly retain that existing regression and add a separate clicked-submitter payload check. Similarly, the roadmap's broad `format_html` removal wording is refined by the plans to Django 6's zero-argument removal. These are not absent execution obligations and do not enter either count. Fact-drift observations are advisory by the workflow contract.
+
+## Verification coverage
+
+Effective authority: `intel`. `.planning/intel/API-SURFACE.md:5` reports an empty/incomplete index and `api-map.json` is absent. All non-new entries below are **UNCHECKABLE / INFO**, with `hardBlock=false` from the severity seam. The supplemental source/path candidates are independently read declarations or exact paths; they do not change the adapter verdict or prove call signatures. Multiple candidates are shown without claiming resolution. New phase outputs are excluded.
+
+The current-plan inventory rebuild uses exact path/identifier boundaries, including previous named references only when still cited, plus current paths, qualified names, decorators/calls, fields and CLI flags. Every entry includes a current plan citation and quoted line; all additional occurrence locations are retained.
+
+Inventory: 342 unique current references, 63 new exclusions. Coverage does not assert a complete Python semantic analysis.
+<details>
+<summary><code>--check</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:233` — &lt;automated&gt;.venv/bin/ruff format --check&lt;/automated&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:233`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>--prefix</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:110` — Then invoke that absolute Node with its recorded npm-cli.js and --prefix . test, forwarding supplied test
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:110`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>--strict</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:126` — &lt;automated&gt;.venv/bin/mkdocs build --strict&lt;/automated&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:126`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:88`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>-n</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:72` — &lt;automated&gt;.venv/bin/pytest tests -n auto&lt;/automated&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:72`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>-q</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:93` — tests/test1/test_action_label_mode_config.py tests/test1/test_button_classes.py -q; record the command,
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:93`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:206`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:233`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:262`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:111`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:115`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:139`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:154`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:88`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:116`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:120`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:86`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:107`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:89`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:114`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:94`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:127`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:92`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:108`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:130`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:237`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:241`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:245`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>-s</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-07-PLAN.md:118` — &lt;automated&gt;.venv/bin/nox -s crispy_floor&lt;/automated&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-07-PLAN.md:118`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>../../.venv/bin/pytest</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:237` — &lt;automated&gt;cd examples/bootstrap5 &amp;&amp; ../../.venv/bin/pytest project/tests.py::SystemChecksTest::test_no_check_errors_with_every_viewset_registered -q&lt;/automated&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:237`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:241`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:245`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>.planning/PROJECT.md</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:54` — @.planning/PROJECT.md
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:54`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:71`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:57`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:56`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:56`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:59`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:53`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:66`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:49`.
+
+Supplemental exact path/declaration candidates: `.planning/PROJECT.md:1`.
+
+</details>
+
+<details>
+<summary><code>.planning/REQUIREMENTS.md</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:57` — @.planning/REQUIREMENTS.md
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:57`.
+
+Supplemental exact path/declaration candidates: `.planning/REQUIREMENTS.md:1`.
+
+</details>
+
+<details>
+<summary><code>.planning/ROADMAP.md</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:55` — @.planning/ROADMAP.md
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:55`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:72`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:58`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:57`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:57`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:60`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:54`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:67`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:50`.
+
+Supplemental exact path/declaration candidates: `.planning/ROADMAP.md:1`.
+
+</details>
+
+<details>
+<summary><code>.planning/STATE.md</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:56` — @.planning/STATE.md
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:56`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:73`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:59`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:58`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:58`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:61`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:55`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:68`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:51`.
+
+Supplemental exact path/declaration candidates: `.planning/STATE.md:1`.
+
+</details>
+
+<details>
+<summary><code>.planning/phases/01-label-mode-defaults/01-CONTEXT.md</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:80` — .planning/phases/01-label-mode-defaults/01-CONTEXT.md; .planning/phases/02-form-key-grammar/02-CONTEXT.md;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:80`.
+
+Supplemental exact path/declaration candidates: `.planning/phases/01-label-mode-defaults/01-CONTEXT.md:1`.
+
+</details>
+
+<details>
+<summary><code>.planning/phases/02-form-key-grammar/02-CONTEXT.md</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:80` — .planning/phases/01-label-mode-defaults/01-CONTEXT.md; .planning/phases/02-form-key-grammar/02-CONTEXT.md;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:80`.
+
+Supplemental exact path/declaration candidates: `.planning/phases/02-form-key-grammar/02-CONTEXT.md:1`.
+
+</details>
+
+<details>
+<summary><code>.planning/phases/06-form-button-leaf/06-01-SUMMARY.md</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:367` — Create .planning/phases/06-form-button-leaf/06-01-SUMMARY.md with prerequisite and baseline commit evidence.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:367`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>.planning/phases/06-form-button-leaf/06-02-SUMMARY.md</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:224` — Create .planning/phases/06-form-button-leaf/06-02-SUMMARY.md.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:224`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>.planning/phases/06-form-button-leaf/06-03-SUMMARY.md</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:195` — Create .planning/phases/06-form-button-leaf/06-03-SUMMARY.md.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:195`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>.planning/phases/06-form-button-leaf/06-04-SUMMARY.md</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-04-PLAN.md:147` — Create .planning/phases/06-form-button-leaf/06-04-SUMMARY.md.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-04-PLAN.md:147`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>.planning/phases/06-form-button-leaf/06-05-SUMMARY.md</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-05-PLAN.md:191` — Create .planning/phases/06-form-button-leaf/06-05-SUMMARY.md.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-05-PLAN.md:191`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>.planning/phases/06-form-button-leaf/06-06-SUMMARY.md</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:204` — Create .planning/phases/06-form-button-leaf/06-06-SUMMARY.md.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:204`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>.planning/phases/06-form-button-leaf/06-07-SUMMARY.md</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-07-PLAN.md:160` — Create .planning/phases/06-form-button-leaf/06-07-SUMMARY.md.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-07-PLAN.md:160`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>.planning/phases/06-form-button-leaf/06-08-SUMMARY.md</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:211` — Create .planning/phases/06-form-button-leaf/06-08-SUMMARY.md.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:211`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>.planning/phases/06-form-button-leaf/06-09-SUMMARY.md</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:294` — Create .planning/phases/06-form-button-leaf/06-09-SUMMARY.md.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:294`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>.planning/phases/06-form-button-leaf/06-ACCEPTANCE.md</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:8` — - .planning/phases/06-form-button-leaf/06-ACCEPTANCE.md
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:8`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:25`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:30`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:61`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:66`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:81`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>.planning/phases/06-form-button-leaf/06-CONTEXT.md</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:58` — @.planning/phases/06-form-button-leaf/06-CONTEXT.md
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:58`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:74`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:60`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:59`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:59`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:62`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:56`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:69`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:52`.
+
+Supplemental exact path/declaration candidates: `.planning/phases/06-form-button-leaf/06-CONTEXT.md:1`.
+
+</details>
+
+<details>
+<summary><code>.planning/phases/06-form-button-leaf/06-JS-RUNTIME.json</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:10` — - .planning/phases/06-form-button-leaf/06-JS-RUNTIME.json
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:10`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:78`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>.planning/phases/06-form-button-leaf/06-PATTERNS.md</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:60` — @.planning/phases/06-form-button-leaf/06-PATTERNS.md
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:60`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:76`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:62`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:61`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:61`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:64`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:58`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:71`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:54`.
+
+Supplemental exact path/declaration candidates: `.planning/phases/06-form-button-leaf/06-PATTERNS.md:1`.
+
+</details>
+
+<details>
+<summary><code>.planning/phases/06-form-button-leaf/06-RESEARCH.md</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:59` — @.planning/phases/06-form-button-leaf/06-RESEARCH.md
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:59`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:75`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:61`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:60`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:60`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:63`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:57`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:70`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:53`.
+
+Supplemental exact path/declaration candidates: `.planning/phases/06-form-button-leaf/06-RESEARCH.md:1`.
+
+</details>
+
+<details>
+<summary><code>.planning/phases/06-form-button-leaf/06-SPEC.md</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:8` — - .planning/phases/06-form-button-leaf/06-SPEC.md
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:8`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:31`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:78`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:206`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:216`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:243`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:77`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:63`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:62`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:62`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:65`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:59`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:72`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:55`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>.planning/phases/06-form-button-leaf/06-VALIDATION.md</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:61` — @.planning/phases/06-form-button-leaf/06-VALIDATION.md
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:61`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:9`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:27`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:33`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:66`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:81`.
+
+Supplemental exact path/declaration candidates: `.planning/phases/06-form-button-leaf/06-VALIDATION.md:1`.
+
+</details>
+
+<details>
+<summary><code>.planning/phases/06-form-button-leaf/06-js-verify.sh</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:9` — - .planning/phases/06-form-button-leaf/06-js-verify.sh
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:9`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:78`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:114`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:83`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:103`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:225`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>.venv/bin/mkdocs</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:126` — &lt;automated&gt;.venv/bin/mkdocs build --strict&lt;/automated&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:126`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:88`.
+
+Supplemental exact path/declaration candidates: `.venv/bin/mkdocs:1`.
+
+</details>
+
+<details>
+<summary><code>.venv/bin/nox</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-07-PLAN.md:118` — &lt;automated&gt;.venv/bin/nox -s crispy_floor&lt;/automated&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-07-PLAN.md:118`.
+
+Supplemental exact path/declaration candidates: `.venv/bin/nox:1`.
+
+</details>
+
+<details>
+<summary><code>.venv/bin/pytest</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:92` — VARIANT_LOCATIONS. Before authoring the spec, run .venv/bin/pytest tests/test1/test_label_mode.py
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:92`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:206`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:233`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:262`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:111`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:115`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:139`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:154`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:88`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:116`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:120`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:86`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:107`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:89`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:114`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:94`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:127`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:92`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:108`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:130`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:72`.
+
+Supplemental exact path/declaration candidates: `.venv/bin/pytest:1`.
+
+</details>
+
+<details>
+<summary><code>.venv/bin/python</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:206` — &lt;automated&gt;.venv/bin/python -c &#x27;from pathlib import Path; import re; p=Path(&quot;.planning/phases/06-form-button-leaf/06-SPEC.md&quot;); s=p.read_text(); headings=(&quot;Prerequisite evidence&quot;, &quot;Form contract&quot;, &quot;Literal text and attributes&quot;, &quot;Template selection&quot;, &quot;Ownership&quot;, &quot;Helper lifecycle&quot;, &quot;Diagnostics and icons&quot;, &quot;Dependency validation&quot;, &quot;Golden history&quot;); sections={h: re.search(r&quot;(?m)^## &quot; + re.escape(h) + r&quot;\n([\s\S]*?)(?=^## |\Z)&quot;, s) for h in headings}; assert all(m and m.group(1).strip() for m in sections.values()), &quot;Missing/empty design section&quot;; assert re.search(r&quot;\b[0-9a-f]{40}\b&quot;, sections[&quot;Prerequisite evidence&quot;].group(1)), &quot;Missing executing-branch HEAD SHA&quot;&#x27; &amp;&amp; .venv/bin/pytest tests/test1/test_crispy_buttons.py tests/test1/test_button_data.py tests/test1/test_label_mode.py tests/test1/test_action_label_mode_config.py tests/test1/test_button_classes.py -q&lt;/automated&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:206`.
+
+Supplemental exact path/declaration candidates: `.venv/bin/python:1`.
+
+</details>
+
+<details>
+<summary><code>.venv/bin/ruff</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:229` — &lt;automated&gt;.venv/bin/ruff check&lt;/automated&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:229`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:233`.
+
+Supplemental exact path/declaration candidates: `.venv/bin/ruff:1`.
+
+</details>
+
+<details>
+<summary><code>/home/alex/.codex/gsd-core/templates/summary.md</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:49` — @/home/alex/.codex/gsd-core/templates/summary.md
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:49`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:66`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:52`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:51`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:51`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:54`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:48`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:61`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:44`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>/home/alex/.codex/gsd-core/workflows/execute-plan.md</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:48` — @/home/alex/.codex/gsd-core/workflows/execute-plan.md
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:48`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:65`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:51`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:50`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:50`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:53`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:47`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:60`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:43`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>06-01-SUMMARY.md</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:90` — &lt;read_first&gt;06-01-SUMMARY.md in this phase directory; src/crud_views/templates/crud_views/tags/button/action.html; src/crud_views/lib/crispy/buttons.py; src/crud_views/lib/view/button_data.py; src/crud_views/lib/view/label_mode.py; src/crud_views/templatetags/crud_views.py (cv_button); src/crud_views/lib/view/visibility.py; tests/test1/test_crispy_buttons.py; tests/test1/test_button_leaves.py; tests/test1/test_import_safety.py&lt;/read_first&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:90`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:149`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>06-07-SUMMARY.md</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:82` — &lt;read_first&gt;examples/bootstrap5/project/settings.py; examples/bootstrap5/pytest.ini; examples/bootstrap5/test_i18n.py; examples/bootstrap5/project/tests.py (HomePageTest and SystemChecksTest); examples/bootstrap5/test_doc_links.py; docs/migrating-1.0.md Form buttons; 06-07-SUMMARY.md; 06-08-SUMMARY.md; 06-VALIDATION.md&lt;/read_first&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:82`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>06-08-SUMMARY.md</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:82` — &lt;read_first&gt;examples/bootstrap5/project/settings.py; examples/bootstrap5/pytest.ini; examples/bootstrap5/test_i18n.py; examples/bootstrap5/project/tests.py (HomePageTest and SystemChecksTest); examples/bootstrap5/test_doc_links.py; docs/migrating-1.0.md Form buttons; 06-07-SUMMARY.md; 06-08-SUMMARY.md; 06-VALIDATION.md&lt;/read_first&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:82`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>06-JS-RUNTIME.json</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:70` — NEW validation artifacts: 06-js-verify.sh and 06-JS-RUNTIME.json at the full phase-local paths in files_modified;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:70`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:104`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:65`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>06-RESEARCH.md</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-07-PLAN.md:71` — &lt;read_first&gt;package.json; package-lock.json; vitest.config.js; tests/js/modal.test.js; tests/js/helpers/setup.js; src/crud_views/static/crud_views/js/modal.js; 06-RESEARCH.md Package Legitimacy Audit&lt;/read_first&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-07-PLAN.md:71`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:113`.
+
+Supplemental exact path/declaration candidates: `.planning/phases/06-form-button-leaf/06-RESEARCH.md:1`.
+
+</details>
+
+<details>
+<summary><code>06-SPEC.md</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:66` — NEW files: 06-SPEC.md at the full path in files_modified; tests/test1/test_form_buttons_golden.py; the five
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:66`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:75`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:98`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:74`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:104`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:84`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:67`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>06-VALIDATION.md</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:61` — NEW file: .planning/phases/06-form-button-leaf/06-ACCEPTANCE.md. Existing 06-VALIDATION.md receives measured results. No new product/test symbols.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:61`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:67`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:82`.
+
+Supplemental exact path/declaration candidates: `.planning/phases/06-form-button-leaf/06-VALIDATION.md:1`.
+
+</details>
+
+<details>
+<summary><code>06-js-verify.sh</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:70` — NEW validation artifacts: 06-js-verify.sh and 06-JS-RUNTIME.json at the full phase-local paths in files_modified;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:70`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:105`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:65`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>BOOTSTRAP_ICONS</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-04-PLAN.md:83` — Add save, cancel and filter-reset to DEFAULT_ICONS and BOOTSTRAP_ICONS with matching semantic meanings. Ensure the leaf reads mode classes through cv_button_class and the existing form utility keys through dedicated lookups; host classes must be escaped as attributes. Label mode suppresses all icon output and host classes, both emits icon plus text without generated tooltip, icon emits hidden text/title/form tooltip. Cover renderer prefix variants and explicit host opt-out, a Unicode/lazy label, an empty label, and repeated renders with changed registry/settings. Extend the real host/leaf tests for finite kind grammar and utility keys and keep exhaustive class/default checks green.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-04-PLAN.md:83`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/icons.py:51`.
+
+</details>
+
+<details>
+<summary><code>BaseInput</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:107` — Implement adapter render without calling BaseInput.render: retain raw value and kwargs, normalize per spec, render the selected leaf through a scoped context copy. Strip inherited input aliases from the template context, never expose the adapter object. Normalize SafeData and lazy values at render time to ordinary strings then use Django autoescaping once; serialized extra attrs are escaped once separately. Preserve constructor signature, slot-selected semantic kind, upstream generated IDs and legacy field_classes/flat_attrs for helper.inputs. Do not infer kind from the submitted name. The leaf uses cv_button_class form/cv_key/cv_label_mode, appends cv_css_class and host classes, and renders the three bodies with cancel URL only for cancel. Keep normalizer/icon behavior extensible for 06-04 rather than hardcoding a temporary floor. Update existing input-only assertions only where layout buttons changed; filter helper inputs remain inputs until 06-05.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:107`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:125`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:216`.
+
+Supplemental exact path/declaration candidates: `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/layout.py:199`.
+
+</details>
+
+<details>
+<summary><code>BaseInput.render</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:107` — Implement adapter render without calling BaseInput.render: retain raw value and kwargs, normalize per spec, render the selected leaf through a scoped context copy. Strip inherited input aliases from the template context, never expose the adapter object. Normalize SafeData and lazy values at render time to ordinary strings then use Django autoescaping once; serialized extra attrs are escaped once separately. Preserve constructor signature, slot-selected semantic kind, upstream generated IDs and legacy field_classes/flat_attrs for helper.inputs. Do not infer kind from the submitted name. The leaf uses cv_button_class form/cv_key/cv_label_mode, appends cv_css_class and host classes, and renders the three bodies with cancel URL only for cancel. Keep normalizer/icon behavior extensible for 06-04 rather than hardcoding a temporary floor. Update existing input-only assertions only where layout buttons changed; filter helper inputs remain inputs until 06-05.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:107`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:216`.
+
+Supplemental exact path/declaration candidates: `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/layout.py:250`.
+
+</details>
+
+<details>
+<summary><code>BasicNode.get_response_dict</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:154` — | H-OVERLAY-PROVENANCE | Rejected as a missing-API claim, not as a test obligation: installed BasicNode.get_response_dict supplies inputs/is_formset/template_pack metadata; no named provenance field is required. Task 2 and the pre-implementation spec retain the current-invocation/page-boundary proof and nested-row/None regressions; this single-reviewer unconfirmed HIGH does not authorize an ownership redesign or certify future implementation. |
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:154`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:85`.
+
+Supplemental exact path/declaration candidates: `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/templatetags/crispy_forms_tags.py:137`.
+
+</details>
+
+<details>
+<summary><code>CHANGELOG.md</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:17` — - CHANGELOG.md
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:17`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:117`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:118`.
+
+Supplemental exact path/declaration candidates: `CHANGELOG.md:1`, `/home/alex/projects/alex/django-crud-views/CHANGELOG.md:1`.
+
+</details>
+
+<details>
+<summary><code>CLAUDE.md</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:53` — @CLAUDE.md
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:53`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:70`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:56`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:55`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:55`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:58`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:52`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:65`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:48`.
+
+Supplemental exact path/declaration candidates: `CLAUDE.md:1`, `/home/alex/projects/alex/django-crud-views/CLAUDE.md:1`.
+
+</details>
+
+<details>
+<summary><code>CONTEXT.md</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:300` — | H-MAIN | Resolved by explicit user decision D-18 after cycle 1: verify completed Phase 1/2 contracts on the executing working branch, recording HEAD and test evidence before the spec. ROADMAP.md and CONTEXT.md now carry this requirement. No claim that main changed; no merge or branch switch. Dependency verification, spec-first and baseline-first gates remain. |
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:300`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>CRUD_VIEWS_FORM_ACTIONS_LABEL_MODE</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:69` — NEW fields: CrudViewsSettings.form_actions_label_mode (CRUD_VIEWS_FORM_ACTIONS_LABEL_MODE), ViewSet.form_actions_label_mode, CrudView.cv_form_actions_label_mode. NEW public resolver: CrudView.cv_get_form_actions_label_mode(). Existing cv_get_action_label_mode gains location=&#x27;form&#x27;. Private owner-recovery helpers and a scoped page-owner transport key across Formsets/cv_x_formset are internal, not promised public names or leaf-context keys.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:69`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:84`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:85`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:87`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>CRUD_VIEWS_ICONS</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:120` — Resolve form mode through the public resolver; catch ValueError only around mode resolution so E108/E210/E211 survive strict checking. For M-REGISTRY-OFF and M-ICON-AVAILABILITY, use the existing icons.resolve_icon(value) in both static inspection and the form normalizer: a None result means an absent/disabled semantic mapping, including explicit None/empty and a semantic name mapped by CRUD_VIEWS_ICONS to None/empty. Test each with known default submit/delete/filter controls. For L-UNREGISTERED-FORM-ICON, semantic resolution alone is insufficient: a nonempty prefix must also have a dict-valued library entry and a usable registered renderer. Add a private side-effect-free availability helper in icons.py reusing resolve_icon/get_libraries/_get_renderers metadata; resolving a renderer callable is allowed, invoking it is not. Share this predicate between form static checks and the normalizer. A resolved empty prefix is the existing raw CSS-class path and remains available. A direct submit_icon=&#x27;unknown:save&#x27; must trigger W292 for static icon-only controls and the same strict ValueError/non-strict logged label fallback as disabled semantic icons at runtime. Registry W352 only visits table entries, so do not claim it covers direct per-form values. Preserve existing registry diagnostics for malformed libraries and named entries; do not change their IDs or silently suppress them. Never call render_icon or a custom renderer to probe availability. Leave actual inline rendering to the leaf&#x27;s one cv_icon call; no rendered-markup cache or extra public leaf key is needed. A custom renderer&#x27;s returned markup remains its existing renderer contract, not a second missing-mapping test. Preserve icon_host_keys/resolve_icon_name_class for placement: a valid host icon is available even though the leaf emits no inline element, and a None/empty form:icon-host class override remains the existing explicit placement opt-out rather than a missing semantic icon.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:120`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>CRUD_VIEWS_LABEL_MODE_DEFAULTS</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:85` — Extend the config suite&#x27;s existing monkeypatch.setattr(crud_views_settings, ...) pattern for form maps, restoring it after each case; construct CrudViewsSettings(form_actions_label_mode=...) explicitly for model-level validation cases. Add real crispy rendering with a monkeypatched singleton submit=&#x27;both&#x27; and an unmapped cancel: a post-import override_settings(CRUD_VIEWS_FORM_ACTIONS_LABEL_MODE={&#x27;submit&#x27;: &#x27;icon&#x27;}) alone leaves submit in both, while nested CRUD_VIEWS_LABEL_MODE_DEFAULTS={&#x27;form&#x27;: &#x27;icon&#x27;} changes only the unmapped cancel and exiting restores its label floor. Keep this distinction explicit in the spec and documentation rather than treating override_settings on the map as a supported hot refresh. The render assertion proves the selected map is connected to the leaf.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:85`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:87`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:123`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>CRUD_VIEWS_STRICT</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:106` — Branch cv_button_data early for form before action URL/modal derivation; retain existing action behavior and LEAF_KEYS. For M-FORM-DATA-KIND, keep the existing third argument&#x27;s signature/default and KINDS validation, then require kind=&#x27;action&#x27; for the form location before entering the form branch. Omitted and explicit &#x27;action&#x27; calls are equivalent; &#x27;menu-item&#x27; and unknown values raise ValueError regardless of CRUD_VIEWS_STRICT. This argument is the existing rendering category, not a form semantic kind: only cv_key selects FORM_KINDS, and passing &#x27;submit&#x27; as the third argument also raises. In test_button_data.py cover these cases for every valid form cv_key and retain context/list/card action/menu-item positive and unknown-kind negative cases. Introduce FORM_LEAF_KEYS for the exact spec contract. Validate cv_key against FORM_KINDS and cv_type against submit/button/reset; invalid semantic key/type raises ValueError independently of the third argument. Explicitly reject non-form and unknown slot kinds when rendering through the new layout leaf; preserve arbitrary slot handling on legacy helper.inputs without constructor-time rejection or warnings (M-SLOT, D-01/D-02/D-13). Cover formset:control and form:unknown as rejected layout slots and retained legacy input cases; 06-08 records this layout-only Breaking change. Missing or None textual values normalize to empty text without coercing other falsey data such as numeric zero to empty. Preserve valid empty labels without manufacturing text.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:106`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:122`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:121`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>Context.dicts</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:139` — Define owner recovery from Django Context.dicts before flattening: the actual adapter render(form, context)
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:139`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:109`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>CrispyDeleteForm</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-04-PLAN.md:68` — EXISTING prerequisites from 06-02: form:hidden-label and form:icon-host with updated exhaustive keys/count. NEW registry names: save, cancel, filter-reset. NEW form attributes: CrispyFormMixin.submit_icon=&#x27;save&#x27;, CrispyDeleteForm.delete_icon=&#x27;delete&#x27;, WorkflowForm.submit_icon=&#x27;workflow&#x27;. NEW adapter icon= keyword is consumed as rendering configuration, never serialized as an HTML attribute; omission selects kind default while explicit None/empty suppresses it.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-04-PLAN.md:68`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:118`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/crispy/form.py:116`.
+
+</details>
+
+<details>
+<summary><code>CrispyDeleteForm.delete_icon</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-04-PLAN.md:68` — EXISTING prerequisites from 06-02: form:hidden-label and form:icon-host with updated exhaustive keys/count. NEW registry names: save, cancel, filter-reset. NEW form attributes: CrispyFormMixin.submit_icon=&#x27;save&#x27;, CrispyDeleteForm.delete_icon=&#x27;delete&#x27;, WorkflowForm.submit_icon=&#x27;workflow&#x27;. NEW adapter icon= keyword is consumed as rendering configuration, never serialized as an HTML attribute; omission selects kind default while explicit None/empty suppresses it.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-04-PLAN.md:68`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>CrispyFormMixin</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-04-PLAN.md:68` — EXISTING prerequisites from 06-02: form:hidden-label and form:icon-host with updated exhaustive keys/count. NEW registry names: save, cancel, filter-reset. NEW form attributes: CrispyFormMixin.submit_icon=&#x27;save&#x27;, CrispyDeleteForm.delete_icon=&#x27;delete&#x27;, WorkflowForm.submit_icon=&#x27;workflow&#x27;. NEW adapter icon= keyword is consumed as rendering configuration, never serialized as an HTML attribute; omission selects kind default while explicit None/empty suppresses it.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-04-PLAN.md:68`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:104`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/crispy/form.py:11`.
+
+</details>
+
+<details>
+<summary><code>CrispyFormMixin.submit_icon</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-04-PLAN.md:68` — EXISTING prerequisites from 06-02: form:hidden-label and form:icon-host with updated exhaustive keys/count. NEW registry names: save, cancel, filter-reset. NEW form attributes: CrispyFormMixin.submit_icon=&#x27;save&#x27;, CrispyDeleteForm.delete_icon=&#x27;delete&#x27;, WorkflowForm.submit_icon=&#x27;workflow&#x27;. NEW adapter icon= keyword is consumed as rendering configuration, never serialized as an HTML attribute; omission selects kind default while explicit None/empty suppresses it.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-04-PLAN.md:68`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>CrudView</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:69` — NEW fields: CrudViewsSettings.form_actions_label_mode (CRUD_VIEWS_FORM_ACTIONS_LABEL_MODE), ViewSet.form_actions_label_mode, CrudView.cv_form_actions_label_mode. NEW public resolver: CrudView.cv_get_form_actions_label_mode(). Existing cv_get_action_label_mode gains location=&#x27;form&#x27;. Private owner-recovery helpers and a scoped page-owner transport key across Formsets/cv_x_formset are internal, not promised public names or leaf-context keys.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:69`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:109`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:118`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/view/base.py:61`.
+
+</details>
+
+<details>
+<summary><code>CrudView.checks</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:118` — Introduce a static form checker wired from CrudView.checks. Inspect concrete statically selected form classes only while the helper property, action provider and relevant button/kwargs hooks retain known package implementations. Select the provider before controls (H-DELETE-STATIC): check CrispyDeleteForm first, whose helper renders delete via delete_icon plus cancel, never its inherited submit_icon. Otherwise default CrispyFormMixin/workflow helpers render submit via submit_icon plus cancel. Hook/helper overrides make the affected provider dynamic rather than evidence for inherited controls. Tests set inherited submit_icon=None on a default delete form and require no submit warning, then delete_icon=None and require a delete W292; custom delete helpers also get runtime coverage.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:118`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/view/base.py:135`.
+
+</details>
+
+<details>
+<summary><code>CrudView.cv_form_actions_label_mode</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:69` — NEW fields: CrudViewsSettings.form_actions_label_mode (CRUD_VIEWS_FORM_ACTIONS_LABEL_MODE), ViewSet.form_actions_label_mode, CrudView.cv_form_actions_label_mode. NEW public resolver: CrudView.cv_get_form_actions_label_mode(). Existing cv_get_action_label_mode gains location=&#x27;form&#x27;. Private owner-recovery helpers and a scoped page-owner transport key across Formsets/cv_x_formset are internal, not promised public names or leaf-context keys.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:69`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>CrudView.cv_get_form_actions_label_mode</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:69` — NEW fields: CrudViewsSettings.form_actions_label_mode (CRUD_VIEWS_FORM_ACTIONS_LABEL_MODE), ViewSet.form_actions_label_mode, CrudView.cv_form_actions_label_mode. NEW public resolver: CrudView.cv_get_form_actions_label_mode(). Existing cv_get_action_label_mode gains location=&#x27;form&#x27;. Private owner-recovery helpers and a scoped page-owner transport key across Formsets/cv_x_formset are internal, not promised public names or leaf-context keys.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:69`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>CrudViewsSettings</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:170` — or explicit CrudViewsSettings arguments, not an invented setting_changed refresh; 06-03 proves the distinction.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:170`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:26`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:69`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:84`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:85`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/settings.py:17`.
+
+</details>
+
+<details>
+<summary><code>CrudViewsSettings.form_actions_label_mode</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:69` — NEW fields: CrudViewsSettings.form_actions_label_mode (CRUD_VIEWS_FORM_ACTIONS_LABEL_MODE), ViewSet.form_actions_label_mode, CrudView.cv_form_actions_label_mode. NEW public resolver: CrudView.cv_get_form_actions_label_mode(). Existing cv_get_action_label_mode gains location=&#x27;form&#x27;. Private owner-recovery helpers and a scoped page-owner transport key across Formsets/cv_x_formset are internal, not promised public names or leaf-context keys.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:69`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:84`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>DEBUG</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:121` — For L-MIGRATION-E108-INVENTORY, also update the older crud_views.E108 paragraph under &quot;## Step zero: run the checks&quot; in docs/migrating-1.0.md: its button-location list must include context/list/card/form. Keep its separate label/icon/both mode vocabulary, invalid-map/unknown-location/invalid-mode meaning, ignored unknown runtime keys, strict ValueError with CRUD_VIEWS_STRICT defaulting to DEBUG, and non-strict warn-once/package-floor fallback unchanged. Extend test_label_mode_docs.py with test_migration_e108_location_inventory: use _section to isolate Step zero, require its unique paragraph beginning with the E108 reports clause, extract only the parenthesized button-location clause and compare the entire set to button_data.LOCATIONS. A form mention in the later Form buttons section or in either reference table must not satisfy this guard, nor may mode tokens enter the location set. Check that the paragraph still documents the existing mode/strict/fallback semantics. Require failure if this paragraph omits form, adds an unknown location or disappears; preserve task 1&#x27;s separate two-row E108 guards. This test lives in the already-owned documentation suite and runs in this producing task alongside the strict build.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:121`.
+
+Supplemental exact path/declaration candidates: `examples/bootstrap5/project/settings_demo.py:11`, `examples/bootstrap5/project/settings.py:14`.
+
+</details>
+
+<details>
+<summary><code>DEFAULT_ICONS</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-04-PLAN.md:83` — Add save, cancel and filter-reset to DEFAULT_ICONS and BOOTSTRAP_ICONS with matching semantic meanings. Ensure the leaf reads mode classes through cv_button_class and the existing form utility keys through dedicated lookups; host classes must be escaped as attributes. Label mode suppresses all icon output and host classes, both emits icon plus text without generated tooltip, icon emits hidden text/title/form tooltip. Cover renderer prefix variants and explicit host opt-out, a Unicode/lazy label, an empty label, and repeated renders with changed registry/settings. Extend the real host/leaf tests for finite kind grammar and utility keys and keep exhaustive class/default checks green.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-04-PLAN.md:83`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/icons.py:14`.
+
+</details>
+
+<details>
+<summary><code>E108_LOCATIONS</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:103` — Start with a failing real-crispy render test. Add form to LOCATIONS and label to LABEL_MODE_DEFAULTS together. In this same change update E108_LOCATIONS in test_action_label_mode_config.py to include form, move the old form-invalid case to the valid defaults parametrization, and retain unknown-location coverage using an actual typo. Update the settings.md defaults table literal and location prose, plus test_label_mode_docs.py&#x27;s matching location assertions; full form-map documentation stays in 06-08. In test_button_classes_templates.py, use VARIANT_LOCATIONS for action/menu sentinel loops, assert its relation to LOCATIONS, and add separate form-leaf sentinel cases over every FORM_KINDS/mode combination with valid form contexts and an existing registered icon. Do not remove coverage or pass form into action leaves. These small direct consumer updates are inseparable from the location/default migration despite exceeding the usual per-task file heuristic (H-LOCATIONS).
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:103`.
+
+Supplemental exact path/declaration candidates: `tests/test1/test_action_label_mode_config.py:278`.
+
+</details>
+
+<details>
+<summary><code>EXPECTED_KEYS</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:105` — Add form:hidden-label=&#x27;visually-hidden&#x27; and form:icon-host now, before advertising icon/host rendering (H-EARLY-UTILITIES, D-14). Update test_button_classes.py&#x27;s exhaustive EXPECTED_KEYS, the measured count (71 to 73 on the reviewed tree), and utility-slot parametrization in this same producing task (H-KEYSET). Update buttons.md&#x27;s measured count and complete utility rows/arithmetic, including five icon-host keys. Preserve finite FORM_KINDS/VARIANT_LOCATIONS; a utility key never accepts a mode suffix. Test hidden-label/title/form-tooltip and host class behavior with an already registered icon; new semantic icon names/hooks remain 06-04 work.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:105`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:171`.
+
+Supplemental exact path/declaration candidates: `tests/test1/test_button_classes.py:21`.
+
+</details>
+
+<details>
+<summary><code>FORM_KINDS</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:91` — contracts at that HEAD: default_label_mode with shared lazy defaults and independent FORM_KINDS /
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:91`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:123`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:106`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:25`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:42`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:89`.
+
+Supplemental exact path/declaration candidates: `tests/test1/test_button_classes_checks.py:111`, `src/crud_views/lib/button_classes.py:210`.
+
+</details>
+
+<details>
+<summary><code>FORM_LEAF_KEYS</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:118` — 06-02 through 06-06. Set separate FORM_LEAF_KEYS, preserving LEAF_KEYS; define type/name/value/id/key,
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:118`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:83`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:104`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:106`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:203`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:122`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:86`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:157`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>FormActions</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:146` — helper overlay by its provenance/response metadata, never a fixed stack offset: FormActions leaves extra
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:146`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:147`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:172`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:184`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:293`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:30`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:98`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:104`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:109`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:110`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:117`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:136`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:24`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:42`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:68`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:72`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:78`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:102`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:109`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:110`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:31`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:104`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:196`.
+
+Supplemental exact path/declaration candidates: `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/bootstrap.py:259`.
+
+</details>
+
+<details>
+<summary><code>FormActions.render</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:98` — &lt;read_first&gt;06-SPEC.md ownership and import-safety contracts; installed crispy BasicNode.get_render/get_response_dict, FormActions.render and FormHelper.get_attributes; src/crud_views/lib/formsets/layout.py; src/crud_views/templatetags/crud_views_formsets.py; src/crud_views/templates/crud_views/formsets/formsets.html; src/crud_views/templates/crud_views/formsets/formset.html; Django InclusionNode.render; tests/test1/test_crispy_buttons.py; tests/test1/test_import_safety.py&lt;/read_first&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:98`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:109`.
+
+Supplemental exact path/declaration candidates: `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/bootstrap.py:306`.
+
+</details>
+
+<details>
+<summary><code>FormData</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-07-PLAN.md:27` — - &quot;The native SubmitEvent.submitter and FormData contract is tested on exact locked JS packages under a compatible isolated runtime, without hiding failure through mocks/polyfills.&quot;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-07-PLAN.md:27`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:36`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:74`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:80`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:135`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:152`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:192`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>FormHelper</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:174` — and its prepared Layout truthy before crispy evaluates `if helper and helper.layout`. FormHelper inherits
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:174`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:98`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:74`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:84`.
+
+Supplemental exact path/declaration candidates: `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/helper.py:106`.
+
+</details>
+
+<details>
+<summary><code>FormHelper.get_attributes</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:98` — &lt;read_first&gt;06-SPEC.md ownership and import-safety contracts; installed crispy BasicNode.get_render/get_response_dict, FormActions.render and FormHelper.get_attributes; src/crud_views/lib/formsets/layout.py; src/crud_views/templatetags/crud_views_formsets.py; src/crud_views/templates/crud_views/formsets/formsets.html; src/crud_views/templates/crud_views/formsets/formset.html; Django InclusionNode.render; tests/test1/test_crispy_buttons.py; tests/test1/test_import_safety.py&lt;/read_first&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:98`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:74`.
+
+Supplemental exact path/declaration candidates: `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/helper.py:290`.
+
+</details>
+
+<details>
+<summary><code>Formsets</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:153` — For L-FORMSET-PAGE-CONTEXT, capture only the genuine page-owner fallback before Formsets.render flattens
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:153`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:157`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:111`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:112`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:113`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:164`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:171`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/formsets/layout.py:7`.
+
+</details>
+
+<details>
+<summary><code>Formsets.render</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:153` — For L-FORMSET-PAGE-CONTEXT, capture only the genuine page-owner fallback before Formsets.render flattens
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:153`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:111`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/formsets/layout.py:10`.
+
+</details>
+
+<details>
+<summary><code>HomePageTest</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:82` — &lt;read_first&gt;examples/bootstrap5/project/settings.py; examples/bootstrap5/pytest.ini; examples/bootstrap5/test_i18n.py; examples/bootstrap5/project/tests.py (HomePageTest and SystemChecksTest); examples/bootstrap5/test_doc_links.py; docs/migrating-1.0.md Form buttons; 06-07-SUMMARY.md; 06-08-SUMMARY.md; 06-VALIDATION.md&lt;/read_first&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:82`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:85`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:245`.
+
+Supplemental exact path/declaration candidates: `examples/bootstrap5/project/tests.py:34`.
+
+</details>
+
+<details>
+<summary><code>HomePageTest.test_every_feature_landing_page_renders</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:85` — For L-EXAMPLE-COVERAGE, run the separate example-consumer gate below from examples/bootstrap5 so its pytest.ini selects project.settings: all test_i18n.py cases (including test_demo_pages_render_german and its translated create-submit value), HomePageTest.test_every_feature_landing_page_renders, and all test_doc_links.py reference/backlink cases. Record their collected counts and results after 06-08 enables form=both. Root pytest tests does not include this example tree; SystemChecksTest and test_docs_sync alone cannot substitute. Retain those two existing gates as independent evidence. A failure is an acceptance blocker to route to the producing implementation/docs plan, not grounds to remove or relax the affected assertion.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:85`.
+
+Supplemental exact path/declaration candidates: `examples/bootstrap5/project/tests.py:45`.
+
+</details>
+
+<details>
+<summary><code>InclusionNode.context</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:113` — Test the actual outer crispy Layout(Formsets()) -&gt; formsets.html -&gt; cv_x_formset -&gt; formset.html -&gt; row crispy path, plus a recursive child formset and standalone cv_x_formset entry. Direct inclusion of formset.html with injected view is not acceptance evidence. For ownerless/current-helper-None rows assert genuine page P survives both context.flatten and InclusionNode.context.new, including P distinct from enclosing helper H. Test no page/ordinary/falsey page and row/helper overrides, two independent formsets with different pages, and repeated/exceptional renders with unchanged caller Context. Assert no warnings for D-12 and no mutation after repeated/interleaved renders.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:113`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>InclusionNode.context.new</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:113` — Test the actual outer crispy Layout(Formsets()) -&gt; formsets.html -&gt; cv_x_formset -&gt; formset.html -&gt; row crispy path, plus a recursive child formset and standalone cv_x_formset entry. Direct inclusion of formset.html with injected view is not acceptance evidence. For ownerless/current-helper-None rows assert genuine page P survives both context.flatten and InclusionNode.context.new, including P distinct from enclosing helper H. Test no page/ordinary/falsey page and row/helper overrides, two independent formsets with different pages, and repeated/exceptional renders with unchanged caller Context. Assert no warnings for D-12 and no mutation after repeated/interleaved renders.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:113`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>InclusionNode.render</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:98` — &lt;read_first&gt;06-SPEC.md ownership and import-safety contracts; installed crispy BasicNode.get_render/get_response_dict, FormActions.render and FormHelper.get_attributes; src/crud_views/lib/formsets/layout.py; src/crud_views/templatetags/crud_views_formsets.py; src/crud_views/templates/crud_views/formsets/formsets.html; src/crud_views/templates/crud_views/formsets/formset.html; Django InclusionNode.render; tests/test1/test_crispy_buttons.py; tests/test1/test_import_safety.py&lt;/read_first&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:98`.
+
+Supplemental exact path/declaration candidates: `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/django/template/library.py:355`.
+
+</details>
+
+<details>
+<summary><code>KINDS</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:106` — Branch cv_button_data early for form before action URL/modal derivation; retain existing action behavior and LEAF_KEYS. For M-FORM-DATA-KIND, keep the existing third argument&#x27;s signature/default and KINDS validation, then require kind=&#x27;action&#x27; for the form location before entering the form branch. Omitted and explicit &#x27;action&#x27; calls are equivalent; &#x27;menu-item&#x27; and unknown values raise ValueError regardless of CRUD_VIEWS_STRICT. This argument is the existing rendering category, not a form semantic kind: only cv_key selects FORM_KINDS, and passing &#x27;submit&#x27; as the third argument also raises. In test_button_data.py cover these cases for every valid form cv_key and retain context/list/card action/menu-item positive and unknown-kind negative cases. Introduce FORM_LEAF_KEYS for the exact spec contract. Validate cv_key against FORM_KINDS and cv_type against submit/button/reset; invalid semantic key/type raises ValueError independently of the third argument. Explicitly reject non-form and unknown slot kinds when rendering through the new layout leaf; preserve arbitrary slot handling on legacy helper.inputs without constructor-time rejection or warnings (M-SLOT, D-01/D-02/D-13). Cover formset:control and form:unknown as rejected layout slots and retained legacy input cases; 06-08 records this layout-only Breaking change. Missing or None textual values normalize to empty text without coercing other falsey data such as numeric zero to empty. Preserve valid empty labels without manufacturing text.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:106`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/pipeline.py:12`, `src/crud_views/lib/assets.py:40`, `src/crud_views/lib/view/button_data.py:14`.
+
+</details>
+
+<details>
+<summary><code>LABEL_MODE_DEFAULTS</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:102` — Update test_label_mode.py and test_button_data.py location/default assertions in this producing task, preserving set(LABEL_MODE_DEFAULTS) == LOCATIONS, before running the tracer shard.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:102`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:103`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/view/label_mode.py:23`.
+
+</details>
+
+<details>
+<summary><code>LEAF_KEYS</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:118` — 06-02 through 06-06. Set separate FORM_LEAF_KEYS, preserving LEAF_KEYS; define type/name/value/id/key,
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:118`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:106`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/view/button_data.py:16`.
+
+</details>
+
+<details>
+<summary><code>LOCATIONS</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:102` — Update test_label_mode.py and test_button_data.py location/default assertions in this producing task, preserving set(LABEL_MODE_DEFAULTS) == LOCATIONS, before running the tracer shard.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:102`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:103`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:36`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:37`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:93`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:95`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:131`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:133`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:175`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:187`.
+
+Supplemental exact path/declaration candidates: `tests/test1/test_button_data.py:9`, `src/crud_views/lib/view/button_data.py:12`.
+
+</details>
+
+<details>
+<summary><code>Layout</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:174` — and its prepared Layout truthy before crispy evaluates `if helper and helper.layout`. FormHelper inherits
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:174`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:175`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:176`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:182`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:113`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:28`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:84`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:85`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:105`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:110`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:132`.
+
+Supplemental exact path/declaration candidates: `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/layout.py:108`.
+
+</details>
+
+<details>
+<summary><code>ListViewFilterFormHelper</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:176` — ListViewFilterFormHelper.__bool__ returning True plus the private truthy prepared Layout; retain ordinary
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:176`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:68`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:84`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:85`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:104`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:105`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/views/list.py:57`.
+
+</details>
+
+<details>
+<summary><code>ListViewFilterFormHelper.__bool__</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:176` — ListViewFilterFormHelper.__bool__ returning True plus the private truthy prepared Layout; retain ordinary
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:176`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:84`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>ListViewFilterFormHelper.get_attributes</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-05-PLAN.md:85` — For M-EMPTY-REPLACEMENT, prepare the current layout in a ListViewFilterFormHelper.get_attributes override before delegating to super: BasicNode.get_response_dict calls this method before get_render evaluates helper truthiness followed by layout truthiness. Detect a caller replacement by identity against the prepared instance, deep-copy it, and normalize an explicitly empty Layout to a private truthy instance layout preserving its empty field selection; appending actions remains render_layout&#x27;s job. Track the genuine no-layout/default-fields case separately so an explicit Layout() never resurrects constructor or inferred fields. The same idempotent preparation helper may serve direct render_layout calls, but replacement detection solely inside render_layout is insufficient. Repeated get_attributes calls must not replace a prepared layout or append actions. Preserve selected nested/custom layout nodes and order while isolating them, and tie exactly-once state to the prepared replacement identity, not a helper lifetime flag. This stays inside the package helper; no crispy monkeypatch, global template override or caller constructor change is involved.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-05-PLAN.md:85`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>ListViewFilterFormHelper.get_form_actions</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-05-PLAN.md:68` — NEW public method: ListViewFilterFormHelper.get_form_actions() -&gt; FormActions | None. NEW __bool__, get_attributes and render_layout overrides with private instance layout/action initialization state. No new test files; only existing phase-owned filter golden changes.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-05-PLAN.md:68`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>ListViewTableFilterMixin</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-05-PLAN.md:84` — Add get_form_actions following the spec. Initialize FormHelper without passing form when preserving declared layout; deep-copy declared layout per instance, and retain helper.form as the identical explicit form argument when supplied, preserving upstream association without rebuilding its fields (M-HELPER-STATE). Make ListViewFilterFormHelper.__bool__ return True independently of its inherited __len__, AND keep a truthy prepared instance layout before crispy dispatch even for no-layout or None actions (private Layout subclass __bool__ returning True). Both terms of `if helper and helper.layout` must pass; a layout-only fix is insufficient. Preserve len(helper) as the actual layout field count, use identity/is-None checks for owner resolution, and do not alter upstream or unrelated helper classes. All new lifecycle/owner state uses underscore-prefixed attributes so get_attributes does not publish it. Populate no-layout fields from the actual form at render_layout before appending the action group. Preserve the helper&#x27;s configured layout field order. Build Apply/Reset as package adapters with form:filter-submit/form:filter-reset and original IDs, append exactly once to the isolated layout. Keep Hidden controls on inputs with current GET naming/value logic. During render_layout push the actual helper owner under a private context key so adapters need not inspect a fresh form.helper property; restore context afterward. Keep ListViewTableFilterMixin construction unchanged.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-05-PLAN.md:84`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/views/mixins.py:299`.
+
+</details>
+
+<details>
+<summary><code>MIGRATING_MD</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:118` — &lt;read_first&gt;CHANGELOG.md; docs/migrating-1.0.md (Step zero E108 paragraph and migration sections); tests/test1/test_label_mode_docs.py (_section, MIGRATING_MD and existing diagnostics guards); examples/bootstrap5/project/settings.py; examples/bootstrap5/test_docs_sync.py&lt;/read_first&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:118`.
+
+Supplemental exact path/declaration candidates: `tests/test1/test_label_mode_docs.py:20`.
+
+</details>
+
+<details>
+<summary><code>PATH</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:107` — Node directory to PATH, uses the selected Node to assert process.execPath/version and unchanged lock hash,
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:107`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>ROADMAP.md</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:300` — | H-MAIN | Resolved by explicit user decision D-18 after cycle 1: verify completed Phase 1/2 contracts on the executing working branch, recording HEAD and test evidence before the spec. ROADMAP.md and CONTEXT.md now carry this requirement. No claim that main changed; no merge or branch switch. Dependency verification, spec-first and baseline-first gates remain. |
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:300`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>SafeData</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:124` — Normalize text to a plain str that has no SafeData trust marker before exactly one Django escaping boundary;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:124`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:107`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>SafeString</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:41` — - &quot;D-15: Empty, Unicode, lazy, SafeString and template-looking values remain exact literal DOM text and values; none evaluates template syntax or creates injected nodes/attributes.&quot;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:41`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:129`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>SubmitEvent</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-07-PLAN.md:27` — - &quot;The native SubmitEvent.submitter and FormData contract is tested on exact locked JS packages under a compatible isolated runtime, without hiding failure through mocks/polyfills.&quot;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-07-PLAN.md:27`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:36`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:73`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:80`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>SubmitEvent.submitter</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-07-PLAN.md:27` — - &quot;The native SubmitEvent.submitter and FormData contract is tested on exact locked JS packages under a compatible isolated runtime, without hiding failure through mocks/polyfills.&quot;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-07-PLAN.md:27`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:73`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>SystemChecksTest</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:82` — &lt;read_first&gt;examples/bootstrap5/project/settings.py; examples/bootstrap5/pytest.ini; examples/bootstrap5/test_i18n.py; examples/bootstrap5/project/tests.py (HomePageTest and SystemChecksTest); examples/bootstrap5/test_doc_links.py; docs/migrating-1.0.md Form buttons; 06-07-SUMMARY.md; 06-08-SUMMARY.md; 06-VALIDATION.md&lt;/read_first&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:82`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:85`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:237`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:256`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:271`.
+
+Supplemental exact path/declaration candidates: `examples/bootstrap5/project/tests.py:97`.
+
+</details>
+
+<details>
+<summary><code>TemplateNameMixin</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:125` — &lt;read_first&gt;The spec literal/attribute rules; crispy BaseInput and TemplateNameMixin in the declared-floor environment; tests/test1/test_button_leaves.py&lt;/read_first&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:125`.
+
+Supplemental exact path/declaration candidates: `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/layout.py:18`.
+
+</details>
+
+<details>
+<summary><code>VARIANT_LOCATIONS</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:92` — VARIANT_LOCATIONS. Before authoring the spec, run .venv/bin/pytest tests/test1/test_label_mode.py
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:92`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:103`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/button_classes.py:209`.
+
+</details>
+
+<details>
+<summary><code>ValueError</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:122` — and unknown values raise ValueError in both strict and non-strict modes. cv_key alone selects the finite
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:122`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:38`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:39`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:97`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:98`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:104`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:106`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:27`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:120`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:122`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:120`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:121`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>ViewSet</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:25` — - &quot;D-13: Form mode maps select view, else ViewSet, else setting as whole maps; an empty selected map and missing kind fall directly to the live form floor.&quot;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:25`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:69`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:91`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:83`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:90`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:97`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:89`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/viewset/__init__.py:45`.
+
+</details>
+
+<details>
+<summary><code>ViewSet.form_actions_label_mode</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:69` — NEW fields: CrudViewsSettings.form_actions_label_mode (CRUD_VIEWS_FORM_ACTIONS_LABEL_MODE), ViewSet.form_actions_label_mode, CrudView.cv_form_actions_label_mode. NEW public resolver: CrudView.cv_get_form_actions_label_mode(). Existing cv_get_action_label_mode gains location=&#x27;form&#x27;. Private owner-recovery helpers and a scoped page-owner transport key across Formsets/cv_x_formset are internal, not promised public names or leaf-context keys.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:69`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>WorkflowForm.submit_icon</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-04-PLAN.md:68` — EXISTING prerequisites from 06-02: form:hidden-label and form:icon-host with updated exhaustive keys/count. NEW registry names: save, cancel, filter-reset. NEW form attributes: CrispyFormMixin.submit_icon=&#x27;save&#x27;, CrispyDeleteForm.delete_icon=&#x27;delete&#x27;, WorkflowForm.submit_icon=&#x27;workflow&#x27;. NEW adapter icon= keyword is consumed as rendering configuration, never serialized as an HTML attribute; omission selects kind default while explicit None/empty suppresses it.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-04-PLAN.md:68`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>__bool__</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-05-PLAN.md:68` — NEW public method: ListViewFilterFormHelper.get_form_actions() -&gt; FormActions | None. NEW __bool__, get_attributes and render_layout overrides with private instance layout/action initialization state. No new test files; only existing phase-owned filter golden changes.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-05-PLAN.md:68`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:84`.
+
+Supplemental exact path/declaration candidates: `tests/test1/test_assets.py:132`.
+
+</details>
+
+<details>
+<summary><code>__len__</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:175` — __len__ returning len(layout.fields), so a truthy Layout alone cannot admit an empty helper. Specify a
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:175`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:84`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/pipeline.py:101`, `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/layout.py:38`, `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/helper.py:99`.
+
+</details>
+
+<details>
+<summary><code>_extract_filter_form_region</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:68` — NEW private test helper: _extract_filter_form_region captures the same raw filter-form region before and after migration.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:68`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:246`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:86`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>action_menus</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:36` — - &quot;D-13: Both buttons.md and action_menus.md E108 rows enumerate exactly the current LOCATIONS, including form, separately from the allowed mode values.&quot;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:36`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:86`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:89`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>action_menus.md</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:36` — - &quot;D-13: Both buttons.md and action_menus.md E108 rows enumerate exactly the current LOCATIONS, including form, separately from the allowed mode values.&quot;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:36`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:86`.
+
+Supplemental exact path/declaration candidates: `docs/reference/action_menus.md:1`.
+
+</details>
+
+<details>
+<summary><code>add_input</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-05-PLAN.md:22` — - &quot;D-01, D-02: Custom add_input controls remain legacy inputs quietly; hidden sort/order/direction inputs keep their current path and values.&quot;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-05-PLAN.md:22`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:106`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:109`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:104`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:120`.
+
+Supplemental exact path/declaration candidates: `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/helper.py:260`.
+
+</details>
+
+<details>
+<summary><code>assumption_delta_decision</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:270` — &lt;assumption_delta_decision&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:270`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>base.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:161` — package initializer and base.py&#x27;s Django auth imports, so new normalizer/owner-recovery dependencies in
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:161`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:108`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:112`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/view/base.py:1`, `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/base.py:1`.
+
+</details>
+
+<details>
+<summary><code>bootstrap5/inputs.html</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:243` — &lt;read_first&gt;tests/test1/test_workflow.py; tests/test1/test_filter.py; tests/test1/app/views.py; src/crud_views/templates/crud_views/tags/list_filter.inner.html; installed bootstrap5/inputs.html; .planning/phases/06-form-button-leaf/06-SPEC.md&lt;/read_first&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:243`.
+
+Supplemental exact path/declaration candidates: `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_bootstrap5/templates/bootstrap5/inputs.html:1`.
+
+</details>
+
+<details>
+<summary><code>button.name</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-07-PLAN.md:80` — Extend the existing modal suite using native SubmitEvent and native FormData, real button elements with nested icon/text, multiple submitters, no submitter, confirm=true plus delete=Delete and literal malicious/Unicode values. Assert actual FormData(form, button).get(button.name) and preserved hidden confirmation/CSRF values; sibling submitter fields must be absent. Fetch may be spied to inspect its FormData, but do not replace browser constructors or fake submitter support. Change modal.js only if a demonstrated regression requires it; keep its current error, CSRF and authorization interactions.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-07-PLAN.md:80`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>button_data.LOCATIONS</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:88` — For L-E108-DOC-INVENTORY, update the crud_views.E108 row in the System checks tables of both docs/reference/buttons.md and docs/reference/action_menus.md to enumerate context/list/card/form. Preserve E108&#x27;s error severity, invalid-map/unknown-location/invalid-mode meaning and the separate label/icon/both mode vocabulary. Extend test_label_mode_docs.py using its unique-row helper to extract each E108 row&#x27;s location-list clause and compare its complete set to button_data.LOCATIONS; a form mention elsewhere on the page or a mode token in the row cannot satisfy the guard. The guard must fail when either row omits form or includes an unknown location; retain all existing diagnostic assertions.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:88`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:121`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>button_data.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:83` — NEW template: src/crud_views/templates/crud_views/tags/button/form.html. NEW symbol: FORM_LEAF_KEYS in button_data.py. NEW normalized fields: cv_type, cv_name, cv_value, cv_id, cancel-only cv_cancel_url, cv_css_class, cv_flat_attrs; existing label/icon fields are reused. NEW class utility defaults: form:hidden-label and form:icon-host, with exhaustive key/count documentation updated in their producing task. Private helper names are implementation-local. No new external package.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:83`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/view/button_data.py:1`.
+
+</details>
+
+<details>
+<summary><code>buttons.md</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:105` — Add form:hidden-label=&#x27;visually-hidden&#x27; and form:icon-host now, before advertising icon/host rendering (H-EARLY-UTILITIES, D-14). Update test_button_classes.py&#x27;s exhaustive EXPECTED_KEYS, the measured count (71 to 73 on the reviewed tree), and utility-slot parametrization in this same producing task (H-KEYSET). Update buttons.md&#x27;s measured count and complete utility rows/arithmetic, including five icon-host keys. Preserve finite FORM_KINDS/VARIANT_LOCATIONS; a utility key never accepts a mode suffix. Test hidden-label/title/form-tooltip and host class behavior with an already registered icon; new semantic icon names/hooks remain 06-04 work.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:105`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:36`.
+
+Supplemental exact path/declaration candidates: `docs/reference/buttons.md:1`.
+
+</details>
+
+<details>
+<summary><code>check_viewsets</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:29` — - &quot;Empty and non-ASCII invalid keys/values yield deterministic diagnostics; malformed floor/map errors survive check_viewsets and are never hidden by W292.&quot;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:29`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:81`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:91`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/checks.py:20`.
+
+</details>
+
+<details>
+<summary><code>context.flatten</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:113` — Test the actual outer crispy Layout(Formsets()) -&gt; formsets.html -&gt; cv_x_formset -&gt; formset.html -&gt; row crispy path, plus a recursive child formset and standalone cv_x_formset entry. Direct inclusion of formset.html with injected view is not acceptance evidence. For ownerless/current-helper-None rows assert genuine page P survives both context.flatten and InclusionNode.context.new, including P distinct from enclosing helper H. Test no page/ordinary/falsey page and row/helper overrides, two independent formsets with different pages, and repeated/exceptional renders with unchanged caller Context. Assert no warnings for D-12 and no mutation after repeated/interleaved renders.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:113`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>context.push</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:143` — helper. Package filter helper render_layout supplies a private helper-owner context entry using context.push
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:143`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>crispy_floor</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-07-PLAN.md:65` — NEW nox session: crispy_floor, Python 3.12 with Django 4.2 and 6.0 variants and exact crispy 2.0/bootstrap5 2023.10 pins. Existing JS source files are conditional bug-fix ownership only; leave them byte-identical if the new regression tests pass. Runtime prerequisites: 06-01 task 1 creates 06-js-verify.sh and 06-JS-RUNTIME.json before per-wave JS sampling; every JS command below reasserts that selected runtime and exact lock-backed environment, including in fresh shells.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-07-PLAN.md:65`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:115`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:118`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:157`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>crud_views</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:160` — import that exposes WorkflowForm must remain importable. Importing crud_views.lib.view.* executes the view
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:160`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:104`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:108`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:112`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:88`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:121`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>crud_views.E108</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:88` — For L-E108-DOC-INVENTORY, update the crud_views.E108 row in the System checks tables of both docs/reference/buttons.md and docs/reference/action_menus.md to enumerate context/list/card/form. Preserve E108&#x27;s error severity, invalid-map/unknown-location/invalid-mode meaning and the separate label/icon/both mode vocabulary. Extend test_label_mode_docs.py using its unique-row helper to extract each E108 row&#x27;s location-list clause and compare its complete set to button_data.LOCATIONS; a form mention elsewhere on the page or a mode token in the row cannot satisfy the guard. The guard must fail when either row omits form or includes an unknown location; retain all existing diagnostic assertions.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:88`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:121`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>crud_views.lib.view</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:160` — import that exposes WorkflowForm must remain importable. Importing crud_views.lib.view.* executes the view
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:160`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:108`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:112`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>crud_views_formsets.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:162` — crispy/buttons.py and crud_views_formsets.py must be deferred to render()/cv_x_formset() call time; apply
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:162`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:112`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/templatetags/crud_views_formsets.py:1`.
+
+</details>
+
+<details>
+<summary><code>crud_views_settings</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:168` — settings.py is initialized and the existing crud_views_settings singleton serves map reads, like context/list.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:168`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:80`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:84`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:85`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:87`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/settings.py:320`.
+
+</details>
+
+<details>
+<summary><code>css_class</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:132` — otherwise extra id wins over generated id; class-table classes then css_class then extra class are appended
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:132`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/crispy/table.py:5`, `src/crud_views/lib/crispy/table.py:9`, `src/crud_views/lib/crispy/table.py:13`, `src/crud_views/lib/crispy/table.py:17`, `src/crud_views/lib/crispy/table.py:21`, `src/crud_views/lib/crispy/table.py:25`, `src/crud_views/lib/crispy/table.py:29`, `src/crud_views/lib/crispy/table.py:33`, `src/crud_views/lib/crispy/table.py:37`, `src/crud_views/lib/crispy/table.py:41`, `src/crud_views/lib/crispy/table.py:45`, `src/crud_views/lib/crispy/table.py:49`, `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/bootstrap.py:599`, `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/bootstrap.py:714`, `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/bootstrap.py:949`, `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/layout.py:732`, `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/templatetags/crispy_forms_field.py:61`, `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/templatetags/crispy_forms_field.py:103`, `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/templatetags/crispy_forms_field.py:108`.
+
+</details>
+
+<details>
+<summary><code>css_id</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:131` — css_id wins over extra id,
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:131`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>cv_access</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:104` — For L-ACTION-TAG-FORM-ROUTING, add an explicit location == &#x27;form&#x27; ValueError guard at the start of cv_button in src/crud_views/templatetags/crud_views.py, before cv_resolve_action, normalization or _BUTTON_LEAVES selection; the error identifies cv_button and the unsupported form location. Preserve all existing context/list/card visibility, action/menu-item selection and unknown-location behavior. Do not route the tag to the form leaf or add cv_tag to FORM_LEAF_KEYS. In test_button_classes_templates.py render the real {% load crud_views %}{% cv_button &quot;form&quot; %} tag with cv_access=True and valid form cv_key/cv_type/name/value fields, so a hidden-action shortcut or invalid form data cannot satisfy rejection. Cover omitted/default and explicit action/menu-item kinds under strict and non-strict settings; also reject form for empty/hidden contexts. Spy on normalization/leaf dispatch to prove neither is reached for form. Retain real-tag positive context/list/card action/menu-item and hidden-action cases, and a positive direct cv_button_data(ctx, &#x27;form&#x27;) assertion using the valid form context. The real crispy tracer continues to prove its independent form-leaf route (D-13/D-14).
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:104`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>cv_button</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:39` — - &quot;The action-only cv_button tag rejects location=&#x27;form&#x27; with ValueError before dispatch; context/list/card rendering, direct form normalization and crispy form-leaf rendering retain their separate contracts.&quot;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:39`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:90`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:98`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:104`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:198`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/templatetags/crud_views.py:200`.
+
+</details>
+
+<details>
+<summary><code>cv_button_class</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:107` — Implement adapter render without calling BaseInput.render: retain raw value and kwargs, normalize per spec, render the selected leaf through a scoped context copy. Strip inherited input aliases from the template context, never expose the adapter object. Normalize SafeData and lazy values at render time to ordinary strings then use Django autoescaping once; serialized extra attrs are escaped once separately. Preserve constructor signature, slot-selected semantic kind, upstream generated IDs and legacy field_classes/flat_attrs for helper.inputs. Do not infer kind from the submitted name. The leaf uses cv_button_class form/cv_key/cv_label_mode, appends cv_css_class and host classes, and renders the three bodies with cancel URL only for cancel. Keep normalizer/icon behavior extensible for 06-04 rather than hardcoding a temporary floor. Update existing input-only assertions only where layout buttons changed; filter helper inputs remain inputs until 06-05.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:107`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:83`.
+
+Supplemental exact path/declaration candidates: `src/crud_views_object_detail/templatetags/crud_views_object_detail.py:108`, `src/crud_views/templatetags/crud_views.py:525`.
+
+</details>
+
+<details>
+<summary><code>cv_button_data</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:120` — For M-FORM-DATA-KIND, preserve cv_button_data&#x27;s signature and define its third kind argument separately
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:120`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:37`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:104`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:106`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:108`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:122`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/view/button_data.py:52`.
+
+</details>
+
+<details>
+<summary><code>cv_cancel_url</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:83` — NEW template: src/crud_views/templates/crud_views/tags/button/form.html. NEW symbol: FORM_LEAF_KEYS in button_data.py. NEW normalized fields: cv_type, cv_name, cv_value, cv_id, cancel-only cv_cancel_url, cv_css_class, cv_flat_attrs; existing label/icon fields are reused. NEW class utility defaults: form:hidden-label and form:icon-host, with exhaustive key/count documentation updated in their producing task. Private helper names are implementation-local. No new external package.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:83`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>cv_css_class</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:119` — literal strings, cancel-only URL, mode/icon fields, cv_css_class suffix and cv_flat_attrs serialization.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:119`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:83`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:107`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>cv_first_inline_keys</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:43` — via: cv_first_inline_keys selects one map
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:43`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:75`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:84`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/view/base.py:263`.
+
+</details>
+
+<details>
+<summary><code>cv_flat_attrs</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:119` — literal strings, cancel-only URL, mode/icon fields, cv_css_class suffix and cv_flat_attrs serialization.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:119`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:83`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>cv_form_actions_label_mode</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:86` — - Form-specific messages name cv_form_actions_label_mode, finite form kinds and the form floor; existing context/list message text remains unchanged.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:86`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:89`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:90`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>cv_form_icon_mode_checks</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:71` — NEW test file: tests/test1/test_form_button_checks.py. NEW private/static form icon checker in view/buttons.py (suggested cv_form_icon_mode_checks). No new check IDs. Finite form contract tests live in this file or existing test_button_data.py read-only coverage; no new generic diagnostic framework.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:71`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>cv_get_action_label_mode</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:69` — NEW fields: CrudViewsSettings.form_actions_label_mode (CRUD_VIEWS_FORM_ACTIONS_LABEL_MODE), ViewSet.form_actions_label_mode, CrudView.cv_form_actions_label_mode. NEW public resolver: CrudView.cv_get_form_actions_label_mode(). Existing cv_get_action_label_mode gains location=&#x27;form&#x27;. Private owner-recovery helpers and a scoped page-owner transport key across Formsets/cv_x_formset are internal, not promised public names or leaf-context keys.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:69`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:75`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:84`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/view/base.py:299`.
+
+</details>
+
+<details>
+<summary><code>cv_get_form_actions_label_mode</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:84` — Add the three named map fields using existing declaration/validator patterns. For M-SETTINGS-LIFECYCLE, declare CrudViewsSettings.form_actions_label_mode with from_settings(&#x27;CRUD_VIEWS_FORM_ACTIONS_LABEL_MODE&#x27;, default={}), matching the context/list maps: Django configuration is captured at module/class initialization and the existing crud_views_settings singleton supplies runtime map lookups. There is no setting_changed refresh mechanism to preserve or add. Keep the separate default_label_mode(&#x27;form&#x27;) floor lazy per D-13; do not convert other settings or maps to lazy access or reload the settings module in tests. Add cv_get_form_actions_label_mode via cv_first_inline_keys and form support to cv_get_action_label_mode using key membership followed by default_label_mode(&#x27;form&#x27;). No target-view scalar or context-button policy applies to form kinds. Route the adapter&#x27;s selected owner through this public seam, honoring subclasses; standalone/ordinary owners use the singleton&#x27;s current map then form floor. Invalid selected values use shared strict/log fallback rather than membership crashes; full diagnostics follow 06-06.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:84`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>cv_icon</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:120` — Resolve form mode through the public resolver; catch ValueError only around mode resolution so E108/E210/E211 survive strict checking. For M-REGISTRY-OFF and M-ICON-AVAILABILITY, use the existing icons.resolve_icon(value) in both static inspection and the form normalizer: a None result means an absent/disabled semantic mapping, including explicit None/empty and a semantic name mapped by CRUD_VIEWS_ICONS to None/empty. Test each with known default submit/delete/filter controls. For L-UNREGISTERED-FORM-ICON, semantic resolution alone is insufficient: a nonempty prefix must also have a dict-valued library entry and a usable registered renderer. Add a private side-effect-free availability helper in icons.py reusing resolve_icon/get_libraries/_get_renderers metadata; resolving a renderer callable is allowed, invoking it is not. Share this predicate between form static checks and the normalizer. A resolved empty prefix is the existing raw CSS-class path and remains available. A direct submit_icon=&#x27;unknown:save&#x27; must trigger W292 for static icon-only controls and the same strict ValueError/non-strict logged label fallback as disabled semantic icons at runtime. Registry W352 only visits table entries, so do not claim it covers direct per-form values. Preserve existing registry diagnostics for malformed libraries and named entries; do not change their IDs or silently suppress them. Never call render_icon or a custom renderer to probe availability. Leave actual inline rendering to the leaf&#x27;s one cv_icon call; no rendered-markup cache or extra public leaf key is needed. A custom renderer&#x27;s returned markup remains its existing renderer contract, not a second missing-mapping test. Preserve icon_host_keys/resolve_icon_name_class for placement: a valid host icon is available even though the leaf emits no inline element, and a None/empty form:icon-host class override remains the existing explicit placement opt-out rather than a missing semantic icon.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:120`.
+
+Supplemental exact path/declaration candidates: `src/crud_views_object_detail/templatetags/crud_views_object_detail.py:102`, `src/crud_views/templatetags/crud_views.py:513`.
+
+</details>
+
+<details>
+<summary><code>cv_icon_inline</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:123` — In test_form_button_checks.py register a counting custom inline renderer using existing registry override fixtures and render a real package Submit in icon, both and label modes. Assert one call and one emitted marker for each icon/both render, zero calls for label/static checks, and fresh output for a second render; disabled semantic mappings make zero renderer calls and still raise/log-and-label as required. Add real host-library form renders under strict and non-strict settings with default and None/empty form:icon-host overrides: assert expected host classes or their intentional absence, cv_icon_inline=False, no inline element/render invocation and no false W292/log/exception. Separately disable the host&#x27;s semantic mapping and require the same strict/non-strict missing-icon behavior as inline mappings. Add a direct per-form unknown-prefix case (absent from the semantic table), and a registered prefix with unusable renderer, in static and custom-hook runtime paths. Assert W292/strict/logged accessible label fallback and zero renderer calls; retain raw unprefixed class, valid inline custom renderer and host opt-out controls as positive cases. A custom renderer that is callable but returns empty markup remains the explicitly documented renderer contract, not a reason to invoke it twice. These cases preserve D-14 host semantics while proving D-16 diagnostics without duplicate side effects.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:123`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>cv_icon_mode_checks</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:104` — &lt;read_first&gt;src/crud_views/lib/view/buttons.py (cv_icon_mode_checks); src/crud_views/lib/crispy/form.py; src/crud_views/lib/views/list.py; src/crud_views/lib/view/button_data.py; src/crud_views/lib/icons.py (resolve_icon/render_icon/resolve_icon_name_class/font_renderer/_library_check_messages); tests/test1/test_icons_checks.py; tests/test1/test_icon_host_leaves.py; 06-SPEC.md static-check reach&lt;/read_first&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:104`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/view/buttons.py:387`.
+
+</details>
+
+<details>
+<summary><code>cv_id</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:83` — NEW template: src/crud_views/templates/crud_views/tags/button/form.html. NEW symbol: FORM_LEAF_KEYS in button_data.py. NEW normalized fields: cv_type, cv_name, cv_value, cv_id, cancel-only cv_cancel_url, cv_css_class, cv_flat_attrs; existing label/icon fields are reused. NEW class utility defaults: form:hidden-label and form:icon-host, with exhaustive key/count documentation updated in their producing task. Private helper names are implementation-local. No new external package.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:83`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>cv_key</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:121` — from cv_key: location=&#x27;form&#x27; accepts omitted/default or explicit kind=&#x27;action&#x27; only; kind=&#x27;menu-item&#x27;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:121`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:122`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:209`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:331`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:38`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:97`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:106`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:112`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:118`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:185`.
+
+Supplemental exact path/declaration candidates: `src/crud_views_polymorphic/lib/create_select.py:29`, `tests/test1/od/test_object_detail_view.py:17`, `tests/test1/od/test_object_detail_view.py:27`, `tests/test1/od/test_object_detail_view.py:37`, `tests/test1/od/test_object_detail_view.py:54`, `tests/test1/od/test_object_detail_view.py:134`, `tests/test1/od/test_object_detail_view.py:168`, `tests/test1/od/test_object_detail_view.py:180`, `tests/test1/test_detail_view.py:26`, `tests/test1/test_detail_view.py:38`, `tests/test1/test_detail_view.py:73`, `tests/test1/test_detail_view.py:90`, `tests/test1/test_detail_view.py:107`, `tests/test1/test_detail_view.py:124`, `tests/test1/test_detail_view.py:141`, `tests/test1/test_detail_view.py:158`, `tests/test1/test_detail_view.py:175`, `tests/test1/test_detail_view.py:187`, `tests/test1/test_detail_view.py:199`, `tests/test1/test_context_actions_isolation.py:47`, `tests/test1/test_context_actions_isolation.py:68`, `tests/test1/test_cancel_origin.py:204`, `tests/test1/test_workflow.py:541`, `tests/test1/test_workflow.py:554`, `tests/test1/test_workflow.py:568`, `tests/test1/test_workflow.py:587`, `tests/test1/test_workflow.py:611`, `tests/test1/test_workflow.py:635`, `tests/test1/test_icons_checks.py:97`, `tests/test1/test_icons_checks.py:135`, `tests/test1/test_post_object_resolution.py:65`, `examples/bootstrap5/showcase/views.py:122`, `tests/test1/test_backend_only_labels.py:22`, `tests/test1/test_backend_only_labels.py:41`, `tests/test1/test_success_origin.py:206`, `tests/test1/app/resources.py:95`, `tests/test1/app/resources.py:119`, `tests/test1/app/views.py:135`, `tests/test1/app/views.py:151`, `tests/test1/app/views.py:163`, `tests/test1/app/views.py:177`, `tests/test1/app/views.py:209`, `tests/test1/app/views.py:918`, `tests/test1/app/views.py:1099`, `tests/test1/app/views.py:1121`, `src/crud_views_workflow/lib/views.py:24`, `examples/bootstrap5/action_menus/views.py:114`, `examples/bootstrap5/action_menus/views.py:132`, `examples/bootstrap5/resources/views.py:94`, `examples/bootstrap5/resources/views.py:112`, `src/crud_views/lib/view/base.py:67`, `src/crud_views/lib/views/update.py:13`, `src/crud_views/lib/views/card.py:22`, `src/crud_views/lib/views/delete.py:32`, `src/crud_views/lib/views/action_ordered.py:19`, `src/crud_views/lib/views/action_ordered.py:47`, `src/crud_views/lib/views/create.py:13`, `src/crud_views/lib/views/detail.py:10`, `src/crud_views/lib/views/list.py:19`, `src/crud_views/lib/views/child.py:13`, `src/crud_views/lib/views/manage.py:14`.
+
+</details>
+
+<details>
+<summary><code>cv_label_mode_checks</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:89` — Addresses H-DIAGNOSTIC-CONTRACT with an explicit form-only policy: retain context/list cv_label_mode_checks exactly (E211 for any malformed map including invalid values, W291 only on the own view attribute). For the finite form map, deliberately distinguish shape from individual modes so D-16&#x27;s E210 extension has a concrete scope without adding a scalar API: non-dict or non-string keys yield one E211 and stop entry traversal; a string-keyed dict yields one E210 per invalid mode value in insertion order; unknown form keys with valid modes yield W291 on the view&#x27;s own cv_form_actions_label_mode only, naming sorted FORM_KINDS. None and {} are valid. This documented form-specific diagnostic distinction does not alter FORM-11 whole-map resolution semantics. Do not blindly invoke the old helper unchanged or change its behavior for context/list.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:89`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/view/action_menu.py:46`.
+
+</details>
+
+<details>
+<summary><code>cv_name</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:83` — NEW template: src/crud_views/templates/crud_views/tags/button/form.html. NEW symbol: FORM_LEAF_KEYS in button_data.py. NEW normalized fields: cv_type, cv_name, cv_value, cv_id, cancel-only cv_cancel_url, cv_css_class, cv_flat_attrs; existing label/icon fields are reused. NEW class utility defaults: form:hidden-label and form:icon-host, with exhaustive key/count documentation updated in their producing task. Private helper names are implementation-local. No new external package.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:83`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:135`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>cv_resolve_action</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:104` — For L-ACTION-TAG-FORM-ROUTING, add an explicit location == &#x27;form&#x27; ValueError guard at the start of cv_button in src/crud_views/templatetags/crud_views.py, before cv_resolve_action, normalization or _BUTTON_LEAVES selection; the error identifies cv_button and the unsupported form location. Preserve all existing context/list/card visibility, action/menu-item selection and unknown-location behavior. Do not route the tag to the form leaf or add cv_tag to FORM_LEAF_KEYS. In test_button_classes_templates.py render the real {% load crud_views %}{% cv_button &quot;form&quot; %} tag with cv_access=True and valid form cv_key/cv_type/name/value fields, so a hidden-action shortcut or invalid form data cannot satisfy rejection. Cover omitted/default and explicit action/menu-item kinds under strict and non-strict settings; also reject form for empty/hidden contexts. Spy on normalization/leaf dispatch to prove neither is reached for form. Retain real-tag positive context/list/card action/menu-item and hidden-action cases, and a positive direct cv_button_data(ctx, &#x27;form&#x27;) assertion using the valid form context. The real crispy tracer continues to prove its independent form-leaf route (D-13/D-14).
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:104`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/view/visibility.py:1`.
+
+</details>
+
+<details>
+<summary><code>cv_tag</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:104` — For L-ACTION-TAG-FORM-ROUTING, add an explicit location == &#x27;form&#x27; ValueError guard at the start of cv_button in src/crud_views/templatetags/crud_views.py, before cv_resolve_action, normalization or _BUTTON_LEAVES selection; the error identifies cv_button and the unsupported form location. Preserve all existing context/list/card visibility, action/menu-item selection and unknown-location behavior. Do not route the tag to the form leaf or add cv_tag to FORM_LEAF_KEYS. In test_button_classes_templates.py render the real {% load crud_views %}{% cv_button &quot;form&quot; %} tag with cv_access=True and valid form cv_key/cv_type/name/value fields, so a hidden-action shortcut or invalid form data cannot satisfy rejection. Cover omitted/default and explicit action/menu-item kinds under strict and non-strict settings; also reject form for empty/hidden contexts. Spy on normalization/leaf dispatch to prove neither is reached for form. Retain real-tag positive context/list/card action/menu-item and hidden-action cases, and a positive direct cv_button_data(ctx, &#x27;form&#x27;) assertion using the valid form context. The real crispy tracer continues to prove its independent form-leaf route (D-13/D-14).
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:104`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>cv_type</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:83` — NEW template: src/crud_views/templates/crud_views/tags/button/form.html. NEW symbol: FORM_LEAF_KEYS in button_data.py. NEW normalized fields: cv_type, cv_name, cv_value, cv_id, cancel-only cv_cancel_url, cv_css_class, cv_flat_attrs; existing label/icon fields are reused. NEW class utility defaults: form:hidden-label and form:icon-host, with exhaustive key/count documentation updated in their producing task. Private helper names are implementation-local. No new external package.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:83`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:106`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>cv_value</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:83` — NEW template: src/crud_views/templates/crud_views/tags/button/form.html. NEW symbol: FORM_LEAF_KEYS in button_data.py. NEW normalized fields: cv_type, cv_name, cv_value, cv_id, cancel-only cv_cancel_url, cv_css_class, cv_flat_attrs; existing label/icon fields are reused. NEW class utility defaults: form:hidden-label and form:icon-host, with exhaustive key/count documentation updated in their producing task. Private helper names are implementation-local. No new external package.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:83`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>cv_view</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:140` — argument&#x27;s cv_view first, never an outer context form; current helper view
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:140`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:152`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:105`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:109`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:110`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/formsets/formsets.py:36`, `src/crud_views/lib/formsets/formsets.py:265`.
+
+</details>
+
+<details>
+<summary><code>cv_x_formset</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:154` — Context, transport it in a private Python context key through cv_x_formset and recursive child inclusions,
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:154`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:157`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:111`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:113`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/templatetags/crud_views_formsets.py:7`.
+
+</details>
+
+<details>
+<summary><code>default_label_mode</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:91` — contracts at that HEAD: default_label_mode with shared lazy defaults and independent FORM_KINDS /
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:91`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:84`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/view/label_mode.py:84`.
+
+</details>
+
+<details>
+<summary><code>delete_icon</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:110` — - Default delete helpers inspect delete_icon/cancel only; disabled inherited submit_icon causes no delete warning, while disabled delete_icon does.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:110`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:118`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>display_form.html</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-05-PLAN.md:111` — For the explicit empty-layout plus None-hook case, assert the helper&#x27;s selected layout stays empty and no action group appears. Preserve the installed pack&#x27;s display_form.html fallback to uni_form.html when form_html is empty; this package-helper fix does not promise suppression of that existing pack-owned field fallback or add a global template override. The default-action case has nonempty layout output and must not restore discarded fields.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-05-PLAN.md:111`.
+
+Supplemental exact path/declaration candidates: `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_bootstrap5/templates/bootstrap5/display_form.html:1`.
+
+</details>
+
+<details>
+<summary><code>django.conf.settings</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:169` — Only the form floor is read lazily from django.conf.settings. Map tests use isolated singleton monkeypatches
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:169`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>django.setup</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:159` — after settings.configure() and before django.setup(), the formset tag and the documented workflow package
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:159`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:40`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:99`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:108`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:31`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:112`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>docs/example</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:34` — - &quot;Documentation recipes render successfully and repeated docs/example checks do not modify generated sources or shared settings.&quot;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:34`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:21`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:211`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>docs/getting_started/tutorial-5-filters-permissions.md</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-05-PLAN.md:99` — &lt;read_first&gt;docs/getting_started/tutorial-5-filters-permissions.md; tests/test1/test_filter.py; tests/test1/test_crispy_buttons.py&lt;/read_first&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-05-PLAN.md:99`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:15`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:101`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:102`.
+
+Supplemental exact path/declaration candidates: `docs/getting_started/tutorial-5-filters-permissions.md:1`.
+
+</details>
+
+<details>
+<summary><code>docs/migrating-1.0.md</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:18` — - docs/migrating-1.0.md
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:18`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:40`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:117`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:118`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:121`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:82`.
+
+Supplemental exact path/declaration candidates: `docs/migrating-1.0.md:1`.
+
+</details>
+
+<details>
+<summary><code>docs/reference/action_menus.md</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:10` — - docs/reference/action_menus.md
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:10`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:47`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:83`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:84`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:88`.
+
+Supplemental exact path/declaration candidates: `docs/reference/action_menus.md:1`.
+
+</details>
+
+<details>
+<summary><code>docs/reference/buttons.md</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:11` — - docs/reference/buttons.md
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:11`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:89`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:8`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:83`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:84`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:88`.
+
+Supplemental exact path/declaration candidates: `docs/reference/buttons.md:1`.
+
+</details>
+
+<details>
+<summary><code>docs/reference/icons.md</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:12` — - docs/reference/icons.md
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:12`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:101`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:102`.
+
+Supplemental exact path/declaration candidates: `docs/reference/icons.md:1`.
+
+</details>
+
+<details>
+<summary><code>docs/reference/javascript.md</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:20` — - docs/reference/javascript.md
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:20`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:117`.
+
+Supplemental exact path/declaration candidates: `docs/reference/javascript.md:1`.
+
+</details>
+
+<details>
+<summary><code>docs/reference/list_view.md</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-05-PLAN.md:74` — &lt;read_first&gt;src/crud_views/lib/views/list.py; src/crud_views/lib/views/mixins.py (get_filterset); installed crispy BasicNode.get_render/get_response_dict and FormHelper.get_attributes; tests/test1/test_filter.py; docs/reference/list_view.md (field-only helper example); 06-SPEC.md in this phase directory&lt;/read_first&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-05-PLAN.md:74`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:14`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:101`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:102`.
+
+Supplemental exact path/declaration candidates: `docs/reference/list_view.md:1`.
+
+</details>
+
+<details>
+<summary><code>docs/reference/settings.md</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:12` — - docs/reference/settings.md
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:12`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:89`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:9`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:48`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:83`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:84`.
+
+Supplemental exact path/declaration candidates: `docs/reference/settings.md:1`.
+
+</details>
+
+<details>
+<summary><code>docs/reference/theme.md</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:13` — - docs/reference/theme.md
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:13`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:50`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:101`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:102`.
+
+Supplemental exact path/declaration candidates: `docs/reference/theme.md:1`.
+
+</details>
+
+<details>
+<summary><code>examples/bootstrap5</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:85` — For L-EXAMPLE-COVERAGE, run the separate example-consumer gate below from examples/bootstrap5 so its pytest.ini selects project.settings: all test_i18n.py cases (including test_demo_pages_render_german and its translated create-submit value), HomePageTest.test_every_feature_landing_page_renders, and all test_doc_links.py reference/backlink cases. Record their collected counts and results after 06-08 enables form=both. Root pytest tests does not include this example tree; SystemChecksTest and test_docs_sync alone cannot substitute. Retain those two existing gates as independent evidence. A failure is an acceptance blocker to route to the producing implementation/docs plan, not grounds to remove or relax the affected assertion.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:85`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:237`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:241`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:245`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>examples/bootstrap5/project/settings.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:19` — - examples/bootstrap5/project/settings.py
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:19`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:44`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:117`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:118`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:82`.
+
+Supplemental exact path/declaration candidates: `examples/bootstrap5/project/settings.py:1`.
+
+</details>
+
+<details>
+<summary><code>examples/bootstrap5/project/tests.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:82` — &lt;read_first&gt;examples/bootstrap5/project/settings.py; examples/bootstrap5/pytest.ini; examples/bootstrap5/test_i18n.py; examples/bootstrap5/project/tests.py (HomePageTest and SystemChecksTest); examples/bootstrap5/test_doc_links.py; docs/migrating-1.0.md Form buttons; 06-07-SUMMARY.md; 06-08-SUMMARY.md; 06-VALIDATION.md&lt;/read_first&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:82`.
+
+Supplemental exact path/declaration candidates: `examples/bootstrap5/project/tests.py:1`.
+
+</details>
+
+<details>
+<summary><code>examples/bootstrap5/pytest.ini</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:82` — &lt;read_first&gt;examples/bootstrap5/project/settings.py; examples/bootstrap5/pytest.ini; examples/bootstrap5/test_i18n.py; examples/bootstrap5/project/tests.py (HomePageTest and SystemChecksTest); examples/bootstrap5/test_doc_links.py; docs/migrating-1.0.md Form buttons; 06-07-SUMMARY.md; 06-08-SUMMARY.md; 06-VALIDATION.md&lt;/read_first&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:82`.
+
+Supplemental exact path/declaration candidates: `examples/bootstrap5/pytest.ini:1`.
+
+</details>
+
+<details>
+<summary><code>examples/bootstrap5/test_doc_links.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:82` — &lt;read_first&gt;examples/bootstrap5/project/settings.py; examples/bootstrap5/pytest.ini; examples/bootstrap5/test_i18n.py; examples/bootstrap5/project/tests.py (HomePageTest and SystemChecksTest); examples/bootstrap5/test_doc_links.py; docs/migrating-1.0.md Form buttons; 06-07-SUMMARY.md; 06-08-SUMMARY.md; 06-VALIDATION.md&lt;/read_first&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:82`.
+
+Supplemental exact path/declaration candidates: `examples/bootstrap5/test_doc_links.py:1`.
+
+</details>
+
+<details>
+<summary><code>examples/bootstrap5/test_docs_sync.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:118` — &lt;read_first&gt;CHANGELOG.md; docs/migrating-1.0.md (Step zero E108 paragraph and migration sections); tests/test1/test_label_mode_docs.py (_section, MIGRATING_MD and existing diagnostics guards); examples/bootstrap5/project/settings.py; examples/bootstrap5/test_docs_sync.py&lt;/read_first&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:118`.
+
+Supplemental exact path/declaration candidates: `examples/bootstrap5/test_docs_sync.py:1`.
+
+</details>
+
+<details>
+<summary><code>examples/bootstrap5/test_i18n.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:82` — &lt;read_first&gt;examples/bootstrap5/project/settings.py; examples/bootstrap5/pytest.ini; examples/bootstrap5/test_i18n.py; examples/bootstrap5/project/tests.py (HomePageTest and SystemChecksTest); examples/bootstrap5/test_doc_links.py; docs/migrating-1.0.md Form buttons; 06-07-SUMMARY.md; 06-08-SUMMARY.md; 06-VALIDATION.md&lt;/read_first&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:82`.
+
+Supplemental exact path/declaration candidates: `examples/bootstrap5/test_i18n.py:1`.
+
+</details>
+
+<details>
+<summary><code>fails_when</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:207` — &lt;fails_when&gt;The current real-render tracer fails, or the spec omits executing-branch dependency evidence or any named contract; passing old tests alone does not discharge the written design.&lt;/fails_when&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:207`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:234`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:263`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:112`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:116`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:140`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:155`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:89`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:117`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:121`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:87`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:108`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:90`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:115`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:95`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:128`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:84`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:104`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:119`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:93`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:109`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:127`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:131`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:73`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:89`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:226`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:230`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:234`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:238`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:242`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:246`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>field_classes</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:136` — Add real crispy custom-template fixtures using an isolated template loader inside the test, including a subclass template and active pack substitution. Implement the spec collision policy for type/name/value/id/class/cancel/title/tooltip and ordinary underscore/hyphen aliases with exactly one final attribute. Preserve boolean True/False and underscore-to-hyphen extra attrs. For label/value/name/id/title and string attrs, test plain strings and marked-safe strings, literal {{ request.user }}, Unicode and lazy translated values under two language contexts. Assert decoded DOM text/value equal the originals and absence of injected attributes/nodes, not just escaped substrings. Ensure no mutation of self.value, shared field_classes, normalized input dicts, or outer Context; retain constructor-visible legacy behavior. An empty explicit template argument retains upstream truthy fallback semantics; valid explicit strings honor D-05–D-08.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:136`.
+
+Supplemental exact path/declaration candidates: `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/bootstrap.py:540`, `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/layout.py:232`, `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/layout.py:323`, `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/layout.py:387`, `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/layout.py:444`, `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/layout.py:508`.
+
+</details>
+
+<details>
+<summary><code>filter.html</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:249` — offsets, never DOM serialization, whitespace normalization or control-only extraction for filter.html.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:249`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:265`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:81`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:86`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/templates/crud_views/snippets/header/filter.html:1`.
+
+</details>
+
+<details>
+<summary><code>font_renderer</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:121` — For L-FONT-ICON-AVAILABILITY, extend that shared side-effect-free availability predicate when the resolved callable is the built-in font_renderer, including the omitted/default renderer setting. Require a nonempty str class template and successfully format it with the resolved icon name, matching font_renderer&#x27;s class-validation semantics without invoking font_renderer or render_icon. Missing, None, empty, non-string or unformattable class configuration is unavailable and must follow the same form icon-only W292/strict/log-and-label policy. Preserve existing E354 IDs/messages/severity from _library_check_messages; the new predicate must not replace or suppress registry diagnostics. Apply the same class validation to host libraries while preserving form:icon-host None/empty placement opt-outs; retain existing standalone-wrapper diagnostics and host placement behavior. Do not impose a font class requirement on arbitrary custom renderers or execute them to inspect their output.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:121`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/icons.py:205`.
+
+</details>
+
+<details>
+<summary><code>form.cv_view</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:100` — - form.cv_view wins over conflicting helper/page owners; missing and None fall through.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:100`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>form.helper</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:109` — Implement the spec&#x27;s owner selection before flattening context. First read cv_view from the actual adapter render form argument, not context[&#x27;form&#x27;] or an outer formset container (M-OWNERS, D-09). Obtain the current helper owner from the package&#x27;s private pushed context entry when present, otherwise identify the current crispy invocation&#x27;s helper overlay from response metadata/provenance and recover the genuine page view through Context.dicts, excluding all enclosing crispy helper response overlays rather than accepting the first lower view. Never use a fixed stack offset or the last dictionary alone: FormActions.render leaves layers behind, and nested crispy row renders create several overlays. Preserve actual object identity and the nearest non-None genuine page owner, including page-level None. Classify response boundaries using installed crispy metadata and demonstrate that classification with stacked invocations; another helper response is not a page layer. A private transported page-owner value, when present from a production inclusion boundary, is authoritative for the page tier, including an explicit None that means no page owner. It never overrides the current row form or current helper tiers. Do not instantiate/re-read form.helper properties to guess the current helper. Explicitly supplied tag helpers must be respected. Once a non-None owner is found, stop even if it lacks crud configuration; never search for a more convenient lower CrudView. Use scoped copies/pushes and restore all context state.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:109`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:84`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>form:cancel</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-04-PLAN.md:101` — - A delete payload with slot=form:cancel uses cancel styling/kind and retains its original name/value.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-04-PLAN.md:101`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>form:hidden-label</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:83` — NEW template: src/crud_views/templates/crud_views/tags/button/form.html. NEW symbol: FORM_LEAF_KEYS in button_data.py. NEW normalized fields: cv_type, cv_name, cv_value, cv_id, cancel-only cv_cancel_url, cv_css_class, cv_flat_attrs; existing label/icon fields are reused. NEW class utility defaults: form:hidden-label and form:icon-host, with exhaustive key/count documentation updated in their producing task. Private helper names are implementation-local. No new external package.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:83`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:105`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:25`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:68`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>form:icon-host</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:83` — NEW template: src/crud_views/templates/crud_views/tags/button/form.html. NEW symbol: FORM_LEAF_KEYS in button_data.py. NEW normalized fields: cv_type, cv_name, cv_value, cv_id, cancel-only cv_cancel_url, cv_css_class, cv_flat_attrs; existing label/icon fields are reused. NEW class utility defaults: form:hidden-label and form:icon-host, with exhaustive key/count documentation updated in their producing task. Private helper names are implementation-local. No new external package.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:83`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:105`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:25`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:68`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:113`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:120`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:121`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:123`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>form:unknown</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:106` — Branch cv_button_data early for form before action URL/modal derivation; retain existing action behavior and LEAF_KEYS. For M-FORM-DATA-KIND, keep the existing third argument&#x27;s signature/default and KINDS validation, then require kind=&#x27;action&#x27; for the form location before entering the form branch. Omitted and explicit &#x27;action&#x27; calls are equivalent; &#x27;menu-item&#x27; and unknown values raise ValueError regardless of CRUD_VIEWS_STRICT. This argument is the existing rendering category, not a form semantic kind: only cv_key selects FORM_KINDS, and passing &#x27;submit&#x27; as the third argument also raises. In test_button_data.py cover these cases for every valid form cv_key and retain context/list/card action/menu-item positive and unknown-kind negative cases. Introduce FORM_LEAF_KEYS for the exact spec contract. Validate cv_key against FORM_KINDS and cv_type against submit/button/reset; invalid semantic key/type raises ValueError independently of the third argument. Explicitly reject non-form and unknown slot kinds when rendering through the new layout leaf; preserve arbitrary slot handling on legacy helper.inputs without constructor-time rejection or warnings (M-SLOT, D-01/D-02/D-13). Cover formset:control and form:unknown as rejected layout slots and retained legacy input cases; 06-08 records this layout-only Breaking change. Missing or None textual values normalize to empty text without coercing other falsey data such as numeric zero to empty. Preserve valid empty labels without manufacturing text.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:106`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>form_actions_label_mode</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:85` — Extend the config suite&#x27;s existing monkeypatch.setattr(crud_views_settings, ...) pattern for form maps, restoring it after each case; construct CrudViewsSettings(form_actions_label_mode=...) explicitly for model-level validation cases. Add real crispy rendering with a monkeypatched singleton submit=&#x27;both&#x27; and an unmapped cancel: a post-import override_settings(CRUD_VIEWS_FORM_ACTIONS_LABEL_MODE={&#x27;submit&#x27;: &#x27;icon&#x27;}) alone leaves submit in both, while nested CRUD_VIEWS_LABEL_MODE_DEFAULTS={&#x27;form&#x27;: &#x27;icon&#x27;} changes only the unmapped cancel and exiting restores its label floor. Keep this distinction explicit in the spec and documentation rather than treating override_settings on the map as a supported hot refresh. The render assertion proves the selected map is connected to the leaf.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:85`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>form_html</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-05-PLAN.md:111` — For the explicit empty-layout plus None-hook case, assert the helper&#x27;s selected layout stays empty and no action group appears. Preserve the installed pack&#x27;s display_form.html fallback to uni_form.html when form_html is empty; this package-helper fix does not promise suppression of that existing pack-owned field fallback or add a global template override. The default-action case has nonempty layout output and must not restore discarded fields.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-05-PLAN.md:111`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>format_html</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:197` — Record accurate dependency findings: Django 6 removed zero-argument format_html calls, not the function;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:197`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:115`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:163`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>formset.html</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:113` — Test the actual outer crispy Layout(Formsets()) -&gt; formsets.html -&gt; cv_x_formset -&gt; formset.html -&gt; row crispy path, plus a recursive child formset and standalone cv_x_formset entry. Direct inclusion of formset.html with injected view is not acceptance evidence. For ownerless/current-helper-None rows assert genuine page P survives both context.flatten and InclusionNode.context.new, including P distinct from enclosing helper H. Test no page/ordinary/falsey page and row/helper overrides, two independent formsets with different pages, and repeated/exceptional renders with unchanged caller Context. Assert no warnings for D-12 and no mutation after repeated/interleaved renders.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:113`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/templates/crud_views/formsets/formset.html:1`.
+
+</details>
+
+<details>
+<summary><code>formsets.html</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:113` — Test the actual outer crispy Layout(Formsets()) -&gt; formsets.html -&gt; cv_x_formset -&gt; formset.html -&gt; row crispy path, plus a recursive child formset and standalone cv_x_formset entry. Direct inclusion of formset.html with injected view is not acceptance evidence. For ownerless/current-helper-None rows assert genuine page P survives both context.flatten and InclusionNode.context.new, including P distinct from enclosing helper H. Test no page/ordinary/falsey page and row/helper overrides, two independent formsets with different pages, and repeated/exceptional renders with unchanged caller Context. Assert no warnings for D-12 and no mutation after repeated/interleaved renders.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:113`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/templates/crud_views/formsets/formsets.html:1`.
+
+</details>
+
+<details>
+<summary><code>from_settings</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:167` — Record M-SETTINGS-LIFECYCLE&#x27;s existing lifecycle explicitly: from_settings captures form-map defaults when
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:167`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:84`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:149`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/settings.py:13`.
+
+</details>
+
+<details>
+<summary><code>get_attributes</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:180` — For M-EMPTY-REPLACEMENT, specify pre-dispatch preparation in the package helper&#x27;s get_attributes override:
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:180`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:68`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:84`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:85`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:110`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:144`.
+
+Supplemental exact path/declaration candidates: `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/helper.py:290`.
+
+</details>
+
+<details>
+<summary><code>get_filterset</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-05-PLAN.md:74` — &lt;read_first&gt;src/crud_views/lib/views/list.py; src/crud_views/lib/views/mixins.py (get_filterset); installed crispy BasicNode.get_render/get_response_dict and FormHelper.get_attributes; tests/test1/test_filter.py; docs/reference/list_view.md (field-only helper example); 06-SPEC.md in this phase directory&lt;/read_first&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-05-PLAN.md:74`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/views/mixins.py:315`.
+
+</details>
+
+<details>
+<summary><code>get_form_actions</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:172` — Define get_form_actions returning FormActions or None; None means no group, empty FormActions is retained.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:172`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:185`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:24`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:84`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:102`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:110`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:145`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:119`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:38`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:104`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:105`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:122`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>get_form_class</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:119` — For filter helpers inspect the configured helper class only when default get_form_actions is inherited. For a concrete dict-valued polymorphic_forms mapping inspect each distinct form class using the same provider rules, without selecting a request/model instance; identify form class and kind in warnings and deduplicate identical repeated class/kind entries locally per traversal (M-POLYMORPHIC). Missing/custom mapping providers skip static inference and get actual polymorphic create/update runtime tests. Never instantiate forms/helpers, call request-dependent get_form_class, or execute custom action hooks during checks.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:119`.
+
+Supplemental exact path/declaration candidates: `src/crud_views_polymorphic/lib/utils.py:64`.
+
+</details>
+
+<details>
+<summary><code>get_render</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-05-PLAN.md:85` — For M-EMPTY-REPLACEMENT, prepare the current layout in a ListViewFilterFormHelper.get_attributes override before delegating to super: BasicNode.get_response_dict calls this method before get_render evaluates helper truthiness followed by layout truthiness. Detect a caller replacement by identity against the prepared instance, deep-copy it, and normalize an explicitly empty Layout to a private truthy instance layout preserving its empty field selection; appending actions remains render_layout&#x27;s job. Track the genuine no-layout/default-fields case separately so an explicit Layout() never resurrects constructor or inferred fields. The same idempotent preparation helper may serve direct render_layout calls, but replacement detection solely inside render_layout is insufficient. Repeated get_attributes calls must not replace a prepared layout or append actions. Preserve selected nested/custom layout nodes and order while isolating them, and tie exactly-once state to the prepared replacement identity, not a helper lifetime flag. This stays inside the package helper; no crispy monkeypatch, global template override or caller constructor change is involved.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-05-PLAN.md:85`.
+
+Supplemental exact path/declaration candidates: `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/templatetags/crispy_forms_tags.py:70`.
+
+</details>
+
+<details>
+<summary><code>get_response_dict</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:181` — crispy get_response_dict calls it before the combined helper-and-layout truthiness guard. Detect and isolate caller layout
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:181`.
+
+Supplemental exact path/declaration candidates: `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/templatetags/crispy_forms_tags.py:137`.
+
+</details>
+
+<details>
+<summary><code>helper.form</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-05-PLAN.md:27` — - &quot;D-03, D-04: A post-construction helper.layout replacement remains the selected layout across renders; explicit form construction retains helper.form identity without replacing fields.&quot;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-05-PLAN.md:27`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:84`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:104`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:109`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:110`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:115`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:130`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>helper.input</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-04-PLAN.md:104` — Select kind from slot, never the name. Add an explicit icon keyword using a sentinel so omission selects the semantic default while None/empty remains an intentional missing icon. Keep legacy helper.input attributes usable. CrispyFormMixin and delete hooks pass submit_icon/delete_icon; workflow supplies its class default. Preserve kwargs override ordering so a custom hook icon or slot wins over the standard hook, then the explicit form icon wins over the adapter kind default. Render each package form against form floor both/icon and preserve the baseline label-mode outputs. Do not change stored values or click handlers. Add sequential/interleaved form instance tests to prove custom icons and current language do not persist into later forms.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-04-PLAN.md:104`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>helper.inputs</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:184` — empty FormActions outcomes through the actual crispy tag. Clearing helper.inputs=[] no longer suppresses stock
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:184`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:95`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:106`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:107`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:173`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:145`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:38`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:105`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:122`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:148`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:161`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>helper.layout</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:174` — and its prepared Layout truthy before crispy evaluates `if helper and helper.layout`. FormHelper inherits
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:174`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:27`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:84`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:104`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:110`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>icon_host_keys</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:191` — for them while preserving raw CSS-class icons, valid host opt-outs and the one-render contract. The leaf owns one inline render, while existing icon_host_keys
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:191`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/view/button_data.py:41`.
+
+</details>
+
+<details>
+<summary><code>icons.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:73` — NEW internal artifact: a private icons.py availability predicate based on existing registry/renderer metadata; no new public API or leaf context field.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:73`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:120`.
+
+Supplemental exact path/declaration candidates: `tests/lib/helper/icons.py:1`, `src/crud_views/lib/icons.py:1`.
+
+</details>
+
+<details>
+<summary><code>icons.resolve_icon</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:188` — For M-ICON-AVAILABILITY, both static checks and runtime missing-icon policy use icons.resolve_icon semantic
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:188`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:120`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>input.value</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:120` — Add one coherent Unreleased Breaking entry and a Form buttons migration section in the same commit, covering input-to-button selectors, literal values replacing template evaluation, and cv_* custom-template context replacing input.value. Include preserved confirmation-only delete flow plus the new clicked submitter field, crispy&#x27;s preserved multi-word name normalization, IDs and custom-template/helper migration links. Explicitly record M-SLOT: new layout rendering rejects non-form/unknown slots with ValueError, while legacy add_input controls keep their current path; migrate layout callers to one of the five finite form kinds and an appropriate form:&lt;kind&gt;:&lt;mode&gt; class override, without adding kinds/variants. Document reserved-attribute collision rules and intentional missing-icon fallback.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:120`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>inputs.html</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-05-PLAN.md:86` — Per L-HIDDEN-WRAPPER and D-01, retain the installed pack&#x27;s hidden-input wrapper and margin after the visible layout actions; this ordering is accepted pack-owned behavior. For L-FILTER-GOLDEN-SCOPE, reuse 06-01&#x27;s _extract_filter_form_region unchanged: filter.html already captures the complete raw form#filter-form slice, including fields, actions and hidden wrapper. Keep its opening/closing boundaries, raw-byte handling and identical GET fixture/query settings; do not extend or narrow extraction during migration. Compare the extractor definition with git show of the recorded filter-baseline commit and record that equality in the summary. Compare hidden names/values independently from the expected action/wrapper ordering change; pin wrapper classes/order and the absence of visible duplicate actions. Update only filter expectations and its phase-owned golden after inspecting the same-region diff against 06-01; 06-08 documents the accepted wrapper behavior rather than globally overriding inputs.html.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-05-PLAN.md:86`.
+
+Supplemental exact path/declaration candidates: `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_bootstrap5/templates/bootstrap5/inputs.html:1`.
+
+</details>
+
+<details>
+<summary><code>javascript.md</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:123` — Per L-HIDDEN-WRAPPER, explain that visible filter actions now precede the pack-owned hidden-input wrapper and its retained margin/classes; hidden values/path are unchanged and no global crispy override is needed. Per L-TOOLTIP-DOC add form to the public data-cv-tooltip location inventory in javascript.md and the tooltip.js header comment, keeping runtime logic untouched because marker-value dispatch is already generic. Set CRUD_VIEWS_LABEL_MODE_DEFAULTS form=both in the example, preserving any other configured locations; show submit/delete/cancel and filter controls per current D-17, which supersedes the older background spec&#x27;s text-only-filter example. Add public icon/helper/settings additions to the appropriate changelog section without splitting the Breaking/migration pair. Keep downstream names out of all newly authored files; detailed generic follow-up goes into 06-09 acceptance.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:123`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:149`.
+
+Supplemental exact path/declaration candidates: `docs/reference/javascript.md:1`.
+
+</details>
+
+<details>
+<summary><code>layout.fields</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:175` — __len__ returning len(layout.fields), so a truthy Layout alone cannot admit an empty helper. Specify a
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:175`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>len(helper)</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:177` — len(helper) field-count semantics and leave third-party helpers untouched. Then render_layout populates
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:177`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:84`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:110`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>list_view.md</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:105` — Address L-SUPPRESSION-MIGRATION explicitly in list_view.md and link the same recipe from the filter tutorial: clearing self.inputs or helper.inputs to [] after construction previously removed stock Apply/Reset because they lived there; after migration it only clears remaining legacy/hidden inputs and no longer suppresses layout actions. Show a ListViewFilterFormHelper subclass overriding get_form_actions(self) to return None, retaining its field layout and base constructor/hidden inputs. Do not infer omission from empty inputs, relocate user controls, or add a compatibility warning. In test_form_button_docs.py execute the documented omission subclass through {% crispy form helper %}, render twice, and assert its fields and named sort/order/direction hidden values remain while Apply/Reset are absent. Add the old clearing-inputs case as a changed-behavior regression: its stock layout actions remain, with no new warning; this demonstrates why the recipe is required rather than claiming backward-compatible suppression. Preserve D-01 through D-04.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:105`.
+
+Supplemental exact path/declaration candidates: `docs/reference/list_view.md:1`.
+
+</details>
+
+<details>
+<summary><code>manage.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:238` — &lt;fails_when&gt;The URLconf does not register feature ViewSets, the registered example reports system-check errors, or the test fails to start; bare manage.py check alone is insufficient.&lt;/fails_when&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:238`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:256`.
+
+Supplemental exact path/declaration candidates: `examples/bootstrap5/manage.py:1`, `src/crud_views/lib/views/manage.py:1`.
+
+</details>
+
+<details>
+<summary><code>modal.js</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-07-PLAN.md:80` — Extend the existing modal suite using native SubmitEvent and native FormData, real button elements with nested icon/text, multiple submitters, no submitter, confirm=true plus delete=Delete and literal malicious/Unicode values. Assert actual FormData(form, button).get(button.name) and preserved hidden confirmation/CSRF values; sibling submitter fields must be absent. Fetch may be spied to inspect its FormData, but do not replace browser constructors or fake submitter support. Change modal.js only if a demonstrated regression requires it; keep its current error, CSRF and authorization interactions.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-07-PLAN.md:80`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/static/crud_views/js/modal.js:1`.
+
+</details>
+
+<details>
+<summary><code>monkeypatch.setattr</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:85` — Extend the config suite&#x27;s existing monkeypatch.setattr(crud_views_settings, ...) pattern for form maps, restoring it after each case; construct CrudViewsSettings(form_actions_label_mode=...) explicitly for model-level validation cases. Add real crispy rendering with a monkeypatched singleton submit=&#x27;both&#x27; and an unmapped cancel: a post-import override_settings(CRUD_VIEWS_FORM_ACTIONS_LABEL_MODE={&#x27;submit&#x27;: &#x27;icon&#x27;}) alone leaves submit in both, while nested CRUD_VIEWS_LABEL_MODE_DEFAULTS={&#x27;form&#x27;: &#x27;icon&#x27;} changes only the unmapped cancel and exiting restores its label floor. Keep this distinction explicit in the spec and documentation rather than treating override_settings on the map as a supported hot refresh. The render assertion proves the selected map is connected to the leaf.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:85`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>must_haves.prohibitions</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:220` — utility, so must_haves.prohibitions is empty. The two unclassified edge assumptions above are retained.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:220`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>must_haves.truths</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:178` — must_haves.truths and behavioral acceptance. The unclassified rows retain their status even though the
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:178`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>node_modules</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:101` — preserving existing node_modules in a uniquely named backup until restoration succeeds. Do not change
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:101`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:79`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>noxfile.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:86` — pyproject.toml; package.json; package-lock.json; noxfile.py.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:86`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:14`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:31`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:37`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:112`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:113`.
+
+Supplemental exact path/declaration candidates: `noxfile.py:1`, `/home/alex/projects/alex/django-crud-views/noxfile.py:1`.
+
+</details>
+
+<details>
+<summary><code>npm-cli.js</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:104` — Create the phase-local 06-JS-RUNTIME.json with absolute Node and npm-cli.js paths, actual Node/npm versions,
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:104`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:110`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>override_settings</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:134` — Retain the location/default assertions updated in task 1 and expand lazy override_settings coverage in test_label_mode.py and test_button_data.py. Existing action contracts and location-independent finite class grammar remain unchanged.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:134`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:80`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:85`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:149`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:91`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:87`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:69`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>package-lock.json</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:86` — pyproject.toml; package.json; package-lock.json; noxfile.py.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:86`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:71`.
+
+Supplemental exact path/declaration candidates: `package-lock.json:1`, `/home/alex/projects/alex/django-crud-views/package-lock.json:1`.
+
+</details>
+
+<details>
+<summary><code>package.json</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:86` — pyproject.toml; package.json; package-lock.json; noxfile.py.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:86`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:71`.
+
+Supplemental exact path/declaration candidates: `package.json:1`, `/home/alex/projects/alex/django-crud-views/package.json:1`.
+
+</details>
+
+<details>
+<summary><code>polymorphic_forms</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:114` — - Concrete polymorphic_forms mappings inspect each supported form class; custom/request-dependent providers are skipped statically and proven by real runtime renders.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:114`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:119`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:146`.
+
+Supplemental exact path/declaration candidates: `src/crud_views_polymorphic/lib/utils.py:35`, `tests/test1/app/views.py:565`, `tests/test1/app/views.py:573`, `examples/bootstrap5/polymorphic_demo/views.py:72`, `examples/bootstrap5/polymorphic_demo/views.py:78`.
+
+</details>
+
+<details>
+<summary><code>project.settings</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:85` — For L-EXAMPLE-COVERAGE, run the separate example-consumer gate below from examples/bootstrap5 so its pytest.ini selects project.settings: all test_i18n.py cases (including test_demo_pages_render_german and its translated create-submit value), HomePageTest.test_every_feature_landing_page_renders, and all test_doc_links.py reference/backlink cases. Record their collected counts and results after 06-08 enables form=both. Root pytest tests does not include this example tree; SystemChecksTest and test_docs_sync alone cannot substitute. Retain those two existing gates as independent evidence. A failure is an acceptance blocker to route to the producing implementation/docs plan, not grounds to remove or relax the affected assertion.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:85`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>project/tests.py::HomePageTest::test_every_feature_landing_page_renders</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:245` — &lt;automated&gt;cd examples/bootstrap5 &amp;&amp; ../../.venv/bin/pytest test_i18n.py project/tests.py::HomePageTest::test_every_feature_landing_page_renders test_doc_links.py -q&lt;/automated&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:245`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>project/tests.py::SystemChecksTest::test_no_check_errors_with_every_viewset_registered</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:237` — &lt;automated&gt;cd examples/bootstrap5 &amp;&amp; ../../.venv/bin/pytest project/tests.py::SystemChecksTest::test_no_check_errors_with_every_viewset_registered -q&lt;/automated&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:237`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>pyproject.toml</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:86` — pyproject.toml; package.json; package-lock.json; noxfile.py.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:86`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:113`.
+
+Supplemental exact path/declaration candidates: `pyproject.toml:1`, `/home/alex/projects/alex/django-crud-views/pyproject.toml:1`.
+
+</details>
+
+<details>
+<summary><code>pytest.ini</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:85` — For L-EXAMPLE-COVERAGE, run the separate example-consumer gate below from examples/bootstrap5 so its pytest.ini selects project.settings: all test_i18n.py cases (including test_demo_pages_render_german and its translated create-submit value), HomePageTest.test_every_feature_landing_page_renders, and all test_doc_links.py reference/backlink cases. Record their collected counts and results after 06-08 enables form=both. Root pytest tests does not include this example tree; SystemChecksTest and test_docs_sync alone cannot substitute. Retain those two existing gates as independent evidence. A failure is an acceptance blocker to route to the producing implementation/docs plan, not grounds to remove or relax the affected assertion.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:85`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>re.escape</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:206` — &lt;automated&gt;.venv/bin/python -c &#x27;from pathlib import Path; import re; p=Path(&quot;.planning/phases/06-form-button-leaf/06-SPEC.md&quot;); s=p.read_text(); headings=(&quot;Prerequisite evidence&quot;, &quot;Form contract&quot;, &quot;Literal text and attributes&quot;, &quot;Template selection&quot;, &quot;Ownership&quot;, &quot;Helper lifecycle&quot;, &quot;Diagnostics and icons&quot;, &quot;Dependency validation&quot;, &quot;Golden history&quot;); sections={h: re.search(r&quot;(?m)^## &quot; + re.escape(h) + r&quot;\n([\s\S]*?)(?=^## |\Z)&quot;, s) for h in headings}; assert all(m and m.group(1).strip() for m in sections.values()), &quot;Missing/empty design section&quot;; assert re.search(r&quot;\b[0-9a-f]{40}\b&quot;, sections[&quot;Prerequisite evidence&quot;].group(1)), &quot;Missing executing-branch HEAD SHA&quot;&#x27; &amp;&amp; .venv/bin/pytest tests/test1/test_crispy_buttons.py tests/test1/test_button_data.py tests/test1/test_label_mode.py tests/test1/test_action_label_mode_config.py tests/test1/test_button_classes.py -q&lt;/automated&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:206`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>re.search</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:206` — &lt;automated&gt;.venv/bin/python -c &#x27;from pathlib import Path; import re; p=Path(&quot;.planning/phases/06-form-button-leaf/06-SPEC.md&quot;); s=p.read_text(); headings=(&quot;Prerequisite evidence&quot;, &quot;Form contract&quot;, &quot;Literal text and attributes&quot;, &quot;Template selection&quot;, &quot;Ownership&quot;, &quot;Helper lifecycle&quot;, &quot;Diagnostics and icons&quot;, &quot;Dependency validation&quot;, &quot;Golden history&quot;); sections={h: re.search(r&quot;(?m)^## &quot; + re.escape(h) + r&quot;\n([\s\S]*?)(?=^## |\Z)&quot;, s) for h in headings}; assert all(m and m.group(1).strip() for m in sections.values()), &quot;Missing/empty design section&quot;; assert re.search(r&quot;\b[0-9a-f]{40}\b&quot;, sections[&quot;Prerequisite evidence&quot;].group(1)), &quot;Missing executing-branch HEAD SHA&quot;&#x27; &amp;&amp; .venv/bin/pytest tests/test1/test_crispy_buttons.py tests/test1/test_button_data.py tests/test1/test_label_mode.py tests/test1/test_action_label_mode_config.py tests/test1/test_button_classes.py -q&lt;/automated&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:206`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>read_bytes</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:222` — tests compare render bytes to read_bytes with no update-on-test behavior. Pin default text, name, value,
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:222`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>render</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:76` — &lt;name&gt;Task 1: Trace the existing form render and record the required design&lt;/name&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:76`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:125`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:128`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:139`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:152`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:156`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:162`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:165`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:191`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:210`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:222`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:294`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:40`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:45`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:54`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:95`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:103`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:104`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:107`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:108`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:135`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:140`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:197`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:28`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:30`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:85`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:103`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:109`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:111`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:136`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:188`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:89`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:98`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:23`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:104`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:105`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:109`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:110`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:108`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:118`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:122`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:123`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:124`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:158`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:201`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:202`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:34`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:86`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:89`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:93`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:100`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:105`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:22`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:111`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:189`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:198`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:200`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:246`.
+
+Supplemental exact path/declaration candidates: `tests/test1/test_icon_host_leaves.py:36`, `examples/bootstrap5/object_detail/views.py:128`, `src/crud_views/templatetags/crud_views.py:333`, `src/crud_views/lib/conditional/layout.py:25`, `src/crud_views/lib/formsets/layout.py:10`, `src/crud_views/lib/formsets/layout.py:26`, `src/crud_views/lib/table/columns.py:23`, `src/crud_views/lib/table/columns.py:38`, `src/crud_views/lib/table/columns.py:63`, `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/bootstrap.py:91`, `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/bootstrap.py:306`, `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/bootstrap.py:356`, `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/bootstrap.py:402`, `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/bootstrap.py:460`, `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/bootstrap.py:558`, `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/bootstrap.py:725`, `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/bootstrap.py:775`, `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/bootstrap.py:888`, `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/bootstrap.py:959`, `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/bootstrap.py:1127`, `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/layout.py:140`, `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/layout.py:190`, `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/layout.py:250`, `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/layout.py:577`, `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/layout.py:655`, `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/layout.py:746`, `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/layout.py:873`, `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/layout.py:938`, `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/templatetags/crispy_forms_field.py:79`, `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/templatetags/crispy_forms_tags.py:199`, `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/templatetags/crispy_forms_utils.py:20`, `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/django/template/library.py:322`, `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/django/template/library.py:355`.
+
+</details>
+
+<details>
+<summary><code>render_icon</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:120` — Resolve form mode through the public resolver; catch ValueError only around mode resolution so E108/E210/E211 survive strict checking. For M-REGISTRY-OFF and M-ICON-AVAILABILITY, use the existing icons.resolve_icon(value) in both static inspection and the form normalizer: a None result means an absent/disabled semantic mapping, including explicit None/empty and a semantic name mapped by CRUD_VIEWS_ICONS to None/empty. Test each with known default submit/delete/filter controls. For L-UNREGISTERED-FORM-ICON, semantic resolution alone is insufficient: a nonempty prefix must also have a dict-valued library entry and a usable registered renderer. Add a private side-effect-free availability helper in icons.py reusing resolve_icon/get_libraries/_get_renderers metadata; resolving a renderer callable is allowed, invoking it is not. Share this predicate between form static checks and the normalizer. A resolved empty prefix is the existing raw CSS-class path and remains available. A direct submit_icon=&#x27;unknown:save&#x27; must trigger W292 for static icon-only controls and the same strict ValueError/non-strict logged label fallback as disabled semantic icons at runtime. Registry W352 only visits table entries, so do not claim it covers direct per-form values. Preserve existing registry diagnostics for malformed libraries and named entries; do not change their IDs or silently suppress them. Never call render_icon or a custom renderer to probe availability. Leave actual inline rendering to the leaf&#x27;s one cv_icon call; no rendered-markup cache or extra public leaf key is needed. A custom renderer&#x27;s returned markup remains its existing renderer contract, not a second missing-mapping test. Preserve icon_host_keys/resolve_icon_name_class for placement: a valid host icon is available even though the leaf emits no inline element, and a None/empty form:icon-host class override remains the existing explicit placement opt-out rather than a missing semantic icon.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:120`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:121`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/icons.py:223`.
+
+</details>
+
+<details>
+<summary><code>render_layout</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:143` — helper. Package filter helper render_layout supplies a private helper-owner context entry using context.push
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:143`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:177`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:183`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:68`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:84`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:85`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:90`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:110`.
+
+Supplemental exact path/declaration candidates: `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_forms/helper.py:266`.
+
+</details>
+
+<details>
+<summary><code>request.user</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:136` — Add real crispy custom-template fixtures using an isolated template loader inside the test, including a subclass template and active pack substitution. Implement the spec collision policy for type/name/value/id/class/cancel/title/tooltip and ordinary underscore/hyphen aliases with exactly one final attribute. Preserve boolean True/False and underscore-to-hyphen extra attrs. For label/value/name/id/title and string attrs, test plain strings and marked-safe strings, literal {{ request.user }}, Unicode and lazy translated values under two language contexts. Assert decoded DOM text/value equal the originals and absence of injected attributes/nodes, not just escaped substrings. Ensure no mutation of self.value, shared field_classes, normalized input dicts, or outer Context; retain constructor-visible legacy behavior. An empty explicit template argument retains upstream truthy fallback semantics; valid explicit strings honor D-05–D-08.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:136`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>resolve_icon</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:158` — | M-ICON-AVAILABILITY | MEDIUM | Task 2 uses source-backed resolve_icon semantic availability in checks and normalization, leaves one inline render to the leaf, and adds invocation-count, host-placement/opt-out and disabled-host strict/log regressions. |
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:158`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/icons.py:187`.
+
+</details>
+
+<details>
+<summary><code>sample_count</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:114` — is part of this plan set. Context estimates use factor 1, sample_count 0 and confidence low from estimate-calibration.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:114`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>self.inputs</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:105` — Address L-SUPPRESSION-MIGRATION explicitly in list_view.md and link the same recipe from the filter tutorial: clearing self.inputs or helper.inputs to [] after construction previously removed stock Apply/Reset because they lived there; after migration it only clears remaining legacy/hidden inputs and no longer suppresses layout actions. Show a ListViewFilterFormHelper subclass overriding get_form_actions(self) to return None, retaining its field layout and base constructor/hidden inputs. Do not infer omission from empty inputs, relocate user controls, or add a compatibility warning. In test_form_button_docs.py execute the documented omission subclass through {% crispy form helper %}, render twice, and assert its fields and named sort/order/direction hidden values remain while Apply/Reset are absent. Add the old clearing-inputs case as a changed-behavior regression: its stock layout actions remain, with no new warning; this demonstrates why the recipe is required rather than claiming backward-compatible suppression. Preserve D-01 through D-04.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:105`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>self.value</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:136` — Add real crispy custom-template fixtures using an isolated template loader inside the test, including a subclass template and active pack substitution. Implement the spec collision policy for type/name/value/id/class/cancel/title/tooltip and ordinary underscore/hyphen aliases with exactly one final attribute. Preserve boolean True/False and underscore-to-hyphen extra attrs. For label/value/name/id/title and string attrs, test plain strings and marked-safe strings, literal {{ request.user }}, Unicode and lazy translated values under two language contexts. Assert decoded DOM text/value equal the originals and absence of injected attributes/nodes, not just escaped substrings. Ensure no mutation of self.value, shared field_classes, normalized input dicts, or outer Context; retain constructor-visible legacy behavior. An empty explicit template argument retains upstream truthy fallback semantics; valid explicit strings honor D-05–D-08.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:136`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>setting_changed</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:170` — or explicit CrudViewsSettings arguments, not an invented setting_changed refresh; 06-03 proves the distinction.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:170`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:84`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>settings.configure</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:159` — after settings.configure() and before django.setup(), the formset tag and the documented workflow package
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:159`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:40`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:99`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:108`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:31`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:112`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>settings.md</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:103` — Start with a failing real-crispy render test. Add form to LOCATIONS and label to LABEL_MODE_DEFAULTS together. In this same change update E108_LOCATIONS in test_action_label_mode_config.py to include form, move the old form-invalid case to the valid defaults parametrization, and retain unknown-location coverage using an actual typo. Update the settings.md defaults table literal and location prose, plus test_label_mode_docs.py&#x27;s matching location assertions; full form-map documentation stays in 06-08. In test_button_classes_templates.py, use VARIANT_LOCATIONS for action/menu sentinel loops, assert its relation to LOCATIONS, and add separate form-leaf sentinel cases over every FORM_KINDS/mode combination with valid form contexts and an existing registered icon. Do not remove coverage or pass form into action leaves. These small direct consumer updates are inseparable from the location/default migration despite exceeding the usual per-task file heuristic (H-LOCATIONS).
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:103`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:86`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:87`.
+
+Supplemental exact path/declaration candidates: `docs/reference/settings.md:1`.
+
+</details>
+
+<details>
+<summary><code>settings.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:168` — settings.py is initialized and the existing crud_views_settings singleton serves map reads, like context/list.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:168`.
+
+Supplemental exact path/declaration candidates: `examples/bootstrap5/project/settings.py:1`, `src/crud_views/lib/settings.py:1`.
+
+</details>
+
+<details>
+<summary><code>src/crud_views/lib/button_classes.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:10` — - src/crud_views/lib/button_classes.py
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:10`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:89`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:32`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:41`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:74`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/button_classes.py:1`.
+
+</details>
+
+<details>
+<summary><code>src/crud_views/lib/crispy/buttons.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:82` — src/crud_views/lib/crispy/buttons.py; src/crud_views/lib/crispy/form.py;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:82`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:17`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:52`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:89`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:90`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:124`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:11`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:35`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:38`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:74`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:97`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:13`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:38`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:95`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:41`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/crispy/buttons.py:1`.
+
+</details>
+
+<details>
+<summary><code>src/crud_views/lib/crispy/form.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:82` — src/crud_views/lib/crispy/buttons.py; src/crud_views/lib/crispy/form.py;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:82`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:11`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:37`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:95`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:96`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:104`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/crispy/form.py:1`.
+
+</details>
+
+<details>
+<summary><code>src/crud_views/lib/formsets/layout.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:14` — - src/crud_views/lib/formsets/layout.py
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:14`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:97`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:98`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/formsets/layout.py:1`.
+
+</details>
+
+<details>
+<summary><code>src/crud_views/lib/icons.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-04-PLAN.md:8` — - src/crud_views/lib/icons.py
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-04-PLAN.md:8`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:30`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:73`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:74`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:14`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:103`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:104`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/icons.py:1`.
+
+</details>
+
+<details>
+<summary><code>src/crud_views/lib/settings.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:8` — - src/crud_views/lib/settings.py
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:8`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:42`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:74`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:75`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:8`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:78`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:79`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/settings.py:1`.
+
+</details>
+
+<details>
+<summary><code>src/crud_views/lib/view/action_menu.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:11` — - src/crud_views/lib/view/action_menu.py
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:11`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:41`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:78`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:79`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/view/action_menu.py:1`.
+
+</details>
+
+<details>
+<summary><code>src/crud_views/lib/view/base.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:10` — - src/crud_views/lib/view/base.py
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:10`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:33`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:39`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:41`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:74`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:75`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:10`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:40`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:78`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:79`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:103`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/view/base.py:1`.
+
+</details>
+
+<details>
+<summary><code>src/crud_views/lib/view/button_data.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:84` — src/crud_views/lib/view/button_data.py; src/crud_views/lib/view/label_mode.py;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:84`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:8`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:49`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:53`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:55`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:89`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:90`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:124`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:15`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:44`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:103`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:104`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/view/button_data.py:1`.
+
+</details>
+
+<details>
+<summary><code>src/crud_views/lib/view/buttons.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:13` — - src/crud_views/lib/view/buttons.py
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:13`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:37`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:43`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:103`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:104`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/view/buttons.py:1`.
+
+</details>
+
+<details>
+<summary><code>src/crud_views/lib/view/label_mode.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:84` — src/crud_views/lib/view/button_data.py; src/crud_views/lib/view/label_mode.py;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:84`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:9`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:89`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:90`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/view/label_mode.py:1`.
+
+</details>
+
+<details>
+<summary><code>src/crud_views/lib/view/visibility.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:90` — &lt;read_first&gt;06-01-SUMMARY.md in this phase directory; src/crud_views/templates/crud_views/tags/button/action.html; src/crud_views/lib/crispy/buttons.py; src/crud_views/lib/view/button_data.py; src/crud_views/lib/view/label_mode.py; src/crud_views/templatetags/crud_views.py (cv_button); src/crud_views/lib/view/visibility.py; tests/test1/test_crispy_buttons.py; tests/test1/test_button_leaves.py; tests/test1/test_import_safety.py&lt;/read_first&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:90`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/view/visibility.py:1`.
+
+</details>
+
+<details>
+<summary><code>src/crud_views/lib/views/list.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:83` — src/crud_views/lib/views/list.py; src/crud_views/lib/views/mixins.py;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:83`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:8`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:32`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:38`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:40`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:73`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:74`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:98`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:104`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/views/list.py:1`.
+
+</details>
+
+<details>
+<summary><code>src/crud_views/lib/views/mixins.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:83` — src/crud_views/lib/views/list.py; src/crud_views/lib/views/mixins.py;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:83`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:37`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:74`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/views/mixins.py:1`.
+
+</details>
+
+<details>
+<summary><code>src/crud_views/lib/viewset/__init__.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:9` — - src/crud_views/lib/viewset/__init__.py
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:9`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:74`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:75`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:9`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:78`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:79`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/viewset/__init__.py:1`.
+
+</details>
+
+<details>
+<summary><code>src/crud_views/static/crud_views/js/list.filter.js</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-07-PLAN.md:13` — - src/crud_views/static/crud_views/js/list.filter.js
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-07-PLAN.md:13`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:92`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:93`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/static/crud_views/js/list.filter.js:1`.
+
+</details>
+
+<details>
+<summary><code>src/crud_views/static/crud_views/js/modal.js</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-07-PLAN.md:9` — - src/crud_views/static/crud_views/js/modal.js
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-07-PLAN.md:9`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:34`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:70`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:71`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/static/crud_views/js/modal.js:1`.
+
+</details>
+
+<details>
+<summary><code>src/crud_views/static/crud_views/js/tooltip.js</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:21` — - src/crud_views/static/crud_views/js/tooltip.js
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:21`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:117`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/static/crud_views/js/tooltip.js:1`.
+
+</details>
+
+<details>
+<summary><code>src/crud_views/static/crud_views/js/viewset.js</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-07-PLAN.md:12` — - src/crud_views/static/crud_views/js/viewset.js
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-07-PLAN.md:12`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:92`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:93`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/static/crud_views/js/viewset.js:1`.
+
+</details>
+
+<details>
+<summary><code>src/crud_views/templates/crud_views/formsets/formset.html</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:98` — &lt;read_first&gt;06-SPEC.md ownership and import-safety contracts; installed crispy BasicNode.get_render/get_response_dict, FormActions.render and FormHelper.get_attributes; src/crud_views/lib/formsets/layout.py; src/crud_views/templatetags/crud_views_formsets.py; src/crud_views/templates/crud_views/formsets/formsets.html; src/crud_views/templates/crud_views/formsets/formset.html; Django InclusionNode.render; tests/test1/test_crispy_buttons.py; tests/test1/test_import_safety.py&lt;/read_first&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:98`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/templates/crud_views/formsets/formset.html:1`.
+
+</details>
+
+<details>
+<summary><code>src/crud_views/templates/crud_views/formsets/formsets.html</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:98` — &lt;read_first&gt;06-SPEC.md ownership and import-safety contracts; installed crispy BasicNode.get_render/get_response_dict, FormActions.render and FormHelper.get_attributes; src/crud_views/lib/formsets/layout.py; src/crud_views/templatetags/crud_views_formsets.py; src/crud_views/templates/crud_views/formsets/formsets.html; src/crud_views/templates/crud_views/formsets/formset.html; Django InclusionNode.render; tests/test1/test_crispy_buttons.py; tests/test1/test_import_safety.py&lt;/read_first&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-03-PLAN.md:98`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/templates/crud_views/formsets/formsets.html:1`.
+
+</details>
+
+<details>
+<summary><code>src/crud_views/templates/crud_views/tags/button/action.html</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:90` — &lt;read_first&gt;06-01-SUMMARY.md in this phase directory; src/crud_views/templates/crud_views/tags/button/action.html; src/crud_views/lib/crispy/buttons.py; src/crud_views/lib/view/button_data.py; src/crud_views/lib/view/label_mode.py; src/crud_views/templatetags/crud_views.py (cv_button); src/crud_views/lib/view/visibility.py; tests/test1/test_crispy_buttons.py; tests/test1/test_button_leaves.py; tests/test1/test_import_safety.py&lt;/read_first&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:90`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:74`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/templates/crud_views/tags/button/action.html:1`.
+
+</details>
+
+<details>
+<summary><code>src/crud_views/templates/crud_views/tags/button/form.html</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:19` — - src/crud_views/templates/crud_views/tags/button/form.html
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:19`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:47`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:56`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:83`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:89`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:9`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:40`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:73`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>src/crud_views/templates/crud_views/tags/list_filter.inner.html</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:243` — &lt;read_first&gt;tests/test1/test_workflow.py; tests/test1/test_filter.py; tests/test1/app/views.py; src/crud_views/templates/crud_views/tags/list_filter.inner.html; installed bootstrap5/inputs.html; .planning/phases/06-form-button-leaf/06-SPEC.md&lt;/read_first&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:243`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/templates/crud_views/tags/list_filter.inner.html:1`.
+
+</details>
+
+<details>
+<summary><code>src/crud_views/templatetags/crud_views.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:18` — - src/crud_views/templatetags/crud_views.py
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:18`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:89`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:90`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:104`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/templatetags/crud_views.py:1`.
+
+</details>
+
+<details>
+<summary><code>src/crud_views/templatetags/crud_views_formsets.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:85` — src/crud_views/templatetags/crud_views_formsets.py; tests/test1/test_import_safety.py;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:85`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:15`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:97`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:98`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/templatetags/crud_views_formsets.py:1`.
+
+</details>
+
+<details>
+<summary><code>src/crud_views_workflow/lib/forms.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-04-PLAN.md:12` — - src/crud_views_workflow/lib/forms.py
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-04-PLAN.md:12`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:34`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:95`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:96`.
+
+Supplemental exact path/declaration candidates: `src/crud_views_workflow/lib/forms.py:1`.
+
+</details>
+
+<details>
+<summary><code>submit_icon</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-04-PLAN.md:28` — - &quot;Repeated renders with different icon settings, forms and languages do not mutate shared class/icon defaults or retain another form&#x27;s submit_icon.&quot;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-04-PLAN.md:28`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:99`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:110`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:118`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:120`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:144`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:201`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>superpowers/plans/2026-10-24-concept-review-followups.md</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:81` — superpowers/plans/2026-10-24-concept-review-followups.md (source Phase 2);
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:81`.
+
+Supplemental exact path/declaration candidates: `superpowers/plans/2026-10-24-concept-review-followups.md:1`.
+
+</details>
+
+<details>
+<summary><code>test_action_label_mode_config</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:103` — Start with a failing real-crispy render test. Add form to LOCATIONS and label to LABEL_MODE_DEFAULTS together. In this same change update E108_LOCATIONS in test_action_label_mode_config.py to include form, move the old form-invalid case to the valid defaults parametrization, and retain unknown-location coverage using an actual typo. Update the settings.md defaults table literal and location prose, plus test_label_mode_docs.py&#x27;s matching location assertions; full form-map documentation stays in 06-08. In test_button_classes_templates.py, use VARIANT_LOCATIONS for action/menu sentinel loops, assert its relation to LOCATIONS, and add separate form-leaf sentinel cases over every FORM_KINDS/mode combination with valid form contexts and an existing registered icon. Do not remove coverage or pass form into action leaves. These small direct consumer updates are inseparable from the location/default migration despite exceeding the usual per-task file heuristic (H-LOCATIONS).
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:103`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>test_action_label_mode_config.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:103` — Start with a failing real-crispy render test. Add form to LOCATIONS and label to LABEL_MODE_DEFAULTS together. In this same change update E108_LOCATIONS in test_action_label_mode_config.py to include form, move the old form-invalid case to the valid defaults parametrization, and retain unknown-location coverage using an actual typo. Update the settings.md defaults table literal and location prose, plus test_label_mode_docs.py&#x27;s matching location assertions; full form-map documentation stays in 06-08. In test_button_classes_templates.py, use VARIANT_LOCATIONS for action/menu sentinel loops, assert its relation to LOCATIONS, and add separate form-leaf sentinel cases over every FORM_KINDS/mode combination with valid form contexts and an existing registered icon. Do not remove coverage or pass form into action leaves. These small direct consumer updates are inseparable from the location/default migration despite exceeding the usual per-task file heuristic (H-LOCATIONS).
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:103`.
+
+Supplemental exact path/declaration candidates: `tests/test1/test_action_label_mode_config.py:1`.
+
+</details>
+
+<details>
+<summary><code>test_button_classes</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:105` — Add form:hidden-label=&#x27;visually-hidden&#x27; and form:icon-host now, before advertising icon/host rendering (H-EARLY-UTILITIES, D-14). Update test_button_classes.py&#x27;s exhaustive EXPECTED_KEYS, the measured count (71 to 73 on the reviewed tree), and utility-slot parametrization in this same producing task (H-KEYSET). Update buttons.md&#x27;s measured count and complete utility rows/arithmetic, including five icon-host keys. Preserve finite FORM_KINDS/VARIANT_LOCATIONS; a utility key never accepts a mode suffix. Test hidden-label/title/form-tooltip and host class behavior with an already registered icon; new semantic icon names/hooks remain 06-04 work.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:105`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>test_button_classes.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:105` — Add form:hidden-label=&#x27;visually-hidden&#x27; and form:icon-host now, before advertising icon/host rendering (H-EARLY-UTILITIES, D-14). Update test_button_classes.py&#x27;s exhaustive EXPECTED_KEYS, the measured count (71 to 73 on the reviewed tree), and utility-slot parametrization in this same producing task (H-KEYSET). Update buttons.md&#x27;s measured count and complete utility rows/arithmetic, including five icon-host keys. Preserve finite FORM_KINDS/VARIANT_LOCATIONS; a utility key never accepts a mode suffix. Test hidden-label/title/form-tooltip and host class behavior with an already registered icon; new semantic icon names/hooks remain 06-04 work.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:105`.
+
+Supplemental exact path/declaration candidates: `tests/test1/test_button_classes.py:1`.
+
+</details>
+
+<details>
+<summary><code>test_button_classes_templates</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:103` — Start with a failing real-crispy render test. Add form to LOCATIONS and label to LABEL_MODE_DEFAULTS together. In this same change update E108_LOCATIONS in test_action_label_mode_config.py to include form, move the old form-invalid case to the valid defaults parametrization, and retain unknown-location coverage using an actual typo. Update the settings.md defaults table literal and location prose, plus test_label_mode_docs.py&#x27;s matching location assertions; full form-map documentation stays in 06-08. In test_button_classes_templates.py, use VARIANT_LOCATIONS for action/menu sentinel loops, assert its relation to LOCATIONS, and add separate form-leaf sentinel cases over every FORM_KINDS/mode combination with valid form contexts and an existing registered icon. Do not remove coverage or pass form into action leaves. These small direct consumer updates are inseparable from the location/default migration despite exceeding the usual per-task file heuristic (H-LOCATIONS).
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:103`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:104`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>test_button_classes_templates.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:103` — Start with a failing real-crispy render test. Add form to LOCATIONS and label to LABEL_MODE_DEFAULTS together. In this same change update E108_LOCATIONS in test_action_label_mode_config.py to include form, move the old form-invalid case to the valid defaults parametrization, and retain unknown-location coverage using an actual typo. Update the settings.md defaults table literal and location prose, plus test_label_mode_docs.py&#x27;s matching location assertions; full form-map documentation stays in 06-08. In test_button_classes_templates.py, use VARIANT_LOCATIONS for action/menu sentinel loops, assert its relation to LOCATIONS, and add separate form-leaf sentinel cases over every FORM_KINDS/mode combination with valid form contexts and an existing registered icon. Do not remove coverage or pass form into action leaves. These small direct consumer updates are inseparable from the location/default migration despite exceeding the usual per-task file heuristic (H-LOCATIONS).
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:103`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:104`.
+
+Supplemental exact path/declaration candidates: `tests/test1/test_button_classes_templates.py:1`.
+
+</details>
+
+<details>
+<summary><code>test_button_data</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:102` — Update test_label_mode.py and test_button_data.py location/default assertions in this producing task, preserving set(LABEL_MODE_DEFAULTS) == LOCATIONS, before running the tracer shard.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:102`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:106`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:134`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:71`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>test_button_data.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:102` — Update test_label_mode.py and test_button_data.py location/default assertions in this producing task, preserving set(LABEL_MODE_DEFAULTS) == LOCATIONS, before running the tracer shard.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:102`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:106`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:134`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:71`.
+
+Supplemental exact path/declaration candidates: `tests/test1/test_button_data.py:1`.
+
+</details>
+
+<details>
+<summary><code>test_demo_pages_render_german</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:85` — For L-EXAMPLE-COVERAGE, run the separate example-consumer gate below from examples/bootstrap5 so its pytest.ini selects project.settings: all test_i18n.py cases (including test_demo_pages_render_german and its translated create-submit value), HomePageTest.test_every_feature_landing_page_renders, and all test_doc_links.py reference/backlink cases. Record their collected counts and results after 06-08 enables form=both. Root pytest tests does not include this example tree; SystemChecksTest and test_docs_sync alone cannot substitute. Retain those two existing gates as independent evidence. A failure is an acceptance blocker to route to the producing implementation/docs plan, not grounds to remove or relax the affected assertion.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:85`.
+
+Supplemental exact path/declaration candidates: `examples/bootstrap5/test_i18n.py:121`.
+
+</details>
+
+<details>
+<summary><code>test_doc_links</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:85` — For L-EXAMPLE-COVERAGE, run the separate example-consumer gate below from examples/bootstrap5 so its pytest.ini selects project.settings: all test_i18n.py cases (including test_demo_pages_render_german and its translated create-submit value), HomePageTest.test_every_feature_landing_page_renders, and all test_doc_links.py reference/backlink cases. Record their collected counts and results after 06-08 enables form=both. Root pytest tests does not include this example tree; SystemChecksTest and test_docs_sync alone cannot substitute. Retain those two existing gates as independent evidence. A failure is an acceptance blocker to route to the producing implementation/docs plan, not grounds to remove or relax the affected assertion.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:85`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:245`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:271`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>test_doc_links.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:85` — For L-EXAMPLE-COVERAGE, run the separate example-consumer gate below from examples/bootstrap5 so its pytest.ini selects project.settings: all test_i18n.py cases (including test_demo_pages_render_german and its translated create-submit value), HomePageTest.test_every_feature_landing_page_renders, and all test_doc_links.py reference/backlink cases. Record their collected counts and results after 06-08 enables form=both. Root pytest tests does not include this example tree; SystemChecksTest and test_docs_sync alone cannot substitute. Retain those two existing gates as independent evidence. A failure is an acceptance blocker to route to the producing implementation/docs plan, not grounds to remove or relax the affected assertion.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:85`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:245`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:271`.
+
+Supplemental exact path/declaration candidates: `examples/bootstrap5/test_doc_links.py:1`.
+
+</details>
+
+<details>
+<summary><code>test_docs_sync</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:85` — For L-EXAMPLE-COVERAGE, run the separate example-consumer gate below from examples/bootstrap5 so its pytest.ini selects project.settings: all test_i18n.py cases (including test_demo_pages_render_german and its translated create-submit value), HomePageTest.test_every_feature_landing_page_renders, and all test_doc_links.py reference/backlink cases. Record their collected counts and results after 06-08 enables form=both. Root pytest tests does not include this example tree; SystemChecksTest and test_docs_sync alone cannot substitute. Retain those two existing gates as independent evidence. A failure is an acceptance blocker to route to the producing implementation/docs plan, not grounds to remove or relax the affected assertion.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:85`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:241`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>test_docs_sync.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:241` — &lt;automated&gt;cd examples/bootstrap5 &amp;&amp; ../../.venv/bin/pytest test_docs_sync.py -q&lt;/automated&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:241`.
+
+Supplemental exact path/declaration candidates: `examples/bootstrap5/test_docs_sync.py:1`.
+
+</details>
+
+<details>
+<summary><code>test_every_feature_landing_page_renders</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:245` — &lt;automated&gt;cd examples/bootstrap5 &amp;&amp; ../../.venv/bin/pytest test_i18n.py project/tests.py::HomePageTest::test_every_feature_landing_page_renders test_doc_links.py -q&lt;/automated&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:245`.
+
+Supplemental exact path/declaration candidates: `examples/bootstrap5/project/tests.py:45`.
+
+</details>
+
+<details>
+<summary><code>test_form_button_baselines</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:67` — tests/test1/golden/form_buttons/*.html files enumerated above. NEW test symbol: test_form_button_baselines.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:67`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>test_form_button_checks</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:123` — In test_form_button_checks.py register a counting custom inline renderer using existing registry override fixtures and render a real package Submit in icon, both and label modes. Assert one call and one emitted marker for each icon/both render, zero calls for label/static checks, and fresh output for a second render; disabled semantic mappings make zero renderer calls and still raise/log-and-label as required. Add real host-library form renders under strict and non-strict settings with default and None/empty form:icon-host overrides: assert expected host classes or their intentional absence, cv_icon_inline=False, no inline element/render invocation and no false W292/log/exception. Separately disable the host&#x27;s semantic mapping and require the same strict/non-strict missing-icon behavior as inline mappings. Add a direct per-form unknown-prefix case (absent from the semantic table), and a registered prefix with unusable renderer, in static and custom-hook runtime paths. Assert W292/strict/logged accessible label fallback and zero renderer calls; retain raw unprefixed class, valid inline custom renderer and host opt-out controls as positive cases. A custom renderer that is callable but returns empty markup remains the explicitly documented renderer contract, not a reason to invoke it twice. These cases preserve D-14 host semantics while proving D-16 diagnostics without duplicate side effects.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:123`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:124`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>test_form_button_checks.py</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:123` — In test_form_button_checks.py register a counting custom inline renderer using existing registry override fixtures and render a real package Submit in icon, both and label modes. Assert one call and one emitted marker for each icon/both render, zero calls for label/static checks, and fresh output for a second render; disabled semantic mappings make zero renderer calls and still raise/log-and-label as required. Add real host-library form renders under strict and non-strict settings with default and None/empty form:icon-host overrides: assert expected host classes or their intentional absence, cv_icon_inline=False, no inline element/render invocation and no false W292/log/exception. Separately disable the host&#x27;s semantic mapping and require the same strict/non-strict missing-icon behavior as inline mappings. Add a direct per-form unknown-prefix case (absent from the semantic table), and a registered prefix with unusable renderer, in static and custom-hook runtime paths. Assert W292/strict/logged accessible label fallback and zero renderer calls; retain raw unprefixed class, valid inline custom renderer and host opt-out controls as positive cases. A custom renderer that is callable but returns empty markup remains the explicitly documented renderer contract, not a reason to invoke it twice. These cases preserve D-14 host semantics while proving D-16 diagnostics without duplicate side effects.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:123`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:124`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>test_form_button_docs</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:105` — Address L-SUPPRESSION-MIGRATION explicitly in list_view.md and link the same recipe from the filter tutorial: clearing self.inputs or helper.inputs to [] after construction previously removed stock Apply/Reset because they lived there; after migration it only clears remaining legacy/hidden inputs and no longer suppresses layout actions. Show a ListViewFilterFormHelper subclass overriding get_form_actions(self) to return None, retaining its field layout and base constructor/hidden inputs. Do not infer omission from empty inputs, relocate user controls, or add a compatibility warning. In test_form_button_docs.py execute the documented omission subclass through {% crispy form helper %}, render twice, and assert its fields and named sort/order/direction hidden values remain while Apply/Reset are absent. Add the old clearing-inputs case as a changed-behavior regression: its stock layout actions remain, with no new warning; this demonstrates why the recipe is required rather than claiming backward-compatible suppression. Preserve D-01 through D-04.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:105`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>test_form_button_docs.py</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:105` — Address L-SUPPRESSION-MIGRATION explicitly in list_view.md and link the same recipe from the filter tutorial: clearing self.inputs or helper.inputs to [] after construction previously removed stock Apply/Reset because they lived there; after migration it only clears remaining legacy/hidden inputs and no longer suppresses layout actions. Show a ListViewFilterFormHelper subclass overriding get_form_actions(self) to return None, retaining its field layout and base constructor/hidden inputs. Do not infer omission from empty inputs, relocate user controls, or add a compatibility warning. In test_form_button_docs.py execute the documented omission subclass through {% crispy form helper %}, render twice, and assert its fields and named sort/order/direction hidden values remain while Apply/Reset are absent. Add the old clearing-inputs case as a changed-behavior regression: its stock layout actions remain, with no new warning; this demonstrates why the recipe is required rather than claiming backward-compatible suppression. Preserve D-01 through D-04.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:105`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>test_i18n</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:85` — For L-EXAMPLE-COVERAGE, run the separate example-consumer gate below from examples/bootstrap5 so its pytest.ini selects project.settings: all test_i18n.py cases (including test_demo_pages_render_german and its translated create-submit value), HomePageTest.test_every_feature_landing_page_renders, and all test_doc_links.py reference/backlink cases. Record their collected counts and results after 06-08 enables form=both. Root pytest tests does not include this example tree; SystemChecksTest and test_docs_sync alone cannot substitute. Retain those two existing gates as independent evidence. A failure is an acceptance blocker to route to the producing implementation/docs plan, not grounds to remove or relax the affected assertion.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:85`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:245`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:271`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>test_i18n.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:85` — For L-EXAMPLE-COVERAGE, run the separate example-consumer gate below from examples/bootstrap5 so its pytest.ini selects project.settings: all test_i18n.py cases (including test_demo_pages_render_german and its translated create-submit value), HomePageTest.test_every_feature_landing_page_renders, and all test_doc_links.py reference/backlink cases. Record their collected counts and results after 06-08 enables form=both. Root pytest tests does not include this example tree; SystemChecksTest and test_docs_sync alone cannot substitute. Retain those two existing gates as independent evidence. A failure is an acceptance blocker to route to the producing implementation/docs plan, not grounds to remove or relax the affected assertion.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:85`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:245`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:271`.
+
+Supplemental exact path/declaration candidates: `tests/test1/test_i18n.py:1`, `examples/bootstrap5/test_i18n.py:1`.
+
+</details>
+
+<details>
+<summary><code>test_label_mode</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:102` — Update test_label_mode.py and test_button_data.py location/default assertions in this producing task, preserving set(LABEL_MODE_DEFAULTS) == LOCATIONS, before running the tracer shard.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:102`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:134`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>test_label_mode.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:102` — Update test_label_mode.py and test_button_data.py location/default assertions in this producing task, preserving set(LABEL_MODE_DEFAULTS) == LOCATIONS, before running the tracer shard.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:102`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:134`.
+
+Supplemental exact path/declaration candidates: `tests/test1/test_label_mode.py:1`.
+
+</details>
+
+<details>
+<summary><code>test_label_mode_docs</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:103` — Start with a failing real-crispy render test. Add form to LOCATIONS and label to LABEL_MODE_DEFAULTS together. In this same change update E108_LOCATIONS in test_action_label_mode_config.py to include form, move the old form-invalid case to the valid defaults parametrization, and retain unknown-location coverage using an actual typo. Update the settings.md defaults table literal and location prose, plus test_label_mode_docs.py&#x27;s matching location assertions; full form-map documentation stays in 06-08. In test_button_classes_templates.py, use VARIANT_LOCATIONS for action/menu sentinel loops, assert its relation to LOCATIONS, and add separate form-leaf sentinel cases over every FORM_KINDS/mode combination with valid form contexts and an existing registered icon. Do not remove coverage or pass form into action leaves. These small direct consumer updates are inseparable from the location/default migration despite exceeding the usual per-task file heuristic (H-LOCATIONS).
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:103`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:88`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:121`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:187`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>test_label_mode_docs.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:103` — Start with a failing real-crispy render test. Add form to LOCATIONS and label to LABEL_MODE_DEFAULTS together. In this same change update E108_LOCATIONS in test_action_label_mode_config.py to include form, move the old form-invalid case to the valid defaults parametrization, and retain unknown-location coverage using an actual typo. Update the settings.md defaults table literal and location prose, plus test_label_mode_docs.py&#x27;s matching location assertions; full form-map documentation stays in 06-08. In test_button_classes_templates.py, use VARIANT_LOCATIONS for action/menu sentinel loops, assert its relation to LOCATIONS, and add separate form-leaf sentinel cases over every FORM_KINDS/mode combination with valid form contexts and an existing registered icon. Do not remove coverage or pass form into action leaves. These small direct consumer updates are inseparable from the location/default migration despite exceeding the usual per-task file heuristic (H-LOCATIONS).
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:103`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:88`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:121`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:187`.
+
+Supplemental exact path/declaration candidates: `tests/test1/test_label_mode_docs.py:1`.
+
+</details>
+
+<details>
+<summary><code>test_migration_e108_location_inventory</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:121` — For L-MIGRATION-E108-INVENTORY, also update the older crud_views.E108 paragraph under &quot;## Step zero: run the checks&quot; in docs/migrating-1.0.md: its button-location list must include context/list/card/form. Keep its separate label/icon/both mode vocabulary, invalid-map/unknown-location/invalid-mode meaning, ignored unknown runtime keys, strict ValueError with CRUD_VIEWS_STRICT defaulting to DEBUG, and non-strict warn-once/package-floor fallback unchanged. Extend test_label_mode_docs.py with test_migration_e108_location_inventory: use _section to isolate Step zero, require its unique paragraph beginning with the E108 reports clause, extract only the parenthesized button-location clause and compare the entire set to button_data.LOCATIONS. A form mention in the later Form buttons section or in either reference table must not satisfy this guard, nor may mode tokens enter the location set. Check that the paragraph still documents the existing mode/strict/fallback semantics. Require failure if this paragraph omits form, adds an unknown location or disappears; preserve task 1&#x27;s separate two-row E108 guards. This test lives in the already-owned documentation suite and runs in this producing task alongside the strict build.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:121`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>test_no_check_errors_with_every_viewset_registered</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:237` — &lt;automated&gt;cd examples/bootstrap5 &amp;&amp; ../../.venv/bin/pytest project/tests.py::SystemChecksTest::test_no_check_errors_with_every_viewset_registered -q&lt;/automated&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-09-PLAN.md:237`.
+
+Supplemental exact path/declaration candidates: `examples/bootstrap5/project/tests.py:98`.
+
+</details>
+
+<details>
+<summary><code>test_templatetags_import_without_app_registry</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:115` — &lt;automated&gt;.venv/bin/pytest tests/test1/test_import_safety.py::test_templatetags_import_without_app_registry tests/test1/test_import_safety.py::test_workflow_lib_model_mixin_public_path_imports_without_app_registry -q&lt;/automated&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:115`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:120`.
+
+Supplemental exact path/declaration candidates: `tests/test1/test_import_safety.py:20`.
+
+</details>
+
+<details>
+<summary><code>test_workflow_lib_model_mixin_public_path_imports_without_app_registry</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:115` — &lt;automated&gt;.venv/bin/pytest tests/test1/test_import_safety.py::test_templatetags_import_without_app_registry tests/test1/test_import_safety.py::test_workflow_lib_model_mixin_public_path_imports_without_app_registry -q&lt;/automated&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:115`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:120`.
+
+Supplemental exact path/declaration candidates: `tests/test1/test_import_safety.py:147`.
+
+</details>
+
+<details>
+<summary><code>tests/docs</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-04-PLAN.md:123` — | H-KEYSET / H-EARLY-UTILITIES | HIGH | Utility defaults and exhaustive tests/docs move together to 06-02 task 1; this plan consumes them and expands real icon/host coverage without a second key addition. |
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-04-PLAN.md:123`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:143`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>tests/js/helpers/setup.js</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-07-PLAN.md:71` — &lt;read_first&gt;package.json; package-lock.json; vitest.config.js; tests/js/modal.test.js; tests/js/helpers/setup.js; src/crud_views/static/crud_views/js/modal.js; 06-RESEARCH.md Package Legitimacy Audit&lt;/read_first&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-07-PLAN.md:71`.
+
+Supplemental exact path/declaration candidates: `tests/js/helpers/setup.js:1`.
+
+</details>
+
+<details>
+<summary><code>tests/js/list.filter.test.js</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-07-PLAN.md:11` — - tests/js/list.filter.test.js
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-07-PLAN.md:11`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:92`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:93`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:103`.
+
+Supplemental exact path/declaration candidates: `tests/js/list.filter.test.js:1`.
+
+</details>
+
+<details>
+<summary><code>tests/js/modal.test.js</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-07-PLAN.md:8` — - tests/js/modal.test.js
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-07-PLAN.md:8`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:29`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:35`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:70`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:71`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:83`.
+
+Supplemental exact path/declaration candidates: `tests/js/modal.test.js:1`.
+
+</details>
+
+<details>
+<summary><code>tests/js/viewset.test.js</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-07-PLAN.md:10` — - tests/js/viewset.test.js
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-07-PLAN.md:10`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:92`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:93`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:103`.
+
+Supplemental exact path/declaration candidates: `tests/js/viewset.test.js:1`.
+
+</details>
+
+<details>
+<summary><code>tests/test1/app/views.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:243` — &lt;read_first&gt;tests/test1/test_workflow.py; tests/test1/test_filter.py; tests/test1/app/views.py; src/crud_views/templates/crud_views/tags/list_filter.inner.html; installed bootstrap5/inputs.html; .planning/phases/06-form-button-leaf/06-SPEC.md&lt;/read_first&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:243`.
+
+Supplemental exact path/declaration candidates: `tests/test1/app/views.py:1`.
+
+</details>
+
+<details>
+<summary><code>tests/test1/conftest.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:216` — &lt;read_first&gt;tests/test1/test_crispy_buttons.py; tests/test1/test_crud.py; tests/test1/conftest.py; tests/test1/test_pagination_docs.py; .planning/phases/06-form-button-leaf/06-SPEC.md&lt;/read_first&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:216`.
+
+Supplemental exact path/declaration candidates: `tests/test1/conftest.py:1`.
+
+</details>
+
+<details>
+<summary><code>tests/test1/golden/form_buttons/*.html</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:67` — tests/test1/golden/form_buttons/*.html files enumerated above. NEW test symbol: test_form_button_baselines.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:67`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>tests/test1/golden/form_buttons/create.html</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:12` — - tests/test1/golden/form_buttons/create.html
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:12`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:37`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:215`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:24`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:148`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>tests/test1/golden/form_buttons/delete.html</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:14` — - tests/test1/golden/form_buttons/delete.html
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:14`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:215`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:26`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:148`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>tests/test1/golden/form_buttons/filter.html</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:16` — - tests/test1/golden/form_buttons/filter.html
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:16`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:242`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:12`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:73`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>tests/test1/golden/form_buttons/update.html</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:13` — - tests/test1/golden/form_buttons/update.html
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:13`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:215`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:25`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:148`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>tests/test1/golden/form_buttons/workflow.html</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:15` — - tests/test1/golden/form_buttons/workflow.html
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:15`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:242`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:27`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:148`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>tests/test1/test_action_label_mode_config.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:93` — tests/test1/test_action_label_mode_config.py tests/test1/test_button_classes.py -q; record the command,
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:93`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:206`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:14`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:89`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:111`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:12`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:74`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:75`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:88`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:116`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:79`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:94`.
+
+Supplemental exact path/declaration candidates: `tests/test1/test_action_label_mode_config.py:1`.
+
+</details>
+
+<details>
+<summary><code>tests/test1/test_button_classes.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:93` — tests/test1/test_action_label_mode_config.py tests/test1/test_button_classes.py -q; record the command,
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:93`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:206`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:13`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:89`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:111`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:86`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:92`.
+
+Supplemental exact path/declaration candidates: `tests/test1/test_button_classes.py:1`.
+
+</details>
+
+<details>
+<summary><code>tests/test1/test_button_classes_templates.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:16` — - tests/test1/test_button_classes_templates.py
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:16`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:89`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:111`.
+
+Supplemental exact path/declaration candidates: `tests/test1/test_button_classes_templates.py:1`.
+
+</details>
+
+<details>
+<summary><code>tests/test1/test_button_data.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:206` — &lt;automated&gt;.venv/bin/python -c &#x27;from pathlib import Path; import re; p=Path(&quot;.planning/phases/06-form-button-leaf/06-SPEC.md&quot;); s=p.read_text(); headings=(&quot;Prerequisite evidence&quot;, &quot;Form contract&quot;, &quot;Literal text and attributes&quot;, &quot;Template selection&quot;, &quot;Ownership&quot;, &quot;Helper lifecycle&quot;, &quot;Diagnostics and icons&quot;, &quot;Dependency validation&quot;, &quot;Golden history&quot;); sections={h: re.search(r&quot;(?m)^## &quot; + re.escape(h) + r&quot;\n([\s\S]*?)(?=^## |\Z)&quot;, s) for h in headings}; assert all(m and m.group(1).strip() for m in sections.values()), &quot;Missing/empty design section&quot;; assert re.search(r&quot;\b[0-9a-f]{40}\b&quot;, sections[&quot;Prerequisite evidence&quot;].group(1)), &quot;Missing executing-branch HEAD SHA&quot;&#x27; &amp;&amp; .venv/bin/pytest tests/test1/test_crispy_buttons.py tests/test1/test_button_data.py tests/test1/test_label_mode.py tests/test1/test_action_label_mode_config.py tests/test1/test_button_classes.py -q&lt;/automated&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:206`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:22`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:89`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:111`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:124`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:139`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:127`.
+
+Supplemental exact path/declaration candidates: `tests/test1/test_button_data.py:1`.
+
+</details>
+
+<details>
+<summary><code>tests/test1/test_button_leaves.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:90` — &lt;read_first&gt;06-01-SUMMARY.md in this phase directory; src/crud_views/templates/crud_views/tags/button/action.html; src/crud_views/lib/crispy/buttons.py; src/crud_views/lib/view/button_data.py; src/crud_views/lib/view/label_mode.py; src/crud_views/templatetags/crud_views.py (cv_button); src/crud_views/lib/view/visibility.py; tests/test1/test_crispy_buttons.py; tests/test1/test_button_leaves.py; tests/test1/test_import_safety.py&lt;/read_first&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:90`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:125`.
+
+Supplemental exact path/declaration candidates: `tests/test1/test_button_leaves.py:1`.
+
+</details>
+
+<details>
+<summary><code>tests/test1/test_cancel_origin.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:149` — &lt;read_first&gt;06-01-SUMMARY.md in this phase directory; tests/test1/test_form_buttons_golden.py; tests/test1/test_crud.py; tests/test1/test_cancel_origin.py&lt;/read_first&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:149`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:154`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:67`.
+
+Supplemental exact path/declaration candidates: `tests/test1/test_cancel_origin.py:1`.
+
+</details>
+
+<details>
+<summary><code>tests/test1/test_crispy_buttons.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:206` — &lt;automated&gt;.venv/bin/python -c &#x27;from pathlib import Path; import re; p=Path(&quot;.planning/phases/06-form-button-leaf/06-SPEC.md&quot;); s=p.read_text(); headings=(&quot;Prerequisite evidence&quot;, &quot;Form contract&quot;, &quot;Literal text and attributes&quot;, &quot;Template selection&quot;, &quot;Ownership&quot;, &quot;Helper lifecycle&quot;, &quot;Diagnostics and icons&quot;, &quot;Dependency validation&quot;, &quot;Golden history&quot;); sections={h: re.search(r&quot;(?m)^## &quot; + re.escape(h) + r&quot;\n([\s\S]*?)(?=^## |\Z)&quot;, s) for h in headings}; assert all(m and m.group(1).strip() for m in sections.values()), &quot;Missing/empty design section&quot;; assert re.search(r&quot;\b[0-9a-f]{40}\b&quot;, sections[&quot;Prerequisite evidence&quot;].group(1)), &quot;Missing executing-branch HEAD SHA&quot;&#x27; &amp;&amp; .venv/bin/pytest tests/test1/test_crispy_buttons.py tests/test1/test_button_data.py tests/test1/test_label_mode.py tests/test1/test_action_label_mode_config.py tests/test1/test_button_classes.py -q&lt;/automated&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:206`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:216`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:20`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:89`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:90`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:111`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:124`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:139`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:13`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:88`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:97`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:98`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:116`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:14`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:95`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:96`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:107`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:10`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:73`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:89`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:98`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:99`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:114`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:38`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:113`.
+
+Supplemental exact path/declaration candidates: `tests/test1/test_crispy_buttons.py:1`.
+
+</details>
+
+<details>
+<summary><code>tests/test1/test_crud.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:216` — &lt;read_first&gt;tests/test1/test_crispy_buttons.py; tests/test1/test_crud.py; tests/test1/conftest.py; tests/test1/test_pagination_docs.py; .planning/phases/06-form-button-leaf/06-SPEC.md&lt;/read_first&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:216`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:223`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:233`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:149`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:154`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:67`.
+
+Supplemental exact path/declaration candidates: `tests/test1/test_crud.py:1`.
+
+</details>
+
+<details>
+<summary><code>tests/test1/test_filter.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:243` — &lt;read_first&gt;tests/test1/test_workflow.py; tests/test1/test_filter.py; tests/test1/app/views.py; src/crud_views/templates/crud_views/tags/list_filter.inner.html; installed bootstrap5/inputs.html; .planning/phases/06-form-button-leaf/06-SPEC.md&lt;/read_first&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:243`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:262`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:9`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:34`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:73`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:74`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:89`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:98`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:99`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:114`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:113`.
+
+Supplemental exact path/declaration candidates: `tests/test1/test_filter.py:1`.
+
+</details>
+
+<details>
+<summary><code>tests/test1/test_form_button_checks.py</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:12` — - tests/test1/test_form_button_checks.py
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:12`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:35`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:71`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:78`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:94`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:103`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:127`, `.planning/phases/06-form-button-leaf/06-07-PLAN.md:113`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:34`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>tests/test1/test_form_button_docs.py</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:16` — - tests/test1/test_form_button_docs.py
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:16`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:42`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:51`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:78`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:101`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:108`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>tests/test1/test_form_buttons_golden.py</code> — EXCLUDED_NEW</summary>
+
+Declared new phase output; excluded from existing-source validation.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:11` — - tests/test1/test_form_buttons_golden.py
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:11`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:33`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:36`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:66`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:215`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:233`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:242`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:262`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:23`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:148`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:149`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:154`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:11`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:73`, `.planning/phases/06-form-button-leaf/06-05-PLAN.md:89`, `.planning/phases/06-form-button-leaf/06-09-PLAN.md:31`.
+
+Supplemental exact path/declaration candidates: none asserted.
+
+</details>
+
+<details>
+<summary><code>tests/test1/test_icon_host_leaves.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-04-PLAN.md:10` — - tests/test1/test_icon_host_leaves.py
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-04-PLAN.md:10`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:73`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:74`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:86`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:104`.
+
+Supplemental exact path/declaration candidates: `tests/test1/test_icon_host_leaves.py:1`.
+
+</details>
+
+<details>
+<summary><code>tests/test1/test_icons_checks.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:104` — &lt;read_first&gt;src/crud_views/lib/view/buttons.py (cv_icon_mode_checks); src/crud_views/lib/crispy/form.py; src/crud_views/lib/views/list.py; src/crud_views/lib/view/button_data.py; src/crud_views/lib/icons.py (resolve_icon/render_icon/resolve_icon_name_class/font_renderer/_library_check_messages); tests/test1/test_icons_checks.py; tests/test1/test_icon_host_leaves.py; 06-SPEC.md static-check reach&lt;/read_first&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:104`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:127`.
+
+Supplemental exact path/declaration candidates: `tests/test1/test_icons_checks.py:1`.
+
+</details>
+
+<details>
+<summary><code>tests/test1/test_icons_registry.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-04-PLAN.md:74` — &lt;read_first&gt;src/crud_views/lib/button_classes.py; src/crud_views/lib/icons.py; tests/test1/test_icon_host_leaves.py; tests/test1/test_icons_registry.py; src/crud_views/templates/crud_views/tags/button/action.html&lt;/read_first&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-04-PLAN.md:74`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:86`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:107`.
+
+Supplemental exact path/declaration candidates: `tests/test1/test_icons_registry.py:1`.
+
+</details>
+
+<details>
+<summary><code>tests/test1/test_import_safety.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:85` — src/crud_views/templatetags/crud_views_formsets.py; tests/test1/test_import_safety.py;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:85`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:90`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:115`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:98`, `.planning/phases/06-form-button-leaf/06-03-PLAN.md:120`.
+
+Supplemental exact path/declaration candidates: `tests/test1/test_import_safety.py:1`.
+
+</details>
+
+<details>
+<summary><code>tests/test1/test_label_mode.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:92` — VARIANT_LOCATIONS. Before authoring the spec, run .venv/bin/pytest tests/test1/test_label_mode.py
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:92`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:206`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:21`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:89`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:124`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:139`, `.planning/phases/06-form-button-leaf/06-06-PLAN.md:94`.
+
+Supplemental exact path/declaration candidates: `tests/test1/test_label_mode.py:1`.
+
+</details>
+
+<details>
+<summary><code>tests/test1/test_label_mode_docs.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:15` — - tests/test1/test_label_mode_docs.py
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-02-PLAN.md:15`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:89`, `.planning/phases/06-form-button-leaf/06-02-PLAN.md:111`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:11`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:83`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:84`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:92`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:117`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:118`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:130`.
+
+Supplemental exact path/declaration candidates: `tests/test1/test_label_mode_docs.py:1`.
+
+</details>
+
+<details>
+<summary><code>tests/test1/test_pagination_docs.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:216` — &lt;read_first&gt;tests/test1/test_crispy_buttons.py; tests/test1/test_crud.py; tests/test1/conftest.py; tests/test1/test_pagination_docs.py; .planning/phases/06-form-button-leaf/06-SPEC.md&lt;/read_first&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:216`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:102`.
+
+Supplemental exact path/declaration candidates: `tests/test1/test_pagination_docs.py:1`.
+
+</details>
+
+<details>
+<summary><code>tests/test1/test_workflow.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:243` — &lt;read_first&gt;tests/test1/test_workflow.py; tests/test1/test_filter.py; tests/test1/app/views.py; src/crud_views/templates/crud_views/tags/list_filter.inner.html; installed bootstrap5/inputs.html; .planning/phases/06-form-button-leaf/06-SPEC.md&lt;/read_first&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-01-PLAN.md:243`, `.planning/phases/06-form-button-leaf/06-01-PLAN.md:262`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:96`, `.planning/phases/06-form-button-leaf/06-04-PLAN.md:107`.
+
+Supplemental exact path/declaration candidates: `tests/test1/test_workflow.py:1`.
+
+</details>
+
+<details>
+<summary><code>tooltip.js</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:123` — Per L-HIDDEN-WRAPPER, explain that visible filter actions now precede the pack-owned hidden-input wrapper and its retained margin/classes; hidden values/path are unchanged and no global crispy override is needed. Per L-TOOLTIP-DOC add form to the public data-cv-tooltip location inventory in javascript.md and the tooltip.js header comment, keeping runtime logic untouched because marker-value dispatch is already generic. Set CRUD_VIEWS_LABEL_MODE_DEFAULTS form=both in the example, preserving any other configured locations; show submit/delete/cancel and filter controls per current D-17, which supersedes the older background spec&#x27;s text-only-filter example. Add public icon/helper/settings additions to the appropriate changelog section without splitting the Breaking/migration pair. Keep downstream names out of all newly authored files; detailed generic follow-up goes into 06-09 acceptance.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-08-PLAN.md:123`, `.planning/phases/06-form-button-leaf/06-08-PLAN.md:149`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/static/crud_views/js/tooltip.js:1`.
+
+</details>
+
+<details>
+<summary><code>uni_form.html</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-05-PLAN.md:111` — For the explicit empty-layout plus None-hook case, assert the helper&#x27;s selected layout stays empty and no action group appears. Preserve the installed pack&#x27;s display_form.html fallback to uni_form.html when form_html is empty; this package-helper fix does not promise suppression of that existing pack-owned field fallback or add a global template override. The default-action case has nonempty layout output and must not restore discarded fields.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-05-PLAN.md:111`.
+
+Supplemental exact path/declaration candidates: `/home/alex/projects/alex/django-crud-views/.venv/lib/python3.12/site-packages/crispy_bootstrap5/templates/bootstrap5/uni_form.html:1`.
+
+</details>
+
+<details>
+<summary><code>view/buttons.py</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:71` — NEW test file: tests/test1/test_form_button_checks.py. NEW private/static form icon checker in view/buttons.py (suggested cv_form_icon_mode_checks). No new check IDs. Finite form contract tests live in this file or existing test_button_data.py read-only coverage; no new generic diagnostic framework.
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-06-PLAN.md:71`.
+
+Supplemental exact path/declaration candidates: `src/crud_views/lib/view/buttons.py:1`.
+
+</details>
+
+<details>
+<summary><code>vitest.config.js</code> — UNCHECKABLE</summary>
+
+Intel index cannot verify this reference; INFO, no hard block.
+
+Plan evidence: `.planning/phases/06-form-button-leaf/06-07-PLAN.md:71` — &lt;read_first&gt;package.json; package-lock.json; vitest.config.js; tests/js/modal.test.js; tests/js/helpers/setup.js; src/crud_views/static/crud_views/js/modal.js; 06-RESEARCH.md Package Legitimacy Audit&lt;/read_first&gt;
+
+Occurrences: `.planning/phases/06-form-button-leaf/06-07-PLAN.md:71`.
+
+Supplemental exact path/declaration candidates: `vitest.config.js:1`, `/home/alex/projects/alex/django-crud-views/vitest.config.js:1`.
+
+</details>
+
+## Retained Review History
+
+<details>
+<summary>Verbatim previous report and its retained history; historical counts do not apply to this cycle</summary>
+
+---
+phase: "06"
+reviewers: ["fable-review", "grok-review", "gemini-review"]
 reviewed_at: "2026-10-27T19:00:46.172491+00:00"
 plans_reviewed: ["06-01-PLAN.md", "06-02-PLAN.md", "06-03-PLAN.md", "06-04-PLAN.md", "06-05-PLAN.md", "06-06-PLAN.md", "06-07-PLAN.md", "06-08-PLAN.md", "06-09-PLAN.md"]
 models:
@@ -6905,5 +12134,7 @@ Supplemental exact path/declaration candidates: `vitest.config.js:1`.
 
 </details>
 
+
+</details>
 
 </details>

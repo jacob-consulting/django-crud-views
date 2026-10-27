@@ -1,3 +1,4 @@
+import json
 import os
 import re
 from pathlib import Path
@@ -5,6 +6,8 @@ from types import SimpleNamespace
 
 import pytest
 from django.contrib.auth.models import User
+from django.core.paginator import Paginator
+from django.template.loader import render_to_string
 from django.test import override_settings
 from django.test.client import Client
 from django.utils import translation
@@ -217,14 +220,36 @@ def _check_golden(name: str, nav):
     path = GOLDEN_DIR / f"{name}.html"
     if os.environ.get("CV_UPDATE_GOLDEN"):
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(markup + "\n")
-    assert markup == path.read_text().strip()
+        path.write_text(markup + "\n", encoding="utf-8")
+    assert markup == path.read_text(encoding="utf-8").strip()
 
 
 @pytest.mark.django_db
 @pytest.mark.parametrize("page", [1, 2])
 def test_card_pagination_golden(client_publisher_order, publishers, page):
     _check_golden(f"page{page}", _pagination(client_publisher_order, page))
+
+
+# D-02: the stock card snippet's exact render bytes, frozen before its hidden-label classes moved to the class table.
+# Captured once with CV_UPDATE_CARD_PAGINATION_RAW=1; never regenerate it to absorb a change.
+CARD_PAGINATION_RAW = GOLDEN_DIR / "raw_pages.json"
+
+
+def _render_card_pagination_raw(page: int) -> str:
+    paginator = Paginator(range(3), 2)
+    context = {"paginator": paginator, "page_obj": paginator.page(page), "is_paginated": True, "base_qs": ""}
+    with translation.override("en"):
+        return render_to_string("crud_views/snippets/pagination.html", context)
+
+
+def test_card_pagination_raw_bytes():
+    rendered = {f"page{page}": _render_card_pagination_raw(page) for page in (1, 2)}
+    if os.environ.get("CV_UPDATE_CARD_PAGINATION_RAW"):
+        CARD_PAGINATION_RAW.write_text(json.dumps(rendered, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    stored = json.loads(CARD_PAGINATION_RAW.read_text(encoding="utf-8"))
+    assert set(stored) == {"page1", "page2"}
+    for name, markup in rendered.items():
+        assert markup.encode("utf-8") == stored[name].encode("utf-8")
 
 
 @pytest.mark.django_db

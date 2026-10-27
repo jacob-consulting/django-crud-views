@@ -131,6 +131,7 @@ apply to the buttons a map, a context button, a target view or `CRUD_VIEWS_LABEL
 | `card-order:active` | `active` |
 | `card:flex` | `flex-grow-1` |
 | `context:hidden-label` / `list:hidden-label` / `card:hidden-label` | `visually-hidden` |
+| `pagination:hidden-label` | `visually-hidden` |
 | `card:root` | `card mb-3` |
 | `card:body` | `card-body` |
 | `card:title` | `card-title` |
@@ -141,7 +142,7 @@ apply to the buttons a map, a context button, a target view or `CRUD_VIEWS_LABEL
 | `alert:debug` | `alert alert-secondary` |
 | `context:icon-host` / `list:icon-host` / `card:icon-host` / `menu:icon-host` | `{name_class}` |
 
-The default table has 70 keys: the rows with four variants stand for four keys each, the rows with three locations
+The default table has 71 keys: the rows with four variants stand for four keys each, the rows with three locations
 for three, the `*:icon-host` row for four. The `context` and `list`
 buttons look the same for every variant by default, the `card` buttons distinguish them. Mode keys such as
 `card:tertiary:icon` and `form:submit:icon` are addressable but not shipped; their possible combinations are excluded
@@ -154,6 +155,12 @@ configurable here: the element, `href`, `type`, `disabled`, the `data-cv-*` attr
 `<location>:hidden-label` for the screen-reader text of an icon-only button. A theme on another framework registers
 its own words there (`is-active`, `is-sr-only`, `sr-only`) and overrides no leaf. `None` on a `hidden-label` key
 makes that text visible; set the key to your framework's screen-reader-only utility instead.
+
+`pagination:hidden-label` is the same utility for pagination rather than for an action button: it styles the
+screen-reader text ("previous", "next") of the arrows in both the table and the card pagination, so one override
+restyles both components. It defaults to `visually-hidden`, resolves per key like every other key (default, then
+theme, then project), and `None` or `""` render the label without a class, so the text shows. It is not a button
+location and has no mode keys. Pagination itself is described in [ListView](list_view.md#table-with-django-tables2).
 
 Three keys style the stock card itself rather than a button: `card:root` is the outer `<div>`, `card:body` the
 `<div>` inside it, and `card:title` the `<h5>` heading. The actions inside the card keep `card:container`. Where the

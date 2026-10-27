@@ -8,6 +8,8 @@ from django.test import override_settings
 from crud_views.lib import button_classes as bc
 from crud_views.lib.button_classes import (
     DEFAULT_BUTTON_CLASSES,
+    VARIANT_LOCATIONS,
+    button_class_check_messages,
     get_button_class,
     get_button_classes,
     get_icon_host_class,
@@ -58,6 +60,7 @@ EXPECTED_KEYS = {
     "context:hidden-label",
     "list:hidden-label",
     "card:hidden-label",
+    "pagination:hidden-label",
     "card:root",
     "card:body",
     "card:title",
@@ -84,7 +87,7 @@ def _isolate_registry():
 
 
 def test_default_table_is_complete():
-    assert len(EXPECTED_KEYS) == 70
+    assert len(EXPECTED_KEYS) == 71
     assert set(DEFAULT_BUTTON_CLASSES) == EXPECTED_KEYS
     assert get_button_class("context", "primary") == "btn btn-outline-primary btn-lg"
     assert get_button_class("card", "danger") == "btn btn-secondary btn-sm"
@@ -110,11 +113,39 @@ def test_documented_default_key_count_matches_table():
         ("context", "hidden-label", "visually-hidden"),
         ("list", "hidden-label", "visually-hidden"),
         ("card", "hidden-label", "visually-hidden"),
+        ("pagination", "hidden-label", "visually-hidden"),
     ],
 )
 def test_utility_slots_default_to_the_bootstrap_word(location, slot, default):
     # the words the leaves used to hard-code (#227)
     assert get_button_class(location, slot) == default
+
+
+def test_pagination_hidden_label_registry_contract():
+    """pagination:hidden-label is a plain utility key: per-key default -> theme -> project, None/"" switch off."""
+    from crud_views.lib.view.button_data import LOCATIONS
+
+    def key_messages():
+        return [m for m in button_class_check_messages() if "pagination:hidden-label" in m.msg]
+
+    assert get_button_class("pagination", "hidden-label") == "visually-hidden"
+    register_button_classes({"pagination:hidden-label": "is-sr-only"})
+    assert get_button_class("pagination", "hidden-label") == "is-sr-only"
+    assert key_messages() == []
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"pagination:hidden-label": "sr-only"}):
+        assert get_button_class("pagination", "hidden-label") == "sr-only"
+        assert key_messages() == []
+    assert get_button_class("pagination", "hidden-label") == "is-sr-only"
+    for value in (None, ""):
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"pagination:hidden-label": value}):
+            assert get_button_class("pagination", "hidden-label") == ""
+            assert key_messages() == []
+
+    # no grammar expansion: a mode suffix is still an unknown key, and pagination is no button location
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"pagination:hidden-label:icon": "sr-only"}):
+        assert [m.id for m in key_messages()] == ["crud_views.W362"]
+    assert "pagination" not in LOCATIONS
+    assert "pagination" not in VARIANT_LOCATIONS
 
 
 @pytest.mark.parametrize(

@@ -200,6 +200,57 @@ do not satisfy the manifest ranges. [VERIFIED: package.json:15-21 and recovery N
 The isolated floor-validation session uses existing declared dependencies. If planning introduces any new package,
 run the required legitimacy gate before recommending its installation.
 
+## Package Legitimacy Audit
+
+Added during planning on 2026-10-27 for **restoration of existing declared test dependencies only**.
+No production package adoption or dependency-floor change is authorized by this audit. Each Python name below
+already occurs in pyproject.toml base dependencies or the polymorphic/workflow/ordered/test extras used by nox;
+the official PyPI JSON endpoint returned the matching canonical name and project URLs during planning.
+The four central runtime/tool identities were also inspected on their primary PyPI pages. Registry existence
+establishes package identity, not security review of every release or transitive dependency.
+
+| Package | Version / scope | Status | Evidence |
+|---|---|---|---|
+| crispy-bootstrap5 | 2023.10 floor | [VERIFIED] | Existing declaration; [official PyPI project](https://pypi.org/project/crispy-bootstrap5/) |
+| cssselect | Existing pyproject.toml constraint | [VERIFIED] | Existing declaration; [official PyPI project](https://pypi.org/project/cssselect/) |
+| django | 4.2 and 6.0 validation lines | [VERIFIED] | Existing declaration; [official PyPI project](https://pypi.org/project/django/) |
+| django-crispy-forms | 2.0 floor | [VERIFIED] | Existing declaration; [official PyPI project](https://pypi.org/project/django-crispy-forms/) |
+| django-filter | Existing pyproject.toml constraint | [VERIFIED] | Existing declaration; [official PyPI project](https://pypi.org/project/django-filter/) |
+| django-fsm-2 | Existing pyproject.toml constraint | [VERIFIED] | Existing declaration; [official PyPI project](https://pypi.org/project/django-fsm-2/) |
+| django-fsm-2-admin | Existing pyproject.toml constraint | [VERIFIED] | Existing declaration; [official PyPI project](https://pypi.org/project/django-fsm-2-admin/) |
+| django-guardian | Existing pyproject.toml constraint | [VERIFIED] | Existing declaration; [official PyPI project](https://pypi.org/project/django-guardian/) |
+| django-ordered-model | Existing pyproject.toml constraint | [VERIFIED] | Existing declaration; [official PyPI project](https://pypi.org/project/django-ordered-model/) |
+| django-pipeline | Existing pyproject.toml constraint | [VERIFIED] | Existing declaration; [official PyPI project](https://pypi.org/project/django-pipeline/) |
+| django-polymorphic | Existing pyproject.toml constraint | [VERIFIED] | Existing declaration; [official PyPI project](https://pypi.org/project/django-polymorphic/) |
+| django-tables2 | Existing pyproject.toml constraint | [VERIFIED] | Existing declaration; [official PyPI project](https://pypi.org/project/django-tables2/) |
+| lxml | Existing pyproject.toml constraint | [VERIFIED] | Existing declaration; [official PyPI project](https://pypi.org/project/lxml/) |
+| nox | Existing pyproject.toml constraint | [VERIFIED] | Existing declaration; [official PyPI project](https://pypi.org/project/nox/) |
+| polib | Existing pyproject.toml constraint | [VERIFIED] | Existing declaration; [official PyPI project](https://pypi.org/project/polib/) |
+| pydantic | Existing pyproject.toml constraint | [VERIFIED] | Existing declaration; [official PyPI project](https://pypi.org/project/pydantic/) |
+| pytest | Existing pyproject.toml constraint | [VERIFIED] | Existing declaration; [official PyPI project](https://pypi.org/project/pytest/) |
+| pytest-cov | Existing pyproject.toml constraint | [VERIFIED] | Existing declaration; [official PyPI project](https://pypi.org/project/pytest-cov/) |
+| pytest-django | Existing pyproject.toml constraint | [VERIFIED] | Existing declaration; [official PyPI project](https://pypi.org/project/pytest-django/) |
+| pytest-mock | Existing pyproject.toml constraint | [VERIFIED] | Existing declaration; [official PyPI project](https://pypi.org/project/pytest-mock/) |
+| pytest-random-order | Existing pyproject.toml constraint | [VERIFIED] | Existing declaration; [official PyPI project](https://pypi.org/project/pytest-random-order/) |
+| pytest-xdist | Existing pyproject.toml constraint | [VERIFIED] | Existing declaration; [official PyPI project](https://pypi.org/project/pytest-xdist/) |
+| python-box | Existing pyproject.toml constraint | [VERIFIED] | Existing declaration; [official PyPI project](https://pypi.org/project/python-box/) |
+| typing-extensions | Existing pyproject.toml constraint | [VERIFIED] | Existing declaration; [official PyPI project](https://pypi.org/project/typing-extensions/) |
+| jquery | 3.7.1 locked | [VERIFIED] | Existing package.json and package-lock.json; registry.npmjs.org URL and integrity |
+| jsdom | 30.1.2 locked | [VERIFIED] | Existing package.json and package-lock.json; registry.npmjs.org URL and integrity |
+| vitest | 5.0.3 locked | [VERIFIED] | Existing package.json and package-lock.json; registry.npmjs.org URL and integrity |
+| npm transitive dependency graph | Exact package-lock.json set only | [VERIFIED] | Every locked package has a registry.npmjs.org source and integrity; restore with npm ci, never a new resolution |
+
+Use these packages only through the existing declaration/lock or the explicit oldest-crispy session pins.
+Before installation, recheck the audit against the checkout's manifests. Any newly proposed package or
+changed source must get its own legitimacy audit; [ASSUMED]/[SUS] requires a blocking human checkpoint and
+[SLOP] is forbidden. This audit does not authorize executing arbitrary lifecycle scripts from a new package.
+
+The lock specifies Node requirements beyond the observed Node 20 runtime: jsdom 30.1.2 requires
+`^22.22.2 || ^24.15.0 || >=26.0.0`; vitest 5.0.3 requires
+`^22.12.0 || ^24.0.0 || >=26.0.0`. Use an isolated compatible runtime for acceptance rather than changing
+the project's declared Node floor or downgrading locked packages. Record both the runtime and package
+versions; old node_modules results do not certify the lock-backed environment.
+
 ## Architecture Patterns
 
 ### Data flow

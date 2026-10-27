@@ -30,22 +30,28 @@ created: "2026-10-27"
 
 ## Per-Task Verification Map
 
-The planner must bind these behaviors to its actual task IDs, waves and phase-unique threat IDs before finalization.
-Every command must have an observable failing direction in the PLAN, and every requirement must be represented.
+All tasks map to executable PLAN commands and immediate fails_when conditions. Pending means planned, not passed.
 
-| Requirement | Behavior / secure behavior | Test target | Status |
-|-------------|----------------------------|-------------|--------|
-| FORM-01 | Baselines committed before product markup edits | Golden tests plus commit-history check | pending |
-| FORM-02 | Exact form contract, no irrelevant action keys, cancel-only URL | `test_button_data.py` | pending |
-| FORM-03/04 | Three modes, class lookup, host/inline icons, accessible hidden labels | `test_button_leaves.py`, class tests | pending |
-| FORM-05 | Constructor/CSS/attributes, template precedence and `%s`, no legacy input alias | `test_crispy_buttons.py` | pending |
-| FORM-06 | Names/values/IDs and normal/modal clicked-submitter payload unchanged | CRUD tests, modal/viewset JS tests | pending |
-| FORM-07 | Literal and SafeString values cannot inject nodes/attributes or execute template syntax | Parameterized render/security cases | pending |
-| FORM-08 | Filter controls once per form, hidden sort/order preserved, reset ID and behavior | Real crispy/filter tests, list.filter JS | pending |
-| FORM-09 | Registry defaults, workflow icon and explicit form overrides | Icon registry and workflow render tests | pending |
-| FORM-10/11 | Floors, whole-map selection and first-owner precedence through real crispy | Mode/config and integration tests | pending |
-| FORM-12 | E210/E211/W291/W292 plus dynamic strict/log fallback | Check and render tests | pending |
-| FORM-13 | Breaking/migration/docs/example accuracy and downstream acceptance note | Strict docs build, example checks | pending |
+| Task | Wave | Requirements | Threat Ref | Verification target | Status |
+|---|---|---|---|---|---|
+| 06-01-1..3 | 1 | FORM-01/02/05/06/08/11 | T-06-01 | Real crispy tracer; spec/main evidence; five golden captures and commit history | pending |
+| 06-02-1 | 2 | FORM-02/03/06/07 | T-06-02/03 | Real crispy form leaf | pending |
+| 06-02-2 | 2 | FORM-05/07 | T-06-02/03/04 | Custom templates, literal/SafeString/lazy attrs; floor invariant | pending |
+| 06-02-3 | 2 | FORM-06 | T-06-04 | Golden diffs, CRUD and cancel payloads | pending |
+| 06-03-1..2 | 3 | FORM-10/11 | T-06-05/06 | Whole maps and actual crispy owner overlay matrix | pending |
+| 06-04-1 | 4 | FORM-03/04/09/10 | T-06-07 | Host/inline modes, class grammar and key count | pending |
+| 06-04-2 | 4 | FORM-09/10 | T-06-08 | Workflow/custom icon precedence | pending |
+| 06-05-1 | 5 | FORM-06/08/10 | T-06-09/10 | Filter endpoint, golden and retained GET controls | pending |
+| 06-05-2 | 5 | FORM-05/08 | T-06-09 | Layout isolation, hook omission and quiet legacy inputs | pending |
+| 06-06-1 | 6 | FORM-11/12 | T-06-11 | Actual system-check map diagnostics | pending |
+| 06-06-2 | 6 | FORM-02/10/12 | T-06-12 | Static W292 plus dynamic strict/log fallback | pending |
+| 06-07-1 | 7 | FORM-06/07 | T-06-13/SC | Locked-JS native modal SubmitEvent/FormData | pending |
+| 06-07-2 | 7 | FORM-06/08 | T-06-14 | Nested cancel and encoded filter reset | pending |
+| 06-07-3 | 7 | FORM-05/07/08 | T-06-SC | Expanded nox crispy_floor suite | pending |
+| 06-08-1 | 7 | FORM-10/11/12/13 | T-06-15 | Canonical config recipe render and live key count | pending |
+| 06-08-2 | 7 | FORM-05/08/09/13 | T-06-15 | Executable helper/custom-template docs recipes | pending |
+| 06-08-3 | 7 | FORM-13 | T-06-16 | Strict docs, paired Breaking/migration and example | pending |
+| 06-09-1..2 | 8 | FORM-01..13 | T-06-17 | Full suites, history, security, docs/lint/example/browser evidence | pending |
 
 ## Wave 0 Requirements
 

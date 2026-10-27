@@ -1,6 +1,7 @@
 import os
 import re
 from pathlib import Path
+from urllib.parse import parse_qs, urlsplit
 
 import django_tables2
 import pytest
@@ -10,6 +11,7 @@ from django.test import RequestFactory, override_settings
 from django.test.client import Client
 from django.utils import translation
 from django_tables2 import RequestConfig
+from django_tables2.templatetags.django_tables2 import table_page_range
 from lxml import html
 
 import crud_views
@@ -420,3 +422,247 @@ def test_table_template_block_reachable(block):
     assert len(doc.cssselect("table")) == 1
     if block != "table.tbody.empty_text":
         assert len(doc.cssselect("nav > ul.pagination")) == 1
+
+
+# PAGE-02/03/04 edges: shared accessibility contract, query/range handling, empty states, translations, icons and
+# class values. _assert_pagination_accessibility, _assert_hidden_labels and HIDDEN_LABEL_CASES are reused by
+# test_card_order.py so both components are held to one semantic contract.
+
+
+def _href_query(href: str) -> dict[str, list[str]]:
+    assert href.startswith("?"), href
+    return parse_qs(urlsplit(href).query, keep_blank_values=True, strict_parsing=True)
+
+
+def _href_page(href: str, page_param: str) -> int:
+    (value,) = _href_query(href)[page_param]
+    return int(value)
+
+
+def _assert_pagination_accessibility(nav, page: int, num_pages: int, page_param: str = "page", labels=None):
+    """The accessible pagination structure shared by table and card; returns the rendered range tokens.
+
+    Compares semantics only: the table's previous/next item hooks and the card nav's spacing class may differ.
+    """
+    labels = labels or {"previous": "previous", "next": "next"}
+    previous, *numbers, next_ = nav.cssselect("ul.pagination > li")
+    for item, direction, target in (
+        (previous, "previous", page - 1 if page > 1 else None),
+        (next_, "next", page + 1 if page < num_pages else None),
+    ):
+        classes = item.get("class").split()
+        assert "page-item" in classes
+        (link,) = item.cssselect("a.page-link")
+        # icon before the "previous" label, the "next" label before its icon; the icon is decorative
+        assert [child.tag for child in link] == (["i", "span"] if direction == "previous" else ["span", "i"])
+        icon = link.find("i")
+        assert icon.get("aria-hidden") == "true"
+        assert icon.text_content() == ""
+        assert link.find("span").text_content() == labels[direction]
+        assert link.text_content() == labels[direction]
+        assert link.get("tabindex") is None
+        if target is None:
+            assert "disabled" in classes
+            assert link.get("aria-disabled") == "true"
+            assert link.get("href") is None
+        else:
+            assert "disabled" not in classes
+            assert link.get("aria-disabled") is None
+            assert _href_page(link.get("href"), page_param) == target
+
+    (current,) = [item for item in numbers if item.get("aria-current") == "page"]
+    assert {"page-item", "active"} <= set(current.get("class").split())
+    assert current.cssselect("a") == []
+    (number,) = current.cssselect("span.page-link")
+    assert number.text_content().strip() == str(page)
+
+    tokens = []
+    for item in numbers:
+        tokens.append(item.text_content().strip())
+        if item is current:
+            continue
+        assert "active" not in item.get("class").split()
+        (link,) = item.cssselect("a.page-link")
+        assert link.get("tabindex") is None
+        if tokens[-1] == "...":
+            assert link.get("href") is None  # an ellipsis is never navigable
+        else:
+            assert _href_page(link.get("href"), page_param) == int(tokens[-1])
+    return tokens
+
+
+HOSTILE_QUERY = 'Grüße, Zoë ✓ "><script>alert(1)</script>&authors-page=9 \'<b onclick="x()">\''
+
+
+def test_table_pagination_prefixed_query_preservation():
+    """Links replace only this table's prefixed page key; every other decoded query value survives as data."""
+    query = {"authors-sort": "value", "books-page": "4", "q": HOSTILE_QUERY, "tag": ["a", "b"]}
+    table, request = _pagination_table(5, 2, prefix="authors-", query=query)
+    assert table.prefixed_page_field == "authors-page"
+    assert request.GET.getlist("tag") == ["a", "b"]
+    rendered = _render_table_pagination(table, request)
+    nav = _nav(rendered)
+
+    _assert_pagination_accessibility(nav, 2, 3, page_param="authors-page")
+    hrefs = [a.get("href") for a in nav.cssselect("a[href]")]
+    assert len(hrefs) == 4  # previous, pages 1 and 3, next: real links before any negative assertion
+    targets = []
+    for href in hrefs:
+        parsed = _href_query(href)
+        (target,) = parsed.pop("authors-page")
+        targets.append(int(target))
+        assert parsed == {"authors-sort": ["value"], "books-page": ["4"], "q": [HOSTILE_QUERY], "tag": ["a", "b"]}
+    assert targets == [1, 1, 3, 3]
+
+    # the hostile value stays attribute data: no injected element or attribute anywhere in the pagination
+    assert html.fromstring(rendered).cssselect("script") == []
+    assert [element.tag for element in nav.iter()].count("b") == 0
+    for link in nav.cssselect("a"):
+        assert set(link.attrib) <= {"class", "href", "aria-disabled"}
+
+
+@pytest.mark.parametrize(
+    "case, rows, page, paginate",
+    [
+        ("unpaginated", 5, None, False),
+        ("zero records", 0, None, True),
+        ("one record", 1, None, True),
+        ("one full page", 2, None, True),
+        ("long range", 30, 15, True),
+    ],
+)
+@override_settings(DJANGO_TABLES2_PAGE_RANGE=10)
+def test_table_pagination_range_and_empty_cases(case, rows, page, paginate):
+    per_page = 1 if case == "long range" else 2
+    table, request = _pagination_table(rows, page, per_page=per_page, paginate=paginate, empty_text="No rows")
+    rendered = _render_table_pagination(table, request)
+    doc = html.fromstring(rendered)
+    body_rows = doc.cssselect("table > tbody > tr")
+
+    if case != "long range":
+        # no paginator/page, or a single page: no pagination at all, the established table rendering stays
+        assert doc.cssselect("nav") == []
+        assert doc.cssselect(".pagination, .page-item, .page-link") == []
+        if rows == 0:
+            (row,) = body_rows
+            (cell,) = row.cssselect("td")
+            assert (cell.get("colspan"), cell.text_content()) == ("1", "No rows")
+        else:
+            assert [row.text_content().strip() for row in body_rows] == [f"row {i}" for i in range(1, rows + 1)]
+        return
+
+    # django-tables2's own range algorithm, unchanged: numeric order with non-navigable ellipses
+    expected = [str(token) for token in table_page_range(table.page, table.paginator)]
+    assert expected == ["1", "...", "12", "13", "14", "15", "16", "17", "...", "30"]
+    tokens = _assert_pagination_accessibility(_nav(rendered), 15, 30)
+    assert tokens == expected
+    numbers = [int(token) for token in tokens if token != "..."]
+    assert numbers == sorted(numbers)
+    (current,) = _nav(rendered).cssselect('li[aria-current="page"]')
+    assert current.cssselect("span.page-link")[0].text_content() == "15"
+    assert [row.text_content().strip() for row in body_rows] == ["row 15"]
+
+
+@pytest.mark.parametrize("raw, expected", [("abc", 1), ("99", 3), ("0", 3)])
+def test_table_pagination_invalid_page_inputs(raw, expected):
+    """django-tables2's own RequestConfig semantics: a non-integer page is page 1, an empty page the last page."""
+    table, request = _pagination_table(5, raw)
+    _assert_pagination_accessibility(_nav(_render_table_pagination(table, request)), expected, 3)
+
+
+SENTINEL_LABELS = {"pagination": "NAV-⚑", "previous": "PREV-⚑", "next": "NEXT-⚑"}
+
+
+def patch_sentinel_translations(monkeypatch):
+    """Route the three pagination msgids through the active gettext to sentinels; restored by monkeypatch."""
+    real = translation._trans.gettext
+    monkeypatch.setattr(translation._trans, "gettext", lambda message: SENTINEL_LABELS.get(message, real(message)))
+
+
+def _label_texts(nav) -> tuple[str, list[str]]:
+    return nav.get("aria-label"), [_direction(nav, d)[1].find("span").text_content() for d in ("previous", "next")]
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("page", [1, 2])
+@override_settings(LANGUAGES=[("en", "English"), ("de", "German")])
+def test_table_pagination_labels_translated(paginated_author_client, monkeypatch, page):
+    """German labels on enabled and disabled ends; a sentinel catalog proves the labels are translated, not literal."""
+    with translation.override("de"):
+        nav = _table_pagination(paginated_author_client, page)
+    assert _label_texts(nav) == ("Seitennavigation", ["zurück", "weiter"])
+    _assert_pagination_accessibility(nav, page, 2, labels={"previous": "zurück", "next": "weiter"})
+
+    patch_sentinel_translations(monkeypatch)
+    with translation.override("de"):
+        nav = _table_pagination(paginated_author_client, page)
+    assert _label_texts(nav) == ("NAV-⚑", ["PREV-⚑", "NEXT-⚑"])
+
+
+@pytest.mark.parametrize("page", [1, 2, 3])
+@override_settings(CRUD_VIEWS_ICONS={"page-previous": "bi:arrow-left", "page-next": "bi:arrow-right"})
+def test_table_pagination_registry_overrides(page):
+    """Overridden page-* registry icons reach both arrows, enabled and disabled alike."""
+    table, request = _pagination_table(5, page)
+    nav = _nav(_render_table_pagination(table, request))
+    for direction, icon, disabled in (
+        ("previous", "bi bi-arrow-left", page == 1),
+        ("next", "bi bi-arrow-right", page == 3),
+    ):
+        item, link = _direction(nav, direction)
+        assert ("disabled" in item.get("class").split()) is disabled
+        (element,) = link.cssselect("i")
+        assert element.get("class") == icon
+    assert "fa-chevron" not in html.tostring(nav, encoding="unicode")
+
+
+NO_SETTING = object()
+HOSTILE_CLASS = 'x" onclick="alert(1)" data-injected=\'<b>z</b>\''
+# case id -> (CRUD_VIEWS_BUTTON_CLASSES, expected class attribute of both arrow labels)
+HIDDEN_LABEL_CASES = {
+    "no setting": (NO_SETTING, "visually-hidden"),
+    "key omitted": ({"card-order:active": "is-active"}, "visually-hidden"),
+    "sr-only": ({"pagination:hidden-label": "sr-only"}, "sr-only"),
+    "None": ({"pagination:hidden-label": None}, ""),
+    "empty": ({"pagination:hidden-label": ""}, ""),
+    "unicode": ({"pagination:hidden-label": "versteckt-ä ✓ 隠す"}, "versteckt-ä ✓ 隠す"),
+    "hostile": ({"pagination:hidden-label": HOSTILE_CLASS}, HOSTILE_CLASS),
+}
+
+
+def hidden_label_settings(mapping):
+    return override_settings() if mapping is NO_SETTING else override_settings(CRUD_VIEWS_BUTTON_CLASSES=mapping)
+
+
+def _assert_hidden_labels(nav, raw: str, expected: str):
+    """Both arrow labels carry exactly one class attribute with the configured value, labels and icons intact."""
+    items = nav.cssselect("ul.pagination > li")
+    for item, direction in ((items[0], "previous"), (items[-1], "next")):
+        (link,) = item.cssselect("a.page-link")
+        (label,) = link.cssselect("span")
+        assert dict(label.attrib) == {"class": expected}
+        assert label.text_content() == direction
+        assert len(link.cssselect("i[aria-hidden=true]")) == 1
+        if expected == "":
+            # None and "" both render an explicitly empty attribute, never a dropped label
+            assert raw.count(f'<span class="">{direction}</span>') == 1
+    for element in nav.iter():
+        assert element.tag != "b"
+        assert "onclick" not in element.attrib and "data-injected" not in element.attrib
+    if expected:
+        # code points round-trip: the decoded attribute equals the configured string (UTF-8 in the raw response)
+        assert len([s for s in nav.iter("span") if s.get("class") == expected]) == 2
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("page", [1, 2])
+@pytest.mark.parametrize("case", HIDDEN_LABEL_CASES)
+def test_table_pagination_hidden_label_values(paginated_author_client, case, page):
+    mapping, expected = HIDDEN_LABEL_CASES[case]
+    with hidden_label_settings(mapping), translation.override("en"):
+        response = paginated_author_client.get(f"/author/?page={page}")
+        nav = _table_pagination(paginated_author_client, page)
+    raw = response.content.decode("utf-8")
+    _assert_hidden_labels(nav, raw, expected)
+    if case == "unicode":
+        assert f'class="{expected}"'.encode() in response.content

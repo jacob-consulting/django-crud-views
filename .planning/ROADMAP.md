@@ -238,14 +238,29 @@ FORM-11, FORM-12, FORM-13
   5. The CHANGELOG `### Breaking` entry and the "Form buttons" section of `docs/migrating-1.0.md` exist. The example
      project shows `both` for submit, delete and cancel, and the Tabler follow-up is written into the acceptance note.
 **Plans**: 0/9 plans executed
+**Wave 1**
 - [ ] 06-01-PLAN.md
+
+**Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 06-02-PLAN.md
+
+**Wave 3** *(blocked on Wave 2 completion)*
 - [ ] 06-03-PLAN.md
+
+**Wave 4** *(blocked on Wave 3 completion)*
 - [ ] 06-04-PLAN.md
+
+**Wave 5** *(blocked on Wave 4 completion)*
 - [ ] 06-05-PLAN.md
+
+**Wave 6** *(blocked on Wave 5 completion)*
 - [ ] 06-06-PLAN.md
+
+**Wave 7** *(blocked on Wave 6 completion)*
 - [ ] 06-07-PLAN.md
 - [ ] 06-08-PLAN.md
+
+**Wave 8** *(blocked on Wave 7 completion)*
 - [ ] 06-09-PLAN.md
 
 **UI hint**: no (new leaf template replaces existing button markup; no new screens)

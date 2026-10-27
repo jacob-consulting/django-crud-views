@@ -3,11 +3,11 @@ gsd_state_version: "1.0"
 current_phase: 06
 current_phase_name: Form-button leaf
 status: planning
-stopped_at: "Phase 06 convergence: cycle 1 reviewed, non-conflicting revisions complete; awaiting H-MAIN prerequisite decision"
-last_updated: "2026-10-27T16:03:06.747Z"
+stopped_at: Phase 06 D-18 resolved; revisions complete, external review cycle 2 pending
+last_updated: "2026-10-27T16:32:44.177Z"
 last_activity: 2026-10-27
 last_activity_desc: Phase 05 complete, transitioned to Phase 6
-state_head: 6089258a20ab32b633a314bed540700a63d989e5
+state_head: 62db7bbede38094110d735b3781e25a1e6d39c64
 progress:
   total_phases: 7
   completed_phases: 5
@@ -138,6 +138,10 @@ None yet.
   the non-core data-bs-* sentence, IN-05 missing-script enumeration) — see 04-REVIEW-DISPOSITION.md; candidates for Phase 7.
 - Phase 2: Both source-probe classifier limitations remain documented; explicit tests and completed human prose UAT independently establish acceptance. See 02-VERIFICATION.md.
 
+### Roadmap Evolution
+
+- Phase 06 edited: User decision D-18: verify completed Phase 1/2 contracts on executing working branch before spec; main merge no longer prerequisite
+
 ## Deferred Items
 
 | Category | Item | Status | Deferred At | Milestone |
@@ -146,6 +150,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-27T16:03:06.486Z
-Stopped at: Phase 06 convergence: cycle 1 reviewed, non-conflicting revisions complete; awaiting H-MAIN prerequisite decision
+Last session: 2026-10-27T16:32:43.942Z
+Stopped at: Phase 06 D-18 resolved; revisions complete, external review cycle 2 pending
 Resume file: .planning/phases/06-form-button-leaf/06-REVIEWS.md

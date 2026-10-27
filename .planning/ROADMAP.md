@@ -206,7 +206,8 @@ label-mode and class-table contract, and are safe against template injection. Wi
 unchanged.
 **Source**: plan 2 (#257) · branch `feat/form-button-leaf`
 **Depends on**: Phase 1 (the `"form"` floor) and Phase 2 (form mode keys, location split)
-**Parallel with**: None. This is the last code phase. Start its spec only after Phases 1 and 2 are on `main`.
+**Parallel with**: None. This is the last code phase. Before its spec, verify completed Phases 1 and 2 on the
+current working branch and record its HEAD SHA plus contract evidence (user decision D-18; no merge to `main` required).
 **Research/spec**: **Needs its own spec** (brainstorm) before implementation; highest risk. The spec must settle:
 
   - the filter buttons' move from `add_input()` into `FormActions`, and a user `formhelper_class` that still calls
@@ -290,7 +291,7 @@ Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 7) is valid. With paralleliza
 |------|--------|-------|
 | 1 | 1 (plan 1A) ∥ 2 (plan 1C) | Disjoint files; both are preconditions of Phase 6 |
 | 2 | 3 (plan 1B) ∥ 4 (plan 3A) ∥ 5 (plan 3B) | 3 needs 1; 4 and 5 are independent (5 rebases after 2 for the key count) |
-| 3 | 6 (plan 2) | Needs 1 and 2 on `main`; spec first |
+| 3 | 6 (plan 2) | Verify completed 1 and 2 on the working branch; spec first (D-18) |
 | 4 | 7 (plan 4) | Needs 6, 4 and 5 merged; last change before the 1.0.0 bump |
 
 Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).

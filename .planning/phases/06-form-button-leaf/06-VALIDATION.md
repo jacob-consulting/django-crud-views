@@ -27,8 +27,9 @@ created: "2026-10-27"
 - 06-01 task 1 creates the selected-runtime wrapper/evidence before the first JS gate. Each invocation
   reasserts absolute Node/npm paths, locked engine ranges, package identities and lock hash; bare ambient npm
   is not a substitute in fresh shells. Compatible runtime/artifact acquisition failure blocks the gate.
-- The authoritative-main prerequisite remains unresolved at review round 1; no task, runtime setup, spec or
-  acceptance result is marked passed by these plan revisions. Its halt remains in 06-01.
+- D-18 resolves the former main prerequisite: verify completed Phase 1/2 contracts on the executing working
+  branch and record HEAD plus test evidence before the spec. These planning changes do not mark any execution
+  or runtime acceptance result passed; missing or invalid dependencies still halt 06-01.
 - Before phase verification, run the declared-floor session, strict docs build, lint and formatting,
   example checks and documentation synchronization.
 - Target feedback latency: under 60 seconds for a focused shard; split if measurement exceeds it.
@@ -39,7 +40,7 @@ All tasks map to executable PLAN commands and immediate fails_when conditions. P
 
 | Task | Wave | Requirements | Threat Ref | Verification target | Status |
 |---|---|---|---|---|---|
-| 06-01-1..3 | 1 | FORM-01/02/05/06/08/11 | T-06-01 | Real crispy tracer; spec/main evidence; five golden captures and commit history | pending |
+| 06-01-1..3 | 1 | FORM-01/02/05/06/08/11 | T-06-01 | Real crispy tracer; spec and executing-branch prerequisite evidence (D-18); five golden captures and commit history | pending |
 | 06-02-1 | 2 | FORM-02/03/04/06/07 | T-06-02/03 | Real leaf plus atomic location consumers, utilities, exhaustive EXPECTED_KEYS and docs count | pending |
 | 06-02-2 | 2 | FORM-05/07 | T-06-02/03/04 | Custom templates, literal/SafeString/lazy attrs; floor invariant | pending |
 | 06-02-3 | 2 | FORM-06 | T-06-04 | Golden diffs, CRUD and cancel payloads | pending |
@@ -92,5 +93,5 @@ All tasks map to executable PLAN commands and immediate fails_when conditions. P
 The nine PLAN files contain append-only Round 1 ledgers anchored to REVIEWS commit 6089258. H-LOCATIONS,
 H-KEYSET and H-EARLY-UTILITIES are produced in 06-02; diagnostic/provider findings are executable in 06-06;
 the remaining consumer/helper/docs/runtime findings are assigned to their affected tasks. Existing confirmation
-POST and new clicked-submitter evidence stay separate. H-MAIN still needs maintainer merge or an explicit user
-decision changing the Phase 6 prerequisite; no plan revision claims that external condition is satisfied.
+POST and new clicked-submitter evidence stay separate. H-MAIN is resolved by the explicit user decision
+D-18; actual working-branch prerequisite verification remains pending execution.

@@ -76,6 +76,14 @@ Phase 7 stability policy are outside this discussion workflow.
   form `both`. Preserve project quality gates and record downstream-theme follow-up in acceptance without
   editing a downstream repository. Follow the project rule against downstream project names in new files.
 
+### Convergence prerequisite resolution
+- **D-18:** The user explicitly selected verifying Phase 1/2 dependencies on the working branch instead of
+  waiting for a merge to `main`. Before authoring the Phase 6 spec, verify the completed lazy-default and finite
+  form-grammar contracts on the actual executing branch, record its HEAD SHA and completion/test evidence, and
+  halt only if those dependencies are missing or invalid. No merge or branch switch is required. This supersedes
+  the earlier Phase 6 `main` prerequisite in ROADMAP.md and source-plan sequencing; spec-first and baseline-first
+  ordering remain required. Applies to whichever branch executes the phase, not a hard-coded branch name.
+
 ### Agent's Discretion and Required Research
 - No additional product choice was explicitly delegated. Helper placement, test organization, and precise
   documentation wording remain implementation choices within these decisions.

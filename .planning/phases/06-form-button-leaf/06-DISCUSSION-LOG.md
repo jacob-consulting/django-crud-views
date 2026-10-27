@@ -204,3 +204,13 @@ and implementation work within the captured requirements. These were not present
 
 None added; rejected alternatives are recorded above. The required design/spec and dependency verification
 remain Phase 6 work. No implementation was performed during this discussion.
+
+## Convergence follow-up: dependency prerequisite
+
+Cycle 1 identified that Phase 1/2 contracts were absent from main while present on the working branch.
+After the non-conflicting plan revisions were completed and committed, the user was offered:
+
+1. Verify dependencies on the working branch (recommended); update the requirement and continue convergence.
+2. Keep the main requirement and wait for those phases to merge.
+
+**User choice:** 1. Recorded as D-18 in CONTEXT.md. No merge or branch change was authorized or performed.

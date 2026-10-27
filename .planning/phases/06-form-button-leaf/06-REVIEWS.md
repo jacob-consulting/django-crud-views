@@ -20,7 +20,7 @@ model_sources:
 <!-- gsd:plan-revision-conflicts:begin -->
 ## Plan-Revision Conflicts
 
-- [ ] REVISION_CONFLICT external-prerequisite/06-01 — required_property: Phase 1 and 2 prerequisites exist on authoritative main before spec/execution | conflicts with: ROADMAP.md Phase 6 main prerequisite; main remains 38b0100 | alternatives: retain main gate and wait for maintainer merge; explicitly authorize executing-branch prerequisite and update governing requirement
+- [x] REVISION_CONFLICT external-prerequisite/06-01 — required_property: Phase 1 and 2 prerequisites exist on authoritative main before spec/execution | conflicts with: ROADMAP.md Phase 6 main prerequisite; main remains 38b0100 | alternatives: retain main gate and wait for maintainer merge; explicitly authorize executing-branch prerequisite and update governing requirement | resolved: User selected working-branch verification (D-18); governing roadmap/context and plans updated; retain dependency evidence, spec-first and baseline-first gates.
 
 <!-- gsd:plan-revision-conflicts:end -->
 

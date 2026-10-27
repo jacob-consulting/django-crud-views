@@ -31,7 +31,8 @@ findings:
     severity: info
     disposition: fixed
     title: "Card list reference omits the new shared key"
-open: 7total: 7
+open: 0
+total: 7
 recorded: 2026-10-27T13:30:00.000Z
 ---
 

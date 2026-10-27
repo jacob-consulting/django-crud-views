@@ -1,6 +1,4 @@
 import json
-import os
-import re
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -13,6 +11,7 @@ from django.test.client import Client
 from django.utils import translation
 from lxml import html
 
+from tests.lib.helper.golden import check_golden
 from tests.lib.helper.user import user_viewset_permission
 from tests.test1.test_table_template import (
     HIDDEN_LABEL_CASES,
@@ -234,23 +233,14 @@ def _pagination(client, page: int):
     return nav
 
 
-def _check_golden(name: str, nav):
-    markup = re.sub(r"\s+", " ", re.sub(r">\s+<", "><", html.tostring(nav, encoding="unicode"))).strip()
-    path = GOLDEN_DIR / f"{name}.html"
-    if os.environ.get("CV_UPDATE_GOLDEN"):
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(markup + "\n", encoding="utf-8")
-    assert markup == path.read_text(encoding="utf-8").strip()
-
-
 @pytest.mark.django_db
 @pytest.mark.parametrize("page", [1, 2])
 def test_card_pagination_golden(client_publisher_order, publishers, page):
-    _check_golden(f"page{page}", _pagination(client_publisher_order, page))
+    check_golden(GOLDEN_DIR / f"page{page}.html", _pagination(client_publisher_order, page))
 
 
 # D-02: the stock card snippet's exact render bytes, frozen before its hidden-label classes moved to the class table.
-# Captured once with CV_UPDATE_CARD_PAGINATION_RAW=1; never regenerate it to absorb a change.
+# Captured once and committed; there is deliberately no regenerate switch, so any drift of the stock bytes fails.
 CARD_PAGINATION_RAW = GOLDEN_DIR / "raw_pages.json"
 
 
@@ -263,8 +253,6 @@ def _render_card_pagination_raw(page: int) -> str:
 
 def test_card_pagination_raw_bytes():
     rendered = {f"page{page}": _render_card_pagination_raw(page) for page in (1, 2)}
-    if os.environ.get("CV_UPDATE_CARD_PAGINATION_RAW"):
-        CARD_PAGINATION_RAW.write_text(json.dumps(rendered, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     stored = json.loads(CARD_PAGINATION_RAW.read_text(encoding="utf-8"))
     assert set(stored) == {"page1", "page2"}
     for name, markup in rendered.items():

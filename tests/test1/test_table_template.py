@@ -1,5 +1,3 @@
-import os
-import re
 from pathlib import Path
 from urllib.parse import parse_qs, urlsplit
 
@@ -16,6 +14,7 @@ from lxml import html
 
 import crud_views
 from tests.lib.helper.boostrap5 import Table
+from tests.lib.helper.golden import check_golden
 
 TABLE_TEMPLATE = "crud_views/table/bootstrap5.html"
 # the package's own templates: the tracked src/ files in a development checkout, their installed copy under nox
@@ -97,7 +96,11 @@ def paginated_author_client(
 
 
 def _table_pagination(client: Client, page: int, query: str = ""):
-    response = client.get(f"/author/?{query}{'&' if query else ''}page={page}")
+    return _table_nav(client.get(f"/author/?{query}{'&' if query else ''}page={page}"))
+
+
+def _table_nav(response):
+    """The pagination nav of one table response, after proving which template rendered it."""
     assert response.status_code == 200
     # template-origin evidence first: new markup alone does not prove which template rendered
     assert response.context["table"].template_name == TABLE_TEMPLATE
@@ -111,21 +114,12 @@ def _table_pagination(client: Client, page: int, query: str = ""):
     return ul.getparent()
 
 
-def _check_table_golden(name: str, nav):
-    markup = re.sub(r"\s+", " ", re.sub(r">\s+<", "><", html.tostring(nav, encoding="unicode"))).strip()
-    path = TABLE_GOLDEN_DIR / f"{name}.html"
-    if os.environ.get("CV_UPDATE_GOLDEN"):
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(markup + "\n", encoding="utf-8")
-    assert markup == path.read_text(encoding="utf-8").strip()
-
-
 @pytest.mark.django_db
 @pytest.mark.parametrize("page", [1, 2])
 def test_table_pagination_golden(paginated_author_client, page):
     with translation.override("en"):
         nav = _table_pagination(paginated_author_client, page)
-    _check_table_golden(f"page{page}", nav)
+    check_golden(TABLE_GOLDEN_DIR / f"page{page}.html", nav)
 
 
 def _direction(nav, direction: str):
@@ -667,7 +661,7 @@ def test_table_pagination_hidden_label_values(paginated_author_client, case, pag
     mapping, expected = HIDDEN_LABEL_CASES[case]
     with hidden_label_settings(mapping), translation.override("en"):
         response = paginated_author_client.get(f"/author/?page={page}")
-        nav = _table_pagination(paginated_author_client, page)
+        nav = _table_nav(response)
     raw = response.content.decode("utf-8")
     _assert_hidden_labels(nav, raw, expected)
     if case == "unicode":

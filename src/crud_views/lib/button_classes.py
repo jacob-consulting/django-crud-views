@@ -84,6 +84,8 @@ DEFAULT_BUTTON_CLASSES: dict[str, str | None] = {
     "context:hidden-label": "visually-hidden",
     "list:hidden-label": "visually-hidden",
     "card:hidden-label": "visually-hidden",
+    # the screen-reader text of the table and card pagination arrows: one key styles both components
+    "pagination:hidden-label": "visually-hidden",
     # the class a host-placed icon (#258) adds to its button: {name_class} is the icon library's name class; a theme
     # that needs a base class next to it writes e.g. "icon {name_class}", None switches the icon off there
     "context:icon-host": "{name_class}",

@@ -1704,3 +1704,25 @@ def test_filter_helper_pushes_its_owner_for_its_render_only(owners, monkeypatch)
     assert [el.get("class") for el in _buttons(out)] == ["m-icon"]
     assert [dict(d) for d in context.dicts] == layers
     assert not any(_CV_HELPER_OWNER in layer for layer in context.dicts)
+
+
+def test_filter_custom_layout_class_keeps_its_behavior_while_isolated():
+    """A selected custom Layout subclass keeps its own render behavior and nested nodes; only the private copy is
+    made truthy, the caller's object and class are untouched."""
+    from crispy_forms.layout import HTML
+
+    class MarkedLayout(Layout):
+        def render(self, form, context, template_pack=None, **kwargs):
+            return "<p>marked</p>" + super().render(form, context, template_pack=template_pack, **kwargs)
+
+    caller = MarkedLayout(HTML("<em>note</em>"), "city")
+    helper = _new_filter_helper(_filter_helper_class(layout=Layout("name")))
+    helper.layout = caller
+    for _ in range(2):
+        out = _filter_render(_CityForm(), helper)
+        assert out.count("<p>marked</p>") == 1 and out.count("<em>note</em>") == 1
+        assert _controls_of(out) == _fields("city") + DEFAULT_ACTIONS + HIDDEN_SORT
+        assert len(_action_groups(out)) == 1
+    assert isinstance(helper.layout, MarkedLayout) and helper.layout is not caller
+    assert type(caller) is MarkedLayout and len(caller.fields) == 2
+    assert bool(MarkedLayout()) is False  # the user's class keeps crispy's len-based truthiness

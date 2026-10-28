@@ -75,7 +75,7 @@ Default list actions for list view.
 | CRUD_VIEWS_LIST_ACTIONS_INLINE | List row actions kept as buttons; the rest go into a `⋯` menu. `None`: no menu. See [Action menus](action_menus.md). Invalid values raise `crud_views.E105`. | `list[str] \| None` | `None` |
 | CRUD_VIEWS_CONTEXT_ACTIONS_INLINE | The same for the context toolbar. | `list[str] \| None` | `None` |
 | CRUD_VIEWS_CARD_ACTIONS_INLINE | The same for card actions. | `list[str] \| None` | `None` |
-| CRUD_VIEWS_LABEL_MODE_DEFAULTS | Label-mode floor per button location (`"context"`, `"list"`, `"card"`), merged per location over the package defaults: a location you leave out keeps its package default. Read at call time. See [Label-mode configuration](#label-mode-configuration). Invalid values raise `crud_views.E108`. | `dict[str, str]` | `{"context": "icon", "list": "icon", "card": "both"}` |
+| CRUD_VIEWS_LABEL_MODE_DEFAULTS | Label-mode floor per button location (`"context"`, `"list"`, `"card"`, `"form"`), merged per location over the package defaults: a location you leave out keeps its package default. Read at call time. See [Label-mode configuration](#label-mode-configuration). Invalid values raise `crud_views.E108`. | `dict[str, str]` | `{"context": "icon", "list": "icon", "card": "both", "form": "label"}` |
 | CRUD_VIEWS_CONTEXT_ACTIONS_LABEL_MODE | Label mode per context toolbar action key (`"label"`, `"icon"`, `"both"`), used whole when neither the view nor its ViewSet sets a map. A key not named falls through to the target view's `cv_context_action_label_mode`, then to the `"context"` entry of `CRUD_VIEWS_LABEL_MODE_DEFAULTS` (package default `"icon"`). See [Label-mode configuration](#label-mode-configuration). Invalid values raise `crud_views.E106`. | `dict[str, str]` | `{}` |
 | CRUD_VIEWS_LIST_ACTIONS_LABEL_MODE | Label mode per list row action key, used whole when neither the view nor its ViewSet sets a map. A key not named takes the `"list"` entry of `CRUD_VIEWS_LABEL_MODE_DEFAULTS` (package default `"icon"`). See [Label-mode configuration](#label-mode-configuration). Invalid values raise `crud_views.E106`. | `dict[str, str]` | `{}` |
 
@@ -87,7 +87,7 @@ merged per location, every per-action map replaces the layer below it whole.
 
 | Knob | merge or replace | layer | keys |
 |---|---|---|---|
-| `CRUD_VIEWS_LABEL_MODE_DEFAULTS` | merged per location over the package defaults `{"context": "icon", "list": "icon", "card": "both"}` | project floor (setting) | button location: `"context"`, `"list"`, `"card"` |
+| `CRUD_VIEWS_LABEL_MODE_DEFAULTS` | merged per location over the package defaults `{"context": "icon", "list": "icon", "card": "both", "form": "label"}` | project floor (setting) | button location: `"context"`, `"list"`, `"card"`, `"form"` (the crispy form buttons) |
 | `CRUD_VIEWS_CONTEXT_ACTIONS_LABEL_MODE` | replace: used whole when no ViewSet or view map is set | setting | context toolbar action key |
 | `CRUD_VIEWS_LIST_ACTIONS_LABEL_MODE` | replace: used whole when no ViewSet or view map is set | setting | list row action key |
 | `ViewSet` `context_actions_label_mode` / `list_actions_label_mode` | replace the setting whole; `None` inherits, `{}` selects an empty map | ViewSet | action key |
@@ -118,8 +118,8 @@ CRUD_VIEWS_LABEL_MODE_DEFAULTS = {"context": "both"}
 
 The resolved values are available in Python:
 
-- `crud_views.lib.view.label_mode.default_label_mode(location)` returns the floor of `"context"`, `"list"` or
-  `"card"`: the setting's entry for it, else the package default. It reads the setting on every call, so
+- `crud_views.lib.view.label_mode.default_label_mode(location)` returns the floor of `"context"`, `"list"`, `"card"`
+  or `"form"`: the setting's entry for it, else the package default. It reads the setting on every call, so
   `override_settings` in tests applies without a reset. An unknown `location` is a caller bug and raises `ValueError`
   in every mode.
 - `crud_views.lib.view.label_mode.LABEL_MODE_DEFAULTS` is the read-only package default map (a `MappingProxyType`);

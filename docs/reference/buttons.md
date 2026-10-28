@@ -81,9 +81,10 @@ CRUD_VIEWS_BUTTON_CLASSES = {
 
 Removing `form:submit:icon` makes the icon lookup use `form:submit` too; setting it to `None` or `""` returns
 no classes for that mode. Settings override theme values at the same exact key, while a theme mode entry still
-wins over a settings base entry. These keys are available to callers that supply a mode. Crispy form buttons
-continue using their existing `slot=` calls without choosing a mode, so their rendering is unchanged. Accepting
-these class keys does not enable label-mode selection or icon rendering for crispy form buttons.
+wins over a settings base entry. A crispy form button in a layout (such as `FormActions`) renders through the
+form-button leaf and looks up `form:<kind>:<mode>` with its resolved mode, the `"form"` floor of
+[`CRUD_VIEWS_LABEL_MODE_DEFAULTS`](settings.md#label-mode-configuration) (package default `"label"`); its `slot=` picks
+the kind. A button added with `helper.add_input()` stays a crispy input and reads only `form:<kind>`.
 
 A `context:<variant>:<mode>` or `list:<variant>:<mode>` key applies to every toolbar or row button whose mode resolves
 to that mode. Without label-mode configuration every toolbar and row button resolves to the package floor `icon`, so
@@ -130,7 +131,7 @@ apply to the buttons a map, a context button, a target view or `CRUD_VIEWS_LABEL
 | `menu:active` | `active` |
 | `card-order:active` | `active` |
 | `card:flex` | `flex-grow-1` |
-| `context:hidden-label` / `list:hidden-label` / `card:hidden-label` | `visually-hidden` |
+| `context:hidden-label` / `list:hidden-label` / `card:hidden-label` / `form:hidden-label` | `visually-hidden` |
 | `pagination:hidden-label` | `visually-hidden` |
 | `card:root` | `card mb-3` |
 | `card:body` | `card-body` |
@@ -140,10 +141,10 @@ apply to the buttons a map, a context button, a target view or `CRUD_VIEWS_LABEL
 | `alert:success` | `alert alert-success` |
 | `alert:info` | `alert alert-info` |
 | `alert:debug` | `alert alert-secondary` |
-| `context:icon-host` / `list:icon-host` / `card:icon-host` / `menu:icon-host` | `{name_class}` |
+| `context:icon-host` / `list:icon-host` / `card:icon-host` / `menu:icon-host` / `form:icon-host` | `{name_class}` |
 
-The default table has 71 keys: the rows with four variants stand for four keys each, the rows with three locations
-for three, the `*:icon-host` row for four. The `context` and `list`
+The default table has 73 keys: the rows with four variants stand for four keys each, the rows with three locations
+for three, the `*:hidden-label` row of the button locations for four and the `*:icon-host` row for five. The `context` and `list`
 buttons look the same for every variant by default, the `card` buttons distinguish them. Mode keys such as
 `card:tertiary:icon` and `form:submit:icon` are addressable but not shipped; their possible combinations are excluded
 from the default-table count.
@@ -222,7 +223,7 @@ CRUD_VIEWS_BUTTON_CLASSES = {"list:container-tag": "div", "list:container-label"
 The five `alert:*` keys colour the one alert frame, `tags/alert.html`, which renders every alert in the package:
 the slot is the alert's level (`error`, `warning`, `success`, `info`, `debug`). See [Flash messages](messages.md).
 
-The four `*:icon-host` keys are format strings: the class a [host-placed icon](icons.md#host-placement) adds to
+The five `*:icon-host` keys are format strings: the class a [host-placed icon](icons.md#host-placement) adds to
 its button, with `{name_class}` standing for the icon library's name class. `"card:icon-host": "icon {name_class}"`
 adds a base class on card buttons only; `None` or `""` switches host icons off at that location (no class and
 nothing inline). The filter toggle is the exception in its icon-bearing modes (`"icon"` and `"both"`): with

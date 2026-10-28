@@ -84,6 +84,8 @@ DEFAULT_BUTTON_CLASSES: dict[str, str | None] = {
     "context:hidden-label": "visually-hidden",
     "list:hidden-label": "visually-hidden",
     "card:hidden-label": "visually-hidden",
+    # the screen-reader text of an icon-only form button (Phase 6); like every utility key, no mode suffix
+    "form:hidden-label": "visually-hidden",
     # the screen-reader text of the table and card pagination arrows: one key styles both components
     "pagination:hidden-label": "visually-hidden",
     # the class a host-placed icon (#258) adds to its button: {name_class} is the icon library's name class; a theme
@@ -92,6 +94,7 @@ DEFAULT_BUTTON_CLASSES: dict[str, str | None] = {
     "list:icon-host": "{name_class}",
     "card:icon-host": "{name_class}",
     "menu:icon-host": "{name_class}",
+    "form:icon-host": "{name_class}",
     "language:toggle": "btn btn-outline-secondary",
     "object-detail:property-detail": "btn btn-link p-0 ms-1 align-baseline text-muted",
 }

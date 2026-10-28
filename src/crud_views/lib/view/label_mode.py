@@ -20,7 +20,9 @@ class LabelMode(StrEnum):
 LABEL_MODES: frozenset[str] = frozenset(mode.value for mode in LabelMode)
 
 # the package floor per button location: read-only, CRUD_VIEWS_LABEL_MODE_DEFAULTS is merged over it per key
-LABEL_MODE_DEFAULTS: Mapping[str, str] = MappingProxyType({"context": "icon", "list": "icon", "card": "both"})
+LABEL_MODE_DEFAULTS: Mapping[str, str] = MappingProxyType(
+    {"context": "icon", "list": "icon", "card": "both", "form": "label"}
+)
 
 # marks CRUD_VIEWS_LABEL_MODE_DEFAULTS as absent (an explicit None is invalid, not absent)
 _UNSET = object()

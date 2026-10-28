@@ -266,7 +266,9 @@ def test_form_leaf_classes_and_bodies(kind, mode):
     (button,) = html.fromstring(f"<div>{markup}</div>").cssselect("button")
     assert _tokens(button) == [SENTINEL_CLASSES[f"form:{kind}"]]
     assert (button.get("type"), button.get("name"), button.get("value")) == (FORM_TYPES[kind], "go", "Go")
-    assert button.get("data-cv-cancel-url") == ("/back/" if kind == "cancel" else None)
+    # rendered once: as the cancel URL of a cancel button, as an ordinary extra attribute on any other kind
+    assert button.get("data-cv-cancel-url") == "/back/"
+    assert markup.count("data-cv-cancel-url=") == 1
     hidden = button.cssselect("span." + SENTINEL_CLASSES["form:hidden-label"])
     icons = button.cssselect("i")
     if mode == "icon":

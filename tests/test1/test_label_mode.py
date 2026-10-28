@@ -89,7 +89,10 @@ def test_default_label_mode_absent_setting(no_setting):
         # an override equal to its package value replaces only that entry and changes nothing
         ({"card": "both"}, PACKAGE),
         ({"context": "icon"}, PACKAGE),
-        ({"context": "label", "list": "both", "card": "label"}, {"context": "label", "list": "both", "card": "label"}),
+        (
+            {"context": "label", "list": "both", "card": "label"},
+            {**PACKAGE, "context": "label", "list": "both", "card": "label"},
+        ),
         # an unknown key (E108 reports it) is ignored at render
         ({"cotext": "both"}, PACKAGE),
         # the form location (Phase 6) is merged like the others; an entry equal to its package value changes nothing

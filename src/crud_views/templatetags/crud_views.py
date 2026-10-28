@@ -201,7 +201,13 @@ def cv_button(context, location, kind="action"):
     """The action data in context as one button (kind "action") or menu item (kind "menu-item").
 
     The leaf template receives only the flat leaf contract of cv_button_data; hidden actions render nothing.
+    Form buttons (location "form") render through the crispy adapters (Submit, Button, Reset), never here.
     """
+    if location == "form":
+        raise ValueError(
+            "cv_button renders action buttons only; location 'form' is not supported here, form buttons render"
+            " through the crispy adapters crud_views.lib.crispy.Submit, Button and Reset"
+        )
     ctx = cv_resolve_action(context.flatten())
     if ctx is None:
         return ""

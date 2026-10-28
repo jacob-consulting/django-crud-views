@@ -517,4 +517,4 @@ def test_label_mode_defaults_document_every_location():
         assert f'`"{location}"`' in config_row[3], location
         assert f'"{location}": "{label_mode.LABEL_MODE_DEFAULTS[location]}"' in config_row[1], location
     flat = " ".join(_section(text, "### Label-mode configuration").split())
-    assert '`default_label_mode(location)` returns the floor of `"context"`, `"list"`, `"card"` or `"form"`' in flat
+    assert '.default_label_mode(location)` returns the floor of `"context"`, `"list"`, `"card"` or `"form"`' in flat

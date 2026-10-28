@@ -35,19 +35,19 @@ except where a requirement says the markup changes.
 
 ### Form-button leaf (plan 2, #257)
 
-- [ ] **FORM-01**: Golden of today's form-button markup is committed before any change, so the PR shows the diff
-- [ ] **FORM-02**: `"form"` is a button-data location; `cv_button_data(ctx, "form")` provides `cv_type`, `cv_name`, `cv_value`, `cv_id`, `cv_cancel_url` (cancel only); `cv_key` is the kind
-- [ ] **FORM-03**: New leaf `crud_views/tags/button/form.html` renders the three label-mode bodies with classes from `{% cv_button_class "form" cv_key cv_label_mode %}`
-- [ ] **FORM-04**: Class keys `form:hidden-label` (default `visually-hidden`) and `form:icon-host` exist, so icon-only form buttons keep an accessible hidden label and host-placed icon libraries render
-- [ ] **FORM-05**: crispy `Submit` / `Button` / `Reset` keep their constructor signature and render through the leaf; `css_class` is still appended; extra kwargs render as attributes
-- [ ] **FORM-06**: With nothing configured, form buttons render as `<button type="…">` with the same text, classes, `name`, `value`, `id`; POST data unchanged
-- [ ] **FORM-07**: Button values/labels are rendered as autoescaped plain text, never evaluated as a Django template; a label containing `<b>` renders escaped (button text and `value` attribute tested)
-- [ ] **FORM-08**: List filter Apply/Reset move from `helper.add_input()` into a layout `FormActions`, so they render through the leaf; `#filter-button-reset` id preserved; hidden sort/order inputs unchanged
-- [ ] **FORM-09**: Icons `save`, `cancel`, `filter-reset` exist in `DEFAULT_ICONS` and `BOOTSTRAP_ICONS`; submit→`save`, delete→`delete`, cancel→`cancel`, filter-submit→`filter`, filter-reset→`filter-reset`; workflow submit uses `workflow`; per-form `submit_icon` wins
-- [ ] **FORM-10**: `CRUD_VIEWS_LABEL_MODE_DEFAULTS = {"form": "both"}` shows icon + text on save, delete, cancel and both filter buttons; `{"form": "icon"}` uses the hidden label with `title` and `data-cv-tooltip="form"`
-- [ ] **FORM-11**: Setting → ViewSet `form_actions_label_mode` → view `cv_form_actions_label_mode` per-key maps resolve like the context/list maps
-- [ ] **FORM-12**: Checks E210/E211/W291 cover form label-mode maps; W292 reports icon-only form buttons without an icon; strict mode raises at render, otherwise logs and renders the label
-- [ ] **FORM-13**: CHANGELOG `### Breaking` (`<input>` → `<button>`, no template evaluation of values) and `docs/migrating-1.0.md` "Form buttons" section; example project enables `both` for submit, delete, cancel; Tabler follow-up written into the acceptance note
+- [x] **FORM-01**: Golden of today's form-button markup is committed before any change, so the PR shows the diff
+- [x] **FORM-02**: `"form"` is a button-data location; `cv_button_data(ctx, "form")` provides `cv_type`, `cv_name`, `cv_value`, `cv_id`, `cv_cancel_url` (cancel only); `cv_key` is the kind
+- [x] **FORM-03**: New leaf `crud_views/tags/button/form.html` renders the three label-mode bodies with classes from `{% cv_button_class "form" cv_key cv_label_mode %}`
+- [x] **FORM-04**: Class keys `form:hidden-label` (default `visually-hidden`) and `form:icon-host` exist, so icon-only form buttons keep an accessible hidden label and host-placed icon libraries render
+- [x] **FORM-05**: crispy `Submit` / `Button` / `Reset` keep their constructor signature and render through the leaf; `css_class` is still appended; extra kwargs render as attributes
+- [x] **FORM-06**: With nothing configured, form buttons render as `<button type="…">` with the same text, classes, `name`, `value`, `id`; POST data unchanged
+- [x] **FORM-07**: Button values/labels are rendered as autoescaped plain text, never evaluated as a Django template; a label containing `<b>` renders escaped (button text and `value` attribute tested)
+- [x] **FORM-08**: List filter Apply/Reset move from `helper.add_input()` into a layout `FormActions`, so they render through the leaf; `#filter-button-reset` id preserved; hidden sort/order inputs unchanged
+- [x] **FORM-09**: Icons `save`, `cancel`, `filter-reset` exist in `DEFAULT_ICONS` and `BOOTSTRAP_ICONS`; submit→`save`, delete→`delete`, cancel→`cancel`, filter-submit→`filter`, filter-reset→`filter-reset`; workflow submit uses `workflow`; per-form `submit_icon` wins
+- [x] **FORM-10**: `CRUD_VIEWS_LABEL_MODE_DEFAULTS = {"form": "both"}` shows icon + text on save, delete, cancel and both filter buttons; `{"form": "icon"}` uses the hidden label with `title` and `data-cv-tooltip="form"`
+- [x] **FORM-11**: Setting → ViewSet `form_actions_label_mode` → view `cv_form_actions_label_mode` per-key maps resolve like the context/list maps
+- [x] **FORM-12**: Checks E210/E211/W291 cover form label-mode maps; W292 reports icon-only form buttons without an icon; strict mode raises at render, otherwise logs and renders the label
+- [x] **FORM-13**: CHANGELOG `### Breaking` (`<input>` → `<button>`, no template evaluation of values) and `docs/migrating-1.0.md` "Form buttons" section; example project enables `both` for submit, delete, cancel; Tabler follow-up written into the acceptance note
 
 ### Alert dismiss (plan 3A)
 
@@ -126,19 +126,19 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PAGE-02 | Phase 5 (plan 3B) | Complete |
 | PAGE-03 | Phase 5 (plan 3B) | Complete |
 | PAGE-04 | Phase 5 (plan 3B) | Complete |
-| FORM-01 | Phase 6 (plan 2) | Gaps Found |
-| FORM-02 | Phase 6 (plan 2) | Gaps Found |
-| FORM-03 | Phase 6 (plan 2) | Gaps Found |
-| FORM-04 | Phase 6 (plan 2) | Gaps Found |
-| FORM-05 | Phase 6 (plan 2) | Gaps Found |
-| FORM-06 | Phase 6 (plan 2) | Gaps Found |
-| FORM-07 | Phase 6 (plan 2) | Gaps Found |
-| FORM-08 | Phase 6 (plan 2) | Gaps Found |
-| FORM-09 | Phase 6 (plan 2) | Gaps Found |
-| FORM-10 | Phase 6 (plan 2) | Gaps Found |
-| FORM-11 | Phase 6 (plan 2) | Gaps Found |
-| FORM-12 | Phase 6 (plan 2) | Gaps Found |
-| FORM-13 | Phase 6 (plan 2) | Gaps Found |
+| FORM-01 | Phase 6 (plan 2) | Complete |
+| FORM-02 | Phase 6 (plan 2) | Complete |
+| FORM-03 | Phase 6 (plan 2) | Complete |
+| FORM-04 | Phase 6 (plan 2) | Complete |
+| FORM-05 | Phase 6 (plan 2) | Complete |
+| FORM-06 | Phase 6 (plan 2) | Complete |
+| FORM-07 | Phase 6 (plan 2) | Complete |
+| FORM-08 | Phase 6 (plan 2) | Complete |
+| FORM-09 | Phase 6 (plan 2) | Complete |
+| FORM-10 | Phase 6 (plan 2) | Complete |
+| FORM-11 | Phase 6 (plan 2) | Complete |
+| FORM-12 | Phase 6 (plan 2) | Complete |
+| FORM-13 | Phase 6 (plan 2) | Complete |
 | STAB-01 | Phase 7 (plan 4) | Pending |
 | STAB-02 | Phase 7 (plan 4) | Pending |
 | STAB-03 | Phase 7 (plan 4) | Pending |

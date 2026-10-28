@@ -24,7 +24,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 3: Filter toggle label mode** - plan 1B (#262): the filter toggle honours `icon` / `both` / `label` (completed 2026-10-26)
 - [x] **Phase 4: Alert dismiss adapter** - plan 3A: alerts close through `cv.adapters.alert` with no Bootstrap data API (droppable) (completed 2026-10-26)
 - [x] **Phase 5: Table pagination parity** - plan 3B: table pagination gets the same registry icons and accessible markup as card pagination (droppable) (completed 2026-10-27)
-- [ ] **Phase 6: Form-button leaf** - plan 2 (#257): crispy form buttons render as `<button>` through `tags/button/form.html`
+- [x] **Phase 6: Form-button leaf** - plan 2 (#257): crispy form buttons render as `<button>` through `tags/button/form.html` (completed 2026-10-28)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Phase Details
@@ -264,7 +264,7 @@ FORM-11, FORM-12, FORM-13
 
   5. The CHANGELOG `### Breaking` entry and the "Form buttons" section of `docs/migrating-1.0.md` exist. The example
      project shows `both` for submit, delete and cancel, and the Tabler follow-up is written into the acceptance note.
-**Plans**: 10/10 plans executed
+**Plans**: 10/10 plans complete
 
 **Wave 1**
 
@@ -361,5 +361,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 3. Filter toggle label mode | 2/2 | Complete    | 2026-10-26 |
 | 4. Alert dismiss adapter | 3/3 | Complete    | 2026-10-26 |
 | 5. Table pagination parity | 3/3 | Complete    | 2026-10-27 |
-| 6. Form-button leaf | 10/10 | In Progress | - |
+| 6. Form-button leaf | 10/10 | Complete    | 2026-10-28 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

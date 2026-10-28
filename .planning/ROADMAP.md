@@ -324,7 +324,7 @@ leaf, while unconfigured forms retain today's button markup and behavior.
      `value`, `type` and `data-cv-cancel-url`, and navigates without JavaScript, including opening in a new tab.
   4. `cv_tag` is included in `FORM_LEAF_KEYS` and documented with the new key and per-button override. Default button
      markup and behavior remain unchanged, `viewset.js` stays unchanged, and existing custom templates remain usable.
-**Plans**: 1/3 plans executed
+**Plans**: 2/3 plans executed
 
 Plans:
 **Wave 1**
@@ -332,7 +332,7 @@ Plans:
 - [ ] TBD (run $gsd-plan-phase 6.1 to break down)
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 06.1-02-PLAN.md
+- [x] 06.1-02-PLAN.md
 
 **Wave 3** *(blocked on Wave 2 completion)*
 - [ ] 06.1-03-PLAN.md
@@ -398,5 +398,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 4. Alert dismiss adapter | 3/3 | Complete    | 2026-10-26 |
 | 5. Table pagination parity | 3/3 | Complete    | 2026-10-27 |
 | 6. Form-button leaf | 10/10 | Complete    | 2026-10-28 |
-| 6.1. Cancel form button as a link | 1/3 | In Progress | - |
+| 6.1. Cancel form button as a link | 2/3 | In Progress | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

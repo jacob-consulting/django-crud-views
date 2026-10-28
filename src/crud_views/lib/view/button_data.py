@@ -241,7 +241,11 @@ def _form_button_data(ctx: dict) -> dict:
     value = _literal(ctx.get("cv_value"))
     label = _literal(ctx["cv_label"]) if "cv_label" in ctx else value
 
-    icon = ctx.get("cv_icon") or None
+    # the leaf contract: a nonblank str or None. Anything else (a non-str, a blank string) is "no icon" everywhere:
+    # availability, diagnostics, host classes and the leaf; an accepted string is kept exactly, never stripped
+    icon = ctx.get("cv_icon")
+    if not isinstance(icon, str) or not icon.strip():
+        icon = None
     if label_mode == "icon" and not _icon_available(icon):
         # an icon-only form button without a usable icon renders nothing visible (D-16): fail in strict mode, else
         # show the literal label, on every render. Decided without rendering: the leaf's one cv_icon call stays the

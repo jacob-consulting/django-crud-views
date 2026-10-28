@@ -44,12 +44,16 @@ for unknown keys.
 
   1. With `CRUD_VIEWS_LABEL_MODE_DEFAULTS = {"context": "both"}`, every unmapped toolbar button renders icon + text on
      every page. Rows and cards are unchanged, and W292 stops firing for those keys.
+
   2. `{"card": "label"}` restores the 0.29 card look without touching a view. An explicit
      `cv_card_actions_label_mode = "both"` on a view still wins.
+
   3. A test using `override_settings` changes the resolved default. An invalid mode outside strict mode logs and falls
      back instead of raising.
+
   4. An unknown location key or an invalid mode in the setting is reported by `crud_views.E108`. Valid keys come from
      the set of locations, not from a literal.
+
   5. `grep -n '"both" if card\|or "icon"\|get(key, "icon")' src/crud_views/lib/view/*.py` returns nothing. Goldens
      stay byte-identical, and the docs state per-key merge vs whole-dict replacement for each knob.
 **Plans**: 5/5 plans complete (4 executed; 1 gap-closure plan ready)
@@ -88,13 +92,17 @@ context/list/card retain variants. Implementation, external review, human prose 
 
   1. `docs/reference/buttons.md#the-class-table` states the chosen grammar: the meanings of the second segment and
      which of them take a mode.
+
   2. W362 accepts form mode keys of the chosen shape and rejects malformed ones such as `form:submitt:icon` and
      `form:container:icon`.
+
   3. The location sets are split explicitly (e.g. `VARIANT_LOCATIONS`, `FORM_KINDS`), so adding `"form"` to the
      button-data locations cannot make W362 accept `form:<variant>:<mode>`.
+
   4. The key count quoted in `buttons.md` is correct, and a test fails whenever it drifts from
      `len(DEFAULT_BUTTON_CLASSES)`. There is no runtime or golden change.
 **Plans**: 1/1 plans complete
+
 - [x] 02-01-PLAN.md
 
 **UI hint**: no (checks and docs only)
@@ -114,16 +122,20 @@ independent list-row modes and the shared runtime validation policy.
 
   1. `CRUD_VIEWS_CONTEXT_ACTIONS_LABEL_MODE = {"filter": "both"}` renders icon + "Filter" with no `title`. `"label"`
      renders the text only. The default `icon` output is byte-identical (`toolbar_publisher_list.html` golden).
+
   2. In `label` mode (no icon spans), clicking the toggle still flips `aria-expanded` and persists the open/closed
      state (vitest label-only case).
+
   3. The toggle's visible text never changes between states. Only `aria-expanded` and the icon change.
   4. "Filter" is a translated msgid and renders in German with the German catalog.
 
 **Plans**: 2/2 plans complete
 **Wave 1**
+
 - [x] 03-01-PLAN.md
 
 **Wave 2** *(blocked on Wave 1 completion)*
+
 - [x] 03-02-PLAN.md
 
 **UI hint**: no (template branch in an existing component; no new screens)
@@ -145,20 +157,25 @@ document the frame override in `theme.md` (LATER-06 tracks the keys).
   1. A golden of today's dismissible alert is committed first, so the PR shows the markup diff.
   2. Clicking an alert's close button closes it through `cv.adapters.alert.close`, with Bootstrap's `Alert` present.
      Without it, the alert is removed. Alerts injected after page load (e.g. inside a modal) close too.
+
   3. The stock frame renders `data-cv-alert-dismiss` and no `data-bs-dismiss`. `grep -rn 'data-bs-'
      src/crud_views/templates` lists only the dropdown templates named in `theme.md`.
+
   4. The example project's flash messages still close. `javascript.md`, `messages.md`, `theme.md`, the CHANGELOG
      Breaking entry and the migration bullet are updated.
 **Plans**: 3/3 plans complete
 
 Plans:
 **Wave 1**
+
 - [x] 04-01-PLAN.md — Commit the current golden, deliver the rendered dismiss tracer and preserve message rendering
 
 **Wave 2** *(blocked on Wave 1 completion)*
+
 - [x] 04-02-PLAN.md — Prove namespace, dynamic-content and custom/component ownership contracts
 
 **Wave 3** *(blocked on Wave 2 completion)*
+
 - [x] 04-03-PLAN.md — Publish references and migration, then record browser acceptance and final quality gates
 
 Execution waves: 1 = 04-01; 2 = 04-02; 3 = 04-03. The first task commits only the baseline before product edits.
@@ -183,18 +200,23 @@ freezes it.
   2. A paginated table shows `page-previous` / `page-next` registry icons with translated hidden labels,
      `aria-current="page"` on the active page, non-focusable disabled ends (`aria-disabled="true"`), and a translated
      `<nav>` label. Existing tables2 block names still work for overrides.
+
   3. One shared hidden-label class key (default `visually-hidden`) is read by both table and card pagination.
      Changing it changes both.
+
   4. Table and card pagination produce the same accessible structure. The CHANGELOG Breaking (DOM) entry, the
      migration bullet and the `.po` files are updated.
 **Plans**: 3/3 plans complete
 **Wave 1**
+
 - [x] 05-01-PLAN.md — Commit table baselines, deliver accessible pagination and the shared hidden-label key.
 
 **Wave 2** *(blocked on Wave 1 completion)*
+
 - [x] 05-02-PLAN.md — Verify overrides, query/range behavior and table/card accessibility parity.
 
 **Wave 3** *(blocked on Wave 2 completion)*
+
 - [x] 05-03-PLAN.md — Publish migration guidance, refresh catalogs and record acceptance checks.
 
 **UI hint**: no (markup parity in an existing template; no new screens)
@@ -212,6 +234,7 @@ current working branch and record its HEAD SHA plus contract evidence (user deci
 
   - the filter buttons' move from `add_input()` into `FormActions`, and a user `formhelper_class` that still calls
     `add_input`
+
   - the view lookup order
   - dropping value templating
   - one `LEAF_KEYS` set or a separate `FORM_LEAF_KEYS`
@@ -227,41 +250,53 @@ FORM-11, FORM-12, FORM-13
   1. With nothing configured, create, update, delete, cancel and both filter buttons render as `<button type="…">`
      with the same text, classes, `name`, `value` and `id`. `test_delete` posts `{"delete": "Delete"}` unchanged, and
      `#filter-button-reset` is preserved. Before-change goldens show the diff.
+
   2. `CRUD_VIEWS_LABEL_MODE_DEFAULTS = {"form": "both"}` shows icon + text on save, delete, cancel and both filter
      buttons. `{"form": "icon"}` shows icon-only buttons with a visually hidden label, `title` and
      `data-cv-tooltip="form"`. Setting → ViewSet → view per-key maps and `form:<kind>:<mode>` class keys apply.
+
   3. A button label or value containing `<b>`, `"><script>` or `{{ request.user }}` renders as escaped plain text in
      both the button body and the `value` attribute.
+
   4. The workflow submit shows the `workflow` icon and a per-form `submit_icon` wins. An icon-only form button with no
      icon is reported by W292, raises in strict mode, and otherwise logs and renders the label. E210/E211/W291 cover
      the form maps.
+
   5. The CHANGELOG `### Breaking` entry and the "Form buttons" section of `docs/migrating-1.0.md` exist. The example
      project shows `both` for submit, delete and cancel, and the Tabler follow-up is written into the acceptance note.
-**Plans**: 8/9 plans executed
+**Plans**: 9/9 plans executed
 **Wave 1**
+
 - [x] 06-01-PLAN.md
 
 **Wave 2** *(blocked on Wave 1 completion)*
+
 - [x] 06-02-PLAN.md
 
 **Wave 3** *(blocked on Wave 2 completion)*
+
 - [x] 06-03-PLAN.md
 
 **Wave 4** *(blocked on Wave 3 completion)*
+
 - [x] 06-04-PLAN.md
 
 **Wave 5** *(blocked on Wave 4 completion)*
+
 - [x] 06-05-PLAN.md
 
 **Wave 6** *(blocked on Wave 5 completion)*
+
 - [x] 06-06-PLAN.md
 
 **Wave 7** *(blocked on Wave 6 completion)*
+
 - [x] 06-07-PLAN.md
 - [x] 06-08-PLAN.md
 
 **Wave 8** *(blocked on Wave 7 completion)*
-- [ ] 06-09-PLAN.md
+
+- [x] 06-09-PLAN.md
 
 **UI hint**: no (new leaf template replaces existing button markup; no new screens)
 
@@ -287,11 +322,14 @@ bump. If Phases 4/5 are dropped, it depends on Phase 6 only and documents the su
      as stable, provisional or internal. Items: icons, class-table keys, leaf templates and their context, alerts,
      `cv.adapters` methods, events, DOM contract, theme hooks, check IDs, `CRUD_VIEWS_*` settings and dependency
      floors.
+
   2. `tests/test1/test_stability_doc.py` fails if a documented name no longer exists, or if a code-derived public name
      is undocumented. Code-derived sources: `DEFAULT_ICONS`, `DEFAULT_BUTTON_CLASSES`, `LEAF_KEYS`, `LOCATIONS`,
      leaf files on disk and JS adapter keys.
+
   3. A theme can detect a library renderer through a public helper (`is_library_renderer` or equivalent) instead of
      importing `_get_renderers` / `_icon_str`.
+
   4. `theme.md` links to "what a theme may rely on", `mkdocs build --strict` passes, and the theme part of #89 is
      closed.
 **Plans**: TBD

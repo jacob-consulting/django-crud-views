@@ -1,19 +1,20 @@
 ---
-gsd_state_version: "1.0"
+gsd_state_version: 1.0
+milestone: v1.0
+milestone_name: milestone
 current_phase: 06
 current_phase_name: Form-button leaf
-status: executing
-stopped_at: Completed 06-08-PLAN.md
-last_updated: "2026-10-28T08:25:23.036Z"
+status: verifying
+stopped_at: Completed 06-09-PLAN.md
+last_updated: "2026-10-28T08:49:11.783Z"
 last_activity: 2026-10-28
 last_activity_desc: Phase 06 execution started
-state_head: 57c94800eb50d2c3a39ff5c4862729eb46ee8533
 progress:
-  total_phases: 7
-  completed_phases: 5
+  total_phases: 6
+  completed_phases: 6
   total_plans: 23
-  completed_plans: 22
-  percent: 71
+  completed_plans: 23
+state_head: 57c94800eb50d2c3a39ff5c4862729eb46ee8533
 ---
 
 # Project State
@@ -29,10 +30,10 @@ See: .planning/PROJECT.md (updated 2026-10-27)
 
 Phase: 06 (Form-button leaf) — EXECUTING
 Plan: 9 of 9
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-10-28 — Phase 06 execution started
 
-Progress: [███████░░░] 71%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -84,6 +85,7 @@ Progress: [███████░░░] 71%
 | Phase 06 P06 | 20 min | 2 tasks | 10 files |
 | Phase 06 P07 | 14min | 3 tasks | 7 files |
 | Phase 06 P08 | 16 min | 3 tasks | 14 files |
+| Phase 06 P09 | 22min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -96,6 +98,7 @@ Recent decisions affecting current work:
 - Roadmap: Phases 4 and 5 (plan 3A/3B) can be dropped if 1.0.0 ships early.
 - Research: the 1A setting is read lazily from `django.conf.settings`, not as a Pydantic snapshot, so
   `override_settings` works.
+
 - Phase 1 completed on `feat/label-mode-defaults`; user explicitly requested staying on the current branch.
 - [Phase 01]: 01-01: Label-mode warn-once dedup is process-lifetime, keyed (location, repr(value)), no source dimension, no setting_changed reset; tests isolate via autouse conftest fixture
 - [Phase 01]: 01-01: default_label_mode reads the raw setting every call (no merged-map cache); setting fallbacks return LABEL_MODE_DEFAULTS[location] directly so nested recovery terminates
@@ -152,6 +155,8 @@ Recent decisions affecting current work:
 - [Phase 06]: 06-08: Form resolution prose lives once in action_menus.md (Form label-mode resolution, Form checks); settings.md adds separate form rows to the single merge/replace table
 - [Phase 06]: 06-08: The migration guide's Form buttons section is a top-level section before A downstream theme, keeping Table pagination overrides adjacent to Silent breaks
 - [Phase 06]: 06-08: The example sets only CRUD_VIEWS_LABEL_MODE_DEFAULTS form=both; other locations keep their package floors
+- [Phase 06]: 06-09: whole-repo ruff format --check recorded as not green (9 pre-existing planning Markdown files, WINDOWS #4); code and Phase 06 changed files formatted
+- [Phase 06]: 06-09: hover tooltip, visual quality, screen reader and migration readability remain pending human; automated Chromium evidence covers names, focus, focus tooltips, cancel, filter reset and modal submit
 
 ### Pending Todos
 
@@ -161,13 +166,16 @@ None yet.
 
 - Phase 2: Ruff 0.16.10 is below the manifest range and global formatting flags eight pre-existing planning
   Markdown files; product formatting passes. See phase deferred-items.md and WINDOWS entry 4.
+
 - Phases 6 and 7: each needs a spec or maintainer decision before planning.
 - Phase 7: retain the decided stable label-mode names; track the separately planned `no_label` removal before 1.0.
 - Phase 7: carry the Phase 5 class key `pagination:hidden-label` into the stability surface.
 - Phase 6 must commit before-change goldens; today's goldens contain no form buttons (Phase 4 committed the
   dismissible alert golden first, f6982bf; Phase 5 the table pagination goldens, be7daa5).
+
 - [Phase 4] Four open Info review findings (IN-01 `[role~="alert"]`, IN-02 hand-copied allowlist, IN-04 no guard for
   the non-core data-bs-* sentence, IN-05 missing-script enumeration) — see 04-REVIEW-DISPOSITION.md; candidates for Phase 7.
+
 - Phase 2: Both source-probe classifier limitations remain documented; explicit tests and completed human prose UAT independently establish acceptance. See 02-VERIFICATION.md.
 - Phase 06: pre-existing tests/js/list.filter.test.js:159 fails on locked jsdom 30.1.2 (element-scoped '#id > span' selector returns null); every 06-js-verify.sh gate is red until a test-only fix lands (06-01 deferred-items, WINDOWS #5)
 
@@ -183,6 +191,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-28T08:25:22.615Z
-Stopped at: Completed 06-08-PLAN.md
+Last session: 2026-10-28T08:49:11.765Z
+Stopped at: Completed 06-09-PLAN.md
 Resume file: None

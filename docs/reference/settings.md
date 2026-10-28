@@ -78,6 +78,7 @@ Default list actions for list view.
 | CRUD_VIEWS_LABEL_MODE_DEFAULTS | Label-mode floor per button location (`"context"`, `"list"`, `"card"`, `"form"`), merged per location over the package defaults: a location you leave out keeps its package default. Read at call time. See [Label-mode configuration](#label-mode-configuration). Invalid values raise `crud_views.E108`. | `dict[str, str]` | `{"context": "icon", "list": "icon", "card": "both", "form": "label"}` |
 | CRUD_VIEWS_CONTEXT_ACTIONS_LABEL_MODE | Label mode per context toolbar action key (`"label"`, `"icon"`, `"both"`), used whole when neither the view nor its ViewSet sets a map. A key not named falls through to the target view's `cv_context_action_label_mode`, then to the `"context"` entry of `CRUD_VIEWS_LABEL_MODE_DEFAULTS` (package default `"icon"`). See [Label-mode configuration](#label-mode-configuration). Invalid values raise `crud_views.E106`. | `dict[str, str]` | `{}` |
 | CRUD_VIEWS_LIST_ACTIONS_LABEL_MODE | Label mode per list row action key, used whole when neither the view nor its ViewSet sets a map. A key not named takes the `"list"` entry of `CRUD_VIEWS_LABEL_MODE_DEFAULTS` (package default `"icon"`). See [Label-mode configuration](#label-mode-configuration). Invalid values raise `crud_views.E106`. | `dict[str, str]` | `{}` |
+| CRUD_VIEWS_FORM_ACTIONS_LABEL_MODE | Label mode per crispy form-button kind (`submit`, `cancel`, `delete`, `filter-submit`, `filter-reset`), used whole when the owning view and its ViewSet set no map, and by forms without a crud_views owner. A kind not named takes the `"form"` entry of `CRUD_VIEWS_LABEL_MODE_DEFAULTS` (package default `"label"`). Read at startup. See [Label-mode configuration](#label-mode-configuration). Invalid values, unknown kinds included, raise `crud_views.E106`. | `dict[str, str]` | `{}` |
 
 ### Label-mode configuration
 
@@ -90,8 +91,11 @@ merged per location, every per-action map replaces the layer below it whole.
 | `CRUD_VIEWS_LABEL_MODE_DEFAULTS` | merged per location over the package defaults `{"context": "icon", "list": "icon", "card": "both", "form": "label"}` | project floor (setting) | button location: `"context"`, `"list"`, `"card"`, `"form"` (the crispy form buttons) |
 | `CRUD_VIEWS_CONTEXT_ACTIONS_LABEL_MODE` | replace: used whole when no ViewSet or view map is set | setting | context toolbar action key |
 | `CRUD_VIEWS_LIST_ACTIONS_LABEL_MODE` | replace: used whole when no ViewSet or view map is set | setting | list row action key |
+| `CRUD_VIEWS_FORM_ACTIONS_LABEL_MODE` | replace: used whole when no ViewSet or view map is set, and for forms without a crud_views owner | setting | form kind |
 | `ViewSet` `context_actions_label_mode` / `list_actions_label_mode` | replace the setting whole; `None` inherits, `{}` selects an empty map | ViewSet | action key |
 | `CrudView` `cv_context_actions_label_mode` / `cv_list_actions_label_mode` | replace the ViewSet and the setting whole; `None` inherits, `{}` selects an empty map | view rendering the group | action key |
+| `ViewSet` `form_actions_label_mode` | replace the setting whole; `None` inherits, `{}` selects an empty map | ViewSet | form kind |
+| `CrudView` `cv_form_actions_label_mode` | replace the ViewSet and the setting whole; `None` inherits, `{}` selects an empty map | view owning the form | form kind |
 | `cv_context_action_label_mode` | scalar override, nothing merged; `None` means unset | target view (the view a toolbar button opens) | none: one string |
 | `cv_card_actions_label_mode` | scalar override, nothing merged; `None` means the `"card"` floor | card view | none: one string |
 
@@ -100,7 +104,8 @@ merges per location, not per action key. The singular `cv_context_action_label_m
 button opens) is not the plural `cv_context_actions_label_mode` (a dict, set on the page showing the toolbar); see
 [Target-view default](action_menus.md#target-view-default). In which order the knobs apply is described once per
 location: [context](action_menus.md#context-label-mode-resolution),
-[list](action_menus.md#list-label-mode-resolution) and [card](action_menus.md#card-label-mode-resolution).
+[list](action_menus.md#list-label-mode-resolution), [card](action_menus.md#card-label-mode-resolution) and
+[form](action_menus.md#form-label-mode-resolution). A form button selects its owning view first and only then a map.
 
 To get the 0.29 label-only card buttons back on every card view of the project:
 
@@ -116,6 +121,22 @@ Independently of that, to show icon and text on every toolbar button that no map
 CRUD_VIEWS_LABEL_MODE_DEFAULTS = {"context": "both"}
 ```
 
+To give the save button of every form its icon and make cancel icon-only, while the other kinds keep the `"form"`
+floor:
+
+```python
+# settings.py
+CRUD_VIEWS_FORM_ACTIONS_LABEL_MODE = {"submit": "both", "cancel": "icon"}
+```
+
+The two kinds of knob are read at different times. `CRUD_VIEWS_LABEL_MODE_DEFAULTS` is read on every call, so a
+change applies at once. `CRUD_VIEWS_FORM_ACTIONS_LABEL_MODE` behaves like `CRUD_VIEWS_CONTEXT_ACTIONS_LABEL_MODE` and
+`CRUD_VIEWS_LIST_ACTIONS_LABEL_MODE`: it is read once at startup into the `crud_views_settings` object
+(`crud_views.lib.settings`) and not refreshed afterwards. An `override_settings` of one of these maps in a test does
+not change rendering; set the attribute on `crud_views_settings` instead (pytest: `monkeypatch.setattr`), or
+configure the map in the test settings. `override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS=...)` does change the
+floor, for the kinds the selected map does not name.
+
 The resolved values are available in Python:
 
 - `crud_views.lib.view.label_mode.default_label_mode(location)` returns the floor of `"context"`, `"list"`, `"card"`
@@ -126,6 +147,8 @@ The resolved values are available in Python:
   change the floor with the setting, not by assigning to it.
 - `CardListView.cv_get_card_actions_label_mode()` returns the mode a card action without its own `label_mode` gets:
   `cv_card_actions_label_mode` when set, else `default_label_mode("card")`.
+- `CrudView.cv_get_form_actions_label_mode()` returns the selected form map, `cv_get_action_label_mode("form", kind)`
+  the mode of one form kind.
 
 System check `crud_views.E108` (error) reports a setting that is not a dict, a key that is not a button location and a
 mode that is not exactly `"label"`, `"icon"` or `"both"`. At render an unknown key is ignored. A setting that is not a

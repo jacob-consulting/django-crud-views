@@ -347,6 +347,7 @@ view data:
 | `crud_views/tags/button/menu_item.html` | one dropdown item |
 | `crud_views/tags/button/container.html` | the group of buttons plus the menu; receives `cv_buttons`, `cv_group` and `cv_location`, and reads its structure, element and label with `{% cv_container_layout cv_location cv_buttons cv_group %}` (see [Button row as a list](#button-row-as-a-list) and [Container element and label](#container-element-and-label)) |
 | `crud_views/tags/button/menu_item_label.html` | icon and label of a menu item, included by `menu_item.html`; reads `cv_icon` and `cv_short_label` |
+| `crud_views/tags/button/form.html` | one crispy form button in a layout; receives [the form leaf contract](#the-form-leaf-contract), not `LEAF_KEYS` |
 
 `crud_views/tags/actions_menu_item_label.html` is kept with its 0.30 body (raw keys `cv_icon_action`,
 `cv_action_short_label`, `cv_action_label`, `cv_label`), minus the `d-inline-block` on its icon placeholder that
@@ -363,7 +364,7 @@ keys are `LEAF_KEYS`:
 
 | Key | Meaning |
 |---|---|
-| `cv_location` | `"context"`, `"list"` or `"card"` |
+| `cv_location` | `"context"`, `"list"` or `"card"` (a form button gets [`FORM_LEAF_KEYS`](#the-form-leaf-contract) instead) |
 | `cv_disabled` | the action is rendered disabled (see [Hide or disable inaccessible actions](inaccessible_actions.md)) |
 | `cv_disabled_reason` | the text for `data-cv-disabled` when the button is disabled, else `""` |
 | `cv_tag` | `"a"` for a link or modal trigger, `"button"` for a POST action or a disabled action |
@@ -397,7 +398,8 @@ subclass with another `key` renders that key).
 `{% cv_button "context" %}` renders the action data in the template context as one button through the leaf
 `tags/button/action.html`. `{% cv_button cv_location kind="menu-item" %}` renders a dropdown item through
 `tags/button/menu_item.html`. A hidden (inaccessible) action renders nothing. The logic templates are exactly these
-calls.
+calls. `{% cv_button "form" %}` raises `ValueError`: form buttons render only through the crispy adapters, see
+[Forms](#forms).
 
 `{% cv_render_button ctx location %}` renders already resolved action data the way the logic templates do (a context
 button with its own `template` or `template_code` keeps rendering that); it renders nothing for empty data. The
@@ -408,21 +410,105 @@ container leaf uses it in its loop.
 The crispy form buttons take their classes from the table. `crud_views.lib.crispy` provides `Submit`, `Button` and
 `Reset`, drop-in subclasses of the crispy layout objects:
 
-| Class | Default `slot` |
-|---|---|
-| `Submit` | `form:submit` |
-| `Button` | `form:cancel` |
-| `Reset` | `form:filter-reset` |
+| Class | Default `slot` | Native `type` |
+|---|---|---|
+| `Submit` | `form:submit` | `submit` |
+| `Button` | `form:cancel` | `button` |
+| `Reset` | `form:filter-reset` | `reset` |
 
 The `slot` keyword picks another key, `Submit(name="delete", value="Delete", slot="form:delete")`; a `css_class` you
-pass is appended to the table classes.
+pass is appended to the table classes. The slot also names the button's **form kind**, one of the five
+`FORM_KINDS`: `submit`, `cancel`, `delete`, `filter-submit` and `filter-reset`. The kind, not the submitted name,
+decides classes, icon and label mode: the cancel button and the filter reset both submit `name="reset"`.
+
+How a button renders depends on where it is placed:
+
+- **In a layout** (`Layout(...)`, typically inside `FormActions`) it renders one `<button>` through the form-button
+  leaf `crud_views/tags/button/form.html`, with its resolved [label mode](action_menus.md#form-label-mode-resolution),
+  its icon and the `form:<kind>:<mode>` classes. This is the path of every package form: `CrispyFormMixin`,
+  `CrispyDeleteForm`, the workflow form and the [list filter](list_view.md#filtering-with-django-filter). A layout
+  button needs a slot `form:<kind>` with one of the five kinds; any other slot (`formset:control`, `form:unknown`)
+  raises `ValueError` when it renders.
+- **Added with `helper.add_input()`** it stays a crispy input, rendered by the template pack's `inputs.html` with
+  its old markup and only the `form:<kind>` classes. No label mode, no icon, no warning; the slot is not checked. To
+  give such a control the leaf, move it into a layout `FormActions`, see
+  [Migrating to 1.0.0](../migrating-1.0.md).
 
 `CrispyFormMixin` builds its buttons through hooks you can override: `get_submit_button_kwargs()` /
 `get_submit_button()` and `get_cancel_button_kwargs()` / `get_cancel_button()`. `CrispyDeleteForm` adds
 `get_delete_button_kwargs()` / `get_delete_button()` (slot `form:delete`); see [Delete view](delete_view.md).
+`get_form_actions()` returns the whole `FormActions` group. The filter helper has the same hook, see
+[Filtering with django-filter](list_view.md#filtering-with-django-filter).
 
 The removed tags `cv_submit_button`, `cv_cancel_button` and `cv_delete_button` and their templates are replaced by
 these classes.
+
+### Literal text
+
+The value, the label, the name, the id and every extra attribute of a form button are literal text. They are escaped
+once, by Django's autoescaping in the leaf (attributes once into `cv_flat_attrs`), and never rendered as template
+code: `Submit("submit", "{{ request.user }}")` shows `{{ request.user }}`. A lazy translation is resolved under the
+active language. A label of `None` renders as `""`; other values are converted (`0` becomes `"0"`).
+
+The visible label is the value, so a button submits the text it shows. A name of several words is slugified on
+output exactly as crispy did (`"Search the Site"` is emitted as `name="search-the-site"`); a one-word name stays as
+written. The generated id is crispy's `<type>-id-<slugified name>`.
+
+Each reserved attribute is resolved once and rendered once:
+
+- `type` comes from the class, `name` and `value` from the positional arguments; extra `type`, `name` and `value`
+  keywords are dropped.
+- `id`: `css_id` wins over an extra `id`, an extra `id` over the generated id.
+- `class`: the table classes of `form:<kind>[:<mode>]`, then `css_class`, then an extra `class`, then the host icon
+  class; nothing is deduplicated.
+- Underscores in keyword names become hyphens (`data_x` is `data-x`); when both spellings are given the hyphenated one
+  wins. `True` renders a bare attribute, `False` and `None` omit it.
+- `data_cv_cancel_url` (or `data-cv-cancel-url`) of a `cancel` button becomes `cv_cancel_url` and renders once as
+  `data-cv-cancel-url`; on any other kind it stays an ordinary attribute.
+- In `"icon"` mode the generated `title` and `data-cv-tooltip="form"` win over an extra `title` or `data-cv-tooltip`;
+  in `"label"` and `"both"` mode those stay ordinary attributes.
+
+Attribute names are code you write; attribute values may be untrusted text.
+
+### The form leaf contract
+
+The leaf receives the flat dict `FORM_LEAF_KEYS` (`crud_views.lib.view.button_data`), a separate set from the
+action `LEAF_KEYS`. None of the action-only keys (`cv_href`, `cv_tag`, `cv_modal`, `cv_disabled`, `cv_variant`, ...)
+appear in it, and neither does crispy's `input` object:
+
+| Key | Meaning |
+|---|---|
+| `cv_location` | always `"form"` |
+| `cv_key` | the form kind (`submit`, `cancel`, `delete`, `filter-submit`, `filter-reset`) |
+| `cv_type` | the native button type: `"submit"`, `"button"` or `"reset"` |
+| `cv_name` | the emitted `name` |
+| `cv_value` | the submitted `value`, a plain `str` |
+| `cv_label` | the button text, a plain `str`; the same text as `cv_value` |
+| `cv_id` | the element id |
+| `cv_label_mode` | `"label"`, `"icon"` or `"both"`, see [Form label-mode resolution](action_menus.md#form-label-mode-resolution) |
+| `cv_icon` | the resolved icon value or `None`, see [Icons](icons.md) |
+| `cv_icon_class` | the `form:icon-host` class of a [host-placed icon](icons.md#host-placement), else `""`; `""` in `"label"` mode |
+| `cv_icon_inline` | render `{% cv_icon cv_icon %}` inside the button; `False` for a host-placed icon |
+| `cv_css_class` | the `css_class` and extra `class` that follow the table classes, else `""` |
+| `cv_flat_attrs` | the other attributes, already escaped and serialized (`SafeString`), output as is |
+| `cv_title` | the generated `title` (the label); present only in `"icon"` mode |
+| `cv_cancel_url` | the navigation URL of the cancel button (`None` without one); present only for kind `cancel` |
+
+The bundled leaf renders `<button type name value id class>` with `{% cv_button_class "form" cv_key cv_label_mode %}`,
+then `cv_css_class` and `cv_icon_class`, then `data-cv-cancel-url` when `cv_cancel_url` is present, `title` with
+`data-cv-tooltip="form"` in `"icon"` mode, and `cv_flat_attrs`. Its body follows the action leaf:
+
+| Mode | Body |
+|---|---|
+| `"label"` (package floor) | the label only; no icon, no host class |
+| `"both"` | the inline icon, then the visible label; no generated `title` or tooltip |
+| `"icon"` | the inline icon and the label in a `<span class="{% cv_button_class 'form' 'hidden-label' %}">`, plus `title` and `data-cv-tooltip="form"` |
+
+An icon-only button needs an icon. When the icon of an `"icon"` mode button is `None`, `""` or not available, it
+raises `ValueError` under [`CRUD_VIEWS_STRICT`](settings.md#basic-settings); otherwise it logs a warning and renders as
+`"label"` with its literal text, without `title`, tooltip or host class. See [Icons](icons.md).
+
+A custom button template receives the same dict, see [Custom themes](theme.md).
 
 ## Formsets
 
@@ -492,9 +578,9 @@ override the leaf, otherwise an action disabled by `CRUD_VIEWS_INACCESSIBLE_ACTI
 | `crud_views.E364` | error | a `*:container-single` value is neither `"container"` nor `"bare"` (`None` and `""` mean `"container"`) |
 | `crud_views.W362` | warning | a `CRUD_VIEWS_BUTTON_CLASSES` or theme key is neither in the default table nor a valid `location:variant:mode` at `context`/`list`/`card` or `form:kind:mode` (typo, or an unknown label mode) |
 | `viewset.E209` | error | a `cv_action_variant`, `ContextButton.variant` or `CardAction.variant` is not one of the four variants |
-| `crud_views.E106` | error | a `CRUD_VIEWS_CONTEXT_ACTIONS_LABEL_MODE` or `CRUD_VIEWS_LIST_ACTIONS_LABEL_MODE` setting is not a dict of action key → `"label"` / `"icon"` / `"both"` |
-| `crud_views.E108` | error | `CRUD_VIEWS_LABEL_MODE_DEFAULTS` is not a dict, names a key that is not a button location (`"context"`, `"list"`, `"card"`), or maps one to a mode that is not exactly `"label"`, `"icon"` or `"both"` |
-| `viewset.E210` | error | a `CardAction.label_mode`, `cv_card_actions_label_mode`, `ContextButton.label_mode` or `cv_context_action_label_mode` is set to a value other than `"label"`, `"icon"`, `"both"`; these are optional, and `None` is accepted as unset (for `cv_card_actions_label_mode` too) |
-| `viewset.E211` | error | a `cv_context_actions_label_mode` or `cv_list_actions_label_mode` is not `None` or a dict of action key → label mode (`cv_card_actions_label_mode` is the string or None default of card views, `cv_context_action_label_mode` the string or None target-view default; both are scalars, checked by E210) |
-| `viewset.W291` | warning | a view's own `cv_*_actions_label_mode` names a key that is not among that location's actions |
-| `viewset.W292` | warning | a context toolbar key resolves to `"icon"` while its target view has no `cv_icon_action` (keys folded into the menu, buttons with their own template or `get_context()` and unregistered targets are not checked; the render-time rule covers them) |
+| `crud_views.E106` | error | a `CRUD_VIEWS_CONTEXT_ACTIONS_LABEL_MODE` or `CRUD_VIEWS_LIST_ACTIONS_LABEL_MODE` setting is not a dict of action key → `"label"` / `"icon"` / `"both"`; `CRUD_VIEWS_FORM_ACTIONS_LABEL_MODE` is not a dict of form kind → mode (an unknown form kind is an error here, not a W291) |
+| `crud_views.E108` | error | `CRUD_VIEWS_LABEL_MODE_DEFAULTS` is not a dict, names a key that is not a button location (`"context"`, `"list"`, `"card"`, `"form"`), or maps one to a mode that is not exactly `"label"`, `"icon"` or `"both"` |
+| `viewset.E210` | error | a `CardAction.label_mode`, `cv_card_actions_label_mode`, `ContextButton.label_mode` or `cv_context_action_label_mode` is set to a value other than `"label"`, `"icon"`, `"both"`; these are optional, and `None` is accepted as unset (for `cv_card_actions_label_mode` too). For forms: one error per form kind of a view's own `cv_form_actions_label_mode` (a dict with string keys) whose mode is invalid, in map order |
+| `viewset.E211` | error | a `cv_context_actions_label_mode` or `cv_list_actions_label_mode` is not `None` or a dict of action key → label mode (`cv_card_actions_label_mode` is the string or None default of card views, `cv_context_action_label_mode` the string or None target-view default; both are scalars, checked by E210). For forms: a view's own `cv_form_actions_label_mode` that is not `None` or a dict, or has a key that is not a string; reported once, its modes are then not checked |
+| `viewset.W291` | warning | a view's own `cv_*_actions_label_mode` names a key that is not among that location's actions; for `cv_form_actions_label_mode`, a key with a valid mode that is not one of the five form kinds (a ViewSet form map raises at construction and the setting fails E106 instead) |
+| `viewset.W292` | warning | a context toolbar key resolves to `"icon"` while its target view has no `cv_icon_action` (keys folded into the menu, buttons with their own template or `get_context()` and unregistered targets are not checked; the render-time rule covers them). For forms: a form kind that resolves to `"icon"` while its icon is not available, on the package forms and filter helper the view selects without a request (see [Icons](icons.md)) |

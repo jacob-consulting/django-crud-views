@@ -58,18 +58,21 @@ from [hide or disable](inaccessible_actions.md), which resolves on each action's
 ## Label mode
 
 Toolbar and row buttons are icon-only unless configured: their package floor is `"icon"`, which a project changes per
-location with [`CRUD_VIEWS_LABEL_MODE_DEFAULTS`](settings.md#label-mode-configuration). A **label mode map** names the
-action keys that show text instead, or as well:
+location with [`CRUD_VIEWS_LABEL_MODE_DEFAULTS`](settings.md#label-mode-configuration). Crispy form buttons show their
+text: the `"form"` floor is `"label"`. A **label mode map** names the action keys, or form kinds, that look
+otherwise:
 
-| Level | List rows | Context toolbar |
-|---|---|---|
-| Django settings | `CRUD_VIEWS_LIST_ACTIONS_LABEL_MODE` | `CRUD_VIEWS_CONTEXT_ACTIONS_LABEL_MODE` |
-| `ViewSet` | `list_actions_label_mode` | `context_actions_label_mode` |
-| `CrudView` | `cv_list_actions_label_mode` | `cv_context_actions_label_mode` |
+| Level | List rows | Context toolbar | Form buttons |
+|---|---|---|---|
+| Django settings | `CRUD_VIEWS_LIST_ACTIONS_LABEL_MODE` | `CRUD_VIEWS_CONTEXT_ACTIONS_LABEL_MODE` | `CRUD_VIEWS_FORM_ACTIONS_LABEL_MODE` |
+| `ViewSet` | `list_actions_label_mode` | `context_actions_label_mode` | `form_actions_label_mode` |
+| `CrudView` | `cv_list_actions_label_mode` | `cv_context_actions_label_mode` | `cv_form_actions_label_mode` |
+| Getter | `cv_get_list_actions_label_mode()` | `cv_get_context_actions_label_mode()` | `cv_get_form_actions_label_mode()` |
 
 Each is a dict of action key to `"label"` (text only), `"icon"` (icon with a visually hidden label and a tooltip) or
-`"both"` (icon and text). A key the map does not name falls through to the next step of its location's resolution
-below; an empty dict names no key.
+`"both"` (icon and text). The form maps are keyed by form kind instead, one of `submit`, `cancel`, `delete`,
+`filter-submit` and `filter-reset`. A key the map does not name falls through to the next step of its location's
+resolution below; an empty dict names no key.
 
 ```python
 class AuthorListView(ListViewTableMixin, ListViewPermissionRequired):
@@ -81,8 +84,9 @@ The map is selected whole: `CrudView` → `ViewSet` → setting, the first value
 not merged, and `{}` on a view replaces whatever its ViewSet says. Only `CRUD_VIEWS_LABEL_MODE_DEFAULTS` merges, per
 location; see [Label-mode configuration](settings.md#label-mode-configuration) for which knob merges and which
 replaces. Keys are the configured keys, as for the inline lists (`"home"`, not its target `"list"`). The getters
-`cv_get_list_actions_label_mode()` and `cv_get_context_actions_label_mode()` return the selected dict,
-`cv_get_action_label_mode(location, key)` the mode of one key.
+`cv_get_list_actions_label_mode()`, `cv_get_context_actions_label_mode()` and `cv_get_form_actions_label_mode()`
+return the selected dict, `cv_get_action_label_mode(location, key)` the mode of one key (`location` is `"context"`,
+`"list"` or `"form"`).
 
 ### Context label-mode resolution
 
@@ -108,6 +112,71 @@ For one key of a list row:
    `"icon"`.
 
 Row actions never read a context button's `label_mode` or the target view's `cv_context_action_label_mode`.
+
+### Form label-mode resolution
+
+A crispy form button in a layout (see [Forms](buttons.md#forms)) first selects the view that **owns** it, then reads
+that owner's configuration. The owner is the first of these that is not `None`; the lookup stops there, and a falsey
+object is an owner too:
+
+1. `cv_view` of the form being rendered (set by `CrispyFormMixin`), never an enclosing form's;
+2. the `view` of the helper of the current `{% crispy %}` call (the list filter helper's view);
+3. the `view` of the page in the template context.
+
+For one form kind of a crud_views owner (a `CrudView` class or instance):
+
+1. the map selected whole from `cv_form_actions_label_mode`, `ViewSet.form_actions_label_mode` and
+   `CRUD_VIEWS_FORM_ACTIONS_LABEL_MODE` (the first that is not `None`), if it names the kind;
+2. otherwise `default_label_mode("form")`: the `"form"` entry of `CRUD_VIEWS_LABEL_MODE_DEFAULTS`, package default
+   `"label"`.
+
+The owner answers through `cv_get_action_label_mode("form", kind)`, so a subclass override of it or of
+`cv_get_form_actions_label_mode()` applies. An ordinary Django view as owner, or no owner at all, uses
+`CRUD_VIEWS_FORM_ACTIONS_LABEL_MODE` and then the floor; a helper or page view lower in the list is never borrowed.
+Forms embedded in a page of another view follow their own owner, and differing owners are never reported.
+
+`None` on a view or ViewSet inherits the next layer; `{}` selects an empty map, so every kind takes the floor and the
+lower maps are not read. A kind the selected map does not name reads the floor directly, never a lower map. No
+context button, target-view default or scalar attribute applies to form kinds.
+
+```python
+class AuthorCreateView(CrispyViewMixin, CreateViewPermissionRequired):
+    form_class = AuthorForm
+    cv_viewset = cv_author
+    cv_form_actions_label_mode = {"submit": "both"}  # Save with its icon; cancel follows the "form" floor
+```
+
+### Form checks
+
+The form maps name a finite set of kinds, so their checks differ from the context and list maps, whose rules stay as
+they are (there an invalid value makes the whole map one `viewset.E211`):
+
+- `viewset.E211`: a view's own `cv_form_actions_label_mode` that is not `None` or a dict, or has a key that is not a
+  string. One error; the entries are then not checked.
+- `viewset.E210`: one error per entry of a string-keyed map whose mode is not `"label"`, `"icon"` or `"both"`, in map
+  order. An unknown kind with an invalid mode is reported once, here.
+- `viewset.W291`: the kinds of a view's own map that have a valid mode but are not form kinds (typo?), listing the
+  five kinds.
+- `crud_views.E106`: `CRUD_VIEWS_FORM_ACTIONS_LABEL_MODE` is not a dict of form kind → mode; an unknown kind is an
+  error here. `ViewSet(form_actions_label_mode=...)` raises a validation error at construction for the same mistakes,
+  unknown kinds included. Neither emits W291.
+- `crud_views.E108`: an invalid `"form"` entry of `CRUD_VIEWS_LABEL_MODE_DEFAULTS`.
+
+The messages name `cv_form_actions_label_mode`, the form kinds and the form floor.
+
+`viewset.W292` reports a form button that resolves to `"icon"` while its icon is not available. It sees only what is
+known without a request: the form class a view selects (`form_class`, or each distinct class of a dict
+`polymorphic_forms` of a polymorphic view) while its `helper`, `get_form_actions()` and button hooks are the
+package's, and the view's filter helper while `get_filterset()` and the helper's `get_form_actions()` are inherited. A
+`CrispyDeleteForm` checks delete (`delete_icon`) and cancel; any other `CrispyFormMixin` form, the workflow form
+included, checks submit (`submit_icon`) and cancel; the filter helper checks filter-submit and filter-reset. Forms
+and helpers are never instantiated and no hook, `get_form_class()` override or icon renderer runs. An icon is not
+available when it is `None` or `""`, when [`CRUD_VIEWS_ICONS`](icons.md#crud_views_icons) maps its name to `None` or
+`""`, when its prefix names no registered library (`submit_icon="unknown:save"`), or when the built-in font
+renderer's `class` is not a usable format string. Overridden hooks and providers are left to the render-time rule:
+under [`CRUD_VIEWS_STRICT`](settings.md#basic-settings) such a button raises `ValueError` naming its form kind,
+otherwise it logs a warning on each render and shows its label. A map or floor that is itself invalid is skipped
+here and reported by E106, E108, E210 or E211.
 
 ### Card label-mode resolution
 
@@ -285,11 +354,12 @@ a `.table-responsive` wrapper.
 | `crud_views.E105` | a `CRUD_VIEWS_*_ACTIONS_INLINE` setting is not `None` or a list of strings |
 | `viewset.E208` | a `cv_*_actions_inline` attribute is not `None` or a list of strings |
 | `viewset.W290` | a view's own `cv_*_actions_inline` names a key that is not among that location's actions (typo?) |
-| `crud_views.E106` | a `CRUD_VIEWS_*_ACTIONS_LABEL_MODE` setting is not a dict of action key → `"label"` / `"icon"` / `"both"` |
-| `crud_views.E108` | error: `CRUD_VIEWS_LABEL_MODE_DEFAULTS` is not a dict, names a key that is not a button location (`"context"`, `"list"`, `"card"`), or maps one to a mode that is not exactly `"label"`, `"icon"` or `"both"` |
-| `viewset.E211` | a `cv_*_actions_label_mode` attribute is not `None` or such a dict (`cv_card_actions_label_mode` is the string or None default of card views, `cv_context_action_label_mode` the string or None target-view default; both are scalars, not maps) |
-| `viewset.W291` | a view's own `cv_*_actions_label_mode` names a key that is not among that location's actions (typo?) |
-| `viewset.W292` | a context toolbar key resolves to `"icon"` (target-view default included) while its target view has no `cv_icon_action` (keys folded into the menu, buttons with their own template or `get_context()` and unregistered targets are not checked; the render-time rule covers them) |
+| `crud_views.E106` | a `CRUD_VIEWS_*_ACTIONS_LABEL_MODE` setting is not a dict of action key → `"label"` / `"icon"` / `"both"` (for `CRUD_VIEWS_FORM_ACTIONS_LABEL_MODE`, of form kind; an unknown kind is an error) |
+| `crud_views.E108` | error: `CRUD_VIEWS_LABEL_MODE_DEFAULTS` is not a dict, names a key that is not a button location (`"context"`, `"list"`, `"card"`, `"form"`), or maps one to a mode that is not exactly `"label"`, `"icon"` or `"both"` |
+| `viewset.E211` | a `cv_*_actions_label_mode` attribute is not `None` or such a dict (`cv_card_actions_label_mode` is the string or None default of card views, `cv_context_action_label_mode` the string or None target-view default; both are scalars, not maps); for `cv_form_actions_label_mode` see [Form checks](#form-checks) |
+| `viewset.W291` | a view's own `cv_*_actions_label_mode` names a key that is not among that location's actions (typo?); for forms, a key with a valid mode that is not a form kind |
+| `viewset.E210` | a view's own `cv_form_actions_label_mode` maps a form kind to an invalid mode, see [Form checks](#form-checks) |
+| `viewset.W292` | a context toolbar key resolves to `"icon"` (target-view default included) while its target view has no `cv_icon_action` (keys folded into the menu, buttons with their own template or `get_context()` and unregistered targets are not checked; the render-time rule covers them); for forms see [Form checks](#form-checks) |
 
 W290 and W291 check only values set on the view class. ViewSet and setting values are shared defaults and may name
 keys some views lack.

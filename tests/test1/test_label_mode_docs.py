@@ -518,3 +518,258 @@ def test_label_mode_defaults_document_every_location():
         assert f'"{location}": "{label_mode.LABEL_MODE_DEFAULTS[location]}"' in config_row[1], location
     flat = " ".join(_section(text, "### Label-mode configuration").split())
     assert '.default_label_mode(location)` returns the floor of `"context"`, `"list"`, `"card"` or `"form"`' in flat
+
+
+# --- Phase 6: the form location, its whole-map resolution and its diagnostics (06-08) ---
+
+E108_LOCATIONS = re.compile(r"button location \(([^)]*)\)")
+FORM_MAP = "CRUD_VIEWS_FORM_ACTIONS_LABEL_MODE"
+
+
+def _e108_locations(cell: str) -> set[str]:
+    """The accepted-location clause of one E108 description: the parenthesized list after "button location"."""
+    clauses = E108_LOCATIONS.findall(cell)
+    assert len(clauses) == 1, clauses
+    clause = clauses[0]
+    # only quoted location names separated by commas: no mode token or prose may enter the location set
+    assert re.fullmatch(r'`"[a-z-]+"`(, `"[a-z-]+"`)*', clause), clause
+    return set(re.findall(r'`"([a-z-]+)"`', clause))
+
+
+def test_e108_rows_list_exactly_the_button_locations():
+    from crud_views.lib.view.button_data import LOCATIONS
+
+    rows = {
+        BUTTONS_MD: lambda checks: _row(checks, "`crud_views.E108`")[2],
+        ACTION_MENUS_MD: lambda checks: _row(checks, "`crud_views.E108`")[1],
+    }
+    for page, cell_of in rows.items():
+        checks = _section(page.read_text(), "## System checks")
+        cell = cell_of(checks)
+        assert _e108_locations(cell) == set(LOCATIONS), page.name
+        # severity, meaning and the separate mode vocabulary are unchanged
+        assert "error" in _row(checks, "`crud_views.E108`")[1]
+        assert f"`{SETTING}` is not a dict" in cell, page.name
+        assert 'not exactly `"label"`, `"icon"` or `"both"`' in cell, page.name
+        # the guard is row-scoped: dropping form from the row, or adding an unknown location, must fail it
+        assert _e108_locations(cell.replace(', `"form"`', "")) != set(LOCATIONS)
+        assert _e108_locations(cell.replace('`"form"`', '`"form"`, `"menu"`')) != set(LOCATIONS)
+
+
+def _crispy_form_buttons(form, actions):
+    """The <button> elements of a real {% crispy form helper %} render of one FormActions group."""
+    from crispy_forms.bootstrap import FormActions
+    from crispy_forms.helper import FormHelper
+    from crispy_forms.layout import Layout
+
+    helper = FormHelper()
+    helper.form_tag = False
+    helper.layout = Layout(FormActions(*actions))
+    markup = Template("{% load crispy_forms_tags %}{% crispy form helper %}").render(
+        Context({"form": form, "helper": helper})
+    )
+    doc = lxml_html.fragment_fromstring(markup, create_parent="div")
+    return {el.get("name"): el for el in doc.cssselect("button")}
+
+
+def _mode_of(button) -> str:
+    """The rendered label mode of a bundled form leaf, read from its DOM."""
+    hidden = button.cssselect("span.visually-hidden")
+    if hidden:
+        assert button.get("title") == hidden[0].text and button.get("data-cv-tooltip") == "form"
+        assert len(button.cssselect("i")) == 1
+        return "icon"
+    assert button.get("title") is None and button.get("data-cv-tooltip") is None
+    return "both" if button.cssselect("i") else "label"
+
+
+def _documented_assignments(text: str, name: str) -> list:
+    found = []
+    for block in FENCE.findall(text):
+        if name not in block:
+            continue
+        for node in ast.parse(block).body:
+            if isinstance(node, ast.Assign) and [getattr(t, "id", None) for t in node.targets] == [name]:
+                found.append(ast.literal_eval(node.value))
+    return found
+
+
+def test_documented_form_map_renders_and_only_the_floor_is_live(monkeypatch):
+    """The settings.md form recipe through real crispy rendering, with the startup snapshot vs the lazy floor."""
+    from django import forms
+
+    from crud_views.lib.crispy import Button, Submit
+    from crud_views.lib.settings import crud_views_settings
+
+    (documented,) = _documented_assignments(SETTINGS_MD.read_text(), FORM_MAP)
+    assert documented == {"submit": "both", "cancel": "icon"}
+
+    def modes():
+        buttons = _crispy_form_buttons(
+            forms.Form(),
+            [
+                Submit("submit", "Save"),
+                Button("reset", "Back", data_cv_cancel_url="/back/"),
+                Submit("delete", "Delete", slot="form:delete"),
+            ],
+        )
+        assert buttons["reset"].get("data-cv-cancel-url") == "/back/"
+        assert [b.text_content().strip() for b in buttons.values()] == ["Save", "Back", "Delete"]
+        return {name: _mode_of(button) for name, button in buttons.items()}
+
+    # the map is a startup snapshot: tests set it on the settings singleton, as the docs say
+    monkeypatch.setattr(crud_views_settings, "form_actions_label_mode", documented)
+    assert modes() == {"submit": "both", "reset": "icon", "delete": "label"}
+    with override_settings(**{FORM_MAP: {"submit": "label"}}):
+        assert modes() == {"submit": "both", "reset": "icon", "delete": "label"}
+        # the floor is read per render, for the kind the selected map does not name only
+        with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"form": "both"}):
+            assert modes() == {"submit": "both", "reset": "icon", "delete": "both"}
+    assert modes() == {"submit": "both", "reset": "icon", "delete": "label"}
+
+
+def test_documented_view_form_map_renders(monkeypatch):
+    """The action_menus.md owner example: the view's whole map wins over the setting, unnamed kinds take the floor."""
+    from django import forms
+
+    from crud_views.lib.crispy import Button, Submit
+    from crud_views.lib.settings import crud_views_settings
+    from tests.test1.app.views import AuthorCreateView, cv_author
+
+    section = _section(ACTION_MENUS_MD.read_text(), "### Form label-mode resolution")
+    (documented,) = [
+        ast.literal_eval(node.value)
+        for block in FENCE.findall(section)
+        for cls in ast.parse(block).body
+        if isinstance(cls, ast.ClassDef)
+        for node in cls.body
+        if isinstance(node, ast.Assign) and [t.id for t in node.targets] == ["cv_form_actions_label_mode"]
+    ]
+    assert documented == {"submit": "both"}
+
+    class Owned(forms.Form):
+        cv_view = AuthorCreateView
+
+    monkeypatch.setattr(cv_author, "form_actions_label_mode", None)
+    monkeypatch.setattr(crud_views_settings, "form_actions_label_mode", {"cancel": "icon"})
+    monkeypatch.setattr(AuthorCreateView, "cv_form_actions_label_mode", documented)
+    buttons = _crispy_form_buttons(Owned(), [Submit("submit", "Save"), Button("reset", "Back")])
+    # selected whole: the setting's cancel entry is not read, cancel takes the "form" floor
+    assert {name: _mode_of(b) for name, b in buttons.items()} == {"submit": "both", "reset": "label"}
+    # {} selects an empty map: every kind takes the floor
+    monkeypatch.setattr(AuthorCreateView, "cv_form_actions_label_mode", {})
+    buttons = _crispy_form_buttons(Owned(), [Submit("submit", "Save"), Button("reset", "Back")])
+    assert {name: _mode_of(b) for name, b in buttons.items()} == {"submit": "label", "reset": "label"}
+
+
+def test_form_label_mode_reference_contract():
+    from crud_views.lib.button_classes import FORM_KINDS
+
+    settings_text = SETTINGS_MD.read_text()
+    row = _row(_section(settings_text, "## Action menus"), FORM_MAP)
+    assert row[2] == "`dict[str, str]`" and row[3] == "`{}`"
+    for kind in FORM_KINDS:
+        assert f"`{kind}`" in row[1], kind
+    for marker in ('`"form"` entry of `CRUD_VIEWS_LABEL_MODE_DEFAULTS`', '`"label"`', "Read at startup", "E106"):
+        assert marker in row[1], marker
+
+    config = _section(settings_text, "### Label-mode configuration")
+    expected = {
+        f"`{FORM_MAP}`": ("replace", "setting", "form kind"),
+        "`ViewSet` `form_actions_label_mode`": ("replace", "ViewSet", "form kind"),
+        "`CrudView` `cv_form_actions_label_mode`": ("replace", "view owning the form", "form kind"),
+    }
+    for knob, (merge, layer, keys) in expected.items():
+        cells = _row(config, knob)
+        assert merge in cells[1] and layer in cells[2] and keys in cells[3], (knob, cells)
+    for knob in list(expected)[1:]:
+        assert "`None` inherits" in _row(config, knob)[1] and "`{}` selects an empty map" in _row(config, knob)[1]
+    flat = _flat(config)
+    assert "(action_menus.md#form-label-mode-resolution)" in config
+    for marker in (
+        "CRUD_VIEWS_LABEL_MODE_DEFAULTS is read on every call",
+        "read once at startup into the crud_views_settings object",
+        "An override_settings of one of these maps in a test does not change rendering",
+        "monkeypatch.setattr",
+        "override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS=...) does change the floor",
+        'cv_get_action_label_mode("form", kind)',
+    ):
+        assert marker in flat, marker
+
+    menus = ACTION_MENUS_MD.read_text()
+    label = _section(menus, "## Label mode")
+    for cells in (
+        ("Django settings", f"`{FORM_MAP}`"),
+        ("`ViewSet`", "`form_actions_label_mode`"),
+        ("`CrudView`", "`cv_form_actions_label_mode`"),
+        ("Getter", "`cv_get_form_actions_label_mode()`"),
+    ):
+        assert _row(label, cells[0])[3] == cells[1], cells
+    assert "\n### Form label-mode resolution\n" in label
+
+    section = _section(menus, "### Form label-mode resolution")
+    steps = [s.replace("\n", " ") for s in re.findall(r"^\d+\. (.+?)(?=^\d+\. |\n\n)", section, re.M | re.S)]
+    owner, mode = steps[:3], steps[3:]
+    for step, marker in zip(owner, ("`cv_view` of the form", "helper of the current", "of the page"), strict=True):
+        assert marker in step, (marker, step)
+    assert len(mode) == 2
+    assert "selected whole" in mode[0] and "if it names the kind" in mode[0] and FORM_MAP in mode[0]
+    assert '`default_label_mode("form")`' in mode[1] and '`"label"`' in mode[1]
+    flat = _flat(section)
+    for marker in (
+        "is not None; the lookup stops there",
+        "falsey object is an owner",
+        "An ordinary Django view as owner, or no owner at all",
+        "never borrowed",
+        "never reported",
+        "{} selects an empty map",
+        "never a lower map",
+        'cv_get_action_label_mode("form", kind)',
+    ):
+        assert marker in flat, marker
+
+    # the form-only diagnostic policy, with the unchanged context / list rule named
+    checks = _bullets(_section(menus, "### Form checks"))
+    by_id = {re.match(r"- `([^`]+)`", b).group(1): _flat(b) for b in checks}
+    assert set(by_id) == {"viewset.E211", "viewset.E210", "viewset.W291", "crud_views.E106", "crud_views.E108"}
+    assert "not None or a dict" in by_id["viewset.E211"] and "not a string" in by_id["viewset.E211"]
+    assert "one error per entry" in by_id["viewset.E210"] and "map order" in by_id["viewset.E210"]
+    assert "valid mode" in by_id["viewset.W291"] and "own map" in by_id["viewset.W291"]
+    assert "unknown kind is an error" in by_id["crud_views.E106"] and "construction" in by_id["crud_views.E106"]
+    assert "Neither emits W291" in by_id["crud_views.E106"]
+    body = _flat(_section(menus, "### Form checks"))
+    assert "whole map one viewset.E211" in body
+    for marker in (
+        "CrispyDeleteForm checks delete (delete_icon) and cancel",
+        "checks submit (submit_icon) and cancel",
+        "filter helper checks filter-submit and filter-reset",
+        "never instantiated",
+        'submit_icon="unknown:save"',
+        "maps its name to None",
+        "raises ValueError naming its form kind",
+    ):
+        assert marker in body, marker
+
+    # buttons.md: the form contract, its finite slot rule and the separate key set
+    buttons = BUTTONS_MD.read_text()
+    forms_section = _section(buttons, "## Forms")
+    assert "\n### The form leaf contract\n" in forms_section and "\n### Literal text\n" in forms_section
+    from crud_views.lib.view.button_data import FORM_LEAF_KEYS
+
+    leaf = _section(buttons, "### The form leaf contract")
+    documented_keys = {
+        re.match(r"\| `(cv_[a-z_]+)` \|", line).group(1)
+        for line in leaf.splitlines()
+        if re.match(r"\| `cv_[a-z_]+` \|", line)
+    }
+    assert documented_keys == set(FORM_LEAF_KEYS)
+    flat = _flat(forms_section)
+    for marker in (
+        "raises ValueError when it renders",
+        "stays a crispy input",
+        "never rendered as template code",
+        "{{ request.user }}",
+        'present only in "icon" mode',
+        "present only for kind cancel",
+    ):
+        assert marker in flat, marker

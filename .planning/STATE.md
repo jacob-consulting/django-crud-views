@@ -3,17 +3,17 @@ gsd_state_version: "1.0"
 current_phase: 06
 current_phase_name: Form-button leaf
 status: executing
-stopped_at: Phase 06 converged in three review cycles; all three reviewers covered 9/9 plans; zero HIGH, actionable findings or open conflicts; ready to execute, implementation not started
-last_updated: "2026-10-28T05:58:41.687Z"
+stopped_at: Completed 06-01-PLAN.md
+last_updated: "2026-10-28T06:16:59.552Z"
 last_activity: 2026-10-28
 last_activity_desc: Phase 06 execution started
-state_head: a194077dd5bb4f347e53e60ebb9b995f289d58dc
+state_head: 6c83edbee2184650354ef84e3efadca45f2ff8e0
 progress:
   total_phases: 7
   completed_phases: 5
   total_plans: 23
-  completed_plans: 14
-  percent: 61
+  completed_plans: 15
+  percent: 65
 ---
 
 # Project State
@@ -28,11 +28,11 @@ See: .planning/PROJECT.md (updated 2026-10-27)
 ## Current Position
 
 Phase: 06 (Form-button leaf) — EXECUTING
-Plan: 1 of 9
-Status: Executing Phase 06
+Plan: 2 of 9
+Status: Ready to execute
 Last activity: 2026-10-28 — Phase 06 execution started
 
-Progress: [██████░░░░] 61%
+Progress: [███████░░░] 65%
 
 ## Performance Metrics
 
@@ -76,6 +76,7 @@ Progress: [██████░░░░] 61%
 | Phase 05 P01 | 5 min | 3 tasks | 10 files |
 | Phase 05 P02 | 8 min | 2 tasks | 2 files |
 | Phase 05 P03 | 9 min | 3 tasks | 9 files |
+| Phase 06 P01 | 16 min | 3 tasks | 11 files |
 
 ## Accumulated Context
 
@@ -120,6 +121,9 @@ Recent decisions affecting current work:
 - [Phase 05]: 05-03: table pagination Breaking entry and migrating-1.0.md 'Table pagination overrides' share commit 09549b2; the guarded myproject/table.html recipe (DJANGO_TABLES2_TEMPLATE at startup) is extracted and rendered by tests/test1/test_pagination_docs.py on pages 1/2/3 with class/icon overrides
 - [Phase 05]: 05-03: German catalog keeps only the pagination/previous/next reference updates for both templates; django.mo byte-identical to a fresh msgfmt build; unrelated makemessages churn deferred (deferred-items.md)
 - [Phase 05]: UAT 2/2 passed; all 7 review findings fixed after review (WR-01/WR-02, IN-01..IN-05, incl. disabled `...` range items and whitespace-free range anchors); re-verification 19/19 passed
+- [Phase 06]: 06-01: D-18 gate passed on introduce-gsd @ 49f44cd (Phase 1 lazy floor + Phase 2 finite FORM_KINDS verified; 201 passed); 06-SPEC.md settles FORM_LEAF_KEYS, literal/attribute, template, ownership, helper-lifecycle, icon and golden contracts
+- [Phase 06]: 06-01: before-change form-button goldens committed src-free: CRUD 2956f3e, workflow+filter 98b71ed; filter scope is _extract_filter_form_region (raw form#filter-form slice) and 06-05 must reuse it unchanged
+- [Phase 06]: 06-01: JS gates run only via 06-js-verify.sh (nvm Node v24.21.0, npm 11.19.0, lock sha 567bff55...); lockfile/manifests unchanged
 
 ### Pending Todos
 
@@ -137,6 +141,7 @@ None yet.
 - [Phase 4] Four open Info review findings (IN-01 `[role~="alert"]`, IN-02 hand-copied allowlist, IN-04 no guard for
   the non-core data-bs-* sentence, IN-05 missing-script enumeration) — see 04-REVIEW-DISPOSITION.md; candidates for Phase 7.
 - Phase 2: Both source-probe classifier limitations remain documented; explicit tests and completed human prose UAT independently establish acceptance. See 02-VERIFICATION.md.
+- Phase 06: pre-existing tests/js/list.filter.test.js:159 fails on locked jsdom 30.1.2 (element-scoped '#id > span' selector returns null); every 06-js-verify.sh gate is red until a test-only fix lands (06-01 deferred-items, WINDOWS #5)
 
 ### Roadmap Evolution
 
@@ -150,6 +155,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-27T19:33:49.194Z
-Stopped at: Phase 06 converged in three review cycles; all three reviewers covered 9/9 plans; zero HIGH, actionable findings or open conflicts; ready to execute, implementation not started
-Resume file: .planning/phases/06-form-button-leaf/06-REVIEWS.md
+Last session: 2026-10-28T06:16:59.179Z
+Stopped at: Completed 06-01-PLAN.md
+Resume file: None

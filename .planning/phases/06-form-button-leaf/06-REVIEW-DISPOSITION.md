@@ -23,9 +23,13 @@ findings:
     severity: info
     disposition: open
     title: "Extra attributes are emitted in sorted order, not insertion order"
-open: 2
-total: 5
-recorded: 2026-10-28T09:53:59.225Z
+  - id: IN-03
+    severity: info
+    disposition: open
+    title: "Adaptive assertion in `test_form_icon_normalization_keeps_nonblank_strings_exactly` has an unreachable branch"
+open: 3
+total: 6
+recorded: 2026-10-28T10:50:00.000Z
 ---
 
 # Phase 06: Code Review Disposition
@@ -37,6 +41,7 @@ recorded: 2026-10-28T09:53:59.225Z
 | WR-02 | warning | fixed | 06-10-SUMMARY.md; fix `61103dd` (non-str or blank `cv_icon` becomes None before availability, diagnostics and the leaf); RED `7f974ad` then green: `test_form_icon_normalization_*` (164) in `tests/test1/test_button_data.py` |
 | IN-01 | info | open | - |
 | IN-02 | info | open | - |
+| IN-03 | info | open | - |
 
 Dispositions: `open` (recorded, not yet triaged), `fixed`, `skipped`, `deferred`.
 Set `deferred` by hand and put the reason in the Source cell; both are preserved. A `|` in the reason is kept as prose and escaped on the next run.

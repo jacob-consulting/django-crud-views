@@ -502,3 +502,19 @@ def test_filter_toggle_reference_contract():
     host = _flat(_section(BUTTONS_MD.read_text(), "### Container element and label"))
     assert 'icon-bearing modes ("icon" and "both")' in host
     assert 'In "label" mode it renders no icons at all' in host and 'None and "" included' in host
+
+
+def test_label_mode_defaults_document_every_location():
+    # Phase 6 adds the "form" location (floor "label"); the full form-map documentation lands with 06-08
+    from crud_views.lib.view.button_data import LOCATIONS
+
+    text = SETTINGS_MD.read_text()
+    menus = _section(text, "## Action menus")
+    row = _row(menus, SETTING)
+    config_row = _row(_section(text, "### Label-mode configuration"), f"`{SETTING}`")
+    for location in sorted(LOCATIONS):
+        assert f'`"{location}"`' in row[1], location
+        assert f'`"{location}"`' in config_row[3], location
+        assert f'"{location}": "{label_mode.LABEL_MODE_DEFAULTS[location]}"' in config_row[1], location
+    flat = " ".join(_section(text, "### Label-mode configuration").split())
+    assert '`default_label_mode(location)` returns the floor of `"context"`, `"list"`, `"card"` or `"form"`' in flat

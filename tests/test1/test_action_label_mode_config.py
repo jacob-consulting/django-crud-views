@@ -275,7 +275,7 @@ def test_w291_never_for_viewset_or_setting(monkeypatch):
 
 # E108: CRUD_VIEWS_LABEL_MODE_DEFAULTS, the per-location floor (read raw, at check time)
 
-E108_LOCATIONS = "['card', 'context', 'list']"
+E108_LOCATIONS = "['card', 'context', 'form', 'list']"
 E108_MODES = "['both', 'icon', 'label']"
 
 
@@ -296,7 +296,15 @@ def _key_msg(key, allowed, value) -> str:
 
 @pytest.mark.parametrize(
     "configured",
-    [{}, {"context": "both"}, {"card": "label"}, {"context": "label", "list": "both", "card": "icon"}],
+    [
+        {},
+        {"context": "both"},
+        {"card": "label"},
+        {"context": "label", "list": "both", "card": "icon"},
+        # the form location (Phase 6) arrives through LOCATIONS
+        {"form": "both"},
+        {"form": "icon", "card": "label"},
+    ],
 )
 def test_e108_valid_defaults(configured):
     assert _e108(absent=True) == []
@@ -319,8 +327,9 @@ def test_e108_non_dict(configured):
     "configured,expected",
     [
         ({"cotext": "both"}, [_key_msg("cotext", E108_LOCATIONS, "both")]),
-        # the form location arrives with Phase 6, through LOCATIONS
-        ({"form": "both"}, [_key_msg("form", E108_LOCATIONS, "both")]),
+        # a typo of the form location is still an unknown key
+        ({"from": "both"}, [_key_msg("from", E108_LOCATIONS, "both")]),
+        ({"form": "nope"}, [_key_msg("form", E108_MODES, "nope")]),
         ({1: "both"}, [_key_msg(1, E108_LOCATIONS, "both")]),
         ({"card": "nope"}, [_key_msg("card", E108_MODES, "nope")]),
         ({"card": None}, [_key_msg("card", E108_MODES, None)]),

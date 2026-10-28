@@ -3,10 +3,11 @@ import copy
 import pytest
 from django.test import override_settings
 
-from crud_views.lib.view.button_data import LEAF_KEYS, cv_button_data
+from crud_views.lib.view.button_data import FORM_LEAF_KEYS, LEAF_KEYS, cv_button_data
 from tests.lib.helper.icons import HOST_ICONS, HOST_LIBRARY
 
-LOCATIONS = ["context", "list", "card"]
+# the action locations; "form" (Phase 6) has its own contract, tested below
+ACTION_LOCATIONS = ["context", "list", "card"]
 
 
 def base(**kw):
@@ -25,7 +26,7 @@ def base(**kw):
     return ctx
 
 
-@pytest.mark.parametrize("location", LOCATIONS)
+@pytest.mark.parametrize("location", ACTION_LOCATIONS)
 def test_get(location):
     data = cv_button_data(base(), location)
     assert data["cv_location"] == location
@@ -48,7 +49,7 @@ def test_get(location):
         assert data["cv_short_label"] == "Detail"
 
 
-@pytest.mark.parametrize("location", LOCATIONS)
+@pytest.mark.parametrize("location", ACTION_LOCATIONS)
 def test_post_without_modal(location):
     data = cv_button_data(base(cv_list_action_method="post"), location)
     assert data["cv_tag"] == "button"
@@ -56,7 +57,7 @@ def test_post_without_modal(location):
     assert "cv_href" not in data
 
 
-@pytest.mark.parametrize("location", LOCATIONS)
+@pytest.mark.parametrize("location", ACTION_LOCATIONS)
 def test_post_with_modal(location):
     data = cv_button_data(base(cv_list_action_method="post", cv_modal=True, cv_modal_size="lg"), location)
     assert data["cv_tag"] == "a"
@@ -66,7 +67,7 @@ def test_post_with_modal(location):
     assert "cv_submit_target" not in data
 
 
-@pytest.mark.parametrize("location", LOCATIONS)
+@pytest.mark.parametrize("location", ACTION_LOCATIONS)
 def test_disabled(location):
     ctx = base(cv_disabled=True, cv_disabled_reason="permission", cv_url=None, cv_modal=True, cv_is_active=True)
     data = cv_button_data(ctx, location)
@@ -79,7 +80,7 @@ def test_disabled(location):
     assert data["cv_disabled_reason"] == "permission"
 
 
-@pytest.mark.parametrize("location", LOCATIONS)
+@pytest.mark.parametrize("location", ACTION_LOCATIONS)
 def test_active(location):
     assert cv_button_data(base(cv_is_active=True), location)["cv_active"] is True
     assert cv_button_data(base(), location)["cv_active"] is False
@@ -117,7 +118,7 @@ def test_cv_no_label_in_ctx_raises(value):
         cv_button_data(ctx, "card")
 
 
-@pytest.mark.parametrize("location", LOCATIONS)
+@pytest.mark.parametrize("location", ACTION_LOCATIONS)
 @pytest.mark.parametrize("value", ["lable", "icons", "Both", 1, ["both"]])
 def test_unknown_cv_label_mode_raises_everywhere(location, value):
     ctx = base(cv_label="Details", cv_label_mode=value)
@@ -155,7 +156,7 @@ def test_flex(location, expected):
     assert cv_button_data(base(cv_flex=True), location)["cv_flex"] is expected
 
 
-@pytest.mark.parametrize("location", LOCATIONS)
+@pytest.mark.parametrize("location", ACTION_LOCATIONS)
 def test_variant_defaults_to_secondary(location):
     ctx = base()
     del ctx["cv_variant"]
@@ -167,7 +168,7 @@ def test_invalid_location():
         cv_button_data(base(), "toolbar")
 
 
-@pytest.mark.parametrize("location", LOCATIONS)
+@pytest.mark.parametrize("location", ACTION_LOCATIONS)
 def test_pure_and_within_leaf_keys(location):
     ctx = base(cv_list_action_method="post", cv_modal=True, cv_is_active=True, cv_flex=True)
     before = copy.deepcopy(ctx)
@@ -182,14 +183,14 @@ host_icons = override_settings(CRUD_VIEWS_ICON_LIBRARIES=HOST_LIBRARY, CRUD_VIEW
 
 
 @host_icons
-@pytest.mark.parametrize("location", LOCATIONS)
+@pytest.mark.parametrize("location", ACTION_LOCATIONS)
 def test_host_icon_keys(location):
     data = cv_button_data(base(), location)
     assert data["cv_icon_class"] == "icon-eye"
     assert data["cv_icon_inline"] is False
 
 
-@pytest.mark.parametrize("location", LOCATIONS)
+@pytest.mark.parametrize("location", ACTION_LOCATIONS)
 def test_element_icon_keys(location):
     data = cv_button_data(base(), location)
     assert data["cv_icon_class"] == ""
@@ -235,14 +236,14 @@ def test_unknown_kind_raises():
 # #264: an icon-only action button needs an icon
 
 
-@pytest.mark.parametrize("location", LOCATIONS)
+@pytest.mark.parametrize("location", ACTION_LOCATIONS)
 @pytest.mark.parametrize("icon", [None, ""])
 def test_icon_mode_without_icon_raises_strict(location, icon):
     with override_settings(CRUD_VIEWS_STRICT=True), pytest.raises(ValueError, match=r"'detail'.*icon"):
         cv_button_data(base(cv_icon_action=icon, cv_label_mode="icon"), location)
 
 
-@pytest.mark.parametrize("location", LOCATIONS)
+@pytest.mark.parametrize("location", ACTION_LOCATIONS)
 @pytest.mark.parametrize("icon", [None, ""])
 def test_icon_mode_without_icon_falls_back_to_label(location, icon, caplog):
     with override_settings(CRUD_VIEWS_STRICT=False):
@@ -259,14 +260,14 @@ def test_menu_item_without_icon_untouched():
     assert data["cv_label_mode"] == "icon"
 
 
-@pytest.mark.parametrize("location", LOCATIONS)
+@pytest.mark.parametrize("location", ACTION_LOCATIONS)
 def test_icon_present_unchanged(location):
     with override_settings(CRUD_VIEWS_STRICT=True):
         data = cv_button_data(base(cv_label_mode="icon"), location)
     assert data["cv_label_mode"] == "icon"
 
 
-@pytest.mark.parametrize("location", LOCATIONS)
+@pytest.mark.parametrize("location", ACTION_LOCATIONS)
 @pytest.mark.parametrize("mode", ["label", "both"])
 def test_label_and_both_without_icon_untouched(location, mode):
     with override_settings(CRUD_VIEWS_STRICT=True):
@@ -298,7 +299,7 @@ def _label_mode_records(caplog) -> list:
     return [record for record in caplog.records if record.name == LABEL_MODE_LOGGER]
 
 
-@pytest.mark.parametrize("location", LOCATIONS)
+@pytest.mark.parametrize("location", ACTION_LOCATIONS)
 def test_configured_leaf_floor(location):
     with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS=CONFIGURED):
         assert cv_button_data(base(), location)["cv_label_mode"] == CONFIGURED[location]
@@ -313,7 +314,7 @@ def test_configured_leaf_floor(location):
     assert "cv_title" not in data
 
 
-@pytest.mark.parametrize("location", LOCATIONS)
+@pytest.mark.parametrize("location", ACTION_LOCATIONS)
 @pytest.mark.parametrize("value", [{"filter": "both"}, ["both"], 1, "Both", " both ", "b\u03bfth", "lable"], ids=repr)
 def test_invalid_stamped_mode_falls_back(location, value, caplog):
     ctx = base(cv_label="Details", cv_label_mode=value)
@@ -331,7 +332,7 @@ def test_invalid_stamped_mode_falls_back(location, value, caplog):
 
 
 @pytest.mark.parametrize("strict", [True, False])
-@pytest.mark.parametrize("location", LOCATIONS)
+@pytest.mark.parametrize("location", ACTION_LOCATIONS)
 @pytest.mark.parametrize("value", [None, "", [], {}], ids=repr)
 def test_falsey_stamped_mode_uses_floor(strict, location, value, caplog):
     # a falsey stamp means unset, as before: the floor, no malformed-stamp warning
@@ -343,7 +344,7 @@ def test_falsey_stamped_mode_uses_floor(strict, location, value, caplog):
     assert _label_mode_records(caplog) == []
 
 
-@pytest.mark.parametrize("location", LOCATIONS)
+@pytest.mark.parametrize("location", ACTION_LOCATIONS)
 def test_strict_stamped_error_precedes_invalid_floor(location):
     # the stamp is named, not the (also malformed) floor it would fall back to
     ctx = base(cv_label="Details", cv_label_mode="Both")
@@ -425,3 +426,299 @@ def test_invalid_stamp_and_floor_recovers_without_deadlock(stamp, floor, expecte
     result = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, timeout=10)
     assert result.returncode == 0, result.stderr
     assert "LABEL-MODE-RECOVERY-OK" in result.stdout
+
+
+# --- the form location (Phase 6, D-13/D-14): a separate finite contract -----------------------------------------
+
+FORM_TYPES = {
+    "submit": "submit",
+    "cancel": "button",
+    "delete": "submit",
+    "filter-submit": "submit",
+    "filter-reset": "reset",
+}
+# keys only an action / menu item has; a form result never carries them
+ACTION_ONLY_KEYS = LEAF_KEYS - FORM_LEAF_KEYS
+
+
+def form_ctx(key="submit", **kw):
+    ctx = {
+        "cv_key": key,
+        "cv_type": FORM_TYPES[key],
+        "cv_name": "submit",
+        "cv_value": "Save",
+        "cv_id": "submit-id-submit",
+    }
+    ctx.update(kw)
+    return ctx
+
+
+def test_form_location_contract_constants():
+    from crud_views.lib.button_classes import FORM_KINDS, VARIANT_LOCATIONS
+    from crud_views.lib.view.button_data import LOCATIONS
+
+    assert set(FORM_TYPES) == FORM_KINDS
+    assert VARIANT_LOCATIONS | {"form"} == LOCATIONS
+    assert set(ACTION_LOCATIONS) == VARIANT_LOCATIONS
+    assert {
+        "cv_location",
+        "cv_key",
+        "cv_type",
+        "cv_name",
+        "cv_value",
+        "cv_label",
+        "cv_id",
+        "cv_label_mode",
+        "cv_icon",
+        "cv_icon_class",
+        "cv_icon_inline",
+        "cv_css_class",
+        "cv_flat_attrs",
+        "cv_title",
+        "cv_cancel_url",
+    } == FORM_LEAF_KEYS
+    assert "cv_tag" not in FORM_LEAF_KEYS
+
+
+@pytest.mark.parametrize("key", sorted(FORM_TYPES))
+def test_form_default_and_explicit_action_kind_are_identical(key):
+    ctx = form_ctx(key)
+    assert cv_button_data(ctx, "form") == cv_button_data(ctx, "form", "action")
+    assert cv_button_data(ctx, "form", kind="action") == cv_button_data(ctx, "form")
+
+
+@pytest.mark.parametrize("strict", [True, False])
+@pytest.mark.parametrize("kind", ["menu-item", "pill", "submit", "cancel", ""])
+@pytest.mark.parametrize("key", sorted(FORM_TYPES))
+def test_form_rejects_a_non_action_third_kind(key, kind, strict):
+    # the third argument is the rendering category, not the semantic form kind: only cv_key selects that
+    with override_settings(CRUD_VIEWS_STRICT=strict), pytest.raises(ValueError, match="kind"):
+        cv_button_data(form_ctx(key), "form", kind)
+
+
+@pytest.mark.parametrize("strict", [True, False])
+@pytest.mark.parametrize("kind", ["action", "menu-item"])
+@pytest.mark.parametrize("location", ACTION_LOCATIONS)
+def test_action_locations_keep_both_kinds(location, kind, strict):
+    with override_settings(CRUD_VIEWS_STRICT=strict):
+        data = cv_button_data(base(), location, kind)
+    assert set(data) <= LEAF_KEYS
+    assert data["cv_location"] == location
+
+
+@pytest.mark.parametrize("strict", [True, False])
+@pytest.mark.parametrize("location", ACTION_LOCATIONS)
+def test_action_locations_reject_unknown_kind(location, strict):
+    with override_settings(CRUD_VIEWS_STRICT=strict), pytest.raises(ValueError, match="kind"):
+        cv_button_data(base(), location, "pill")
+
+
+@pytest.mark.parametrize("strict", [True, False])
+@pytest.mark.parametrize("bad", ["primary", "detail", "hidden-label", "icon-host", "", None, "Submit"])
+def test_form_rejects_unknown_cv_key(bad, strict):
+    with override_settings(CRUD_VIEWS_STRICT=strict), pytest.raises(ValueError, match="cv_key"):
+        cv_button_data(form_ctx(cv_key=bad), "form")
+    ctx = form_ctx()
+    del ctx["cv_key"]
+    with pytest.raises(ValueError, match="cv_key"):
+        cv_button_data(ctx, "form")
+
+
+@pytest.mark.parametrize("strict", [True, False])
+@pytest.mark.parametrize("bad", ["image", "hidden", "", None, "Submit", "text"])
+def test_form_rejects_unknown_cv_type(bad, strict):
+    with override_settings(CRUD_VIEWS_STRICT=strict), pytest.raises(ValueError, match="cv_type"):
+        cv_button_data(form_ctx(cv_type=bad), "form")
+    # an invalid semantic field raises whatever the third argument says
+    with pytest.raises(ValueError):
+        cv_button_data(form_ctx(cv_type=bad), "form", "menu-item")
+
+
+@pytest.mark.parametrize("key", sorted(FORM_TYPES))
+@pytest.mark.parametrize("mode", ["label", "both", "icon"])
+def test_form_result_keys_and_presence(key, mode):
+    data = cv_button_data(form_ctx(key, cv_label_mode=mode, data_cv_cancel_url="/x/"), "form")
+    assert set(data) <= FORM_LEAF_KEYS
+    assert not set(data) & ACTION_ONLY_KEYS
+    required = FORM_LEAF_KEYS - {"cv_title", "cv_cancel_url"}
+    assert required <= set(data)
+    assert ("cv_title" in data) is (mode == "icon")
+    assert ("cv_cancel_url" in data) is (key == "cancel")
+    assert data["cv_location"] == "form"
+    assert data["cv_key"] == key
+    assert data["cv_type"] == FORM_TYPES[key]
+    assert data["cv_label_mode"] == mode
+
+
+def test_form_default_mode_is_the_lazy_form_floor():
+    assert cv_button_data(form_ctx(), "form")["cv_label_mode"] == "label"
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"form": "icon"}):
+        data = cv_button_data(form_ctx(), "form")
+        assert data["cv_label_mode"] == "icon"
+        assert data["cv_title"] == "Save"
+        with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"form": "both"}):
+            assert cv_button_data(form_ctx(), "form")["cv_label_mode"] == "both"
+    # other locations' floors never reach the form
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"context": "icon", "card": "icon", "list": "icon"}):
+        assert cv_button_data(form_ctx(), "form")["cv_label_mode"] == "label"
+    assert cv_button_data(form_ctx(), "form")["cv_label_mode"] == "label"
+
+
+def test_form_invalid_mode_stamp(caplog):
+    with override_settings(CRUD_VIEWS_STRICT=True), pytest.raises(ValueError, match="cv_label_mode"):
+        cv_button_data(form_ctx(cv_label_mode="Both"), "form")
+    with override_settings(CRUD_VIEWS_STRICT=False):
+        assert cv_button_data(form_ctx(cv_label_mode="Both"), "form")["cv_label_mode"] == "label"
+    assert any("'Both'" in r.getMessage() for r in caplog.records)
+
+
+def test_form_values_are_exact_plain_strings():
+    from django.utils.safestring import SafeData, mark_safe
+    from django.utils.translation import gettext_lazy
+
+    data = cv_button_data(
+        form_ctx(cv_name=mark_safe("go"), cv_value=mark_safe("<b>x</b>"), cv_id=gettext_lazy("an-id")), "form"
+    )
+    for field in ("cv_name", "cv_value", "cv_label", "cv_id", "cv_css_class"):
+        assert type(data[field]) is str, field
+        assert not isinstance(data[field], SafeData), field
+    assert data["cv_value"] == data["cv_label"] == "<b>x</b>"
+    assert data["cv_id"] == "an-id"
+
+
+def test_form_missing_none_and_falsey_values():
+    ctx = {"cv_key": "submit", "cv_type": "submit"}
+    data = cv_button_data(ctx, "form")
+    assert (data["cv_name"], data["cv_value"], data["cv_label"], data["cv_id"]) == ("", "", "", "")
+    data = cv_button_data(form_ctx(cv_value=None, cv_name=None, cv_id=None), "form")
+    assert (data["cv_name"], data["cv_value"], data["cv_label"], data["cv_id"]) == ("", "", "", "")
+    data = cv_button_data(form_ctx(cv_value=0), "form")
+    assert (data["cv_value"], data["cv_label"]) == ("0", "0")
+    data = cv_button_data(form_ctx(cv_value=False), "form")
+    assert data["cv_value"] == "False"
+    # a valid empty label stays empty: no text is manufactured from the name or the kind
+    data = cv_button_data(form_ctx(cv_value="", cv_label_mode="label"), "form")
+    assert (data["cv_value"], data["cv_label"], data["cv_label_mode"]) == ("", "", "label")
+    data = cv_button_data(form_ctx(cv_value="v", cv_label=""), "form")
+    assert (data["cv_value"], data["cv_label"]) == ("v", "")
+    data = cv_button_data(form_ctx(cv_value="v", cv_label=None), "form")
+    assert data["cv_label"] == ""
+
+
+@pytest.mark.parametrize(
+    "name,emitted",
+    [
+        ("submit", "submit"),
+        ("reset", "reset"),
+        ("a.b!", "a.b!"),
+        ("Search the Site", "search-the-site"),
+        ("Search  the Site!", "search-the-site"),
+        ("Ünïcode name", "unicode-name"),
+    ],
+)
+def test_form_emitted_name_follows_crispy_wordcount_rule(name, emitted):
+    assert cv_button_data(form_ctx(cv_name=name), "form")["cv_name"] == emitted
+
+
+def test_form_attrs_reserved_and_aliases():
+    data = cv_button_data(
+        form_ctx(
+            "submit",
+            cv_css_class="extra",
+            cv_attrs={
+                "data_x": "u",
+                "data-x": "h",
+                "type": "image",
+                "name": "evil",
+                "value": "evil",
+                "class": "more",
+                "aria_label": 'a "q"',
+                "formnovalidate": True,
+                "hidden": False,
+                "none": None,
+            },
+        ),
+        "form",
+    )
+    flat = str(data["cv_flat_attrs"])
+    assert flat.count("data-x=") == 1 and 'data-x="h"' in flat
+    assert "type=" not in flat and "name=" not in flat and "value=" not in flat and "class=" not in flat
+    assert 'aria-label="a &quot;q&quot;"' in flat
+    assert " formnovalidate" in flat
+    assert "hidden" not in flat and "none" not in flat
+    assert data["cv_css_class"] == "extra more"
+    assert data["cv_type"] == "submit"
+
+
+@pytest.mark.parametrize(
+    "ctx,expected",
+    [
+        ({"cv_id": "gen"}, "gen"),
+        ({"cv_id": "gen", "cv_attrs": {"id": "extra"}}, "extra"),
+        ({"cv_id": "css", "cv_css_id": "css", "cv_attrs": {"id": "extra"}}, "css"),
+        ({"cv_id": "gen", "cv_attrs": {"id": None}}, "gen"),
+    ],
+)
+def test_form_id_precedence(ctx, expected):
+    data = cv_button_data(form_ctx(**ctx), "form")
+    assert data["cv_id"] == expected
+    assert "id=" not in str(data["cv_flat_attrs"])
+
+
+def test_form_cancel_url_only_for_cancel():
+    data = cv_button_data(
+        form_ctx("cancel", cv_attrs={"data_cv_cancel_url": "/u/", "data-cv-cancel-url": "/h/"}), "form"
+    )
+    assert data["cv_cancel_url"] == "/h/"
+    assert "cancel-url" not in str(data["cv_flat_attrs"])
+    data = cv_button_data(form_ctx("cancel"), "form")
+    assert data["cv_cancel_url"] is None
+    # any other kind keeps it an ordinary escaped extra attribute
+    data = cv_button_data(form_ctx("submit", cv_attrs={"data_cv_cancel_url": "/a?b=1&c=2"}), "form")
+    assert "cv_cancel_url" not in data
+    assert 'data-cv-cancel-url="/a?b=1&amp;c=2"' in str(data["cv_flat_attrs"])
+
+
+@pytest.mark.parametrize("mode", ["label", "both", "icon"])
+def test_form_title_and_tooltip_collisions(mode):
+    data = cv_button_data(form_ctx(cv_label_mode=mode, cv_attrs={"title": "T", "data_cv_tooltip": "x"}), "form")
+    flat = str(data["cv_flat_attrs"])
+    if mode == "icon":
+        assert data["cv_title"] == "Save"
+        assert "title=" not in flat and "data-cv-tooltip" not in flat
+    else:
+        assert "cv_title" not in data
+        assert 'title="T"' in flat and 'data-cv-tooltip="x"' in flat
+
+
+host_icons_form = override_settings(CRUD_VIEWS_ICON_LIBRARIES=HOST_LIBRARY, CRUD_VIEWS_ICONS=HOST_ICONS)
+
+
+@host_icons_form
+@pytest.mark.parametrize("mode", ["label", "both", "icon"])
+def test_form_host_icon_classes(mode):
+    data = cv_button_data(form_ctx(cv_label_mode=mode, cv_icon="update"), "form")
+    if mode == "label":
+        assert (data["cv_icon_class"], data["cv_icon_inline"]) == ("", True)
+    else:
+        assert (data["cv_icon_class"], data["cv_icon_inline"]) == ("icon-edit", False)
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"form:icon-host": "icon {name_class}"}):
+        if mode != "label":
+            assert cv_button_data(form_ctx(cv_label_mode=mode, cv_icon="update"), "form")["cv_icon_class"] == (
+                "icon icon-edit"
+            )
+
+
+@pytest.mark.parametrize("mode", ["label", "both", "icon"])
+def test_form_element_icon(mode):
+    data = cv_button_data(form_ctx(cv_label_mode=mode, cv_icon="detail"), "form")
+    assert data["cv_icon"] == "detail"
+    assert (data["cv_icon_class"], data["cv_icon_inline"]) == ("", True)
+
+
+def test_form_never_mutates_ctx():
+    ctx = form_ctx("cancel", cv_attrs={"data_cv_cancel_url": "/u/", "id": "x", "class": "c"}, cv_css_class="e")
+    before = copy.deepcopy(ctx)
+    cv_button_data(ctx, "form")
+    cv_button_data(ctx, "form")
+    assert ctx == before

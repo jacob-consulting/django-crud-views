@@ -12,8 +12,8 @@ from django.urls import reverse
 from django.utils import translation
 from lxml import html
 
-from crud_views.lib.button_classes import DEFAULT_BUTTON_CLASSES
-from crud_views.lib.view.button_data import LOCATIONS
+from crud_views.lib.button_classes import DEFAULT_BUTTON_CLASSES, FORM_KINDS, VARIANT_LOCATIONS
+from crud_views.lib.view.button_data import LOCATIONS, cv_button_data
 from crud_views.lib.view.label_mode import LABEL_MODES
 from tests.lib.helper.user import user_viewset_permission
 
@@ -172,6 +172,32 @@ def _leaf_contract(location: str, mode: str) -> dict:
     }
 
 
+FORM_LEAF = "crud_views/tags/button/form.html"
+FORM_TYPES = {
+    "submit": "submit",
+    "cancel": "button",
+    "delete": "submit",
+    "filter-submit": "submit",
+    "filter-reset": "reset",
+}
+
+
+def _form_contract(kind: str, mode: str, **kw) -> dict:
+    """Valid raw form data for cv_button_data(ctx, "form"), with an already registered (element) icon."""
+    ctx = {
+        "cv_key": kind,
+        "cv_type": FORM_TYPES[kind],
+        "cv_name": "go",
+        "cv_value": "Go",
+        "cv_id": "submit-id-go",
+        "cv_label_mode": mode,
+        "cv_icon": "detail",
+        "cv_attrs": {"data_cv_cancel_url": "/back/"},
+    }
+    ctx.update(kw)
+    return ctx
+
+
 def _guard_client(grants) -> Client:
     user = User.objects.create_user(username=f"guard_{uuid.uuid4().hex[:8]}", password="pw")
     for viewset, perms in grants:
@@ -210,13 +236,19 @@ def test_button_chain_renders_only_table_classes(monkeypatch):
         offenders[name] = _offenders(doc)
         styled[name] = len(_styled(doc))
 
+    # the action and menu leaves serve the variant locations; the form location has its own leaf, checked below
+    assert LOCATIONS - {"form"} == VARIANT_LOCATIONS
     with override_settings(CRUD_VIEWS_BUTTON_CLASSES=SENTINEL_CLASSES):
-        for location in sorted(LOCATIONS):
+        for location in sorted(VARIANT_LOCATIONS):
             for mode in sorted(LABEL_MODES):
                 markup = render_to_string("crud_views/tags/button/action.html", _leaf_contract(location, mode))
                 check(f"action.html:{location}:{mode}", html.fromstring(f"<div>{markup}</div>"))
             markup = render_to_string("crud_views/tags/button/menu_item.html", _leaf_contract(location, "icon"))
             check(f"menu_item.html:{location}", html.fromstring(f"<div>{markup}</div>"))
+        for kind in sorted(FORM_KINDS):
+            for mode in sorted(LABEL_MODES):
+                markup = render_to_string(FORM_LEAF, cv_button_data(_form_contract(kind, mode), "form"))
+                check(f"form.html:{kind}:{mode}", html.fromstring(f"<div>{markup}</div>"))
         for client, url in pages:
             resp = client.get(url)
             assert resp.status_code == 200, url
@@ -224,3 +256,113 @@ def test_button_chain_renders_only_table_classes(monkeypatch):
 
     assert all(styled.values()), styled  # every render had table-styled elements to check
     assert {name: found for name, found in offenders.items() if found} == {}
+
+
+@pytest.mark.parametrize("kind", sorted(FORM_KINDS))
+@pytest.mark.parametrize("mode", sorted(LABEL_MODES))
+def test_form_leaf_classes_and_bodies(kind, mode):
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES=SENTINEL_CLASSES):
+        markup = render_to_string(FORM_LEAF, cv_button_data(_form_contract(kind, mode), "form"))
+    (button,) = html.fromstring(f"<div>{markup}</div>").cssselect("button")
+    assert _tokens(button) == [SENTINEL_CLASSES[f"form:{kind}"]]
+    assert (button.get("type"), button.get("name"), button.get("value")) == (FORM_TYPES[kind], "go", "Go")
+    assert button.get("data-cv-cancel-url") == ("/back/" if kind == "cancel" else None)
+    hidden = button.cssselect("span." + SENTINEL_CLASSES["form:hidden-label"])
+    icons = button.cssselect("i")
+    if mode == "icon":
+        assert [s.text for s in hidden] == ["Go"]
+        assert (button.get("title"), button.get("data-cv-tooltip")) == ("Go", "form")
+        assert len(icons) == 1
+    elif mode == "both":
+        assert not hidden and len(icons) == 1
+        assert [s.text for s in button.cssselect("span")] == ["Go"]
+        assert button.get("title") is None and button.get("data-cv-tooltip") is None
+    else:
+        assert not hidden and not icons
+        assert [s.text for s in button.cssselect("span")] == ["Go"]
+        assert button.get("title") is None and button.get("data-cv-tooltip") is None
+
+
+# --- the action-only {% cv_button %} tag never renders the form location (L-ACTION-TAG-FORM-ROUTING) -------------
+
+_VALID_FORM_TAG_CONTEXT = {
+    "cv_access": True,
+    "cv_key": "submit",
+    "cv_type": "submit",
+    "cv_name": "submit",
+    "cv_value": "Save",
+    "cv_id": "submit-id-submit",
+    "cv_url": "/u/",
+    "cv_action_label": "Save",
+    "cv_icon_action": "detail",
+    "cv_oid": "o1",
+}
+
+_TAG_KINDS = ['{% cv_button "form" %}', '{% cv_button "form" "action" %}', '{% cv_button "form" "menu-item" %}']
+
+
+@pytest.fixture
+def tag_spies(monkeypatch):
+    from crud_views.templatetags import crud_views as tags
+
+    calls = []
+    for name in ("cv_resolve_action", "cv_button_data", "render_to_string"):
+        real = getattr(tags, name)
+
+        def spy(*args, _name=name, _real=real, **kwargs):
+            calls.append(_name)
+            return _real(*args, **kwargs)
+
+        monkeypatch.setattr(tags, name, spy)
+    return calls
+
+
+@pytest.mark.parametrize("strict", [True, False])
+@pytest.mark.parametrize("tag", _TAG_KINDS)
+@pytest.mark.parametrize(
+    "ctx", [_VALID_FORM_TAG_CONTEXT, {}, {"cv_key": "submit", "cv_access": False}], ids=["visible", "empty", "hidden"]
+)
+def test_cv_button_tag_rejects_form_location(tag_spies, tag, ctx, strict):
+    template = Template("{% load crud_views %}" + tag)
+    with override_settings(CRUD_VIEWS_STRICT=strict), pytest.raises(ValueError, match="cv_button") as excinfo:
+        template.render(Context(dict(ctx)))
+    assert "'form'" in str(excinfo.value)
+    assert tag_spies == []  # rejected before resolution, normalization and leaf dispatch
+
+
+def test_direct_form_normalization_still_succeeds():
+    data = cv_button_data(_VALID_FORM_TAG_CONTEXT, "form")
+    assert (data["cv_location"], data["cv_key"], data["cv_type"]) == ("form", "submit", "submit")
+    markup = render_to_string(FORM_LEAF, data)
+    (button,) = html.fromstring(f"<div>{markup}</div>").cssselect("button")
+    assert (button.get("name"), button.get("value")) == ("submit", "Save")
+
+
+_ACTION_TAG_CONTEXT = {
+    "cv_key": "detail",
+    "cv_access": True,
+    "cv_url": "/author/1/detail/",
+    "cv_action_label": "Details",
+    "cv_icon_action": "detail",
+    "cv_list_action_method": "get",
+    "cv_oid": "author_detail_1",
+}
+
+
+@pytest.mark.parametrize("strict", [True, False])
+@pytest.mark.parametrize("location", sorted(VARIANT_LOCATIONS))
+def test_cv_button_tag_keeps_action_and_menu_item(tag_spies, location, strict):
+    with override_settings(CRUD_VIEWS_STRICT=strict):
+        action = Template('{% load crud_views %}{% cv_button "' + location + '" %}').render(
+            Context(dict(_ACTION_TAG_CONTEXT))
+        )
+        item = Template('{% load crud_views %}{% cv_button "' + location + '" "menu-item" %}').render(
+            Context(dict(_ACTION_TAG_CONTEXT))
+        )
+        hidden = Template('{% load crud_views %}{% cv_button "' + location + '" %}').render(
+            Context({"cv_key": "detail", "cv_access": False, "cv_url": "/x/"})
+        )
+    assert html.fromstring(f"<div>{action}</div>").cssselect('a[href="/author/1/detail/"]')
+    assert html.fromstring(f"<div>{item}</div>").cssselect('a[href="/author/1/detail/"]')
+    assert hidden == ""
+    assert "cv_button_data" in tag_spies and "render_to_string" in tag_spies

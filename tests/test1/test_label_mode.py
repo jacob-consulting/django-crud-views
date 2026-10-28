@@ -14,7 +14,7 @@ from crud_views.lib.view.label_mode import (
 )
 
 LOGGER = "crud_views.lib.view.label_mode"
-PACKAGE = {"context": "icon", "list": "icon", "card": "both"}
+PACKAGE = {"context": "icon", "list": "icon", "card": "both", "form": "label"}
 # the process-lifetime register as seen at collection, before any test-scoped isolation
 PROCESS_WARNED = label_mode._warned
 
@@ -65,6 +65,7 @@ def _records(caplog) -> list:
 
 def test_defaults_match_locations():
     assert set(LABEL_MODE_DEFAULTS) == LOCATIONS
+    assert "form" in LOCATIONS and LABEL_MODE_DEFAULTS["form"] == "label"
     assert dict(LABEL_MODE_DEFAULTS) == PACKAGE
     assert all(is_label_mode(mode) for mode in LABEL_MODE_DEFAULTS.values())
     with pytest.raises(TypeError):
@@ -91,7 +92,10 @@ def test_default_label_mode_absent_setting(no_setting):
         ({"context": "label", "list": "both", "card": "label"}, {"context": "label", "list": "both", "card": "label"}),
         # an unknown key (E108 reports it) is ignored at render
         ({"cotext": "both"}, PACKAGE),
+        # the form location (Phase 6) is merged like the others; an entry equal to its package value changes nothing
         ({"form": "label", "list": "both"}, {**PACKAGE, "list": "both"}),
+        ({"form": "icon"}, {**PACKAGE, "form": "icon"}),
+        ({"form": "both", "card": "label"}, {**PACKAGE, "form": "both", "card": "label"}),
     ],
 )
 def test_default_label_mode_merge(configured, expected):
@@ -134,7 +138,7 @@ def test_default_label_mode_override_settings(no_setting):
 
 
 @pytest.mark.parametrize("strict", [True, False])
-@pytest.mark.parametrize("location", ["toolbar", "form", "filter", "", "Context"])
+@pytest.mark.parametrize("location", ["toolbar", "forms", "Form", "filter", "", "Context"])
 def test_default_label_mode_invalid_location(strict, location):
     # a wrong location argument is a caller bug, not configuration: it raises in every mode
     with override_settings(CRUD_VIEWS_STRICT=strict), pytest.raises(ValueError, match="location must be one of"):
@@ -152,7 +156,7 @@ def test_default_label_mode_invalid_setting_whole(configured, caplog):
         default_label_mode("context")
     with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS=configured, CRUD_VIEWS_STRICT=False):
         assert _resolved() == PACKAGE
-    assert len(_records(caplog)) == 3  # one per location queried
+    assert len(_records(caplog)) == len(LOCATIONS) == 4  # one per location queried
 
 
 @pytest.mark.parametrize("value", PER_LOCATION_INVALID, ids=repr)
@@ -164,6 +168,7 @@ def test_default_label_mode_invalid_setting(value, caplog):
         # only the requested location is validated at render
         assert default_label_mode("list") == "label"
         assert default_label_mode("card") == "both"
+        assert default_label_mode("form") == "label"
     with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS=configured, CRUD_VIEWS_STRICT=False):
         # the package default for that location, never the setting's other entries
         assert default_label_mode("context") == "icon"

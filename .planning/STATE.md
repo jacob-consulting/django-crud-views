@@ -1,20 +1,19 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 7
-current_phase_name: Theme-surface stability policy
+current_phase: "6.1"
+current_phase_name: Cancel form button as a link
 status: planning
-stopped_at: Phase 06 complete, ready to plan Phase 7
-last_updated: "2026-10-28T14:17:56.648Z"
+stopped_at: Phase 6.1 context gathered
+last_updated: "2026-10-28T19:35:03.240Z"
 last_activity: 2026-10-28
-last_activity_desc: Phase 06 complete, transitioned to Phase 7
-state_head: dbca22ea38bc3a7c25be2fc1338efbf69233e6d4
+last_activity_desc: "Inserted Phase 6.1 from #275 before the theme-surface stability freeze"
+state_head: 1ec581b4dfe39834dc34c6f1036b2acfc2f9ea07
 progress:
-  total_phases: 7
+  total_phases: 8
   completed_phases: 6
   total_plans: 24
   completed_plans: 24
-  percent: 86
 milestone_name: milestone
 ---
 
@@ -25,16 +24,16 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-10-28)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 7 — Theme-surface stability policy
+**Current focus:** Phase 6.1 — Cancel form button as a link (#275)
 
 ## Current Position
 
-Phase: 7 — Theme-surface stability policy
+Phase: 6.1 — Cancel form button as a link
 Plan: Not started
 Status: Ready to plan
-Last activity: 2026-10-28 — Phase 06 complete, transitioned to Phase 7
+Last activity: 2026-10-28 — Inserted Phase 6.1 from #275 before the theme-surface stability freeze
 
-Progress: 24/24 plans executed ([█████████░] 86%); 6/7 phases complete
+Progress: 24/24 plans executed ([████████░░] 75%); 6/8 phases complete
 
 ## Performance Metrics
 
@@ -186,6 +185,7 @@ None yet.
 ### Roadmap Evolution
 
 - Phase 06 edited: User decision D-18: verify completed Phase 1/2 contracts on executing working branch before spec; main merge no longer prerequisite
+- Phase 6.1 inserted after Phase 6: Cancel form button as a link (#275); complete before Phase 7 freezes the theme surface (URGENT)
 
 ## Deferred Items
 
@@ -195,6 +195,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-28
-Stopped at: Phase 06 complete, ready to plan Phase 7
-Resume file: None
+Last session: 2026-10-28T19:35:02.886Z
+Stopped at: Phase 6.1 context gathered
+Resume file: .planning/phases/06.1-cancel-form-button-as-a-link/06.1-CONTEXT.md

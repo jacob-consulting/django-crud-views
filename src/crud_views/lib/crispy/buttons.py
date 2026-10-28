@@ -22,7 +22,9 @@ _KIND_ICONS = {
     "filter-reset": "filter-reset",
 }
 
-# the default of icon=: "not given", so an explicit None or "" stays an intentional "no icon"
+# the default of icon=: "not given", so an explicit None or "" stays an intentional "no icon". Compared only in the
+# constructor: an adapter records the omission as a bool, which survives the filter helper's per-instance deepcopy
+# (a copied object() would be a new, truthy non-sentinel icon)
 _KIND_ICON = object()
 
 
@@ -125,7 +127,9 @@ class _TableClassMixin:
 
     def __init__(self, name, value, *, slot: str | None = None, icon=_KIND_ICON, **kwargs):
         self._cv_slot = slot or self.slot
-        self._cv_icon = icon
+        # icon= omitted: the slot's kind picks the icon at render time; a bool copies as itself
+        self._cv_kind_icon = icon is _KIND_ICON
+        self._cv_icon = None if self._cv_kind_icon else icon
         self.field_classes = get_button_class(*self._cv_slot.split(":", 1))
         self._cv_css_id = kwargs.get("css_id")
         self._cv_css_class = kwargs.get("css_class")
@@ -156,7 +160,7 @@ class _TableClassMixin:
             "cv_css_id": self._cv_css_id,
             "cv_css_class": self._cv_css_class,
             "cv_attrs": dict(self._cv_attrs),
-            "cv_icon": _KIND_ICONS[kind] if self._cv_icon is _KIND_ICON else self._cv_icon,
+            "cv_icon": _KIND_ICONS[kind] if self._cv_kind_icon else self._cv_icon,
         }
 
     def render(self, form, context, template_pack=TEMPLATE_PACK, **kwargs):

@@ -1390,3 +1390,317 @@ def test_form_instances_do_not_share_icons_or_language():
     )
     assert seen == [(rocket, xmark), (floppy, xmark), (rocket, xmark), (floppy, xmark), (bolt, xmark), (floppy, xmark)]
     assert PlainForm.submit_icon == "save" and RocketForm.submit_icon == "fas:rocket"
+
+
+# --- the filter helper lifecycle (06-05): real {% crispy form helper %} renders ----------------------------------
+
+FILTER_CRISPY = Template("{% load crispy_forms_tags %}{% crispy form helper %}")
+
+
+class _CityForm(forms.Form):
+    name = forms.CharField(required=False)
+    city = forms.CharField(required=False)
+
+
+def _filter_helper_class(*, layout=_ABSENT, actions=_ABSENT):
+    """A ListViewFilterFormHelper subclass: class-level ``layout`` and/or a ``get_form_actions`` returning ``actions``
+    (a fresh object per call when given a factory)."""
+    from crud_views.lib.views.list import ListViewFilterFormHelper
+
+    attrs = {}
+    if layout is not _ABSENT:
+        attrs["layout"] = layout
+    if actions is not _ABSENT:
+        attrs["get_form_actions"] = lambda self: actions() if callable(actions) else actions
+    return type("FilterHelper", (ListViewFilterFormHelper,), attrs)
+
+
+def _new_filter_helper(cls, query="", **kwargs):
+    from django.test import RequestFactory
+
+    return cls(view=kwargs.pop("view", None), request=RequestFactory().get("/" + query), **kwargs)
+
+
+def _filter_render(form, helper, **page) -> str:
+    return FILTER_CRISPY.render(Context({"form": form, "helper": helper, **page}))
+
+
+def _controls_of(markup: str) -> list[tuple]:
+    """(tag, type, name, value) of every input / button in document order."""
+    root = lxml_html.fragment_fromstring(markup, create_parent="div")
+    return [(el.tag, el.get("type"), el.get("name"), el.get("value")) for el in root.iter("input", "button")]
+
+
+def _action_groups(markup: str) -> list:
+    """The FormActions groups: div.mb-3 > div[class=""] without hidden inputs (the pack's inputs wrapper has them)."""
+    root = lxml_html.fragment_fromstring(markup, create_parent="div")
+    return [
+        div
+        for div in root.iter("div")
+        if (div.get("class") or "").split() == ["mb-3"]
+        and div.get("id") is None
+        and not div.cssselect("input[type=hidden]")
+        and [child.get("class") for child in div] == [""]
+    ]
+
+
+DEFAULT_ACTIONS = [("button", "submit", "submit", "Apply Filter"), ("button", "reset", "reset", "Reset Filter")]
+HIDDEN_SORT = [("input", "hidden", "sort", "")]
+FIELD = {"name": ("input", "text", "name", None), "city": ("input", "text", "city", None)}
+
+
+def _fields(*names) -> list[tuple]:
+    return [FIELD[name] for name in names]
+
+
+def _layout_fields(layout) -> list:
+    return [getattr(field, "fields", field) for field in layout.fields]
+
+
+def test_filter_class_layout_is_cloned_per_instance_and_actions_appear_once():
+    """D-03: the documented field-only subclass; two instances, explicit form=, repeated and interleaved renders."""
+    helper_cls = _filter_helper_class(layout=Layout("name", "city"))
+    class_layout = helper_cls.layout
+    form = _CityForm()
+    first = _new_filter_helper(helper_cls)
+    second = _new_filter_helper(helper_cls, form=form)
+    assert second.form is form
+    assert first.layout is not class_layout and second.layout is not class_layout
+    assert first.layout is not second.layout
+
+    expected = _fields("name", "city") + DEFAULT_ACTIONS + HIDDEN_SORT
+    for _ in range(3):
+        for helper in (first, second, first):
+            out = _filter_render(_CityForm(), helper)
+            assert _controls_of(out) == expected
+            assert len(_action_groups(out)) == 1
+    # the class layout and the other instance never receive the appended actions
+    assert class_layout.fields == ["name", "city"]
+    assert first.layout.fields[:2] == second.layout.fields[:2] == ["name", "city"]
+    assert len(first.layout.fields) == len(second.layout.fields) == 3
+    assert first.layout.fields[2] is not second.layout.fields[2]
+    assert second.form is form
+
+
+def test_filter_explicit_form_never_overwrites_the_declared_layout():
+    """crispy's FormHelper(form) would replace the layout with every form field; the declared fields stay."""
+    form = _CityForm()
+    helper = _new_filter_helper(_filter_helper_class(layout=Layout("city")), form=form)
+    assert helper.form is form
+    assert _controls_of(_filter_render(form, helper)) == _fields("city") + DEFAULT_ACTIONS + HIDDEN_SORT
+    assert helper.form is form
+
+
+@pytest.mark.parametrize("names", [(), ("name",), ("name", "city", "zip")])
+def test_filter_helper_without_layout_renders_the_actual_form_fields(names):
+    form_cls = type("NForm", (forms.Form,), {name: forms.CharField(required=False) for name in names})
+    helper = _new_filter_helper(_filter_helper_class())
+    for form in (form_cls(), form_cls()):
+        out = _filter_render(form, helper)
+        fields = [("input", "text", name, None) for name in names]
+        assert _controls_of(out) == fields + DEFAULT_ACTIONS + HIDDEN_SORT
+        assert len(_action_groups(out)) == 1
+    # another form through the same helper renders its own fields, not the first form's
+    out = _filter_render(_CityForm(), helper)
+    assert _controls_of(out) == _fields("name", "city") + DEFAULT_ACTIONS + HIDDEN_SORT
+
+
+@pytest.mark.parametrize("when", ["before-first-render", "between-renders"])
+def test_filter_layout_replacement_is_respected_with_one_action_group(when):
+    """M-HELPER-STATE: a caller-assigned layout selects the fields and order; it is isolated, never mutated, and the
+    constructor snapshot is never restored over it."""
+    from crispy_forms.layout import Row
+
+    form = _CityForm()
+    helper = _new_filter_helper(_filter_helper_class(layout=Layout("name", "city")), form=form)
+    if when == "between-renders":
+        assert _controls_of(_filter_render(form, helper)) == _fields("name", "city") + DEFAULT_ACTIONS + HIDDEN_SORT
+    replacement = Layout(Row("city", "name"))
+    helper.layout = replacement
+    other = _new_filter_helper(_filter_helper_class(layout=Layout("name")))
+    for _ in range(3):
+        out = _filter_render(form, helper)
+        assert _controls_of(out) == _fields("city", "name") + DEFAULT_ACTIONS + HIDDEN_SORT
+        assert len(_action_groups(out)) == 1
+        assert _controls_of(_filter_render(_CityForm(), other)) == _fields("name") + DEFAULT_ACTIONS + HIDDEN_SORT
+    assert len(replacement.fields) == 1 and replacement.fields[0].fields == ["city", "name"]
+    assert helper.layout is not replacement
+    assert helper.form is form
+
+    # a second replacement after a completed render is selected the same way
+    second = Layout("name")
+    helper.layout = second
+    assert _controls_of(_filter_render(form, helper)) == _fields("name") + DEFAULT_ACTIONS + HIDDEN_SORT
+    assert second.fields == ["name"]
+
+
+_HOOKS = {
+    "default": _ABSENT,
+    "none": None,
+    "empty": FormActions,
+}
+
+
+@pytest.mark.parametrize("hook", sorted(_HOOKS))
+@pytest.mark.parametrize("when", ["before-first-render", "between-renders"])
+def test_filter_empty_layout_replacement_dispatches_through_the_tag(monkeypatch, hook, when):
+    """M-EMPTY-REPLACEMENT / H-HELPER-TRUTHINESS: ``helper.layout = Layout()`` is prepared in get_attributes, before
+    crispy's ``if helper and helper.layout`` guard, so the real render_layout runs for every hook; discarded fields
+    never come back, the caller's Layout stays empty and helper.form keeps its identity."""
+    from crud_views.lib.views.list import ListViewFilterFormHelper
+
+    events = []
+    original_attributes = ListViewFilterFormHelper.get_attributes
+    original_render_layout = ListViewFilterFormHelper.render_layout
+
+    def spy_attributes(self, *args, **kwargs):
+        result = original_attributes(self, *args, **kwargs)
+        events.append(("get_attributes", self, bool(self), bool(self.layout), len(self), self.layout is caller))
+        return result
+
+    def spy_render_layout(self, form, context, *args, **kwargs):
+        events.append(("render_layout", self, form))
+        return original_render_layout(self, form, context, *args, **kwargs)
+
+    monkeypatch.setattr(ListViewFilterFormHelper, "get_attributes", spy_attributes)
+    monkeypatch.setattr(ListViewFilterFormHelper, "render_layout", spy_render_layout)
+
+    caller = None
+    form = _CityForm()
+    helper = _new_filter_helper(_filter_helper_class(layout=Layout("name", "city"), actions=_HOOKS[hook]), form=form)
+    other = _new_filter_helper(_filter_helper_class(layout=Layout("name"), actions=_HOOKS[hook]))
+    if when == "between-renders":
+        assert _controls_of(_filter_render(form, helper))[:2] == _fields("name", "city")
+    caller = Layout()
+    helper.layout = caller
+    events.clear()
+
+    for _ in range(2):
+        out = _filter_render(form, helper)
+        _filter_render(_CityForm(), other)  # interleaved second helper
+        if hook == "default":
+            assert _controls_of(out) == DEFAULT_ACTIONS + HIDDEN_SORT
+            assert len(_action_groups(out)) == 1
+        elif hook == "empty":
+            assert _controls_of(out) == HIDDEN_SORT
+            assert len(_action_groups(out)) == 1  # the explicit empty group
+        else:
+            # no action group; the pack's display_form.html falls back to uni_form for an empty form_html
+            assert [c for c in _controls_of(out) if c[0] == "button"] == []
+            assert _action_groups(out) == []
+        assert not [c for c in _controls_of(out) if c[0] == "button" and c[2] not in ("submit", "reset")]
+
+    mine = [e for e in events if e[1] is helper]
+    assert [e[0] for e in mine] == ["get_attributes", "render_layout"] * 2
+    first_attributes = mine[0]
+    # prepared before the guard: helper and layout truthy, zero fields, no longer the caller's object
+    assert first_attributes[2:] == (True, True, 0, False)
+    assert all(e[2] is form for e in mine if e[0] == "render_layout")
+    assert caller.fields == []
+    selected = _layout_fields(helper.layout)
+    assert all(not isinstance(f, str) for f in selected)  # no discarded field name is restored
+    assert len(selected) == (0 if hook == "none" else 1)
+    assert helper.form is form
+
+
+def test_filter_action_hook_none_empty_and_equal_labels():
+    """D-04: None omits the group; an empty FormActions stays an explicit empty group; a replacement group appears
+    once per render and equal labels do not deduplicate distinct controls."""
+    form = _CityForm()
+    fields = _fields("name", "city")
+
+    omitted = _new_filter_helper(_filter_helper_class(layout=Layout("name", "city"), actions=None))
+    out = _filter_render(form, omitted)
+    assert _controls_of(out) == fields + HIDDEN_SORT and _action_groups(out) == []
+
+    empty = _new_filter_helper(_filter_helper_class(layout=Layout("name", "city"), actions=FormActions))
+    out = _filter_render(form, empty)
+    assert _controls_of(out) == fields + HIDDEN_SORT and len(_action_groups(out)) == 1
+
+    def same_label_actions():
+        return FormActions(
+            Submit("go", "Go", css_id="go-1", slot="form:filter-submit"),
+            Submit("go", "Go", css_id="go-2", slot="form:filter-submit"),
+        )
+
+    replaced = _new_filter_helper(_filter_helper_class(layout=Layout("name", "city"), actions=same_label_actions))
+    for _ in range(3):
+        out = _filter_render(form, replaced)
+        go = ("button", "submit", "go", "Go")
+        assert _controls_of(out) == [*fields, go, go, *HIDDEN_SORT]
+        assert re.findall(r'id="(go-\d)"', out) == ["go-1", "go-2"]
+        assert len(_action_groups(out)) == 1
+
+
+def test_filter_legacy_add_input_controls_stay_quiet_inputs(caplog):
+    """D-01 / D-02: a subclass add_input(Submit) stays a crispy input in the pack wrapper, with no warning, beside the
+    stock layout actions; a two-argument constructor still works."""
+    from crud_views.lib.views.list import ListViewFilterFormHelper
+
+    class LegacyHelper(ListViewFilterFormHelper):
+        layout = Layout("name")
+
+        def __init__(self, view, request):
+            super().__init__(view, request)
+            self.add_input(Submit("legacy", "Search"))
+            self.add_input(Button("custom", "Custom", slot="formset:control"))
+
+    helper = _new_filter_helper(LegacyHelper)
+    with warnings.catch_warnings(), caplog.at_level(logging.DEBUG):
+        warnings.simplefilter("error")
+        out = _filter_render(_CityForm(), helper)
+    assert [r for r in caplog.records if r.levelno >= logging.WARNING] == []
+    assert _controls_of(out) == _fields("name") + DEFAULT_ACTIONS + [
+        ("input", "hidden", "sort", ""),
+        ("input", "submit", "legacy", "Search"),
+        ("input", "button", "custom", "Custom"),
+    ]
+    assert 'class="btn btn-primary"' in tag(out, name="legacy")
+    assert len(_action_groups(out)) == 1
+
+
+def test_filter_helper_private_state_is_not_published():
+    """Lifecycle state is underscore-prefixed: crispy's get_attributes publishes nothing new into the context."""
+    from crispy_forms.helper import FormHelper as CrispyFormHelper
+
+    form = _CityForm()
+    helper = _new_filter_helper(_filter_helper_class(layout=Layout("name")), form=form, view="VIEW")
+    base = set(CrispyFormHelper().get_attributes())
+    for _ in range(2):
+        _filter_render(form, helper)
+        helper.layout = Layout()
+        attributes = helper.get_attributes()
+        assert set(attributes) - base == {"inputs", "view", "form"}
+        assert (attributes["view"], attributes["form"]) == ("VIEW", form)
+        assert not [key for key in attributes if key.startswith("_")]
+
+
+def test_filter_helper_pushes_its_owner_for_its_render_only(owners, monkeypatch):
+    """render_layout pushes the private helper-owner entry for its own invocation and restores the context; the
+    helper's view, not the page, selects the filter action modes."""
+    from crud_views.lib.crispy.buttons import _CV_HELPER_OWNER
+
+    monkeypatch.setattr(owners.RH, "cv_form_actions_label_mode", {"filter-submit": "icon"})
+    monkeypatch.setattr(owners.P, "cv_form_actions_label_mode", {"filter-submit": "both"})
+
+    seen = []
+
+    class RecordingSubmit(Submit):
+        def render(self, form, context, *args, **kwargs):
+            seen.append([layer[_CV_HELPER_OWNER] for layer in context.dicts if _CV_HELPER_OWNER in layer])
+            return super().render(form, context, *args, **kwargs)
+
+    helper = _new_filter_helper(
+        _filter_helper_class(
+            layout=Layout("name"),
+            actions=lambda: FormActions(RecordingSubmit("submit", "Apply", slot="form:filter-submit")),
+        ),
+        view=owners.RH,
+    )
+    context = Context({"form": _CityForm(), "helper": helper, "view": owners.P})
+    layers = [dict(d) for d in context.dicts]
+    out = FILTER_CRISPY.render(context)
+    assert seen == [[owners.RH]]
+    assert [el.get("class") for el in _buttons(out)] == ["m-icon"]
+    assert [dict(d) for d in context.dicts] == layers
+    assert not any(_CV_HELPER_OWNER in layer for layer in context.dicts)

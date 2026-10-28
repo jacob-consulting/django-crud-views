@@ -301,3 +301,43 @@ def test_custom_helper_constructor_without_form_keyword(
     assert calls == [("PublisherListView", "GET")]
     assert _buttons(form) == [APPLY, RESET]
     assert _hidden(form) == [("sort", "name"), ("order", "name"), ("dir", "desc")]
+
+
+@pytest.mark.django_db
+def test_filter_endpoint_repeated_requests_never_accumulate_actions(
+    client_user_publisher_view: Client, cv_publisher, publisher_penguin
+):
+    """D-03: the shared class layout of the documented subclass is never extended by a request."""
+    from tests.test1.app.views import PublisherFilterFormHelper
+
+    class_layout = PublisherFilterFormHelper.layout
+    before = len(class_layout.fields)
+    for path in (FILTER_PATH, "/publisher/?order=name", FILTER_PATH):
+        form = _filter_form(client_user_publisher_view.get(path))
+        assert _buttons(form) == [APPLY, RESET]
+    assert PublisherFilterFormHelper.layout is class_layout
+    assert len(class_layout.fields) == before
+
+
+@pytest.mark.parametrize(
+    ("query", "expected"),
+    [
+        ("?sort=s&o=name&d=asc&order=x&dir=y", [("sort", "s"), ("o", "name"), ("d", "asc")]),
+        ("?o=&d=", [("sort", "")]),
+        ("?d=desc", [("sort", ""), ("d", "desc")]),
+    ],
+)
+def test_filter_hidden_controls_follow_renamed_order_params(query, expected):
+    """Renamed order / direction parameters and empty values keep today's hidden-input naming and value logic."""
+    from types import SimpleNamespace
+
+    from crispy_forms.layout import Hidden
+    from django.test import RequestFactory
+
+    from crud_views.lib.views.list import ListViewFilterFormHelper
+
+    view = SimpleNamespace(cv_order_param="o", cv_order_dir_param="d")
+    helper = ListViewFilterFormHelper(view=view, request=RequestFactory().get("/" + query))
+    assert [type(i) for i in helper.inputs] == [Hidden] * len(expected)
+    assert [(i.name, i.value) for i in helper.inputs] == expected
+    assert helper.view is view

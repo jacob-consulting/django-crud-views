@@ -237,6 +237,10 @@ changes below unless noted.
     The names, values, ids, classes and the cancel button's `data-cv-cancel-url` stay as they were, and so do the
     filter's `filter-button` and `filter-button-reset` ids. Selectors and tests that match `input[type="submit"]`,
     `input[name="reset"]`, `input#filter-button` or the attribute order must match `button` instead.
+    Extra attributes passed to a button (`Submit("submit", "Go", data_b="1", data_a="2")`) render after `type`,
+    `name`, `value`, `id` and `class` (and the cancel URL and icon-only title, when present) in sorted order, as
+    Django's `flatatt` emits them, with boolean attributes last; crispy kept the keyword order. The example renders
+    `data-a` before `data-b`.
 - A click posts the clicked button's `name=value`, as the input did, and in the modal `modal.js` sends the same
   submitter. The delete view still needs only its confirmation field: a click posts `confirm` and `delete=Delete`,
   and a test that posts `{"confirm": True}` alone keeps working.

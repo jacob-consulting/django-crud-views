@@ -3,16 +3,16 @@ gsd_state_version: "1.0"
 current_phase: 06
 current_phase_name: Form-button leaf
 status: executing
-stopped_at: Completed 06-05-PLAN.md
-last_updated: "2026-10-28T07:26:39.156Z"
+stopped_at: Completed 06-06-PLAN.md
+last_updated: "2026-10-28T07:50:57.529Z"
 last_activity: 2026-10-28
 last_activity_desc: Phase 06 execution started
-state_head: 2d2169dbb43c5c75d6f437bbaa36dbf2dbfa7cf1
+state_head: de3f56dcfcf236ad9833d63d69624dc8d5d1d8a3
 progress:
   total_phases: 7
   completed_phases: 5
   total_plans: 23
-  completed_plans: 19
+  completed_plans: 20
   percent: 71
 ---
 
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-10-27)
 ## Current Position
 
 Phase: 06 (Form-button leaf) — EXECUTING
-Plan: 6 of 9
+Plan: 7 of 9
 Status: Ready to execute
 Last activity: 2026-10-28 — Phase 06 execution started
 
@@ -81,6 +81,7 @@ Progress: [███████░░░] 71%
 | Phase 06 P03 | 11 min | 2 tasks | 9 files |
 | Phase 06 P04 | 12 min | 2 tasks | 7 files |
 | Phase 06 P05 | 15 min | 2 tasks | 5 files |
+| Phase 06 P06 | 20 min | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -140,6 +141,9 @@ Recent decisions affecting current work:
 - [Phase 06]: 06-05: ListViewFilterFormHelper calls FormHelper.__init__() without the form and keeps helper.form identity, so form= never replaces a declared layout
 - [Phase 06]: 06-05: filter layouts are deep-copied into a private always-truthy layout, prepared in get_attributes() before crispy's dispatch guard; exactly-once actions keyed on prepared-layout identity
 - [Phase 06]: 06-05: get_form_actions() None omits the filter action group, empty FormActions keeps an explicit empty group; hidden sort/order/dir stay add_input(Hidden) after the actions
+- [Phase 06]: 06-06: form cv_form_actions_label_mode uses a form-only policy (E211 shape stops traversal, E210 per invalid mode, W291 unknown kinds with valid modes); settings form map is E106 and ViewSet form map a construction error against FORM_KINDS
+- [Phase 06]: 06-06: W292 static reach picks the provider first (CrispyDeleteForm delete+cancel, else submit+cancel), filter helpers with inherited get_form_actions, concrete dict polymorphic_forms; overridden hooks and custom get_form_class are runtime-only
+- [Phase 06]: 06-06: icons._icon_available decides availability without rendering (registry None/empty, unknown prefix, unusable renderer, invalid built-in font class); the form normalizer raises in strict mode, else logs per render and falls back to label
 
 ### Pending Todos
 
@@ -171,6 +175,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-28T07:26:38.724Z
-Stopped at: Completed 06-05-PLAN.md
+Last session: 2026-10-28T07:50:57.057Z
+Stopped at: Completed 06-06-PLAN.md
 Resume file: None

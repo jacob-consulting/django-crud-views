@@ -3,16 +3,16 @@ gsd_state_version: "1.0"
 current_phase: 06
 current_phase_name: Form-button leaf
 status: executing
-stopped_at: Completed 06-07-PLAN.md
-last_updated: "2026-10-28T08:06:16.936Z"
+stopped_at: Completed 06-08-PLAN.md
+last_updated: "2026-10-28T08:25:23.036Z"
 last_activity: 2026-10-28
 last_activity_desc: Phase 06 execution started
-state_head: 374131ae59d6a812879a3b5c609d9cb662714e74
+state_head: 57c94800eb50d2c3a39ff5c4862729eb46ee8533
 progress:
   total_phases: 7
   completed_phases: 5
   total_plans: 23
-  completed_plans: 21
+  completed_plans: 22
   percent: 71
 ---
 
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-10-27)
 ## Current Position
 
 Phase: 06 (Form-button leaf) — EXECUTING
-Plan: 8 of 9
+Plan: 9 of 9
 Status: Ready to execute
 Last activity: 2026-10-28 — Phase 06 execution started
 
@@ -83,6 +83,7 @@ Progress: [███████░░░] 71%
 | Phase 06 P05 | 15 min | 2 tasks | 5 files |
 | Phase 06 P06 | 20 min | 2 tasks | 10 files |
 | Phase 06 P07 | 14min | 3 tasks | 7 files |
+| Phase 06 P08 | 16 min | 3 tasks | 14 files |
 
 ## Accumulated Context
 
@@ -148,6 +149,9 @@ Recent decisions affecting current work:
 - [Phase 06]: 06-07: modal.js, viewset.js and list.filter.js stay byte-identical; native submitter, cancel and reset regressions pass on the existing handlers and are proven discriminating by source mutations
 - [Phase 06]: 06-07: crispy_floor nox session (py3.12 x Django 4.2/6.0, crispy 2.0 / crispy-bootstrap5 2023.10) deselects only the pack-whitespace-bound filter region golden; test_filter_form_controls_match_golden byte-checks the leaf controls everywhere
 - [Phase 06]: 06-07: list.filter.test.js:159 jsdom 30.1.2 selector failure fixed test-only with :scope; full JS gate 223/223
+- [Phase 06]: 06-08: Form resolution prose lives once in action_menus.md (Form label-mode resolution, Form checks); settings.md adds separate form rows to the single merge/replace table
+- [Phase 06]: 06-08: The migration guide's Form buttons section is a top-level section before A downstream theme, keeping Table pagination overrides adjacent to Silent breaks
+- [Phase 06]: 06-08: The example sets only CRUD_VIEWS_LABEL_MODE_DEFAULTS form=both; other locations keep their package floors
 
 ### Pending Todos
 
@@ -179,6 +183,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-28T08:06:16.509Z
-Stopped at: Completed 06-07-PLAN.md
+Last session: 2026-10-28T08:25:22.615Z
+Stopped at: Completed 06-08-PLAN.md
 Resume file: None

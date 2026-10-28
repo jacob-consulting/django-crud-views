@@ -188,14 +188,19 @@ def test_form_messages_do_not_name_view_actions_or_card_scalars(form_map):
             assert "cv_context_action_label_mode" not in msg
 
 
-def test_checks_do_not_resolve_the_mode(form_map, monkeypatch):
-    # checks inspect the map only; the resolver (which may raise in strict mode) is never called
+def test_map_checks_do_not_resolve_the_mode(form_map, monkeypatch):
+    # the map checks inspect the view's own attribute only; the resolver (which may raise in strict mode) is never
+    # called by them (the W292 icon check resolves modes through it on purpose, see below)
+    from crud_views.lib.view.action_menu import cv_form_label_mode_checks
+
     def boom(*args, **kwargs):
-        raise AssertionError("resolver called during checks")
+        raise AssertionError("resolver called during the map checks")
 
     form_map({"submit": "nope"})
     monkeypatch.setattr(AuthorCreateView, "cv_get_form_actions_label_mode", classmethod(boom))
-    assert [m[0] for m in _system_messages()] == ["viewset.E210"]
+    monkeypatch.setattr(AuthorCreateView, "cv_get_action_label_mode", classmethod(boom))
+    messages = [m for c in cv_form_label_mode_checks(AuthorCreateView) for m in c.messages()]
+    assert [(m.id, m.msg) for m in messages] == [("viewset.E210", _e210("submit", "nope"))]
 
 
 # --- context / list checks unchanged (byte-compatible E211 / W291) ------------------------------------------------
@@ -895,7 +900,7 @@ def test_non_strict_fallback_keeps_caller_title_as_a_plain_attribute(caplog):
     with _strict(False):
         data = cv_button_data(_form_ctx(cv_attrs={"title": "Mine", "data_cv_tooltip": "x"}), "form")
     assert data["cv_label_mode"] == "label"
-    assert data["cv_flat_attrs"] == ' title="Mine" data-cv-tooltip="x"'
+    assert data["cv_flat_attrs"] == ' data-cv-tooltip="x" title="Mine"'
 
 
 def test_non_strict_missing_icon_and_label_keeps_the_empty_payload(caplog):

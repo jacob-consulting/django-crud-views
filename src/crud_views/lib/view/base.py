@@ -46,7 +46,7 @@ from .action_menu import (
     cv_label_mode_checks,
     cv_split_actions,
 )
-from .buttons import ContextButton, context_button_checks, cv_icon_mode_checks
+from .buttons import ContextButton, context_button_checks, cv_form_icon_mode_checks, cv_icon_mode_checks
 from .context import ViewContext
 from .label_mode import default_label_mode, form_label_mode, label_mode_check
 from .meta import CrudViewMetaClass
@@ -203,6 +203,7 @@ class CrudView(metaclass=CrudViewMetaClass):
         if cls.cv_viewset is not None:
             yield from context_button_checks(cls, cls.cv_viewset, cls.cv_context_buttons)
             yield from cv_icon_mode_checks(cls)
+            yield from cv_form_icon_mode_checks(cls)
         yield CheckUnknownAttributes(context=cls)
 
     def get_success_url(self) -> str:

@@ -438,3 +438,139 @@ def cv_icon_mode_checks(cls):
                 "label mode ('label' or 'both')"
             ),
         )
+
+
+def _declared(klass: type, name: str) -> Any:
+    """The attribute as declared in the MRO (the property or function object itself, never bound), else None."""
+    for base in klass.__mro__:
+        if name in vars(base):
+            return vars(base)[name]
+    return None
+
+
+def _inherits(klass: type, name: str, owner: type) -> bool:
+    """True when ``klass`` still uses ``owner``'s own implementation of ``name`` (no subclass override)."""
+    return _declared(klass, name) is vars(owner)[name]
+
+
+def _static_form_classes(cls) -> list[type]:
+    """The crispy package form classes a view selects without a request, in order and without duplicates.
+
+    Only Django's own get_form_class (``form_class``) and the polymorphic mixin's (each value of a concrete dict
+    ``polymorphic_forms``) are understood; any other get_form_class is request-dependent and skipped. Nothing is
+    called or instantiated.
+    """
+    from crud_views.lib.crispy.form import CrispyFormMixin
+
+    getter = _declared(cls, "get_form_class")
+    module = getattr(getter, "__module__", None) or ""
+    if module.startswith("django.views."):
+        candidates = [_declared(cls, "form_class")]
+    elif module.startswith("crud_views_polymorphic.") and (
+        getattr(getter, "__qualname__", "") == "PolymorphicCrudViewMixin.get_form_class"
+    ):
+        mapping = _declared(cls, "polymorphic_forms")
+        candidates = list(mapping.values()) if isinstance(mapping, dict) else []
+    else:
+        return []
+    forms: list[type] = []
+    for candidate in candidates:
+        if isinstance(candidate, type) and issubclass(candidate, CrispyFormMixin) and candidate not in forms:
+            forms.append(candidate)
+    return forms
+
+
+def _static_form_controls(form_class: type) -> list[tuple[str, Any]]:
+    """(form kind, icon) of each control a package form helper renders, for the hooks that are still the package's.
+
+    The provider is chosen before the controls: CrispyDeleteForm's helper renders delete (delete_icon) and cancel,
+    never its inherited submit; otherwise CrispyFormMixin's helper (also the workflow form) renders submit
+    (submit_icon) and cancel. An overridden helper or action provider makes the whole form dynamic, an overridden
+    button hook that one control; icon attributes that are not None or a str (e.g. a property) are dynamic too.
+    """
+    from crud_views.lib.crispy.buttons import _KIND_ICONS
+    from crud_views.lib.crispy.form import CrispyDeleteForm, CrispyFormMixin
+
+    controls: list[tuple[str, Any]] = []
+    if issubclass(form_class, CrispyDeleteForm):
+        if not _inherits(form_class, "helper", CrispyDeleteForm):
+            return []
+        if _inherits(form_class, "get_delete_button", CrispyDeleteForm) and _inherits(
+            form_class, "get_delete_button_kwargs", CrispyDeleteForm
+        ):
+            controls.append(("delete", _declared(form_class, "delete_icon")))
+    else:
+        if not (
+            _inherits(form_class, "helper", CrispyFormMixin)
+            and _inherits(form_class, "get_form_actions", CrispyFormMixin)
+        ):
+            return []
+        if _inherits(form_class, "get_submit_button", CrispyFormMixin) and _inherits(
+            form_class, "get_submit_button_kwargs", CrispyFormMixin
+        ):
+            controls.append(("submit", _declared(form_class, "submit_icon")))
+    if _inherits(form_class, "get_cancel_button", CrispyFormMixin) and _inherits(
+        form_class, "get_cancel_button_kwargs", CrispyFormMixin
+    ):
+        controls.append(("cancel", _KIND_ICONS["cancel"]))
+    return [(kind, icon) for kind, icon in controls if icon is None or isinstance(icon, str)]
+
+
+def _static_filter_controls(cls) -> list[tuple[type, str, str]]:
+    """(helper class, form kind, icon) of a filter view's configured helper, when its default actions are known."""
+    from crud_views.lib.crispy.buttons import _KIND_ICONS
+    from crud_views.lib.views.list import ListViewFilterFormHelper
+    from crud_views.lib.views.mixins import ListViewTableFilterMixin
+
+    if not issubclass(cls, ListViewTableFilterMixin) or not _inherits(cls, "get_filterset", ListViewTableFilterMixin):
+        return []
+    helper = _declared(cls, "formhelper_class")
+    if not (isinstance(helper, type) and issubclass(helper, ListViewFilterFormHelper)):
+        return []
+    if not _inherits(helper, "get_form_actions", ListViewFilterFormHelper):
+        return []
+    return [(helper, kind, _KIND_ICONS[kind]) for kind in ("filter-submit", "filter-reset")]
+
+
+_FORM_ICON_HINTS = {"submit": "submit_icon or CRUD_VIEWS_ICONS", "delete": "delete_icon or CRUD_VIEWS_ICONS"}
+
+
+def cv_form_icon_mode_checks(cls):
+    """System check viewset.W292 for crispy form buttons (Phase 6, D-16): an icon-only control without a usable icon.
+
+    Static reach only: the concrete form classes the view selects without a request (form_class, or each distinct
+    class of a concrete dict polymorphic_forms) whose helper, action provider and button hooks are still the package
+    implementations, and the configured filter helper when it inherits the default get_form_actions. Forms and
+    helpers are never instantiated and no hook, get_form_class or renderer runs; everything else is covered at render
+    time by cv_button_data (strict ValueError, else a logged label fallback). Availability is the shared
+    icons._icon_available predicate. The mode is resolved through the public resolver; a resolution that raises
+    (an invalid floor or map in strict mode) is skipped, so E108 / E210 / E211 / E106 still report it.
+    """
+    from crud_views.lib.icons import _icon_available
+
+    mapping = cls.cv_get_form_actions_label_mode()
+    if not isinstance(mapping, dict) or not is_label_mode_map(mapping):
+        return  # viewset.E211 / E210 or crud_views.E106 report the selected map
+    controls: list[tuple[type, str, Any]] = []
+    for form_class in _static_form_classes(cls):
+        controls.extend((form_class, kind, icon) for kind, icon in _static_form_controls(form_class))
+    controls.extend(_static_filter_controls(cls))
+    # each form class appears once (_static_form_classes deduplicates repeated polymorphic entries) and each kind
+    # once per class, so every (class, kind) is reported at most once per traversal
+    for owner, kind, icon in controls:
+        try:
+            mode = cls.cv_get_action_label_mode("form", kind)
+        except ValueError:
+            continue  # an invalid floor or map in strict mode: crud_views.E108 / viewset.E210 / E211 report it
+        if mode != "icon" or _icon_available(icon):
+            continue
+        hint = _FORM_ICON_HINTS.get(kind, "CRUD_VIEWS_ICONS")
+        yield CheckWarningExpression(
+            context=cls,
+            id="W292",
+            expression=False,
+            msg=(
+                f"form button {kind!r} of {owner.__name__} renders icon-only but its icon {icon!r} is not available; "
+                f"set a usable icon ({hint}) or the form label mode 'label' or 'both'"
+            ),
+        )

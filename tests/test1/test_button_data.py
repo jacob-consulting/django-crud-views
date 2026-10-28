@@ -442,12 +442,15 @@ ACTION_ONLY_KEYS = LEAF_KEYS - FORM_LEAF_KEYS
 
 
 def form_ctx(key="submit", **kw):
+    # an available icon by default: an icon-mode form button without one is the missing-icon policy (06-06,
+    # tests/test1/test_form_button_checks.py), not the contract these tests pin
     ctx = {
         "cv_key": key,
         "cv_type": FORM_TYPES[key],
         "cv_name": "submit",
         "cv_value": "Save",
         "cv_id": "submit-id-submit",
+        "cv_icon": "save",
     }
     ctx.update(kw)
     return ctx

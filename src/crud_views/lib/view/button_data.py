@@ -11,7 +11,7 @@ from django.utils.text import slugify
 
 from ..button_classes import FORM_KINDS, get_icon_host_class
 from ..exceptions import is_strict
-from ..icons import resolve_icon_name_class
+from ..icons import _icon_available, resolve_icon_name_class
 from .label_mode import LABEL_MODES, _invalid_label_mode, default_label_mode, is_label_mode
 
 logger = logging.getLogger(__name__)
@@ -241,6 +241,25 @@ def _form_button_data(ctx: dict) -> dict:
     value = _literal(ctx.get("cv_value"))
     label = _literal(ctx["cv_label"]) if "cv_label" in ctx else value
 
+    icon = ctx.get("cv_icon") or None
+    if label_mode == "icon" and not _icon_available(icon):
+        # an icon-only form button without a usable icon renders nothing visible (D-16): fail in strict mode, else
+        # show the literal label, on every render. Decided without rendering: the leaf's one cv_icon call stays the
+        # only renderer invocation
+        where = f"form button {key!r}"
+        if is_strict():
+            raise ValueError(
+                f"{where} renders icon-only but its icon {icon!r} is not available; set a usable icon (icon=,"
+                " submit_icon, delete_icon or CRUD_VIEWS_ICONS) or the form label mode 'label' or 'both'"
+            )
+        label_mode = "label"
+        if label:
+            logger.warning(
+                "%s renders icon-only but its icon %r is not available; rendered with its label instead", where, icon
+            )
+        else:
+            logger.warning("%s has neither an available icon (%r) nor a label and renders empty", where, icon)
+
     # reserved attributes resolve once: type, name and value come from the button itself
     attrs = _form_attrs(ctx.get("cv_attrs"))
     for reserved in ("type", "name", "value"):
@@ -256,7 +275,6 @@ def _form_button_data(ctx: dict) -> dict:
         attrs.pop("data-cv-tooltip", None)
     flat_attrs = flatatt({k: v if isinstance(v, bool) or v is None else _literal(v) for k, v in attrs.items()})
 
-    icon = ctx.get("cv_icon") or None
     if label_mode == "label":
         icon_class, icon_inline = "", True
     else:

@@ -120,6 +120,7 @@ apply to the buttons a map, a context button, a target view or `CRUD_VIEWS_LABEL
 | `form:delete` | `btn btn-primary` |
 | `form:filter-submit` | `btn btn-primary` |
 | `form:filter-reset` | `btn btn-secondary` |
+| `form:cancel-tag` | `"button"` (`"a"`: an eligible cancel renders as a native link, see [Forms](#forms)) |
 | `formset:control` | `btn btn-light` |
 | `formset:container` | `btn-group` |
 | `formset:control-danger` | `btn btn-danger` |
@@ -143,7 +144,7 @@ apply to the buttons a map, a context button, a target view or `CRUD_VIEWS_LABEL
 | `alert:debug` | `alert alert-secondary` |
 | `context:icon-host` / `list:icon-host` / `card:icon-host` / `menu:icon-host` / `form:icon-host` | `{name_class}` |
 
-The default table has 73 keys: the rows with four variants stand for four keys each, the rows with three locations
+The default table has 74 keys: the rows with four variants stand for four keys each, the rows with three locations
 for three, the `*:hidden-label` row of the button locations for four and the `*:icon-host` row for five. The `context` and `list`
 buttons look the same for every variant by default, the `card` buttons distinguish them. Mode keys such as
 `card:tertiary:icon` and `form:submit:icon` are addressable but not shipped; their possible combinations are excluded
@@ -151,7 +152,12 @@ from the default-table count.
 
 The table holds what a theme restyles: classes. What the markup needs to work stays in the templates and is not
 configurable here: the element, `href`, `type`, `disabled`, the `data-cv-*` attributes, `aria-*`, `cv-key`,
-`dropdown-toggle`, `data-bs-toggle` and the like. The presentational words the leaves used to hard-code are keys:
+`dropdown-toggle`, `data-bs-toggle` and the like. The one exception for an element is the exact key
+`form:cancel-tag`: `"button"` (the default, also for `None`) or `"a"`, which renders an enabled cancel form button
+with a destination as a native `<a href>` link. It selects the element of that one control only, has no mode keys,
+and does not configure its `href`, its native `type` or `disabled`: a disabled cancel or one without a destination
+stays the native button, and submit, delete and the filter actions are never links. A value other than these is
+check error `crud_views.E365` (a non-str value is `crud_views.E361`). The presentational words the leaves used to hard-code are keys:
 `<location>:active` for the button that points at the current page, `card:flex` for a stretched card action and
 `<location>:hidden-label` for the screen-reader text of an icon-only button. A theme on another framework registers
 its own words there (`is-active`, `is-sr-only`, `sr-only`) and overrides no leaf. `None` on a `hidden-label` key

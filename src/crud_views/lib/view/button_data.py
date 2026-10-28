@@ -9,7 +9,7 @@ import logging
 from django.forms.utils import flatatt
 from django.utils.text import slugify
 
-from ..button_classes import FORM_KINDS, get_button_classes, get_icon_host_class
+from ..button_classes import CANCEL_TAG_KEY, FORM_KINDS, FORM_TAGS, get_button_classes, get_icon_host_class
 from ..exceptions import is_strict
 from ..icons import _icon_available, resolve_icon_name_class
 from .label_mode import LABEL_MODES, _invalid_label_mode, default_label_mode, is_label_mode
@@ -70,12 +70,6 @@ FORM_LEAF_KEYS = frozenset(
 
 # the native type of a form button
 FORM_TYPES = frozenset({"submit", "button", "reset"})
-
-# the elements a form button may render as (Phase 6.1): exactly these strings, never stripped or case-folded
-FORM_TAGS = frozenset({"button", "a"})
-
-# the class-table key selecting the element of an eligible cancel; a value of None means "button"
-CANCEL_TAG_KEY = "form:cancel-tag"
 
 
 def icon_host_keys(icon: str | None, location: str) -> tuple[str, bool]:

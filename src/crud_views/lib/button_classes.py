@@ -58,6 +58,9 @@ DEFAULT_BUTTON_CLASSES: dict[str, str | None] = {
     "form:delete": "btn btn-primary",
     "form:filter-submit": "btn btn-primary",
     "form:filter-reset": "btn btn-secondary",
+    # the element of an eligible cancel (Phase 6.1): "button" or "a" (a native link), None means "button"; a
+    # structural value like container-tag, never classes, and without mode keys
+    "form:cancel-tag": "button",
     "formset:control": "btn btn-light",
     "formset:container": "btn-group",
     "formset:control-danger": "btn btn-danger",
@@ -212,6 +215,11 @@ def get_container_layout(location: str, item_count: int) -> ContainerLayout:
 VARIANT_LOCATIONS: frozenset[str] = frozenset({"context", "list", "card"})
 FORM_KINDS: frozenset[str] = frozenset({"submit", "cancel", "delete", "filter-submit", "filter-reset"})
 
+# the elements a form button may render as (Phase 6.1): exactly these strings, never stripped or case-folded
+FORM_TAGS: frozenset[str] = frozenset({"button", "a"})
+# the class-table key selecting the element of an eligible cancel; a value of None means "button"
+CANCEL_TAG_KEY = "form:cancel-tag"
+
 
 def _action_key_parts(key: str) -> tuple[str, str, str] | None:
     """``(location, variant-or-kind, mode)`` for a known three-segment button key, else None.
@@ -276,6 +284,15 @@ def button_class_check_messages() -> list[CheckMessage]:
                     f"Button class {key!r} = {value!r} is not a container mode.",
                     hint=f"Use one of {list(CONTAINER_SINGLE_MODES)}.",
                     id="crud_views.E364",
+                )
+            )
+        elif key == CANCEL_TAG_KEY and isinstance(value, str) and value not in FORM_TAGS:
+            # a non-str value is E361 above; "" is no default here, it is invalid (D-02)
+            messages.append(
+                Error(
+                    f"Button class {key!r} = {value!r} is not a form button tag.",
+                    hint="Use 'button', 'a' (a native link for an enabled cancel with a destination) or None.",
+                    id="crud_views.E365",
                 )
             )
 

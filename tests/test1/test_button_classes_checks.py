@@ -1,4 +1,4 @@
-"""System checks crud_views.E360/E361/W362/E363/E364 for the button class table."""
+"""System checks crud_views.E360/E361/W362/E363/E364/E365 for the button class table."""
 
 import pytest
 from django.core.checks import Warning as DjangoWarning
@@ -283,3 +283,115 @@ def test_container_keys_valid_no_messages():
         }
     )
     assert check_button_classes() == []
+
+
+# --- crud_views.E365: the form:cancel-tag value (Phase 6.1, D-01/D-02/D-03/D-12/D-13) ---------------------------
+
+
+@pytest.mark.parametrize("source", ["settings", "theme"])
+@pytest.mark.parametrize("value", ["button", "a", None])
+def test_cancel_tag_valid_values_have_no_messages(source, value):
+    assert messages_for({"form:cancel-tag": value}, source) == []
+
+
+@pytest.mark.parametrize("source", ["settings", "theme"])
+@pytest.mark.parametrize("value", ["", " ", " a", "a ", "A", "Button", "BUTTON", "link", "anchor", "btn btn-link"])
+def test_e365_cancel_tag_invalid_string(source, value):
+    (message,) = messages_for({"form:cancel-tag": value}, source)
+    assert message.id == "crud_views.E365"
+    assert message.level == 40  # an Error
+    assert message.msg == f"Button class 'form:cancel-tag' = {value!r} is not a form button tag."
+    assert "'button'" in message.hint and "'a'" in message.hint and "None" in message.hint
+
+
+@pytest.mark.parametrize("source", ["settings", "theme"])
+@pytest.mark.parametrize("value", [0, 1, True, False, ["a"], {"a": 1}, b"a"], ids=repr)
+def test_cancel_tag_non_str_is_e361_only(source, value):
+    assert ids(messages_for({"form:cancel-tag": value}, source)) == ["crud_views.E361"]
+
+
+def test_project_cancel_tag_error_wins_over_a_valid_theme_value_and_vice_versa():
+    register_button_classes({"form:cancel-tag": "a"})
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"form:cancel-tag": "link"}):
+        assert ids(check_button_classes()) == ["crud_views.E365"]
+    register_button_classes({"form:cancel-tag": "link"})
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"form:cancel-tag": "button"}):
+        assert check_button_classes() == []
+
+
+def _registered_button_class_ids() -> list[str]:
+    from django.core.checks import run_checks
+
+    return [m.id for m in run_checks(tags=["crud_views"]) if m.id.startswith("crud_views.E36")]
+
+
+@pytest.mark.parametrize("value,check_id", [("link", "crud_views.E365"), (3, "crud_views.E361")])
+@pytest.mark.parametrize("explicit", ["button", "a"])
+def test_cancel_tag_errors_surface_although_an_explicit_tag_renders(value, check_id, explicit):
+    """D-12: a valid explicit tag renders despite the invalid table value; the registered check still reports it."""
+    from crispy_forms.bootstrap import FormActions
+    from crispy_forms.helper import FormHelper
+    from crispy_forms.layout import Layout
+    from django import forms
+    from django.template import Context, Template
+
+    from crud_views.lib.crispy import Button
+
+    helper = FormHelper()
+    helper.form_tag = False
+    helper.layout = Layout(FormActions(Button("reset", "Back", tag=explicit, data_cv_cancel_url="/b/")))
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"form:cancel-tag": value}, CRUD_VIEWS_STRICT=True):
+        markup = Template("{% load crispy_forms_tags %}{% crispy form helper %}").render(
+            Context({"form": forms.Form(), "helper": helper})
+        )
+        assert f"<{explicit} " in markup
+        assert _registered_button_class_ids() == [check_id]
+    assert _registered_button_class_ids() == []
+
+
+@pytest.mark.parametrize("source", ["settings", "theme"])
+def test_w362_accepts_the_exact_cancel_tag_key(source):
+    assert messages_for({"form:cancel-tag": "a"}, source) == []
+
+
+@pytest.mark.parametrize("source", ["settings", "theme"])
+@pytest.mark.parametrize(
+    "key",
+    [
+        "form:cancel-tag:icon",
+        "form:cancel-tag:both",
+        "form:cancel-tag:label",
+        "form:cancel-tag:a",
+        "form:cancel-tags",
+        "form:cancel_tag",
+        "form:cancle-tag",
+        "form:submit-tag",
+        "form:delete-tag",
+        "form:filter-reset-tag",
+        "form:cancel-tag ",
+        "Form:cancel-tag",
+        "list:cancel-tag",
+        "context:cancel-tag",
+        "formset:cancel-tag",
+    ],
+)
+def test_w362_rejects_cancel_tag_neighbours(source, key):
+    (message,) = messages_for({key: "a"}, source)
+    assert type(message) is DjangoWarning
+    assert message.id == "crud_views.W362"
+    assert message.msg == f"Button class {key!r} is not a known key (typo?)."
+
+
+@pytest.mark.parametrize("source", ["settings", "theme"])
+@pytest.mark.parametrize("mode", ["tag", "a", "button"])
+def test_w362_cancel_kind_with_a_tag_mode_names_the_bad_mode(source, mode):
+    key = f"form:cancel:{mode}"
+    (message,) = messages_for({key: "a"}, source)
+    assert message.id == "crud_views.W362"
+    assert message.msg == f"Button class {key!r} has an unknown label mode {mode!r}."
+
+
+def test_cancel_tag_does_not_widen_the_form_kind_grammar():
+    assert "cancel-tag" not in bc.FORM_KINDS
+    assert bc._action_key_parts("form:cancel-tag") is None
+    assert bc._action_key_parts("form:cancel-tag:icon") is None

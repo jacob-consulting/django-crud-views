@@ -9,7 +9,7 @@ import logging
 from django.forms.utils import flatatt
 from django.utils.text import slugify
 
-from ..button_classes import FORM_KINDS, get_icon_host_class
+from ..button_classes import FORM_KINDS, get_button_classes, get_icon_host_class
 from ..exceptions import is_strict
 from ..icons import _icon_available, resolve_icon_name_class
 from .label_mode import LABEL_MODES, _invalid_label_mode, default_label_mode, is_label_mode
@@ -45,7 +45,8 @@ LEAF_KEYS = frozenset(
 )
 
 # the complete contract of a form button (location "form"); cv_title only in icon mode, cv_cancel_url only for the
-# cancel kind. None of the action-only keys (href, submit target, modal, tag, variant, ...) is ever part of it
+# cancel kind. cv_tag (Phase 6.1) is the effective element, "a" or "button", on every form button. None of the
+# action-only keys (href, submit target, modal, variant, ...) is ever part of it
 FORM_LEAF_KEYS = frozenset(
     {
         "cv_location",
@@ -63,11 +64,18 @@ FORM_LEAF_KEYS = frozenset(
         "cv_flat_attrs",
         "cv_title",
         "cv_cancel_url",
+        "cv_tag",
     }
 )
 
 # the native type of a form button
 FORM_TYPES = frozenset({"submit", "button", "reset"})
+
+# the elements a form button may render as (Phase 6.1): exactly these strings, never stripped or case-folded
+FORM_TAGS = frozenset({"button", "a"})
+
+# the class-table key selecting the element of an eligible cancel; a value of None means "button"
+CANCEL_TAG_KEY = "form:cancel-tag"
 
 
 def icon_host_keys(icon: str | None, location: str) -> tuple[str, bool]:
@@ -212,12 +220,59 @@ def _attr_text(value) -> str | None:
     return _literal(value)
 
 
+def _is_form_tag(value) -> bool:
+    """True for exactly ``"button"`` or ``"a"``; the type is checked first, so an unhashable is simply False."""
+    return isinstance(value, str) and value in FORM_TAGS
+
+
+def _selected_form_tag(ctx: dict, key: str, button_type: str) -> str:
+    """The tag selected for a form button, validated before any destination or disabled fallback (D-04).
+
+    An explicit ``cv_tag`` wins and is the only value read (D-12): an invalid one, or ``"a"`` on a control that is
+    not an eligible cancel (the cancel kind with the native type ``button``, D-09), raises ValueError whatever the
+    strictness. Otherwise an eligible cancel reads the raw ``form:cancel-tag`` class-table value: absent or None
+    selects ``"button"`` (D-02); an invalid value raises in strict mode, else it logs and selects ``"button"`` (D-01).
+    Any other control inherits ``"button"`` without reading the table (D-11).
+    """
+    eligible = key == "cancel" and button_type == "button"
+    explicit = ctx.get("cv_tag")
+    if explicit is not None:
+        if not _is_form_tag(explicit):
+            raise ValueError(f"form button cv_tag must be one of {sorted(FORM_TAGS)} or None, got {explicit!r}")
+        if explicit == "a" and not eligible:
+            raise ValueError(
+                f"form button cv_tag 'a' is only for a cancel (cv_key 'cancel' with the cv_type 'button'), got"
+                f" {key!r} with {button_type!r}"
+            )
+        return explicit
+    if not eligible:
+        return "button"
+    configured = get_button_classes().get(CANCEL_TAG_KEY)
+    if configured is None or _is_form_tag(configured):
+        return configured or "button"
+    message = f"button class {CANCEL_TAG_KEY!r} = {configured!r} is not one of {sorted(FORM_TAGS)} or None"
+    if is_strict():
+        raise ValueError(message)
+    logger.warning("%s; the cancel is rendered as 'button'", message)
+    return "button"
+
+
+def _emits_disabled(attrs: dict) -> bool:
+    """True when the extra attributes emit a ``disabled`` attribute in any letter case (HTML presence semantics:
+    every value except False and None is emitted, even ``""``, ``0`` or ``"false"``)."""
+    return any(
+        isinstance(name, str) and name.lower() == "disabled" and value is not False and value is not None
+        for name, value in attrs.items()
+    )
+
+
 def _form_button_data(ctx: dict) -> dict:
     """The FORM_LEAF_KEYS contract of one form button. Never mutates ctx.
 
     Input keys: ``cv_key`` (a FORM_KINDS member), ``cv_type`` (submit / button / reset), ``cv_name``, ``cv_value``,
     optional ``cv_label`` (default: the value's text), ``cv_id`` (the generated id), ``cv_css_id``,
-    ``cv_css_class``, ``cv_attrs`` (the extra attributes), ``cv_label_mode`` and ``cv_icon``.
+    ``cv_css_class``, ``cv_attrs`` (the extra attributes), ``cv_label_mode``, ``cv_icon`` and ``cv_tag`` (the
+    explicit tag intent; None or absent inherits ``form:cancel-tag``).
     """
     key = ctx.get("cv_key")
     if not isinstance(key, str) or key not in FORM_KINDS:
@@ -225,6 +280,7 @@ def _form_button_data(ctx: dict) -> dict:
     button_type = ctx.get("cv_type")
     if not isinstance(button_type, str) or button_type not in FORM_TYPES:
         raise ValueError(f"form button cv_type must be one of {sorted(FORM_TYPES)}, got {button_type!r}")
+    selected_tag = _selected_form_tag(ctx, key, button_type)
 
     label_mode = ctx.get("cv_label_mode")
     if not label_mode:
@@ -273,6 +329,9 @@ def _form_button_data(ctx: dict) -> dict:
     button_id = _literal(css_id) if css_id else extra_id if extra_id is not None else _literal(ctx.get("cv_id"))
     classes = [_literal(c) for c in (ctx.get("cv_css_class"), _attr_text(attrs.pop("class", None))) if c]
     cancel_url = _attr_text(attrs.pop("data-cv-cancel-url", None)) if key == "cancel" else None
+    # the effective tag (D-06, D-08, D-10, D-14): a link needs the selected "a", a nonempty destination and no emitted
+    # disabled attribute; anything else keeps the native button, its disabled attribute serialized as before
+    tag = "a" if selected_tag == "a" and cancel_url and not _emits_disabled(attrs) else "button"
     if label_mode == "icon":
         # the generated title and tooltip marker win over caller attributes of the same name
         attrs.pop("title", None)
@@ -299,6 +358,7 @@ def _form_button_data(ctx: dict) -> dict:
         "cv_icon_inline": icon_inline,
         "cv_css_class": " ".join(classes),
         "cv_flat_attrs": flat_attrs,
+        "cv_tag": tag,
     }
     if label_mode == "icon":
         data["cv_title"] = label

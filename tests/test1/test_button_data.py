@@ -480,8 +480,8 @@ def test_form_location_contract_constants():
         "cv_flat_attrs",
         "cv_title",
         "cv_cancel_url",
+        "cv_tag",
     } == FORM_LEAF_KEYS
-    assert "cv_tag" not in FORM_LEAF_KEYS
 
 
 @pytest.mark.parametrize("key", sorted(FORM_TYPES))
@@ -552,6 +552,8 @@ def test_form_result_keys_and_presence(key, mode):
     assert data["cv_key"] == key
     assert data["cv_type"] == FORM_TYPES[key]
     assert data["cv_label_mode"] == mode
+    # Phase 6.1: every form result carries its effective tag; unconfigured, that is the original button
+    assert data["cv_tag"] == "button"
 
 
 def test_form_default_mode_is_the_lazy_form_floor():
@@ -896,3 +898,210 @@ def test_form_icon_normalization_never_mutates_the_input(icon):
         assert cv_button_data(ctx, "form")["cv_icon"] is None
     assert ctx == before
     assert ctx["cv_icon"] is icon
+
+
+# --- the effective tag of a form button (Phase 6.1, D-01 to D-14) ------------------------------------------------
+
+LINK = {"form:cancel-tag": "a"}
+_NO_URL = object()  # the cancel destination is absent
+
+
+def cancel_ctx(url="/back/", **kw):
+    attrs = kw.pop("cv_attrs", {})
+    if url is not _NO_URL:
+        attrs = {"data-cv-cancel-url": url, **attrs}
+    return form_ctx("cancel", cv_name="reset", cv_value="Cancel", cv_id="button-id-reset", cv_attrs=attrs, **kw)
+
+
+def _tag_warnings(caplog) -> list[str]:
+    return [r.getMessage() for r in caplog.records if r.name == BUTTON_LOGGER and r.levelno >= logging.WARNING]
+
+
+def test_form_explicit_link_keeps_every_prior_field():
+    data = cv_button_data(cancel_ctx(cv_tag="a"), "form")
+    assert data["cv_tag"] == "a"
+    # D-16: native type, name, value and the cancel URL stay in the context although the anchor omits them
+    assert (data["cv_type"], data["cv_name"], data["cv_value"], data["cv_cancel_url"]) == (
+        "button",
+        "reset",
+        "Cancel",
+        "/back/",
+    )
+    assert set(data) == FORM_LEAF_KEYS - {"cv_title"}
+    assert data == {**cv_button_data(cancel_ctx(), "form"), "cv_tag": "a"}
+
+
+@pytest.mark.parametrize("key", sorted(FORM_TYPES))
+def test_form_tag_defaults_to_button_for_every_kind(key):
+    assert cv_button_data(form_ctx(key), "form")["cv_tag"] == "button"
+    assert cv_button_data(form_ctx(key, cv_tag=None), "form")["cv_tag"] == "button"
+    assert cv_button_data(form_ctx(key, cv_tag="button"), "form")["cv_tag"] == "button"
+
+
+@pytest.mark.parametrize(
+    "config,expected",
+    [({}, "button"), (LINK, "a"), ({"form:cancel-tag": "button"}, "button"), ({"form:cancel-tag": None}, "button")],
+    ids=["absent", "a", "button", "none"],
+)
+def test_form_inherited_tag_reads_the_class_table(config, expected):
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES=config):
+        assert cv_button_data(cancel_ctx(), "form")["cv_tag"] == expected
+        assert cv_button_data(cancel_ctx(cv_tag=None), "form")["cv_tag"] == expected
+
+
+def test_form_inherited_tag_is_read_per_normalization():
+    ctx = cancel_ctx()
+    seen = []
+    for config in ({}, LINK, {"form:cancel-tag": None}, LINK, {}):
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=config):
+            seen.append(cv_button_data(ctx, "form")["cv_tag"])
+    assert seen == ["button", "a", "button", "a", "button"]
+
+
+INVALID_TAGS = ["", " ", " a", "a ", "A", "Button", "BUTTON", "link", 0, 1, True, False, ["a"], {"a": 1}, ("a",), b"a"]
+
+
+@pytest.mark.parametrize("strict", [True, False], ids=["strict", "lenient"])
+@pytest.mark.parametrize("value", INVALID_TAGS, ids=repr)
+@pytest.mark.parametrize("key", sorted(FORM_TYPES))
+def test_form_invalid_explicit_tag_always_raises(key, value, strict):
+    """D-01/D-03: an explicit invalid tag is a ValueError (never a TypeError for an unhashable) in both modes."""
+    ctx = cancel_ctx(cv_tag=value) if key == "cancel" else form_ctx(key, cv_tag=value)
+    with override_settings(CRUD_VIEWS_STRICT=strict), pytest.raises(ValueError, match="cv_tag"):
+        cv_button_data(ctx, "form")
+
+
+@pytest.mark.parametrize(
+    "key,button_type",
+    [
+        ("submit", "submit"),
+        ("delete", "submit"),
+        ("filter-submit", "submit"),
+        ("filter-reset", "reset"),
+        ("cancel", "submit"),
+        ("cancel", "reset"),
+        ("submit", "button"),
+        ("filter-reset", "button"),
+    ],
+)
+def test_form_explicit_link_on_a_noneligible_control_raises(key, button_type):
+    """D-09: eligibility is the cancel kind AND the native type button."""
+    ctx = form_ctx(key, cv_type=button_type, cv_attrs={"data-cv-cancel-url": "/b/"}, cv_tag="a")
+    with pytest.raises(ValueError, match="cancel"):
+        cv_button_data(ctx, "form")
+    # an explicit button stays valid there (D-11), and inherited configuration never makes it a link
+    assert cv_button_data({**ctx, "cv_tag": "button"}, "form")["cv_tag"] == "button"
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES=LINK):
+        assert cv_button_data({**ctx, "cv_tag": None}, "form")["cv_tag"] == "button"
+
+
+INVALID_CONFIG = ["", " a", "A", "Button", "link", 0, True, False, ["a"], {"a": 1}]
+SELECTED_STATES = {
+    "url": {},
+    "no-url": {"url": _NO_URL},
+    "empty-url": {"url": ""},
+    "disabled": {"cv_attrs": {"disabled": True}},
+}
+
+
+@pytest.mark.parametrize("state", sorted(SELECTED_STATES))
+@pytest.mark.parametrize("value", INVALID_CONFIG, ids=repr)
+def test_form_selected_invalid_configuration_raises_in_strict_mode(value, state):
+    """D-01/D-04: the selected value is validated before the missing-URL / disabled fallback."""
+    config = override_settings(CRUD_VIEWS_BUTTON_CLASSES={"form:cancel-tag": value}, CRUD_VIEWS_STRICT=True)
+    with config, pytest.raises(ValueError, match="form:cancel-tag"):
+        cv_button_data(cancel_ctx(**SELECTED_STATES[state]), "form")
+
+
+@pytest.mark.parametrize("state", sorted(SELECTED_STATES))
+@pytest.mark.parametrize("value", INVALID_CONFIG, ids=repr)
+def test_form_selected_invalid_configuration_logs_and_selects_button(value, state, caplog):
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"form:cancel-tag": value}, CRUD_VIEWS_STRICT=False):
+        data = cv_button_data(cancel_ctx(**SELECTED_STATES[state]), "form")
+    assert data["cv_tag"] == "button"
+    (message,) = _tag_warnings(caplog)
+    assert "form:cancel-tag" in message and repr(value) in message
+
+
+@pytest.mark.parametrize("explicit", ["button", "a"])
+@pytest.mark.parametrize("value", ["bogus", "", ["a"], 0], ids=repr)
+def test_form_valid_explicit_tag_bypasses_invalid_configuration(explicit, value, caplog):
+    """D-12: an overridden table value is never validated during this normalization."""
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"form:cancel-tag": value}, CRUD_VIEWS_STRICT=True):
+        assert cv_button_data(cancel_ctx(cv_tag=explicit), "form")["cv_tag"] == explicit
+    assert _tag_warnings(caplog) == []
+
+
+@pytest.mark.parametrize("key", ["submit", "delete", "filter-submit", "filter-reset"])
+@pytest.mark.parametrize("value", ["bogus", ["a"]], ids=repr)
+def test_form_noneligible_controls_never_read_the_configuration(key, value, caplog):
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"form:cancel-tag": value}, CRUD_VIEWS_STRICT=True):
+        assert cv_button_data(form_ctx(key), "form")["cv_tag"] == "button"
+    assert _tag_warnings(caplog) == []
+
+
+@pytest.mark.parametrize(
+    "attrs",
+    [{}, {"data-cv-cancel-url": None}, {"data_cv_cancel_url": False}, {"data-cv-cancel-url": ""}],
+    ids=["missing", "none", "false", "empty"],
+)
+def test_form_missing_or_empty_destination_falls_back_to_button(attrs):
+    """D-08: absent, None, False and "" are no destination; the result is the unconfigured button's."""
+    ctx = form_ctx("cancel", cv_attrs=attrs)
+    for explicit in ("a", None):
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=LINK):
+            data = cv_button_data({**ctx, "cv_tag": explicit}, "form")
+        assert data == cv_button_data(ctx, "form")
+        assert data["cv_tag"] == "button"
+
+
+@pytest.mark.parametrize("order", ["underscore-first", "hyphen-first"])
+def test_form_link_destination_follows_the_winning_alias(order):
+    for hyphen, expected in (("/h/", "a"), ("", "button")):
+        pairs = [("data_cv_cancel_url", "/u/"), ("data-cv-cancel-url", hyphen)]
+        if order == "hyphen-first":
+            pairs.reverse()
+        data = cv_button_data(form_ctx("cancel", cv_attrs=dict(pairs), cv_tag="a"), "form")
+        assert (data["cv_tag"], data["cv_cancel_url"]) == (expected, hyphen)
+
+
+@pytest.mark.parametrize(
+    "name,value,flat",
+    [
+        ("disabled", True, " disabled"),
+        ("disabled", "", ' disabled=""'),
+        ("disabled", 0, ' disabled="0"'),
+        ("disabled", "false", ' disabled="false"'),
+        ("DISABLED", True, " DISABLED"),
+        ("Disabled", "x", ' Disabled="x"'),
+    ],
+    ids=repr,
+)
+def test_form_emitted_disabled_falls_back_to_button(name, value, flat):
+    """D-06: HTML presence decides, not Python truth; the original attribute is kept on the fallback button."""
+    for explicit in ("a", None):
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=LINK):
+            data = cv_button_data(cancel_ctx(cv_tag=explicit, cv_attrs={name: value}), "form")
+        assert data["cv_tag"] == "button"
+        assert str(data["cv_flat_attrs"]) == flat
+        assert data["cv_cancel_url"] == "/back/"
+
+
+@pytest.mark.parametrize("value", [False, None])
+def test_form_omitted_disabled_keeps_the_link(value):
+    data = cv_button_data(cancel_ctx(cv_tag="a", cv_attrs={"disabled": value}), "form")
+    assert data["cv_tag"] == "a"
+    assert "disabled" not in str(data["cv_flat_attrs"])
+
+
+def test_form_tag_resolution_never_mutates_ctx():
+    for ctx in (
+        cancel_ctx(cv_tag="a", cv_attrs={"disabled": "", "data_cv_cancel_url": "/u/"}),
+        cancel_ctx(cv_tag=None),
+        form_ctx("submit", cv_tag="button"),
+    ):
+        before = copy.deepcopy(ctx)
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=LINK):
+            cv_button_data(ctx, "form")
+            cv_button_data(ctx, "form")
+        assert ctx == before

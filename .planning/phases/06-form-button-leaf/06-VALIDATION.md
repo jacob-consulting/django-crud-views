@@ -1,7 +1,7 @@
 ---
 phase: "06"
 slug: "form-button-leaf"
-status: executed
+status: validated
 nyquist_compliant: true
 wave_0_complete: true
 created: "2026-10-27"
@@ -150,3 +150,11 @@ and independent re-review pending.
 | L-UNREGISTERED-FORM-ICON | 06-01 spec; 06-06 task 2 | Direct unknown-prefix and unusable renderer produce W292/strict/log fallback; no renderer probe; raw class/valid inline/host opt-out behavior preserved |
 
 Manual planning checks: all 9 frontmatter/structure validations passed; 18/18 decisions and 13/13 requirements covered; dependency waves, task file ownership and same-wave isolation passed; 28 verification blocks have failure conditions. The command-path tool returned no findings but marks Python commands not_applicable. An installed-crispy probe reproduced the layout-only false helper and confirmed both local __bool__ methods admit dispatch with len(helper)==0. These checks do not constitute feature implementation or independent convergence.
+
+## Validation Audit 2026-10-28
+
+| Metric | Count |
+|---|---|
+| Gaps found | 0 |
+| Resolved | 0 |
+| Escalated | 0 |

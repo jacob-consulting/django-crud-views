@@ -144,3 +144,160 @@ def test_pinned_filter_is_expanded_without_toggle(
     response = client_user_publisher_view.get("/publisher/")
     assert response.context["cv_filter_expanded"] is True
     assert html.fromstring(response.content).cssselect("#cv-filter-toggle") == []
+
+
+# --- the filter actions through the form-button leaf (Phase 6, 06-05) ---------------------------------------------
+
+FILTER_PATH = "/publisher/?sort=name&order=name&dir=desc"
+APPLY = ("submit", "submit", "Apply Filter", "filter-button", "btn btn-primary")
+RESET = ("reset", "reset", "Reset Filter", "filter-button-reset", "btn btn-secondary")
+
+
+def _filter_form(response):
+    from lxml import html
+
+    assert response.status_code == 200
+    (form,) = html.fromstring(response.content).cssselect("form#filter-form")
+    return form
+
+
+def _buttons(form) -> list[tuple]:
+    return [(b.get("type"), b.get("name"), b.get("value"), b.get("id"), b.get("class")) for b in form.iter("button")]
+
+
+def _hidden(form) -> list[tuple]:
+    return [(i.get("name"), i.get("value")) for i in form.cssselect("input[type=hidden]")]
+
+
+def _publisher_list_view():
+    from tests.test1.app.views import PublisherListView
+
+    return PublisherListView
+
+
+@pytest.mark.django_db
+def test_filter_endpoint_renders_apply_and_reset_as_leaf_buttons(
+    client_user_publisher_view: Client, cv_publisher, publisher_penguin
+):
+    """Apply / Reset are layout <button>s with their original type, name, value, id and classes."""
+    form = _filter_form(client_user_publisher_view.get(FILTER_PATH))
+    assert _buttons(form) == [APPLY, RESET]
+    assert [" ".join(b.text_content().split()) for b in form.iter("button")] == ["Apply Filter", "Reset Filter"]
+    # no visible action is left behind as a crispy input
+    assert form.cssselect("input[type=submit], input[type=reset]") == []
+
+
+@pytest.mark.django_db
+def test_filter_endpoint_fields_then_actions_then_hidden_wrapper(
+    client_user_publisher_view: Client, cv_publisher, publisher_penguin
+):
+    """Field layout, one action group, then the pack-owned hidden-input wrapper with its margin/classes."""
+    form = _filter_form(client_user_publisher_view.get(FILTER_PATH))
+    order = [el.get("name") for el in form.iter("input", "button")]
+    assert order == ["name", "submit", "reset", "sort", "order", "dir"]
+
+    apply_, reset = form.iter("button")
+    group = apply_.getparent().getparent()
+    assert reset.getparent().getparent() is group
+    assert group.get("class").split() == ["mb-3"]
+    assert apply_.getparent().get("class") == ""
+
+    hidden = form.cssselect("input[type=hidden]")
+    wrapper = hidden[0].getparent().getparent()
+    assert all(el.getparent().getparent() is wrapper for el in hidden)
+    assert (wrapper.get("class"), hidden[0].getparent().get("class")) == ("mb-3", "")
+    # the hidden wrapper is a separate, later sibling and holds no visible action
+    assert wrapper is not group and wrapper.getparent() is group.getparent()
+    siblings = list(group.getparent())
+    assert siblings.index(group) < siblings.index(wrapper)
+    assert wrapper.cssselect("button, input[type=submit], input[type=reset]") == []
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    ("path", "expected"),
+    [
+        (FILTER_PATH, [("sort", "name"), ("order", "name"), ("dir", "desc")]),
+        ("/publisher/", [("sort", "")]),
+        ("/publisher/?sort=&order=&dir=", [("sort", "")]),
+        ("/publisher/?order=name", [("sort", ""), ("order", "name")]),
+    ],
+)
+def test_filter_hidden_controls_unchanged(client_user_publisher_view: Client, cv_publisher, path, expected):
+    form = _filter_form(client_user_publisher_view.get(path))
+    assert _hidden(form) == expected
+    assert _buttons(form) == [APPLY, RESET]
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    ("modes", "apply_mode", "reset_mode"),
+    [({}, "label", "label"), ({"filter-submit": "icon", "filter-reset": "both"}, "icon", "both")],
+)
+def test_filter_actions_honor_the_list_view_form_modes(
+    client_user_publisher_view: Client, cv_publisher, publisher_penguin, monkeypatch, modes, apply_mode, reset_mode
+):
+    """The filter helper's view owns its actions: label / both / icon with the filter and filter-reset icons."""
+    monkeypatch.setattr(_publisher_list_view(), "cv_form_actions_label_mode", modes)
+    form = _filter_form(client_user_publisher_view.get(FILTER_PATH))
+    apply_, reset = form.iter("button")
+    for button, mode, icon_class, label in (
+        (apply_, apply_mode, "fa-filter", "Apply Filter"),
+        (reset, reset_mode, "fa-rotate-left", "Reset Filter"),
+    ):
+        (span,) = button.cssselect("span")
+        assert span.text == label
+        inline = button.cssselect("i")
+        if mode == "label":
+            assert inline == [] and not span.get("class") and button.get("title") is None
+        elif mode == "both":
+            assert icon_class in inline[0].get("class") and not span.get("class") and button.get("title") is None
+        else:
+            assert icon_class in inline[0].get("class") and span.get("class") == "visually-hidden"
+            assert (button.get("title"), button.get("data-cv-tooltip")) == (label, "form")
+    assert (apply_.get("id"), reset.get("id")) == ("filter-button", "filter-button-reset")
+
+
+@pytest.mark.django_db
+def test_filter_helper_without_layout_renders_form_fields_then_one_action_group(
+    client_user_publisher_view: Client, cv_publisher, publisher_penguin, monkeypatch
+):
+    from crud_views.lib.views.list import ListViewFilterFormHelper
+
+    class NoLayoutHelper(ListViewFilterFormHelper):
+        pass
+
+    monkeypatch.setattr(_publisher_list_view(), "formhelper_class", NoLayoutHelper)
+    for _ in range(2):
+        form = _filter_form(client_user_publisher_view.get(FILTER_PATH))
+        assert [el.get("name") for el in form.iter("input", "button")] == [
+            "name",
+            "submit",
+            "reset",
+            "sort",
+            "order",
+            "dir",
+        ]
+        assert _buttons(form) == [APPLY, RESET]
+    assert NoLayoutHelper.layout is None
+
+
+@pytest.mark.django_db
+def test_custom_helper_constructor_without_form_keyword(
+    client_user_publisher_view: Client, cv_publisher, publisher_penguin, monkeypatch
+):
+    """The mixin keeps constructing helpers with view/request only, so a two-argument constructor still works."""
+    from tests.test1.app.views import PublisherFilterFormHelper
+
+    calls = []
+
+    class TwoArgHelper(PublisherFilterFormHelper):
+        def __init__(self, view, request):
+            calls.append((type(view).__name__, request.method))
+            super().__init__(view, request)
+
+    monkeypatch.setattr(_publisher_list_view(), "formhelper_class", TwoArgHelper)
+    form = _filter_form(client_user_publisher_view.get(FILTER_PATH))
+    assert calls == [("PublisherListView", "GET")]
+    assert _buttons(form) == [APPLY, RESET]
+    assert _hidden(form) == [("sort", "name"), ("order", "name"), ("dir", "desc")]

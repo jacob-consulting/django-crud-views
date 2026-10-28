@@ -92,12 +92,15 @@ def test_delete_button_kwargs_may_choose_the_slot(
 
 @pytest.mark.django_db
 def test_filter_buttons(client_user_publisher_view, cv_publisher):
+    """The stock filter actions are layout leaf buttons (06-05) with their table classes and original ids."""
     html = client_user_publisher_view.get(url(cv_publisher, "list")).content.decode()
-    assert 'class="btn btn-primary"' in tag(html, id="filter-button")
-    reset = tag(html, id="filter-button-reset")
+    apply_ = button(html, id="filter-button")
+    assert 'class="btn btn-primary"' in apply_ and 'type="submit"' in apply_
+    reset = button(html, id="filter-button-reset")
     assert 'class="btn btn-secondary"' in reset
     assert 'type="reset"' in reset
     assert "btn-inverse" not in html
+    assert not re.search(r"<input\b[^>]*\bid=\"filter-button", html)
 
 
 @pytest.mark.django_db

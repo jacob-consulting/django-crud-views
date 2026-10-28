@@ -12,8 +12,10 @@ unchanged and every golden diff is product markup. Defaults are pinned a second 
 Updates (D-17): 06-02 task 3 replaced the create / update / delete / workflow goldens with the form-button leaf
 output after comparing the parsed controls with the before-change baselines (commits 2956f3e and 98b71ed, which stay
 in history): native type, name, value, id, classes, cancel URL and visible text are equal; only the element and its
-body changed (``<input>`` to ``<button>`` with a ``<span>`` label). The filter golden still holds crispy inputs
-until 06-05.
+body changed (``<input>`` to ``<button>`` with a ``<span>`` label). 06-05 replaced the filter golden the same way,
+reusing ``_extract_filter_form_region`` unchanged (its definition equals the one in baseline commit 98b71ed): Apply /
+Reset moved from the pack's trailing inputs wrapper into one layout ``FormActions`` group of leaf buttons after the
+fields; the hidden sort / order / dir inputs keep that wrapper, its classes and their names / values.
 
 The filter golden is different on purpose (L-FILTER-GOLDEN-SCOPE): ``_extract_filter_form_region`` returns the exact
 raw response slice from the unique ``<form id="filter-form" ...>`` opening tag through its matching ``</form>`` —
@@ -278,7 +280,11 @@ def test_filter_form_region_is_stable_and_csrf_free(client_user_publisher_view, 
 
 @pytest.mark.django_db
 def test_filter_form_defaults(client_user_publisher_view, cv_publisher, publisher_penguin):
-    """Wrapper classes, control order, hidden names/values and the reset control, independently of the bytes."""
+    """Wrapper classes, control order, hidden names/values and the reset control, independently of the bytes.
+
+    Since 06-05 the visible actions are leaf buttons in one layout FormActions group; the hidden controls stay in the
+    pack's trailing inputs wrapper (L-HIDDEN-WRAPPER), after the actions.
+    """
     form = lxml_html.fragment_fromstring(_filter_region(client_user_publisher_view))
     assert (form.get("id"), form.get("method")) == ("filter-form", "get")
     assert form.cssselect("#id_name")[0].get("name") == "name"
@@ -313,11 +319,20 @@ def test_filter_form_defaults(client_user_publisher_view, cv_publisher, publishe
     assert [(el.get("type"), el.get("name"), el.get("value")) for el in hidden] == [
         ("hidden", name, value) for name, value in FILTER_HIDDEN
     ]
-    # today the actions and the hidden controls share the pack's trailing inputs wrapper: div.mb-3 > div[class=""]
-    for el in controls:
+    # the actions are leaf buttons in one FormActions group: div.mb-3 > div[class=""] > button, no duplicates
+    assert [el.tag for el in (apply_, reset)] == ["button", "button"]
+    assert len(form.cssselect("#filter-button")) == len(form.cssselect("#filter-button-reset")) == 1
+    group = apply_.getparent().getparent()
+    assert reset.getparent() is apply_.getparent() and apply_.getparent().get("class") == ""
+    assert group.get("class").split() == ["mb-3"]
+    # the hidden controls keep the pack's trailing inputs wrapper (div.mb-3 > div[class=""]), after the actions
+    wrapper = hidden[0].getparent().getparent()
+    for el in hidden:
         inner = el.getparent()
-        assert inner.tag == "div" and inner.get("class") == ""
-        assert inner.getparent().get("class") == "mb-3"
+        assert el.tag == "input" and inner.tag == "div" and inner.get("class") == ""
+        assert inner.getparent() is wrapper and wrapper.get("class") == "mb-3"
+    assert wrapper is not group and list(form).index(group) < list(form).index(wrapper)
+    assert wrapper.cssselect("button, input[type=submit], input[type=reset]") == []
 
 
 def test_filter_region_extractor_scope():

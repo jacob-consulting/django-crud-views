@@ -46,6 +46,11 @@ DEFAULT_ICONS: dict[str, str] = {
     "message-warning": "fas:triangle-exclamation",
     "message-error": "fas:circle-exclamation",
     "message-debug": "fas:bug",
+    # the form-button kinds (Phase 6): submit saves, cancel leaves the form, filter-reset clears the filter form
+    # (delete and filter-submit reuse "delete" and "filter")
+    "save": "far:floppy-disk",
+    "cancel": "fas:xmark",
+    "filter-reset": "fas:rotate-left",
 }
 
 BOOTSTRAP_ICONS: dict[str, str] = {
@@ -85,6 +90,9 @@ BOOTSTRAP_ICONS: dict[str, str] = {
         "message-warning": "exclamation-triangle-fill",
         "message-error": "exclamation-octagon-fill",
         "message-debug": "bug-fill",
+        "save": "floppy",
+        "cancel": "x-lg",
+        "filter-reset": "arrow-counterclockwise",
     }.items()
 }
 

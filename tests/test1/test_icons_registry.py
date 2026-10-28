@@ -231,7 +231,7 @@ def test_message_icon_defaults(name, fa, bi):
     assert BOOTSTRAP_ICONS[name] == bi
 
 
-# the semantic defaults of the form-button kinds (Phase 6): submit -> save, cancel -> cancel, filter-reset -> filter-reset
+# the semantic defaults of the form-button kinds (Phase 6): submit -> save, cancel, filter-reset
 FORM_ICONS = {
     "save": ("far:floppy-disk", "bi:floppy"),
     "cancel": ("fas:xmark", "bi:x-lg"),

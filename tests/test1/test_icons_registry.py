@@ -231,6 +231,26 @@ def test_message_icon_defaults(name, fa, bi):
     assert BOOTSTRAP_ICONS[name] == bi
 
 
+# the semantic defaults of the form-button kinds (Phase 6): submit -> save, cancel -> cancel, filter-reset -> filter-reset
+FORM_ICONS = {
+    "save": ("far:floppy-disk", "bi:floppy"),
+    "cancel": ("fas:xmark", "bi:x-lg"),
+    "filter-reset": ("fas:rotate-left", "bi:arrow-counterclockwise"),
+}
+
+
+@pytest.mark.parametrize("name,fa,bi", [(name, *values) for name, values in FORM_ICONS.items()])
+def test_form_icon_defaults(name, fa, bi):
+    assert DEFAULT_ICONS[name] == fa
+    assert BOOTSTRAP_ICONS[name] == bi
+
+
+def test_form_reset_icon_is_distinct_from_the_filter_toggle():
+    # filter-reset clears the filter form; filter-close is the open state of the filter panel toggle
+    assert DEFAULT_ICONS["filter-reset"] != DEFAULT_ICONS["filter-close"]
+    assert BOOTSTRAP_ICONS["filter-reset"] != BOOTSTRAP_ICONS["filter-close"]
+
+
 def test_message_icon_renders_font_awesome_by_default():
     assert render_icon("message-success") == '<i class="fa-solid fa-circle-check" aria-hidden="true"></i>'
 

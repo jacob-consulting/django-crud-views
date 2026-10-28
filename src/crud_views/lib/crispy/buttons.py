@@ -14,12 +14,67 @@ from crud_views.lib.button_classes import get_button_class
 FORM_LEAF_TEMPLATE = "crud_views/tags/button/form.html"
 
 
-def _cv_form_owner(form, context):
-    """The view that owns a form button: the actual render form's ``cv_view``, else None (no owner).
+# private context keys (underscore: unreadable from templates, never published by crispy's helper attributes)
+# the owner a package helper pushes for the duration of its own render_layout (filter helper)
+_CV_HELPER_OWNER = "_cv_helper_owner"
+# the page-tier owner carried across the formset flatten / inclusion boundaries; None means "no page owner"
+_CV_PAGE_OWNER = "_cv_page_owner"
 
-    Identity, never truthiness: the first candidate that is not None is the owner, even a falsey object.
+# crispy's BasicNode.get_render pushes get_response_dict() for each {% crispy %} invocation: always these keys,
+# plus every public helper attribute (which is how helper.view, even view=None, reaches the context)
+_RESPONSE_KEYS = frozenset({"is_formset", "template_pack", "inputs"})
+_RESPONSE_METHOD_KEYS = ("form_method", "formset_method")
+
+
+def _is_response_overlay(layer) -> bool:
+    """True for a crispy helper response layer (current or enclosing); such a layer is never a page layer."""
+    return layer.keys() >= _RESPONSE_KEYS and any(key in layer for key in _RESPONSE_METHOD_KEYS)
+
+
+def _cv_helper_tier(context):
+    """The current crispy invocation's helper owner: a private entry pushed above its overlay, else its ``view``.
+
+    Scans ``Context.dicts`` from the top and stops at the nearest response overlay, the current invocation; entries
+    and overlays below it belong to enclosing invocations. No fixed stack offset: FormActions and nested rows
+    leave other layers above the overlay.
     """
-    return getattr(form, "cv_view", None)
+    for layer in reversed(context.dicts):
+        if _CV_HELPER_OWNER in layer:
+            return layer[_CV_HELPER_OWNER]
+        if _is_response_overlay(layer):
+            return layer.get("view")
+    return None
+
+
+def _cv_page_tier(context):
+    """The page owner: the transported value when present (authoritative, even None), else the nearest ``view``
+    that is not None in a genuine page layer. Every crispy response overlay is skipped, never read as a page.
+    """
+    for layer in reversed(context.dicts):
+        if _CV_PAGE_OWNER in layer:
+            return layer[_CV_PAGE_OWNER]
+    for layer in reversed(context.dicts):
+        if _is_response_overlay(layer):
+            continue
+        owner = layer.get("view")
+        if owner is not None:
+            return owner
+    return None
+
+
+def _cv_form_owner(form, context):
+    """The view that owns a form button (D-09): the actual render form's ``cv_view``, then the current helper's
+    owner, then the page owner; None when there is no owner.
+
+    Identity, never truthiness: the first candidate that is not None is the owner, even a falsey object, and the
+    lookup stops there (D-11). Conflicting owners are not reported (D-12). Reads the context only.
+    """
+    owner = getattr(form, "cv_view", None)
+    if owner is None:
+        owner = _cv_helper_tier(context)
+    if owner is None:
+        owner = _cv_page_tier(context)
+    return owner
 
 
 def _cv_form_label_mode(owner, kind: str) -> str:

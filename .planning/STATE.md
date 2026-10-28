@@ -3,17 +3,17 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: 06
 current_phase_name: Form-button leaf
-status: executing
-stopped_at: Planned 06-10-PLAN.md — gap closure ready to execute
-last_updated: "2026-10-28T10:25:09.247Z"
+status: verifying
+stopped_at: Completed 06-10-PLAN.md
+last_updated: "2026-10-28T10:39:51.557Z"
 last_activity: 2026-10-28
-last_activity_desc: Phase 06 gap plan 06-10 independently checked and ready to execute
-state_head: 03ec4414e2380aa6718763c0d38003997f5847b2
+last_activity_desc: Phase 06 gap plan 06-10 executed (CR-01, WR-01, WR-02 fixed); ready for independent re-verification
+state_head: 9438a5add6906db3055e3a8febecc849592d719c
 progress:
   total_phases: 7
   completed_phases: 5
   total_plans: 24
-  completed_plans: 23
+  completed_plans: 24
 milestone_name: milestone
 ---
 
@@ -28,12 +28,12 @@ See: .planning/PROJECT.md (updated 2026-10-27)
 
 ## Current Position
 
-Phase: 06 (Form-button leaf) — READY TO EXECUTE
-Plan: 10 of 10 — gap closure planned; 9 executed
-Status: Ready to execute
-Last activity: 2026-10-28 — Phase 06 gap plan 06-10 independently checked and ready to execute
+Phase: 06 (Form-button leaf) — READY FOR RE-VERIFICATION
+Plan: 10 of 10
+Status: Phase complete — ready for verification
+Last activity: 2026-10-28 — Phase 06 gap plan 06-10 executed (CR-01, WR-01, WR-02 fixed); ready for independent re-verification
 
-Progress: 23/24 plans executed (96%); phase 06 gap closure pending
+Progress: 24/24 plans executed (100%); phase 06 gap closure executed, independent re-verification pending
 
 ## Performance Metrics
 
@@ -86,6 +86,7 @@ Progress: 23/24 plans executed (96%); phase 06 gap closure pending
 | Phase 06 P07 | 14min | 3 tasks | 7 files |
 | Phase 06 P08 | 16 min | 3 tasks | 14 files |
 | Phase 06 P09 | 22min | 2 tasks | 3 files |
+| Phase 06 P10 | 13min | 3 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -157,6 +158,8 @@ Recent decisions affecting current work:
 - [Phase 06]: 06-08: The example sets only CRUD_VIEWS_LABEL_MODE_DEFAULTS form=both; other locations keep their package floors
 - [Phase 06]: 06-09: whole-repo ruff format --check recorded as not green (9 pre-existing planning Markdown files, WINDOWS #4); code and Phase 06 changed files formatted
 - [Phase 06]: 06-09: hover tooltip, visual quality, screen reader and migration readability remain pending human; automated Chromium evidence covers names, focus, focus tooltips, cancel, filter reset and modal submit
+- [Phase 06]: 06-10: icon= omission is stored as the private bool _cv_kind_icon (sentinel compared in __init__ only); deepcopy isolation of filter layouts kept
+- [Phase 06]: 06-10: _form_button_data treats any non-str or whitespace-only cv_icon as None before availability, diagnostics, host classes and the leaf; accepted strings kept exactly
 
 ### Pending Todos
 
@@ -191,6 +194,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-28T08:49:11.765Z
-Stopped at: Planned 06-10-PLAN.md — gap closure ready to execute
+Last session: 2026-10-28T10:39:51.048Z
+Stopped at: Completed 06-10-PLAN.md
 Resume file: None

@@ -223,6 +223,14 @@ as intended, because they guard behavior that was already correct:
   files are in `CRISPY_FLOOR_TESTS`.
 - **Effect:** Additive evidence only.
 
+**3. REQUIREMENTS.md left at "Gaps Found".**
+- **Found during:** state updates
+- **What changed:** `requirements.mark-complete` for this plan's six IDs was undone. Applying it would have
+  repeated the premature completion that `03ec441` deliberately reverted. It would also have left the FORM rows
+  split between Complete and Gaps Found while the phase's D-16 truth still awaits independent re-verification.
+- **Effect:** The orchestrator or verifier marks the requirements complete once re-verification passes. The
+  `requirements-completed` frontmatter above lists the IDs this plan addresses, as the template requires.
+
 No other changes to the planned work, and no new `Breaking` entry was needed.
 
 ## TDD Gate Compliance

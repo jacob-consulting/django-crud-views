@@ -101,6 +101,27 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
   `CRUD_VIEWS_BUTTON_CLASSES = {"form:filter-reset": "..."}`.
 - The tags `cv_submit_button`, `cv_cancel_button` and `cv_delete_button` and their templates are removed; the crispy
   forms build their buttons with `Submit`, `Button` and `Reset`.
+- **Form buttons** render as `<button>` elements through the new leaf `crud_views/tags/button/form.html` (#257). This
+  covers every `Submit`, `Button` and `Reset` of `crud_views.lib.crispy` in a crispy layout: the create, update,
+  custom-form, delete and workflow forms and the list filter's Apply and Reset. The default names, values, ids,
+  classes and `data-cv-cancel-url` are unchanged; the text moves into a `<span>`. CSS, JavaScript and tests that
+  select `input[type="submit"]`, `input[name="reset"]` or `input#filter-button` must select `button` instead. A click
+  still posts the clicked button's `name=value` (`delete=Delete`), in the modal too, and the delete view still needs
+  only its confirmation field. Crispy's rule for names of several words is kept (`"Search the Site"` is submitted as
+  `search-the-site`). Values and labels are literal text: crispy rendered a button value as a template, so a value
+  such as `{{ request.user }}` used to show the user and now shows itself. A custom button template (`template=`, a
+  subclass `template`, `%s` pack names included) receives the `cv_*` form leaf contract instead of crispy's `input`
+  object: `input.value` becomes `cv_value`, `input.name` `cv_name`, `input.id` `cv_id`, `input.flat_attrs`
+  `cv_flat_attrs`. Each reserved attribute renders once: an extra `type`, `name` or `value` keyword is dropped,
+  `css_id` wins over an extra `id`. A layout button whose `slot` is not `form:<kind>` with one of the five form kinds
+  (`submit`, `cancel`, `delete`, `filter-submit`, `filter-reset`) raises `ValueError` when it renders: pick the
+  matching kind and restyle it with `css_class` or a `form:<kind>:<mode>` class key. Buttons added with
+  `helper.add_input()` keep their old input markup and any slot, without a warning. The filter's Apply and Reset are
+  layout buttons now: they render in their own `FormActions` group before the template pack's inputs wrapper, which
+  keeps the hidden `sort`, order and direction inputs with their names, values and margin, and clearing
+  `helper.inputs = []` no longer removes them; override the filter helper's `get_form_actions()` to return `None`
+  instead. An icon-only form button without a usable icon raises under `CRUD_VIEWS_STRICT`, otherwise it shows its
+  label. See [Migrating to 1.0.0](docs/migrating-1.0.md#form-buttons).
 - `CardAction.variant` defaults to `None`, the target view's variant: a card action on a create view without an
   explicit variant now renders `btn-primary`.
 - `cv_actions_menu` no longer passes `cv_menu_wrapper_class` / `cv_toggle_class`; theme overrides of
@@ -223,10 +244,12 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 - Theme and `CRUD_VIEWS_BUTTON_CLASSES` validation accepts `form:<kind>:<mode>` for all five form kinds and all
   three label modes, retaining the existing W362 diagnostics for invalid keys and modes. The buttons reference
-  documents the variant/kind grammar and corrects the shipped-key count. Existing form rendering is unchanged.
-- `CRUD_VIEWS_LABEL_MODE_DEFAULTS` sets the label-mode floor per button location (`"context"`, `"list"`, `"card"`):
-  the mode of a button that nothing more specific names. Unset entries keep the package floors, `"icon"` for the
-  toolbar and rows and `"both"` for cards, held read-only in `crud_views.lib.view.label_mode.LABEL_MODE_DEFAULTS`.
+  documents the variant/kind grammar and corrects the shipped-key count. Layout form buttons look these keys up with
+  their resolved label mode.
+- `CRUD_VIEWS_LABEL_MODE_DEFAULTS` sets the label-mode floor per button location (`"context"`, `"list"`, `"card"`,
+  `"form"`): the mode of a button that nothing more specific names. Unset entries keep the package floors, `"icon"`
+  for the toolbar and rows, `"both"` for cards and `"label"` for form buttons, held read-only in
+  `crud_views.lib.view.label_mode.LABEL_MODE_DEFAULTS`.
   The public `default_label_mode(location)` returns the merged floor, and
   `CardListView.cv_get_card_actions_label_mode()` the resolved mode of a card view. `crud_views.E108` reports a
   setting that is not a dict, an unknown location key or an invalid mode.
@@ -329,6 +352,19 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
   (`cv_button_data`) and the tags `{% cv_button %}` and `{% cv_render_button %}`.
 - `CrispyDeleteForm.get_delete_button()` / `get_delete_button_kwargs()` (the kwargs may set `slot`); `Submit`,
   `Button` and `Reset` in `crud_views.lib.crispy`.
+- `CRUD_VIEWS_FORM_ACTIONS_LABEL_MODE`, `ViewSet.form_actions_label_mode` and `CrudView.cv_form_actions_label_mode`
+  map a form kind (`submit`, `cancel`, `delete`, `filter-submit`, `filter-reset`) to `"label"`, `"icon"` or `"both"`
+  (#257). The map is selected whole on the view that owns the form (`form.cv_view`, else the helper's `view`, else the
+  page's `view`); kinds it does not name take the `"form"` floor. `cv_get_form_actions_label_mode()` returns the
+  selected map and `cv_get_action_label_mode("form", kind)` the mode of one kind. In `"icon"` and `"both"` mode a form
+  button shows an icon: the new semantic icons `save`, `cancel` and `filter-reset` (in `BOOTSTRAP_ICONS` too), the
+  `icon=` argument of `Submit`, `Button` and `Reset`, and the form attributes `CrispyFormMixin.submit_icon` (the
+  workflow form: `workflow`) and `CrispyDeleteForm.delete_icon`. New button class keys `form:hidden-label` and
+  `form:icon-host`; `crud_views.lib.view.button_data.FORM_LEAF_KEYS` is the leaf contract.
+  `ListViewFilterFormHelper.get_form_actions()` replaces or omits the filter's Apply and Reset. `crud_views.E106`,
+  `viewset.E210`, `E211`, `W291` and `W292` check the form maps and icons. See
+  [Buttons](docs/reference/buttons.md#forms) and
+  [Form label-mode resolution](docs/reference/action_menus.md#form-label-mode-resolution).
 - System checks `viewset.E209`, `crud_views.E360`, `crud_views.E361` and `crud_views.W362`; see
   `docs/reference/buttons.md`.
 - `cv.adapters.tooltip.hide(el)` and `dispose(el)`, both optional, with the Bootstrap defaults

@@ -773,3 +773,104 @@ def test_form_label_mode_reference_contract():
         "present only for kind cancel",
     ):
         assert marker in flat, marker
+
+
+def _migration_e108_paragraph(text: str) -> str:
+    """The unique Step zero paragraph that begins with the E108 reports clause, whitespace-normalized."""
+    step_zero = _section(text, "## Step zero: run the checks")
+    paragraphs = [" ".join(p.split()) for p in step_zero.split("\n\n")]
+    found = [p for p in paragraphs if p.startswith(f"`crud_views.E108` reports a `{SETTING}`")]
+    assert len(found) == 1, found
+    return found[0]
+
+
+def test_migration_e108_location_inventory():
+    from crud_views.lib.view.button_data import LOCATIONS
+
+    text = MIGRATING_MD.read_text()
+    paragraph = _migration_e108_paragraph(text)
+    assert _e108_locations(paragraph) == set(LOCATIONS)
+    # the separate mode vocabulary and the strict / non-strict runtime guidance are unchanged
+    for marker in (
+        'a mode that is not exactly `"label"`, `"icon"` or `"both"`',
+        "At render an unknown key is ignored.",
+        "An invalid mode raises `ValueError` in strict mode (`CRUD_VIEWS_STRICT`, which defaults to `DEBUG`)",
+        "otherwise it logs one warning and the location falls back to its package floor.",
+    ):
+        assert marker in paragraph, marker
+    # paragraph-scoped: a form mention elsewhere (the Form buttons section, the reference tables) cannot satisfy it
+    assert "## Form buttons" in text
+    for broken in (
+        text.replace('`"card"`, `"form"`) and a mode', '`"card"`) and a mode'),
+        text.replace('`"card"`, `"form"`) and a mode', '`"card"`, `"form"`, `"menu"`) and a mode'),
+    ):
+        assert broken != text
+        assert _e108_locations(_migration_e108_paragraph(broken)) != set(LOCATIONS)
+    gone = text.replace(paragraph.split(" (")[0], "Run the checks.", 1)
+    assert gone != text
+    try:
+        _migration_e108_paragraph(gone)
+    except AssertionError:
+        pass
+    else:
+        raise AssertionError("a missing E108 paragraph must fail the guard")
+
+
+def test_form_buttons_breaking_entry_pairs_with_migration():
+    changelog = CHANGELOG_MD.read_text()
+    release = re.split(r"^## ", changelog, flags=re.MULTILINE)[1]
+    entries = [b for b in _bullets(_subsection(release, "### Breaking")) if b.startswith("- **Form buttons**")]
+    assert len(entries) == 1
+    entry = _flat(entries[0])
+    for marker in (
+        "<button>",
+        'input[type="submit"]',
+        "delete=Delete",
+        "confirmation field",
+        "search-the-site",
+        "{{ request.user }}",
+        "input.value becomes cv_value",
+        "raises ValueError when it renders",
+        "helper.add_input()",
+        "helper.inputs = [] no longer removes them; override the filter helper's get_form_actions() to return None",
+        "CRUD_VIEWS_STRICT",
+        "(docs/migrating-1.0.md#form-buttons)",
+    ):
+        assert marker in entry, marker
+    assert "form-buttons" in _anchors(MIGRATING_MD)
+
+    section = _flat(_section(MIGRATING_MD.read_text(), "## Form buttons"))
+    for marker in (
+        'input[type="submit"]',
+        "delete=Delete",
+        '{"confirm": True} alone keeps working',
+        "search-the-site",
+        "{{ request.user }}",
+        "{{ cv_value }}",
+        "raises ValueError when the button renders",
+        "form:<kind>:<mode>",
+        "helper.inputs = []",
+        "get_form_actions() to return None",
+        "Nothing warns",
+        "add_input(Submit(...))",
+        "mb-3",
+        "(reference/theme.md#custom-form-button-templates)",
+        "(reference/list_view.md#removing-the-filter-buttons)",
+        "(reference/buttons.md#literal-text)",
+        "(reference/icons.md#form-buttons)",
+    ):
+        assert marker in section, marker
+    # one Added entry names the new public API; the existing Added-bullet prefix stays unique
+    added = _bullets(_subsection(release, "### Added"))
+    assert len([b for b in added if b.startswith(f"- `{FORM_MAP}`")]) == 1
+    assert len([b for b in added if b.startswith(f"- `{SETTING}` sets")]) == 1
+
+
+def test_example_enables_form_both_only():
+    tree = ast.parse((ROOT / "examples" / "bootstrap5" / "project" / "settings.py").read_text())
+    values = [
+        ast.literal_eval(node.value)
+        for node in tree.body
+        if isinstance(node, ast.Assign) and [getattr(t, "id", None) for t in node.targets] == [SETTING]
+    ]
+    assert values == [{"form": "both"}]

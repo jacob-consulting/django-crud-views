@@ -432,7 +432,7 @@ How a button renders depends on where it is placed:
 - **Added with `helper.add_input()`** it stays a crispy input, rendered by the template pack's `inputs.html` with
   its old markup and only the `form:<kind>` classes. No label mode, no icon, no warning; the slot is not checked. To
   give such a control the leaf, move it into a layout `FormActions`, see
-  [Migrating to 1.0.0](../migrating-1.0.md).
+  [Migrating to 1.0.0](../migrating-1.0.md#form-buttons).
 
 `CrispyFormMixin` builds its buttons through hooks you can override: `get_submit_button_kwargs()` /
 `get_submit_button()` and `get_cancel_button_kwargs()` / `get_cancel_button()`. `CrispyDeleteForm` adds

@@ -4,7 +4,7 @@
 // instantiated. This initializes the package's own triggers, marked with
 // data-cv-tooltip, through cv.adapters.tooltip (see adapters.js). The marker's
 // value names the trigger's location (context, list, card, card-order, formset,
-// object-detail; "" for a bare marker) and is passed to the adapter as
+// object-detail, form; "" for a bare marker) and is passed to the adapter as
 // init(el, {location}); the tooltip text lives in the trigger's title attribute.
 // App-owned [data-bs-toggle="tooltip"] elements are deliberately left to the host
 // application, so neither side double-initializes the other's tooltips.

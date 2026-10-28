@@ -46,10 +46,11 @@ project that uses none of them never sees them: `crud_views.E351`, `E354`, `E355
 ([icon libraries](reference/icons.md)), `crud_views.E361`, `W362` ([button classes](reference/buttons.md)),
 `viewset.E209` ([variants](reference/buttons.md)), `viewset.E210` ([card label mode](reference/card-list-view.md)),
 `crud_views.E106`, `viewset.E211`, `W291` ([toolbar and row label modes](reference/action_menus.md)),
-`crud_views.E108` ([label-mode defaults](reference/settings.md#label-mode-configuration)).
+`crud_views.E108` ([label-mode defaults](reference/settings.md#label-mode-configuration)). The form label-mode maps
+reuse `crud_views.E106`, `viewset.E210`, `E211`, `W291` and `W292` ([Form checks](reference/action_menus.md#form-checks)).
 
 `crud_views.E108` reports a `CRUD_VIEWS_LABEL_MODE_DEFAULTS` that is not a dict, a key that is not a button location
-(`"context"`, `"list"`, `"card"`) and a mode that is not exactly `"label"`, `"icon"` or `"both"`. At render an
+(`"context"`, `"list"`, `"card"`, `"form"`) and a mode that is not exactly `"label"`, `"icon"` or `"both"`. At render an
 unknown key is ignored. An invalid mode raises `ValueError` in strict mode (`CRUD_VIEWS_STRICT`, which defaults to
 `DEBUG`); otherwise it logs one warning and the location falls back to its package floor.
 
@@ -200,8 +201,9 @@ None of these raise anything. Check your stylesheets, your JavaScript selectors 
   `<button type="button">`; the active toolbar action carries `aria-current="page"`; a list or card button whose
   target is the current view renders `active`; the card row carries `cv-card-container`; card menu forms render
   before the row.
-- **Form buttons:** the crispy cancel button renders `btn btn-secondary` (was `btn btn btn-secondary`), the filter
-  reset `btn btn-secondary` (was `btn btn-inverse btn btn-secondary`), and the Delete label is translated.
+- **Form buttons:** the crispy form buttons are `<button>` elements instead of `<input>`
+  ([Form buttons](#form-buttons)). The cancel button renders `btn btn-secondary` (was `btn btn btn-secondary`), the
+  filter reset `btn btn-secondary` (was `btn btn-inverse btn btn-secondary`), and the Delete label is translated.
 - **Tooltip markup** (#202): the formset controls' `title` is the translated text of their `aria-label` ("Move up",
   "Move down", "Add row", "Delete row"), no longer `up` / `down` / `add` / `delete`. The object-detail
   property-detail button uses `title` instead of `data-bs-title`.
@@ -213,6 +215,96 @@ None of these raise anything. Check your stylesheets, your JavaScript selectors 
   no container at all, so `[cv-list-container]` (or `cv-context-container`, `cv-card-container`) is not in every row
   any more. Selectors that expect it must handle its absence.
 - **Container label** (#266): the toolbar and list row `aria-label` is translated ("Aktionen" on a German page).
+
+## Form buttons
+
+The `Submit`, `Button` and `Reset` of `crud_views.lib.crispy` render through the form-button leaf
+`crud_views/tags/button/form.html` when they sit in a crispy layout ([Forms](reference/buttons.md#forms)). Every
+package form does that: create, update, custom form, delete, workflow and the list filter. Nothing raises for the
+changes below unless noted.
+
+### Markup and submitted data
+
+- Each button is a `<button>` instead of an `<input>`, with its text in a `<span>`:
+
+    ```html
+    <!-- before -->
+    <input type="submit" name="submit" value="Create" class="btn btn-primary" id="submit-id-submit"/>
+    <!-- after -->
+    <button type="submit" name="submit" value="Create" id="submit-id-submit" class="btn btn-primary"><span>Create</span></button>
+    ```
+
+    The names, values, ids, classes and the cancel button's `data-cv-cancel-url` stay as they were, and so do the
+    filter's `filter-button` and `filter-button-reset` ids. Selectors and tests that match `input[type="submit"]`,
+    `input[name="reset"]`, `input#filter-button` or the attribute order must match `button` instead.
+- A click posts the clicked button's `name=value`, as the input did, and in the modal `modal.js` sends the same
+  submitter. The delete view still needs only its confirmation field: a click posts `confirm` and `delete=Delete`,
+  and a test that posts `{"confirm": True}` alone keeps working.
+- A name of several words is still submitted slugified, as crispy did (`"Search the Site"` becomes
+  `search-the-site`); a one-word name is submitted as written. The generated ids keep crispy's `<type>-id-<name>`.
+- The filter's Apply and Reset now render in their own `FormActions` group (`<div class="mb-3">`) after the fields.
+  The template pack's inputs wrapper follows it with only the hidden `sort`, order and direction inputs, with
+  unchanged names and values and its own `mb-3` margin. No global crispy template override is needed or shipped.
+
+### Values are literal text
+
+Crispy rendered the value of a layout button as a Django template. The leaf does not: values, labels, names, ids and
+attribute values are escaped once and shown as written. `Submit("submit", "{{ request.user }}")` used to show the
+user's name and now shows `{{ request.user }}`. Compute such a label in Python instead, for example in
+`get_submit_button_kwargs()`, where the form's view and its request are at hand (`self.cv_view.request`).
+
+Each reserved attribute is set once ([Literal text](reference/buttons.md#literal-text)): an extra `type`, `name` or
+`value` keyword is dropped, `css_id` wins over an extra `id`, and an extra `class` is appended after the table
+classes and `css_class`. In `"icon"` mode the generated `title` and `data-cv-tooltip="form"` win over yours.
+
+### Custom button templates
+
+A `template=` argument and a `template` attribute on your subclass keep working, `%s` pack names included, in this
+order: `template=`, the subclass attribute, the bundled leaf. The template now receives the form leaf contract
+instead of crispy's `input` object, and nothing of the surrounding page:
+
+| Before | After |
+|---|---|
+| `{{ input.value }}` | `{{ cv_value }}` (submitted), `{{ cv_label }}` (shown) |
+| `{{ input.name }}` | `{{ cv_name }}` |
+| `{{ input.id }}` | `{{ cv_id }}` |
+| `{{ input.input_type }}` | `{{ cv_type }}` |
+| `{{ input.field_classes }}` | `{% cv_button_class "form" cv_key cv_label_mode %}` and `{{ cv_css_class }}` |
+| `{{ input.flat_attrs }}` | `{{ cv_flat_attrs }}` |
+
+A template that still reads `input.*` renders empty attributes and raises nothing. The full recipe is
+[Custom form-button templates](reference/theme.md#custom-form-button-templates). A theme that restyled the package
+buttons by overriding crispy's `layout/baseinput.html` no longer reaches them: register `form:*` classes or override
+`crud_views/tags/button/form.html`.
+
+### Slots
+
+A button in a layout needs `slot="form:<kind>"` with one of the five form kinds `submit`, `cancel`, `delete`,
+`filter-submit` and `filter-reset`; any other slot (`"formset:control"`, `"form:primary"`) raises `ValueError` when
+the button renders. Pick the kind that matches what the button does and restyle it with `css_class`, or for every
+button of that kind with a `form:<kind>` or `form:<kind>:<mode>` key in `CRUD_VIEWS_BUTTON_CLASSES`. There are no
+other kinds or variants. Buttons added with `helper.add_input()` are not checked.
+
+### Filter helpers
+
+A `ListViewFilterFormHelper` subclass that declares only its fields keeps working: Apply and Reset are appended once
+after them ([Custom filter helpers](reference/list_view.md#custom-filter-helpers)).
+
+- **If you cleared `helper.inputs = []` (or `self.inputs = []`) to hide Apply and Reset:** that no longer hides them,
+  it only drops the hidden sort, order and direction inputs. Nothing warns. Override `get_form_actions()` to return
+  `None` and leave the inputs alone, see
+  [Removing the filter buttons](reference/list_view.md#removing-the-filter-buttons).
+- **If you added your own buttons with `add_input(Submit(...))`:** they keep rendering as crispy inputs with their old
+  markup, in the inputs wrapper after the visible actions, without label mode or icon and without a warning. To give
+  them the new leaf, return them from `get_form_actions()` in a `FormActions`; keep hidden inputs as inputs.
+
+### Label modes and icons
+
+Form buttons show their text by default: the `"form"` floor of `CRUD_VIEWS_LABEL_MODE_DEFAULTS` is `"label"`, so
+nothing gains an icon until a project asks for one with the floor or a form map
+([Form label-mode resolution](reference/action_menus.md#form-label-mode-resolution)). In `"icon"` mode a button
+without a usable icon raises `ValueError` under `CRUD_VIEWS_STRICT` and otherwise logs a warning and keeps its label;
+see [Form buttons](reference/icons.md#form-buttons) for the icons and their order.
 
 ## A downstream theme
 
@@ -503,6 +595,12 @@ about these.
   `data-bs-dismiss="alert"` ([CSS and tests that select on markup](#css-and-tests-that-select-on-markup)).
 - [ ] Card buttons show their icon next to the label, and card actions without a `variant` take the target view's
   variant ([Views and Python code](#views-and-python-code)).
+- [ ] Form buttons are `<button>` elements: selectors and tests on `input[type="submit"]` or `input[name="reset"]` find
+  nothing ([Markup and submitted data](#markup-and-submitted-data)).
+- [ ] A form button value or label written as template code (`{{ request.user }}`) shows that text
+  ([Values are literal text](#values-are-literal-text)).
+- [ ] `helper.inputs = []` on a filter helper no longer hides Apply and Reset and drops the hidden sort inputs
+  ([Filter helpers](#filter-helpers)).
 
 **In a theme, or in project template overrides:**
 
@@ -531,4 +629,6 @@ about these.
   [The filter toggle](reference/context_buttons.md#the-filter-toggle)).
 - [ ] A `formsets/control.html` copy without `data-cv-class` / `data-cv-class-danger` no longer recolours the delete
   toggle ([Contract changes](#contract-changes-in-templates-you-still-override)).
+- [ ] A custom form-button template that reads `input.value` renders empty attributes, and an override of crispy's
+  `layout/baseinput.html` no longer styles the package form buttons ([Custom button templates](#custom-button-templates)).
 - [ ] A `view_card.content.html` copy keeps the untranslated "No items found." ([Hooks instead of copies](#hooks-instead-of-copies)).

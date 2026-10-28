@@ -5,15 +5,15 @@ titles: json
 findings:
   - id: CR-01
     severity: critical
-    disposition: open
+    disposition: fixed
     title: "`_KIND_ICON` sentinel does not survive `copy.deepcopy`, so deep-copied layout buttons lose their kind icon"
   - id: WR-01
     severity: warning
-    disposition: open
+    disposition: fixed
     title: "No test renders a deep-copied adapter in `\"icon\"` or `\"both\"` mode"
   - id: WR-02
     severity: warning
-    disposition: open
+    disposition: fixed
     title: "The form normalizer admits any truthy non-`str` `cv_icon` into the leaf contract"
   - id: IN-01
     severity: info
@@ -23,7 +23,7 @@ findings:
     severity: info
     disposition: open
     title: "Extra attributes are emitted in sorted order, not insertion order"
-open: 5
+open: 2
 total: 5
 recorded: 2026-10-28T09:53:59.225Z
 ---
@@ -32,9 +32,9 @@ recorded: 2026-10-28T09:53:59.225Z
 
 | Finding | Severity | Disposition | Source |
 |---------|----------|-------------|--------|
-| CR-01 | critical | open | - |
-| WR-01 | warning | open | - |
-| WR-02 | warning | open | - |
+| CR-01 | critical | fixed | 06-10-SUMMARY.md; fix `f33d396` (omitted icon= recorded as the deep-copy-stable bool `_cv_kind_icon`); RED `ae83e62` then green: `test_copied_filter_layout_keeps_kind_icons` (12), `test_copied_adapter_keeps_icon_contract` (5) |
+| WR-01 | warning | fixed | 06-10-SUMMARY.md; regressions `ae83e62` (`tests/test1/test_crispy_buttons.py`: real `{% crispy %}` class-level and assigned copied filter layouts, both/icon x strict/lenient; direct copy/deepcopy of all five kinds; explicit-icon copies), red before and green after `f33d396` |
+| WR-02 | warning | fixed | 06-10-SUMMARY.md; fix `61103dd` (non-str or blank `cv_icon` becomes None before availability, diagnostics and the leaf); RED `7f974ad` then green: `test_form_icon_normalization_*` (164) in `tests/test1/test_button_data.py` |
 | IN-01 | info | open | - |
 | IN-02 | info | open | - |
 

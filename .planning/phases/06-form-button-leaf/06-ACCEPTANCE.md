@@ -7,6 +7,10 @@ recorded_at: "2026-10-28"
 executing_branch: introduce-gsd
 head_at_measurement: e40b0de
 writer: single (06-09 executor; no other process writes this file)
+gap_closure: "06-10"
+gap_closure_status: fixed-measured-pending-independent-reverification
+gap_closure_head: 61103dd
+gap_closure_writer: single (06-10 executor; appended section 12 and the section 11 status only)
 ---
 
 # Phase 06 — Acceptance record
@@ -304,3 +308,55 @@ following:
 - **Not green, pre-existing and recorded:** the whole-repo `ruff format --check` (9 planning Markdown files,
   WINDOWS #4); the dev-only `undici` audit advisory (WINDOWS #6).
 - **Pending human observation:** §9 items 1–4.
+- **Gap closure 06-10 (measured, §12):** the D-16 copied-layout defect found by phase verification (06-REVIEW
+  CR-01, WR-01, WR-02) is fixed and covered by regressions that were red before the fix and green after it.
+  This is the executor's measurement, not a fresh independent review: the phase's D-16 truth stays open until
+  independent re-verification confirms it. Sections 1–10 above remain the 06-09 record at `e40b0de` and are not
+  re-claimed by 06-10.
+
+## 12. Gap closure 06-10 (measured 2026-10-28, HEAD `61103dd`, branch `introduce-gsd`)
+
+Scope: the single partial truth in 06-VERIFICATION.md (D-16). A package `Submit`/`Button`/`Reset` built without
+`icon=` inside a class-level or caller-assigned filter layout lost its kind icon, because the `object()` "not given"
+sentinel did not survive the filter helper's per-instance `copy.deepcopy`; in strict icon mode it raised a false
+`ValueError`. The form normalizer also let any truthy non-`str` (or whitespace-only) `cv_icon` into the leaf contract.
+
+| Commit | Kind | Change |
+|---|---|---|
+| `ae83e62` | RED | `test_copied_filter_layout_keeps_kind_icons`, `test_copied_adapter_keeps_icon_contract`, `test_copied_adapter_preserves_explicit_icon` |
+| `f33d396` | fix | `_TableClassMixin` records an omitted `icon=` as the private bool `_cv_kind_icon` (CR-01) |
+| `7f974ad` | RED | `test_form_icon_normalization_*` (7 functions, 164 cases) |
+| `61103dd` | fix | `_form_button_data` turns a non-`str` or blank `cv_icon` into None before availability, diagnostics and the leaf (WR-02) |
+
+**Fail before / pass after (measured):**
+
+| Selection | Before the fix | After the fix |
+|---|---|---|
+| `.venv/bin/pytest tests/test1/test_crispy_buttons.py -q -k "copied_filter_layout or copied_adapter"` | exit 1: 17 failed, 5 passed. Both mode: `assert [] == ['fa-solid fa-filter']`. Strict icon: `ValueError … its icon <object object at 0x…> is not available`. Lenient icon: label fallback, no icon. Direct deepcopy: `cv_icon` of type `object`. The 5 explicit-icon cases passed, as intended | exit 0: 22 passed (0.37 s) |
+| `.venv/bin/pytest tests/test1/test_button_data.py -q -k form_icon_normalization` | exit 1: 92 failed, 72 passed. Truthy non-`str` and whitespace-only icons survived (`assert <object …> is None`, `assert '   ' is None`), and diagnostics named the repr instead of None. Falsey inputs and the nonblank-string cases passed, as intended | exit 0: 164 passed (0.26 s) |
+
+RED evidence was classified per selected target from pytest JUnit XML: `RED_EVIDENCE_OK` for
+`test_copied_adapter_keeps_icon_contract[submit]`, `test_copied_filter_layout_keeps_kind_icons[class-both-strict]`,
+`test_copied_filter_layout_keeps_kind_icons[class-icon-strict]`,
+`test_form_icon_normalization_label_and_both_are_quiet[object-label-lenient]` and
+`test_form_icon_normalization_strict_icon_mode_raises_naming_none[spaces-filter-submit]`. Each target failed on its
+planned assertion (or on the defect's own `ValueError`). None failed on collection, import or fixture errors.
+
+**Gates at `61103dd`:**
+
+| Gate | Command | Exit | Result | Time |
+|---|---|---|---|---|
+| Inherited bounded shard | `.venv/bin/pytest tests/test1/test_filter.py tests/test1/test_crispy_buttons.py tests/test1/test_button_data.py -q` | 0 | 745 passed (planning baseline at `03ec441`: 559 passed with the defect present) | 18.49 s (wall 19.4 s) |
+| Task 2 gate | `.venv/bin/pytest tests/test1/test_button_data.py tests/test1/test_form_button_checks.py -q` | 0 | 731 passed | 9.64 s |
+| Full suite (parallel) | `.venv/bin/pytest tests -n auto -q` | 0 | 4631 passed (4445 at 06-09 plus 186 new) | 60.42 s |
+| Crispy floors | `.venv/bin/nox -s crispy_floor` | 0 | Django 4.2: 2063 passed (15.69 s). Django 6.0.9: 2063 passed (24.54 s). django-crispy-forms 2.0 / crispy-bootstrap5 2023.10. Version assertion and `format_html` audit passed in both | 47 s |
+| Lint | `.venv/bin/ruff check` | 0 | All checks passed | — |
+| Format (changed files) | `.venv/bin/ruff format --check` on the 2 source and 2 test files | 0 | 4 files already formatted | — |
+| Format (whole repo) | `.venv/bin/ruff format --check` | 1 | 10 planning Markdown files would be reformatted (code blocks in `.planning/` docs). None was changed by 06-10: the 9 from WINDOWS #4 plus `06-REVIEW.md`, which the reviewer wrote after 06-09. Not repaired here | — |
+
+**Not changed by 06-10:** IN-01 and IN-02 stay open. The §9 human-only items stay pending (hover tooltip, visual
+quality, screen reader, migration readability). The D-17 baselines and goldens are untouched: no golden file
+changed, and `test_form_buttons_golden.py` passes in the full suite. The two unclassified edge assumptions
+(FORM-01, FORM-02) stay flagged. The 28 classified edge predicates keep their 06-01…06-09 evidence. The fix
+changes no published contract, so there is no new `Breaking` entry, and the existing Breaking/migration pair
+is unchanged.

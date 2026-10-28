@@ -59,6 +59,9 @@ All tasks map to executable PLAN commands and immediate fails_when conditions. S
 | 06-08-3 | 7 | FORM-13 | T-06-16 | Strict docs, paired Breaking/migration and example | passed (mkdocs --strict exit 0; example gates ACCEPTANCE §8) |
 | 06-09-1 | 8 | FORM-01..13 | T-06-17 | Full suites, history, security, payload, cycle-3 repairs | passed (ACCEPTANCE §2–§7) |
 | 06-09-2 | 8 | FORM-04/06/08/10/13 | T-06-17 | Docs/lint, URLconf-registered example checks, German form values, feature landing pages, doc links and browser evidence | passed except: whole-repo `ruff format --check` exit 1 (9 pre-existing planning Markdown files, WINDOWS #4); hover tooltip, visual quality, screen reader and migration readability pending human (ACCEPTANCE §8–§11) |
+| 06-10-1 | 9 | FORM-05/08/09/10 | T-06-18/19 | `tests/test1/test_crispy_buttons.py`: `test_copied_filter_layout_keeps_kind_icons` (class / before-first-render / between-renders x both / icon x strict / lenient), `test_copied_adapter_keeps_icon_contract` (5 kinds), `test_copied_adapter_preserves_explicit_icon` (5); gate `.venv/bin/pytest tests/test1/test_crispy_buttons.py -q -k "copied_filter_layout or copied_adapter"` | passed at `61103dd` (red at `ae83e62`: 17 failed, 5 passed; green after `f33d396`: 22 passed; ACCEPTANCE §12) |
+| 06-10-2 | 9 | FORM-02/10/12 | T-06-20 | `tests/test1/test_button_data.py`: `test_form_icon_normalization_label_and_both_are_quiet`, `_strict_icon_mode_raises_naming_none`, `_lenient_icon_mode_logs_and_uses_the_label`, `_lenient_without_a_label_keeps_the_empty_path`, `_keeps_nonblank_strings_exactly`, `_unavailable_nonblank_string_is_not_none`, `_never_mutates_the_input` (164 cases); gate `.venv/bin/pytest tests/test1/test_button_data.py tests/test1/test_form_button_checks.py -q` | passed at `61103dd` (red at `7f974ad`: 92 failed, 72 passed; green after `61103dd`: 731 passed; ACCEPTANCE §12) |
+| 06-10-3 | 9 | FORM-13 (evidence) | T-06-21 | Bounded shard `.venv/bin/pytest tests/test1/test_filter.py tests/test1/test_crispy_buttons.py tests/test1/test_button_data.py -q` (745 passed), full suite (4631 passed), crispy_floor (2063 x 2), `ruff check` exit 0, scoped format exit 0; REVIEW-DISPOSITION YAML/table gate | passed except whole-repo `ruff format --check` exit 1 (10 pre-existing planning Markdown files, none changed by 06-10; ACCEPTANCE §12) |
 
 ## Threat verification (06-09, measured)
 
@@ -69,6 +72,10 @@ All tasks map to executable PLAN commands and immediate fails_when conditions. S
 | T-06-13 | high | Native SubmitEvent/FormData modal suite on the locked jsdom runtime (JS shard 123 passed) | mitigated |
 | T-06-SC | high | Lock sha256 and 71 lock-matched packages re-asserted by 06-js-verify.sh; floor sessions install declared pins only; no install in 06-09 | mitigated; WINDOWS #6 dev-only `undici` audit advisory stays open (not a form-render finding) |
 | T-06-01, 04, 06, 07, 08, 10, 11, 12, 14, 16, 17 | medium | ACCEPTANCE §3/§4/§7 | mitigated |
+| T-06-18 (06-10) | high | Copied class-level and assigned filter layouts render their kind icons in strict icon mode without a false `ValueError` (`test_copied_filter_layout_keeps_kind_icons[*-icon-strict]`) | mitigated |
+| T-06-19 (06-10) | high | Source layout and buttons unchanged, distinct copies per helper, interleaved renders, explicit None / empty / override copies preserved (`test_copied_filter_layout_keeps_kind_icons`, `test_copied_adapter_preserves_explicit_icon`) | mitigated |
+| T-06-20 (06-10) | medium | Non-`str` / blank `cv_icon` normalized to None before logging and rendering; messages name None (`test_form_icon_normalization_*`) | mitigated |
+| T-06-21 (06-10) | medium | Fresh measured commands and commit/test references in ACCEPTANCE §12 and 06-10-SUMMARY.md; REVIEW-DISPOSITION YAML/table agreement checked; IN-01/IN-02 kept open | mitigated |
 
 No high or critical threat is unresolved. The medium items are listed with their dispositions above, not omitted.
 
@@ -158,3 +165,13 @@ Manual planning checks: all 9 frontmatter/structure validations passed; 18/18 de
 | Gaps found | 0 |
 | Resolved | 0 |
 | Escalated | 0 |
+
+## Gap closure 06-10 — 2026-10-28
+
+06-10 closes the D-16 partial truth from 06-VERIFICATION.md (06-REVIEW CR-01, WR-01, WR-02). The task rows
+06-10-1..3 and threats T-06-18..21 above are measured at HEAD `61103dd` (06-ACCEPTANCE.md §12). Each new
+regression selection was red before its production fix and green after it, and the RED targets were classified
+`RED_EVIDENCE_OK` from pytest JUnit XML. The new tests are in `noxfile.CRISPY_FLOOR_TESTS` files, so the floor
+sessions now run 2063 tests each. This is executor evidence, not an independent re-verification. The human-only
+checks and the whole-repo format gate stay as recorded above.
+

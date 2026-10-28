@@ -22,10 +22,10 @@ milestone_name: milestone
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-10-27)
+See: .planning/PROJECT.md (updated 2026-10-28)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06 — Form-button leaf
+**Current focus:** Phase 7 — Theme-surface stability policy
 
 ## Current Position
 
@@ -34,7 +34,7 @@ Plan: Not started
 Status: Ready to plan
 Last activity: 2026-10-28 — Phase 06 complete, transitioned to Phase 7
 
-Progress: 24/24 plans executed ([█████████░] 86%); phase 06 gap closure executed, independent re-verification pending
+Progress: 24/24 plans executed ([█████████░] 86%); 6/7 phases complete
 
 ## Performance Metrics
 
@@ -162,6 +162,7 @@ Recent decisions affecting current work:
 - [Phase 06]: 06-09: hover tooltip, visual quality, screen reader and migration readability remain pending human; automated Chromium evidence covers names, focus, focus tooltips, cancel, filter reset and modal submit
 - [Phase 06]: 06-10: icon= omission is stored as the private bool _cv_kind_icon (sentinel compared in __init__ only); deepcopy isolation of filter layouts kept
 - [Phase 06]: 06-10: _form_button_data treats any non-str or whitespace-only cv_icon as None before availability, diagnostics, host classes and the leaf; accepted strings kept exactly
+- [Phase 06]: UAT 4/4 passed; review IN-01..IN-03 fixed (aed6003, 92d5430, d75fb31; disposition open 0/6); re-verification 42/42 passed (dbca22e); full suite 4632 passed
 
 ### Pending Todos
 
@@ -172,17 +173,15 @@ None yet.
 - Phase 2: Ruff 0.16.10 is below the manifest range and global formatting flags eight pre-existing planning
   Markdown files; product formatting passes. See phase deferred-items.md and WINDOWS entry 4.
 
-- Phases 6 and 7: each needs a spec or maintainer decision before planning.
+- Phase 7: needs a spec or maintainer decision before planning.
 - Phase 7: retain the decided stable label-mode names; track the separately planned `no_label` removal before 1.0.
 - Phase 7: carry the Phase 5 class key `pagination:hidden-label` into the stability surface.
-- Phase 6 must commit before-change goldens; today's goldens contain no form buttons (Phase 4 committed the
-  dismissible alert golden first, f6982bf; Phase 5 the table pagination goldens, be7daa5).
 
 - [Phase 4] Four open Info review findings (IN-01 `[role~="alert"]`, IN-02 hand-copied allowlist, IN-04 no guard for
   the non-core data-bs-* sentence, IN-05 missing-script enumeration) — see 04-REVIEW-DISPOSITION.md; candidates for Phase 7.
 
 - Phase 2: Both source-probe classifier limitations remain documented; explicit tests and completed human prose UAT independently establish acceptance. See 02-VERIFICATION.md.
-- Phase 06: pre-existing tests/js/list.filter.test.js:159 fails on locked jsdom 30.1.2 (element-scoped '#id > span' selector returns null); every 06-js-verify.sh gate is red until a test-only fix lands (06-01 deferred-items, WINDOWS #5)
+- Phase 7: carry the Phase 6 form surface (`form` location, `tags/button/form.html`, `FORM_LEAF_KEYS`, `get_form_actions()`, icons `save`/`cancel`/`filter-reset`) into the stability doc.
 
 ### Roadmap Evolution
 
@@ -196,6 +195,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-28T10:39:51.048Z
+Last session: 2026-10-28
 Stopped at: Phase 06 complete, ready to plan Phase 7
 Resume file: None

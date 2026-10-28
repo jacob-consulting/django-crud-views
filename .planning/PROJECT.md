@@ -40,12 +40,12 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
   core templates keep `data-bs-*` only in the dropdowns — Phase 4
 - ✓ **3B** Table pagination from the `page-previous`/`page-next` registry icons with the card's accessible markup
   (#241); one shared `pagination:hidden-label` key (default `visually-hidden`) for both — Phase 5
+- ✓ **2** Form buttons through the `tags/button/form.html` leaf (#257): `"form"` location with owner-first map
+  resolution, crispy `Submit`/`Button`/`Reset` as escaped adapters, semantic icons `save`/`cancel`/`filter-reset`,
+  form-only E210/E211/W291/W292, `<input>` → `<button>` (Breaking), POST data unchanged, example uses `both` — Phase 6
 
 ### Active
 
-- [ ] **2** Form buttons through a crud_views leaf (#257): `"form"` in `LOCATIONS`, new leaf `tags/button/form.html`,
-  crispy `Submit`/`Button`/`Reset` as thin adapters, escaping, icons `save`/`cancel`/`filter-reset`, checks
-  E210/E211/W291/W292, `<input>` → `<button>` (Breaking), example project uses `both`
 - [ ] **4** Theme surface in `docs/development/stability.md` (icons, buttons, alerts, JS, theme hooks) + guard test
   `tests/test1/test_stability_doc.py`; closes the theme part of #89
 
@@ -104,6 +104,9 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 | Core performs no catch/log/fallback after a custom alert adapter fails; the `el.remove()` fallback lives only in the default adapter | Adapter owns its outcome and errors; core stays a thin delegated click listener | Validated (Phase 4) |
 | Alert dismiss change released as Breaking with a copied-template migration; `data-bs-*` audit scoped to core templates | Only copied `alert.html` overrides need the one-attribute edit; object-detail layouts keep Bootstrap collapse/tab attributes | Validated (Phase 4) |
 | One shared `pagination:hidden-label` class key for table and card pagination (not `table:hidden-label`) | One setting restyles both components; the default card bytes stay unchanged | Validated (Phase 5) |
+| Form buttons resolve their mode from the owning view (render form `cv_view`, else helper, else page) and select that owner's whole form map | Formsets and nested forms follow their own view; maps never merge across owners | Validated (Phase 6) |
+| Form values render as literal escaped text, never as Django templates | Removes crispy's template-injection path; the only visible change is `<input>` → `<button>` | Validated (Phase 6) |
+| Filter helpers render a private deep-copied layout prepared in `get_attributes()` with a `get_form_actions()` hook | Field-only subclasses, `form=` and `add_input()` keep working without crispy template overrides | Validated (Phase 6) |
 | Table `pagination.previous`/`pagination.next` blocks carry their own availability guards and run on disabled ends; released as Breaking with a tested override recipe | Theme overrides keep all django-tables2 block names; an unguarded copied override is the one thing that must change | Validated (Phase 5) |
 
 ## Evolution
@@ -124,4 +127,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-10-27 after Phase 5 completion*
+*Last updated: 2026-10-28 after Phase 6 completion*

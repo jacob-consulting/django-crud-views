@@ -268,6 +268,24 @@ def test_filter_form_baseline(client_user_publisher_view, cv_publisher, publishe
     assert _filter_region(client_user_publisher_view).encode("utf-8") == (GOLDEN_DIR / "filter.html").read_bytes()
 
 
+FILTER_CONTROLS = ("name", "submit", "reset", "sort", "order", "dir")
+
+
+@pytest.mark.django_db
+def test_filter_form_controls_match_golden(client_user_publisher_view, cv_publisher, publisher_penguin):
+    """The raw field, Apply / Reset leaf and hidden controls equal the golden's, byte for byte.
+
+    Independent of the template pack's own wrapper markup (field label, FormActions ``<div>``), whose whitespace
+    differs between crispy-bootstrap5 releases; the region golden above pins it for the locked pack, while the
+    ``crispy_floor`` nox session relies on this test at the declared floors.
+    """
+    golden = (GOLDEN_DIR / "filter.html").read_text(encoding="utf-8")
+    live = _filter_region(client_user_publisher_view)
+    expected = _extract_controls(golden, FILTER_CONTROLS)
+    assert _golden_bytes(_extract_controls(live, FILTER_CONTROLS)) == _golden_bytes(expected)
+    assert [_element(control).tag for control in expected] == ["input", "button", "button", "input", "input", "input"]
+
+
 @pytest.mark.django_db
 def test_filter_form_region_is_stable_and_csrf_free(client_user_publisher_view, cv_publisher, publisher_penguin):
     first = _filter_region(client_user_publisher_view)

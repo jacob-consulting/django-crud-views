@@ -25,6 +25,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 4: Alert dismiss adapter** - plan 3A: alerts close through `cv.adapters.alert` with no Bootstrap data API (droppable) (completed 2026-10-26)
 - [x] **Phase 5: Table pagination parity** - plan 3B: table pagination gets the same registry icons and accessible markup as card pagination (droppable) (completed 2026-10-27)
 - [x] **Phase 6: Form-button leaf** - plan 2 (#257): crispy form buttons render as `<button>` through `tags/button/form.html` (completed 2026-10-28)
+- [ ] **Phase 6.1: Cancel form button as a link (INSERTED)** - #275: themes can opt into native cancel links while preserving the button default
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Phase Details
@@ -305,13 +306,47 @@ FORM-11, FORM-12, FORM-13
 
 **UI hint**: no (new leaf template replaces existing button markup; no new screens)
 
+### Phase 6.1: Cancel form button as a link (INSERTED)
+
+**Goal**: Themes and individual forms can render cancel controls as native navigation links without copying the form
+leaf, while unconfigured forms retain today's button markup and behavior.
+**Source**: [Issue #275 — Render the cancel form button as a link](https://github.com/jacob-consulting/django-crud-views/issues/275)
+**Requirements**: TBD
+**Depends on**: Phase 6. Must complete before Phase 7 freezes the theme surface.
+**Parallel with**: None
+**Success Criteria** (what must be TRUE):
+
+  1. `form:cancel-tag` accepts `button` (default) or `a`, is registrable through `register_button_classes()` and
+     overridable through `CRUD_VIEWS_BUTTON_CLASSES`, and participates in the existing W362 key validation.
+  2. An explicit `Button(tag=...)` overrides the class-table choice. A cancel control with a URL and resolved tag `a`
+     renders a native `<a href>`; without a cancel URL it remains a button regardless of the configured tag.
+  3. The link retains the button's id, classes, label mode, icon and applicable extra attributes, omits `name`,
+     `value`, `type` and `data-cv-cancel-url`, and navigates without JavaScript, including opening in a new tab.
+  4. `cv_tag` is included in `FORM_LEAF_KEYS` and documented with the new key and per-button override. Default button
+     markup and behavior remain unchanged, `viewset.js` stays unchanged, and existing custom templates remain usable.
+**Plans**: 0/3 plans executed
+
+Plans:
+**Wave 1**
+- [ ] 06.1-01-PLAN.md
+- [ ] TBD (run $gsd-plan-phase 6.1 to break down)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 06.1-02-PLAN.md
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [ ] 06.1-03-PLAN.md
+
+**UI hint**: no (tag choice in the existing form leaf; no new screens)
+
 ### Phase 7: Theme-surface stability policy
 
 **Goal**: Theme authors can see exactly which names they may rely on at 1.0.0, and a test stops any public theme name
 from shipping undocumented or being documented without existing.
 **Source**: plan 4 · branch `docs/stability-theme-surface`
-**Depends on**: Phase 6, Phase 4 and Phase 5 (and so, transitively, Phases 1 and 2). It merges last, before the 1.0.0
-bump. If Phases 4/5 are dropped, it depends on Phase 6 only and documents the surface as it is.
+**Depends on**: Phase 6.1, Phase 4 and Phase 5 (and so, transitively, Phases 6, 1 and 2). It merges last, before the 1.0.0
+bump. If Phases 4/5 are dropped, it depends on Phase 6.1 only and documents the surface as it is. Include the cancel
+tag key, `Button(tag=...)` and form-leaf `cv_tag` contract introduced by #275.
 **Parallel with**: None
 **Research/spec**: **Needs a maintainer decision/spec**:
 
@@ -343,14 +378,15 @@ bump. If Phases 4/5 are dropped, it depends on Phase 6 only and documents the su
 ## Progress
 
 **Execution Order:**
-Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 7) is valid. With parallelization, run in waves:
+Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 6.1 → 7) is valid. With parallelization, run in waves:
 
 | Wave | Phases | Notes |
 |------|--------|-------|
 | 1 | 1 (plan 1A) ∥ 2 (plan 1C) | Disjoint files; both are preconditions of Phase 6 |
 | 2 | 3 (plan 1B) ∥ 4 (plan 3A) ∥ 5 (plan 3B) | 3 needs 1; 4 and 5 are independent (5 rebases after 2 for the key count) |
 | 3 | 6 (plan 2) | Verify completed 1 and 2 on the working branch; spec first (D-18) |
-| 4 | 7 (plan 4) | Needs 6, 4 and 5 merged; last change before the 1.0.0 bump |
+| 4 | 6.1 (#275) | Extends Phase 6 with a theme-selectable cancel link before the stability freeze |
+| 5 | 7 (plan 4) | Needs 6.1, 4 and 5 merged; last change before the 1.0.0 bump |
 
 Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 
@@ -362,4 +398,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 4. Alert dismiss adapter | 3/3 | Complete    | 2026-10-26 |
 | 5. Table pagination parity | 3/3 | Complete    | 2026-10-27 |
 | 6. Form-button leaf | 10/10 | Complete    | 2026-10-28 |
+| 6.1. Cancel form button as a link | 0/3 | Planned     | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

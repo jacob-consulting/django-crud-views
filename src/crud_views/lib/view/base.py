@@ -41,6 +41,7 @@ from ..settings import crud_views_settings
 from .action_menu import (
     ActionGroup,
     cv_context_button_foldable,
+    cv_form_label_mode_checks,
     cv_inline_checks,
     cv_label_mode_checks,
     cv_split_actions,
@@ -197,6 +198,8 @@ class CrudView(metaclass=CrudViewMetaClass):
         yield from cv_inline_checks(cls, "cv_context_actions_inline", cls.cv_context_actions)
         yield from cv_label_mode_checks(cls, "cv_list_actions_label_mode", cls.cv_list_actions)
         yield from cv_label_mode_checks(cls, "cv_context_actions_label_mode", cls.cv_context_actions)
+        # form kinds are finite (FORM_KINDS): a form-only E211 / E210 / W291 policy, never the open action keys
+        yield from cv_form_label_mode_checks(cls)
         if cls.cv_viewset is not None:
             yield from context_button_checks(cls, cls.cv_viewset, cls.cv_context_buttons)
             yield from cv_icon_mode_checks(cls)

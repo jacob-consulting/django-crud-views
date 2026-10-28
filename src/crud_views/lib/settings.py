@@ -103,10 +103,11 @@ class CrudViewsSettings(BaseModel):
     )
 
     def _action_settings_messages(self) -> list[CheckMessage]:
-        """E105 / E106 / E108: the shape of the inline-keys lists (#174), the label-mode maps (#216) and the
-        label-mode floor CRUD_VIEWS_LABEL_MODE_DEFAULTS."""
+        """E105 / E106 / E108: the shape of the inline-keys lists (#174), the label-mode maps (#216, and the form map
+        of Phase 6) and the label-mode floor CRUD_VIEWS_LABEL_MODE_DEFAULTS."""
         # deferred imports: settings.py must not import the view package at module level
-        from crud_views.lib.view.action_menu import cv_is_inline_keys
+        from crud_views.lib.button_classes import FORM_KINDS
+        from crud_views.lib.view.action_menu import cv_is_form_label_mode_map, cv_is_inline_keys
         from crud_views.lib.view.button_data import LOCATIONS
         from crud_views.lib.view.label_mode import (
             _UNSET,
@@ -144,6 +145,17 @@ class CrudViewsSettings(BaseModel):
                         ),
                     )
                 )
+        # the form map (Phase 6) names finite form kinds: an unknown kind is an error here too, never a W291
+        if not cv_is_form_label_mode_map(self.form_actions_label_mode):
+            messages.append(
+                Error(
+                    id="crud_views.E106",
+                    msg=(
+                        "setting CRUD_VIEWS_FORM_ACTIONS_LABEL_MODE must be a dict of form kind (one of "
+                        f"{sorted(FORM_KINDS)}) -> one of {sorted(LABEL_MODES)}, got {self.form_actions_label_mode!r}"
+                    ),
+                )
+            )
         # the per-location floor, read raw on every check (like default_label_mode): absent means the package
         # defaults, anything else must be a dict; one Error per bad entry, an unknown location before its mode
         defaults = _raw_label_mode_defaults()

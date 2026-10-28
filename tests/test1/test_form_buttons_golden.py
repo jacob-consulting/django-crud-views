@@ -8,11 +8,17 @@ mode: the fixtures were written once from unchanged product source and are only 
 
 The extractor accepts ``<input>`` and ``<button>`` controls alike, so the button migration (06-02) reuses it
 unchanged and every golden diff is product markup. Defaults are pinned a second time by parsed DOM assertions.
+
+The filter golden is different on purpose (L-FILTER-GOLDEN-SCOPE): ``_extract_filter_form_region`` returns the exact
+raw response slice from the unique ``<form id="filter-form" ...>`` opening tag through its matching ``</form>`` —
+fields, visible actions and the pack-owned hidden-input wrapper — by source offsets, never DOM serialization or
+whitespace normalization. 06-05 reuses this extractor unchanged, so its filter diff is product markup only.
 """
 
 import re
 import uuid
 from pathlib import Path
+from typing import NamedTuple
 
 import pytest
 from django.test import Client
@@ -89,44 +95,68 @@ CANCEL = {
     "data-cv-cancel-url": "/author/",
 }
 
-# golden name -> (logged-in client fixture, page path, captured control names, expected default controls)
-CRUD_CASES = {
-    "create": ("client_user_author_add", "/author/create/", ("submit", "reset"), (SUBMIT, CANCEL)),
-    "update": ("client_user_author_change", f"/author/{AUTHOR_PK}/update/", ("submit", "reset"), (SUBMIT, CANCEL)),
-    "delete": ("client_user_author_delete", f"/author/{AUTHOR_PK}/delete/", ("delete", "reset"), (DELETE, CANCEL)),
+WORKFLOW_SUBMIT = {**SUBMIT, "value": "Process Workflow Step"}
+WORKFLOW_CANCEL = {**CANCEL, "data-cv-cancel-url": "/campaign/"}
+
+
+class ControlCase(NamedTuple):
+    client: str  # logged-in client fixture
+    obj: str | None  # fixture of the object the page is about; its pk fills {pk}
+    path: str
+    names: tuple[str, ...]  # captured control names, each exactly once
+    expected: tuple[dict, ...]  # default controls, in document order
+
+
+# golden name -> case; each golden is tests/test1/golden/form_buttons/<name>.html
+CONTROL_CASES = {
+    "create": ControlCase("client_user_author_add", None, "/author/create/", ("submit", "reset"), (SUBMIT, CANCEL)),
+    "update": ControlCase(
+        "client_user_author_change", "golden_author", "/author/{pk}/update/", ("submit", "reset"), (SUBMIT, CANCEL)
+    ),
+    "delete": ControlCase(
+        "client_user_author_delete", "golden_author", "/author/{pk}/delete/", ("delete", "reset"), (DELETE, CANCEL)
+    ),
+    "workflow": ControlCase(
+        "client_user_campaign_change",
+        "campaign_new",
+        "/campaign/{pk}/workflow/",
+        ("submit", "reset"),
+        (WORKFLOW_SUBMIT, WORKFLOW_CANCEL),
+    ),
 }
 
 
-def _crud_controls(request, case: str) -> list[str]:
-    client_fixture, path, names, _ = CRUD_CASES[case]
-    client: Client = request.getfixturevalue(client_fixture)
+def _page_controls(request, case: str) -> list[str]:
+    spec = CONTROL_CASES[case]
+    client: Client = request.getfixturevalue(spec.client)
+    pk = request.getfixturevalue(spec.obj).pk if spec.obj else None
     with translation.override("en"):
-        response = client.get(path)
+        response = client.get(spec.path.format(pk=pk))
     assert response.status_code == 200
-    return _extract_controls(response.content.decode("utf-8"), names)
+    return _extract_controls(response.content.decode("utf-8"), spec.names)
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("case", sorted(CRUD_CASES))
-def test_form_button_baselines(request, golden_author, case):
-    """The raw control bytes of the real create / update / delete pages equal their committed golden."""
-    data = _golden_bytes(_crud_controls(request, case))
+@pytest.mark.parametrize("case", sorted(CONTROL_CASES))
+def test_form_button_baselines(request, case):
+    """The raw control bytes of the real create / update / delete / workflow pages equal their committed golden."""
+    data = _golden_bytes(_page_controls(request, case))
     assert b"csrfmiddlewaretoken" not in data
     assert data == (GOLDEN_DIR / f"{case}.html").read_bytes()
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("case", sorted(CRUD_CASES))
-def test_form_button_baselines_are_deterministic(request, golden_author, case):
-    assert _golden_bytes(_crud_controls(request, case)) == _golden_bytes(_crud_controls(request, case))
+@pytest.mark.parametrize("case", sorted(CONTROL_CASES))
+def test_form_button_baselines_are_deterministic(request, case):
+    assert _golden_bytes(_page_controls(request, case)) == _golden_bytes(_page_controls(request, case))
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("case", sorted(CRUD_CASES))
-def test_form_button_defaults(request, golden_author, case):
+@pytest.mark.parametrize("case", sorted(CONTROL_CASES))
+def test_form_button_defaults(request, case):
     """Default text, name, value, id, type and classes, independently of the golden bytes."""
-    expected = CRUD_CASES[case][3]
-    elements = [_element(control) for control in _crud_controls(request, case)]
+    expected = CONTROL_CASES[case].expected
+    elements = [_element(control) for control in _page_controls(request, case)]
     assert len(elements) == len(expected)
     for element, attrs in zip(elements, expected, strict=True):
         assert _type(element) == attrs["type"]
@@ -175,3 +205,109 @@ def test_extractor_accepts_input_and_button_controls():
     ]
     with pytest.raises(AssertionError):
         _extract_controls(markup, ("submit", "missing"))
+
+
+# --- filter form: the whole raw form#filter-form region (L-FILTER-GOLDEN-SCOPE) ---
+
+_FORM_TAG = re.compile(r"""<form\b(?:[^>"']|"[^"]*"|'[^']*')*>|</form\s*>""", re.IGNORECASE)
+_FILTER_FORM_ID = re.compile(r'(?<![\w-])id="filter-form"')
+
+# stable nonempty sort / order / direction values: each becomes a hidden control of the filter helper
+FILTER_PATH = "/publisher/?sort=name&order=name&dir=desc"
+FILTER_HIDDEN = [("sort", "name"), ("order", "name"), ("dir", "desc")]
+
+
+def _extract_filter_form_region(markup: str) -> str:
+    """The exact raw slice from the unique ``<form id="filter-form" ...>`` opening tag through its matching
+    ``</form>``, found by source offsets (no DOM serialization, no whitespace normalization)."""
+    tags = list(_FORM_TAG.finditer(markup))
+    openers = [m for m in tags if not m.group(0).startswith("</") and _FILTER_FORM_ID.search(m.group(0))]
+    assert len(openers) == 1, f"expected one form#filter-form, found {len(openers)}"
+    (opener,) = openers
+    depth = 0
+    for match in tags:
+        if match.start() < opener.start():
+            continue
+        depth += -1 if match.group(0).startswith("</") else 1
+        if depth == 0:
+            return markup[opener.start() : match.end()]
+    raise AssertionError("form#filter-form is not closed")
+
+
+def _filter_region(client: Client) -> str:
+    with translation.override("en"):
+        response = client.get(FILTER_PATH)
+    assert response.status_code == 200
+    return _extract_filter_form_region(response.content.decode("utf-8"))
+
+
+@pytest.mark.django_db
+def test_filter_form_baseline(client_user_publisher_view, cv_publisher, publisher_penguin):
+    """The raw filter-form region of the real publisher list equals its committed golden."""
+    assert _filter_region(client_user_publisher_view).encode("utf-8") == (GOLDEN_DIR / "filter.html").read_bytes()
+
+
+@pytest.mark.django_db
+def test_filter_form_region_is_stable_and_csrf_free(client_user_publisher_view, cv_publisher, publisher_penguin):
+    first = _filter_region(client_user_publisher_view)
+    assert first == _filter_region(client_user_publisher_view)
+    assert first.startswith("<form") and first.endswith("</form>")
+    assert "csrfmiddlewaretoken" not in first
+    # the region is only the form: no table or other page content is captured
+    assert "<table" not in first and "cv-filter-toggle" not in first
+
+
+@pytest.mark.django_db
+def test_filter_form_defaults(client_user_publisher_view, cv_publisher, publisher_penguin):
+    """Wrapper classes, control order, hidden names/values and the reset control, independently of the bytes."""
+    form = lxml_html.fragment_fromstring(_filter_region(client_user_publisher_view))
+    assert (form.get("id"), form.get("method")) == ("filter-form", "get")
+    assert form.cssselect("#id_name")[0].get("name") == "name"
+
+    controls = [el for el in form.iter("input", "button") if el.get("name") != "name"]
+    assert [(el.get("id") or el.get("name")) for el in controls] == [
+        "filter-button",
+        "filter-button-reset",
+        "sort",
+        "order",
+        "dir",
+    ]
+
+    apply_, reset = controls[:2]
+    assert (_type(apply_), apply_.get("name"), apply_.get("value"), apply_.get("class")) == (
+        "submit",
+        "submit",
+        "Apply Filter",
+        "btn btn-primary",
+    )
+    assert _text(apply_) == "Apply Filter"
+    assert (_type(reset), reset.get("name"), reset.get("value"), reset.get("class")) == (
+        "reset",
+        "reset",
+        "Reset Filter",
+        "btn btn-secondary",
+    )
+    assert reset.get("id") == "filter-button-reset"
+    assert _text(reset) == "Reset Filter"
+
+    hidden = controls[2:]
+    assert [(el.get("type"), el.get("name"), el.get("value")) for el in hidden] == [
+        ("hidden", name, value) for name, value in FILTER_HIDDEN
+    ]
+    # today the actions and the hidden controls share the pack's trailing inputs wrapper: div.mb-3 > div[class=""]
+    for el in controls:
+        inner = el.getparent()
+        assert inner.tag == "div" and inner.get("class") == ""
+        assert inner.getparent().get("class") == "mb-3"
+
+
+def test_filter_region_extractor_scope():
+    markup = (
+        '<form id="other"></form><div><form id="filter-form" method="get">\n'
+        '<input type="hidden" name="sort" value="a &gt; b"> </form></div><form id="after"></form>'
+    )
+    assert _extract_filter_form_region(markup) == (
+        '<form id="filter-form" method="get">\n<input type="hidden" name="sort" value="a &gt; b"> </form>'
+    )
+    with pytest.raises(AssertionError):
+        _extract_filter_form_region('<form id="filter-form"></form><form id="filter-form"></form>')

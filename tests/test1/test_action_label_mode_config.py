@@ -4,6 +4,7 @@ import logging
 import re
 
 import pytest
+from django import forms
 from django.conf import settings
 from django.core.checks import ERROR
 from django.test import override_settings
@@ -378,3 +379,249 @@ def test_e108_uses_button_locations(monkeypatch):
     assert message.msg == _key_msg("test_lok", sorted(button_data.LOCATIONS), "both")
     (message,) = _e108({"test_loc": "nope"})
     assert message.msg == _key_msg("test_loc", sorted(LABEL_MODES), "nope")
+
+
+# --- form actions (Phase 6, FORM-11): whole-map selection view -> ViewSet -> setting, then the lazy form floor ----
+
+FORM_KIND_KEYS = ("submit", "cancel", "delete", "filter-submit", "filter-reset")
+FORM_LABEL = {"form": "label"}
+
+
+def _form_mode(kind, view_cls=None):
+    from tests.test1.app.views import AuthorCreateView
+
+    return (view_cls or AuthorCreateView).cv_get_action_label_mode("form", kind)
+
+
+def _no_form_maps(monkeypatch):
+    from tests.test1.app.views import AuthorCreateView
+
+    monkeypatch.setattr(AuthorCreateView, "cv_form_actions_label_mode", None)
+    monkeypatch.setattr(cv_author, "form_actions_label_mode", None)
+    monkeypatch.setattr(crud_views_settings, "form_actions_label_mode", {})
+
+
+def test_form_settings_default_and_explicit_construction():
+    assert CrudViewsSettings().form_actions_label_mode == {}
+    assert CrudViewsSettings(form_actions_label_mode={"submit": "both"}).form_actions_label_mode == {"submit": "both"}
+    # the import-time singleton follows the context / list maps
+    assert crud_views_settings.form_actions_label_mode == {}
+
+
+def test_form_viewset_field_and_view_attribute_default_to_none():
+    from tests.test1.app.views import AuthorCreateView
+
+    assert cv_author.form_actions_label_mode is None
+    assert AuthorCreateView.cv_form_actions_label_mode is None
+    vs = ViewSet(model=Author, name="author_form_label_mode_06", form_actions_label_mode={"submit": "icon"})
+    assert vs.form_actions_label_mode == {"submit": "icon"}
+
+
+@pytest.mark.parametrize("value", [["submit"], "both", {"submit": "text"}, {"submit": None}])
+def test_form_viewset_rejects_bad_value(value):
+    with pytest.raises(ValidationError):
+        ViewSet(model=Author, name="author_bad_form_label_mode_06", form_actions_label_mode=value)
+
+
+def test_form_default_resolves_to_empty_and_label(monkeypatch):
+    _no_form_maps(monkeypatch)
+    from tests.test1.app.views import AuthorCreateView
+
+    assert AuthorCreateView.cv_get_form_actions_label_mode() == {}
+    assert [_form_mode(k) for k in FORM_KIND_KEYS] == ["label"] * 5
+
+
+@pytest.mark.parametrize(
+    "layer",
+    [
+        lambda mp, cls: mp.setattr(cls, "cv_form_actions_label_mode", {"submit": "both"}),
+        lambda mp, cls: mp.setattr(cv_author, "form_actions_label_mode", {"submit": "both"}),
+        lambda mp, cls: mp.setattr(crud_views_settings, "form_actions_label_mode", {"submit": "both"}),
+    ],
+    ids=["view", "viewset", "setting"],
+)
+def test_form_floor_used_only_for_unmapped_kind(monkeypatch, layer):
+    from tests.test1.app.views import AuthorCreateView
+
+    _no_form_maps(monkeypatch)
+    layer(monkeypatch, AuthorCreateView)
+    assert _form_mode("submit") == "both"
+    assert _form_mode("cancel") == "label"
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"form": "icon"}):
+        assert _form_mode("submit") == "both"  # the named kind wins over the floor
+        assert _form_mode("cancel") == "icon"  # the floor for kinds the map does not name
+        # the other floors are independent
+        assert _list_mode("update") == "icon"
+    assert _form_mode("cancel") == "label"  # restored: the package floor
+
+
+def test_form_maps_are_selected_whole(monkeypatch):
+    from tests.test1.app.views import AuthorCreateView
+
+    _no_form_maps(monkeypatch)
+    monkeypatch.setattr(crud_views_settings, "form_actions_label_mode", {"submit": "both", "cancel": "both"})
+    monkeypatch.setattr(cv_author, "form_actions_label_mode", {"cancel": "icon"})
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS=FORM_LABEL):
+        # the ViewSet map replaces the setting map whole: submit is unnamed and takes the floor
+        assert AuthorCreateView.cv_get_form_actions_label_mode() == {"cancel": "icon"}
+        assert (_form_mode("submit"), _form_mode("cancel")) == ("label", "icon")
+        # an empty view map replaces the ViewSet map whole: every kind takes the floor
+        monkeypatch.setattr(AuthorCreateView, "cv_form_actions_label_mode", {})
+        assert AuthorCreateView.cv_get_form_actions_label_mode() == {}
+        assert (_form_mode("submit"), _form_mode("cancel")) == ("label", "label")
+    # an empty ViewSet map suppresses the setting map the same way
+    monkeypatch.setattr(AuthorCreateView, "cv_form_actions_label_mode", None)
+    monkeypatch.setattr(cv_author, "form_actions_label_mode", {})
+    assert (_form_mode("submit"), _form_mode("cancel")) == ("label", "label")
+
+
+def test_form_resolver_honors_subclass_override(monkeypatch):
+    from tests.test1.app.views import AuthorCreateView
+
+    _no_form_maps(monkeypatch)
+    monkeypatch.setattr(AuthorCreateView, "cv_get_form_actions_label_mode", classmethod(lambda cls: {"cancel": "icon"}))
+    assert (_form_mode("submit"), _form_mode("cancel")) == ("label", "icon")
+
+
+@pytest.mark.parametrize(
+    "layer",
+    [
+        lambda mp, cls: mp.setattr(cls, "cv_form_actions_label_mode", {"submit": "both"}),
+        lambda mp, cls: mp.setattr(cv_author, "form_actions_label_mode", {"submit": "both"}),
+        lambda mp, cls: mp.setattr(crud_views_settings, "form_actions_label_mode", {"submit": "both"}),
+    ],
+    ids=["view", "viewset", "setting"],
+)
+@pytest.mark.parametrize("floor", [{"form": "nope"}, None], ids=["bad-mode", "non-dict"])
+def test_explicit_form_mode_bypasses_invalid_floor(monkeypatch, caplog, layer, floor):
+    from tests.test1.app.views import AuthorCreateView
+
+    _no_form_maps(monkeypatch)
+    layer(monkeypatch, AuthorCreateView)
+    with caplog.at_level(logging.WARNING, logger="crud_views.lib.view.label_mode"):
+        with override_settings(CRUD_VIEWS_STRICT=True, CRUD_VIEWS_LABEL_MODE_DEFAULTS=floor):
+            assert _form_mode("submit") == "both"  # the floor is never read for a mapped kind
+        assert caplog.records == []
+        with (
+            override_settings(CRUD_VIEWS_STRICT=True, CRUD_VIEWS_LABEL_MODE_DEFAULTS=floor),
+            pytest.raises(ValueError, match="CRUD_VIEWS_LABEL_MODE_DEFAULTS"),
+        ):
+            _form_mode("cancel")
+        with override_settings(CRUD_VIEWS_STRICT=False, CRUD_VIEWS_LABEL_MODE_DEFAULTS=floor):
+            assert _form_mode("cancel") == "label"
+
+
+@pytest.mark.parametrize(
+    ("selected", "kind"),
+    [
+        ({"submit": "text"}, "submit"),
+        ({"submit": None}, "submit"),
+        (["submit"], "submit"),
+        ("both", "submit"),
+        (7, "submit"),
+    ],
+    ids=["bad-mode", "none-mode", "list", "str", "int"],
+)
+def test_invalid_selected_form_map_uses_shared_fallback(monkeypatch, caplog, selected, kind):
+    from tests.test1.app.views import AuthorCreateView
+
+    _no_form_maps(monkeypatch)
+    monkeypatch.setattr(AuthorCreateView, "cv_form_actions_label_mode", selected)
+    with override_settings(CRUD_VIEWS_STRICT=True), pytest.raises(ValueError, match="form"):
+        _form_mode(kind)
+    with (
+        caplog.at_level(logging.WARNING, logger="crud_views.lib.view.label_mode"),
+        override_settings(CRUD_VIEWS_STRICT=False, CRUD_VIEWS_LABEL_MODE_DEFAULTS={"form": "both"}),
+    ):
+        assert _form_mode(kind) == "both"  # the floor, never a membership crash
+    records = [r for r in caplog.records if r.name == "crud_views.lib.view.label_mode"]
+    assert len(records) <= 1
+
+
+def test_form_location_does_not_change_other_locations(monkeypatch):
+    _no_form_maps(monkeypatch)
+    monkeypatch.setattr(crud_views_settings, "form_actions_label_mode", {"create": "label", "update": "label"})
+    assert AuthorDetailView.cv_get_action_label_mode("context", "update") == "icon"
+    assert AuthorListView.cv_get_action_label_mode("list", "update") == "icon"
+    with pytest.raises(ValueError, match="'form'"):
+        AuthorDetailView.cv_get_action_label_mode("card", "detail")
+
+
+# the maps reach the real crispy leaf
+
+MODE_CLASSES = {f"form:{k}:{m}": f"m-{m}" for k in FORM_KIND_KEYS for m in LABEL_MODES}
+
+
+def _crispy_modes(form) -> dict[str, str]:
+    """name -> rendered mode of each layout control of a real {% crispy %} render."""
+    from crispy_forms.bootstrap import FormActions
+    from crispy_forms.helper import FormHelper
+    from crispy_forms.layout import Layout
+    from django.template import Context, Template
+    from lxml import html as lxml_html
+
+    from crud_views.lib.crispy import Button, Submit
+
+    helper = FormHelper()
+    helper.form_tag = False
+    helper.layout = Layout(FormActions(Submit("submit", "Save"), Button("cancel", "Back", data_cv_cancel_url="/b/")))
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES=MODE_CLASSES):
+        markup = Template("{% load crispy_forms_tags %}{% crispy form helper %}").render(
+            Context({"form": form, "helper": helper})
+        )
+    doc = lxml_html.fragment_fromstring(markup, create_parent="div")
+    return {el.get("name"): el.get("class").removeprefix("m-") for el in doc.cssselect("button")}
+
+
+class _OwnedForm(forms.Form):
+    def __init__(self, cv_view=None):
+        super().__init__()
+        if cv_view is not None:
+            self.cv_view = cv_view
+
+
+def test_settings_map_reaches_the_leaf_and_only_the_floor_is_live(monkeypatch):
+    _no_form_maps(monkeypatch)
+    monkeypatch.setattr(crud_views_settings, "form_actions_label_mode", {"submit": "both"})
+    assert _crispy_modes(_OwnedForm()) == {"submit": "both", "cancel": "label"}
+    # the map is captured at import (startup) time: a post-import override_settings of the map alone changes nothing
+    with override_settings(CRUD_VIEWS_FORM_ACTIONS_LABEL_MODE={"submit": "icon"}):
+        assert _crispy_modes(_OwnedForm()) == {"submit": "both", "cancel": "label"}
+        # the form floor is read per render: it changes the unmapped cancel only
+        with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"form": "icon"}):
+            assert _crispy_modes(_OwnedForm()) == {"submit": "both", "cancel": "icon"}
+        assert _crispy_modes(_OwnedForm()) == {"submit": "both", "cancel": "label"}
+    assert _crispy_modes(_OwnedForm()) == {"submit": "both", "cancel": "label"}
+
+
+@pytest.mark.parametrize("instance", [False, True], ids=["class", "instance"])
+def test_view_and_viewset_maps_reach_the_leaf(monkeypatch, instance):
+    from tests.test1.app.views import AuthorCreateView
+
+    _no_form_maps(monkeypatch)
+    owner = AuthorCreateView() if instance else AuthorCreateView
+    monkeypatch.setattr(crud_views_settings, "form_actions_label_mode", {"submit": "icon", "cancel": "icon"})
+    monkeypatch.setattr(cv_author, "form_actions_label_mode", {"cancel": "both"})
+    assert _crispy_modes(_OwnedForm(owner)) == {"submit": "label", "cancel": "both"}
+    monkeypatch.setattr(AuthorCreateView, "cv_form_actions_label_mode", {"submit": "icon"})
+    assert _crispy_modes(_OwnedForm(owner)) == {"submit": "icon", "cancel": "label"}
+    monkeypatch.setattr(AuthorCreateView, "cv_form_actions_label_mode", {})
+    assert _crispy_modes(_OwnedForm(owner)) == {"submit": "label", "cancel": "label"}
+
+
+@pytest.mark.django_db
+def test_view_map_reaches_the_endpoint(monkeypatch, client_user_author_add):
+    from django.urls import reverse
+    from lxml import html as lxml_html
+
+    from tests.test1.app.views import AuthorCreateView
+
+    _no_form_maps(monkeypatch)
+    monkeypatch.setattr(AuthorCreateView, "cv_form_actions_label_mode", {"submit": "icon"})
+    page = client_user_author_add.get(reverse(cv_author.get_router_name("create"))).content.decode()
+    doc = lxml_html.fromstring(page)
+    (submit,) = doc.cssselect('button[name="submit"]')
+    (cancel,) = doc.cssselect('button[name="reset"]')
+    assert [s.text for s in submit.cssselect("span.visually-hidden")] == ["Create"]
+    assert (submit.get("title"), submit.get("data-cv-tooltip")) == ("Create", "form")
+    assert not cancel.cssselect("span.visually-hidden") and cancel.get("title") is None

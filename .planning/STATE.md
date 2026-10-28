@@ -3,17 +3,17 @@ gsd_state_version: "1.0"
 current_phase: 06
 current_phase_name: Form-button leaf
 status: executing
-stopped_at: Completed 06-02-PLAN.md
-last_updated: "2026-10-28T06:37:18.581Z"
+stopped_at: Completed 06-03-PLAN.md
+last_updated: "2026-10-28T06:51:12.463Z"
 last_activity: 2026-10-28
 last_activity_desc: Phase 06 execution started
-state_head: d48d7139fccb5f68fbfa4848d30979ad34868ece
+state_head: c3abad0c9b6ac34aacd8d5fff6e658674674e0c8
 progress:
   total_phases: 7
   completed_phases: 5
   total_plans: 23
-  completed_plans: 16
-  percent: 70
+  completed_plans: 17
+  percent: 71
 ---
 
 # Project State
@@ -28,11 +28,11 @@ See: .planning/PROJECT.md (updated 2026-10-27)
 ## Current Position
 
 Phase: 06 (Form-button leaf) — EXECUTING
-Plan: 3 of 9
+Plan: 4 of 9
 Status: Ready to execute
 Last activity: 2026-10-28 — Phase 06 execution started
 
-Progress: [███████░░░] 70%
+Progress: [███████░░░] 71%
 
 ## Performance Metrics
 
@@ -78,6 +78,7 @@ Progress: [███████░░░] 70%
 | Phase 05 P03 | 9 min | 3 tasks | 9 files |
 | Phase 06 P01 | 16 min | 3 tasks | 11 files |
 | Phase 06 P02 | 17min | 3 tasks | 20 files |
+| Phase 06 P03 | 11 min | 2 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -129,6 +130,8 @@ Recent decisions affecting current work:
 - [Phase 06]: 06-02: cv_cancel_url exists for kind cancel only and is None without a URL; leaf emits data-cv-cancel-url only when not None
 - [Phase 06]: 06-02: icon-mode form button with empty label renders no title/tooltip (matches action leaf)
 - [Phase 06]: 06-02: layout render rejects slots other than form:<FORM_KINDS>; construction and legacy helper.inputs accept any slot
+- [Phase 06]: 06-03: form maps (setting/ViewSet/view) are selected whole on the owner; invalid selected maps or values use the shared strict/log fallback to the form floor
+- [Phase 06]: 06-03: form-button owner = render form cv_view, else current crispy helper overlay (or private _cv_helper_owner entry), else page (transported _cv_page_owner, else nearest non-None view outside response overlays); identity, quiet
 
 ### Pending Todos
 
@@ -160,6 +163,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-28T06:37:18.109Z
-Stopped at: Completed 06-02-PLAN.md
+Last session: 2026-10-28T06:51:12.079Z
+Stopped at: Completed 06-03-PLAN.md
 Resume file: None

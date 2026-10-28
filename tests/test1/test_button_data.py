@@ -867,17 +867,11 @@ def test_form_icon_normalization_keeps_nonblank_strings_exactly(icon, mode, capl
     caplog.set_level(logging.WARNING, logger=BUTTON_LOGGER)
     with override_settings(CRUD_VIEWS_STRICT=False):
         data = cv_button_data(_icon_ctx(icon, cv_label_mode=mode), "form")
-    if data["cv_label_mode"] == mode:
-        # usable (or not consulted outside icon mode): the very string, never stripped or replaced
-        assert data["cv_icon"] is icon
-    else:
-        # an unavailable nonblank string in icon mode keeps the existing missing-icon policy and its value
-        assert mode == "icon" and data["cv_label_mode"] == "label"
-        assert data["cv_icon"] is icon
-        assert _warnings(caplog) == [
-            f"form button 'submit' renders icon-only but its icon {icon!r} is not available; rendered with its label"
-            " instead"
-        ]
+    # every parameter is an available icon (semantic, padded, library prefix, raw class): the mode is kept and the
+    # very string is stored, never stripped or replaced; the unavailable case is covered by the test below
+    assert data["cv_label_mode"] == mode
+    assert data["cv_icon"] is icon
+    assert _warnings(caplog) == []
 
 
 @pytest.mark.parametrize("strict", [True, False], ids=["strict", "lenient"])

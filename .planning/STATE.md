@@ -3,17 +3,17 @@ gsd_state_version: "1.0"
 current_phase: 06
 current_phase_name: Form-button leaf
 status: executing
-stopped_at: Completed 06-01-PLAN.md
-last_updated: "2026-10-28T06:16:59.552Z"
+stopped_at: Completed 06-02-PLAN.md
+last_updated: "2026-10-28T06:37:18.581Z"
 last_activity: 2026-10-28
 last_activity_desc: Phase 06 execution started
-state_head: 6c83edbee2184650354ef84e3efadca45f2ff8e0
+state_head: d48d7139fccb5f68fbfa4848d30979ad34868ece
 progress:
   total_phases: 7
   completed_phases: 5
   total_plans: 23
-  completed_plans: 15
-  percent: 65
+  completed_plans: 16
+  percent: 70
 ---
 
 # Project State
@@ -28,11 +28,11 @@ See: .planning/PROJECT.md (updated 2026-10-27)
 ## Current Position
 
 Phase: 06 (Form-button leaf) — EXECUTING
-Plan: 2 of 9
+Plan: 3 of 9
 Status: Ready to execute
 Last activity: 2026-10-28 — Phase 06 execution started
 
-Progress: [███████░░░] 65%
+Progress: [███████░░░] 70%
 
 ## Performance Metrics
 
@@ -77,6 +77,7 @@ Progress: [███████░░░] 65%
 | Phase 05 P02 | 8 min | 2 tasks | 2 files |
 | Phase 05 P03 | 9 min | 3 tasks | 9 files |
 | Phase 06 P01 | 16 min | 3 tasks | 11 files |
+| Phase 06 P02 | 17min | 3 tasks | 20 files |
 
 ## Accumulated Context
 
@@ -124,6 +125,10 @@ Recent decisions affecting current work:
 - [Phase 06]: 06-01: D-18 gate passed on introduce-gsd @ 49f44cd (Phase 1 lazy floor + Phase 2 finite FORM_KINDS verified; 201 passed); 06-SPEC.md settles FORM_LEAF_KEYS, literal/attribute, template, ownership, helper-lifecycle, icon and golden contracts
 - [Phase 06]: 06-01: before-change form-button goldens committed src-free: CRUD 2956f3e, workflow+filter 98b71ed; filter scope is _extract_filter_form_region (raw form#filter-form slice) and 06-05 must reuse it unchanged
 - [Phase 06]: 06-01: JS gates run only via 06-js-verify.sh (nvm Node v24.21.0, npm 11.19.0, lock sha 567bff55...); lockfile/manifests unchanged
+- [Phase 06]: 06-02: form normalizer input contract cv_key/cv_type/cv_name/cv_value/cv_label/cv_id/cv_css_id/cv_css_class/cv_attrs/cv_label_mode/cv_icon; reserved attributes resolve in the normalizer
+- [Phase 06]: 06-02: cv_cancel_url exists for kind cancel only and is None without a URL; leaf emits data-cv-cancel-url only when not None
+- [Phase 06]: 06-02: icon-mode form button with empty label renders no title/tooltip (matches action leaf)
+- [Phase 06]: 06-02: layout render rejects slots other than form:<FORM_KINDS>; construction and legacy helper.inputs accept any slot
 
 ### Pending Todos
 
@@ -155,6 +160,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-28T06:16:59.179Z
-Stopped at: Completed 06-01-PLAN.md
+Last session: 2026-10-28T06:37:18.109Z
+Stopped at: Completed 06-02-PLAN.md
 Resume file: None

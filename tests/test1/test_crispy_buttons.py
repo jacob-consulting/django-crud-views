@@ -333,3 +333,297 @@ def test_layout_render_does_not_touch_the_context_or_adapter():
         "btn btn-primary extra",
         "1",
     )
+
+
+# --- template precedence, attributes and repeatable rendering (FORM-05 / FORM-07) --------------------------------
+
+CUSTOM = (
+    "[{{ cv_location }}|{{ cv_key }}|{{ cv_type }}|{{ cv_name }}|{{ cv_value }}|{{ cv_label }}|{{ cv_id }}"
+    "|{{ cv_label_mode }}|{{ cv_css_class }}|{{ cv_cancel_url }}|input={{ input }}|{{ input.value }}"
+    "|form={{ form }}|helper={{ helper }}|outer={{ outer }}]"
+)
+
+
+@pytest.fixture
+def custom_templates(settings):
+    """An isolated locmem loader in front of the project's loaders, for the custom-template cases."""
+    import copy as _copy
+
+    templates = _copy.deepcopy(settings.TEMPLATES)
+    engine = templates[0]
+    engine["APP_DIRS"] = False
+    engine["OPTIONS"]["loaders"] = [
+        (
+            "django.template.loaders.locmem.Loader",
+            {
+                "custom/explicit.html": "explicit" + CUSTOM,
+                "custom/subclass.html": "subclass" + CUSTOM,
+                "bootstrap5/custom/pack.html": "pack" + CUSTOM,
+            },
+        ),
+        "django.template.loaders.filesystem.Loader",
+        "django.template.loaders.app_directories.Loader",
+    ]
+    settings.TEMPLATES = templates
+    yield
+
+
+def _custom_fields(markup: str) -> list[str]:
+    return markup[markup.index("[") + 1 : markup.rindex("]")].split("|")
+
+
+def _custom_name(markup: str) -> str:
+    """Which custom template rendered: the word in front of its field list (inside the FormActions wrapper)."""
+    return re.search(r"(\w+)\[", markup).group(1)
+
+
+@pytest.mark.parametrize("adapter", [Submit, Button, Reset])
+def test_template_precedence(custom_templates, adapter):
+    class Subclassed(adapter):
+        template = "custom/subclass.html"
+
+    # bundled default
+    (el,) = _buttons(_render(_helper(adapter("go", "Go"))))
+    assert el.get("name") == "go"
+    # subclass template over the bundled default
+    assert _custom_name(_render(_helper(Subclassed("go", "Go")))) == "subclass"
+    # an explicit template over the subclass template
+    assert _custom_name(_render(_helper(Subclassed("go", "Go", template="custom/explicit.html")))) == "explicit"
+    assert _custom_name(_render(_helper(adapter("go", "Go", template="custom/explicit.html")))) == "explicit"
+    # %s is the active template pack
+    assert _custom_name(_render(_helper(adapter("go", "Go", template="%s/custom/pack.html")))) == "pack"
+    # an empty explicit template keeps crispy's truthy fallback: the subclass template, else the bundled leaf
+    assert _custom_name(_render(_helper(Subclassed("go", "Go", template="")))) == "subclass"
+    (el,) = _buttons(_render(_helper(adapter("go", "Go", template=""))))
+    assert el.get("value") == "Go"
+
+
+def test_custom_template_gets_only_normalized_fields(custom_templates):
+    control = Button("reset", "Back", template="custom/explicit.html", css_class="x", data_cv_cancel_url="/b/")
+    markup = _render(_helper(control), input="OUTER-INPUT", outer="OUTER", cv_value="OUTER-VALUE")
+    assert _custom_fields(markup) == [
+        "form",
+        "cancel",
+        "button",
+        "reset",
+        "Back",
+        "Back",
+        "button-id-reset",
+        "label",
+        "x",
+        "/b/",
+        "input=",
+        "",
+        "form=",
+        "helper=",
+        "outer=",
+    ]
+    # no layer of the caller's context reaches a custom template, even the outermost one
+    context = Context({"input": "OUTER-INPUT", "cv_label": "OUTER"})
+    context.push({"form": _EmptyForm(), "helper": _helper(control)})
+    fields = _custom_fields(CRISPY.render(context))
+    assert fields[5] == "Back" and fields[10] == "input="
+
+
+NAMES = [
+    "submit",
+    "reset",
+    "a.b!",
+    "Ünïcode",
+    "Search the Site",
+    "Search  the Site!",
+    " leading and trailing ",
+    "tab\tseparated",
+    "Hello, World!",
+    "Ünïcode name",
+    "名前 ボタン",
+]
+
+
+@pytest.mark.parametrize("name", NAMES, ids=repr)
+@pytest.mark.parametrize("wrap", ["plain", "safe", "lazy"])
+def test_emitted_name_and_id_match_the_original_pack_input(name, wrap):
+    from django.utils.functional import lazy
+    from django.utils.safestring import mark_safe
+
+    raw = {"plain": name, "safe": mark_safe(name), "lazy": lazy(lambda: name, str)()}[wrap]
+    legacy = _fragment(_render(_helper(inputs=(Submit(raw, "Go"),)))).cssselect("input")[0]
+    (el,) = _buttons(_render(_helper(Submit(raw, "Go"))))
+    assert el.get("name") == legacy.get("name")
+    assert el.get("id") == legacy.get("id")
+    if len(name.split()) == 1:
+        assert el.get("name") == name  # a single token is submitted literally
+
+
+@pytest.mark.parametrize("order", ["underscore-first", "hyphen-first"])
+@pytest.mark.parametrize("mode", ["label", "both", "icon"])
+def test_reserved_attributes_resolve_to_one(mode, order):
+    aliases = [("data_cv_cancel_url", "/underscore/"), ("data-cv-cancel-url", "/hyphen/"), ("data_x", "u")]
+    aliases.append(("data-x", "h"))
+    if order == "hyphen-first":
+        aliases = [aliases[1], aliases[0], aliases[3], aliases[2]]
+    control = Button(
+        "reset",
+        "Back",
+        css_id="css-id",
+        css_class="c1",
+        **{
+            "id": "extra-id",
+            "class": "c2",
+            "type": "submit",
+            **dict(aliases),
+            "title": "extra title",
+            "data_cv_tooltip": "extra",
+            "aria_label": "Back to list",
+            "formnovalidate": True,
+            "hidden": False,
+        },
+    )
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"form": mode}):
+        markup = _render(_helper(control))
+    start = re.search(r"<button\b[^>]*>", markup).group(0)
+    names = re.findall(r"""\s([\w-]+)(?==|\s|>)""", start)
+    assert len(names) == len(set(names)), names
+    (el,) = _buttons(markup)
+    assert el.get("type") == "button"
+    assert (el.get("name"), el.get("value"), el.get("id")) == ("reset", "Back", "css-id")
+    assert el.get("class") == "btn btn-secondary c1 c2"
+    assert el.get("data-cv-cancel-url") == "/hyphen/"
+    assert el.get("data-x") == "h"
+    assert el.get("aria-label") == "Back to list"
+    assert el.get("formnovalidate") is not None and el.get("hidden") is None
+    if mode == "icon":
+        assert (el.get("title"), el.get("data-cv-tooltip")) == ("Back", "form")
+    else:
+        assert (el.get("title"), el.get("data-cv-tooltip")) == ("extra title", "extra")
+
+
+def test_extra_id_wins_over_the_generated_id():
+    (el,) = _buttons(_render(_helper(Submit("go", "Go", **{"id": "mine"}))))
+    assert el.get("id") == "mine"
+    assert (
+        re.search(r"<button\b[^>]*>", _render(_helper(Submit("go", "Go", **{"id": "mine"})))).group(0).count(" id=")
+        == 1
+    )
+
+
+HOSTILE = [
+    '"><img src=x onerror=alert(1)>',
+    "' onmouseover='alert(1)",
+    "a & b < c > d",
+    "&amp; &lt;b&gt; &#39;",
+    "{{ request.user }}{% now 'Y' %}",
+    "Ünïcode ✓ 名前",
+    "",
+]
+
+
+@pytest.mark.parametrize("text", HOSTILE, ids=repr)
+@pytest.mark.parametrize("safe", [False, True])
+@pytest.mark.parametrize("mode", ["label", "both", "icon"])
+def test_hostile_literals_never_create_nodes_or_attributes(text, safe, mode):
+    from django.utils.safestring import mark_safe
+
+    wrap = mark_safe if safe else str
+    control = Submit(
+        "go",
+        wrap(text),
+        css_class=wrap("c"),
+        title=wrap(text),
+        data_note=wrap(text),
+        aria_label=wrap(text),
+    )
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"form": mode}):
+        markup = _render(_helper(control), request=SimpleNamespace(user="LEAKED-USER"))
+    doc = _fragment(markup)
+    (el,) = doc.cssselect("button")
+    assert not doc.cssselect("img, b, script")
+    assert el.get("value") == text
+    assert el.text_content() == text
+    assert el.get("data-note") == text and el.get("aria-label") == text
+    expected = {"type", "name", "value", "id", "class", "data-note", "aria-label"}
+    if mode != "icon":
+        assert el.get("title") == text  # the caller's title stays an ordinary attribute
+        expected.add("title")
+    elif text:
+        assert el.get("title") == text  # the generated title, which drops the caller's
+        expected |= {"title", "data-cv-tooltip"}
+    # an empty icon-mode label renders no title and no tooltip marker, like the action leaf
+    assert set(el.attrib) == expected
+    assert "LEAKED-USER" not in markup
+
+
+@pytest.mark.parametrize("language", ["en", "de"])
+def test_lazy_text_resolves_per_render_in_the_active_language(language):
+    from django.utils import translation
+    from django.utils.translation import gettext, gettext_lazy
+
+    with translation.override(language):
+        expected = gettext("Save")
+    assert (expected != "Save") is (language == "de")
+
+    control = Submit("go", gettext_lazy("Save"), title=gettext_lazy("Save"), css_class=gettext_lazy("Save"))
+    for active, text in (("en", "Save"), (language, expected), ("en", "Save")):
+        with translation.override(active):
+            (el,) = _buttons(_render(_helper(control)))
+        assert (el.get("value"), el.text_content(), el.get("title")) == (text, text, text)
+        assert el.get("class") == f"btn btn-primary {text}"
+
+
+def test_interleaved_renders_of_one_shared_adapter_are_independent():
+    shared = Submit("Search the Site", "Go", css_class="extra", data_x="1")
+    state = (
+        shared.name,
+        shared.value,
+        shared.id,
+        shared.field_classes,
+        str(shared.flat_attrs),
+        shared.template,
+        dict(shared._cv_attrs),
+    )
+    first = Context({"form": _EmptyForm(), "helper": _helper(shared), "input": "A"})
+    second = Context({"form": _EmptyForm(), "helper": _helper(shared), "input": "B"})
+    layers = ([dict(d) for d in first.dicts], [dict(d) for d in second.dicts])
+    out = []
+    for context, mode in ((first, "label"), (second, "icon"), (first, "label"), (second, "icon")):
+        with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"form": mode}):
+            out.append(CRISPY.render(context))
+    assert out[0] == out[2] and out[1] == out[3] and out[0] != out[1]
+    (label,) = _buttons(out[0])
+    (icon,) = _buttons(out[1])
+    assert label.get("title") is None and icon.get("title") == "Go"
+    for el in (label, icon):
+        assert (el.get("name"), el.get("value"), el.get("id"), el.get("class"), el.get("data-x")) == (
+            "search-the-site",
+            "Go",
+            "submit-id-search-the-site",
+            "btn btn-primary extra",
+            "1",
+        )
+    assert ([dict(d) for d in first.dicts], [dict(d) for d in second.dicts]) == layers
+    after = (
+        shared.name,
+        shared.value,
+        shared.id,
+        shared.field_classes,
+        str(shared.flat_attrs),
+        shared.template,
+        dict(shared._cv_attrs),
+    )
+    assert after == state
+
+
+def test_constructor_visible_legacy_state_is_crispys():
+    from crispy_forms.layout import Submit as CrispySubmit
+
+    ours = Submit("Search the Site", "Go", css_id="cid", css_class="extra", data_x="1", formnovalidate=True)
+    theirs = CrispySubmit("Search the Site", "Go", css_id="cid", css_class="extra", data_x="1", formnovalidate=True)
+    assert (ours.name, ours.value, ours.id, str(ours.flat_attrs)) == (
+        theirs.name,
+        theirs.value,
+        theirs.id,
+        str(theirs.flat_attrs),
+    )
+    assert ours.field_classes == "btn btn-primary extra"
+    assert ours.template == "crud_views/tags/button/form.html"
+    assert Submit("go", "Go", template="x.html").template == "x.html"

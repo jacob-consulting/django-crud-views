@@ -665,6 +665,21 @@ def test_form_id_precedence(ctx, expected):
     assert "id=" not in str(data["cv_flat_attrs"])
 
 
+@pytest.mark.parametrize("key", ["cancel", "submit"])
+def test_form_hyphen_spelling_wins_in_any_order(key):
+    for attrs in (
+        {"data_x": "u", "data-x": "h", "data_cv_cancel_url": "/u/", "data-cv-cancel-url": "/h/"},
+        {"data-x": "h", "data_x": "u", "data-cv-cancel-url": "/h/", "data_cv_cancel_url": "/u/"},
+    ):
+        data = cv_button_data(form_ctx(key, cv_attrs=attrs), "form")
+        flat = str(data["cv_flat_attrs"])
+        assert 'data-x="h"' in flat and flat.count("data-x=") == 1
+        if key == "cancel":
+            assert data["cv_cancel_url"] == "/h/"
+        else:
+            assert 'data-cv-cancel-url="/h/"' in flat and flat.count("data-cv-cancel-url=") == 1
+
+
 def test_form_cancel_url_only_for_cancel():
     data = cv_button_data(
         form_ctx("cancel", cv_attrs={"data_cv_cancel_url": "/u/", "data-cv-cancel-url": "/h/"}), "form"
@@ -722,3 +737,27 @@ def test_form_never_mutates_ctx():
     cv_button_data(ctx, "form")
     cv_button_data(ctx, "form")
     assert ctx == before
+
+
+def test_form_floor_is_read_per_normalization():
+    ctx = form_ctx()
+    seen = []
+    for floor in ({}, {"form": "icon"}, {"form": "both"}, {"form": "icon", "card": "label"}, {}):
+        with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS=floor):
+            seen.append(cv_button_data(ctx, "form")["cv_label_mode"])
+    assert seen == ["label", "icon", "both", "icon", "label"]
+
+
+@pytest.mark.parametrize("mode", ["label", "both", "icon"])
+def test_form_explicit_mode_never_reads_an_invalid_strict_floor(mode):
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"form": "nope"}, CRUD_VIEWS_STRICT=True):
+        assert cv_button_data(form_ctx(cv_label_mode=mode), "form")["cv_label_mode"] == mode
+        with pytest.raises(ValueError, match="key 'form'"):
+            cv_button_data(form_ctx(), "form")
+
+
+def test_form_invalid_floor_non_strict_falls_back_to_label(caplog):
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"form": "nope"}, CRUD_VIEWS_STRICT=False):
+        assert cv_button_data(form_ctx(), "form")["cv_label_mode"] == "label"
+        assert cv_button_data(form_ctx(), "form")["cv_label_mode"] == "label"
+    assert len([r for r in caplog.records if "'form'" in r.getMessage()]) == 1

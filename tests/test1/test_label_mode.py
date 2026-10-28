@@ -242,3 +242,34 @@ def test_warning_register_is_isolated_per_test(attempt, caplog):
         default_label_mode("card")
         default_label_mode("card")
     assert len(_records(caplog)) == 1
+
+
+def test_form_floor_is_lazy_and_nested(no_setting):
+    # the form floor (Phase 6) is read on every call like the others
+    assert default_label_mode("form") == "label"
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"form": "icon"}):
+        assert default_label_mode("form") == "icon"
+        with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"form": "both", "card": "label"}):
+            assert default_label_mode("form") == "both"
+            assert default_label_mode("card") == "label"
+        assert default_label_mode("form") == "icon"
+        assert default_label_mode("card") == "both"
+    assert default_label_mode("form") == "label"
+    # another location's entry never reaches the form floor
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"context": "both", "list": "both", "card": "icon"}):
+        assert default_label_mode("form") == "label"
+
+
+@pytest.mark.parametrize("value", PER_LOCATION_INVALID, ids=repr)
+def test_form_floor_invalid(value, caplog):
+    configured = {"form": value, "card": "label"}
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS=configured, CRUD_VIEWS_STRICT=True):
+        with pytest.raises(ValueError, match="CRUD_VIEWS_LABEL_MODE_DEFAULTS key 'form' must be one of"):
+            default_label_mode("form")
+        assert default_label_mode("card") == "label"
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS=configured, CRUD_VIEWS_STRICT=False):
+        assert default_label_mode("form") == "label"
+        assert default_label_mode("form") == "label"
+    records = _records(caplog)
+    assert len(records) == 1
+    assert "'form'" in records[0].getMessage()

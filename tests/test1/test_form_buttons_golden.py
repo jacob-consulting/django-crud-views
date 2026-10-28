@@ -9,6 +9,12 @@ mode: the fixtures were written once from unchanged product source and are only 
 The extractor accepts ``<input>`` and ``<button>`` controls alike, so the button migration (06-02) reuses it
 unchanged and every golden diff is product markup. Defaults are pinned a second time by parsed DOM assertions.
 
+Updates (D-17): 06-02 task 3 replaced the create / update / delete / workflow goldens with the form-button leaf
+output after comparing the parsed controls with the before-change baselines (commits 2956f3e and 98b71ed, which stay
+in history): native type, name, value, id, classes, cancel URL and visible text are equal; only the element and its
+body changed (``<input>`` to ``<button>`` with a ``<span>`` label). The filter golden still holds crispy inputs
+until 06-05.
+
 The filter golden is different on purpose (L-FILTER-GOLDEN-SCOPE): ``_extract_filter_form_region`` returns the exact
 raw response slice from the unique ``<form id="filter-form" ...>`` opening tag through its matching ``</form>`` —
 fields, visible actions and the pack-owned hidden-input wrapper — by source offsets, never DOM serialization or
@@ -166,6 +172,19 @@ def test_form_button_defaults(request, case):
         assert element.get("class") == attrs["class"]
         assert element.get("data-cv-cancel-url") == attrs.get("data-cv-cancel-url")
         assert _text(element) == attrs["value"]
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("case", sorted(CONTROL_CASES))
+def test_layout_controls_are_form_leaf_buttons(request, case):
+    """The intended structural change (06-02): each layout control is one <button> whose body is its label span."""
+    expected = CONTROL_CASES[case].expected
+    for control, attrs in zip(_page_controls(request, case), expected, strict=True):
+        element = _element(control)
+        assert element.tag == "button"
+        assert [child.tag for child in element] == ["span"]
+        assert element[0].text == attrs["value"] and not element[0].get("class")
+        assert element.get("title") is None and element.get("data-cv-tooltip") is None
 
 
 @pytest.mark.django_db

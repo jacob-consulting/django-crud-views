@@ -2,7 +2,7 @@
 phase: "06"
 slug: "form-button-leaf"
 status: executed
-nyquist_compliant: false
+nyquist_compliant: true
 wave_0_complete: true
 created: "2026-10-27"
 ---
@@ -58,7 +58,7 @@ All tasks map to executable PLAN commands and immediate fails_when conditions. S
 | 06-08-2 | 7 | FORM-05/08/09/13 | T-06-15 | Executable helper/custom-template recipes, including clearing-inputs suppression migration to None hook with preserved hidden controls | passed (full suite) |
 | 06-08-3 | 7 | FORM-13 | T-06-16 | Strict docs, paired Breaking/migration and example | passed (mkdocs --strict exit 0; example gates ACCEPTANCE §8) |
 | 06-09-1 | 8 | FORM-01..13 | T-06-17 | Full suites, history, security, payload, cycle-3 repairs | passed (ACCEPTANCE §2–§7) |
-| 06-09-2 | 8 | FORM-04/06/08/10/13 | T-06-17 | Docs/lint, URLconf-registered example checks, German form values, feature landing pages, doc links and browser evidence | see ACCEPTANCE §8–§11 |
+| 06-09-2 | 8 | FORM-04/06/08/10/13 | T-06-17 | Docs/lint, URLconf-registered example checks, German form values, feature landing pages, doc links and browser evidence | passed except: whole-repo `ruff format --check` exit 1 (9 pre-existing planning Markdown files, WINDOWS #4); hover tooltip, visual quality, screen reader and migration readability pending human (ACCEPTANCE §8–§11) |
 
 ## Threat verification (06-09, measured)
 
@@ -88,22 +88,26 @@ No high or critical threat is unresolved. The medium items are listed with their
 
 ## Manual-Only Verifications
 
-| Behavior | Requirement | Why manual | Instructions |
-|----------|-------------|------------|--------------|
-| Final appearance and focus/tooltip behavior | FORM-04/10/13 | DOM tests cannot establish visual quality | Inspect example save/delete/cancel/filter controls in label, both and icon modes; use keyboard and tooltip interactions |
-| Integrated example flows | FORM-06/08 | Complements automated payload assertions | Submit a modal form, cancel a form, apply and reset a filter; confirm navigation and retained sort/order |
+| Behavior | Requirement | Why manual | Instructions | 06-09 status |
+|----------|-------------|------------|--------------|--------------|
+| Final appearance and focus/tooltip behavior | FORM-04/10/13 | DOM tests cannot establish visual quality | Inspect example save/delete/cancel/filter controls in label, both and icon modes; use keyboard and tooltip interactions | Keyboard focus, `:focus-visible`, accessible names and focus tooltips observed in real headless Chromium in all three modes (ACCEPTANCE §9). **Pending human:** hover tooltips (not observed in the harness), visual quality and the screen-reader announcement |
+| Integrated example flows | FORM-06/08 | Complements automated payload assertions | Submit a modal form, cancel a form, apply and reset a filter; confirm navigation and retained sort/order | Observed in real headless Chromium in all three modes: modal delete submit through a nested child, pointer and keyboard cancel, filter apply, and a reset that keeps `sort`/`dir` (ACCEPTANCE §9) |
 
 ## Validation Sign-Off
 
-- [ ] Every task has automated verification or explicit Wave 0 dependency.
-- [ ] No three consecutive tasks lack automated verification.
-- [ ] All missing test targets are created before use.
-- [ ] Commands terminate (no watch mode), with explicit failure signals.
-- [ ] Focused-shard feedback timing measured.
-- [ ] Expanded tests pass at declared dependency floors.
-- [ ] `nyquist_compliant: true` reflects actual coverage, not merely this draft.
+- [x] Every task has automated verification or explicit Wave 0 dependency.
+- [x] No three consecutive tasks lack automated verification.
+- [x] All missing test targets are created before use.
+- [x] Commands terminate (no watch mode), with explicit failure signals.
+- [x] Focused-shard feedback timing measured (repair shard 1.79 s; JS full 2.90 s).
+- [x] Expanded tests pass at declared dependency floors (crispy_floor, Django 4.2.30 and 6.0.9, 1877 each).
+- [x] `nyquist_compliant: true` reflects actual coverage, not merely this draft.
 
-**Approval:** pending execution evidence. Research probes establish feasibility only.
+**Approval:** automated coverage is complete and measured (06-ACCEPTANCE.md, HEAD `e40b0de`). Two gates stay
+open and are not reported as passed:
+- the whole-repo `ruff format --check`, which fails on 9 pre-existing planning Markdown files (WINDOWS #4).
+  Code and every Phase 06 changed file are formatted.
+- the human-only checks in ACCEPTANCE §9: hover tooltip, visual quality, screen reader, migration readability.
 
 ## Round 1 review traceability
 

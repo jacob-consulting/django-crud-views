@@ -2,7 +2,7 @@
 phase: "06"
 slug: form-button-leaf
 plan: "06-09"
-status: python-accepted
+status: accepted-with-pending-human-checks
 recorded_at: "2026-10-28"
 executing_branch: introduce-gsd
 head_at_measurement: e40b0de
@@ -165,4 +165,142 @@ already cited. The two unclassified rows are **not** reclassified as resolved he
 | FORM-01 | unclassified | FLAGGED, unresolved | The history requirement itself is verified (§3). The classifier's edge shape for it is still unknown. |
 | FORM-02 | unclassified | FLAGGED, unresolved | The form contract itself is verified (§6). The classifier's edge shape for it is still unknown. |
 
-<!-- gsd:task2 -->
+## 8. Docs, JS, lint, format and example gates (Task 2)
+
+| Gate | Command | Exit | Result |
+|---|---|---|---|
+| Strict docs | `.venv/bin/mkdocs build --strict` | 0 | built in 0.93 s, 0 warnings (output: gitignored `site/`) |
+| Full JS | `bash .planning/phases/06-form-button-leaf/06-js-verify.sh` | 0 | 8 files, 223 tests passed in 2.90 s. Runtime, lock sha256, 71 packages and 72 engine ranges re-asserted. |
+| Lint | `.venv/bin/ruff check` (run as `--no-fix`, so nothing is rewritten) | 0 | All checks passed |
+| Format, whole repo | `.venv/bin/ruff format --check` | **1** | **Not green.** 9 files would be reformatted, 653 already formatted. See below. |
+| Format, code | `.venv/bin/ruff format --check src tests examples noxfile.py` | 0 | 451 files already formatted |
+| Format, files changed in Phase 06 | every `*.py` and `*.md` added or modified in `49f44cd..HEAD` | 0 | 31 Python and 24 Markdown files already formatted |
+| Example system checks (URLconf registered) | `cd examples/bootstrap5 && ../../.venv/bin/pytest project/tests.py::SystemChecksTest::test_no_check_errors_with_every_viewset_registered -q` | 0 | 1 passed |
+| Example docs sync | `cd examples/bootstrap5 && ../../.venv/bin/pytest test_docs_sync.py -q` | 0 | 36 passed |
+| Example consumer (L-EXAMPLE-COVERAGE) | `cd examples/bootstrap5 && ../../.venv/bin/pytest test_i18n.py project/tests.py::HomePageTest::test_every_feature_landing_page_renders test_doc_links.py -q` | 0 | 72 passed, 1 warning. Collected: `test_i18n.py` 11, `HomePageTest::test_every_feature_landing_page_renders` 1, `test_doc_links.py` 60. |
+
+**Whole-repo format gate: not passed (pre-existing, unrelated).** These are the 9 files, all Markdown
+planning documents whose embedded Python code blocks ruff would reformat:
+
+- `.planning/codebase/CONVENTIONS.md`
+- `.planning/codebase/TESTING.md`
+- `.planning/phases/01-label-mode-defaults/01-PATTERNS.md`
+- `.planning/phases/01-label-mode-defaults/01-RESEARCH.md`
+- `.planning/phases/02-form-key-grammar/02-RESEARCH.md`
+- `.planning/phases/02-form-key-grammar/02-VERIFICATION.md`
+- `.planning/phases/06-form-button-leaf/06-PATTERNS.md`
+- `.planning/research/ARCHITECTURE.md`
+- `.planning/research/STACK.md`
+
+How this was established as baseline drift: each file was piped from the phase-start commit `49f44cd` through
+`ruff format --check --stdin-filename`, and all 9 already failed there. `git diff 49f44cd HEAD` is empty for all
+9, so Phase 06 did not change any of them. `06-PATTERNS.md` is a planning artifact last changed in `b8d2b4f`,
+before execution started. This is the same drift as WINDOWS #4, which stays open. The files were not
+reformatted, because they are outside this phase's scope.
+
+**Example settings were loaded.** The example `pytest.ini` sets `DJANGO_SETTINGS_MODULE = project.settings`.
+Importing those settings yields `CRUD_VIEWS_LABEL_MODE_DEFAULTS == {'form': 'both'}`, which is the 06-08 change.
+`test_i18n.py::test_demo_pages_render_german` asserts that the translated create-submit value
+`value="Sichern"` is present, and it passed. The single warning is Django's `UnorderedObjectListWarning` for
+the workflow example's `Campaign` list. It comes from pagination and is unrelated to form buttons. The root
+`pytest tests` run does not collect this example tree, so these results are separate evidence. They do not
+replace the root suite, and the root suite does not replace them.
+
+**Repeatability.** After each gate (parallel and one-process pytest, nox, JS, ruff, mkdocs, the three example
+runs, the browser runs), `git status --porcelain` matched the pre-run snapshot. Only the unrelated
+`.codegraph/.gitignore` modification appears, and it was there before 06-09 started. The gates write only to
+ignored or scratch locations: `site/`, `.nox/`, `node_modules/`, and the session scratchpad.
+
+## 9. Browser acceptance (real Chromium, automated)
+
+**Harness.** Headless Chromium `HeadlessChrome/149.0.7827.55` (the locally installed Playwright
+chrome-headless-shell build, run with `--no-sandbox` because the host forbids unprivileged user namespaces). It
+was driven over the Chrome DevTools Protocol by a scratch Node script that uses only built-in WebSocket and
+fetch; no package was installed. Each mode ran in isolation:
+
+- its own `runserver` process (ports 8771/8772/8773)
+- its own settings module (`from project.settings import *`, overriding only `DATABASES` with a scratch
+  SQLite copy and `CRUD_VIEWS_LABEL_MODE_DEFAULTS = {"form": <mode>}`)
+- its own seeded database copy (`manage.py migrate` + `manage.py seed`)
+- a scratch browser profile
+
+Real pointer events (`Input.dispatchMouseEvent`) and key events (`Input.dispatchKeyEvent`) were used. Accessible
+names come from Chromium's accessibility tree (`Accessibility.getPartialAXTree`). Pages are the example's
+`/library/author/create/`, `/library/author/<pk>/delete/`, `/library/author/?sort=last_name&dir=desc` (filter)
+and `/showcase/recipe/` (the modal delete; `RecipeDeleteView.cv_modal = True`). The run was logged in as the
+seeded demo user `alice`. No console errors or uncaught exceptions occurred in any mode.
+
+| Check | label | both | icon |
+|---|---|---|---|
+| Save (create) | `<button type=submit name=submit value=Save id=submit-id-submit class="btn btn-primary">`, text only, AX name "Save" | icon + visible text, AX "Save" | icon + `.visually-hidden` "Save", `data-cv-tooltip="form"`, 40×38 px, AX "Save" |
+| Delete (delete page) | `name=delete value=Delete id=submit-id-delete`, AX "Delete" | icon + text, AX "Delete" | icon + hidden label, AX "Delete" |
+| Cancel | `type=button name=reset value=Cancel data-cv-cancel-url=/library/author/`, AX "Cancel" | icon + text, AX "Cancel" | icon + hidden label, AX "Cancel" |
+| Apply / Reset filter | `#filter-button` submit / `#filter-button-reset` reset, AX "Apply Filter" / "Reset Filter" | icon + text | icon + hidden labels; AX names unchanged |
+| Keyboard focus (Tab from top) | Save reached after 16 Tabs, Cancel on the next Tab, both `:focus-visible`; filter Apply then Reset, both `:focus-visible` | same | same |
+| Tooltip on keyboard focus | none generated (label mode) | none generated (both mode shows text) | the tooltip bound to the trigger (`aria-describedby`) shows "Save", "Cancel", "Apply Filter", "Reset Filter" |
+| Cancel by pointer on a nested child | click on the label `<span>` navigates to `/library/author/` | click on the `<i>` icon navigates to the list | click on the `<i>` icon navigates to the list |
+| Cancel by keyboard (Enter on focused Cancel) | navigates to the list | navigates to the list | navigates to the list |
+| Filter apply | `?first_name=a&last_name=&submit=Apply+Filter&sort=last_name&dir=desc` | same | same |
+| Filter reset (click on nested child) | `?sort=last_name&dir=desc`: filter value cleared, sort/dir kept | same | same |
+| Modal submit (click on the delete button's nested child) | modal opened from the recipe list's Delete trigger (`data-cv-modal="true"`); `confirm` checked; clicking the `<span>` posted, redirected to `/showcase/recipe/` with "Deleted recipe “Soufflé au Fromage”" | clicking the `<i>` deleted "Lamb Tagine" | clicking the `<i>` deleted "Lamb Tagine"; the modal buttons carry the hidden labels "Delete" / "Cancel" |
+
+Note on cancel targets: sometimes cancel landed on `/library/author/?sort=last_name&dir=desc` rather than the
+bare `/library/author/`. That is the existing cancel-origin behavior returning to the list state remembered in
+that browser profile, not a form-button change. The `data-cv-cancel-url` attribute itself was always
+`/library/author/`.
+
+**Observed with automation but not accepted by automation (human-needed, pending):**
+
+1. **Tooltip on pointer hover.** Not observed. In this headless harness, synthetic `mouseMoved` events over the
+   lower-page form buttons did not set `:hover`, although `elementFromPoint` hit the button's icon and click
+   events at the same coordinates worked. The same probe did show a hover tooltip on a context button near the
+   top of the page. The focus-triggered tooltips above use the same Bootstrap Tooltip instance, so this looks
+   like a harness limitation. It is still **not verified**.
+2. **Visual quality** in all three modes: spacing, icon alignment, hidden-label clipping, the both-mode icon gap,
+   and how icon-only buttons look next to their siblings. This includes the label fallback for a missing icon
+   (06-06 D7).
+3. **Screen-reader announcement.** Accessible names come from the AX tree only. No assistive technology was run.
+4. **Readability of the migration prose** for downstream consumers (06-08 D5).
+
+These items stay **pending** until a human observes them. The phase verification step owns that.
+
+## 10. Downstream theme follow-up (recorded, not performed)
+
+No downstream repository was opened, named or edited. A consuming theme with its own icon library should do the
+following:
+
+1. **Map the three new semantic icon names** through `CRUD_VIEWS_ICONS` or the theme's icon preset:
+   - `save` to the library's `device-floppy` glyph
+   - `cancel` to its `x` glyph
+   - `filter-reset` to its `filter-off` glyph
+
+   Add those glyph assets to the theme's icon bundle or sprite if it ships a subset. `delete`, `filter` and
+   `workflow` already exist.
+2. **Update selectors and assertions** that target `input[type=submit]`, `input[type=button]` or
+   `input[type=reset]` for crispy layout controls, so they target `button[...]`:
+   - CSS
+   - JS
+   - template tests
+   - end-to-end tests
+
+   Selectors by id (`#submit-id-submit`, `#filter-button`, `#filter-button-reset`) and by name/value keep
+   working, because those attributes are unchanged.
+3. **Update the theme's own stock delete-form assertions.** The delete control is now
+   `<button type="submit" name="delete" value="Delete" …><span>Delete</span></button>`. The POST still carries
+   `confirm` plus the clicked `delete=Delete`.
+4. **Non-Bootstrap themes only:** set `CRUD_VIEWS_BUTTON_CLASSES["form:hidden-label"]` to the theme's
+   screen-reader-only class, and the `form:<kind>` keys to its button classes.
+5. **No new template override is required.** The bundled leaf `crud_views/tags/button/form.html` is
+   theme-neutral: every class comes from `{% cv_button_class %}` and every icon from `{% cv_icon %}`, both of
+   which the theme already configures. A theme that had overridden crispy's `bootstrap5/layout/baseinput.html`
+   for layout buttons must move that markup to a form-button template that uses `cv_*` variables
+   (docs/reference/theme.md "Custom form-button templates"). Legacy `helper.add_input()` controls still
+   use crispy's input template (D-01).
+
+## 11. Acceptance status
+
+- **Accepted (automated evidence above):** FORM-01 … FORM-13 Python, JS, floor, docs, lint, code formatting,
+  example and browser behavior. The two unclassified edge assumptions stay flagged.
+- **Not green, pre-existing and recorded:** the whole-repo `ruff format --check` (9 planning Markdown files,
+  WINDOWS #4); the dev-only `undici` audit advisory (WINDOWS #6).
+- **Pending human observation:** §9 items 1–4.

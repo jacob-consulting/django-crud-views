@@ -1,19 +1,19 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "6.1"
-current_phase_name: Cancel form button as a link
+current_phase: "06.1"
+current_phase_name: Cancel form button as a link (INSERTED)
 status: executing
-stopped_at: Phase 6.1 plans converged after 2 review cycles; ready to execute
-last_updated: "2026-10-28T21:00:20.780Z"
+stopped_at: Completed 06.1-01-PLAN.md
+last_updated: "2026-10-28T21:15:57.330Z"
 last_activity: 2026-10-28
-last_activity_desc: "Inserted Phase 6.1 from #275 before the theme-surface stability freeze"
-state_head: 4e7cc64031412859fdb922a4378625d0083dfcae
+last_activity_desc: Phase 06.1 execution started
+state_head: 99820d905e83e981f6bbe26dc83f69032008ac65
 progress:
   total_phases: 8
   completed_phases: 6
   total_plans: 27
-  completed_plans: 24
+  completed_plans: 25
 milestone_name: milestone
 ---
 
@@ -24,14 +24,14 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-10-28)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 6.1 — Cancel form button as a link (#275)
+**Current focus:** Phase 06.1 — Cancel form button as a link (INSERTED)
 
 ## Current Position
 
-Phase: 6.1 (Cancel form button as a link) — READY TO EXECUTE
-Plan: Not started
+Phase: 06.1 (Cancel form button as a link (INSERTED)) — EXECUTING
+Plan: 2 of 3
 Status: Ready to execute
-Last activity: 2026-10-28 — Inserted Phase 6.1 from #275 before the theme-surface stability freeze
+Last activity: 2026-10-28 — Phase 06.1 execution started
 
 Progress: 24/24 plans executed ([████████░░] 75%); 6/8 phases complete
 
@@ -88,6 +88,7 @@ Progress: 24/24 plans executed ([████████░░] 75%); 6/8 phase
 | Phase 06 P08 | 16 min | 3 tasks | 14 files |
 | Phase 06 P09 | 22min | 2 tasks | 3 files |
 | Phase 06 P10 | 13min | 3 tasks | 7 files |
+| Phase 06.1 P01 | 12 min | 3 tasks | 12 files |
 
 ## Accumulated Context
 
@@ -162,6 +163,9 @@ Recent decisions affecting current work:
 - [Phase 06]: 06-10: icon= omission is stored as the private bool _cv_kind_icon (sentinel compared in __init__ only); deepcopy isolation of filter layouts kept
 - [Phase 06]: 06-10: _form_button_data treats any non-str or whitespace-only cv_icon as None before availability, diagnostics, host classes and the leaf; accepted strings kept exactly
 - [Phase 06]: UAT 4/4 passed; review IN-01..IN-03 fixed (aed6003, 92d5430, d75fb31; disposition open 0/6); re-verification 42/42 passed (dbca22e); full suite 4632 passed
+- [Phase 06.1]: Cancel link eligibility is cv_key cancel AND native type button; explicit tag validated at adapter construction (None/button quiet), a requires form:cancel slot
+- [Phase 06.1]: Invalid selected form:cancel-tag raises in strict mode, else warns and renders button; valid explicit tag never reads the table; E365 for invalid str values, E361 for non-str
+- [Phase 06.1]: FORM_TAGS and CANCEL_TAG_KEY live in button_classes (pre-setup importable); form leaf branches on effective cv_tag with byte-identical button branch
 
 ### Pending Todos
 
@@ -195,6 +199,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-28T21:00:20.434Z
-Stopped at: Phase 6.1 plans converged after 2 review cycles; ready to execute
-Resume file: .planning/phases/06.1-cancel-form-button-as-a-link/06.1-REVIEWS.md
+Last session: 2026-10-28T21:15:56.675Z
+Stopped at: Completed 06.1-01-PLAN.md
+Resume file: None

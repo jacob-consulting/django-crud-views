@@ -113,7 +113,9 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
   subclass `template`, `%s` pack names included) receives the `cv_*` form leaf contract instead of crispy's `input`
   object: `input.value` becomes `cv_value`, `input.name` `cv_name`, `input.id` `cv_id`, `input.flat_attrs`
   `cv_flat_attrs`. Each reserved attribute renders once: an extra `type`, `name` or `value` keyword is dropped,
-  `css_id` wins over an extra `id`. A layout button whose `slot` is not `form:<kind>` with one of the five form kinds
+  `css_id` wins over an extra `id`. A `tag` keyword, which crispy rendered as an attribute, is no longer one: it
+  accepts only `None`, `"button"` and `"a"` (a [cancel link](docs/reference/buttons.md#cancel-links)), and any other
+  value raises `ValueError` when the button is built. A layout button whose `slot` is not `form:<kind>` with one of the five form kinds
   (`submit`, `cancel`, `delete`, `filter-submit`, `filter-reset`) raises `ValueError` when it renders: pick the
   matching kind and restyle it with `css_class` or a `form:<kind>:<mode>` class key. Buttons added with
   `helper.add_input()` keep their old input markup and any slot, without a warning. The filter's Apply and Reset are
@@ -242,6 +244,17 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Added
 
+- Cancel links: a cancel form button can render as a native `<a href>` link that navigates without JavaScript and
+  opens in another tab with the browser's own gestures. The class-table key `form:cancel-tag` (`"button"` by default,
+  or `"a"`) selects it for a theme or a project, and the `tag=` keyword of `Button` (`None` inherits, `"button"`, `"a"`)
+  for one button, for example from `get_cancel_button_kwargs()`. Only an enabled cancel with a destination becomes a
+  link; a disabled cancel, a cancel without a destination and every other button stay native `<button>` elements, and
+  default markup is unchanged. The link's only `href` is the cancel destination, and button-only attributes are
+  dropped from it. `FORM_LEAF_KEYS` gains `cv_tag`, the effective element, so a custom button template can render
+  the link while `cv_type`, `cv_name`, `cv_value` and `cv_cancel_url` keep their values. Templates written without
+  `cv_tag` keep rendering their buttons. The new check error `crud_views.E365` reports a `form:cancel-tag` str
+  other than `"button"` or `"a"`. See [Cancel links](docs/reference/buttons.md#cancel-links) and
+  [Cancel links in custom form-button templates](docs/reference/theme.md#cancel-links-in-custom-form-button-templates).
 - Theme and `CRUD_VIEWS_BUTTON_CLASSES` validation accepts `form:<kind>:<mode>` for all five form kinds and all
   three label modes, retaining the existing W362 diagnostics for invalid keys and modes. The buttons reference
   documents the variant/kind grammar and corrects the shipped-key count. Layout form buttons look these keys up with

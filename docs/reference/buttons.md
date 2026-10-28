@@ -431,7 +431,8 @@ How a button renders depends on where it is placed:
 
 - **In a layout** (`Layout(...)`, typically inside `FormActions`) it renders one `<button>` through the form-button
   leaf `crud_views/tags/button/form.html`, with its resolved [label mode](action_menus.md#form-label-mode-resolution),
-  its icon and the `form:<kind>:<mode>` classes. This is the path of every package form: `CrispyFormMixin`,
+  its icon and the `form:<kind>:<mode>` classes. A cancel can opt into one native `<a href>` link instead, see
+  [Cancel links](#cancel-links); by default every form button is a `<button>`. This is the path of every package form: `CrispyFormMixin`,
   `CrispyDeleteForm`, the workflow form and the [list filter](list_view.md#filtering-with-django-filter). A layout
   button needs a slot `form:<kind>` with one of the five kinds; any other slot (`formset:control`, `form:unknown`)
   raises `ValueError` when it renders.
@@ -448,6 +449,119 @@ How a button renders depends on where it is placed:
 
 The removed tags `cv_submit_button`, `cv_cancel_button` and `cv_delete_button` and their templates are replaced by
 these classes.
+
+### Cancel links
+
+By default the cancel button navigates with JavaScript: it is a `<button type="button">` whose `data-cv-cancel-url`
+`viewset.js` follows on a click. A theme, a project or a single form can render it as a native `<a href>` link
+instead. A link navigates without JavaScript, and the browser's own gestures (middle click, the context menu) open it
+in another tab while the form stays open. Nothing changes until you opt in.
+
+The option takes `"button"` (the default), `"a"` or `None`, which inherits. The first value that is set wins:
+
+1. the `tag=` keyword of the `Button`, for example `Button("reset", "Back", tag="a")`; `None`, the default, inherits;
+2. the class-table key `form:cancel-tag`, from a theme registration or `CRUD_VIEWS_BUTTON_CLASSES` (settings win, see
+   [Precedence](#precedence)); when the key is absent or `None`, the cancel stays a `"button"`.
+
+A theme registers the key from `AppConfig.ready()`:
+
+```python
+# myapp_theme/apps.py
+def ready(self):
+    from crud_views.lib.button_classes import register_button_classes
+
+    register_button_classes({"form:cancel-tag": "a"})
+```
+
+A project sets it for every form:
+
+```python
+# settings.py
+CRUD_VIEWS_BUTTON_CLASSES = {"form:cancel-tag": "a"}
+```
+
+A form picks its own element through `get_cancel_button_kwargs()`, and its explicit `tag=` wins over the table
+either way. Subclass these forms like `CrispyModelForm`, with your own `Meta`:
+
+```python
+# forms.py
+from crud_views.lib.crispy import CrispyModelForm
+
+
+class CancelLinkForm(CrispyModelForm):
+    """The cancel is a link on this form, whatever the theme selects."""
+
+    def get_cancel_button_kwargs(self) -> dict:
+        return {**super().get_cancel_button_kwargs(), "tag": "a"}
+
+
+class CancelButtonForm(CrispyModelForm):
+    """The cancel stays the native button on this form, even when the theme or the project selects links."""
+
+    def get_cancel_button_kwargs(self) -> dict:
+        return {**super().get_cancel_button_kwargs(), "tag": "button"}
+```
+
+In a layout of your own, pass `tag=` to the `Button`:
+
+```python
+# a layout of your own
+from crispy_forms.bootstrap import FormActions
+
+from crud_views.lib.crispy import Button, Submit
+
+actions = FormActions(
+    Submit("submit", "Save"),
+    Button("reset", "Back", tag="a", data_cv_cancel_url="/authors/"),
+)
+
+# a plain click opens a new tab: set target and rel yourself
+new_tab = Button("reset", "Back", tag="a", data_cv_cancel_url="/authors/", target="_blank", rel="noopener")
+```
+
+**Which control can be a link.** Only a cancel can: form kind `cancel` (the slot `form:cancel`, the default of
+`Button`) with the native type `button`. A subclass of `Button` qualifies too. `tag="a"` on a `Submit`, a `Reset` or a
+`Button` with another slot raises `ValueError` when it is built, while `tag="button"` is accepted on every control.
+Submit, delete and the filter actions never become links, and they never read the key.
+
+**Validation.** `tag=` accepts exactly `None`, `"button"` and `"a"`. Any other value (`""`, `"A"`, `" a"`, a
+non-str) raises `ValueError` when the button is built, even for a button added with `helper.add_input()`. A
+configured `form:cancel-tag` str other than `"button"` or `"a"` is the check error `crud_views.E365`; a non-str value
+is `crud_views.E361`. If such a value is selected at render, it raises `ValueError` under `CRUD_VIEWS_STRICT` and
+otherwise logs a warning and renders the button. The value is checked before the fallback below, so it is reported
+even for a cancel without a destination or a disabled one. An explicit valid `tag=` never reads the key, but the check
+still reports an invalid key.
+
+**Fallback.** A selected `"a"` renders a link only for an enabled cancel with a destination. When the destination is
+missing (`data_cv_cancel_url` absent, `None` or `""`), or the cancel carries a `disabled` attribute (any value except
+`False` and `None`, in any letter case), the cancel renders exactly the native button it renders without the option,
+because a link cannot be disabled. `cv_tag` in [the form leaf contract](#the-form-leaf-contract) is the resulting
+element.
+
+**The link.** It is `<a href id class>` with the classes, label-mode body, icon, `title` and tooltip of the button.
+Its only `href` is the cancel destination, escaped once. It drops what has no meaning on a link: `type`, `name`,
+`value`, `data-cv-cancel-url` and an extra `href`, plus the button-only attributes `command`, `commandfor`,
+`disabled`, `form`, `formaction`, `formenctype`, `formmethod`, `formnovalidate`, `formtarget`, `popovertarget` and
+`popovertargetaction`, each in any letter case. The other extras stay: `target`, `rel`, `aria-*`, other `data-*`,
+`autofocus`, and `title` outside `"icon"` mode. In the leaf contract `cv_tag` is `"a"`, while `cv_type`, `cv_name`,
+`cv_value` and `cv_cancel_url` keep their values, so a custom template can still read them. Like the cancel button,
+the link submits nothing.
+
+**Navigation.** The link navigates without JavaScript. `viewset.js` only follows elements that carry
+`data-cv-cancel-url`, and a link carries none, so the script never intercepts it. Opening the link in another tab
+needs no option. If a plain click should open a new tab, set `target="_blank"` and `rel="noopener"` yourself, as in
+the example above. The link keeps `target` and `rel` exactly as given, and never adds or rewrites `rel`.
+
+**Trusted destinations.** The `href` is the destination the cancel hooks return: the view's
+`get_cancel_button_context()` (a URL of the ViewSet by default) or the `data_cv_cancel_url` you pass. Escaping keeps
+the value inside its attribute. It is HTML escaping, not URL validation, so a `javascript:` URL renders as given.
+Build destinations with `reverse()` from your own URL patterns, never from unchecked request input.
+
+**Helper inputs.** A button added with `helper.add_input()` stays the template pack's input: its `tag=` is checked as
+above, but it never reads `form:cancel-tag` and never renders a link. An input without `tag=` or with
+`tag="button"` stays quiet. To get a link, move the cancel into a layout `FormActions`; inputs are not migrated
+automatically. A custom button template chooses its own markup, see
+[Cancel links in custom form-button templates](theme.md#cancel-links-in-custom-form-button-templates).
 
 ### Literal text
 
@@ -470,7 +584,9 @@ Each reserved attribute is resolved once and rendered once:
 - Underscores in keyword names become hyphens (`data_x` is `data-x`); when both spellings are given the hyphenated one
   wins. `True` renders a bare attribute, `False` and `None` omit it.
 - `data_cv_cancel_url` (or `data-cv-cancel-url`) of a `cancel` button becomes `cv_cancel_url` and renders once as
-  `data-cv-cancel-url`; on any other kind it stays an ordinary attribute.
+  `data-cv-cancel-url` (as the `href` of a [cancel link](#cancel-links)); on any other kind it stays an ordinary
+  attribute.
+- `tag` is never an attribute: it selects the element of a cancel, see [Cancel links](#cancel-links).
 - In `"icon"` mode the generated `title` and `data-cv-tooltip="form"` win over an extra `title` or `data-cv-tooltip`;
   in `"label"` and `"both"` mode those stay ordinary attributes.
 

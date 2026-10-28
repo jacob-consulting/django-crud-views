@@ -260,6 +260,10 @@ user's name and now shows `{{ request.user }}`. Compute such a label in Python i
 Each reserved attribute is set once ([Literal text](reference/buttons.md#literal-text)): an extra `type`, `name` or
 `value` keyword is dropped, `css_id` wins over an extra `id`, and an extra `class` is appended after the table
 classes and `css_class`. In `"icon"` mode the generated `title` and `data-cv-tooltip="form"` win over yours.
+A `tag` keyword is no longer rendered as an attribute: it accepts only `None`, `"button"` and `"a"`, which selects a
+[cancel link](reference/buttons.md#cancel-links), and any other value raises `ValueError` when the button is built.
+If you passed `tag` as a plain HTML attribute, for example from `get_cancel_button_kwargs()`, rename it to a
+`data_` keyword (`data_tag="..."` renders `data-tag`).
 
 ### Custom button templates
 
@@ -280,6 +284,21 @@ A template that still reads `input.*` renders empty attributes and raises nothin
 [Custom form-button templates](reference/theme.md#custom-form-button-templates). A theme that restyled the package
 buttons by overriding crispy's `layout/baseinput.html` no longer reaches them: register `form:*` classes or override
 `crud_views/tags/button/form.html`.
+
+### Cancel links
+
+Optional: the cancel button stays a `<button>` with `data-cv-cancel-url` unless you opt in, so a project on the
+defaults needs no action. To render it as a native `<a href>` link, set the class-table key `form:cancel-tag` to
+`"a"` in a theme registration or `CRUD_VIEWS_BUTTON_CLASSES`, or pass `tag="a"` to one cancel
+([Cancel links](reference/buttons.md#cancel-links)). A disabled cancel and one without a destination stay buttons.
+
+A custom button template keeps rendering what it renders: a template that knows nothing of `cv_tag` keeps its
+`<button>` and its `data-cv-cancel-url` navigation even when links are selected. To render the link, branch on the
+new `cv_tag` field: emit `<a href="{{ cv_cancel_url }}">` without `type`, `name`, `value` and `data-cv-cancel-url`
+when it is `"a"`, and the button otherwise. See
+[Cancel links in custom form-button templates](reference/theme.md#cancel-links-in-custom-form-button-templates).
+JavaScript or tests that select the cancel as `button[name="reset"]` must also accept `a#button-id-reset` once links
+are on.
 
 ### Slots
 

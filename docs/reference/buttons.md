@@ -479,8 +479,9 @@ Attribute names are code you write; attribute values may be untrusted text.
 ### The form leaf contract
 
 The leaf receives the flat dict `FORM_LEAF_KEYS` (`crud_views.lib.view.button_data`), a separate set from the
-action `LEAF_KEYS`. None of the action-only keys (`cv_href`, `cv_tag`, `cv_modal`, `cv_disabled`, `cv_variant`, ...)
-appear in it, and neither does crispy's `input` object:
+action `LEAF_KEYS`. None of the action-only keys (`cv_href`, `cv_submit_target`, `cv_modal`, `cv_disabled`,
+`cv_variant`, ...) appear in it, and neither does crispy's `input` object. `cv_tag` is shared by name only: in a form
+it is the effective element of the form button, never an action's link or POST decision:
 
 | Key | Meaning |
 |---|---|
@@ -499,10 +500,13 @@ appear in it, and neither does crispy's `input` object:
 | `cv_flat_attrs` | the other attributes, already escaped and serialized (`SafeString`), output as is |
 | `cv_title` | the generated `title` (the label); present only in `"icon"` mode |
 | `cv_cancel_url` | the navigation URL of the cancel button (`None` without one); present only for kind `cancel` |
+| `cv_tag` | the effective element, after every fallback: `"a"` only for an enabled cancel (kind `cancel`, native type `"button"`) whose selected tag is `"a"` (its `tag=` keyword, else [`form:cancel-tag`](#the-class-table)) and whose `cv_cancel_url` is not empty; `"button"` otherwise, including a disabled cancel and one without a destination. Present on every form button; `cv_type`, `cv_name`, `cv_value` and `cv_cancel_url` keep their values when it is `"a"` |
 
 The bundled leaf renders `<button type name value id class>` with `{% cv_button_class "form" cv_key cv_label_mode %}`,
 then `cv_css_class` and `cv_icon_class`, then `data-cv-cancel-url` when `cv_cancel_url` is present, `title` with
-`data-cv-tooltip="form"` in `"icon"` mode, and `cv_flat_attrs`. Its body follows the action leaf:
+`data-cv-tooltip="form"` in `"icon"` mode, and `cv_flat_attrs`. When `cv_tag` is `"a"` it renders a native
+`<a href id class>` instead, with `cv_cancel_url` as its `href` and the same classes, `title`, tooltip and body, but
+without `type`, `name`, `value` and `data-cv-cancel-url`. Its body follows the action leaf:
 
 | Mode | Body |
 |---|---|
@@ -582,6 +586,7 @@ override the leaf, otherwise an action disabled by `CRUD_VIEWS_INACCESSIBLE_ACTI
 | `crud_views.E361` | error | a `CRUD_VIEWS_BUTTON_CLASSES` value or registered theme value is neither a str nor `None` |
 | `crud_views.E363` | error | an `*:icon-host` value is not a valid format string with `{name_class}` as its only placeholder |
 | `crud_views.E364` | error | a `*:container-single` value is neither `"container"` nor `"bare"` (`None` and `""` mean `"container"`) |
+| `crud_views.E365` | error | a `form:cancel-tag` str value is neither `"button"` nor `"a"` (`""`, whitespace and other letter cases included); the hint names `'button'`, `'a'` and `None`. A non-str value is `crud_views.E361` only. Reported even when every cancel overrides it with an explicit `tag=` |
 | `crud_views.W362` | warning | a `CRUD_VIEWS_BUTTON_CLASSES` or theme key is neither in the default table nor a valid `location:variant:mode` at `context`/`list`/`card` or `form:kind:mode` (typo, or an unknown label mode) |
 | `viewset.E209` | error | a `cv_action_variant`, `ContextButton.variant` or `CardAction.variant` is not one of the four variants |
 | `crud_views.E106` | error | a `CRUD_VIEWS_CONTEXT_ACTIONS_LABEL_MODE` or `CRUD_VIEWS_LIST_ACTIONS_LABEL_MODE` setting is not a dict of action key → `"label"` / `"icon"` / `"both"`; `CRUD_VIEWS_FORM_ACTIONS_LABEL_MODE` is not a dict of form kind → mode (an unknown form kind is an error here, not a W291) |

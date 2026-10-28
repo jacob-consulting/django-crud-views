@@ -403,5 +403,5 @@ def check_icons(app_configs=None, **kwargs):
 
 @register(TAG)
 def check_button_classes(app_configs=None, **kwargs):
-    """E360/E361/W362/E363/E364 from the button class table."""
+    """E360/E361/W362/E363/E364/E365 from the button class table."""
     return button_class_check_messages()

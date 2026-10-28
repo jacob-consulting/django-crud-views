@@ -1,10 +1,10 @@
 ---
 schema_version: 1
-open_count: 4
+open_count: 3
 waived_count: 0
-fixed_count: 4
+fixed_count: 5
 total_count: 8
-last_updated: 2026-10-28T07:48:56.639Z
+last_updated: 2026-10-28T07:58:29.012Z
 ---
 
 # Broken Windows Ledger
@@ -19,7 +19,7 @@ last_updated: 2026-10-28T07:48:56.639Z
 | 2 | 01 | deviation | tests/test1/test_card_label_mode_render.py |  | Task 2 was already green after Task 1; the expanded matrix was verified red against the exact pre-fix source and committed as tests only | fixed |  | 2026-10-26T11:03:49.979Z | 2026-10-26T11:04:00.593Z |
 | 3 | 02 | skipped-test | tests/test1/test_assets.py | 332 | Existing CSP nonce roundtrip test skips on Django 5.2 because built-in CSP middleware requires Django 6.0 | open |  | 2026-10-26T12:40:20.697Z |  |
 | 4 | 02 | lint-warning | .planning/phases/02-form-key-grammar/deferred-items.md |  | Ruff 0.16.10 differs from manifest >=0.17,<0.18; global format reports seven pre-existing planning Markdown files | open |  | 2026-10-26T12:40:20.826Z |  |
-| 5 | 06 | deviation | tests/js/list.filter.test.js | 159 | Pre-existing JS failure on locked jsdom 30.1.2: element-scoped '#cv-filter-toggle > span' selector returns null; Phase 06 JS gates stay red until fixed (06-01 deferred-items) | open |  | 2026-10-28T06:15:42.420Z |  |
+| 5 | 06 | deviation | tests/js/list.filter.test.js | 159 | Pre-existing JS failure on locked jsdom 30.1.2: element-scoped '#cv-filter-toggle > span' selector returns null; Phase 06 JS gates stay red until fixed (06-01 deferred-items) | fixed |  | 2026-10-28T06:15:42.420Z | 2026-10-28T07:58:29.012Z |
 | 6 | 06 | deviation | package-lock.json |  | npm audit: high-severity advisories in transitive dev-only undici; lockfile intentionally unchanged in Phase 06 (06-01 deferred-items) | open |  | 2026-10-28T06:15:42.562Z |  |
 | 7 | 06 | stub | src/crud_views/lib/crispy/buttons.py |  | Crispy layout form buttons pass no icon yet: icon/both modes (form floor set to icon or both) render no visible icon until 06-04 adds kind-default icons, icon= hooks and the missing-icon policy | fixed |  | 2026-10-28T06:36:10.760Z | 2026-10-28T07:04:38.892Z |
 | 8 | 06 | stub | src/crud_views/lib/view/button_data.py |  | Form missing-icon policy not yet applied: an icon-mode form button whose icon is explicitly None/empty or unavailable renders hidden text only (no strict ValueError, no logged label fallback) until 06-06 adds the availability predicate and runtime policy | fixed |  | 2026-10-28T07:04:39.037Z | 2026-10-28T07:48:56.639Z |
@@ -85,10 +85,10 @@ last_updated: 2026-10-28T07:48:56.639Z
     "file": "tests/js/list.filter.test.js",
     "line": 159,
     "description": "Pre-existing JS failure on locked jsdom 30.1.2: element-scoped '#cv-filter-toggle > span' selector returns null; Phase 06 JS gates stay red until fixed (06-01 deferred-items)",
-    "status": "open",
+    "status": "fixed",
     "reason": "",
     "recorded_at": "2026-10-28T06:15:42.420Z",
-    "resolved_at": null,
+    "resolved_at": "2026-10-28T07:58:29.012Z",
     "milestone": null
   },
   {

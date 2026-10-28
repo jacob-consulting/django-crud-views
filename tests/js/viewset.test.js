@@ -97,6 +97,97 @@ describe("viewset.js", () => {
             expect(event.defaultPrevented).toBe(true);
             expect(nav.href).toBe("/books/");
         });
+
+        // Phase 06 (D-14/D-17): the form-button leaf renders the cancel control as a <button> whose body nests an
+        // icon and a visible or visually-hidden label (crud_views/tags/button/form.html)
+        const ICON = '<i class="fa-solid fa-xmark" aria-hidden="true"></i>';
+        const BODIES = {
+            label: '<span>Cancel</span>',
+            icon: `${ICON}<span class="visually-hidden">Cancel</span>`,
+            both: `${ICON} <span>Cancel</span>`,
+        };
+        const TARGETS = [
+            ["the button", (b) => b],
+            ["its label", (b) => b.querySelector("span")],
+            ["its icon", (b) => b.querySelector("i") ?? b.querySelector("span")],
+        ];
+
+        function cancelForm(mode, { type = "button", url = "/author/" } = {}) {
+            document.body.innerHTML = `
+                <form method="post" action="/author/create/">
+                    <input type="hidden" name="csrfmiddlewaretoken" value="tok">
+                    <input type="text" name="first_name" value="initial">
+                    <button type="submit" name="submit" value="Create" id="submit-id-submit" class="btn btn-primary"><span>Create</span></button>
+                    <button type="${type}" name="reset" value="Cancel" id="button-id-reset" class="btn btn-secondary"
+                            data-cv-cancel-url="${url}">${BODIES[mode]}</button>
+                </form>`;
+            const form = document.querySelector("form");
+            return { form, cancel: form.querySelector("#button-id-reset"), field: form.elements.first_name };
+        }
+
+        // every write to location.href, so one click is proven to navigate exactly once
+        function recordNavigation(fn) {
+            const descriptor = Object.getOwnPropertyDescriptor(nav, "href");
+            const writes = [];
+            Object.defineProperty(nav, "href", {
+                configurable: true,
+                get: () => writes.at(-1) ?? "",
+                set: (value) => writes.push(value),
+            });
+            try {
+                fn();
+            } finally {
+                Object.defineProperty(nav, "href", descriptor);
+            }
+            return writes;
+        }
+
+        describe.each(Object.keys(BODIES))("a %s-body form cancel button", (mode) => {
+            it.each(TARGETS)("a click on %s navigates once, prevented but still propagating", (_name, pick) => {
+                const { form, cancel } = cancelForm(mode);
+                const submit = vi.fn((event) => event.preventDefault());
+                form.addEventListener("submit", submit);
+                const bubbled = [];
+                window.addEventListener("click", (event) => bubbled.push(event), { once: true });
+                const target = pick(cancel);
+                expect(cancel.contains(target)).toBe(true);
+                const event = new MouseEvent("click", { bubbles: true, cancelable: true });
+                const errors = listenerErrors(() => {
+                    expect(recordNavigation(() => target.dispatchEvent(event))).toEqual(["/author/"]);
+                });
+                expect(errors).toEqual([]);
+                expect(event.defaultPrevented).toBe(true);
+                expect(bubbled).toEqual([event]); // not stopped: other delegated handlers still see it
+                expect(submit).not.toHaveBeenCalled();
+            });
+        });
+
+        it("keeps a reset-typed cancel from resetting the form (the established preventDefault)", () => {
+            const { cancel, field } = cancelForm("icon", { type: "reset" });
+            field.value = "edited";
+            expect(recordNavigation(() => cancel.querySelector("i").click())).toEqual(["/author/"]);
+            expect(field.value).toBe("edited");
+        });
+
+        it("navigates to the decoded attribute value of an encoded, non-ASCII cancel url", () => {
+            const { cancel } = cancelForm("both", { url: "/author/?q=%C3%A4&amp;sort=n%C3%A4me&amp;dir=" });
+            expect(recordNavigation(() => cancel.querySelector("span").click())).toEqual([
+                "/author/?q=%C3%A4&sort=n%C3%A4me&dir=",
+            ]);
+        });
+
+        it("leaves the sibling submit button and plain text alone", () => {
+            const { form } = cancelForm("both");
+            const submit = vi.fn((event) => event.preventDefault()); // jsdom cannot navigate a native submit
+            form.addEventListener("submit", submit);
+            const writes = recordNavigation(() => {
+                form.querySelector("#submit-id-submit span").click();
+                form.elements.first_name.click();
+            });
+            expect(writes).toEqual([]);
+            expect(submit).toHaveBeenCalledTimes(1);
+            expect(submit.mock.calls[0][0].submitter).toBe(form.querySelector("#submit-id-submit"));
+        });
     });
 
     describe("rendered alert dismissal tracer", () => {

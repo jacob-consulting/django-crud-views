@@ -230,8 +230,10 @@ def test_form_floor_selects_the_body(mode):
     with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"form": mode}):
         (el,) = _buttons(_render(_helper(Submit("submit", "Save"))))
     hidden = el.cssselect("span.visually-hidden")
-    assert el.text_content() == "Save"
+    assert [s.text for s in el.cssselect("span")] == ["Save"]
     assert el.get("value") == "Save"
+    # the submit kind's semantic icon (save) in "both" and "icon" modes, none in "label"
+    assert [i.get("class") for i in el.cssselect("i")] == ([] if mode == "label" else ["fa-regular fa-floppy-disk"])
     if mode == "icon":
         assert [s.text for s in hidden] == ["Save"]
         assert (el.get("title"), el.get("data-cv-tooltip")) == ("Save", "form")
@@ -539,7 +541,8 @@ def test_hostile_literals_never_create_nodes_or_attributes(text, safe, mode):
     (el,) = doc.cssselect("button")
     assert not doc.cssselect("img, b, script")
     assert el.get("value") == text
-    assert el.text_content() == text
+    # the label span; "both" and "icon" put the kind's icon element in front of it
+    assert el.cssselect("span")[0].text_content() == text
     assert el.get("data-note") == text and el.get("aria-label") == text
     expected = {"type", "name", "value", "id", "class", "data-note", "aria-label"}
     if mode != "icon":
@@ -1177,12 +1180,11 @@ def _author_pages(author):
 @pytest.mark.django_db
 @pytest.mark.parametrize("mode", ["both", "icon"])
 @pytest.mark.parametrize("page", ["create", "update", "delete"])
-def test_package_forms_render_their_semantic_icons(
-    page, mode, client_user_author_add, client_user_author_change, client_user_author_delete, author_douglas_adams
-):
-    clients = {"create": client_user_author_add, "update": client_user_author_change}
+def test_package_forms_render_their_semantic_icons(request, page, mode, author_douglas_adams):
+    permission = {"create": "add", "update": "change", "delete": "delete"}[page]
+    client = request.getfixturevalue(f"client_user_author_{permission}")
     path, name, value, fa = _author_pages(author_douglas_adams)[page]
-    buttons = _page_buttons(clients.get(page, client_user_author_delete), path, name, "reset", mode=mode)
+    buttons = _page_buttons(client, path, name, "reset", mode=mode)
     action, cancel = buttons[name], buttons["reset"]
     assert _icon_classes(action) == [fa]
     assert _icon_classes(cancel) == ["fa-solid fa-xmark"]

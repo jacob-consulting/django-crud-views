@@ -33,6 +33,8 @@ class CrispyFormMixin:
     """
 
     submit_label: str = _("Save")
+    # the icon of the submit button in "both" and "icon" label modes; None means no icon
+    submit_icon: str | None = "save"
 
     def __init__(self, cv_view, *args, **kwargs):
         self.cv_view = cv_view
@@ -58,9 +60,9 @@ class CrispyFormMixin:
 
     def get_submit_button(self) -> Submit:
         """
-        Submit button for FormActions
+        Submit button for FormActions; an ``icon`` returned by ``get_submit_button_kwargs`` wins over ``submit_icon``
         """
-        return Submit(**self.get_submit_button_kwargs())
+        return Submit(**{"icon": self.submit_icon, **self.get_submit_button_kwargs()})
 
     def get_cancel_button_kwargs(self) -> dict:
         request = self.cv_view.request
@@ -119,15 +121,17 @@ class CrispyDeleteForm(CrispyForm):
     """
 
     confirm = BooleanField(label=_("Confirm deletion"))
+    # the icon of the delete button in "both" and "icon" label modes; None means no icon
+    delete_icon: str | None = "delete"
 
     def get_delete_button_kwargs(self) -> dict:
         return {"name": "delete", "value": _("Delete")}
 
     def get_delete_button(self) -> Submit:
         """
-        Delete button for FormActions
+        Delete button for FormActions; a ``slot`` or ``icon`` returned by ``get_delete_button_kwargs`` wins
         """
-        return Submit(**{"slot": "form:delete", **self.get_delete_button_kwargs()})
+        return Submit(**{"slot": "form:delete", "icon": self.delete_icon, **self.get_delete_button_kwargs()})
 
     @property
     def helper(self):

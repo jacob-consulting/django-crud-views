@@ -13,6 +13,18 @@ from crud_views.lib.button_classes import get_button_class
 
 FORM_LEAF_TEMPLATE = "crud_views/tags/button/form.html"
 
+# the semantic icon of each form kind (D-16); a button without an icon= argument uses its kind's icon
+_KIND_ICONS = {
+    "submit": "save",
+    "delete": "delete",
+    "cancel": "cancel",
+    "filter-submit": "filter",
+    "filter-reset": "filter-reset",
+}
+
+# the default of icon=: "not given", so an explicit None or "" stays an intentional "no icon"
+_KIND_ICON = object()
+
 
 # private context keys (underscore: unreadable from templates, never published by crispy's helper attributes)
 # the owner a package helper pushes for the duration of its own render_layout (filter helper)
@@ -99,6 +111,10 @@ class _TableClassMixin:
     Sets the crispy ``field_classes`` of the instance from the button class table, before crispy
     appends a project supplied ``css_class``. ``slot`` (``"location:slot"``) picks the table key.
 
+    ``icon`` is rendering configuration, never an HTML attribute: omitted, the slot's form kind picks its semantic
+    icon (submit ``save``, delete ``delete``, cancel ``cancel``, filter-submit ``filter``, filter-reset
+    ``filter-reset``); an explicit None or ``""`` means no icon.
+
     On the layout path ``render()`` replaces crispy's: it never renders the value as a template and gives the
     selected template only the normalized form-button data (``FORM_LEAF_KEYS``), no ``input`` object.
     """
@@ -107,8 +123,9 @@ class _TableClassMixin:
     # the bundled leaf; a subclass ``template`` or an explicit ``template=`` argument wins (``%s`` is the pack)
     template = FORM_LEAF_TEMPLATE
 
-    def __init__(self, name, value, *, slot: str | None = None, **kwargs):
+    def __init__(self, name, value, *, slot: str | None = None, icon=_KIND_ICON, **kwargs):
         self._cv_slot = slot or self.slot
+        self._cv_icon = icon
         self.field_classes = get_button_class(*self._cv_slot.split(":", 1))
         self._cv_css_id = kwargs.get("css_id")
         self._cv_css_class = kwargs.get("css_class")
@@ -129,8 +146,9 @@ class _TableClassMixin:
 
     def _cv_button_context(self) -> dict:
         """The raw form-button data this button hands to ``cv_button_data(ctx, "form")``."""
+        kind = self._cv_form_kind()
         return {
-            "cv_key": self._cv_form_kind(),
+            "cv_key": kind,
             "cv_type": self.input_type,
             "cv_name": self.name,
             "cv_value": self.value,
@@ -138,6 +156,7 @@ class _TableClassMixin:
             "cv_css_id": self._cv_css_id,
             "cv_css_class": self._cv_css_class,
             "cv_attrs": dict(self._cv_attrs),
+            "cv_icon": _KIND_ICONS[kind] if self._cv_icon is _KIND_ICON else self._cv_icon,
         }
 
     def render(self, form, context, template_pack=TEMPLATE_PACK, **kwargs):

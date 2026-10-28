@@ -3,16 +3,16 @@ gsd_state_version: "1.0"
 current_phase: 06
 current_phase_name: Form-button leaf
 status: executing
-stopped_at: Completed 06-03-PLAN.md
-last_updated: "2026-10-28T06:51:12.463Z"
+stopped_at: Completed 06-04-PLAN.md
+last_updated: "2026-10-28T07:06:20.683Z"
 last_activity: 2026-10-28
 last_activity_desc: Phase 06 execution started
-state_head: c3abad0c9b6ac34aacd8d5fff6e658674674e0c8
+state_head: e26d78648bb7591ed27326b407a871e2b9a0eab5
 progress:
   total_phases: 7
   completed_phases: 5
   total_plans: 23
-  completed_plans: 17
+  completed_plans: 18
   percent: 71
 ---
 
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-10-27)
 ## Current Position
 
 Phase: 06 (Form-button leaf) — EXECUTING
-Plan: 4 of 9
+Plan: 5 of 9
 Status: Ready to execute
 Last activity: 2026-10-28 — Phase 06 execution started
 
@@ -79,6 +79,7 @@ Progress: [███████░░░] 71%
 | Phase 06 P01 | 16 min | 3 tasks | 11 files |
 | Phase 06 P02 | 17min | 3 tasks | 20 files |
 | Phase 06 P03 | 11 min | 2 tasks | 9 files |
+| Phase 06 P04 | 12 min | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -132,6 +133,9 @@ Recent decisions affecting current work:
 - [Phase 06]: 06-02: layout render rejects slots other than form:<FORM_KINDS>; construction and legacy helper.inputs accept any slot
 - [Phase 06]: 06-03: form maps (setting/ViewSet/view) are selected whole on the owner; invalid selected maps or values use the shared strict/log fallback to the form floor
 - [Phase 06]: 06-03: form-button owner = render form cv_view, else current crispy helper overlay (or private _cv_helper_owner entry), else page (transported _cv_page_owner, else nearest non-None view outside response overlays); identity, quiet
+- [Phase 06]: 06-04: layout form buttons pick a semantic icon from the slot kind (submit save, delete delete, cancel cancel, filter-submit filter, filter-reset filter-reset). icon= has a sentinel default, so explicit None/empty means no icon
+- [Phase 06]: 06-04: icon precedence is hook kwargs, then the form attribute (CrispyFormMixin.submit_icon='save', CrispyDeleteForm.delete_icon='delete', WorkflowForm.submit_icon='workflow'), then the adapter kind default. A delete payload moved to slot form:cancel keeps delete_icon
+- [Phase 06]: 06-04: registry glyphs save far:floppy-disk/bi:floppy, cancel fas:xmark/bi:x-lg, filter-reset fas:rotate-left/bi:arrow-counterclockwise (distinct from filter-close)
 
 ### Pending Todos
 
@@ -163,6 +167,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-28T06:51:12.079Z
-Stopped at: Completed 06-03-PLAN.md
+Last session: 2026-10-28T07:06:20.271Z
+Stopped at: Completed 06-04-PLAN.md
 Resume file: None

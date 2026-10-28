@@ -237,7 +237,7 @@ FORM-11, FORM-12, FORM-13
      the form maps.
   5. The CHANGELOG `### Breaking` entry and the "Form buttons" section of `docs/migrating-1.0.md` exist. The example
      project shows `both` for submit, delete and cancel, and the Tabler follow-up is written into the acceptance note.
-**Plans**: 3/9 plans executed
+**Plans**: 4/9 plans executed
 **Wave 1**
 - [x] 06-01-PLAN.md
 
@@ -248,7 +248,7 @@ FORM-11, FORM-12, FORM-13
 - [x] 06-03-PLAN.md
 
 **Wave 4** *(blocked on Wave 3 completion)*
-- [ ] 06-04-PLAN.md
+- [x] 06-04-PLAN.md
 
 **Wave 5** *(blocked on Wave 4 completion)*
 - [ ] 06-05-PLAN.md
@@ -318,5 +318,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 3. Filter toggle label mode | 2/2 | Complete    | 2026-10-26 |
 | 4. Alert dismiss adapter | 3/3 | Complete    | 2026-10-26 |
 | 5. Table pagination parity | 3/3 | Complete    | 2026-10-27 |
-| 6. Form-button leaf | 3/9 | In Progress | - |
+| 6. Form-button leaf | 4/9 | In Progress | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

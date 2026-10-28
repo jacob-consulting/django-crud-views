@@ -627,3 +627,419 @@ def test_constructor_visible_legacy_state_is_crispys():
     assert ours.field_classes == "btn btn-primary extra"
     assert ours.template == "crud_views/tags/button/form.html"
     assert Submit("go", "Go", template="x.html").template == "x.html"
+
+
+# --- ownership (D-09 to D-12, 06-03): which view's form map a crispy form button uses ----------------------------
+#
+# Each owner gets a distinct (submit, cancel) mode signature, so the rendered classes name the owner that won.
+
+FORM_KINDS = ("submit", "cancel", "delete", "filter-submit", "filter-reset")
+MODE_CLASSES = {f"form:{k}:{m}": f"m-{m}" for k in FORM_KINDS for m in ("label", "icon", "both")}
+
+SIGNATURES = {
+    "R": ("icon", "icon"),  # row / current form
+    "RH": ("both", "both"),  # current helper
+    "P": ("icon", "both"),  # page
+    "H": ("both", "icon"),  # enclosing helper
+    "OF": ("icon", "label"),  # outer form
+}
+S = ("label", "icon")  # the settings singleton's map: no owner, or an ordinary owner
+
+_ABSENT = object()
+
+
+class _Falsey:
+    """A real, ordinary owner that is falsey."""
+
+    def __bool__(self):
+        return False
+
+    def __len__(self):
+        return 0
+
+
+@pytest.fixture
+def owners(monkeypatch, settings):
+    """Five CrudView owners with distinct form maps, the settings map S, and classes that name the mode."""
+    from crud_views.lib.settings import crud_views_settings
+    from tests.test1.app.views import (
+        AuthorCreateView,
+        AuthorDeleteView,
+        AuthorDetailView,
+        AuthorListView,
+        AuthorUpdateView,
+        cv_author,
+    )
+
+    settings.CRUD_VIEWS_BUTTON_CLASSES = MODE_CLASSES
+    monkeypatch.setattr(cv_author, "form_actions_label_mode", None)
+    monkeypatch.setattr(crud_views_settings, "form_actions_label_mode", {"submit": S[0], "cancel": S[1]})
+    classes = {
+        "R": AuthorCreateView,
+        "RH": AuthorUpdateView,
+        "P": AuthorDeleteView,
+        "H": AuthorDetailView,
+        "OF": AuthorListView,
+    }
+    for name, cls in classes.items():
+        submit, cancel = SIGNATURES[name]
+        monkeypatch.setattr(cls, "cv_form_actions_label_mode", {"submit": submit, "cancel": cancel})
+    return SimpleNamespace(**classes)
+
+
+def _owned_form(cv_view=_ABSENT) -> forms.Form:
+    form = _EmptyForm()
+    if cv_view is not _ABSENT:
+        form.cv_view = cv_view
+    return form
+
+
+def _controls(tag: str):
+    """Two FormActions groups and a later control, all named after ``tag``."""
+    return (
+        FormActions(Submit(f"{tag}-s1", "S"), Button(f"{tag}-c1", "C")),
+        FormActions(Submit(f"{tag}-s2", "S"), Button(f"{tag}-c2", "C")),
+        Submit(f"{tag}-s3", "S"),
+    )
+
+
+def _owner_helper(*fields, view=_ABSENT) -> FormHelper:
+    helper = FormHelper()
+    helper.form_tag = False
+    helper.layout = Layout(*fields)
+    if view is not _ABSENT:
+        helper.view = view
+    return helper
+
+
+def _modes(markup: str) -> dict[str, tuple[str, str]]:
+    """tag -> the (submit, cancel) mode signature of its controls; all controls of a tag must agree."""
+    seen: dict[str, set] = {}
+    for el in _buttons(markup):
+        tag, _, which = el.get("name").rpartition("-")
+        seen.setdefault(tag, set()).add((which[0], el.get("class").removeprefix("m-")))
+    result = {}
+    for tag, pairs in seen.items():
+        submit = {m for w, m in pairs if w == "s"}
+        cancel = {m for w, m in pairs if w == "c"}
+        assert len(submit) == 1 and len(cancel) == 1, (tag, pairs)
+        result[tag] = (submit.pop(), cancel.pop())
+    return result
+
+
+def _crispy_owned(form, helper, **page) -> str:
+    context = Context({"form": form, "helper": helper, **page})
+    before = [dict(d) for d in context.dicts]
+    out = CRISPY.render(context)
+    assert [dict(d) for d in context.dicts] == before
+    return out
+
+
+def _resolve_owner(owners, value):
+    """A named test owner; ordinary, falsey and string owners are real objects, never a CrudView."""
+    from django.views.generic import View
+
+    special = {"ordinary": View, "falsey": _Falsey, "string": lambda: "PAGE"}
+    return special[value]() if value in special else getattr(owners, value)
+
+
+def _sig(name):
+    return SIGNATURES.get(name, S)
+
+
+@pytest.mark.parametrize(
+    ("form_owner", "helper_owner", "page_owner", "winner"),
+    [
+        ("R", "RH", "P", "R"),
+        (_ABSENT, "RH", "P", "RH"),
+        (None, "RH", "P", "RH"),
+        (_ABSENT, _ABSENT, "P", "P"),
+        (None, None, "P", "P"),  # a helper view=None overlay never hides the page
+        (_ABSENT, None, _ABSENT, "S"),
+        (None, None, None, "S"),
+        ("R", None, None, "R"),
+        (_ABSENT, "RH", None, "RH"),
+        # an explicit ordinary owner stops the lookup: settings, never a lower CrudView
+        ("ordinary", "RH", "P", "S"),
+        ("falsey", "RH", "P", "S"),
+        (None, "ordinary", "P", "S"),
+        (_ABSENT, "falsey", "P", "S"),
+        (None, None, "ordinary", "S"),
+        (None, None, "falsey", "S"),
+        ("string", "RH", "P", "S"),
+    ],
+)
+def test_owner_priority(owners, form_owner, helper_owner, page_owner, winner):
+    def resolve(value):
+        if value is _ABSENT or value is None:
+            return value
+        return _resolve_owner(owners, value)
+
+    page = {} if page_owner is _ABSENT else {"view": resolve(page_owner)}
+    helper = _owner_helper(*_controls("x"), view=resolve(helper_owner))
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        markup = _crispy_owned(_owned_form(resolve(form_owner)), helper, **page)
+    assert _modes(markup) == {"x": _sig(winner)}
+
+
+def test_crud_view_instances_own_like_their_class(owners):
+    helper = _owner_helper(*_controls("x"), view=None)
+    assert _modes(_crispy_owned(_owned_form(owners.R()), helper, view=owners.P())) == {"x": SIGNATURES["R"]}
+    assert _modes(_crispy_owned(_owned_form(), helper, view=owners.P())) == {"x": SIGNATURES["P"]}
+
+
+def test_page_owner_survives_nested_context_pushes(owners):
+    helper = _owner_helper(*_controls("x"), view=None)
+    context = Context({"view": owners.P})
+    context.push({"unrelated": 1})
+    context.push({"view": None})  # page-level None above the page owner: not an owner
+    context.push({"form": _owned_form(), "helper": helper})
+    before = [dict(d) for d in context.dicts]
+    assert _modes(CRISPY.render(context)) == {"x": SIGNATURES["P"]}
+    # a nearer genuine page owner wins over a lower one
+    context.push({"view": owners.H})
+    assert _modes(CRISPY.render(context)) == {"x": SIGNATURES["H"]}
+    context.pop()
+    assert [dict(d) for d in context.dicts] == before
+
+
+NESTED = Template("{% load crispy_forms_tags %}{% crispy inner_form inner_helper %}")
+
+
+def test_enclosing_helper_overlays_are_never_page_layers(owners):
+    from crispy_forms.layout import HTML
+
+    inner = "{% load crispy_forms_tags %}{% crispy inner_form inner_helper %}"
+    middle = "{% load crispy_forms_tags %}{% crispy middle_form middle_helper %}"
+    # page P, outer helper H, a middle helper (stacked enclosing overlays) and the current helper view=None
+    outer_helper = _owner_helper(*_controls("outer"), HTML(middle), *_controls("outer2"), view=owners.H)
+    middle_helper = _owner_helper(*_controls("mid"), HTML(inner), view=owners.OF)
+    inner_helper = _owner_helper(*_controls("in"), view=None)
+    page = {
+        "middle_form": _owned_form(),
+        "middle_helper": middle_helper,
+        "inner_form": _owned_form(None),
+        "inner_helper": inner_helper,
+    }
+    modes = _modes(_crispy_owned(_owned_form(), outer_helper, view=owners.P, **page))
+    assert modes == {
+        "outer": SIGNATURES["H"],
+        "outer2": SIGNATURES["H"],
+        "mid": SIGNATURES["OF"],
+        "in": SIGNATURES["P"],  # P, never an enclosing helper owner
+    }
+    # with no page owner: the settings map, never H or the middle helper
+    for page_view in ({"view": None}, {}):
+        modes = _modes(_crispy_owned(_owned_form(), outer_helper, **page_view, **page))
+        assert modes["in"] == S
+    # explicit current owners still win over P
+    page["inner_form"] = _owned_form(owners.R)
+    assert _modes(_crispy_owned(_owned_form(), outer_helper, view=owners.P, **page))["in"] == SIGNATURES["R"]
+    page["inner_form"] = _owned_form()
+    inner_helper.view = owners.RH
+    assert _modes(_crispy_owned(_owned_form(), outer_helper, view=owners.P, **page))["in"] == SIGNATURES["RH"]
+
+
+def test_explicit_tag_helper_is_respected_and_form_helper_never_read(owners):
+    class NoHelperForm(forms.Form):
+        @property
+        def helper(self):
+            raise AssertionError("form.helper must not be read")
+
+    helper = _owner_helper(*_controls("x"), view=owners.RH)
+    assert _modes(_crispy_owned(NoHelperForm(), helper, view=owners.P)) == {"x": SIGNATURES["RH"]}
+
+
+def test_private_helper_owner_entry_wins_for_its_invocation_only(owners):
+    from crud_views.lib.crispy.buttons import _CV_HELPER_OWNER
+
+    class PushingHelper(FormHelper):
+        def render_layout(self, form, context, template_pack=None, **kwargs):
+            context.push({_CV_HELPER_OWNER: self._owner})
+            try:
+                return super().render_layout(form, context, **kwargs)
+            finally:
+                context.pop()
+
+    helper = PushingHelper()
+    helper.form_tag = False
+    helper.layout = Layout(*_controls("x"))
+    helper.view = owners.H  # published in the overlay; the private entry is nearer
+    helper._owner = owners.RH
+    assert _modes(_crispy_owned(_owned_form(), helper, view=owners.P)) == {"x": SIGNATURES["RH"]}
+    helper._owner = None
+    assert _modes(_crispy_owned(_owned_form(), helper, view=owners.P)) == {"x": SIGNATURES["P"]}
+
+
+def test_interleaved_owners_do_not_leak(owners):
+    shared = _owner_helper(*_controls("x"), view=None)
+    first = Context({"form": _owned_form(owners.R), "helper": shared, "view": owners.P})
+    second = Context({"form": _owned_form(), "helper": shared})
+    layers = ([dict(d) for d in first.dicts], [dict(d) for d in second.dicts])
+    out = [CRISPY.render(c) for c in (first, second, first, second)]
+    assert [_modes(o) for o in out] == [{"x": SIGNATURES["R"]}, {"x": S}] * 2
+    assert ([dict(d) for d in first.dicts], [dict(d) for d in second.dicts]) == layers
+    assert not hasattr(shared, "_cv_owner")
+
+
+# the production formset path: Layout(Formsets()) -> formsets.html -> cv_x_formset -> formset.html -> row crispy
+
+
+def _xform(form, helper, *children, prefix="row"):
+    return SimpleNamespace(form=form, helper=helper, formsets=list(children), prefix=prefix, json_data="{}")
+
+
+def _xformset(*rows, prefix="fs"):
+    return SimpleNamespace(
+        render_rows_only=True, end_at_rows=True, prefix=prefix, forms=list(rows), cv_toggle_field=None
+    )
+
+
+def _row(owners, tag, form_owner=_ABSENT, helper_owner=_ABSENT, *children):
+    return _xform(_owned_form(form_owner), _owner_helper(*_controls(tag), view=helper_owner), *children, prefix=tag)
+
+
+def _render_formsets(owners, *x_formsets, outer_form=_ABSENT, outer_helper=_ABSENT, **page) -> str:
+    from crud_views.lib.formsets import Formsets
+
+    helper = _owner_helper(Formsets(), *_controls("outer"), view=outer_helper)
+    return _crispy_owned(_owned_form(outer_form), helper, formsets=SimpleNamespace(x_formsets=list(x_formsets)), **page)
+
+
+@pytest.mark.parametrize(
+    ("form_owner", "helper_owner", "winner"),
+    [
+        ("R", "RH", "R"),
+        ("R", None, "R"),
+        (_ABSENT, "RH", "RH"),
+        (None, "RH", "RH"),
+        (_ABSENT, _ABSENT, "P"),
+        (None, None, "P"),  # the page survives flatten and the inclusion context.new, never H or OF
+        ("ordinary", "RH", "S"),
+        (None, "falsey", "S"),
+    ],
+)
+def test_formset_rows_use_the_row_form_then_row_helper_then_page(owners, form_owner, helper_owner, winner):
+    def resolve(value):
+        if value is _ABSENT or value is None:
+            return value
+        return _resolve_owner(owners, value)
+
+    row = _row(owners, "row", resolve(form_owner), resolve(helper_owner))
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        markup = _render_formsets(owners, _xformset(row), outer_form=owners.OF, outer_helper=owners.H, view=owners.P)
+    assert _modes(markup) == {"row": _sig(winner), "outer": SIGNATURES["OF"]}
+
+
+@pytest.mark.parametrize(
+    ("page", "expected"),
+    [({"view": None}, "S"), ({}, "S"), ({"view": "ordinary"}, "S"), ({"view": "falsey"}, "S"), ({"view": "P"}, "P")],
+    ids=["none", "absent", "ordinary", "falsey", "page"],
+)
+def test_formset_page_tier_is_transported_exactly(owners, page, expected):
+    if "view" in page and isinstance(page["view"], str):
+        page = {"view": _resolve_owner(owners, page["view"])}
+    row = _row(owners, "row", None, None)
+    child = _xformset(_row(owners, "child", _ABSENT, None), prefix="child-fs")
+    parent = _row(owners, "parent", _ABSENT, _ABSENT, child)
+    markup = _render_formsets(owners, _xformset(row, parent), outer_helper=owners.H, **page)
+    sig = _sig(expected)
+    # the recursive child inclusion propagates the same page fallback; the outer helper owns its own controls
+    assert _modes(markup) == {"row": sig, "parent": sig, "child": sig, "outer": SIGNATURES["H"]}
+
+
+def test_formset_child_rows_keep_their_own_owners(owners):
+    child = _xformset(_row(owners, "child", owners.R, owners.H), _row(owners, "child2", None, owners.RH))
+    parent = _row(owners, "parent", owners.OF, _ABSENT, child)
+    markup = _render_formsets(owners, _xformset(parent), outer_helper=owners.H, view=owners.P)
+    modes = _modes(markup)
+    assert (modes["parent"], modes["child"], modes["child2"]) == (
+        SIGNATURES["OF"],
+        SIGNATURES["R"],
+        SIGNATURES["RH"],
+    )
+
+
+def test_two_formset_pages_are_independent(owners):
+    first = _xformset(_row(owners, "row", None, None))
+    second = _xformset(_row(owners, "row", None, None))
+    a = _render_formsets(owners, first, outer_helper=owners.H, view=owners.P)
+    b = _render_formsets(owners, second, outer_helper=owners.H, view=owners.R)
+    again = _render_formsets(owners, first, outer_helper=owners.H, view=owners.P)
+    assert _modes(a)["row"] == _modes(again)["row"] == SIGNATURES["P"]
+    assert _modes(b)["row"] == SIGNATURES["R"]
+
+
+def test_standalone_cv_x_formset_derives_the_page_tier(owners):
+    standalone = Template("{% load crud_views_formsets %}{% cv_x_formset xfs %}")
+    xfs = _xformset(_row(owners, "row", None, None), _row(owners, "row2", _ABSENT, owners.RH))
+    context = Context({"view": owners.P, "xfs": xfs})
+    before = [dict(d) for d in context.dicts]
+    assert _modes(standalone.render(context)) == {"row": SIGNATURES["P"], "row2": SIGNATURES["RH"]}
+    assert [dict(d) for d in context.dicts] == before
+    assert _modes(standalone.render(Context({"xfs": xfs}))) == {"row": S, "row2": SIGNATURES["RH"]}
+
+
+def test_formset_render_failure_leaves_the_caller_context_unchanged(owners):
+    from crud_views.lib.formsets import Formsets
+
+    bad = _xformset(_xform(_owned_form(), _owner_helper(Submit("bad-s", "S", slot="formset:control"))))
+    helper = _owner_helper(Formsets(), view=owners.H)
+    context = Context({"form": _owned_form(), "helper": helper, "view": owners.P, "formsets": None})
+    context.push({"formsets": SimpleNamespace(x_formsets=[bad])})
+    before = [dict(d) for d in context.dicts]
+    with pytest.raises(ValueError, match="slot"):
+        CRISPY.render(context)
+    assert [dict(d) for d in context.dicts] == before
+    context["formsets"] = SimpleNamespace(x_formsets=[_xformset(_row(owners, "row", None, None))])
+    assert _modes(CRISPY.render(context))["row"] == SIGNATURES["P"]
+
+
+def test_formset_transport_key_is_private(owners):
+    from crud_views.lib.crispy.buttons import _CV_PAGE_OWNER
+
+    assert _CV_PAGE_OWNER.startswith("_") and not _CV_PAGE_OWNER.startswith("cv_")
+    markup = _render_formsets(owners, _xformset(_row(owners, "row", None, None)), view=owners.P)
+    assert _CV_PAGE_OWNER not in markup
+
+
+def test_overlay_classification_on_stacked_invocations(owners):
+    """Every {% crispy %} invocation leaves exactly one response overlay; page layers and FormActions are not."""
+    from crispy_forms.layout import HTML
+
+    from crud_views.lib.crispy.buttons import _cv_helper_tier, _cv_page_tier, _is_response_overlay
+
+    seen = []
+
+    class Spy(Submit):
+        def render(self, form, context, *args, **kwargs):
+            seen.append((list(context.dicts), _cv_helper_tier(context), _cv_page_tier(context)))
+            return super().render(form, context, *args, **kwargs)
+
+    inner = "{% load crispy_forms_tags %}{% crispy inner_form inner_helper %}"
+    outer_helper = _owner_helper(FormActions(Spy("o-s", "S")), HTML(inner), view=owners.H)
+    inner_helper = _owner_helper(FormActions(Spy("i-s1", "S")), FormActions(Spy("i-s2", "S")), Spy("i-s3", "S"))
+    inner_helper.view = None
+    _crispy_owned(_owned_form(), outer_helper, view=owners.P, inner_form=_owned_form(), inner_helper=inner_helper)
+    overlays = [sum(map(_is_response_overlay, dicts)) for dicts, _, _ in seen]
+    assert overlays == [1, 2, 2, 2]
+    assert [(helper, page) for _, helper, page in seen] == [(owners.H, owners.P)] + [(None, owners.P)] * 3
+    # the trailing control sits under more leftover FormActions layers than the first, still the same overlay
+    assert len(seen[3][0]) > len(seen[1][0])
+    for dicts, _, _ in seen:
+        page_layers = [d for d in dicts if "view" in d and not _is_response_overlay(d)]
+        assert [d["view"] for d in page_layers] == [owners.P]
+
+
+def test_transported_page_owner_is_authoritative_even_when_none(owners):
+    from crud_views.lib.crispy.buttons import _CV_PAGE_OWNER, _cv_page_tier
+
+    context = Context({"view": owners.P})
+    assert _cv_page_tier(context) is owners.P
+    context.push({_CV_PAGE_OWNER: None})
+    assert _cv_page_tier(context) is None  # an explicit transported None: no page owner, not the lower view
+    context.push({_CV_PAGE_OWNER: owners.R})
+    context.push({"view": owners.H})
+    assert _cv_page_tier(context) is owners.R

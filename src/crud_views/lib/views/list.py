@@ -153,9 +153,8 @@ class ListViewFilterFormHelper(FormHelper):
             prepared = copy.deepcopy(current)
             prepared.__class__ = _prepared_layout_class(type(current))
             self._cv_default_fields = False
+        # a new prepared layout: render_layout resolves its action group once (identity, not a lifetime flag)
         self._cv_prepared = prepared
-        self._cv_actions_layout = None
-        self._cv_actions = None
         self.layout = prepared
         return prepared
 

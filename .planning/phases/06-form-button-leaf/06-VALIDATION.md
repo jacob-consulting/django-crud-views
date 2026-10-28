@@ -1,9 +1,9 @@
 ---
 phase: "06"
 slug: "form-button-leaf"
-status: draft
+status: executed
 nyquist_compliant: false
-wave_0_complete: false
+wave_0_complete: true
 created: "2026-10-27"
 ---
 
@@ -18,7 +18,7 @@ created: "2026-10-27"
 | Quick Python | `.venv/bin/pytest tests/test1/test_crispy_buttons.py tests/test1/test_button_data.py -q` |
 | Quick JavaScript | `bash .planning/phases/06-form-button-leaf/06-js-verify.sh tests/js/modal.test.js tests/js/viewset.test.js tests/js/list.filter.test.js` |
 | Full suites | `.venv/bin/pytest tests -n auto` and `bash .planning/phases/06-form-button-leaf/06-js-verify.sh` |
-| Runtime | Not measured; measure during execution, do not infer from inherited research |
+| Runtime | Measured in 06-09: full Python 57.25 s (4445 tests, `-n auto`); full JS 2.90 s (223 tests); focused repair shard 1.79 s; crispy_floor 42 s for both sessions |
 
 ## Sampling Rate
 
@@ -36,42 +36,55 @@ created: "2026-10-27"
 
 ## Per-Task Verification Map
 
-All tasks map to executable PLAN commands and immediate fails_when conditions. Pending means planned, not passed.
+All tasks map to executable PLAN commands and immediate fails_when conditions. Status values come from 06-09 measurements at HEAD `e40b0de` (06-ACCEPTANCE.md); a row says passed only when its gate was re-run there.
 
 | Task | Wave | Requirements | Threat Ref | Verification target | Status |
 |---|---|---|---|---|---|
-| 06-01-1..3 | 1 | FORM-01/02/05/06/08/11 | T-06-01 | Real crispy tracer; spec and executing-branch prerequisite evidence (D-18); five golden captures and commit history | pending |
-| 06-02-1 | 2 | FORM-02/03/04/06/07 | T-06-02/03 | Real leaf plus atomic location consumers, utilities, exhaustive EXPECTED_KEYS and docs count | pending |
-| 06-02-2 | 2 | FORM-05/07 | T-06-02/03/04 | Custom templates, literal/SafeString/lazy attrs; floor invariant | pending |
-| 06-02-3 | 2 | FORM-06 | T-06-04 | Golden diffs, CRUD and cancel payloads | pending |
-| 06-03-1..2 | 3 | FORM-10/11 | T-06-05/06 | Singleton maps versus lazy floor overrides; whole maps, actual render-form identity, multiple FormActions and nested formset rows | pending |
-| 06-04-1 | 4 | FORM-03/04/09/10 | T-06-07 | Host/inline modes, class grammar and key count | pending |
-| 06-04-2 | 4 | FORM-09/10 | T-06-08 | Workflow/custom icon precedence | pending |
-| 06-05-1 | 5 | FORM-06/08/10 | T-06-09/10 | Filter endpoint/golden, retained GET controls and pack-owned trailing wrapper | pending |
-| 06-05-2 | 5 | FORM-05/08 | T-06-09 | Empty/nonempty layout replacement before dispatch, isolation, helper.form identity, hook omission and quiet legacy inputs | pending |
-| 06-06-1 | 6 | FORM-11/12 | T-06-11 | Documented form-specific diagnostics, truthful messages and unchanged context/list checks | pending |
-| 06-06-2 | 6 | FORM-02/10/12 | T-06-12 | Provider-aware delete/polymorphic W292, semantic availability, single inline-render counts, host opt-outs and disabled-icon strict/log fallback | pending |
-| 06-07-1 | 7 | FORM-06/07 | T-06-13/SC | Locked-JS native modal SubmitEvent/FormData | pending |
-| 06-07-2 | 7 | FORM-06/08 | T-06-14 | Nested cancel and encoded filter reset | pending |
-| 06-07-3 | 7 | FORM-05/07/08 | T-06-SC | Expanded nox crispy_floor suite | pending |
-| 06-08-1 | 7 | FORM-10/11/12/13 | T-06-15 | Canonical config recipe render and live key count | pending |
-| 06-08-2 | 7 | FORM-05/08/09/13 | T-06-15 | Executable helper/custom-template recipes, including clearing-inputs suppression migration to None hook with preserved hidden controls | pending |
-| 06-08-3 | 7 | FORM-13 | T-06-16 | Strict docs, paired Breaking/migration and example | pending |
-| 06-09-1..2 | 8 | FORM-01..13 | T-06-17 | Full suites, history, security, docs/lint, URLconf-registered example checks, German form values, feature landing pages, doc links and browser evidence | pending |
+| 06-01-1..3 | 1 | FORM-01/02/05/06/08/11 | T-06-01 | Real crispy tracer; spec and executing-branch prerequisite evidence (D-18); five golden captures and commit history | passed (06-09 re-verified: baselines `2956f3e`/`98b71ed` ancestral, `src` tree `dcc38f4` unchanged in both, ACCEPTANCE §3) |
+| 06-02-1 | 2 | FORM-02/03/04/06/07 | T-06-02/03 | Real leaf plus atomic location consumers, utilities, exhaustive EXPECTED_KEYS and docs count | passed (full suite 4445, 06-09) |
+| 06-02-2 | 2 | FORM-05/07 | T-06-02/03/04 | Custom templates, literal/SafeString/lazy attrs; floor invariant | passed (full suite; high-threat shard 109 passed; crispy_floor 1877×2) |
+| 06-02-3 | 2 | FORM-06 | T-06-04 | Golden diffs, CRUD and cancel payloads | passed (ACCEPTANCE §3/§4) |
+| 06-03-1..2 | 3 | FORM-10/11 | T-06-05/06 | Singleton maps versus lazy floor overrides; whole maps, actual render-form identity, multiple FormActions and nested formset rows | passed (full suite; repair shard ACCEPTANCE §5) |
+| 06-04-1 | 4 | FORM-03/04/09/10 | T-06-07 | Host/inline modes, class grammar and key count | passed (full suite) |
+| 06-04-2 | 4 | FORM-09/10 | T-06-08 | Workflow/custom icon precedence | passed (full suite) |
+| 06-05-1 | 5 | FORM-06/08/10 | T-06-09/10 | Filter endpoint/golden, retained GET controls and pack-owned trailing wrapper | passed (full suite) |
+| 06-05-2 | 5 | FORM-05/08 | T-06-09 | Empty/nonempty layout replacement before dispatch, isolation, helper.form identity, hook omission and quiet legacy inputs | passed (repair shard: guards `(True, True, 0, False)`) |
+| 06-06-1 | 6 | FORM-11/12 | T-06-11 | Documented form-specific diagnostics, truthful messages and unchanged context/list checks | passed (full suite) |
+| 06-06-2 | 6 | FORM-02/10/12 | T-06-12 | Provider-aware delete/polymorphic W292, semantic availability, single inline-render counts, host opt-outs and disabled-icon strict/log fallback | passed (repair shard: unknown prefix W292, one call per icon/both render) |
+| 06-07-1 | 7 | FORM-06/07 | T-06-13/SC | Locked-JS native modal SubmitEvent/FormData | passed (06-js-verify.sh 223/223, lock re-asserted) |
+| 06-07-2 | 7 | FORM-06/08 | T-06-14 | Nested cancel and encoded filter reset | passed (06-js-verify.sh 223/223) |
+| 06-07-3 | 7 | FORM-05/07/08 | T-06-SC | Expanded nox crispy_floor suite | passed (Django 4.2.30 and 6.0.9: 1877 each) |
+| 06-08-1 | 7 | FORM-10/11/12/13 | T-06-15 | Canonical config recipe render and live key count | passed (full suite) |
+| 06-08-2 | 7 | FORM-05/08/09/13 | T-06-15 | Executable helper/custom-template recipes, including clearing-inputs suppression migration to None hook with preserved hidden controls | passed (full suite) |
+| 06-08-3 | 7 | FORM-13 | T-06-16 | Strict docs, paired Breaking/migration and example | passed (mkdocs --strict exit 0; example gates ACCEPTANCE §8) |
+| 06-09-1 | 8 | FORM-01..13 | T-06-17 | Full suites, history, security, payload, cycle-3 repairs | passed (ACCEPTANCE §2–§7) |
+| 06-09-2 | 8 | FORM-04/06/08/10/13 | T-06-17 | Docs/lint, URLconf-registered example checks, German form values, feature landing pages, doc links and browser evidence | see ACCEPTANCE §8–§11 |
+
+## Threat verification (06-09, measured)
+
+| Threats | Severity | Evidence | Status |
+|---|---|---|---|
+| T-06-02, T-06-03, T-06-15 | high | Literal/hostile/`{{ request.user }}` leaf and recipe tests (high-threat shard 109 passed) | mitigated |
+| T-06-05, T-06-09 | high | Owner and filter-layout isolation tests, including the cycle-3 repair shard (102 passed) | mitigated |
+| T-06-13 | high | Native SubmitEvent/FormData modal suite on the locked jsdom runtime (JS shard 123 passed) | mitigated |
+| T-06-SC | high | Lock sha256 and 71 lock-matched packages re-asserted by 06-js-verify.sh; floor sessions install declared pins only; no install in 06-09 | mitigated; WINDOWS #6 dev-only `undici` audit advisory stays open (not a form-render finding) |
+| T-06-01, 04, 06, 07, 08, 10, 11, 12, 14, 16, 17 | medium | ACCEPTANCE §3/§4/§7 | mitigated |
+
+No high or critical threat is unresolved. The medium items are listed with their dispositions above, not omitted.
 
 ## Wave 0 Requirements
 
-- [ ] Capture and commit before-change form goldens before any product edits.
-- [ ] Add real `{% crispy %}` fixture coverage, including helper context shadowing and no-layout helpers.
-- [ ] Preserve custom helper constructor signatures; test class layout cloning, two instances and repeated render.
-- [ ] Cover replacement/omission via `get_form_actions()` and legacy `add_input()` without new warnings.
-- [ ] Exercise empty caller Layout() replacement before/between real crispy renders; preparation must precede both helper and layout truthiness guards; real-tag dispatch must occur even when len(helper) is zero.
-- [ ] Distinguish singleton-map monkeypatch tests from nested live-floor override_settings tests.
-- [ ] Count custom inline renderer calls and preserve host placement/opt-outs while testing semantic disabled-icon strict/log fallback.
-- [ ] Execute the documented helper.inputs=[] suppression migration to a None-returning hook with unchanged fields/hidden GET values.
-- [ ] Establish a reproducible oldest-crispy session without raising declared floors or replacing the existing matrix.
-- [ ] Before wave 1 sampling, obtain the compatible isolated Node and exact locked packages, or record the blocker; create the absolute-runtime wrapper and evidence without changing dependency declarations.
-- [ ] Test native SubmitEvent/FormData behavior without replacing it with a polyfill that hides failures.
+- [x] Capture and commit before-change form goldens before any product edits. (`2956f3e`, `98b71ed`)
+- [x] Add real `{% crispy %}` fixture coverage, including helper context shadowing and no-layout helpers.
+- [x] Preserve custom helper constructor signatures; test class layout cloning, two instances and repeated render.
+- [x] Cover replacement/omission via `get_form_actions()` and legacy `add_input()` without new warnings.
+- [x] Exercise empty caller Layout() replacement before/between real crispy renders; preparation must precede both helper and layout truthiness guards; real-tag dispatch must occur even when len(helper) is zero.
+- [x] Distinguish singleton-map monkeypatch tests from nested live-floor override_settings tests.
+- [x] Count custom inline renderer calls and preserve host placement/opt-outs while testing semantic disabled-icon strict/log fallback.
+- [x] Execute the documented helper.inputs=[] suppression migration to a None-returning hook with unchanged fields/hidden GET values.
+- [x] Establish a reproducible oldest-crispy session without raising declared floors or replacing the existing matrix.
+- [x] Before wave 1 sampling, obtain the compatible isolated Node and exact locked packages, or record the blocker; create the absolute-runtime wrapper and evidence without changing dependency declarations.
+- [x] Test native SubmitEvent/FormData behavior without replacing it with a polyfill that hides failures.
 
 ## Manual-Only Verifications
 

@@ -1,5 +1,6 @@
 """Crispy form buttons read the layered button class table and render through the form-button leaf (Phase 6)."""
 
+import copy
 import logging
 import re
 import warnings
@@ -1726,3 +1727,143 @@ def test_filter_custom_layout_class_keeps_its_behavior_while_isolated():
     assert isinstance(helper.layout, MarkedLayout) and helper.layout is not caller
     assert type(caller) is MarkedLayout and len(caller.fields) == 2
     assert bool(MarkedLayout()) is False  # the user's class keeps crispy's len-based truthiness
+
+
+# --- copied layouts keep their kind icons (06-10: CR-01 / WR-01) ---------------------------------------------------
+
+# name -> (Font Awesome classes of the kind default, label) of the package controls in a copied filter layout
+COPIED = {"submit": ("fa-solid fa-filter", "Go"), "reset": ("fa-solid fa-rotate-left", "Clear")}
+COPIED_CONTROLS = [("button", "submit", "submit", "Go"), ("button", "reset", "reset", "Clear")]
+# the semantic icon name each kind resolves to when icon= is omitted (D-16)
+KIND_ICON_NAMES = {
+    "submit": "save",
+    "delete": "delete",
+    "cancel": "cancel",
+    "filter-submit": "filter",
+    "filter-reset": "filter-reset",
+}
+# a submitted name suggesting another kind: the slot, never the name, picks the icon
+MISLEADING_NAMES = {
+    "submit": "delete",
+    "delete": "reset",
+    "cancel": "submit",
+    "filter-submit": "reset",
+    "filter-reset": "submit",
+}
+
+
+def _copied_layout() -> Layout:
+    return Layout(
+        "name",
+        FormActions(Submit("submit", "Go", slot="form:filter-submit", css_class="x-go"), Reset("reset", "Clear")),
+    )
+
+
+def _copied_buttons(out: str, mode: str) -> list[tuple]:
+    """Asserts the kind icon and accessible label of each copied control; returns their (id, class) pairs."""
+    root = _fragment(out)
+    seen = []
+    for name, (fa, label) in COPIED.items():
+        (el,) = root.cssselect(f"button[name={name}]")
+        assert _icon_classes(el) == [fa]
+        (span,) = el.cssselect("span")
+        assert span.text == label
+        if mode == "icon":
+            assert span.get("class") == "visually-hidden"
+            assert el.get("title") == label and el.get("data-cv-tooltip") == "form"
+        else:
+            assert span.get("class") is None
+            assert el.get("title") is None and el.get("data-cv-tooltip") is None
+        seen.append((el.get("id"), el.get("class")))
+    return seen
+
+
+@pytest.mark.parametrize("strict", [True, False], ids=["strict", "lenient"])
+@pytest.mark.parametrize("mode", ["both", "icon"])
+@pytest.mark.parametrize("where", ["class", "before-first-render", "between-renders"])
+def test_copied_filter_layout_keeps_kind_icons(where, mode, strict, caplog):
+    """CR-01 / D-03 / D-16: package buttons inside a class-level or caller-assigned filter layout are deep-copied per
+    helper and still render their kind icons through the real crispy tag, with no warning and no strict error."""
+    source = _copied_layout()
+    source_actions = source.fields[1]
+    source_buttons = list(source_actions.fields)
+    form = _CityForm()
+    expected = _fields("name") + COPIED_CONTROLS + HIDDEN_SORT
+    attrs = set()
+    settings = {"CRUD_VIEWS_LABEL_MODE_DEFAULTS": {"form": mode}, "CRUD_VIEWS_STRICT": strict}
+    with override_settings(**settings), warnings.catch_warnings(), caplog.at_level(logging.DEBUG):
+        warnings.simplefilter("error")
+        if where == "class":
+            helper_cls = _filter_helper_class(layout=source, actions=None)
+            helper, other = _new_filter_helper(helper_cls, form=form), _new_filter_helper(helper_cls)
+        else:
+            helper_cls = _filter_helper_class(layout=Layout("city"), actions=None)
+            helper, other = _new_filter_helper(helper_cls, form=form), _new_filter_helper(helper_cls)
+            if where == "between-renders":
+                assert _controls_of(_filter_render(form, helper)) == _fields("city") + HIDDEN_SORT
+            helper.layout = source
+            other.layout = source
+        for _ in range(3):
+            for current in (helper, other, helper):
+                out = _filter_render(form if current is helper else _CityForm(), current)
+                assert _controls_of(out) == expected
+                assert len(_action_groups(out)) == 1
+                attrs.add(tuple(_copied_buttons(out, mode)))
+    assert [r for r in caplog.records if r.levelno >= logging.WARNING] == []
+    # ids and classes are stable across helpers and renders; the project css_class is kept
+    assert len(attrs) == 1
+    ((submit_id, submit_class), (reset_id, _)) = attrs.pop()
+    assert (submit_id, reset_id) == ("submit-id-submit", "reset-id-reset")
+    assert "x-go" in submit_class.split()
+    # the source layout is never rendered or mutated: each helper renders its own copy of its buttons
+    assert source.fields[0] == "name" and source.fields[1] is source_actions and len(source.fields) == 2
+    assert source_actions.fields == source_buttons
+    copies = [current.layout.fields[1].fields for current in (helper, other)]
+    assert all(len(buttons) == 2 for buttons in copies)
+    assert all(b is not s for buttons in copies for b, s in zip(buttons, source_buttons, strict=True))
+    assert all(a is not b for a, b in zip(*copies, strict=True))
+    assert helper.form is form
+
+
+@pytest.mark.parametrize("kind", sorted(KIND_ICONS))
+def test_copied_adapter_keeps_icon_contract(kind):
+    """CR-01 / WR-01: a copied adapter without icon= resolves its kind's named icon (a str), whatever its name."""
+    from crud_views.lib.view.button_data import cv_button_data
+
+    adapter, slot, fa = KIND_ICONS[kind]
+    original = adapter(MISLEADING_NAMES[kind], "Go", **slot)
+    for copier in (copy.copy, copy.deepcopy):
+        copied = copier(original)
+        assert copied is not original
+        for mode in ("label", "both", "icon"):
+            data = cv_button_data({**copied._cv_button_context(), "cv_label_mode": mode}, "form")
+            assert type(data["cv_icon"]) is str and data["cv_icon"] == KIND_ICON_NAMES[kind]
+    copied = copy.deepcopy(original)
+    for mode in ("both", "icon"):
+        with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"form": mode}, CRUD_VIEWS_STRICT=True):
+            (el,) = _buttons(_render(_helper(copied)))
+        assert _icon_classes(el) == [fa]
+        assert el.get("name") == MISLEADING_NAMES[kind]
+
+
+@pytest.mark.parametrize(
+    "control,expected,fa",
+    [
+        (Submit("submit", "Go", icon=None), None, []),
+        (Reset("reset", "Clear", icon=""), "", []),
+        (Submit("delete", "Go", slot="form:filter-submit", icon=None), None, []),
+        (Button("submit", "Go", icon="workflow"), "workflow", [WORKFLOW_ICON]),
+        (Submit("reset", "Go", slot="form:delete", icon="fas:rocket"), "fas:rocket", ["fa-solid fa-rocket"]),
+    ],
+    ids=["none", "empty", "none-misnamed", "workflow", "prefixed-misnamed"],
+)
+def test_copied_adapter_preserves_explicit_icon(control, expected, fa):
+    """D-16: an explicit icon= (a choice, or None / "" for no icon) survives copying and is never the kind default."""
+    for copied in (copy.copy(control), copy.deepcopy(control)):
+        raw = copied._cv_button_context()["cv_icon"]
+        assert raw == expected and type(raw) is type(expected)
+        with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"form": "both"}, CRUD_VIEWS_STRICT=True):
+            (el,) = _buttons(_render(_helper(copied)))
+        assert _icon_classes(el) == fa
+    # the original keeps its own explicit choice
+    assert control._cv_button_context()["cv_icon"] == expected

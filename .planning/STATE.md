@@ -3,16 +3,16 @@ gsd_state_version: "1.0"
 current_phase: 06
 current_phase_name: Form-button leaf
 status: executing
-stopped_at: Completed 06-06-PLAN.md
-last_updated: "2026-10-28T07:50:57.529Z"
+stopped_at: Completed 06-07-PLAN.md
+last_updated: "2026-10-28T08:06:16.936Z"
 last_activity: 2026-10-28
 last_activity_desc: Phase 06 execution started
-state_head: de3f56dcfcf236ad9833d63d69624dc8d5d1d8a3
+state_head: 374131ae59d6a812879a3b5c609d9cb662714e74
 progress:
   total_phases: 7
   completed_phases: 5
   total_plans: 23
-  completed_plans: 20
+  completed_plans: 21
   percent: 71
 ---
 
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-10-27)
 ## Current Position
 
 Phase: 06 (Form-button leaf) — EXECUTING
-Plan: 7 of 9
+Plan: 8 of 9
 Status: Ready to execute
 Last activity: 2026-10-28 — Phase 06 execution started
 
@@ -82,6 +82,7 @@ Progress: [███████░░░] 71%
 | Phase 06 P04 | 12 min | 2 tasks | 7 files |
 | Phase 06 P05 | 15 min | 2 tasks | 5 files |
 | Phase 06 P06 | 20 min | 2 tasks | 10 files |
+| Phase 06 P07 | 14min | 3 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -144,6 +145,9 @@ Recent decisions affecting current work:
 - [Phase 06]: 06-06: form cv_form_actions_label_mode uses a form-only policy (E211 shape stops traversal, E210 per invalid mode, W291 unknown kinds with valid modes); settings form map is E106 and ViewSet form map a construction error against FORM_KINDS
 - [Phase 06]: 06-06: W292 static reach picks the provider first (CrispyDeleteForm delete+cancel, else submit+cancel), filter helpers with inherited get_form_actions, concrete dict polymorphic_forms; overridden hooks and custom get_form_class are runtime-only
 - [Phase 06]: 06-06: icons._icon_available decides availability without rendering (registry None/empty, unknown prefix, unusable renderer, invalid built-in font class); the form normalizer raises in strict mode, else logs per render and falls back to label
+- [Phase 06]: 06-07: modal.js, viewset.js and list.filter.js stay byte-identical; native submitter, cancel and reset regressions pass on the existing handlers and are proven discriminating by source mutations
+- [Phase 06]: 06-07: crispy_floor nox session (py3.12 x Django 4.2/6.0, crispy 2.0 / crispy-bootstrap5 2023.10) deselects only the pack-whitespace-bound filter region golden; test_filter_form_controls_match_golden byte-checks the leaf controls everywhere
+- [Phase 06]: 06-07: list.filter.test.js:159 jsdom 30.1.2 selector failure fixed test-only with :scope; full JS gate 223/223
 
 ### Pending Todos
 
@@ -175,6 +179,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-28T07:50:57.057Z
-Stopped at: Completed 06-06-PLAN.md
+Last session: 2026-10-28T08:06:16.509Z
+Stopped at: Completed 06-07-PLAN.md
 Resume file: None

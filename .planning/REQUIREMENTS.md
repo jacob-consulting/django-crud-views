@@ -42,7 +42,7 @@ except where a requirement says the markup changes.
 - [x] **FORM-05**: crispy `Submit` / `Button` / `Reset` keep their constructor signature and render through the leaf; `css_class` is still appended; extra kwargs render as attributes
 - [x] **FORM-06**: With nothing configured, form buttons render as `<button type="…">` with the same text, classes, `name`, `value`, `id`; POST data unchanged
 - [x] **FORM-07**: Button values/labels are rendered as autoescaped plain text, never evaluated as a Django template; a label containing `<b>` renders escaped (button text and `value` attribute tested)
-- [ ] **FORM-08**: List filter Apply/Reset move from `helper.add_input()` into a layout `FormActions`, so they render through the leaf; `#filter-button-reset` id preserved; hidden sort/order inputs unchanged
+- [x] **FORM-08**: List filter Apply/Reset move from `helper.add_input()` into a layout `FormActions`, so they render through the leaf; `#filter-button-reset` id preserved; hidden sort/order inputs unchanged
 - [ ] **FORM-09**: Icons `save`, `cancel`, `filter-reset` exist in `DEFAULT_ICONS` and `BOOTSTRAP_ICONS`; submit→`save`, delete→`delete`, cancel→`cancel`, filter-submit→`filter`, filter-reset→`filter-reset`; workflow submit uses `workflow`; per-form `submit_icon` wins
 - [ ] **FORM-10**: `CRUD_VIEWS_LABEL_MODE_DEFAULTS = {"form": "both"}` shows icon + text on save, delete, cancel and both filter buttons; `{"form": "icon"}` uses the hidden label with `title` and `data-cv-tooltip="form"`
 - [ ] **FORM-11**: Setting → ViewSet `form_actions_label_mode` → view `cv_form_actions_label_mode` per-key maps resolve like the context/list maps
@@ -133,7 +133,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | FORM-05 | Phase 6 (plan 2) | Complete |
 | FORM-06 | Phase 6 (plan 2) | Complete |
 | FORM-07 | Phase 6 (plan 2) | Complete |
-| FORM-08 | Phase 6 (plan 2) | Pending |
+| FORM-08 | Phase 6 (plan 2) | Complete |
 | FORM-09 | Phase 6 (plan 2) | Pending |
 | FORM-10 | Phase 6 (plan 2) | Pending |
 | FORM-11 | Phase 6 (plan 2) | Pending |

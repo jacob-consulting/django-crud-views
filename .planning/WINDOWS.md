@@ -1,15 +1,15 @@
 ---
 schema_version: 1
-open_count: 3
+open_count: 4
 waived_count: 0
 fixed_count: 5
-total_count: 8
-last_updated: 2026-10-28T07:58:29.012Z
+total_count: 9
+last_updated: 2026-10-28T08:48:15.158Z
 ---
 
 # Broken Windows Ledger
 
-> Cross-phase defect register. With `workflow.windows_enforce` enabled, `/gsd-ship` blocks while `open_count > 0`.
+> Cross-phase defect register. `/gsd-ship` blocks while `open_count > 0`.
 > Waive with `gsd-tools windows waive <id> "<reason>"` (reason required).
 > Mark fixed with `gsd-tools windows fixed <id>`.
 
@@ -23,6 +23,7 @@ last_updated: 2026-10-28T07:58:29.012Z
 | 6 | 06 | deviation | package-lock.json |  | npm audit: high-severity advisories in transitive dev-only undici; lockfile intentionally unchanged in Phase 06 (06-01 deferred-items) | open |  | 2026-10-28T06:15:42.562Z |  |
 | 7 | 06 | stub | src/crud_views/lib/crispy/buttons.py |  | Crispy layout form buttons pass no icon yet: icon/both modes (form floor set to icon or both) render no visible icon until 06-04 adds kind-default icons, icon= hooks and the missing-icon policy | fixed |  | 2026-10-28T06:36:10.760Z | 2026-10-28T07:04:38.892Z |
 | 8 | 06 | stub | src/crud_views/lib/view/button_data.py |  | Form missing-icon policy not yet applied: an icon-mode form button whose icon is explicitly None/empty or unavailable renders hidden text only (no strict ValueError, no logged label fallback) until 06-06 adds the availability predicate and runtime policy | fixed |  | 2026-10-28T07:04:39.037Z | 2026-10-28T07:48:56.639Z |
+| 9 | 06 | unrun-verify | .planning/phases/06-form-button-leaf/06-ACCEPTANCE.md |  | 06-09 human-check pending: hover tooltip (not observed in headless harness), visual quality in label/both/icon, screen-reader announcement and migration-prose readability | open |  | 2026-10-28T08:48:15.158Z |  |
 
 ````json
 [
@@ -36,8 +37,7 @@ last_updated: 2026-10-28T07:58:29.012Z
     "status": "fixed",
     "reason": "",
     "recorded_at": "2026-10-26T11:03:49.854Z",
-    "resolved_at": "2026-10-26T11:04:00.477Z",
-    "milestone": null
+    "resolved_at": "2026-10-26T11:04:00.477Z"
   },
   {
     "id": 2,
@@ -49,8 +49,7 @@ last_updated: 2026-10-28T07:58:29.012Z
     "status": "fixed",
     "reason": "",
     "recorded_at": "2026-10-26T11:03:49.979Z",
-    "resolved_at": "2026-10-26T11:04:00.593Z",
-    "milestone": null
+    "resolved_at": "2026-10-26T11:04:00.593Z"
   },
   {
     "id": 3,
@@ -62,8 +61,7 @@ last_updated: 2026-10-28T07:58:29.012Z
     "status": "open",
     "reason": "",
     "recorded_at": "2026-10-26T12:40:20.697Z",
-    "resolved_at": null,
-    "milestone": null
+    "resolved_at": null
   },
   {
     "id": 4,
@@ -75,8 +73,7 @@ last_updated: 2026-10-28T07:58:29.012Z
     "status": "open",
     "reason": "",
     "recorded_at": "2026-10-26T12:40:20.826Z",
-    "resolved_at": null,
-    "milestone": null
+    "resolved_at": null
   },
   {
     "id": 5,
@@ -88,8 +85,7 @@ last_updated: 2026-10-28T07:58:29.012Z
     "status": "fixed",
     "reason": "",
     "recorded_at": "2026-10-28T06:15:42.420Z",
-    "resolved_at": "2026-10-28T07:58:29.012Z",
-    "milestone": null
+    "resolved_at": "2026-10-28T07:58:29.012Z"
   },
   {
     "id": 6,
@@ -101,8 +97,7 @@ last_updated: 2026-10-28T07:58:29.012Z
     "status": "open",
     "reason": "",
     "recorded_at": "2026-10-28T06:15:42.562Z",
-    "resolved_at": null,
-    "milestone": null
+    "resolved_at": null
   },
   {
     "id": 7,
@@ -114,8 +109,7 @@ last_updated: 2026-10-28T07:58:29.012Z
     "status": "fixed",
     "reason": "",
     "recorded_at": "2026-10-28T06:36:10.760Z",
-    "resolved_at": "2026-10-28T07:04:38.892Z",
-    "milestone": null
+    "resolved_at": "2026-10-28T07:04:38.892Z"
   },
   {
     "id": 8,
@@ -127,8 +121,19 @@ last_updated: 2026-10-28T07:58:29.012Z
     "status": "fixed",
     "reason": "",
     "recorded_at": "2026-10-28T07:04:39.037Z",
-    "resolved_at": "2026-10-28T07:48:56.639Z",
-    "milestone": null
+    "resolved_at": "2026-10-28T07:48:56.639Z"
+  },
+  {
+    "id": 9,
+    "kind": "unrun-verify",
+    "phase": "06",
+    "file": ".planning/phases/06-form-button-leaf/06-ACCEPTANCE.md",
+    "line": null,
+    "description": "06-09 human-check pending: hover tooltip (not observed in headless harness), visual quality in label/both/icon, screen-reader announcement and migration-prose readability",
+    "status": "open",
+    "reason": "",
+    "recorded_at": "2026-10-28T08:48:15.158Z",
+    "resolved_at": null
   }
 ]
 ````

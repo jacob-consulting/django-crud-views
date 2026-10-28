@@ -1043,3 +1043,345 @@ def test_transported_page_owner_is_authoritative_even_when_none(owners):
     context.push({_CV_PAGE_OWNER: owners.R})
     context.push({"view": owners.H})
     assert _cv_page_tier(context) is owners.R
+
+
+# --- semantic icons (D-16, 06-04): kind defaults from the slot, the icon= keyword, per-form icons -----------------
+
+# kind -> (adapter, slot keyword, Font Awesome classes of the kind's default icon)
+KIND_ICONS = {
+    "submit": (Submit, {}, "fa-regular fa-floppy-disk"),
+    "delete": (Submit, {"slot": "form:delete"}, "fa-regular fa-trash-can"),
+    "cancel": (Button, {}, "fa-solid fa-xmark"),
+    "filter-submit": (Submit, {"slot": "form:filter-submit"}, "fa-solid fa-filter"),
+    "filter-reset": (Reset, {}, "fa-solid fa-rotate-left"),
+}
+WORKFLOW_ICON = "fa-solid fa-diagram-project"
+
+
+def _icon_classes(el) -> list[str]:
+    """The classes of each inline icon element of a rendered button."""
+    return [i.get("class") for i in el.cssselect("i")]
+
+
+@pytest.mark.parametrize("mode", ["label", "both", "icon"])
+@pytest.mark.parametrize("kind", sorted(KIND_ICONS))
+def test_kind_default_icons(kind, mode):
+    adapter, slot, fa = KIND_ICONS[kind]
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"form": mode}):
+        (el,) = _buttons(_render(_helper(adapter("go", "Go", **slot))))
+    assert _icon_classes(el) == ([] if mode == "label" else [fa])
+    assert el.get("icon") is None
+    assert [s.text for s in el.cssselect("span")] == ["Go"]
+
+
+@pytest.mark.parametrize(
+    "control,fa",
+    [
+        (Button("submit", "Back"), "fa-solid fa-xmark"),
+        (Reset("reset", "Clear"), "fa-solid fa-rotate-left"),
+        (Button("reset", "Back"), "fa-solid fa-xmark"),
+        (Submit("reset", "Remove", slot="form:delete"), "fa-regular fa-trash-can"),
+        (Submit("delete", "Go", slot="form:submit"), "fa-regular fa-floppy-disk"),
+        (Submit("reset", "Search", slot="form:filter-submit"), "fa-solid fa-filter"),
+    ],
+    ids=["cancel-named-submit", "reset", "cancel-named-reset", "delete-named-reset", "submit-named-delete", "filter"],
+)
+def test_kind_icon_follows_the_slot_not_the_name(control, fa):
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"form": "both"}):
+        (el,) = _buttons(_render(_helper(control)))
+    assert _icon_classes(el) == [fa]
+
+
+@pytest.mark.parametrize("mode", ["both", "icon"])
+def test_explicit_icon_keyword(mode):
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"form": mode}):
+        (rocket,) = _buttons(_render(_helper(Submit("go", "Go", icon="fas:rocket"))))
+        (named,) = _buttons(_render(_helper(Button("go", "Go", icon="workflow"))))
+    assert _icon_classes(rocket) == ["fa-solid fa-rocket"]
+    assert _icon_classes(named) == [WORKFLOW_ICON]
+    assert rocket.get("icon") is None and named.get("icon") is None
+
+
+@pytest.mark.parametrize("value", [None, ""])
+@pytest.mark.parametrize("kind", sorted(KIND_ICONS))
+def test_explicit_none_or_empty_icon_suppresses_the_kind_default(kind, value):
+    from crud_views.lib.view import button_data
+
+    adapter, slot, _ = KIND_ICONS[kind]
+    control = adapter("go", "Go", icon=value, **slot)
+    seen = []
+    real = button_data.cv_button_data
+
+    def spy(ctx, location, kind="action"):
+        seen.append(ctx.get("cv_icon"))
+        return real(ctx, location, kind)
+
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"form": "both"}):
+        original = button_data.cv_button_data
+        button_data.cv_button_data = spy
+        try:
+            (el,) = _buttons(_render(_helper(control)))
+        finally:
+            button_data.cv_button_data = original
+    # the intentional "no icon" reaches the normalizer (and so the missing-icon policy), never the kind default
+    assert seen == [value]
+    assert _icon_classes(el) == []
+    assert el.text_content() == "Go"
+
+
+def test_icon_keyword_is_configuration_not_an_attribute():
+    ours = Submit("go", "Go", icon="fas:rocket", data_x="1")
+    theirs_attrs = str(ours.flat_attrs)
+    assert "icon" not in theirs_attrs and 'data-x="1"' in theirs_attrs
+    # a legacy helper input keeps its extra attributes and never serializes icon=
+    markup = _render(_helper(inputs=[Submit("go", "Go", icon="fas:rocket", data_x="1")]))
+    (el,) = _fragment(markup).cssselect("input[name=go]")
+    assert el.get("data-x") == "1"
+    assert el.get("icon") is None
+    assert "rocket" not in markup
+
+
+def test_interleaved_icons_of_shared_adapters_do_not_leak():
+    rocket = Submit("go", "Go", icon="fas:rocket")
+    plain = Submit("go", "Go")
+    seen = []
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"form": "both"}):
+        for control in (rocket, plain, rocket, plain):
+            (el,) = _buttons(_render(_helper(control)))
+            seen.append(_icon_classes(el))
+    assert seen == [["fa-solid fa-rocket"], ["fa-regular fa-floppy-disk"]] * 2
+
+
+# package forms on real endpoints
+
+
+def _page_buttons(client, path, *names, mode=None) -> dict:
+    from django.utils import translation
+
+    floor = {"CRUD_VIEWS_LABEL_MODE_DEFAULTS": {"form": mode}} if mode else {}
+    with override_settings(**floor), translation.override("en"):
+        response = client.get(path)
+    assert response.status_code == 200
+    doc = lxml_html.fromstring(response.content.decode())
+    return {name: doc.cssselect(f'button[name="{name}"]')[0] for name in names}
+
+
+def _author_pages(author):
+    return {
+        "create": ("/author/create/", "submit", "Create", "fa-regular fa-floppy-disk"),
+        "update": (f"/author/{author.pk}/update/", "submit", "Create", "fa-regular fa-floppy-disk"),
+        "delete": (f"/author/{author.pk}/delete/", "delete", "Delete", "fa-regular fa-trash-can"),
+    }
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("mode", ["both", "icon"])
+@pytest.mark.parametrize("page", ["create", "update", "delete"])
+def test_package_forms_render_their_semantic_icons(
+    page, mode, client_user_author_add, client_user_author_change, client_user_author_delete, author_douglas_adams
+):
+    clients = {"create": client_user_author_add, "update": client_user_author_change}
+    path, name, value, fa = _author_pages(author_douglas_adams)[page]
+    buttons = _page_buttons(clients.get(page, client_user_author_delete), path, name, "reset", mode=mode)
+    action, cancel = buttons[name], buttons["reset"]
+    assert _icon_classes(action) == [fa]
+    assert _icon_classes(cancel) == ["fa-solid fa-xmark"]
+    # unchanged payload: name, value, id, type and the cancel URL
+    assert (action.get("name"), action.get("value"), action.get("type")) == (name, value, "submit")
+    assert (cancel.get("value"), cancel.get("type"), cancel.get("data-cv-cancel-url")) == (
+        "Cancel",
+        "button",
+        "/author/",
+    )
+    for el, text in ((action, value), (cancel, "Cancel")):
+        hidden = [s.text for s in el.cssselect("span.visually-hidden")]
+        if mode == "icon":
+            assert hidden == [text]
+            assert (el.get("title"), el.get("data-cv-tooltip")) == (text, "form")
+        else:
+            assert not hidden and [s.text for s in el.cssselect("span")] == [text]
+            assert el.get("title") is None and el.get("data-cv-tooltip") is None
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("mode", ["both", "icon"])
+def test_workflow_form_uses_the_workflow_icon(mode, client_user_campaign_change, campaign_new):
+    buttons = _page_buttons(
+        client_user_campaign_change, f"/campaign/{campaign_new.pk}/workflow/", "submit", "reset", mode=mode
+    )
+    assert _icon_classes(buttons["submit"]) == [WORKFLOW_ICON]
+    assert _icon_classes(buttons["reset"]) == ["fa-solid fa-xmark"]
+    assert buttons["submit"].get("value") == "Process Workflow Step"
+
+
+# page -> (logged-in client fixture, path); the client fixtures share one Client, so one page per test
+ICON_PAGES = {
+    "create": ("client_user_author_add", "/author/create/"),
+    "workflow": ("client_user_campaign_change", "/campaign/{pk}/workflow/"),
+}
+
+
+def _icon_page(request, page):
+    client, path = ICON_PAGES[page]
+    pk = request.getfixturevalue("campaign_new").pk if page == "workflow" else None
+    return request.getfixturevalue(client), path.format(pk=pk)
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("page", sorted(ICON_PAGES))
+def test_label_floor_keeps_package_forms_icon_free(request, page):
+    for el in _page_buttons(*_icon_page(request, page), "submit", "reset").values():
+        assert not el.cssselect("i, svg, span.visually-hidden")
+
+
+def test_form_icon_defaults():
+    from crud_views.lib.crispy.form import CrispyFormMixin
+    from crud_views_workflow.lib.forms import WorkflowForm
+
+    assert CrispyFormMixin.submit_icon == "save"
+    assert CrispyDeleteForm.delete_icon == "delete"
+    assert WorkflowForm.submit_icon == "workflow"
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("page", sorted(ICON_PAGES))
+def test_per_form_submit_icon_wins(request, page, monkeypatch):
+    from tests.test1.app.views import AuthorCreateView, AuthorForm, CampaignWorkflowForm, CampaignWorkflowView
+
+    class RocketForm(AuthorForm):
+        submit_icon = "fas:rocket"
+
+    class RocketWorkflowForm(CampaignWorkflowForm):
+        submit_icon = "fas:rocket"
+
+    monkeypatch.setattr(AuthorCreateView, "form_class", RocketForm)
+    monkeypatch.setattr(CampaignWorkflowView, "form_class", RocketWorkflowForm)
+    buttons = _page_buttons(*_icon_page(request, page), "submit", "reset", mode="both")
+    assert _icon_classes(buttons["submit"]) == ["fa-solid fa-rocket"]
+    assert _icon_classes(buttons["reset"]) == ["fa-solid fa-xmark"]
+
+
+@pytest.mark.django_db
+def test_hook_kwargs_win_over_the_form_icon(client_user_author_add, monkeypatch):
+    from tests.test1.app.views import AuthorCreateView, AuthorForm
+
+    class HookForm(AuthorForm):
+        submit_icon = "fas:rocket"
+
+        def get_submit_button_kwargs(self) -> dict:
+            return {**super().get_submit_button_kwargs(), "icon": "fas:bolt"}
+
+        def get_cancel_button_kwargs(self) -> dict:
+            return {**super().get_cancel_button_kwargs(), "icon": None}
+
+    monkeypatch.setattr(AuthorCreateView, "form_class", HookForm)
+    buttons = _page_buttons(client_user_author_add, "/author/create/", "submit", "reset", mode="both")
+    assert _icon_classes(buttons["submit"]) == ["fa-solid fa-bolt"]
+    assert _icon_classes(buttons["reset"]) == []
+
+
+@pytest.mark.django_db
+def test_explicit_none_submit_icon_is_no_icon(client_user_author_add, monkeypatch):
+    from tests.test1.app.views import AuthorCreateView, AuthorForm
+
+    class NoIconForm(AuthorForm):
+        submit_icon = None
+
+    monkeypatch.setattr(AuthorCreateView, "form_class", NoIconForm)
+    buttons = _page_buttons(client_user_author_add, "/author/create/", "submit", "reset", mode="both")
+    assert _icon_classes(buttons["submit"]) == []
+    assert buttons["submit"].text_content() == "Create"
+    assert _icon_classes(buttons["reset"]) == ["fa-solid fa-xmark"]
+
+
+@pytest.mark.django_db
+def test_delete_form_icon_and_slot_hooks(client_user_author_delete, author_douglas_adams, monkeypatch):
+    from tests.test1.app.views import AuthorDeleteView
+
+    path = f"/author/{author_douglas_adams.pk}/delete/"
+
+    class SubmitIconForm(CrispyDeleteForm):
+        submit_icon = "fas:rocket"  # inherited, never used by the delete button
+
+    class DeleteIconForm(CrispyDeleteForm):
+        delete_icon = "fas:bomb"
+
+    class CancelSlotForm(CrispyDeleteForm):
+        def get_delete_button_kwargs(self) -> dict:
+            return {**super().get_delete_button_kwargs(), "slot": "form:cancel"}
+
+    expected = {SubmitIconForm: "fa-regular fa-trash-can", DeleteIconForm: "fa-solid fa-bomb"}
+    for form_class, fa in expected.items():
+        monkeypatch.setattr(AuthorDeleteView, "form_class", form_class)
+        buttons = _page_buttons(client_user_author_delete, path, "delete", mode="both")
+        assert _icon_classes(buttons["delete"]) == [fa]
+
+    # a delete payload in the cancel slot: cancel styling and kind, its own name / value / type, the form's icon
+    monkeypatch.setattr(AuthorDeleteView, "form_class", CancelSlotForm)
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"form:cancel:both": "x-cancel"}):
+        delete = _page_buttons(client_user_author_delete, path, "delete", mode="both")["delete"]
+    assert (delete.get("name"), delete.get("value"), delete.get("type"), delete.get("class")) == (
+        "delete",
+        "Delete",
+        "submit",
+        "x-cancel",
+    )
+    assert delete.get("data-cv-cancel-url") is None
+    assert _icon_classes(delete) == ["fa-regular fa-trash-can"]
+
+
+class _CancelOwner:
+    """A minimal non-CrudView owner: the cancel hook needs a request and a cancel button context."""
+
+    request = SimpleNamespace(user=None)
+
+    def get_cancel_button_context(self, obj, user, request):
+        from django.utils.translation import gettext_lazy
+
+        return {"cv_url": "/back/", "cv_action_label": gettext_lazy("Cancel")}
+
+
+def test_form_instances_do_not_share_icons_or_language():
+    from django.utils import translation
+    from django.utils.translation import gettext, gettext_lazy
+
+    from crud_views.lib.crispy import CrispyForm
+
+    class PlainForm(CrispyForm):
+        submit_label = gettext_lazy("Save")
+
+        def get_layout_fields(self):
+            return []
+
+    class RocketForm(PlainForm):
+        submit_icon = "fas:rocket"
+
+    template = Template("{% load crispy_forms_tags %}{% crispy form %}")
+    seen = []
+    instance = PlainForm(cv_view=_CancelOwner())
+    instance.submit_icon = "fas:bolt"  # an instance override stays on that instance
+    forms_in_order = (
+        (RocketForm, "en"),
+        (PlainForm, "de"),
+        (RocketForm, "de"),
+        (PlainForm, "en"),
+        (instance, "de"),
+        (PlainForm, "de"),
+    )
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"form": "icon"}):
+        for form, language in forms_in_order:
+            form = form(cv_view=_CancelOwner()) if isinstance(form, type) else form
+            with translation.override(language):
+                markup = template.render(Context({"form": form}))
+                expected = (gettext("Save"), gettext("Cancel"))
+            submit, cancel = _buttons(markup)
+            seen.append((_icon_classes(submit), _icon_classes(cancel)))
+            assert (submit.get("title"), cancel.get("title")) == expected
+    rocket, floppy, bolt, xmark = (
+        ["fa-solid fa-rocket"],
+        ["fa-regular fa-floppy-disk"],
+        ["fa-solid fa-bolt"],
+        ["fa-solid fa-xmark"],
+    )
+    assert seen == [(rocket, xmark), (floppy, xmark), (rocket, xmark), (floppy, xmark), (bolt, xmark), (floppy, xmark)]
+    assert PlainForm.submit_icon == "save" and RocketForm.submit_icon == "fas:rocket"

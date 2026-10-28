@@ -71,6 +71,30 @@ FORM_LEAF_KEYS = frozenset(
 # the native type of a form button
 FORM_TYPES = frozenset({"submit", "button", "reset"})
 
+# extra attributes a cancel link never emits (D-05, D-07, D-15), compared in lower case: the WHATWG button-only
+# attributes and the submission identity, an extra href (the cancel destination is the one href) and the cancel
+# handler marker (it would stop native navigation)
+_ANCHOR_DROPPED = frozenset(
+    {
+        "command",
+        "commandfor",
+        "disabled",
+        "form",
+        "formaction",
+        "formenctype",
+        "formmethod",
+        "formnovalidate",
+        "formtarget",
+        "name",
+        "popovertarget",
+        "popovertargetaction",
+        "type",
+        "value",
+        "href",
+        "data-cv-cancel-url",
+    }
+)
+
 
 def icon_host_keys(icon: str | None, location: str) -> tuple[str, bool]:
     """``(cv_icon_class, cv_icon_inline)`` for an icon on a button at ``location`` (#258).
@@ -260,6 +284,16 @@ def _emits_disabled(attrs: dict) -> bool:
     )
 
 
+def _anchor_attrs(attrs: dict, generated: frozenset) -> dict:
+    """The extra attributes of a cancel link: every spelling of a dropped or a generated attribute removed.
+
+    HTML attribute names are case-insensitive, so ``HREF`` or ``Class`` would duplicate the leaf's own attribute.
+    Only link output is filtered; a button keeps its extras exactly as before (D-17).
+    """
+    drop = _ANCHOR_DROPPED | generated
+    return {name: value for name, value in attrs.items() if str(name).lower() not in drop}
+
+
 def _form_button_data(ctx: dict) -> dict:
     """The FORM_LEAF_KEYS contract of one form button. Never mutates ctx.
 
@@ -330,6 +364,10 @@ def _form_button_data(ctx: dict) -> dict:
         # the generated title and tooltip marker win over caller attributes of the same name
         attrs.pop("title", None)
         attrs.pop("data-cv-tooltip", None)
+    if tag == "a":
+        # after aliases, reserved fields and the final tag are resolved: the link drops what a button may carry
+        generated = {"id", "class", "title", "data-cv-tooltip"} if label_mode == "icon" else {"id", "class"}
+        attrs = _anchor_attrs(attrs, frozenset(generated))
     flat_attrs = flatatt({k: v if isinstance(v, bool) or v is None else _literal(v) for k, v in attrs.items()})
 
     if label_mode == "label":

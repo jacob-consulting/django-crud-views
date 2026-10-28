@@ -1,5 +1,6 @@
 import copy
 import logging
+import re
 
 import pytest
 from django.test import override_settings
@@ -1105,3 +1106,135 @@ def test_form_tag_resolution_never_mutates_ctx():
             cv_button_data(ctx, "form")
             cv_button_data(ctx, "form")
         assert ctx == before
+
+
+# --- anchor-only attribute filtering (Phase 6.1, D-05, D-07, D-15) -----------------------------------------------
+
+# WHATWG button-only attributes plus the submission identity: never on a cancel link, kept on every button
+BUTTON_ONLY = [
+    "command",
+    "commandfor",
+    "disabled",
+    "form",
+    "formaction",
+    "formenctype",
+    "formmethod",
+    "formnovalidate",
+    "formtarget",
+    "name",
+    "popovertarget",
+    "popovertargetaction",
+    "type",
+    "value",
+]
+
+
+def _spellings(name: str) -> list[str]:
+    return list(dict.fromkeys([name, name.upper(), name.title()]))
+
+
+def _flat_names(data) -> list[str]:
+    return [n.lower() for n in re.findall(r"""\s([^\s=]+)(?==|\s|$)""", str(data["cv_flat_attrs"]))]
+
+
+@pytest.mark.parametrize("spelling", ["lower", "upper", "title"])
+@pytest.mark.parametrize("attr", [*BUTTON_ONLY, "href", "data-cv-cancel-url"])
+def test_form_link_drops_button_only_and_conflicting_attributes(attr, spelling):
+    """D-05/D-07: whatever the letter case, the anchor emits none of them; the cancel URL stays the one href."""
+    name = {"lower": attr, "upper": attr.upper(), "title": attr.title()}[spelling]
+    # an emitted disabled keeps the native button (D-06); on a link only an omitted disabled can arrive
+    value = False if attr == "disabled" else "x"
+    data = cv_button_data(cancel_ctx(cv_tag="a", cv_attrs={name: value}), "form")
+    assert data["cv_tag"] == "a"
+    # the exact lower-case marker is the destination input itself; any other spelling never replaces it
+    assert data["cv_cancel_url"] == ("x" if name == "data-cv-cancel-url" else "/back/")
+    assert attr not in _flat_names(data)
+
+
+@pytest.mark.parametrize("attr", [a for a in BUTTON_ONLY if a not in ("type", "name", "value")] + ["href"])
+def test_form_fallback_and_default_buttons_keep_button_only_attributes(attr):
+    """D-06/D-08/D-17: filtering is conditional on the final tag; every button keeps what it kept before."""
+    for name in _spellings(attr):
+        attrs = {name: "x"}
+        plain = cv_button_data(cancel_ctx(cv_attrs=attrs), "form")
+        assert plain["cv_tag"] == "button"
+        assert f'{name}="x"' in str(plain["cv_flat_attrs"])
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=LINK):
+            # missing destination
+            assert cv_button_data(cancel_ctx(url=_NO_URL, cv_attrs=attrs), "form") == cv_button_data(
+                cancel_ctx(url=_NO_URL, cv_attrs=attrs, cv_tag="button"), "form"
+            )
+            # emitted disabled
+            disabled = {**attrs, "DISABLED": ""} if attr != "disabled" else attrs
+            fallback = cv_button_data(cancel_ctx(cv_attrs=disabled), "form")
+        assert fallback == cv_button_data(cancel_ctx(cv_attrs=disabled, cv_tag="button"), "form")
+        assert fallback["cv_tag"] == "button" and f'{name}="x"' in str(fallback["cv_flat_attrs"])
+        # an ordinary submit is never filtered
+        assert f'{name}="x"' in str(cv_button_data(form_ctx("submit", cv_attrs=attrs), "form")["cv_flat_attrs"])
+
+
+def test_form_link_keeps_link_compatible_attributes():
+    data = cv_button_data(
+        cancel_ctx(
+            cv_tag="a",
+            cv_attrs={
+                "target": "_blank",
+                "rel": "noopener",
+                "autofocus": True,
+                "aria_label": 'Back "home"',
+                "data_x": "1",
+                "data-cv-tooltip": "t",
+                "title": "T",
+                "hidden": False,
+                "lang": None,
+            },
+        ),
+        "form",
+    )
+    flat = str(data["cv_flat_attrs"])
+    assert data["cv_tag"] == "a"
+    # flatatt's own serialization: valued attributes sorted, then the bare booleans
+    assert (
+        flat == ' aria-label="Back &quot;home&quot;" data-cv-tooltip="t" data-x="1" rel="noopener" target="_blank"'
+        ' title="T" autofocus'
+    )
+
+
+@pytest.mark.parametrize("mode", ["label", "both", "icon"])
+def test_form_link_drops_case_variants_of_generated_attributes(mode):
+    """D-15: the generated id and class (and title / tooltip marker in icon mode) cannot be duplicated."""
+    attrs = {"ID": "i", "Class": "c", "id": "extra-id", "class": "more", "TITLE": "T", "Data-Cv-Tooltip": "x"}
+    data = cv_button_data(cancel_ctx(cv_tag="a", cv_label_mode=mode, cv_css_class="first", cv_attrs=attrs), "form")
+    assert data["cv_tag"] == "a"
+    assert (data["cv_id"], data["cv_css_class"]) == ("extra-id", "first more")
+    names = _flat_names(data)
+    assert "id" not in names and "class" not in names
+    if mode == "icon":
+        assert data["cv_title"] == "Cancel"
+        assert names == []
+    else:
+        # outside icon mode no title is generated: the caller's single title and marker stay ordinary attributes
+        assert str(data["cv_flat_attrs"]) == ' Data-Cv-Tooltip="x" TITLE="T"'
+
+
+def test_form_link_escapes_values_once_and_keeps_them_literal():
+    from django.utils.safestring import mark_safe
+
+    hostile = '"><img src=x> & {{ x }}'
+    for wrap in (str, mark_safe):
+        data = cv_button_data(cancel_ctx(cv_tag="a", cv_attrs={"target": wrap(hostile), "HREF": wrap(hostile)}), "form")
+        assert str(data["cv_flat_attrs"]) == ' target="&quot;&gt;&lt;img src=x&gt; &amp; {{ x }}"'
+        assert type(data["cv_cancel_url"]) is str
+
+
+def test_form_link_filtering_never_mutates_ctx():
+    ctx = cancel_ctx(
+        cv_tag="a",
+        cv_label_mode="icon",
+        cv_attrs={"HREF": "/x/", "formaction": "/f/", "ID": "i", "Title": "t", "target": "_top", "data_x": "1"},
+    )
+    before = copy.deepcopy(ctx)
+    first = cv_button_data(ctx, "form")
+    assert cv_button_data(ctx, "form") == first
+    assert ctx == before
+    assert str(first["cv_flat_attrs"]) == ' data-x="1" target="_top"'

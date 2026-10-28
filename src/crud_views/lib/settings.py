@@ -66,6 +66,11 @@ class CrudViewsSettings(BaseModel):
     # it is read raw at call time (override_settings applies) and validated by E108
     context_actions_label_mode: Any = from_settings("CRUD_VIEWS_CONTEXT_ACTIONS_LABEL_MODE", default={})
     list_actions_label_mode: Any = from_settings("CRUD_VIEWS_LIST_ACTIONS_LABEL_MODE", default={})
+    # label mode of crispy form buttons (Phase 6): form kind (submit, cancel, delete, filter-submit, filter-reset) ->
+    # mode, selected whole like the maps above on the view that owns the form (cv_form_actions_label_mode, then the
+    # ViewSet's form_actions_label_mode, then this setting); a form without a crud_views owner uses this setting.
+    # Captured at startup like the other maps; kinds not named take the lazy "form" floor (package default "label")
+    form_actions_label_mode: Any = from_settings("CRUD_VIEWS_FORM_ACTIONS_LABEL_MODE", default={})
 
     # breadcrumb
     breadcrumb_prefix: list[dict[str, Any]] = from_settings("CRUD_VIEWS_BREADCRUMB_PREFIX", default=[])

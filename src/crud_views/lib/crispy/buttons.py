@@ -14,6 +14,31 @@ from crud_views.lib.button_classes import get_button_class
 FORM_LEAF_TEMPLATE = "crud_views/tags/button/form.html"
 
 
+def _cv_form_owner(form, context):
+    """The view that owns a form button: the actual render form's ``cv_view``, else None (no owner).
+
+    Identity, never truthiness: the first candidate that is not None is the owner, even a falsey object.
+    """
+    return getattr(form, "cv_view", None)
+
+
+def _cv_form_label_mode(owner, kind: str) -> str:
+    """The label mode of a form button of ``kind`` once its owner is selected (D-09 to D-13).
+
+    A CrudView owner (class or instance) answers through its public seam ``cv_get_action_label_mode("form", kind)``,
+    so subclass overrides apply. No owner, or an ordinary view without crud_views configuration, uses the settings
+    singleton's form map, then the form floor; a lower view is never borrowed.
+    """
+    # deferred: crud_views.lib.view needs the app registry (see render)
+    from crud_views.lib.settings import crud_views_settings
+    from crud_views.lib.view.base import CrudView
+    from crud_views.lib.view.label_mode import form_label_mode
+
+    if isinstance(owner, CrudView) or (isinstance(owner, type) and issubclass(owner, CrudView)):
+        return owner.cv_get_action_label_mode("form", kind)
+    return form_label_mode(crud_views_settings.form_actions_label_mode, kind)
+
+
 class _TableClassMixin:
     """
     Sets the crispy ``field_classes`` of the instance from the button class table, before crispy
@@ -65,7 +90,9 @@ class _TableClassMixin:
         # (e.g. crud_views_workflow.lib) before django.setup()
         from crud_views.lib.view.button_data import cv_button_data
 
-        data = cv_button_data(self._cv_button_context(), "form")
+        raw = self._cv_button_context()
+        raw["cv_label_mode"] = _cv_form_label_mode(_cv_form_owner(form, context), raw["cv_key"])
+        data = cv_button_data(raw, "form")
         return render_to_string(self.get_template_name(template_pack), data)
 
 

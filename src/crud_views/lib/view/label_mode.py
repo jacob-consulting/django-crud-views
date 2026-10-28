@@ -117,3 +117,30 @@ def default_label_mode(location: str) -> str:
         value,
         lambda: LABEL_MODE_DEFAULTS[location],
     )
+
+
+def form_label_mode(mapping: object, kind: str) -> str:
+    """The label mode of one form kind from the selected whole form-actions map (Phase 6), else the form floor.
+
+    Membership, not a dict.get default: default_label_mode("form") is read (and may raise or warn) only for a kind
+    the map does not name. A selected map that is not a dict, or a mapped value that is not a label mode, raises in
+    strict mode and otherwise falls back to the form floor (logged once), never a membership crash.
+    """
+    if not isinstance(mapping, dict):
+        return _invalid_label_mode(
+            f"form actions label mode must be a dict of form kind -> one of {sorted(LABEL_MODES)}",
+            "form",
+            mapping,
+            lambda: default_label_mode("form"),
+        )
+    if kind not in mapping:
+        return default_label_mode("form")
+    value = mapping[kind]
+    if is_label_mode(value):
+        return value
+    return _invalid_label_mode(
+        f"form actions label mode of {kind!r} must be one of {sorted(LABEL_MODES)}",
+        "form",
+        value,
+        lambda: default_label_mode("form"),
+    )

@@ -84,6 +84,8 @@ class ViewSet(BaseModel):
     # None: CRUD_VIEWS_*_ACTIONS_LABEL_MODE
     context_actions_label_mode: dict[str, str] | None = None
     list_actions_label_mode: dict[str, str] | None = None
+    # label mode of crispy form buttons (Phase 6): form kind -> mode; None: CRUD_VIEWS_FORM_ACTIONS_LABEL_MODE
+    form_actions_label_mode: dict[str, str] | None = None
     # Resource-based ViewSets only: explicit permission map, e.g.
     # {"view": "storage.view_s3object", "delete": "storage.delete_s3object"}.
     # None means: no permissions declared (only non-PermissionRequired views).
@@ -102,7 +104,7 @@ class ViewSet(BaseModel):
     def is_resource(self) -> bool:
         return issubclass(self.model, Resource)
 
-    @field_validator("context_actions_label_mode", "list_actions_label_mode")
+    @field_validator("context_actions_label_mode", "list_actions_label_mode", "form_actions_label_mode")
     @classmethod
     def check_label_mode_map(cls, value):
         """The dict shape is Pydantic's; the values must be label modes (#216)."""

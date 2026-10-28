@@ -47,7 +47,7 @@ from .action_menu import (
 )
 from .buttons import ContextButton, context_button_checks, cv_icon_mode_checks
 from .context import ViewContext
-from .label_mode import default_label_mode, label_mode_check
+from .label_mode import default_label_mode, form_label_mode, label_mode_check
 from .meta import CrudViewMetaClass
 from .variant import variant_check
 from .visibility import cv_resolve_action
@@ -98,6 +98,11 @@ class CrudView(metaclass=CrudViewMetaClass):
     # toolbar only, after the maps and the button's label_mode and before that floor (not to be confused with the
     # per-key dict cv_context_actions_label_mode above)
     cv_context_action_label_mode: str | None = None
+    # label mode per crispy form-button kind of the forms this view owns (Phase 6): submit / cancel / delete /
+    # filter-submit / filter-reset -> "label" / "icon" / "both". None inherits the whole map: the ViewSet's, then
+    # the setting's (CRUD_VIEWS_FORM_ACTIONS_LABEL_MODE); never merged. Unnamed kinds take the form floor of the
+    # defaults map (CRUD_VIEWS_LABEL_MODE_DEFAULTS, package default label)
+    cv_form_actions_label_mode: dict[str, str] | None = None
 
     # modal rendering (Bootstrap 5 theme; see superpowers/specs/2026-07-14-bootstrap-modals-design.md)
     cv_modal: bool = False  # opt-in: action buttons open this view in a modal
@@ -296,6 +301,14 @@ class CrudView(metaclass=CrudViewMetaClass):
         return cls.cv_first_inline_keys(cls.cv_context_actions_label_mode, "context_actions_label_mode")
 
     @classmethod
+    def cv_get_form_actions_label_mode(cls) -> dict[str, str]:
+        """Crispy form-button kind -> label mode (Phase 6), selected whole: view, then ViewSet, then setting.
+
+        Kinds not named take default_label_mode("form"), the form floor.
+        """
+        return cls.cv_first_inline_keys(cls.cv_form_actions_label_mode, "form_actions_label_mode")
+
+    @classmethod
     def cv_get_action_label_mode(
         cls, location: str, key: str, button: ContextButton | None = None, target_default: str | None = None
     ) -> str:
@@ -306,8 +319,10 @@ class CrudView(metaclass=CrudViewMetaClass):
         finally default_label_mode("context"), the context floor of CRUD_VIEWS_LABEL_MODE_DEFAULTS; the floor is read
         only when nothing before it names the key. A list key takes the resolved map if it names the key, else
         default_label_mode("list"), the list floor. Row actions never read the button or the target. button is the
-        key's context button as the rendering view sees it; None looks it up on the class. Cards resolve their mode
-        per CardAction in cv_get_card_action_data() and never come through here.
+        key's context button as the rendering view sees it; None looks it up on the class. A form key is a form kind
+        of a crispy button this view owns: the resolved form map if it names the kind, else default_label_mode("form");
+        no button or target applies. Cards resolve their mode per CardAction in cv_get_card_action_data() and never
+        come through here.
         """
         if location == "context":
             if cls.cv_context_actions_label_mode is not None and key in cls.cv_context_actions_label_mode:
@@ -326,7 +341,9 @@ class CrudView(metaclass=CrudViewMetaClass):
             if key in mapping:
                 return mapping[key]
             return default_label_mode("list")
-        raise ValueError(f"location must be 'context' or 'list', got {location!r}")
+        if location == "form":
+            return form_label_mode(cls.cv_get_form_actions_label_mode(), key)
+        raise ValueError(f"location must be 'context', 'list' or 'form', got {location!r}")
 
     @classmethod
     def cv_has_access(cls, user: User, obj: Model | None = None) -> bool:

@@ -1,4 +1,5 @@
 import copy
+import logging
 
 import pytest
 from django.test import override_settings
@@ -764,3 +765,140 @@ def test_form_invalid_floor_non_strict_falls_back_to_label(caplog):
         assert cv_button_data(form_ctx(), "form")["cv_label_mode"] == "label"
         assert cv_button_data(form_ctx(), "form")["cv_label_mode"] == "label"
     assert len([r for r in caplog.records if "'form'" in r.getMessage()]) == 1
+
+
+# --- the form icon type contract (06-10: WR-02): cv_icon is a nonblank str or None -----------------------------------
+
+BUTTON_LOGGER = "crud_views.lib.view.button_data"
+_NO_ICON = object()  # the cv_icon key is absent
+
+# never a usable icon: not a str, or a str that is blank; each normalizes to None before the missing-icon policy
+INVALID_ICONS = [
+    pytest.param(_NO_ICON, id="missing"),
+    pytest.param(None, id="none"),
+    pytest.param("", id="empty"),
+    pytest.param("   ", id="spaces"),
+    pytest.param(" \t\n ", id="tab-newline"),
+    pytest.param(object(), id="object"),
+    pytest.param(True, id="true"),
+    pytest.param(False, id="false"),
+    pytest.param(1, id="one"),
+    pytest.param(0, id="zero"),
+    pytest.param(b"save", id="bytes"),
+    pytest.param(["save"], id="list"),
+    pytest.param({"save": "save"}, id="dict"),
+]
+
+
+def _icon_ctx(icon, key="submit", **kw) -> dict:
+    ctx = form_ctx(key, **kw)
+    if icon is _NO_ICON:
+        del ctx["cv_icon"]
+    else:
+        ctx["cv_icon"] = icon
+    return ctx
+
+
+def _warnings(caplog) -> list[str]:
+    return [r.getMessage() for r in caplog.records if r.levelno >= logging.WARNING]
+
+
+@pytest.mark.parametrize("strict", [True, False], ids=["strict", "lenient"])
+@pytest.mark.parametrize("mode", ["label", "both"])
+@pytest.mark.parametrize("icon", INVALID_ICONS)
+def test_form_icon_normalization_label_and_both_are_quiet(icon, mode, strict, caplog):
+    caplog.set_level(logging.DEBUG)
+    with override_settings(CRUD_VIEWS_STRICT=strict):
+        data = cv_button_data(_icon_ctx(icon, cv_label_mode=mode), "form")
+    assert data["cv_icon"] is None
+    assert data["cv_label_mode"] == mode
+    assert (data["cv_icon_class"], data["cv_icon_inline"]) == ("", True)
+    assert "cv_title" not in data
+    assert _warnings(caplog) == []
+
+
+@pytest.mark.parametrize("key", sorted(FORM_TYPES))
+@pytest.mark.parametrize("icon", INVALID_ICONS)
+def test_form_icon_normalization_strict_icon_mode_raises_naming_none(icon, key):
+    with override_settings(CRUD_VIEWS_STRICT=True), pytest.raises(ValueError) as info:
+        cv_button_data(_icon_ctx(icon, key, cv_label_mode="icon"), "form")
+    message = str(info.value)
+    assert f"form button {key!r} renders icon-only but its icon None is not available" in message
+    assert "object at" not in message
+
+
+@pytest.mark.parametrize("icon", INVALID_ICONS)
+def test_form_icon_normalization_lenient_icon_mode_logs_and_uses_the_label(icon, caplog):
+    caplog.set_level(logging.WARNING, logger=BUTTON_LOGGER)
+    ctx = _icon_ctx(icon, "filter-submit", cv_label_mode="icon", cv_value="Go")
+    with override_settings(CRUD_VIEWS_STRICT=False):
+        first = cv_button_data(ctx, "form")
+        second = cv_button_data(ctx, "form")
+    # one warning per render, naming None
+    assert (
+        _warnings(caplog)
+        == [
+            "form button 'filter-submit' renders icon-only but its icon None is not available; rendered with its label"
+            " instead"
+        ]
+        * 2
+    )
+    assert first == second
+    assert first["cv_label_mode"] == "label" and first["cv_icon"] is None
+    assert (first["cv_icon_class"], first["cv_icon_inline"]) == ("", True)
+    assert "cv_title" not in first and first["cv_label"] == "Go"
+    assert "data-cv-tooltip" not in str(first["cv_flat_attrs"])
+
+
+@pytest.mark.parametrize("icon", INVALID_ICONS)
+def test_form_icon_normalization_lenient_without_a_label_keeps_the_empty_path(icon, caplog):
+    caplog.set_level(logging.WARNING, logger=BUTTON_LOGGER)
+    with override_settings(CRUD_VIEWS_STRICT=False):
+        data = cv_button_data(_icon_ctx(icon, cv_label_mode="icon", cv_value="", cv_label=""), "form")
+    assert (data["cv_label"], data["cv_value"], data["cv_label_mode"], data["cv_icon"]) == ("", "", "label", None)
+    assert _warnings(caplog) == [
+        "form button 'submit' has neither an available icon (None) nor a label and renders empty"
+    ]
+
+
+@pytest.mark.parametrize("mode", ["label", "both", "icon"])
+@pytest.mark.parametrize("icon", ["save", " save ", "\tfilter\n", "fas:rocket", "my-raw icon-save"])
+def test_form_icon_normalization_keeps_nonblank_strings_exactly(icon, mode, caplog):
+    caplog.set_level(logging.WARNING, logger=BUTTON_LOGGER)
+    with override_settings(CRUD_VIEWS_STRICT=False):
+        data = cv_button_data(_icon_ctx(icon, cv_label_mode=mode), "form")
+    if data["cv_label_mode"] == mode:
+        # usable (or not consulted outside icon mode): the very string, never stripped or replaced
+        assert data["cv_icon"] is icon
+    else:
+        # an unavailable nonblank string in icon mode keeps the existing missing-icon policy and its value
+        assert mode == "icon" and data["cv_label_mode"] == "label"
+        assert data["cv_icon"] is icon
+        assert _warnings(caplog) == [
+            f"form button 'submit' renders icon-only but its icon {icon!r} is not available; rendered with its label"
+            " instead"
+        ]
+
+
+@pytest.mark.parametrize("strict", [True, False], ids=["strict", "lenient"])
+def test_form_icon_normalization_unavailable_nonblank_string_is_not_none(strict, caplog):
+    """A nonblank string that does not resolve stays the caller's value: the missing-icon policy names it."""
+    ctx = _icon_ctx("unknown:save", cv_label_mode="icon")
+    with override_settings(CRUD_VIEWS_STRICT=strict):
+        if strict:
+            with pytest.raises(ValueError, match=r"its icon 'unknown:save' is not available"):
+                cv_button_data(ctx, "form")
+        else:
+            assert cv_button_data(ctx, "form")["cv_icon"] == "unknown:save"
+    with override_settings(CRUD_VIEWS_STRICT=strict):
+        assert cv_button_data({**ctx, "cv_label_mode": "both"}, "form")["cv_icon"] == "unknown:save"
+
+
+@pytest.mark.parametrize("icon", [["save"], {"save": "save"}, b"save", "   "], ids=["list", "dict", "bytes", "blank"])
+def test_form_icon_normalization_never_mutates_the_input(icon):
+    ctx = _icon_ctx(icon, cv_label_mode="both")
+    before = copy.deepcopy(ctx)
+    for _ in range(2):
+        assert cv_button_data(ctx, "form")["cv_icon"] is None
+    assert ctx == before
+    assert ctx["cv_icon"] is icon

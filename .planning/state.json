@@ -1,0 +1,48 @@
+{
+  "contract": "1.0.0",
+  "flavor": "core",
+  "milestone": null,
+  "phases": [
+    {
+      "number": "1",
+      "name": "Label-mode defaults",
+      "status": "complete"
+    },
+    {
+      "number": "2",
+      "name": "Form key grammar",
+      "status": "complete"
+    },
+    {
+      "number": "3",
+      "name": "Filter toggle label mode",
+      "status": "complete"
+    },
+    {
+      "number": "4",
+      "name": "Alert dismiss adapter",
+      "status": "complete"
+    },
+    {
+      "number": "5",
+      "name": "Table pagination parity",
+      "status": "complete"
+    },
+    {
+      "number": "6",
+      "name": "Form-button leaf",
+      "status": "in_progress"
+    },
+    {
+      "number": "7",
+      "name": "Theme-surface stability policy",
+      "status": "pending"
+    }
+  ],
+  "next": {
+    "command": "/gsd-progress --next",
+    "label": "Advance to the next step",
+    "reason": "Phase 6 of 7 · 61% · executing"
+  },
+  "updated_at": "2026-10-28T05:58:41.706Z"
+}

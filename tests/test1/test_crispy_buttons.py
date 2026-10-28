@@ -1729,6 +1729,32 @@ def test_filter_custom_layout_class_keeps_its_behavior_while_isolated():
     assert bool(MarkedLayout()) is False  # the user's class keeps crispy's len-based truthiness
 
 
+@pytest.mark.parametrize("when", ["class", "assigned"])
+def test_filter_layout_that_cannot_be_deep_copied_names_the_helper(when):
+    """IN-01: a layout holding a non-copyable member fails with a TypeError that names the helper class."""
+    import threading
+
+    from crispy_forms.layout import HTML
+
+    class LockedHTML(HTML):
+        def __init__(self, html):
+            super().__init__(html)
+            self.lock = threading.Lock()
+
+    locked = Layout(LockedHTML("<em>note</em>"), "city")
+    match = r"FilterHelper\.layout must be deep-copyable \(each helper renders its own copy\)"
+    if when == "class":
+        with pytest.raises(TypeError, match=match) as exc_info:
+            _new_filter_helper(_filter_helper_class(layout=locked))
+    else:
+        helper = _new_filter_helper(_filter_helper_class(layout=Layout("name")))
+        helper.layout = locked
+        with pytest.raises(TypeError, match=match) as exc_info:
+            _filter_render(_CityForm(), helper)
+    assert isinstance(exc_info.value.__cause__, TypeError)
+    assert len(locked.fields) == 2  # the caller's layout is untouched
+
+
 # --- copied layouts keep their kind icons (06-10: CR-01 / WR-01) ---------------------------------------------------
 
 # name -> (Font Awesome classes of the kind default, label) of the package controls in a copied filter layout

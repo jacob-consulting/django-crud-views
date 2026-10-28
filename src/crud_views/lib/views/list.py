@@ -142,6 +142,7 @@ class ListViewFilterFormHelper(FormHelper):
         ``self.layout`` that is not the prepared instance was assigned by the caller (or is the class layout): it is
         deep-copied into a private, always-truthy instance layout, keeping its fields, order and nested or custom
         layout objects. An explicitly empty layout stays empty; only ``None`` (no layout) renders the form's fields.
+        The selected layout must therefore be deep-copyable; one that is not raises a ``TypeError`` naming the helper.
         """
         current = self.layout
         if self._cv_prepared is not None and current is self._cv_prepared:
@@ -150,7 +151,12 @@ class ListViewFilterFormHelper(FormHelper):
             prepared = _PreparedLayout()
             self._cv_default_fields = True
         else:
-            prepared = copy.deepcopy(current)
+            try:
+                prepared = copy.deepcopy(current)
+            except (TypeError, copy.Error) as exc:
+                raise TypeError(
+                    f"{type(self).__name__}.layout must be deep-copyable (each helper renders its own copy): {exc}"
+                ) from exc
             prepared.__class__ = _prepared_layout_class(type(current))
             self._cv_default_fields = False
         # a new prepared layout: render_layout resolves its action group once (identity, not a lifetime flag)

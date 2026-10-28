@@ -169,8 +169,11 @@ class AuthorListView(ListViewTableMixin, ListViewTableFilterMixin, ListViewPermi
 `AuthorFilterFormHelper` above declares only the filter fields. `ListViewFilterFormHelper` appends the Apply and
 Reset buttons after them, once per form, as a crispy `FormActions` group. Each helper instance renders its own copy of
 the class-level `layout`, so neither the class nor other instances ever collect buttons; a layout you assign to
-`helper.layout` later is copied the same way. A helper without a `layout` renders every field of the filter form,
-then the buttons.
+`helper.layout` later is copied the same way. The copy is a `copy.deepcopy`, so the layout and every object in it
+must be deep-copyable; a member that is not (a lock, an open resource, a layout object with `__slots__` that cannot
+be copied) raises a `TypeError` naming the helper class when the helper is created (for an assigned layout, when it
+next renders). A helper without a `layout`
+renders every field of the filter form, then the buttons.
 
 The hidden `sort`, order and direction inputs that keep the table sort or card order across a filter submit are
 crispy inputs (`add_input()`). They render in the template pack's inputs wrapper after the visible buttons, with

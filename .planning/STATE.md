@@ -3,16 +3,16 @@ gsd_state_version: "1.0"
 current_phase: 06
 current_phase_name: Form-button leaf
 status: executing
-stopped_at: Completed 06-04-PLAN.md
-last_updated: "2026-10-28T07:06:20.683Z"
+stopped_at: Completed 06-05-PLAN.md
+last_updated: "2026-10-28T07:26:39.156Z"
 last_activity: 2026-10-28
 last_activity_desc: Phase 06 execution started
-state_head: e26d78648bb7591ed27326b407a871e2b9a0eab5
+state_head: 2d2169dbb43c5c75d6f437bbaa36dbf2dbfa7cf1
 progress:
   total_phases: 7
   completed_phases: 5
   total_plans: 23
-  completed_plans: 18
+  completed_plans: 19
   percent: 71
 ---
 
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-10-27)
 ## Current Position
 
 Phase: 06 (Form-button leaf) — EXECUTING
-Plan: 5 of 9
+Plan: 6 of 9
 Status: Ready to execute
 Last activity: 2026-10-28 — Phase 06 execution started
 
@@ -80,6 +80,7 @@ Progress: [███████░░░] 71%
 | Phase 06 P02 | 17min | 3 tasks | 20 files |
 | Phase 06 P03 | 11 min | 2 tasks | 9 files |
 | Phase 06 P04 | 12 min | 2 tasks | 7 files |
+| Phase 06 P05 | 15 min | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -136,6 +137,9 @@ Recent decisions affecting current work:
 - [Phase 06]: 06-04: layout form buttons pick a semantic icon from the slot kind (submit save, delete delete, cancel cancel, filter-submit filter, filter-reset filter-reset). icon= has a sentinel default, so explicit None/empty means no icon
 - [Phase 06]: 06-04: icon precedence is hook kwargs, then the form attribute (CrispyFormMixin.submit_icon='save', CrispyDeleteForm.delete_icon='delete', WorkflowForm.submit_icon='workflow'), then the adapter kind default. A delete payload moved to slot form:cancel keeps delete_icon
 - [Phase 06]: 06-04: registry glyphs save far:floppy-disk/bi:floppy, cancel fas:xmark/bi:x-lg, filter-reset fas:rotate-left/bi:arrow-counterclockwise (distinct from filter-close)
+- [Phase 06]: 06-05: ListViewFilterFormHelper calls FormHelper.__init__() without the form and keeps helper.form identity, so form= never replaces a declared layout
+- [Phase 06]: 06-05: filter layouts are deep-copied into a private always-truthy layout, prepared in get_attributes() before crispy's dispatch guard; exactly-once actions keyed on prepared-layout identity
+- [Phase 06]: 06-05: get_form_actions() None omits the filter action group, empty FormActions keeps an explicit empty group; hidden sort/order/dir stay add_input(Hidden) after the actions
 
 ### Pending Todos
 
@@ -167,6 +171,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-28T07:06:20.271Z
-Stopped at: Completed 06-04-PLAN.md
+Last session: 2026-10-28T07:26:38.724Z
+Stopped at: Completed 06-05-PLAN.md
 Resume file: None

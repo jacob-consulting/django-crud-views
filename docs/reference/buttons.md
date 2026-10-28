@@ -438,7 +438,7 @@ How a button renders depends on where it is placed:
 `get_submit_button()` and `get_cancel_button_kwargs()` / `get_cancel_button()`. `CrispyDeleteForm` adds
 `get_delete_button_kwargs()` / `get_delete_button()` (slot `form:delete`); see [Delete view](delete_view.md).
 `get_form_actions()` returns the whole `FormActions` group. The filter helper has the same hook, see
-[Filtering with django-filter](list_view.md#filtering-with-django-filter).
+[Custom filter helpers](list_view.md#custom-filter-helpers).
 
 The removed tags `cv_submit_button`, `cv_cancel_button` and `cv_delete_button` and their templates are replaced by
 these classes.
@@ -486,7 +486,7 @@ appear in it, and neither does crispy's `input` object:
 | `cv_label` | the button text, a plain `str`; the same text as `cv_value` |
 | `cv_id` | the element id |
 | `cv_label_mode` | `"label"`, `"icon"` or `"both"`, see [Form label-mode resolution](action_menus.md#form-label-mode-resolution) |
-| `cv_icon` | the resolved icon value or `None`, see [Icons](icons.md) |
+| `cv_icon` | the resolved icon value or `None`, see [Icons](icons.md#form-buttons) |
 | `cv_icon_class` | the `form:icon-host` class of a [host-placed icon](icons.md#host-placement), else `""`; `""` in `"label"` mode |
 | `cv_icon_inline` | render `{% cv_icon cv_icon %}` inside the button; `False` for a host-placed icon |
 | `cv_css_class` | the `css_class` and extra `class` that follow the table classes, else `""` |
@@ -506,9 +506,9 @@ then `cv_css_class` and `cv_icon_class`, then `data-cv-cancel-url` when `cv_canc
 
 An icon-only button needs an icon. When the icon of an `"icon"` mode button is `None`, `""` or not available, it
 raises `ValueError` under [`CRUD_VIEWS_STRICT`](settings.md#basic-settings); otherwise it logs a warning and renders as
-`"label"` with its literal text, without `title`, tooltip or host class. See [Icons](icons.md).
+`"label"` with its literal text, without `title`, tooltip or host class. See [Icons](icons.md#form-buttons).
 
-A custom button template receives the same dict, see [Custom themes](theme.md).
+A custom button template receives the same dict, see [Custom form-button templates](theme.md#custom-form-button-templates).
 
 ## Formsets
 
@@ -583,4 +583,4 @@ override the leaf, otherwise an action disabled by `CRUD_VIEWS_INACCESSIBLE_ACTI
 | `viewset.E210` | error | a `CardAction.label_mode`, `cv_card_actions_label_mode`, `ContextButton.label_mode` or `cv_context_action_label_mode` is set to a value other than `"label"`, `"icon"`, `"both"`; these are optional, and `None` is accepted as unset (for `cv_card_actions_label_mode` too). For forms: one error per form kind of a view's own `cv_form_actions_label_mode` (a dict with string keys) whose mode is invalid, in map order |
 | `viewset.E211` | error | a `cv_context_actions_label_mode` or `cv_list_actions_label_mode` is not `None` or a dict of action key → label mode (`cv_card_actions_label_mode` is the string or None default of card views, `cv_context_action_label_mode` the string or None target-view default; both are scalars, checked by E210). For forms: a view's own `cv_form_actions_label_mode` that is not `None` or a dict, or has a key that is not a string; reported once, its modes are then not checked |
 | `viewset.W291` | warning | a view's own `cv_*_actions_label_mode` names a key that is not among that location's actions; for `cv_form_actions_label_mode`, a key with a valid mode that is not one of the five form kinds (a ViewSet form map raises at construction and the setting fails E106 instead) |
-| `viewset.W292` | warning | a context toolbar key resolves to `"icon"` while its target view has no `cv_icon_action` (keys folded into the menu, buttons with their own template or `get_context()` and unregistered targets are not checked; the render-time rule covers them). For forms: a form kind that resolves to `"icon"` while its icon is not available, on the package forms and filter helper the view selects without a request (see [Icons](icons.md)) |
+| `viewset.W292` | warning | a context toolbar key resolves to `"icon"` while its target view has no `cv_icon_action` (keys folded into the menu, buttons with their own template or `get_context()` and unregistered targets are not checked; the render-time rule covers them). For forms: a form kind that resolves to `"icon"` while its icon is not available, on the package forms and filter helper the view selects without a request (see [Form checks](action_menus.md#form-checks)) |

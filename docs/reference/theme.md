@@ -133,6 +133,61 @@ templates keep the bootstrap5 defaults.
 The thin templates `tags/context_action.html`, `tags/list_action.html`, `tags/card_action.html` and
 `tags/actions_menu_item.html` are logic templates: do not copy them, override the leaves instead.
 
+## Custom form-button templates
+
+A crispy form button in a layout renders through the leaf `crud_views/tags/button/form.html` (see
+[Forms](buttons.md#forms)). A theme app that ships a template under that name restyles every form button. A single
+button class, or a single button, can use its own template instead; the first that is set wins:
+
+1. a `template=` argument: `Submit("submit", "Save", template="myapp/buttons/save.html")` (an empty string counts as
+   not set);
+2. the `template` attribute of your subclass of `Submit`, `Button` or `Reset`;
+3. the bundled `crud_views/tags/button/form.html`.
+
+`%s` in the name is replaced with the active crispy template pack, as crispy does: `"%s/buttons/pill.html"` loads
+`bootstrap5/buttons/pill.html`.
+
+Every one of these templates receives exactly [the form leaf contract](buttons.md#the-form-leaf-contract) and nothing
+else: no crispy `input` object, no `form` and no variable of the surrounding page. A template written for crispy's
+`baseinput.html` migrates its variables:
+
+| crispy `input` | Form leaf contract |
+|---|---|
+| `input.value` | `cv_value` (the submitted value), `cv_label` (the text) |
+| `input.name` | `cv_name` |
+| `input.id` | `cv_id` |
+| `input.input_type` | `cv_type` |
+| `input.field_classes` | `{% cv_button_class "form" cv_key cv_label_mode %}`, then `cv_css_class` and `cv_icon_class` |
+| `input.flat_attrs` | `cv_flat_attrs` |
+| the cancel URL attribute | `cv_cancel_url` |
+
+`cv_value`, `cv_label` and the other text keys are plain strings: output them with `{{ }}` and let autoescaping do
+its work, never with `|safe`. `cv_flat_attrs` is already escaped and is output as it is. A value is never rendered as
+template code. This recipe makes the submit buttons of a theme pill-shaped and keeps the label modes:
+
+```python
+from crud_views.lib.crispy import Submit
+
+
+class PillSubmit(Submit):
+    template = "%s/buttons/pill.html"
+```
+
+```django
+{% load crud_views %}
+<button type="{{ cv_type }}" name="{{ cv_name }}" value="{{ cv_value }}" id="{{ cv_id }}"
+        class="{% cv_button_class 'form' cv_key cv_label_mode %} rounded-pill{% if cv_css_class %} {{ cv_css_class }}{% endif %}{% if cv_icon_class %} {{ cv_icon_class }}{% endif %}"
+        {% if cv_cancel_url is not None %}data-cv-cancel-url="{{ cv_cancel_url }}"{% endif %}
+        {% if cv_title %}title="{{ cv_title }}" data-cv-tooltip="form"{% endif %}{{ cv_flat_attrs }}>
+    {% if cv_label_mode != "label" and cv_icon and cv_icon_inline is not False %}{% cv_icon cv_icon %}{% endif %}
+    <span{% if cv_label_mode == "icon" %} class="{% cv_button_class 'form' 'hidden-label' %}"{% endif %}>{{ cv_label }}</span>
+</button>
+```
+
+Save it as `myapp_theme/templates/bootstrap5/buttons/pill.html`. Keep `data-cv-cancel-url` on cancel buttons, where
+`viewset.js` reads it, and `title` with `data-cv-tooltip="form"` in `"icon"` mode. A button added with
+`helper.add_input()` is still rendered by the template pack's `baseinput.html`, never by these templates.
+
 ## Framing the form pages
 
 The create, update, custom-form and delete pages share one frame, `snippets/form_frame.html`:

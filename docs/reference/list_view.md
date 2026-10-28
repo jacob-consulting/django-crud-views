@@ -164,6 +164,70 @@ class AuthorListView(ListViewTableMixin, ListViewTableFilterMixin, ListViewPermi
     formhelper_class = AuthorFilterFormHelper
 ```
 
+### Custom filter helpers
+
+`AuthorFilterFormHelper` above declares only the filter fields. `ListViewFilterFormHelper` appends the Apply and
+Reset buttons after them, once per form, as a crispy `FormActions` group. Each helper instance renders its own copy of
+the class-level `layout`, so neither the class nor other instances ever collect buttons; a layout you assign to
+`helper.layout` later is copied the same way. A helper without a `layout` renders every field of the filter form,
+then the buttons.
+
+The hidden `sort`, order and direction inputs that keep the table sort or card order across a filter submit are
+crispy inputs (`add_input()`). They render in the template pack's inputs wrapper after the visible buttons, with
+unchanged names and values.
+
+The buttons come from the hook `get_form_actions()`, like on `CrispyFormMixin`. Return another `FormActions` to replace
+them, `FormActions()` to keep an empty group, or `None` for no group at all:
+
+```python
+from crispy_forms.bootstrap import FormActions
+from crispy_forms.layout import Layout, Row
+from django.utils.translation import gettext_lazy as _
+
+from crud_views.lib.crispy import Column4, Submit
+from crud_views.lib.views.list import ListViewFilterFormHelper
+
+
+class SearchFilterFormHelper(ListViewFilterFormHelper):
+    layout = Layout(Row(Column4("first_name"), Column4("last_name")))
+
+    def get_form_actions(self):
+        # one button only; the filter kind gives it the filter-submit classes and icon
+        return FormActions(Submit("submit", _("Search"), css_id="filter-button", slot="form:filter-submit"))
+```
+
+#### Removing the filter buttons
+
+Before 1.0 the Apply and Reset buttons were helper inputs, so clearing `self.inputs = []` (or `helper.inputs = []`)
+after construction removed them. They are layout buttons now: clearing the inputs leaves Apply and Reset in place
+and removes only the hidden sort, order and direction inputs (and any input you added), so a filter submit then
+drops the active sort as well. Nothing warns about it. Override `get_form_actions()` to return `None` and leave the
+inputs alone:
+
+```python
+from crispy_forms.layout import Layout, Row
+
+from crud_views.lib.crispy import Column4
+from crud_views.lib.views.list import ListViewFilterFormHelper
+
+
+class NoButtonsFilterFormHelper(ListViewFilterFormHelper):
+    layout = Layout(Row(Column4("first_name"), Column4("last_name")))
+
+    def get_form_actions(self):
+        return None  # no Apply / Reset; the fields and the hidden sort / order / direction inputs stay
+```
+
+The helper keeps its fields, its constructor and its hidden inputs. A helper whose `layout` is an empty `Layout()` and
+whose hook returns `None` renders nothing of its own; crispy then falls back to rendering every field of the form.
+
+#### Buttons added with `add_input()`
+
+A custom helper that adds its own buttons with `add_input(Submit(...))` keeps rendering them as before: they stay
+crispy inputs in the template pack's inputs wrapper, with their old markup, and get no label mode or icon. No check or
+warning reports this. To give such a button the form-button leaf ([Forms](buttons.md#forms)), return it from
+`get_form_actions()` instead of adding it as an input; keep hidden inputs as inputs.
+
 ### Filter Persistence
 
 Filter values are stored in the user session by default, so the filter state is preserved

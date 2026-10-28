@@ -55,6 +55,9 @@ yourself.
 | `actions-menu` | `fas:ellipsis` | toggle of the [action menu](action_menus.md) |
 | `filter` | `fas:filter` | filter button, panel closed |
 | `filter-close` | `fas:filter-circle-xmark` | filter button, panel open |
+| `save` | `far:floppy-disk` | [form](#form-buttons) submit button |
+| `cancel` | `fas:xmark` | [form](#form-buttons) cancel button |
+| `filter-reset` | `fas:rotate-left` | [form](#form-buttons) filter reset button (not the `filter-close` panel toggle) |
 | `language` | `fas:language` | language selector |
 | `sort-asc` / `sort-desc` | `fas:arrow-up-short-wide` / `fas:arrow-down-wide-short` | card list ordering |
 | `table-sort-asc` / `table-sort-desc` | `fas:angles-up` / `fas:angles-down` | sortable table headers |
@@ -150,10 +153,10 @@ CRUD_VIEWS_ICON_LIBRARIES = {
 CRUD_VIEWS_ICONS = {"update": "ui:edit", "create": "ui:plus"}
 ```
 
-- **On a button** (context, list and card buttons, the "More actions" toggle, menu items and the filter toggle) the
-  button gets the class and renders no icon element. Which class it gets comes from the button class table: the
-  `context:icon-host`, `list:icon-host`, `card:icon-host` and `menu:icon-host` slots, each `"{name_class}"` by
-  default, where `{name_class}` is the formatted `class`. A theme that needs a base class next to the name class on
+- **On a button** (context, list and card buttons, the "More actions" toggle, menu items, the filter toggle and
+  [form buttons](#form-buttons)) the button gets the class and renders no icon element. Which class it gets comes
+  from the button class table: the `context:icon-host`, `list:icon-host`, `card:icon-host`, `menu:icon-host` and
+  `form:icon-host` slots, each `"{name_class}"` by default, where `{name_class}` is the formatted `class`. A theme that needs a base class next to the name class on
   one kind of host writes e.g. `"menu:icon-host": "link-icon {name_class}"`; `None` switches the icon off there. The
   mode markers (`btn-with-icon`, `btn-icon-only`) belong in the `location:variant:mode` keys
   ([Buttons](buttons.md#the-class-table)).
@@ -223,6 +226,46 @@ CRUD_VIEWS_ICONS = {"detail": "svg:eye"}
 ```
 
 Extra keys in the library config (here `sprite`) are passed to the renderer in `config`.
+
+## Form buttons
+
+A crispy form button in a layout shows an icon in the `"icon"` and `"both"` [label modes](action_menus.md#form-label-mode-resolution);
+the package floor `"label"` shows none. Each form kind has a semantic icon, so a project restyles every form at once
+through `CRUD_VIEWS_ICONS` (or `BOOTSTRAP_ICONS`):
+
+| Form kind | Icon |
+|---|---|
+| `submit` | `save` |
+| `cancel` | `cancel` |
+| `delete` | `delete` |
+| `filter-submit` | `filter` |
+| `filter-reset` | `filter-reset` |
+
+The first setting that applies wins:
+
+1. an `icon=` keyword on the button: `Submit("submit", "Send", icon="fas:paper-plane")`; `icon=None` or `icon=""`
+   means no icon;
+2. the form's own attribute, passed as `icon=` by its hooks: `CrispyFormMixin.submit_icon` (default `"save"`) for the
+   submit button, `CrispyDeleteForm.delete_icon` (default `"delete"`) for the delete button. The workflow form sets
+   `submit_icon = "workflow"`; a subclass of it that sets its own `submit_icon` wins. An `icon` returned by
+   `get_submit_button_kwargs()` or `get_delete_button_kwargs()` wins over the attribute;
+3. the icon of the slot's kind, from the table above. The kind comes from the slot, not the submitted name.
+
+```python
+class SendForm(CrispyForm):
+    submit_icon = "fas:paper-plane"  # this form's submit button only
+```
+
+A button you add to a layout yourself follows the same order: its `icon=`, else the icon of its slot's kind. An
+icon is placed like on any other button: a host library puts the `form:icon-host` class on the button and renders
+nothing inside it.
+
+An icon-only form button needs an icon that can render. The icon is not available when it is `None` or `""`, when
+`CRUD_VIEWS_ICONS` maps its name to `None` or `""`, when its prefix names no registered library
+(`submit_icon="unknown:save"`), or when the built-in font renderer's `class` is not a usable format string. Such a
+button raises `ValueError` under [`CRUD_VIEWS_STRICT`](settings.md#basic-settings); otherwise it logs a warning on
+each render and shows its label, without `title`, tooltip or host class. `viewset.W292` reports the forms it can see
+at startup, see [Form checks](action_menus.md#form-checks).
 
 ## Bootstrap Icons preset
 

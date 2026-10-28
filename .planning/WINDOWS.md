@@ -2,9 +2,9 @@
 schema_version: 1
 open_count: 5
 waived_count: 0
-fixed_count: 2
-total_count: 7
-last_updated: 2026-10-28T06:36:10.760Z
+fixed_count: 3
+total_count: 8
+last_updated: 2026-10-28T07:04:39.037Z
 ---
 
 # Broken Windows Ledger
@@ -21,7 +21,8 @@ last_updated: 2026-10-28T06:36:10.760Z
 | 4 | 02 | lint-warning | .planning/phases/02-form-key-grammar/deferred-items.md |  | Ruff 0.16.10 differs from manifest >=0.17,<0.18; global format reports seven pre-existing planning Markdown files | open |  | 2026-10-26T12:40:20.826Z |  |
 | 5 | 06 | deviation | tests/js/list.filter.test.js | 159 | Pre-existing JS failure on locked jsdom 30.1.2: element-scoped '#cv-filter-toggle > span' selector returns null; Phase 06 JS gates stay red until fixed (06-01 deferred-items) | open |  | 2026-10-28T06:15:42.420Z |  |
 | 6 | 06 | deviation | package-lock.json |  | npm audit: high-severity advisories in transitive dev-only undici; lockfile intentionally unchanged in Phase 06 (06-01 deferred-items) | open |  | 2026-10-28T06:15:42.562Z |  |
-| 7 | 06 | stub | src/crud_views/lib/crispy/buttons.py |  | Crispy layout form buttons pass no icon yet: icon/both modes (form floor set to icon or both) render no visible icon until 06-04 adds kind-default icons, icon= hooks and the missing-icon policy | open |  | 2026-10-28T06:36:10.760Z |  |
+| 7 | 06 | stub | src/crud_views/lib/crispy/buttons.py |  | Crispy layout form buttons pass no icon yet: icon/both modes (form floor set to icon or both) render no visible icon until 06-04 adds kind-default icons, icon= hooks and the missing-icon policy | fixed |  | 2026-10-28T06:36:10.760Z | 2026-10-28T07:04:38.892Z |
+| 8 | 06 | stub | src/crud_views/lib/view/button_data.py |  | Form missing-icon policy not yet applied: an icon-mode form button whose icon is explicitly None/empty or unavailable renders hidden text only (no strict ValueError, no logged label fallback) until 06-06 adds the availability predicate and runtime policy | open |  | 2026-10-28T07:04:39.037Z |  |
 
 ````json
 [
@@ -110,9 +111,22 @@ last_updated: 2026-10-28T06:36:10.760Z
     "file": "src/crud_views/lib/crispy/buttons.py",
     "line": null,
     "description": "Crispy layout form buttons pass no icon yet: icon/both modes (form floor set to icon or both) render no visible icon until 06-04 adds kind-default icons, icon= hooks and the missing-icon policy",
-    "status": "open",
+    "status": "fixed",
     "reason": "",
     "recorded_at": "2026-10-28T06:36:10.760Z",
+    "resolved_at": "2026-10-28T07:04:38.892Z",
+    "milestone": null
+  },
+  {
+    "id": 8,
+    "kind": "stub",
+    "phase": "06",
+    "file": "src/crud_views/lib/view/button_data.py",
+    "line": null,
+    "description": "Form missing-icon policy not yet applied: an icon-mode form button whose icon is explicitly None/empty or unavailable renders hidden text only (no strict ValueError, no logged label fallback) until 06-06 adds the availability predicate and runtime policy",
+    "status": "open",
+    "reason": "",
+    "recorded_at": "2026-10-28T07:04:39.037Z",
     "resolved_at": null,
     "milestone": null
   }

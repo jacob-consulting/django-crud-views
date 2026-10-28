@@ -2392,3 +2392,276 @@ def test_cancel_link_lazy_text_resolves_per_render(language):
         with translation.override(active):
             (link,) = _links(_render(_helper(control)))
         assert (link.text_content(), link.get("title"), link.get("aria-label")) == (text, text, text)
+
+
+# --- cancel links and custom templates, owners and copies (Phase 6.1, D-16, D-17) ---------------------------------
+
+# a cancel-capable custom template: branches on the effective tag and still receives every prior field
+TAGGED = (
+    "[{{ cv_tag }}|{{ cv_key }}|{{ cv_type }}|{{ cv_name }}|{{ cv_value }}|{{ cv_label }}|{{ cv_id }}"
+    "|{{ cv_label_mode }}|{{ cv_cancel_url }}|{{ cv_title }}|{{ cv_flat_attrs }}|input={{ input }}|form={{ form }}"
+    "|helper={{ helper }}|outer={{ outer }}]"
+)
+
+
+@pytest.fixture
+def tagged_templates(settings):
+    """A locmem loader with tag-aware templates; the old ``custom_templates`` fixture stays as it was."""
+    templates = copy.deepcopy(settings.TEMPLATES)
+    engine = templates[0]
+    engine["APP_DIRS"] = False
+    engine["OPTIONS"]["loaders"] = [
+        (
+            "django.template.loaders.locmem.Loader",
+            {
+                "custom/tagged.html": "explicit" + TAGGED,
+                "custom/tagged-subclass.html": "subclass" + TAGGED,
+                "bootstrap5/custom/tagged-pack.html": "pack" + TAGGED,
+            },
+        ),
+        "django.template.loaders.filesystem.Loader",
+        "django.template.loaders.app_directories.Loader",
+    ]
+    settings.TEMPLATES = templates
+    yield
+
+
+def test_old_custom_template_renders_its_fields_under_a_configured_link(custom_templates):
+    """D-16: a template written before cv_tag existed renders its own markup with the same fields; the bundled anchor
+    is never forced over it."""
+    control = Button("reset", "Back", template="custom/explicit.html", css_class="x", data_cv_cancel_url="/b/")
+    expected = _custom_fields(_render(_helper(control), input="OUTER-INPUT", outer="OUTER"))
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES=LINK):
+        markup = _render(_helper(control), input="OUTER-INPUT", outer="OUTER")
+    assert _custom_name(markup) == "explicit" and not _links(markup)
+    assert _custom_fields(markup) == expected
+    assert expected[:10] == [
+        "form",
+        "cancel",
+        "button",
+        "reset",
+        "Back",
+        "Back",
+        "button-id-reset",
+        "label",
+        "x",
+        "/b/",
+    ]
+    explicit = Button(
+        "reset", "Back", tag="a", template="custom/explicit.html", css_class="x", data_cv_cancel_url="/b/"
+    )
+    assert _custom_fields(_render(_helper(explicit), input="OUTER-INPUT", outer="OUTER")) == expected
+
+
+@pytest.mark.parametrize(
+    ("control", "config", "expected"),
+    [
+        (lambda **kw: Button("reset", "Back", data_cv_cancel_url="/b/", **kw), LINK, "a"),
+        (lambda **kw: Button("reset", "Back", tag="a", data_cv_cancel_url="/b/", **kw), {}, "a"),
+        (lambda **kw: Button("reset", "Back", data_cv_cancel_url="/b/", **kw), {}, "button"),
+        (lambda **kw: Button("reset", "Back", tag="button", data_cv_cancel_url="/b/", **kw), LINK, "button"),
+        (lambda **kw: Button("reset", "Back", tag="a", **kw), LINK, "button"),
+        (lambda **kw: Button("reset", "Back", tag="a", data_cv_cancel_url="", **kw), LINK, "button"),
+        (lambda **kw: Button("reset", "Back", tag="a", data_cv_cancel_url="/b/", disabled=True, **kw), LINK, "button"),
+        (lambda **kw: Submit("reset", "Back", data_cv_cancel_url="/b/", **kw), LINK, "button"),
+        (lambda **kw: Reset("reset", "Back", **kw), LINK, "button"),
+    ],
+    ids=[
+        "configured",
+        "explicit",
+        "unconfigured",
+        "explicit-button",
+        "no-url",
+        "empty-url",
+        "disabled",
+        "submit",
+        "reset",
+    ],
+)
+def test_tag_aware_template_receives_the_effective_tag(tagged_templates, control, config, expected):
+    """D-10/D-16: the effective tag after every fallback, with type, name, value and the cancel URL retained."""
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES=config):
+        markup = _render(_helper(control(template="custom/tagged.html")), outer="OUTER", cv_tag="OUTER-TAG")
+    fields = _custom_fields(markup)
+    assert fields[0] == expected
+    assert fields[3:5] == ["reset", "Back"]
+    assert fields[-4:] == ["input=", "form=", "helper=", "outer="]
+    assert "OUTER" not in markup
+
+
+@pytest.mark.parametrize("how", ["configured", "explicit"])
+def test_tag_aware_template_precedence_and_pack_substitution(tagged_templates, how):
+    """D-16: explicit template > subclass template > bundled leaf, ``%s`` the pack; each receives the link tag."""
+
+    class Subclassed(Button):
+        template = "custom/tagged-subclass.html"
+
+    tag_kw = {"tag": "a"} if how == "explicit" else {}
+    config = LINK if how == "configured" else {}
+
+    def render(adapter, **kwargs):
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=config):
+            return _render(_helper(adapter("reset", "Back", data_cv_cancel_url="/b/", **tag_kw, **kwargs)))
+
+    for markup, name in (
+        (render(Subclassed), "subclass"),
+        (render(Subclassed, template="custom/tagged.html"), "explicit"),
+        (render(Button, template="custom/tagged.html"), "explicit"),
+        (render(Button, template="%s/custom/tagged-pack.html"), "pack"),
+        (render(Subclassed, template=""), "subclass"),
+    ):
+        assert _custom_name(markup) == name
+        fields = _custom_fields(markup)
+        assert (fields[0], fields[2], fields[8]) == ("a", "button", "/b/")
+    for markup in (render(Button), render(Button, template="")):
+        (link,) = _links(markup)
+        assert link.get("href") == "/b/"
+
+
+@pytest.mark.parametrize("mode", ["label", "both", "icon"])
+def test_tag_aware_template_title_follows_icon_mode(tagged_templates, mode):
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES=LINK, CRUD_VIEWS_LABEL_MODE_DEFAULTS={"form": mode}):
+        markup = _render(
+            _helper(Button("reset", "Back", template="custom/tagged.html", data_cv_cancel_url="/b/", target="_top")),
+            cv_title="OUTER-TITLE",
+        )
+    fields = _custom_fields(markup)
+    assert (fields[0], fields[7]) == ("a", mode)
+    assert fields[9] == ("Back" if mode == "icon" else "")
+    # the filtered link attributes: target kept, the destination marker gone
+    assert fields[10] == ' target="_top"'
+
+
+def _link_controls(tag: str):
+    """Like ``_controls``, with a destination on every cancel, so a configured cancel becomes a link."""
+    return (
+        FormActions(Submit(f"{tag}-s1", "S"), Button(f"{tag}-c1", "C", data_cv_cancel_url="/b/")),
+        FormActions(Submit(f"{tag}-s2", "S"), Button(f"{tag}-c2", "C", data_cv_cancel_url="/b/")),
+        Submit(f"{tag}-s3", "S"),
+    )
+
+
+def _link_modes(markup: str) -> dict[str, tuple[str, str]]:
+    """tag -> (submit mode, cancel mode); every cancel must be a link, every submit a native submit button."""
+    seen: dict[str, set] = {}
+    for el in _fragment(markup).cssselect("a, button"):
+        tag, _, which = el.get("id").split("-id-", 1)[1].rpartition("-")
+        assert el.tag == ("a" if which[0] == "c" else "button"), el.get("id")
+        if el.tag == "button":
+            assert (el.get("type"), el.get("name"), el.get("value")) == ("submit", f"{tag}-{which}", "S")
+        seen.setdefault(tag, set()).add((which[0], el.get("class").removeprefix("m-")))
+    result = {}
+    for tag, pairs in seen.items():
+        submit = {m for w, m in pairs if w == "s"}
+        cancel = {m for w, m in pairs if w == "c"}
+        assert len(submit) == 1 and len(cancel) == 1, (tag, pairs)
+        result[tag] = (submit.pop(), cancel.pop())
+    return result
+
+
+@pytest.mark.parametrize(
+    ("form_owner", "helper_owner", "page_owner", "winner"),
+    [("R", "RH", "P", "R"), (_ABSENT, "RH", "P", "RH"), (None, None, "P", "P"), (None, None, None, "S")],
+)
+def test_cancel_links_keep_the_owner_selected_label_mode(
+    owners, settings, form_owner, helper_owner, page_owner, winner
+):
+    """D-17: link configuration changes the element only; ownership and label modes stay quiet and unchanged."""
+    settings.CRUD_VIEWS_BUTTON_CLASSES = {**MODE_CLASSES, **LINK}
+
+    def resolve(value):
+        return value if value is _ABSENT or value is None else _resolve_owner(owners, value)
+
+    page = {} if page_owner is _ABSENT else {"view": resolve(page_owner)}
+    helper = _owner_helper(*_link_controls("x"), view=resolve(helper_owner))
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        markup = _crispy_owned(_owned_form(resolve(form_owner)), helper, **page)
+    assert _link_modes(markup) == {"x": _sig(winner)}
+
+
+def test_interleaved_owners_and_settings_of_one_shared_link_helper_do_not_leak(owners, settings):
+    shared = _owner_helper(*_link_controls("x"), view=None)
+    first = Context({"form": _owned_form(owners.R), "helper": shared, "view": owners.P})
+    second = Context({"form": _owned_form(), "helper": shared})
+    layers = ([dict(d) for d in first.dicts], [dict(d) for d in second.dicts])
+    out = []
+    for context in (first, second, first, second):
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES={**MODE_CLASSES, **LINK}):
+            out.append(CRISPY.render(context))
+    assert [_link_modes(o) for o in out] == [{"x": SIGNATURES["R"]}, {"x": S}] * 2
+    # outside the link configuration the very same helper renders native cancel buttons again
+    assert _modes(CRISPY.render(first)) == {"x": SIGNATURES["R"]}
+    assert not _links(CRISPY.render(second))
+    assert ([dict(d) for d in first.dicts], [dict(d) for d in second.dicts]) == layers
+    assert not hasattr(shared, "_cv_owner")
+
+
+def test_shared_and_deepcopied_cancel_adapters_resolve_tag_and_mode_per_render():
+    """D-17: before / inside / after the settings override, original and copy render alike and keep no state."""
+    shared = Button("reset", "Back", data_cv_cancel_url="/b/", css_class="extra", target="_top")
+    copied = copy.deepcopy(shared)
+    state = [(c._cv_tag, dict(c._cv_attrs), str(c.flat_attrs), c.field_classes, c.template) for c in (shared, copied)]
+    steps = [({}, "label"), (LINK, "icon"), (LINK, "label"), ({}, "icon"), (LINK, "both"), ({}, "label")]
+    for config, mode in steps:
+        rendered = []
+        for control in (shared, copied):
+            context = Context({"form": _EmptyForm(), "helper": _helper(control), "input": "OUTER"})
+            before = [dict(d) for d in context.dicts]
+            with override_settings(CRUD_VIEWS_BUTTON_CLASSES=config, CRUD_VIEWS_LABEL_MODE_DEFAULTS={"form": mode}):
+                rendered.append(CRISPY.render(context))
+            assert [dict(d) for d in context.dicts] == before
+        assert rendered[0] == rendered[1]
+        if config:
+            (el,) = _links(rendered[0])
+            assert (el.get("href"), el.get("target")) == ("/b/", "_top")
+        else:
+            (el,) = _buttons(rendered[0])
+            assert el.get("data-cv-cancel-url") == "/b/"
+        assert el.get("class") == "btn btn-secondary extra"
+        assert (el.get("title") == "Back") is (mode == "icon")
+    after = [(c._cv_tag, dict(c._cv_attrs), str(c.flat_attrs), c.field_classes, c.template) for c in (shared, copied)]
+    assert after == state
+
+
+def test_filter_helper_copies_render_independent_cancel_tags():
+    """D-17: a cancel in a filter layout is deep-copied per helper instance; Apply / Reset stay native everywhere."""
+    layout = Layout("name", FormActions(Button("back", "Back", data_cv_cancel_url="/list/")))
+    helper_cls = _filter_helper_class(layout=layout)
+    first, second = _new_filter_helper(helper_cls), _new_filter_helper(helper_cls)
+    out = []
+    for helper, config in ((first, {}), (second, LINK), (first, LINK), (second, {})):
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=config):
+            out.append(_filter_render(_CityForm(), helper))
+    for markup, config in zip(out, ({}, LINK, LINK, {}), strict=True):
+        controls = _controls_of(markup)
+        # the stock Apply / Reset actions and the hidden sort input are untouched by the configuration
+        assert [c for c in controls if c[2] != "back" and c[0] == "button"] == DEFAULT_ACTIONS
+        assert HIDDEN_SORT[0] in controls
+        links = _links(markup)
+        if config:
+            assert [link.get("href") for link in links] == ["/list/"]
+            assert ("button", "button", "back", "Back") not in controls
+        else:
+            assert links == [] and ("button", "button", "back", "Back") in controls
+    assert out[0] == out[3] and out[1] == out[2]
+    assert helper_cls.layout is layout
+
+
+def test_legacy_helper_inputs_stay_quiet_pack_inputs_under_a_link_configuration(caplog):
+    """D-17: add_input() controls never render the leaf, so the link configuration neither migrates nor warns."""
+    caplog.set_level(logging.DEBUG)
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=LINK):
+            markup = _render(_helper(inputs=(Button("reset", "Back", data_cv_cancel_url="/b/"), Submit("go", "Go"))))
+    assert caught == []
+    assert [r for r in caplog.records if r.levelno >= logging.WARNING] == []
+    doc = _fragment(markup)
+    assert not doc.cssselect("button, a")
+    assert [(el.get("type"), el.get("name")) for el in doc.cssselect("input")] == [
+        ("button", "reset"),
+        ("submit", "go"),
+    ]
+    assert doc.cssselect("input")[0].get("data-cv-cancel-url") == "/b/"
+    assert "tag=" not in markup

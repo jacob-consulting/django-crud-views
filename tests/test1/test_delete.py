@@ -138,21 +138,298 @@ def test_permission_filtering_shows_permitted_objects(cv_publisher_cascade, publ
     assert "Visible Book" in content
 
 
+DANGER_ALERT = 'class="alert alert-danger" role="alert"'
+BLOCKED_HEADING = "Deletion is blocked by protected relationships:"
+MODAL_HEADERS = {"X-CV-Modal": "true"}
+
+
+def _norm(html: str) -> str:
+    return re.sub(r"\s+", " ", html)
+
+
+def _context_instances(value, model, depth: int = 0) -> list:
+    """Every ``model`` instance reachable through lists/tuples/sets/dicts of a context value."""
+    if depth > 8:
+        return []
+    if isinstance(value, model):
+        return [value]
+    if isinstance(value, dict):
+        return [hit for v in value.values() for hit in _context_instances(v, model, depth + 1)]
+    if isinstance(value, (list, tuple, set)):
+        return [hit for v in value for hit in _context_instances(v, model, depth + 1)]
+    return []
+
+
+def _response_instances(response, model) -> list:
+    return [hit for layer in response.context for hit in _context_instances(layer.flatten(), model)]
+
+
 @pytest.mark.django_db
-def test_protected_objects_shown_as_warning(
+def test_protected_objects_hidden_without_view_permission(
     client_user_publisher_cascade_delete, cv_publisher_cascade, publisher_penguin
 ):
-    """Protected objects (on_delete=PROTECT) are shown as a warning."""
+    """D-07/D-08: a protected-only collection the user may not view keeps one blocked notice, no labels."""
     from tests.test1.app.models import Contract
 
-    Contract.objects.create(title="Publishing Contract", publisher=publisher_penguin)
+    Contract.objects.create(title="Secret Contract", publisher=publisher_penguin)
     pk = publisher_penguin.pk
     response = client_user_publisher_cascade_delete.get(f"/publisher_cascade/{pk}/delete/")
     assert response.status_code == 200
     context = response.context
-    assert len(context["protected_objects"]) > 0
-    content = response.content.decode()
-    assert "blocked" in content.lower() or "protected" in content.lower()
+    assert context["related_summary"] == {}
+    assert list(context["protected_objects"]) == []
+    assert context["has_protected_objects"] is True
+    assert _response_instances(response, Contract) == []
+    content = _norm(response.content.decode())
+    assert content.count(DANGER_ALERT) == 1
+    assert BLOCKED_HEADING in content
+    assert "Secret Contract" not in content
+
+
+@pytest.mark.django_db
+def test_protected_objects_hidden_without_view_permission_modal(
+    client_user_publisher_cascade_delete, cv_publisher_cascade, publisher_penguin, monkeypatch
+):
+    """The modal partial carries the same independent notice when summary and labels are empty."""
+    from tests.test1.app.models import Contract
+    from tests.test1.app.views import PublisherCascadeDeleteView
+
+    monkeypatch.setattr(PublisherCascadeDeleteView, "cv_modal", True)
+    Contract.objects.create(title="Secret Contract", publisher=publisher_penguin)
+    pk = publisher_penguin.pk
+    response = client_user_publisher_cascade_delete.get(f"/publisher_cascade/{pk}/delete/", headers=MODAL_HEADERS)
+    assert response.status_code == 200
+    assert "crud_views/modal/content.html" in [t.name for t in response.templates]
+    assert response.context["related_summary"] == {}
+    assert list(response.context["protected_objects"]) == []
+    assert response.context["has_protected_objects"] is True
+    assert _response_instances(response, Contract) == []
+    content = _norm(response.content.decode())
+    assert content.count(DANGER_ALERT) == 1
+    assert BLOCKED_HEADING in content
+    assert "Secret Contract" not in content
+
+
+@pytest.mark.django_db
+def test_protected_objects_shown_with_view_permission(
+    client_user_publisher_cascade_delete, user_publisher_cascade_delete, cv_publisher_cascade, publisher_penguin
+):
+    """A user granted view_contract sees the protected label inside the single blocked notice."""
+    from django.contrib.auth.models import Permission
+
+    from tests.test1.app.models import Contract
+
+    contract = Contract.objects.create(title="Publishing Contract", publisher=publisher_penguin)
+    user_publisher_cascade_delete.user_permissions.add(Permission.objects.get(codename="view_contract"))
+    pk = publisher_penguin.pk
+    response = client_user_publisher_cascade_delete.get(f"/publisher_cascade/{pk}/delete/")
+    assert response.status_code == 200
+    assert list(response.context["protected_objects"]) == [contract]
+    assert response.context["has_protected_objects"] is True
+    content = _norm(response.content.decode())
+    assert content.count(DANGER_ALERT) == 1
+    assert BLOCKED_HEADING in content
+    assert "<li>Publishing Contract</li>" in content
+
+
+@pytest.mark.django_db
+def test_no_protected_objects_no_notice(client_user_publisher_cascade_delete, cv_publisher_cascade, publisher_penguin):
+    pk = publisher_penguin.pk
+    response = client_user_publisher_cascade_delete.get(f"/publisher_cascade/{pk}/delete/")
+    assert response.status_code == 200
+    assert response.context["has_protected_objects"] is False
+    assert list(response.context["protected_objects"]) == []
+    assert DANGER_ALERT not in _norm(response.content.decode())
+
+
+@pytest.mark.django_db
+def test_database_protect_post_raises_and_keeps_storage(
+    client_user_publisher_cascade_delete, cv_publisher_cascade, publisher_penguin
+):
+    """A confirmed POST against a database PROTECT relation keeps raising ProtectedError (unchanged lifecycle)."""
+    from django.db.models import ProtectedError
+
+    from tests.test1.app.models import Contract, Publisher
+
+    contract = Contract.objects.create(title="Secret Contract", publisher=publisher_penguin)
+    pk = publisher_penguin.pk
+    with pytest.raises(ProtectedError):
+        client_user_publisher_cascade_delete.post(f"/publisher_cascade/{pk}/delete/", {"confirm": True})
+    assert Publisher.objects.filter(pk=pk).exists()
+    assert Contract.objects.filter(pk=contract.pk).exists()
+
+
+@pytest.mark.django_db
+def test_custom_protection_post_modal_422_keeps_storage(
+    client_user_publisher_modal_protected_delete, cv_publisher_modal_protected, publisher_penguin
+):
+    """Custom cv_check_delete_protection errors re-render (422 in the modal), never write."""
+    from tests.test1.app.models import Publisher
+
+    pk = publisher_penguin.pk
+    response = client_user_publisher_modal_protected_delete.post(
+        f"/publisher_modal_protected/{pk}/delete/", {"confirm": True}, headers=MODAL_HEADERS
+    )
+    assert response.status_code == 422
+    assert Publisher.objects.filter(pk=pk).exists()
+    full = client_user_publisher_modal_protected_delete.post(
+        f"/publisher_modal_protected/{pk}/delete/", {"confirm": True}
+    )
+    assert full.status_code == 200
+    assert Publisher.objects.filter(pk=pk).exists()
+
+
+# ── AUTH-01: HTTP DELETE is rejected (D-01/D-02) ─────────────────────────────
+
+
+def _allow(response) -> set[str]:
+    return {m.strip() for m in response.headers.get("Allow", "").split(",") if m.strip()}
+
+
+def _spy_lifecycle(monkeypatch, view_class, names=("get_context_data", "cv_post_hook", "cv_form_valid_process")):
+    calls = []
+    for name in names:
+        original = getattr(view_class, name)
+
+        def spy(self, *args, _name=name, _original=original, **kwargs):
+            calls.append(_name)
+            return _original(self, *args, **kwargs)
+
+        monkeypatch.setattr(view_class, name, spy)
+    return calls
+
+
+@pytest.mark.django_db
+def test_http_delete_rejected_with_405(
+    client_user_publisher_cascade_delete, cv_publisher_cascade, publisher_penguin, monkeypatch
+):
+    from tests.test1.app.models import Publisher
+    from tests.test1.app.views import PublisherCascadeDeleteView
+
+    calls = _spy_lifecycle(monkeypatch, PublisherCascadeDeleteView)
+    pk = publisher_penguin.pk
+    response = client_user_publisher_cascade_delete.delete(f"/publisher_cascade/{pk}/delete/")
+    assert response.status_code == 405
+    allow = _allow(response)
+    assert "DELETE" not in allow
+    assert {"GET", "POST", "OPTIONS"} <= allow
+    assert calls == []
+    assert Publisher.objects.filter(pk=pk).exists()
+
+
+@pytest.mark.django_db
+def test_options_allow_omits_delete(client_user_publisher_cascade_delete, cv_publisher_cascade, publisher_penguin):
+    pk = publisher_penguin.pk
+    response = client_user_publisher_cascade_delete.options(f"/publisher_cascade/{pk}/delete/")
+    assert response.status_code == 200
+    allow = _allow(response)
+    assert "DELETE" not in allow
+    assert {"GET", "POST", "OPTIONS"} <= allow
+
+
+@pytest.mark.django_db
+def test_http_delete_rejected_on_subclass_restoring_method_name(
+    client_user_publisher_cascade_delete, cv_publisher_cascade, publisher_penguin, monkeypatch
+):
+    """A subclass putting "delete" back into http_method_names is still stopped by the dispatch guard."""
+    from django.views.generic import View
+
+    from tests.test1.app.models import Publisher
+    from tests.test1.app.views import PublisherCascadeDeleteView
+
+    monkeypatch.setattr(PublisherCascadeDeleteView, "http_method_names", list(View.http_method_names))
+    calls = _spy_lifecycle(monkeypatch, PublisherCascadeDeleteView)
+    pk = publisher_penguin.pk
+    url = f"/publisher_cascade/{pk}/delete/"
+    response = client_user_publisher_cascade_delete.delete(url)
+    assert response.status_code == 405
+    assert "DELETE" not in _allow(response)
+    options = client_user_publisher_cascade_delete.options(url)
+    assert options.status_code == 200
+    assert "DELETE" not in _allow(options)
+    assert _allow(options) == _allow(response)
+    assert calls == []
+    assert Publisher.objects.filter(pk=pk).exists()
+
+
+@pytest.mark.django_db
+def test_http_delete_rejection_keeps_modal_vary(client_user_author_modal, author_douglas_adams):
+    from tests.test1.app.models import Author
+
+    pk = author_douglas_adams.pk
+    for headers in ({}, MODAL_HEADERS):
+        response = client_user_author_modal.delete(f"/author_modal/{pk}/delete/", headers=headers)
+        assert response.status_code == 405
+        assert "X-CV-Modal" in response.headers.get("Vary", "")
+    assert Author.objects.filter(pk=pk).exists()
+
+
+@pytest.mark.django_db
+def test_http_delete_keeps_earlier_core_gates(client, cv_publisher_cascade, publisher_penguin):
+    """Authentication and core permission gates still run before the method rejection."""
+    from django.contrib.auth.models import User
+
+    from tests.test1.app.models import Publisher
+
+    pk = publisher_penguin.pk
+    url = f"/publisher_cascade/{pk}/delete/"
+    anonymous = client.delete(url)
+    assert anonymous.status_code == 302
+    assert "login" in anonymous.headers["Location"]
+
+    user = User.objects.create_user(username="user_no_delete", password="password")
+    client.force_login(user)
+    assert client.delete(url).status_code == 403
+    assert Publisher.objects.filter(pk=pk).exists()
+
+
+@pytest.mark.django_db
+def test_http_delete_missing_target_core(client_user_publisher_cascade_delete, cv_publisher_cascade):
+    """The core permission phase loads the object, so a missing target still 404s before the 405 guard."""
+    assert client_user_publisher_cascade_delete.delete("/publisher_cascade/999999/delete/").status_code == 404
+
+
+@pytest.mark.django_db
+def test_delete_views_construct_without_custom_delete_warning(
+    client_user_publisher_cascade_delete, cv_publisher_cascade, publisher_penguin
+):
+    """The guard leaves Django's delete() untouched, so Django 4.2 emits no DeleteViewCustomDeleteWarning."""
+    import warnings
+
+    from django.views.generic.edit import DeletionMixin
+
+    from crud_views.lib.views import DeleteView, DeleteViewPermissionRequired
+    from crud_views_guardian.lib.views import GuardianDeleteViewPermissionRequired
+    from crud_views_polymorphic.lib import PolymorphicDeleteViewPermissionRequired
+    from tests.test1.app.views import (
+        AuthorModalDeleteView,
+        GuardianPublisherCascadeDeleteView,
+        PublisherCascadeDeleteView,
+        VehicleDeleteView,
+    )
+
+    classes = [
+        PublisherCascadeDeleteView,
+        GuardianPublisherCascadeDeleteView,
+        VehicleDeleteView,
+        AuthorModalDeleteView,
+    ]
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        for view_class in classes:
+            view_class()
+        url = f"/publisher_cascade/{publisher_penguin.pk}/delete/"
+        client_user_publisher_cascade_delete.get(url)
+        client_user_publisher_cascade_delete.delete(url)
+    assert [w for w in caught if w.category.__name__ == "DeleteViewCustomDeleteWarning"] == []
+    for view_class in (
+        DeleteView,
+        DeleteViewPermissionRequired,
+        GuardianDeleteViewPermissionRequired,
+        PolymorphicDeleteViewPermissionRequired,
+        *classes,
+    ):
+        assert view_class.delete is DeletionMixin.delete
 
 
 @pytest.mark.django_db

@@ -50,9 +50,9 @@
     }
   ],
   "next": {
-    "command": "/gsd-progress --next",
-    "label": "Advance to the next step (verify)",
-    "reason": "Phase 8 of 9 · 27% · ready to verify"
+    "command": "$gsd-execute-phase 06.2",
+    "label": "Execute remaining Phase 06.2 plans",
+    "reason": "Plans 07\u201309 incorporate cross-AI reviews and passed the independent plan checker; 6 of 9 plans complete"
   },
-  "updated_at": "2026-10-29T13:24:25.905Z"
+  "updated_at": "2026-10-29T17:12:51.013Z"
 }

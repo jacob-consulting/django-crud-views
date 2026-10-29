@@ -31,7 +31,12 @@
     {
       "number": "6",
       "name": "Form-button leaf",
-      "status": "in_progress"
+      "status": "complete"
+    },
+    {
+      "number": "6.1",
+      "name": "Cancel form button as a link",
+      "status": "complete"
     },
     {
       "number": "7",
@@ -41,8 +46,8 @@
   ],
   "next": {
     "command": "/gsd-progress --next",
-    "label": "Advance to the next step (verify)",
-    "reason": "Phase 6 of 7 · 23% · ready to verify"
+    "label": "Advance to the next step (plan phase 7)",
+    "reason": "Phase 8 of 8 — needs a plan"
   },
-  "updated_at": "2026-10-28T10:39:48.653Z"
+  "updated_at": "2026-10-29T05:32:55.897Z"
 }

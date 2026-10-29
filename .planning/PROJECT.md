@@ -43,6 +43,9 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 - ✓ **2** Form buttons through the `tags/button/form.html` leaf (#257): `"form"` location with owner-first map
   resolution, crispy `Submit`/`Button`/`Reset` as escaped adapters, semantic icons `save`/`cancel`/`filter-reset`,
   form-only E210/E211/W291/W292, `<input>` → `<button>` (Breaking), POST data unchanged, example uses `both` — Phase 6
+- ✓ **6.1** Cancel as a native link (#275): `form:cancel-tag` (`button` default / `a`), `Button(tag=...)` override,
+  `cv_tag` leaf field, E365; link drops button-only attrs and falls back to a button when disabled or URL-less;
+  `viewset.js` unchanged — Phase 6.1
 
 ### Active
 
@@ -108,6 +111,9 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 | Form values render as literal escaped text, never as Django templates | Removes crispy's template-injection path; the only visible change is `<input>` → `<button>` | Validated (Phase 6) |
 | Filter helpers render a private deep-copied layout prepared in `get_attributes()` with a `get_form_actions()` hook | Field-only subclasses, `form=` and `add_input()` keep working without crispy template overrides | Validated (Phase 6) |
 | Table `pagination.previous`/`pagination.next` blocks carry their own availability guards and run on disabled ends; released as Breaking with a tested override recipe | Theme overrides keep all django-tables2 block names; an unguarded copied override is the one thing that must change | Validated (Phase 5) |
+| Cancel-link eligibility is semantic kind `cancel` + native type `button`, never name/URL/adapter class | `Button` subclasses stay eligible; submit/reset can never become links | Validated (Phase 6.1) |
+| Button-only attribute filtering lives in the normalizer (`_anchor_attrs`), not the leaf; disabled or URL-less cancels fall back to `<button>` | One authoritative escaped `href`; custom leaves receive clean `cv_flat_attrs` | Validated (Phase 6.1) |
+| A `tag` returned from `get_cancel_button_kwargs()` now raises — filed under the Form buttons Breaking entry with migration guidance | 0.30 rendered it as an attribute; the behavior change must be documented | Validated (Phase 6.1) |
 
 ## Evolution
 
@@ -127,4 +133,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-10-28 after Phase 6 completion*
+*Last updated: 2026-10-29 after Phase 6.1 completion*

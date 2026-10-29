@@ -1,19 +1,20 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.1"
-current_phase_name: Cancel form button as a link (INSERTED)
-status: verifying
-stopped_at: Completed 06.1-03-PLAN.md
-last_updated: "2026-10-28T21:38:35.971Z"
-last_activity: 2026-10-28
-last_activity_desc: Phase 06.1 execution started
-state_head: adc9140f8ead95358c3353e7b507c0105f4928de
+current_phase: 7
+current_phase_name: Theme-surface stability policy
+status: planning
+stopped_at: Phase 06.1 complete, ready to plan Phase 7
+last_updated: "2026-10-29T05:32:55.886Z"
+last_activity: 2026-10-29
+last_activity_desc: Phase 06.1 complete, transitioned to Phase 7
+state_head: 726cfc8a3a153a982b1be4592c19b6fb79bf790e
 progress:
   total_phases: 8
-  completed_phases: 6
+  completed_phases: 7
   total_plans: 27
   completed_plans: 27
+  percent: 88
 milestone_name: milestone
 ---
 
@@ -21,25 +22,25 @@ milestone_name: milestone
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-10-28)
+See: .planning/PROJECT.md (updated 2026-10-29)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.1 — Cancel form button as a link (INSERTED)
+**Current focus:** Phase 7 — Theme-surface stability policy
 
 ## Current Position
 
-Phase: 06.1 (Cancel form button as a link (INSERTED)) — EXECUTING
-Plan: 3 of 3
-Status: Phase complete — ready for verification
-Last activity: 2026-10-28 — Phase 06.1 execution started
+Phase: 7 — Theme-surface stability policy
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-10-29 — Phase 06.1 complete, transitioned to Phase 7
 
-Progress: 24/24 plans executed ([████████░░] 75%); 6/8 phases complete
+Progress: 27/27 plans executed ([█████████░] 88%); 7/8 phases complete
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 24
+- Total plans completed: 27
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -53,6 +54,7 @@ Progress: 24/24 plans executed ([████████░░] 75%); 6/8 phase
 | 04 | 3 | - | - |
 | 05 | 3 | - | - |
 | 06 | 10 | - | - |
+| 06.1 | 3 | - | - |
 
 **Recent Trend:**
 
@@ -172,6 +174,7 @@ Recent decisions affecting current work:
 - [Phase 06.1]: On a link, case variants of generated id/class (and title/data-cv-tooltip in icon mode) are dropped; fallback/default buttons keep every extra byte for byte
 - [Phase 06.1]: 06.1-03: tag= keyword change recorded in the existing Form buttons Breaking entry with paired migrating-1.0.md guidance; cancel links are an Added entry
 - [Phase 06.1]: 06.1-03: real-browser cancel-link acceptance (no-JS, new tab, disabled) left pending for end-of-phase UAT; jsdom proves handler noninterference only
+- [Phase 06.1]: UAT 3/3 passed via automated Chromium (JS-disabled click/Enter/middle-click, disabled fallback, JS-on non-interception), user-confirmed; verification canonicalized to passed
 
 ### Pending Todos
 
@@ -191,6 +194,7 @@ None yet.
 
 - Phase 2: Both source-probe classifier limitations remain documented; explicit tests and completed human prose UAT independently establish acceptance. See 02-VERIFICATION.md.
 - Phase 7: carry the Phase 6 form surface (`form` location, `tags/button/form.html`, `FORM_LEAF_KEYS`, `get_form_actions()`, icons `save`/`cancel`/`filter-reset`) into the stability doc.
+- Phase 7: carry the Phase 6.1 additions (`form:cancel-tag` key, `Button(tag=...)` keyword, `cv_tag` leaf field, `crud_views.E365`) into the stability doc.
 
 ### Roadmap Evolution
 
@@ -205,6 +209,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-28T21:38:35.312Z
-Stopped at: Completed 06.1-03-PLAN.md
+Last session: 2026-10-29T05:40:00Z
+Stopped at: Phase 06.1 complete, ready to plan Phase 7
 Resume file: None

@@ -25,7 +25,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 4: Alert dismiss adapter** - plan 3A: alerts close through `cv.adapters.alert` with no Bootstrap data API (droppable) (completed 2026-10-26)
 - [x] **Phase 5: Table pagination parity** - plan 3B: table pagination gets the same registry icons and accessible markup as card pagination (droppable) (completed 2026-10-27)
 - [x] **Phase 6: Form-button leaf** - plan 2 (#257): crispy form buttons render as `<button>` through `tags/button/form.html` (completed 2026-10-28)
-- [ ] **Phase 6.1: Cancel form button as a link (INSERTED)** - #275: themes can opt into native cancel links while preserving the button default
+- [x] **Phase 6.1: Cancel form button as a link (INSERTED)** - #275: themes can opt into native cancel links while preserving the button default (completed 2026-10-29)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Phase Details
@@ -324,12 +324,11 @@ leaf, while unconfigured forms retain today's button markup and behavior.
      `value`, `type` and `data-cv-cancel-url`, and navigates without JavaScript, including opening in a new tab.
   4. `cv_tag` is included in `FORM_LEAF_KEYS` and documented with the new key and per-button override. Default button
      markup and behavior remain unchanged, `viewset.js` stays unchanged, and existing custom templates remain usable.
-**Plans**: 3/3 plans executed
+**Plans**: 3/3 plans complete
 
 Plans:
 **Wave 1**
 - [x] 06.1-01-PLAN.md
-- [ ] TBD (run $gsd-plan-phase 6.1 to break down)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 - [x] 06.1-02-PLAN.md
@@ -398,5 +397,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 4. Alert dismiss adapter | 3/3 | Complete    | 2026-10-26 |
 | 5. Table pagination parity | 3/3 | Complete    | 2026-10-27 |
 | 6. Form-button leaf | 10/10 | Complete    | 2026-10-28 |
-| 6.1. Cancel form button as a link | 3/3 | In Progress | - |
+| 6.1. Cancel form button as a link | 3/3 | Complete    | 2026-10-29 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

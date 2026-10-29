@@ -152,6 +152,56 @@ row at the right position, increments the formset's `TOTAL_FORMS` management val
 re-attaches the row's add/delete/order controls. `formset.js` is built on jQuery, so pages with formsets
 need jQuery loaded by `DOMContentLoaded`; see [JavaScript](javascript.md#jquery).
 
+### Who may request a row
+
+A row request is answered only for a user who may open the editor itself. Before rendering anything, the endpoint
+runs the gates of the page it belongs to:
+
+- An update view loads its object through `get_object()`. A Guardian view therefore checks the object permission and
+  the action state, and a missing object, or one under a different URL parent, is a 404.
+- A create view runs its dispatch gates: the model-level `add` permission at top level, the parent permission and the
+  parent's action state for a nested create.
+- A core view checks its permission and action state as on the full page.
+
+A denied request gets 403, or the login redirect or configured anonymous behavior for an anonymous user. An inactive
+user gets 403 on Guardian views. No row is rendered and none of the row's choices are evaluated. A row request never
+builds the full editor context.
+
+### Coordinates are validated
+
+The endpoint then checks the request's coordinates against the `FormSets` declaration and the stored data. Any
+mismatch is a **400** before anything renders:
+
+- `template` must name a declared key path.
+- `num` and every index must be 1 to 9 ASCII digits.
+- Every identity in `pk` and `formset_parent_prefix_key` must match its declaration's `FormSet.PK` grammar and convert
+  with the owning model's primary key field.
+- The root identity must be the endpoint's own object, or `None` on a create page. The top-level formset index is
+  always `0`, and every nested level must use the declared child index.
+- Each saved identity must be a stored row whose foreign key points at the identity above it. This ancestry is checked
+  on every request, so moving a row to another parent takes effect on the next request. Once an identity is `None`
+  (an unsaved row), every deeper one must be `None` too.
+- A top-level formset takes no `formset_parent_prefix_key` (or an empty one). A nested formset needs one with exactly
+  the declared depth.
+
+Requests that `formset.js` builds pass these checks. The request parameters and the JSON response (`html` and
+`rows`) are unchanged.
+
+An unsaved parent row is `None` in the form prefixes even when a default, such as `uuid.uuid4`, already gave it a
+primary key. New-object create pages and extra rows with UUID keys therefore render `None` prefixes, as integer keys
+always did, and the rows added in the browser bind on POST. Saved rows keep their primary keys in the prefix.
+
+The endpoint only decides who may receive the editor's rows. Which choices a row's `ModelChoiceField` offers to a user
+who may open the editor is still up to your form: restrict its `queryset` as you would on any form. A conditional
+formset's server-side purge keeps its own policy; see [Conditional formsets](#conditional-formsets).
+
+!!! note "Known limitation: a second child declaration"
+    A row request for a child formset that is not the first declared child of its parent (`books|memos` when the
+    `books` formset declares `notes` before `memos`) returns rows with index `0`, while the page initialized that
+    formset with index `1`. The added rows do not extend the formset on the page. Top-level formsets and, at every
+    nesting level, the first declared child formset are not affected. Authorization and ancestry checks apply to every
+    declaration either way. A fix is planned with the formset lifecycle work after 1.0's authorization changes.
+
 ### Initializing widgets in added rows
 
 A row added this way arrives after page load, so scripts that initialize widgets on

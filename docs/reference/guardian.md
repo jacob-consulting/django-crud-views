@@ -97,6 +97,33 @@ class AuthorDetailView(GuardianDetailViewPermissionRequired):
     cv_guardian_accept_global_perms = True
 ```
 
+The fallback is a **view** setting and nothing else. Each view class reads its own `cv_guardian_accept_global_perms`,
+so two views of one `GuardianViewSet` can follow different policies. The ViewSet does not pass a value on to its views.
+
+`GuardianViewSet` no longer accepts a `cv_guardian_accept_global_perms` key. The key never changed access, and
+passing it now (as `True` or `False`, as a keyword or in `GuardianViewSet.model_validate({...})`) fails with a
+Pydantic `ValidationError` that names the per-view replacement, and nothing is registered. Set the attribute on each
+view class that should accept global permissions instead; see
+[Migrating to 1.0.0](../migrating-1.0.md).
+
+### The ViewSet helper is always strict
+
+`GuardianViewSet.get_objects_for_user(user, perm)` has a fixed policy of its own and no option to change it. It never
+accepts global model permissions. It does count object grants and group grants. An active superuser gets every
+object, and an inactive user gets none. A view's `cv_guardian_accept_global_perms` does not change what the helper
+returns, so a list view with the fallback can show rows the helper does not return.
+
+### Inactive users
+
+A user who is logged in but whose account is inactive (`is_active = False`, possible with a backend such as
+`AllowAllUsersModelBackend`) gets no authority from any Guardian path. That applies to ordinary users, users with
+object or group grants, users with only global permissions, and superusers. Every `Guardian*ViewPermissionRequired` view
+answers such a user with 403 before it resolves a parent, an object or a formset fragment. That includes list and card
+views, which return no rows, and an HTTP DELETE, which gets 403 rather than 405. The callable helpers deny such a user too:
+`cv_has_access`, `cv_create_has_access`, `get_objects_for_user` (an empty queryset) and the delete-preview label
+filter. Anonymous users keep their configured `cv_guardian_anonymous_behavior`. Deactivating a user or revoking a
+grant takes effect on that user's next request.
+
 ## Create Views
 
 `CreateView` cannot check per-object permission on an object that does not exist
@@ -154,7 +181,47 @@ class BookCreateView(CreateViewParentMixin, GuardianCreateViewPermissionRequired
 When `cv_create_has_access` is not overridden, the default implementation
 uses `cv_guardian_parent_create_permission` (falling back to
 `cv_guardian_parent_permission`) — no extra configuration needed for the
-standard case.
+standard case. It applies the same rule as the create view's dispatch, including the view's
+`cv_guardian_accept_global_perms` fallback and a `None` permission key.
+
+The URL-bound list override above is unchanged. On a child list page the parent comes from the URL, so `cv_access`
+and `cv_action_enabled` of the create control are both computed from that parent. If the parent cannot be resolved
+late (`Http404` or `KeyError`), both fields are `False` and no custom `cv_action_enabled` hook is called with `None`.
+
+### What the create access helpers accept
+
+`cv_has_access(user, obj)` and `cv_create_has_access(user, rendering_view, parent_obj)` on a nested
+`GuardianCreateViewPermissionRequired` check **permission only**. The action state (`cv_action_enabled`) is a
+separate field; see [Conditionally disabling an action](action_enabled.md). The object you pass decides which parent
+the permission is checked on:
+
+| Input | Result |
+|---|---|
+| An instance of the parent model | The permission is checked on that parent. |
+| An instance of the create view's own model, with a `ForeignKey` to its parent | The parent is read through the configured attribute (`ParentViewSet.get_attribute()`, the `attribute` you declared or the parent ViewSet's name), and the permission is checked on it. For a Book the helpers answer exactly as they would for that Book's Publisher. |
+| An own-model instance of a `ManyToMany` nesting (`many_to_many_through_attribute`) | Denied. The object exposes a related manager, not one parent, so it cannot tell which URL parent a create would use. |
+| `None`, an instance of an unrelated model, or an own-model instance whose parent relation is empty or missing | Denied, superusers included. |
+
+Before 1.0 these helpers returned `True` for any object that was not a parent instance, so a Book was granted
+"add book" whatever the user held on its Publisher. Now an own child honors its actual parent's permission, and an
+unrelated object denies. See [Migrating to 1.0.0](../migrating-1.0.md).
+
+The `ManyToMany` case fails closed on purpose. A helper, filter or control that only receives the child object has no
+selected parent, and picking the first or only related parent would invent authority the URL never granted. What
+does work for `ManyToMany` nesting:
+
+- the helpers with an explicit parent instance, `Genre` create checked against `publisher_a`;
+- the URL-bound child list, whose create control resolves the parent from the URL;
+- direct create GET and POST under an authorized URL parent, including the `None` parent policy and the independent
+  state rule.
+
+On list pages, place the control through the URL-aware
+[resolved button loop](../faq.md#render-a-custom-loop-of-buttons). Route-aware create controls for a `ManyToMany`
+child's own page would need an explicit selected-parent contract. They are a possible future enhancement and are not
+part of 1.0.
+
+Top-level creates are unchanged: `cv_has_access(user, obj)` checks the model-level `add_<model>` permission, and
+object grants never stand in for it.
 
 ## Parent Viewsets
 
@@ -175,13 +242,31 @@ cv_book = GuardianViewSet(
 
 `cv_guardian_parent_create_permission=None` (the default) means create views use
 `cv_guardian_parent_permission` as well. Setting `cv_guardian_parent_permission=None`
-disables the parent check, for create views too unless they have their own
+disables the parent **permission** check, for create views too unless they have their own
 `cv_guardian_parent_create_permission`.
+
+`None` disables only that permission check. The rest still applies:
+
+- The URL parent is still resolved, and a missing parent is a 404 for every child view, list included.
+- A create view still runs its `cv_action_enabled(user, parent)` state check with the URL parent, so a disabled
+  parent answers GET and POST with 403 and writes nothing.
+- With `CreateViewParentMixin`, the created child is bound to the URL parent, whatever parent value the POST
+  contains.
+- No child-model `add_<model>` permission is required instead.
+- The create access helpers return `True` for the parent and for a `ForeignKey` own child without any grant, and keep
+  denying `None`, unrelated objects and `ManyToMany` own children.
 
 The parent check follows the child view's `cv_guardian_accept_global_perms`: in
 strict mode (the default) only a per-object grant on the parent counts; with the
 flag set, a model-level permission on the parent model (e.g. `app.view_author`) is
 accepted as a fallback.
+
+## Formset fragments
+
+The AJAX request that adds a formset row runs the same gates as the editor page it belongs to. On a Guardian update
+view, a user without the object permission, with a revoked grant, or whose action state is disabled gets 403 and no
+row, so the row's choices are never rendered for them. A missing target, or a target under another URL parent, gets
+404. See [The AJAX template endpoint](formsets.md#the-ajax-template-endpoint).
 
 ## Group Permissions
 
@@ -200,6 +285,22 @@ list is filtered using per-object `view` permissions instead of model-level perm
 
 - Objects the user has per-object `view` permission for: shown with full details
 - Objects the user lacks per-object `view` permission for: shown as aggregated counts
+
+The same filter applies to the labels of protected objects (`on_delete=PROTECT`), the objects that block the
+deletion. A protected object's label reaches the template only when the user holds `view` on that object, through an
+object grant or a group grant. Labels of objects the user may not view are dropped before the template gets its
+context, while the page still shows one generic "blocked" notice through `has_protected_objects`. The summary counts
+are unchanged. See [Delete protection previews](delete_view.md#protected-objects).
+
+The **delete view's** own `cv_guardian_accept_global_perms` decides whether a global `view_<model>` permission also
+shows the labels of each related or protected model, not only whether it opens the deletion target. An object grant
+shows its label without any global permission. The removed ViewSet key and the strict `get_objects_for_user` helper
+play no part here.
+
+`GuardianDeleteRelatedObjectsMixin` replaces the core model-level filter rather than adding to it. A custom
+`cv_filter_related_objects` on a Guardian delete view should call `super()` (which applies the Guardian filter) and
+narrow its result further, never re-run the core model-level filter after it or return the raw collection; see
+[Custom related-object filters](delete_view.md#custom-related-object-filters).
 
 ```python
 class PublisherDeleteView(CrispyViewMixin, GuardianDeleteViewPermissionRequired):
@@ -239,8 +340,30 @@ In addition to the standard ManageView content, GuardianManageView adds:
 **Guardian Configuration** — a table showing:
 - `cv_guardian_parent_permission` — permission key checked on parent object for child views
 - `cv_guardian_parent_create_permission` — permission key for child create views (falls back to `cv_guardian_parent_permission` if None)
-- `cv_guardian_accept_global_perms` — whether model-level permissions are accepted as a fallback
 - `parent_viewset` — parent viewset name and the permission used to grant access
+- `GuardianViewSet.get_objects_for_user()` — the helper's fixed strict policy (object and group grants only)
+
+**Global permission fallback** — one row per registered view with its own `cv_guardian_accept_global_perms` and the
+effective policy:
+
+| Effective policy | When |
+|---|---|
+| strict | the view checks object permissions (object or queryset mixin, or a parent check), and its flag is `False` |
+| global fallback | the same, with the flag `True` |
+| not applicable | the view never consults the flag: a plain or manage view, a top-level create, or a parent-only view whose parent permission key is `None` |
+
+The values come from each view class, never from the ViewSet. Below the table the page states that
+`get_objects_for_user()` is independent of these view policies and always strict.
+
+A template that overrides the manage page reads the values from the context: `guardian_config.get_objects_for_user`
+holds `{"policy": "strict", "accept_global_perms": False, "use_groups": True}`, and each `views.<key>.guardian_policy`
+holds `global_fallback_applicable`, `cv_guardian_accept_global_perms` (`None` when not applicable) and
+`effective_policy` (`"strict"`, `"global fallback"` or `"not applicable"`). The `guardian_config` key
+`cv_guardian_accept_global_perms` is gone.
+
+Who may open the manage page has not changed: `CRUD_VIEWS_MANAGE_VIEWS_ENABLED` (`"yes"`, `"debug_only"` with
+`DEBUG`, or `"no"`) and membership of the `CRUD_VIEWS_MANAGE_GROUP` group (default `CRUD_VIEWS_MANAGE`) still
+decide, not object permissions.
 
 **Permission Holders** — extends the standard group listing with an "Objects (guardian)" column showing how many objects each group has per-object access to.
 

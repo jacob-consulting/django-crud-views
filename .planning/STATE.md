@@ -4,16 +4,16 @@ milestone: v1.0
 current_phase: "06.2"
 current_phase_name: Request authorization and write integrity (INSERTED)
 status: executing
-stopped_at: Phase 6.2 converged after 5 review cycles; 6 plans in 5 waves; zero unresolved review concerns or conflicts
-last_updated: "2026-10-29T10:43:16.754Z"
+stopped_at: Completed 06.2-01-PLAN.md
+last_updated: "2026-10-29T11:07:40.511Z"
 last_activity: 2026-10-29
 last_activity_desc: Phase 06.2 execution started
-state_head: 2bd9d8d0427faf3beefc252695cde78210df6b61
+state_head: 5b6da914b4434fa2c42865cfacd25ce2d412d062
 progress:
   total_phases: 9
   completed_phases: 7
   total_plans: 33
-  completed_plans: 27
+  completed_plans: 28
 milestone_name: milestone
 ---
 
@@ -29,8 +29,8 @@ See: .planning/PROJECT.md (updated 2026-10-29)
 ## Current Position
 
 Phase: 06.2 (Request authorization and write integrity (INSERTED)) — EXECUTING
-Plan: 1 of 6
-Status: Executing Phase 06.2
+Plan: 2 of 6
+Status: Ready to execute
 Last activity: 2026-10-29 — Phase 06.2 execution started
 
 Progress: 27/33 plans executed; 7/9 phases complete (78%); Phase 6.2 planned and review-converged
@@ -92,6 +92,7 @@ Progress: 27/33 plans executed; 7/9 phases complete (78%); Phase 6.2 planned and
 | Phase 06.1 P01 | 12 min | 3 tasks | 12 files |
 | Phase 06.1 P02 | 8 min | 2 tasks | 4 files |
 | Phase 06.1 P03 | 9 min | 2 tasks | 7 files |
+| Phase 06.2 P01 | 16 min | 3 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -174,6 +175,8 @@ Recent decisions affecting current work:
 - [Phase 06.1]: 06.1-03: tag= keyword change recorded in the existing Form buttons Breaking entry with paired migrating-1.0.md guidance; cancel links are an Added entry
 - [Phase 06.1]: 06.1-03: real-browser cancel-link acceptance (no-JS, new tab, disabled) left pending for end-of-phase UAT; jsdom proves handler noninterference only
 - [Phase 06.1]: UAT 3/3 passed via automated Chromium (JS-disabled click/Enter/middle-click, disabled fallback, JS-on non-interception), user-confirmed; verification canonicalized to passed
+- [Phase 06.2]: HTTP DELETE rejected by a private dispatch guard (_DeleteMethodGuardMixin) between CrudView and Django DeleteView; _allowed_methods drops DELETE from 405 Allow/OPTIONS; DeletionMixin.delete identity kept (no Django 4.2 warning)
+- [Phase 06.2]: Delete previews expose has_protected_objects (from the unfiltered collection) and only permitted protected_objects; core filters by model view permission, Guardian by object grant with per-view global fallback (no core re-filter)
 
 ### Pending Todos
 
@@ -209,6 +212,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-29T10:39:51.693065+00:00
-Stopped at: Phase 6.2 converged after 5 review cycles; 6 plans in 5 waves; zero unresolved review concerns or conflicts
-Resume file: .planning/phases/06.2-request-authorization-and-write-integrity/06.2-01-PLAN.md
+Last session: 2026-10-29T11:07:39.833Z
+Stopped at: Completed 06.2-01-PLAN.md
+Resume file: None

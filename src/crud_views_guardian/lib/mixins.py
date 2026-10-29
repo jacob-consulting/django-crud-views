@@ -7,6 +7,16 @@ from django.shortcuts import get_object_or_404
 logger = logging.getLogger(__name__)
 
 
+def _guardian_inactive_actor(user) -> bool:
+    """True for an authenticated user whose account is inactive (D-11).
+
+    Guardian's ``get_objects_for_user`` ignores ``is_active`` (an inactive superuser gets every row), so each
+    Guardian request gate and callable query/access helper denies such actors explicitly. Anonymous users are
+    not "inactive actors" here; their configured anonymous behavior applies unchanged.
+    """
+    return bool(getattr(user, "is_authenticated", False)) and not getattr(user, "is_active", True)
+
+
 class GuardianObjectPermissionMixin:
     """
     For single-object views (Detail, Update, Delete, Action).
@@ -35,9 +45,13 @@ class GuardianObjectPermissionMixin:
             if self.cv_guardian_anonymous_behavior == "403":
                 raise PermissionDenied
             return False  # triggers Django's handle_no_permission() → redirect to login
+        if _guardian_inactive_actor(self.request.user):
+            raise PermissionDenied
         return True
 
     def _check_object_perm(self, user, perm: str, obj) -> bool:
+        if _guardian_inactive_actor(user):
+            return False
         # Check model-level perm first (without obj — ModelBackend returns empty
         # set when obj is passed, so we must call has_perm without obj here).
         if self.cv_guardian_accept_global_perms and user.has_perm(perm):
@@ -59,6 +73,8 @@ class GuardianObjectPermissionMixin:
 
     @classmethod
     def cv_has_access(cls, user, obj=None):
+        if _guardian_inactive_actor(user):
+            return False
         perm = cls.cv_viewset.permissions.get(cls.cv_permission)
         if obj is not None:
             # Model-level perm must be checked without obj (ModelBackend ignores
@@ -102,11 +118,13 @@ class GuardianQuerysetMixin:
             if self.cv_guardian_anonymous_behavior == "403":
                 raise PermissionDenied
             return False  # triggers Django's handle_no_permission() → redirect to login
+        if _guardian_inactive_actor(self.request.user):
+            raise PermissionDenied
         return True
 
     @classmethod
     def cv_has_access(cls, user, obj=None):
-        return True
+        return not _guardian_inactive_actor(user)
 
     def cv_get_context(self, key=None, obj=None, user=None, request=None, *, location=None):
         """
@@ -165,6 +183,8 @@ class GuardianQuerysetMixin:
         from guardian.shortcuts import get_objects_for_user
 
         qs = super().get_queryset()
+        if _guardian_inactive_actor(self.request.user):
+            return qs.none()
         perm = self.cv_viewset.permissions.get(self.cv_permission)
         return get_objects_for_user(
             self.request.user,
@@ -212,6 +232,8 @@ class GuardianParentPermissionMixin:
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return self._guardian_deny_anonymous()
+        if _guardian_inactive_actor(request.user):
+            raise PermissionDenied  # before any parent, None-policy, method or fragment handling (D-11)
         parent_vs = self.cv_viewset.parent
         if parent_vs is not None:
             self._guardian_check_parent(request.user, parent_vs, kwargs)
@@ -246,7 +268,10 @@ class GuardianParentPermissionMixin:
 
         Shared by dispatch and the create access helpers. A None permission key skips only this
         permission evaluation (True); parent resolution and action state are the callers' concern.
+        Inactive actors are always denied.
         """
+        if _guardian_inactive_actor(user):
+            return False
         perm_key = cls._guardian_resolve_parent_perm_key()
         if perm_key is None:
             return True

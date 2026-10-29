@@ -61,13 +61,22 @@ class GuardianViewSet(ViewSet):
         remove_perm(self.permissions[perm], user_or_group, obj)
 
     def get_objects_for_user(self, user, perm: str, qs=None):
-        """Return queryset of objects for which user has the given per-object permission."""
+        """Return queryset of objects for which user has the given per-object permission.
+
+        Strict: global model permissions are not accepted. Object and group grants count, an active superuser
+        gets every object, and an inactive (authenticated) user gets none.
+        """
         from guardian.shortcuts import get_objects_for_user
 
+        from crud_views_guardian.lib.mixins import _guardian_inactive_actor
+
+        qs = qs if qs is not None else self.model.objects.all()
+        if _guardian_inactive_actor(user):
+            return qs.none()
         return get_objects_for_user(
             user,
             self.permissions[perm],
-            qs if qs is not None else self.model.objects.all(),
+            qs,
             accept_global_perms=False,
             use_groups=True,
         )

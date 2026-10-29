@@ -14,6 +14,7 @@ from crud_views_guardian.lib.mixins import (
     GuardianObjectPermissionMixin,
     GuardianParentPermissionMixin,
     GuardianQuerysetMixin,
+    _guardian_inactive_actor,
 )
 
 GUARDIAN_MIXINS = [
@@ -56,7 +57,8 @@ class GuardianDeleteRelatedObjectsMixin:
 
 
 class _PermittedPks:
-    """Per-model cache of the pks ``user`` may view."""
+    """Per-model cache of the pks ``user`` may view; request-local (one instance per projection), and empty for
+    an inactive actor."""
 
     def __init__(self, user, accept_global: bool):
         self.user = user
@@ -64,6 +66,8 @@ class _PermittedPks:
         self._cache: dict = {}
 
     def __call__(self, model) -> set:
+        if _guardian_inactive_actor(self.user):
+            return set()
         if model not in self._cache:
             from guardian.shortcuts import get_objects_for_user
 
@@ -193,6 +197,8 @@ class GuardianCreateViewPermissionRequired(GuardianParentPermissionMixin, Create
         """
         if cls.cv_viewset.parent is None:
             return cls.cv_has_access(user, None)
+        if _guardian_inactive_actor(user):
+            return False
         resolved = cls._cv_guardian_create_parent(parent_obj)
         if resolved is None:
             return False
@@ -236,7 +242,7 @@ class GuardianCreateViewPermissionRequired(GuardianParentPermissionMixin, Create
         if cls.cv_viewset.parent is None:
             return super().cv_has_access(user, obj)
 
-        if obj is None:
+        if obj is None or _guardian_inactive_actor(user):
             return False  # safe fallback — GuardianQuerysetMixin.cv_get_context handles the real check
 
         parent_obj = cls._cv_guardian_create_parent(obj)

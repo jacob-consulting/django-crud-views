@@ -345,7 +345,7 @@ Plans:
 configuration before the theme-surface freeze. Authorization and safe context construction remain library-owned.
 **Source**: `superpowers/notes/2026-10-28-pre-1.0-before-theme-freeze-analysis.md`, §3 (B1–B7), §8 (slice 6.2), §9 (decisions 1 and 4).
 **Canonical refs**: `superpowers/notes/2026-10-28-pre-1.0-before-theme-freeze-analysis.md`; `docs/reference/guardian.md`; `docs/migrating-1.0.md`.
-**Requirements**: Source findings B1–B7; phase requirement IDs to be assigned during planning.
+**Requirements**: AUTH-01, AUTH-02, AUTH-03, AUTH-04, AUTH-05, AUTH-06, AUTH-07
 **Depends on**: Phase 6.1 for execution order; uses existing core delete/formset and Guardian composition.
 Must complete before Phase 7 freezes the affected contracts.
 **Parallel with**: None

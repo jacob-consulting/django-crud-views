@@ -104,7 +104,7 @@ so two views of one `GuardianViewSet` can follow different policies. The ViewSet
 passing it now (as `True` or `False`, as a keyword or in `GuardianViewSet.model_validate({...})`) fails with a
 Pydantic `ValidationError` that names the per-view replacement, and nothing is registered. Set the attribute on each
 view class that should accept global permissions instead; see
-[Migrating to 1.0.0](../migrating-1.0.md).
+[Migrating to 1.0.0](../migrating-1.0.md#the-guardianviewset-global-permission-key).
 
 ### The ViewSet helper is always strict
 
@@ -204,7 +204,7 @@ the permission is checked on:
 
 Before 1.0 these helpers returned `True` for any object that was not a parent instance, so a Book was granted
 "add book" whatever the user held on its Publisher. Now an own child honors its actual parent's permission, and an
-unrelated object denies. See [Migrating to 1.0.0](../migrating-1.0.md).
+unrelated object denies. See [Migrating to 1.0.0](../migrating-1.0.md#nested-guardian-create-access).
 
 The `ManyToMany` case fails closed on purpose. A helper, filter or control that only receives the child object has no
 selected parent, and picking the first or only related parent would invent authority the URL never granted. What

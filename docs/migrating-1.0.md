@@ -13,6 +13,9 @@ touch.
   and [Silent breaks](#silent-breaks).
 - **A downstream theme**, such as `crud_views_tabler`, that ships its own copies of crud_views templates. Read all of
   it: a theme is also an app.
+- **An app on django-guardian**, one that shows delete previews with `cv_show_related_objects`, or one whose clients
+  send HTTP `DELETE`: also read
+  [Request authorization and Guardian configuration](#request-authorization-and-guardian-configuration).
 
 Each step says what changed between 0.29.x and 1.0.0, not the route through 0.30.0. Steps marked **[0.30]** came
 with the icon registry in 0.30.0: if you are already on 0.30.0, skip them.
@@ -40,6 +43,10 @@ Two removals raise at runtime instead, the first time the page renders:
 - `TypeError` from a `cv_get_context()` override with the old signature: see
   [Views and Python code](#views-and-python-code).
 - `ValueError: cv_no_label is no longer a leaf input`: see [Views and Python code](#views-and-python-code).
+
+A `GuardianViewSet(..., cv_guardian_accept_global_perms=...)` fails earlier still, with a Pydantic `ValidationError`
+when the module that builds it is imported: see
+[The GuardianViewSet global-permission key](#the-guardianviewset-global-permission-key).
 
 The new features bring their own checks. They only fire on a misconfigured new setting or attribute, so an upgraded
 project that uses none of them never sees them: `crud_views.E351`, `E354`, `E355`, `E356`, `W352`, `W353`
@@ -328,6 +335,157 @@ nothing gains an icon until a project asks for one with the floor or a form map
 ([Form label-mode resolution](reference/action_menus.md#form-label-mode-resolution)). In `"icon"` mode a button
 without a usable icon raises `ValueError` under `CRUD_VIEWS_STRICT` and otherwise logs a warning and keeps its label;
 see [Form buttons](reference/icons.md#form-buttons) for the icons and their order.
+
+## Request authorization and Guardian configuration
+
+1.0 closes several request paths that reached data or writes past the documented permission checks, and settles
+how django-guardian's global-permission fallback is configured. Most apps need no change. The steps below are for
+code that relied on the old behavior, and for copied templates and Python overrides.
+
+### HTTP DELETE on delete views
+
+Before 1.0 every delete view inherited Django's `DeletionMixin.delete()`. An HTTP `DELETE` request deleted the object
+without the confirmation form, without `cv_check_delete_protection()` and without the form hooks. That inherited route
+was never a documented package API, and it is closed: `DELETE` now gets 405 on the core, Guardian and polymorphic
+delete views.
+
+- **Clients and tests** that send `DELETE` must post the confirmation form instead, as the bundled form does, for
+  example `client.post(url, {"confirm": True})`. The POST runs validation, the protection check, the hooks and the
+  transaction.
+- **A subclass that adds `"delete"` back to `http_method_names`** does not reopen the route: the request still gets
+  405, and `Allow` and `OPTIONS` still leave `DELETE` out. There is no opt-in for a `DELETE` lifecycle.
+- The earlier gates are unchanged, so an anonymous user is still redirected to the login page. A user without the
+  permission still gets 403, a missing object on a core view 404, and an inactive Guardian user 403. See
+  [HTTP methods](reference/delete_view.md#http-methods).
+
+### The GuardianViewSet global-permission key
+
+`GuardianViewSet(cv_guardian_accept_global_perms=...)` never changed access: every view read its own attribute. The
+key is removed and now fails with a `ValidationError` naming the replacement. Before:
+
+```python
+cv_author = GuardianViewSet(model=Author, name="author", cv_guardian_accept_global_perms=True)
+
+
+class AuthorListView(ListViewTableMixin, GuardianListViewPermissionRequired):
+    cv_viewset = cv_author
+```
+
+After, on each view that should accept global model permissions:
+
+```python
+cv_author = GuardianViewSet(model=Author, name="author")
+
+
+class AuthorListView(ListViewTableMixin, GuardianListViewPermissionRequired):
+    cv_viewset = cv_author
+    cv_guardian_accept_global_perms = True
+```
+
+If you passed `False`, drop the key: strict is the default. Views you leave alone keep their policy, because the key
+never reached them. `GuardianViewSet.get_objects_for_user()` stays strict whatever the views say. It has no
+global-permission option, so code that needs global fallback for a query calls guardian's own `get_objects_for_user`
+with `accept_global_perms=True`. See [Strict Mode](reference/guardian.md#strict-mode-default).
+
+### Delete previews and protected objects
+
+With `cv_show_related_objects`, the context of a delete page changes in two ways. `protected_objects` now holds only
+the protected objects the user may view. The new `has_protected_objects` is `True` whenever protected objects block
+the deletion, also when every label is hidden. The summary counts are unchanged.
+
+- **A copied `crud_views/view_delete.content.html`**: include the snippet on the new flag as well. A copy that still
+  tests `related_summary or protected_objects` drops the whole snippet when the user may view no protected object:
+
+    ```django
+    {# before #}
+    {% if related_summary or protected_objects %}
+    {# after #}
+    {% if related_summary or has_protected_objects %}
+    ```
+
+- **A copied `crud_views/snippets/delete/related_objects.html`**: show the blocked notice on the flag and list only
+  `protected_objects`, which is already filtered. Do not fetch the protected objects another way:
+
+    ```django
+    {# before #}
+    {% if protected_objects %}
+    {# after #}
+    {% if has_protected_objects %}
+    ```
+
+- **A custom `cv_filter_related_objects`** now has to filter `related.protected` as well as the tree. Return only
+  protected objects the user may view, never the raw `related.protected`. Start from
+  `super().cv_filter_related_objects(user, related)`, which is the core model-level filter on a core view and the
+  Guardian object-grant filter on a Guardian view, and narrow its result. On a Guardian view, do not also run the core
+  model-level filter: it hides labels that an object grant permits. Leave `has_protected_objects` and the summary
+  alone: the flag is computed before your hook runs. See
+  [Custom related-object filters](reference/delete_view.md#custom-related-object-filters).
+- **Guardian delete views:** the delete view's own `cv_guardian_accept_global_perms` decides whether a global
+  `view_<model>` permission shows the labels of related and protected objects, not only whether it opens the page. An
+  object grant shows a label without any global permission.
+
+### The Guardian manage page
+
+The context of `GuardianManageView` no longer has `guardian_config.cv_guardian_accept_global_perms`; a template that
+reads it renders an empty cell. Read the strict helper policy from `guardian_config.get_objects_for_user`, and each
+view's own policy from `views.<key>.guardian_policy`:
+
+```django
+{% for view_key, view in views.items %}
+    {{ view_key }}: {{ view.guardian_policy.effective_policy }}
+{% endfor %}
+```
+
+`effective_policy` is `"strict"`, `"global fallback"` or `"not applicable"`. `global_fallback_applicable` and the view's
+`cv_guardian_accept_global_perms` (`None` when not applicable) sit next to it. Who may open the page is unchanged. See
+[GuardianManageView](reference/guardian.md#guardianmanageview).
+
+### Nested Guardian create access
+
+The helpers `cv_has_access(user, obj)` and `cv_create_has_access(user, view, parent_obj)` of a nested
+`GuardianCreateViewPermissionRequired` used to return `True` for any object that was not a parent instance. Now:
+
+- **A parent instance** works as before.
+- **An own child with a `ForeignKey` parent**, such as a Book on its detail page, is resolved to its actual parent
+  through `ParentViewSet.get_attribute()`. "Add book" on a Book page therefore follows the user's permission on that
+  Book's Publisher; before, it always passed. Keep passing the page object; do not swap in the parent yourself.
+- **An unrelated object, an own child without its parent, or `None`** denies, superusers included. If you called the
+  helper with such an object, pass the parent instance instead.
+- **An own child with a `ManyToMany` parent** (`many_to_many_through_attribute`) denies: the object belongs to several
+  parents and cannot say which one a create would use. An object-only control, `cv_context_has_permission:"create"`
+  on that child's page, or a helper call with the child, is therefore unavailable. Do not select the first or only
+  related parent to get it back. Pass an explicit parent instance to the helpers, or link to the child list under the
+  URL parent: its create control and the create URL itself still work for an authorized parent. Route-aware create
+  controls for such pages need an explicit selected-parent contract, which 1.0 does not provide.
+
+The helpers check permission only. A rendered create control also needs its action state: on a child page the
+control's `cv_action_enabled` hook receives the actual parent (the Publisher), while its label template still sees the
+page object (the Book). So `cv_context_has_permission` can be `True` while the control renders nothing. The recipes in
+[Context Buttons](reference/context_buttons.md#cv_context_has_permission-gate-surrounding-markup) and the
+[FAQ](faq.md#gate-surrounding-markup-by-permission) show what to use where. On a child **list** page the URL-bound
+control is unchanged, and the filter stays `False` there because the page has no object.
+
+The parent `None` policy changed with it. `cv_guardian_parent_permission = None` (or the create key) skips only the
+permission check now. A missing URL parent is a 404, a create under a parent whose `cv_action_enabled` is `False` is a
+403, and the helpers return `True` for the parent and a `ForeignKey` own child without any grant. Top-level create
+still needs the model-level `add_<model>` permission. See
+[What the create access helpers accept](reference/guardian.md#what-the-create-access-helpers-accept).
+
+### Inactive users and formset row requests
+
+These are fixes and need no change unless your app relied on the old behavior:
+
+- **Inactive users** (logged in through a backend such as `AllowAllUsersModelBackend` with `is_active = False`) get
+  403 from every Guardian view and nothing from the Guardian helpers, superusers included. There is no setting to
+  restore their access. See [Inactive users](reference/guardian.md#inactive-users).
+- **Formset row requests** run the editor page's gates first: 403 or 404 for users who may not open the editor.
+  Their coordinates are then checked against the declaration and the stored ancestry, and a malformed or forged
+  request gets 400. `formset.js` sends valid requests. Custom JavaScript or tests that build `template`, `pk`, `num`
+  and `formset_parent_prefix_key` by hand must send the values the page renders: `None` for the root of a create
+  page and for unsaved rows (also with UUID keys), `0` as the top-level index, and the declared child index at each
+  nesting level. A row request for a child formset that is not the first declared child of its parent still returns
+  the wrong index. That is a known limitation, not fixed in 1.0; see
+  [The AJAX template endpoint](reference/formsets.md#the-ajax-template-endpoint).
 
 ## A downstream theme
 
@@ -624,6 +782,11 @@ about these.
   ([Values are literal text](#values-are-literal-text)).
 - [ ] `helper.inputs = []` on a filter helper no longer hides Apply and Reset and drops the hidden sort inputs
   ([Filter helpers](#filter-helpers)).
+- [ ] On a nested Guardian ViewSet, `cv_has_access`, `cv_create_has_access` and `cv_context_has_permission:"create"`
+  deny an unrelated object and a `ManyToMany` own child, and a `ForeignKey` own child follows its parent's permission:
+  a create control on such pages can disappear ([Nested Guardian create access](#nested-guardian-create-access)).
+- [ ] A custom `cv_filter_related_objects` that returns `related.protected` unfiltered shows labels the user may not
+  view ([Delete previews and protected objects](#delete-previews-and-protected-objects)).
 
 **In a theme, or in project template overrides:**
 
@@ -655,3 +818,8 @@ about these.
 - [ ] A custom form-button template that reads `input.value` renders empty attributes, and an override of crispy's
   `layout/baseinput.html` no longer styles the package form buttons ([Custom button templates](#custom-button-templates)).
 - [ ] A `view_card.content.html` copy keeps the untranslated "No items found." ([Hooks instead of copies](#hooks-instead-of-copies)).
+- [ ] A `view_delete.content.html` or `snippets/delete/related_objects.html` copy that tests `protected_objects`
+  hides the blocked-deletion notice when the user may view no protected object
+  ([Delete previews and protected objects](#delete-previews-and-protected-objects)).
+- [ ] A Guardian manage template that reads `guardian_config.cv_guardian_accept_global_perms` renders an empty cell
+  ([The Guardian manage page](#the-guardian-manage-page)).

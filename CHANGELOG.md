@@ -149,6 +149,50 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 - `formsets/control.html` overrides without `data-cv-class` / `data-cv-class-danger` no longer recolour the delete
   toggle.
 - A list or card button whose target is the current view now renders `active`.
+- **HTTP DELETE on delete views** returns 405. Every package delete view (core, Guardian and polymorphic) used to
+  inherit Django's `DeletionMixin.delete()`. An HTTP `DELETE` request therefore removed the object without the
+  confirmation form, `cv_check_delete_protection()` or the form hooks. That inherited route was never a documented
+  package API. The 405 comes after the existing login, permission, parent and state gates, so their redirects, 403s
+  and 404s are unchanged; an inactive Guardian user gets 403. The `Allow` header and `OPTIONS` no longer list
+  `DELETE`, also on a subclass that adds `"delete"` back to `http_method_names`. `DeleteView.http_method_names` no
+  longer contains `"delete"`. Clients and tests that sent `DELETE` must post the confirmation form. Django's
+  `delete()` method is left in place, so Django 4.2 emits no `DeleteViewCustomDeleteWarning`. See
+  [Migrating to 1.0.0](docs/migrating-1.0.md#http-delete-on-delete-views).
+- **`GuardianViewSet` no longer accepts `cv_guardian_accept_global_perms`.** The key never changed access: the
+  global-permission fallback has always been read from each view class. Passing it now, as `True` or `False`, raises
+  a Pydantic `ValidationError` that names the per-view replacement, and nothing is registered. Set
+  `cv_guardian_accept_global_perms = True` on each Guardian view class that should accept global model permissions.
+  `GuardianViewSet.get_objects_for_user()` stays strict and has no global-permission option. See
+  [Migrating to 1.0.0](docs/migrating-1.0.md#the-guardianviewset-global-permission-key).
+- **Delete previews and protected objects.** With `cv_show_related_objects`, `protected_objects` now holds only the
+  protected objects the user may view (core: model-level `view_<model>`; Guardian: object or group grants, plus a
+  global permission when the delete view's `cv_guardian_accept_global_perms` allows it). The new
+  `has_protected_objects` says whether protected objects block the deletion at all. The stock templates show one
+  generic blocked notice from it, also when every label is hidden. A copy of `view_delete.content.html` or
+  `snippets/delete/related_objects.html` that tests `protected_objects` loses the notice when the user may view none of
+  them: test `related_summary or has_protected_objects` around the include and `has_protected_objects` around the
+  notice. A custom `cv_filter_related_objects` must now filter `related.protected` too, starting from `super()`.
+  Summary counts are unchanged. See
+  [Migrating to 1.0.0](docs/migrating-1.0.md#delete-previews-and-protected-objects).
+- **Guardian manage context.** `guardian_config["cv_guardian_accept_global_perms"]` is gone, so a manage template
+  that reads it renders empty. Read `guardian_config.get_objects_for_user` (the helper's fixed strict policy) and each
+  `views.<key>.guardian_policy` (`global_fallback_applicable`, `cv_guardian_accept_global_perms`, `effective_policy`)
+  instead. The stock page shows a per-view "Global permission fallback" table. Who may open the page is unchanged.
+  See [Migrating to 1.0.0](docs/migrating-1.0.md#the-guardian-manage-page).
+- **Nested Guardian create access helpers.** `cv_has_access(user, obj)` and
+  `cv_create_has_access(user, view, parent_obj)` on a nested `GuardianCreateViewPermissionRequired` used to return
+  `True` for any object that was not a parent instance. They now accept only:
+    - a parent instance;
+    - for `ForeignKey` nesting, an own-child instance, whose actual parent is read through
+      `ParentViewSet.get_attribute()`. A Book now honors its Publisher's create permission instead of always passing.
+
+  Unrelated objects, own children with a missing parent, and `None` deny, superusers included. An own child of
+  `ManyToMany` nesting also denies: its object cannot name the URL parent, so an object-only control or
+  `cv_context_has_permission:"create"` on such a child's page stays closed. Explicit-parent helper calls, the URL-bound
+  child list control and direct create GET/POST under an authorized parent keep working. The helpers check permission
+  only. Rendered create controls on child pages pass the actual parent to `cv_action_enabled`, while label templates
+  keep the page object. Top-level create still checks the model-level `add_<model>` permission. See
+  [Migrating to 1.0.0](docs/migrating-1.0.md#nested-guardian-create-access).
 
 ### Removed
 
@@ -194,6 +238,35 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Fixed
 
+- **Formset row requests are authorized.** The AJAX request that adds a formset row (`?template=...`) used to render
+  the row before the view's object was loaded. A user denied the editor, for example a Guardian user without the
+  object permission, could therefore receive the row and its field choices. Each row request now runs the editor
+  page's own gates first: the object permission and action state through `get_object()`, the parent and create gates
+  on create views. Denied requests get 403, and a missing target or one under another URL parent gets 404. Nothing
+  is rendered for them. The request's `template`, `pk`, `num` and `formset_parent_prefix_key` are then checked
+  against the `FormSets` declaration and the stored foreign-key ancestry. Malformed or forged values, including
+  non-ASCII digits, get 400 before rendering. Requests built by `formset.js` and the `{html, rows}` response are
+  unchanged. Choices offered to users who may open the editor remain the form's business. See
+  [The AJAX template endpoint](docs/reference/formsets.md#the-ajax-template-endpoint).
+- **Unsaved UUID rows in formset prefixes:** an unsaved parent row is `None` in formset prefixes even when a UUID
+  default already set its primary key. New-object create pages and extra rows with UUID keys used to render a random
+  UUID that the POST rebuilt differently, so added nested rows did not bind. Saved rows are unchanged.
+- **`formset.js` with integer keys of 10 and more:** the key parser read `12-0` as key `2`, so a row added under a
+  parent with a multi-digit key got a prefix the POST never read, and its data was lost. It now reads the whole key.
+- **Guardian parent `None` policy:** `cv_guardian_parent_permission = None` (or
+  `cv_guardian_parent_create_permission = None`) used to skip the whole parent check. A child page then answered for
+  a missing parent, and a create ran under a parent whose `cv_action_enabled` state was disabled. Now `None` skips
+  only the permission check. The URL parent is still resolved (404 when missing), and a create view still runs its
+  state check with that parent (403 when disabled). The create access helpers no longer crash with
+  `AttributeError` under this policy, and they resolve the permission key exactly as dispatch does (`None`, not any
+  falsy value, means "no check"). No child `add_<model>` permission is required. See
+  [Parent Viewsets](docs/reference/guardian.md#parent-viewsets).
+- **Inactive users under Guardian:** a logged-in user whose account is inactive (possible with
+  `AllowAllUsersModelBackend`) got rows from Guardian list and card views (all of them for an inactive superuser), the
+  formset row of an editor, and results from `GuardianViewSet.get_objects_for_user()` and the delete-preview label
+  filter. Every Guardian view now answers such a user with 403. `cv_has_access`, `cv_create_has_access` and
+  `GuardianQuerysetMixin.cv_has_access` return `False`, and `get_objects_for_user()` returns an empty queryset. Active
+  superusers keep full access. See [Inactive users](docs/reference/guardian.md#inactive-users).
 - **Instance card label modes:** `as_view(cv_card_actions_label_mode=...)` and per-request assignments retain their
   explicit choices ahead of the project floor. An instance reset to `None` uses the current card floor; subclass
   resolver hooks still handle instances without their own value. See

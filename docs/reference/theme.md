@@ -321,3 +321,32 @@ The leaves `tags/button/action.html` and `tags/button/menu_item.html` receive `c
 `cv_disabled_reason`. If you override one of them, keep the `disabled data-cv-disabled` handling to support
 `CRUD_VIEWS_INACCESSIBLE_ACTIONS = "disable"`; without it a disabled action looks enabled. The logic templates no
 longer carry a branch of their own. See [Hide or disable inaccessible actions](inaccessible_actions.md).
+
+## Authorized data in overridden templates
+
+The library decides what a user may see and do before a template renders. An overridden template receives context
+that is already authorized, and it should render that context rather than fetch or recompute anything. Hiding a
+control in a template is presentation, not protection: every request is checked again on the server, whatever the
+page showed.
+
+| Template | What it receives |
+|---|---|
+| List and card templates | Only the rows the view's queryset permits. Do not query the model again in the template. |
+| Button leaves (`tags/button/action.html`, `tags/button/menu_item.html`) | Only actions the user may see. A denied action never reaches the leaf, and a disabled one arrives with `cv_disabled`. |
+| `crud_views/view_delete.content.html`, `snippets/delete/related_objects.html` | `protected_objects` holds only the labels the user may view, and `has_protected_objects` says whether the deletion is blocked at all. |
+| `crud_views/view_guardian_manage.html` | Each view's own global-fallback policy in `views.<key>.guardian_policy`, and the strict helper policy in `guardian_config.get_objects_for_user`. |
+| Formset templates | The editor's rows and choices, only on a page or row request the user passed the editor's gates for. |
+
+The blocked-deletion notice is the one place where the list and the state differ. Decide whether to show the notice
+from the flag and list the filtered labels, so the notice stays when every label is hidden:
+
+```django
+{% load crud_views i18n %}
+{% if has_protected_objects %}
+    {% cv_alert "error" heading=_("Deletion is blocked by protected relationships:") items=protected_objects %}
+{% endif %}
+```
+
+The labels arrive escaped like any other value. Wrap the include of this snippet in
+`{% if related_summary or has_protected_objects %}`. A copy that tests `protected_objects` instead loses the notice
+for a user who may view none of the protected objects. See [Protected objects](delete_view.md#protected-objects).

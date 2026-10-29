@@ -66,7 +66,7 @@ The 405 response's `Allow` header and an `OPTIONS` response never list `DELETE`,
 so Django 4.2 emits no `DeleteViewCustomDeleteWarning`.
 
 Send a POST with the confirmation field, as the bundled form does. A client or test that sent `DELETE` must post the
-form instead; see [Migrating to 1.0.0](../migrating-1.0.md).
+form instead; see [Migrating to 1.0.0](../migrating-1.0.md#http-delete-on-delete-views).
 
 ## Confirmation Form
 
@@ -230,7 +230,7 @@ Override these in your project's template directory to customize the rendering. 
 `crud_views/view_delete.content.html` must include the snippet when `related_summary or has_protected_objects`, and a
 copy of `related_objects.html` must show the blocked notice when `has_protected_objects`, listing
 `protected_objects`. A copy that still tests `protected_objects` loses the notice whenever every label is hidden. See
-[Migrating to 1.0.0](../migrating-1.0.md).
+[Migrating to 1.0.0](../migrating-1.0.md#delete-previews-and-protected-objects).
 
 ## Delete Protection
 

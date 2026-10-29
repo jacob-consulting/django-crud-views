@@ -4,16 +4,16 @@ milestone: v1.0
 current_phase: "06.2"
 current_phase_name: Request authorization and write integrity (INSERTED)
 status: executing
-stopped_at: Completed 06.2-02-PLAN.md
-last_updated: "2026-10-29T11:41:20.005Z"
+stopped_at: Completed 06.2-03-PLAN.md
+last_updated: "2026-10-29T12:14:57.671Z"
 last_activity: 2026-10-29
 last_activity_desc: Phase 06.2 execution started
-state_head: 0ccb1094d1ab5bd24d1c78a9b857de6ab2d1dae7
+state_head: e2f133069481a168a979ed254f8ee54fbdb6fcb5
 progress:
   total_phases: 9
   completed_phases: 7
   total_plans: 33
-  completed_plans: 29
+  completed_plans: 30
 milestone_name: milestone
 ---
 
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-10-29)
 ## Current Position
 
 Phase: 06.2 (Request authorization and write integrity (INSERTED)) — EXECUTING
-Plan: 3 of 6
+Plan: 4 of 6
 Status: Ready to execute
 Last activity: 2026-10-29 — Phase 06.2 execution started
 
@@ -94,6 +94,7 @@ Progress: 27/33 plans executed; 7/9 phases complete (78%); Phase 6.2 planned and
 | Phase 06.1 P03 | 9 min | 2 tasks | 7 files |
 | Phase 06.2 P01 | 16 min | 3 tasks | 8 files |
 | Phase 06.2 P02 | 30 min | 3 tasks | 9 files |
+| Phase 06.2 P03 | 30 min | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -181,6 +182,11 @@ Recent decisions affecting current work:
 - [Phase 06.2]: 06.2-02: Guardian parent-None (permission key None) skips only the permission check; dispatch still resolves the URL parent (404) and runs cv_action_enabled with it; create helpers share the dispatch resolver and accept only the parent or a single-FK own child (M2M/unrelated deny)
 - [Phase 06.2]: 06.2-02: Inactive authenticated actors are denied in every Guardian request gate and callable helper (querysets .none(), helpers False, _PermittedPks empty, strict ViewSet helper empty); active superuser semantics unchanged (D-05)
 - [Phase 06.2]: 06.2-02: Rendered controls compute state via private CrudView._cv_action_enabled_for_context (ContextButton classes, card branches, view context); Guardian nested create overrides it to pass the resolved parent; request dispatch keeps calling cv_action_enabled directly
+- [Phase 06.2]: Fragment requests resolve self.object via get_object() (None for create) before rendering; Guardian object/state gates apply and missing or wrong-parent targets 404
+- [Phase 06.2]: Private FormSets._cv_validate_fragment_coordinates validates key path, pk grammar, endpoint root, top/child indices, FK ancestry (exists()) and guarded ASCII indices; failures are 400 before rendering and only canonical values render
+- [Phase 06.2]: FormSet.init renders unsaved instances as None even with a default UUID pk (A14); integer-pk output unchanged
+- [Phase 06.2]: formset.js pk regex anchored after '-' so multi-digit integer pks are no longer truncated (Rule 1 fix)
+- [Phase 06.2]: A19 non-first child emitted-index mismatch stays deferred to proposed 6.3; both siblings keep authorization and ancestry checks
 
 ### Pending Todos
 
@@ -216,6 +222,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-29T11:41:19.249Z
-Stopped at: Completed 06.2-02-PLAN.md
+Last session: 2026-10-29T12:14:56.942Z
+Stopped at: Completed 06.2-03-PLAN.md
 Resume file: None

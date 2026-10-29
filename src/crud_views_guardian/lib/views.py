@@ -255,6 +255,8 @@ class GuardianManageView(ManageView):
     template_name = "crud_views/view_guardian_manage.html"
 
     def get_context_data(self, **kwargs):
+        from crud_views_guardian.lib.viewset import STRICT_HELPER_POLICY
+
         context = super().get_context_data(**kwargs)
         parent = self.cv_viewset.parent
         if parent is not None:
@@ -273,8 +275,9 @@ class GuardianManageView(ManageView):
         context["guardian_config"] = {
             "cv_guardian_parent_permission": self.cv_viewset.cv_guardian_parent_permission,
             "cv_guardian_parent_create_permission": self.cv_viewset.cv_guardian_parent_create_permission,
-            "cv_guardian_accept_global_perms": self.cv_viewset.cv_guardian_accept_global_perms,
             "parent_viewset": parent_viewset_info,
+            # the ViewSet helper's own fixed policy (D-05); global fallback is per view, see get_view_data()
+            "get_objects_for_user": dict(STRICT_HELPER_POLICY),
         }
         return context
 

@@ -1,9 +1,21 @@
-from typing import Self
+from collections.abc import Mapping
+from typing import Any, Self
 
 from pydantic import model_validator
 
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.viewset import ViewSet
+
+# The fixed, non-configurable guardian arguments of GuardianViewSet.get_objects_for_user() (D-05). The manage page
+# reports exactly these values, so its strict-helper entry cannot drift from the call.
+STRICT_HELPER_POLICY = {"policy": "strict", "accept_global_perms": False, "use_groups": True}
+
+_REMOVED_GLOBAL_PERMS_KEY = "cv_guardian_accept_global_perms"
+_REMOVED_GLOBAL_PERMS_MESSAGE = (
+    "GuardianViewSet no longer accepts cv_guardian_accept_global_perms: it never affected access and was removed "
+    "before 1.0. Set cv_guardian_accept_global_perms = True on each Guardian view class that should accept global "
+    "model permissions. GuardianViewSet.get_objects_for_user() stays strict and has no global-permission option."
+)
 
 
 class GuardianViewSet(ViewSet):
@@ -16,11 +28,25 @@ class GuardianViewSet(ViewSet):
         cv_guardian_parent_create_permission: permission key checked on parent
             object for child create views. None = falls back to
             cv_guardian_parent_permission.
+
+    Global model-permission fallback is configured per view class (``cv_guardian_accept_global_perms``), never on
+    the ViewSet; passing the removed ViewSet key raises a validation error naming that replacement.
     """
 
     cv_guardian_parent_permission: str | None = "view"
     cv_guardian_parent_create_permission: str | None = None
-    cv_guardian_accept_global_perms: bool = False
+
+    @model_validator(mode="before")
+    @classmethod
+    def reject_removed_global_perms_flag(cls, data: Any) -> Any:
+        """Reject the removed ViewSet flag before Pydantic would silently ignore it as an extra (D-04).
+
+        Only mapping input is inspected; anything else (an existing instance, invalid input) passes through to
+        Pydantic's established validation. Raising here precedes the after-validator, so nothing is registered.
+        """
+        if isinstance(data, Mapping) and _REMOVED_GLOBAL_PERMS_KEY in data:
+            raise ValueError(_REMOVED_GLOBAL_PERMS_MESSAGE)
+        return data
 
     def get_manage_view_class(self):
         from django.utils.module_loading import import_string
@@ -77,6 +103,6 @@ class GuardianViewSet(ViewSet):
             user,
             self.permissions[perm],
             qs,
-            accept_global_perms=False,
-            use_groups=True,
+            accept_global_perms=STRICT_HELPER_POLICY["accept_global_perms"],
+            use_groups=STRICT_HELPER_POLICY["use_groups"],
         )

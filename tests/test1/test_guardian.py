@@ -334,11 +334,74 @@ def test_create_cv_has_access_child_with_parent_obj_without_perm(user_guardian, 
 
 
 @pytest.mark.django_db
-def test_create_cv_has_access_child_wrong_type_obj(user_guardian, book_under_publisher_a):
-    """Child create, obj=wrong model type: True (fallback — cannot determine access)."""
+def test_create_cv_has_access_child_own_child_obj_uses_fk_parent(
+    user_guardian, cv_guardian_publisher, publisher_a, publisher_b, book_under_publisher_a
+):
+    """Child create, obj=own-child instance (a Book on a Book detail page): the configured FK parent
+    (``ParentViewSet.attribute="publisher"``) is resolved and its create permission decides. This supersedes
+    the former wrong-type fallback to True (Phase 6.2 H03): no parent grant is no access."""
+    from django.contrib.auth.models import User
+
     from tests.test1.app.views import GuardianBookCreateView
 
+    book = book_under_publisher_a
+    assert GuardianBookCreateView.cv_has_access(user_guardian, book) is False
+    assert GuardianBookCreateView.cv_create_has_access(user_guardian, None, book) is False
+
+    # a grant on ANOTHER parent does not authorize a child of publisher_a
+    user_guardian_object_perm(user_guardian, cv_guardian_publisher, "change", publisher_b)
+    user = User.objects.get(pk=user_guardian.pk)
+    assert GuardianBookCreateView.cv_has_access(user, book) is False
+    assert GuardianBookCreateView.cv_create_has_access(user, None, book) is False
+
+    # the correct parent's create grant authorizes — the same answer as passing that parent directly
+    user_guardian_object_perm(user_guardian, cv_guardian_publisher, "change", publisher_a)
+    user = User.objects.get(pk=user_guardian.pk)
+    assert GuardianBookCreateView.cv_has_access(user, book) is True
+    assert GuardianBookCreateView.cv_create_has_access(user, None, book) is True
+    assert GuardianBookCreateView.cv_has_access(user, publisher_a) is True
+
+
+@pytest.mark.django_db
+def test_create_cv_has_access_child_unrelated_obj_denied_even_for_superuser(author_douglas_adams):
+    """An object that is neither the configured parent nor an own child cannot establish a parent."""
+    from django.contrib.auth.models import User
+
+    from tests.test1.app.views import GuardianBookCreateView
+
+    root = User.objects.create_superuser(username="root", password="password")
+    assert GuardianBookCreateView.cv_has_access(root, author_douglas_adams) is False
+    assert GuardianBookCreateView.cv_create_has_access(root, None, author_douglas_adams) is False
+
+
+@pytest.mark.django_db
+def test_create_cv_has_access_child_missing_relation_denied(user_guardian):
+    """An own-child instance without its parent relation (unsaved, FK unset) is denied, not guessed."""
+    from tests.test1.app.models import Book
+    from tests.test1.app.views import GuardianBookCreateView
+
+    assert GuardianBookCreateView.cv_has_access(user_guardian, Book(title="no parent")) is False
+    assert GuardianBookCreateView.cv_create_has_access(user_guardian, None, Book(title="no parent")) is False
+
+
+@pytest.mark.django_db
+def test_create_cv_has_access_parent_none_policy_resolves_without_permission(
+    user_guardian, cv_guardian_book, publisher_a, book_under_publisher_a, author_douglas_adams, monkeypatch
+):
+    """Parent permission None: a resolvable parent (direct or via own child) needs no grant; None and
+    unrelated inputs still deny. The helpers no longer crash on the None key (B6)."""
+    from tests.test1.app.views import GuardianBookCreateView
+
+    monkeypatch.setattr(cv_guardian_book, "cv_guardian_parent_permission", None)
+    monkeypatch.setattr(cv_guardian_book, "cv_guardian_parent_create_permission", None)
+
+    assert GuardianBookCreateView.cv_has_access(user_guardian, publisher_a) is True
+    assert GuardianBookCreateView.cv_create_has_access(user_guardian, None, publisher_a) is True
     assert GuardianBookCreateView.cv_has_access(user_guardian, book_under_publisher_a) is True
+    assert GuardianBookCreateView.cv_create_has_access(user_guardian, None, book_under_publisher_a) is True
+    assert GuardianBookCreateView.cv_has_access(user_guardian, None) is False
+    assert GuardianBookCreateView.cv_create_has_access(user_guardian, None, None) is False
+    assert GuardianBookCreateView.cv_has_access(user_guardian, author_douglas_adams) is False
 
 
 # ── cv_create_has_access ──────────────────────────────────────────────────────

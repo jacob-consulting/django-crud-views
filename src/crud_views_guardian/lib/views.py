@@ -316,9 +316,34 @@ class GuardianManageView(ManageView):
         return sorted(holders.values(), key=lambda r: (r["group"], r["permission"]))
 
     def get_view_data(self):
+        from collections import OrderedDict
+
         data = super().get_view_data()
         for key, view_data in data.items():
             view_class = self.cv_viewset.get_all_views()[key]
             labels = [label for cls, label in GUARDIAN_MIXINS if issubclass(view_class, cls)]
             view_data["base"]["guardian_mixin"] = " + ".join(labels) if labels else "—"
+            applicable = self._guardian_global_fallback_applicable(view_class)
+            accept = bool(getattr(view_class, "cv_guardian_accept_global_perms", False)) if applicable else None
+            effective = ("global fallback" if accept else "strict") if applicable else "not applicable"
+            view_data["guardian_policy"] = OrderedDict(
+                {
+                    "global_fallback_applicable": applicable,
+                    "cv_guardian_accept_global_perms": accept,
+                    "effective_policy": effective,
+                }
+            )
         return data
+
+    def _guardian_global_fallback_applicable(self, view_class) -> bool:
+        """Whether ``view_class`` ever consults its own ``cv_guardian_accept_global_perms`` (D-06).
+
+        Object and queryset views always do. A parent-only view does so only in its parent check, i.e. with an
+        actual parent and a non-None effective parent permission (the shared resolver used by dispatch and the
+        create helpers). Plain views, manage and top-level creates never do. The ViewSet is never consulted.
+        """
+        if issubclass(view_class, (GuardianObjectPermissionMixin, GuardianQuerysetMixin)):
+            return True
+        if issubclass(view_class, GuardianParentPermissionMixin) and self.cv_viewset.parent is not None:
+            return view_class._guardian_resolve_parent_perm_key() is not None
+        return False

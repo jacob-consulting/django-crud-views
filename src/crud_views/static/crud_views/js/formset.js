@@ -151,8 +151,9 @@ class XFormset extends XBase {
 
         // calculated
 
-        // primary key and index
-        let pk_index_reg = new RegExp(String.raw`^(.*)(None|${this.data.pk})-(\d+)$`),
+        // primary key and index: the pk starts after a "-" (or at the start), so a greedy prefix
+        // cannot swallow leading digits of a multi-digit pk ("12-0" is pk 12, not 2)
+        let pk_index_reg = new RegExp(String.raw`^(?:(.*)-)?(None|${this.data.pk})-(\d+)$`),
             pk_index_match = this.prefix_key.match(pk_index_reg).slice(-2),
             pk_index = pk_index_match.slice(-2),
             pk = pk_index[0] === "None" ? null : pk_index[0],

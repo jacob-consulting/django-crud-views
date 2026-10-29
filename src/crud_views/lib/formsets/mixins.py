@@ -52,28 +52,30 @@ class FormSetMixinBase:
         return super().get(request, *args, **kwargs)
 
     def get_template_html(self, request):
+        """
+        Render one empty row of the requested formset as ``{"html", "rows"}``.
 
+        Runs after ``get()`` resolved and authorized the endpoint object. The key path, ``num``, ``pk`` and
+        ``formset_parent_prefix_key`` are validated against the declaration and the persisted ancestry rooted at
+        that object before anything renders; any mismatch is a 400.
+        """
         key_path = request.GET.get("template").split("|")
         pk = request.GET.get("pk", "None")
         num = request.GET.get("num")
         formset_parent_prefix_key = request.GET.get("formset_parent_prefix_key")
 
-        if num is None or not num.isdigit():
-            raise BadRequest("num must be an integer")
-
         formsets = self.cv_get_formsets()
         if formsets is None:
             raise BadRequest("view has no formsets")
 
-        # validate the key path before rendering
-        node = formsets.get(key_path[0])
-        for key in key_path[1:]:
-            node = node.children.get(key) if node else None
-        if node is None:
-            raise BadRequest(f"unknown formset template {request.GET.get('template')}")
-
-        data = formsets.get_template(key_path=key_path, pk=pk, num=int(num), parent_prefix=formset_parent_prefix_key)
-        return data
+        pk, num, parent_prefix = formsets._cv_validate_fragment_coordinates(
+            key_path=key_path,
+            pk=pk,
+            num=num,
+            parent_prefix=formset_parent_prefix_key,
+            root=getattr(self, "object", None),
+        )
+        return formsets.get_template(key_path=key_path, pk=pk, num=num, parent_prefix=parent_prefix)
 
     def cv_form_is_valid(self, context: dict) -> bool:
         """

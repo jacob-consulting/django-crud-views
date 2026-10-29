@@ -36,10 +36,17 @@ class FormSetMixinBase:
 
     def get(self, request, *args, **kwargs):
         """
-        GET also handles AJAX requests for formset templates
+        GET also handles AJAX requests for formset templates.
+
+        A fragment request resolves and authorizes its real target before anything renders, exactly like the
+        full page: object views load ``self.object`` through the cooperative ``get_object()`` (Guardian object
+        permission and action-state gates, missing or wrong-parent targets 404); create and other no-object
+        views use ``None`` after dispatch has run their parent and permission gates. The full editor is not
+        built for a fragment.
         """
         template = request.GET.get("template", None)
         if template:
+            self.object = self.get_object() if self.cv_object else None
             data = self.get_template_html(request)
             return JsonResponse(data)
         return super().get(request, *args, **kwargs)

@@ -764,3 +764,115 @@ def test_fragment_get_does_not_render_the_full_editor(fr, world, monkeypatch):
     _assert_fragment(response, [f"books-{pa.pk}-0-2"], ["title"])
     assert built == []
     assert fr.calls["render"] == 1
+
+
+# ── D-12: polymorphic formset composition keeps declaration selection after authorization ──
+
+
+@pytest.fixture
+def poly():
+    """Fresh Vehicle routes whose create/update views select formsets per polymorphic model."""
+    from crud_views.lib import check as check_module
+    from crud_views.lib.crispy import CrispyViewMixin
+    from crud_views.lib.formsets.mixins import PolymorphicFormSetsViewMixin
+    from crud_views.lib.views import DetailViewPermissionRequired, ListViewPermissionRequired
+    from crud_views.lib.viewset import _REGISTRY, _REGISTRY_LOCK, ViewSet
+    from crud_views_polymorphic.lib import (
+        PolymorphicCreateViewPermissionRequired,
+        PolymorphicUpdateViewPermissionRequired,
+    )
+    from tests.test1.app.models import Car, Truck, Vehicle
+    from tests.test1.app.views import CarForm, TruckForm
+
+    sfx = uuid.uuid4().hex[:8]
+    name = f"frveh{sfx}"
+    modname = f"tests.test1._fragment_poly_urls_{sfx}"
+    vocab_snapshot = dict(check_module._VOCAB_CACHE)
+    selected: list = []
+
+    class RecordingSelection:
+        def cv_get_formsets(self):
+            selected.append((self.polymorphic_model, getattr(self, "object", None)))
+            return super().cv_get_formsets()
+
+    try:
+        viewset = ViewSet(model=Vehicle, name=name, icon_header="fa-solid fa-car")
+
+        class FrVehicleListView(ListViewPermissionRequired):
+            cv_viewset = viewset
+
+        class FrVehicleDetailView(DetailViewPermissionRequired):
+            cv_viewset = viewset
+
+        class FrVehicleCreateView(
+            RecordingSelection, CrispyViewMixin, PolymorphicFormSetsViewMixin, PolymorphicCreateViewPermissionRequired
+        ):
+            cv_viewset = viewset
+            polymorphic_forms = {Car: CarForm, Truck: TruckForm}
+            cv_polymorphic_formsets = {}
+            cv_formsets_required = False
+
+        class FrVehicleUpdateView(
+            RecordingSelection, CrispyViewMixin, PolymorphicFormSetsViewMixin, PolymorphicUpdateViewPermissionRequired
+        ):
+            cv_viewset = viewset
+            polymorphic_forms = {Car: CarForm, Truck: TruckForm}
+            cv_polymorphic_formsets = {}
+            cv_formsets_required = False
+
+        module = types.ModuleType(modname)
+        module.urlpatterns = [*viewset.urlpatterns, path("", include("tests.test1.project.urls"))]
+        sys.modules[modname] = module
+
+        clear_url_caches()
+        with override_settings(ROOT_URLCONF=modname):
+            clear_url_caches()
+            try:
+                yield SimpleNamespace(viewset=viewset, selected=selected, Car=Car)
+            finally:
+                clear_url_caches()
+    finally:
+        with _REGISTRY_LOCK:
+            _REGISTRY.pop(name, None)
+        check_module._VOCAB_CACHE.clear()
+        check_module._VOCAB_CACHE.update(vocab_snapshot)
+        sys.modules.pop(modname, None)
+        clear_url_caches()
+
+
+@pytest.mark.django_db
+def test_polymorphic_formset_views_select_declarations_after_authorization(poly):
+    from django.contrib.contenttypes.models import ContentType
+
+    car = poly.Car.objects.create(name="Beetle", doors=2)
+    editor = _user("poly_editor")
+    _model_perms(editor, "view_vehicle", "change_vehicle", "add_vehicle")
+    client = _client(editor)
+    update_url = _url(poly.viewset, "update", pk=car.pk)
+    create_url = _url(poly.viewset, "create", polymorphic_ctype_id=ContentType.objects.get_for_model(poly.Car).id)
+
+    # the full GET/POST paths keep working
+    assert client.get(update_url).status_code == 200
+    assert client.get(create_url).status_code == 200
+    assert client.post(update_url, {"name": "Golf", "doors": "4"}).status_code == 302
+    car.refresh_from_db()
+    assert car.name == "Golf"
+    poly.selected.clear()
+
+    # authorized fragments select the declaration for the resolved model and object; a model without
+    # formsets is a 400 (no declaration), never a crash
+    params = {"template": "books", "pk": "None", "num": "0", "formset_parent_prefix_key": ""}
+    assert _get(client, update_url, params).status_code == 400
+    assert _get(client, create_url, params).status_code == 400
+    assert [(model, getattr(obj, "pk", None)) for model, obj in poly.selected] == [
+        (poly.Car, car.pk),
+        (poly.Car, None),
+    ]
+    poly.selected.clear()
+
+    # an actor who may not edit, and a missing target, are stopped before any declaration lookup
+    viewer = _user("poly_viewer")
+    _model_perms(viewer, "view_vehicle")
+    assert _get(_client(viewer), update_url, params).status_code == 403
+    assert _get(client, _url(poly.viewset, "update", pk=987654), params).status_code == 404
+    assert poly.selected == []

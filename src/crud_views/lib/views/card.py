@@ -63,7 +63,7 @@ class CardListView(CardOrderMixin, CrudView, generic.ListView):
             # permission is checked on the child view, like ChildContextButton (#149)
             return {
                 "cv_access": bool(child_cls.cv_has_access(user, obj)),
-                "cv_action_enabled": child_cls.cv_action_enabled(user, obj),
+                "cv_action_enabled": child_cls._cv_action_enabled_for_context(user, obj),
                 "cv_inaccessible_actions": child_cls.cv_get_inaccessible_actions(),
                 "cv_key": action.child_name,
                 "cv_url": url,
@@ -86,7 +86,7 @@ class CardListView(CardOrderMixin, CrudView, generic.ListView):
             cv_oid=self.cv_get_oid(action.key, obj=obj),
             cv_url=url,
             cv_access=bool(cls.cv_has_access(user, obj)),
-            cv_action_enabled=cls.cv_action_enabled(user, obj),
+            cv_action_enabled=cls._cv_action_enabled_for_context(user, obj),
         )
         variant = action.variant if action.variant is not None else cls.cv_action_variant
         data.update(cv_label=label, cv_variant=variant, cv_flex=action.flex, cv_label_mode=label_mode)

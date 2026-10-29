@@ -106,7 +106,7 @@ class ContextButton(BaseModel):
         }
 
         # button visibility — independent of access/permission
-        dict_kwargs["cv_action_enabled"] = cls.cv_action_enabled(context.view.request.user, context.object)
+        dict_kwargs["cv_action_enabled"] = cls._cv_action_enabled_for_context(context.view.request.user, context.object)
 
         # check access
         if cls.cv_has_access(context.view.request.user, context.object):
@@ -179,7 +179,7 @@ class ParentContextButton(ContextButton):
                 parent_obj = None
 
         # button visibility — independent of access/permission
-        dict_kwargs["cv_action_enabled"] = cls.cv_action_enabled(context.view.request.user, parent_obj)
+        dict_kwargs["cv_action_enabled"] = cls._cv_action_enabled_for_context(context.view.request.user, parent_obj)
 
         # check permission against the parent object
         if cls.cv_has_access(context.view.request.user, parent_obj):
@@ -231,7 +231,7 @@ class ChildContextButton(ContextButton):
         }
 
         # button visibility — independent of access/permission
-        dict_kwargs["cv_action_enabled"] = cls.cv_action_enabled(context.view.request.user, context.object)
+        dict_kwargs["cv_action_enabled"] = cls._cv_action_enabled_for_context(context.view.request.user, context.object)
 
         if cls.cv_has_access(context.view.request.user, context.object):
             dict_kwargs.update(cv_access=True)
@@ -288,7 +288,7 @@ class SiblingContextButton(ContextButton):
         }
 
         # button visibility — independent of access/permission
-        dict_kwargs["cv_action_enabled"] = cls.cv_action_enabled(context.view.request.user, None)
+        dict_kwargs["cv_action_enabled"] = cls._cv_action_enabled_for_context(context.view.request.user, None)
 
         if cls.cv_has_access(context.view.request.user, None):
             dict_kwargs.update(cv_access=True)

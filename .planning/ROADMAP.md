@@ -26,6 +26,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 5: Table pagination parity** - plan 3B: table pagination gets the same registry icons and accessible markup as card pagination (droppable) (completed 2026-10-27)
 - [x] **Phase 6: Form-button leaf** - plan 2 (#257): crispy form buttons render as `<button>` through `tags/button/form.html` (completed 2026-10-28)
 - [x] **Phase 6.1: Cancel form button as a link (INSERTED)** - #275: themes can opt into native cancel links while preserving the button default (completed 2026-10-29)
+- [ ] **Phase 6.2: Request authorization and write integrity (INSERTED)** - analysis B1–B7: secure request paths, safe delete previews and truthful Guardian configuration before the freeze
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Phase Details
@@ -338,14 +339,55 @@ Plans:
 
 **UI hint**: no (tag choice in the existing form leaf; no new screens)
 
+### Phase 6.2: Request authorization and write integrity (INSERTED)
+
+**Goal**: Close the request authorization and write-integrity gaps in B1–B6 and settle B7's effective Guardian
+configuration before the theme-surface freeze. Authorization and safe context construction remain library-owned.
+**Source**: `superpowers/notes/2026-10-28-pre-1.0-before-theme-freeze-analysis.md`, §3 (B1–B7), §8 (slice 6.2), §9 (decisions 1 and 4).
+**Canonical refs**: `superpowers/notes/2026-10-28-pre-1.0-before-theme-freeze-analysis.md`; `docs/reference/guardian.md`; `docs/migrating-1.0.md`.
+**Requirements**: Source findings B1–B7; phase requirement IDs to be assigned during planning.
+**Depends on**: Phase 6.1 for execution order; uses existing core delete/formset and Guardian composition.
+Must complete before Phase 7 freezes the affected contracts.
+**Parallel with**: None
+**Research/spec**: Discuss HTTP DELETE policy (reject or equivalent validated lifecycle), safe protected-object
+preview context, and Guardian global-permission configuration/helper/manage-display semantics. The source note's
+recommendations are proposals, not locked decisions.
+**Success Criteria** (what must be TRUE):
+
+  1. B1: Every allowed deletion method preserves permission, action-state, confirmation/form validation,
+     deletion-protection, hooks and transaction/rollback boundaries. HTTP DELETE is explicitly rejected or follows
+     the complete validated lifecycle; it cannot inherit a direct-delete bypass.
+  2. B2: Formset fragments authorize the target and validate URL-parent/fragment coordinates before rendering.
+     Ungranted, revoked, inactive, state-disabled, wrong-parent and missing-object requests disclose no form data
+     or choices; authorized fragments retain the documented request and `{html, rows}` protocol.
+  3. B3: Protected related objects are filtered before entering template context. No/partial/full related-view
+     grants reveal only permitted labels, while deletion remains visibly blocked even if all labels are hidden.
+  4. B4/B6: Parent permission `None` retains parent resolution and independent action-state checks. Create
+     visibility/access helpers and direct GET/POST agree without crashes or requiring a new child-add grant.
+  5. B5: Inactive users, including inactive superusers and group/object grant holders, receive no unauthorized
+     rows or object access even when an authentication backend permits inactive sessions.
+  6. B7: Guardian has a documented effective global-permission policy. View behavior, the ViewSet helper and
+     manage diagnostics are truthful; removal/clarification or inheritance of the inert ViewSet flag is
+     explicitly decided and covered by regressions.
+  7. Direct-request actor-matrix regressions and native list/card/action/manage/alert/formset overrides prove
+     server enforcement independently of presentation. Preserve intentional aggregate purge authority and
+     existing parent/global safeguards. Document changed access/config/context behavior; every Breaking entry
+     has a paired `docs/migrating-1.0.md` update.
+
+**Scope exclusions**: Conditional/formset lifecycle work A1–A7 (proposed 6.3), presentation/alias cleanup
+(proposed 6.4), the jQuery port, and the final stability inventory. Do not reopen completed Phase 6/6.1 acceptance.
+**Plans**: TBD
+**UI hint**: no (backend enforcement and safe existing template contexts; no new screens)
+
 ### Phase 7: Theme-surface stability policy
 
 **Goal**: Theme authors can see exactly which names they may rely on at 1.0.0, and a test stops any public theme name
 from shipping undocumented or being documented without existing.
 **Source**: plan 4 · branch `docs/stability-theme-surface`
-**Depends on**: Phase 6.1, Phase 4 and Phase 5 (and so, transitively, Phases 6, 1 and 2). It merges last, before the 1.0.0
-bump. If Phases 4/5 are dropped, it depends on Phase 6.1 only and documents the surface as it is. Include the cancel
-tag key, `Button(tag=...)` and form-leaf `cv_tag` contract introduced by #275.
+**Depends on**: Phase 6.2, Phase 4 and Phase 5 (and so, transitively, Phases 6.1, 6, 1 and 2). It merges last, before the 1.0.0
+bump. If Phases 4/5 are dropped, it depends on Phase 6.2 only and documents the surface as it is. Include the cancel
+tag key, `Button(tag=...)` and form-leaf `cv_tag` contract introduced by #275, plus the settled request,
+protected-preview and Guardian configuration contracts from Phase 6.2.
 **Parallel with**: None
 **Research/spec**: **Needs a maintainer decision/spec**:
 
@@ -377,7 +419,7 @@ tag key, `Button(tag=...)` and form-leaf `cv_tag` contract introduced by #275.
 ## Progress
 
 **Execution Order:**
-Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 6.1 → 7) is valid. With parallelization, run in waves:
+Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 6.1 → 6.2 → 7) is valid. With parallelization, run in waves:
 
 | Wave | Phases | Notes |
 |------|--------|-------|
@@ -385,7 +427,8 @@ Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 6.1 → 7) is valid. With par
 | 2 | 3 (plan 1B) ∥ 4 (plan 3A) ∥ 5 (plan 3B) | 3 needs 1; 4 and 5 are independent (5 rebases after 2 for the key count) |
 | 3 | 6 (plan 2) | Verify completed 1 and 2 on the working branch; spec first (D-18) |
 | 4 | 6.1 (#275) | Extends Phase 6 with a theme-selectable cancel link before the stability freeze |
-| 5 | 7 (plan 4) | Needs 6.1, 4 and 5 merged; last change before the 1.0.0 bump |
+| 5 | 6.2 (analysis B1–B7) | Secures request/write boundaries and safe contexts before the freeze |
+| 6 | 7 (plan 4) | Needs 6.2, 4 and 5 merged; last change before the 1.0.0 bump |
 
 Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 
@@ -398,4 +441,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 5. Table pagination parity | 3/3 | Complete    | 2026-10-27 |
 | 6. Form-button leaf | 10/10 | Complete    | 2026-10-28 |
 | 6.1. Cancel form button as a link | 3/3 | Complete    | 2026-10-29 |
+| 6.2. Request authorization and write integrity | 0/TBD | Not started | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

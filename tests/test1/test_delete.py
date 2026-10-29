@@ -605,3 +605,60 @@ def test_delete_alert_headings_translate():
         )
     assert "Dieses Objekt kann nicht gelöscht werden:" in html
     assert 'role="alert"' in html
+
+
+def _assert_guard_in_mro(view_class):
+    from django.views import generic
+
+    from crud_views.lib.view import CrudView
+    from crud_views.lib.views.delete import _DeleteMethodGuardMixin
+
+    mro = view_class.__mro__
+    assert mro.index(CrudView) < mro.index(_DeleteMethodGuardMixin) < mro.index(generic.DeleteView)
+
+
+def _spy_raw_delete_handler(monkeypatch) -> list:
+    """Spy on Django's DeletionMixin.delete itself, so concrete classes keep ``delete is DeletionMixin.delete``."""
+    from django.views.generic.edit import DeletionMixin
+
+    entered = []
+    original = DeletionMixin.delete
+
+    def spy(self, request, *args, **kwargs):
+        entered.append(request.method)
+        return original(self, request, *args, **kwargs)
+
+    monkeypatch.setattr(DeletionMixin, "delete", spy)
+    return entered
+
+
+@pytest.mark.django_db
+def test_registered_core_class_restoring_delete_stays_guarded(
+    client_user_publisher_delete, cv_publisher, publisher_penguin, monkeypatch
+):
+    """A18/A22: the registered PublisherDeleteView, patched to list "delete" again, inherits the dispatch guard."""
+    from django.views.generic import View
+
+    from crud_views.lib.views import DeleteView
+    from tests.test1.app.models import Publisher
+    from tests.test1.app.views import PublisherDeleteView
+
+    _assert_guard_in_mro(PublisherDeleteView)
+    original = PublisherDeleteView.http_method_names
+    inherited = list(DeleteView.http_method_names)
+    url = f"/publisher/{publisher_penguin.pk}/delete/"
+    with monkeypatch.context() as patch:
+        patch.setattr(PublisherDeleteView, "http_method_names", [*View.http_method_names])
+        assert "delete" in PublisherDeleteView.http_method_names
+        entered = _spy_raw_delete_handler(patch)
+        response = client_user_publisher_delete.delete(url)
+        options = client_user_publisher_delete.options(url)
+        assert response.status_code == 405
+        assert options.status_code == 200
+        assert "DELETE" not in _allow(response)
+        assert _allow(options) == _allow(response)
+        assert entered == []
+    assert PublisherDeleteView.http_method_names is original
+    assert "delete" not in PublisherDeleteView.http_method_names
+    assert DeleteView.http_method_names == inherited
+    assert Publisher.objects.filter(pk=publisher_penguin.pk).exists()

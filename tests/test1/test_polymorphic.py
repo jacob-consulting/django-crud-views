@@ -175,6 +175,23 @@ def test_delete_vehicle(client_user_vehicle_delete: Client, cv_vehicle, car_seda
 
 
 @pytest.mark.django_db
+def test_delete_vehicle_http_delete_rejected(client_user_vehicle_delete: Client, cv_vehicle, car_sedan):
+    """A26: the registered VehicleDeleteView inherits the DELETE rejection; Car and Vehicle rows stay intact."""
+    pk = car_sedan.pk
+    car_before = Car.objects.filter(pk=pk).values().get()
+    vehicle_before = Vehicle.objects.non_polymorphic().filter(pk=pk).values().get()
+
+    response = client_user_vehicle_delete.delete(f"/vehicle/{pk}/delete/")
+    assert response.status_code == 405
+    allow = {m.strip() for m in response.headers.get("Allow", "").split(",") if m.strip()}
+    assert "DELETE" not in allow
+    assert {"GET", "POST"} <= allow
+
+    assert Car.objects.filter(pk=pk).values().get() == car_before
+    assert Vehicle.objects.non_polymorphic().filter(pk=pk).values().get() == vehicle_before
+
+
+@pytest.mark.django_db
 def test_polymorphic_queryset_returns_subtypes(cv_vehicle, car_sedan, truck_semi):
     """Vehicle.objects.all() should return Car and Truck instances."""
     vehicles = list(Vehicle.objects.all())

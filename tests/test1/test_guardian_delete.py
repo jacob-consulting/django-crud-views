@@ -415,3 +415,44 @@ def test_guardian_options_and_restored_method_omit_delete(
     assert _allow(options) == _allow(response) == _allow(default_options)
     assert lookups == []
     assert Publisher.objects.filter(pk=publisher_a.pk).exists()
+
+
+@pytest.mark.django_db
+def test_registered_guardian_class_restoring_delete_stays_guarded(
+    client_guardian, user_guardian, cv_guardian_publisher, publisher_a, monkeypatch
+):
+    """A18/A22: the registered Guardian delete class, patched to list "delete" again, inherits the guard."""
+    from django.views import generic
+    from django.views.generic import View
+    from django.views.generic.edit import DeletionMixin
+
+    from crud_views.lib.view import CrudView
+    from crud_views.lib.views.delete import _DeleteMethodGuardMixin
+    from tests.test1.app.models import Publisher
+    from tests.test1.app.views import GuardianPublisherCascadeDeleteView, cv_guardian_publisher_cascade
+
+    mro = GuardianPublisherCascadeDeleteView.__mro__
+    assert mro.index(CrudView) < mro.index(_DeleteMethodGuardMixin) < mro.index(generic.DeleteView)
+    user_guardian_object_perm(user_guardian, cv_guardian_publisher_cascade, "delete", publisher_a)
+    original = GuardianPublisherCascadeDeleteView.http_method_names
+    url = f"/guardian_publisher_cascade/{publisher_a.pk}/delete/"
+    with monkeypatch.context() as patch:
+        patch.setattr(GuardianPublisherCascadeDeleteView, "http_method_names", [*View.http_method_names])
+        entered = []
+        raw_delete = DeletionMixin.delete
+        patch.setattr(
+            DeletionMixin,
+            "delete",
+            lambda self, request, *a, **kw: entered.append(1) or raw_delete(self, request, *a, **kw),
+        )
+        lookups = _spy_get_object(patch, GuardianPublisherCascadeDeleteView)
+        for _ in range(2):
+            response = client_guardian.delete(url)
+            assert response.status_code == 405
+            assert "DELETE" not in _allow(response)
+        assert "DELETE" not in _allow(client_guardian.options(url))
+        assert entered == []
+        assert lookups == []
+    assert GuardianPublisherCascadeDeleteView.http_method_names is original
+    assert "delete" not in GuardianPublisherCascadeDeleteView.http_method_names
+    assert Publisher.objects.filter(pk=publisher_a.pk).exists()

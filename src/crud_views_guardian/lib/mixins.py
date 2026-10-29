@@ -120,8 +120,10 @@ class GuardianQuerysetMixin:
         view, viewset has a parent), resolves the parent object from self.kwargs
         using the existing cv_get_parent_object() helper, and delegates to
         target_cls.cv_create_has_access() with the resolved parent. The result
-        replaces cv_access in the already-built context dict — no other context
-        fields are affected.
+        replaces cv_access in the already-built context dict. cv_action_enabled is
+        re-derived separately from the same parent through the target's state
+        adapter; when the parent cannot be resolved both fields are False and no
+        custom state hook is called with None. No other context fields are affected.
         """
         assert not isinstance(user, str)
 
@@ -152,7 +154,10 @@ class GuardianQuerysetMixin:
                     )
                     parent_obj = None
                 ctx["cv_access"] = target_cls.cv_create_has_access(user, self, parent_obj)
-                ctx["cv_action_enabled"] = target_cls.cv_action_enabled(user, parent_obj)
+                # state is independent of permission; an unresolved parent never reaches a custom state hook
+                ctx["cv_action_enabled"] = parent_obj is not None and target_cls._cv_action_enabled_for_context(
+                    user, parent_obj
+                )
 
         return ctx
 
@@ -186,7 +191,18 @@ class GuardianParentPermissionMixin:
     When a parent viewset is present, overrides has_permission() to return True
     so that Django's model-level PermissionRequiredMixin is bypassed; the parent
     object-level check in dispatch() is the sole gatekeeper.
+
+    A parent permission key of None disables only the parent *permission* check:
+    the URL parent is still resolved (a missing parent is a 404) and no-object
+    child views (create) still run their independent cv_action_enabled state gate
+    with that parent. No child-add permission is required instead.
     """
+
+    # Policy names read via getattr() below. Annotation-only on purpose: a value here
+    # would shadow an object/queryset mixin composed after this one (MRO order), while
+    # the annotation still makes the names known to the W280 unknown-attribute check.
+    cv_guardian_accept_global_perms: bool
+    cv_guardian_anonymous_behavior: str
 
     def has_permission(self):
         if self.cv_viewset.parent is not None:
@@ -209,35 +225,49 @@ class GuardianParentPermissionMixin:
             raise PermissionDenied
         return self.handle_no_permission()  # redirect to login
 
-    def _guardian_parent_perm_key(self) -> str | None:
+    @classmethod
+    def _guardian_resolve_parent_perm_key(cls) -> str | None:
+        """The parent permission key for this view class: create views use
+        cv_guardian_parent_create_permission, falling back (when None) to
+        cv_guardian_parent_permission. None means: no parent permission check."""
         perm_key = None
-        if getattr(self, "cv_permission", None) == "add":
-            perm_key = getattr(self.cv_viewset, "cv_guardian_parent_create_permission", None)
+        if getattr(cls, "cv_permission", None) == "add":
+            perm_key = getattr(cls.cv_viewset, "cv_guardian_parent_create_permission", None)
         if perm_key is None:
-            perm_key = getattr(self.cv_viewset, "cv_guardian_parent_permission", "view")
+            perm_key = getattr(cls.cv_viewset, "cv_guardian_parent_permission", "view")
         return perm_key
 
-    def _guardian_has_parent_perm(self, user, parent_perm: str, parent_obj) -> bool:
+    def _guardian_parent_perm_key(self) -> str | None:
+        return self._guardian_resolve_parent_perm_key()
+
+    @classmethod
+    def _guardian_user_has_parent_perm(cls, user, parent_obj) -> bool:
+        """Whether ``user`` holds this view's parent permission on the resolved ``parent_obj``.
+
+        Shared by dispatch and the create access helpers. A None permission key skips only this
+        permission evaluation (True); parent resolution and action state are the callers' concern.
+        """
+        perm_key = cls._guardian_resolve_parent_perm_key()
+        if perm_key is None:
+            return True
+        parent_perm = cls.cv_viewset.parent.viewset.permissions.get(perm_key)
         # accept_global: the model-level permission is a fallback. Note that
         # user.has_perm(perm, obj) would NOT do this — Django's ModelBackend returns
         # nothing once an object is passed, and guardian checks object perms only.
-        if getattr(self, "cv_guardian_accept_global_perms", False) and user.has_perm(parent_perm):
+        if getattr(cls, "cv_guardian_accept_global_perms", False) and user.has_perm(parent_perm):
             return True
         from guardian.core import ObjectPermissionChecker
 
         return ObjectPermissionChecker(user).has_perm(parent_perm.split(".")[1], parent_obj)
 
     def _guardian_check_parent(self, user, parent_vs, kwargs):
-        """Raise PermissionDenied unless ``user`` may act on the parent object."""
-        perm_key = self._guardian_parent_perm_key()
-        if perm_key is None:
-            return
+        """Resolve the URL parent (404 when missing) and raise PermissionDenied unless ``user`` may act on it."""
         parent_obj = get_object_or_404(parent_vs.viewset.model, pk=kwargs.get(parent_vs.get_pk_name()))
-        parent_perm = parent_vs.viewset.permissions.get(perm_key)
-        if not self._guardian_has_parent_perm(user, parent_perm, parent_obj):
+        if not self._guardian_user_has_parent_perm(user, parent_obj):
             raise PermissionDenied
         # Secondary state gate — only for no-object child views (e.g. create),
-        # whose action object IS the parent. Object child-views (detail/update/
+        # whose action object IS the parent. It runs even when the parent
+        # permission key is None (D-10). Object child-views (detail/update/
         # delete) carry a row and are gated in get_object() with that row, so we
         # must NOT also gate them here with the parent (that would invoke
         # cv_action_enabled with the wrong object type).

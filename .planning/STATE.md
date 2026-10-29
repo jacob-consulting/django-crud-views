@@ -1,20 +1,19 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 7
-current_phase_name: Theme-surface stability policy
-status: planning
-stopped_at: Phase 06.1 complete, ready to plan Phase 7
-last_updated: "2026-10-29T05:32:55.886Z"
+current_phase: "06.2"
+current_phase_name: Request authorization and write integrity (INSERTED)
+status: executing
+stopped_at: Completed 06.2-01-PLAN.md
+last_updated: "2026-10-29T11:07:40.511Z"
 last_activity: 2026-10-29
-last_activity_desc: Phase 06.1 complete, transitioned to Phase 7
-state_head: 726cfc8a3a153a982b1be4592c19b6fb79bf790e
+last_activity_desc: Phase 06.2 execution started
+state_head: 5b6da914b4434fa2c42865cfacd25ce2d412d062
 progress:
-  total_phases: 8
+  total_phases: 9
   completed_phases: 7
-  total_plans: 27
-  completed_plans: 27
-  percent: 88
+  total_plans: 33
+  completed_plans: 28
 milestone_name: milestone
 ---
 
@@ -25,16 +24,16 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-10-29)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 7 — Theme-surface stability policy
+**Current focus:** Phase 06.2 — Request authorization and write integrity (INSERTED)
 
 ## Current Position
 
-Phase: 7 — Theme-surface stability policy
-Plan: Not started
-Status: Ready to plan
-Last activity: 2026-10-29 — Phase 06.1 complete, transitioned to Phase 7
+Phase: 06.2 (Request authorization and write integrity (INSERTED)) — EXECUTING
+Plan: 2 of 6
+Status: Ready to execute
+Last activity: 2026-10-29 — Phase 06.2 execution started
 
-Progress: 27/27 plans executed ([█████████░] 88%); 7/8 phases complete
+Progress: 27/33 plans executed; 7/9 phases complete (78%); Phase 6.2 planned and review-converged
 
 ## Performance Metrics
 
@@ -93,6 +92,7 @@ Progress: 27/27 plans executed ([█████████░] 88%); 7/8 phase
 | Phase 06.1 P01 | 12 min | 3 tasks | 12 files |
 | Phase 06.1 P02 | 8 min | 2 tasks | 4 files |
 | Phase 06.1 P03 | 9 min | 2 tasks | 7 files |
+| Phase 06.2 P01 | 16 min | 3 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -175,6 +175,8 @@ Recent decisions affecting current work:
 - [Phase 06.1]: 06.1-03: tag= keyword change recorded in the existing Form buttons Breaking entry with paired migrating-1.0.md guidance; cancel links are an Added entry
 - [Phase 06.1]: 06.1-03: real-browser cancel-link acceptance (no-JS, new tab, disabled) left pending for end-of-phase UAT; jsdom proves handler noninterference only
 - [Phase 06.1]: UAT 3/3 passed via automated Chromium (JS-disabled click/Enter/middle-click, disabled fallback, JS-on non-interception), user-confirmed; verification canonicalized to passed
+- [Phase 06.2]: HTTP DELETE rejected by a private dispatch guard (_DeleteMethodGuardMixin) between CrudView and Django DeleteView; _allowed_methods drops DELETE from 405 Allow/OPTIONS; DeletionMixin.delete identity kept (no Django 4.2 warning)
+- [Phase 06.2]: Delete previews expose has_protected_objects (from the unfiltered collection) and only permitted protected_objects; core filters by model view permission, Guardian by object grant with per-view global fallback (no core re-filter)
 
 ### Pending Todos
 
@@ -200,6 +202,7 @@ None yet.
 
 - Phase 06 edited: User decision D-18: verify completed Phase 1/2 contracts on executing working branch before spec; main merge no longer prerequisite
 - Phase 6.1 inserted after Phase 6: Cancel form button as a link (#275); complete before Phase 7 freezes the theme surface (URGENT)
+- Phase 6.2 inserted after Phase 6.1: Request authorization and write integrity (analysis B1–B7); complete before Phase 7 freezes the theme surface (URGENT)
 
 ## Deferred Items
 
@@ -209,6 +212,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-29T05:40:00Z
-Stopped at: Phase 06.1 complete, ready to plan Phase 7
+Last session: 2026-10-29T11:07:39.833Z
+Stopped at: Completed 06.2-01-PLAN.md
 Resume file: None

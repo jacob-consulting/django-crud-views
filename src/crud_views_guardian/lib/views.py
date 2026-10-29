@@ -1,3 +1,5 @@
+from django.core.exceptions import ObjectDoesNotExist
+
 from crud_views.lib.views import (
     ActionViewPermissionRequired,
     CardListViewPermissionRequired,
@@ -34,19 +36,22 @@ class GuardianUpdateViewPermissionRequired(
 
 
 class GuardianDeleteRelatedObjectsMixin:
-    """Filter cascade-delete related objects by per-object view permissions via django-guardian."""
+    """Filter cascade-delete related objects and protected-object labels by per-object view permissions via
+    django-guardian (with the view's ``cv_guardian_accept_global_perms`` fallback).
+
+    Replaces the core model-level filter rather than chaining to it, so an object grant keeps its label without a
+    global view permission. Protected objects are filtered even when the cascade tree is empty; the blocked state
+    itself is captured by ``DeleteView.get_context_data`` before this hook runs, and summaries stay unchanged.
+    """
 
     def cv_filter_related_objects(self, user, related):
         from crud_views.lib.views.delete import RelatedObjects
-
-        if not related.tree:
-            return related
 
         permitted = _PermittedPks(user, getattr(self, "cv_guardian_accept_global_perms", False))
         return RelatedObjects(
             tree=_filter_tree(related.tree, permitted),
             summary=related.summary,
-            protected=related.protected,
+            protected=[obj for obj in related.protected if obj.pk in permitted(obj._meta.model)],
         )
 
 
@@ -117,7 +122,49 @@ class GuardianCreateViewPermissionRequired(GuardianParentPermissionMixin, Create
     For child creates: GuardianParentPermissionMixin checks per-object permission
     on the parent instance using cv_guardian_parent_create_permission (falls back
     to cv_guardian_parent_permission). No model-level add_<child> check is made.
+    When the resolved key is None only that permission check is skipped; the
+    parent is still resolved and cv_action_enabled still runs with it.
+
+    The access helpers (cv_has_access, cv_create_has_access) are permission-only
+    and share the dispatch permission rule. They accept the configured parent
+    model instance, or an own-child instance of a single-FK nesting whose parent
+    is resolved through ParentViewSet.attribute. Anything else denies.
     """
+
+    @classmethod
+    def _cv_guardian_create_parent(cls, obj):
+        """The configured parent instance an access/state input stands for, or None.
+
+        - an instance of the parent model is the parent itself (also for M2M nesting, when supplied explicitly);
+        - an instance of this view's own model resolves its FK parent via ``ParentViewSet.get_attribute()``,
+          only for single-FK nesting: an M2M child may belong to several parents and names none of them;
+        - a missing/None relation (Django ``ObjectDoesNotExist``), a non-parent result and every other
+          input yield None. No attribute name or related manager is guessed.
+        """
+        if obj is None:
+            return None
+        parent = cls.cv_viewset.parent
+        parent_model = parent.viewset.model
+        if isinstance(obj, parent_model):
+            return obj
+        if not isinstance(obj, cls.cv_viewset.model) or parent.many_to_many_through_attribute:
+            return None
+        try:
+            candidate = getattr(obj, parent.get_attribute())
+        except ObjectDoesNotExist:
+            return None
+        return candidate if isinstance(candidate, parent_model) else None
+
+    @classmethod
+    def _cv_action_enabled_for_context(cls, user, obj=None) -> bool:
+        """Nested create: the action object is the parent. Resolve it from ``obj`` (parent or FK own child);
+        unresolved → False without calling a custom cv_action_enabled hook. Top-level: unchanged."""
+        if cls.cv_viewset.parent is None:
+            return super()._cv_action_enabled_for_context(user, obj)
+        parent_obj = cls._cv_guardian_create_parent(obj)
+        if parent_obj is None:
+            return False
+        return cls.cv_action_enabled(user, parent_obj)
 
     @classmethod
     def cv_create_has_access(cls, user, rendering_view, parent_obj):
@@ -129,8 +176,10 @@ class GuardianCreateViewPermissionRequired(GuardianParentPermissionMixin, Create
         parent object from its URL kwargs and passes it here.
 
         Default implementation checks cv_guardian_parent_create_permission (falling
-        back to cv_guardian_parent_permission) on the parent object via guardian's
-        ObjectPermissionChecker. Override in subclasses for custom logic.
+        back to cv_guardian_parent_permission) on the parent object — the same rule
+        dispatch applies, including the accept-global fallback and a None key
+        (no permission check). Permission only: the action state is resolved
+        separately. Override in subclasses for custom logic.
 
         Args:
             user: the requesting user
@@ -138,26 +187,21 @@ class GuardianCreateViewPermissionRequired(GuardianParentPermissionMixin, Create
                 (e.g. NetzwerkMemberListView) — provides access to
                 rendering_view.request, rendering_view.kwargs, etc.
                 Not used by the default implementation; available for subclass overrides.
-            parent_obj: the resolved parent model instance, or None if resolution
-                failed (returns False in that case)
+            parent_obj: the resolved parent model instance (an own-child instance of a
+                single-FK nesting is resolved to its parent), or None if resolution
+                failed (returns False in that case, as does any other object)
         """
-        if parent_obj is None:
+        if cls.cv_viewset.parent is None:
+            return cls.cv_has_access(user, None)
+        resolved = cls._cv_guardian_create_parent(parent_obj)
+        if resolved is None:
             return False
-        perm_key = getattr(cls.cv_viewset, "cv_guardian_parent_create_permission", None) or getattr(
-            cls.cv_viewset, "cv_guardian_parent_permission", "view"
-        )
-        perm = cls.cv_viewset.parent.viewset.permissions.get(perm_key)
-        accept_global = getattr(cls, "cv_guardian_accept_global_perms", False)
-        if accept_global and user.has_perm(perm):
-            return True
-        from guardian.core import ObjectPermissionChecker
-
-        return ObjectPermissionChecker(user).has_perm(perm.split(".")[1], parent_obj)
+        return cls._guardian_user_has_parent_perm(user, resolved)
 
     @classmethod
     def cv_has_access(cls, user, obj=None):
         """
-        Three-case permission check for create button visibility.
+        Permission check for create button visibility.
 
         Case 1 — Top-level create (cv_viewset.parent is None):
             Falls through to the base class, which checks the model-level
@@ -170,17 +214,22 @@ class GuardianCreateViewPermissionRequired(GuardianParentPermissionMixin, Create
             cv_create_has_access(). This is a safe fallback for any call path
             that bypasses the list view override.
 
-        Case 3 — Child create, parent object available (e.g. author detail page):
+        Case 3 — Child create, parent object available (e.g. publisher detail page):
             When obj is an instance of the parent model, checks
             cv_guardian_parent_create_permission (falling back to
-            cv_guardian_parent_permission) on that specific parent object via
-            guardian's ObjectPermissionChecker. This gives precise per-object
-            button visibility: "add book" only appears for parent objects the user
+            cv_guardian_parent_permission) on that specific parent object, with the
+            same rule as dispatch (accept-global fallback; a None key skips the
+            permission check). "add book" only appears for parent objects the user
             is actually allowed to create children under.
 
-            If obj is provided but is not an instance of the parent model
-            (unexpected; wrong type passed by some other render path), falls back
-            to True — cannot determine access without the right object type.
+        Case 4 — Child create, own-child object (e.g. a book detail page):
+            For single-FK nesting the book's configured parent attribute is
+            resolved and Case 3 applies to that parent. M2M nesting cannot name a
+            single parent from a child and denies.
+
+        Any other object (an unrelated model, a child without its parent
+        relation) denies — it cannot establish which parent the create would
+        bind to. This supersedes the former permissive fallback to True.
         """
         assert not isinstance(user, str)
 
@@ -190,20 +239,10 @@ class GuardianCreateViewPermissionRequired(GuardianParentPermissionMixin, Create
         if obj is None:
             return False  # safe fallback — GuardianQuerysetMixin.cv_get_context handles the real check
 
-        parent_vs = cls.cv_viewset.parent.viewset
-        if isinstance(obj, parent_vs.model):
-            perm_key = getattr(cls.cv_viewset, "cv_guardian_parent_create_permission", None) or getattr(
-                cls.cv_viewset, "cv_guardian_parent_permission", "view"
-            )
-            perm = parent_vs.permissions.get(perm_key)
-            accept_global = getattr(cls, "cv_guardian_accept_global_perms", False)
-            if accept_global and user.has_perm(perm):
-                return True
-            from guardian.core import ObjectPermissionChecker
-
-            return ObjectPermissionChecker(user).has_perm(perm.split(".")[1], obj)
-
-        return True
+        parent_obj = cls._cv_guardian_create_parent(obj)
+        if parent_obj is None:
+            return False
+        return cls._guardian_user_has_parent_perm(user, parent_obj)
 
 
 class GuardianManageView(ManageView):

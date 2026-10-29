@@ -5,7 +5,7 @@
 {% if delete_protection_errors %}
     {% include "crud_views/snippets/delete/protection_errors.html" %}
 {% else %}
-    {% if related_summary or protected_objects %}
+    {% if related_summary or has_protected_objects %}
         {% include "crud_views/snippets/delete/related_objects.html" %}
     {% endif %}
 

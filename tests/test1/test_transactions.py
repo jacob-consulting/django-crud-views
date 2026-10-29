@@ -384,6 +384,130 @@ def test_guardian_delete_goes_through_seam(
     assert len(calls) == 1
 
 
+# --- Phase 6.2 (AUTH-01, D-12): allowed POST lifecycle and rejected DELETE ---------------------
+
+
+def _record_delete_lifecycle(monkeypatch, view_class) -> list[str]:
+    """Record the delete write-path hooks of a registered class in call order (auto-restored)."""
+    calls: list[str] = []
+    for name in ("cv_check_delete_protection", "cv_post_hook", "cv_form_valid", "cv_form_valid_hook"):
+        original = getattr(view_class, name)
+
+        def spy(self, *args, _name=name, _original=original, **kwargs):
+            calls.append(_name)
+            return _original(self, *args, **kwargs)
+
+        monkeypatch.setattr(view_class, name, spy)
+    monkeypatch.setattr(view_class, "cv_on_commit", lambda self, context: calls.append("cv_on_commit"))
+    return calls
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("data", [{}, {"confirm": "false"}, {"confirm": ""}], ids=["empty", "false", "blank"])
+def test_delete_unconfirmed_post_skips_write_phase(
+    client_user_publisher_delete, monkeypatch, django_capture_on_commit_callbacks, data
+):
+    from tests.test1.app.views import PublisherDeleteView
+
+    publisher = Publisher.objects.create(name="Unconfirmed")
+    calls = _record_delete_lifecycle(monkeypatch, PublisherDeleteView)
+    with django_capture_on_commit_callbacks(execute=True) as callbacks:
+        response = client_user_publisher_delete.post(f"/publisher/{publisher.pk}/delete/", data)
+    assert response.status_code == 200
+    assert response.context["form"].errors
+    assert "cv_form_valid" not in calls
+    assert "cv_on_commit" not in calls
+    assert callbacks == []
+    assert Publisher.objects.filter(pk=publisher.pk).exists()
+
+
+@pytest.mark.django_db
+def test_delete_missing_target_never_writes(client_user_publisher_delete, monkeypatch):
+    from tests.test1.app.views import PublisherDeleteView
+
+    Publisher.objects.create(name="Bystander")
+    before = Publisher.objects.count()
+    calls = _record_delete_lifecycle(monkeypatch, PublisherDeleteView)
+    response = client_user_publisher_delete.post("/publisher/999999/delete/", {"confirm": True})
+    assert response.status_code == 404
+    assert calls == []
+    assert Publisher.objects.count() == before
+
+
+@pytest.mark.django_db
+def test_delete_custom_protection_runs_before_write(
+    client_user_publisher_protected_delete, monkeypatch, django_capture_on_commit_callbacks
+):
+    from tests.test1.app.views import PublisherProtectedDeleteView
+
+    publisher = Publisher.objects.create(name="Vetoed")
+    calls = _record_delete_lifecycle(monkeypatch, PublisherProtectedDeleteView)
+    with django_capture_on_commit_callbacks(execute=True) as callbacks:
+        response = client_user_publisher_protected_delete.post(
+            f"/publisher_protected/{publisher.pk}/delete/", {"confirm": True}
+        )
+    assert response.status_code == 200
+    assert calls == ["cv_check_delete_protection", "cv_post_hook"]
+    assert callbacks == []
+    assert Publisher.objects.filter(pk=publisher.pk).exists()
+
+
+@pytest.mark.django_db
+def test_delete_valid_post_hook_order_and_single_delete(
+    client_user_publisher_delete, monkeypatch, django_capture_on_commit_callbacks
+):
+    from tests.test1.app.views import PublisherDeleteView
+
+    publisher = Publisher.objects.create(name="Ordered")
+    calls = _record_delete_lifecycle(monkeypatch, PublisherDeleteView)
+    with django_capture_on_commit_callbacks(execute=True):
+        response = client_user_publisher_delete.post(f"/publisher/{publisher.pk}/delete/", {"confirm": True})
+    assert response.status_code == 302
+    assert calls == [
+        "cv_check_delete_protection",
+        "cv_post_hook",
+        "cv_form_valid",
+        "cv_form_valid_hook",
+        "cv_on_commit",
+    ]
+    assert not Publisher.objects.filter(pk=publisher.pk).exists()
+
+
+@pytest.mark.django_db
+def test_delete_hook_exception_rolls_back_and_suppresses_on_commit(
+    client_user_publisher_delete, monkeypatch, django_capture_on_commit_callbacks
+):
+    from tests.test1.app.views import PublisherDeleteView
+
+    publisher = Publisher.objects.create(name="Rolled Back")
+    calls = _record_on_commit(monkeypatch, PublisherDeleteView)
+    monkeypatch.setattr(PublisherDeleteView, "cv_form_valid_hook", _boom)
+    with django_capture_on_commit_callbacks(execute=True) as callbacks, pytest.raises(Boom):
+        client_user_publisher_delete.post(f"/publisher/{publisher.pk}/delete/", {"confirm": True})
+    assert callbacks == []
+    assert calls == []
+    assert Publisher.objects.filter(pk=publisher.pk).exists()
+
+
+@pytest.mark.django_db
+def test_rejected_http_delete_is_idempotent(
+    client_user_publisher_delete, monkeypatch, django_capture_on_commit_callbacks
+):
+    """Repeated DELETE requests are all 405, never enter the write path and leave the row intact."""
+    from tests.test1.app.views import PublisherDeleteView
+
+    publisher = Publisher.objects.create(name="Persistent")
+    calls = _record_delete_lifecycle(monkeypatch, PublisherDeleteView)
+    with django_capture_on_commit_callbacks(execute=True) as callbacks:
+        statuses = [
+            client_user_publisher_delete.delete(f"/publisher/{publisher.pk}/delete/").status_code for _ in range(3)
+        ]
+    assert statuses == [405, 405, 405]
+    assert calls == []
+    assert callbacks == []
+    assert Publisher.objects.filter(pk=publisher.pk).exists()
+
+
 # --- Task 4: action views ----------------------------------------------------------------------
 
 

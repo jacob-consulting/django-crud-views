@@ -1,20 +1,19 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 7
-current_phase_name: Theme-surface stability policy
+current_phase: "6.2"
+current_phase_name: Request authorization and write integrity
 status: planning
-stopped_at: Phase 06.1 complete, ready to plan Phase 7
-last_updated: "2026-10-29T05:32:55.886Z"
+stopped_at: Phase 6.2 context gathered
+last_updated: "2026-10-29T05:48:32.599Z"
 last_activity: 2026-10-29
-last_activity_desc: Phase 06.1 complete, transitioned to Phase 7
-state_head: 726cfc8a3a153a982b1be4592c19b6fb79bf790e
+last_activity_desc: Phase 6.2 context gathered; ready for planning
+state_head: ecf2146700e42e2dcdfd1814ced10b0878a91555
 progress:
-  total_phases: 8
+  total_phases: 9
   completed_phases: 7
   total_plans: 27
   completed_plans: 27
-  percent: 88
 milestone_name: milestone
 ---
 
@@ -25,16 +24,16 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-10-29)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 7 — Theme-surface stability policy
+**Current focus:** Phase 6.2 — Request authorization and write integrity
 
 ## Current Position
 
-Phase: 7 — Theme-surface stability policy
+Phase: 6.2 — Request authorization and write integrity
 Plan: Not started
 Status: Ready to plan
-Last activity: 2026-10-29 — Phase 06.1 complete, transitioned to Phase 7
+Last activity: 2026-10-29 — Phase 6.2 context gathered; ready for planning
 
-Progress: 27/27 plans executed ([█████████░] 88%); 7/8 phases complete
+Progress: 27/27 plans executed; 7/9 phases complete (78%); Phase 6.2 ready for planning
 
 ## Performance Metrics
 
@@ -200,6 +199,7 @@ None yet.
 
 - Phase 06 edited: User decision D-18: verify completed Phase 1/2 contracts on executing working branch before spec; main merge no longer prerequisite
 - Phase 6.1 inserted after Phase 6: Cancel form button as a link (#275); complete before Phase 7 freezes the theme surface (URGENT)
+- Phase 6.2 inserted after Phase 6.1: Request authorization and write integrity (analysis B1–B7); complete before Phase 7 freezes the theme surface (URGENT)
 
 ## Deferred Items
 
@@ -209,6 +209,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-29T05:40:00Z
-Stopped at: Phase 06.1 complete, ready to plan Phase 7
-Resume file: None
+Last session: 2026-10-29T05:48:32.205Z
+Stopped at: Phase 6.2 context gathered
+Resume file: .planning/phases/06.2-request-authorization-and-write-integrity/06.2-CONTEXT.md

@@ -41,7 +41,7 @@
     {
       "number": "6.2",
       "name": "Request authorization and write integrity",
-      "status": "pending"
+      "status": "in_progress"
     },
     {
       "number": "7",
@@ -54,5 +54,5 @@
     "label": "Advance to the next step",
     "reason": "Phase 8 of 9 · 27% · executing"
   },
-  "updated_at": "2026-10-29T11:07:36.743Z"
+  "updated_at": "2026-10-29T11:41:15.211Z"
 }

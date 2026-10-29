@@ -4,16 +4,16 @@ milestone: v1.0
 current_phase: "06.2"
 current_phase_name: Request authorization and write integrity (INSERTED)
 status: executing
-stopped_at: Completed 06.2-01-PLAN.md
-last_updated: "2026-10-29T11:07:40.511Z"
+stopped_at: Completed 06.2-02-PLAN.md
+last_updated: "2026-10-29T11:41:20.005Z"
 last_activity: 2026-10-29
 last_activity_desc: Phase 06.2 execution started
-state_head: 5b6da914b4434fa2c42865cfacd25ce2d412d062
+state_head: 0ccb1094d1ab5bd24d1c78a9b857de6ab2d1dae7
 progress:
   total_phases: 9
   completed_phases: 7
   total_plans: 33
-  completed_plans: 28
+  completed_plans: 29
 milestone_name: milestone
 ---
 
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-10-29)
 ## Current Position
 
 Phase: 06.2 (Request authorization and write integrity (INSERTED)) — EXECUTING
-Plan: 2 of 6
+Plan: 3 of 6
 Status: Ready to execute
 Last activity: 2026-10-29 — Phase 06.2 execution started
 
@@ -93,6 +93,7 @@ Progress: 27/33 plans executed; 7/9 phases complete (78%); Phase 6.2 planned and
 | Phase 06.1 P02 | 8 min | 2 tasks | 4 files |
 | Phase 06.1 P03 | 9 min | 2 tasks | 7 files |
 | Phase 06.2 P01 | 16 min | 3 tasks | 8 files |
+| Phase 06.2 P02 | 30 min | 3 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -177,6 +178,9 @@ Recent decisions affecting current work:
 - [Phase 06.1]: UAT 3/3 passed via automated Chromium (JS-disabled click/Enter/middle-click, disabled fallback, JS-on non-interception), user-confirmed; verification canonicalized to passed
 - [Phase 06.2]: HTTP DELETE rejected by a private dispatch guard (_DeleteMethodGuardMixin) between CrudView and Django DeleteView; _allowed_methods drops DELETE from 405 Allow/OPTIONS; DeletionMixin.delete identity kept (no Django 4.2 warning)
 - [Phase 06.2]: Delete previews expose has_protected_objects (from the unfiltered collection) and only permitted protected_objects; core filters by model view permission, Guardian by object grant with per-view global fallback (no core re-filter)
+- [Phase 06.2]: 06.2-02: Guardian parent-None (permission key None) skips only the permission check; dispatch still resolves the URL parent (404) and runs cv_action_enabled with it; create helpers share the dispatch resolver and accept only the parent or a single-FK own child (M2M/unrelated deny)
+- [Phase 06.2]: 06.2-02: Inactive authenticated actors are denied in every Guardian request gate and callable helper (querysets .none(), helpers False, _PermittedPks empty, strict ViewSet helper empty); active superuser semantics unchanged (D-05)
+- [Phase 06.2]: 06.2-02: Rendered controls compute state via private CrudView._cv_action_enabled_for_context (ContextButton classes, card branches, view context); Guardian nested create overrides it to pass the resolved parent; request dispatch keeps calling cv_action_enabled directly
 
 ### Pending Todos
 
@@ -212,6 +216,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-29T11:07:39.833Z
-Stopped at: Completed 06.2-01-PLAN.md
+Last session: 2026-10-29T11:41:19.249Z
+Stopped at: Completed 06.2-02-PLAN.md
 Resume file: None

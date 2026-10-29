@@ -196,3 +196,24 @@ class ProfileItem(models.Model):
 
     def __str__(self):
         return self.label
+
+
+class UUIDFragmentRow(models.Model):
+    """Test-only UUID-keyed inline row of an Author (formset fragment ancestry, Phase 6.2 B2)."""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name="fragment_rows")
+    text = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.text
+
+
+class UUIDFragmentLeaf(models.Model):
+    """Test-only inline leaf of a UUIDFragmentRow (nested formset fragment ancestry, Phase 6.2 B2)."""
+
+    row = models.ForeignKey(UUIDFragmentRow, on_delete=models.CASCADE, related_name="leaves")
+    text = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.text

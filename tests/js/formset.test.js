@@ -31,6 +31,30 @@ describe("formset.js", () => {
             expect(fs.index).toBe(0);
         });
 
+        it("parses multi-digit and UUID parent pks with the server's pk grammar", () => {
+            const { prefix } = formsetFixture({ pk: "12" });
+            const content = document.querySelector(".cv-formset-content");
+            const data = JSON.parse(content.getAttribute("cv-data-formset"));
+            const INT = String.raw`\d+`;
+            const UUID = String.raw`[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}`;
+            const a = "0a1b2c3d-0000-4000-8000-00000000000a";
+            const r = "9f8e7d6c-1111-4111-8111-11111111111b";
+            const cases = [
+                ["12-0", INT, "12", 0],
+                ["5-0-0-12-0", INT, "12", 0],
+                ["15-0-3-123-1", INT, "123", 1],
+                ["None-0-3-None-0", INT, null, 0],
+                [`${a}-0`, UUID, a, 0],
+                [`${a}-0-1-${r}-0`, UUID, r, 0],
+                [`${a}-0-1-None-0`, UUID, null, 0],
+            ];
+            for (const [prefixKey, grammar, pk, index] of cases) {
+                content.setAttribute("cv-data-formset", JSON.stringify({ ...data, prefix_key: prefixKey, pk: grammar }));
+                const fs = new window.cv.XFormset(null, prefix);
+                expect([prefixKey, fs.pk, fs.index]).toEqual([prefixKey, pk, index]);
+            }
+        });
+
         it("reads and writes the management form", () => {
             formsetFixture({ rows: 2 });
             const fs = new window.cv.XFormset(null, "book-None-0");

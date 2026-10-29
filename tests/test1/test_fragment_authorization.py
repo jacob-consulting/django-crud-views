@@ -28,7 +28,7 @@ from lxml import html as lxml_html
 
 from crud_views.lib.crispy import Column4, CrispyModelForm
 from crud_views.lib.formsets import FormSet, FormSets, Formsets, InlineFormSet
-from tests.test1.app.models import Book, BookNote, Contract, Publisher
+from tests.test1.app.models import Author, Book, BookNote, Contract, Publisher, UUIDFragmentLeaf, UUIDFragmentRow
 
 SECRET = "TOP-SECRET-CONTRACT-7f3a"
 ALLOW_INACTIVE = "django.contrib.auth.backends.AllowAllUsersModelBackend"
@@ -114,6 +114,50 @@ def book_formsets() -> FormSets:
     return FormSets(formsets=OrderedDict(notes=FormSet(title="Notes", klass=SecretNoteFormSet)))
 
 
+def two_child_formsets() -> FormSets:
+    """A19: two sibling child declarations under books (notes at index 0, memos at index 1)."""
+    return FormSets(
+        formsets=OrderedDict(
+            books=FormSet(
+                title="Books",
+                klass=SecretBookFormSet,
+                children=OrderedDict(
+                    notes=FormSet(title="Notes", klass=SecretNoteFormSet),
+                    memos=FormSet(title="Memos", klass=SecretNoteFormSet),
+                ),
+            )
+        )
+    )
+
+
+def three_level_formsets() -> FormSets:
+    """Fragment-only declaration three levels deep, so a parent prefix carries a declared child index.
+
+    The leaf declarations reuse the note formset class: fragment rendering never binds them to a row, and the
+    ancestry checked for ``books|memos|leaf`` is Publisher -> Book -> BookNote. Only fragment requests use it.
+    """
+    return FormSets(
+        formsets=OrderedDict(
+            books=FormSet(
+                title="Books",
+                klass=SecretBookFormSet,
+                children=OrderedDict(
+                    notes=FormSet(
+                        title="Notes",
+                        klass=SecretNoteFormSet,
+                        children=OrderedDict(leaf=FormSet(title="Leaf", klass=SecretNoteFormSet)),
+                    ),
+                    memos=FormSet(
+                        title="Memos",
+                        klass=SecretNoteFormSet,
+                        children=OrderedDict(leaf=FormSet(title="Leaf", klass=SecretNoteFormSet)),
+                    ),
+                ),
+            )
+        )
+    )
+
+
 class PublisherMainForm(CrispyModelForm):
     class Meta:
         model = Publisher
@@ -170,7 +214,7 @@ def fr(monkeypatch):
     from crud_views_guardian.lib.viewset import GuardianViewSet
 
     sfx = uuid.uuid4().hex[:8]
-    names = [f"frgpub{sfx}", f"frgbook{sfx}", f"frcpub{sfx}"]
+    names = [f"frgpub{sfx}", f"frgbook{sfx}", f"frcpub{sfx}", f"frg2pub{sfx}", f"frdeep{sfx}"]
     modname = f"tests.test1._fragment_urls_{sfx}"
     vocab_snapshot = dict(check_module._VOCAB_CACHE)
     calls = {"render": 0}
@@ -246,11 +290,36 @@ def fr(monkeypatch):
             cv_viewset = cpub_vs
             cv_formsets = publisher_formsets()
 
+        g2pub_vs = GuardianViewSet(model=Publisher, name=names[3], icon_header="fa-regular fa-building")
+
+        class FrG2PublisherListView(GuardianListViewPermissionRequired):
+            cv_viewset = g2pub_vs
+
+        class FrG2PublisherDetailView(GuardianDetailViewPermissionRequired):
+            cv_viewset = g2pub_vs
+
+        class FrG2PublisherUpdateView(CrispyViewMixin, FormSetMixin, GuardianUpdateViewPermissionRequired):
+            form_class = PublisherMainForm
+            cv_viewset = g2pub_vs
+            cv_formsets = two_child_formsets()
+
+        deep_vs = ViewSet(model=Publisher, name=names[4], icon_header="fa-regular fa-building")
+
+        class FrDeepPublisherListView(ListViewPermissionRequired):
+            cv_viewset = deep_vs
+
+        class FrDeepPublisherUpdateView(CrispyViewMixin, FormSetMixin, UpdateViewPermissionRequired):
+            form_class = PublisherMainForm
+            cv_viewset = deep_vs
+            cv_formsets = three_level_formsets()
+
         module = types.ModuleType(modname)
         module.urlpatterns = [
             *gpub_vs.urlpatterns,
             *gbook_vs.urlpatterns,
             *cpub_vs.urlpatterns,
+            *g2pub_vs.urlpatterns,
+            *deep_vs.urlpatterns,
             path("", include("tests.test1.project.urls")),
         ]
         sys.modules[modname] = module
@@ -263,6 +332,8 @@ def fr(monkeypatch):
                     gpub_vs=gpub_vs,
                     gbook_vs=gbook_vs,
                     cpub_vs=cpub_vs,
+                    g2pub_vs=g2pub_vs,
+                    deep_vs=deep_vs,
                     GPublisherCreate=FrGPublisherCreateView,
                     GPublisherUpdate=FrGPublisherUpdateView,
                     GBookCreate=FrGBookCreateView,
@@ -876,3 +947,637 @@ def test_polymorphic_formset_views_select_declarations_after_authorization(poly)
     assert _get(_client(viewer), update_url, params).status_code == 403
     assert _get(client, _url(poly.viewset, "update", pk=987654), params).status_code == 404
     assert poly.selected == []
+
+
+# ── 03-02: declaration-aware coordinates (integer chains) ─────────────────────
+
+
+def _editor_client(fr, world, viewset=None):
+    actor = _user(f"coord_editor_{uuid.uuid4().hex[:6]}")
+    _grant(actor, viewset or fr.gpub_vs, world.publisher_a, "view", "change")
+    return _client(actor)
+
+
+def _assert_bad_request(fr, response, before):
+    assert response.status_code == 400, (response.status_code, response.content[:300])
+    _assert_not_rendered(fr, response)
+    assert _counts() == before
+
+
+@pytest.mark.parametrize(
+    "num",
+    ["²", "٣", "1²", "-1", "1.0", "", " 1", "9" * 30, "9" * 5000],
+    ids=["superscript", "arabic-indic", "mixed", "negative", "float", "empty", "space", "long", "huge"],
+)
+@pytest.mark.django_db
+def test_malformed_num_is_400_without_rendering(fr, world, num):
+    pa = world.publisher_a
+    client = _editor_client(fr, world)
+    before = _counts()
+    response = _get(
+        client,
+        _url(fr.gpub_vs, "update", pk=pa.pk),
+        {"template": "books", "pk": str(pa.pk), "num": num, "formset_parent_prefix_key": ""},
+    )
+    _assert_bad_request(fr, response, before)
+
+
+@pytest.mark.parametrize("prefix_tpl", ["{pa}-0-²", "{pa}-²-0", "{pa}-0-٣", "{pa}-0-" + "9" * 5000])
+@pytest.mark.django_db
+def test_malformed_prefix_index_is_400_without_rendering(fr, world, prefix_tpl):
+    pa, ba = world.publisher_a, world.book_a
+    client = _editor_client(fr, world)
+    before = _counts()
+    response = _get(
+        client,
+        _url(fr.gpub_vs, "update", pk=pa.pk),
+        {
+            "template": "books|notes",
+            "pk": str(ba.pk),
+            "num": "1",
+            "formset_parent_prefix_key": prefix_tpl.format(pa=pa.pk),
+        },
+    )
+    _assert_bad_request(fr, response, before)
+
+
+# (template, pk, parent prefix) templates; {pa}/{pb}/{ba}/{bb} are filled from the world fixture.
+FORGED_UPDATE = {
+    "top-wrong-root": ("books", "{pb}", ""),
+    "top-none-root-on-update": ("books", "None", ""),
+    "top-nonempty-prefix": ("books", "{pa}", "{pa}-0-0"),
+    "top-garbage-prefix": ("books", "{pa}", "x"),
+    "top-invalid-identity": ("books", "abc", ""),
+    "nested-missing-prefix": ("books|notes", "{ba}", None),
+    "nested-empty-prefix": ("books|notes", "{ba}", ""),
+    "nested-short-prefix": ("books|notes", "{ba}", "{pa}-0"),
+    "nested-long-prefix": ("books|notes", "{ba}", "{pa}-0-0-1"),
+    "nested-wrong-root": ("books|notes", "{ba}", "{pb}-0-0"),
+    "nested-none-root-on-update": ("books|notes", "None", "None-0-0"),
+    "nested-nonzero-top-index": ("books|notes", "{ba}", "{pa}-1-0"),
+    "nested-unrelated-ancestor": ("books|notes", "{bb}", "{pa}-0-0"),
+    "nested-missing-ancestor": ("books|notes", "987654", "{pa}-0-0"),
+    "nested-invalid-identity": ("books|notes", "1e3", "{pa}-0-0"),
+    "nested-signed-identity": ("books|notes", "-1", "{pa}-0-0"),
+    "nested-uuid-on-int": ("books|notes", str(uuid.UUID(int=1)), "{pa}-0-0"),
+    "unknown-key": ("nope", "{pa}", ""),
+    "empty-child-key": ("books|", "{ba}", "{pa}-0-0"),
+    "empty-root-key": ("|books", "{pa}", ""),
+    "child-as-root": ("notes", "{ba}", ""),
+    "too-deep-key": ("books|notes|x", "{ba}", "{pa}-0-0"),
+}
+
+
+def _fill(world, value):
+    if value is None:
+        return None
+    return value.format(pa=world.publisher_a.pk, pb=world.publisher_b.pk, ba=world.book_a.pk, bb=world.book_b.pk)
+
+
+def _coordinate_params(world, template, pk, prefix, num="1"):
+    params = {"template": template, "pk": _fill(world, pk), "num": num}
+    if prefix is not None:
+        params["formset_parent_prefix_key"] = _fill(world, prefix)
+    return params
+
+
+@pytest.mark.parametrize("case", list(FORGED_UPDATE), ids=list(FORGED_UPDATE))
+@pytest.mark.django_db
+def test_forged_update_coordinates_are_400_without_rendering(fr, world, case):
+    client = _editor_client(fr, world)
+    before = _counts()
+    response = _get(
+        client,
+        _url(fr.gpub_vs, "update", pk=world.publisher_a.pk),
+        _coordinate_params(world, *FORGED_UPDATE[case]),
+    )
+    _assert_bad_request(fr, response, before)
+
+
+FORGED_CREATE = {
+    "top-saved-root": ("books", "{pa}", ""),
+    "nested-saved-root-prefix": ("books|notes", "None", "{pa}-0-0"),
+    "nested-saved-under-unsaved": ("books|notes", "{ba}", "None-0-0"),
+    "nested-missing-prefix": ("books|notes", "None", None),
+}
+
+
+@pytest.mark.parametrize("case", list(FORGED_CREATE), ids=list(FORGED_CREATE))
+@pytest.mark.django_db
+def test_forged_create_coordinates_are_400_without_rendering(fr, world, case):
+    actor = _user("coord_creator")
+    _model_perms(actor, "add_publisher")
+    before = _counts()
+    response = _get(_client(actor), _url(fr.gpub_vs, "create"), _coordinate_params(world, *FORGED_CREATE[case]))
+    _assert_bad_request(fr, response, before)
+
+
+@pytest.mark.django_db
+def test_nested_create_accepts_none_chain_and_new_row_indices(fr, world):
+    actor = _user("coord_creator_ok")
+    _model_perms(actor, "add_publisher")
+    client = _client(actor)
+    url = _url(fr.gpub_vs, "create")
+    before = _counts()
+    for row in ("0", "1", "7", "123456789"):
+        response = _get(client, url, _coordinate_params(world, "books|notes", "None", f"None-0-{row}", num="3"))
+        _assert_fragment(response, [f"books-notes-None-0-{row}-None-0-3"], ["note"])
+    assert _counts() == before
+
+
+@pytest.mark.django_db
+def test_nested_update_accepts_mixed_saved_and_unsaved_chains(fr, world):
+    pa, ba = world.publisher_a, world.book_a
+    client = _editor_client(fr, world)
+    url = _url(fr.gpub_vs, "update", pk=pa.pk)
+    before = _counts()
+    # saved book at a row index above the initial count (the browser may have reordered or added rows)
+    _assert_fragment(
+        _get(client, url, _coordinate_params(world, "books|notes", "{ba}", "{pa}-0-5", num="4")),
+        [f"books-notes-{pa.pk}-0-5-{ba.pk}-0-4"],
+        ["note"],
+    )
+    # unsaved book rows under the saved publisher, any non-negative index
+    for row in ("1", "2", "40"):
+        _assert_fragment(
+            _get(client, url, _coordinate_params(world, "books|notes", "None", f"{{pa}}-0-{row}")),
+            [f"books-notes-{pa.pk}-0-{row}-None-0-1"],
+            ["note"],
+        )
+    assert _counts() == before
+
+
+@pytest.mark.django_db
+def test_parent_ownership_change_applies_on_next_request(fr, world):
+    """Fragment GETs are read-only, and each request re-checks persisted ancestry."""
+    pa, ba = world.publisher_a, world.book_a
+    client = _editor_client(fr, world)
+    url = _url(fr.gpub_vs, "update", pk=pa.pk)
+    params = _coordinate_params(world, "books|notes", "{ba}", "{pa}-0-0")
+    _assert_fragment(_get(client, url, params), [f"books-notes-{pa.pk}-0-0-{ba.pk}-0-1"], ["note"])
+
+    Book.objects.filter(pk=ba.pk).update(publisher=world.publisher_b)
+    fr.calls["render"] = 0
+    CHOICES["evaluated"] = 0
+    _assert_bad_request(fr, _get(client, url, params), _counts())
+
+
+@pytest.mark.django_db
+def test_multi_digit_integer_pks_round_trip_and_truncated_pks_are_rejected(fr, world):
+    """Canonical multi-digit ids pass. The truncated ids the old formset.js regex derived ("2" for 12) do not
+    match the real ancestry and are rejected instead of rendering rows under a prefix the POST never reads."""
+    pub = Publisher.objects.create(id=12, name="Twelve")
+    Book.objects.create(id=34, title="Thirty-four", publisher=pub)
+    actor = _user("multi_digit")
+    _grant(actor, fr.gpub_vs, pub, "view", "change")
+    client = _client(actor)
+    url = _url(fr.gpub_vs, "update", pk=pub.pk)
+    page = client.get(url)
+    before = _counts()
+
+    top = browser_add_row(page.content, "books-12-0")
+    assert top["pk"] == "12"
+    _assert_fragment(_get(client, url, top), ["books-12-0-2"], ["title"])
+    nested = browser_add_row(page.content, "books-notes-12-0-0-34-0")
+    assert (nested["pk"], nested["formset_parent_prefix_key"]) == ("34", "12-0-0")
+    _assert_fragment(_get(client, url, nested), ["books-notes-12-0-0-34-0-1"], ["note"])
+
+    for params in ({**top, "pk": "2"}, {**nested, "pk": "4"}, {**nested, "formset_parent_prefix_key": "2-0-0"}):
+        fr.calls["render"] = 0
+        CHOICES["evaluated"] = 0
+        _assert_bad_request(fr, _get(client, url, params), before)
+
+
+# ── A19: two sibling child declarations ───────────────────────────────────────
+
+
+@pytest.mark.django_db
+def test_two_child_declaration_characterizes_emitted_index_and_keeps_gates(fr, world):
+    """Both siblings keep editor authorization and ancestry validation, and valid ancestor positions pass.
+
+    Known limitation (A19, proposed 6.3, not fixed here): ``FormSet.init`` gives the second sibling index 1,
+    while ``FormSets.get_template`` emits index 0 for any selected fragment. The memos fragment's rows therefore
+    do not extend the initialized memos formset prefix; this is characterized, not counted as a round trip.
+    """
+    pa, ba = world.publisher_a, world.book_a
+    client = _editor_client(fr, world, viewset=fr.g2pub_vs)
+    url = _url(fr.g2pub_vs, "update", pk=pa.pk)
+    page = client.get(url)
+    assert page.status_code == 200
+    meta = _formset_metadata(page.content)
+    notes_prefix = f"books-notes-{pa.pk}-0-0-{ba.pk}-0"
+    memos_prefix = f"books-memos-{pa.pk}-0-0-{ba.pk}-1"
+    assert notes_prefix in meta and memos_prefix in meta
+    before = _counts()
+
+    # first child: the fragment extends its initialized formset
+    _assert_fragment(_get(client, url, browser_add_row(page.content, notes_prefix)), [f"{notes_prefix}-1"], ["note"])
+
+    memos_payload = browser_add_row(page.content, memos_prefix)
+    assert memos_payload == {
+        "template": "books|memos",
+        "pk": str(ba.pk),
+        "num": "1",
+        "formset_parent_prefix_key": f"{pa.pk}-0-0",
+    }
+    memos = _get(client, url, memos_payload).json()
+    assert memos["rows"] == [f"books-memos-{pa.pk}-0-0-{ba.pk}-0-1"]  # emitted index 0 ...
+    assert not memos["rows"][0].startswith(f"{memos_prefix}-")  # ... not the initialized index 1 (A19)
+
+    for template in ("books|notes", "books|memos"):
+        # valid declaration-derived ancestor position: the unsaved extra book row 1
+        response = _get(client, url, _coordinate_params(world, template, "None", "{pa}-0-1"))
+        assert response.status_code == 200
+        # forged ancestry for either sibling
+        fr.calls["render"] = 0
+        CHOICES["evaluated"] = 0
+        forged = _get(client, url, _coordinate_params(world, template, "{bb}", "{pa}-0-0"))
+        _assert_bad_request(fr, forged, before)
+        # an actor who may not edit gets nothing for either sibling
+        denied = _get(
+            _client(_user(f"g2_ungranted_{template[-5:]}")),
+            url,
+            _coordinate_params(world, template, "{ba}", "{pa}-0-0"),
+        )
+        assert denied.status_code == 403
+        _assert_not_rendered(fr, denied)
+    assert _counts() == before
+
+
+# ── declared child positions inside a parent prefix (three levels) ────────────
+
+
+@pytest.mark.django_db
+def test_three_level_prefix_validates_declared_child_index_and_ancestry(fr, world):
+    pa, ba, bb = world.publisher_a, world.book_a, world.book_b
+    note = BookNote.objects.create(book=ba, note="n-a")
+    note_b = BookNote.objects.create(book=bb, note="n-b")
+    editor = _user("deep_editor")
+    _model_perms(editor, "view_publisher", "change_publisher")
+    client = _client(editor)
+    url = _url(fr.deep_vs, "update", pk=pa.pk)
+    before = _counts()
+
+    # memos is declared at child index 1 under books, notes at 0
+    _assert_fragment(
+        _get(
+            client,
+            url,
+            {
+                "template": "books|memos|leaf",
+                "pk": str(note.pk),
+                "num": "1",
+                "formset_parent_prefix_key": f"{pa.pk}-0-0-{ba.pk}-1-0",
+            },
+        ),
+        [f"books-memos-leaf-{pa.pk}-0-0-{ba.pk}-1-0-{note.pk}-0-1"],
+        ["note"],
+    )
+    _assert_fragment(
+        _get(
+            client,
+            url,
+            {
+                "template": "books|notes|leaf",
+                "pk": "None",
+                "num": "2",
+                "formset_parent_prefix_key": f"{pa.pk}-0-3-None-0-4",
+            },
+        ),
+        [f"books-notes-leaf-{pa.pk}-0-3-None-0-4-None-0-2"],
+        ["note"],
+    )
+
+    forged = [
+        ("books|memos|leaf", str(note.pk), f"{pa.pk}-0-0-{ba.pk}-0-0"),  # memos is not child 0
+        ("books|notes|leaf", str(note.pk), f"{pa.pk}-0-0-{ba.pk}-1-0"),  # notes is not child 1
+        ("books|memos|leaf", str(note.pk), f"{pa.pk}-0-0-{ba.pk}-2-0"),  # no child 2
+        ("books|memos|leaf", str(note_b.pk), f"{pa.pk}-0-0-{ba.pk}-1-0"),  # note of another book
+        ("books|memos|leaf", str(note.pk), f"{pa.pk}-0-0-{bb.pk}-1-0"),  # book of another publisher
+        ("books|memos|leaf", str(note.pk), f"{pa.pk}-0-0-None-1-0"),  # saved row under an unsaved one
+        ("books|memos|leaf", "None", f"{pa.pk}-0-0-{ba.pk}-1"),  # short
+        ("books|memos|leaf", "None", f"{pa.pk}-0-0"),  # parent prefix of the wrong depth
+    ]
+    for template, pk, prefix in forged:
+        response = _get(client, url, {"template": template, "pk": pk, "num": "1", "formset_parent_prefix_key": prefix})
+        assert response.status_code == 400, (template, pk, prefix, response.status_code)
+    assert _counts() == before
+
+
+# ── A07/A14: persisted UUID ancestry and unsaved UUID-default rows ────────────
+
+
+class AuthorMainForm(CrispyModelForm):
+    class Meta:
+        model = Author
+        fields = ["first_name", "last_name"]
+
+    def get_layout_fields(self):
+        return [Row(Column4("first_name"), Column4("last_name")), Formsets()]
+
+    @property
+    def helper(self):
+        h = super().helper
+        h.form_tag = False
+        return h
+
+
+class FragmentRowForm(CrispyModelForm):
+    class Meta:
+        model = UUIDFragmentRow
+        fields = ["text"]
+
+
+class FragmentRowInlineFormSet(InlineFormSet):
+    def get_helper_layout_fields(self):
+        return [Row(Column4("text"), self.form_control_col4)]
+
+
+class FragmentLeafForm(CrispyModelForm):
+    class Meta:
+        model = UUIDFragmentLeaf
+        fields = ["text"]
+
+
+class FragmentLeafInlineFormSet(InlineFormSet):
+    def get_helper_layout_fields(self):
+        return [Row(Column4("text"), self.form_control_col4)]
+
+
+FragmentRowFormSet = inlineformset_factory(
+    Author,
+    UUIDFragmentRow,
+    formset=FragmentRowInlineFormSet,
+    form=FragmentRowForm,
+    fields=["text"],
+    extra=1,
+    can_delete=True,
+    can_delete_extra=True,
+)
+
+FragmentLeafFormSet = inlineformset_factory(
+    UUIDFragmentRow,
+    UUIDFragmentLeaf,
+    formset=FragmentLeafInlineFormSet,
+    form=FragmentLeafForm,
+    fields=["text"],
+    extra=1,
+    can_delete=True,
+    can_delete_extra=True,
+)
+
+
+def author_uuid_formsets() -> FormSets:
+    """Root (Author) and nested parent (UUIDFragmentRow) identities both use the UUID grammar."""
+    return FormSets(
+        formsets=OrderedDict(
+            rows=FormSet(
+                title="Rows",
+                klass=FragmentRowFormSet,
+                pk=FormSet.PK.UUID,
+                children=OrderedDict(
+                    leaves=FormSet(title="Leaves", klass=FragmentLeafFormSet, pk=FormSet.PK.UUID),
+                ),
+            )
+        )
+    )
+
+
+@pytest.fixture
+def uu(monkeypatch):
+    """Fresh core Author routes with Author -> UUIDFragmentRow -> UUIDFragmentLeaf formsets."""
+    from crud_views.lib import check as check_module
+    from crud_views.lib.crispy import CrispyViewMixin
+    from crud_views.lib.formsets import FormSetMixin
+    from crud_views.lib.views import (
+        CreateViewPermissionRequired,
+        DetailViewPermissionRequired,
+        ListViewPermissionRequired,
+        UpdateViewPermissionRequired,
+    )
+    from crud_views.lib.viewset import _REGISTRY, _REGISTRY_LOCK, ViewSet
+
+    sfx = uuid.uuid4().hex[:8]
+    name = f"fruuid{sfx}"
+    modname = f"tests.test1._fragment_uuid_urls_{sfx}"
+    vocab_snapshot = dict(check_module._VOCAB_CACHE)
+    calls = {"render": 0}
+    CHOICES["evaluated"] = 0
+    original_get_template = FormSets.get_template
+
+    def counting_get_template(self, *args, **kwargs):
+        calls["render"] += 1
+        return original_get_template(self, *args, **kwargs)
+
+    monkeypatch.setattr(FormSets, "get_template", counting_get_template)
+
+    try:
+        viewset = ViewSet(model=Author, name=name, icon_header="fa-regular fa-user")
+
+        class FrAuthorListView(ListViewPermissionRequired):
+            cv_viewset = viewset
+
+        class FrAuthorDetailView(DetailViewPermissionRequired):
+            cv_viewset = viewset
+
+        class FrAuthorCreateView(CrispyViewMixin, FormSetMixin, CreateViewPermissionRequired):
+            form_class = AuthorMainForm
+            cv_viewset = viewset
+            cv_formsets = author_uuid_formsets()
+
+        class FrAuthorUpdateView(CrispyViewMixin, FormSetMixin, UpdateViewPermissionRequired):
+            form_class = AuthorMainForm
+            cv_viewset = viewset
+            cv_formsets = author_uuid_formsets()
+
+        module = types.ModuleType(modname)
+        module.urlpatterns = [*viewset.urlpatterns, path("", include("tests.test1.project.urls"))]
+        sys.modules[modname] = module
+
+        clear_url_caches()
+        with override_settings(ROOT_URLCONF=modname):
+            clear_url_caches()
+            try:
+                editor = _user(f"uuid_editor_{sfx}")
+                _model_perms(editor, "view_author", "add_author", "change_author")
+                yield SimpleNamespace(viewset=viewset, calls=calls, client=_client(editor))
+            finally:
+                clear_url_caches()
+    finally:
+        with _REGISTRY_LOCK:
+            _REGISTRY.pop(name, None)
+        check_module._VOCAB_CACHE.clear()
+        check_module._VOCAB_CACHE.update(vocab_snapshot)
+        sys.modules.pop(modname, None)
+        clear_url_caches()
+
+
+@pytest.fixture
+def uworld(db):
+    author = Author.objects.create(first_name="Douglas", last_name="Adams")
+    other = Author.objects.create(first_name="Terry", last_name="Pratchett")
+    row = UUIDFragmentRow.objects.create(author=author, text="row-a")
+    leaf = UUIDFragmentLeaf.objects.create(row=row, text="leaf-a")
+    other_row = UUIDFragmentRow.objects.create(author=other, text="row-b")
+    return SimpleNamespace(author=author, other=other, row=row, leaf=leaf, other_row=other_row)
+
+
+def _uuid_counts():
+    return (Author.objects.count(), UUIDFragmentRow.objects.count(), UUIDFragmentLeaf.objects.count())
+
+
+def _fragment_inputs(fragment_html: str) -> dict:
+    """The submittable inputs of a returned fragment, as a browser would post them once inserted."""
+    doc = lxml_html.fragment_fromstring(fragment_html, create_parent="div")
+    payload = {}
+    for el in doc.cssselect("input, select, textarea"):
+        name = el.get("name")
+        if not name or (el.get("type") or "").lower() in ("submit", "button", "reset"):
+            continue
+        if (el.get("type") or "").lower() in ("checkbox", "radio"):
+            if el.get("checked") is not None:
+                payload[name] = el.get("value", "on")
+            continue
+        payload[name] = el.text or "" if el.tag == "textarea" else el.get("value") or ""
+    return payload
+
+
+def _assert_uuid_bad_request(uu, response, before):
+    assert response.status_code == 400, (response.status_code, response.content[:300])
+    assert uu.calls["render"] == 0
+    assert _uuid_counts() == before
+
+
+@pytest.mark.django_db
+def test_uuid_saved_chain_fragments_follow_browser_payloads(uu, uworld):
+    a, row = uworld.author, uworld.row
+    url = _url(uu.viewset, "update", pk=a.pk)
+    page = uu.client.get(url)
+    assert page.status_code == 200
+    before = _uuid_counts()
+
+    top = browser_add_row(page.content, f"rows-{a.pk}-0")
+    assert top == {"template": "rows", "pk": str(a.pk), "num": "2", "formset_parent_prefix_key": ""}
+    _assert_fragment(uu.client.get(url, top), [f"rows-{a.pk}-0-2"], ["text"])
+
+    saved = browser_add_row(page.content, f"rows-leaves-{a.pk}-0-0-{row.pk}-0")
+    assert saved == {
+        "template": "rows|leaves",
+        "pk": str(row.pk),
+        "num": "2",
+        "formset_parent_prefix_key": f"{a.pk}-0-0",
+    }
+    _assert_fragment(uu.client.get(url, saved), [f"rows-leaves-{a.pk}-0-0-{row.pk}-0-2"], ["text"])
+    assert _uuid_counts() == before
+
+
+@pytest.mark.django_db
+def test_uuid_forged_ancestry_and_grammar_are_400(uu, uworld):
+    a, other, row, other_row = uworld.author, uworld.other, uworld.row, uworld.other_row
+    update_url = _url(uu.viewset, "update", pk=a.pk)
+    before = _uuid_counts()
+    forged = [
+        {"template": "rows", "pk": str(other.pk), "num": "1", "formset_parent_prefix_key": ""},
+        {"template": "rows", "pk": str(a.pk).upper(), "num": "1", "formset_parent_prefix_key": ""},
+        {"template": "rows", "pk": str(a.pk).replace("-", ""), "num": "1", "formset_parent_prefix_key": ""},
+        {"template": "rows", "pk": "1", "num": "1", "formset_parent_prefix_key": ""},
+        {"template": "rows|leaves", "pk": str(other_row.pk), "num": "1", "formset_parent_prefix_key": f"{a.pk}-0-0"},
+        {"template": "rows|leaves", "pk": str(row.pk), "num": "1", "formset_parent_prefix_key": f"{other.pk}-0-0"},
+        {"template": "rows|leaves", "pk": str(uuid.uuid4()), "num": "1", "formset_parent_prefix_key": f"{a.pk}-0-0"},
+        {"template": "rows|leaves", "pk": str(row.pk), "num": "1", "formset_parent_prefix_key": f"{a.pk}-0"},
+        {"template": "rows|leaves", "pk": str(row.pk), "num": "1", "formset_parent_prefix_key": str(a.pk)},
+        {"template": "rows|leaves", "pk": str(row.pk), "num": "1"},
+    ]
+    for params in forged:
+        _assert_uuid_bad_request(uu, uu.client.get(update_url, params), before)
+
+    create_url = _url(uu.viewset, "create")
+    for params in (
+        {"template": "rows", "pk": str(a.pk), "num": "1", "formset_parent_prefix_key": ""},
+        {"template": "rows|leaves", "pk": str(row.pk), "num": "1", "formset_parent_prefix_key": "None-0-0"},
+        {"template": "rows|leaves", "pk": "None", "num": "1", "formset_parent_prefix_key": f"{a.pk}-0-0"},
+    ):
+        _assert_uuid_bad_request(uu, uu.client.get(create_url, params), before)
+
+
+@pytest.mark.django_db
+def test_uuid_create_metadata_add_row_and_post_agree(uu, uworld):
+    """A14: a new Author already carries a default UUID, but the rendered prefixes use the None sentinel, the
+    add-row requests derived from them are accepted, and the bound POST reads the same prefixes."""
+    url = _url(uu.viewset, "create")
+    page = uu.client.get(url)
+    assert page.status_code == 200
+    meta = _formset_metadata(page.content)
+    assert "rows-None-0" in meta
+    assert "rows-leaves-None-0-0-None-0" in meta
+
+    top = browser_add_row(page.content, "rows-None-0")
+    assert top == {"template": "rows", "pk": "None", "num": "1", "formset_parent_prefix_key": ""}
+    fragment = _assert_fragment(uu.client.get(url, top), ["rows-None-0-1"], ["text"])
+    nested = browser_add_row(fragment["html"].encode(), "rows-leaves-None-0-1-None-0")
+    assert nested == {"template": "rows|leaves", "pk": "None", "num": "1", "formset_parent_prefix_key": "None-0-1"}
+    _assert_fragment(uu.client.get(url, nested), ["rows-leaves-None-0-1-None-0-1"], ["text"])
+
+    from tests.lib.helper.forms import form_payload
+
+    payload = {**form_payload(page), **_fragment_inputs(fragment["html"])}
+    payload["rows-None-0-TOTAL_FORMS"] = "2"
+    payload.update(
+        {
+            "first_name": "Ursula",
+            "last_name": "Le Guin",
+            "rows-None-0-0-text": "row-0",
+            "rows-leaves-None-0-0-None-0-0-text": "leaf-0",
+            "rows-None-0-1-text": "row-1",
+            "rows-leaves-None-0-1-None-0-0-text": "leaf-1",
+        }
+    )
+    response = uu.client.post(url, payload)
+    assert response.status_code == 302, response.content[:2000]
+
+    created = Author.objects.get(first_name="Ursula")
+    rows = {r.text: r for r in created.fragment_rows.all()}
+    assert set(rows) == {"row-0", "row-1"}
+    assert all(isinstance(r.pk, uuid.UUID) for r in rows.values())  # real UUIDs were kept, never cleared
+    assert list(rows["row-0"].leaves.values_list("text", flat=True)) == ["leaf-0"]
+    assert list(rows["row-1"].leaves.values_list("text", flat=True)) == ["leaf-1"]
+
+
+@pytest.mark.django_db
+def test_uuid_update_extra_rows_render_none_and_post_binds(uu, uworld):
+    a, row = uworld.author, uworld.row
+    url = _url(uu.viewset, "update", pk=a.pk)
+    page = uu.client.get(url)
+    meta = _formset_metadata(page.content)
+    assert f"rows-leaves-{a.pk}-0-0-{row.pk}-0" in meta  # the saved row keeps its real UUID
+    assert f"rows-leaves-{a.pk}-0-1-None-0" in meta  # the extra row's default UUID is not a coordinate
+
+    from tests.lib.helper.forms import form_payload
+
+    payload = form_payload(page)
+    assert payload[f"rows-{a.pk}-0-0-id"] == str(row.pk)
+
+    extra = browser_add_row(page.content, f"rows-leaves-{a.pk}-0-1-None-0")
+    assert extra == {"template": "rows|leaves", "pk": "None", "num": "1", "formset_parent_prefix_key": f"{a.pk}-0-1"}
+    _assert_fragment(uu.client.get(url, extra), [f"rows-leaves-{a.pk}-0-1-None-0-1"], ["text"])
+
+    top = browser_add_row(page.content, f"rows-{a.pk}-0")
+    fragment = _assert_fragment(uu.client.get(url, top), [f"rows-{a.pk}-0-2"], ["text"])
+
+    payload.update(_fragment_inputs(fragment["html"]))
+    payload[f"rows-{a.pk}-0-TOTAL_FORMS"] = "3"
+    payload.update(
+        {
+            f"rows-{a.pk}-0-1-text": "row-extra",
+            f"rows-leaves-{a.pk}-0-1-None-0-0-text": "leaf-extra",
+            f"rows-{a.pk}-0-2-text": "row-added",
+            f"rows-leaves-{a.pk}-0-2-None-0-0-text": "leaf-added",
+        }
+    )
+    response = uu.client.post(url, payload)
+    assert response.status_code == 302, response.content[:2000]
+
+    texts = {r.text: list(r.leaves.values_list("text", flat=True)) for r in a.fragment_rows.all()}
+    assert texts == {"row-a": ["leaf-a"], "row-extra": ["leaf-extra"], "row-added": ["leaf-added"]}
+    row.refresh_from_db()
+    assert row.author_id == a.pk

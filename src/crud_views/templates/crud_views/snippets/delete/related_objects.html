@@ -1,7 +1,7 @@
 {% load crud_views i18n %}
 
 <div class="cv-related-objects mb-3">
-    {% if protected_objects %}
+    {% if has_protected_objects %}
         {% cv_alert "error" heading=_("Deletion is blocked by protected relationships:") items=protected_objects %}
     {% endif %}
     {% if related_summary %}

@@ -1,7 +1,7 @@
 import logging
 from collections import defaultdict
 from collections.abc import Iterable
-from typing import NamedTuple
+from typing import ClassVar, NamedTuple
 
 from django.contrib.admin.utils import NestedObjects
 from django.db import router
@@ -24,7 +24,28 @@ class RelatedObjects(NamedTuple):
     protected: list
 
 
-class DeleteView(CrudViewProcessFormMixin, CrudView, generic.DeleteView):
+class _DeleteMethodGuardMixin:
+    """Reject HTTP DELETE on every package delete view; deletion only runs through the validated POST.
+
+    Sits after ``CrudView`` and before Django's ``DeleteView`` in the MRO: authentication, permission and parent
+    gates (``PermissionRequiredMixin``, Guardian's parent mixin) run first, ``CrudView.dispatch`` still adds the
+    modal ``Vary`` header, and a subclass that puts ``"delete"`` back into ``http_method_names`` is still stopped
+    here before any handler or object lookup. Django's inherited ``delete()`` is left untouched on purpose, so
+    Django 4.2 emits no ``DeleteViewCustomDeleteWarning``.
+    """
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.method == "DELETE":
+            return self.http_method_not_allowed(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
+
+    def _allowed_methods(self):
+        # feeds both the 405 Allow header and OPTIONS, so neither advertises DELETE
+        return [method for method in super()._allowed_methods() if method != "DELETE"]
+
+
+class DeleteView(CrudViewProcessFormMixin, CrudView, _DeleteMethodGuardMixin, generic.DeleteView):
+    http_method_names: ClassVar[list[str]] = [m for m in generic.DeleteView.http_method_names if m != "delete"]
     template_name = "crud_views/view_delete.html"
     cv_content_template = "crud_views/view_delete.content.html"
     cv_modal_supported = True
@@ -169,7 +190,9 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, generic.DeleteView):
             return result
 
         filtered_tree = _filter_tree(related.tree)
-        return RelatedObjects(tree=filtered_tree, summary=related.summary, protected=related.protected)
+        # only labels the user may view; the blocked state itself is captured before this hook runs
+        protected = [obj for obj in related.protected if _has_view_permission(obj._meta.model)]
+        return RelatedObjects(tree=filtered_tree, summary=related.summary, protected=protected)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -178,10 +201,12 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, generic.DeleteView):
             context["delete_protection_errors"] = errors
         if self.cv_show_related_objects:
             related = self.cv_get_related_objects()
+            # blocked state comes from the unfiltered collection, so hiding every label never hides the block
+            context["has_protected_objects"] = bool(related.protected)
             related = self.cv_filter_related_objects(self.request.user, related)
             context["related_summary"] = related.summary
             context["related_summary_items"] = [f"{name}: {count}" for name, count in related.summary.items()]
-            context["protected_objects"] = related.protected
+            context["protected_objects"] = list(related.protected)
 
             urls = {}
             if self.cv_link_related_objects:

@@ -34,19 +34,22 @@ class GuardianUpdateViewPermissionRequired(
 
 
 class GuardianDeleteRelatedObjectsMixin:
-    """Filter cascade-delete related objects by per-object view permissions via django-guardian."""
+    """Filter cascade-delete related objects and protected-object labels by per-object view permissions via
+    django-guardian (with the view's ``cv_guardian_accept_global_perms`` fallback).
+
+    Replaces the core model-level filter rather than chaining to it, so an object grant keeps its label without a
+    global view permission. Protected objects are filtered even when the cascade tree is empty; the blocked state
+    itself is captured by ``DeleteView.get_context_data`` before this hook runs, and summaries stay unchanged.
+    """
 
     def cv_filter_related_objects(self, user, related):
         from crud_views.lib.views.delete import RelatedObjects
-
-        if not related.tree:
-            return related
 
         permitted = _PermittedPks(user, getattr(self, "cv_guardian_accept_global_perms", False))
         return RelatedObjects(
             tree=_filter_tree(related.tree, permitted),
             summary=related.summary,
-            protected=related.protected,
+            protected=[obj for obj in related.protected if obj.pk in permitted(obj._meta.model)],
         )
 
 

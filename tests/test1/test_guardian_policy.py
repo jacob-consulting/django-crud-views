@@ -394,3 +394,213 @@ def test_helper_policy_entry_matches_the_helper_call(pol, publishers, monkeypatc
     assert len(calls) == 1
     assert calls[0]["accept_global_perms"] is STRICT_HELPER["accept_global_perms"]
     assert calls[0]["use_groups"] is STRICT_HELPER["use_groups"]
+
+
+# ── manage: effective global-fallback policy per registered view (D-06, A17) ──
+
+
+def _policy(*, applicable, accept=None):
+    effective = "not applicable"
+    if applicable:
+        effective = "global fallback" if accept else "strict"
+    return {
+        "global_fallback_applicable": applicable,
+        "cv_guardian_accept_global_perms": accept,
+        "effective_policy": effective,
+    }
+
+
+def _manage(client, viewset, parent_pk=None):
+    response = client.get(_url(viewset, "manage", parent_pk=parent_pk))
+    assert response.status_code == 200
+    return response
+
+
+def _views_policy(response):
+    return {key: dict(view["guardian_policy"]) for key, view in response.context["views"].items()}
+
+
+def _flat(response):
+    import re
+
+    return re.sub(r"\s+", " ", response.content.decode())
+
+
+def _policy_row(view_key, accept_cell, effective_text):
+    import re
+
+    return re.compile(
+        rf"<tr> <td>{re.escape(view_key)}</td> <td>{re.escape(accept_cell)}</td> <td>{re.escape(effective_text)}</td>"
+    )
+
+
+@pytest.mark.django_db
+def test_manage_context_reports_mixed_policies_on_one_viewset(pol, client):
+    client.force_login(_user("manager"))
+    policies = _views_policy(_manage(client, pol.pub_vs))
+
+    assert policies == {
+        "list": _policy(applicable=True, accept=False),  # queryset view, strict
+        "detail": _policy(applicable=True, accept=True),  # object view, global fallback
+        "update": _policy(applicable=False),  # plain core view
+        "create": _policy(applicable=False),  # top-level create: fallback=True never consulted
+        "manage": _policy(applicable=False),  # manage itself
+    }
+
+
+@pytest.mark.django_db
+def test_manage_context_reports_parent_only_applicability(pol, client, publishers):
+    a, _b = publishers
+    client.force_login(_user("manager"))
+
+    # parent permission "view": the parent-only create consults its (default, strict) fallback
+    book = _views_policy(_manage(client, pol.book_vs, parent_pk=a.pk))
+    assert book["list"] == _policy(applicable=True, accept=True)
+    assert book["create"] == _policy(applicable=True, accept=False)
+    assert book["manage"] == _policy(applicable=False)
+
+    # both parent permissions None: the parent-only create never consults fallback=True; the queryset view still does
+    free = _views_policy(_manage(client, pol.free_vs, parent_pk=a.pk))
+    assert free["list"] == _policy(applicable=True, accept=False)
+    assert free["create"] == _policy(applicable=False)
+
+
+@pytest.mark.django_db
+def test_manage_never_reads_policy_from_the_viewset(pol, client, monkeypatch):
+    """Changing a view class flips its row; the row is the view's own class attribute (D-03)."""
+    client.force_login(_user("manager"))
+    monkeypatch.setattr(pol.PublisherList, "cv_guardian_accept_global_perms", True)
+    monkeypatch.setattr(pol.PublisherDetail, "cv_guardian_accept_global_perms", False)
+
+    policies = _views_policy(_manage(client, pol.pub_vs))
+    assert policies["list"] == _policy(applicable=True, accept=True)
+    assert policies["detail"] == _policy(applicable=True, accept=False)
+
+
+@pytest.mark.django_db
+def test_manage_html_names_each_views_policy_and_the_strict_helper(pol, client):
+    client.force_login(_user("manager"))
+    content = _flat(_manage(client, pol.pub_vs))
+
+    assert "Global permission fallback" in content
+    assert _policy_row("list", "False", "strict: object and group grants only").search(content)
+    assert _policy_row("detail", "True", "global fallback: model permissions accepted").search(content)
+    assert _policy_row("update", "—", "not applicable").search(content)
+    assert _policy_row("create", "—", "not applicable").search(content)
+    assert _policy_row("manage", "—", "not applicable").search(content)
+    # the helper is reported separately and as strict, never as sharing a view's fallback
+    assert "GuardianViewSet.get_objects_for_user() is independent of these view policies and always strict" in content
+    assert "strict: object and group grants only; global model permissions are not accepted" in content
+
+
+@pytest.mark.django_db
+def test_manage_html_reports_parent_none_create_as_not_applicable(pol, client, publishers):
+    a, _b = publishers
+    client.force_login(_user("manager"))
+    content = _flat(_manage(client, pol.free_vs, parent_pk=a.pk))
+
+    assert _policy_row("create", "—", "not applicable").search(content)
+    assert _policy_row("list", "False", "strict: object and group grants only").search(content)
+
+
+# ── the reported policies match actual access ─────────────────────────────────
+
+
+@pytest.mark.django_db
+def test_parent_none_create_with_fallback_succeeds_without_grants(pol, client, publishers):
+    """Reported "not applicable": the enabled create needs no parent, child or global grant at all."""
+    from tests.test1.app.models import Book
+
+    a, _b = publishers
+    client.force_login(_user("no_grants"))
+    url = _url(pol.free_vs, "create", parent_pk=a.pk)
+
+    assert client.get(url).status_code == 200
+    assert client.post(url, {"title": "Free Policy Book"}).status_code == 302
+    assert list(Book.objects.filter(title="Free Policy Book").values_list("publisher_id", flat=True)) == [a.pk]
+
+
+@pytest.mark.django_db
+def test_reported_child_policies_match_access_for_a_global_only_user(pol, client, publishers):
+    """Reported "global fallback" list admits a model permission; reported "strict" create does not."""
+    from tests.test1.app.models import Book
+
+    a, _b = publishers
+    book = Book.objects.create(title="Shared Book", publisher=a)
+    client.force_login(_grant_global(_user("global_only"), "view_publisher", "view_book"))
+
+    response = client.get(_url(pol.book_vs, "list", parent_pk=a.pk))
+    assert response.status_code == 200
+    assert _pks(response.context["object_list"]) == [book.pk]
+    assert client.get(_url(pol.book_vs, "create", parent_pk=a.pk)).status_code == 403
+
+
+# ── manage gate preserved (A20): patched singleton modes/groups, live DEBUG ───
+
+MANAGE_GROUP = "pol_manage_admins"
+
+
+@pytest.fixture
+def manage_mode(monkeypatch):
+    """Patch the import-time settings singleton (not Django settings); monkeypatch restores it either way."""
+    from crud_views.lib.settings import crud_views_settings
+
+    def set_mode(mode):
+        monkeypatch.setattr(crud_views_settings, "manage_views_enabled", mode)
+        monkeypatch.setattr(crud_views_settings, "manage_group", MANAGE_GROUP)
+
+    return set_mode
+
+
+def _actor_client(client, actor):
+    from django.contrib.auth.models import Group
+
+    if actor == "anonymous":
+        return client
+    user = _user(f"manage_{actor}")
+    if actor == "group":
+        user.groups.add(Group.objects.get_or_create(name=MANAGE_GROUP)[0])
+    client.force_login(user)
+    return client
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    ("mode", "debug", "actor", "status"),
+    [
+        ("yes", False, "anonymous", 200),
+        ("yes", False, "nongroup", 200),
+        ("debug_only", True, "anonymous", 200),
+        ("debug_only", True, "nongroup", 200),
+        ("debug_only", False, "anonymous", 302),
+        ("debug_only", False, "nongroup", 403),
+        ("debug_only", False, "group", 200),
+        ("no", False, "anonymous", 302),
+        ("no", True, "anonymous", 302),
+        ("no", False, "nongroup", 403),
+        ("no", True, "nongroup", 403),
+        ("no", False, "group", 200),
+    ],
+)
+def test_manage_gate_is_unchanged(pol, client, manage_mode, mode, debug, actor, status):
+    manage_mode(mode)
+    with override_settings(DEBUG=debug):
+        response = _actor_client(client, actor).get(_url(pol.pub_vs, "manage"))
+
+    assert response.status_code == status
+    if status == 302:
+        assert "/accounts/login/" in response["Location"]
+    if status == 200:
+        assert "views" in response.context
+    else:
+        assert "Global permission fallback" not in response.content.decode()
+
+
+@pytest.mark.django_db
+def test_group_member_sees_policy_rows_under_group_gate(pol, client, manage_mode):
+    manage_mode("no")
+    response = _actor_client(client, "group").get(_url(pol.pub_vs, "manage"))
+
+    assert response.status_code == 200
+    assert _views_policy(response)["detail"] == _policy(applicable=True, accept=True)
+    assert _policy_row("detail", "True", "global fallback: model permissions accepted").search(_flat(response))

@@ -579,3 +579,28 @@ def test_m2m_none_policy_create_without_grants(pn, client, monkeypatch, publishe
     assert client.post(url, {"name": "Blocked"}).status_code == 403
     assert not Genre.objects.filter(name="Blocked").exists()
     assert not publisher_b.genres.filter(name="Blocked").exists()
+
+
+# ── inactive actors under the None policy (D-11) ─────────────────────────────
+
+
+@pytest.mark.parametrize("superuser", [False, True])
+@pytest.mark.django_db
+def test_none_policy_inactive_actor_denied_create_and_list(pn, client, publisher_a, superuser):
+    """A None parent policy skips the permission check, never the inactive-actor denial."""
+    from tests.test1.app.models import Book
+
+    backend = "django.contrib.auth.backends.AllowAllUsersModelBackend"
+    user = _user("inactive", superuser=superuser, active=False)
+    Book.objects.create(title="Listed Row", publisher=publisher_a)
+    with override_settings(AUTHENTICATION_BACKENDS=[backend, "guardian.backends.ObjectPermissionBackend"]):
+        client.force_login(user, backend=backend)
+        url = _url(pn.book_vs, "create", publisher_a.pk)
+        assert client.get(url).status_code == 403
+        assert client.post(url, {"title": "Inactive None"}).status_code == 403
+        response = client.get(_url(pn.book_vs, "list", publisher_a.pk))
+        assert response.status_code == 403
+        assert "Listed Row" not in response.content.decode()
+    assert not Book.objects.filter(title="Inactive None").exists()
+    assert pn.BookCreate.cv_has_access(user, publisher_a) is False
+    assert pn.BookCreate.cv_create_has_access(user, None, publisher_a) is False

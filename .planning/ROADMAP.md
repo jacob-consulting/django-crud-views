@@ -376,7 +376,7 @@ recommendations are proposals, not locked decisions.
 
 **Scope exclusions**: Conditional/formset lifecycle work A1–A7 (proposed 6.3), presentation/alias cleanup
 (proposed 6.4), the jQuery port, and the final stability inventory. Do not reopen completed Phase 6/6.1 acceptance.
-**Plans**: 4/6 plans executed
+**Plans**: 5/6 plans executed
 
 Plans:
 **Wave 1**
@@ -390,7 +390,7 @@ Plans:
 - [x] 06.2-04-PLAN.md — Remove inert configuration and report per-view manage policy
 
 **Wave 4** *(blocked on Wave 3 completion)*
-- [ ] 06.2-05-PLAN.md — Replay direct actor and native template matrices
+- [x] 06.2-05-PLAN.md — Replay direct actor and native template matrices
 
 **Wave 5** *(blocked on Wave 4 completion)*
 - [ ] 06.2-06-PLAN.md — Document migrations and record supported-version evidence
@@ -459,5 +459,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 5. Table pagination parity | 3/3 | Complete    | 2026-10-27 |
 | 6. Form-button leaf | 10/10 | Complete    | 2026-10-28 |
 | 6.1. Cancel form button as a link | 3/3 | Complete    | 2026-10-29 |
-| 6.2. Request authorization and write integrity | 4/6 | In Progress | - |
+| 6.2. Request authorization and write integrity | 5/6 | In Progress | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

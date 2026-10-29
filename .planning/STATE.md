@@ -4,16 +4,16 @@ milestone: v1.0
 current_phase: "06.2"
 current_phase_name: Request authorization and write integrity (INSERTED)
 status: executing
-stopped_at: Completed 06.2-04-PLAN.md
-last_updated: "2026-10-29T12:30:06.350Z"
+stopped_at: Completed 06.2-05-PLAN.md
+last_updated: "2026-10-29T12:51:11.304Z"
 last_activity: 2026-10-29
 last_activity_desc: Phase 06.2 execution started
-state_head: 336f995f1372db96d64c88f400d41939cec50aec
+state_head: 7268e66ce0c8166259419ee672fa372a0ff17b30
 progress:
   total_phases: 9
   completed_phases: 7
   total_plans: 33
-  completed_plans: 31
+  completed_plans: 32
 milestone_name: milestone
 ---
 
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-10-29)
 ## Current Position
 
 Phase: 06.2 (Request authorization and write integrity (INSERTED)) — EXECUTING
-Plan: 5 of 6
+Plan: 6 of 6
 Status: Ready to execute
 Last activity: 2026-10-29 — Phase 06.2 execution started
 
@@ -96,6 +96,7 @@ Progress: 27/33 plans executed; 7/9 phases complete (78%); Phase 6.2 planned and
 | Phase 06.2 P02 | 30 min | 3 tasks | 9 files |
 | Phase 06.2 P03 | 30 min | 2 tasks | 7 files |
 | Phase 06.2 P04 | 14 min | 2 tasks | 6 files |
+| Phase 06.2 P05 | 16min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -190,6 +191,8 @@ Recent decisions affecting current work:
 - [Phase 06.2]: A19 non-first child emitted-index mismatch stays deferred to proposed 6.3; both siblings keep authorization and ancestry checks
 - [Phase 06.2]: 06.2-04: GuardianViewSet.cv_guardian_accept_global_perms removed; a mode=before Mapping-guarded validator rejects the key (ValidationError naming the per-view replacement) before registration; unrelated extras still ignored
 - [Phase 06.2]: 06.2-04: Manage reports guardian_config.get_objects_for_user from STRICT_HELPER_POLICY (the same values the helper passes to guardian) and views[key].guardian_policy per view; applicable = object/queryset views, or parent-only views with a parent and a non-None resolved parent permission
+- [Phase 06.2]: 06.2-05: the A10 actor matrix and six native template overrides are replayed as test-only evidence (582 tests) with no production change; strict and global-accepting Guardian families are the same views with the per-view flag set per test
+- [Phase 06.2]: 06.2-05: manage stays its own administrative gate in the matrix (D-06); its mode/group/DEBUG cells are replayed under the patched singleton rather than under object-view inactive policy
 
 ### Pending Todos
 
@@ -225,6 +228,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-29T12:30:05.567Z
-Stopped at: Completed 06.2-04-PLAN.md
+Last session: 2026-10-29T12:51:10.599Z
+Stopped at: Completed 06.2-05-PLAN.md
 Resume file: None

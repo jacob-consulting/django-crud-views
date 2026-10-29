@@ -376,7 +376,25 @@ recommendations are proposals, not locked decisions.
 
 **Scope exclusions**: Conditional/formset lifecycle work A1–A7 (proposed 6.3), presentation/alias cleanup
 (proposed 6.4), the jQuery port, and the final stability inventory. Do not reopen completed Phase 6/6.1 acceptance.
-**Plans**: TBD
+**Plans**: 6 plans
+
+Plans:
+**Wave 1**
+- [ ] 06.2-01-PLAN.md — Reject DELETE and secure protected preview context; retain POST integrity
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 06.2-02-PLAN.md — Enforce parent-None state and inactive actor denial
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [ ] 06.2-03-PLAN.md — Authorize fragments and validate saved/unsaved ancestry
+- [ ] 06.2-04-PLAN.md — Remove inert configuration and report per-view manage policy
+
+**Wave 4** *(blocked on Wave 3 completion)*
+- [ ] 06.2-05-PLAN.md — Replay direct actor and native template matrices
+
+**Wave 5** *(blocked on Wave 4 completion)*
+- [ ] 06.2-06-PLAN.md — Document migrations and record supported-version evidence
+
 **UI hint**: no (backend enforcement and safe existing template contexts; no new screens)
 
 ### Phase 7: Theme-surface stability policy

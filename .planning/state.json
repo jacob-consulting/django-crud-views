@@ -39,6 +39,11 @@
       "status": "complete"
     },
     {
+      "number": "6.2",
+      "name": "Request authorization and write integrity",
+      "status": "pending"
+    },
+    {
       "number": "7",
       "name": "Theme-surface stability policy",
       "status": "pending"
@@ -46,8 +51,8 @@
   ],
   "next": {
     "command": "$gsd-progress --next",
-    "label": "Advance to the next step (plan phase 7)",
-    "reason": "Phase 9 of 9 — needs a plan"
+    "label": "Advance to the next step",
+    "reason": "Phase 8 of 9 · 27% · executing"
   },
-  "updated_at": "2026-10-29T05:38:03.070Z"
+  "updated_at": "2026-10-29T06:39:10.505Z"
 }

@@ -376,7 +376,7 @@ recommendations are proposals, not locked decisions.
 
 **Scope exclusions**: Conditional/formset lifecycle work A1–A7 (proposed 6.3), presentation/alias cleanup
 (proposed 6.4), the jQuery port, and the final stability inventory. Do not reopen completed Phase 6/6.1 acceptance.
-**Plans**: 6/6 plans executed
+**Plans**: 6/9 plans executed (3 gap-closure plans from UAT 2026-10-29 pending)
 
 Plans:
 **Wave 1**
@@ -394,6 +394,11 @@ Plans:
 
 **Wave 5** *(blocked on Wave 4 completion)*
 - [x] 06.2-06-PLAN.md — Document migrations and record supported-version evidence
+
+**Gap closure** *(UAT 2026-10-29, gaps G-06.2-1 and G-06.2-3; sequential waves 1-3)*
+- [ ] 06.2-07-PLAN.md — Guardian delete preview fails closed per model: _PermittedPks resolves against guardian's content type (G-06.2-1 / CR-01)
+- [ ] 06.2-08-PLAN.md — Blocked deletions: notice without a form, blocked POST 200/422 with exception backstop, flag on every delete page, copy and German catalog (G-06.2-3 / WR-02)
+- [ ] 06.2-09-PLAN.md — Document both closures, pair CHANGELOG with migrating-1.0.md, update ACCEPTANCE/disposition and re-measure both cached environments
 
 **UI hint**: no (backend enforcement and safe existing template contexts; no new screens)
 

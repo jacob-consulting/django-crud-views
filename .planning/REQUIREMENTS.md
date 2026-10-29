@@ -68,13 +68,13 @@ except where a requirement says the markup changes.
 Source: `superpowers/notes/2026-10-28-pre-1.0-before-theme-freeze-analysis.md` B1–B7; locked decisions in
 `.planning/phases/06.2-request-authorization-and-write-integrity/06.2-CONTEXT.md`.
 
-- [ ] **AUTH-01**: All package delete views reject HTTP DELETE with 405 while the validated POST protection, form, hook and transaction lifecycle remains intact.
-- [ ] **AUTH-02**: Formset fragments authorize the target and validate root/parent/fragment ancestry before rendering; valid persisted and unsaved nested rows retain the request and {html, rows} protocol.
-- [ ] **AUTH-03**: Core and Guardian delete previews expose only permitted protected-object labels and an independent generic blocked notice, including when every label is hidden.
-- [ ] **AUTH-04**: Parent permission None preserves actual parent resolution and action-state enforcement; create controls/helpers and direct GET/POST agree without adding child-add requirements.
-- [ ] **AUTH-05**: Inactive actors receive no unauthorized rows or object access through Guardian request and callable helper paths, including when authentication permits inactive sessions; active-superuser behavior is preserved.
-- [ ] **AUTH-06**: Global fallback remains per view; the inert ViewSet flag is removed with clear diagnostics/migration; get_objects_for_user stays strict and manage shows effective policy per view and the strict helper policy.
-- [ ] **AUTH-07**: Direct-request actor and native-template regressions preserve parent/global, aggregate purge and form/cancel contracts; changed method/access/config/context behavior is documented with paired Breaking and migration guidance.
+- [x] **AUTH-01**: All package delete views reject HTTP DELETE with 405 while the validated POST protection, form, hook and transaction lifecycle remains intact.
+- [x] **AUTH-02**: Formset fragments authorize the target and validate root/parent/fragment ancestry before rendering; valid persisted and unsaved nested rows retain the request and {html, rows} protocol.
+- [x] **AUTH-03**: Core and Guardian delete previews expose only permitted protected-object labels and an independent generic blocked notice, including when every label is hidden.
+- [x] **AUTH-04**: Parent permission None preserves actual parent resolution and action-state enforcement; create controls/helpers and direct GET/POST agree without adding child-add requirements.
+- [x] **AUTH-05**: Inactive actors receive no unauthorized rows or object access through Guardian request and callable helper paths, including when authentication permits inactive sessions; active-superuser behavior is preserved.
+- [x] **AUTH-06**: Global fallback remains per view; the inert ViewSet flag is removed with clear diagnostics/migration; get_objects_for_user stays strict and manage shows effective policy per view and the strict helper policy.
+- [x] **AUTH-07**: Direct-request actor and native-template regressions preserve parent/global, aggregate purge and form/cancel contracts; changed method/access/config/context behavior is documented with paired Breaking and migration guidance.
 
 ### Stability policy (plan 4)
 
@@ -152,13 +152,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 | FORM-11 | Phase 6 (plan 2) | Complete |
 | FORM-12 | Phase 6 (plan 2) | Complete |
 | FORM-13 | Phase 6 (plan 2) | Complete |
-| AUTH-01 | Phase 6.2 | Pending |
-| AUTH-02 | Phase 6.2 | Pending |
-| AUTH-03 | Phase 6.2 | Pending |
-| AUTH-04 | Phase 6.2 | Pending |
-| AUTH-05 | Phase 6.2 | Pending |
-| AUTH-06 | Phase 6.2 | Pending |
-| AUTH-07 | Phase 6.2 | Pending |
+| AUTH-01 | Phase 6.2 | Complete |
+| AUTH-02 | Phase 6.2 | Complete |
+| AUTH-03 | Phase 6.2 | Complete |
+| AUTH-04 | Phase 6.2 | Complete |
+| AUTH-05 | Phase 6.2 | Complete |
+| AUTH-06 | Phase 6.2 | Complete |
+| AUTH-07 | Phase 6.2 | Complete |
 | STAB-01 | Phase 7 (plan 4) | Pending |
 | STAB-02 | Phase 7 (plan 4) | Pending |
 | STAB-03 | Phase 7 (plan 4) | Pending |

@@ -3,17 +3,17 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.2"
 current_phase_name: Request authorization and write integrity (INSERTED)
-status: executing
-stopped_at: Completed 06.2-05-PLAN.md
-last_updated: "2026-10-29T12:51:11.304Z"
+status: verifying
+stopped_at: Completed 06.2-06-PLAN.md
+last_updated: "2026-10-29T13:24:31.216Z"
 last_activity: 2026-10-29
 last_activity_desc: Phase 06.2 execution started
-state_head: 7268e66ce0c8166259419ee672fa372a0ff17b30
+state_head: 6cd4d11e0b813e0983bac32b41055481a5fffe3c
 progress:
   total_phases: 9
   completed_phases: 7
   total_plans: 33
-  completed_plans: 32
+  completed_plans: 33
 milestone_name: milestone
 ---
 
@@ -30,7 +30,7 @@ See: .planning/PROJECT.md (updated 2026-10-29)
 
 Phase: 06.2 (Request authorization and write integrity (INSERTED)) — EXECUTING
 Plan: 6 of 6
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-10-29 — Phase 06.2 execution started
 
 Progress: 27/33 plans executed; 7/9 phases complete (78%); Phase 6.2 planned and review-converged
@@ -97,6 +97,7 @@ Progress: 27/33 plans executed; 7/9 phases complete (78%); Phase 6.2 planned and
 | Phase 06.2 P03 | 30 min | 2 tasks | 7 files |
 | Phase 06.2 P04 | 14 min | 2 tasks | 6 files |
 | Phase 06.2 P05 | 16min | 2 tasks | 2 files |
+| Phase 06.2 P06 | 31 min | 3 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -193,6 +194,9 @@ Recent decisions affecting current work:
 - [Phase 06.2]: 06.2-04: Manage reports guardian_config.get_objects_for_user from STRICT_HELPER_POLICY (the same values the helper passes to guardian) and views[key].guardian_policy per view; applicable = object/queryset views, or parent-only views with a parent and a non-None resolved parent permission
 - [Phase 06.2]: 06.2-05: the A10 actor matrix and six native template overrides are replayed as test-only evidence (582 tests) with no production change; strict and global-accepting Guardian families are the same views with the per-view flag set per test
 - [Phase 06.2]: 06.2-05: manage stays its own administrative gate in the matrix (D-06); its mode/group/DEBUG cells are replayed under the patched singleton rather than under object-view inactive policy
+- [Phase 06.2]: 06.2-06: Breaking (paired with migrating-1.0.md): HTTP DELETE 405, removed GuardianViewSet key, filtered protected_objects + has_protected_objects, Guardian manage context, nested Guardian create helper contract
+- [Phase 06.2]: 06.2-06: Fixed (not Breaking): fragment authorization/400 coordinates, unsaved UUID None prefixes, formset.js multi-digit keys, parent-None gates, inactive Guardian denial
+- [Phase 06.2]: 06.2-06: Supported-version evidence limited to cached Django 6.0/4.2 crispy-floor envs; Django 5.2 and Python 3.13-3.15 nox sessions not run (no installs, T-06.2-SC)
 
 ### Pending Todos
 
@@ -228,6 +232,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-29T12:51:10.599Z
-Stopped at: Completed 06.2-05-PLAN.md
+Last session: 2026-10-29T13:24:30.356Z
+Stopped at: Completed 06.2-06-PLAN.md
 Resume file: None

@@ -28,18 +28,22 @@ def pn():
     """Fresh nested Guardian routes: Publisher parent, None-policy Book child (FK), Genre child (M2M) and a
     composition child whose views inherit custom global/anonymous policies through the parent mixin."""
     from crud_views.lib import check as check_module
-    from crud_views.lib.crispy import CrispyViewMixin
+    from crud_views.lib.crispy import CrispyDeleteForm, CrispyViewMixin
+    from crud_views.lib.view import CardAction, ContextButton
     from crud_views.lib.views import CreateViewParentMixin, DetailViewPermissionRequired, ListViewPermissionRequired
-    from crud_views.lib.viewset import _REGISTRY, _REGISTRY_LOCK, ParentViewSet
+    from crud_views.lib.viewset import _REGISTRY, _REGISTRY_LOCK, ParentViewSet, context_buttons_default
     from crud_views_guardian.lib.mixins import (
         GuardianObjectPermissionMixin,
         GuardianParentPermissionMixin,
         GuardianQuerysetMixin,
     )
     from crud_views_guardian.lib.views import (
+        GuardianCardListViewPermissionRequired,
         GuardianCreateViewPermissionRequired,
+        GuardianDeleteViewPermissionRequired,
         GuardianDetailViewPermissionRequired,
         GuardianListViewPermissionRequired,
+        GuardianUpdateViewPermissionRequired,
     )
     from crud_views_guardian.lib.viewset import GuardianViewSet
     from tests.test1.app.models import Book, Genre, Publisher
@@ -61,6 +65,11 @@ def pn():
         class PnPublisherDetailView(GuardianDetailViewPermissionRequired):
             cv_viewset = pub_vs
 
+        class PnPublisherCardView(GuardianCardListViewPermissionRequired):
+            cv_viewset = pub_vs
+            # child branch of a card action: the row (a Publisher) is the create target's parent
+            cv_card_actions = [CardAction(child_name=names[1], child_key="create", label="Add book")]
+
         book_vs = GuardianViewSet(
             model=Book,
             name=names[1],
@@ -68,7 +77,12 @@ def pn():
             icon_header="fa-regular fa-address-book",
             cv_guardian_parent_permission=None,
             cv_guardian_parent_create_permission=None,
+            context_buttons=[
+                *context_buttons_default(),
+                ContextButton(key="create_alias", key_target="create", label_template_code="Another book"),
+            ],
         )
+        child_page_actions = ["home", "create", "create_alias"]
 
         class PnBookListView(GuardianListViewPermissionRequired):
             cv_viewset = book_vs
@@ -76,6 +90,23 @@ def pn():
 
         class PnBookDetailView(GuardianDetailViewPermissionRequired):
             cv_viewset = book_vs
+            cv_context_actions = child_page_actions
+
+        class PnBookUpdateView(CrispyViewMixin, GuardianUpdateViewPermissionRequired):
+            form_class = BookForm
+            cv_viewset = book_vs
+            cv_context_actions = child_page_actions
+
+        class PnBookDeleteView(CrispyViewMixin, GuardianDeleteViewPermissionRequired):
+            form_class = CrispyDeleteForm
+            cv_viewset = book_vs
+            cv_context_actions = child_page_actions
+
+        class PnBookCardView(GuardianCardListViewPermissionRequired):
+            cv_viewset = book_vs
+            cv_context_actions = ["create"]
+            # key branch of a card action: the row (a Book) is an own child of the create target
+            cv_card_actions = [CardAction(key="create", label="Sibling book"), CardAction(key="detail", label="Open")]
 
         class PnBookCreateView(CrispyViewMixin, CreateViewParentMixin, GuardianCreateViewPermissionRequired):
             form_class = BookForm
@@ -150,8 +181,12 @@ def pn():
                     genre_vs=genre_vs,
                     comp_vs=comp_vs,
                     PublisherDetail=PnPublisherDetailView,
+                    PublisherCard=PnPublisherCardView,
                     BookList=PnBookListView,
                     BookDetail=PnBookDetailView,
+                    BookUpdate=PnBookUpdateView,
+                    BookDelete=PnBookDeleteView,
+                    BookCard=PnBookCardView,
                     BookCreate=PnBookCreateView,
                     GenreList=PnGenreListView,
                     GenreCreate=PnGenreCreateView,
@@ -604,3 +639,303 @@ def test_none_policy_inactive_actor_denied_create_and_list(pn, client, publisher
     assert not Book.objects.filter(title="Inactive None").exists()
     assert pn.BookCreate.cv_has_access(user, publisher_a) is False
     assert pn.BookCreate.cv_create_has_access(user, None, publisher_a) is False
+
+
+# ── child-page and card create controls use the real parent (H03, D-10/D-12) ──
+
+
+def _strict_policy(pn, monkeypatch):
+    """Book child pages need parent 'view'; creating a Book needs parent 'change'."""
+    monkeypatch.setattr(pn.book_vs, "cv_guardian_parent_permission", "view")
+    monkeypatch.setattr(pn.book_vs, "cv_guardian_parent_create_permission", "change")
+
+
+def _child_page_actor(pn, publisher, book, *, create_grant, name="child_page"):
+    """May open the Book's detail/update/delete pages (parent view + own object grants), independently of the
+    parent create grant."""
+    user = _user(name)
+    user_guardian_object_perm(user, pn.pub_vs, "view", publisher)
+    for perm in ("view", "change", "delete"):
+        user_guardian_object_perm(user, pn.book_vs, perm, book)
+    if create_grant:
+        user_guardian_object_perm(user, pn.pub_vs, "change", publisher)
+    return user
+
+
+def _assert_hook_saw_only_parent(pn, publisher):
+    from tests.test1.app.models import Publisher
+
+    assert pn.hook_calls, "the create state hook was not consulted"
+    assert all(type(obj) is Publisher and obj.pk == publisher.pk for obj in pn.hook_calls), pn.hook_calls
+
+
+def _render_filter_and_button(response):
+    from django.template import Context, Template
+
+    view = response.context["view"]
+    template = Template(
+        '{% load crud_views %}{{ view|cv_context_has_permission:"create" }}|{% cv_context_button "create" %}'
+    )
+    permission, button = template.render(Context({"view": view, "request": view.request})).split("|", 1)
+    return permission, button
+
+
+PAGES = ["detail", "update", "delete"]
+
+
+@pytest.fixture
+def child(pn, publisher_a):
+    from tests.test1.app.models import Book
+
+    return Book.objects.create(title="Child Page Book", publisher=publisher_a)
+
+
+@pytest.mark.parametrize("page", PAGES)
+@pytest.mark.parametrize("create_grant", [True, False])
+@pytest.mark.django_db
+def test_child_page_create_controls_follow_parent_grant(
+    pn, client, monkeypatch, publisher_a, child, page, create_grant
+):
+    _strict_policy(pn, monkeypatch)
+    page_cls = {"detail": pn.BookDetail, "update": pn.BookUpdate, "delete": pn.BookDelete}[page]
+    records = _record_contexts(monkeypatch, page_cls)
+    client.force_login(_child_page_actor(pn, publisher_a, child, create_grant=create_grant))
+    create_url = _url(pn.book_vs, "create", publisher_a.pk)
+
+    response = client.get(_url(pn.book_vs, page, publisher_a.pk, child.pk))
+    assert response.status_code == 200
+    contexts = {key: ctx for key, ctx in records if key in ("create", "create_alias")}
+    assert set(contexts) == {"create", "create_alias"}
+    for ctx in contexts.values():
+        assert ctx["cv_access"] is create_grant
+        assert ctx["cv_action_enabled"] is True
+        assert ctx["cv_url"] == create_url  # bound to the URL parent
+    # original label context: the alias keeps its own label, the view key keeps the target default
+    assert contexts["create_alias"]["cv_action_label"] == "Another book"
+    assert contexts["create"]["cv_action_label"] != "Another book"
+    assert (f'href="{create_url}"' in response.content.decode()) is create_grant
+    _assert_hook_saw_only_parent(pn, publisher_a)
+
+    permission, button = _render_filter_and_button(response)
+    assert permission == str(create_grant)
+    assert (create_url in button) is create_grant
+
+
+@pytest.mark.django_db
+def test_child_page_disabled_state_is_distinct_from_permission_denial(pn, client, monkeypatch, publisher_a, child):
+    from tests.test1.app.models import Book
+
+    _strict_policy(pn, monkeypatch)
+    records = _record_contexts(monkeypatch, pn.BookDetail)
+    detail_url = _url(pn.book_vs, "detail", publisher_a.pk, child.pk)
+    create_url = _url(pn.book_vs, "create", publisher_a.pk)
+
+    # authorized but state-disabled: permission True, state False, button unavailable, direct requests 403
+    pn.state["enabled"] = False
+    client.force_login(_child_page_actor(pn, publisher_a, child, create_grant=True, name="granted"))
+    response = client.get(detail_url)
+    for key in ("create", "create_alias"):
+        (ctx,) = [c for k, c in records if k == key]
+        assert ctx["cv_access"] is True
+        assert ctx["cv_action_enabled"] is False
+    assert f'href="{create_url}"' not in response.content.decode()
+    permission, button = _render_filter_and_button(response)
+    assert permission == "True"  # the permission filter stays permission-only
+    assert create_url not in button
+    assert client.get(create_url).status_code == 403
+    assert client.post(create_url, {"title": "Disabled"}).status_code == 403
+    _assert_hook_saw_only_parent(pn, publisher_a)
+
+    # denied: both fields reflect it independently; filter False, button unavailable, direct requests 403
+    records.clear()
+    pn.state["enabled"] = True
+    client.force_login(_child_page_actor(pn, publisher_a, child, create_grant=False, name="denied"))
+    response = client.get(detail_url)
+    for key in ("create", "create_alias"):
+        (ctx,) = [c for k, c in records if k == key]
+        assert ctx["cv_access"] is False
+        assert ctx["cv_action_enabled"] is True
+    permission, button = _render_filter_and_button(response)
+    assert permission == "False"
+    assert create_url not in button
+    assert client.get(create_url).status_code == 403
+    assert client.post(create_url, {"title": "Denied"}).status_code == 403
+    assert not Book.objects.filter(title__in=["Disabled", "Denied"]).exists()
+
+    # allowed + enabled: control available and the direct request agrees, bound to the URL parent
+    client.force_login(_child_page_actor(pn, publisher_a, child, create_grant=True, name="allowed"))
+    assert f'href="{create_url}"' in client.get(detail_url).content.decode()
+    assert client.get(create_url).status_code == 200
+    assert client.post(create_url, {"title": "Allowed"}).status_code == 302
+    assert Book.objects.get(title="Allowed").publisher_id == publisher_a.pk
+
+
+@pytest.mark.django_db
+def test_child_page_create_revocation_applies_next_request(pn, client, monkeypatch, publisher_a, child):
+    from tests.test1.app.models import Book
+
+    _strict_policy(pn, monkeypatch)
+    user = _child_page_actor(pn, publisher_a, child, create_grant=True)
+    client.force_login(user)
+    detail_url = _url(pn.book_vs, "detail", publisher_a.pk, child.pk)
+    create_url = _url(pn.book_vs, "create", publisher_a.pk)
+    assert f'href="{create_url}"' in client.get(detail_url).content.decode()
+
+    pn.pub_vs.remove_perm("change", user, publisher_a)
+    response = client.get(detail_url)
+    assert response.status_code == 200
+    assert f'href="{create_url}"' not in response.content.decode()
+    assert client.post(create_url, {"title": "Revoked"}).status_code == 403
+    assert not Book.objects.filter(title="Revoked").exists()
+
+
+@pytest.mark.parametrize("accept_global", [True, False])
+@pytest.mark.django_db
+def test_child_page_create_global_fallback_follows_create_view_policy(
+    pn, client, monkeypatch, publisher_a, child, accept_global
+):
+    _strict_policy(pn, monkeypatch)
+    monkeypatch.setattr(pn.BookCreate, "cv_guardian_accept_global_perms", accept_global, raising=False)
+    user = _grant_global(_child_page_actor(pn, publisher_a, child, create_grant=False), "change_publisher")
+    client.force_login(user)
+    create_url = _url(pn.book_vs, "create", publisher_a.pk)
+
+    response = client.get(_url(pn.book_vs, "detail", publisher_a.pk, child.pk))
+    assert (f'href="{create_url}"' in response.content.decode()) is accept_global
+    assert client.get(create_url).status_code == (200 if accept_global else 403)
+    assert pn.BookCreate.cv_has_access(user, child) is accept_global
+
+
+@pytest.mark.django_db
+def test_child_page_none_policy_create_needs_no_parent_grant(pn, client, monkeypatch, publisher_a, child):
+    records = _record_contexts(monkeypatch, pn.BookDetail)
+    user = _user("object_only")
+    user_guardian_object_perm(user, pn.book_vs, "view", child)
+    client.force_login(user)
+    create_url = _url(pn.book_vs, "create", publisher_a.pk)
+
+    response = client.get(_url(pn.book_vs, "detail", publisher_a.pk, child.pk))
+    assert response.status_code == 200
+    for key in ("create", "create_alias"):
+        (ctx,) = [c for k, c in records if k == key]
+        assert ctx["cv_access"] is True
+        assert ctx["cv_action_enabled"] is True
+    assert f'href="{create_url}"' in response.content.decode()
+    _assert_hook_saw_only_parent(pn, publisher_a)
+
+
+@pytest.mark.django_db
+def test_child_page_inactive_actor_denied(pn, client, monkeypatch, publisher_a, child):
+    backend = "django.contrib.auth.backends.AllowAllUsersModelBackend"
+    _strict_policy(pn, monkeypatch)
+    user = _child_page_actor(pn, publisher_a, child, create_grant=True)
+    user.is_active = False
+    user.save()
+    with override_settings(AUTHENTICATION_BACKENDS=[backend, "guardian.backends.ObjectPermissionBackend"]):
+        client.force_login(user, backend=backend)
+        assert client.get(_url(pn.book_vs, "detail", publisher_a.pk, child.pk)).status_code == 403
+    assert pn.BookCreate.cv_has_access(user, child) is False
+    assert pn.BookCreate._cv_action_enabled_for_context(user, child) is True  # state is not permission
+    assert pn.hook_calls and pn.hook_calls[-1].pk == publisher_a.pk
+
+
+# ── card actions ──────────────────────────────────────────────────────────────
+
+
+def _record_card_actions(monkeypatch, card_cls):
+    records: list = []
+    original = card_cls.cv_get_card_action_data
+
+    def spy(self, action, obj, user):
+        data = original(self, action, obj, user)
+        records.append((action.key or action.child_name, obj, data))
+        return data
+
+    monkeypatch.setattr(card_cls, "cv_get_card_action_data", spy)
+    return records
+
+
+@pytest.mark.parametrize("create_grant", [True, False])
+@pytest.mark.parametrize("enabled", [True, False])
+@pytest.mark.django_db
+def test_child_card_row_create_action_uses_row_parent(
+    pn, client, monkeypatch, publisher_a, child, create_grant, enabled
+):
+    _strict_policy(pn, monkeypatch)
+    pn.state["enabled"] = enabled
+    records = _record_card_actions(monkeypatch, pn.BookCard)
+    client.force_login(_child_page_actor(pn, publisher_a, child, create_grant=create_grant))
+    create_url = _url(pn.book_vs, "create", publisher_a.pk)
+
+    response = client.get(_url(pn.book_vs, "card", publisher_a.pk))
+    assert response.status_code == 200
+    (row,) = [data for key, obj, data in records if key == "create"]
+    assert row["cv_access"] is create_grant
+    assert row["cv_action_enabled"] is enabled
+    assert row["cv_url"] == create_url
+    assert row["cv_label"] == "Sibling book"
+    (detail,) = [data for key, obj, data in records if key == "detail"]
+    assert detail["cv_access"] is True  # the other card action keeps its own row-object semantics
+    assert ("Sibling book" in response.content.decode()) is (create_grant and enabled)
+    _assert_hook_saw_only_parent(pn, publisher_a)
+
+
+@pytest.mark.django_db
+def test_parent_card_child_create_action_uses_row(pn, client, monkeypatch, publisher_a, publisher_b):
+    """Preservation: the child-name branch already passes the row, which is the parent."""
+    from tests.test1.app.models import Publisher
+
+    _strict_policy(pn, monkeypatch)
+    records = _record_card_actions(monkeypatch, pn.PublisherCard)
+    user = _user("pub_card")
+    for publisher in (publisher_a, publisher_b):
+        user_guardian_object_perm(user, pn.pub_vs, "view", publisher)
+    user_guardian_object_perm(user, pn.pub_vs, "change", publisher_a)
+    client.force_login(user)
+
+    response = client.get(reverse(pn.pub_vs.get_router_name("card")))
+    assert response.status_code == 200
+    access = {obj.pk: data["cv_access"] for key, obj, data in records}
+    assert access == {publisher_a.pk: True, publisher_b.pk: False}
+    assert _url(pn.book_vs, "create", publisher_a.pk) in response.content.decode()
+    assert _url(pn.book_vs, "create", publisher_b.pk) not in response.content.decode()
+    assert all(type(obj) is Publisher for obj in pn.hook_calls)
+
+
+# ── controls: the default adapter leaves other action objects unchanged ───────
+
+
+def _spy_state(monkeypatch, cls):
+    calls: list = []
+
+    @classmethod
+    def spy(klass, user, obj=None):
+        calls.append(obj)
+        return True
+
+    monkeypatch.setattr(cls, "cv_action_enabled", spy)
+    return calls
+
+
+@pytest.mark.django_db
+def test_core_detail_page_state_hook_receives_page_object(client_user_author_view, monkeypatch, author_douglas_adams):
+    from tests.test1.app.models import Author
+    from tests.test1.app.views import AuthorUpdateView
+
+    calls = _spy_state(monkeypatch, AuthorUpdateView)
+    assert client_user_author_view.get(f"/author/{author_douglas_adams.pk}/detail/").status_code == 200
+    assert calls and all(type(obj) is Author and obj.pk == author_douglas_adams.pk for obj in calls)
+
+
+@pytest.mark.django_db
+def test_guardian_top_level_page_and_card_state_hooks_receive_row(
+    client_guardian, user_guardian, cv_guardian_author, monkeypatch, author_douglas_adams
+):
+    from tests.test1.app.models import Author
+    from tests.test1.app.views import GuardianAuthorUpdateView
+
+    user_guardian_object_perm(user_guardian, cv_guardian_author, "view", author_douglas_adams)
+    calls = _spy_state(monkeypatch, GuardianAuthorUpdateView)
+    assert client_guardian.get(f"/guardian_author/{author_douglas_adams.pk}/detail/").status_code == 200
+    assert client_guardian.get("/guardian_author/card/").status_code == 200
+    assert calls and all(type(obj) is Author and obj.pk == author_douglas_adams.pk for obj in calls)

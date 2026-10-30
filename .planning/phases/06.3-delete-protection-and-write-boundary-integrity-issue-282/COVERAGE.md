@@ -1,0 +1,1 @@
+No external API integration: this phase corrects existing in-process Django/Guardian deletion and permission behavior; the detector matched the proposed public Python API inventory, not a remote service integration. Supported library behavior and deliberate custom/private boundaries are enumerated in 06.3-DESIGN.md.

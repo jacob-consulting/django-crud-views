@@ -461,10 +461,33 @@ No architecture is chosen; do not run a blanket automatic `--fix` pass.
 The user explicitly added GUA-01 on 2026-10-30: AUTH-06’s residual review flag and IN-02/IN-03 transfer
 here unresolved, alongside #282 rather than as an amendment to the external issue.
 WR-01 was fixed separately in 6.2 by quick 261030-csg. IN-01/IN-04 are closed with rationale and IN-05 is fixed in 6.2.
-**Plans**: 0 plans; not planned or verified
+**Plans**: 9 plans; design review required before implementation
 
 Plans:
-- [ ] TBD (run $gsd-plan-phase 06.3 to break down; maintainer review required before implementation)
+**Wave 1**
+- [ ] 06.3-01-PLAN.md — Maintainer design and package verification checkpoints
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 06.3-02-PLAN.md — Callback-safe confirmation and native deletion tracer
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [ ] 06.3-03-PLAN.md — Graph inspection, safe provider and partial notices
+- [ ] 06.3-06-PLAN.md — Strict-helper diagnostics and bounded Guardian review
+
+**Wave 4** *(blocked on Wave 3 completion)*
+- [ ] 06.3-04-PLAN.md — Native provenance and real write-boundary evidence
+
+**Wave 5** *(blocked on Wave 4 completion)*
+- [ ] 06.3-05-PLAN.md — Pinned alias, two databases and Guardian label projection
+
+**Wave 6** *(blocked on Wave 5 completion)*
+- [ ] 06.3-07-PLAN.md — Authorization, templates and actual polymorphic deletion
+
+**Wave 7** *(blocked on Wave 6 completion)*
+- [ ] 06.3-08-PLAN.md — Executable migration examples and paired release guidance
+
+**Wave 8** *(blocked on Wave 7 completion)*
+- [ ] 06.3-09-PLAN.md — Three-series matrix and affected acceptance reconciliation
 
 ### Phase 7: Theme-surface stability policy
 

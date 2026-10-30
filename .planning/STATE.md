@@ -4,16 +4,16 @@ milestone: v1.0
 current_phase: "06.3"
 current_phase_name: "Delete protection and write-boundary integrity — issue #282"
 status: in_progress
-stopped_at: Completed 06.3-12-PLAN.md; CT-01 positive controls pass; next plan 13; all twelve human items remain pending
-last_updated: "2026-10-30T23:32:38.029Z"
+stopped_at: Completed 06.3-13-PLAN.md; CR-02 owner controls and published recipes pass; next plan 14; all twelve human items remain pending
+last_updated: "2026-10-30T23:41:46.838Z"
 last_activity: 2026-10-30
-last_activity_desc: Plan 12 complete; CT-01 configured Guardian access and retained policy controls pass on Django 4.2 and 6.0
-state_head: 34747363e812d6ef815f1f61a47688b417aa8b07
+last_activity_desc: Plan 13 complete; CR-02 owner boundaries and executable provider migration pass on Django 4.2 and 6.0
+state_head: 7b4ee94380eaa1394204240256a5c2366467257b
 progress:
   total_phases: 10
   completed_phases: 8
   total_plans: 53
-  completed_plans: 48
+  completed_plans: 49
 milestone_name: milestone
 ---
 
@@ -29,12 +29,12 @@ See: .planning/PROJECT.md (updated 2026-10-30)
 ## Current Position
 
 Phase: 06.3 (Delete protection and write-boundary integrity — issue #282) — IN PROGRESS
-Plan: 13 of 17 — next to execute; plans 01–12 complete
-Status: CR-01 and CT-01 bounded repair controls pass; CR-02/03, final verification and human dispositions remain open
-Last activity: 2026-10-30 — 12-02 committed (d34d19f); 94 new and 353 retained Guardian controls pass on both cached series
+Plan: 14 of 17 — next to execute; plans 01–13 complete
+Status: CR-01, CR-02 and CT-01 bounded repair controls pass; CR-03, final verification and human dispositions remain open
+Last activity: 2026-10-30 — 13-02 committed (7b4ee94); full inspection 203 passed, owner gate 33 passed on 4.2, docs 33 passed
 
-Progress: 48/53 plans executed; 8/10 phases complete. Phase 06.3 is not accepted.
-Next: Execute approved plans 13–17; preserve independent final verification and all twelve human dispositions.
+Progress: 49/53 plans executed; 8/10 phases complete. Phase 06.3 is not accepted.
+Next: Execute approved plans 14–17; preserve independent final verification and all twelve human dispositions.
 
 ### Phase 06.3 gap execution approval
 
@@ -45,8 +45,9 @@ Next: Execute approved plans 13–17; preserve independent final verification an
 - Plans 10–17 combined SHA-256: `4de8457efead5268b3463860fcfc1dc0eea32c883d7fd3fd24eb402be2bdbc59`.
 - Plan 11 is executed: selected native root/parent identity controls pass; independent final verification remains.
 - Plan 12 is executed: configured Guardian CT-01 positive access, custom/default keys and retained actor/cache controls pass.
-- Plans 13–17 remain unexecuted under the bound contract. Do not repeat plans 10–12.
-- CR-02/03 and all twelve human items remain unresolved; AUTH-06/GUA-01 are not globally complete and phase acceptance is unchanged.
+- Plan 13 is executed: declaring-owner boundaries, partial notices and actual owner-qualified migration recipes pass.
+- Plans 14–17 remain unexecuted under the bound contract. Do not repeat plans 10–13.
+- CR-03 and all twelve human items remain unresolved; AUTH-06/GUA-01 are not globally complete and phase acceptance is unchanged.
 
 ### Phase 06.3 gap planning
 
@@ -155,6 +156,7 @@ Next: Execute approved plans 13–17; preserve independent final verification an
 | Phase 06.3 P10 | 3min | 2 tasks | 2 files |
 | Phase 06.3 P11 | 6min | 2 tasks | 2 files |
 | Phase 06.3 P12 | 9min | 2 tasks | 14 files |
+| Phase 06.3 P13 | 7min | 2 tasks | 19 files |
 
 ## Accumulated Context
 
@@ -265,6 +267,8 @@ Recent decisions affecting current work:
 - [Phase 06.3]: Bounded CT-01 configured-content-type default/custom permission scope explicitly approved; implementation and all twelve human dispositions remain outstanding.
 - [Phase 06.3]: 11: Native collection reloads selected values but preserves original authorized origin/state; actual parent-link queries ignore cached descriptors.
 - [Phase 06.3]: 12: Guardian default/custom permissions use only the configured content type; exact explicit mappings and retained actor/global/cache policy remain unchanged.
+- [Phase 06.3]: 13: Boundary field_model retains declaring owner separately from source rows; exact supplied six-field descriptors reject ownerless field contributions immediately.
+- [Phase 06.3]: 13: Actual owner-qualified provider migration and its Breaking entry share commit 7b4ee94; synthetic test metadata owners corrected without an ownerless product fallback.
 
 ### Pending Todos
 
@@ -311,6 +315,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-30T23:32:37.221Z
-Stopped at: Completed 06.3-12-PLAN.md; CT-01 positive controls pass; next plan 13; all twelve human items remain pending
+Last session: 2026-10-30T23:41:46.126Z
+Stopped at: Completed 06.3-13-PLAN.md; CR-02 owner controls and published recipes pass; next plan 14; all twelve human items remain pending
 Resume file: None

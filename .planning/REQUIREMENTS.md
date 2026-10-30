@@ -89,10 +89,10 @@ No new verification or UAT pass is implied, including for checked entries repres
 | AUTH-03 | Permitted protected labels, independent notice, fixed CR-01/WR-02 response scope | CR-02/04: obtain blocked state without callbacks and from the target database → 6.3; overall unresolved |
 | AUTH-04 | Parent-None dispatch and Guardian helper/state regressions | Older WR-01 core rendered-state agreement awaits explicit disposition; separate from #282 and not accepted |
 | AUTH-05 | Named inactive-actor request/helper regressions | Retain recorded evidence; no new result or broader certification |
-| AUTH-06 | Named per-view configuration, helper and manage regressions | Spec-less edge remains unresolved; IN-02/03/05 await separate disposition; checked item covers named evidence only |
+| AUTH-06 | Named per-view configuration, helper and manage regressions | Unspecified review flag and IN-02/IN-03 → Phase 6.3 GUA-01, unresolved; IN-05 retains separate disposition; checked item covers named evidence only |
 | AUTH-07 | Recorded actor/native-template replay and paired documentation | Real-preview, converter, routing and preservation re-review → 6.3; existing suite passes do not cover CR-02–CR-04 |
 
-### Delete protection remediation (inserted Phase 6.3, issue #282)
+### Delete protection remediation and bounded Guardian policy review (Phase 6.3)
 
 Source: [issue #282](https://github.com/jacob-consulting/django-crud-views/issues/282), revised analysis addendum/§8,
 and [06.2-REVIEW](phases/06.2-request-authorization-and-write-integrity/06.2-REVIEW.md) CR-02–CR-04.
@@ -105,7 +105,11 @@ These remediate the existing AUTH promises; deferral leaves them unresolved and 
 - [ ] **DEL-05**: Core, Guardian and polymorphic authorization, filtered protected labels, independent blocked notice and coherent full-page/modal responses remain enforced (AUTH-03/07 preservation).
 - [ ] **DEL-06**: Reproduce fixes on Django 4.2/6.0, add supported Django 5.2 coverage, rerun deletion/transaction/authorization suites, update deletion/override docs and changelog (Breaking paired with migrating-1.0.md), and re-review affected 6.2 acceptance before closure.
 
-Older WR-01 and IN-01–IN-05 remain **open for explicit disposition**, outside #282 unless deliberately brought in.
+- [ ] **GUA-01**: Perform a bounded review of AUTH-06 policy boundaries and findings IN-02 (mutable strict-helper policy) / IN-03 (unknown permission-key diagnostics). Record a concrete scenario and expected outcome for each actionable gap; fix and test confirmed defects, preserving named AUTH-06 behaviors. If no additional gap supports the unclassified detector flag, close that flag with a documented rationale. Record explicit dispositions for IN-02/IN-03 and replay the policy tests on cached Django 4.2/6.0. This task transfers unresolved review work, not completed AUTH-06 implementation; any substantial policy redesign requires a separate scope decision.
+
+GUA-01 was added by explicit user decision on 2026-10-30 as a bounded continuation of 6.2, alongside the
+deletion work; it does not change issue #282 itself. IN-02/IN-03 are deferred here and remain unresolved.
+Older WR-01, IN-01, IN-04 and IN-05 remain **open for explicit disposition**, outside this transfer.
 D-13's aggregate policy does not silently close IN-01. See
 [06.2-REVIEW-DISPOSITION](phases/06.2-request-authorization-and-write-integrity/06.2-REVIEW-DISPOSITION.md).
 The revised analysis schedules conditional/formset work in proposed 6.4, presentation cleanup in proposed 6.5,
@@ -192,7 +196,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | AUTH-03 | Phase 6.2 + 6.3 | Partial; CR-02/CR-04 unresolved in 6.3 |
 | AUTH-04 | Phase 6.2 | Partial; WR-01 disposition open |
 | AUTH-05 | Phase 6.2 | Complete |
-| AUTH-06 | Phase 6.2 | Named evidence retained; spec-less edge and older dispositions open |
+| AUTH-06 | Phase 6.2 + 6.3 | Named 6.2 evidence retained; residual flag and IN-02/03 → GUA-01; IN-05 separate |
 | AUTH-07 | Phase 6.2 + 6.3 | Partial; #282 re-review pending in 6.3 |
 | DEL-01 | Phase 6.3 | Pending; unresolved |
 | DEL-02 | Phase 6.3 | Pending; unresolved |
@@ -200,6 +204,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DEL-04 | Phase 6.3 | Pending; unresolved |
 | DEL-05 | Phase 6.3 | Pending; unresolved |
 | DEL-06 | Phase 6.3 | Pending; unresolved |
+| GUA-01 | Phase 6.3 | Pending; AUTH-06 review flag and IN-02/03 unresolved |
 | STAB-01 | Phase 7 (plan 4) | Pending |
 | STAB-02 | Phase 7 (plan 4) | Pending |
 | STAB-03 | Phase 7 (plan 4) | Pending |
@@ -209,10 +214,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 **Coverage:**
 
-- v1 requirements: 54 total
-- Mapped to phases: 54
+- v1 requirements: 55 total
+- Mapped to phases: 55
 - Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-10-25*
-*Last updated: 2026-10-30 — split affected AUTH acceptance across 6.2/6.3; add unresolved DEL-01–06 for #282*
+*Last updated: 2026-10-30 — add bounded GUA-01 review in 6.3; preserve completed AUTH-06 evidence and unresolved dispositions*

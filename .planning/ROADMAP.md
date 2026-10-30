@@ -387,12 +387,13 @@ verification/UAT pass. [Issue #282](https://github.com/jacob-consulting/django-c
 | 3 / AUTH-03 | Filtered protected labels, independent notice, fixed CR-01/WR-02 scope | Callback-free, target-database blocked-state determination → 6.3 DEL-02/04/05 |
 | 7 / AUTH-07 | Actor/native-template replay, paired docs | Real-preview/error/routing evidence, preserved authorization and re-review → 6.3 DEL-01–06 |
 | 4 / AUTH-04 | Parent-None dispatch and Guardian helper/state cases | Older WR-01 core rendered-state agreement remains open for separate disposition |
-| 2, 5, 6 / AUTH-02/05/06 | Named fragment/inactive/configuration cases | Preserve A19 (proposed 6.4), AUTH-06 spec-less edge and older IN-01–IN-05 limitations/dispositions |
+| 2, 5, 6 / AUTH-02/05/06 | Named fragment/inactive/configuration cases | Preserve A19 (proposed 6.4); AUTH-06 residual review and IN-02/03 → 6.3 GUA-01; other findings retain separate dispositions |
 
 See [REQUIREMENTS](REQUIREMENTS.md#acceptance-ownership-split-2026-10-30),
 [06.2-ACCEPTANCE](phases/06.2-request-authorization-and-write-integrity/06.2-ACCEPTANCE.md#acceptance-ownership-split-for-issue-282)
 and [06.2-REVIEW-DISPOSITION](phases/06.2-request-authorization-and-write-integrity/06.2-REVIEW-DISPOSITION.md).
-Older WR-01 and IN-01–IN-05 remain open for explicit fix/deferral/skip decisions, separately from #282.
+AUTH-06 residual review and IN-02/IN-03 are explicitly transferred unresolved to 6.3 GUA-01.
+WR-01, IN-01, IN-04 and IN-05 remain open for separate disposition.
 The revised analysis §8 puts conditional/formset, presentation and Tabler proposals at 6.4/6.5/6.6; only 6.3 is
 inserted here. Phase 7 remains last and cannot freeze the affected promises before remediation.
 
@@ -426,10 +427,12 @@ Plans:
 
 **Goal**: Remediate unresolved Phase 6.2 CR-02–CR-04: protection inspection respects confirmation/write
 boundaries, unknown application failures propagate, and inspection/deletion use the same target database.
+Also complete a bounded Guardian policy review of the residual AUTH-06 detector flag and IN-02/IN-03,
+preserving 6.2’s implemented and tested policy behavior.
 **Source**: [Issue #282](https://github.com/jacob-consulting/django-crud-views/issues/282);
 `superpowers/notes/2026-10-28-pre-1.0-before-theme-freeze-analysis.md` addendum 2026-10-30 and §8;
 [06.2-REVIEW](phases/06.2-request-authorization-and-write-integrity/06.2-REVIEW.md).
-**Requirements**: DEL-01, DEL-02, DEL-03, DEL-04, DEL-05, DEL-06; completes affected AUTH-01/03/07 obligations.
+**Requirements**: DEL-01, DEL-02, DEL-03, DEL-04, DEL-05, DEL-06, GUA-01; completes affected AUTH-01/03/07 obligations and owns the residual AUTH-06 review.
 **Depends on**: Phase 6.2 implementation/evidence baseline; this dependency does not assert 6.2 verification passed.
 **Parallel with**: None
 **Planning gate**: Detailed design/implementation plan and maintainer review before implementation. Settle safe
@@ -449,8 +452,16 @@ No architecture is chosen; do not run a blanket automatic `--fix` pass.
      update deletion/override docs and changelog (Breaking paired with migrating-1.0.md), re-review and reconcile
      affected 6.2 acceptance before closure. Existing green suites are not proof of these uncovered cases.
 
+  6. Bounded Guardian review (GUA-01): examine AUTH-06 policy boundaries, mutable strict-helper policy (IN-02)
+     and unknown permission-key diagnostics (IN-03). Give each actionable gap a concrete scenario/expected outcome,
+     fix and test confirmed defects, and record explicit dispositions. If the unclassified detector flag identifies
+     no additional gap, close it with a documented rationale. Replay policy tests on cached Django 4.2/6.0;
+     preserve the completed AUTH-06 implementation. Escalate any substantial policy redesign as a separate scope decision.
+
 **Disposition**: CR-02–CR-04 deferred here and **unresolved**. CR-01/WR-02 remain fixed in their earlier scope.
-Older WR-01 and IN-01–IN-05 remain a separate open disposition queue unless explicitly brought into scope.
+The user explicitly added GUA-01 on 2026-10-30: AUTH-06’s residual review flag and IN-02/IN-03 transfer
+here unresolved, alongside #282 rather than as an amendment to the external issue.
+WR-01, IN-01, IN-04 and IN-05 remain a separate open disposition queue.
 **Plans**: 0 plans; not planned or verified
 
 Plans:

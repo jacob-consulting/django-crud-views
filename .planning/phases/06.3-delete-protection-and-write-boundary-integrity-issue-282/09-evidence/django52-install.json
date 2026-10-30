@@ -1,0 +1,16 @@
+{
+  "label": "django52-install",
+  "started": "2026-10-30T14:36:52.393284+00:00",
+  "head": "b0f739b608e8cbd363f0f02f471fa03b1c1e1234",
+  "diff_sha256": "ec026078b98b14c0b0d50b6a946b21b47866415759cd3b4c1e298332cb98db04",
+  "source_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "source_tree_sha256": "3afbb8ca117aa3c798b692e1a8255a007158403d12cbaaa11a3d79c2349a7eec",
+  "command": ".venv/bin/python -m nox -s 'tests-3.12(django='\"'\"'5.2'\"'\"')'",
+  "environment": {
+    "PYTHONPATH": null,
+    "PYTEST_XDIST_AUTO_NUM_WORKERS": "4"
+  },
+  "exit_code": 0,
+  "duration_seconds": 255.834,
+  "finished": "2026-10-30T14:41:08.250716+00:00"
+}

@@ -461,7 +461,7 @@ No architecture is chosen; do not run a blanket automatic `--fix` pass.
 The user explicitly added GUA-01 on 2026-10-30: AUTH-06’s residual review flag and IN-02/IN-03 transfer
 here unresolved, alongside #282 rather than as an amendment to the external issue.
 WR-01 was fixed separately in 6.2 by quick 261030-csg. IN-01/IN-04 are closed with rationale and IN-05 is fixed in 6.2.
-**Plans**: 13/17 plans executed; plan 10's concrete contract delta and bounded CT-01 scope are approved. Plan 11's selected native identity controls and plan 12's configured Guardian CT-01 controls pass on Django 4.2/6.0. Five implementation/evidence/review plans (13–17) remain under the bound approval. All twelve human items remain pending; phase verification remains `gaps_found`.
+**Plans**: 13/17 plans executed; plan 10's concrete contract delta and bounded CT-01 scope are approved. Plan 11's selected native identity, plan 12's configured Guardian CT-01 and plan 13's declaring-owner boundary/migration controls pass on Django 4.2/6.0. Four implementation/evidence/review plans (14–17) remain under the bound approval. All twelve human items remain pending; phase verification remains `gaps_found`.
 
 Plans:
 **Wave 1**

@@ -373,6 +373,11 @@ class CrudView(metaclass=CrudViewMetaClass):
         cv_action_enabled hooks keep receiving their real action object. Not a public extension point."""
         return cls.cv_action_enabled(user, obj)
 
+    @classmethod
+    def _cv_action_enabled_for_rendering(cls, user, obj, rendering_view) -> bool:
+        """Supply rendering context without changing the target's existing state adapter contract."""
+        return cls._cv_action_enabled_for_context(user, obj)
+
     def cv_get_action_object(self) -> Model | None:
         """The object an action concerns: the instance for object-views, the
         parent for child create-views, else None. Used by request enforcement."""
@@ -712,7 +717,7 @@ class CrudView(metaclass=CrudViewMetaClass):
         context = self.cv_get_view_context(object=obj)
 
         # button visibility — independent of access/permission
-        dict_kwargs["cv_action_enabled"] = cls._cv_action_enabled_for_context(user, obj)
+        dict_kwargs["cv_action_enabled"] = cls._cv_action_enabled_for_rendering(user, obj, self)
 
         # check access
         if cls.cv_has_access(user, obj):

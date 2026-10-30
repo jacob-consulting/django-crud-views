@@ -135,7 +135,7 @@ def test_create_rendering_entry_points_keep_parent_and_adapter(monkeypatch, book
         view = _view(BookListView, {cv_book.parent.get_pk_name(): parent.pk})
         if entry == "card":
             data = CardListView.cv_get_card_action_data(
-                view, CardAction(key="create"), book_hitchhiker, view.request.user
+                view, CardAction(key="create", label_mode="both"), book_hitchhiker, view.request.user
             )
         else:
             data = SiblingContextButton(key="new_book", sibling_name="book", sibling_key="create").get_context(
@@ -183,6 +183,45 @@ def test_url_parent_wins_over_page_child_and_missing_parent_fails_closed(monkeyp
     assert view.cv_get_context("create", obj=book_hitchhiker, user=view.request.user)["cv_action_enabled"] is True
     assert calls == [publisher_b]
     calls.clear()
-    view.kwargs[cv_book.parent.get_pk_name()] = -1
+    view.kwargs[cv_book.parent.get_pk_name()] = 999999
     assert view.cv_get_context("create", obj=book_hitchhiker, user=view.request.user)["cv_action_enabled"] is False
     assert calls == []
+
+
+@pytest.mark.django_db
+def test_parent_button_top_level_create_keeps_existing_state_object(monkeypatch, book_hitchhiker):
+    from crud_views.lib.view import ParentContextButton
+    from tests.test1.app.views import BookListView, PublisherCreateView, cv_book, cv_publisher
+
+    parent = book_hitchhiker.publisher
+    calls = []
+    monkeypatch.setattr(
+        PublisherCreateView, "cv_action_enabled", classmethod(lambda cls, user, obj=None: calls.append(obj) or True)
+    )
+    view = _view(BookListView, {cv_book.parent.get_pk_name(): parent.pk})
+    data = ParentContextButton(key="new_publisher", key_target="create").get_context(
+        view.cv_get_view_context(object=book_hitchhiker)
+    )
+    assert data["cv_url"] == reverse(cv_publisher.get_router_name("create"))
+    assert data["cv_action_enabled"] is True
+    assert calls == [parent]
+
+
+@pytest.mark.django_db
+def test_m2m_create_uses_explicit_url_parent_without_inferring_from_child(monkeypatch, publisher_a, publisher_b):
+    from tests.test1.app.models import Genre
+    from tests.test1.app.views import GenreCreateView, GenreListView, cv_genre
+
+    genre = Genre.objects.create(name="Two parents")
+    publisher_a.genres.add(genre)
+    publisher_b.genres.add(genre)
+    calls = []
+    monkeypatch.setattr(
+        GenreCreateView, "cv_action_enabled", classmethod(lambda cls, user, obj=None: calls.append(obj) or True)
+    )
+    assert GenreCreateView._cv_action_enabled_for_context(None, genre) is False
+    assert calls == []
+    view = _view(GenreListView, {cv_genre.parent.get_pk_name(): publisher_b.pk})
+    data = view.cv_get_context("create", obj=genre, user=view.request.user)
+    assert data["cv_action_enabled"] is True
+    assert calls == [publisher_b]

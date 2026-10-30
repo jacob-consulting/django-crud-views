@@ -106,7 +106,9 @@ class ContextButton(BaseModel):
         }
 
         # button visibility — independent of access/permission
-        dict_kwargs["cv_action_enabled"] = cls._cv_action_enabled_for_context(context.view.request.user, context.object)
+        dict_kwargs["cv_action_enabled"] = cls._cv_action_enabled_for_rendering(
+            context.view.request.user, context.object, context.view
+        )
 
         # check access
         if cls.cv_has_access(context.view.request.user, context.object):
@@ -179,7 +181,9 @@ class ParentContextButton(ContextButton):
                 parent_obj = None
 
         # button visibility — independent of access/permission
-        dict_kwargs["cv_action_enabled"] = cls._cv_action_enabled_for_context(context.view.request.user, parent_obj)
+        dict_kwargs["cv_action_enabled"] = cls._cv_action_enabled_for_rendering(
+            context.view.request.user, parent_obj, context.view
+        )
 
         # check permission against the parent object
         if cls.cv_has_access(context.view.request.user, parent_obj):
@@ -231,7 +235,9 @@ class ChildContextButton(ContextButton):
         }
 
         # button visibility — independent of access/permission
-        dict_kwargs["cv_action_enabled"] = cls._cv_action_enabled_for_context(context.view.request.user, context.object)
+        dict_kwargs["cv_action_enabled"] = cls._cv_action_enabled_for_rendering(
+            context.view.request.user, context.object, context.view
+        )
 
         if cls.cv_has_access(context.view.request.user, context.object):
             dict_kwargs.update(cv_access=True)
@@ -288,7 +294,9 @@ class SiblingContextButton(ContextButton):
         }
 
         # button visibility — independent of access/permission
-        dict_kwargs["cv_action_enabled"] = cls._cv_action_enabled_for_context(context.view.request.user, None)
+        dict_kwargs["cv_action_enabled"] = cls._cv_action_enabled_for_rendering(
+            context.view.request.user, None, context.view
+        )
 
         if cls.cv_has_access(context.view.request.user, None):
             dict_kwargs.update(cv_access=True)

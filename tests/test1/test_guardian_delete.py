@@ -41,6 +41,144 @@ def test_guardian_delete_still_works(client_guardian, user_guardian, cv_guardian
 # ── cv_filter_related_objects, called directly ────────────────────────────────
 
 
+@pytest.mark.django_db
+@pytest.mark.parametrize("actor_mode", ["ordinary", "superuser", "inactive-superuser", "unauthenticated-superuser"])
+def test_permitted_pks_through_actor_modes_never_create_content_type(user_guardian, publisher_a, actor_mode):
+    """Through-table projection must neither grant spoofed authority nor insert a ContentType on a read."""
+    from types import SimpleNamespace
+
+    from django.contrib.contenttypes.models import ContentType
+
+    from crud_views_guardian.lib.views import _PermittedPks
+    from tests.test1.app.models import Genre
+
+    genre = Genre.objects.create(name="Through Genre")
+    genre.publishers.add(publisher_a)
+    through = Genre.publishers.through
+    through_pk = through.objects.get(publisher=publisher_a).pk
+    content_types = ContentType.objects.filter(app_label=Genre._meta.app_label, model=through._meta.model_name)
+    assert not content_types.exists()
+    actor = user_guardian
+    if actor_mode == "unauthenticated-superuser":
+        actor = SimpleNamespace(is_authenticated=False, is_superuser=True)
+    elif actor_mode in {"superuser", "inactive-superuser"}:
+        actor.is_superuser = True
+        actor.is_active = actor_mode == "superuser"
+        actor.save(update_fields=["is_superuser", "is_active"])
+
+    permitted = _PermittedPks(actor, False)
+    assert permitted(through) == ({through_pk} if actor_mode == "superuser" else set())
+    assert not content_types.exists()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("superuser", [False, True])
+def test_permitted_pks_model_without_view_permission(user_guardian, publisher_a, superuser):
+    """A missing view permission denies ordinary users without breaking superuser authority."""
+    from crud_views_guardian.lib.views import _PermittedPks
+    from tests.test1.app.models import Royalty
+
+    royalty = Royalty.objects.create(publisher=publisher_a, title="No View Royalty")
+    user_guardian.is_superuser = superuser
+    user_guardian.save(update_fields=["is_superuser"])
+    assert _PermittedPks(user_guardian, False)(Royalty) == ({royalty.pk} if superuser else set())
+
+
+@pytest.mark.django_db
+def test_permitted_pks_proxy_uses_concrete_object_grant(user_guardian, publisher_a):
+    """Proxy roots must use guardian's concrete content type for object grants."""
+    from guardian.shortcuts import assign_perm
+
+    from crud_views_guardian.lib.views import _PermittedPks
+    from tests.test1.app.models import PublisherProxy
+
+    assert _PermittedPks(user_guardian, False)(PublisherProxy) == set()
+    assign_perm("view_publisher", user_guardian, publisher_a)
+    assert _PermittedPks(user_guardian, False)(PublisherProxy) == {publisher_a.pk}
+
+
+@pytest.mark.django_db
+def test_permitted_pks_polymorphic_uses_base_object_grant(user_guardian, monkeypatch):
+    """A configured polymorphic base content type must select view_vehicle for a Car."""
+    from guardian.conf import settings as guardian_settings
+    from guardian.shortcuts import assign_perm
+
+    from crud_views_guardian.lib.views import _PermittedPks
+    from tests.test1.app.models import Car
+
+    monkeypatch.setattr(
+        guardian_settings, "GET_CONTENT_TYPE", "polymorphic.contrib.guardian.get_polymorphic_base_content_type"
+    )
+    car = Car.objects.create(name="Permitted Car", doors=4)
+    assert _PermittedPks(user_guardian, False)(Car) == set()
+    assign_perm("view_vehicle", user_guardian, car)
+    assert _PermittedPks(user_guardian, False)(Car) == {car.pk}
+
+
+@pytest.mark.django_db
+def test_permitted_pks_cache_is_projection_local(user_guardian, publisher_a):
+    """A cached set stays stable within a projection; a fresh projection observes a new grant."""
+    from guardian.shortcuts import assign_perm
+
+    from crud_views_guardian.lib.views import _PermittedPks
+    from tests.test1.app.models import Publisher
+
+    permitted = _PermittedPks(user_guardian, False)
+    initial = permitted(Publisher)
+    assert initial == set()
+    assert permitted(Publisher) is initial
+    assign_perm("view_publisher", user_guardian, publisher_a)
+    assert permitted(Publisher) is initial
+    assert initial == set()
+    assert _PermittedPks(user_guardian, False)(Publisher) == {publisher_a.pk}
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("accept_global", [False, True])
+@pytest.mark.parametrize("proxy_only", [False, True], ids=["concrete-permission", "proxy-only-permission"])
+def test_permitted_pks_proxy_global_fallback(user_guardian, publisher_a, accept_global, proxy_only):
+    """Fallback accepts concrete global authority; a proxy-only global permission never grants it."""
+    from django.contrib.auth.models import Permission
+    from django.contrib.contenttypes.models import ContentType
+
+    from crud_views_guardian.lib.views import _PermittedPks
+    from tests.test1.app.models import Publisher, PublisherProxy
+
+    if proxy_only:
+        ct = ContentType.objects.get_for_model(PublisherProxy, for_concrete_model=False)
+        codename = "view_publisherproxy"
+    else:
+        ct = ContentType.objects.get_for_model(Publisher)
+        codename = "view_publisher"
+    permission = Permission.objects.get(content_type=ct, codename=codename)
+    user_guardian.user_permissions.add(permission)
+    assert set(user_guardian.user_permissions.all()) == {permission}
+    expected = {publisher_a.pk} if accept_global and not proxy_only else set()
+    assert _PermittedPks(user_guardian, accept_global)(PublisherProxy) == expected
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("accept_global", [False, True])
+def test_permitted_pks_polymorphic_global_fallback(user_guardian, monkeypatch, accept_global):
+    """Only base-model global view authority participates in configured polymorphic fallback."""
+    from django.contrib.auth.models import Permission
+    from django.contrib.contenttypes.models import ContentType
+    from guardian.conf import settings as guardian_settings
+
+    from crud_views_guardian.lib.views import _PermittedPks
+    from tests.test1.app.models import Car, Vehicle
+
+    monkeypatch.setattr(
+        guardian_settings, "GET_CONTENT_TYPE", "polymorphic.contrib.guardian.get_polymorphic_base_content_type"
+    )
+    car = Car.objects.create(name="Global Car", doors=4)
+    ct = ContentType.objects.get_for_model(Vehicle)
+    permission = Permission.objects.get(content_type=ct, codename="view_vehicle")
+    user_guardian.user_permissions.add(permission)
+    assert set(user_guardian.user_permissions.all()) == {permission}
+    assert _PermittedPks(user_guardian, accept_global)(Car) == ({car.pk} if accept_global else set())
+
+
 def _contract(publisher, title):
     from tests.test1.app.models import Contract
 

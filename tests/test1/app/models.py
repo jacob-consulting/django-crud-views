@@ -34,6 +34,13 @@ class Publisher(models.Model):
         return self.name
 
 
+class PublisherProxy(Publisher):
+    """Exercise the proxy-root content-type mode of the Guardian label lookup."""
+
+    class Meta:
+        proxy = True
+
+
 class Book(models.Model):
     title = models.CharField(max_length=200)
     publisher = models.ForeignKey(Publisher, on_delete=models.CASCADE, related_name="books")

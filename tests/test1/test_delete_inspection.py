@@ -548,7 +548,9 @@ def test_partial_notice_modes_and_german(
         response = client_user_publisher_cascade_delete.get(url, headers=headers)
         notice = {
             "en": "This preview is incomplete. Custom deletion behavior may affect additional objects.",
-            "de": "Diese Vorschau ist unvollständig. Benutzerdefiniertes Löschverhalten kann weitere Objekte betreffen.",
+            "de": (
+                "Diese Vorschau ist unvollständig. Benutzerdefiniertes Löschverhalten kann weitere Objekte betreffen."
+            ),
         }[language]
         partial = {
             "en": "Some related objects that will also be deleted (partial counts):",

@@ -109,14 +109,15 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, _DeleteMethodGuardMixin, ge
 
     def cv_get_delete_db_alias(self) -> str:
         """Pin the selection once, after authorized resolution of a saved target."""
+        if hasattr(self, "_cv_delete_db_alias"):
+            return self._cv_delete_db_alias
         target = getattr(self, "object", None)
         if not isinstance(target, Model) or target._state.adding or target.pk is None:
             raise ImproperlyConfigured("Resolve a saved self.object before calling cv_get_delete_db_alias()")
-        if not hasattr(self, "_cv_delete_db_alias"):
-            using = self.cv_get_db_alias()
-            if not isinstance(using, str) or not using or using not in connections:
-                raise ImproperlyConfigured("cv_get_db_alias() must select a configured database alias")
-            self._cv_delete_db_alias = using
+        using = self.cv_get_db_alias()
+        if not isinstance(using, str) or not using or using not in connections:
+            raise ImproperlyConfigured("cv_get_db_alias() must select a configured database alias")
+        self._cv_delete_db_alias = using
         return self._cv_delete_db_alias
 
     def cv_get_atomic(self):

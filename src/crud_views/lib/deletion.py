@@ -273,9 +273,15 @@ class _DeleteCollector(Collector):
                     )
         if not collect_related:
             return
+        # Django 4.2 exposes get_parent_list(); 5.2/6.0 expose all_parents.
+        parents = ()
+        if keep_parents:
+            parents = getattr(model._meta, "all_parents", None)
+            if parents is None:
+                parents = set(model._meta.get_parent_list())
         model_fast_deletes = defaultdict(list)
         for related in get_candidate_relations_to_delete(model._meta):
-            if keep_parents and related.model._meta.concrete_model in model._meta.all_parents:
+            if keep_parents and related.model._meta.concrete_model in parents:
                 continue
             field = related.field
             handler = field.remote_field.on_delete

@@ -412,7 +412,7 @@ def test_inactive_permitted_pks_cache_is_empty(world, kind, accept_global):
     from crud_views_guardian.lib.views import _PermittedPks
     from tests.test1.app.models import Author
 
-    assert _PermittedPks(_actor(world, kind), accept_global)(Author) == set()
+    assert _PermittedPks(_actor(world, kind), accept_global)(Author, using="default") == set()
 
 
 @pytest.mark.parametrize("kind", ACTORS)

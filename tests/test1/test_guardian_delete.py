@@ -67,7 +67,7 @@ def test_permitted_pks_through_actor_modes_never_create_content_type(user_guardi
         actor.save(update_fields=["is_superuser", "is_active"])
 
     permitted = _PermittedPks(actor, False)
-    assert permitted(through) == ({through_pk} if actor_mode == "superuser" else set())
+    assert permitted(through, using="default") == ({through_pk} if actor_mode == "superuser" else set())
     assert not content_types.exists()
 
 
@@ -81,7 +81,7 @@ def test_permitted_pks_model_without_view_permission(user_guardian, publisher_a,
     royalty = Royalty.objects.create(publisher=publisher_a, title="No View Royalty")
     user_guardian.is_superuser = superuser
     user_guardian.save(update_fields=["is_superuser"])
-    assert _PermittedPks(user_guardian, False)(Royalty) == ({royalty.pk} if superuser else set())
+    assert _PermittedPks(user_guardian, False)(Royalty, using="default") == ({royalty.pk} if superuser else set())
 
 
 @pytest.mark.django_db
@@ -92,9 +92,9 @@ def test_permitted_pks_proxy_uses_concrete_object_grant(user_guardian, publisher
     from crud_views_guardian.lib.views import _PermittedPks
     from tests.test1.app.models import PublisherProxy
 
-    assert _PermittedPks(user_guardian, False)(PublisherProxy) == set()
+    assert _PermittedPks(user_guardian, False)(PublisherProxy, using="default") == set()
     assign_perm("view_publisher", user_guardian, publisher_a)
-    assert _PermittedPks(user_guardian, False)(PublisherProxy) == {publisher_a.pk}
+    assert _PermittedPks(user_guardian, False)(PublisherProxy, using="default") == {publisher_a.pk}
 
 
 @pytest.mark.django_db
@@ -110,9 +110,9 @@ def test_permitted_pks_polymorphic_uses_base_object_grant(user_guardian, monkeyp
         guardian_settings, "GET_CONTENT_TYPE", "polymorphic.contrib.guardian.get_polymorphic_base_content_type"
     )
     car = Car.objects.create(name="Permitted Car", doors=4)
-    assert _PermittedPks(user_guardian, False)(Car) == set()
+    assert _PermittedPks(user_guardian, False)(Car, using="default") == set()
     assign_perm("view_vehicle", user_guardian, car)
-    assert _PermittedPks(user_guardian, False)(Car) == {car.pk}
+    assert _PermittedPks(user_guardian, False)(Car, using="default") == {car.pk}
 
 
 @pytest.mark.django_db
@@ -124,13 +124,13 @@ def test_permitted_pks_cache_is_projection_local(user_guardian, publisher_a):
     from tests.test1.app.models import Publisher
 
     permitted = _PermittedPks(user_guardian, False)
-    initial = permitted(Publisher)
+    initial = permitted(Publisher, using="default")
     assert initial == set()
-    assert permitted(Publisher) is initial
+    assert permitted(Publisher, using="default") is initial
     assign_perm("view_publisher", user_guardian, publisher_a)
-    assert permitted(Publisher) is initial
+    assert permitted(Publisher, using="default") is initial
     assert initial == set()
-    assert _PermittedPks(user_guardian, False)(Publisher) == {publisher_a.pk}
+    assert _PermittedPks(user_guardian, False)(Publisher, using="default") == {publisher_a.pk}
 
 
 @pytest.mark.django_db
@@ -154,7 +154,7 @@ def test_permitted_pks_proxy_global_fallback(user_guardian, publisher_a, accept_
     user_guardian.user_permissions.add(permission)
     assert set(user_guardian.user_permissions.all()) == {permission}
     expected = {publisher_a.pk} if accept_global and not proxy_only else set()
-    assert _PermittedPks(user_guardian, accept_global)(PublisherProxy) == expected
+    assert _PermittedPks(user_guardian, accept_global)(PublisherProxy, using="default") == expected
 
 
 @pytest.mark.django_db
@@ -176,7 +176,7 @@ def test_permitted_pks_polymorphic_global_fallback(user_guardian, monkeypatch, a
     permission = Permission.objects.get(content_type=ct, codename="view_vehicle")
     user_guardian.user_permissions.add(permission)
     assert set(user_guardian.user_permissions.all()) == {permission}
-    assert _PermittedPks(user_guardian, accept_global)(Car) == ({car.pk} if accept_global else set())
+    assert _PermittedPks(user_guardian, accept_global)(Car, using="default") == ({car.pk} if accept_global else set())
 
 
 def _contract(publisher, title):

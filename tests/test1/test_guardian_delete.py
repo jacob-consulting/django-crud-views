@@ -262,7 +262,9 @@ def test_filter_related_objects_identical_labels_keep_object_identity(user_guard
 # ── protected previews through real Guardian requests (D-07/D-08) ─────────────
 
 DANGER_ALERT = 'class="alert alert-danger" role="alert"'
-BLOCKED_HEADING = "Deletion is blocked by protected relationships:"
+BLOCKED_HEADING = "Deletion is blocked by protected relationships"
+BLOCKED_LIST_HEADING = BLOCKED_HEADING + ":"
+BLOCKED_SENTENCE = "Other objects still reference this one; remove or reassign them before deleting it."
 
 
 def _norm(html: str) -> str:
@@ -396,6 +398,9 @@ def test_guardian_protected_only_hidden_keeps_single_notice(
     content = _norm(response.content.decode())
     assert content.count(DANGER_ALERT) == 1
     assert BLOCKED_HEADING in content
+    assert BLOCKED_LIST_HEADING not in content
+    assert BLOCKED_SENTENCE in content
+    assert "<form" not in content
     assert "Secret Contract" not in content
 
 
@@ -414,6 +419,9 @@ def test_guardian_protected_only_hidden_modal(
     assert _context_contracts(response) == []
     content = _norm(response.content.decode())
     assert content.count(DANGER_ALERT) == 1
+    assert BLOCKED_LIST_HEADING not in content
+    assert BLOCKED_SENTENCE in content
+    assert "<form" not in content
     assert "Secret Contract" not in content
 
 
@@ -437,6 +445,9 @@ def test_guardian_protected_partial_grant_keeps_order_and_aggregates(
     content = _norm(response.content.decode())
     assert content.count(DANGER_ALERT) == 1
     assert "<li>Visible Contract</li>" in content
+    assert BLOCKED_LIST_HEADING in content
+    assert BLOCKED_SENTENCE not in content
+    assert "<form" not in content
     assert "Hidden Contract" not in content
 
 
@@ -537,19 +548,32 @@ def test_guardian_protected_revocation_applies_next_request(
 
 
 @pytest.mark.django_db
-def test_guardian_database_protect_post_raises_and_keeps_storage(
-    client_guardian, user_guardian, cv_guardian_publisher, publisher_a
+@pytest.mark.parametrize("modal", [False, True])
+def test_guardian_database_protect_post_returns_blocked_response_and_keeps_storage(
+    client_guardian, user_guardian, cv_guardian_publisher, publisher_a, monkeypatch, modal
 ):
-    """Hidden protection never turns into permission to delete: confirmed POST still raises ProtectedError."""
-    from django.db.models import ProtectedError
-
     from tests.test1.app.models import Contract, Publisher
-    from tests.test1.app.views import cv_guardian_publisher_cascade
+    from tests.test1.app.views import GuardianPublisherCascadeDeleteView, cv_guardian_publisher_cascade
 
+    monkeypatch.setattr(GuardianPublisherCascadeDeleteView, "cv_modal", True)
+    calls = []
+    monkeypatch.setattr(
+        GuardianPublisherCascadeDeleteView, "cv_form_valid_hook", lambda self, context: calls.append("success")
+    )
+    monkeypatch.setattr(
+        GuardianPublisherCascadeDeleteView, "cv_on_commit", lambda self, context: calls.append("commit")
+    )
     user_guardian_object_perm(user_guardian, cv_guardian_publisher_cascade, "delete", publisher_a)
     contract = _contract(publisher_a, "Secret Contract")
-    with pytest.raises(ProtectedError):
-        client_guardian.post(f"/guardian_publisher_cascade/{publisher_a.pk}/delete/", {"confirm": True})
+    response = client_guardian.post(
+        f"/guardian_publisher_cascade/{publisher_a.pk}/delete/",
+        {"confirm": True},
+        headers={"X-CV-Modal": "true"} if modal else {},
+    )
+    assert response.status_code == (422 if modal else 200)
+    assert "<form" not in response.content.decode()
+    assert BLOCKED_SENTENCE in response.content.decode()
+    assert calls == []
     assert Publisher.objects.filter(pk=publisher_a.pk).exists()
     assert Contract.objects.filter(pk=contract.pk).exists()
 

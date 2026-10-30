@@ -23,7 +23,6 @@ from collections import Counter
 from types import SimpleNamespace
 
 import pytest
-from django.db.models import ProtectedError
 from django.test import Client, override_settings
 from django.urls import clear_url_caches, include, path, reverse
 
@@ -726,7 +725,7 @@ def test_granted_custom_protection_delete_post(mx, client, monkeypatch, world, f
 
 @pytest.mark.parametrize("family", FAMILIES)
 @pytest.mark.django_db
-def test_granted_database_protect_delete_reraises(mx, client, monkeypatch, world, family):
+def test_granted_database_protect_delete_blocked_response(mx, client, monkeypatch, world, family):
     from tests.test1.app.models import Contract, Publisher
 
     _set_policy(mx, monkeypatch, family)
@@ -734,8 +733,17 @@ def test_granted_database_protect_delete_reraises(mx, client, monkeypatch, world
     client.force_login(_granted_actor(mx, family, world, "delete"))
     before = _snapshot()
 
-    with pytest.raises(ProtectedError):
-        client.post(_u(_fam(mx, family).vs, "delete", world.a.pk), {"confirm": "on"})
+    url = _u(_fam(mx, family).vs, "delete", world.a.pk)
+    page = client.get(url)
+    assert page.context["has_protected_objects"] is True
+    assert "protected_objects" not in page.context
+    full = client.post(url, {"confirm": "on"})
+    assert full.status_code == 200
+    assert "Deletion is blocked by protected relationships</strong>" in full.content.decode()
+    assert "<form" not in full.content.decode()
+    modal = client.post(url, {"confirm": "on"}, headers=MODAL)
+    assert modal.status_code == 422
+    assert "<form" not in modal.content.decode()
     assert Publisher.objects.filter(pk=world.a.pk).exists()
     assert Contract.objects.filter(pk=contract.pk).exists()
     _assert_no_write(mx, before)

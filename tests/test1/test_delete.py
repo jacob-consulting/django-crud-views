@@ -733,6 +733,25 @@ def test_registered_core_class_restoring_delete_stays_guarded(
     assert Publisher.objects.filter(pk=publisher_penguin.pk).exists()
 
 
+@pytest.mark.django_db
+def test_database_restrict_preview_and_post_keep_storage(client_user_publisher_cascade_delete, publisher_penguin):
+    from tests.test1.app.models import Publisher, Royalty
+
+    royalty = Royalty.objects.create(publisher=publisher_penguin, title="Hidden Royalty")
+    url = f"/publisher_cascade/{publisher_penguin.pk}/delete/"
+    response = client_user_publisher_cascade_delete.get(url)
+    assert response.context["has_protected_objects"] is True
+    assert response.context["protected_objects"] == []
+    assert _response_instances(response, Royalty) == []
+    assert "<form" not in response.content.decode()
+    response = client_user_publisher_cascade_delete.post(url, {"confirm": True})
+    assert response.status_code == 200
+    assert BLOCKED_SENTENCE in response.content.decode()
+    assert "<form" not in response.content.decode()
+    assert Publisher.objects.filter(pk=publisher_penguin.pk).exists()
+    assert Royalty.objects.filter(pk=royalty.pk).exists()
+
+
 def _delete_probe(monkeypatch, atomic):
     """Exercise the registered route with real writes and an intentionally stale preview."""
     from crud_views.lib.views.delete import RelatedObjects

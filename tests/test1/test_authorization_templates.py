@@ -39,7 +39,9 @@ ALLOW_INACTIVE = "django.contrib.auth.backends.AllowAllUsersModelBackend"
 INACTIVE_BACKENDS = [ALLOW_INACTIVE, "guardian.backends.ObjectPermissionBackend"]
 LOGIN = "/accounts/login/"
 MANAGE_GROUP = "mxt_manage_admins"
-BLOCKED_HEADING = "Deletion is blocked by protected relationships:"
+BLOCKED_HEADING = "Deletion is blocked by protected relationships"
+BLOCKED_LIST_HEADING = BLOCKED_HEADING + ":"
+BLOCKED_SENTENCE = "Other objects still reference this one; remove or reassign them before deleting it."
 CONTRACT_TITLE = "<b>Esc</b> Contract-7x"
 CONTRACT_ESCAPED = "&lt;b&gt;Esc&lt;/b&gt; Contract-7x"
 
@@ -80,6 +82,7 @@ OVERRIDES = {
     ),
     "crud_views/tags/alert.html": (
         '<div role="alert" data-mx-alert="{{ alert.level }}"><strong>MX-ALERT {{ alert.heading }}</strong>'
+        "{% if alert.text %}<p>{{ alert.text }}</p>{% endif %}"
         "<ul>{% for item in alert.items %}<li>{{ item }}</li>{% endfor %}</ul></div>"
     ),
 }
@@ -614,14 +617,20 @@ def test_alert_override_receives_only_permitted_protected_labels(native, tp, cli
     assert response.context["related_summary"] == {}
     blocked = content.split(f"MX-ALERT {BLOCKED_HEADING}", 1)[1].split("</div>", 1)[0]
     if label_visible:
+        assert f"<strong>MX-ALERT {BLOCKED_LIST_HEADING}</strong>" in content
+        assert BLOCKED_SENTENCE not in content
         assert re.findall(r"<li>(.*?)</li>", blocked) == [CONTRACT_ESCAPED]  # literal escaping kept
         assert response.context["protected_objects"] == [contract]
     else:
+        assert f"<strong>MX-ALERT {BLOCKED_HEADING}</strong>" in content
+        assert BLOCKED_LIST_HEADING not in content
+        assert content.count(BLOCKED_SENTENCE) == 1
         assert "<li>" not in blocked  # no placeholder per hidden object
         assert response.context["protected_objects"] == []
         assert _context_pks(response, Contract) == set()
         assert CONTRACT_ESCAPED not in content
     assert CONTRACT_TITLE not in content
+    assert "<form" not in content
     assert Publisher.objects.filter(pk=world.a.pk).exists()
 
 

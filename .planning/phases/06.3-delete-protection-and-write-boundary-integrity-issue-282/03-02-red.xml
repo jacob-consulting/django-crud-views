@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.941" timestamp="2026-10-30T13:20:36.199145+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_delete_inspection" name="test_partial_notice_modes_and_german[1-native-True-False-de]" time="0.647"><failure message="assert 0 == 1&#10; +  where 0 = &lt;built-in method count of str object at 0x3c563d70&gt;('Diese Vorschau ist unvollständig. Benutzerdefiniertes Löschverhalten kann weitere Objekte betreffen.')&#10; +    where &lt;built-in method count of str object at 0x3c563d70&gt; = '\n\n\n&lt;!DOCTYPE html&gt;\n&lt;html lang=&quot;en&quot;&gt;\n&lt;head&gt;\n    &lt;meta charset=&quot;utf-8&quot;/&gt;\n    &lt;meta http-equiv=&quot;x-ua-compatible&quot; ...       \n    \n&lt;/div&gt;\n\n    \n\n    \n\n\n\n\n\n        &lt;/div&gt;\n    &lt;/div&gt;\n\n\n\n    &lt;/main&gt;\n\n\n&lt;/body&gt;\n&lt;/html&gt;\n'.count">client_user_publisher_cascade_delete = &lt;django.test.client.Client object at 0x7806f6b32ff0&gt;
+user_publisher_cascade_delete = &lt;User: user_publisher_cascade_delete&gt;
+publisher_penguin = &lt;Publisher: Penguin&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7806f6b31fa0&gt;
+language = 'de', modal = False, details = True, blocker = 'native'
+row_count = 1
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("language", ["en", "de"])
+    @pytest.mark.parametrize("modal", [False, True])
+    @pytest.mark.parametrize("details", [False, True])
+    @pytest.mark.parametrize("blocker", ["none", "native", "business"])
+    @pytest.mark.parametrize("row_count", [0, 1, 2])
+    def test_partial_notice_modes_and_german(
+        client_user_publisher_cascade_delete, user_publisher_cascade_delete, publisher_penguin,
+        monkeypatch, language, modal, details, blocker, row_count
+    ):
+        from django.contrib.auth.models import Permission
+        from django.utils.html import escape
+        from django.utils.translation import override
+        from lxml import html
+    
+        labels = ['&lt;script&gt;alert("雪")&lt;/script&gt;', "München — 東京"]
+        for label in labels[:row_count]:
+            Book.objects.create(publisher=publisher_penguin, title=label)
+        # A real unknown boundary even for empty relationships, never a synthetic result.
+        monkeypatch.setattr(BookNote._meta.get_field("book").remote_field, "on_delete", models.SET(lambda: None))
+        monkeypatch.setattr(PublisherCascadeDeleteView, "cv_modal", True)
+        monkeypatch.setattr(PublisherCascadeDeleteView, "cv_show_related_objects", details)
+        # Empty cascades need a root boundary as no Book is visited.
+        monkeypatch.setattr(Publisher, "delete", lambda self, **kwargs: None)
+        user_publisher_cascade_delete.user_permissions.add(Permission.objects.get(codename="view_book"))
+        if blocker == "native":
+            Contract.objects.create(publisher=publisher_penguin, title="Do not disclose native label")
+        elif blocker == "business":
+            monkeypatch.setattr(PublisherCascadeDeleteView, "cv_check_delete_protection", lambda self: ["Business block"])
+        headers = {"X-CV-Modal": "true"} if modal else {}
+        url = f"/publisher_cascade/{publisher_penguin.pk}/delete/"
+        with override(language):
+            response = client_user_publisher_cascade_delete.get(url, headers=headers)
+            notice = {
+                "en": "This preview is incomplete. Custom deletion behavior may affect additional objects.",
+                "de": "Diese Vorschau ist unvollständig. Benutzerdefiniertes Löschverhalten kann weitere Objekte betreffen.",
+            }[language]
+            partial = {
+                "en": "Some related objects that will also be deleted (partial counts):",
+                "de": "Einige verknüpfte Objekte, die ebenfalls gelöscht werden (Teilanzahlen):",
+            }[language]
+            markup = response.content.decode()
+            document = html.fromstring(markup)
+            assert response.status_code == 200
+&gt;           assert markup.count(notice) == 1
+E           assert 0 == 1
+E            +  where 0 = &lt;built-in method count of str object at 0x3c563d70&gt;('Diese Vorschau ist unvollständig. Benutzerdefiniertes Löschverhalten kann weitere Objekte betreffen.')
+E            +    where &lt;built-in method count of str object at 0x3c563d70&gt; = '\n\n\n&lt;!DOCTYPE html&gt;\n&lt;html lang="en"&gt;\n&lt;head&gt;\n    &lt;meta charset="utf-8"/&gt;\n    &lt;meta http-equiv="x-ua-compatible" ...       \n    \n&lt;/div&gt;\n\n    \n\n    \n\n\n\n\n\n        &lt;/div&gt;\n    &lt;/div&gt;\n\n\n\n    &lt;/main&gt;\n\n\n&lt;/body&gt;\n&lt;/html&gt;\n'.count
+
+tests/test1/test_delete_inspection.py:553: AssertionError</failure></testcase></testsuite></testsuites>

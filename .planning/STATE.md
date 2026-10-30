@@ -4,16 +4,16 @@ milestone: v1.0
 current_phase: "06.3"
 current_phase_name: "Delete protection and write-boundary integrity — issue #282"
 status: executing
-stopped_at: Completed 06.3-02-PLAN.md; phase remains executing
-last_updated: "2026-10-30T13:07:38.249Z"
+stopped_at: Completed 06.3-03-PLAN.md; phase remains executing
+last_updated: "2026-10-30T13:25:51.344Z"
 last_activity: 2026-10-30
 last_activity_desc: Phase 06.3 execution started
-state_head: b1e3dab8f661f67ff4917badbf3251c9319c4ad8
+state_head: ba5b3182c33f55b7c5181340764b249d128c7665
 progress:
   total_phases: 10
   completed_phases: 8
   total_plans: 45
-  completed_plans: 38
+  completed_plans: 39
 milestone_name: milestone
 ---
 
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-10-30)
 ## Current Position
 
 Phase: 06.3 (Delete protection and write-boundary integrity — issue #282) — EXECUTING
-Plan: 2 of 9
+Plan: 3 of 9
 Status: Ready to execute
 Last activity: 2026-10-30 — Phase 06.3 execution started
 
@@ -114,6 +114,7 @@ Progress: 36/45 plans executed; 8/10 phases complete (80%); Phase 6.2 complete f
 | Phase 06.2 P08 | 15min | 3 tasks | 9 files |
 | Phase 06.2 P09 | 26min | 3 tasks | 8 files |
 | Phase 06.3 P02 | 18min | 2 tasks | 6 files |
+| Phase 06.3 P03 | 10min | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -218,6 +219,8 @@ Recent decisions affecting current work:
 - [Phase 06.2]: 06.2-08: Translate only pre-call native graph plus exact target Model.delete/Collector.collect provenance; custom handlers, SET/defaults, loaders, hooks, signals and committed callback failures propagate.
 - [Phase 06.2]: 06.2-08: Hidden-label notices use colon-free heading plus generic sentence; labelled heading remains unchanged. German MO now compiled with polib 1.2.0.
 - [Phase 06.3]: 06.3-02: metadata-only previews replace NestedObjects; exact Model.delete uses native collector provenance, actual Author/Car methods retain using and stale-error propagation; 359 affected tests pass on both cached supported series
+- [Phase 06.3]: 03: E263 rejects legacy collection overrides; E264 diagnoses inspectable incompatible delete(using=...) methods; opaque methods fail without invocation at runtime.
+- [Phase 06.3]: 03: Proxy and concrete instances share stored-row identity; genuine multi-table parent models remain distinct; scoped providers validate immutable boundaries and saved same-alias records.
 
 ### Pending Todos
 
@@ -264,6 +267,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-30T13:07:37.613Z
-Stopped at: Completed 06.3-02-PLAN.md; phase remains executing
+Last session: 2026-10-30T13:25:50.647Z
+Stopped at: Completed 06.3-03-PLAN.md; phase remains executing
 Resume file: None

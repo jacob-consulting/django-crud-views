@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="4" skipped="0" tests="7" time="0.545" timestamp="2026-10-30T13:16:29.479202+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_delete_inspection" name="test_legacy_collection_override_startup_and_runtime" time="0.272"><failure message="AssertionError: assert 'viewset.E263' in []&#10; +  where [] = _check_ids(&lt;class 'tests.test1.test_delete_inspection.test_legacy_collection_override_startup_and_runtime.&lt;locals&gt;.Legacy'&gt;)">publisher_penguin = &lt;Publisher: Penguin&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7d14e02aff50&gt;
+
+    @pytest.mark.django_db
+    def test_legacy_collection_override_startup_and_runtime(publisher_penguin, monkeypatch):
+        from django.core.exceptions import ImproperlyConfigured
+    
+        from crud_views.lib.views.delete import DeleteView
+    
+        events = []
+    
+        class Legacy(DeleteView):
+            def cv_get_related_objects(self):
+                events.append("unsafe")
+    
+&gt;       assert "viewset.E263" in _check_ids(Legacy)
+E       AssertionError: assert 'viewset.E263' in []
+E        +  where [] = _check_ids(&lt;class 'tests.test1.test_delete_inspection.test_legacy_collection_override_startup_and_runtime.&lt;locals&gt;.Legacy'&gt;)
+
+tests/test1/test_delete_inspection.py:28: AssertionError</failure></testcase><testcase classname="tests.test1.test_delete_inspection" name="test_custom_delete_signature_diagnostics[keyword]" time="0.002" /><testcase classname="tests.test1.test_delete_inspection" name="test_custom_delete_signature_diagnostics[kwargs]" time="0.002" /><testcase classname="tests.test1.test_delete_inspection" name="test_custom_delete_signature_diagnostics[no-using]" time="0.002"><failure message="AssertionError: assert ('viewset.E264' in []) is ((not False and 'no-using' != 'opaque'))&#10; +  where [] = _check_ids(&lt;class 'tests.test1.test_delete_inspection.test_custom_delete_signature_diagnostics.&lt;locals&gt;.SignatureView'&gt;)">publisher_penguin = &lt;Publisher: Penguin&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7d14e060d580&gt;
+signature_kind = 'no-using'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("signature_kind", ["keyword", "kwargs", "no-using", "positional", "opaque"])
+    def test_custom_delete_signature_diagnostics(publisher_penguin, monkeypatch, signature_kind):
+        from django.core.exceptions import ImproperlyConfigured
+    
+        from crud_views.lib.deletion import execute_deletion
+        from crud_views.lib.views.delete import DeleteView
+    
+        events = []
+    
+        def keyword(self, *, using):
+            events.append(using)
+    
+        def kwargs(self, **kwargs):
+            events.append(kwargs["using"])
+    
+        def no_using(self):
+            events.append("unsafe")
+    
+        def positional(self, using, /):
+            events.append("unsafe")
+    
+        class Opaque:
+            __signature__ = "uninspectable"
+    
+            def __call__(self, **kwargs):
+                events.append("unsafe")
+    
+        method = {"keyword": keyword, "kwargs": kwargs, "no-using": no_using, "positional": positional,
+                  "opaque": Opaque()}[signature_kind]
+        monkeypatch.setattr(Publisher, "delete", method)
+    
+        class SignatureView(DeleteView):
+            model = Publisher
+    
+        compatible = signature_kind in ("keyword", "kwargs")
+&gt;       assert ("viewset.E264" in _check_ids(SignatureView)) is (not compatible and signature_kind != "opaque")
+E       AssertionError: assert ('viewset.E264' in []) is ((not False and 'no-using' != 'opaque'))
+E        +  where [] = _check_ids(&lt;class 'tests.test1.test_delete_inspection.test_custom_delete_signature_diagnostics.&lt;locals&gt;.SignatureView'&gt;)
+
+tests/test1/test_delete_inspection.py:72: AssertionError</failure></testcase><testcase classname="tests.test1.test_delete_inspection" name="test_custom_delete_signature_diagnostics[positional]" time="0.002"><failure message="AssertionError: assert ('viewset.E264' in []) is ((not False and 'positional' != 'opaque'))&#10; +  where [] = _check_ids(&lt;class 'tests.test1.test_delete_inspection.test_custom_delete_signature_diagnostics.&lt;locals&gt;.SignatureView'&gt;)">publisher_penguin = &lt;Publisher: Penguin&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7d14e060ed80&gt;
+signature_kind = 'positional'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("signature_kind", ["keyword", "kwargs", "no-using", "positional", "opaque"])
+    def test_custom_delete_signature_diagnostics(publisher_penguin, monkeypatch, signature_kind):
+        from django.core.exceptions import ImproperlyConfigured
+    
+        from crud_views.lib.deletion import execute_deletion
+        from crud_views.lib.views.delete import DeleteView
+    
+        events = []
+    
+        def keyword(self, *, using):
+            events.append(using)
+    
+        def kwargs(self, **kwargs):
+            events.append(kwargs["using"])
+    
+        def no_using(self):
+            events.append("unsafe")
+    
+        def positional(self, using, /):
+            events.append("unsafe")
+    
+        class Opaque:
+            __signature__ = "uninspectable"
+    
+            def __call__(self, **kwargs):
+                events.append("unsafe")
+    
+        method = {"keyword": keyword, "kwargs": kwargs, "no-using": no_using, "positional": positional,
+                  "opaque": Opaque()}[signature_kind]
+        monkeypatch.setattr(Publisher, "delete", method)
+    
+        class SignatureView(DeleteView):
+            model = Publisher
+    
+        compatible = signature_kind in ("keyword", "kwargs")
+&gt;       assert ("viewset.E264" in _check_ids(SignatureView)) is (not compatible and signature_kind != "opaque")
+E       AssertionError: assert ('viewset.E264' in []) is ((not False and 'positional' != 'opaque'))
+E        +  where [] = _check_ids(&lt;class 'tests.test1.test_delete_inspection.test_custom_delete_signature_diagnostics.&lt;locals&gt;.SignatureView'&gt;)
+
+tests/test1/test_delete_inspection.py:72: AssertionError</failure></testcase><testcase classname="tests.test1.test_delete_inspection" name="test_custom_delete_signature_diagnostics[opaque]" time="0.002" /><testcase classname="tests.test1.test_delete_inspection" name="test_signature_checks_skip_bare_and_resource_views" time="0.004"><failure message="AssertionError: assert 'viewset.E264' in []&#10; +  where [] = _check_ids(&lt;class 'tests.test1.test_delete_inspection.test_signature_checks_skip_bare_and_resource_views.&lt;locals&gt;.BadModel'&gt;)">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7d14e060d190&gt;
+
+    def test_signature_checks_skip_bare_and_resource_views(monkeypatch):
+        from crud_views.lib.resource import Resource, ResourceViewMixin
+        from crud_views.lib.views.delete import DeleteView
+        from crud_views.lib.viewset import ViewSet
+    
+        class Bare(DeleteView):
+            cv_modal_size = "bad"
+    
+        assert "viewset.E250" in _check_ids(Bare)
+        assert "viewset.E264" not in _check_ids(Bare)
+        for value in (None, "not a model", object()):
+            class NonModel(DeleteView):
+                model = value
+    
+            assert "viewset.E264" not in _check_ids(NonModel)
+    
+        class Item(Resource):
+            key: str
+    
+            class Meta:
+                pk_field = "key"
+    
+        vs = ViewSet(model=Item, name="inspection_resource_signature")
+    
+        class ResourceDelete(ResourceViewMixin, DeleteView):
+            cv_viewset = vs
+    
+        assert "viewset.E264" not in _check_ids(ResourceDelete)
+        assert "viewset.E262" in [m.id for c in vs.checks() for m in c.messages()]
+        monkeypatch.setattr(Publisher, "delete", lambda self: None)
+    
+        class BadModel(DeleteView):
+            model = Publisher
+    
+&gt;       assert "viewset.E264" in _check_ids(BadModel)
+E       AssertionError: assert 'viewset.E264' in []
+E        +  where [] = _check_ids(&lt;class 'tests.test1.test_delete_inspection.test_signature_checks_skip_bare_and_resource_views.&lt;locals&gt;.BadModel'&gt;)
+
+tests/test1/test_delete_inspection.py:116: AssertionError</failure></testcase></testsuite></testsuites>

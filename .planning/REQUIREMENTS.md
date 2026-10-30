@@ -87,7 +87,7 @@ No new verification or UAT pass is implied, including for checked entries repres
 | AUTH-01 | HTTP DELETE rejection and named POST form/hook/atomic controls | CR-02/03/04: callback-safe inspection, unknown-error propagation and database alignment → 6.3; overall unresolved |
 | AUTH-02 | Fragment authorization/ancestry and first-child round trips | A19 sibling-index round trip → proposed 6.4, not 6.3; IN-04 closed as documented integer/UUID-only fragment boundary |
 | AUTH-03 | Permitted protected labels, independent notice, fixed CR-01/WR-02 response scope | CR-02/04: obtain blocked state without callbacks and from the target database → 6.3; overall unresolved |
-| AUTH-04 | Parent-None dispatch and Guardian helper/state regressions | Older WR-01 core rendered-state agreement awaits explicit disposition; separate from #282 and not accepted |
+| AUTH-04 | Parent-None dispatch and Guardian helper/state regressions | WR-01 core rendered-state agreement fixed by quick 261030-csg (bd31992); 25 core and 86 preservation cases pass on both supported cached versions; phase verification/UAT pending |
 | AUTH-05 | Named inactive-actor request/helper regressions | Retain recorded evidence; no new result or broader certification |
 | AUTH-06 | Named per-view configuration, helper and manage regressions | Unspecified review flag and IN-02/IN-03 → Phase 6.3 GUA-01, unresolved; IN-05 composition guard fixed; checked item covers named evidence only |
 | AUTH-07 | Recorded actor/native-template replay and paired documentation | Real-preview, converter, routing and preservation re-review → 6.3; existing suite passes do not cover CR-02–CR-04 |
@@ -109,7 +109,7 @@ These remediate the existing AUTH promises; deferral leaves them unresolved and 
 
 GUA-01 was added by explicit user decision on 2026-10-30 as a bounded continuation of 6.2, alongside the
 deletion work; it does not change issue #282 itself. IN-02/IN-03 are deferred here and remain unresolved.
-WR-01 remains **open**, outside this transfer. IN-01 is explicitly closed as intentional D-13 aggregate
+WR-01 is **fixed** by quick 261030-csg (bd31992), outside this transfer. IN-01 is explicitly closed as intentional D-13 aggregate
 policy, IN-04 as a documented unsupported slug-fragment boundary, and IN-05 is fixed with composition checks. See
 [06.2-REVIEW-DISPOSITION](phases/06.2-request-authorization-and-write-integrity/06.2-REVIEW-DISPOSITION.md).
 The revised analysis schedules conditional/formset work in proposed 6.4, presentation cleanup in proposed 6.5,
@@ -194,7 +194,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | AUTH-01 | Phase 6.2 + 6.3 | Partial; CR-02–CR-04 unresolved in 6.3 |
 | AUTH-02 | Phase 6.2 | Named evidence retained; A19 open; IN-04 documented unsupported boundary |
 | AUTH-03 | Phase 6.2 + 6.3 | Partial; CR-02/CR-04 unresolved in 6.3 |
-| AUTH-04 | Phase 6.2 | Partial; WR-01 disposition open |
+| AUTH-04 | Phase 6.2 | Implemented; WR-01 fixed; phase verification pending |
 | AUTH-05 | Phase 6.2 | Complete |
 | AUTH-06 | Phase 6.2 + 6.3 | Named 6.2 evidence retained; residual flag and IN-02/03 → GUA-01; IN-05 fixed |
 | AUTH-07 | Phase 6.2 + 6.3 | Partial; #282 re-review pending in 6.3 |

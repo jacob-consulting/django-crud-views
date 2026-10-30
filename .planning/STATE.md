@@ -31,7 +31,7 @@ See: .planning/PROJECT.md (updated 2026-10-29)
 Phase: 06.2 (Request authorization and write integrity (INSERTED)) — VERIFYING
 Plan: 9 of 9
 Status: verifying
-Last activity: 2026-10-30 — Completed quick task 261030-bqk: reconciled #282 closure records; CR-02–CR-04 deferred/unresolved; older findings open; verification/UAT unchanged
+Last activity: 2026-10-30 — Completed quick task 261030-csg: WR-01 fixed; supported-version tests pass; phase gates and UAT pending
 
 Progress: 36/36 plans executed; 7/10 phases complete (70%); Phase 6.2 9/9 plans executed, final verification pending
 
@@ -225,7 +225,7 @@ None yet.
 - Phase 2: Both source-probe classifier limitations remain documented; explicit tests and completed human prose UAT independently establish acceptance. See 02-VERIFICATION.md.
 - Phase 7: carry the Phase 6 form surface (`form` location, `tags/button/form.html`, `FORM_LEAF_KEYS`, `get_form_actions()`, icons `save`/`cancel`/`filter-reset`) into the stability doc.
 - Phase 7: carry the Phase 6.1 additions (`form:cancel-tag` key, `Button(tag=...)` keyword, `cv_tag` leaf field, `crud_views.E365`) into the stability doc.
-- Phase 06.2 closure pending: CR-02–CR-04 unresolved, deferred to Phase 6.3 / issue #282; AUTH-01/03/07 split recorded in ACCEPTANCE and REQUIREMENTS. AUTH-06 residual flag and IN-02/IN-03 transferred unresolved to 6.3 GUA-01; WR-01 remains open; IN-01/IN-04 closed with explicit rationale, IN-05 fixed with startup/runtime composition guards; no verification/UAT pass recorded.
+- Phase 06.2 closure pending: CR-02–CR-04 unresolved, deferred to Phase 6.3 / issue #282; AUTH-01/03/07 split recorded in ACCEPTANCE and REQUIREMENTS. AUTH-06 residual flag and IN-02/IN-03 transferred unresolved to 6.3 GUA-01; WR-01 fixed in bd31992; IN-01/IN-04 closed with explicit rationale, IN-05 fixed with startup/runtime composition guards; no verification/UAT pass recorded.
 
 ### Quick Tasks Completed
 
@@ -236,7 +236,7 @@ None yet.
 
 ### Roadmap Evolution
 
-- Phase 06.3 scope extended by user decision: GUA-01 owns bounded AUTH-06 residual review plus IN-02/IN-03. Completed AUTH-06 evidence stays in 6.2; transfer remains unresolved; WR-01 stays separate.
+- Phase 06.3 scope extended by user decision: GUA-01 owns bounded AUTH-06 residual review plus IN-02/IN-03. Completed AUTH-06 evidence stays in 6.2; transfer remains unresolved; WR-01 fixed separately in quick task 261030-csg.
 
 - Phase 06 edited: User decision D-18: verify completed Phase 1/2 contracts on executing working branch before spec; main merge no longer prerequisite
 - Phase 6.1 inserted after Phase 6: Cancel form button as a link (#275); complete before Phase 7 freezes the theme surface (URGENT)

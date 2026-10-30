@@ -103,7 +103,12 @@ class _DeleteInspector:
                 continue
             values = field.get_local_related_value(obj)
             query = {remote.attname: value for (_, remote), value in zip(field.related_fields, values, strict=True)}
-            for ancestor in field.remote_field.model._base_manager.using(self.using).filter(**query):
+            ancestors = field.remote_field.model._base_manager.using(self.using).filter(**query)
+            # A polymorphic parent manager otherwise upcasts this stored parent row
+            # back to the child, conflating its identity and omitting its summary count.
+            if hasattr(ancestors, "non_polymorphic"):
+                ancestors = ancestors.non_polymorphic()
+            for ancestor in ancestors:
                 self.visit(ancestor, collect_related=False, parent=key)
         if not collect_related:
             return

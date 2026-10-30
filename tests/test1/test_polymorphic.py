@@ -109,11 +109,12 @@ def _exercise_actual_library_delete(case, monkeypatch, atomic, covered):
 
     from crud_views.lib.deletion import DeletePreviewContribution
 
-    events, origins, updates = [], [], []
+    events, origins, updates, invoked = [], [], [], []
     original = case.model.delete
 
     def delete(self, *, using):
         assert using == case.using
+        invoked.append(self)
         events.append("method")
         return original(self, using=using)
 
@@ -183,6 +184,7 @@ def _exercise_actual_library_delete(case, monkeypatch, atomic, covered):
             for sender in senders:
                 signal.disconnect(receiver, sender=sender)
     assert events == ["method", "hook", "commit"]
+    assert len(invoked) == 1 and all(origin is invoked[0] for *_, origin in origins)
     assert len({id(origin) for *_, origin in origins}) == 1
     for sender in senders:
         assert [signal for signal, model, *_ in origins if model is sender] == [pre_delete, post_delete]

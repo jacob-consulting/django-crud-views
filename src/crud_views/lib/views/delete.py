@@ -1,26 +1,23 @@
 import logging
-from collections import defaultdict
 from collections.abc import Iterable
-from typing import ClassVar, NamedTuple
+from contextlib import nullcontext
+from functools import partial
+from typing import ClassVar
 
-from django.contrib.admin.utils import NestedObjects
-from django.db import router
-from django.db.models import ForeignKey, Manager, Model, OneToOneField, QuerySet, signals
-from django.db.models.deletion import (
-    CASCADE,
-    DO_NOTHING,
-    PROTECT,
-    RESTRICT,
-    SET_NULL,
-    Collector,
-    ProtectedError,
-    RestrictedError,
-    get_candidate_relations_to_delete,
-)
+from django.core.exceptions import ImproperlyConfigured
+from django.db import connections, router, transaction
+from django.db.models import Model
 from django.urls import NoReverseMatch, reverse
 from django.views import generic
 
 from crud_views.lib.check import Check, CheckExpression
+from crud_views.lib.deletion import (
+    RelatedObjects,
+    _NativeDeleteBlocked,
+    execute_deletion,
+    inspect_deletion,
+    merge_delete_preview,
+)
 from crud_views.lib.exceptions import ViewSetKeyFoundError
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import CrudView, CrudViewPermissionRequiredMixin
@@ -28,102 +25,6 @@ from crud_views.lib.view.base import cv_is_modal_request
 from crud_views.lib.views.mixins import CrudViewProcessFormMixin
 
 logger = logging.getLogger(__name__)
-
-
-class RelatedObjects(NamedTuple):
-    tree: list
-    summary: dict[str, int]
-    protected: list
-
-
-class _TargetDeleteBlocked(Exception):
-    """Only a proven, pre-write native target collection failure crosses the write boundary."""
-
-
-def _cv_has_native_collection_graph(target):
-    """Certify metadata without queries or callbacks, including empty cascade/parent branches.
-
-    Django aggregates handler errors, losing their traceback. Custom handlers, SET/defaults, private collectors
-    and unknown loaders cannot be certified. This affects exception translation only, never the real deletion.
-    """
-    visited = set()
-
-    def native_loader(model):
-        manager = model._base_manager
-        return (
-            type(manager) is Manager
-            and manager._queryset_class is QuerySet
-            and model.__init__ is Model.__init__
-            and model.from_db.__func__ is Model.from_db.__func__
-            and not signals.pre_init.has_listeners(model)
-            and not signals.post_init.has_listeners(model)
-        )
-
-    def visit(model):
-        if model in visited:
-            return True
-        visited.add(model)
-        if not native_loader(model):
-            return False
-        opts = model._meta
-        if any(hasattr(field, "bulk_related_objects") for field in opts.private_fields):
-            return False
-        if opts.concrete_model is not model and not visit(opts.concrete_model):
-            return False
-        for parent, field in opts.parents.items():
-            if field is not None and type(field) not in (ForeignKey, OneToOneField):
-                return False
-            if not visit(parent):
-                return False
-        for related in get_candidate_relations_to_delete(opts):
-            field = related.field
-            if type(field) not in (ForeignKey, OneToOneField):
-                return False
-            handler = field.remote_field.on_delete
-            if not any(handler is allowed for allowed in (CASCADE, PROTECT, RESTRICT, SET_NULL, DO_NOTHING)):
-                return False
-            if not native_loader(related.related_model):
-                return False
-            if handler is CASCADE and not visit(related.related_model):
-                return False
-        return True
-
-    try:
-        return visit(type(target))
-    except (AttributeError, TypeError):
-        return False  # Unknown metadata is not evidence of native collection.
-
-
-def _cv_is_target_collection_protection(error, target, delete_method, native_graph):
-    """Require exact Model.delete -> target Collector.collect frames, before delete SQL.
-
-    Frame identity alone cannot distinguish aggregated custom errors: native_graph must be captured before
-    invoking delete. Unknown origins always propagate; no collector payload is copied to response context.
-    """
-    if not native_graph or getattr(delete_method, "__func__", None) is not Model.delete:
-        return False
-    terminal = error.__traceback__
-    if terminal is None:
-        return False
-    while terminal.tb_next is not None:
-        terminal = terminal.tb_next
-    tb = error.__traceback__
-    while tb is not None:
-        frame = tb.tb_frame
-        if frame.f_code is Model.delete.__code__ and frame.f_locals.get("self") is target:
-            collector = frame.f_locals.get("collector")
-            child = tb.tb_next
-            return (
-                type(collector) is Collector
-                and collector.origin is target
-                and child is not None
-                and child.tb_frame.f_code is Collector.collect.__code__
-                and child.tb_frame.f_locals.get("self") is collector
-                and terminal.tb_frame.f_code is Collector.collect.__code__
-                and terminal.tb_frame.f_locals.get("self") is collector
-            )
-        tb = tb.tb_next
-    return False
 
 
 class _DeleteMethodGuardMixin:
@@ -203,25 +104,52 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, _DeleteMethodGuardMixin, ge
                 pass
         return keys
 
+    def cv_get_db_alias(self) -> str:
+        return router.db_for_write(type(self.object), instance=self.object)
+
+    def cv_get_delete_db_alias(self) -> str:
+        """Pin the selection once, after authorized resolution of a saved target."""
+        target = getattr(self, "object", None)
+        if not isinstance(target, Model) or target._state.adding or target.pk is None:
+            raise ImproperlyConfigured("Resolve a saved self.object before calling cv_get_delete_db_alias()")
+        if not hasattr(self, "_cv_delete_db_alias"):
+            using = self.cv_get_db_alias()
+            if not isinstance(using, str) or not using or using not in connections:
+                raise ImproperlyConfigured("cv_get_db_alias() must select a configured database alias")
+            self._cv_delete_db_alias = using
+        return self._cv_delete_db_alias
+
+    def cv_get_atomic(self):
+        using = self.cv_get_delete_db_alias()
+        return transaction.atomic(using=using) if self.cv_atomic else nullcontext()
+
+    def cv_form_valid_process(self, context: dict) -> None:
+        using = self.cv_get_delete_db_alias()
+        with self.cv_get_atomic():
+            self.cv_form_valid(context)
+            self.cv_form_valid_hook(context)
+            transaction.on_commit(partial(self.cv_on_commit, context), using=using)
+
+    def cv_get_delete_preview(self, boundaries, *, using):
+        """Describe unknown effects using read-only DeletePreviewContribution records."""
+        return ()
+
+    def _cv_inspect_deletion(self):
+        using = self.cv_get_delete_db_alias()
+        if type(self).cv_get_related_objects is not DeleteView.cv_get_related_objects:
+            raise ImproperlyConfigured(
+                "cv_get_related_objects overrides are unsupported. Use cv_get_delete_preview() "
+                "for read-only descriptions and cv_filter_related_objects() for display filtering."
+            )
+        if not hasattr(self, "_cv_delete_inspection"):
+            inspection = inspect_deletion(self.object, using=using)
+            contributions = self.cv_get_delete_preview(inspection.boundaries, using=using)
+            self._cv_delete_inspection = merge_delete_preview(inspection, contributions, using=using)
+        return self._cv_delete_inspection
+
     def cv_get_related_objects(self) -> RelatedObjects:
-        """Collect on the write alias even when previews are off.
-
-        NestedObjects disables fast deletion and materializes the graph, tree and summary. Overrides must
-        preserve the unfiltered protected collection: it supplies blocked state independently of labels.
-        """
-        using = router.db_for_write(self.object._meta.model)
-        collector = NestedObjects(using=using)
-        collector.collect([self.object])
-
-        summary = defaultdict(int)
-        for model, instances in collector.data.items():
-            if model == self.object._meta.model:
-                continue
-            summary[model._meta.verbose_name] += len(instances)
-
-        tree = collector.nested()
-
-        return RelatedObjects(tree=tree, summary=dict(summary), protected=list(collector.protected))
+        """Read-only compatibility accessor; lifecycle overrides must use the safe provider."""
+        return self._cv_inspect_deletion().related
 
     def cv_get_related_object_url(self, obj) -> str | None:
         from crud_views.lib.viewset import _REGISTRY
@@ -306,7 +234,9 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, _DeleteMethodGuardMixin, ge
         errors = self.cv_check_delete_protection()
         if errors:
             context["delete_protection_errors"] = errors
-        related = self.cv_get_related_objects()
+        inspection = self._cv_inspect_deletion()
+        related = inspection.related
+        context["delete_preview_incomplete"] = not inspection.complete
         # Only the boolean crosses the context boundary when the preview is disabled.
         context["has_protected_objects"] = bool(related.protected)
         if self.cv_show_related_objects:
@@ -348,7 +278,7 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, _DeleteMethodGuardMixin, ge
                 return self._cv_protection_response(context)
             try:
                 self.cv_form_valid_process(context)
-            except _TargetDeleteBlocked:
+            except _NativeDeleteBlocked:
                 context["has_protected_objects"] = True
                 return self._cv_protection_response(context)
             return self.cv_form_valid_redirect(context)
@@ -363,20 +293,7 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, _DeleteMethodGuardMixin, ge
         return response
 
     def cv_form_valid(self, context: dict):
-        """Invoke the real model method once; mark only certified native target collection protection.
-
-        Custom model deletion and relationship/default/loading paths still run, but their errors propagate.
-        No new transaction is introduced when cv_atomic is disabled.
-        """
-        target = self.object
-        delete_method = target.delete
-        native_graph = _cv_has_native_collection_graph(target)
-        try:
-            delete_method()
-        except (ProtectedError, RestrictedError) as error:
-            if _cv_is_target_collection_protection(error, target, delete_method, native_graph):
-                raise _TargetDeleteBlocked from error
-            raise
+        execute_deletion(self.object, using=self.cv_get_delete_db_alias())
 
 
 class DeleteViewPermissionRequired(CrudViewPermissionRequiredMixin, DeleteView):

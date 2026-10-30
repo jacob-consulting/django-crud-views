@@ -5,10 +5,10 @@ current_phase: "06.2"
 current_phase_name: Request authorization and write integrity (INSERTED)
 status: verifying
 stopped_at: Completed 06.2-09-PLAN.md; all 9 plans summarized; phase gates awaiting existing UI-review choice
-last_updated: "2026-10-30T08:32:09.429Z"
+last_updated: "2026-10-30T09:31:33.710Z"
 last_activity: 2026-10-30
 last_activity_desc: "Completed quick task 261030-bqk: reconciled #282 closure records; CR-02–CR-04 deferred/unresolved; older findings open; verification/UAT unchanged"
-state_head: 165614f2e6461d104a0d3e62db65a179c3cc211b
+state_head: bd31992ee575fdee6ed87ea8f10a8135ff98f3f4
 progress:
   total_phases: 10
   completed_phases: 7
@@ -232,6 +232,7 @@ None yet.
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 261030-bqk | Reconcile 06.2 closure with #282: defer unresolved CR-02–CR-04 to 6.3, split acceptance, retain older open findings; documentation only | 2026-10-30 | 491ae9c | [261030-bqk-reconcile-phase-06-2-closure-with-issue-](./quick/261030-bqk-reconcile-phase-06-2-closure-with-issue-/) |
+| 261030-csg | Fix Phase 06.2 WR-01 core nested-create control state; supported-version regressions pass | 2026-10-30 | bd31992 | [261030-csg-fix-phase-06-2-wr-01-core-nested-create-](./quick/261030-csg-fix-phase-06-2-wr-01-core-nested-create-/) |
 
 ### Roadmap Evolution
 

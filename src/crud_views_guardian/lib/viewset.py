@@ -1,4 +1,5 @@
 from collections.abc import Mapping
+from types import MappingProxyType
 from typing import Any, Self
 
 from pydantic import model_validator
@@ -8,7 +9,7 @@ from crud_views.lib.viewset import ViewSet
 
 # The fixed, non-configurable guardian arguments of GuardianViewSet.get_objects_for_user() (D-05). The manage page
 # reports exactly these values, so its strict-helper entry cannot drift from the call.
-STRICT_HELPER_POLICY = {"policy": "strict", "accept_global_perms": False, "use_groups": True}
+STRICT_HELPER_POLICY = MappingProxyType({"policy": "strict", "accept_global_perms": False, "use_groups": True})
 
 _REMOVED_GLOBAL_PERMS_KEY = "cv_guardian_accept_global_perms"
 _REMOVED_GLOBAL_PERMS_MESSAGE = (
@@ -74,17 +75,27 @@ class GuardianViewSet(ViewSet):
 
         return result
 
+    def _resolve_permission_key(self, perm: str) -> str:
+        """Resolve exact configured string keys before query access or permission changes."""
+        permissions = self.permissions
+        if not isinstance(perm, str) or perm not in permissions:
+            alternatives = ", ".join(repr(key) for key in sorted(permissions))
+            raise ValueError(f"Invalid permission key {perm!r}. Valid keys: {alternatives}.")
+        return permissions[perm]
+
     def assign_perm(self, perm: str, user_or_group, obj) -> None:
         """Assign per-object permission using a short key ("view", "change", etc.)."""
         from guardian.shortcuts import assign_perm
 
-        assign_perm(self.permissions[perm], user_or_group, obj)
+        permission = self._resolve_permission_key(perm)
+        assign_perm(permission, user_or_group, obj)
 
     def remove_perm(self, perm: str, user_or_group, obj) -> None:
         """Remove per-object permission using a short key."""
         from guardian.shortcuts import remove_perm
 
-        remove_perm(self.permissions[perm], user_or_group, obj)
+        permission = self._resolve_permission_key(perm)
+        remove_perm(permission, user_or_group, obj)
 
     def get_objects_for_user(self, user, perm: str, qs=None):
         """Return queryset of objects for which user has the given per-object permission.
@@ -96,12 +107,13 @@ class GuardianViewSet(ViewSet):
 
         from crud_views_guardian.lib.mixins import _guardian_inactive_actor
 
+        permission = self._resolve_permission_key(perm)
         qs = qs if qs is not None else self.model.objects.all()
         if _guardian_inactive_actor(user):
             return qs.none()
         return get_objects_for_user(
             user,
-            self.permissions[perm],
+            permission,
             qs,
             accept_global_perms=STRICT_HELPER_POLICY["accept_global_perms"],
             use_groups=STRICT_HELPER_POLICY["use_groups"],

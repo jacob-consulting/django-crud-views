@@ -5,7 +5,7 @@ from types import SimpleNamespace
 
 import pytest
 from django.core.exceptions import ImproperlyConfigured
-from django.db import connection, models
+from django.db import connection, models, transaction
 from django.db.models.deletion import Collector, ProtectedError, RestrictedError
 from django.db.models.signals import post_delete, pre_delete
 from django.test.utils import isolate_apps
@@ -59,6 +59,12 @@ def test_native_pk_validation_precedes_collection():
 def graph():
     """All model metadata belongs to this test; no live application relation is mutated."""
     with isolate_apps("tests.test1.app"):
+        converter = {}
+
+        class ProbeAutoField(models.AutoField):
+            def from_db_value(self, value, expression, connection):
+                callback = converter.pop("on_read", None)
+                return callback(value) if callback else value
 
         class Root(models.Model):
             label = models.CharField(max_length=50, default="root")
@@ -67,6 +73,7 @@ def graph():
                 app_label = "app"
 
         class Branch(models.Model):
+            id = ProbeAutoField(primary_key=True)
             root = models.ForeignKey(Root, on_delete=models.CASCADE)
 
             class Meta:
@@ -113,11 +120,13 @@ def graph():
                 Custom=Custom,
                 BranchBlocker=BranchBlocker,
                 Ignored=Ignored,
+                converter=converter,
             )
 
 
 @pytest.mark.django_db(transaction=True)
-def test_native_protect_before_custom_stops(graph, monkeypatch):
+@pytest.mark.parametrize("following", ["handler", "SET", "SET_DEFAULT", "private"])
+def test_native_protect_before_custom_stops(graph, monkeypatch, following):
     root = graph.Root.objects.create()
     blocker = graph.Blocker.objects.create(root=root)
     graph.Custom.objects.create(root=root)
@@ -126,7 +135,24 @@ def test_native_protect_before_custom_stops(graph, monkeypatch):
     def handler(*args):
         events.append("custom")
 
-    monkeypatch.setattr(graph.Custom._meta.get_field("root").remote_field, "on_delete", handler)
+    field = graph.Custom._meta.get_field("root")
+    if following == "SET":
+        monkeypatch.setattr(field.remote_field, "on_delete", models.SET(handler))
+    elif following == "SET_DEFAULT":
+        monkeypatch.setattr(field.remote_field, "on_delete", models.SET_DEFAULT)
+        monkeypatch.setattr(field, "_get_default", handler)
+    elif following == "private":
+        metadata = SimpleNamespace(
+            name="private_effect",
+            bulk_related_objects=handler,
+            is_relation=False,
+            auto_created=False,
+            concrete=False,
+            column=None,
+        )
+        monkeypatch.setattr(graph.Root._meta, "private_fields", [metadata])
+    else:
+        monkeypatch.setattr(field.remote_field, "on_delete", handler)
     with pytest.raises(_NativeDeleteBlocked) as caught:
         execute_deletion(root, using="default")
     assert isinstance(caught.value.__cause__, ProtectedError)
@@ -390,3 +416,325 @@ def test_custom_lazy_sub_objs_and_request_local_stickiness(graph, monkeypatch, l
     graph.Blocker.objects.create(root=root)
     with pytest.raises(_NativeDeleteBlocked):
         second.collect([root])
+
+
+@pytest.fixture
+def request_graph(graph, client_user_publisher_delete, monkeypatch):
+    """Use the registered, permission-gated POST route and actual form/inspection lifecycle."""
+    from tests.test1.app.views import PublisherDeleteView
+
+    root = graph.Root.objects.create()
+    events = []
+    view = PublisherDeleteView
+    monkeypatch.setattr(view, "get_queryset", lambda self: graph.Root.objects.all())
+    monkeypatch.setattr(view, "cv_modal", True)
+    monkeypatch.setattr(
+        view, "cv_form_valid_hook", lambda self, context: events.append(("success", connection.in_atomic_block))
+    )
+    monkeypatch.setattr(
+        view, "cv_on_commit", lambda self, context: events.append(("commit", connection.in_atomic_block))
+    )
+    original_response = view._cv_protection_response
+
+    def blocked(self, context):
+        events.append(("blocked", connection.in_atomic_block))
+        return original_response(self, context)
+
+    monkeypatch.setattr(view, "_cv_protection_response", blocked)
+    return SimpleNamespace(
+        graph=graph,
+        root=root,
+        view=view,
+        client=client_user_publisher_delete,
+        url=f"/publisher/{root.pk}/delete/",
+        events=events,
+    )
+
+
+def _assert_read_paths_are_callback_free(case, monkeypatch):
+    """Keep the real preview in every negative control, including incomplete boundaries."""
+    from django.test.client import Client
+
+    response = case.client.get(case.url)
+    assert response.status_code == 200
+    assert response.context["has_protected_objects"] is False
+    response = case.client.post(case.url, {})
+    assert response.status_code == 200
+    assert response.context["form"].errors
+    with monkeypatch.context() as scope:
+        scope.setattr(case.view, "cv_check_delete_protection", lambda self: ["Business veto"])
+        response = case.client.post(case.url, {"confirm": True})
+        assert response.status_code == 200
+    assert case.events == [("blocked", False)]
+    case.events.clear()
+    assert Client().post(case.url, {"confirm": True}).status_code == 302
+    assert case.events == []
+    assert not case.graph.Root.objects.filter(label="effect").exists()
+
+
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.parametrize("atomic", [False, True])
+@pytest.mark.parametrize("modal", [False, True])
+@pytest.mark.parametrize("configured", ["SET", "SET_DEFAULT", "handler"])
+@pytest.mark.parametrize("returns", [False, True], ids=["raises", "returns-before-native-protect"])
+def test_callback_real_transaction_effects(request_graph, monkeypatch, atomic, modal, configured, returns):
+    from crud_views.lib import deletion
+
+    case = request_graph
+    graph = case.graph
+    monkeypatch.setattr(case.view, "cv_atomic", atomic)
+    child = graph.Custom.objects.create(root=case.root)
+    error = ProtectedError("callback failure", {child})
+    cause = RuntimeError("original callback cause")
+
+    def effect():
+        case.events.append((configured, connection.in_atomic_block))
+        row = graph.Root.objects.create(label="effect")
+        if not returns:
+            raise error from cause
+        return row.pk
+
+    field = graph.Custom._meta.get_field("root")
+    if configured == "SET":
+        monkeypatch.setattr(field.remote_field, "on_delete", models.SET(effect))
+    elif configured == "SET_DEFAULT":
+        monkeypatch.setattr(field.remote_field, "on_delete", models.SET_DEFAULT)
+        monkeypatch.setattr(field, "_get_default", effect)
+    else:
+
+        def handler(collector, field, objects, using):
+            assert using == "default"
+            collector.add_field_update(field, effect(), objects)
+
+        monkeypatch.setattr(field.remote_field, "on_delete", handler)
+    _assert_read_paths_are_callback_free(case, monkeypatch)
+    if returns:
+        native_relations = deletion.get_candidate_relations_to_delete
+
+        def custom_first(opts):
+            return sorted(native_relations(opts), key=lambda rel: rel.related_model is not graph.Custom)
+
+        monkeypatch.setattr(deletion, "get_candidate_relations_to_delete", custom_first)
+
+        def stage_blocker(self, context):
+            assert context["delete_preview_incomplete"] is True
+            assert context["has_protected_objects"] is False
+            graph.Blocker.objects.create(root=case.root)
+
+        monkeypatch.setattr(case.view, "cv_post_hook", stage_blocker)
+    with pytest.raises(ProtectedError) as caught:
+        case.client.post(case.url, {"confirm": True}, headers={"X-CV-Modal": "true"} if modal else {})
+    if not returns:
+        assert caught.value is error
+        assert caught.value.__cause__ is cause
+    else:
+        assert set(caught.value.protected_objects) == set(graph.Blocker.objects.all())
+    assert case.events == [(configured, atomic)]
+    assert graph.Root.objects.filter(pk=case.root.pk).exists()
+    assert graph.Root.objects.filter(label="effect").exists() is not atomic
+    child.refresh_from_db()
+    assert child.root_id == case.root.pk
+
+
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.parametrize("atomic", [False, True])
+@pytest.mark.parametrize(
+    "stage", ["model", "pre_delete", "post_delete", "success", "on_commit", "private", "converter"]
+)
+def test_request_failure_durable_state_and_external_events(request_graph, monkeypatch, atomic, stage):
+    case = request_graph
+    graph = case.graph
+    monkeypatch.setattr(case.view, "cv_atomic", atomic)
+    branch = graph.Branch.objects.create(root=case.root)
+    graph.Leaf.objects.create(root=case.root, branch=branch, restricted=branch)
+    error = RestrictedError("application failure", {branch})
+    cause = RuntimeError("nested original cause")
+    signal = None
+    receiver = None
+
+    def effect(using="default"):
+        case.events.append((stage, connection.in_atomic_block))
+        graph.Root.objects.using(using).create(label="effect")
+        raise error from cause
+
+    if stage == "model":
+
+        def delete(self, *, using):
+            return effect(using)
+
+        monkeypatch.setattr(graph.Root, "delete", delete)
+    elif stage in {"pre_delete", "post_delete"}:
+        signal = pre_delete if stage == "pre_delete" else post_delete
+
+        def receiver(sender, origin, using, **kwargs):
+            assert origin.pk == case.root.pk
+            effect(using)
+
+        signal.connect(receiver, sender=graph.Root, weak=False)
+    elif stage == "success":
+        monkeypatch.setattr(case.view, "cv_form_valid_hook", lambda self, context: effect())
+    elif stage == "on_commit":
+        monkeypatch.setattr(case.view, "cv_on_commit", lambda self, context: effect())
+    elif stage == "private":
+
+        def bulk_related_objects(objects, using):
+            return effect(using)
+
+        metadata = SimpleNamespace(
+            name="private_effect",
+            bulk_related_objects=bulk_related_objects,
+            is_relation=False,
+            auto_created=False,
+            concrete=False,
+            column=None,
+        )
+        monkeypatch.setattr(graph.Root._meta, "private_fields", [metadata])
+    else:
+        # Install the actual nested loader only after the real preview has succeeded.
+        def stage_loader(self, context):
+            assert context["has_protected_objects"] is False
+            # The field converter consumes this one-shot callback before the reporter can replay a read.
+            graph.converter["on_read"] = lambda value: effect()
+
+        monkeypatch.setattr(case.view, "cv_post_hook", stage_loader)
+    try:
+        if stage != "converter":
+            _assert_read_paths_are_callback_free(case, monkeypatch)
+        else:
+            assert case.client.get(case.url).status_code == 200
+            assert case.events == []
+        with pytest.raises(RestrictedError) as caught:
+            case.client.post(case.url, {"confirm": True})
+    finally:
+        if signal:
+            signal.disconnect(receiver, sender=graph.Root)
+    assert caught.value is error
+    assert caught.value.__cause__ is cause
+    internally_atomic = stage in {"pre_delete", "post_delete"}
+    expected_atomic = False if stage == "on_commit" else (atomic or internally_atomic)
+    expected_events = [(stage, expected_atomic)]
+    if stage == "on_commit":
+        expected_events.insert(0, ("success", atomic))
+    assert case.events == expected_events
+    effect_committed = not (atomic or internally_atomic) or stage == "on_commit"
+    assert graph.Root.objects.filter(label="effect").exists() is effect_committed
+    target_committed_deleted = stage == "on_commit" or (stage == "success" and not atomic)
+    assert graph.Root.objects.filter(pk=case.root.pk).exists() is not target_committed_deleted
+    assert graph.Branch.objects.filter(pk=branch.pk).exists() is not target_committed_deleted
+
+
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.parametrize("atomic", [False, True])
+@pytest.mark.parametrize("modal", [False, True])
+@pytest.mark.parametrize("custom_model", [False, True], ids=["native", "kwargs-override"])
+def test_real_commit_success_order_and_repeated_post(request_graph, monkeypatch, atomic, modal, custom_model):
+    case = request_graph
+    graph = case.graph
+    monkeypatch.setattr(case.view, "cv_atomic", atomic)
+    retained = graph.Custom.objects.create(root=case.root)
+    field = graph.Custom._meta.get_field("root")
+
+    def effect():
+        case.events.append(("SET", connection.in_atomic_block))
+        return graph.Root.objects.create(label="effect").pk
+
+    def delete(self, **kwargs):
+        case.events.append(("model", connection.in_atomic_block))
+        return models.Model.delete(self, **kwargs)
+
+    def success(self, context):
+        assert self.object.pk is None
+        case.events.append(("success", connection.in_atomic_block))
+
+    def commit(self, context):
+        assert not connection.in_atomic_block
+        assert not graph.Root.objects.filter(pk=case.root.pk).exists()
+        assert graph.Root.objects.filter(label="effect").exists()
+        case.events.append(("commit", connection.in_atomic_block))
+
+    monkeypatch.setattr(field.remote_field, "on_delete", models.SET(effect))
+    if custom_model:
+        monkeypatch.setattr(graph.Root, "delete", delete)
+    monkeypatch.setattr(case.view, "cv_form_valid_hook", success)
+    monkeypatch.setattr(case.view, "cv_on_commit", commit)
+    _assert_read_paths_are_callback_free(case, monkeypatch)
+    headers = {"X-CV-Modal": "true"} if modal else {}
+    response = case.client.post(case.url, {"confirm": True}, headers=headers)
+    assert response.status_code == (204 if modal else 302)
+    if modal:
+        assert response.headers["X-CV-Redirect"]
+    expected = [("SET", atomic), ("success", atomic), ("commit", False)]
+    if custom_model:
+        expected.insert(0, ("model", atomic))
+    assert case.events == expected
+    retained.refresh_from_db()
+    assert retained.root_id == graph.Root.objects.get(label="effect").pk
+    assert case.client.post(case.url, {"confirm": True}, headers=headers).status_code == 404
+    assert case.events == expected
+
+
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.parametrize("atomic", [False, True])
+def test_on_commit_inside_handler_immediate_or_deferred(request_graph, monkeypatch, atomic):
+    case = request_graph
+    graph = case.graph
+    monkeypatch.setattr(case.view, "cv_atomic", atomic)
+    retained = graph.Custom.objects.create(root=case.root)
+    error = ProtectedError("commit failed", {retained})
+
+    def callback():
+        case.events.append(("external", connection.in_atomic_block))
+        graph.Root.objects.create(label="effect")
+        raise error
+
+    def handler(collector, field, objects, using):
+        case.events.append(("handler", connection.in_atomic_block))
+        collector.add_field_update(field, None, objects)
+        transaction.on_commit(callback, using=using)
+
+    monkeypatch.setattr(graph.Custom._meta.get_field("root").remote_field, "on_delete", handler)
+    _assert_read_paths_are_callback_free(case, monkeypatch)
+    with pytest.raises(ProtectedError) as caught:
+        case.client.post(case.url, {"confirm": True})
+    assert caught.value is error
+    assert case.events == (
+        [("handler", True), ("success", True), ("external", False)]
+        if atomic
+        else [("handler", False), ("external", False)]
+    )
+    assert graph.Root.objects.filter(pk=case.root.pk).exists() is not atomic
+    assert graph.Root.objects.filter(label="effect").exists()
+    retained.refresh_from_db()
+    assert retained.root_id == (None if atomic else case.root.pk)
+
+
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.parametrize("atomic", [False, True])
+def test_nested_converter_protected_error_identity(request_graph, monkeypatch, atomic):
+    """CR-03: a real nested field converter cannot be mistaken for native PROTECT."""
+    case = request_graph
+    graph = case.graph
+    branch = graph.Branch.objects.create(root=case.root)
+    monkeypatch.setattr(case.view, "cv_atomic", atomic)
+    _assert_read_paths_are_callback_free(case, monkeypatch)
+    original = ProtectedError("converter unrelated protection", {branch})
+    cause = RuntimeError("converter cause")
+
+    def convert(value):
+        case.events.append(("converter", connection.in_atomic_block))
+        graph.Root.objects.create(label="effect")
+        raise original from cause
+
+    def after_preview(self, context):
+        assert context["has_protected_objects"] is False
+        graph.converter["on_read"] = convert
+
+    monkeypatch.setattr(case.view, "cv_post_hook", after_preview)
+    with pytest.raises(ProtectedError) as caught:
+        case.client.post(case.url, {"confirm": True})
+    assert caught.value is original
+    assert caught.value.__cause__ is cause
+    assert case.events == [("converter", atomic)]
+    assert graph.Root.objects.filter(pk=case.root.pk).exists()
+    assert graph.Branch.objects.filter(pk=branch.pk).exists()
+    assert graph.Root.objects.filter(label="effect").exists() is not atomic

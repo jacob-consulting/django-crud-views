@@ -689,9 +689,67 @@ The helper remains strict and reads an immutable `MappingProxyType` policy; per-
 Manage dictionaries are detached display copies, not mutable authority. Supported delete-preview database topology
 requires actor/auth/grant/content-type routes co-located with candidate rows; unsupported topology hides labels
 without clearing protection or aggregates. See [Guardian database topology](reference/guardian.md#delete-preview-database-topology).
-The registered Car helper/list mismatch under a polymorphic base-content-type resolver still raises
-`MixedContentTypeError`; fixing delete-preview projection and passing characterization tests does not resolve that
-limitation, the broader AUTH-06 residual, or the unspecified precision backstop.
+The configured Car helper/list mismatch is repaired as described below. That bounded repair does not settle the
+separate unclassified AUTH-06 residual or unspecified custom-PK/database-cast/collation precision backstop.
+
+### Guardian configured content-type permissions
+
+`GuardianViewSet` now discovers default permissions through Guardian's configured `GUARDIAN_GET_CONTENT_TYPE`
+resolver. Previously a Car ViewSet inferred `app.view_car` even when Guardian selected Vehicle, so a valid
+`view_vehicle` grant could raise `MixedContentTypeError` in the helper or list. Under a polymorphic-base resolver,
+`GuardianViewSet(model=Car)` now infers `app.view_vehicle`; its queryset still contains Car instances.
+With the default concrete resolver, Car retains `app.view_car`, while PublisherProxy uses `app.view_publisher`.
+
+Set `GUARDIAN_GET_CONTENT_TYPE = "polymorphic.contrib.guardian.get_polymorphic_base_content_type"` in Django settings
+before starting the application. After migrations have created Vehicle's permissions, put the following in your
+ViewSet module. Here `myapp.models.Car` inherits from `Vehicle`. Include `cv_car.urlpatterns` in your project's URL
+configuration as for other ViewSets. The functions accept an existing user/group and select a saved Car by PK.
+Call `grant_car_view(user, car.pk)`, query `visible_cars(user)`, and use
+`revoke_car_view(user, car)` to remove that grant. The registered strict list uses the same permission mapping.
+
+```python
+from crud_views_guardian.lib.views import GuardianListViewPermissionRequired
+from crud_views_guardian.lib.viewset import GuardianViewSet
+from myapp.models import Car
+
+cv_car = GuardianViewSet(model=Car, name="configured_car")
+
+
+class CarListView(GuardianListViewPermissionRequired):
+    cv_viewset = cv_car
+
+
+def grant_car_view(user_or_group, car_pk):
+    car = Car.objects.get(pk=car_pk)
+    cv_car.assign_perm("view", user_or_group, car)
+    return car
+
+
+def visible_cars(user, queryset=None):
+    return cv_car.get_objects_for_user(user, "view", qs=queryset)
+
+
+def revoke_car_view(user_or_group, car):
+    cv_car.remove_perm("view", user_or_group, car)
+```
+
+Audit existing grants against the selected content type before deploying; this discovery correction does not copy
+or convert stored permission rows. Defaults include only Permission rows on that selected type. For example,
+Vehicle's `inspect_status_vehicle` becomes key `inspect_status` with value `app.inspect_status_vehicle`.
+Only the exact terminal `_<selected_type.model>` suffix is removed. Child-only `child_only_car` is no longer an
+inferred key when the selected type is Vehicle; move the intended permission/grants to Vehicle or deliberately
+choose a compatible resolver and mapping. There is no compatibility grace period or child/base permission union.
+
+An application's explicit `permissions` property override remains authoritative: exact string keys and qualified
+values are forwarded unchanged. No trimming, normalization or automatic child-to-base translation occurs.
+An explicit `app.view_car` mapping under a Vehicle resolver remains incompatible and raises Guardian's original
+`MixedContentTypeError`; fix the configuration rather than catching it as empty access. Invalid keys still raise
+`ValueError` with the actual sorted available keys, including selected-type custom keys.
+
+Nonempty discovered defaults are cached on the ViewSet for its process lifetime; empty discovery retries.
+Configure the resolver before startup. Changes to permissions or the resolver after discovery need a fresh
+ViewSet or process restart; runtime setting hot reload is not promised. The strict helper, per-view global
+fallback, object/group grants, active-superuser behavior, inactive denial and manage policy remain unchanged.
 
 ### The Guardian manage page
 

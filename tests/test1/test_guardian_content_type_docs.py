@@ -72,9 +72,10 @@ def test_documented_guardian_content_type_migration(published_guardian_recipe, c
     outside = Car.objects.create(name="Outside caller scope", doors=2)
     assert viewset.permissions["view"] == "app.view_vehicle"
     assert not viewset.get_objects_for_user(user, "view").exists()
-    recipe["grant_car_view"](user, granted)
-    recipe["grant_car_view"](other, sibling)
-    recipe["grant_car_view"](user, outside)
+    selected = recipe["grant_car_view"](user, granted.pk)
+    assert isinstance(selected, Car) and selected.pk == granted.pk
+    recipe["grant_car_view"](other, sibling.pk)
+    recipe["grant_car_view"](user, outside.pk)
     grant = UserObjectPermission.objects.get(user=user, object_pk=str(granted.pk))
     assert grant.permission.codename == "view_vehicle"
     assert grant.content_type == ContentType.objects.get_for_model(Vehicle)
@@ -98,7 +99,9 @@ def test_documented_guardian_content_type_migration(published_guardian_recipe, c
 
 def test_documented_guardian_custom_permission_namespace(published_guardian_recipe):
     Permission.objects.create(
-        content_type=ContentType.objects.get_for_model(Vehicle), codename="inspect_status_vehicle", name="Inspect status"
+        content_type=ContentType.objects.get_for_model(Vehicle),
+        codename="inspect_status_vehicle",
+        name="Inspect status",
     )
     Permission.objects.create(
         content_type=ContentType.objects.get_for_model(Car), codename="child_only_car", name="Child only"

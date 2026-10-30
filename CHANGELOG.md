@@ -6,6 +6,12 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Breaking
 
+- **Guardian configured content-type defaults.** `GuardianViewSet` discovers default/custom permissions only on
+  Guardian's configured content type. With the polymorphic-base resolver, Car now infers `app.view_vehicle`
+  and Vehicle custom keys instead of Car defaults; child-only permissions are no longer inferred. Explicit
+  mappings stay exact and incompatible mappings retain Guardian's errors. Restart or create a fresh ViewSet
+  after changing the resolver/permissions. See the executable
+  [migration](docs/migrating-1.0.md#guardian-configured-content-type-permissions).
 - **Delete preview field ownership.** Frozen `DeletePreviewBoundary` now includes the declaring `field_model`.
   Providers must select exact supplied descriptors by owner as well as source model and field name; copied
   ownerless field descriptors fail immediately with `ValueError`. Different owners' same-name relationships

@@ -83,6 +83,24 @@ cv_author.remove_perm("view", user, author_instance)
 qs = cv_author.get_objects_for_user(user, "view")
 ```
 
+### Configured content-type defaults
+
+`GuardianViewSet.default_permissions` discovers Permission rows on the type selected by Guardian's
+`GUARDIAN_GET_CONTENT_TYPE`, including custom permissions on that type. It removes only the exact terminal
+`_<content_type.model>` suffix to form each key and retains the fully qualified permission value.
+With the default concrete resolver, Car uses `app.view_car` and PublisherProxy uses `app.view_publisher`.
+With `polymorphic.contrib.guardian.get_polymorphic_base_content_type`, a Car ViewSet uses `app.view_vehicle`,
+discovers Vehicle's custom permissions, and returns Car querysets. Child-only Car permissions are not inferred
+or unioned with Vehicle's permissions. Core `ViewSet` discovery is unchanged.
+
+Explicit application `permissions` property overrides retain their exact keys and qualified values. An
+incompatible explicit mapping remains a configuration/programming error, including Guardian's original
+`MixedContentTypeError`; it is never translated into empty or widened access. Nonempty discovered defaults are
+cached per ViewSet for the process lifetime, while empty discovery retries. Set the resolver before startup;
+later resolver/permission changes require a fresh ViewSet or restart, without runtime hot-reload guarantees.
+See the executable [configured-content-type migration](../migrating-1.0.md#guardian-configured-content-type-permissions)
+for grant/query/removal and a registered list. This is an immediate change to inferred defaults, without a grace period.
+
 ## Strict Mode (Default)
 
 By default, `cv_guardian_accept_global_perms = False`: a user with a model-level
@@ -348,12 +366,11 @@ through tables are decided without any ContentType lookup or row write: only aut
 their rows. Their projection cache materializes **every PK in the through table**, including unrelated rows, once
 per projection, rather than limiting the query to cascade candidates.
 
-This covers delete-preview lookup only. A registered Car ViewSet under
-`polymorphic.contrib.guardian.get_polymorphic_base_content_type` still resolves `app.view_car` while Guardian expects
-Vehicle's content type. The strict helper **and list queryset** raise `guardian.exceptions.MixedContentTypeError`
-even with a valid `view_vehicle` object grant. This configuration is an unresolved limitation; the projection fix
-does not fix those paths. The default PublisherProxy/concrete-content-type helper/list control passes, which does
-not certify every proxy/custom-permission combination.
+Registered Car ViewSets also use Guardian's selected type for inferred defaults: a valid `view_vehicle` grant
+under the polymorphic-base resolver works in the strict helper, registered list and object views. Explicit
+incompatible mappings still raise `guardian.exceptions.MixedContentTypeError`; see
+[Configured content-type defaults](#configured-content-type-defaults). These named controls do not certify every
+custom-PK/database-cast/collation combination or resolve the separate unclassified AUTH-06 review predicate.
 
 `GuardianDeleteRelatedObjectsMixin` replaces the core model-level filter rather than adding to it. A custom
 `cv_filter_related_objects` on a Guardian delete view should call `super()` (which applies the Guardian filter) and

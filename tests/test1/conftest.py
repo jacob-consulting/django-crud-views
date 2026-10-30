@@ -92,7 +92,11 @@ def pytest_configure():
             "default": {
                 "ENGINE": "django.db.backends.sqlite3",
                 "NAME": ":memory:",
-            }
+            },
+            "shard": {
+                "ENGINE": "django.db.backends.sqlite3",
+                "NAME": ":memory:",
+            },
         },
         # Internationalization
         LANGUAGE_CODE="en-us",
@@ -119,6 +123,42 @@ def pytest_configure():
     )
 
     django.setup()
+
+
+@pytest.fixture
+def database_routes(monkeypatch):
+    """Request-local routing must enclose login and middleware, with independent test databases."""
+    from contextlib import contextmanager
+    from contextvars import ContextVar
+
+    from django.contrib.contenttypes.models import ContentType
+    from django.db import router
+
+    selection = ContextVar("delete_test_database", default=None)
+
+    class RequestRouter:
+        def db_for_read(self, model, **hints):
+            config = selection.get()
+            if config is None:
+                return None
+            return config[1].get(model, config[0])
+
+        def db_for_write(self, model, **hints):
+            return self.db_for_read(model, **hints)
+
+    monkeypatch.setattr(router, "routers", [RequestRouter()])
+
+    @contextmanager
+    def route(using, overrides=None):
+        token = selection.set((using, overrides or {}))
+        try:
+            yield
+        finally:
+            selection.reset(token)
+
+    ContentType.objects.clear_cache()
+    yield route
+    ContentType.objects.clear_cache()
 
 
 @pytest.fixture

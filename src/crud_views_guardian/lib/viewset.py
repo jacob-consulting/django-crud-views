@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from collections.abc import Mapping
 from types import MappingProxyType
 from typing import Any, Self
@@ -74,6 +75,27 @@ class GuardianViewSet(ViewSet):
         _AutoManageView = type("AutoManageView", (base,), {"model": self.model, "cv_viewset": self})
 
         return result
+
+    @property
+    def default_permissions(self) -> OrderedDict[str, str]:
+        """Discover permissions in Guardian's configured content-type namespace.
+
+        Like the core ViewSet, retain nonempty results for the process lifetime and retry empty discovery.
+        Resolver or permission changes after discovery require a fresh ViewSet or process restart.
+        """
+        from django.contrib.auth.models import Permission
+        from guardian.ctypes import get_content_type
+
+        if self._default_permissions is not None:
+            return self._default_permissions
+        content_type = get_content_type(self.model)
+        permissions = OrderedDict()
+        for permission in Permission.objects.filter(content_type=content_type):
+            action = permission.codename.removesuffix(f"_{content_type.model}")
+            permissions[action] = f"{content_type.app_label}.{permission.codename}"
+        if permissions:
+            self._default_permissions = permissions
+        return permissions
 
     def _resolve_permission_key(self, perm: str) -> str:
         """Resolve exact configured string keys before query access or permission changes."""

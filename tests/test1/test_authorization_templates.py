@@ -83,7 +83,9 @@ OVERRIDES = {
     "crud_views/tags/alert.html": (
         '<div role="alert" data-mx-alert="{{ alert.level }}"><strong>MX-ALERT {{ alert.heading }}</strong>'
         "{% if alert.text %}<p>{{ alert.text }}</p>{% endif %}"
-        "<ul>{% for item in alert.items %}<li>{{ item }}</li>{% endfor %}</ul></div>"
+        "<ul>{% for item in alert.items %}<li>{{ item }}</li>{% endfor %}</ul>"
+        '{% if alert.body_template == "crud_views/snippets/delete/related_objects_tree.html" %}'
+        "{% include alert.body_template %}{% endif %}</div>"
     ),
 }
 
@@ -704,3 +706,170 @@ def test_formset_override_never_reached_by_denied_editor(native, tp, client, wor
         assert SECRET.encode() not in response.content
     assert tp.calls["render"] == 0
     assert CHOICES["evaluated"] == 0
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("family", ["core", "guardian"])
+@pytest.mark.parametrize("visibility", ["hidden", "partial", "full", "group", "global-strict", "global-fallback"])
+@pytest.mark.parametrize("modal", [False, True])
+@pytest.mark.parametrize("details", [False, True])
+@pytest.mark.parametrize("business", [False, True])
+def test_partial_native_template_context_shape(
+    native, tp, client, world, monkeypatch, family, visibility, modal, details, business
+):
+    """Native and provider rows share projection; root/None/tree shape and numeric partial counts survive."""
+    from django.contrib.auth.models import Group
+    from django.utils.html import escape
+    from guardian.shortcuts import assign_perm
+
+    from crud_views.lib.deletion import DeletePreviewContribution
+    from tests.test1.app.models import Book, Contract, Publisher
+
+    vs = tp.c_vs if family == "core" else tp.g_vs
+    view = vs.get_view_class("delete")
+    events = []
+    native_book = Book.objects.create(publisher=world.a, title="<b>Native</b> Bücher 東京")
+    provider_book = Book.objects.create(publisher=world.b, title="<i>Provider</i> Étoile 雪")
+    native_blocker = Contract.objects.create(publisher=world.a, title="<u>Native</u> Vertrag Ω")
+    provider_blocker = Contract.objects.create(publisher=world.b, title="<s>Provider</s> عقد")
+
+    def delete(self, *, using):
+        events.append("delete")
+        raise AssertionError("known protection must precede the actual model delete")
+
+    def provider(self, boundaries, *, using):
+        assert using == "default"
+        assert len(boundaries) == 1 and boundaries[0].kind == "model_delete"
+        return [DeletePreviewContribution(boundaries[0], deleted=(provider_book,), protected=(provider_blocker,))]
+
+    monkeypatch.setattr(Publisher, "delete", delete)
+    monkeypatch.setattr(view, "cv_get_delete_preview", provider)
+    monkeypatch.setattr(view, "cv_show_related_objects", details)
+    monkeypatch.setattr(view, "cv_modal", True)
+    monkeypatch.setattr(view, "cv_check_delete_protection", lambda self: ["Business veto"] if business else [])
+    monkeypatch.setattr(view, "cv_form_valid_hook", lambda *args: events.append("hook"))
+    monkeypatch.setattr(view, "cv_on_commit", lambda *args: events.append("commit"))
+    if family == "guardian":
+        monkeypatch.setattr(view, "cv_guardian_accept_global_perms", visibility == "global-fallback")
+
+    globals_ = ["delete_publisher"] if family == "core" else []
+    if (family == "core" and visibility != "hidden") or visibility.startswith("global"):
+        globals_ += ["view_book"]
+        if visibility != "partial":
+            globals_ += ["view_contract"]
+    user = _user("partial_context", global_perms=globals_)
+    if family == "guardian":
+        _grant(user, vs, world.a, "delete")
+        if visibility in {"partial", "full", "group"}:
+            principal = user
+            if visibility == "group":
+                principal = Group.objects.create(name="partial_preview_readers")
+                user.groups.add(principal)
+            for obj in [
+                native_book,
+                native_blocker,
+                *([provider_book, provider_blocker] if visibility != "partial" else []),
+            ]:
+                assign_perm(f"view_{obj._meta.model_name}", principal, obj)
+    client.force_login(user)
+    headers = {"X-CV-Modal": "true"} if modal else {}
+    url = _u(vs, "delete", world.a.pk)
+
+    books = []
+    blockers = []
+    if family == "core":
+        if visibility != "hidden":
+            books = [native_book, provider_book]
+        if visibility not in {"hidden", "partial"}:
+            blockers = [native_blocker, provider_blocker]
+    elif visibility in {"full", "group", "global-fallback"}:
+        books, blockers = [native_book, provider_book], [native_blocker, provider_blocker]
+    elif visibility == "partial":
+        books, blockers = [native_book], [native_blocker]
+
+    for method, data, status in [
+        ("get", {}, 200),
+        ("get", {}, 200),
+        ("post", {}, 422 if modal else 200),
+        ("post", {"confirm": True}, 422 if modal else 200),
+    ]:
+        response = getattr(client, method)(url, data, headers=headers)
+        assert response.status_code == status
+        context = response.context
+        assert context["delete_preview_incomplete"] is True
+        assert context["has_protected_objects"] is True
+        content = response.content.decode()
+        assert "This preview is incomplete." in content
+        assert "MX-ALERT" in content and "<form" not in content
+        assert ("Business veto" in content) is business
+        if details:
+            assert context["related_summary"] == {"book": 2}
+            assert all(
+                isinstance(name, str) and type(count) is int for name, count in context["related_summary"].items()
+            )
+            assert ("partial counts" in content) is not business
+            assert context["protected_objects"] == blockers
+            (root,) = context["related_objects"]
+            assert root["obj"] is None and root["url"] is None
+            assert [node["obj"] for node in root["children"]] == [
+                obj if obj in books else None for obj in (native_book, provider_book)
+            ]
+        else:
+            for key in ("related_summary", "related_objects", "protected_objects"):
+                assert key not in context
+            assert "partial counts" not in content
+        assert _context_pks(response, Book) == ({obj.pk for obj in books} if details else set())
+        assert _context_pks(response, Contract) == ({obj.pk for obj in blockers} if details else set())
+        for obj in (native_book, provider_book, native_blocker, provider_blocker):
+            assert str(obj) not in content
+            assert (str(escape(str(obj))) in content) is (details and not business and obj in [*books, *blockers])
+        if details and not blockers and not business:
+            assert BLOCKED_SENTENCE in content
+            assert BLOCKED_LIST_HEADING not in content
+        assert events == []
+        assert Publisher.objects.filter(pk=world.a.pk).exists()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "actor", ["anonymous", "ungranted", "revoked", "inactive", "wrong-parent", "disabled", "allowed"]
+)
+def test_partial_delete_request_gates_precede_inspector(native, tp, client, world, child, monkeypatch, actor):
+    """The new provider is unreachable through denied parent/object/state and forbidden method paths."""
+    from guardian.shortcuts import remove_perm
+
+    events = []
+
+    def forbidden(*args, **kwargs):
+        events.append("unexpected callback")
+        raise AssertionError("request gate must precede inspection and mutation")
+
+    for name in ("cv_get_delete_preview", "cv_post_hook", "cv_form_valid", "cv_form_valid_hook", "cv_on_commit"):
+        monkeypatch.setattr(tp.BookDelete, name, forbidden)
+    if actor != "anonymous":
+        user = _user("gated_delete", active=actor != "inactive")
+        _grant(user, tp.g_vs, world.a, "view")
+        _grant(user, tp.g_vs, world.b, "view")
+        if actor != "ungranted":
+            _grant(user, tp.book_vs, child, "delete")
+        if actor == "revoked":
+            remove_perm(tp.book_vs.permissions["delete"], user, child)
+        client.force_login(user, backend=ALLOW_INACTIVE)
+    if actor == "disabled":
+        monkeypatch.setattr(tp.BookDelete, "cv_action_enabled", classmethod(lambda cls, user, obj=None: False))
+    url = _u(tp.book_vs, "delete", child.pk, world.b.pk if actor == "wrong-parent" else world.a.pk)
+    with override_settings(AUTHENTICATION_BACKENDS=INACTIVE_BACKENDS):
+        if actor == "allowed":
+            response = client.delete(url)
+            assert response.status_code == 405
+            assert "DELETE" not in response["Allow"]
+            response = client.options(url)
+            assert response.status_code == 200 and "DELETE" not in response["Allow"]
+        else:
+            status = 302 if actor == "anonymous" else 404 if actor == "wrong-parent" else 403
+            for method in ("get", "post"):
+                response = getattr(client, method)(url, {"confirm": True})
+                assert response.status_code == status
+                assert b"MX-ALERT" not in response.content
+    assert events == []
+    assert type(child).objects.filter(pk=child.pk).exists()

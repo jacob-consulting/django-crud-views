@@ -3,17 +3,17 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.3"
 current_phase_name: "Delete protection and write-boundary integrity — issue #282"
-status: awaiting_decision
-stopped_at: Phase 06.3 plan 10 task 10-01 committed (0a95670); task 10-02 awaiting maintainer approval
-last_updated: "2026-10-30T23:13:06.962826+00:00"
+status: in_progress
+stopped_at: Completed 06.3-10-PLAN.md; contract and CT-01 scope approved; next plans 11/12; phase remains gaps_found
+last_updated: "2026-10-30T23:15:55.804Z"
 last_activity: 2026-10-30
-last_activity_desc: Gap design committed; waiting for task 10-02 contract and CT-01 scope approval
-state_head: 74c7f63a13090bcde004167bae09fac7b0601f4a
+last_activity_desc: Plan 10 complete; actual repair-contract and CT-01 scope approval recorded
+state_head: 464bd8e98872880b5854b10f3222141ba836d0fb
 progress:
   total_phases: 10
   completed_phases: 8
   total_plans: 53
-  completed_plans: 45
+  completed_plans: 46
 milestone_name: milestone
 ---
 
@@ -28,21 +28,22 @@ See: .planning/PROJECT.md (updated 2026-10-30)
 
 ## Current Position
 
-Phase: 06.3 (Delete protection and write-boundary integrity — issue #282) — AWAITING DECISION
-Plan: 10 of 17 — task 1/2 complete; plans 01–09 executed
-Status: Awaiting blocking-human decision on GAP-DESIGN and plans 10–17
-Last activity: 2026-10-30 — 10-01 committed (0a95670); GAP_DESIGN_REVIEWABLE passed
+Phase: 06.3 (Delete protection and write-boundary integrity — issue #282) — IN PROGRESS
+Plan: 11 of 17 — next to execute; plans 01–10 complete
+Status: Repair contract and bounded CT-01 scope approved; implementation gaps remain open
+Last activity: 2026-10-30 — 10-02 committed (464bd8e); both plan-10 artifact checks passed
 
-Progress: 45/53 plans executed; 8/10 phases complete. Phase 06.3 is not accepted.
-Next: Obtain task 10-02 approval of GAP-DESIGN and bounded CT-01 scope, then resume gap execution.
+Progress: 46/53 plans executed; 8/10 phases complete. Phase 06.3 is not accepted.
+Next: Execute approved plans 11/12, then 13–17; preserve independent final verification and human dispositions.
 
-### Phase 06.3 gap execution checkpoint
+### Phase 06.3 gap execution approval
 
 - Task 10-01: `06.3-GAP-DESIGN.md` committed in `0a95670`; document verification passed.
-- Task 10-02: actual maintainer decision pending; no GAP-APPROVAL or completed plan-10 SUMMARY exists.
+- Task 10-02: maintainer replied "approve"; GAP-APPROVAL committed in `464bd8e`, including explicit CT-01 scope.
+- Plan 10 SUMMARY complete; GAP_DESIGN_REVIEWABLE and GAP_APPROVAL_BOUND both passed.
 - Reviewed design SHA-256: `feee0a1bbb36028e6bf95f9cbc8aabf73709a1db3463e64328db1d14bad7b572`.
 - Plans 10–17 combined SHA-256: `4de8457efead5268b3463860fcfc1dc0eea32c883d7fd3fd24eb402be2bdbc59`.
-- Resume at task 10-02; do not repeat committed 10-01. Plans 11–17 await dependency completion.
+- Plans 11/12 may start under the bound contract; plans 11–17 remain unexecuted. Do not repeat plan 10.
 - All four defects and all twelve human items remain unresolved; phase acceptance is unchanged.
 
 ### Phase 06.3 gap planning
@@ -149,6 +150,7 @@ Next: Obtain task 10-02 approval of GAP-DESIGN and bounded CT-01 scope, then res
 | Phase 06.3 P02 | 18min | 2 tasks | 6 files |
 | Phase 06.3 P03 | 10min | 2 tasks | 5 files |
 | Phase 06.3 P04 | 12min | 2 tasks | 2 files |
+| Phase 06.3 P10 | 3min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -255,6 +257,8 @@ Recent decisions affecting current work:
 - [Phase 06.3]: 06.3-02: metadata-only previews replace NestedObjects; exact Model.delete uses native collector provenance, actual Author/Car methods retain using and stale-error propagation; 359 affected tests pass on both cached supported series
 - [Phase 06.3]: 03: E263 rejects legacy collection overrides; E264 diagnoses inspectable incompatible delete(using=...) methods; opaque methods fail without invocation at runtime.
 - [Phase 06.3]: 03: Proxy and concrete instances share stored-row identity; genuine multi-table parent models remain distinct; scoped providers validate immutable boundaries and saved same-alias records.
+- [Phase 06.3]: Maintainer approved GAP-DESIGN and plans 10–17 including immediate owner-qualified provider migration; actual response and reviewed digests recorded in GAP-APPROVAL.
+- [Phase 06.3]: Bounded CT-01 configured-content-type default/custom permission scope explicitly approved; implementation and all twelve human dispositions remain outstanding.
 
 ### Pending Todos
 
@@ -301,6 +305,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-30T23:13:06.962826+00:00
-Stopped at: Phase 06.3 plan 10 task 10-01 committed (0a95670); task 10-02 awaiting maintainer approval
-Resume file: .planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-10-PLAN.md
+Last session: 2026-10-30T23:15:55.075Z
+Stopped at: Completed 06.3-10-PLAN.md; contract and CT-01 scope approved; next plans 11/12; phase remains gaps_found
+Resume file: None

@@ -461,7 +461,7 @@ No architecture is chosen; do not run a blanket automatic `--fix` pass.
 The user explicitly added GUA-01 on 2026-10-30: AUTH-06’s residual review flag and IN-02/IN-03 transfer
 here unresolved, alongside #282 rather than as an amendment to the external issue.
 WR-01 was fixed separately in 6.2 by quick 261030-csg. IN-01/IN-04 are closed with rationale and IN-05 is fixed in 6.2.
-**Plans**: 9/17 plans executed; eight gap-closure plans verified and ready to execute. Plan 10 prepares the concrete contract delta and requires maintainer approval before further implementation. Phase verification remains `gaps_found`.
+**Plans**: 10/17 plans executed; plan 10's concrete contract delta and bounded CT-01 scope are approved. Seven implementation/evidence/review plans (11–17) remain; plans 11/12 may start under the bound approval. Phase verification remains `gaps_found`.
 
 Plans:
 **Wave 1**
@@ -490,9 +490,9 @@ Plans:
 - [x] 06.3-09-PLAN.md — Three-series matrix and affected acceptance reconciliation
 
 **Wave 9** *(blocked on Wave 8 completion)*
-- [ ] 06.3-10-PLAN.md — Reviewable repair contract and maintainer approval
+- [x] 06.3-10-PLAN.md — Reviewable repair contract and maintainer approval
 
-**Wave 10** *(blocked on Wave 9 approval)*
+**Wave 10** *(Wave 9 approval recorded; ready to execute)*
 - [ ] 06.3-11-PLAN.md — CR-01 selected-database native target and parent identity
 - [ ] 06.3-12-PLAN.md — CT-01 configured Guardian content-type access
 
@@ -576,5 +576,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 6. Form-button leaf | 10/10 | Complete    | 2026-10-28 |
 | 6.1. Cancel form button as a link | 3/3 | Complete    | 2026-10-29 |
 | 6.2. Request authorization and write integrity | 9/9 | Complete    | 2026-10-30 |
-| 6.3. Delete protection and write-boundary integrity | 9/17 | In Progress | - |
+| 6.3. Delete protection and write-boundary integrity | 10/17 | In Progress | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

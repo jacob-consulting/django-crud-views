@@ -236,7 +236,10 @@ def test_nullable_join_unknown_boundary(nullable_graph, monkeypatch, modal, atom
     assert len(inspection.boundaries) == 1
     boundary = inspection.boundaries[0]
     assert (boundary.kind, boundary.model, boundary.field_name, boundary.field_model) == (
-        "on_delete", g.Root, "target", g.Ref
+        "on_delete",
+        g.Root,
+        "target",
+        g.Ref,
     )
     assert boundary.source_pks == (1,)
     assert inspection.related == ([root], {}, [])
@@ -248,8 +251,21 @@ def test_nullable_join_unknown_boundary(nullable_graph, monkeypatch, modal, atom
     assert g.events == []
     assert set(g.Root.objects.values_list("pk", flat=True)) == {1, 2}
     assert set(g.Ref.objects.values_list("pk", flat=True)) == {11}
+    with monkeypatch.context() as protected:
+        protected.setattr(g.view, "cv_check_delete_protection", lambda self: ["Business protection"])
+        response = g.client.post(g.url, {"confirm": "on"}, headers=headers)
+        assert response.status_code == (422 if modal else 200)
+        assert response.context["delete_preview_incomplete"] is True
+        assert "Business protection" in response.content.decode()
+    assert g.events == []
+    assert set(g.Root.objects.values_list("pk", flat=True)) == {1, 2}
+    response = g.client.post(g.url, {"confirm": "on"}, headers=headers)
+    assert response.status_code == (204 if modal else 302)
+    assert g.events == []
+    assert set(g.Root.objects.values_list("pk", flat=True)) == {2}
+    assert set(g.Ref.objects.values_list("pk", flat=True)) == {11}
     # A real matching row proves this handler does execute after valid confirmation.
-    g.Root.objects.filter(pk=1).update(code="selected")
+    g.Root.objects.create(pk=1, code="selected")
     g.Ref.objects.create(pk=12, target_id="selected")
     response = g.client.post(g.url, {"confirm": "on"}, headers=headers)
     assert response.status_code == (204 if modal else 302)

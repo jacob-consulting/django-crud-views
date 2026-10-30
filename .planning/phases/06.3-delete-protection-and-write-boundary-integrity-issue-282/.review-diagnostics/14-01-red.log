@@ -1,0 +1,96 @@
+FFFF                                                                     [100%]
+=================================== FAILURES ===================================
+_______________ test_nullable_join_protect_request[False-False] ________________
+
+nullable_graph = namespace(Root=<class 'tests.test1.test_delete_join_identity.nullable_graph.<locals>.Root'>, Ref=<class 'tests.test1.t...>.RootDelete'>, client=<django.test.client.Client object at 0x788c404dcd70>, events=[], url='/nullable_join/1/delete/')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x788c404dfe30>
+atomic = False, modal = False
+
+    @pytest.mark.parametrize("atomic", [False, True])
+    @pytest.mark.parametrize("modal", [False, True])
+    def test_nullable_join_protect_request(nullable_graph, monkeypatch, atomic, modal):
+        """An unlinked nullable FK must not prevent confirmation of a null-key root."""
+        g = nullable_graph
+        root = g.Root.objects.create(pk=1, code=None)
+        g.Root.objects.create(pk=2, code=None)
+        g.Ref.objects.create(pk=11, target_id=None)
+        monkeypatch.setattr(g.view, "cv_atomic", atomic)
+        headers = {"X-CV-Modal": "true"} if modal else {}
+        preview = g.client.get(g.url, headers=headers)
+        assert preview.status_code == 200
+>       assert preview.context["has_protected_objects"] is False
+E       assert True is False
+
+tests/test1/test_delete_join_identity.py:111: AssertionError
+________________ test_nullable_join_protect_request[False-True] ________________
+
+nullable_graph = namespace(Root=<class 'tests.test1.test_delete_join_identity.nullable_graph.<locals>.Root'>, Ref=<class 'tests.test1.t...>.RootDelete'>, client=<django.test.client.Client object at 0x788c40841e50>, events=[], url='/nullable_join/1/delete/')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x788c407bf530>
+atomic = True, modal = False
+
+    @pytest.mark.parametrize("atomic", [False, True])
+    @pytest.mark.parametrize("modal", [False, True])
+    def test_nullable_join_protect_request(nullable_graph, monkeypatch, atomic, modal):
+        """An unlinked nullable FK must not prevent confirmation of a null-key root."""
+        g = nullable_graph
+        root = g.Root.objects.create(pk=1, code=None)
+        g.Root.objects.create(pk=2, code=None)
+        g.Ref.objects.create(pk=11, target_id=None)
+        monkeypatch.setattr(g.view, "cv_atomic", atomic)
+        headers = {"X-CV-Modal": "true"} if modal else {}
+        preview = g.client.get(g.url, headers=headers)
+        assert preview.status_code == 200
+>       assert preview.context["has_protected_objects"] is False
+E       assert True is False
+
+tests/test1/test_delete_join_identity.py:111: AssertionError
+________________ test_nullable_join_protect_request[True-False] ________________
+
+nullable_graph = namespace(Root=<class 'tests.test1.test_delete_join_identity.nullable_graph.<locals>.Root'>, Ref=<class 'tests.test1.t...>.RootDelete'>, client=<django.test.client.Client object at 0x788c407f5c70>, events=[], url='/nullable_join/1/delete/')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x788c40804230>
+atomic = False, modal = True
+
+    @pytest.mark.parametrize("atomic", [False, True])
+    @pytest.mark.parametrize("modal", [False, True])
+    def test_nullable_join_protect_request(nullable_graph, monkeypatch, atomic, modal):
+        """An unlinked nullable FK must not prevent confirmation of a null-key root."""
+        g = nullable_graph
+        root = g.Root.objects.create(pk=1, code=None)
+        g.Root.objects.create(pk=2, code=None)
+        g.Ref.objects.create(pk=11, target_id=None)
+        monkeypatch.setattr(g.view, "cv_atomic", atomic)
+        headers = {"X-CV-Modal": "true"} if modal else {}
+        preview = g.client.get(g.url, headers=headers)
+        assert preview.status_code == 200
+>       assert preview.context["has_protected_objects"] is False
+E       assert True is False
+
+tests/test1/test_delete_join_identity.py:111: AssertionError
+________________ test_nullable_join_protect_request[True-True] _________________
+
+nullable_graph = namespace(Root=<class 'tests.test1.test_delete_join_identity.nullable_graph.<locals>.Root'>, Ref=<class 'tests.test1.t...>.RootDelete'>, client=<django.test.client.Client object at 0x788c40be42c0>, events=[], url='/nullable_join/1/delete/')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x788c4076bf20>
+atomic = True, modal = True
+
+    @pytest.mark.parametrize("atomic", [False, True])
+    @pytest.mark.parametrize("modal", [False, True])
+    def test_nullable_join_protect_request(nullable_graph, monkeypatch, atomic, modal):
+        """An unlinked nullable FK must not prevent confirmation of a null-key root."""
+        g = nullable_graph
+        root = g.Root.objects.create(pk=1, code=None)
+        g.Root.objects.create(pk=2, code=None)
+        g.Ref.objects.create(pk=11, target_id=None)
+        monkeypatch.setattr(g.view, "cv_atomic", atomic)
+        headers = {"X-CV-Modal": "true"} if modal else {}
+        preview = g.client.get(g.url, headers=headers)
+        assert preview.status_code == 200
+>       assert preview.context["has_protected_objects"] is False
+E       assert True is False
+
+tests/test1/test_delete_join_identity.py:111: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test1/test_delete_join_identity.py::test_nullable_join_protect_request[False-False]
+FAILED tests/test1/test_delete_join_identity.py::test_nullable_join_protect_request[False-True]
+FAILED tests/test1/test_delete_join_identity.py::test_nullable_join_protect_request[True-False]
+FAILED tests/test1/test_delete_join_identity.py::test_nullable_join_protect_request[True-True]
+4 failed, 40 deselected in 0.90s

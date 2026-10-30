@@ -103,6 +103,8 @@ class _DeleteInspector:
                 self.boundary("on_delete", obj, field.name, field_model=field.model)
                 continue
             values = field.get_local_related_value(obj)
+            if any(value is None for value in values):
+                continue
             query = {remote.attname: value for (_, remote), value in zip(field.related_fields, values, strict=True)}
             ancestors = field.remote_field.model._base_manager.using(self.using).filter(**query)
             # A polymorphic parent manager otherwise upcasts this stored parent row
@@ -254,6 +256,8 @@ def _native_parent_rows(objects, field, *, using):
     """Resolve concrete parents from stored link fields, never relation caches."""
     for obj in objects:
         values = field.get_local_related_value(obj)
+        if any(value is None for value in values):
+            continue
         query = {remote.attname: value for (_, remote), value in zip(field.related_fields, values, strict=True)}
         parents = field.remote_field.model._base_manager.using(using).filter(**query)
         if hasattr(parents, "non_polymorphic"):

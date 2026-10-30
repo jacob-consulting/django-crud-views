@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="4" skipped="0" tests="34" time="2.540" timestamp="2026-10-30T23:19:46.429712+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_delete_join_identity" name="test_native_selected_join_request[False-False-default]" time="0.643" /><testcase classname="tests.test1.test_delete_join_identity" name="test_native_selected_join_request[False-False-shard]" time="0.060" /><testcase classname="tests.test1.test_delete_join_identity" name="test_native_selected_join_request[False-True-default]" time="0.065" /><testcase classname="tests.test1.test_delete_join_identity" name="test_native_selected_join_request[False-True-shard]" time="0.066" /><testcase classname="tests.test1.test_delete_join_identity" name="test_native_selected_join_request[True-False-default]" time="0.058" /><testcase classname="tests.test1.test_delete_join_identity" name="test_native_selected_join_request[True-False-shard]" time="0.056" /><testcase classname="tests.test1.test_delete_join_identity" name="test_native_selected_join_request[True-True-default]" time="0.056" /><testcase classname="tests.test1.test_delete_join_identity" name="test_native_selected_join_request[True-True-shard]" time="0.056" /><testcase classname="tests.test1.test_delete_join_identity" name="test_native_selected_parent_links[False-False-default]" time="0.049"><failure message="assert {101} == {303}&#10;  &#10;  Extra items in the left set:&#10;  101&#10;  Extra items in the right set:&#10;  303&#10;  Use -v to get more diff">selected_graph = namespace(Root=&lt;class 'tests.test1.test_delete_join_identity.selected_graph.&lt;locals&gt;.Root'&gt;, Child=&lt;class 'tests.test1...ject (None)&gt;, None, False), ('commit', &lt;Descendant: Descendant object (None)&gt;, False)], url='/selected_join/1/delete/')
+database_routes = &lt;function database_routes.&lt;locals&gt;.route at 0x75606dc159e0&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x75606da64230&gt;
+using = 'default', atomic = False, blocked = False
+
+    @pytest.mark.parametrize("using", ALIASES)
+    @pytest.mark.parametrize("atomic", [False, True])
+    @pytest.mark.parametrize("blocked", [False, True])
+    def test_native_selected_parent_links(selected_graph, database_routes, monkeypatch, using, atomic, blocked):
+        """A selected child must query its parent link even with a poisoned descriptor cache."""
+        g = selected_graph
+        read = next(alias for alias in ALIASES if alias != using)
+        for alias, code in ((read, "read-parent"), (using, "selected-parent")):
+            parent = g.Parent.objects.using(alias).create(pk=101, code=code)
+            g.Parent.objects.using(alias).create(pk=303, code="unrelated")
+            child = g.Descendant(id=101, code=code, child_id=202, parent_link_id=parent.code)
+            child.save_base(raw=True, force_insert=True, using=alias)
+        foreign_parent = g.Parent.objects.using(read).get(pk=303)
+        g.Blocker.objects.using(read).create(pk=401, child_id=202)
+        if blocked:
+            g.Blocker.objects.using(using).create(pk=402, child_id=202)
+    
+        def poison(sender, instance, **kwargs):
+            g.Descendant._meta.get_field("parent_link").set_cached_value(instance, foreign_parent)
+    
+        post_init.connect(poison, sender=g.Descendant, weak=False)
+        monkeypatch.setattr(g.view, "get_queryset", lambda self: g.Descendant.objects.using(read).all())
+        monkeypatch.setattr(g.view, "cv_atomic", atomic)
+        monkeypatch.setattr(g.view, "cv_get_db_alias", lambda self: using)
+        try:
+            with database_routes(read):
+                actor = User.objects.create_user(username="parent_actor", is_superuser=True)
+                client = Client()
+                client.force_login(actor)
+                with transaction.atomic(using=read):
+                    response = client.post("/selected_join/202/delete/", {"confirm": "on"})
+                    assert response.status_code == (200 if blocked else 302)
+                    if not blocked:
+                        assert g.events[-1][0] == "commit"
+&gt;           assert set(g.Parent.objects.using(using).values_list("pk", flat=True)) == ({101, 303} if blocked else {303})
+E           assert {101} == {303}
+E             
+E             Extra items in the left set:
+E             101
+E             Extra items in the right set:
+E             303
+E             Use -v to get more diff
+
+tests/test1/test_delete_join_identity.py:240: AssertionError</failure></testcase><testcase classname="tests.test1.test_delete_join_identity" name="test_native_selected_parent_links[False-False-shard]" time="0.048"><failure message="assert {101} == {303}&#10;  &#10;  Extra items in the left set:&#10;  101&#10;  Extra items in the right set:&#10;  303&#10;  Use -v to get more diff">selected_graph = namespace(Root=&lt;class 'tests.test1.test_delete_join_identity.selected_graph.&lt;locals&gt;.Root'&gt;, Child=&lt;class 'tests.test1...ject (None)&gt;, None, False), ('commit', &lt;Descendant: Descendant object (None)&gt;, False)], url='/selected_join/1/delete/')
+database_routes = &lt;function database_routes.&lt;locals&gt;.route at 0x75606da6cf40&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x75606da9e4b0&gt;
+using = 'shard', atomic = False, blocked = False
+
+    @pytest.mark.parametrize("using", ALIASES)
+    @pytest.mark.parametrize("atomic", [False, True])
+    @pytest.mark.parametrize("blocked", [False, True])
+    def test_native_selected_parent_links(selected_graph, database_routes, monkeypatch, using, atomic, blocked):
+        """A selected child must query its parent link even with a poisoned descriptor cache."""
+        g = selected_graph
+        read = next(alias for alias in ALIASES if alias != using)
+        for alias, code in ((read, "read-parent"), (using, "selected-parent")):
+            parent = g.Parent.objects.using(alias).create(pk=101, code=code)
+            g.Parent.objects.using(alias).create(pk=303, code="unrelated")
+            child = g.Descendant(id=101, code=code, child_id=202, parent_link_id=parent.code)
+            child.save_base(raw=True, force_insert=True, using=alias)
+        foreign_parent = g.Parent.objects.using(read).get(pk=303)
+        g.Blocker.objects.using(read).create(pk=401, child_id=202)
+        if blocked:
+            g.Blocker.objects.using(using).create(pk=402, child_id=202)
+    
+        def poison(sender, instance, **kwargs):
+            g.Descendant._meta.get_field("parent_link").set_cached_value(instance, foreign_parent)
+    
+        post_init.connect(poison, sender=g.Descendant, weak=False)
+        monkeypatch.setattr(g.view, "get_queryset", lambda self: g.Descendant.objects.using(read).all())
+        monkeypatch.setattr(g.view, "cv_atomic", atomic)
+        monkeypatch.setattr(g.view, "cv_get_db_alias", lambda self: using)
+        try:
+            with database_routes(read):
+                actor = User.objects.create_user(username="parent_actor", is_superuser=True)
+                client = Client()
+                client.force_login(actor)
+                with transaction.atomic(using=read):
+                    response = client.post("/selected_join/202/delete/", {"confirm": "on"})
+                    assert response.status_code == (200 if blocked else 302)
+                    if not blocked:
+                        assert g.events[-1][0] == "commit"
+&gt;           assert set(g.Parent.objects.using(using).values_list("pk", flat=True)) == ({101, 303} if blocked else {303})
+E           assert {101} == {303}
+E             
+E             Extra items in the left set:
+E             101
+E             Extra items in the right set:
+E             303
+E             Use -v to get more diff
+
+tests/test1/test_delete_join_identity.py:240: AssertionError</failure></testcase><testcase classname="tests.test1.test_delete_join_identity" name="test_native_selected_parent_links[False-True-default]" time="0.048"><failure message="assert {101} == {303}&#10;  &#10;  Extra items in the left set:&#10;  101&#10;  Extra items in the right set:&#10;  303&#10;  Use -v to get more diff">selected_graph = namespace(Root=&lt;class 'tests.test1.test_delete_join_identity.selected_graph.&lt;locals&gt;.Root'&gt;, Child=&lt;class 'tests.test1...bject (None)&gt;, None, True), ('commit', &lt;Descendant: Descendant object (None)&gt;, False)], url='/selected_join/1/delete/')
+database_routes = &lt;function database_routes.&lt;locals&gt;.route at 0x75606dc15120&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x75606da8cb30&gt;
+using = 'default', atomic = True, blocked = False
+
+    @pytest.mark.parametrize("using", ALIASES)
+    @pytest.mark.parametrize("atomic", [False, True])
+    @pytest.mark.parametrize("blocked", [False, True])
+    def test_native_selected_parent_links(selected_graph, database_routes, monkeypatch, using, atomic, blocked):
+        """A selected child must query its parent link even with a poisoned descriptor cache."""
+        g = selected_graph
+        read = next(alias for alias in ALIASES if alias != using)
+        for alias, code in ((read, "read-parent"), (using, "selected-parent")):
+            parent = g.Parent.objects.using(alias).create(pk=101, code=code)
+            g.Parent.objects.using(alias).create(pk=303, code="unrelated")
+            child = g.Descendant(id=101, code=code, child_id=202, parent_link_id=parent.code)
+            child.save_base(raw=True, force_insert=True, using=alias)
+        foreign_parent = g.Parent.objects.using(read).get(pk=303)
+        g.Blocker.objects.using(read).create(pk=401, child_id=202)
+        if blocked:
+            g.Blocker.objects.using(using).create(pk=402, child_id=202)
+    
+        def poison(sender, instance, **kwargs):
+            g.Descendant._meta.get_field("parent_link").set_cached_value(instance, foreign_parent)
+    
+        post_init.connect(poison, sender=g.Descendant, weak=False)
+        monkeypatch.setattr(g.view, "get_queryset", lambda self: g.Descendant.objects.using(read).all())
+        monkeypatch.setattr(g.view, "cv_atomic", atomic)
+        monkeypatch.setattr(g.view, "cv_get_db_alias", lambda self: using)
+        try:
+            with database_routes(read):
+                actor = User.objects.create_user(username="parent_actor", is_superuser=True)
+                client = Client()
+                client.force_login(actor)
+                with transaction.atomic(using=read):
+                    response = client.post("/selected_join/202/delete/", {"confirm": "on"})
+                    assert response.status_code == (200 if blocked else 302)
+                    if not blocked:
+                        assert g.events[-1][0] == "commit"
+&gt;           assert set(g.Parent.objects.using(using).values_list("pk", flat=True)) == ({101, 303} if blocked else {303})
+E           assert {101} == {303}
+E             
+E             Extra items in the left set:
+E             101
+E             Extra items in the right set:
+E             303
+E             Use -v to get more diff
+
+tests/test1/test_delete_join_identity.py:240: AssertionError</failure></testcase><testcase classname="tests.test1.test_delete_join_identity" name="test_native_selected_parent_links[False-True-shard]" time="0.048"><failure message="assert {101} == {303}&#10;  &#10;  Extra items in the left set:&#10;  101&#10;  Extra items in the right set:&#10;  303&#10;  Use -v to get more diff">selected_graph = namespace(Root=&lt;class 'tests.test1.test_delete_join_identity.selected_graph.&lt;locals&gt;.Root'&gt;, Child=&lt;class 'tests.test1...bject (None)&gt;, None, True), ('commit', &lt;Descendant: Descendant object (None)&gt;, False)], url='/selected_join/1/delete/')
+database_routes = &lt;function database_routes.&lt;locals&gt;.route at 0x75606da4e980&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x75606da97230&gt;
+using = 'shard', atomic = True, blocked = False
+
+    @pytest.mark.parametrize("using", ALIASES)
+    @pytest.mark.parametrize("atomic", [False, True])
+    @pytest.mark.parametrize("blocked", [False, True])
+    def test_native_selected_parent_links(selected_graph, database_routes, monkeypatch, using, atomic, blocked):
+        """A selected child must query its parent link even with a poisoned descriptor cache."""
+        g = selected_graph
+        read = next(alias for alias in ALIASES if alias != using)
+        for alias, code in ((read, "read-parent"), (using, "selected-parent")):
+            parent = g.Parent.objects.using(alias).create(pk=101, code=code)
+            g.Parent.objects.using(alias).create(pk=303, code="unrelated")
+            child = g.Descendant(id=101, code=code, child_id=202, parent_link_id=parent.code)
+            child.save_base(raw=True, force_insert=True, using=alias)
+        foreign_parent = g.Parent.objects.using(read).get(pk=303)
+        g.Blocker.objects.using(read).create(pk=401, child_id=202)
+        if blocked:
+            g.Blocker.objects.using(using).create(pk=402, child_id=202)
+    
+        def poison(sender, instance, **kwargs):
+            g.Descendant._meta.get_field("parent_link").set_cached_value(instance, foreign_parent)
+    
+        post_init.connect(poison, sender=g.Descendant, weak=False)
+        monkeypatch.setattr(g.view, "get_queryset", lambda self: g.Descendant.objects.using(read).all())
+        monkeypatch.setattr(g.view, "cv_atomic", atomic)
+        monkeypatch.setattr(g.view, "cv_get_db_alias", lambda self: using)
+        try:
+            with database_routes(read):
+                actor = User.objects.create_user(username="parent_actor", is_superuser=True)
+                client = Client()
+                client.force_login(actor)
+                with transaction.atomic(using=read):
+                    response = client.post("/selected_join/202/delete/", {"confirm": "on"})
+                    assert response.status_code == (200 if blocked else 302)
+                    if not blocked:
+                        assert g.events[-1][0] == "commit"
+&gt;           assert set(g.Parent.objects.using(using).values_list("pk", flat=True)) == ({101, 303} if blocked else {303})
+E           assert {101} == {303}
+E             
+E             Extra items in the left set:
+E             101
+E             Extra items in the right set:
+E             303
+E             Use -v to get more diff
+
+tests/test1/test_delete_join_identity.py:240: AssertionError</failure></testcase><testcase classname="tests.test1.test_delete_join_identity" name="test_native_selected_parent_links[True-False-default]" time="0.053" /><testcase classname="tests.test1.test_delete_join_identity" name="test_native_selected_parent_links[True-False-shard]" time="0.056" /><testcase classname="tests.test1.test_delete_join_identity" name="test_native_selected_parent_links[True-True-default]" time="0.055" /><testcase classname="tests.test1.test_delete_join_identity" name="test_native_selected_parent_links[True-True-shard]" time="0.052" /><testcase classname="tests.test1.test_delete_join_identity" name="test_native_selected_parent_links_keep_parents[default]" time="0.041" /><testcase classname="tests.test1.test_delete_join_identity" name="test_native_selected_parent_links_keep_parents[shard]" time="0.044" /><testcase classname="tests.test1.test_delete_join_identity" name="test_native_selected_missing_row[False-default]" time="0.042" /><testcase classname="tests.test1.test_delete_join_identity" name="test_native_selected_missing_row[False-shard]" time="0.043" /><testcase classname="tests.test1.test_delete_join_identity" name="test_native_selected_missing_row[True-default]" time="0.044" /><testcase classname="tests.test1.test_delete_join_identity" name="test_native_selected_missing_row[True-shard]" time="0.046" /><testcase classname="tests.test1.test_delete_join_identity" name="test_native_selected_custom_dispatch[False-default]" time="0.042" /><testcase classname="tests.test1.test_delete_join_identity" name="test_native_selected_custom_dispatch[False-shard]" time="0.043" /><testcase classname="tests.test1.test_delete_join_identity" name="test_native_selected_custom_dispatch[True-default]" time="0.047" /><testcase classname="tests.test1.test_delete_join_identity" name="test_native_selected_custom_dispatch[True-shard]" time="0.109" /><testcase classname="tests.test1.test_delete_join_identity" name="test_native_selected_success_hook_failure[False-default]" time="0.056" /><testcase classname="tests.test1.test_delete_join_identity" name="test_native_selected_success_hook_failure[False-shard]" time="0.050" /><testcase classname="tests.test1.test_delete_join_identity" name="test_native_selected_success_hook_failure[True-default]" time="0.049" /><testcase classname="tests.test1.test_delete_join_identity" name="test_native_selected_success_hook_failure[True-shard]" time="0.048" /><testcase classname="tests.test1.test_delete_join_identity" name="test_native_selected_read_error_propagates[default]" time="0.040" /><testcase classname="tests.test1.test_delete_join_identity" name="test_native_selected_read_error_propagates[shard]" time="0.039" /><testcase classname="tests.test1.test_delete_join_identity" name="test_native_selected_denied_request[default]" time="0.050" /><testcase classname="tests.test1.test_delete_join_identity" name="test_native_selected_denied_request[shard]" time="0.049" /></testsuite></testsuites>

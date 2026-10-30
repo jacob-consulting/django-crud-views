@@ -1,19 +1,21 @@
 """Selected native rows must not borrow non-PK joins from authorized read objects."""
 
 import sys
+from contextlib import nullcontext
 from types import ModuleType, SimpleNamespace
 
 import pytest
 from django.contrib.auth.models import Permission, User
 from django.contrib.contenttypes.models import ContentType
 from django.db import connections, models, router, transaction
-from django.db.models.signals import post_delete, pre_delete
+from django.db.models.signals import post_delete, post_init, pre_delete
 from django.test import Client, override_settings
 from django.test.utils import isolate_apps
 from django.urls import clear_url_caches
 
 from crud_views.lib import check as check_module
 from crud_views.lib.crispy import CrispyDeleteForm, CrispyViewMixin
+from crud_views.lib.deletion import _DeleteCollector, execute_deletion
 from crud_views.lib.views import DeleteViewPermissionRequired, ListViewPermissionRequired
 from crud_views.lib.viewset import _REGISTRY, _REGISTRY_LOCK, ViewSet
 
@@ -43,7 +45,26 @@ def selected_graph(monkeypatch):
             class Meta:
                 app_label = "app"
 
-        classes = (Root, Child)
+        class Parent(models.Model):
+            code = models.CharField(max_length=40, unique=True)
+
+            class Meta:
+                app_label = "app"
+
+        class Descendant(Parent):
+            child_id = models.IntegerField(primary_key=True)
+            parent_link = models.OneToOneField(Parent, to_field="code", parent_link=True, on_delete=models.CASCADE)
+
+            class Meta:
+                app_label = "app"
+
+        class Blocker(models.Model):
+            child = models.ForeignKey(Descendant, on_delete=models.PROTECT)
+
+            class Meta:
+                app_label = "app"
+
+        classes = (Root, Child, Parent, Descendant, Blocker)
         for alias in ALIASES:
             with connections[alias].schema_editor() as editor:
                 for model in classes:
@@ -92,7 +113,14 @@ def selected_graph(monkeypatch):
             with override_settings(ROOT_URLCONF=urls.__name__):
                 clear_url_caches()
                 yield SimpleNamespace(
-                    Root=Root, Child=Child, view=RootDelete, events=events, url="/selected_join/1/delete/"
+                    Root=Root,
+                    Child=Child,
+                    Parent=Parent,
+                    Descendant=Descendant,
+                    Blocker=Blocker,
+                    view=RootDelete,
+                    events=events,
+                    url="/selected_join/1/delete/",
                 )
         finally:
             pre_delete.disconnect(before, sender=Root)
@@ -174,3 +202,187 @@ def test_native_selected_join_request(selected_graph, database_routes, monkeypat
     ]
     assert all(event[3] is original for event in g.events if event[0] in ("pre", "post"))
     assert g.events[-2:] == [("hook", original, None, atomic), ("commit", original, False)]
+
+
+@pytest.mark.parametrize("using", ALIASES)
+@pytest.mark.parametrize("atomic", [False, True])
+@pytest.mark.parametrize("blocked", [False, True])
+def test_native_selected_parent_links(selected_graph, database_routes, monkeypatch, using, atomic, blocked):
+    """A selected child must query its parent link even with a poisoned descriptor cache."""
+    g = selected_graph
+    read = next(alias for alias in ALIASES if alias != using)
+    for alias, code in ((read, "read-parent"), (using, "selected-parent")):
+        parent = g.Parent.objects.using(alias).create(pk=101, code=code)
+        g.Parent.objects.using(alias).create(pk=303, code="unrelated")
+        child = g.Descendant(id=101, code=code, child_id=202, parent_link_id=parent.code)
+        child.save_base(raw=True, force_insert=True, using=alias)
+    foreign_parent = g.Parent.objects.using(read).get(pk=303)
+    g.Blocker.objects.using(read).create(pk=401, child_id=202)
+    if blocked:
+        g.Blocker.objects.using(using).create(pk=402, child_id=202)
+
+    def poison(sender, instance, **kwargs):
+        g.Descendant._meta.get_field("parent_link").set_cached_value(instance, foreign_parent)
+
+    post_init.connect(poison, sender=g.Descendant, weak=False)
+    monkeypatch.setattr(g.view, "get_queryset", lambda self: g.Descendant.objects.using(read).all())
+    monkeypatch.setattr(g.view, "cv_atomic", atomic)
+    monkeypatch.setattr(g.view, "cv_get_db_alias", lambda self: using)
+    try:
+        with database_routes(read):
+            actor = User.objects.create_user(username="parent_actor", is_superuser=True)
+            client = Client()
+            client.force_login(actor)
+            with transaction.atomic(using=read):
+                response = client.post("/selected_join/202/delete/", {"confirm": "on"})
+                assert response.status_code == (200 if blocked else 302)
+                if not blocked:
+                    assert g.events[-1][0] == "commit"
+        assert set(g.Parent.objects.using(using).values_list("pk", flat=True)) == ({101, 303} if blocked else {303})
+        assert set(g.Descendant.objects.using(using).values_list("pk", flat=True)) == ({202} if blocked else set())
+        assert set(g.Parent.objects.using(read).values_list("pk", flat=True)) == {101, 303}
+        assert set(g.Descendant.objects.using(read).values_list("pk", flat=True)) == {202}
+        assert set(g.Blocker.objects.using(read).values_list("pk", flat=True)) == {401}
+        if blocked:
+            assert g.events == []
+        else:
+            original = g.events[-2][1]
+            assert original.pk is None and original._state.db == read
+            assert original._state.fields_cache["parent_link"] is foreign_parent
+            assert g.events[-2:] == [("hook", original, None, atomic), ("commit", original, False)]
+    finally:
+        post_init.disconnect(poison, sender=g.Descendant)
+
+
+@pytest.mark.parametrize("using", ALIASES)
+def test_native_selected_parent_links_keep_parents(selected_graph, using):
+    g = selected_graph
+    parent = g.Parent.objects.using(using).create(pk=101, code="parent")
+    child = g.Descendant(id=101, code="parent", child_id=202, parent_link_id="parent")
+    child.save_base(raw=True, force_insert=True, using=using)
+    collector = _DeleteCollector(using=using, origin=child)
+    collector.collect([child], keep_parents=True)
+    assert collector.delete()[0] == 1
+    assert g.Parent.objects.using(using).filter(pk=parent.pk).exists()
+    assert not g.Descendant.objects.using(using).exists()
+
+
+@pytest.mark.parametrize("using", ALIASES)
+@pytest.mark.parametrize("atomic", [False, True])
+def test_native_selected_missing_row(selected_graph, monkeypatch, using, atomic):
+    g = selected_graph
+    read = next(alias for alias in ALIASES if alias != using)
+    target = g.Root.objects.using(read).create(pk=1, code="original")
+    view = g.view()
+    view.object = target
+    view.cv_atomic = atomic
+    monkeypatch.setattr(view, "cv_get_db_alias", lambda: using)
+    with pytest.raises(g.Root.DoesNotExist):
+        view.cv_form_valid_process({})
+    assert g.events == []
+    assert target.pk == 1 and target._state.db == read
+    assert g.Root.objects.using(read).filter(pk=1).exists()
+
+
+@pytest.mark.parametrize("using", ALIASES)
+@pytest.mark.parametrize("atomic", [False, True])
+def test_native_selected_custom_dispatch(selected_graph, monkeypatch, using, atomic):
+    g = selected_graph
+    read = next(alias for alias in ALIASES if alias != using)
+    target = g.Root.objects.using(read).create(pk=1, code="original")
+    # A real custom implementation explicitly re-fetches its chosen write row.
+    # Its external event and storage effects must survive adapter dispatch unchanged.
+    g.Root.objects.using(using).create(pk=1, code="selected")
+    original_delete = g.Root.delete
+
+    def delete(self, *, using):
+        g.events.append(("model", self, using))
+        selected = type(self)._base_manager.using(using).get(pk=self.pk)
+        result = original_delete(selected, using=using)
+        self.pk = None
+        return result
+
+    monkeypatch.setattr(g.Root, "delete", delete)
+    with transaction.atomic(using=using) if atomic else nullcontext():
+        result = execute_deletion(target, using=using)
+    assert result[0] == 1
+    assert [event for event in g.events if event[0] == "model"] == [("model", target, using)]
+    assert target.pk is None and target._state.db == read
+    assert not g.Root.objects.using(using).exists()
+    assert g.Root.objects.using(read).filter(pk=1).exists()
+
+
+@pytest.mark.parametrize("using", ALIASES)
+@pytest.mark.parametrize("atomic", [False, True])
+def test_native_selected_success_hook_failure(selected_graph, database_routes, monkeypatch, using, atomic):
+    g = selected_graph
+    read = _join_world(g, using)
+    error = RuntimeError("selected hook failed")
+
+    def hook(self, context):
+        g.events.append(("failed-hook", self.object, self.object.pk, connections[using].in_atomic_block))
+        g.Root.objects.using(using).create(pk=3, code="hook-effect")
+        raise error
+
+    monkeypatch.setattr(g.view, "cv_atomic", atomic)
+    monkeypatch.setattr(g.view, "cv_get_db_alias", lambda self: using)
+    monkeypatch.setattr(g.view, "cv_form_valid_hook", hook)
+    with database_routes(read):
+        actor = User.objects.create_user(username="hook_actor", is_superuser=True)
+        client = Client()
+        client.force_login(actor)
+        with pytest.raises(RuntimeError) as caught:
+            client.post(g.url, {"confirm": "on"})
+    assert caught.value is error
+    assert set(g.Root.objects.using(using).values_list("pk", flat=True)) == ({1, 2} if atomic else {2, 3})
+    assert set(g.Child.objects.using(using).values_list("pk", flat=True)) == {22}
+    assert set(g.Root.objects.using(read).values_list("pk", flat=True)) == {1}
+    assert [event[0] for event in g.events] == ["pre", "post", "failed-hook"]
+    assert g.events[-1][2:] == (None, atomic)
+
+
+@pytest.mark.parametrize("using", ALIASES)
+def test_native_selected_read_error_propagates(selected_graph, monkeypatch, using):
+    g = selected_graph
+    read = _join_world(g, using)
+    target = g.Root.objects.using(read).get(pk=1)
+    error = RuntimeError("selected value converter failed")
+    field = g.Root._meta.get_field("code")
+
+    def convert(value, expression, connection):
+        assert connection.alias == using
+        raise error
+
+    monkeypatch.setattr(field, "from_db_value", convert, raising=False)
+    with pytest.raises(RuntimeError) as caught:
+        execute_deletion(target, using=using)
+    assert caught.value is error
+    assert target.pk == 1 and g.events == []
+    assert set(g.Root.objects.using(using).values_list("pk", flat=True)) == {1, 2}
+    assert set(g.Child.objects.using(using).values_list("pk", flat=True)) == {22}
+
+
+@pytest.mark.parametrize("using", ALIASES)
+def test_native_selected_denied_request(selected_graph, database_routes, using):
+    g = selected_graph
+    read = _join_world(g, using)
+    with database_routes(read):
+        actor = User.objects.create_user(username="denied_actor")
+        client = Client()
+        client.force_login(actor)
+        assert client.post(g.url, {"confirm": "on"}).status_code == 403
+    assert g.events == []
+    assert set(g.Root.objects.using(using).values_list("pk", flat=True)) == {1, 2}
+    assert set(g.Child.objects.using(using).values_list("pk", flat=True)) == {22}
+
+
+@pytest.mark.parametrize("using", ALIASES)
+def test_native_selected_join_count(selected_graph, using):
+    g = selected_graph
+    read = _join_world(g, using)
+    original = g.Root.objects.using(read).get(pk=1)
+    result = execute_deletion(original, using=using)
+    assert result == (1, {"app.Root": 1})
+    assert original.pk is None
+    assert set(g.Root.objects.using(using).values_list("pk", flat=True)) == {2}
+    assert set(g.Child.objects.using(using).values_list("pk", flat=True)) == {22}

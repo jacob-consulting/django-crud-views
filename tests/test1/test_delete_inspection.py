@@ -9,6 +9,113 @@ from tests.test1.app.models import Book, BookNote, Contract, Publisher
 from tests.test1.app.views import PublisherCascadeDeleteView
 
 
+def _check_ids(view):
+    return [message.id for check in view.checks() for message in check.messages()]
+
+
+@pytest.mark.django_db
+def test_legacy_collection_override_startup_and_runtime(publisher_penguin, monkeypatch):
+    from django.core.exceptions import ImproperlyConfigured
+
+    from crud_views.lib.views.delete import DeleteView
+
+    events = []
+
+    class Legacy(DeleteView):
+        def cv_get_related_objects(self):
+            events.append("unsafe")
+
+    assert "viewset.E263" in _check_ids(Legacy)
+    view = Legacy()
+    view.object = publisher_penguin
+    with pytest.raises(ImproperlyConfigured, match="cv_get_delete_preview.*cv_filter_related_objects"):
+        view._cv_inspect_deletion()
+    assert events == []
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("signature_kind", ["keyword", "kwargs", "no-using", "positional", "opaque"])
+def test_custom_delete_signature_diagnostics(publisher_penguin, monkeypatch, signature_kind):
+    from django.core.exceptions import ImproperlyConfigured
+
+    from crud_views.lib.deletion import execute_deletion
+    from crud_views.lib.views.delete import DeleteView
+
+    events = []
+
+    def keyword(self, *, using):
+        events.append(using)
+
+    def kwargs(self, **kwargs):
+        events.append(kwargs["using"])
+
+    def no_using(self):
+        events.append("unsafe")
+
+    def positional(self, using, /):
+        events.append("unsafe")
+
+    class Opaque:
+        __signature__ = "uninspectable"
+
+        def __call__(self, **kwargs):
+            events.append("unsafe")
+
+    method = {"keyword": keyword, "kwargs": kwargs, "no-using": no_using, "positional": positional,
+              "opaque": Opaque()}[signature_kind]
+    monkeypatch.setattr(Publisher, "delete", method)
+
+    class SignatureView(DeleteView):
+        model = Publisher
+
+    compatible = signature_kind in ("keyword", "kwargs")
+    assert ("viewset.E264" in _check_ids(SignatureView)) is (not compatible and signature_kind != "opaque")
+    if compatible:
+        execute_deletion(publisher_penguin, using="default")
+        assert events == ["default"]
+    else:
+        with pytest.raises(ImproperlyConfigured, match="inspectable signature.*using"):
+            execute_deletion(publisher_penguin, using="default")
+        assert events == []
+
+
+def test_signature_checks_skip_bare_and_resource_views(monkeypatch):
+    from crud_views.lib.resource import Resource, ResourceViewMixin
+    from crud_views.lib.views.delete import DeleteView
+    from crud_views.lib.viewset import ViewSet
+
+    class Bare(DeleteView):
+        cv_modal_size = "bad"
+
+    assert "viewset.E250" in _check_ids(Bare)
+    assert "viewset.E264" not in _check_ids(Bare)
+    for value in (None, "not a model", object()):
+        class NonModel(DeleteView):
+            model = value
+
+        assert "viewset.E264" not in _check_ids(NonModel)
+
+    class Item(Resource):
+        key: str
+
+        class Meta:
+            pk_field = "key"
+
+    vs = ViewSet(model=Item, name="inspection_resource_signature")
+
+    class ResourceDelete(ResourceViewMixin, DeleteView):
+        cv_viewset = vs
+
+    assert "viewset.E264" not in _check_ids(ResourceDelete)
+    assert "viewset.E262" in [m.id for c in vs.checks() for m in c.messages()]
+    monkeypatch.setattr(Publisher, "delete", lambda self: None)
+
+    class BadModel(DeleteView):
+        model = Publisher
+
+    assert "viewset.E264" in _check_ids(BadModel)
+
+
 @pytest.mark.django_db(transaction=True)
 @pytest.mark.parametrize("outcome", ["invalid", "native-blocked", "business-blocked", "permitted"])
 def test_tracer_real_preview_confirmation_and_commit(

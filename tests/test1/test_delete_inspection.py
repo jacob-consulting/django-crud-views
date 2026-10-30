@@ -78,3 +78,29 @@ def test_tracer_real_preview_confirmation_and_commit(
         assert Publisher.objects.filter(pk=target_pk).exists()
         assert Book.objects.filter(pk=book_pk).exists()
         assert not Publisher.objects.filter(name="Callback side effect").exists()
+
+
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.parametrize("atomic", [False, True])
+def test_direct_delete_process_pins_alias_before_write_and_keeps_it_for_hooks(publisher_penguin, monkeypatch, atomic):
+    view = PublisherCascadeDeleteView()
+    view.object = publisher_penguin
+    view.cv_atomic = atomic
+    events = []
+
+    def select():
+        events.append("select")
+        return "default"
+
+    def hook(context):
+        assert view.object.pk is None
+        assert view.cv_get_delete_db_alias() == "default"
+        events.append("hook")
+
+    monkeypatch.setattr(view, "cv_get_db_alias", select)
+    monkeypatch.setattr(view, "cv_form_valid_hook", hook)
+    monkeypatch.setattr(view, "cv_on_commit", lambda context: events.append("commit"))
+    pk = publisher_penguin.pk
+    view.cv_form_valid_process({})
+    assert events == ["select", "hook", "commit"]
+    assert not Publisher.objects.filter(pk=pk).exists()

@@ -71,7 +71,7 @@ Source: `superpowers/notes/2026-10-28-pre-1.0-before-theme-freeze-analysis.md` B
 - [ ] **AUTH-01**: All package delete views reject HTTP DELETE with 405 while the validated POST protection, form, hook and transaction lifecycle remains intact.
 - [x] **AUTH-02**: Formset fragments authorize the target and validate root/parent/fragment ancestry before rendering; valid persisted and unsaved nested rows retain the request and {html, rows} protocol.
 - [ ] **AUTH-03**: Core and Guardian delete previews expose only permitted protected-object labels and an independent generic blocked notice, including when every label is hidden.
-- [ ] **AUTH-04**: Parent permission None preserves actual parent resolution and action-state enforcement; create controls/helpers and direct GET/POST agree without adding child-add requirements.
+- [x] **AUTH-04**: Parent permission None preserves actual parent resolution and action-state enforcement; create controls/helpers and direct GET/POST agree without adding child-add requirements.
 - [x] **AUTH-05**: Inactive actors receive no unauthorized rows or object access through Guardian request and callable helper paths, including when authentication permits inactive sessions; active-superuser behavior is preserved.
 - [x] **AUTH-06**: Global fallback remains per view; the inert ViewSet flag is removed with clear diagnostics/migration; get_objects_for_user stays strict and manage shows effective policy per view and the strict helper policy.
 - [ ] **AUTH-07**: Direct-request actor and native-template regressions preserve parent/global, aggregate purge and form/cancel contracts; changed method/access/config/context behavior is documented with paired Breaking and migration guidance.
@@ -80,14 +80,14 @@ Source: `superpowers/notes/2026-10-28-pre-1.0-before-theme-freeze-analysis.md` B
 
 The AUTH wording above is retained; unchecked entries are not wholly accepted. Historical passing evidence remains
 in [06.2-ACCEPTANCE](phases/06.2-request-authorization-and-write-integrity/06.2-ACCEPTANCE.md), subject to this split.
-No new verification or UAT pass is implied, including for checked entries representing previously recorded work.
+Phase 6.2 retained-scope verification and UAT passed on 2026-10-30. This does not accept the transferred obligations; AUTH-01/03/07 remain partial and GUA-01 remains unresolved.
 
 | Requirement | Retained Phase 6.2 evidence | Outstanding obligation / owner |
 | --- | --- | --- |
 | AUTH-01 | HTTP DELETE rejection and named POST form/hook/atomic controls | CR-02/03/04: callback-safe inspection, unknown-error propagation and database alignment → 6.3; overall unresolved |
 | AUTH-02 | Fragment authorization/ancestry and first-child round trips | A19 sibling-index round trip → proposed 6.4, not 6.3; IN-04 closed as documented integer/UUID-only fragment boundary |
 | AUTH-03 | Permitted protected labels, independent notice, fixed CR-01/WR-02 response scope | CR-02/04: obtain blocked state without callbacks and from the target database → 6.3; overall unresolved |
-| AUTH-04 | Parent-None dispatch and Guardian helper/state regressions | WR-01 core rendered-state agreement fixed by quick 261030-csg (bd31992); 25 core and 86 preservation cases pass on both supported cached versions; phase verification/UAT pending |
+| AUTH-04 | Parent-None dispatch and Guardian helper/state regressions | WR-01 core rendered-state agreement fixed by quick 261030-csg (bd31992); 25 core and 86 preservation cases pass on both supported cached versions; retained-scope verification and UAT passed on 2026-10-30 |
 | AUTH-05 | Named inactive-actor request/helper regressions | Retain recorded evidence; no new result or broader certification |
 | AUTH-06 | Named per-view configuration, helper and manage regressions | Unspecified review flag and IN-02/IN-03 → Phase 6.3 GUA-01, unresolved; IN-05 composition guard fixed; checked item covers named evidence only |
 | AUTH-07 | Recorded actor/native-template replay and paired documentation | Real-preview, converter, routing and preservation re-review → 6.3; existing suite passes do not cover CR-02–CR-04 |
@@ -194,7 +194,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | AUTH-01 | Phase 6.2 + 6.3 | Partial; CR-02–CR-04 unresolved in 6.3 |
 | AUTH-02 | Phase 6.2 | Named evidence retained; A19 open; IN-04 documented unsupported boundary |
 | AUTH-03 | Phase 6.2 + 6.3 | Partial; CR-02/CR-04 unresolved in 6.3 |
-| AUTH-04 | Phase 6.2 | Implemented; WR-01 fixed; phase verification pending |
+| AUTH-04 | Phase 6.2 | Complete; WR-01 fixed; verification/UAT passed |
 | AUTH-05 | Phase 6.2 | Complete |
 | AUTH-06 | Phase 6.2 + 6.3 | Named 6.2 evidence retained; residual flag and IN-02/03 → GUA-01; IN-05 fixed |
 | AUTH-07 | Phase 6.2 + 6.3 | Partial; #282 re-review pending in 6.3 |

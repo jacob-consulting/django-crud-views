@@ -26,7 +26,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 5: Table pagination parity** - plan 3B: table pagination gets the same registry icons and accessible markup as card pagination (droppable) (completed 2026-10-27)
 - [x] **Phase 6: Form-button leaf** - plan 2 (#257): crispy form buttons render as `<button>` through `tags/button/form.html` (completed 2026-10-28)
 - [x] **Phase 6.1: Cancel form button as a link (INSERTED)** - #275: themes can opt into native cancel links while preserving the button default (completed 2026-10-29)
-- [ ] **Phase 6.2: Request authorization and write integrity (INSERTED)** - analysis B1–B7: secure request paths, safe delete previews and truthful Guardian configuration before the freeze
+- [x] **Phase 6.2: Request authorization and write integrity (INSERTED)** - analysis B1–B7: secure request paths, safe delete previews and truthful Guardian configuration before the freeze (completed 2026-10-30)
 - [ ] **Phase 6.3: Delete protection and write-boundary integrity (INSERTED)** - issue #282
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
@@ -377,8 +377,7 @@ recommendations are proposals, not locked decisions.
 
 **Scope exclusions**: Conditional/formset lifecycle work A1–A7 (proposed 6.4), presentation/alias cleanup
 (proposed 6.5), Tabler theme-adoption seams (proposed 6.6), the jQuery port, and the final stability inventory. Do not reopen completed Phase 6/6.1 acceptance.
-**Acceptance reconciliation (2026-10-30)**: All nine plans executed; closure remains pending, with no new
-verification/UAT pass. [Issue #282](https://github.com/jacob-consulting/django-crud-views/issues/282) defers
+**Acceptance reconciliation (2026-10-30)**: All nine plans executed; retained 6.2 scope verified and UAT completed on 2026-10-30, including the final Playwright blocked-delete check. [Issue #282](https://github.com/jacob-consulting/django-crud-views/issues/282) defers
 **unresolved CR-02–CR-04 to Phase 6.3** as remediation of this phase's existing promises, not scope erasure.
 
 | Existing criterion / requirement | Retained 6.2 evidence | Outstanding acceptance |
@@ -386,7 +385,7 @@ verification/UAT pass. [Issue #282](https://github.com/jacob-consulting/django-c
 | 1 / AUTH-01 | DELETE 405 and named POST lifecycle controls | Callback-safe inspection, unknown converter propagation, database alignment → 6.3 DEL-02/03/04 |
 | 3 / AUTH-03 | Filtered protected labels, independent notice, fixed CR-01/WR-02 scope | Callback-free, target-database blocked-state determination → 6.3 DEL-02/04/05 |
 | 7 / AUTH-07 | Actor/native-template replay, paired docs | Real-preview/error/routing evidence, preserved authorization and re-review → 6.3 DEL-01–06 |
-| 4 / AUTH-04 | Parent-None dispatch and Guardian helper/state cases | WR-01 core rendered-state agreement fixed in quick 261030-csg; final post-fix UAT remains pending |
+| 4 / AUTH-04 | Parent-None dispatch and Guardian helper/state cases | WR-01 core rendered-state agreement fixed in quick 261030-csg; final post-fix Playwright UAT passed |
 | 2, 5, 6 / AUTH-02/05/06 | Named fragment/inactive/configuration cases | Preserve A19 (proposed 6.4); AUTH-06 residual review and IN-02/03 → 6.3 GUA-01; other findings retain separate dispositions |
 
 See [REQUIREMENTS](REQUIREMENTS.md#acceptance-ownership-split-2026-10-30),
@@ -397,7 +396,7 @@ WR-01 is fixed by quick 261030-csg (bd31992). IN-01/IN-04 are closed with explic
 The revised analysis §8 puts conditional/formset, presentation and Tabler proposals at 6.4/6.5/6.6; only 6.3 is
 inserted here. Phase 7 remains last and cannot freeze the affected promises before remediation.
 
-**Plans**: 9/9 plans executed; final automated gates refreshed; canonical verification human_needed, one post-fix UAT check pending
+**Plans**: 9/9 plans complete; final automated gates refreshed; canonical verification passed; final Playwright UAT passed; 6.3 transfers remain unresolved
 
 Plans:
 **Wave 1**
@@ -531,6 +530,6 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 5. Table pagination parity | 3/3 | Complete    | 2026-10-27 |
 | 6. Form-button leaf | 10/10 | Complete    | 2026-10-28 |
 | 6.1. Cancel form button as a link | 3/3 | Complete    | 2026-10-29 |
-| 6.2. Request authorization and write integrity | 9/9 | In Progress | - |
+| 6.2. Request authorization and write integrity | 9/9 | Complete    | 2026-10-30 |
 | 6.3. Delete protection and write-boundary integrity | 0/TBD | Not started | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

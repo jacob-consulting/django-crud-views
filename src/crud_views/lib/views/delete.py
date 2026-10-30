@@ -5,6 +5,18 @@ from typing import ClassVar, NamedTuple
 
 from django.contrib.admin.utils import NestedObjects
 from django.db import router
+from django.db.models import ForeignKey, Manager, Model, OneToOneField, QuerySet, signals
+from django.db.models.deletion import (
+    CASCADE,
+    DO_NOTHING,
+    PROTECT,
+    RESTRICT,
+    SET_NULL,
+    Collector,
+    ProtectedError,
+    RestrictedError,
+    get_candidate_relations_to_delete,
+)
 from django.urls import NoReverseMatch, reverse
 from django.views import generic
 
@@ -22,6 +34,96 @@ class RelatedObjects(NamedTuple):
     tree: list
     summary: dict[str, int]
     protected: list
+
+
+class _TargetDeleteBlocked(Exception):
+    """Only a proven, pre-write native target collection failure crosses the write boundary."""
+
+
+def _cv_has_native_collection_graph(target):
+    """Certify metadata without queries or callbacks, including empty cascade/parent branches.
+
+    Django aggregates handler errors, losing their traceback. Custom handlers, SET/defaults, private collectors
+    and unknown loaders cannot be certified. This affects exception translation only, never the real deletion.
+    """
+    visited = set()
+
+    def native_loader(model):
+        manager = model._base_manager
+        return (
+            type(manager) is Manager
+            and manager._queryset_class is QuerySet
+            and model.__init__ is Model.__init__
+            and model.from_db.__func__ is Model.from_db.__func__
+            and not signals.pre_init.has_listeners(model)
+            and not signals.post_init.has_listeners(model)
+        )
+
+    def visit(model):
+        if model in visited:
+            return True
+        visited.add(model)
+        if not native_loader(model):
+            return False
+        opts = model._meta
+        if any(hasattr(field, "bulk_related_objects") for field in opts.private_fields):
+            return False
+        if opts.concrete_model is not model and not visit(opts.concrete_model):
+            return False
+        for parent, field in opts.parents.items():
+            if field is not None and type(field) not in (ForeignKey, OneToOneField):
+                return False
+            if not visit(parent):
+                return False
+        for related in get_candidate_relations_to_delete(opts):
+            field = related.field
+            if type(field) not in (ForeignKey, OneToOneField):
+                return False
+            handler = field.remote_field.on_delete
+            if not any(handler is allowed for allowed in (CASCADE, PROTECT, RESTRICT, SET_NULL, DO_NOTHING)):
+                return False
+            if not native_loader(related.related_model):
+                return False
+            if handler is CASCADE and not visit(related.related_model):
+                return False
+        return True
+
+    try:
+        return visit(type(target))
+    except (AttributeError, TypeError):
+        return False  # Unknown metadata is not evidence of native collection.
+
+
+def _cv_is_target_collection_protection(error, target, delete_method, native_graph):
+    """Require exact Model.delete -> target Collector.collect frames, before delete SQL.
+
+    Frame identity alone cannot distinguish aggregated custom errors: native_graph must be captured before
+    invoking delete. Unknown origins always propagate; no collector payload is copied to response context.
+    """
+    if not native_graph or getattr(delete_method, "__func__", None) is not Model.delete:
+        return False
+    terminal = error.__traceback__
+    if terminal is None:
+        return False
+    while terminal.tb_next is not None:
+        terminal = terminal.tb_next
+    tb = error.__traceback__
+    while tb is not None:
+        frame = tb.tb_frame
+        if frame.f_code is Model.delete.__code__ and frame.f_locals.get("self") is target:
+            collector = frame.f_locals.get("collector")
+            child = tb.tb_next
+            return (
+                type(collector) is Collector
+                and collector.origin is target
+                and child is not None
+                and child.tb_frame.f_code is Collector.collect.__code__
+                and child.tb_frame.f_locals.get("self") is collector
+                and terminal.tb_frame.f_code is Collector.collect.__code__
+                and terminal.tb_frame.f_locals.get("self") is collector
+            )
+        tb = tb.tb_next
+    return False
 
 
 class _DeleteMethodGuardMixin:
@@ -102,6 +204,11 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, _DeleteMethodGuardMixin, ge
         return keys
 
     def cv_get_related_objects(self) -> RelatedObjects:
+        """Collect on the write alias even when previews are off.
+
+        NestedObjects disables fast deletion and materializes the graph, tree and summary. Overrides must
+        preserve the unfiltered protected collection: it supplies blocked state independently of labels.
+        """
         using = router.db_for_write(self.object._meta.model)
         collector = NestedObjects(using=using)
         collector.collect([self.object])
@@ -199,10 +306,10 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, _DeleteMethodGuardMixin, ge
         errors = self.cv_check_delete_protection()
         if errors:
             context["delete_protection_errors"] = errors
+        related = self.cv_get_related_objects()
+        # Only the boolean crosses the context boundary when the preview is disabled.
+        context["has_protected_objects"] = bool(related.protected)
         if self.cv_show_related_objects:
-            related = self.cv_get_related_objects()
-            # blocked state comes from the unfiltered collection, so hiding every label never hides the block
-            context["has_protected_objects"] = bool(related.protected)
             related = self.cv_filter_related_objects(self.request.user, related)
             context["related_summary"] = related.summary
             context["related_summary_items"] = [f"{name}: {count}" for name, count in related.summary.items()]
@@ -222,6 +329,11 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, _DeleteMethodGuardMixin, ge
         return []
 
     def post(self, request, *args, **kwargs):
+        """Honor preview protection; translate only the private pre-write marker after atomic unwind.
+
+        Lifecycle, custom relationship/default/loading and commit-callback failures retain propagation and
+        cv_atomic semantics. A failed callback must never report an already committed deletion as blocked.
+        """
         self.object = self.get_object()
 
         context = self.get_context_data(**kwargs)
@@ -229,22 +341,42 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, _DeleteMethodGuardMixin, ge
         if self.cv_form_is_valid(context):
             # get_context_data already ran the delete protection check
             errors = context.get("delete_protection_errors", [])
-            if errors:
+            if errors or context["has_protected_objects"]:
                 form = context["form"]
                 for error in errors:
                     form.add_error(None, error)
-                response = self.render_to_response(context)
-                if self.cv_modal and cv_is_modal_request(self.request):
-                    response.status_code = 422
-                return response
-            self.cv_form_valid_process(context)
+                return self._cv_protection_response(context)
+            try:
+                self.cv_form_valid_process(context)
+            except _TargetDeleteBlocked:
+                context["has_protected_objects"] = True
+                return self._cv_protection_response(context)
             return self.cv_form_valid_redirect(context)
         else:
             self.cv_form_invalid_hook(context)
             return self.cv_form_invalid(context)
 
+    def _cv_protection_response(self, context):
+        response = self.render_to_response(context)
+        if self.cv_modal and cv_is_modal_request(self.request):
+            response.status_code = 422
+        return response
+
     def cv_form_valid(self, context: dict):
-        self.object.delete()
+        """Invoke the real model method once; mark only certified native target collection protection.
+
+        Custom model deletion and relationship/default/loading paths still run, but their errors propagate.
+        No new transaction is introduced when cv_atomic is disabled.
+        """
+        target = self.object
+        delete_method = target.delete
+        native_graph = _cv_has_native_collection_graph(target)
+        try:
+            delete_method()
+        except (ProtectedError, RestrictedError) as error:
+            if _cv_is_target_collection_protection(error, target, delete_method, native_graph):
+                raise _TargetDeleteBlocked from error
+            raise
 
 
 class DeleteViewPermissionRequired(CrudViewPermissionRequiredMixin, DeleteView):

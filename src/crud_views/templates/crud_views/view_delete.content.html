@@ -9,6 +9,7 @@
         {% include "crud_views/snippets/delete/related_objects.html" %}
     {% endif %}
 
+    {% if not has_protected_objects %}
     <form class="cv-form" method="post" action="{{ request.get_full_path }}" novalidate>
         {% csrf_token %}
 
@@ -16,5 +17,6 @@
 
         {% cv_render_form %}
     </form>
+    {% endif %}
 {% endif %}
 {% endblock %}

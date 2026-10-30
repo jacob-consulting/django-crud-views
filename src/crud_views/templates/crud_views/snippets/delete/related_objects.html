@@ -2,7 +2,11 @@
 
 <div class="cv-related-objects mb-3">
     {% if has_protected_objects %}
-        {% cv_alert "error" heading=_("Deletion is blocked by protected relationships:") items=protected_objects %}
+        {% if protected_objects %}
+            {% cv_alert "error" heading=_("Deletion is blocked by protected relationships:") items=protected_objects %}
+        {% else %}
+            {% cv_alert "error" heading=_("Deletion is blocked by protected relationships") text=_("Other objects still reference this one; remove or reassign them before deleting it.") %}
+        {% endif %}
     {% endif %}
     {% if related_summary %}
         {% cv_alert "warning" heading=_("The following related objects will also be deleted:") items=related_summary_items %}

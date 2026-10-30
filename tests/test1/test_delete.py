@@ -185,6 +185,8 @@ def test_protected_objects_hidden_without_view_permission(
     content = _norm(response.content.decode())
     assert content.count(DANGER_ALERT) == 1
     assert BLOCKED_HEADING in content
+    assert BLOCKED_SENTENCE in content
+    assert BLOCKED_LIST_HEADING not in content
     assert "Secret Contract" not in content
 
 
@@ -209,6 +211,8 @@ def test_protected_objects_hidden_without_view_permission_modal(
     content = _norm(response.content.decode())
     assert content.count(DANGER_ALERT) == 1
     assert BLOCKED_HEADING in content
+    assert BLOCKED_SENTENCE in content
+    assert BLOCKED_LIST_HEADING not in content
     assert "Secret Contract" not in content
 
 
@@ -230,7 +234,8 @@ def test_protected_objects_shown_with_view_permission(
     assert response.context["has_protected_objects"] is True
     content = _norm(response.content.decode())
     assert content.count(DANGER_ALERT) == 1
-    assert BLOCKED_HEADING in content
+    assert BLOCKED_LIST_HEADING in content
+    assert BLOCKED_SENTENCE not in content
     assert "<li>Publishing Contract</li>" in content
 
 
@@ -273,7 +278,7 @@ def test_blocked_page_omits_confirmation_form(client_user_publisher_cascade_dele
 
     Contract.objects.create(title="Secret Contract", publisher=publisher_penguin)
     response = client_user_publisher_cascade_delete.get(f"/publisher_cascade/{publisher_penguin.pk}/delete/")
-    content = response.content.decode()
+    content = _norm(response.content.decode())
     assert content.count(DANGER_ALERT) == 1
     assert "<form" not in content
     assert "id_confirm" not in content
@@ -726,3 +731,686 @@ def test_registered_core_class_restoring_delete_stays_guarded(
     assert "delete" not in PublisherDeleteView.http_method_names
     assert DeleteView.http_method_names == inherited
     assert Publisher.objects.filter(pk=publisher_penguin.pk).exists()
+
+
+def _delete_probe(monkeypatch, atomic):
+    """Exercise the registered route with real writes and an intentionally stale preview."""
+    from crud_views.lib.views.delete import RelatedObjects
+    from tests.test1.app.views import PublisherDeleteView
+
+    calls = []
+    monkeypatch.setattr(PublisherDeleteView, "cv_atomic", atomic)
+    monkeypatch.setattr(PublisherDeleteView, "cv_get_related_objects", lambda self: RelatedObjects([], {}, []))
+    monkeypatch.setattr(PublisherDeleteView, "cv_form_valid_hook", lambda self, context: calls.append("success"))
+    monkeypatch.setattr(PublisherDeleteView, "cv_on_commit", lambda self, context: calls.append("commit"))
+    original = PublisherDeleteView._cv_protection_response
+
+    def response(self, context):
+        calls.append("blocked")
+        return original(self, context)
+
+    monkeypatch.setattr(PublisherDeleteView, "_cv_protection_response", response)
+    return PublisherDeleteView, calls
+
+
+def _protector(error_name, publisher):
+    from tests.test1.app.models import Contract, Royalty
+
+    model = Contract if error_name == "ProtectedError" else Royalty
+    return model.objects.create(publisher=publisher, title="Hidden protector")
+
+
+def _error_type(error_name):
+    from django.db.models import ProtectedError, RestrictedError
+
+    return ProtectedError if error_name == "ProtectedError" else RestrictedError
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("preview", [False, True])
+@pytest.mark.parametrize("method", ["get", "post"])
+def test_delete_preview_override_called_once(
+    client_user_publisher_delete, publisher_penguin, monkeypatch, preview, method
+):
+    from crud_views.lib.views.delete import RelatedObjects
+    from tests.test1.app.models import Contract
+    from tests.test1.app.views import PublisherDeleteView
+
+    contract = Contract.objects.create(title="Never projected", publisher=publisher_penguin)
+    seen = []
+
+    def related(self):
+        seen.append(self.object.pk)
+        return RelatedObjects([], {}, [contract])
+
+    monkeypatch.setattr(PublisherDeleteView, "cv_get_related_objects", related)
+    monkeypatch.setattr(PublisherDeleteView, "cv_show_related_objects", preview)
+    response = getattr(client_user_publisher_delete, method)(
+        f"/publisher/{publisher_penguin.pk}/delete/", {"confirm": True}
+    )
+    assert seen == [publisher_penguin.pk]
+    assert response.context["has_protected_objects"] is True
+    assert _response_instances(response, Contract) == []
+    assert ("protected_objects" in response.context) is preview
+
+
+@pytest.mark.django_db
+def test_delete_default_collection_uses_write_router(client_user_publisher_delete, publisher_penguin, monkeypatch):
+    from crud_views.lib.views import delete
+
+    seen = []
+    original = delete.NestedObjects
+
+    class RecordingCollector(original):
+        def __init__(self, using, *args, **kwargs):
+            seen.append(using)
+            super().__init__(using, *args, **kwargs)
+
+    routed = []
+
+    def db_for_write(model, **hints):
+        routed.append(model)
+        return "default"
+
+    monkeypatch.setattr(delete.router, "db_for_write", db_for_write)
+    monkeypatch.setattr(delete, "NestedObjects", RecordingCollector)
+    response = client_user_publisher_delete.get(f"/publisher/{publisher_penguin.pk}/delete/")
+    assert response.context["has_protected_objects"] is False
+    assert seen == ["default"]
+    assert type(publisher_penguin) in routed
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("modal", [False, True])
+def test_blocked_invalid_confirmation_keeps_invalid_path(
+    client_user_publisher_delete, publisher_penguin, monkeypatch, modal
+):
+    from tests.test1.app.models import Publisher
+    from tests.test1.app.views import PublisherDeleteView
+
+    protector = _protector("ProtectedError", publisher_penguin)
+    monkeypatch.setattr(PublisherDeleteView, "cv_modal", True)
+    calls = _spy_lifecycle(
+        monkeypatch, PublisherDeleteView, ("cv_form_invalid_hook", "cv_form_valid_hook", "cv_on_commit")
+    )
+    response = client_user_publisher_delete.post(
+        f"/publisher/{publisher_penguin.pk}/delete/", {}, headers=MODAL_HEADERS if modal else {}
+    )
+    assert response.status_code == (422 if modal else 200)
+    assert response.context["form"].errors
+    assert "<form" not in response.content.decode()
+    assert calls == ["cv_form_invalid_hook"]
+    assert Publisher.objects.filter(pk=publisher_penguin.pk).exists()
+    assert type(protector).objects.filter(pk=protector.pk).exists()
+
+
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.parametrize("atomic", [False, True])
+@pytest.mark.parametrize("error_name", ["ProtectedError", "RestrictedError"])
+@pytest.mark.parametrize("nested", [False, True])
+def test_delete_callback_protection_error_propagates_after_real_commit(
+    client_user_publisher_delete, monkeypatch, atomic, error_name, nested
+):
+    from django.db import connection
+
+    from tests.test1.app.models import Publisher
+
+    view, calls = _delete_probe(monkeypatch, atomic)
+    target = Publisher.objects.create(name="Target")
+    unrelated = Publisher.objects.create(name="Unrelated")
+    protector = _protector(error_name, unrelated)
+    error = _error_type(error_name)("Callback failure", {protector})
+    raised = []
+
+    def callback(self, context):
+        calls.append("commit")
+        assert not connection.in_atomic_block
+        try:
+            if nested:
+                unrelated.delete()
+            raise error
+        except _error_type(error_name) as exc:
+            raised.append(exc)
+            raise
+
+    monkeypatch.setattr(view, "cv_on_commit", callback)
+    with pytest.raises(_error_type(error_name)) as caught:
+        client_user_publisher_delete.post(f"/publisher/{target.pk}/delete/", {"confirm": True})
+    assert caught.value is raised[0]
+    assert not Publisher.objects.filter(pk=target.pk).exists()
+    assert Publisher.objects.filter(pk=unrelated.pk).exists()
+    assert calls == ["success", "commit"]
+
+
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.parametrize("atomic", [False, True])
+@pytest.mark.parametrize("error_name", ["ProtectedError", "RestrictedError"])
+def test_delete_success_hook_protection_error_keeps_atomic_semantics(
+    client_user_publisher_delete, monkeypatch, atomic, error_name
+):
+    from tests.test1.app.models import Publisher
+
+    view, calls = _delete_probe(monkeypatch, atomic)
+    target = Publisher.objects.create(name="Target")
+    error = _error_type(error_name)("Success hook failure", set())
+
+    def success(self, context):
+        calls.append("success")
+        raise error
+
+    monkeypatch.setattr(view, "cv_form_valid_hook", success)
+    with pytest.raises(_error_type(error_name)) as caught:
+        client_user_publisher_delete.post(f"/publisher/{target.pk}/delete/", {"confirm": True})
+    assert caught.value is error
+    assert Publisher.objects.filter(pk=target.pk).exists() is atomic
+    assert calls == ["success"]
+
+
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.parametrize("atomic", [False, True])
+@pytest.mark.parametrize("error_name", ["ProtectedError", "RestrictedError"])
+@pytest.mark.parametrize("stage", ["before", "after", "write_then_protected"])
+def test_delete_model_override_protection_error_propagates(
+    client_user_publisher_delete, monkeypatch, atomic, error_name, stage
+):
+    from django.db.models import Model
+
+    from tests.test1.app.models import Publisher
+
+    _, calls = _delete_probe(monkeypatch, atomic)
+    target = Publisher.objects.create(name="Target")
+    if stage == "write_then_protected":
+        _protector(error_name, target)
+    error = _error_type(error_name)("Model override failure", set())
+    raised = []
+
+    def delete(self, *args, **kwargs):
+        try:
+            if stage == "before":
+                raise error
+            Publisher.objects.create(name="Side effect")
+            Model.delete(self, *args, **kwargs)
+            raise error
+        except _error_type(error_name) as exc:
+            raised.append(exc)
+            raise
+
+    monkeypatch.setattr(Publisher, "delete", delete)
+    with pytest.raises(_error_type(error_name)) as caught:
+        client_user_publisher_delete.post(f"/publisher/{target.pk}/delete/", {"confirm": True})
+    assert caught.value is raised[0]
+    assert Publisher.objects.filter(pk=target.pk).exists() is (stage != "after" or atomic)
+    assert Publisher.objects.filter(name="Side effect").exists() is (stage != "before" and not atomic)
+    assert calls == []
+
+
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.parametrize("atomic", [False, True])
+@pytest.mark.parametrize("error_name", ["ProtectedError", "RestrictedError"])
+@pytest.mark.parametrize("signal_name", ["pre_delete", "post_delete"])
+def test_delete_signal_protection_error_propagates(
+    client_user_publisher_delete, monkeypatch, atomic, error_name, signal_name
+):
+    from django.db.models import signals
+
+    from tests.test1.app.models import Publisher
+
+    _, calls = _delete_probe(monkeypatch, atomic)
+    target = Publisher.objects.create(name="Target")
+    error = _error_type(error_name)("Signal failure", set())
+
+    def receiver(**kwargs):
+        calls.append(signal_name)
+        raise error
+
+    signal = getattr(signals, signal_name)
+    signal.connect(receiver, sender=Publisher, weak=False)
+    try:
+        with pytest.raises(_error_type(error_name)) as caught:
+            client_user_publisher_delete.post(f"/publisher/{target.pk}/delete/", {"confirm": True})
+        assert caught.value is error
+        assert Publisher.objects.filter(pk=target.pk).exists()
+        assert calls == [signal_name]
+    finally:
+        signal.disconnect(receiver, sender=Publisher)
+
+
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.parametrize("atomic", [False, True])
+@pytest.mark.parametrize("error_name", ["ProtectedError", "RestrictedError"])
+def test_delete_signal_commit_protection_error_propagates(
+    client_user_publisher_delete, monkeypatch, atomic, error_name
+):
+    from django.db import connection, transaction
+    from django.db.models.signals import post_delete
+
+    from tests.test1.app.models import Publisher
+
+    _, calls = _delete_probe(monkeypatch, atomic)
+    target = Publisher.objects.create(name="Target")
+    error = _error_type(error_name)("Signal callback failure", set())
+
+    def callback():
+        calls.append("signal_commit")
+        assert not connection.in_atomic_block
+        raise error
+
+    def receiver(**kwargs):
+        transaction.on_commit(callback)
+
+    post_delete.connect(receiver, sender=Publisher, weak=False)
+    try:
+        with pytest.raises(_error_type(error_name)) as caught:
+            client_user_publisher_delete.post(f"/publisher/{target.pk}/delete/", {"confirm": True})
+        assert caught.value is error
+        assert not Publisher.objects.filter(pk=target.pk).exists()
+        assert calls == (["success", "signal_commit"] if atomic else ["signal_commit"])
+    finally:
+        post_delete.disconnect(receiver, sender=Publisher)
+
+
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.parametrize("atomic", [False, True])
+@pytest.mark.parametrize("modal", [False, True])
+def test_delete_success_real_commit_order(client_user_publisher_delete, monkeypatch, atomic, modal):
+    from django.db import connection
+    from django.db.models import Model
+
+    from tests.test1.app.models import Publisher
+
+    view, calls = _delete_probe(monkeypatch, atomic)
+    monkeypatch.setattr(view, "cv_modal", True)
+    target = Publisher.objects.create(name="Target")
+
+    def delete(self):
+        calls.append("delete")
+        return Model.delete(self)
+
+    def callback(self, context):
+        assert not connection.in_atomic_block
+        calls.append("commit")
+
+    monkeypatch.setattr(Publisher, "delete", delete)
+    monkeypatch.setattr(view, "cv_on_commit", callback)
+    response = client_user_publisher_delete.post(
+        f"/publisher/{target.pk}/delete/", {"confirm": True}, headers=MODAL_HEADERS if modal else {}
+    )
+    assert response.status_code == (204 if modal else 302)
+    if modal:
+        assert response.headers["X-CV-Redirect"]
+    assert calls == ["delete", "success", "commit"]
+    assert not Publisher.objects.filter(pk=target.pk).exists()
+
+
+def _collection_snapshot():
+    from tests.test1.app.models import Book, BookNote, Contract, Publisher, Royalty
+
+    return {
+        model: list(
+            model.objects.exclude(**({"name": "Side effect"} if model is Publisher else {})).order_by("pk").values()
+        )
+        for model in (Publisher, Book, BookNote, Contract, Royalty)
+    }
+
+
+def _assert_collection_extension_propagates(client, target, calls, atomic, error_name, before):
+    from tests.test1.app.models import Publisher
+
+    with pytest.raises(_error_type(error_name)) as caught:
+        client.post(f"/publisher/{target.pk}/delete/", {"confirm": True})
+    assert _collection_snapshot() == before
+    assert Publisher.objects.filter(name="Side effect").exists() is not atomic
+    assert "success" not in calls
+    assert "commit" not in calls
+    assert "blocked" not in calls
+    return caught.value
+
+
+def _assert_handler_error(error, original, error_name, objects):
+    from django.db.models.deletion import Collector
+
+    if error_name == "ProtectedError":
+        assert error is not original  # Django replaces even custom-handler errors with an aggregate.
+        assert set(objects) <= set(error.protected_objects)
+        tb = error.__traceback__
+        while tb.tb_next is not None:
+            tb = tb.tb_next
+        assert tb.tb_frame.f_code is Collector.collect.__code__
+    else:
+        assert error is original
+
+
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.parametrize("atomic", [False, True])
+@pytest.mark.parametrize("error_name", ["ProtectedError", "RestrictedError"])
+@pytest.mark.parametrize("mode", ["raise", "nested_delete", "return"])
+def test_delete_custom_relationship_handler_propagates_after_real_commit(
+    client_user_publisher_delete, monkeypatch, atomic, error_name, mode
+):
+    from crud_views.lib.views.delete import _cv_has_native_collection_graph
+    from tests.test1.app.models import Book, Publisher
+
+    _, calls = _delete_probe(monkeypatch, atomic)
+    target = Publisher.objects.create(name="Target")
+    book = Book.objects.create(title="Cascade", publisher=target)
+    unrelated = Publisher.objects.create(name="Unrelated")
+    protector = _protector(error_name, target if mode == "return" else unrelated)
+    raised = []
+
+    def handler(collector, field, objects, using):
+        calls.append("handler")
+        Publisher.objects.create(name="Side effect")
+        # Changing the handler back now must not retroactively certify the collection.
+        if mode == "return":
+            from django.db.models import CASCADE
+
+            monkeypatch.setattr(field.remote_field, "on_delete", CASCADE)
+            return
+        try:
+            if mode == "nested_delete":
+                unrelated.delete()
+            raise _error_type(error_name)("Custom handler", {book})
+        except _error_type(error_name) as error:
+            raised.append(error)
+            raise
+
+    monkeypatch.setattr(Book._meta.get_field("publisher").remote_field, "on_delete", handler)
+    assert not _cv_has_native_collection_graph(target)
+    before = _collection_snapshot()
+    error = _assert_collection_extension_propagates(
+        client_user_publisher_delete, target, calls, atomic, error_name, before
+    )
+    assert calls == ["handler"]
+    if mode != "return":
+        _assert_handler_error(error, raised[0], error_name, [protector if mode == "nested_delete" else book])
+
+
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.parametrize("atomic", [False, True])
+@pytest.mark.parametrize("error_name", ["ProtectedError", "RestrictedError"])
+def test_delete_nested_relationship_handler_propagates_after_real_commit(
+    client_user_publisher_delete, monkeypatch, atomic, error_name
+):
+    from crud_views.lib.views.delete import _cv_has_native_collection_graph
+    from tests.test1.app.models import Book, BookNote, Publisher
+
+    _, calls = _delete_probe(monkeypatch, atomic)
+    target = Publisher.objects.create(name="Target")
+    book = Book.objects.create(title="Cascade", publisher=target)
+    note = BookNote.objects.create(book=book, note="Nested")
+    original = _error_type(error_name)("Nested handler", {note})
+
+    def handler(collector, field, objects, using):
+        calls.append("nested_handler")
+        Publisher.objects.create(name="Side effect")
+        raise original
+
+    monkeypatch.setattr(BookNote._meta.get_field("book").remote_field, "on_delete", handler)
+    assert not _cv_has_native_collection_graph(target)
+    before = _collection_snapshot()
+    error = _assert_collection_extension_propagates(
+        client_user_publisher_delete, target, calls, atomic, error_name, before
+    )
+    assert calls == ["nested_handler"]
+    _assert_handler_error(error, original, error_name, [note])
+
+
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.parametrize("atomic", [False, True])
+@pytest.mark.parametrize("error_name", ["ProtectedError", "RestrictedError"])
+@pytest.mark.parametrize("configured", ["SET", "SET_DEFAULT"])
+def test_delete_callable_relationship_default_propagates_after_real_commit(
+    client_user_publisher_delete, monkeypatch, atomic, error_name, configured
+):
+    from django.db.models import SET, SET_DEFAULT
+
+    from crud_views.lib.views.delete import _cv_has_native_collection_graph
+    from tests.test1.app.models import Book, Publisher
+
+    _, calls = _delete_probe(monkeypatch, atomic)
+    target = Publisher.objects.create(name="Target")
+    Book.objects.create(title="Cascade", publisher=target)
+    _protector(error_name, target)
+
+    def default():
+        calls.append("default")
+        return Publisher.objects.create(name="Side effect").pk
+
+    field = Book._meta.get_field("publisher")
+    if configured == "SET":
+        monkeypatch.setattr(field.remote_field, "on_delete", SET(default))
+    else:
+        monkeypatch.setattr(field.remote_field, "on_delete", SET_DEFAULT)
+        # Materialize the original cached default before replacing it, so teardown restores it too.
+        original_default = field._get_default
+        monkeypatch.setattr(field, "default", default)
+        monkeypatch.setattr(field, "_get_default", default)
+        assert original_default is not default
+    assert not _cv_has_native_collection_graph(target)
+    assert calls == []
+    before = _collection_snapshot()
+    _assert_collection_extension_propagates(client_user_publisher_delete, target, calls, atomic, error_name, before)
+    assert calls == ["default"]
+
+
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.parametrize("atomic", [False, True])
+@pytest.mark.parametrize("error_name", ["ProtectedError", "RestrictedError"])
+def test_delete_unknown_collection_loader_propagates_after_real_commit(
+    client_user_publisher_delete, monkeypatch, atomic, error_name
+):
+    from django.db.models import Model
+
+    from crud_views.lib.views.delete import _cv_has_native_collection_graph
+    from tests.test1.app.models import Book, Publisher
+
+    _, calls = _delete_probe(monkeypatch, atomic)
+    target = Publisher.objects.create(name="Target")
+    Book.objects.create(title="Cascade", publisher=target)
+    _protector(error_name, target)
+
+    def from_db(cls, db, field_names, values):
+        calls.append("loader")
+        Publisher.objects.create(name="Side effect")
+        return Model.from_db.__func__(cls, db, field_names, values)
+
+    monkeypatch.setattr(Book, "from_db", classmethod(from_db))
+    assert not _cv_has_native_collection_graph(target)
+    assert calls == []
+    before = _collection_snapshot()
+    _assert_collection_extension_propagates(client_user_publisher_delete, target, calls, atomic, error_name, before)
+    assert calls == ["loader"]
+
+
+@pytest.mark.parametrize(
+    "handler_name,eligible",
+    [
+        ("CASCADE", True),
+        ("PROTECT", True),
+        ("RESTRICT", True),
+        ("SET_NULL", True),
+        ("DO_NOTHING", True),
+        ("custom", False),
+        ("SET-value", False),
+        ("SET-callable", False),
+        ("SET_DEFAULT", False),
+    ],
+)
+def test_delete_native_collection_graph_eligibility(monkeypatch, handler_name, eligible):
+    from django.db import models
+
+    from crud_views.lib.views.delete import _cv_has_native_collection_graph
+    from tests.test1.app.models import Book, Publisher
+
+    def unknown(*args):
+        pytest.fail("Metadata classifier executed a callback")
+
+    if handler_name == "custom":
+        handler = unknown
+    elif handler_name.startswith("SET-"):
+        handler = models.SET(unknown if handler_name == "SET-callable" else 1)
+    else:
+        handler = getattr(models, handler_name)
+    monkeypatch.setattr(Book._meta.get_field("publisher").remote_field, "on_delete", handler)
+    # No database access is permitted by this test; no relation has rows.
+    assert _cv_has_native_collection_graph(Publisher()) is eligible
+
+
+@pytest.mark.parametrize(
+    "extension", ["manager", "queryset", "init", "from_db", "pre_init", "post_init", "private", "field", "missing"]
+)
+def test_delete_native_collection_graph_rejects_unknown_metadata(monkeypatch, extension):
+    from types import SimpleNamespace
+
+    from django.db import models
+    from django.db.models import signals
+
+    from crud_views.lib.views import delete
+    from tests.test1.app.models import Book, Publisher
+
+    target = Publisher()
+    if extension == "manager":
+
+        class CustomManager(models.Manager):
+            pass
+
+        monkeypatch.setitem(Book._meta.__dict__, "base_manager", CustomManager())
+    elif extension == "queryset":
+
+        class CustomQuerySet(models.QuerySet):
+            pass
+
+        monkeypatch.setattr(Book._base_manager, "_queryset_class", CustomQuerySet)
+    elif extension == "init":
+        monkeypatch.setattr(Book, "__init__", lambda self: None)
+    elif extension == "from_db":
+        monkeypatch.setattr(Book, "from_db", classmethod(lambda *args: None))
+    elif extension == "private":
+        monkeypatch.setattr(Book._meta, "private_fields", [SimpleNamespace(bulk_related_objects=lambda *args: [])])
+    elif extension in ("field", "missing"):
+        relation = SimpleNamespace(field=object()) if extension == "field" else object()
+        monkeypatch.setattr(delete, "get_candidate_relations_to_delete", lambda opts: [relation])
+    else:
+        signal = getattr(signals, extension)
+
+        def receiver(**kwargs):
+            pytest.fail("Metadata classifier initialized a model")
+
+        signal.connect(receiver, sender=Book, weak=False)
+        try:
+            assert not delete._cv_has_native_collection_graph(target)
+        finally:
+            signal.disconnect(receiver, sender=Book)
+        return
+    assert not delete._cv_has_native_collection_graph(target)
+
+
+def test_delete_native_collection_graph_terminates_cycles(monkeypatch):
+    from types import SimpleNamespace
+
+    from crud_views.lib.views import delete
+    from tests.test1.app.models import Book, Publisher, PublisherProxy
+
+    # Native ordinary field metadata with a self-referential cascade; no database query or schema needed.
+    field = Book._meta.get_field("publisher")
+    monkeypatch.setattr(
+        delete,
+        "get_candidate_relations_to_delete",
+        lambda opts: [SimpleNamespace(field=field, related_model=Publisher)],
+    )
+    assert delete._cv_has_native_collection_graph(Publisher())
+    assert delete._cv_has_native_collection_graph(PublisherProxy())
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("error_name", ["ProtectedError", "RestrictedError"])
+def test_delete_target_collection_provenance(publisher_penguin, error_name):
+    from crud_views.lib.views.delete import _cv_has_native_collection_graph, _cv_is_target_collection_protection
+    from tests.test1.app.models import Publisher
+
+    _protector(error_name, publisher_penguin)
+    native_graph = _cv_has_native_collection_graph(publisher_penguin)
+    assert native_graph
+    method = publisher_penguin.delete
+    with pytest.raises(_error_type(error_name)) as caught:
+        method()
+    assert _cv_is_target_collection_protection(caught.value, publisher_penguin, method, native_graph)
+    assert not _cv_is_target_collection_protection(caught.value, publisher_penguin, method, False)
+    assert not _cv_is_target_collection_protection(caught.value, Publisher(), method, True)
+    assert not _cv_is_target_collection_protection(caught.value, publisher_penguin, lambda: None, True)
+    assert not _cv_is_target_collection_protection(
+        _error_type(error_name)("No frames", set()), publisher_penguin, method, True
+    )
+
+
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.parametrize("atomic", [False, True])
+@pytest.mark.parametrize("error_name", ["ProtectedError", "RestrictedError"])
+@pytest.mark.parametrize("modal", [False, True])
+def test_delete_native_target_backstop_keeps_storage(
+    client_user_publisher_cascade_delete, monkeypatch, atomic, error_name, modal
+):
+    from crud_views.lib.views.delete import RelatedObjects
+    from tests.test1.app.models import Publisher
+    from tests.test1.app.views import PublisherCascadeDeleteView
+
+    target = Publisher.objects.create(name="Native target")
+    protector = _protector(error_name, target)
+    view = PublisherCascadeDeleteView
+    monkeypatch.setattr(view, "cv_atomic", atomic)
+    monkeypatch.setattr(view, "cv_modal", True)
+    preview_calls = []
+
+    def stale_preview(self):
+        preview_calls.append(self.object.pk)
+        return RelatedObjects([], {}, [])
+
+    monkeypatch.setattr(view, "cv_get_related_objects", stale_preview)
+    calls = _spy_lifecycle(monkeypatch, view, ("cv_form_valid_hook", "cv_on_commit"))
+    before = _collection_snapshot()
+    response = client_user_publisher_cascade_delete.post(
+        f"/publisher_cascade/{target.pk}/delete/", {"confirm": True}, headers=MODAL_HEADERS if modal else {}
+    )
+    assert response.status_code == (422 if modal else 200)
+    assert response.context["has_protected_objects"] is True
+    content = _norm(response.content.decode())
+    assert content.count(f"<strong>{BLOCKED_HEADING}</strong>") == 1
+    assert content.count(BLOCKED_SENTENCE) == 1
+    assert BLOCKED_LIST_HEADING not in content
+    assert "<form" not in content
+    assert protector.title not in content
+    assert _response_instances(response, type(protector)) == []
+    assert preview_calls == [target.pk]
+    assert _collection_snapshot() == before
+    assert calls == []
+
+
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.parametrize("atomic", [False, True])
+@pytest.mark.parametrize("error_name", ["ProtectedError", "RestrictedError"])
+def test_delete_unknown_collector_type_propagates(client_user_publisher_delete, monkeypatch, atomic, error_name):
+    from django.db.models import base
+    from django.db.models.deletion import Collector
+
+    from tests.test1.app.models import Publisher
+
+    _, calls = _delete_probe(monkeypatch, atomic)
+    target = Publisher.objects.create(name="Target")
+    _protector(error_name, target)
+    raised = []
+
+    class UnknownCollector(Collector):
+        def collect(self, *args, **kwargs):
+            try:
+                return super().collect(*args, **kwargs)
+            except _error_type(error_name) as error:
+                raised.append(error)
+                raise
+
+    monkeypatch.setattr(base, "Collector", UnknownCollector)
+    before = _collection_snapshot()
+    with pytest.raises(_error_type(error_name)) as caught:
+        client_user_publisher_delete.post(f"/publisher/{target.pk}/delete/", {"confirm": True})
+    assert caught.value is raised[-1]
+    assert _collection_snapshot() == before
+    assert calls == []

@@ -577,6 +577,7 @@ def test_inspection_native_skips_through_and_custom_metadata(monkeypatch):
             result = inspect_deletion(target, using="default")
             assert not result.complete
             assert [(b.kind, b.field_name) for b in result.boundaries] == [("on_delete", "custom")]
+            assert result.boundaries[0].field_model is Ref
             through = Group.targets.through.objects.get(target=target)
             assert result.related.tree == [target, [through]]
             assert result.related.summary == {through._meta.verbose_name: 1}
@@ -996,6 +997,7 @@ def test_real_preview_callback_safety_and_confirmed_positive_control(
 
         private = models.Field()
         private.set_attributes_from_name("private_effect")
+        private.model = Publisher
         private.bulk_related_objects = bulk
         monkeypatch.setattr(Publisher._meta, "private_fields", [*Publisher._meta.private_fields, private])
     monkeypatch.setattr(view, "cv_form_valid_hook", lambda self, context: events.append("hook"))

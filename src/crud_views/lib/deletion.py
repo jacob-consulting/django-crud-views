@@ -40,6 +40,7 @@ class DeletePreviewBoundary:
     field_name: str | None
     using: str
     source_pks: tuple
+    field_model: type[Model] | None = None
 
 
 @dataclass(frozen=True)
@@ -76,8 +77,8 @@ class _DeleteInspector:
         self.protected = {}
         self.restricted = {}
 
-    def boundary(self, kind, source, field_name=None):
-        pks = self.unknown[kind, source._meta.model, field_name]
+    def boundary(self, kind, source, field_name=None, *, field_model=None):
+        pks = self.unknown[kind, source._meta.model, field_name, field_model]
         if source.pk not in pks:
             pks.append(source.pk)
 
@@ -99,7 +100,7 @@ class _DeleteInspector:
             if field is None:
                 continue
             if type(field) not in (ForeignKey, OneToOneField):
-                self.boundary("on_delete", obj, field.name)
+                self.boundary("on_delete", obj, field.name, field_model=field.model)
                 continue
             values = field.get_local_related_value(obj)
             query = {remote.attname: value for (_, remote), value in zip(field.related_fields, values, strict=True)}
@@ -115,13 +116,13 @@ class _DeleteInspector:
         for relation in get_candidate_relations_to_delete(opts):
             field = relation.field
             if type(field) not in (ForeignKey, OneToOneField):
-                self.boundary("on_delete", obj, getattr(field, "name", None))
+                self.boundary("on_delete", obj, getattr(field, "name", None), field_model=field.model)
                 continue
             handler = field.remote_field.on_delete
             if handler is SET_NULL or handler is DO_NOTHING:
                 continue
             if not any(handler is native for native in (CASCADE, PROTECT, RESTRICT)):
-                self.boundary("on_delete", obj, field.name)
+                self.boundary("on_delete", obj, field.name, field_model=field.model)
                 continue
             values = field.get_foreign_related_value(obj)
             query = {local.attname: value for (local, _), value in zip(field.related_fields, values, strict=True)}
@@ -134,7 +135,7 @@ class _DeleteInspector:
                     self.restricted.setdefault(_identity(child, self.using), child)
         for field in opts.private_fields:
             if hasattr(field, "bulk_related_objects"):
-                self.boundary("private_relation", obj, getattr(field, "name", None))
+                self.boundary("private_relation", obj, getattr(field, "name", None), field_model=field.model)
 
     def inspect(self):
         target = self.target
@@ -162,8 +163,8 @@ class _DeleteInspector:
             if obj._meta.concrete_model is not target._meta.concrete_model:
                 summary[obj._meta.verbose_name] += 1
         boundaries = tuple(
-            DeletePreviewBoundary(kind, model, name, self.using, tuple(pks))
-            for (kind, model, name), pks in self.unknown.items()
+            DeletePreviewBoundary(kind, model, name, self.using, tuple(pks), field_model)
+            for (kind, model, name, field_model), pks in self.unknown.items()
         )
         return DeleteInspection(
             RelatedObjects(tree(_identity(target, self.using)), dict(summary), list(self.protected.values())),
@@ -200,6 +201,12 @@ def merge_delete_preview(inspection, contributions, *, using):
         boundary = contribution.boundary
         if not isinstance(boundary, DeletePreviewBoundary):
             raise ValueError("Delete preview contribution must reference a DeletePreviewBoundary descriptor")
+        if boundary.kind in ("on_delete", "private_relation") and boundary.field_model is None:
+            raise ValueError(
+                "Delete preview field boundary requires its declaring field_model; use a supplied descriptor"
+            )
+        if boundary.kind == "model_delete" and boundary.field_model is not None:
+            raise ValueError("Delete preview model_delete boundary must have field_model=None")
         try:
             hash(boundary)
         except TypeError as error:

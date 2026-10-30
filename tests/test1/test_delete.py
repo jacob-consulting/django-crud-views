@@ -1391,21 +1391,27 @@ def test_delete_private_and_unknown_field_boundaries(publisher_penguin, monkeypa
     from types import SimpleNamespace
 
     from crud_views.lib import deletion
-    from tests.test1.app.models import Publisher
+    from tests.test1.app.models import Book, Publisher
 
     events = []
-    private = SimpleNamespace(name="private", bulk_related_objects=lambda *args: events.append("private"))
+    private = SimpleNamespace(
+        name="private", model=Publisher, bulk_related_objects=lambda *args: events.append("private")
+    )
     monkeypatch.setattr(Publisher._meta, "private_fields", [private])
     monkeypatch.setattr(
         deletion,
         "get_candidate_relations_to_delete",
-        lambda opts: [SimpleNamespace(field=SimpleNamespace(name="unknown"))],
+        lambda opts: [SimpleNamespace(field=SimpleNamespace(name="unknown", model=Book))],
     )
     inspection = deletion.inspect_deletion(publisher_penguin, using="default")
     assert not inspection.complete
     assert {(boundary.kind, boundary.field_name) for boundary in inspection.boundaries} == {
         ("private_relation", "private"),
         ("on_delete", "unknown"),
+    }
+    assert {(boundary.kind, boundary.field_model) for boundary in inspection.boundaries} == {
+        ("private_relation", Publisher),
+        ("on_delete", Book),
     }
     assert events == []
 

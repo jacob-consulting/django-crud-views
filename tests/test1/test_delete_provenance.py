@@ -144,6 +144,7 @@ def test_native_protect_before_custom_stops(graph, monkeypatch, following):
     elif following == "private":
         metadata = SimpleNamespace(
             name="private_effect",
+            model=graph.Root,
             bulk_related_objects=handler,
             is_relation=False,
             auto_created=False,
@@ -582,6 +583,7 @@ def test_request_failure_durable_state_and_external_events(request_graph, monkey
 
         metadata = SimpleNamespace(
             name="private_effect",
+            model=graph.Root,
             bulk_related_objects=bulk_related_objects,
             is_relation=False,
             auto_created=False,

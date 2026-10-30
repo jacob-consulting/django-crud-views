@@ -68,13 +68,48 @@ except where a requirement says the markup changes.
 Source: `superpowers/notes/2026-10-28-pre-1.0-before-theme-freeze-analysis.md` B1–B7; locked decisions in
 `.planning/phases/06.2-request-authorization-and-write-integrity/06.2-CONTEXT.md`.
 
-- [x] **AUTH-01**: All package delete views reject HTTP DELETE with 405 while the validated POST protection, form, hook and transaction lifecycle remains intact.
+- [ ] **AUTH-01**: All package delete views reject HTTP DELETE with 405 while the validated POST protection, form, hook and transaction lifecycle remains intact.
 - [x] **AUTH-02**: Formset fragments authorize the target and validate root/parent/fragment ancestry before rendering; valid persisted and unsaved nested rows retain the request and {html, rows} protocol.
-- [x] **AUTH-03**: Core and Guardian delete previews expose only permitted protected-object labels and an independent generic blocked notice, including when every label is hidden.
-- [x] **AUTH-04**: Parent permission None preserves actual parent resolution and action-state enforcement; create controls/helpers and direct GET/POST agree without adding child-add requirements.
+- [ ] **AUTH-03**: Core and Guardian delete previews expose only permitted protected-object labels and an independent generic blocked notice, including when every label is hidden.
+- [ ] **AUTH-04**: Parent permission None preserves actual parent resolution and action-state enforcement; create controls/helpers and direct GET/POST agree without adding child-add requirements.
 - [x] **AUTH-05**: Inactive actors receive no unauthorized rows or object access through Guardian request and callable helper paths, including when authentication permits inactive sessions; active-superuser behavior is preserved.
 - [x] **AUTH-06**: Global fallback remains per view; the inert ViewSet flag is removed with clear diagnostics/migration; get_objects_for_user stays strict and manage shows effective policy per view and the strict helper policy.
-- [x] **AUTH-07**: Direct-request actor and native-template regressions preserve parent/global, aggregate purge and form/cancel contracts; changed method/access/config/context behavior is documented with paired Breaking and migration guidance.
+- [ ] **AUTH-07**: Direct-request actor and native-template regressions preserve parent/global, aggregate purge and form/cancel contracts; changed method/access/config/context behavior is documented with paired Breaking and migration guidance.
+
+#### Acceptance ownership split (2026-10-30)
+
+The AUTH wording above is retained; unchecked entries are not wholly accepted. Historical passing evidence remains
+in [06.2-ACCEPTANCE](phases/06.2-request-authorization-and-write-integrity/06.2-ACCEPTANCE.md), subject to this split.
+No new verification or UAT pass is implied, including for checked entries representing previously recorded work.
+
+| Requirement | Retained Phase 6.2 evidence | Outstanding obligation / owner |
+| --- | --- | --- |
+| AUTH-01 | HTTP DELETE rejection and named POST form/hook/atomic controls | CR-02/03/04: callback-safe inspection, unknown-error propagation and database alignment → 6.3; overall unresolved |
+| AUTH-02 | Fragment authorization/ancestry and first-child round trips | A19 sibling-index round trip → proposed 6.4, not 6.3; IN-04 slug-PK support awaits separate disposition |
+| AUTH-03 | Permitted protected labels, independent notice, fixed CR-01/WR-02 response scope | CR-02/04: obtain blocked state without callbacks and from the target database → 6.3; overall unresolved |
+| AUTH-04 | Parent-None dispatch and Guardian helper/state regressions | Older WR-01 core rendered-state agreement awaits explicit disposition; separate from #282 and not accepted |
+| AUTH-05 | Named inactive-actor request/helper regressions | Retain recorded evidence; no new result or broader certification |
+| AUTH-06 | Named per-view configuration, helper and manage regressions | Spec-less edge remains unresolved; IN-02/03/05 await separate disposition; checked item covers named evidence only |
+| AUTH-07 | Recorded actor/native-template replay and paired documentation | Real-preview, converter, routing and preservation re-review → 6.3; existing suite passes do not cover CR-02–CR-04 |
+
+### Delete protection remediation (inserted Phase 6.3, issue #282)
+
+Source: [issue #282](https://github.com/jacob-consulting/django-crud-views/issues/282), revised analysis addendum/§8,
+and [06.2-REVIEW](phases/06.2-request-authorization-and-write-integrity/06.2-REVIEW.md) CR-02–CR-04.
+These remediate the existing AUTH promises; deferral leaves them unresolved and does not reopen fixed CR-01/WR-02.
+
+- [ ] **DEL-01**: Maintainer reviews detailed design/plan for safe protection inspection, supported custom behavior, exception translation, routing and override compatibility before implementation; architecture is not selected here.
+- [ ] **DEL-02**: Real-preview GET, invalid confirmation and custom-protected POST execute no deletion callbacks, including SET/default factories; failed valid POST preserves the write boundary. Database rollback alone is insufficient for external effects (CR-02; AUTH-01/03/07).
+- [ ] **DEL-03**: Established native PROTECT/RESTRICT retains friendly handling; unknown custom handlers, converters, model methods, hooks and commit callbacks propagate. Nested cascades/stale previews and real commit/rollback evidence cover both atomic settings (CR-03; AUTH-01/07).
+- [ ] **DEL-04**: Two-database tests with colliding PKs and protection on only one alias prove instance-aware inspection/deletion routing and alignment with transaction/commit hooks (CR-04; AUTH-01/03/07).
+- [ ] **DEL-05**: Core, Guardian and polymorphic authorization, filtered protected labels, independent blocked notice and coherent full-page/modal responses remain enforced (AUTH-03/07 preservation).
+- [ ] **DEL-06**: Reproduce fixes on Django 4.2/6.0, add supported Django 5.2 coverage, rerun deletion/transaction/authorization suites, update deletion/override docs and changelog (Breaking paired with migrating-1.0.md), and re-review affected 6.2 acceptance before closure.
+
+Older WR-01 and IN-01–IN-05 remain **open for explicit disposition**, outside #282 unless deliberately brought in.
+D-13's aggregate policy does not silently close IN-01. See
+[06.2-REVIEW-DISPOSITION](phases/06.2-request-authorization-and-write-integrity/06.2-REVIEW-DISPOSITION.md).
+The revised analysis schedules conditional/formset work in proposed 6.4, presentation cleanup in proposed 6.5,
+and Tabler adoption seams in proposed 6.6. These proposals are not inserted by this task; Phase 7 stays last.
 
 ### Stability policy (plan 4)
 
@@ -152,13 +187,19 @@ Which phases cover which requirements. Updated during roadmap creation.
 | FORM-11 | Phase 6 (plan 2) | Complete |
 | FORM-12 | Phase 6 (plan 2) | Complete |
 | FORM-13 | Phase 6 (plan 2) | Complete |
-| AUTH-01 | Phase 6.2 | Complete |
-| AUTH-02 | Phase 6.2 | Complete |
-| AUTH-03 | Phase 6.2 | Complete |
-| AUTH-04 | Phase 6.2 | Complete |
+| AUTH-01 | Phase 6.2 + 6.3 | Partial; CR-02–CR-04 unresolved in 6.3 |
+| AUTH-02 | Phase 6.2 | Named evidence retained; A19/IN-04 limitations open |
+| AUTH-03 | Phase 6.2 + 6.3 | Partial; CR-02/CR-04 unresolved in 6.3 |
+| AUTH-04 | Phase 6.2 | Partial; WR-01 disposition open |
 | AUTH-05 | Phase 6.2 | Complete |
-| AUTH-06 | Phase 6.2 | Complete |
-| AUTH-07 | Phase 6.2 | Complete |
+| AUTH-06 | Phase 6.2 | Named evidence retained; spec-less edge and older dispositions open |
+| AUTH-07 | Phase 6.2 + 6.3 | Partial; #282 re-review pending in 6.3 |
+| DEL-01 | Phase 6.3 | Pending; unresolved |
+| DEL-02 | Phase 6.3 | Pending; unresolved |
+| DEL-03 | Phase 6.3 | Pending; unresolved |
+| DEL-04 | Phase 6.3 | Pending; unresolved |
+| DEL-05 | Phase 6.3 | Pending; unresolved |
+| DEL-06 | Phase 6.3 | Pending; unresolved |
 | STAB-01 | Phase 7 (plan 4) | Pending |
 | STAB-02 | Phase 7 (plan 4) | Pending |
 | STAB-03 | Phase 7 (plan 4) | Pending |
@@ -168,10 +209,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 **Coverage:**
 
-- v1 requirements: 48 total
-- Mapped to phases: 48
+- v1 requirements: 54 total
+- Mapped to phases: 54
 - Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-10-25*
-*Last updated: 2026-10-29 — added AUTH-01–07 for approved Phase 6.2*
+*Last updated: 2026-10-30 — split affected AUTH acceptance across 6.2/6.3; add unresolved DEL-01–06 for #282*

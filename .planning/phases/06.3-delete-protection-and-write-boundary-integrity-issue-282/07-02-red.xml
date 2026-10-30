@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="1.014" timestamp="2026-10-30T14:13:37.998680+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_polymorphic" name="test_library_delete_car_parent_rows_and_partial[partial-False-library_delete_case0]" time="0.893"><failure message="AssertionError: assert {'library cascade': 1} == {'library cas... 'vehicle': 1}&#10;  &#10;  Omitting 1 identical items, use -vv to show&#10;  Right contains 1 more item:&#10;  {'vehicle': 1}&#10;  Use -v to get more diff">tests/test1/test_polymorphic.py:218: in test_library_delete_car_parent_rows_and_partial
+    _exercise_actual_library_delete(library_delete_case, monkeypatch, atomic, covered)
+tests/test1/test_polymorphic.py:162: in _exercise_actual_library_delete
+    assert response.context["related_summary"] == summary
+E   AssertionError: assert {'library cascade': 1} == {'library cas... 'vehicle': 1}
+E     
+E     Omitting 1 identical items, use -vv to show
+E     Right contains 1 more item:
+E     {'vehicle': 1}
+E     Use -v to get more diff</failure></testcase></testsuite></testsuites>

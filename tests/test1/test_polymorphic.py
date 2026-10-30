@@ -8,6 +8,337 @@ from tests.lib.helper.boostrap5 import Table
 from tests.test1.app.models import Car, Truck, Vehicle
 
 
+@pytest.fixture
+def library_delete_case(request, monkeypatch, settings):
+    """Real library methods, isolated effect tables and a trusted same-alias router; restored per test."""
+    from types import SimpleNamespace
+
+    from django.db import connections, models
+    from django.test.utils import isolate_apps
+
+    from tests.test1.app.models import Author
+    from tests.test1.app.views import AuthorDeleteView, VehicleDeleteView
+
+    family, using = request.param
+    model, view = (Author, AuthorDeleteView) if family == "author" else (Car, VehicleDeleteView)
+    routes = []
+
+    class Router:
+        def db_for_read(self, candidate, **hints):
+            if candidate._meta.app_label == "app":
+                routes.append(("read", candidate, hints))
+                return using
+
+        def db_for_write(self, candidate, **hints):
+            if candidate._meta.app_label == "app":
+                routes.append(("write", candidate, hints))
+                return using
+
+    settings.DATABASE_ROUTERS = [Router()]
+    if family == "author":
+        from tests.test1.test_form_buttons_golden import AUTHOR_PK
+
+        before = Author.objects.using(using).create(first_name="Before", last_name="Sibling")
+        target = Author.objects.using(using).create(pk=AUTHOR_PK, first_name="Douglas", last_name="Adams")
+        after = Author.objects.using(using).create(first_name="After", last_name="Sibling")
+        siblings = [before, after]
+        url = f"/author/{target.pk}/delete/"
+        client = request.getfixturevalue("client_user_author_delete")
+    else:
+        target = Car.objects.using(using).create(name="Actual Car", doors=4)
+        siblings = [Truck.objects.using(using).create(name="Untouched Truck", payload_tons=12)]
+        url = f"/vehicle/{target.pk}/delete/"
+        client = request.getfixturevalue("client_user_vehicle_delete")
+    pk = target.pk
+    sibling_rows = [type(row).objects.using(using).filter(pk=row.pk).values().get() for row in siblings]
+    with isolate_apps("tests.test1.app"):
+
+        class LibraryCascade(models.Model):
+            target = models.ForeignKey(model, on_delete=models.CASCADE)
+
+            class Meta:
+                app_label = "app"
+
+        class LibraryBlocker(models.Model):
+            target = models.ForeignKey(model, on_delete=models.PROTECT)
+
+            class Meta:
+                app_label = "app"
+
+        connection = connections[using]
+        with connection.schema_editor() as editor:
+            editor.create_model(LibraryCascade)
+            editor.create_model(LibraryBlocker)
+        try:
+            with monkeypatch.context() as scope:
+                original_fields = model._meta.get_fields
+                relations = tuple(
+                    effect._meta.get_field("target").remote_field for effect in (LibraryCascade, LibraryBlocker)
+                )
+                scope.setattr(
+                    model._meta, "get_fields", lambda *args, **kwargs: (*original_fields(*args, **kwargs), *relations)
+                )
+                scope.setattr(view, "cv_show_related_objects", True)
+                cascade = LibraryCascade.objects.using(using).create(target=target)
+                case = SimpleNamespace(
+                    family=family,
+                    using=using,
+                    model=model,
+                    view=view,
+                    target=target,
+                    pk=pk,
+                    client=client,
+                    url=url,
+                    siblings=siblings,
+                    sibling_rows=sibling_rows,
+                    cascade=cascade,
+                    Cascade=LibraryCascade,
+                    Blocker=LibraryBlocker,
+                    routes=routes,
+                    connection=connection,
+                )
+                yield case
+        finally:
+            with connection.schema_editor() as editor:
+                editor.delete_model(LibraryBlocker)
+                editor.delete_model(LibraryCascade)
+
+
+def _exercise_actual_library_delete(case, monkeypatch, atomic, covered):
+    from django.db.models.signals import post_delete, pre_delete
+
+    from crud_views.lib.deletion import DeletePreviewContribution
+
+    events, origins, updates = [], [], []
+    original = case.model.delete
+
+    def delete(self, *, using):
+        assert using == case.using
+        events.append("method")
+        return original(self, using=using)
+
+    def provider(self, boundaries, *, using):
+        assert using == case.using
+        assert len(boundaries) == 1 and boundaries[0].kind == "model_delete"
+        return [DeletePreviewContribution(boundaries[0], complete=True)] if covered else []
+
+    def success(self, context):
+        assert case.connection.in_atomic_block is atomic
+        assert not case.model.objects.using(case.using).filter(pk=case.pk).exists()
+        assert not case.Cascade.objects.using(case.using).filter(pk=case.cascade.pk).exists()
+        events.append("hook")
+
+    def commit(self, context):
+        assert case.connection.in_atomic_block is False
+        events.append("commit")
+
+    def receiver(sender, instance, origin, using, signal, **kwargs):
+        assert using == case.using and type(origin) is case.model and origin.pk == case.pk
+        origins.append((signal, sender, instance.pk, origin))
+
+    def observe_sql(execute, sql, params, many, context):
+        if sql.startswith("UPDATE") and "app_author" in sql:
+            updates.append(context["connection"].alias)
+        return execute(sql, params, many, context)
+
+    monkeypatch.setattr(case.model, "delete", delete)
+    monkeypatch.setattr(case.view, "cv_get_delete_preview", provider)
+    monkeypatch.setattr(case.view, "cv_atomic", atomic)
+    monkeypatch.setattr(case.view, "cv_form_valid_hook", success)
+    monkeypatch.setattr(case.view, "cv_on_commit", commit)
+    senders = [case.model, case.Cascade, *([Vehicle] if case.family == "car" else [])]
+    for signal in (pre_delete, post_delete):
+        for sender in senders:
+            signal.connect(receiver, sender=sender, weak=False)
+    try:
+        for _ in range(2):
+            response = case.client.get(case.url)
+            assert response.status_code == 200
+            assert response.context["delete_preview_incomplete"] is not covered
+            assert response.context["has_protected_objects"] is False
+            summary = {str(case.Cascade._meta.verbose_name): 1}
+            if case.family == "car":
+                summary[str(Vehicle._meta.verbose_name)] = 1
+            assert response.context["related_summary"] == summary
+            assert str(case.model._meta.verbose_name) not in summary
+            assert events == origins == []
+            content = response.content.decode()
+            assert ("This preview is incomplete." in content) is not covered
+            if not covered:
+                assert content.index("This preview is incomplete.") < content.index('<form class="cv-form"')
+            if case.family == "author":
+                from tests.test1.test_form_buttons_golden import GOLDEN_DIR, _extract_controls, _golden_bytes
+
+                assert (
+                    _golden_bytes(_extract_controls(content, ("delete", "reset")))
+                    == (GOLDEN_DIR / "delete.html").read_bytes()
+                )
+        assert case.client.post(case.url, {}).status_code == 200
+        assert events == origins == []
+        with case.connection.execute_wrapper(observe_sql):
+            response = case.client.post(case.url, {"confirm": True})
+        assert response.status_code == 302
+    finally:
+        for signal in (pre_delete, post_delete):
+            for sender in senders:
+                signal.disconnect(receiver, sender=sender)
+    assert events == ["method", "hook", "commit"]
+    assert len({id(origin) for *_, origin in origins}) == 1
+    for sender in senders:
+        assert [signal for signal, model, *_ in origins if model is sender] == [pre_delete, post_delete]
+    assert not case.model.objects.using(case.using).filter(pk=case.pk).exists()
+    assert not case.Cascade.objects.using(case.using).filter(pk=case.cascade.pk).exists()
+    if case.family == "car":
+        assert not Vehicle.objects.using(case.using).non_polymorphic().filter(pk=case.pk).exists()
+        assert Truck.objects.using(case.using).filter(pk=case.siblings[0].pk).values().get() == case.sibling_rows[0]
+    else:
+        for index, sibling in enumerate(case.siblings):
+            sibling.refresh_from_db(using=case.using)
+            assert sibling.order == case.sibling_rows[index]["order"] - (1 if index else 0)
+        assert updates == [case.using]
+        assert any(
+            kind == "write" and model is case.model and hints.get("instance") is not None
+            for kind, model, hints in case.routes
+        )
+
+
+@pytest.mark.django_db(transaction=True, databases=["default", "shard"])
+@pytest.mark.parametrize("library_delete_case", [("author", "default"), ("author", "shard")], indirect=True)
+@pytest.mark.parametrize("atomic", [False, True])
+@pytest.mark.parametrize("covered", [False, True], ids=["partial", "safe-provider"])
+def test_library_delete_author_reorders_and_remains_partial(library_delete_case, monkeypatch, atomic, covered):
+    _exercise_actual_library_delete(library_delete_case, monkeypatch, atomic, covered)
+
+
+@pytest.mark.django_db(transaction=True, databases=["default", "shard"])
+@pytest.mark.parametrize("library_delete_case", [("car", "default"), ("car", "shard")], indirect=True)
+@pytest.mark.parametrize("atomic", [False, True])
+@pytest.mark.parametrize("covered", [False, True], ids=["partial", "safe-provider"])
+def test_library_delete_car_parent_rows_and_partial(library_delete_case, monkeypatch, atomic, covered):
+    _exercise_actual_library_delete(library_delete_case, monkeypatch, atomic, covered)
+
+
+@pytest.mark.django_db(transaction=True, databases=["default", "shard"])
+@pytest.mark.parametrize("library_delete_case", [("author", "default"), ("car", "default")], indirect=True)
+@pytest.mark.parametrize("atomic", [False, True])
+@pytest.mark.parametrize("stale", [False, True], ids=["known", "stale"])
+@pytest.mark.parametrize("handler_name", ["PROTECT", "RESTRICT"])
+def test_library_delete_native_protection_before_or_inside_override(
+    library_delete_case, monkeypatch, atomic, stale, handler_name
+):
+    from django.db import models
+
+    case = library_delete_case
+    events, raised = [], []
+    original = case.model.delete
+    handler = getattr(models, handler_name)
+    monkeypatch.setattr(case.Blocker._meta.get_field("target").remote_field, "on_delete", handler)
+    monkeypatch.setattr(case.view, "cv_atomic", atomic)
+    monkeypatch.setattr(case.view, "cv_form_valid_hook", lambda *args: events.append("hook"))
+    monkeypatch.setattr(case.view, "cv_on_commit", lambda *args: events.append("commit"))
+
+    def delete(self, *, using):
+        assert using == case.using
+        events.append("method")
+        try:
+            return original(self, using=using)
+        except (models.ProtectedError, models.RestrictedError) as error:
+            raised.append(error)
+            raise
+
+    def post_hook(self, context):
+        assert context["has_protected_objects"] is False
+        case.Blocker.objects.using(case.using).create(target=self.object)
+
+    monkeypatch.setattr(case.model, "delete", delete)
+    if not stale:
+        case.Blocker.objects.using(case.using).create(target=case.target)
+    response = case.client.get(case.url)
+    assert response.status_code == 200
+    assert response.context["delete_preview_incomplete"] is True
+    assert response.context["has_protected_objects"] is not stale
+    assert events == []
+    if stale:
+        # Insert after the actual safe inspection, before the write boundary: the real override encounters it.
+        monkeypatch.setattr(case.view, "cv_post_hook", post_hook)
+        error_type = models.ProtectedError if handler_name == "PROTECT" else models.RestrictedError
+        with pytest.raises(error_type) as caught:
+            case.client.post(case.url, {"confirm": True})
+        assert caught.value is raised[0]
+        assert events == ["method"]
+    else:
+        for data in ({}, {"confirm": True}):
+            response = case.client.post(case.url, data)
+            assert response.status_code == 200 and response.context["has_protected_objects"] is True
+            assert "This preview is incomplete." in response.content.decode()
+            assert "<form" not in response.content.decode()
+        assert events == []
+    assert case.model.objects.using(case.using).filter(pk=case.pk).exists()
+    assert case.Cascade.objects.using(case.using).filter(pk=case.cascade.pk).exists()
+    assert case.Blocker.objects.using(case.using).filter(target_id=case.pk).exists()
+    if case.family == "author":
+        for index, sibling in enumerate(case.siblings):
+            sibling.refresh_from_db(using=case.using)
+            reordered = index == 1 and stale and not atomic
+            assert sibling.order == case.sibling_rows[index]["order"] - int(reordered)
+    else:
+        assert Vehicle.objects.using(case.using).non_polymorphic().filter(pk=case.pk).exists()
+
+
+@pytest.mark.django_db(transaction=True, databases=["default", "shard"])
+@pytest.mark.parametrize("library_delete_case", [("car", "default"), ("car", "shard")], indirect=True)
+@pytest.mark.parametrize("atomic", [False, True])
+@pytest.mark.parametrize("failure", ["application", "protection"])
+def test_library_delete_car_override_failure_propagates(library_delete_case, monkeypatch, atomic, failure):
+    from django.db.models import ProtectedError
+
+    case = library_delete_case
+    error = (
+        RuntimeError("subclass delete failed")
+        if failure == "application"
+        else ProtectedError("custom protection", {case.target})
+    )
+    events = []
+
+    def delete(self, *, using):
+        events.append(using)
+        Car.objects.using(using).filter(pk=self.pk).update(doors=9)
+        raise error
+
+    monkeypatch.setattr(Car, "delete", delete)
+    monkeypatch.setattr(case.view, "cv_atomic", atomic)
+    monkeypatch.setattr(case.view, "cv_form_valid_hook", lambda *args: events.append("hook"))
+    monkeypatch.setattr(case.view, "cv_on_commit", lambda *args: events.append("commit"))
+    assert case.client.get(case.url).context["delete_preview_incomplete"] is True
+    assert case.client.post(case.url, {}).status_code == 200
+    assert events == []
+    with pytest.raises(type(error)) as caught:
+        case.client.post(case.url, {"confirm": True})
+    assert caught.value is error
+    assert events == [case.using]
+    case.target.refresh_from_db(using=case.using)
+    assert case.target.doors == (4 if atomic else 9)
+    assert Vehicle.objects.using(case.using).non_polymorphic().filter(pk=case.pk).exists()
+    assert case.Cascade.objects.using(case.using).filter(pk=case.cascade.pk).exists()
+
+
+@pytest.mark.django_db
+def test_library_delete_polymorphic_denied_never_inspects_or_calls_override(
+    client_user_vehicle_view, car_sedan, monkeypatch
+):
+    from tests.test1.app.views import VehicleDeleteView
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("denied polymorphic requests must precede preview and deletion")
+
+    monkeypatch.setattr(Car, "delete", forbidden)
+    monkeypatch.setattr(VehicleDeleteView, "cv_get_delete_preview", forbidden)
+    for method in ("get", "post", "delete"):
+        response = getattr(client_user_vehicle_view, method)(f"/vehicle/{car_sedan.pk}/delete/", {"confirm": True})
+        assert response.status_code == 403
+    assert Car.objects.filter(pk=car_sedan.pk).exists()
+
+
 @pytest.mark.django_db
 def test_viewset_has_polymorphic_views(cv_vehicle: ViewSet):
     """Polymorphic viewset should have all expected views registered."""

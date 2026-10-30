@@ -4,16 +4,16 @@ milestone: v1.0
 current_phase: "06.3"
 current_phase_name: "Delete protection and write-boundary integrity — issue #282"
 status: in_progress
-stopped_at: Completed 06.3-13-PLAN.md; CR-02 owner controls and published recipes pass; next plan 14; all twelve human items remain pending
-last_updated: "2026-10-30T23:41:46.838Z"
+stopped_at: Completed 06.3-14-PLAN.md; CR-03 null native joins pass on all three series; next plan 15; all twelve human items remain pending
+last_updated: "2026-10-30T23:47:50.451Z"
 last_activity: 2026-10-30
-last_activity_desc: Plan 13 complete; CR-02 owner boundaries and executable provider migration pass on Django 4.2 and 6.0
-state_head: 7b4ee94380eaa1394204240256a5c2366467257b
+last_activity_desc: Plan 14 complete; CR-03 absent null joins pass on Django 4.2, 5.2 and 6.0
+state_head: 404d1c56c11de9cf56f14b674848b07cfd82149b
 progress:
   total_phases: 10
   completed_phases: 8
   total_plans: 53
-  completed_plans: 49
+  completed_plans: 50
 milestone_name: milestone
 ---
 
@@ -29,12 +29,12 @@ See: .planning/PROJECT.md (updated 2026-10-30)
 ## Current Position
 
 Phase: 06.3 (Delete protection and write-boundary integrity — issue #282) — IN PROGRESS
-Plan: 14 of 17 — next to execute; plans 01–13 complete
-Status: CR-01, CR-02 and CT-01 bounded repair controls pass; CR-03, final verification and human dispositions remain open
-Last activity: 2026-10-30 — 13-02 committed (7b4ee94); full inspection 203 passed, owner gate 33 passed on 4.2, docs 33 passed
+Plan: 15 of 17 — next to execute; plans 01–14 complete
+Status: CR-01, CR-02, CR-03 and CT-01 bounded repair controls pass; final verification and human dispositions remain open
+Last activity: 2026-10-30 — 14-02 committed (404d1c5); nullable matrix 64 passed on all three series, full affected 307 passed on 4.2/6.0
 
-Progress: 49/53 plans executed; 8/10 phases complete. Phase 06.3 is not accepted.
-Next: Execute approved plans 14–17; preserve independent final verification and all twelve human dispositions.
+Progress: 50/53 plans executed; 8/10 phases complete. Phase 06.3 is not accepted.
+Next: Execute approved plans 15–17; preserve independent final verification and all twelve human dispositions.
 
 ### Phase 06.3 gap execution approval
 
@@ -46,8 +46,9 @@ Next: Execute approved plans 14–17; preserve independent final verification an
 - Plan 11 is executed: selected native root/parent identity controls pass; independent final verification remains.
 - Plan 12 is executed: configured Guardian CT-01 positive access, custom/default keys and retained actor/cache controls pass.
 - Plan 13 is executed: declaring-owner boundaries, partial notices and actual owner-qualified migration recipes pass.
-- Plans 14–17 remain unexecuted under the bound contract. Do not repeat plans 10–13.
-- CR-03 and all twelve human items remain unresolved; AUTH-06/GUA-01 are not globally complete and phase acceptance is unchanged.
+- Plan 14 is executed: absent native null joins retain exact counts, actual blockers, custom boundaries and unrelated parents.
+- Plans 15–17 remain unexecuted under the bound contract. Do not repeat plans 10–14.
+- Independent final verification and all twelve human items remain unresolved; AUTH-06/GUA-01 are not globally complete and phase acceptance is unchanged.
 
 ### Phase 06.3 gap planning
 
@@ -157,6 +158,7 @@ Next: Execute approved plans 14–17; preserve independent final verification an
 | Phase 06.3 P11 | 6min | 2 tasks | 2 files |
 | Phase 06.3 P12 | 9min | 2 tasks | 14 files |
 | Phase 06.3 P13 | 7min | 2 tasks | 19 files |
+| Phase 06.3 P14 | 5min | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -269,6 +271,8 @@ Recent decisions affecting current work:
 - [Phase 06.3]: 12: Guardian default/custom permissions use only the configured content type; exact explicit mappings and retained actor/global/cache policy remain unchanged.
 - [Phase 06.3]: 13: Boundary field_model retains declaring owner separately from source rows; exact supplied six-field descriptors reject ownerless field contributions immediately.
 - [Phase 06.3]: 13: Actual owner-qualified provider migration and its Breaking entry share commit 7b4ee94; synthetic test metadata owners corrected without an ownerless product fallback.
+- [Phase 06.3]: Apply absent-null-join semantics to native reverse/parent inspection and selected parent collection; preserve unknown owner boundaries and propagate read errors.
+- [Phase 06.3]: Keep owner-qualified unknown handlers incomplete even for null joins; ordinary confirmation remains available and real custom effects execute only for actual matches.
 
 ### Pending Todos
 
@@ -315,6 +319,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-30T23:41:46.126Z
-Stopped at: Completed 06.3-13-PLAN.md; CR-02 owner controls and published recipes pass; next plan 14; all twelve human items remain pending
+Last session: 2026-10-30T23:47:32.396Z
+Stopped at: Completed 06.3-14-PLAN.md; CR-03 null native joins pass on all three series; next plan 15; all twelve human items remain pending
 Resume file: None

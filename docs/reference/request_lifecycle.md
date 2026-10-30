@@ -60,8 +60,21 @@ The success URL is resolved after the delete, so it must not point at the delete
 
 The early block combines native and provider protected rows independently of permission-filtered labels and
 `cv_show_related_objects`. `delete_preview_incomplete` is independent too and does not add a confirmation step.
-The exact bound Django `Model.delete` uses adapted native collection plus Django's SQL executor; other methods run
-once with keyword `using`, preserving ordered sibling reordering and polymorphic parent behavior. Only native
+The exact bound Django `Model.delete` reloads the same model/PK on the pinned alias immediately before native
+collection inside the write lifecycle, even on the same database. Current selected-row non-PK values and actual
+parent-link values determine the graph; cached parent descriptors and child-PK substitutions are not used.
+Supported native joins containing `None` select no relationship, while unknown handlers retain their incomplete
+boundaries. This read adds no locking or protection against subsequent concurrent changes.
+
+The original authorized instance supplies selector hints and remains the signals' `origin` and the hook object.
+Its non-PK fields, relation caches and `_state.db` stay intact; successful native return clears its PK attname
+before the success hook. Collection/deletion failure preserves its PK. A missing selected native row propagates
+the model's `DoesNotExist` before deletion callbacks, success hooks and commit registration, distinct from an
+initial missing URL object's 404. A later hook failure need not restore the cleared in-memory PK on rollback.
+
+Other bound methods run once on that original instance with keyword `using`, preserving ordered sibling reordering
+and polymorphic parent behavior. They own relation routing, additional queries and external side effects; receiving
+the alias supplies no automatic selected-row refresh or guarantee for each custom query. Only native
 blockers observed before custom collection callbacks become a friendly response after atomic unwind. Custom model
 methods, callbacks, query loaders, hooks and signals retain ordinary exception propagation, including stale
 protection. A returned custom callback can leave effects before a later block, especially when non-atomic.
@@ -103,7 +116,8 @@ calling `cv_form_valid_process` directly does not supply those gates.
 
 `cv_on_commit` runs only on success: never for an invalid form, never after a rollback, never when
 `action()` returned `False`. `context["object"]` is the saved object where the view has one (for
-deletes, the deleted instance with `pk=None`). For workflow views, `context["workflow_info"]` is the `WorkflowInfo` record
+native deletes, the original authorized instance with `pk=None`; custom methods determine their own instance
+state). For workflow views, `context["workflow_info"]` is the `WorkflowInfo` record
 of the transition.
 
 Success messages (`MessageMixin`, action messages) are queued inside the transaction. If a later

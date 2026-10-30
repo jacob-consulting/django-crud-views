@@ -544,6 +544,7 @@ def test_delete_breaking_entries_have_matching_migration_contracts():
         "delete-method-signatures-and-database-selection": ("viewset.E264", "using", "cv_get_delete_db_alias"),
         "copied-delete-templates-with-incomplete-previews": ("delete_preview_incomplete", "has_protected_objects"),
         "guardian-permission-keys": ("ValueError", "KeyError", "non-string"),
+        "guardian-configured-content-type-permissions": ("app.view_vehicle", "MixedContentTypeError", "child_only_car"),
     }.items():
         assert anchor in anchors and f"docs/migrating-1.0.md#{anchor}" in breaking
         heading = (
@@ -554,6 +555,7 @@ def test_delete_breaking_entries_have_matching_migration_contracts():
                 "delete-method-signatures-and-database-selection": "Delete method signatures and database selection",
                 "copied-delete-templates-with-incomplete-previews": "Copied delete templates with incomplete previews",
                 "guardian-permission-keys": "Guardian permission keys",
+                "guardian-configured-content-type-permissions": "Guardian configured content-type permissions",
             }[anchor]
         )
         section = _section(MIGRATION.read_text(), heading)

@@ -1,0 +1,74 @@
+FFF                                                                      [100%]
+=================================== FAILURES ===================================
+______________ test_documented_guardian_content_type_migration[0] ______________
+
+published_guardian_recipe = <function published_guardian_recipe.<locals>.execute at 0x78b7c2792d40>
+client = <django.test.client.Client object at 0x78b7c278e450>, repeat = 0
+
+    @pytest.mark.parametrize("repeat", range(2))
+    def test_documented_guardian_content_type_migration(published_guardian_recipe, client, repeat):
+>       recipe = published_guardian_recipe()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test1/test_guardian_content_type_docs.py:66: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def execute():
+>       assert HEADING in MIGRATION.read_text(), "Publish the configured-content-type migration before using it"
+E       AssertionError: Publish the configured-content-type migration before using it
+E       assert '### Guardian configured content-type permissions' in '# Migrating to 1.0.0\n\n1.0.0 collects the breaking changes and theme-compatibility work of 0.30.0 and of the release...g.cv_guardian_accept_global_perms` renders an empty cell\n  ([The Guardian manage page](#the-guardian-manage-page)).\n'
+E        +  where '# Migrating to 1.0.0\n\n1.0.0 collects the breaking changes and theme-compatibility work of 0.30.0 and of the release...g.cv_guardian_accept_global_perms` renders an empty cell\n  ([The Guardian manage page](#the-guardian-manage-page)).\n' = read_text()
+E        +    where read_text = PosixPath('/home/alex/projects/alex/django-crud-views/docs/migrating-1.0.md').read_text
+
+tests/test1/test_guardian_content_type_docs.py:41: AssertionError
+______________ test_documented_guardian_content_type_migration[1] ______________
+
+published_guardian_recipe = <function published_guardian_recipe.<locals>.execute at 0x78b7c26847c0>
+client = <django.test.client.Client object at 0x78b7c26067b0>, repeat = 1
+
+    @pytest.mark.parametrize("repeat", range(2))
+    def test_documented_guardian_content_type_migration(published_guardian_recipe, client, repeat):
+>       recipe = published_guardian_recipe()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test1/test_guardian_content_type_docs.py:66: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def execute():
+>       assert HEADING in MIGRATION.read_text(), "Publish the configured-content-type migration before using it"
+E       AssertionError: Publish the configured-content-type migration before using it
+E       assert '### Guardian configured content-type permissions' in '# Migrating to 1.0.0\n\n1.0.0 collects the breaking changes and theme-compatibility work of 0.30.0 and of the release...g.cv_guardian_accept_global_perms` renders an empty cell\n  ([The Guardian manage page](#the-guardian-manage-page)).\n'
+E        +  where '# Migrating to 1.0.0\n\n1.0.0 collects the breaking changes and theme-compatibility work of 0.30.0 and of the release...g.cv_guardian_accept_global_perms` renders an empty cell\n  ([The Guardian manage page](#the-guardian-manage-page)).\n' = read_text()
+E        +    where read_text = PosixPath('/home/alex/projects/alex/django-crud-views/docs/migrating-1.0.md').read_text
+
+tests/test1/test_guardian_content_type_docs.py:41: AssertionError
+_____________ test_documented_guardian_custom_permission_namespace _____________
+
+published_guardian_recipe = <function published_guardian_recipe.<locals>.execute at 0x78b7c26851c0>
+
+    def test_documented_guardian_custom_permission_namespace(published_guardian_recipe):
+        Permission.objects.create(
+            content_type=ContentType.objects.get_for_model(Vehicle), codename="inspect_status_vehicle", name="Inspect status"
+        )
+        Permission.objects.create(
+            content_type=ContentType.objects.get_for_model(Car), codename="child_only_car", name="Child only"
+        )
+>       viewset = published_guardian_recipe()["cv_car"]
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test1/test_guardian_content_type_docs.py:106: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def execute():
+>       assert HEADING in MIGRATION.read_text(), "Publish the configured-content-type migration before using it"
+E       AssertionError: Publish the configured-content-type migration before using it
+E       assert '### Guardian configured content-type permissions' in '# Migrating to 1.0.0\n\n1.0.0 collects the breaking changes and theme-compatibility work of 0.30.0 and of the release...g.cv_guardian_accept_global_perms` renders an empty cell\n  ([The Guardian manage page](#the-guardian-manage-page)).\n'
+E        +  where '# Migrating to 1.0.0\n\n1.0.0 collects the breaking changes and theme-compatibility work of 0.30.0 and of the release...g.cv_guardian_accept_global_perms` renders an empty cell\n  ([The Guardian manage page](#the-guardian-manage-page)).\n' = read_text()
+E        +    where read_text = PosixPath('/home/alex/projects/alex/django-crud-views/docs/migrating-1.0.md').read_text
+
+tests/test1/test_guardian_content_type_docs.py:41: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test1/test_guardian_content_type_docs.py::test_documented_guardian_content_type_migration[0]
+FAILED tests/test1/test_guardian_content_type_docs.py::test_documented_guardian_content_type_migration[1]
+FAILED tests/test1/test_guardian_content_type_docs.py::test_documented_guardian_custom_permission_namespace
+3 failed in 0.42s

@@ -242,6 +242,10 @@ model. Identity is `(using, concrete_model, pk)`, preserving UUID/integer values
 concrete descriptions of one stored row deduplicate. Native tree structure and redacted `None` positions remain.
 Concrete multi-table parent rows count separately: deleting a Car can include its Vehicle parent in the summary.
 Native joins use actual field targets, including `to_field` and parent links whose key differs from the child PK.
+For supported native reverse and parent joins, any `None` component means no relationship: inspection does not
+turn it into an `IS NULL` match. Unlinked nullable rows neither block nor contribute cascade counts. Unknown
+handlers or unsupported metadata still produce owner-qualified boundaries even when the join is null or empty;
+they are not silently declared complete. Read and converter failures propagate.
 
 Provider `protected` rows are an **additive veto**, even without a native blocker. Neither contributions nor display
 redaction remove native protection. Native `RESTRICT` is reconciled against the supported cascade closure only;
@@ -368,15 +372,32 @@ class ProtectedDeleteForm(CrispyDeleteForm):
    can use the race backstop after the transaction unwinds, under the rules below.
 5. **Successful deletion**: run the normal success hook, commit callbacks and redirect/204 behavior.
 
-For an exact bound Django `Model.delete`, the package adapts native collection and inherits Django's SQL deletion
-executor (signals, counts and PK clearing). It establishes native protection origin at the operation itself; no
+For an exact bound Django `Model.delete`, the package reloads the same model/PK through its base manager on the
+pinned alias immediately before collection, inside the existing write lifecycle. This applies even when read and
+write aliases are the same: current selected-row non-PK values determine native joins. Parent rows are queried
+from actual parent-link values on that alias, including non-PK targets, without dereferencing cached parent
+descriptors or substituting the child's PK. Null native joins select no parent or reverse rows.
+
+The original authorized instance remains `self.object`, supplies selector hints, and is the delete signals'
+`origin`. Its non-PK values, relation caches and `_state.db` are preserved; only its PK attname is cleared after
+successful native return, before the success hook. A failed collection/deletion leaves its PK intact. If the
+selected native row has disappeared, its model's `DoesNotExist` propagates before deletion callbacks, success
+hooks or commit registration, with the original PK retained. This differs from an initial missing URL target's
+404. A later success-hook failure does not restore in-memory PK state, even if atomic writes roll back.
+
+The package inherits Django's SQL deletion executor, signals, counts and return value. This fresh read adds no
+row lock or guarantee against changes after the read; inspection is descriptive and never reused as write
+instructions. It establishes native protection origin at the operation itself; no
 traceback or graph-certification inference is used. Native `PROTECT` stops immediately. Native `RESTRICT` reconciles
 at outer closure. Before executing a custom handler, `SET`/default factory or private collector, the collector marks
 that a custom callback has been entered. This flag stays set across recursion. Only a native blocker observed before
 that point becomes the private marker that `post` catches after the atomic context unwinds. A custom callback that
 returns before a later native block still makes that later error propagate. Query/converter errors also propagate.
 
-Every other bound model method runs once as `delete(using=using)`, including ordered-model and polymorphic methods.
+Every other bound model method runs once on the original authorized object as `delete(using=using)`, including
+ordered-model and polymorphic methods. It receives no selected-row replacement or automatic refresh. The custom
+method owns its relation routing, additional queries and external side effects; passing `using` alone cannot
+guarantee that those operations honor the pinned alias.
 Actual Author sibling reordering and Car/Vehicle parent behavior are preserved; their stale `ProtectedError` and
 `RestrictedError` propagate. No friendly native response is promised for custom methods. Inspectable methods lacking
 a keyword `using` or forwarding `**kwargs` fail `viewset.E264`; opaque or incompatible methods raise
@@ -396,9 +417,10 @@ its configured nonempty alias and pins it for the view instance. The delete defa
 `on_commit` registration share that alias, even with `cv_atomic=False`. Calling the accessor before a saved target
 exists raises `ImproperlyConfigured`. Request parameters do not select it.
 
-A router/explicit selector can choose a different alias from the loaded instance: inspection and deletion then use
-the same model/PK on the selected alias, with fresh relationships/parent rows. The selector is trusted application
-policy. Custom atomic overrides must use `cv_get_delete_db_alias()`; side-effect ORM queries must select their own
+A router/explicit selector can choose a different alias from the loaded instance. Native execution reloads the
+same model/PK there with current selected-row relationships and actual parent links; custom methods retain the
+original instance and their routing responsibility above. The selector is trusted application policy.
+Custom atomic overrides must use `cv_get_delete_db_alias()`; side-effect ORM queries must select their own
 alias explicitly. There are no cross-database transactions. See
 [Request lifecycle](request_lifecycle.md#transactions) and the
 [atomic migration](../migrating-1.0.md#delete-method-signatures-and-database-selection).

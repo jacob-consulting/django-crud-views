@@ -640,8 +640,12 @@ An inspectable `def delete(self, **kwargs): return super().delete(**kwargs)` ada
 `cv_get_db_alias()` selection hook once, validates the configured alias and shares it across inspection, deletion,
 default atomic and `on_commit`. Its delete default uses `router.db_for_write(type(self.object), instance=self.object)`.
 Before a saved target exists it raises `ImproperlyConfigured`. Direct process callers must supply one and own
-authorization/confirmation. A selector may intentionally choose another alias: the same model/PK there is inspected
-and deleted using fresh relationships, not loaded-instance caches. Request inputs do not select it.
+authorization/confirmation. A selector may intentionally choose another alias: native execution reloads the same
+model/PK there immediately before collection, using current non-PK and actual parent-link values rather than cached
+parent descriptors. Custom methods still execute on the original authorized instance with `using` and own their
+relation routing and external effects. Request inputs do not select the alias. See
+[Execution order](reference/delete_view.md#execution-order) for native origin/PK state, missing-selected-row
+propagation, null-join semantics and concurrency limits.
 
 Migrate custom delete atomic overrides from repeated `cv_get_db_alias()` calls to the accessor:
 

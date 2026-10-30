@@ -363,6 +363,11 @@ class _DeleteCollector(Collector):
                 self._blocked(RestrictedError("Deletion blocked by a native restricted relationship", restricted))
 
 
+def _selected_native_target(target, *, using):
+    """Read current join values without changing the authorized origin's state."""
+    return type(target)._base_manager.using(using).get(pk=target.pk)
+
+
 def execute_deletion(target, *, using):
     method = target.delete
     if getattr(method, "__func__", None) is not Model.delete:
@@ -382,5 +387,7 @@ def execute_deletion(target, *, using):
             "attribute is set to None."
         )
     collector = _DeleteCollector(using=using, origin=target)
-    collector.collect([target])
-    return collector.delete()
+    collector.collect([_selected_native_target(target, using=using)])
+    result = collector.delete()
+    setattr(target, target._meta.pk.attname, None)
+    return result

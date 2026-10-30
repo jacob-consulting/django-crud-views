@@ -3,16 +3,16 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.3"
 current_phase_name: "Delete protection and write-boundary integrity — issue #282"
-status: "gaps_found"
-stopped_at: "Phase06.3 all9plans executed; verification gaps_found41/51; CR01–03 and CT01 open"
-last_updated: "2026-10-30T15:30:18.893461+00:00"
+status: ready_to_execute
+stopped_at: Phase 06.3 gap plans 10–17 verified; execute plan 10 contract-review gate next
+last_updated: "2026-10-30T16:14:06.998Z"
 last_activity: 2026-10-30
-last_activity_desc: "Phase06.3 all9plans executed; verification gaps_found41/51; CR01–03 and CT01 open"
-state_head: "36558c2856b6f0d35b9344e39d99705aa0c87b08"
+last_activity_desc: Phase 06.3 gap closure planned; eight plans passed independent checking after one scope revision
+state_head: b21b66946e22a99ae343ec3dc3bad93999f893ee
 progress:
   total_phases: 10
   completed_phases: 8
-  total_plans: 45
+  total_plans: 53
   completed_plans: 45
 milestone_name: milestone
 ---
@@ -24,17 +24,27 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-10-30)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase06.3 — all9plans executed; gap closure required before acceptance.
+**Current focus:** Phase 06.3 — eight gap-closure plans ready; phase acceptance remains open.
 
 ## Current Position
 
-Phase: 06.3 (Delete protection and write-boundary integrity — issue #282) — GAPS FOUND
-Plan: 9 of 9 executed; phase acceptance remains open
-Status: Gaps found — 41/51 must-haves verified
-Last activity: 2026-10-30 — full supported-series matrix passed; final review reproduced three blockers
+Phase: 06.3 (Delete protection and write-boundary integrity — issue #282) — READY TO EXECUTE
+Plan: 9 of 17 executed; gap plans 10–17 verified
+Status: Ready to execute gap closure; canonical phase verification remains gaps_found (41/51)
+Last activity: 2026-10-30 — eight gap plans passed independent checking after splitting evidence from final acceptance review
 
-Progress: 45/45 existing plans executed;8/10 phases complete. Phase06.3 is not accepted.
-Next: `$gsd-plan-phase 06.3 --gaps`.
+Progress: 45/53 plans executed; 8/10 phases complete. Phase 06.3 is not accepted.
+Next: `$gsd-execute-phase 06.3 --gaps-only`.
+
+### Phase 06.3 gap planning
+
+- Eight new plans (10–17), sixteen tasks, waves 9–15; original plans 01–09 remain executed.
+- CR-01/02/03 and CT-01 have concrete repair and regression tasks; eleven requirements and sixteen decisions are covered.
+- Independent checker passed revision 1 with no remaining issues. The initial scope warning was resolved by separating plan 16 automated evidence from plan 17 review and reconciliation.
+- Research skipped for gap closure; existing context, research, patterns, UI contract and validation retained.
+- Plan 10 prepares a reviewable design delta and records actual maintainer approval before product changes. Prior approval does not cover the new material contract changes.
+- All twelve unresolved human items remain visible; planning verification does not close implementation defects or grant phase acceptance.
+- Verify-command failure-direction probe passes; its path probe does not support these Python command forms and returned not_applicable, not affirmative path validation.
 
 ### Phase06.3 execution and final verification
 
@@ -282,6 +292,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-30T15:30:18.893461+00:00
-Stopped at: Phase06.3 all9plans executed; verification gaps_found41/51; CR01–03 and CT01 open
-Resume file: .planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-VERIFICATION.md
+Last session: 2026-10-30T16:14:06.998Z
+Stopped at: Phase 06.3 gap plans 10–17 verified; execute plan 10 contract-review gate next
+Resume file: .planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-10-PLAN.md

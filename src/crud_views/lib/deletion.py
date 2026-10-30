@@ -125,6 +125,9 @@ class _DeleteInspector:
                 self.boundary("on_delete", obj, field.name, field_model=field.model)
                 continue
             values = field.get_foreign_related_value(obj)
+            # NULL denotes an absent join, not equality with unlinked rows.
+            if any(value is None for value in values):
+                continue
             query = {local.attname: value for (local, _), value in zip(field.related_fields, values, strict=True)}
             for child in relation.related_model._base_manager.using(self.using).filter(**query):
                 if handler is CASCADE:

@@ -92,14 +92,28 @@ def graph():
             class Meta:
                 app_label = "app"
 
+        class BranchBlocker(models.Model):
+            branch = models.ForeignKey(Branch, on_delete=models.PROTECT)
+
+            class Meta:
+                app_label = "app"
+
         class Ignored(models.Model):
             root = models.ForeignKey(Root, on_delete=models.DO_NOTHING, db_constraint=False)
 
             class Meta:
                 app_label = "app"
 
-        with _tables(Root, Branch, Leaf, Blocker, Custom, Ignored):
-            yield SimpleNamespace(Root=Root, Branch=Branch, Leaf=Leaf, Blocker=Blocker, Custom=Custom, Ignored=Ignored)
+        with _tables(Root, Branch, Leaf, Blocker, Custom, BranchBlocker, Ignored):
+            yield SimpleNamespace(
+                Root=Root,
+                Branch=Branch,
+                Leaf=Leaf,
+                Blocker=Blocker,
+                Custom=Custom,
+                BranchBlocker=BranchBlocker,
+                Ignored=Ignored,
+            )
 
 
 @pytest.mark.django_db(transaction=True)
@@ -275,3 +289,104 @@ def test_actual_custom_method_signature_dispatch(graph, monkeypatch, signature_k
         assert execute_deletion(root, using="default")[0] == 1
         assert events == (["default"] if signature_kind == "keyword" else [{"using": "default"}])
         assert root.pk is None
+
+
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.parametrize("atomic", [False, True])
+@pytest.mark.parametrize("modal", [False, True])
+@pytest.mark.parametrize("handler", [models.PROTECT, models.RESTRICT], ids=["protect", "restrict"])
+def test_native_nested_stale_provider_preview(graph, client_user_publisher_delete, monkeypatch, atomic, modal, handler):
+    from tests.test1.app.views import PublisherDeleteView
+
+    root = graph.Root.objects.create()
+    branch = graph.Branch.objects.create(root=root)
+    leaf = graph.Leaf.objects.create(root=root, branch=branch, restricted=branch)
+    events = []
+
+    def preview(self, boundaries, *, using):
+        assert using == "default"
+        result = inspect_deletion(self.object, using=using)
+        assert result.related.protected == []
+        assert result.related.summary == {"branch": 1, "leaf": 1}
+        assert boundaries == ()
+        graph.BranchBlocker.objects.using(using).create(branch=branch)
+        events.append("preview")
+        return ()
+
+    monkeypatch.setattr(PublisherDeleteView, "get_queryset", lambda self: graph.Root.objects.all())
+    monkeypatch.setattr(PublisherDeleteView, "cv_atomic", atomic)
+    monkeypatch.setattr(PublisherDeleteView, "cv_modal", True)
+    monkeypatch.setattr(PublisherDeleteView, "cv_get_delete_preview", preview)
+    monkeypatch.setattr(PublisherDeleteView, "cv_form_valid_hook", lambda self, context: events.append("success"))
+    monkeypatch.setattr(PublisherDeleteView, "cv_on_commit", lambda self, context: events.append("commit"))
+    monkeypatch.setattr(graph.BranchBlocker._meta.get_field("branch").remote_field, "on_delete", handler)
+    response = client_user_publisher_delete.post(
+        f"/publisher/{root.pk}/delete/", {"confirm": True}, headers={"X-CV-Modal": "true"} if modal else {}
+    )
+    assert response.status_code == (422 if modal else 200)
+    assert response.context["has_protected_objects"] is True
+    assert graph.Root.objects.filter(pk=root.pk).exists()
+    assert graph.Branch.objects.filter(pk=branch.pk).exists()
+    assert graph.Leaf.objects.filter(pk=leaf.pk).exists()
+    assert graph.BranchBlocker.objects.count() == 1
+    assert events == ["preview"]
+
+
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.parametrize("keep_parents", [False, True])
+def test_native_parent_order_and_keep_parents(keep_parents):
+    with isolate_apps("tests.test1.app"):
+
+        class Parent(models.Model):
+            class Meta:
+                app_label = "app"
+
+        class Child(Parent):
+            class Meta:
+                app_label = "app"
+
+        with _tables(Parent, Child):
+            child = Child.objects.create()
+            pk = child.pk
+            events = []
+
+            def receiver(sender, instance, origin, **kwargs):
+                assert origin is child
+                events.append(sender)
+
+            for model in (Parent, Child):
+                post_delete.connect(receiver, sender=model, weak=False)
+            try:
+                collector = _DeleteCollector(using="default", origin=child)
+                collector.collect([child], keep_parents=keep_parents)
+                collector.delete()
+            finally:
+                for model in (Parent, Child):
+                    post_delete.disconnect(receiver, sender=model)
+            assert events == ([Child] if keep_parents else [Child, Parent])
+            assert Parent.objects.filter(pk=pk).exists() is keep_parents
+            assert not Child.objects.filter(pk=pk).exists()
+            assert child.pk is None
+
+
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.parametrize("lazy", [False, True])
+def test_custom_lazy_sub_objs_and_request_local_stickiness(graph, monkeypatch, lazy):
+    root = graph.Root.objects.create()
+    events = []
+
+    def custom(collector, field, objects, using):
+        events.append((objects.count(), using))
+
+    custom.lazy_sub_objs = lazy
+    monkeypatch.setattr(graph.Custom._meta.get_field("root").remote_field, "on_delete", custom)
+    collector = _DeleteCollector(using="default", origin=root)
+    collector.collect([root])
+    assert events == ([(0, "default")] if lazy else [])
+    assert collector.custom_callback_entered is lazy
+    second = _DeleteCollector(using="default", origin=root)
+    assert second.custom_callback_entered is False
+    assert second.data == {}
+    graph.Blocker.objects.create(root=root)
+    with pytest.raises(_NativeDeleteBlocked):
+        second.collect([root])

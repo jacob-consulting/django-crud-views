@@ -369,7 +369,9 @@ def execute_deletion(target, *, using):
                 "Provide a keyword using parameter or a forwarding **kwargs adapter."
             ) from error
         return method(using=using)
-    if target.pk is None:
+    # Django 5.2+ validates every composite-key component; 4.2 has scalar PKs.
+    pk_is_set = target._is_pk_set() if hasattr(Model, "_is_pk_set") else target.pk is not None
+    if not pk_is_set:
         raise ValueError(
             f"{target._meta.object_name} object can't be deleted because its {target._meta.pk.attname} "
             "attribute is set to None."

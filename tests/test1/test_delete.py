@@ -139,7 +139,9 @@ def test_permission_filtering_shows_permitted_objects(cv_publisher_cascade, publ
 
 
 DANGER_ALERT = 'class="alert alert-danger" role="alert"'
-BLOCKED_HEADING = "Deletion is blocked by protected relationships:"
+BLOCKED_HEADING = "Deletion is blocked by protected relationships"
+BLOCKED_LIST_HEADING = BLOCKED_HEADING + ":"
+BLOCKED_SENTENCE = "Other objects still reference this one; remove or reassign them before deleting it."
 MODAL_HEADERS = {"X-CV-Modal": "true"}
 
 
@@ -243,20 +245,82 @@ def test_no_protected_objects_no_notice(client_user_publisher_cascade_delete, cv
 
 
 @pytest.mark.django_db
-def test_database_protect_post_raises_and_keeps_storage(
-    client_user_publisher_cascade_delete, cv_publisher_cascade, publisher_penguin
+@pytest.mark.parametrize("modal", [False, True])
+def test_database_protect_post_returns_blocked_response_and_keeps_storage(
+    client_user_publisher_cascade_delete, cv_publisher_cascade, publisher_penguin, monkeypatch, modal
 ):
-    """A confirmed POST against a database PROTECT relation keeps raising ProtectedError (unchanged lifecycle)."""
-    from django.db.models import ProtectedError
-
     from tests.test1.app.models import Contract, Publisher
+    from tests.test1.app.views import PublisherCascadeDeleteView
 
+    monkeypatch.setattr(PublisherCascadeDeleteView, "cv_modal", True)
+    calls = _spy_lifecycle(monkeypatch, PublisherCascadeDeleteView, ("cv_form_valid_hook", "cv_on_commit"))
     contract = Contract.objects.create(title="Secret Contract", publisher=publisher_penguin)
     pk = publisher_penguin.pk
-    with pytest.raises(ProtectedError):
-        client_user_publisher_cascade_delete.post(f"/publisher_cascade/{pk}/delete/", {"confirm": True})
+    response = client_user_publisher_cascade_delete.post(
+        f"/publisher_cascade/{pk}/delete/", {"confirm": True}, headers=MODAL_HEADERS if modal else {}
+    )
+    assert response.status_code == (422 if modal else 200)
+    assert "<form" not in response.content.decode()
+    assert BLOCKED_SENTENCE in response.content.decode()
+    assert calls == []
     assert Publisher.objects.filter(pk=pk).exists()
     assert Contract.objects.filter(pk=contract.pk).exists()
+
+
+@pytest.mark.django_db
+def test_blocked_page_omits_confirmation_form(client_user_publisher_cascade_delete, publisher_penguin):
+    from tests.test1.app.models import Contract
+
+    Contract.objects.create(title="Secret Contract", publisher=publisher_penguin)
+    response = client_user_publisher_cascade_delete.get(f"/publisher_cascade/{publisher_penguin.pk}/delete/")
+    content = response.content.decode()
+    assert content.count(DANGER_ALERT) == 1
+    assert "<form" not in content
+    assert "id_confirm" not in content
+    assert 'name="delete"' not in content
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("labelled", [False, True])
+def test_blocked_notice_copy_hidden_and_labelled(
+    client_user_publisher_cascade_delete, user_publisher_cascade_delete, publisher_penguin, labelled
+):
+    from django.contrib.auth.models import Permission
+
+    from tests.test1.app.models import Contract
+
+    Contract.objects.create(title="Publishing Contract", publisher=publisher_penguin)
+    if labelled:
+        user_publisher_cascade_delete.user_permissions.add(Permission.objects.get(codename="view_contract"))
+    response = client_user_publisher_cascade_delete.get(f"/publisher_cascade/{publisher_penguin.pk}/delete/")
+    content = _norm(response.content.decode())
+    if labelled:
+        assert BLOCKED_LIST_HEADING in content
+        assert "<li>Publishing Contract</li>" in content
+        assert BLOCKED_SENTENCE not in content
+    else:
+        assert BLOCKED_LIST_HEADING not in content
+        assert content.count(BLOCKED_SENTENCE) == 1
+        assert "Publishing Contract" not in content
+    assert "<form" not in content
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("blocked", [False, True])
+def test_blocked_state_without_related_preview(client_user_publisher_delete, publisher_penguin, blocked):
+    from tests.test1.app.models import Contract, Publisher
+
+    if blocked:
+        Contract.objects.create(title="Hidden", publisher=publisher_penguin)
+    url = f"/publisher/{publisher_penguin.pk}/delete/"
+    response = client_user_publisher_delete.get(url)
+    assert response.context["has_protected_objects"] is blocked
+    assert "protected_objects" not in response.context
+    assert "related_summary" not in response.context
+    assert ("<form" in response.content.decode()) is not blocked
+    response = client_user_publisher_delete.post(url, {"confirm": True})
+    assert response.status_code == (200 if blocked else 302)
+    assert Publisher.objects.filter(pk=publisher_penguin.pk).exists() is blocked
 
 
 @pytest.mark.django_db

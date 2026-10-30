@@ -416,7 +416,7 @@ def test_legacy_collection_override_startup_and_runtime(publisher_penguin, monke
     assert "viewset.E263" in _check_ids(Legacy)
     view = Legacy()
     view.object = publisher_penguin
-    with pytest.raises(ImproperlyConfigured, match="cv_get_delete_preview.*cv_filter_related_objects"):
+    with pytest.raises(ImproperlyConfigured, match=r"cv_get_delete_preview.*cv_filter_related_objects"):
         view._cv_inspect_deletion()
     assert events == []
 
@@ -463,7 +463,7 @@ def test_custom_delete_signature_diagnostics(publisher_penguin, monkeypatch, sig
         execute_deletion(publisher_penguin, using="default")
         assert events == ["default"]
     else:
-        with pytest.raises(ImproperlyConfigured, match="inspectable signature.*using"):
+        with pytest.raises(ImproperlyConfigured, match=r"inspectable signature.*using"):
             execute_deletion(publisher_penguin, using="default")
         assert events == []
 

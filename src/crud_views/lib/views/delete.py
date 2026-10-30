@@ -2,6 +2,7 @@ import logging
 from collections.abc import Iterable
 from contextlib import nullcontext
 from functools import partial
+from inspect import signature
 from typing import ClassVar
 
 from django.core.exceptions import ImproperlyConfigured
@@ -78,6 +79,36 @@ class DeleteView(CrudViewProcessFormMixin, CrudView, _DeleteMethodGuardMixin, ge
     @classmethod
     def checks(cls) -> Iterable[Check]:
         yield from super().checks()
+        yield CheckExpression(
+            context=cls,
+            id="E263",
+            expression=cls.cv_get_related_objects is DeleteView.cv_get_related_objects,
+            msg=(
+                "cv_get_related_objects overrides are unsupported. Use cv_get_delete_preview() "
+                "for read-only descriptions and cv_filter_related_objects() for display filtering."
+            ),
+        )
+        viewset = getattr(cls, "cv_viewset", None)
+        model = getattr(cls, "model", None) or getattr(viewset, "model", None)
+        if not getattr(viewset, "is_resource", False) and isinstance(model, type) and issubclass(model, Model):
+            try:
+                delete_signature = signature(model.delete)
+            except (TypeError, ValueError):
+                # Opaque methods are diagnosed at execution, before invocation.
+                pass
+            else:
+                try:
+                    delete_signature.bind(None, using="default")
+                except TypeError:
+                    yield CheckExpression(
+                        context=cls,
+                        id="E264",
+                        expression=False,
+                        msg=(
+                            "Custom model delete must accept delete(using=...). Provide a keyword using "
+                            "parameter or a forwarding **kwargs adapter."
+                        ),
+                    )
         yield CheckExpression(
             context=cls,
             id="E254",

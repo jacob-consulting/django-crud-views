@@ -61,7 +61,8 @@ class DeleteInspection:
 
 
 def _identity(obj, using):
-    return using, obj._meta.model, obj.pk
+    # A proxy and its concrete instance describe the same stored deletion row.
+    return using, obj._meta.concrete_model, obj.pk
 
 
 class _DeleteInspector:
@@ -153,7 +154,7 @@ class _DeleteInspector:
 
         summary = defaultdict(int)
         for obj in self.rows.values():
-            if obj._meta.model is not target._meta.model:
+            if obj._meta.concrete_model is not target._meta.concrete_model:
                 summary[obj._meta.verbose_name] += 1
         boundaries = tuple(
             DeletePreviewBoundary(kind, model, name, self.using, tuple(pks))
@@ -187,13 +188,23 @@ def merge_delete_preview(inspection, contributions, *, using):
 
     deleted = {_identity(obj, using) for obj in walk(tree)}
     protected = {_identity(obj, using): obj for obj in related.protected}
-    root_model = tree[0]._meta.model
+    root_model = tree[0]._meta.concrete_model
     for contribution in contributions:
         if not isinstance(contribution, DeletePreviewContribution):
             raise ValueError("Delete preview providers must return DeletePreviewContribution records")
         boundary = contribution.boundary
+        if not isinstance(boundary, DeletePreviewBoundary):
+            raise ValueError("Delete preview contribution must reference a DeletePreviewBoundary descriptor")
+        try:
+            hash(boundary)
+        except TypeError as error:
+            raise ValueError("Delete preview boundary must have an immutable source_pks tuple") from error
         if boundary not in boundaries or boundary.using != using or boundary in seen:
             raise ValueError("Delete preview contribution references an unknown, stale or duplicate boundary")
+        if type(contribution.complete) is not bool:
+            raise ValueError("Delete preview contribution complete must be a boolean")
+        if not isinstance(contribution.deleted, tuple) or not isinstance(contribution.protected, tuple):
+            raise ValueError("Delete preview deleted and protected records must be tuples of model instances")
         seen.add(boundary)
         for records, is_deleted in ((contribution.deleted, True), (contribution.protected, False)):
             for obj in records:
@@ -207,7 +218,7 @@ def merge_delete_preview(inspection, contributions, *, using):
                     else:
                         tree[1] = list(tree[1])
                     tree[1].append(obj)
-                    if obj._meta.model is not root_model:
+                    if obj._meta.concrete_model is not root_model:
                         name = obj._meta.verbose_name
                         summary[name] = summary.get(name, 0) + 1
                 elif not is_deleted:

@@ -37,7 +37,7 @@ Both inherit from Django's `generic.DeleteView` and `CrudView`.
 | `cv_cancel_keys` | `list[str] \| None` | `None` | Origin keys the cancel button may return to dynamically. See [UpdateView](update_view.md#dynamic-cancel-target) |
 | `cv_success_keys` | `list[str] \| None` | `None` | Origin keys the success redirect may return to dynamically; object views such as `detail` are rejected (`viewset.E254`). See [UpdateView](update_view.md#dynamic-success-target) |
 | `cv_context_actions` | `list[str]` | `["home", "detail", "update", "delete"]` | Actions shown in the header area |
-| `cv_show_related_objects` | `bool` | `False` | Show filtered cascade/protected labels and summaries; collection and blocked state run even when false |
+| `cv_show_related_objects` | `bool` | `False` | Show filtered deletion/protected labels and summaries; inspection and blocked state run even when false |
 | `cv_link_related_objects` | `bool` | `False` | Link related objects to their detail views |
 
 ## HTTP methods
@@ -118,13 +118,14 @@ Your base template renders the queued messages with `{% cv_messages %}` — see 
 The same hooks as [CreateView](create_view.md#form-processing-hooks) are available, since
 `DeleteView` also uses `CrudViewProcessFormMixin`.
 
-`self.object.delete()` and `cv_form_valid_hook` run in one transaction; side effects belong in
+Deletion and `cv_form_valid_hook` run in one transaction by default; side effects belong in
 `cv_on_commit`. See [Request lifecycle, transactions & hooks](request_lifecycle.md#call-chains).
 
 ## Cascading Deletes Display
 
-Show users what related objects will be deleted when they delete an object (similar to Django Admin).
-This feature is opt-in.
+Show the supported related deletion effects. Display is opt-in; read-only inspection always runs. Unknown effects
+produce an independent incomplete-preview warning, including with display disabled. A partial preview keeps the
+ordinary confirmation available unless custom protection or known protected rows block deletion.
 
 ```python
 class PublisherDeleteView(CrispyViewMixin, MessageMixin, DeleteViewPermissionRequired):
@@ -137,7 +138,8 @@ When enabled, the delete confirmation page displays:
 
 - A summary of related objects by type and count
 - A nested tree of individual related objects
-- Warnings for protected relationships (`on_delete=PROTECT`)
+- Warnings for protected relationships (`on_delete=PROTECT` / `RESTRICT`)
+- Partial-count headings when some effects remain undescribed
 
 ### Linking Related Objects
 
@@ -185,22 +187,66 @@ deleting it." Hidden labels never change the blocked state.
 | `has_protected_objects` | Present on every delete GET/POST context, computed from the unfiltered protected collection. Use it for the notice and form guard. |
 | `protected_objects` | Present only with previews enabled: the protected objects the user may view, in original order. It can be empty while the flag is true. |
 
-A confirmed POST whose target is genuinely blocked returns the protection page with **200**, or **422** in a modal,
-without deleting anything. Custom protection runs first; the unfiltered database collection supplies the early
-pre-check. A narrow race backstop also handles `ProtectedError` / `RestrictedError` from native target collection
-after the existing lifecycle transaction unwinds. See [Execution Order](#execution-order) for its limits.
+A confirmed POST stopped by the early check returns the protection page with **200**, or **422** in a modal,
+without executing deletion. Inspection merges native and provider blockers before permission filtering.
+A narrow race backstop handles native protection observed during fresh write collection before any executable
+custom collection callback. See [Execution Order](#execution-order) for the precise origin and transaction limits.
 
 #### Collection cost and overrides
 
-The default `cv_get_related_objects()` runs once per context on every GET/POST, including when previews are off.
-It uses `router.db_for_write` and `NestedObjects`, which disables fast deletion and materializes the complete cascade
-rows, tree and summary. A POST that reaches deletion additionally performs the actual deletion collection. There is
-no large-cascade bound or benchmark claim. Hiding labels cannot safely omit the blocked-state check.
+Inspection reads metadata and full display rows on the selected write alias. It does not instantiate `NestedObjects`
+or invoke `Collector.collect`, deletion handlers, `SET(...)` factories, defaults, private collection hooks, model
+deletion or delete signals. Ordinary ORM reads can still run managers, converters, model initialization and read
+signals. Application providers and display filters are trusted code; the package cannot prove their purity.
+Inspection is cached for the view instance; an allowed POST additionally performs fresh write collection. Large
+cascades materialize full rows, tree and counts; there is no large-graph performance bound.
 
-Existing `cv_get_related_objects()` overrides now run with previews disabled too. They must return an accurate,
-unfiltered protected collection and keep those instances local; only the boolean enters context when previews are
-off. Apply display authorization in `cv_filter_related_objects`, which still runs only with previews enabled. This
-cost and override compatibility change introduces no new configuration option.
+`cv_get_related_objects()` remains a read-only compatibility accessor returning `RelatedObjects(tree, summary,
+protected)`. **Overrides are rejected immediately**, without calling them: `viewset.E263` at startup and
+`ImproperlyConfigured` at runtime. Move descriptions to `cv_get_delete_preview` and redaction to
+`cv_filter_related_objects`; see [Safe deletion preview overrides](../migrating-1.0.md#safe-deletion-preview-overrides).
+
+### Inspection and provider API
+
+Import `RelatedObjects`, `DeleteInspection`, `DeletePreviewBoundary` and `DeletePreviewContribution` from
+`crud_views.lib.deletion`. The old `RelatedObjects` import from `crud_views.lib.views.delete` still works.
+`inspect_deletion(target, *, using)` returns `DeleteInspection(related, boundaries)`; its `complete` property is true
+exactly when no boundaries remain. `merge_delete_preview(inspection, contributions, *, using)` validates and merges
+provider records. Normal views use these through `cv_get_delete_preview(self, boundaries, *, using)`, returning an
+iterable of contributions (default `()`). It runs after inspection, including when previews are disabled.
+
+| Record | Fields |
+|---|---|
+| Frozen `DeletePreviewBoundary` | `kind` (`"model_delete"`, `"on_delete"`, `"private_relation"`), `model`, `field_name` (possibly `None`), `using`, ordered `source_pks` tuple |
+| Frozen `DeletePreviewContribution` | `boundary`, `deleted` tuple of saved model instances (default `()`), `protected` tuple of saved model instances (default `()`), `complete` boolean (default `False`) |
+
+Use a boundary supplied to this invocation. Equality includes the **ordered** `source_pks`, model, kind, field and
+alias. Unknown, stale, cross-alias or duplicate boundaries, invalid tuple/boolean fields, unsaved/non-model rows and
+rows whose `_state.db` differs from `using` raise `ValueError`. Query providers explicitly with `.using(using)`;
+provider exceptions propagate. `complete=True` is the application's attestation about that boundary alone, including
+an explicitly described no-effect boundary; it is not a proof of purity or a whole-preview completeness switch.
+
+Deleted rows merge as deduplicated direct-root children, with counts added for models other than the root's concrete
+model. Identity is `(using, concrete_model, pk)`, preserving UUID/integer values and discovery order; proxy and
+concrete descriptions of one stored row deduplicate. Native tree structure and redacted `None` positions remain.
+Concrete multi-table parent rows count separately: deleting a Car can include its Vehicle parent in the summary.
+Native joins use actual field targets, including `to_field` and parent links whose key differs from the child PK.
+
+Provider `protected` rows are an **additive veto**, even without a native blocker. Neither contributions nor display
+redaction remove native protection. Native `RESTRICT` is reconciled against the supported cascade closure only;
+asserting a restricted row in provider `deleted` never clears a blocker outside that closure.
+
+Exact native `CASCADE`, `PROTECT` and `RESTRICT` are inspected through metadata. `SET_NULL` and `DO_NOTHING` have no
+deletion traversal. `SET(...)`, `SET_DEFAULT`, unknown handlers/field classes, generic/private bulk relations and
+custom root `delete` methods leave boundaries, even on empty relationships. Ordered-model Author and polymorphic
+Car therefore normally show incomplete notices; no library override is assumed harmless. Unexpected read, provider
+or rendering failures propagate instead of being relabelled incomplete. See the
+[custom-effect recipe](../migrating-1.0.md#describing-custom-deletion-effects).
+
+Every delete context contains `delete_preview_incomplete` and `has_protected_objects`. Raw boundaries, aliases and
+unfiltered protected instances stay local. Preview keys (`related_objects`, `related_summary`,
+`related_summary_items`, `protected_objects`) exist only when display is enabled. Incomplete integer counts are
+qualified by the heading, not changed to strings. Aggregate model/count disclosure retains the policy above.
 
 ### Custom related-object filters
 
@@ -242,7 +288,8 @@ Each alert in `related_objects.html` is a `{% cv_alert %}` call, so it renders t
 `related_summary_items`, the summary as ready strings (`"book: 3"`); `related_summary` (a `{verbose_name: count}`
 dict) stays in the context for overrides that read it.
 
-Override these in your project's template directory to customize the rendering. A copy of
+Override these in your project's template directory to customize the rendering. Keep the independent incomplete
+warning outside both protection branches, even with previews disabled. A copy of
 `crud_views/view_delete.content.html` must include the snippet when `related_summary or has_protected_objects`, and a
 copy of `related_objects.html` must use both notice branches: colon heading with `items=protected_objects` when
 labels exist, colon-free heading with the generic `text=` sentence otherwise. A copy that still tests
@@ -257,8 +304,8 @@ labels exist, colon-free heading with the generic `text=` sentence otherwise. A 
 {% endif %}
 ```
 
-Keep the existing custom-protection branch around this content. The complete two-branch notice and migration steps
-are in [Blocked deletions](../migrating-1.0.md#blocked-deletions); a copied alert leaf must render `alert.text` or
+Keep the existing custom-protection branch around this content. The complete executable content/snippet recipe is
+in [Copied delete templates](../migrating-1.0.md#copied-delete-templates-with-incomplete-previews); a copied alert leaf must render `alert.text` or
 `alert.body_template` as well as its heading and items.
 
 ## Delete Protection
@@ -300,31 +347,50 @@ class ProtectedDeleteForm(CrispyDeleteForm):
 
 ### Execution Order
 
-1. **GET/POST context**: run `cv_check_delete_protection()` and collect database protection, regardless of previews.
+1. **GET/POST context**: run `cv_check_delete_protection()` and inspect supported effects plus providers, regardless of previews.
    Custom errors take presentation precedence; either block omits the form.
 2. **POST**: run `cv_post_hook`, then validate the confirmation form. An invalid form follows the existing invalid
    hook/response path.
 3. **Valid POST**: custom protection errors become non-field errors; custom or database protection returns the
    protection page (200 full page / 422 modal), with no write hooks or deletion.
-4. **Unblocked POST**: run the existing write lifecycle and real `self.object.delete()`. Native target collection
-   protection discovered here can use the race backstop after the transaction unwinds.
+4. **Unblocked POST**: run the existing write lifecycle on the pinned alias. Fresh native collection protection
+   can use the race backstop after the transaction unwinds, under the rules below.
 5. **Successful deletion**: run the normal success hook, commit callbacks and redirect/204 behavior.
 
-The backstop requires both native-graph eligibility captured **before** invoking deletion and exact target
-`Model.delete` / `Collector.collect` frame identity. Collector frames alone are insufficient: Django can aggregate a
-custom relationship handler's `ProtectedError` and discard its traceback. The native allowlist excludes custom
-handlers anywhere in possible cascade/parent paths, every `SET(...)` closure, `SET_DEFAULT`, private bulk-related
-callbacks and nonstandard row loaders, including unknown relations with no current rows. Unknown collector types
-also propagate. These exclusions govern exception translation only: real `model.delete()` still runs, visible
-protection still uses the early pre-check, and no new transaction is introduced.
+For an exact bound Django `Model.delete`, the package adapts native collection and inherits Django's SQL deletion
+executor (signals, counts and PK clearing). It establishes native protection origin at the operation itself; no
+traceback or graph-certification inference is used. Native `PROTECT` stops immediately. Native `RESTRICT` reconciles
+at outer closure. Before executing a custom handler, `SET`/default factory or private collector, the collector marks
+that a custom callback has been entered. This flag stays set across recursion. Only a native blocker observed before
+that point becomes the private marker that `post` catches after the atomic context unwinds. A custom callback that
+returns before a later native block still makes that later error propagate. Query/converter errors also propagate.
 
-Errors from those unknown collection paths, `cv_post_hook`, a custom `cv_form_valid`, `cv_form_valid_hook`,
-`cv_on_commit`, model overrides or signals continue to propagate. A callback failure after commit leaves the target
-deleted; it must not report that the target survived. With `cv_atomic=False`, committed side effects of a custom
-collection callback remain committed even if collection then fails. This is not support for arbitrary application
-collector extensions. A custom `post` must delegate to the standard `post` path to receive its response handling and
-preserve the documented lifecycle; direct `cv_form_valid_process` calls do not automatically receive an HTTP
-protection response.
+Every other bound model method runs once as `delete(using=using)`, including ordered-model and polymorphic methods.
+Actual Author sibling reordering and Car/Vehicle parent behavior are preserved; their stale `ProtectedError` and
+`RestrictedError` propagate. No friendly native response is promised for custom methods. Inspectable methods lacking
+a keyword `using` or forwarding `**kwargs` fail `viewset.E264`; opaque or incompatible methods raise
+`ImproperlyConfigured` before invocation. See [Delete signatures](../migrating-1.0.md#delete-method-signatures-and-database-selection).
+
+Errors from `cv_post_hook`, custom mutation hooks, success hooks, model overrides, delete signals and `cv_on_commit`
+propagate. Non-atomic callback writes can remain after a later block; external I/O cannot be rolled back even with
+`cv_atomic=True`. A commit callback error leaves committed deletion intact. Friendly native markers do not imply
+rollback of external effects. Delegate custom `post` to the standard path for HTTP protection responses; direct
+`cv_form_valid_process` callers own authorization/confirmation and receive no automatic HTTP protection response.
+
+### Database selection
+
+After resolving an authorized saved `self.object`, `cv_get_delete_db_alias()` calls `cv_get_db_alias()` once, validates
+its configured nonempty alias and pins it for the view instance. The delete default selects
+`router.db_for_write(type(self.object), instance=self.object)`. Inspection, execution, the default atomic block and
+`on_commit` registration share that alias, even with `cv_atomic=False`. Calling the accessor before a saved target
+exists raises `ImproperlyConfigured`. Request parameters do not select it.
+
+A router/explicit selector can choose a different alias from the loaded instance: inspection and deletion then use
+the same model/PK on the selected alias, with fresh relationships/parent rows. The selector is trusted application
+policy. Custom atomic overrides must use `cv_get_delete_db_alias()`; side-effect ORM queries must select their own
+alias explicitly. There are no cross-database transactions. See
+[Request lifecycle](request_lifecycle.md#transactions) and the
+[atomic migration](../migrating-1.0.md#delete-method-signatures-and-database-selection).
 
 ---
 

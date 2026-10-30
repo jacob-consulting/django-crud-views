@@ -12,7 +12,9 @@ effects such as e-mails or Celery tasks.
 
 ## Overview
 
-GET requests never write. POST requests are handled by one of three methods:
+Package GET handlers do not intentionally mutate storage. Delete inspection reads metadata/ORM rows without
+executing deletion callbacks; application loaders, preview providers and filters remain trusted code whose purity
+cannot be guaranteed. POST requests are handled by one of three methods:
 
 | POST handler | Used by |
 |---|---|
@@ -24,7 +26,8 @@ Each handler has three phases:
 
 1. **Outside the transaction:** load the object, build the context, validate.
 2. **In the transaction (the write phase):** your write code and its follow-up hook. If anything
-   raises, everything written in this phase is rolled back.
+   raises, writes on that database roll back when the atomic boundary is enabled. External effects and writes on
+   another database cannot be rolled back by it.
 3. **After the commit:** `cv_on_commit(context)`, then the redirect.
 
 ## Call chains
@@ -44,7 +47,8 @@ get_object (if cv_object) → get_context_data → cv_post_hook → cv_form_is_v
 ### Delete views
 
 ```text
-get_object → get_context_data (delete protection, related objects) → cv_post_hook → cv_form_is_valid
+get_object → get_context_data (custom protection, pinned-alias inspection/provider, display projection)
+  → cv_post_hook → cv_form_is_valid
   valid + protection errors: render the form again (422 in a modal)
   valid:   cv_form_valid_process [atomic: cv_form_valid (delete) → cv_form_valid_hook ⇢ cv_on_commit]
            → cv_form_valid_redirect
@@ -53,6 +57,15 @@ get_object → get_context_data (delete protection, related objects) → cv_post
 
 The success URL is resolved after the delete, so it must not point at the deleted object
 (system check `viewset.E254`).
+
+The early block combines native and provider protected rows independently of permission-filtered labels and
+`cv_show_related_objects`. `delete_preview_incomplete` is independent too and does not add a confirmation step.
+The exact bound Django `Model.delete` uses adapted native collection plus Django's SQL executor; other methods run
+once with keyword `using`, preserving ordered sibling reordering and polymorphic parent behavior. Only native
+blockers observed before custom collection callbacks become a friendly response after atomic unwind. Custom model
+methods, callbacks, query loaders, hooks and signals retain ordinary exception propagation, including stale
+protection. A returned custom callback can leave effects before a later block, especially when non-atomic.
+See [Delete execution order](delete_view.md#execution-order).
 
 ### Action views
 
@@ -65,6 +78,8 @@ get_object → get_context_data
 
 `cv_form_valid_process(context)` and `cv_action_process(context)` own the transaction. If you
 override `post()`, call them instead of `cv_form_valid` / `action()` directly to keep it.
+For delete views delegate to `super().post()` to retain confirmation, early protection and HTTP marker handling;
+calling `cv_form_valid_process` directly does not supply those gates.
 
 ## Hook reference
 
@@ -81,6 +96,7 @@ override `post()`, call them instead of `cv_form_valid` / `action()` directly to
 | `cv_action_error_hook(context)` | action | in transaction | failure audit rows | yes | no | optional |
 | `cv_on_commit(context)` | form, delete, action | after commit | mail, Celery, webhooks, cache invalidation | not atomic with the write | **yes** | optional (base is empty) |
 | `cv_check_delete_protection() -> list[str]` | delete | outside | vetoing a delete | no | no | optional |
+| `cv_get_delete_preview(boundaries, *, using)` | delete | outside | read-only boundary descriptions | no | no | optional (base returns `()`) |
 | `cv_form_invalid(context)` | form, delete | outside | custom invalid response | no | no | optional |
 | `cv_form_invalid_hook(context)` | form, delete | outside | logging invalid submits | no | no | optional |
 | `cv_form_valid_redirect(context)` | form, delete | after the write phase | custom success response | no | no | optional |
@@ -100,6 +116,16 @@ hook raises, the write is rolled back but the message may still be shown on the 
 | `cv_atomic` | attribute | `True` (`False` on `ResourceViewMixin`) | wrap the write phase in `transaction.atomic()` |
 | `cv_get_db_alias()` | method | `router.db_for_write(viewset.model)` | database of the transaction and of `cv_on_commit` |
 | `cv_get_atomic()` | method | `atomic(using=cv_get_db_alias())`, or `nullcontext()` when `cv_atomic` is `False` | the context manager around the write phase |
+
+These generic defaults continue to apply to create/update/action/resource views. **Delete views** override them:
+`cv_get_db_alias()` uses `router.db_for_write(type(self.object), instance=self.object)`;
+`cv_get_delete_db_alias()` validates and pins that selection after a saved target is resolved. Inspection,
+`delete(using=...)`, the default `cv_get_atomic()` and `on_commit` registration all use the pinned alias. The selector
+runs once per view instance, including non-atomic execution. A custom delete atomic boundary must use
+`cv_get_delete_db_alias()`, not repeatedly call the selector. Explicit selection can target the same model/PK on a
+different alias from the loaded instance. Your selectors, custom model methods and follow-up ORM writes must honor
+the intended routing; this does not authorize cross-database side effects automatically. See the
+[migration recipe](../migrating-1.0.md#delete-method-signatures-and-database-selection).
 
 When `cv_on_commit` runs:
 
@@ -240,8 +266,9 @@ With `ATOMIC_REQUESTS = True` the request transaction is still open, so also dec
 `method_decorator(transaction.non_atomic_requests, name="dispatch")`).
 
 For a different boundary (for example `savepoint=False`), override `cv_get_atomic()` and return
-your own context manager. Keep it on `cv_get_db_alias()`: `cv_on_commit` is registered on that
-alias. To change the database, override `cv_get_db_alias()` instead.
+your own context manager. Keep it on `cv_get_db_alias()` for generic views, or the pinned
+`cv_get_delete_db_alias()` for deletes: `cv_on_commit` is registered on that alias. To change selection, override
+`cv_get_db_alias()` instead.
 
 ### Resource views writing ORM rows
 
@@ -278,7 +305,8 @@ class S3FileArchiveView(ResourceViewMixin, ActionViewPermissionRequired):
 
 `cv_get_db_alias()` asks your `DATABASE_ROUTERS` for the write database of the ViewSet's model;
 the transaction and `cv_on_commit` both use it. Override it when the write phase mainly targets
-another model. Django has no transactions across databases: writes to a second database inside
+another model. Delete views pin their instance-hinted selection as described above. Django has no transactions across
+databases: writes to a second database inside
 `cv_form_valid` are not rolled back with the first.
 
 ## Limitations

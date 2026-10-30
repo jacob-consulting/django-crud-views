@@ -4,10 +4,10 @@ milestone: v1.0
 current_phase: "06.2"
 current_phase_name: Request authorization and write integrity (INSERTED)
 status: verifying
-stopped_at: WR-01 fixed; validation/security/UI/code-review refreshed; regression gate running before final verifier and UAT
-last_updated: "2026-10-30T09:48:38.906237+00:00"
+stopped_at: Phase 06.2 final verification human_needed; UAT test 6 blocked-delete screen/modal recovery awaiting user
+last_updated: "2026-10-30T10:01:14.777921+00:00"
 last_activity: 2026-10-30
-last_activity_desc: "WR-01 fixed; final 06.2 gates in progress; 6.3 transfers remain unresolved"
+last_activity_desc: "Completed WR-01 quick fix and refreshed final gates; resumed UAT with one post-fix browser check"
 state_head: bd31992ee575fdee6ed87ea8f10a8135ff98f3f4
 progress:
   total_phases: 10
@@ -24,16 +24,16 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-10-29)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.2 — Request authorization and write integrity (INSERTED); next phase: 06.3 — Delete protection and write-boundary integrity (#282); next recommended run: $gsd-plan-phase 06.3
+**Current focus:** Phase 06.2 — Request authorization and write integrity (INSERTED); next phase: 06.3 — Delete protection and write-boundary integrity (#282); current action: $gsd-verify-work 06.2 (test 6); then $gsd-plan-phase 06.3
 
 ## Current Position
 
 Phase: 06.2 (Request authorization and write integrity (INSERTED)) — VERIFYING
 Plan: 9 of 9
 Status: verifying
-Last activity: 2026-10-30 — Completed quick task 261030-csg: WR-01 fixed; supported-version tests pass; phase gates and UAT pending
+Last activity: 2026-10-30 — Final automated gates passed for retained 6.2 scope; UAT test 6 awaits user observation; 6.3 transfers unresolved
 
-Progress: 36/36 plans executed; 7/10 phases complete (70%); Phase 6.2 9/9 plans executed, final verification pending
+Progress: 36/36 plans executed; 7/10 phases complete (70%); Phase 6.2 9/9 plans executed, human verification pending (one post-fix browser check)
 
 ## Performance Metrics
 

@@ -386,18 +386,18 @@ verification/UAT pass. [Issue #282](https://github.com/jacob-consulting/django-c
 | 1 / AUTH-01 | DELETE 405 and named POST lifecycle controls | Callback-safe inspection, unknown converter propagation, database alignment → 6.3 DEL-02/03/04 |
 | 3 / AUTH-03 | Filtered protected labels, independent notice, fixed CR-01/WR-02 scope | Callback-free, target-database blocked-state determination → 6.3 DEL-02/04/05 |
 | 7 / AUTH-07 | Actor/native-template replay, paired docs | Real-preview/error/routing evidence, preserved authorization and re-review → 6.3 DEL-01–06 |
-| 4 / AUTH-04 | Parent-None dispatch and Guardian helper/state cases | Older WR-01 core rendered-state agreement remains open for separate disposition |
+| 4 / AUTH-04 | Parent-None dispatch and Guardian helper/state cases | WR-01 core rendered-state agreement fixed in quick 261030-csg; final post-fix UAT remains pending |
 | 2, 5, 6 / AUTH-02/05/06 | Named fragment/inactive/configuration cases | Preserve A19 (proposed 6.4); AUTH-06 residual review and IN-02/03 → 6.3 GUA-01; other findings retain separate dispositions |
 
 See [REQUIREMENTS](REQUIREMENTS.md#acceptance-ownership-split-2026-10-30),
 [06.2-ACCEPTANCE](phases/06.2-request-authorization-and-write-integrity/06.2-ACCEPTANCE.md#acceptance-ownership-split-for-issue-282)
 and [06.2-REVIEW-DISPOSITION](phases/06.2-request-authorization-and-write-integrity/06.2-REVIEW-DISPOSITION.md).
 AUTH-06 residual review and IN-02/IN-03 are explicitly transferred unresolved to 6.3 GUA-01.
-WR-01 remains open. IN-01/IN-04 are closed with explicit policy/limitation rationale; IN-05 is fixed.
+WR-01 is fixed by quick 261030-csg (bd31992). IN-01/IN-04 are closed with explicit policy/limitation rationale; IN-05 is fixed.
 The revised analysis §8 puts conditional/formset, presentation and Tabler proposals at 6.4/6.5/6.6; only 6.3 is
 inserted here. Phase 7 remains last and cannot freeze the affected promises before remediation.
 
-**Plans**: 9/9 plans executed; final phase gates awaiting existing UI-review choice
+**Plans**: 9/9 plans executed; final automated gates refreshed; canonical verification human_needed, one post-fix UAT check pending
 
 Plans:
 **Wave 1**
@@ -461,7 +461,7 @@ No architecture is chosen; do not run a blanket automatic `--fix` pass.
 **Disposition**: CR-02–CR-04 deferred here and **unresolved**. CR-01/WR-02 remain fixed in their earlier scope.
 The user explicitly added GUA-01 on 2026-10-30: AUTH-06’s residual review flag and IN-02/IN-03 transfer
 here unresolved, alongside #282 rather than as an amendment to the external issue.
-WR-01 remains a separate open finding. IN-01/IN-04 are closed with rationale and IN-05 is fixed in 6.2.
+WR-01 was fixed separately in 6.2 by quick 261030-csg. IN-01/IN-04 are closed with rationale and IN-05 is fixed in 6.2.
 **Plans**: 0 plans; not planned or verified
 
 Plans:

@@ -506,6 +506,123 @@ def test_signature_checks_skip_bare_and_resource_views(monkeypatch):
     assert "viewset.E264" in _check_ids(BadModel)
 
 
+@pytest.mark.django_db
+@pytest.mark.parametrize("language", ["en", "de"])
+@pytest.mark.parametrize("modal", [False, True])
+@pytest.mark.parametrize("details", [False, True])
+@pytest.mark.parametrize("blocker", ["none", "native", "business"])
+@pytest.mark.parametrize("row_count", [0, 1, 2])
+def test_partial_notice_modes_and_german(
+    client_user_publisher_cascade_delete,
+    user_publisher_cascade_delete,
+    publisher_penguin,
+    monkeypatch,
+    language,
+    modal,
+    details,
+    blocker,
+    row_count,
+):
+    from django.contrib.auth.models import Permission
+    from django.utils.html import escape
+    from django.utils.translation import override
+    from lxml import html
+
+    labels = ['<script>alert("雪")</script>', "München — 東京"]
+    for label in labels[:row_count]:
+        Book.objects.create(publisher=publisher_penguin, title=label)
+    # A real unknown boundary even for empty relationships, never a synthetic result.
+    monkeypatch.setattr(BookNote._meta.get_field("book").remote_field, "on_delete", models.SET(lambda: None))
+    monkeypatch.setattr(PublisherCascadeDeleteView, "cv_modal", True)
+    monkeypatch.setattr(PublisherCascadeDeleteView, "cv_show_related_objects", details)
+    # Empty cascades need a root boundary as no Book is visited.
+    monkeypatch.setattr(Publisher, "delete", lambda self, **kwargs: None)
+    user_publisher_cascade_delete.user_permissions.add(Permission.objects.get(codename="view_book"))
+    if blocker == "native":
+        Contract.objects.create(publisher=publisher_penguin, title="Do not disclose native label")
+    elif blocker == "business":
+        monkeypatch.setattr(PublisherCascadeDeleteView, "cv_check_delete_protection", lambda self: ["Business block"])
+    headers = {"X-CV-Modal": "true"} if modal else {}
+    url = f"/publisher_cascade/{publisher_penguin.pk}/delete/"
+    with override(language):
+        response = client_user_publisher_cascade_delete.get(url, headers=headers)
+        notice = {
+            "en": "This preview is incomplete. Custom deletion behavior may affect additional objects.",
+            "de": "Diese Vorschau ist unvollständig. Benutzerdefiniertes Löschverhalten kann weitere Objekte betreffen.",
+        }[language]
+        partial = {
+            "en": "Some related objects that will also be deleted (partial counts):",
+            "de": "Einige verknüpfte Objekte, die ebenfalls gelöscht werden (Teilanzahlen):",
+        }[language]
+        markup = response.content.decode()
+        document = html.fromstring(markup)
+        assert response.status_code == 200
+        assert markup.count(notice) == 1
+        assert document.xpath('//*[contains(@class, "alert-warning")][@role="alert"]')
+        assert response.context["delete_preview_incomplete"] is True
+        assert response.context["has_protected_objects"] is (blocker == "native")
+        assert ("related_summary" in response.context) is details
+        if details:
+            expected = {"book": row_count} if row_count else {}
+            assert response.context["related_summary"] == expected
+            assert all(type(count) is int and count >= 0 for count in expected.values())
+        assert (partial in markup) is (details and row_count > 0 and blocker != "business")
+        assert "Do not disclose native label" not in markup
+        assert '<script>alert("雪")</script>' not in markup
+        if details and row_count and blocker != "business":
+            assert str(escape(labels[0])) in markup
+            if row_count == 2:
+                assert labels[1] in markup
+        confirms = document.xpath('//input[@name="confirm"]')
+        forms = document.xpath('//form[contains(@class, "cv-form")]')
+        assert len(confirms) == len(forms) == (1 if blocker == "none" else 0)
+        if forms:
+            assert not forms[0].xpath('.//*[contains(text(), "' + notice + '")]')
+        if blocker != "none":
+            blocked = client_user_publisher_cascade_delete.post(url, {"confirm": True}, headers=headers)
+            assert blocked.status_code == (422 if modal else 200)
+            assert notice in blocked.content.decode()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("modal", [False, True])
+def test_complete_preview_retains_copy_and_one_confirmation(
+    client_user_publisher_cascade_delete, publisher_penguin, monkeypatch, modal
+):
+    from lxml import html
+
+    Book.objects.create(publisher=publisher_penguin, title="Complete preview")
+    monkeypatch.setattr(PublisherCascadeDeleteView, "cv_modal", True)
+    headers = {"X-CV-Modal": "true"} if modal else {}
+    response = client_user_publisher_cascade_delete.get(
+        f"/publisher_cascade/{publisher_penguin.pk}/delete/", headers=headers
+    )
+    markup = response.content.decode()
+    assert response.context["delete_preview_incomplete"] is False
+    assert "The following related objects will also be deleted:" in markup
+    assert "partial counts" not in markup
+    assert "This preview is incomplete." not in markup
+    assert len(html.fromstring(markup).xpath('//input[@name="confirm"]')) == 1
+
+
+def test_german_delete_catalog_matches_source(tmp_path):
+    from pathlib import Path
+
+    import polib
+
+    directory = Path(__file__).resolve().parents[2] / "src/crud_views/locale/de/LC_MESSAGES"
+    source = polib.pofile(str(directory / "django.po"))
+    for msgid in (
+        "This preview is incomplete. Custom deletion behavior may affect additional objects.",
+        "Some related objects that will also be deleted (partial counts):",
+    ):
+        entry = source.find(msgid)
+        assert entry is not None and entry.translated()
+    regenerated = tmp_path / "django.mo"
+    source.save_as_mofile(str(regenerated))
+    assert regenerated.read_bytes() == (directory / "django.mo").read_bytes()
+
+
 @pytest.mark.django_db(transaction=True)
 @pytest.mark.parametrize("outcome", ["invalid", "native-blocked", "business-blocked", "permitted"])
 def test_tracer_real_preview_confirmation_and_commit(

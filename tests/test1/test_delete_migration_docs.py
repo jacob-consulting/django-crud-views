@@ -3,13 +3,16 @@
 import copy
 import re
 import sys
+from collections import OrderedDict
 from dataclasses import replace
+from textwrap import indent
 from types import ModuleType, SimpleNamespace
 
 import pytest
 from django.conf import settings
 from django.contrib.auth.models import Permission, User
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ImproperlyConfigured
 from django.db import connection, models
 from django.db.models.signals import post_delete
 from django.test import Client, override_settings
@@ -21,7 +24,7 @@ from crud_views.lib import check as check_module
 from crud_views.lib.deletion import DeletePreviewContribution, inspect_deletion
 from crud_views.lib.views import ListViewPermissionRequired
 from crud_views.lib.viewset import _REGISTRY, _REGISTRY_LOCK, ViewSet
-from tests.test1.test_label_mode_docs import DOCS, FENCE, _section
+from tests.test1.test_label_mode_docs import DOCS, FENCE, ROOT, _anchors, _section
 
 MIGRATION = DOCS / "migrating-1.0.md"
 TEMPLATE_FENCE = re.compile(r"^```django\n(.*?)^```", re.MULTILINE | re.DOTALL)
@@ -341,3 +344,116 @@ def test_real_author_and_car_remain_incomplete_without_attestation():
     car_inspection = inspect_deletion(car, using="default")
     assert not car_inspection.complete
     assert car_inspection.related.summary == {"vehicle": 1}
+
+
+def test_documented_signature_and_atomic_adapters_execute(recipes):
+    from crud_views.lib.deletion import execute_deletion
+    from crud_views.lib.views.delete import DeleteView
+
+    r = recipes
+    signature, atomic = _recipe("### Delete method signatures and database selection", count=2)
+    namespace = {"Document": r.Document, "__name__": "myapp.signature_recipe"}
+    source = "class SignatureAdapter(Document):\n" + indent(signature, "    ")
+    source += '\n    class Meta:\n        app_label = "app"\n        proxy = True\n'
+    exec(compile(source, str(MIGRATION), "exec"), namespace)
+    adapter = namespace["SignatureAdapter"].objects.get(pk=r.target.pk)
+    count, _ = execute_deletion(adapter, using="default")
+    assert count == 2  # Document + Attachment; PreviewNote is deleted inside the custom method
+    assert r.events == [("model", "default"), ("handler", "default")]
+    assert not r.Document.objects.exists() and not r.PreviewNote.objects.exists()
+
+    # The published atomic override really enters the pinned alias, without re-running selection.
+    exec(compile(atomic, str(MIGRATION), "exec"), namespace)
+    view = DeleteView()
+    view._cv_delete_db_alias = "default"
+    view.cv_get_db_alias = lambda: pytest.fail("selector must not be called again")
+    assert not connection.in_atomic_block
+    with namespace["cv_get_atomic"](view):
+        assert connection.in_atomic_block
+    assert not connection.in_atomic_block
+
+
+def test_documented_delete_diagnostics_reject_before_invocation(recipes, monkeypatch):
+    from crud_views.lib.deletion import execute_deletion
+    from crud_views.lib.views.delete import DeleteView
+
+    r = recipes
+    table = _section(MIGRATION.read_text(), "## Step zero: run the checks")
+
+    class Legacy(DeleteView):
+        model = r.Document
+
+        def cv_get_related_objects(self):
+            pytest.fail("legacy preview must not execute")
+
+    ids = {message.id for check in Legacy.checks() for message in check.messages()}
+    assert "viewset.E263" in ids and "`viewset.E263`" in table
+    view = Legacy()
+    view.object = r.target
+    with pytest.raises(ImproperlyConfigured, match=r"cv_get_delete_preview.*cv_filter_related_objects"):
+        view._cv_inspect_deletion()
+
+    def incompatible(self):
+        pytest.fail("incompatible delete must not execute")
+
+    monkeypatch.setattr(r.Document, "delete", incompatible)
+    ids = {message.id for check in Legacy.checks() for message in check.messages()}
+    assert "viewset.E264" in ids and "`viewset.E264`" in table
+    with pytest.raises(ImproperlyConfigured, match=r"inspectable signature.*using"):
+        execute_deletion(r.target, using="default")
+    assert r.events == []
+
+
+def test_documented_guardian_key_recipe_and_exact_diagnostic(recipes, monkeypatch):
+    from crud_views_guardian.lib.viewset import STRICT_HELPER_POLICY, GuardianViewSet
+
+    r = recipes
+    vs = GuardianViewSet(model=r.Document, name="migration_guardian_keys")
+    vs._default_permissions = OrderedDict(
+        [("zebra", "app.view_document"), ("réviser", "app.change_document"), ("alpha", "app.delete_document")]
+    )
+    monkeypatch.setattr(sys.modules["myapp.viewsets"], "cv_document", vs)
+    namespace = {"__name__": "myapp.key_recipe"}
+    exec(compile(_recipe("### Guardian permission keys")[0], str(MIGRATION), "exec"), namespace)
+    r.actor.is_active = False
+    r.actor.save()
+    message = "Invalid permission key 'view'. Valid keys: 'alpha', 'réviser', 'zebra'."
+    assert message in _section(MIGRATION.read_text(), "### Guardian permission keys")
+    for key in ("view", "", None, 1, b"alpha", [], {}, "Alpha", "alpha "):
+        expected = f"Invalid permission key {key!r}. Valid keys: 'alpha', 'réviser', 'zebra'."
+        for call in (
+            lambda key=key: namespace["visible_documents"](r.actor, key),
+            lambda key=key: vs.assign_perm(key, r.actor, r.target),
+            lambda key=key: vs.remove_perm(key, r.actor, r.target),
+        ):
+            with pytest.raises(ValueError) as error:
+                call()
+            assert str(error.value) == expected
+    assert not namespace["visible_documents"](r.actor, "réviser").exists()
+    with pytest.raises(TypeError):
+        STRICT_HELPER_POLICY["accept_global_perms"] = True
+
+
+def test_delete_breaking_entries_have_matching_migration_contracts():
+    unreleased = _section((ROOT / "CHANGELOG.md").read_text(), "## Unreleased")
+    breaking = _section(unreleased, "### Breaking")
+    anchors = _anchors(MIGRATION)
+    for anchor, terms in {
+        "safe-deletion-preview-overrides": ("cv_get_related_objects", "viewset.E263", "cv_get_delete_preview"),
+        "delete-method-signatures-and-database-selection": ("viewset.E264", "using", "cv_get_delete_db_alias"),
+        "copied-delete-templates-with-incomplete-previews": ("delete_preview_incomplete", "has_protected_objects"),
+        "guardian-permission-keys": ("ValueError", "KeyError", "non-string"),
+    }.items():
+        assert anchor in anchors and f"docs/migrating-1.0.md#{anchor}" in breaking
+        heading = (
+            "### "
+            + {
+                "safe-deletion-preview-overrides": "Safe deletion preview overrides",
+                "delete-method-signatures-and-database-selection": "Delete method signatures and database selection",
+                "copied-delete-templates-with-incomplete-previews": "Copied delete templates with incomplete previews",
+                "guardian-permission-keys": "Guardian permission keys",
+            }[anchor]
+        )
+        section = _section(MIGRATION.read_text(), heading)
+        for term in terms:
+            assert term in section

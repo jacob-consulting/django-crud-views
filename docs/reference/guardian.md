@@ -113,6 +113,26 @@ accepts global model permissions. It does count object grants and group grants. 
 object, and an inactive user gets none. A view's `cv_guardian_accept_global_perms` does not change what the helper
 returns, so a list view with the fallback can show rows the helper does not return.
 
+The shared `STRICT_HELPER_POLICY` is a `MappingProxyType` over an unexposed literal mapping:
+`{"policy": "strict", "accept_global_perms": False, "use_groups": True}`. Assignment raises `TypeError`.
+Manage context exposes detached `dict` copies; editing one response cannot change helper authority or later
+responses. This prevents accidental mapping/context mutation, not arbitrary monkeypatching of application modules.
+
+### Permission key diagnostics
+
+`assign_perm`, `remove_perm` and `get_objects_for_user` accept exact configured **string** keys from
+`viewset.permissions`. Unknown/empty/non-string inputs raise `ValueError`, replacing earlier `KeyError` (and
+unhashable-input `TypeError` or the inactive-user empty-result shortcut). Validation precedes inactive-user return,
+target queryset access and Guardian shortcut calls/permission writes. A valid key for an inactive actor still
+returns an empty queryset. Non-string input is a programming error, including `None`, integers, bytes, lists and
+dicts; it is not an alternative way to request no permissions.
+
+The exact message is `Invalid permission key {perm!r}. Valid keys: {alternatives}.`, with
+`alternatives = ", ".join(repr(key) for key in sorted(self.permissions))`. Alternatives are the actual configured
+keys, not a fixed CRUD list. Case, whitespace and Unicode normalization are not changed. A configuration with keys
+`zebra`, `réviser`, `alpha` reports `Invalid permission key 'view'. Valid keys: 'alpha', 'réviser', 'zebra'.`
+See the executable [Guardian permission-key migration](../migrating-1.0.md#guardian-permission-keys).
+
 ### Inactive users
 
 A user who is logged in but whose account is inactive (`is_active = False`, possible with a backend such as
@@ -328,8 +348,12 @@ through tables are decided without any ContentType lookup or row write: only aut
 their rows. Their projection cache materializes **every PK in the through table**, including unrelated rows, once
 per projection, rather than limiting the query to cascade candidates.
 
-This fix covers delete-preview lookup. Other ViewSet queryset/helper paths retain their app-qualified permission
-lookup and require separate review for proxy/base-content-type configurations.
+This covers delete-preview lookup only. A registered Car ViewSet under
+`polymorphic.contrib.guardian.get_polymorphic_base_content_type` still resolves `app.view_car` while Guardian expects
+Vehicle's content type. The strict helper **and list queryset** raise `guardian.exceptions.MixedContentTypeError`
+even with a valid `view_vehicle` object grant. This configuration is an unresolved limitation; the projection fix
+does not fix those paths. The default PublisherProxy/concrete-content-type helper/list control passes, which does
+not certify every proxy/custom-permission combination.
 
 `GuardianDeleteRelatedObjectsMixin` replaces the core model-level filter rather than adding to it. A custom
 `cv_filter_related_objects` on a Guardian delete view should call `super()` (which applies the Guardian filter) and
@@ -343,10 +367,33 @@ class PublisherDeleteView(CrispyViewMixin, GuardianDeleteViewPermissionRequired)
     cv_show_related_objects = True
 ```
 
-Performance: permitted PK sets are cached per model per projection, using bulk
-`guardian.shortcuts.get_objects_for_user` filtering. This adds no large-cascade bound; the core collection still
-materializes the full deletion graph even with previews disabled (see
+Performance: permitted PK sets are cached per `(model, using)` per projection, using bulk
+`guardian.shortcuts.get_objects_for_user` filtering. This adds no large-cascade bound; core inspection still
+materializes full rows for supported deletion paths even with previews disabled (see
 [Collection cost and overrides](delete_view.md#collection-cost-and-overrides)).
+
+### Delete-preview database topology
+
+Candidate rows and their permission queryset are bound to each candidate's `_state.db`. Before ordinary, global,
+superuser or through-row fast paths, projection requires the persisted actor to be on that alias, with User, Group,
+Permission, ContentType, auth join tables, related-manager queries and configured Guardian user/group permission
+tables routed there too. It does not substitute another actor having the same PK. The configured content type must
+also belong to that alias; auto-created through rows continue to skip content-type lookup.
+
+An unsupported topology yields no labels, preserving blocked state, completeness and aggregate counts. This is a
+conservative display result, not a new authorization policy or general central-auth/multi-database support.
+Configured anonymous-object display uses Guardian's resolved anonymous actor under the same checks. Cross-alias
+global fallback with unrecognized custom auth backend paths is not certified and yields no labels. Recognized
+ModelBackend/ObjectPermissionBackend routes and fresh same-alias actor state are required for that supported path;
+request.user is not replaced.
+
+The tested multi-database topology uses independent `default`/`shard` databases with colliding PKs, co-located actor,
+auth tables and object/group grants, and request-local routing established before authentication/session middleware.
+Positive object/group/global/active-superuser and through-row display is checked on both aliases; independent
+misrouting and interleaved-request controls deny labels. Ordered-model sibling queries inside a custom delete method
+must follow the same trusted routing. These tests do not promise arbitrary shared-auth schemas, backend SQL paths,
+database casts/collations, or cross-database transactions. The broader AUTH-06 residual and Guardian precision
+backstop remain unresolved; named integer/UUID/key tests and error characterizations do not close them.
 
 ## Working Example
 

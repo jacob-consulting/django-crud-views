@@ -6,6 +6,16 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Breaking
 
+- **Delete preview overrides and model signatures.** `cv_get_related_objects()` overrides now fail `viewset.E263`
+  and raise `ImproperlyConfigured` without invocation. Use boundary-scoped `cv_get_delete_preview` descriptions and
+  `cv_filter_related_objects` redaction ([migration](docs/migrating-1.0.md#safe-deletion-preview-overrides)). Custom
+  model methods must accept keyword `using` or forward `**kwargs`; inspectable incompatible signatures fail
+  `viewset.E264`, opaque ones fail at runtime. Custom delete atomic overrides must use the pinned
+  `cv_get_delete_db_alias()` accessor ([migration](docs/migrating-1.0.md#delete-method-signatures-and-database-selection)).
+- **Guardian permission keys.** `assign_perm`, `remove_perm` and `get_objects_for_user` now raise descriptive
+  `ValueError` instead of `KeyError` for unknown keys. Empty and non-string keys are programming errors, validated
+  before inactive shortcuts, target queryset access or Guardian calls/writes. Alternatives list actual configured
+  keys, with no normalization. See [migration](docs/migrating-1.0.md#guardian-permission-keys).
 - Incomplete or incorrectly ordered custom nested Guardian view compositions now fail system check `crud_views_guardian.E001` and raise
   `ImproperlyConfigured` before request processing. Pair `GuardianParentPermissionMixin` with
   `GuardianObjectPermissionMixin` for object views or `GuardianQuerysetMixin` for list/card views, or use the
@@ -177,16 +187,20 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
   `snippets/delete/related_objects.html` that tests `protected_objects` loses the notice when the user may view none of
   them: test `related_summary or has_protected_objects` around the include and `has_protected_objects` around the
   notice. A custom `cv_filter_related_objects` must now filter `related.protected` too, starting from `super()`.
-  Summary counts are unchanged. This filtering entry applies to enabled previews; the always-present flag and
-  form/POST changes are covered separately under **Blocked deletions** below. See
+  Inspection is read-only and supported-path counts may be partial; `delete_preview_incomplete` is always present.
+  Copies of the content/snippet templates must preserve the independent warning, partial-count heading and ordinary
+  confirmation ([tested recipe](docs/migrating-1.0.md#copied-delete-templates-with-incomplete-previews)). The aggregate
+  disclosure policy is unchanged. The always-present flag and form/POST changes are covered below. See
   [Migrating to 1.0.0](docs/migrating-1.0.md#delete-previews-and-protected-objects).
 - **Blocked deletions.** `has_protected_objects` is present on every delete page, regardless of
   `cv_show_related_objects`. The stock `view_delete.content.html` renders no confirmation form while it is true,
   including no form-contained cancel control. With all labels hidden, the notice now has a heading without a colon
   and one explanatory sentence; labelled copy is unchanged. A confirmed POST on a genuinely `PROTECT`- or
   `RESTRICT`-blocked target returns the protection page (200 full page / 422 modal) with nothing deleted, instead of
-  raising native target protection. The race backstop translates only proven native target collection failures;
-  unknown collection and lifecycle failures still propagate with their existing commit semantics. Code/tests that
+  reaching deletion when the early check blocks. Fresh native protection is translated only for exact Django
+  `Model.delete` before custom collection callbacks have been entered. Actual ordered/polymorphic/custom methods
+  retain their `delete(using=...)` behavior and stale failures propagate. A custom callback returning before a later
+  block can already have effects; non-atomic writes and external effects need application handling. Code/tests that
   expected `ProtectedError` and copied templates need the
   [migration steps](docs/migrating-1.0.md#blocked-deletions).
 - **Guardian manage context.** `guardian_config["cv_guardian_accept_global_perms"]` is gone, so a manage template
@@ -253,6 +267,19 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Fixed
 
+- **Delete inspection and write provenance (#282).** GET, invalid confirmation and early-blocked POST no longer
+  execute deletion handlers, `SET`/default factories, private collection hooks, model deletion or delete signals.
+  Unexpected ORM/provider errors propagate. Confirmed native deletion establishes protection origin at collection,
+  preserving Django's SQL executor; custom callback/model/signal/hook/commit failures retain their exception and
+  commit semantics. Actual join fields, distinct parent keys and concrete polymorphic parent preview counts are
+  honored. See [delete lifecycle](docs/reference/delete_view.md#execution-order).
+- **Delete database routing (#282).** One validated, instance-hinted write alias is pinned across inspection,
+  deletion, the default atomic block and `on_commit`, including non-atomic execution. Guardian preview caches bind
+  model and alias and hide labels on unsupported actor/auth/grant topology without clearing block state or counts.
+  The tested topology and unresolved polymorphic helper/list limitation are explicit in
+  [Guardian guidance](docs/reference/guardian.md#delete-preview-database-topology).
+- **Guardian helper policy** is protected from accidental mutation by `MappingProxyType`; manage context exposes
+  detached dictionaries. Per-view global fallback and manage access retain their existing policy.
 - **Guardian delete preview no longer crashes on models without a view permission.** Its app-qualified permission
   lookup could not resolve auto-created through tables or models whose default permissions omit `view`, and could
   mismatch proxy roots or polymorphic children under a polymorphic `GUARDIAN_GET_CONTENT_TYPE`, causing confirmation
@@ -342,6 +369,11 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Added
 
+- **Safe delete-preview providers (#282).** Frozen `DeletePreviewBoundary`, `DeletePreviewContribution` and
+  `DeleteInspection` records describe unknown effects without calling deletion. Contributions add deleted rows and
+  protected vetoes; per-boundary completeness is a trusted application attestation. Generic/private/custom behavior
+  stays incomplete unless described. Templates expose independent incomplete/blocked booleans and partial counts.
+  See the [executed custom-effect migration](docs/migrating-1.0.md#describing-custom-deletion-effects).
 - Cancel links: a cancel form button can render as a native `<a href>` link that navigates without JavaScript and
   opens in another tab with the browser's own gestures. The class-table key `form:cancel-tag` (`"button"` by default,
   or `"a"`) selects it for a theme or a project, and the `tag=` keyword of `Button` (`None` inherits, `"button"`, `"a"`)

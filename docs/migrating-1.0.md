@@ -36,6 +36,8 @@ the message:
 | `crud_views.E350` **[0.30]** | a removed icon setting is still defined: `CRUD_VIEWS_ACTIONS_MENU_ICON`, `CRUD_VIEWS_FILTER_ICON`, `CRUD_VIEWS_OBJECT_DETAIL_ICONS_LIBRARY`, `_ICONS_CLASS`, `_ICONS_TYPE`, `_ICONS_PREFIX`, `CRUD_VIEWS_OBJECT_DETAIL_NAMED_ICONS` | move the value into `CRUD_VIEWS_ICONS`, see [Settings](#settings) |
 | `crud_views.E360` | `CRUD_VIEWS_FILTER_RESET_BUTTON_CSS_CLASS` is still defined | `CRUD_VIEWS_BUTTON_CLASSES = {"form:filter-reset": "..."}` |
 | `viewset.E250` | `cv_modal_size` is a Bootstrap class such as `"modal-lg"` | use the token: `""`, `"sm"`, `"lg"` or `"xl"` |
+| `viewset.E263` | an effective `cv_get_related_objects()` override remains | use the [safe provider and display filter](#safe-deletion-preview-overrides); runtime rejects it without invocation |
+| `viewset.E264` | an inspectable model `delete` cannot bind keyword `using` | accept/forward `using` or `**kwargs`; [opaque methods fail at runtime](#delete-method-signatures-and-database-selection) |
 | `viewset.W246` **[0.30]** | an object detail group `icon` uses a `prefix:` that is not registered | register the library in `CRUD_VIEWS_ICON_LIBRARIES`, or fix the prefix |
 
 Two removals raise at runtime instead, the first time the page renders:
@@ -635,6 +637,42 @@ def cv_get_atomic(self):
 Preserve your `cv_atomic` policy when needed, or call `super().cv_get_atomic()`. Application hook queries must use
 the intended alias explicitly. Atomic overrides and routers remain trusted; no cross-database transaction or
 rollback of external effects is supplied. Generic create/update/resource lifecycle remains unchanged.
+
+### Guardian permission keys
+
+`GuardianViewSet.assign_perm`, `remove_perm` and `get_objects_for_user` now raise **`ValueError`**, rather than
+`KeyError`, for an unknown key. Replace downstream `except KeyError` expectations with `ValueError` where handling
+an invalid application selection is appropriate. Empty strings and **all non-string inputs** (`None`, integers,
+bytes, lists, dicts) are programming errors with the same diagnostic, not silent denial. Validation precedes the
+inactive-user shortcut, target queryset access and Guardian calls/writes. A valid key for an inactive user still
+returns an empty queryset. No case, whitespace or Unicode normalization is performed.
+
+For a `GuardianViewSet` with configured keys `zebra`, `réviser`, `alpha`, requesting `view` produces exactly:
+
+```text
+Invalid permission key 'view'. Valid keys: 'alpha', 'réviser', 'zebra'.
+```
+
+The message uses `repr` of the supplied value and the actual sorted configured keys:
+`ValueError(f"Invalid permission key {perm!r}. Valid keys: {', '.join(repr(key) for key in sorted(self.permissions))}.")`.
+Use the configured key exactly, and let programming errors propagate. Here `cv_document` is your existing
+**GuardianViewSet**, and a valid `permission_key` is a string from its `permissions` mapping:
+
+```python
+from myapp.viewsets import cv_document
+
+
+def visible_documents(user, permission_key):
+    return cv_document.get_objects_for_user(user, permission_key)
+```
+
+The helper remains strict and reads an immutable `MappingProxyType` policy; per-view global fallback is independent.
+Manage dictionaries are detached display copies, not mutable authority. Supported delete-preview database topology
+requires actor/auth/grant/content-type routes co-located with candidate rows; unsupported topology hides labels
+without clearing protection or aggregates. See [Guardian database topology](reference/guardian.md#delete-preview-database-topology).
+The registered Car helper/list mismatch under a polymorphic base-content-type resolver still raises
+`MixedContentTypeError`; fixing delete-preview projection and passing characterization tests does not resolve that
+limitation, the broader AUTH-06 residual, or the unspecified precision backstop.
 
 ### The Guardian manage page
 

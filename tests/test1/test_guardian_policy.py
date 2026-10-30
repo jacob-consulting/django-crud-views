@@ -809,3 +809,101 @@ def test_manage_policy_copies_are_detached_across_requests_and_from_helper(pol, 
     third = _manage(client, pol.pub_vs)
     assert third.context["guardian_config"]["get_objects_for_user"] == STRICT_HELPER
     assert _views_policy(third)["list"] == _policy(applicable=True, accept=False)
+
+
+@pytest.mark.django_db
+def test_inherited_global_flag_and_explicit_sibling_override_remain_independent(pol, client, publishers, monkeypatch):
+    from crud_views_guardian.lib.mixins import GuardianQuerysetMixin
+
+    obj, other = publishers
+    user = _grant_global(_user("inherited_policy"), "view_publisher")
+    client.force_login(user)
+    assert "cv_guardian_accept_global_perms" not in pol.PublisherList.__dict__
+    monkeypatch.setattr(GuardianQuerysetMixin, "cv_guardian_accept_global_perms", True)
+    monkeypatch.setattr(pol.PublisherDetail, "cv_guardian_accept_global_perms", False)
+
+    assert _pks(client.get(_url(pol.pub_vs, "list")).context["object_list"]) == sorted([obj.pk, other.pk])
+    assert client.get(_url(pol.pub_vs, "detail", pk=obj.pk)).status_code == 403
+    assert _pks(pol.pub_vs.get_objects_for_user(user, "view")) == []
+    policies = _views_policy(_manage(client, pol.pub_vs))
+    assert policies["list"] == _policy(applicable=True, accept=True)
+    assert policies["detail"] == _policy(applicable=True, accept=False)
+
+
+@pytest.mark.django_db
+def test_strict_helper_preserves_uuid_queryset_identities(author_douglas_adams, author_terry_pratchett):
+    from django.db.models import QuerySet
+
+    from tests.test1.app.models import Author
+    from tests.test1.app.views import cv_guardian_author
+
+    user = _user("uuid_precision")
+    cv_guardian_author.assign_perm("view", user, author_douglas_adams)
+    scope = Author.objects.filter(pk__in=[author_douglas_adams.pk, author_terry_pratchett.pk])
+    result = cv_guardian_author.get_objects_for_user(user, "view", qs=scope)
+    assert isinstance(result, QuerySet) and result.model is Author and result.db == scope.db
+    assert list(result) == [author_douglas_adams]
+    assert isinstance(result[0].pk, uuid.UUID)
+    assert result[0].pk == author_douglas_adams.pk
+    assert not cv_guardian_author.get_objects_for_user(user, "view", qs=scope.none()).exists()
+
+
+@pytest.mark.django_db
+def test_registered_proxy_viewset_uses_concrete_permission_without_key_or_pk_coercion(unique_name, publishers):
+    from guardian.shortcuts import assign_perm
+
+    from crud_views_guardian.lib.views import GuardianListViewPermissionRequired
+    from crud_views_guardian.lib.viewset import GuardianViewSet
+    from tests.test1.app.models import PublisherProxy
+
+    obj, _ = publishers
+    user = _user("proxy_policy")
+    viewset = GuardianViewSet(model=PublisherProxy, name=unique_name)
+
+    class ProxyListView(GuardianListViewPermissionRequired):
+        cv_viewset = viewset
+
+    assign_perm("view_publisher", user, obj)
+    assert viewset.permissions["view"] == "app.view_publisher"
+    result = viewset.get_objects_for_user(user, "view")
+    assert result.model is PublisherProxy
+    assert _pks(result) == [obj.pk]
+    assert isinstance(result[0], PublisherProxy)
+    view = ProxyListView()
+    view.request = SimpleNamespace(user=user)
+    view.kwargs = {}
+    assert _pks(view.get_queryset()) == [obj.pk]
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("path_kind", ["helper", "list"])
+def test_registered_polymorphic_base_content_type_policy_residual(unique_name, monkeypatch, path_kind):
+    """Reproduce the unresolved AUTH-06 concern; this is evidence of an error, not an access-policy pass."""
+    from guardian.conf import settings as guardian_settings
+    from guardian.exceptions import MixedContentTypeError
+    from guardian.shortcuts import assign_perm
+
+    from crud_views_guardian.lib.views import GuardianListViewPermissionRequired
+    from crud_views_guardian.lib.viewset import GuardianViewSet
+    from tests.test1.app.models import Car
+
+    monkeypatch.setattr(
+        guardian_settings, "GET_CONTENT_TYPE", "polymorphic.contrib.guardian.get_polymorphic_base_content_type"
+    )
+    car = Car.objects.create(name="Residual content type", doors=4)
+    user = _user("polymorphic_policy")
+    viewset = GuardianViewSet(model=Car, name=unique_name)
+
+    class CarListView(GuardianListViewPermissionRequired):
+        cv_viewset = viewset
+
+    assign_perm("view_vehicle", user, car)
+    assert viewset.permissions["view"] == "app.view_car"
+    view = CarListView()
+    view.request = SimpleNamespace(user=user)
+    view.kwargs = {}
+    with pytest.raises(MixedContentTypeError, match="Content type for given perms and klass differs"):
+        if path_kind == "helper":
+            viewset.get_objects_for_user(user, "view")
+        else:
+            view.get_queryset()

@@ -1,15 +1,15 @@
 ---
 schema_version: 1
-open_count: 4
+open_count: 6
 waived_count: 0
 fixed_count: 5
-total_count: 9
-last_updated: 2026-10-28T08:48:15.158Z
+total_count: 11
+last_updated: 2026-10-30T13:36:14.791Z
 ---
 
 # Broken Windows Ledger
 
-> Cross-phase defect register. `/gsd-ship` blocks while `open_count > 0`.
+> Cross-phase defect register. With `workflow.windows_enforce` enabled, `/gsd-ship` blocks while `open_count > 0`.
 > Waive with `gsd-tools windows waive <id> "<reason>"` (reason required).
 > Mark fixed with `gsd-tools windows fixed <id>`.
 
@@ -24,6 +24,8 @@ last_updated: 2026-10-28T08:48:15.158Z
 | 7 | 06 | stub | src/crud_views/lib/crispy/buttons.py |  | Crispy layout form buttons pass no icon yet: icon/both modes (form floor set to icon or both) render no visible icon until 06-04 adds kind-default icons, icon= hooks and the missing-icon policy | fixed |  | 2026-10-28T06:36:10.760Z | 2026-10-28T07:04:38.892Z |
 | 8 | 06 | stub | src/crud_views/lib/view/button_data.py |  | Form missing-icon policy not yet applied: an icon-mode form button whose icon is explicitly None/empty or unavailable renders hidden text only (no strict ValueError, no logged label fallback) until 06-06 adds the availability predicate and runtime policy | fixed |  | 2026-10-28T07:04:39.037Z | 2026-10-28T07:48:56.639Z |
 | 9 | 06 | unrun-verify | .planning/phases/06-form-button-leaf/06-ACCEPTANCE.md |  | 06-09 human-check pending: hover tooltip (not observed in headless harness), visual quality in label/both/icon, screen-reader announcement and migration-prose readability | open |  | 2026-10-28T08:48:15.158Z |  |
+| 10 | 06.3 | unmet-truth | tests/test1/test_guardian_policy.py | 879 | AUTH-06/CT-01 remains unresolved: registered Car Guardian helper/list raise MixedContentTypeError under configured polymorphic base content type; explicit error characterization is not access-policy success. | open |  | 2026-10-30T13:35:57.187Z |  |
+| 11 | 06.3 | unmet-truth | .planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-GUARDIAN-REVIEW.md |  | GUA-01 precision backstop remains human_needed/insufficient_spec: normal int/UUID and exact configured-key tests pass, but no general custom-PK/coercion predicate was supplied. | open |  | 2026-10-30T13:36:14.791Z |  |
 
 ````json
 [
@@ -134,6 +136,32 @@ last_updated: 2026-10-28T08:48:15.158Z
     "reason": "",
     "recorded_at": "2026-10-28T08:48:15.158Z",
     "resolved_at": null
+  },
+  {
+    "id": 10,
+    "kind": "unmet-truth",
+    "phase": "06.3",
+    "file": "tests/test1/test_guardian_policy.py",
+    "line": 879,
+    "description": "AUTH-06/CT-01 remains unresolved: registered Car Guardian helper/list raise MixedContentTypeError under configured polymorphic base content type; explicit error characterization is not access-policy success.",
+    "status": "open",
+    "reason": "",
+    "recorded_at": "2026-10-30T13:35:57.187Z",
+    "resolved_at": null,
+    "milestone": "v1.0"
+  },
+  {
+    "id": 11,
+    "kind": "unmet-truth",
+    "phase": "06.3",
+    "file": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-GUARDIAN-REVIEW.md",
+    "line": null,
+    "description": "GUA-01 precision backstop remains human_needed/insufficient_spec: normal int/UUID and exact configured-key tests pass, but no general custom-PK/coercion predicate was supplied.",
+    "status": "open",
+    "reason": "",
+    "recorded_at": "2026-10-30T13:36:14.791Z",
+    "resolved_at": null,
+    "milestone": "v1.0"
   }
 ]
 ````

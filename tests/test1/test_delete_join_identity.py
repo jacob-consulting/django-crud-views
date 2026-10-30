@@ -15,12 +15,117 @@ from django.urls import clear_url_caches
 
 from crud_views.lib import check as check_module
 from crud_views.lib.crispy import CrispyDeleteForm, CrispyViewMixin
-from crud_views.lib.deletion import _DeleteCollector, execute_deletion
+from crud_views.lib.deletion import _DeleteCollector, execute_deletion, inspect_deletion
 from crud_views.lib.views import DeleteViewPermissionRequired, ListViewPermissionRequired
 from crud_views.lib.viewset import _REGISTRY, _REGISTRY_LOCK, ViewSet
 
 pytestmark = pytest.mark.django_db(transaction=True, databases=["default", "shard"])
 ALIASES = ("default", "shard")
+
+
+@pytest.fixture
+def nullable_graph(request, monkeypatch):
+    registry = dict(_REGISTRY)
+    vocabulary = dict(check_module._VOCAB_CACHE)
+    events = []
+    with isolate_apps("tests.test1.app"):
+
+        def custom(collector, field, rows, using):
+            events.append(("custom", using))
+            collector.collect(rows, source=field.remote_field.model, source_attr=field.name)
+
+        handler = getattr(request, "param", models.PROTECT)
+        if handler == "custom":
+            handler = custom
+
+        class Root(models.Model):
+            code = models.CharField(max_length=40, unique=True, null=True)
+
+            class Meta:
+                app_label = "app"
+
+            def __str__(self):
+                return f"Root {self.pk}"
+
+        class Ref(models.Model):
+            target = models.ForeignKey(Root, to_field="code", null=True, on_delete=handler)
+
+            class Meta:
+                app_label = "app"
+
+        classes = (Root, Ref)
+        with connections["default"].schema_editor() as editor:
+            for model in classes:
+                editor.create_model(model)
+        ct = ContentType.objects.get_for_model(Root)
+        for action in ("view", "delete"):
+            Permission.objects.create(content_type=ct, codename=f"{action}_root", name=f"{action} root")
+        vs = ViewSet(model=Root, name="nullable_join")
+
+        class RootList(ListViewPermissionRequired):
+            cv_viewset = vs
+
+        class RootDelete(CrispyViewMixin, DeleteViewPermissionRequired):
+            form_class = CrispyDeleteForm
+            cv_viewset = vs
+            cv_show_related_objects = True
+            cv_modal = True
+
+        urls = ModuleType("nullable_join_urls")
+        urls.urlpatterns = vs.urlpatterns
+        monkeypatch.setitem(sys.modules, urls.__name__, urls)
+        actor = User.objects.create_user(username="nullable_actor", is_superuser=True)
+        client = Client()
+        client.force_login(actor)
+        try:
+            with override_settings(ROOT_URLCONF=urls.__name__):
+                clear_url_caches()
+                yield SimpleNamespace(
+                    Root=Root, Ref=Ref, view=RootDelete, client=client, events=events, url="/nullable_join/1/delete/"
+                )
+        finally:
+            clear_url_caches()
+            ContentType.objects.clear_cache()
+            with _REGISTRY_LOCK:
+                _REGISTRY.clear()
+                _REGISTRY.update(registry)
+            check_module._VOCAB_CACHE.clear()
+            check_module._VOCAB_CACHE.update(vocabulary)
+            with connections["default"].schema_editor() as editor:
+                for model in reversed(classes):
+                    editor.delete_model(model)
+
+
+@pytest.mark.parametrize("atomic", [False, True])
+@pytest.mark.parametrize("modal", [False, True])
+def test_nullable_join_protect_request(nullable_graph, monkeypatch, atomic, modal):
+    """An unlinked nullable FK must not prevent confirmation of a null-key root."""
+    g = nullable_graph
+    root = g.Root.objects.create(pk=1, code=None)
+    g.Root.objects.create(pk=2, code=None)
+    g.Ref.objects.create(pk=11, target_id=None)
+    monkeypatch.setattr(g.view, "cv_atomic", atomic)
+    headers = {"X-CV-Modal": "true"} if modal else {}
+    preview = g.client.get(g.url, headers=headers)
+    assert preview.status_code == 200
+    assert preview.context["has_protected_objects"] is False
+    assert preview.context["related_summary"] == {}
+    assert "confirm" in preview.context["form"].fields
+    inspection = inspect_deletion(root, using="default")
+    assert inspection.related.protected == []
+    assert inspection.related.summary == {}
+    assert inspection.related.tree == [root]
+    assert inspection.complete is True
+    invalid = g.client.post(g.url, {}, headers=headers)
+    assert invalid.status_code == (422 if modal else 200)
+    assert invalid.context["form"].errors
+    assert set(g.Root.objects.values_list("pk", flat=True)) == {1, 2}
+    assert set(g.Ref.objects.values_list("pk", flat=True)) == {11}
+    response = g.client.post(g.url, {"confirm": "on"}, headers=headers)
+    assert response.status_code == (204 if modal else 302)
+    assert set(g.Root.objects.values_list("pk", flat=True)) == {2}
+    assert set(g.Ref.objects.values_list("pk", flat=True)) == {11}
+    assert g.events == []
 
 
 @pytest.fixture

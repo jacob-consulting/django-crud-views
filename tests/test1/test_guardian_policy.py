@@ -11,7 +11,8 @@ the registry, vocabulary cache, URL caches and module registration are restored 
 import sys
 import types
 import uuid
-from types import SimpleNamespace
+from collections import UserDict
+from types import MappingProxyType, SimpleNamespace
 
 import pytest
 from django.test import override_settings
@@ -240,6 +241,26 @@ def test_removed_flag_in_model_validate_mapping_is_rejected(value, unique_name):
 
 
 @pytest.mark.django_db
+@pytest.mark.parametrize("mapping_type", [UserDict, MappingProxyType])
+@pytest.mark.parametrize("value", [True, False])
+def test_removed_flag_in_non_dict_mapping_names_replacement_and_never_registers(mapping_type, value, unique_name):
+    """AUTH-06/A12: the removed-key guard applies to Mapping input, including callers that wrap config dicts."""
+    from crud_views.lib.viewset import _REGISTRY
+    from crud_views_guardian.lib.viewset import GuardianViewSet
+    from tests.test1.app.models import Publisher
+
+    data = mapping_type({"model": Publisher, "name": unique_name, REMOVED_KEY: value})
+    with pytest.raises(ValidationError) as excinfo:
+        GuardianViewSet.model_validate(data)
+
+    message = str(excinfo.value)
+    assert REMOVED_KEY in message
+    assert "view class" in message
+    assert "get_objects_for_user" in message
+    assert unique_name not in _REGISTRY
+
+
+@pytest.mark.django_db
 def test_unrelated_extra_keyword_keeps_existing_behavior(unique_name):
     """Only the exact removed key is rejected; other extras keep Pydantic's established (ignore) behavior."""
     from crud_views.lib.viewset import _REGISTRY
@@ -335,6 +356,34 @@ def test_active_superuser_keeps_full_access_and_helper_rows(pol, client, publish
     assert _pks(response.context["object_list"]) == sorted([a.pk, b.pk])
     assert client.get(_url(pol.pub_vs, "detail", pk=a.pk)).status_code == 200
     assert _pks(pol.pub_vs.get_objects_for_user(user, "view")) == sorted([a.pk, b.pk])
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("actor", ["object", "group", "global", "superuser", "inactive"])
+def test_strict_helper_intersects_supplied_queryset_and_never_widens_empty_scope(pol, publishers, actor):
+    """AUTH-06/D-05: caller scope and object authority both constrain qs=, even when the scope is empty."""
+    from django.contrib.auth.models import Group
+
+    from tests.test1.app.models import Publisher
+
+    a, b = publishers
+    outside = Publisher.objects.create(name="Outside caller scope")
+    user = _user("scoped_helper", superuser=actor == "superuser", active=actor != "inactive")
+    if actor == "global":
+        user = _grant_global(user, "view_publisher")
+    elif actor == "group":
+        group = Group.objects.create(name="scoped_readers")
+        user.groups.add(group)
+        for obj in (a, outside):
+            pol.pub_vs.assign_perm("view", group, obj)
+    elif actor in {"object", "inactive"}:
+        for obj in (a, outside):
+            pol.pub_vs.assign_perm("view", user, obj)
+
+    scope = Publisher.objects.filter(pk__in=[a.pk, b.pk])
+    expected = sorted([a.pk, b.pk]) if actor == "superuser" else [a.pk] if actor in {"object", "group"} else []
+    assert _pks(pol.pub_vs.get_objects_for_user(user, "view", qs=scope)) == expected
+    assert _pks(pol.pub_vs.get_objects_for_user(user, "view", qs=Publisher.objects.none())) == []
 
 
 @pytest.mark.django_db

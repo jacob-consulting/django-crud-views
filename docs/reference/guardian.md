@@ -292,10 +292,22 @@ object grant or a group grant. Labels of objects the user may not view are dropp
 context, while the page still shows one generic "blocked" notice through `has_protected_objects`. The summary counts
 are unchanged. See [Delete protection previews](delete_view.md#protected-objects).
 
-The **delete view's** own `cv_guardian_accept_global_perms` decides whether a global `view_<model>` permission also
-shows the labels of each related or protected model, not only whether it opens the deletion target. An object grant
-shows its label without any global permission. The removed ViewSet key and the strict `get_objects_for_user` helper
-play no part here.
+Each related/protected model uses guardian's own content type (`GUARDIAN_GET_CONTENT_TYPE`) and a bare
+`view_<ct.model>` codename with that model as `klass`. The **delete view's** `cv_guardian_accept_global_perms` enables
+the global grant `<ct.app_label>.view_<ct.model>` for labels, independently of access to the deletion target. With the
+default concrete resolver, `PublisherProxy` labels consult `app.view_publisher`; `app.view_publisherproxy` alone
+does not authorize them. With a polymorphic base-content-type resolver, `Car` labels consult `app.view_vehicle`.
+Strict mode ignores global fallback; object/group grants remain effective without global permission. The removed
+ViewSet key and the strict ViewSet helper play no part in this projection.
+
+A model without a grantable view permission contributes no ordinary-user labels, without the former lookup
+exceptions. Authenticated active superusers retain core-view visibility; inactive users remain denied. Auto-created
+through tables are decided without any ContentType lookup or row write: only authenticated active superusers see
+their rows. Their projection cache materializes **every PK in the through table**, including unrelated rows, once
+per projection, rather than limiting the query to cascade candidates.
+
+This fix covers delete-preview lookup. Other ViewSet queryset/helper paths retain their app-qualified permission
+lookup and require separate review for proxy/base-content-type configurations.
 
 `GuardianDeleteRelatedObjectsMixin` replaces the core model-level filter rather than adding to it. A custom
 `cv_filter_related_objects` on a Guardian delete view should call `super()` (which applies the Guardian filter) and
@@ -309,8 +321,10 @@ class PublisherDeleteView(CrispyViewMixin, GuardianDeleteViewPermissionRequired)
     cv_show_related_objects = True
 ```
 
-Performance: uses `guardian.shortcuts.get_objects_for_user` for bulk queryset filtering —
-one query per related model, not one per object.
+Performance: permitted PK sets are cached per model per projection, using bulk
+`guardian.shortcuts.get_objects_for_user` filtering. This adds no large-cascade bound; the core collection still
+materializes the full deletion graph even with previews disabled (see
+[Collection cost and overrides](delete_view.md#collection-cost-and-overrides)).
 
 ## Working Example
 

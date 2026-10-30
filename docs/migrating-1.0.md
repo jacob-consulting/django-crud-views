@@ -389,9 +389,10 @@ with `accept_global_perms=True`. See [Strict Mode](reference/guardian.md#strict-
 
 ### Delete previews and protected objects
 
-With `cv_show_related_objects`, the context of a delete page changes in two ways. `protected_objects` now holds only
-the protected objects the user may view. The new `has_protected_objects` is `True` whenever protected objects block
-the deletion, also when every label is hidden. The summary counts are unchanged.
+With `cv_show_related_objects`, `protected_objects` now holds only the protected objects the user may view. Preview
+labels, tree and summary keys still depend on that option. `has_protected_objects` is now present on every delete
+GET/POST context regardless of the option, and is true whenever the unfiltered collection blocks deletion. Summary
+counts are unchanged. The separate [Blocked deletions](#blocked-deletions) change below adds form/POST handling.
 
 - **A copied `crud_views/view_delete.content.html`**: include the snippet on the new flag as well. A copy that still
   tests `related_summary or protected_objects` drops the whole snippet when the user may view no protected object:
@@ -404,14 +405,9 @@ the deletion, also when every label is hidden. The summary counts are unchanged.
     ```
 
 - **A copied `crud_views/snippets/delete/related_objects.html`**: show the blocked notice on the flag and list only
-  `protected_objects`, which is already filtered. Do not fetch the protected objects another way:
-
-    ```django
-    {# before #}
-    {% if protected_objects %}
-    {# after #}
-    {% if has_protected_objects %}
-    ```
+  `protected_objects`, which is already filtered. Use the complete two-branch recipe in
+  [Blocked deletions](#blocked-deletions) so hidden labels still get explanatory text. Do not fetch protected objects
+  another way.
 
 - **A custom `cv_filter_related_objects`** now has to filter `related.protected` as well as the tree. Return only
   protected objects the user may view, never the raw `related.protected`. Start from
@@ -421,8 +417,68 @@ the deletion, also when every label is hidden. The summary counts are unchanged.
   alone: the flag is computed before your hook runs. See
   [Custom related-object filters](reference/delete_view.md#custom-related-object-filters).
 - **Guardian delete views:** the delete view's own `cv_guardian_accept_global_perms` decides whether a global
-  `view_<model>` permission shows the labels of related and protected objects, not only whether it opens the page. An
-  object grant shows a label without any global permission.
+  `<ct.app_label>.view_<ct.model>` permission, resolved through guardian's content type, shows related/protected
+  labels, not only whether it opens the page. An object grant shows a label without any global permission. Under
+  the default concrete resolver `PublisherProxy` uses `app.view_publisher`, never a proxy-only
+  `app.view_publisherproxy` grant; `Car` under a polymorphic base resolver uses `app.view_vehicle`. Strict mode
+  ignores global fallback. See [Guardian cascading deletes](reference/guardian.md#cascading-deletes-with-per-object-permissions).
+
+### Blocked deletions
+
+Every delete page now has `has_protected_objects`, derived from the unfiltered collection even with
+`cv_show_related_objects = False`. The stock content template omits the entire confirmation form while blocked,
+including its checkbox, submit and form-contained cancel control, matching the custom-protection page. In a copied
+`crud_views/view_delete.content.html`, keep the custom-protection branch and snippet include guard
+`{% if related_summary or has_protected_objects %}`, and change the form guard:
+
+```django
+{# before: inside the branch with no custom protection errors #}
+<form method="post">{% csrf_token %}{% cv_render_form %}</form>
+{# after #}
+{% if not has_protected_objects %}
+    <form method="post">{% csrf_token %}{% cv_render_form %}</form>
+{% endif %}
+```
+
+In a copied `crud_views/snippets/delete/related_objects.html`, retain the labelled heading with its colon and items,
+and add the colon-free heading and generic sentence when labels are absent:
+
+```django
+{% load crud_views i18n %}
+{% if has_protected_objects %}
+    {% if protected_objects %}
+        {% cv_alert "error" heading=_("Deletion is blocked by protected relationships:") items=protected_objects %}
+    {% else %}
+        {% cv_alert "error" heading=_("Deletion is blocked by protected relationships") text=_("Other objects still reference this one; remove or reassign them before deleting it.") %}
+    {% endif %}
+{% endif %}
+```
+
+A copied alert leaf must render `alert.text` or `alert.body_template` as well as heading/items; otherwise the generic
+sentence disappears. Labels remain escaped and permission-filtered, and summary counts keep their existing policy.
+
+A confirmed POST with genuinely blocked target protection now returns **200** full page / **422** modal with storage
+intact, instead of letting native `ProtectedError` / `RestrictedError` escape. Update downstream tests or middleware
+that expected that exception to assert the status and intact storage. The early check handles visible protection;
+the race backstop handles only native target collection proven by both pre-call native-graph eligibility and exact
+target `Model.delete` / `Collector.collect` frames, after the existing transaction unwinds. Django can aggregate a
+custom relationship handler's `ProtectedError` and lose its traceback, so collector frames alone prove too little.
+
+Custom handlers anywhere in possible cascade/parent paths, every `SET(...)` closure, `SET_DEFAULT`, private
+bulk-related callbacks, nonstandard row loaders and unknown collectors are excluded from translation, even on empty
+relations. Real `model.delete()` still runs and the early check remains; these exclusions introduce no new
+transaction or support promise for arbitrary collector extensions. Those unknown collection failures, errors from
+`cv_post_hook`, custom `cv_form_valid`, `cv_form_valid_hook`, `cv_on_commit`, model overrides and signals continue to
+propagate. After-commit callback failure leaves the target deleted. With `cv_atomic=False`, committed side effects
+from custom collection callbacks survive collection failure. Delegate custom `post` overrides to the standard path
+for this HTTP response handling and preserve its lifecycle; a direct `cv_form_valid_process` call does not
+automatically receive a protection response.
+
+Existing `cv_get_related_objects` overrides now run once per context with previews disabled too. Return an accurate,
+unfiltered protected collection and keep it local; display authorization belongs in `cv_filter_related_objects`.
+The default traversal uses `router.db_for_write` and `NestedObjects`, disables fast deletion and materializes complete
+cascade rows/tree/summary on every GET/POST. An allowed POST also performs actual deletion collection. Hiding labels
+cannot safely remove the check. There is no new option, large-cascade bound or benchmark claim.
 
 ### The Guardian manage page
 

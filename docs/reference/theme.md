@@ -333,7 +333,7 @@ page showed.
 |---|---|
 | List and card templates | Only the rows the view's queryset permits. Do not query the model again in the template. |
 | Button leaves (`tags/button/action.html`, `tags/button/menu_item.html`) | Only actions the user may see. A denied action never reaches the leaf, and a disabled one arrives with `cv_disabled`. |
-| `crud_views/view_delete.content.html`, `snippets/delete/related_objects.html` | `protected_objects` holds only the labels the user may view, and `has_protected_objects` says whether the deletion is blocked at all. |
+| `crud_views/view_delete.content.html`, `snippets/delete/related_objects.html` | Every delete page has `has_protected_objects`; the stock content omits the whole form while true. With previews enabled, `protected_objects` holds only permitted labels. |
 | `crud_views/view_guardian_manage.html` | Each view's own global-fallback policy in `views.<key>.guardian_policy`, and the strict helper policy in `guardian_config.get_objects_for_user`. |
 | Formset templates | The editor's rows and choices, only on a page or row request the user passed the editor's gates for. |
 
@@ -343,10 +343,18 @@ from the flag and list the filtered labels, so the notice stays when every label
 ```django
 {% load crud_views i18n %}
 {% if has_protected_objects %}
-    {% cv_alert "error" heading=_("Deletion is blocked by protected relationships:") items=protected_objects %}
+    {% if protected_objects %}
+        {% cv_alert "error" heading=_("Deletion is blocked by protected relationships:") items=protected_objects %}
+    {% else %}
+        {% cv_alert "error" heading=_("Deletion is blocked by protected relationships") text=_("Other objects still reference this one; remove or reassign them before deleting it.") %}
+    {% endif %}
 {% endif %}
 ```
 
 The labels arrive escaped like any other value. Wrap the include of this snippet in
 `{% if related_summary or has_protected_objects %}`. A copy that tests `protected_objects` instead loses the notice
-for a user who may view none of the protected objects. See [Protected objects](delete_view.md#protected-objects).
+for a user who may view none of the protected objects. The flag is present even with previews disabled. Render the
+confirmation form only inside `{% if not has_protected_objects %}` (and retain the custom-protection branch); this
+also removes the form-contained cancel control. A copied alert leaf must render `alert.text` or
+`alert.body_template` as well as heading/items to show the generic sentence. See
+[Protected objects](delete_view.md#protected-objects).

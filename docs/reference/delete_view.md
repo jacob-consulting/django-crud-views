@@ -37,7 +37,7 @@ Both inherit from Django's `generic.DeleteView` and `CrudView`.
 | `cv_cancel_keys` | `list[str] \| None` | `None` | Origin keys the cancel button may return to dynamically. See [UpdateView](update_view.md#dynamic-cancel-target) |
 | `cv_success_keys` | `list[str] \| None` | `None` | Origin keys the success redirect may return to dynamically; object views such as `detail` are rejected (`viewset.E254`). See [UpdateView](update_view.md#dynamic-success-target) |
 | `cv_context_actions` | `list[str]` | `["home", "detail", "update", "delete"]` | Actions shown in the header area |
-| `cv_show_related_objects` | `bool` | `False` | Show cascading deletes display |
+| `cv_show_related_objects` | `bool` | `False` | Show filtered cascade/protected labels and summaries; collection and blocked state run even when false |
 | `cv_link_related_objects` | `bool` | `False` | Link related objects to their detail views |
 
 ## HTTP methods
@@ -171,20 +171,34 @@ instead, with the delete view's own `cv_guardian_accept_global_perms` as the glo
 
 ### Protected objects
 
-An object that a `PROTECT` foreign key points at blocks the deletion. The confirmation page shows one generic
-"Deletion is blocked by protected relationships" notice, followed only by the labels of protected objects the user may
-view. Labels of objects the user may not view are dropped before the template gets its context, and no placeholder
-stands in for them. If the user may view none of them, the notice still shows, with no labels.
-
-Two context keys carry this, both set when `cv_show_related_objects` is on:
+`PROTECT` and `RESTRICT` relationships can block deletion. Every delete GET and POST context includes the blocked
+state, even with the default `cv_show_related_objects = False`. The stock page omits the whole form while blocked:
+confirmation, submit and the form-contained cancel control are absent, just as with custom protection errors.
+Permitted labels use the heading "Deletion is blocked by protected relationships:" and a list. With no labels,
+the heading has no colon and the notice says "Other objects still reference this one; remove or reassign them before
+deleting it." Hidden labels never change the blocked state.
 
 | Key | Contents |
 |---|---|
-| `has_protected_objects` | `True` when protected objects block the deletion, computed from the unfiltered collection before any filtering. Decide whether to show the notice from this key. |
-| `protected_objects` | A list of only the protected objects the user may view, in their original order. It can be empty while `has_protected_objects` is `True`. |
+| `has_protected_objects` | Present on every delete GET/POST context, computed from the unfiltered protected collection. Use it for the notice and form guard. |
+| `protected_objects` | Present only with previews enabled: the protected objects the user may view, in original order. It can be empty while the flag is true. |
 
-Hiding labels never makes a deletion look possible and never weakens the protection itself. A POST still runs
-Django's `PROTECT` check and raises `ProtectedError` as before.
+A confirmed POST whose target is genuinely blocked returns the protection page with **200**, or **422** in a modal,
+without deleting anything. Custom protection runs first; the unfiltered database collection supplies the early
+pre-check. A narrow race backstop also handles `ProtectedError` / `RestrictedError` from native target collection
+after the existing lifecycle transaction unwinds. See [Execution Order](#execution-order) for its limits.
+
+#### Collection cost and overrides
+
+The default `cv_get_related_objects()` runs once per context on every GET/POST, including when previews are off.
+It uses `router.db_for_write` and `NestedObjects`, which disables fast deletion and materializes the complete cascade
+rows, tree and summary. A POST that reaches deletion additionally performs the actual deletion collection. There is
+no large-cascade bound or benchmark claim. Hiding labels cannot safely omit the blocked-state check.
+
+Existing `cv_get_related_objects()` overrides now run with previews disabled too. They must return an accurate,
+unfiltered protected collection and keep those instances local; only the boolean enters context when previews are
+off. Apply display authorization in `cv_filter_related_objects`, which still runs only with previews enabled. This
+cost and override compatibility change introduces no new configuration option.
 
 ### Custom related-object filters
 
@@ -228,9 +242,22 @@ dict) stays in the context for overrides that read it.
 
 Override these in your project's template directory to customize the rendering. A copy of
 `crud_views/view_delete.content.html` must include the snippet when `related_summary or has_protected_objects`, and a
-copy of `related_objects.html` must show the blocked notice when `has_protected_objects`, listing
-`protected_objects`. A copy that still tests `protected_objects` loses the notice whenever every label is hidden. See
-[Migrating to 1.0.0](../migrating-1.0.md#delete-previews-and-protected-objects).
+copy of `related_objects.html` must use both notice branches: colon heading with `items=protected_objects` when
+labels exist, colon-free heading with the generic `text=` sentence otherwise. A copy that still tests
+`protected_objects` loses the notice whenever every label is hidden. Guard the entire confirmation form too:
+
+```django
+{% if not has_protected_objects %}
+    <form method="post">
+        {% csrf_token %}
+        {% cv_render_form %}
+    </form>
+{% endif %}
+```
+
+Keep the existing custom-protection branch around this content. The complete two-branch notice and migration steps
+are in [Blocked deletions](../migrating-1.0.md#blocked-deletions); a copied alert leaf must render `alert.text` or
+`alert.body_template` as well as its heading and items.
 
 ## Delete Protection
 
@@ -271,17 +298,31 @@ class ProtectedDeleteForm(CrispyDeleteForm):
 
 ### Execution Order
 
-1. **GET**: `cv_check_delete_protection()` runs — if errors, show errors instead of form
-2. **POST**: Form validates (checkbox confirmed, `clean()` passes)
-3. **POST**: `cv_check_delete_protection()` runs again (defense in depth)
-4. If errors from either, form re-renders with non-field errors: status 200 on a full page, 422 in the modal, and
-   nothing is deleted
-5. If no errors, object is deleted
+1. **GET/POST context**: run `cv_check_delete_protection()` and collect database protection, regardless of previews.
+   Custom errors take presentation precedence; either block omits the form.
+2. **POST**: run `cv_post_hook`, then validate the confirmation form. An invalid form follows the existing invalid
+   hook/response path.
+3. **Valid POST**: custom protection errors become non-field errors; custom or database protection returns the
+   protection page (200 full page / 422 modal), with no write hooks or deletion.
+4. **Unblocked POST**: run the existing write lifecycle and real `self.object.delete()`. Native target collection
+   protection discovered here can use the race backstop after the transaction unwinds.
+5. **Successful deletion**: run the normal success hook, commit callbacks and redirect/204 behavior.
 
-`cv_check_delete_protection()` is separate from the database's `on_delete=PROTECT`. A protected foreign key is not
-turned into a form error: the POST lets Django raise `ProtectedError` as before, and the transaction keeps the data.
-Show the block on GET with `cv_show_related_objects` (see [Protected objects](#protected-objects)), or return a
-message from `cv_check_delete_protection()` when you want the form-error behavior.
+The backstop requires both native-graph eligibility captured **before** invoking deletion and exact target
+`Model.delete` / `Collector.collect` frame identity. Collector frames alone are insufficient: Django can aggregate a
+custom relationship handler's `ProtectedError` and discard its traceback. The native allowlist excludes custom
+handlers anywhere in possible cascade/parent paths, every `SET(...)` closure, `SET_DEFAULT`, private bulk-related
+callbacks and nonstandard row loaders, including unknown relations with no current rows. Unknown collector types
+also propagate. These exclusions govern exception translation only: real `model.delete()` still runs, visible
+protection still uses the early pre-check, and no new transaction is introduced.
+
+Errors from those unknown collection paths, `cv_post_hook`, a custom `cv_form_valid`, `cv_form_valid_hook`,
+`cv_on_commit`, model overrides or signals continue to propagate. A callback failure after commit leaves the target
+deleted; it must not report that the target survived. With `cv_atomic=False`, committed side effects of a custom
+collection callback remain committed even if collection then fails. This is not support for arbitrary application
+collector extensions. A custom `post` must delegate to the standard `post` path to receive its response handling and
+preserve the documented lifecycle; direct `cv_form_valid_process` calls do not automatically receive an HTTP
+protection response.
 
 ---
 

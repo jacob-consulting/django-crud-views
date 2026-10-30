@@ -172,8 +172,18 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
   `snippets/delete/related_objects.html` that tests `protected_objects` loses the notice when the user may view none of
   them: test `related_summary or has_protected_objects` around the include and `has_protected_objects` around the
   notice. A custom `cv_filter_related_objects` must now filter `related.protected` too, starting from `super()`.
-  Summary counts are unchanged. See
+  Summary counts are unchanged. This filtering entry applies to enabled previews; the always-present flag and
+  form/POST changes are covered separately under **Blocked deletions** below. See
   [Migrating to 1.0.0](docs/migrating-1.0.md#delete-previews-and-protected-objects).
+- **Blocked deletions.** `has_protected_objects` is present on every delete page, regardless of
+  `cv_show_related_objects`. The stock `view_delete.content.html` renders no confirmation form while it is true,
+  including no form-contained cancel control. With all labels hidden, the notice now has a heading without a colon
+  and one explanatory sentence; labelled copy is unchanged. A confirmed POST on a genuinely `PROTECT`- or
+  `RESTRICT`-blocked target returns the protection page (200 full page / 422 modal) with nothing deleted, instead of
+  raising native target protection. The race backstop translates only proven native target collection failures;
+  unknown collection and lifecycle failures still propagate with their existing commit semantics. Code/tests that
+  expected `ProtectedError` and copied templates need the
+  [migration steps](docs/migrating-1.0.md#blocked-deletions).
 - **Guardian manage context.** `guardian_config["cv_guardian_accept_global_perms"]` is gone, so a manage template
   that reads it renders empty. Read `guardian_config.get_objects_for_user` (the helper's fixed strict policy) and each
   `views.<key>.guardian_policy` (`global_fallback_applicable`, `cv_guardian_accept_global_perms`, `effective_policy`)
@@ -238,6 +248,16 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Fixed
 
+- **Guardian delete preview no longer crashes on models without a view permission.** Its app-qualified permission
+  lookup could not resolve auto-created through tables or models whose default permissions omit `view`, and could
+  mismatch proxy roots or polymorphic children under a polymorphic `GUARDIAN_GET_CONTENT_TYPE`, causing confirmation
+  GET/POST 500s. The preview now resolves against guardian's content type, fails closed for ordinary users and keeps
+  active authenticated superuser parity with the core view. With per-view global fallback, labels consult
+  `<ct.app_label>.view_<ct.model>`: `app.view_publisher` for `PublisherProxy` under the default concrete resolver,
+  `app.view_vehicle` for `Car` under the polymorphic base resolver. A proxy-only `app.view_publisherproxy` grant does
+  not authorize labels under default resolution; strict mode ignores global fallback. Auto-created through tables
+  need no ContentType lookup or write. Other ViewSet queryset/helper paths are outside this preview fix. See
+  [Guardian cascading deletes](docs/reference/guardian.md#cascading-deletes-with-per-object-permissions).
 - **Formset row requests are authorized.** The AJAX request that adds a formset row (`?template=...`) used to render
   the row before the view's object was loaded. A user denied the editor, for example a Guardian user without the
   object permission, could therefore receive the row and its field choices. Each row request now runs the editor

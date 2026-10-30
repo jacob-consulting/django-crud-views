@@ -57,8 +57,14 @@ class GuardianDeleteRelatedObjectsMixin:
 
 
 class _PermittedPks:
-    """Per-model cache of the pks ``user`` may view; request-local (one instance per projection), and empty for
-    an inactive actor."""
+    """Request-local, per-model cache of viewable pks (one instance per projection).
+
+    Use guardian's own content type and a bare codename; guardian derives the type from ``klass``. Models without
+    a grantable view permission yield no pks for ordinary users (fail closed, D-07/D-08). Auto-created through
+    tables are decided without touching ContentType: only authenticated active superusers see their rows, like
+    the core view (D-05). That branch materializes the entire model's pk set once per projection, including
+    unrelated through rows; it is not a bounded cascade-only query. Inactive actors get nothing.
+    """
 
     def __init__(self, user, accept_global: bool):
         self.user = user
@@ -69,11 +75,21 @@ class _PermittedPks:
         if _guardian_inactive_actor(self.user):
             return set()
         if model not in self._cache:
+            opts = model._meta
+            if opts.auto_created:
+                self._cache[model] = (
+                    set(model._default_manager.values_list("pk", flat=True))
+                    if getattr(self.user, "is_authenticated", False) and getattr(self.user, "is_superuser", False)
+                    else set()
+                )
+                return self._cache[model]
+
+            from guardian.ctypes import get_content_type
             from guardian.shortcuts import get_objects_for_user
 
-            opts = model._meta
-            perm = f"{opts.app_label}.view_{opts.model_name}"
-            qs = get_objects_for_user(self.user, perm, klass=model, accept_global_perms=self.accept_global)
+            ct = get_content_type(model)
+            codename = f"view_{ct.model}"
+            qs = get_objects_for_user(self.user, codename, klass=model, accept_global_perms=self.accept_global)
             self._cache[model] = set(qs.values_list("pk", flat=True))
         return self._cache[model]
 

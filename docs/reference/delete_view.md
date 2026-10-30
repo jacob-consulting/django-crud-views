@@ -160,7 +160,9 @@ Related objects are filtered based on the current user's permissions:
 - Objects the user has `view` permission for: shown with full details
 - Objects the user lacks `view` permission for: shown as aggregated counts (e.g., "3 book objects")
 
-This ensures users see the full impact of deletion without leaking details of objects they can't normally access.
+This hides individual object labels but intentionally reveals model names and aggregate counts, even for models
+whose rows the user cannot view. Applications that consider those aggregates confidential must override
+`cv_filter_related_objects()` to redact the summary as well as labels.
 The summary counts (`related_summary`) are deliberately not filtered: they show how much a deletion removes, which is
 the existing aggregate policy. (A [conditional formset](conditional.md) with `on_off="purge"` follows its own,
 separately documented deletion policy.)

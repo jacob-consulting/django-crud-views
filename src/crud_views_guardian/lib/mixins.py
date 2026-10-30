@@ -1,8 +1,12 @@
 import logging
 
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import ImproperlyConfigured, PermissionDenied
 from django.http import Http404
 from django.shortcuts import get_object_or_404
+from django.views.generic.detail import SingleObjectMixin
+from django.views.generic.list import MultipleObjectMixin
+
+from crud_views.lib.view import CrudView
 
 logger = logging.getLogger(__name__)
 
@@ -210,7 +214,10 @@ class GuardianParentPermissionMixin:
 
     When a parent viewset is present, overrides has_permission() to return True
     so that Django's model-level PermissionRequiredMixin is bypassed; the parent
-    object-level check in dispatch() is the sole gatekeeper.
+    object-level check in dispatch() gates the parent. Object child views must also
+    include GuardianObjectPermissionMixin; list child views must include
+    GuardianQuerysetMixin. Incomplete compositions raise ImproperlyConfigured
+    before processing the request and are reported by system check E001.
 
     A parent permission key of None disables only the parent *permission* check:
     the URL parent is still resolved (a missing parent is a 404) and no-object
@@ -224,12 +231,42 @@ class GuardianParentPermissionMixin:
     cv_guardian_accept_global_perms: bool
     cv_guardian_anonymous_behavior: str
 
+    @classmethod
+    def _guardian_child_composition_error(cls):
+        """Name a missing child gate without loading objects or evaluating permission policy."""
+        if cls.cv_viewset.parent is None:
+            return None
+        mro = cls.__mro__
+        if cls.cv_object:
+            if not issubclass(cls, GuardianObjectPermissionMixin):
+                return "Object child views using GuardianParentPermissionMixin require GuardianObjectPermissionMixin."
+            # SingleObjectMixin.get_object() does not call super(): a later Guardian gate is unreachable.
+            if SingleObjectMixin in mro and mro.index(GuardianObjectPermissionMixin) > mro.index(SingleObjectMixin):
+                return "Place GuardianObjectPermissionMixin before the core object view class."
+        if issubclass(cls, MultipleObjectMixin):
+            if not issubclass(cls, GuardianQuerysetMixin):
+                return "List child views using GuardianParentPermissionMixin require GuardianQuerysetMixin."
+            # Both implementations terminate queryset loading; filtering must wrap them, not follow them.
+            if any(
+                terminal in mro and mro.index(GuardianQuerysetMixin) > mro.index(terminal)
+                for terminal in (CrudView, MultipleObjectMixin)
+            ):
+                return "Place GuardianQuerysetMixin before the core list view class."
+        return None
+
+    def _guardian_validate_child_composition(self):
+        error = self._guardian_child_composition_error()
+        if error:
+            raise ImproperlyConfigured(error)
+
     def has_permission(self):
+        self._guardian_validate_child_composition()
         if self.cv_viewset.parent is not None:
             return True
         return super().has_permission()
 
     def dispatch(self, request, *args, **kwargs):
+        self._guardian_validate_child_composition()
         if not request.user.is_authenticated:
             return self._guardian_deny_anonymous()
         if _guardian_inactive_actor(request.user):

@@ -184,7 +184,14 @@ mismatch is a **400** before anything renders:
 - A top-level formset takes no `formset_parent_prefix_key` (or an empty one). A nested formset needs one with exactly
   the declared depth.
 
-Requests that `formset.js` builds pass these checks. The request parameters and the JSON response (`html` and
+!!! note "Supported primary keys"
+    Formset row prefixes support integer keys (`FormSet.PK.INT`) and UUID keys (`FormSet.PK.UUID`).
+    Slug and arbitrary text primary keys are not supported by the row-prefix protocol, even when the ViewSet's
+    ordinary URLs support them. A slug such as `parent-with-hyphens` is rejected with HTTP 400 by the fragment
+    endpoint; selecting `INT` or `UUID` does not add slug support. This is an existing client/server protocol
+    limitation, not a permission denial. Supporting slugs requires a coordinated client/server prefix design.
+
+Requests that `formset.js` builds for supported primary keys pass these checks. The request parameters and the JSON response (`html` and
 `rows`) are unchanged.
 
 An unsaved parent row is `None` in the form prefixes even when a default, such as `uuid.uuid4`, already gave it a

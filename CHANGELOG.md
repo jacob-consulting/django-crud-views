@@ -6,6 +6,11 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Breaking
 
+- Incomplete or incorrectly ordered custom nested Guardian view compositions now fail system check `crud_views_guardian.E001` and raise
+  `ImproperlyConfigured` before request processing. Pair `GuardianParentPermissionMixin` with
+  `GuardianObjectPermissionMixin` for object views or `GuardianQuerysetMixin` for list/card views, or use the
+  shipped Guardian view classes. See [migration guidance](docs/migrating-1.0.md#custom-guardian-child-view-compositions).
+
 - A button container with no items renders nothing (#265). A toolbar, list row or card whose actions are all hidden
   for the user no longer renders an empty `<fieldset aria-label="Actions">` (or `div`) with its
   `cv-<location>-container` attribute; JavaScript or CSS that expects that attribute in every row must handle its

@@ -358,6 +358,16 @@ delete views.
   permission still gets 403, a missing object on a core view 404, and an inactive Guardian user 403. See
   [HTTP methods](reference/delete_view.md#http-methods).
 
+### Custom Guardian child-view compositions
+
+A custom child view that omits its Guardian child mixin or places it after the core object/list view can
+bypass child authorization. Such compositions now produce `crud_views_guardian.E001` during system checks and
+raise `ImproperlyConfigured` before request processing, including when system checks were not run.
+Use the corresponding shipped `Guardian*ViewPermissionRequired` class, or add `GuardianObjectPermissionMixin`
+for object views / `GuardianQuerysetMixin` for list and card views before the core view class. Preserve cooperative
+`super()` calls in overrides. The shipped Guardian views, parent-only create gate and top-level behavior are unchanged.
+See [Custom child-view compositions](reference/guardian.md#custom-child-view-compositions).
+
 ### The GuardianViewSet global-permission key
 
 `GuardianViewSet(cv_guardian_accept_global_perms=...)` never changed access: every view read its own attribute. The

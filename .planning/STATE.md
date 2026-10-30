@@ -225,7 +225,7 @@ None yet.
 - Phase 2: Both source-probe classifier limitations remain documented; explicit tests and completed human prose UAT independently establish acceptance. See 02-VERIFICATION.md.
 - Phase 7: carry the Phase 6 form surface (`form` location, `tags/button/form.html`, `FORM_LEAF_KEYS`, `get_form_actions()`, icons `save`/`cancel`/`filter-reset`) into the stability doc.
 - Phase 7: carry the Phase 6.1 additions (`form:cancel-tag` key, `Button(tag=...)` keyword, `cv_tag` leaf field, `crud_views.E365`) into the stability doc.
-- Phase 06.2 closure pending: CR-02–CR-04 unresolved, deferred to Phase 6.3 / issue #282; AUTH-01/03/07 split recorded in ACCEPTANCE and REQUIREMENTS. AUTH-06 residual flag and IN-02/IN-03 transferred unresolved to 6.3 GUA-01; WR-01, IN-01, IN-04 and IN-05 still need separate disposition; no verification/UAT pass recorded.
+- Phase 06.2 closure pending: CR-02–CR-04 unresolved, deferred to Phase 6.3 / issue #282; AUTH-01/03/07 split recorded in ACCEPTANCE and REQUIREMENTS. AUTH-06 residual flag and IN-02/IN-03 transferred unresolved to 6.3 GUA-01; WR-01 remains open; IN-01/IN-04 closed with explicit rationale, IN-05 fixed with startup/runtime composition guards; no verification/UAT pass recorded.
 
 ### Quick Tasks Completed
 

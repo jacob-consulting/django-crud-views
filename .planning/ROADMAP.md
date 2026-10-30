@@ -393,7 +393,7 @@ See [REQUIREMENTS](REQUIREMENTS.md#acceptance-ownership-split-2026-10-30),
 [06.2-ACCEPTANCE](phases/06.2-request-authorization-and-write-integrity/06.2-ACCEPTANCE.md#acceptance-ownership-split-for-issue-282)
 and [06.2-REVIEW-DISPOSITION](phases/06.2-request-authorization-and-write-integrity/06.2-REVIEW-DISPOSITION.md).
 AUTH-06 residual review and IN-02/IN-03 are explicitly transferred unresolved to 6.3 GUA-01.
-WR-01, IN-01, IN-04 and IN-05 remain open for separate disposition.
+WR-01 remains open. IN-01/IN-04 are closed with explicit policy/limitation rationale; IN-05 is fixed.
 The revised analysis §8 puts conditional/formset, presentation and Tabler proposals at 6.4/6.5/6.6; only 6.3 is
 inserted here. Phase 7 remains last and cannot freeze the affected promises before remediation.
 
@@ -461,7 +461,7 @@ No architecture is chosen; do not run a blanket automatic `--fix` pass.
 **Disposition**: CR-02–CR-04 deferred here and **unresolved**. CR-01/WR-02 remain fixed in their earlier scope.
 The user explicitly added GUA-01 on 2026-10-30: AUTH-06’s residual review flag and IN-02/IN-03 transfer
 here unresolved, alongside #282 rather than as an amendment to the external issue.
-WR-01, IN-01, IN-04 and IN-05 remain a separate open disposition queue.
+WR-01 remains a separate open finding. IN-01/IN-04 are closed with rationale and IN-05 is fixed in 6.2.
 **Plans**: 0 plans; not planned or verified
 
 Plans:

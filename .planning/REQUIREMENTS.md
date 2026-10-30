@@ -85,11 +85,11 @@ No new verification or UAT pass is implied, including for checked entries repres
 | Requirement | Retained Phase 6.2 evidence | Outstanding obligation / owner |
 | --- | --- | --- |
 | AUTH-01 | HTTP DELETE rejection and named POST form/hook/atomic controls | CR-02/03/04: callback-safe inspection, unknown-error propagation and database alignment → 6.3; overall unresolved |
-| AUTH-02 | Fragment authorization/ancestry and first-child round trips | A19 sibling-index round trip → proposed 6.4, not 6.3; IN-04 slug-PK support awaits separate disposition |
+| AUTH-02 | Fragment authorization/ancestry and first-child round trips | A19 sibling-index round trip → proposed 6.4, not 6.3; IN-04 closed as documented integer/UUID-only fragment boundary |
 | AUTH-03 | Permitted protected labels, independent notice, fixed CR-01/WR-02 response scope | CR-02/04: obtain blocked state without callbacks and from the target database → 6.3; overall unresolved |
 | AUTH-04 | Parent-None dispatch and Guardian helper/state regressions | Older WR-01 core rendered-state agreement awaits explicit disposition; separate from #282 and not accepted |
 | AUTH-05 | Named inactive-actor request/helper regressions | Retain recorded evidence; no new result or broader certification |
-| AUTH-06 | Named per-view configuration, helper and manage regressions | Unspecified review flag and IN-02/IN-03 → Phase 6.3 GUA-01, unresolved; IN-05 retains separate disposition; checked item covers named evidence only |
+| AUTH-06 | Named per-view configuration, helper and manage regressions | Unspecified review flag and IN-02/IN-03 → Phase 6.3 GUA-01, unresolved; IN-05 composition guard fixed; checked item covers named evidence only |
 | AUTH-07 | Recorded actor/native-template replay and paired documentation | Real-preview, converter, routing and preservation re-review → 6.3; existing suite passes do not cover CR-02–CR-04 |
 
 ### Delete protection remediation and bounded Guardian policy review (Phase 6.3)
@@ -109,8 +109,8 @@ These remediate the existing AUTH promises; deferral leaves them unresolved and 
 
 GUA-01 was added by explicit user decision on 2026-10-30 as a bounded continuation of 6.2, alongside the
 deletion work; it does not change issue #282 itself. IN-02/IN-03 are deferred here and remain unresolved.
-Older WR-01, IN-01, IN-04 and IN-05 remain **open for explicit disposition**, outside this transfer.
-D-13's aggregate policy does not silently close IN-01. See
+WR-01 remains **open**, outside this transfer. IN-01 is explicitly closed as intentional D-13 aggregate
+policy, IN-04 as a documented unsupported slug-fragment boundary, and IN-05 is fixed with composition checks. See
 [06.2-REVIEW-DISPOSITION](phases/06.2-request-authorization-and-write-integrity/06.2-REVIEW-DISPOSITION.md).
 The revised analysis schedules conditional/formset work in proposed 6.4, presentation cleanup in proposed 6.5,
 and Tabler adoption seams in proposed 6.6. These proposals are not inserted by this task; Phase 7 stays last.
@@ -192,11 +192,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | FORM-12 | Phase 6 (plan 2) | Complete |
 | FORM-13 | Phase 6 (plan 2) | Complete |
 | AUTH-01 | Phase 6.2 + 6.3 | Partial; CR-02–CR-04 unresolved in 6.3 |
-| AUTH-02 | Phase 6.2 | Named evidence retained; A19/IN-04 limitations open |
+| AUTH-02 | Phase 6.2 | Named evidence retained; A19 open; IN-04 documented unsupported boundary |
 | AUTH-03 | Phase 6.2 + 6.3 | Partial; CR-02/CR-04 unresolved in 6.3 |
 | AUTH-04 | Phase 6.2 | Partial; WR-01 disposition open |
 | AUTH-05 | Phase 6.2 | Complete |
-| AUTH-06 | Phase 6.2 + 6.3 | Named 6.2 evidence retained; residual flag and IN-02/03 → GUA-01; IN-05 separate |
+| AUTH-06 | Phase 6.2 + 6.3 | Named 6.2 evidence retained; residual flag and IN-02/03 → GUA-01; IN-05 fixed |
 | AUTH-07 | Phase 6.2 + 6.3 | Partial; #282 re-review pending in 6.3 |
 | DEL-01 | Phase 6.3 | Pending; unresolved |
 | DEL-02 | Phase 6.3 | Pending; unresolved |

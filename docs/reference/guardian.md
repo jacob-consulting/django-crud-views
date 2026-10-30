@@ -261,6 +261,28 @@ strict mode (the default) only a per-object grant on the parent counts; with the
 flag set, a model-level permission on the parent model (e.g. `app.view_author`) is
 accepted as a fallback.
 
+### Custom child-view compositions
+
+Prefer the shipped `Guardian*ViewPermissionRequired` classes. `GuardianParentPermissionMixin` authorizes the
+URL parent; it does not replace authorization of the child row or queryset. A custom nested object view must
+also include `GuardianObjectPermissionMixin`, and a nested list/card view must include `GuardianQuerysetMixin`,
+before the core view class in the inheritance list. For example:
+
+```python
+from crud_views.lib.views import UpdateViewPermissionRequired
+from crud_views_guardian.lib.mixins import GuardianObjectPermissionMixin, GuardianParentPermissionMixin
+
+class BookUpdateView(GuardianParentPermissionMixin, GuardianObjectPermissionMixin, UpdateViewPermissionRequired):
+    cv_viewset = cv_book
+    form_class = BookForm
+```
+
+System check `crud_views_guardian.E001` names a missing or unreachable companion mixin. An incomplete or incorrectly ordered nested composition also
+raises `ImproperlyConfigured` at request dispatch and permission evaluation, before it can load or mutate child
+rows. Nested create views keep their parent permission/state gate without requiring a child-object mixin.
+Top-level views retain their existing permission delegation. Custom overrides must preserve cooperative `super()`
+calls; the check does not prove that an application override enforces authorization.
+
 ## Formset fragments
 
 The AJAX request that adds a formset row runs the same gates as the editor page it belongs to. On a Guardian update

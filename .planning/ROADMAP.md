@@ -465,7 +465,7 @@ WR-01 was fixed separately in 6.2 by quick 261030-csg. IN-01/IN-04 are closed wi
 
 Plans:
 **Wave 1**
-- [ ] 06.3-01-PLAN.md — Maintainer design and package verification checkpoints
+- [ ] 06.3-01-PLAN.md — Blocking maintainer review of the integrated design
 
 **Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 06.3-02-PLAN.md — Callback-safe confirmation and native deletion tracer

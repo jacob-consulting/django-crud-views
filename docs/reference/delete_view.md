@@ -217,14 +217,25 @@ iterable of contributions (default `()`). It runs after inspection, including wh
 
 | Record | Fields |
 |---|---|
-| Frozen `DeletePreviewBoundary` | `kind` (`"model_delete"`, `"on_delete"`, `"private_relation"`), `model`, `field_name` (possibly `None`), `using`, ordered `source_pks` tuple |
+| Frozen `DeletePreviewBoundary` | `kind` (`"model_delete"`, `"on_delete"`, `"private_relation"`), `model`, `field_name` (possibly `None`), `using`, ordered `source_pks` tuple, `field_model` (declaring model; default `None` for `model_delete`) |
 | Frozen `DeletePreviewContribution` | `boundary`, `deleted` tuple of saved model instances (default `()`), `protected` tuple of saved model instances (default `()`), `complete` boolean (default `False`) |
 
-Use a boundary supplied to this invocation. Equality includes the **ordered** `source_pks`, model, kind, field and
-alias. Unknown, stale, cross-alias or duplicate boundaries, invalid tuple/boolean fields, unsaved/non-model rows and
+`model` and `source_pks` identify the source rows being inspected. `field_model` identifies the model declaring
+the relationship: inspecting a Document's reverse `Attachment.document` produces `model is Document` and
+`field_model is Attachment`. Parent links and private relations likewise retain their declaring field's model.
+Separate owners with the same field name remain independent boundaries, even when one relationship has no rows.
+Source PKs batch only within one owner; they are not the related field owner's row identities.
+
+Use a boundary supplied to this invocation, selecting the exact declaring owner as well as source model and field.
+Equality includes all six fields: kind, model, field_name, using, **ordered** source_pks and field_model.
+Reconstructed descriptors must equal a current supplied descriptor in every field. Ownerless field descriptors
+and model-delete descriptors with a field owner raise `ValueError`; `model_delete` retains `field_model=None`.
+Unknown, wrong-owner, stale, cross-alias or duplicate boundaries, invalid tuple/boolean fields, unsaved/non-model rows and
 rows whose `_state.db` differs from `using` raise `ValueError`. Query providers explicitly with `.using(using)`;
 provider exceptions propagate. `complete=True` is the application's attestation about that boundary alone, including
 an explicitly described no-effect boundary; it is not a proof of purity or a whole-preview completeness switch.
+Attesting one owner never completes another owner's same-name relationship. Migrate existing source/name-only
+providers immediately; see [Describing custom deletion effects](../migrating-1.0.md#describing-custom-deletion-effects).
 
 Deleted rows merge as deduplicated direct-root children, with counts added for models other than the root's concrete
 model. Identity is `(using, concrete_model, pk)`, preserving UUID/integer values and discovery order; proxy and

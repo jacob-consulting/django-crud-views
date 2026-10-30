@@ -506,7 +506,8 @@ class DocumentDeleteView(CrispyViewMixin, DeleteViewPermissionRequired):
 Use the corresponding Guardian base class in a Guardian project. Its `super()` supplies the Guardian projection;
 do not reapply the core model-permission filter afterward. The filter runs only with display enabled. The provider
 runs even with display disabled, before the unfiltered blocked flag is computed. Never call deletion to simulate a
-preview. Each boundary must match the current supplied descriptor, including **ordered** `source_pks` and `using`.
+preview. Each boundary must match all six fields of the current supplied descriptor: `kind`, `model`, `field_name`,
+`using`, **ordered** `source_pks` and `field_model`. Model-delete boundaries retain `field_model=None`.
 Saved same-alias model tuples are required; invalid, duplicate, stale or cross-alias contributions raise `ValueError`.
 `complete=True` attests only this boundary, not purity or completeness of other effects.
 
@@ -517,6 +518,19 @@ whose complete effect is to cascade-delete those Attachment rows, with no furthe
 Describe that effect with reads on `using`; do not call the handler. Keep `complete=False` until you can attest the
 whole effect. This standalone view is an alternative to the preceding one; combine their provider loops if you
 need both descriptions. Any custom root-model method remains a separate unresolved boundary here.
+
+**Immediate provider migration:** `DeletePreviewBoundary` appends the immutable `field_model` identity field.
+Select supplied field descriptors by their declaring owner as well as source model and field name, as below.
+Old copied **ownerless** `on_delete` or `private_relation` descriptors now raise `ValueError` before confirmation;
+there is no grace period. Do not reconstruct an ambiguous source/name descriptor. A reconstructed descriptor must
+equal a supplied descriptor in all six fields, including owner, alias and the exact ordered source batch.
+Model-delete descriptors keep `field_model=None` and their existing construction remains valid.
+
+Here `model is Document` and `source_pks` identify the inspected Document rows; `field_model is Attachment`
+identifies who declares `document`, not those source rows. Each reverse relation, unsupported parent link and
+private relation retains its declaring field model. A newly added `OtherAttachment.document` has a separate
+boundary, including when it has no rows. The provider below must leave that boundary incomplete until another
+explicit description attests it. One owner's contribution cannot complete another owner's effects.
 
 ```python
 from crud_views.lib.crispy import CrispyDeleteForm, CrispyViewMixin
@@ -534,7 +548,12 @@ class DocumentEffectsDeleteView(CrispyViewMixin, DeleteViewPermissionRequired):
     def cv_get_delete_preview(self, boundaries, *, using):
         contributions = list(super().cv_get_delete_preview(boundaries, using=using))
         for boundary in boundaries:
-            if boundary.kind == "on_delete" and boundary.model is Document and boundary.field_name == "document":
+            if (
+                boundary.kind == "on_delete"
+                and boundary.model is Document
+                and boundary.field_model is Attachment
+                and boundary.field_name == "document"
+            ):
                 rows = tuple(Attachment.objects.using(using).filter(document_id__in=boundary.source_pks))
                 contributions.append(DeletePreviewContribution(boundary, deleted=rows, complete=True))
         return contributions

@@ -6,6 +6,11 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Breaking
 
+- **Delete preview field ownership.** Frozen `DeletePreviewBoundary` now includes the declaring `field_model`.
+  Providers must select exact supplied descriptors by owner as well as source model and field name; copied
+  ownerless field descriptors fail immediately with `ValueError`. Different owners' same-name relationships
+  remain independently incomplete; model-delete descriptors retain `field_model=None`. See the executable
+  [provider migration](docs/migrating-1.0.md#describing-custom-deletion-effects).
 - **Delete preview overrides and model signatures.** `cv_get_related_objects()` overrides now fail `viewset.E263`
   and raise `ImproperlyConfigured` without invocation. Use boundary-scoped `cv_get_delete_preview` descriptions and
   `cv_filter_related_objects` redaction ([migration](docs/migrating-1.0.md#safe-deletion-preview-overrides)). Custom

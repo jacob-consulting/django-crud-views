@@ -276,11 +276,20 @@ def test_published_provider_invalid_records_fail_before_write(recipes, invalid):
             return records * 2
         if invalid == "stale":
             return [replace(records[0], boundary=replace(records[0].boundary, source_pks=(-1,)))]
-        if invalid in ("ownerless", "wrong-owner"):
+        if invalid == "ownerless":
+            from crud_views.lib.deletion import DeletePreviewBoundary
+
+            boundary = records[0].boundary
+            # Old copied five-field constructors default the appended owner to None.
+            copied = DeletePreviewBoundary(
+                boundary.kind, boundary.model, boundary.field_name, boundary.using, boundary.source_pks
+            )
+            return [replace(records[0], boundary=copied)]
+        if invalid == "wrong-owner":
             return [
                 replace(
                     records[0],
-                    boundary=replace(records[0].boundary, field_model=None if invalid == "ownerless" else r.Document),
+                    boundary=replace(records[0].boundary, field_model=r.Document),
                 )
             ]
         return [replace(records[0], deleted=(r.Attachment(title="unsaved"),))]
@@ -379,6 +388,12 @@ def test_published_provider_boundary_attestation_and_public_imports(recipes):
     inspection = inspect_deletion(r.target, using="default")
     assert isinstance(inspection, DeleteInspection)
     assert all(isinstance(boundary, DeletePreviewBoundary) for boundary in inspection.boundaries)
+    model_boundary = next(boundary for boundary in inspection.boundaries if boundary.kind == "model_delete")
+    copied_model_boundary = DeletePreviewBoundary("model_delete", r.Document, None, "default", (r.target.pk,))
+    assert copied_model_boundary == model_boundary and copied_model_boundary.field_model is None
+    assert merge_delete_preview(
+        inspection, [DeletePreviewContribution(copied_model_boundary, complete=True)], using="default"
+    ).boundaries == tuple(boundary for boundary in inspection.boundaries if boundary.kind != "model_delete")
     contributions = []
     for heading in (OVERRIDE, EFFECT):
         view = r.build(heading)()

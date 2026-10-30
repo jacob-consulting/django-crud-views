@@ -1,5 +1,9 @@
 """Real request regressions for read-only deletion inspection and confirmed writes."""
 
+from contextlib import contextmanager
+from dataclasses import FrozenInstanceError, replace
+from uuid import uuid4
+
 import pytest
 from django.db import connection, models
 from django.db.models.signals import post_delete
@@ -7,6 +11,390 @@ from django.test.utils import isolate_apps
 
 from tests.test1.app.models import Book, BookNote, Contract, Publisher
 from tests.test1.app.views import PublisherCascadeDeleteView
+
+
+@contextmanager
+def _tables(*model_classes):
+    with connection.schema_editor() as editor:
+        for model in model_classes:
+            editor.create_model(model)
+    try:
+        yield
+    finally:
+        with connection.schema_editor() as editor:
+            for model in reversed(model_classes):
+                editor.delete_model(model)
+
+
+@pytest.mark.django_db(transaction=True)
+def test_inspection_reverse_fk_to_field():
+    from crud_views.lib.deletion import inspect_deletion
+
+    with isolate_apps("tests.test1.app"):
+
+        class Target(models.Model):
+            code = models.CharField(max_length=60, unique=True)
+
+            class Meta:
+                app_label = "app"
+
+        class Cascade(models.Model):
+            target = models.ForeignKey(Target, to_field="code", on_delete=models.CASCADE)
+            label = models.CharField(max_length=60)
+
+            class Meta:
+                app_label = "app"
+
+        class Protector(models.Model):
+            target = models.ForeignKey(Target, to_field="code", on_delete=models.PROTECT)
+
+            class Meta:
+                app_label = "app"
+
+        with _tables(Target, Cascade, Protector):
+            target = Target.objects.create(pk=71, code="鍵-900719925474099312345")
+            other = Target.objects.create(pk=72, code="other")
+            child = Cascade.objects.create(target=target, label="Loaded without deferral")
+            Cascade.objects.create(target=other, label="Unrelated")
+            protector = Protector.objects.create(target=target)
+            result = inspect_deletion(target, using="default")
+            assert result.complete
+            assert result.related.tree == [target, [child]]
+            assert result.related.summary == {"cascade": 1}
+            assert result.related.protected == [protector]
+            assert result.related.tree[1][0].get_deferred_fields() == set()
+
+
+@pytest.mark.django_db(transaction=True)
+def test_inspection_distinct_parent_link_keys():
+    from crud_views.lib.deletion import inspect_deletion
+
+    with isolate_apps("tests.test1.app"):
+
+        class Parent(models.Model):
+            code = models.CharField(max_length=40, unique=True)
+
+            class Meta:
+                app_label = "app"
+
+        class Child(Parent):
+            child_id = models.IntegerField(primary_key=True)
+            parent_link = models.OneToOneField(Parent, to_field="code", parent_link=True, on_delete=models.CASCADE)
+            ordinary_key = models.CharField(max_length=40, unique=True)
+
+            class Meta:
+                app_label = "app"
+
+        class Cascade(models.Model):
+            parent = models.ForeignKey(Parent, to_field="code", on_delete=models.CASCADE)
+
+            class Meta:
+                app_label = "app"
+
+        class Protector(models.Model):
+            child = models.ForeignKey(Child, to_field="ordinary_key", on_delete=models.PROTECT)
+
+            class Meta:
+                app_label = "app"
+
+        with _tables(Parent, Child, Cascade, Protector):
+            parent = Parent.objects.create(pk=101, code="parent-link-303")
+            child = Child(
+                id=parent.pk, code=parent.code, child_id=202, parent_link_id=parent.code, ordinary_key="ordinary-404"
+            )
+            child.save_base(raw=True, force_insert=True)
+            cascade = Cascade.objects.create(parent=parent)
+            protector = Protector.objects.create(child=child)
+            child = Child.objects.get(pk=202)
+            result = inspect_deletion(child, using="default")
+            assert result.complete
+            assert result.related.tree == [child, [parent, cascade]]
+            assert result.related.summary == {"parent": 1, "cascade": 1}
+            assert result.related.protected == [protector]
+
+
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.parametrize("reverse_order", [False, True])
+def test_inspection_diamond_cycle_restrict_and_proxy(reverse_order, monkeypatch):
+    from crud_views.lib.deletion import DeletePreviewContribution, inspect_deletion, merge_delete_preview
+
+    events = []
+
+    def custom(*args):
+        events.append("unsafe")
+
+    with isolate_apps("tests.test1.app"):
+
+        class Root(models.Model):
+            key = models.UUIDField(primary_key=True, default=uuid4)
+
+            class Meta:
+                app_label = "app"
+
+        class Node(models.Model):
+            root = models.ForeignKey(Root, on_delete=models.CASCADE)
+            peer = models.ForeignKey("self", null=True, on_delete=models.CASCADE)
+            restricted = models.ForeignKey("self", null=True, on_delete=models.RESTRICT, related_name="restrictors")
+            unknown = models.ForeignKey("self", null=True, on_delete=custom, related_name="unknowns")
+
+            class Meta:
+                app_label = "app"
+
+        class Proxy(Root):
+            class Meta:
+                proxy = True
+                app_label = "app"
+
+        with _tables(Root, Node):
+            root = Root.objects.create()
+            other = Root.objects.create()
+            a = Node.objects.create(root=root)
+            b = Node.objects.create(root=root, peer=a, restricted=a)
+            a.peer = b
+            a.save()
+            outside = Node.objects.create(root=other, restricted=a)
+            if reverse_order:
+                from crud_views.lib import deletion
+
+                original = deletion.get_candidate_relations_to_delete
+                monkeypatch.setattr(
+                    deletion, "get_candidate_relations_to_delete", lambda opts: reversed(list(original(opts)))
+                )
+            result = inspect_deletion(Proxy.objects.get(pk=root.pk), using="default")
+            assert not result.complete
+            assert result.related.summary == {"node": 2}
+            assert result.related.protected == [outside]
+            assert len(list(PublisherCascadeDeleteView._walk_nested(result.related.tree))) < 12
+            boundary = result.boundaries[0]
+            merged = merge_delete_preview(
+                result, [DeletePreviewContribution(boundary, deleted=(outside,), complete=True)], using="default"
+            )
+            assert merged.related.protected == [outside], "Provider claims cannot expand native RESTRICT closure"
+            assert events == []
+            assert set(boundary.source_pks) == {a.pk, b.pk}
+
+
+@pytest.mark.django_db
+def test_provider_tree_shape_and_counts(publisher_penguin, monkeypatch):
+    from crud_views.lib.deletion import (
+        DeletePreviewContribution,
+        RelatedObjects,
+        inspect_deletion,
+        merge_delete_preview,
+    )
+    from crud_views.lib.views.delete import RelatedObjects as LegacyRelatedObjects
+
+    assert LegacyRelatedObjects is RelatedObjects
+    root = publisher_penguin
+    child = Book.objects.create(publisher=root, title="Child")
+    grandchild = BookNote.objects.create(book=child, note="Grandchild")
+    sibling = Book.objects.create(publisher=root, title="Sibling")
+    provider_child = BookNote.objects.create(book=sibling, note="Provider child")
+    monkeypatch.setattr(BookNote._meta.get_field("book").remote_field, "on_delete", models.SET(lambda: None))
+    native = inspect_deletion(root, using="default")
+    assert native.related.tree == [root, [child, sibling]]
+    assert native.boundaries[0].source_pks == (child.pk, sibling.pk)
+    contribution = DeletePreviewContribution(
+        native.boundaries[0], deleted=(grandchild, provider_child, grandchild), complete=True
+    )
+    with pytest.raises(FrozenInstanceError):
+        contribution.complete = False
+    merged = merge_delete_preview(native, [contribution], using="default")
+    assert merged.complete
+    assert merged.related.tree == [root, [child, sibling, grandchild, provider_child]]
+    assert merged.related.summary == {"book": 2, "book note": 2}
+    assert len(merged.related) == 3
+    assert native.related.tree == [root, [child, sibling]], "Merging must not mutate the native result"
+    # A native nested branch retains its alternating shape and redaction positions.
+    monkeypatch.setattr(BookNote._meta.get_field("book").remote_field, "on_delete", models.CASCADE)
+    nested = inspect_deletion(root, using="default")
+    assert nested.related.tree == [root, [child, [grandchild], sibling, [provider_child]]]
+
+    class Actor:
+        def has_perm(self, permission):
+            return permission != "app.view_book"
+
+    filtered = PublisherCascadeDeleteView().cv_filter_related_objects(Actor(), nested.related)
+    assert filtered.tree == [root, [None, [grandchild], None, [provider_child]]]
+    assert filtered.summary == {"book": 2, "book note": 2}
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "invalid",
+    [
+        "record",
+        "descriptor",
+        "unhashable",
+        "source-order",
+        "alias",
+        "duplicate",
+        "unsaved",
+        "html",
+        "dict",
+        "wrong-db",
+        "complete",
+        "container",
+    ],
+)
+def test_provider_rejects_invalid_records(publisher_penguin, monkeypatch, invalid):
+    from crud_views.lib.deletion import DeletePreviewContribution, inspect_deletion, merge_delete_preview
+
+    first = Book.objects.create(publisher=publisher_penguin, title="First")
+    Book.objects.create(publisher=publisher_penguin, title="Second")
+    monkeypatch.setattr(BookNote._meta.get_field("book").remote_field, "on_delete", models.SET(lambda: None))
+    result = inspect_deletion(publisher_penguin, using="default")
+    boundary = result.boundaries[0]
+    contribution = DeletePreviewContribution(boundary, deleted=(first,))
+    contributions = [contribution]
+    if invalid == "record":
+        contributions = ["<script>unsafe</script>"]
+    elif invalid == "descriptor":
+        contributions = [replace(contribution, boundary="invalid")]
+    elif invalid == "unhashable":
+        contributions = [replace(contribution, boundary=replace(boundary, source_pks=list(boundary.source_pks)))]
+    elif invalid == "complete":
+        contributions = [replace(contribution, complete="yes")]
+    elif invalid == "container":
+        contributions = [replace(contribution, deleted="")]
+    elif invalid == "source-order":
+        contributions = [
+            replace(contribution, boundary=replace(boundary, source_pks=tuple(reversed(boundary.source_pks))))
+        ]
+    elif invalid == "alias":
+        contributions = [replace(contribution, boundary=replace(boundary, using="other"))]
+    elif invalid == "duplicate":
+        contributions *= 2
+    else:
+        record = {"unsaved": Book(title="unsaved"), "html": "<b>bad</b>", "dict": {}, "wrong-db": first}[invalid]
+        if invalid == "wrong-db":
+            record._state.db = "other"
+        contributions = [replace(contribution, deleted=(record,))]
+    with pytest.raises(ValueError):
+        merge_delete_preview(result, contributions, using="default")
+
+
+@pytest.mark.django_db
+def test_provider_scoped_coverage_permission_order_and_exceptions(
+    client_user_publisher_cascade_delete, publisher_penguin, monkeypatch
+):
+    from crud_views.lib.deletion import DeletePreviewContribution
+
+    calls = []
+    child = Book.objects.create(publisher=publisher_penguin, title="Child")
+    note = BookNote.objects.create(book=child, note="<script>隠れた</script>")
+    protected = Contract.objects.create(publisher=publisher_penguin, title="Native hidden")
+    monkeypatch.setattr(BookNote._meta.get_field("book").remote_field, "on_delete", models.SET(lambda: None))
+    monkeypatch.setattr(Publisher, "delete", lambda self, **kwargs: None)
+
+    def provider(self, boundaries, *, using):
+        calls.append((boundaries, using))
+        assert len(boundaries) == 2
+        return [DeletePreviewContribution(boundaries[0], deleted=(note,), protected=(note,), complete=True)]
+
+    monkeypatch.setattr(PublisherCascadeDeleteView, "cv_get_delete_preview", provider)
+    response = client_user_publisher_cascade_delete.get(f"/publisher_cascade/{publisher_penguin.pk}/delete/")
+    assert len(calls) == 1
+    assert response.context["delete_preview_incomplete"] is True
+    assert response.context["has_protected_objects"] is True
+    assert response.context["protected_objects"] == []
+    assert "隠れた" not in response.content.decode()
+    assert protected.title not in response.content.decode()
+    assert response.context["related_summary"] == {"book": 1, "book note": 1}
+    assert not any("boundar" in key or key == "using" for context in response.context for key in context.flatten())
+
+    class Actor:
+        def has_perm(self, permission):
+            return permission == "app.view_booknote"
+
+    from crud_views.lib.deletion import RelatedObjects
+
+    second = BookNote.objects.create(book=child, note="Second")
+    rows = RelatedObjects([], {}, [note, protected, second])
+    assert PublisherCascadeDeleteView().cv_filter_related_objects(Actor(), rows).protected == [note, second]
+
+    def broken(*args, **kwargs):
+        raise RuntimeError("provider failure")
+
+    monkeypatch.setattr(PublisherCascadeDeleteView, "cv_get_delete_preview", broken)
+    with pytest.raises(RuntimeError, match="provider failure"):
+        client_user_publisher_cascade_delete.get(f"/publisher_cascade/{publisher_penguin.pk}/delete/")
+
+
+@pytest.mark.django_db(transaction=True)
+def test_inspection_native_skips_through_and_custom_metadata(monkeypatch):
+    from crud_views.lib.deletion import inspect_deletion
+
+    events = []
+
+    class CustomFK(models.ForeignKey):
+        def get_foreign_related_value(self, instance):
+            events.append("unsafe-custom-join")
+            return super().get_foreign_related_value(instance)
+
+    with isolate_apps("tests.test1.app"):
+
+        class Target(models.Model):
+            class Meta:
+                app_label = "app"
+
+        class Ref(models.Model):
+            skipped = models.ForeignKey(Target, null=True, on_delete=models.SET_NULL, related_name="nullable")
+            ignored = models.ForeignKey(Target, on_delete=models.DO_NOTHING, related_name="ignored")
+            custom = CustomFK(Target, on_delete=models.CASCADE, related_name="custom")
+
+            class Meta:
+                app_label = "app"
+
+        class Group(models.Model):
+            targets = models.ManyToManyField(Target)
+
+            class Meta:
+                app_label = "app"
+
+        with _tables(Target, Ref, Group):
+            target = Target.objects.create()
+            Ref.objects.create(skipped=target, ignored=target, custom=target)
+            group = Group.objects.create()
+            group.targets.add(target)
+            events.clear()  # setup legitimately uses the custom join
+            result = inspect_deletion(target, using="default")
+            assert not result.complete
+            assert [(b.kind, b.field_name) for b in result.boundaries] == [("on_delete", "custom")]
+            through = Group.targets.through.objects.get(target=target)
+            assert result.related.tree == [target, [through]]
+            assert result.related.summary == {through._meta.verbose_name: 1}
+            assert result.related.protected == []
+            assert events == []
+
+
+@pytest.mark.django_db(transaction=True)
+def test_inspection_proxy_self_cycle_has_no_phantom_root_count():
+    from crud_views.lib.deletion import inspect_deletion
+
+    with isolate_apps("tests.test1.app"):
+
+        class Node(models.Model):
+            peer = models.ForeignKey("self", null=True, on_delete=models.CASCADE)
+
+            class Meta:
+                app_label = "app"
+
+        class Proxy(Node):
+            class Meta:
+                proxy = True
+                app_label = "app"
+
+        with _tables(Node):
+            root = Node.objects.create()
+            child = Node.objects.create(peer=root)
+            root.peer = child
+            root.save()
+            proxy = Proxy.objects.get(pk=root.pk)
+            result = inspect_deletion(proxy, using="default")
+            assert result.complete
+            assert result.related.summary == {}
+            assert result.related.tree == [proxy, [child, [proxy]]]
 
 
 def _check_ids(view):
@@ -61,8 +449,9 @@ def test_custom_delete_signature_diagnostics(publisher_penguin, monkeypatch, sig
         def __call__(self, **kwargs):
             events.append("unsafe")
 
-    method = {"keyword": keyword, "kwargs": kwargs, "no-using": no_using, "positional": positional,
-              "opaque": Opaque()}[signature_kind]
+    method = {"keyword": keyword, "kwargs": kwargs, "no-using": no_using, "positional": positional, "opaque": Opaque()}[
+        signature_kind
+    ]
     monkeypatch.setattr(Publisher, "delete", method)
 
     class SignatureView(DeleteView):
@@ -90,6 +479,7 @@ def test_signature_checks_skip_bare_and_resource_views(monkeypatch):
     assert "viewset.E250" in _check_ids(Bare)
     assert "viewset.E264" not in _check_ids(Bare)
     for value in (None, "not a model", object()):
+
         class NonModel(DeleteView):
             model = value
 

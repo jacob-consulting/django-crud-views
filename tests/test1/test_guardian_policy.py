@@ -878,9 +878,8 @@ def test_registered_proxy_viewset_uses_concrete_permission_without_key_or_pk_coe
 @pytest.mark.django_db
 @pytest.mark.parametrize("path_kind", ["helper", "list"])
 def test_registered_polymorphic_base_content_type_policy_residual(unique_name, monkeypatch, path_kind):
-    """Reproduce the unresolved AUTH-06 concern; this is evidence of an error, not an access-policy pass."""
+    """CT-01: a configured base grant supports both registered access paths."""
     from guardian.conf import settings as guardian_settings
-    from guardian.exceptions import MixedContentTypeError
     from guardian.shortcuts import assign_perm
 
     from crud_views_guardian.lib.views import GuardianListViewPermissionRequired
@@ -898,12 +897,13 @@ def test_registered_polymorphic_base_content_type_policy_residual(unique_name, m
         cv_viewset = viewset
 
     assign_perm("view_vehicle", user, car)
-    assert viewset.permissions["view"] == "app.view_car"
     view = CarListView()
     view.request = SimpleNamespace(user=user)
     view.kwargs = {}
-    with pytest.raises(MixedContentTypeError, match="Content type for given perms and klass differs"):
-        if path_kind == "helper":
-            viewset.get_objects_for_user(user, "view")
-        else:
-            view.get_queryset()
+    if path_kind == "helper":
+        result = viewset.get_objects_for_user(user, "view")
+    else:
+        result = view.get_queryset()
+    assert _pks(result) == [car.pk]
+    assert result.model is Car
+    assert viewset.permissions["view"] == "app.view_vehicle"

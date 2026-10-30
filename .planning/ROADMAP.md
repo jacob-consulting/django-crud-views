@@ -376,7 +376,7 @@ recommendations are proposals, not locked decisions.
 
 **Scope exclusions**: Conditional/formset lifecycle work A1–A7 (proposed 6.3), presentation/alias cleanup
 (proposed 6.4), the jQuery port, and the final stability inventory. Do not reopen completed Phase 6/6.1 acceptance.
-**Plans**: 7/9 plans executed (2 gap-closure plans from UAT 2026-10-29 pending)
+**Plans**: 8/9 plans executed (gap-closure plan 09 from UAT 2026-10-29 pending)
 
 Plans:
 **Wave 1**
@@ -397,7 +397,7 @@ Plans:
 
 **Gap closure** *(UAT 2026-10-29, gaps G-06.2-1 and G-06.2-3; sequential waves 1-3)*
 - [x] 06.2-07-PLAN.md — Guardian delete preview fails closed per model: _PermittedPks resolves against guardian's content type (G-06.2-1 / CR-01)
-- [ ] 06.2-08-PLAN.md — Blocked deletions: notice without a form, blocked POST 200/422 with exception backstop, flag on every delete page, copy and German catalog (G-06.2-3 / WR-02)
+- [x] 06.2-08-PLAN.md — Blocked deletions: notice without a form, blocked POST 200/422 with exception backstop, flag on every delete page, copy and German catalog (G-06.2-3 / WR-02)
 - [ ] 06.2-09-PLAN.md — Document both closures, pair CHANGELOG with migrating-1.0.md, update ACCEPTANCE/disposition and re-measure both cached environments
 
 **UI hint**: no (backend enforcement and safe existing template contexts; no new screens)
@@ -464,5 +464,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 5. Table pagination parity | 3/3 | Complete    | 2026-10-27 |
 | 6. Form-button leaf | 10/10 | Complete    | 2026-10-28 |
 | 6.1. Cancel form button as a link | 3/3 | Complete    | 2026-10-29 |
-| 6.2. Request authorization and write integrity | 7/9 | In Progress | - |
+| 6.2. Request authorization and write integrity | 8/9 | In Progress | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

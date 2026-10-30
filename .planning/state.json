@@ -50,9 +50,9 @@
     }
   ],
   "next": {
-    "command": "$gsd-execute-phase 06.2",
-    "label": "Execute remaining Phase 06.2 plans",
-    "reason": "Plan 07 complete; next plan 08. Phase 06.2 remains in progress, 7 of 9 plans complete."
+    "command": "$gsd-execute-phase 06.2 --gaps-only --wave 3",
+    "label": "Execute remaining plan 06.2-09",
+    "reason": "Phase 06.2 remains executing; 8/9 plans complete, plan 09 next"
   },
-  "updated_at": "2026-10-30T06:53:32.870Z"
+  "updated_at": "2026-10-30T07:17:38.588Z"
 }

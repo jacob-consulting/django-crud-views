@@ -900,10 +900,7 @@ def test_registered_polymorphic_base_content_type_policy_residual(unique_name, m
     view = CarListView()
     view.request = SimpleNamespace(user=user)
     view.kwargs = {}
-    if path_kind == "helper":
-        result = viewset.get_objects_for_user(user, "view")
-    else:
-        result = view.get_queryset()
+    result = viewset.get_objects_for_user(user, "view") if path_kind == "helper" else view.get_queryset()
     assert _pks(result) == [car.pk]
     assert result.model is Car
     assert viewset.permissions["view"] == "app.view_vehicle"

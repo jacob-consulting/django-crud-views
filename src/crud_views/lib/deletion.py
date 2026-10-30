@@ -240,6 +240,17 @@ class _NativeDeleteBlocked(Exception):
     """A native collection blocker observed before any executable deletion extension."""
 
 
+def _native_parent_rows(objects, field, *, using):
+    """Resolve concrete parents from stored link fields, never relation caches."""
+    for obj in objects:
+        values = field.get_local_related_value(obj)
+        query = {remote.attname: value for (_, remote), value in zip(field.related_fields, values, strict=True)}
+        parents = field.remote_field.model._base_manager.using(using).filter(**query)
+        if hasattr(parents, "non_polymorphic"):
+            parents = parents.non_polymorphic()
+        yield from parents
+
+
 class _DeleteCollector(Collector):
     """Adapted from Django 4.2/5.2/6.0 Collector.collect (Django Software Foundation, BSD).
 
@@ -280,7 +291,7 @@ class _DeleteCollector(Collector):
             for ptr in model._meta.concrete_model._meta.parents.values():
                 if ptr:
                     self.collect(
-                        [getattr(obj, ptr.name) for obj in new_objs],
+                        list(_native_parent_rows(new_objs, ptr, using=self.using)),
                         source=model,
                         source_attr=ptr.remote_field.related_name,
                         collect_related=False,

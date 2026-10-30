@@ -386,3 +386,42 @@ def test_native_selected_join_count(selected_graph, using):
     assert original.pk is None
     assert set(g.Root.objects.using(using).values_list("pk", flat=True)) == {2}
     assert set(g.Child.objects.using(using).values_list("pk", flat=True)) == {22}
+
+
+@pytest.mark.parametrize("using", ALIASES)
+def test_native_selected_same_alias_stale_join(selected_graph, using):
+    g = selected_graph
+    original = g.Root.objects.using(using).create(pk=1, code="original")
+    g.Root.objects.using(using).filter(pk=1).update(code="selected")
+    g.Root.objects.using(using).create(pk=2, code="original")
+    g.Child.objects.using(using).create(pk=22, target_id="original")
+    assert execute_deletion(original, using=using) == (1, {"app.Root": 1})
+    assert original.pk is None and original.code == "original"
+    assert set(g.Root.objects.using(using).values_list("pk", flat=True)) == {2}
+    assert set(g.Child.objects.using(using).values_list("pk", flat=True)) == {22}
+
+
+@pytest.mark.parametrize("using", ALIASES)
+def test_native_selected_parent_converter_error(selected_graph, monkeypatch, using):
+    g = selected_graph
+    parent = g.Parent.objects.using(using).create(pk=101, code="parent")
+    child = g.Descendant(id=101, code="parent", child_id=202, parent_link_id="parent")
+    child.save_base(raw=True, force_insert=True, using=using)
+    target = g.Descendant.objects.using(using).get(pk=202)
+    error = RuntimeError("parent converter failed")
+    reads = []
+
+    def convert(value, expression, connection):
+        reads.append(connection.alias)
+        if len(reads) == 2:
+            raise error
+        return value
+
+    monkeypatch.setattr(g.Parent._meta.get_field("code"), "from_db_value", convert, raising=False)
+    with pytest.raises(RuntimeError) as caught:
+        execute_deletion(target, using=using)
+    assert caught.value is error
+    assert reads == [using, using]
+    assert target.pk == 202
+    assert g.Parent.objects.using(using).filter(pk=parent.pk).exists()
+    assert g.Descendant.objects.using(using).filter(pk=202).exists()

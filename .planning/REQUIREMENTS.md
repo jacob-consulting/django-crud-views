@@ -201,7 +201,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DEL-01 | Phase 6.3 | Pending; unresolved |
 | DEL-02 | Phase 6.3 | Pending; unresolved |
 | DEL-03 | Phase 6.3 | Pending; unresolved |
-| DEL-04 | Phase 6.3 | Pending; unresolved |
+| DEL-04 | Phase 6.3 | Partial; CR-01 selected native identity repaired in plan 11; integrated verification and DEL-04-unclassified pending |
 | DEL-05 | Phase 6.3 | Pending; unresolved |
 | DEL-06 | Phase 6.3 | Pending; unresolved |
 | GUA-01 | Phase 6.3 | Pending; AUTH-06 review flag and IN-02/03 unresolved |

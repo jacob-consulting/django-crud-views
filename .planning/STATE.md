@@ -4,16 +4,16 @@ milestone: v1.0
 current_phase: "06.3"
 current_phase_name: "Delete protection and write-boundary integrity — issue #282"
 status: in_progress
-stopped_at: Completed 06.3-10-PLAN.md; contract and CT-01 scope approved; next plans 11/12; phase remains gaps_found
-last_updated: "2026-10-30T23:15:55.804Z"
+stopped_at: Completed 06.3-11-PLAN.md; CR-01 regression controls pass; next plan 12; phase remains gaps_found
+last_updated: "2026-10-30T23:23:26.372Z"
 last_activity: 2026-10-30
-last_activity_desc: Plan 10 complete; actual repair-contract and CT-01 scope approval recorded
-state_head: 464bd8e98872880b5854b10f3222141ba836d0fb
+last_activity_desc: Plan 11 complete; selected native target and parent-link controls pass on Django 4.2 and 6.0
+state_head: ba365cbe1c88a508f6e83a559439c3e485f1f4ae
 progress:
   total_phases: 10
   completed_phases: 8
   total_plans: 53
-  completed_plans: 46
+  completed_plans: 47
 milestone_name: milestone
 ---
 
@@ -29,12 +29,12 @@ See: .planning/PROJECT.md (updated 2026-10-30)
 ## Current Position
 
 Phase: 06.3 (Delete protection and write-boundary integrity — issue #282) — IN PROGRESS
-Plan: 11 of 17 — next to execute; plans 01–10 complete
-Status: Repair contract and bounded CT-01 scope approved; implementation gaps remain open
-Last activity: 2026-10-30 — 10-02 committed (464bd8e); both plan-10 artifact checks passed
+Plan: 12 of 17 — next to execute; plans 01–11 complete
+Status: CR-01 repair controls pass; CR-02/03 and CT-01 implementation plus final verification remain open
+Last activity: 2026-10-30 — 11-02 committed (ba365cb); 40 new and 612 existing controls pass on both cached series
 
-Progress: 46/53 plans executed; 8/10 phases complete. Phase 06.3 is not accepted.
-Next: Execute approved plans 11/12, then 13–17; preserve independent final verification and human dispositions.
+Progress: 47/53 plans executed; 8/10 phases complete. Phase 06.3 is not accepted.
+Next: Execute approved plan 12, then 13–17; preserve independent final verification and human dispositions.
 
 ### Phase 06.3 gap execution approval
 
@@ -43,8 +43,9 @@ Next: Execute approved plans 11/12, then 13–17; preserve independent final ver
 - Plan 10 SUMMARY complete; GAP_DESIGN_REVIEWABLE and GAP_APPROVAL_BOUND both passed.
 - Reviewed design SHA-256: `feee0a1bbb36028e6bf95f9cbc8aabf73709a1db3463e64328db1d14bad7b572`.
 - Plans 10–17 combined SHA-256: `4de8457efead5268b3463860fcfc1dc0eea32c883d7fd3fd24eb402be2bdbc59`.
-- Plans 11/12 may start under the bound contract; plans 11–17 remain unexecuted. Do not repeat plan 10.
-- All four defects and all twelve human items remain unresolved; phase acceptance is unchanged.
+- Plan 11 is executed: selected native root/parent identity controls pass; independent final verification remains.
+- Plans 12–17 remain unexecuted under the bound contract. Do not repeat plans 10/11.
+- CR-02/03 and CT-01 plus all twelve human items remain unresolved; phase acceptance is unchanged.
 
 ### Phase 06.3 gap planning
 
@@ -151,6 +152,7 @@ Next: Execute approved plans 11/12, then 13–17; preserve independent final ver
 | Phase 06.3 P03 | 10min | 2 tasks | 5 files |
 | Phase 06.3 P04 | 12min | 2 tasks | 2 files |
 | Phase 06.3 P10 | 3min | 2 tasks | 2 files |
+| Phase 06.3 P11 | 6min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -259,6 +261,7 @@ Recent decisions affecting current work:
 - [Phase 06.3]: 03: Proxy and concrete instances share stored-row identity; genuine multi-table parent models remain distinct; scoped providers validate immutable boundaries and saved same-alias records.
 - [Phase 06.3]: Maintainer approved GAP-DESIGN and plans 10–17 including immediate owner-qualified provider migration; actual response and reviewed digests recorded in GAP-APPROVAL.
 - [Phase 06.3]: Bounded CT-01 configured-content-type default/custom permission scope explicitly approved; implementation and all twelve human dispositions remain outstanding.
+- [Phase 06.3]: 11: Native collection reloads selected values but preserves original authorized origin/state; actual parent-link queries ignore cached descriptors.
 
 ### Pending Todos
 
@@ -305,6 +308,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-30T23:15:55.075Z
-Stopped at: Completed 06.3-10-PLAN.md; contract and CT-01 scope approved; next plans 11/12; phase remains gaps_found
+Last session: 2026-10-30T23:23:25.684Z
+Stopped at: Completed 06.3-11-PLAN.md; CR-01 regression controls pass; next plan 12; phase remains gaps_found
 Resume file: None

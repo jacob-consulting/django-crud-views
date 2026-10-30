@@ -80,6 +80,19 @@ class Contract(models.Model):
         return self.title
 
 
+class Royalty(models.Model):
+    """CR-01 protected-list model without a view_ permission; RESTRICT also exercises 06.2-08's write path."""
+
+    publisher = models.ForeignKey(Publisher, on_delete=models.RESTRICT, related_name="royalties")
+    title = models.CharField(max_length=100)
+
+    class Meta:
+        default_permissions = ("add", "change", "delete")
+
+    def __str__(self):
+        return self.title
+
+
 class CampaignState(models.TextChoices):
     NEW = "new", _("New")
     ACTIVE = "active", _("Active")

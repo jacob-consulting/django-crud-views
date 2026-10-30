@@ -133,13 +133,11 @@ def _norm(html: str) -> str:
     return re.sub(r"\s+", " ", html)
 
 
-def _context_contracts(response) -> list:
-    from tests.test1.app.models import Contract
-
+def _response_instances(response, model) -> list:
     def walk(value, depth=0):
         if depth > 8:
             return []
-        if isinstance(value, Contract):
+        if isinstance(value, model):
             return [value]
         if isinstance(value, dict):
             return [hit for v in value.values() for hit in walk(v, depth + 1)]
@@ -150,8 +148,97 @@ def _context_contracts(response) -> list:
     return [hit for layer in response.context for hit in walk(layer.flatten())]
 
 
+def _context_contracts(response) -> list:
+    from tests.test1.app.models import Contract
+
+    return _response_instances(response, Contract)
+
+
 def _delete_page(client, publisher, **kwargs):
     return client.get(f"/guardian_publisher_cascade/{publisher.pk}/delete/", **kwargs)
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("operation", ["get", "modal", "post"])
+@pytest.mark.parametrize("superuser", [False, True], ids=["object-granted", "superuser"])
+def test_guardian_m2m_delete_preview_and_post(
+    client_guardian, user_guardian, cv_guardian_publisher, publisher_a, monkeypatch, superuser, operation
+):
+    """M2M through rows cannot crash previews or POST; only active superusers see their labels."""
+    from django.contrib.auth.models import User
+
+    from tests.test1.app.models import Genre, Publisher
+    from tests.test1.app.views import GuardianPublisherCascadeDeleteView, cv_guardian_publisher_cascade
+
+    if superuser:
+        actor = User.objects.create_superuser(username="m2m_superuser", email="", password="password")
+        client_guardian.force_login(actor)
+    else:
+        user_guardian_object_perm(user_guardian, cv_guardian_publisher_cascade, "delete", publisher_a)
+    genre = Genre.objects.create(name="Surviving Genre")
+    genre.publishers.add(publisher_a)
+    through = Genre.publishers.through
+    through_row = through.objects.get(publisher=publisher_a)
+    publisher_pk, through_pk = publisher_a.pk, through_row.pk
+
+    if operation == "post":
+        response = client_guardian.post(f"/guardian_publisher_cascade/{publisher_pk}/delete/", {"confirm": True})
+        assert response.status_code == 302
+        assert not Publisher.objects.filter(pk=publisher_pk).exists()
+        assert not through.objects.filter(pk=through_pk).exists()
+        assert Genre.objects.filter(pk=genre.pk).exists()
+    else:
+        headers = {}
+        if operation == "modal":
+            monkeypatch.setattr(GuardianPublisherCascadeDeleteView, "cv_modal", True)
+            headers["X-CV-Modal"] = "true"
+        response = _delete_page(client_guardian, publisher_a, headers=headers)
+        assert response.status_code == 200
+        assert response.context["has_protected_objects"] is False
+        content = _norm(response.content.decode())
+        if superuser:
+            assert through_row in _response_instances(response, through)
+            assert str(through_row) in content
+        else:
+            assert _response_instances(response, through) == []
+            assert str(through_row) not in content
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("superuser", [False, True], ids=["object-granted", "superuser"])
+def test_guardian_protected_model_without_view_permission(
+    client_guardian, user_guardian, cv_guardian_publisher, publisher_a, superuser
+):
+    """A no-view model stays blocked, with labels hidden for ordinary users and visible to superusers."""
+    from django.contrib.auth.models import Permission, User
+
+    from tests.test1.app.models import Royalty
+    from tests.test1.app.views import cv_guardian_publisher_cascade
+
+    royalty = Royalty.objects.create(publisher=publisher_a, title="Secret Royalty")
+    assert not Permission.objects.filter(
+        content_type__app_label=Royalty._meta.app_label,
+        content_type__model=Royalty._meta.model_name,
+        codename="view_royalty",
+    ).exists()
+    if superuser:
+        actor = User.objects.create_superuser(username="royalty_superuser", email="", password="password")
+        client_guardian.force_login(actor)
+    else:
+        user_guardian_object_perm(user_guardian, cv_guardian_publisher_cascade, "delete", publisher_a)
+    response = _delete_page(client_guardian, publisher_a)
+    assert response.status_code == 200
+    assert response.context["has_protected_objects"] is True
+    content = _norm(response.content.decode())
+    if superuser:
+        assert response.context["protected_objects"] == [royalty]
+        assert royalty in _response_instances(response, Royalty)
+        assert royalty.title in content
+    else:
+        assert response.context["protected_objects"] == []
+        assert _response_instances(response, Royalty) == []
+        assert royalty.title not in content
+    assert content.count(DANGER_ALERT) == 1
 
 
 @pytest.mark.django_db

@@ -221,9 +221,17 @@ msgstr "Absteigend"
 msgid "This object cannot be deleted:"
 msgstr "Dieses Objekt kann nicht gelöscht werden:"
 
-#: templates/crud_views/snippets/delete/related_objects.html:5
+#: templates/crud_views/snippets/delete/related_objects.html:6
 msgid "Deletion is blocked by protected relationships:"
 msgstr "Das Löschen wird durch geschützte Beziehungen verhindert:"
+
+#: templates/crud_views/snippets/delete/related_objects.html:8
+msgid "Deletion is blocked by protected relationships"
+msgstr "Das Löschen wird durch geschützte Beziehungen verhindert"
+
+#: templates/crud_views/snippets/delete/related_objects.html:8
+msgid "Other objects still reference this one; remove or reassign them before deleting it."
+msgstr "Andere Objekte verweisen noch auf dieses Objekt; entfernen Sie diese Verweise oder ordnen Sie sie neu zu, bevor Sie es löschen."
 
 #: templates/crud_views/snippets/delete/related_objects.html:8
 msgid "The following related objects will also be deleted:"

@@ -676,6 +676,40 @@ def test_delete_alert_headings_translate():
     assert 'role="alert"' in html
 
 
+@pytest.mark.django_db
+@pytest.mark.parametrize("labelled", [False, True])
+def test_blocked_notice_renders_in_german(
+    client_user_publisher_cascade_delete, user_publisher_cascade_delete, publisher_penguin, labelled
+):
+    from django.contrib.auth.models import Permission
+    from django.utils import translation
+
+    from tests.test1.app.models import Contract
+
+    Contract.objects.create(title="Publishing Contract", publisher=publisher_penguin)
+    if labelled:
+        user_publisher_cascade_delete.user_permissions.add(Permission.objects.get(codename="view_contract"))
+    with translation.override("de"):
+        response = client_user_publisher_cascade_delete.get(f"/publisher_cascade/{publisher_penguin.pk}/delete/")
+    content = _norm(response.content.decode())
+    heading = "Das Löschen wird durch geschützte Beziehungen verhindert"
+    sentence = (
+        "Andere Objekte verweisen noch auf dieses Objekt; entfernen Sie diese Verweise oder ordnen Sie sie neu zu, "
+        "bevor Sie es löschen."
+    )
+    assert "<form" not in content
+    if labelled:
+        assert f"<strong>{heading}:</strong>" in content
+        assert "<li>Publishing Contract</li>" in content
+        assert sentence not in content
+    else:
+        assert f"<strong>{heading}</strong>" in content
+        assert sentence in content
+        assert "Publishing Contract" not in content
+    assert BLOCKED_HEADING not in content
+    assert BLOCKED_SENTENCE not in content
+
+
 def _assert_guard_in_mro(view_class):
     from django.views import generic
 

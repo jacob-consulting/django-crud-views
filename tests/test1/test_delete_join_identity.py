@@ -128,6 +128,179 @@ def test_nullable_join_protect_request(nullable_graph, monkeypatch, atomic, moda
     assert g.events == []
 
 
+@pytest.mark.parametrize("nullable_graph", [models.RESTRICT, models.CASCADE], indirect=True)
+@pytest.mark.parametrize("unlinked", [0, 1, 3])
+@pytest.mark.parametrize("atomic", [False, True])
+@pytest.mark.parametrize("modal", [False, True])
+def test_nullable_join_restrict_cascade_request(nullable_graph, monkeypatch, unlinked, atomic, modal):
+    """Neither null-key roots nor unlinked refs contribute a blocker or cascade."""
+    g = nullable_graph
+    root = g.Root.objects.create(pk=1, code=None)
+    g.Root.objects.create(pk=2, code=None)
+    g.Root.objects.create(pk=3, code="other")
+    for pk in range(11, 11 + unlinked):
+        g.Ref.objects.create(pk=pk, target_id=None)
+    g.Ref.objects.create(pk=20, target_id="other")
+    survivors = {20} | set(range(11, 11 + unlinked))
+    monkeypatch.setattr(g.view, "cv_atomic", atomic)
+    headers = {"X-CV-Modal": "true"} if modal else {}
+    inspection = inspect_deletion(root, using="default")
+    assert inspection.complete is True
+    assert inspection.related == ([root], {}, [])
+    preview = g.client.get(g.url, headers=headers)
+    assert preview.status_code == 200
+    assert preview.context["related_summary"] == {}
+    assert preview.context["has_protected_objects"] is False
+    response = g.client.post(g.url, {"confirm": "on"}, headers=headers)
+    assert response.status_code == (204 if modal else 302)
+    assert set(g.Root.objects.values_list("pk", flat=True)) == {2, 3}
+    assert set(g.Ref.objects.values_list("pk", flat=True)) == survivors
+    assert g.events == []
+
+
+@pytest.mark.parametrize("nullable_graph", [models.PROTECT, models.RESTRICT, models.CASCADE], indirect=True)
+@pytest.mark.parametrize("unlinked", [0, 1, 3])
+@pytest.mark.parametrize("extra_roots", [False, True])
+def test_nullable_join_native_counts(nullable_graph, unlinked, extra_roots):
+    g = nullable_graph
+    root = g.Root.objects.create(pk=1, code=None)
+    if extra_roots:
+        g.Root.objects.create(pk=2, code=None)
+        g.Root.objects.create(pk=3, code=None)
+    for pk in range(11, 11 + unlinked):
+        g.Ref.objects.create(pk=pk, target_id=None)
+    assert inspect_deletion(root, using="default").related == ([root], {}, [])
+    assert execute_deletion(root, using="default") == (1, {"app.Root": 1})
+    assert set(g.Root.objects.values_list("pk", flat=True)) == ({2, 3} if extra_roots else set())
+    assert set(g.Ref.objects.values_list("pk", flat=True)) == set(range(11, 11 + unlinked))
+    assert g.events == []
+
+
+@pytest.mark.parametrize("nullable_graph", [models.PROTECT, models.RESTRICT, models.CASCADE], indirect=True)
+@pytest.mark.parametrize("atomic", [False, True])
+@pytest.mark.parametrize("modal", [False, True])
+def test_nullable_join_nonnull_controls(nullable_graph, monkeypatch, atomic, modal):
+    """Filtering absent joins must retain actual native protection and cascades."""
+    g = nullable_graph
+    root = g.Root.objects.create(pk=1, code="selected")
+    g.Root.objects.create(pk=2, code="other")
+    g.Ref.objects.create(pk=11, target_id=None)
+    linked = g.Ref.objects.create(pk=12, target_id="selected")
+    g.Ref.objects.create(pk=13, target_id="other")
+    cascade = g.Ref._meta.get_field("target").remote_field.on_delete is models.CASCADE
+    monkeypatch.setattr(g.view, "cv_atomic", atomic)
+    headers = {"X-CV-Modal": "true"} if modal else {}
+    inspection = inspect_deletion(root, using="default")
+    assert inspection.complete is True
+    assert inspection.related.protected == ([] if cascade else [linked])
+    assert inspection.related.summary == ({"ref": 1} if cascade else {})
+    preview = g.client.get(g.url, headers=headers)
+    assert preview.status_code == 200
+    assert preview.context["has_protected_objects"] is (not cascade)
+    assert preview.context["related_summary"] == ({"ref": 1} if cascade else {})
+    response = g.client.post(g.url, {"confirm": "on"}, headers=headers)
+    assert response.status_code == ((204 if modal else 302) if cascade else (422 if modal else 200))
+    if not cascade:
+        assert response.context["has_protected_objects"] is True
+    assert set(g.Root.objects.values_list("pk", flat=True)) == ({2} if cascade else {1, 2})
+    assert set(g.Ref.objects.values_list("pk", flat=True)) == ({11, 13} if cascade else {11, 12, 13})
+    assert g.events == []
+
+
+@pytest.mark.parametrize("nullable_graph", [models.CASCADE], indirect=True)
+def test_nullable_join_nonnull_native_count(nullable_graph):
+    g = nullable_graph
+    root = g.Root.objects.create(pk=1, code="selected")
+    g.Root.objects.create(pk=2, code="other")
+    g.Ref.objects.create(pk=11, target_id=None)
+    g.Ref.objects.create(pk=12, target_id="selected")
+    g.Ref.objects.create(pk=13, target_id="other")
+    assert execute_deletion(root, using="default") == (2, {"app.Root": 1, "app.Ref": 1})
+    assert set(g.Root.objects.values_list("pk", flat=True)) == {2}
+    assert set(g.Ref.objects.values_list("pk", flat=True)) == {11, 13}
+
+
+@pytest.mark.parametrize("nullable_graph", ["custom"], indirect=True)
+@pytest.mark.parametrize("modal", [False, True])
+@pytest.mark.parametrize("atomic", [False, True])
+def test_nullable_join_unknown_boundary(nullable_graph, monkeypatch, modal, atomic):
+    """A null join cannot attest custom behavior or execute it during inspection."""
+    g = nullable_graph
+    root = g.Root.objects.create(pk=1, code=None)
+    g.Root.objects.create(pk=2, code=None)
+    g.Ref.objects.create(pk=11, target_id=None)
+    monkeypatch.setattr(g.view, "cv_atomic", atomic)
+    headers = {"X-CV-Modal": "true"} if modal else {}
+    inspection = inspect_deletion(root, using="default")
+    assert inspection.complete is False
+    assert len(inspection.boundaries) == 1
+    boundary = inspection.boundaries[0]
+    assert (boundary.kind, boundary.model, boundary.field_name, boundary.field_model) == (
+        "on_delete", g.Root, "target", g.Ref
+    )
+    assert boundary.source_pks == (1,)
+    assert inspection.related == ([root], {}, [])
+    for response in (g.client.get(g.url, headers=headers), g.client.post(g.url, {}, headers=headers)):
+        assert response.status_code in (200, 422)
+        assert response.context["delete_preview_incomplete"] is True
+        assert response.context["has_protected_objects"] is False
+        assert response.context["related_summary"] == {}
+    assert g.events == []
+    assert set(g.Root.objects.values_list("pk", flat=True)) == {1, 2}
+    assert set(g.Ref.objects.values_list("pk", flat=True)) == {11}
+    # A real matching row proves this handler does execute after valid confirmation.
+    g.Root.objects.filter(pk=1).update(code="selected")
+    g.Ref.objects.create(pk=12, target_id="selected")
+    response = g.client.post(g.url, {"confirm": "on"}, headers=headers)
+    assert response.status_code == (204 if modal else 302)
+    assert g.events == [("custom", "default")]
+    assert set(g.Root.objects.values_list("pk", flat=True)) == {2}
+    assert set(g.Ref.objects.values_list("pk", flat=True)) == {11}
+
+
+def test_nullable_join_parent_link():
+    """A supported nullable parent link must not collect unrelated null-key parents."""
+    with isolate_apps("tests.test1.app"):
+
+        class Parent(models.Model):
+            code = models.CharField(max_length=40, unique=True, null=True)
+
+            class Meta:
+                app_label = "app"
+
+        class Child(Parent):
+            child_id = models.IntegerField(primary_key=True)
+            parent_link = models.OneToOneField(
+                Parent, to_field="code", parent_link=True, null=True, on_delete=models.CASCADE
+            )
+
+            class Meta:
+                app_label = "app"
+
+        with connections["default"].schema_editor() as editor:
+            editor.create_model(Parent)
+            editor.create_model(Child)
+        try:
+            Parent.objects.create(pk=101, code=None)
+            Parent.objects.create(pk=102, code=None)
+            child = Child(child_id=202, parent_link_id=None)
+            child.save_base(raw=True, force_insert=True, using="default")
+            inspection = inspect_deletion(child, using="default")
+            assert inspection.complete is True
+            assert inspection.related == ([child], {}, [])
+            collector = _DeleteCollector(using="default", origin=child)
+            collector.collect([child])
+            assert collector.delete() == (1, {"app.Child": 1})
+            assert set(Parent.objects.values_list("pk", flat=True)) == {101, 102}
+            with connections["default"].cursor() as cursor:
+                cursor.execute('SELECT COUNT(*) FROM "app_child"')
+                assert cursor.fetchone() == (0,)
+        finally:
+            with connections["default"].schema_editor() as editor:
+                editor.delete_model(Child)
+                editor.delete_model(Parent)
+
+
 @pytest.fixture
 def selected_graph(monkeypatch):
     registry = dict(_REGISTRY)

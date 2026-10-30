@@ -461,7 +461,7 @@ No architecture is chosen; do not run a blanket automatic `--fix` pass.
 The user explicitly added GUA-01 on 2026-10-30: AUTH-06’s residual review flag and IN-02/IN-03 transfer
 here unresolved, alongside #282 rather than as an amendment to the external issue.
 WR-01 was fixed separately in 6.2 by quick 261030-csg. IN-01/IN-04 are closed with rationale and IN-05 is fixed in 6.2.
-**Plans**: 11/17 plans executed; plan 10's concrete contract delta and bounded CT-01 scope are approved. Plan 11's selected native identity controls pass on Django 4.2/6.0. Six implementation/evidence/review plans (12–17) remain under the bound approval. Phase verification remains `gaps_found`.
+**Plans**: 12/17 plans executed; plan 10's concrete contract delta and bounded CT-01 scope are approved. Plan 11's selected native identity controls and plan 12's configured Guardian CT-01 controls pass on Django 4.2/6.0. Five implementation/evidence/review plans (13–17) remain under the bound approval. All twelve human items remain pending; phase verification remains `gaps_found`.
 
 Plans:
 **Wave 1**
@@ -492,11 +492,11 @@ Plans:
 **Wave 9** *(blocked on Wave 8 completion)*
 - [x] 06.3-10-PLAN.md — Reviewable repair contract and maintainer approval
 
-**Wave 10** *(plan 11 complete; plan 12 next)*
+**Wave 10** *(plans 11 and 12 complete)*
 - [x] 06.3-11-PLAN.md — CR-01 selected-database native target and parent identity
-- [ ] 06.3-12-PLAN.md — CT-01 configured Guardian content-type access
+- [x] 06.3-12-PLAN.md — CT-01 configured Guardian content-type access
 
-**Wave 11** *(blocked on Wave 10 completion)*
+**Wave 11** *(ready after Wave 10 completion)*
 - [ ] 06.3-13-PLAN.md — CR-02 independent relationship boundaries and provider migration
 
 **Wave 12** *(blocked on Wave 11 completion)*
@@ -576,5 +576,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 6. Form-button leaf | 10/10 | Complete    | 2026-10-28 |
 | 6.1. Cancel form button as a link | 3/3 | Complete    | 2026-10-29 |
 | 6.2. Request authorization and write integrity | 9/9 | Complete    | 2026-10-30 |
-| 6.3. Delete protection and write-boundary integrity | 11/17 | In Progress | - |
+| 6.3. Delete protection and write-boundary integrity | 12/17 | In Progress | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

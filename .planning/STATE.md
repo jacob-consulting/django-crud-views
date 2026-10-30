@@ -4,16 +4,16 @@ milestone: v1.0
 current_phase: "06.3"
 current_phase_name: "Delete protection and write-boundary integrity — issue #282"
 status: in_progress
-stopped_at: Completed 06.3-11-PLAN.md; CR-01 regression controls pass; next plan 12; phase remains gaps_found
-last_updated: "2026-10-30T23:23:26.372Z"
+stopped_at: Completed 06.3-12-PLAN.md; CT-01 positive controls pass; next plan 13; all twelve human items remain pending
+last_updated: "2026-10-30T23:32:38.029Z"
 last_activity: 2026-10-30
-last_activity_desc: Plan 11 complete; selected native target and parent-link controls pass on Django 4.2 and 6.0
-state_head: ba365cbe1c88a508f6e83a559439c3e485f1f4ae
+last_activity_desc: Plan 12 complete; CT-01 configured Guardian access and retained policy controls pass on Django 4.2 and 6.0
+state_head: 34747363e812d6ef815f1f61a47688b417aa8b07
 progress:
   total_phases: 10
   completed_phases: 8
   total_plans: 53
-  completed_plans: 47
+  completed_plans: 48
 milestone_name: milestone
 ---
 
@@ -29,12 +29,12 @@ See: .planning/PROJECT.md (updated 2026-10-30)
 ## Current Position
 
 Phase: 06.3 (Delete protection and write-boundary integrity — issue #282) — IN PROGRESS
-Plan: 12 of 17 — next to execute; plans 01–11 complete
-Status: CR-01 repair controls pass; CR-02/03 and CT-01 implementation plus final verification remain open
-Last activity: 2026-10-30 — 11-02 committed (ba365cb); 40 new and 612 existing controls pass on both cached series
+Plan: 13 of 17 — next to execute; plans 01–12 complete
+Status: CR-01 and CT-01 bounded repair controls pass; CR-02/03, final verification and human dispositions remain open
+Last activity: 2026-10-30 — 12-02 committed (d34d19f); 94 new and 353 retained Guardian controls pass on both cached series
 
-Progress: 47/53 plans executed; 8/10 phases complete. Phase 06.3 is not accepted.
-Next: Execute approved plan 12, then 13–17; preserve independent final verification and human dispositions.
+Progress: 48/53 plans executed; 8/10 phases complete. Phase 06.3 is not accepted.
+Next: Execute approved plans 13–17; preserve independent final verification and all twelve human dispositions.
 
 ### Phase 06.3 gap execution approval
 
@@ -44,8 +44,9 @@ Next: Execute approved plan 12, then 13–17; preserve independent final verific
 - Reviewed design SHA-256: `feee0a1bbb36028e6bf95f9cbc8aabf73709a1db3463e64328db1d14bad7b572`.
 - Plans 10–17 combined SHA-256: `4de8457efead5268b3463860fcfc1dc0eea32c883d7fd3fd24eb402be2bdbc59`.
 - Plan 11 is executed: selected native root/parent identity controls pass; independent final verification remains.
-- Plans 12–17 remain unexecuted under the bound contract. Do not repeat plans 10/11.
-- CR-02/03 and CT-01 plus all twelve human items remain unresolved; phase acceptance is unchanged.
+- Plan 12 is executed: configured Guardian CT-01 positive access, custom/default keys and retained actor/cache controls pass.
+- Plans 13–17 remain unexecuted under the bound contract. Do not repeat plans 10–12.
+- CR-02/03 and all twelve human items remain unresolved; AUTH-06/GUA-01 are not globally complete and phase acceptance is unchanged.
 
 ### Phase 06.3 gap planning
 
@@ -153,6 +154,7 @@ Next: Execute approved plan 12, then 13–17; preserve independent final verific
 | Phase 06.3 P04 | 12min | 2 tasks | 2 files |
 | Phase 06.3 P10 | 3min | 2 tasks | 2 files |
 | Phase 06.3 P11 | 6min | 2 tasks | 2 files |
+| Phase 06.3 P12 | 9min | 2 tasks | 14 files |
 
 ## Accumulated Context
 
@@ -262,6 +264,7 @@ Recent decisions affecting current work:
 - [Phase 06.3]: Maintainer approved GAP-DESIGN and plans 10–17 including immediate owner-qualified provider migration; actual response and reviewed digests recorded in GAP-APPROVAL.
 - [Phase 06.3]: Bounded CT-01 configured-content-type default/custom permission scope explicitly approved; implementation and all twelve human dispositions remain outstanding.
 - [Phase 06.3]: 11: Native collection reloads selected values but preserves original authorized origin/state; actual parent-link queries ignore cached descriptors.
+- [Phase 06.3]: 12: Guardian default/custom permissions use only the configured content type; exact explicit mappings and retained actor/global/cache policy remain unchanged.
 
 ### Pending Todos
 
@@ -308,6 +311,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-30T23:23:25.684Z
-Stopped at: Completed 06.3-11-PLAN.md; CR-01 regression controls pass; next plan 12; phase remains gaps_found
+Last session: 2026-10-30T23:32:37.221Z
+Stopped at: Completed 06.3-12-PLAN.md; CT-01 positive controls pass; next plan 13; all twelve human items remain pending
 Resume file: None

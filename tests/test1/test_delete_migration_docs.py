@@ -263,7 +263,7 @@ def test_copied_templates_preserve_independent_notices_and_gates(recipes, detail
     assert r.events == [] and r.Document.objects.filter(pk=r.target.pk).exists()
 
 
-@pytest.mark.parametrize("invalid", ["duplicate", "stale", "unsaved"])
+@pytest.mark.parametrize("invalid", ["duplicate", "stale", "unsaved", "ownerless", "wrong-owner"])
 def test_published_provider_invalid_records_fail_before_write(recipes, invalid):
     r = recipes
     view = r.build(EFFECT)
@@ -276,6 +276,13 @@ def test_published_provider_invalid_records_fail_before_write(recipes, invalid):
             return records * 2
         if invalid == "stale":
             return [replace(records[0], boundary=replace(records[0].boundary, source_pks=(-1,)))]
+        if invalid in ("ownerless", "wrong-owner"):
+            return [
+                replace(
+                    records[0],
+                    boundary=replace(records[0].boundary, field_model=None if invalid == "ownerless" else r.Document),
+                )
+            ]
         return [replace(records[0], deleted=(r.Attachment(title="unsaved"),))]
 
     view.cv_get_delete_preview = broken
@@ -283,6 +290,84 @@ def test_published_provider_invalid_records_fail_before_write(recipes, invalid):
     with pytest.raises(ValueError, match=r"boundary|boundar|saved"):
         r.client.get(r.url)
     assert r.events == [] and r.Document.objects.filter(pk=r.target.pk).exists()
+
+
+@pytest.mark.parametrize("details", [False, True])
+@pytest.mark.parametrize("blocked", [False, True])
+@pytest.mark.parametrize("empty", [False, True])
+def test_documented_provider_added_same_name_relation(recipes, details, blocked, empty):
+    from crud_views.lib.deletion import merge_delete_preview
+
+    r = recipes
+    # Execute both published fences before a new application model is introduced.
+    model_provider = r.build(OVERRIDE)()
+    view = r.build(EFFECT)
+    effect_provider = view.cv_get_delete_preview
+
+    def combined(self, boundaries, *, using):
+        return model_provider.cv_get_delete_preview(boundaries, using=using) + effect_provider(
+            self, boundaries, using=using
+        )
+
+    view.cv_get_delete_preview = combined
+    view.cv_show_related_objects = details
+    r.install(view)
+    initial = r.client.get(r.url)
+    assert initial.status_code == 200 and initial.context["delete_preview_incomplete"] is False
+    assert NOTICE not in initial.content.decode()
+
+    def added_effect(*args):
+        r.events.append(("added-handler", "must never execute during preview"))
+
+    class AdditionalAttachment(models.Model):
+        document = models.ForeignKey(r.Document, on_delete=added_effect)
+
+        class Meta:
+            app_label = "app"
+
+    with connection.schema_editor() as editor:
+        editor.create_model(AdditionalAttachment)
+    try:
+        if not empty:
+            AdditionalAttachment.objects.create(document=r.target)
+        if blocked:
+            r.Blocker.objects.create(document=r.target, title="Never disclose new-relation blocker")
+        inspection = inspect_deletion(r.target, using="default")
+        effect = view()
+        effect.object = r.target
+        records = effect_provider(effect, inspection.boundaries, using="default")
+        assert [record.boundary.field_model for record in records] == [r.Attachment], (
+            "The actual published fence must attest Attachment.document only, regardless of added same-name fields"
+        )
+        records = combined(effect, inspection.boundaries, using="default")
+        merged = merge_delete_preview(inspection, records, using="default")
+        assert not merged.complete
+        assert [boundary.field_model for boundary in merged.boundaries] == [AdditionalAttachment]
+        assert merged.related.summary == {"preview note": 1, "attachment": 1}
+        responses = [r.client.get(r.url), r.client.post(r.url, {})]
+        if blocked:
+            responses.append(r.client.post(r.url, {"confirm": "on"}))
+        for response in responses:
+            assert response.status_code == 200
+            assert response.context["delete_preview_incomplete"] is True
+            assert response.context["has_protected_objects"] is blocked
+            markup = response.content.decode()
+            assert markup.count(NOTICE) == 1
+            assert "Never disclose new-relation blocker" not in markup
+            assert "Secret attachment" not in markup and "secret note" not in markup
+            assert (GENERIC in markup) is blocked
+            assert len(html.fromstring(markup).cssselect('input[name="confirm"]')) == (0 if blocked else 1)
+            if details:
+                assert response.context["related_summary"] == {"preview note": 1, "attachment": 1}
+                assert response.context["protected_objects"] == []
+                assert "partial counts" in markup
+            else:
+                assert "related_summary" not in response.context
+        assert r.events == [] and r.Document.objects.filter(pk=r.target.pk).exists()
+        assert AdditionalAttachment.objects.count() == (0 if empty else 1)
+    finally:
+        with connection.schema_editor() as editor:
+            editor.delete_model(AdditionalAttachment)
 
 
 def test_published_provider_boundary_attestation_and_public_imports(recipes):
@@ -440,6 +525,7 @@ def test_delete_breaking_entries_have_matching_migration_contracts():
     anchors = _anchors(MIGRATION)
     for anchor, terms in {
         "safe-deletion-preview-overrides": ("cv_get_related_objects", "viewset.E263", "cv_get_delete_preview"),
+        "describing-custom-deletion-effects": ("field_model", "Attachment", "ownerless", "source_pks"),
         "delete-method-signatures-and-database-selection": ("viewset.E264", "using", "cv_get_delete_db_alias"),
         "copied-delete-templates-with-incomplete-previews": ("delete_preview_incomplete", "has_protected_objects"),
         "guardian-permission-keys": ("ValueError", "KeyError", "non-string"),
@@ -449,6 +535,7 @@ def test_delete_breaking_entries_have_matching_migration_contracts():
             "### "
             + {
                 "safe-deletion-preview-overrides": "Safe deletion preview overrides",
+                "describing-custom-deletion-effects": "Describing custom deletion effects",
                 "delete-method-signatures-and-database-selection": "Delete method signatures and database selection",
                 "copied-delete-templates-with-incomplete-previews": "Copied delete templates with incomplete previews",
                 "guardian-permission-keys": "Guardian permission keys",

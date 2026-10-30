@@ -461,7 +461,7 @@ No architecture is chosen; do not run a blanket automatic `--fix` pass.
 The user explicitly added GUA-01 on 2026-10-30: AUTH-06’s residual review flag and IN-02/IN-03 transfer
 here unresolved, alongside #282 rather than as an amendment to the external issue.
 WR-01 was fixed separately in 6.2 by quick 261030-csg. IN-01/IN-04 are closed with rationale and IN-05 is fixed in 6.2.
-**Plans**: 3/9 plans executed; design review required before implementation
+**Plans**: 9/9 plans executed; design review required before implementation
 
 Plans:
 **Wave 1**
@@ -472,22 +472,22 @@ Plans:
 
 **Wave 3** *(blocked on Wave 2 completion)*
 - [x] 06.3-03-PLAN.md — Graph inspection, safe provider and partial notices
-- [ ] 06.3-06-PLAN.md — Strict-helper diagnostics and bounded Guardian review
+- [x] 06.3-06-PLAN.md — Strict-helper diagnostics and bounded Guardian review
 
 **Wave 4** *(blocked on Wave 3 completion)*
-- [ ] 06.3-04-PLAN.md — Native provenance and real write-boundary evidence
+- [x] 06.3-04-PLAN.md — Native provenance and real write-boundary evidence
 
 **Wave 5** *(blocked on Wave 4 completion)*
-- [ ] 06.3-05-PLAN.md — Pinned alias, two databases and Guardian label projection
+- [x] 06.3-05-PLAN.md — Pinned alias, two databases and Guardian label projection
 
 **Wave 6** *(blocked on Wave 5 completion)*
-- [ ] 06.3-07-PLAN.md — Authorization, templates and actual polymorphic deletion
+- [x] 06.3-07-PLAN.md — Authorization, templates and actual polymorphic deletion
 
 **Wave 7** *(blocked on Wave 6 completion)*
-- [ ] 06.3-08-PLAN.md — Executable migration examples and paired release guidance
+- [x] 06.3-08-PLAN.md — Executable migration examples and paired release guidance
 
 **Wave 8** *(blocked on Wave 7 completion)*
-- [ ] 06.3-09-PLAN.md — Three-series matrix and affected acceptance reconciliation
+- [x] 06.3-09-PLAN.md — Three-series matrix and affected acceptance reconciliation
 
 ### Phase 7: Theme-surface stability policy
 
@@ -554,5 +554,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 6. Form-button leaf | 10/10 | Complete    | 2026-10-28 |
 | 6.1. Cancel form button as a link | 3/3 | Complete    | 2026-10-29 |
 | 6.2. Request authorization and write integrity | 9/9 | Complete    | 2026-10-30 |
-| 6.3. Delete protection and write-boundary integrity | 3/9 | In Progress | - |
+| 6.3. Delete protection and write-boundary integrity | 9/9 | In Progress | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

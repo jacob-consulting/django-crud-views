@@ -162,7 +162,7 @@ def test_alias_unresolved_view_diagnostic():
     for target in [None, Publisher(), Publisher(pk=41)]:
         view = DeleteView()
         view.object = target
-        with pytest.raises(ImproperlyConfigured, match="saved self.object"):
+        with pytest.raises(ImproperlyConfigured, match=r"saved self\.object"):
             view.cv_form_valid_process({})
 
 
@@ -362,13 +362,14 @@ def test_guardian_alias_cache_and_interleaved_requests(database_routes):
             assert bool(response.context["protected_objects"]) is (using == "shard")
 
 
-def test_guardian_cross_alias_global_cache_does_not_grant_labels(database_routes):
+@pytest.mark.parametrize("using", ALIASES)
+def test_guardian_cross_alias_global_cache_does_not_grant_labels(database_routes, using):
     from crud_views.lib.views.delete import RelatedObjects
     from crud_views_guardian.lib.views import GuardianDeleteRelatedObjectsMixin
 
-    _world("shard", protected=True)
-    with database_routes("shard"):
-        actor = _actor("shard")
+    _world(using, protected=True)
+    with database_routes(using):
+        actor = _actor(using)
         actor._perm_cache = actor._user_perm_cache = actor._group_perm_cache = {"app.view_contract"}
         mixin = GuardianDeleteRelatedObjectsMixin()
         mixin.cv_guardian_accept_global_perms = True
@@ -376,3 +377,148 @@ def test_guardian_cross_alias_global_cache_does_not_grant_labels(database_routes
         result = mixin.cv_filter_related_objects(actor, RelatedObjects([], {}, [blocker]))
         assert result.protected == []
         assert actor._perm_cache == {"app.view_contract"}
+
+
+@pytest.mark.parametrize("using", ALIASES)
+def test_guardian_misrouted_authenticated_request_hides_labels(database_routes, using):
+    other = next(alias for alias in ALIASES if alias != using)
+    target = _world(using, protected=True)
+    _world(other, protected=True)
+    with database_routes(other):
+        actor = _actor(other, is_superuser=True)
+    # The route is already active before force_login/session/auth middleware, not patched after user loading.
+    with database_routes(using, {User: other}):
+        client = Client()
+        client.force_login(actor)
+        response = client.get(f"/guardian_publisher_cascade/{target.pk}/delete/")
+        assert response.status_code == 200
+        assert response.wsgi_request.user._state.db == other
+        assert response.context["has_protected_objects"] is True
+        assert response.context["protected_objects"] == []
+        assert "secret" not in response.content.decode()
+
+
+@pytest.mark.parametrize("using", ALIASES)
+@pytest.mark.parametrize("kind", ["superuser", "global", "object"])
+def test_guardian_configured_content_type_must_be_on_candidate_alias(database_routes, monkeypatch, using, kind):
+    from django.contrib.contenttypes.models import ContentType
+    from guardian import ctypes
+
+    from crud_views_guardian.lib.views import _PermittedPks
+
+    other = next(alias for alias in ALIASES if alias != using)
+    _world(using)
+    foreign_ct = ContentType.objects.db_manager(other).get_for_model(Publisher)
+    with database_routes(using):
+        actor = _actor(using, is_superuser=kind == "superuser")
+        if kind == "global":
+            actor.user_permissions.add(Permission.objects.get(codename="view_publisher"))
+        if kind == "object":
+            _grant(actor, Publisher.objects.get(pk=41), "view_publisher")
+        monkeypatch.setattr(ctypes, "get_content_type", lambda model: foreign_ct)
+        assert _PermittedPks(actor, True)(Publisher, using=using) == set()
+
+
+@pytest.mark.parametrize("using", ALIASES)
+def test_guardian_through_same_alias_never_looks_up_content_type(database_routes, monkeypatch, using):
+    from guardian import ctypes
+
+    from crud_views_guardian.lib.views import _PermittedPks
+    from tests.test1.app.models import Genre
+
+    _world(using)
+    with database_routes(using):
+        actor = _actor(using, is_superuser=True)
+        genre = Genre.objects.create(name="through positive")
+        genre.publishers.add(Publisher.objects.get(pk=41))
+        through = Genre.publishers.through
+        pk = through.objects.get().pk
+
+        def forbidden(model):
+            raise AssertionError("Through projection must not resolve a ContentType")
+
+        monkeypatch.setattr(ctypes, "get_content_type", forbidden)
+        assert _PermittedPks(actor, True)(through, using=using) == {pk}
+
+
+@pytest.mark.parametrize("using", ALIASES)
+@pytest.mark.parametrize("resolved", ["same", "other", "absent"])
+def test_guardian_anonymous_actor_topology(database_routes, monkeypatch, using, resolved):
+    from django.contrib.auth.models import AnonymousUser
+    from guardian import utils
+    from guardian.conf import settings as guardian_settings
+
+    from crud_views_guardian.lib.views import _PermittedPks
+
+    other = next(alias for alias in ALIASES if alias != using)
+    _world(using)
+    monkeypatch.setattr(guardian_settings, "ANONYMOUS_USER_NAME", "preview-anonymous")
+    with database_routes(using):
+        actor = User.objects.create_user(username="preview-anonymous")
+        _grant(actor, Publisher.objects.get(pk=41), "view_publisher")
+    with database_routes(other):
+        foreign_actor = User.objects.create_user(username="preview-anonymous")
+    if resolved == "other":
+        monkeypatch.setattr(utils, "get_anonymous_user", lambda: foreign_actor)
+    elif resolved == "absent":
+
+        def missing():
+            raise User.DoesNotExist
+
+        monkeypatch.setattr(utils, "get_anonymous_user", missing)
+    with database_routes(using):
+        expected = {41} if resolved == "same" else set()
+        assert _PermittedPks(AnonymousUser(), False)(Publisher, using=using) == expected
+
+
+@pytest.mark.parametrize("accept_global", [False, True])
+def test_guardian_uncertified_backend_cross_alias_global_path(database_routes, monkeypatch, accept_global):
+    from django.conf import settings
+
+    from crud_views_guardian.lib.views import _PermittedPks
+
+    _world("shard")
+    with database_routes("shard"):
+        actor = _actor("shard")
+        _grant(actor, Publisher.objects.get(pk=41), "view_publisher")
+        monkeypatch.setattr(
+            settings,
+            "AUTHENTICATION_BACKENDS",
+            ["django.contrib.auth.backends.AllowAllUsersModelBackend", "guardian.backends.ObjectPermissionBackend"],
+        )
+        assert _PermittedPks(actor, accept_global)(Publisher, using="shard") == (set() if accept_global else {41})
+
+
+@pytest.mark.parametrize("using", ALIASES)
+def test_routing_request_gates_read_identity_before_trusted_write_selection(database_routes, monkeypatch, using):
+    from tests.test1.app.views import PublisherCascadeDeleteView
+
+    read = next(alias for alias in ALIASES if alias != using)
+    _world(read, protected=True)
+    _world(using)
+    seen = []
+
+    def permission(view):
+        target = view.get_object()
+        seen.append(("permission", target._state.db, target.pk))
+        return original_permission(view)
+
+    def state(cls, actor, obj=None):
+        if obj is not None:
+            seen.append(("state", obj._state.db, obj.pk))
+        return True
+
+    original_permission = PublisherCascadeDeleteView.has_permission
+    monkeypatch.setattr(PublisherCascadeDeleteView, "has_permission", permission)
+    monkeypatch.setattr(PublisherCascadeDeleteView, "cv_action_enabled", classmethod(state))
+    monkeypatch.setattr(PublisherCascadeDeleteView, "cv_get_db_alias", lambda self: using)
+    with database_routes(read):
+        actor = _actor(read, is_superuser=True)
+        client = Client()
+        client.force_login(actor)
+        response = client.post("/publisher_cascade/41/delete/", {"confirm": "on"})
+    assert response.status_code == 302
+    assert ("permission", read, 41) in seen
+    assert ("state", read, 41) in seen
+    assert Publisher.objects.using(read).filter(pk=41).exists()
+    assert not Publisher.objects.using(using).filter(pk=41).exists()

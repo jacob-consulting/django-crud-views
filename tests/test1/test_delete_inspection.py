@@ -1,7 +1,9 @@
 """Real request regressions for read-only deletion inspection and confirmed writes."""
 
+import sys
 from contextlib import contextmanager
 from dataclasses import FrozenInstanceError, replace
+from types import ModuleType, SimpleNamespace
 from uuid import uuid4
 
 import pytest
@@ -11,6 +13,220 @@ from django.test.utils import isolate_apps
 
 from tests.test1.app.models import Book, BookNote, Contract, Publisher
 from tests.test1.app.views import PublisherCascadeDeleteView
+
+
+@pytest.fixture
+def owner_graph(monkeypatch, transactional_db):
+    from django.contrib.auth.models import Permission, User
+    from django.contrib.contenttypes.models import ContentType
+    from django.test import Client, override_settings
+    from django.urls import clear_url_caches
+
+    from crud_views.lib import check as check_module
+    from crud_views.lib.crispy import CrispyDeleteForm, CrispyViewMixin
+    from crud_views.lib.deletion import DeletePreviewContribution
+    from crud_views.lib.views import DeleteViewPermissionRequired, ListViewPermissionRequired
+    from crud_views.lib.viewset import _REGISTRY, _REGISTRY_LOCK, ViewSet
+
+    registry = dict(_REGISTRY)
+    vocabulary = dict(check_module._VOCAB_CACHE)
+    events = []
+    with isolate_apps("tests.test1.app"):
+
+        def first_effect(collector, field, rows, using):
+            events.append(("first", using))
+            collector.collect(rows, source=field.remote_field.model, source_attr=field.name)
+
+        def second_effect(collector, field, rows, using):
+            events.append(("second", using))
+            collector.collect(rows, source=field.remote_field.model, source_attr=field.name)
+
+        class Root(models.Model):
+            parent = models.ForeignKey("self", null=True, on_delete=models.CASCADE)
+
+            class Meta:
+                app_label = "app"
+
+        class First(models.Model):
+            target = models.ForeignKey(Root, on_delete=first_effect)
+
+            class Meta:
+                app_label = "app"
+
+        class Second(models.Model):
+            target = models.ForeignKey(Root, on_delete=second_effect)
+
+            class Meta:
+                app_label = "app"
+
+        class Blocker(models.Model):
+            target = models.ForeignKey(Root, on_delete=models.PROTECT)
+
+            class Meta:
+                app_label = "app"
+
+            def __str__(self):
+                return "Hidden native blocker"
+
+        with _tables(Root, First, Second, Blocker):
+            vs = ViewSet(model=Root, name="field_owner")
+
+            class RootList(ListViewPermissionRequired):
+                cv_viewset = vs
+
+            class RootDelete(CrispyViewMixin, DeleteViewPermissionRequired):
+                cv_viewset = vs
+                form_class = CrispyDeleteForm
+                cv_show_related_objects = True
+                cv_modal = True
+                cv_attested_owner = First
+                cv_provider_block = False
+
+                def cv_get_delete_preview(self, boundaries, *, using):
+                    assert len(boundaries) == 2, "Independent field owners must survive into the request provider"
+                    return [
+                        DeletePreviewContribution(
+                            boundary,
+                            deleted=tuple(
+                                self.cv_attested_owner.objects.using(using).filter(target_id__in=boundary.source_pks)
+                            ),
+                            protected=(self.object,) if self.cv_provider_block else (),
+                            complete=True,
+                        )
+                        for boundary in boundaries
+                        if boundary.field_model is self.cv_attested_owner
+                    ]
+
+            urls = ModuleType("field_owner_urls")
+            urls.urlpatterns = vs.urlpatterns
+            monkeypatch.setitem(sys.modules, urls.__name__, urls)
+            actor = User.objects.create_user(username="field_owner_actor")
+            ct = ContentType.objects.get_for_model(Root)
+            permission = Permission.objects.create(content_type=ct, codename="delete_root", name="Delete root")
+            actor.user_permissions.add(permission)
+            client = Client()
+            client.force_login(actor)
+            try:
+                with override_settings(ROOT_URLCONF=urls.__name__):
+                    clear_url_caches()
+                    yield SimpleNamespace(
+                        Root=Root,
+                        First=First,
+                        Second=Second,
+                        Blocker=Blocker,
+                        view=RootDelete,
+                        client=client,
+                        events=events,
+                    )
+            finally:
+                clear_url_caches()
+                ContentType.objects.clear_cache()
+                with _REGISTRY_LOCK:
+                    _REGISTRY.clear()
+                    _REGISTRY.update(registry)
+                check_module._VOCAB_CACHE.clear()
+                check_module._VOCAB_CACHE.update(vocabulary)
+
+
+@pytest.mark.parametrize("reverse_order", [False, True])
+@pytest.mark.parametrize("attested", ["First", "Second"])
+def test_boundary_field_owner_batching(owner_graph, monkeypatch, reverse_order, attested):
+    from crud_views.lib import deletion
+    from crud_views.lib.deletion import DeletePreviewContribution, inspect_deletion, merge_delete_preview
+
+    g = owner_graph
+    first = g.Root.objects.create(pk=11)
+    g.Root.objects.create(pk=22, parent=first)
+    before = inspect_deletion(first, using="default")
+    assert len(before.boundaries) == 2, "Each declaring field owner needs its own boundary, even without related rows"
+    # Native adjacency reaches multiple sources; each field owner keeps its own batch.
+    original = deletion.get_candidate_relations_to_delete
+    if reverse_order:
+        monkeypatch.setattr(deletion, "get_candidate_relations_to_delete", lambda opts: reversed(list(original(opts))))
+    result = inspect_deletion(first, using="default")
+    assert len(result.boundaries) == 2
+    assert {boundary.field_model for boundary in result.boundaries} == {g.First, g.Second}
+    assert all(boundary.model is g.Root and boundary.field_name == "target" for boundary in result.boundaries)
+    assert all(boundary.source_pks == ((11, 22) if reverse_order else (22, 11)) for boundary in result.boundaries)
+    owner = getattr(g, attested)
+    boundary = next(boundary for boundary in result.boundaries if boundary.field_model is owner)
+    with pytest.raises(FrozenInstanceError):
+        boundary.field_model = g.Root
+    partial = merge_delete_preview(result, [DeletePreviewContribution(boundary, complete=True)], using="default")
+    assert not partial.complete
+    assert [boundary.field_model for boundary in partial.boundaries] == [g.Second if owner is g.First else g.First]
+    merged = merge_delete_preview(
+        result, [DeletePreviewContribution(boundary, complete=True) for boundary in result.boundaries], using="default"
+    )
+    assert merged.complete and g.events == []
+
+
+@pytest.mark.parametrize("owner", ["First", "Second"])
+@pytest.mark.parametrize("modal", [False, True])
+@pytest.mark.parametrize("details", [False, True])
+@pytest.mark.parametrize("block", ["none", "native", "provider"])
+def test_boundary_field_owner_request(owner_graph, monkeypatch, owner, modal, details, block):
+    from lxml import html
+
+    g = owner_graph
+    root = g.Root.objects.create()
+    g.First.objects.create(target=root)
+    g.Second.objects.create(target=root)
+    monkeypatch.setattr(g.view, "cv_attested_owner", getattr(g, owner))
+    monkeypatch.setattr(g.view, "cv_show_related_objects", details)
+    monkeypatch.setattr(g.view, "cv_provider_block", block == "provider")
+    if block == "native":
+        g.Blocker.objects.create(target=root)
+    url = f"/field_owner/{root.pk}/delete/"
+    headers = {"X-CV-Modal": "true"} if modal else {}
+    for response in (g.client.get(url, headers=headers), g.client.post(url, {}, headers=headers)):
+        assert response.status_code in (200, 422)
+        assert response.context["delete_preview_incomplete"] is True
+        assert response.context["has_protected_objects"] is (block != "none")
+        markup = response.content.decode()
+        assert markup.count("This preview is incomplete.") == 1
+        assert "Hidden native blocker" not in markup
+        assert len(html.fromstring(markup).cssselect('input[name="confirm"]')) == (1 if block == "none" else 0)
+        if details:
+            assert response.context["related_summary"] == {owner.lower(): 1}
+            assert response.context["protected_objects"] == []
+            assert "partial counts" in markup
+        else:
+            assert "related_summary" not in response.context
+    assert g.events == [] and g.Root.objects.filter(pk=root.pk).exists()
+    response = g.client.post(url, {"confirm": "on"}, headers=headers)
+    if block == "none":
+        assert response.status_code == (204 if modal else 302)
+        assert sorted(g.events) == [("first", "default"), ("second", "default")]
+        assert not g.Root.objects.exists() and not g.First.objects.exists() and not g.Second.objects.exists()
+    else:
+        assert response.status_code == (422 if modal else 200)
+        assert response.context["delete_preview_incomplete"] is True
+        assert g.events == [] and g.Root.objects.filter(pk=root.pk).exists()
+
+
+@pytest.mark.parametrize("invalid", ["ownerless", "wrong-owner", "stale", "alias", "duplicate"])
+def test_boundary_field_owner_validation(owner_graph, invalid):
+    from crud_views.lib.deletion import DeletePreviewContribution, inspect_deletion, merge_delete_preview
+
+    g = owner_graph
+    root = g.Root.objects.create()
+    result = inspect_deletion(root, using="default")
+    assert len(result.boundaries) == 2
+    boundary = next(boundary for boundary in result.boundaries if boundary.field_model is g.First)
+    changes = {
+        "ownerless": {"field_model": None},
+        "wrong-owner": {"field_model": g.Root},
+        "stale": {"source_pks": (-1,)},
+        "alias": {"using": "other"},
+        "duplicate": {},
+    }
+    records = [DeletePreviewContribution(replace(boundary, **changes[invalid]), complete=True)]
+    if invalid == "duplicate":
+        records *= 2
+    with pytest.raises(ValueError, match="boundary"):
+        merge_delete_preview(result, records, using="default")
+    assert g.events == []
 
 
 @contextmanager

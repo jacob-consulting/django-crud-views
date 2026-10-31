@@ -529,6 +529,14 @@ describe("modal focus lifecycle", () => {
         await loaded;
         expect(document.activeElement.id).toBe('next-field');
     });
+    it('retains visible-shell focus recovery across an unresolved intermediate open', async () => {
+        await open(); content.querySelector('input').focus();
+        vi.stubGlobal('fetch', () => new Promise(() => {})); window.cv.cvModalOpen('/pending');
+        const loaded = new Promise(resolve => modal.addEventListener('cv:modal:loaded', resolve, {once: true}));
+        stubFetch(textResponse('<input required id="latest-field">')); adapter.show.mockImplementation(() => {});
+        window.cv.cvModalOpen('/latest'); await loaded;
+        expect(document.activeElement.id).toBe('latest-field');
+    });
     it('ignores stale hidden callbacks after a new open and releases previous subscriptions', async () => {
         await open(); const old = callbacks[0]; adapter.show.mockClear(); await open(formHTML, document.getElementById('alternate'));
         expect(cleanups[0]).toHaveBeenCalledTimes(1); const active = document.activeElement; old(); expect(document.activeElement).toBe(active);

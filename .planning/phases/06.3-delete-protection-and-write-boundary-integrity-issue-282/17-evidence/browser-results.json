@@ -1,0 +1,1341 @@
+{
+  "captured": "2026-10-31T00:21:53.120Z",
+  "browser": "149.0.7827.55",
+  "source": "bc5a56a8c8b9254bfe0e87d893a74ff57e72e38f85646b31b6206e1222717a12",
+  "sourceRevision": "9ebbd196fb1ba25db38ce691d9173d7c0784b772",
+  "screenshotDirectory": ".planning/ui-reviews/06.3-gap-review",
+  "initialAttributes": {
+    "noValidate": true,
+    "html": "<form class=\"cv-form\" method=\"post\" action=\"/publisher_cascade/3/delete/\" novalidate=\"\">\n        <input type=\"hidden\" name=\"csrfmiddlewaretoken\" value=\"CmYay2vXpS0zjsCqGQcndNydlxoGne6PjL4eFeeHRgMlAbV2vjlmoTkAQ922mr88\">\n\n        \n\n        \n\n\n    \n\n <input type=\"hidden\" name=\"csrfmiddlewaretoken\" value=\"CmYay2vXpS0zjsCqGQcndNydlxoGne6PjL4eFeeHRgMlAbV2vjlmoTkAQ922mr88\"> <div class=\"row \"> <div class=\"col-md-4\"> <div class=\"mb-3\"> <div id=\"div_id_confirm\" class=\"mb-3 form-check\"> <input type=\"checkbox\" name=\"confirm\" class=\"checkboxinput form-check-input\" required=\"\" id=\"id_confirm\"> <label for=\"id_confirm\" class=\"form-check-label requiredField\">\n                    Confirm deletion<span class=\"asteriskField\">*</span> </label> </div> </div> </div> </div>\n<div class=\"mb-3\"> <div class=\"\"> <button type=\"submit\" name=\"delete\" value=\"Delete\" id=\"submit-id-delete\" class=\"btn btn-primary\"><span>Delete</span></button>\n<button type=\"button\" name=\"reset\" value=\"Cancel\" id=\"button-id-reset\" class=\"btn btn-secondary\" data-cv-cancel-url=\"/publisher_cascade/\"><span>Cancel</span></button> </div>\n</div> </form>"
+  },
+  "results": [
+    {
+      "case": {
+        "language": "en",
+        "mode": "partial",
+        "pk": 1,
+        "url": "/publisher_cascade/1/delete/"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "page",
+      "filename": "en-partial-page-1440x900.png",
+      "scrollWidth": 1320,
+      "clientWidth": 1320,
+      "text": "Publisher\nList of all Publishers\nDelete Publisher “en partial — München 東京”\nViewSet publisher_cascade details.\nDelete Publisher en partial — München 東京\nThis preview is incomplete. Custom deletion behavior may affect additional objects.\nSome related objects that will also be deleted (partial counts):\nbook: 2\nbook note: 2\nDetails about the related objects to be deleted:\nen partial — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nConfirm deletion*\nDelete Cancel",
+      "alerts": [
+        "This preview is incomplete. Custom deletion behavior may affect additional objects.",
+        "Some related objects that will also be deleted (partial counts):\nbook: 2\nbook note: 2",
+        "Details about the related objects to be deleted:\nen partial — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text"
+      ],
+      "controls": [
+        {
+          "tag": "A",
+          "text": "List of all Publishers",
+          "name": ""
+        },
+        {
+          "tag": "A",
+          "text": "Delete Publisher “en partial — München 東京”",
+          "name": ""
+        },
+        {
+          "tag": "A",
+          "text": "ViewSet publisher_cascade details.",
+          "name": ""
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "name": "csrfmiddlewaretoken"
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "name": "csrfmiddlewaretoken"
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "name": "confirm"
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Delete",
+          "name": "delete"
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Cancel",
+          "name": "reset"
+        }
+      ]
+    },
+    {
+      "case": {
+        "language": "en",
+        "mode": "partial",
+        "pk": 1,
+        "url": "/publisher_cascade/1/delete/"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "modal",
+      "filename": "en-partial-modal-1440x900.png",
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "text": "Publisher\nThis preview is incomplete. Custom deletion behavior may affect additional objects.\nSome related objects that will also be deleted (partial counts):\nbook: 2\nbook note: 2\nDetails about the related objects to be deleted:\nen partial — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nConfirm deletion*\nDelete Cancel",
+      "alerts": [
+        "This preview is incomplete. Custom deletion behavior may affect additional objects.",
+        "Some related objects that will also be deleted (partial counts):\nbook: 2\nbook note: 2",
+        "Details about the related objects to be deleted:\nen partial — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text"
+      ],
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "text": "",
+          "name": ""
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "name": "csrfmiddlewaretoken"
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "name": "csrfmiddlewaretoken"
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "name": "confirm"
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Delete",
+          "name": "delete"
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Cancel",
+          "name": "reset"
+        }
+      ]
+    },
+    {
+      "case": {
+        "language": "en",
+        "mode": "partial",
+        "pk": 1,
+        "url": "/publisher_cascade/1/delete/"
+      },
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "mode": "page",
+      "filename": "en-partial-page-768x1024.png",
+      "scrollWidth": 720,
+      "clientWidth": 720,
+      "text": "Publisher\nList of all Publishers\nDelete Publisher “en partial — München 東京”\nViewSet publisher_cascade details.\nDelete Publisher en partial — München 東京\nThis preview is incomplete. Custom deletion behavior may affect additional objects.\nSome related objects that will also be deleted (partial counts):\nbook: 2\nbook note: 2\nDetails about the related objects to be deleted:\nen partial — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nConfirm deletion*\nDelete Cancel",
+      "alerts": [
+        "This preview is incomplete. Custom deletion behavior may affect additional objects.",
+        "Some related objects that will also be deleted (partial counts):\nbook: 2\nbook note: 2",
+        "Details about the related objects to be deleted:\nen partial — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text"
+      ],
+      "controls": [
+        {
+          "tag": "A",
+          "text": "List of all Publishers",
+          "name": ""
+        },
+        {
+          "tag": "A",
+          "text": "Delete Publisher “en partial — München 東京”",
+          "name": ""
+        },
+        {
+          "tag": "A",
+          "text": "ViewSet publisher_cascade details.",
+          "name": ""
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "name": "csrfmiddlewaretoken"
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "name": "csrfmiddlewaretoken"
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "name": "confirm"
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Delete",
+          "name": "delete"
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Cancel",
+          "name": "reset"
+        }
+      ]
+    },
+    {
+      "case": {
+        "language": "en",
+        "mode": "partial",
+        "pk": 1,
+        "url": "/publisher_cascade/1/delete/"
+      },
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "mode": "modal",
+      "filename": "en-partial-modal-768x1024.png",
+      "scrollWidth": 768,
+      "clientWidth": 768,
+      "text": "Publisher\nThis preview is incomplete. Custom deletion behavior may affect additional objects.\nSome related objects that will also be deleted (partial counts):\nbook: 2\nbook note: 2\nDetails about the related objects to be deleted:\nen partial — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nConfirm deletion*\nDelete Cancel",
+      "alerts": [
+        "This preview is incomplete. Custom deletion behavior may affect additional objects.",
+        "Some related objects that will also be deleted (partial counts):\nbook: 2\nbook note: 2",
+        "Details about the related objects to be deleted:\nen partial — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text"
+      ],
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "text": "",
+          "name": ""
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "name": "csrfmiddlewaretoken"
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "name": "csrfmiddlewaretoken"
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "name": "confirm"
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Delete",
+          "name": "delete"
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Cancel",
+          "name": "reset"
+        }
+      ]
+    },
+    {
+      "case": {
+        "language": "en",
+        "mode": "partial",
+        "pk": 1,
+        "url": "/publisher_cascade/1/delete/"
+      },
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "mode": "page",
+      "filename": "en-partial-page-375x812.png",
+      "scrollWidth": 375,
+      "clientWidth": 375,
+      "text": "Publisher\nList of all Publishers\nDelete Publisher “en partial — München 東京”\nViewSet publisher_cascade details.\nDelete Publisher en partial — München 東京\nThis preview is incomplete. Custom deletion behavior may affect additional objects.\nSome related objects that will also be deleted (partial counts):\nbook: 2\nbook note: 2\nDetails about the related objects to be deleted:\nen partial — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nConfirm deletion*\nDelete Cancel",
+      "alerts": [
+        "This preview is incomplete. Custom deletion behavior may affect additional objects.",
+        "Some related objects that will also be deleted (partial counts):\nbook: 2\nbook note: 2",
+        "Details about the related objects to be deleted:\nen partial — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text"
+      ],
+      "controls": [
+        {
+          "tag": "A",
+          "text": "List of all Publishers",
+          "name": ""
+        },
+        {
+          "tag": "A",
+          "text": "Delete Publisher “en partial — München 東京”",
+          "name": ""
+        },
+        {
+          "tag": "A",
+          "text": "ViewSet publisher_cascade details.",
+          "name": ""
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "name": "csrfmiddlewaretoken"
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "name": "csrfmiddlewaretoken"
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "name": "confirm"
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Delete",
+          "name": "delete"
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Cancel",
+          "name": "reset"
+        }
+      ]
+    },
+    {
+      "case": {
+        "language": "en",
+        "mode": "partial",
+        "pk": 1,
+        "url": "/publisher_cascade/1/delete/"
+      },
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "mode": "modal",
+      "filename": "en-partial-modal-375x812.png",
+      "scrollWidth": 375,
+      "clientWidth": 375,
+      "text": "Publisher\nThis preview is incomplete. Custom deletion behavior may affect additional objects.\nSome related objects that will also be deleted (partial counts):\nbook: 2\nbook note: 2\nDetails about the related objects to be deleted:\nen partial — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nConfirm deletion*\nDelete Cancel",
+      "alerts": [
+        "This preview is incomplete. Custom deletion behavior may affect additional objects.",
+        "Some related objects that will also be deleted (partial counts):\nbook: 2\nbook note: 2",
+        "Details about the related objects to be deleted:\nen partial — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text"
+      ],
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "text": "",
+          "name": ""
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "name": "csrfmiddlewaretoken"
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "name": "csrfmiddlewaretoken"
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "name": "confirm"
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Delete",
+          "name": "delete"
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Cancel",
+          "name": "reset"
+        }
+      ]
+    },
+    {
+      "case": {
+        "language": "en",
+        "mode": "blocked",
+        "pk": 2,
+        "url": "/publisher_cascade/2/delete/"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "page",
+      "filename": "en-blocked-page-1440x900.png",
+      "scrollWidth": 1320,
+      "clientWidth": 1320,
+      "text": "Publisher\nList of all Publishers\nDelete Publisher “en blocked — München 東京”\nViewSet publisher_cascade details.\nDelete Publisher en blocked — München 東京\nThis preview is incomplete. Custom deletion behavior may affect additional objects.\nDeletion is blocked by protected relationships Other objects still reference this one; remove or reassign them before deleting it.\nSome related objects that will also be deleted (partial counts):\nbook: 2\nbook note: 2\nDetails about the related objects to be deleted:\nen blocked — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text",
+      "alerts": [
+        "This preview is incomplete. Custom deletion behavior may affect additional objects.",
+        "Deletion is blocked by protected relationships Other objects still reference this one; remove or reassign them before deleting it.",
+        "Some related objects that will also be deleted (partial counts):\nbook: 2\nbook note: 2",
+        "Details about the related objects to be deleted:\nen blocked — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text"
+      ],
+      "controls": [
+        {
+          "tag": "A",
+          "text": "List of all Publishers",
+          "name": ""
+        },
+        {
+          "tag": "A",
+          "text": "Delete Publisher “en blocked — München 東京”",
+          "name": ""
+        },
+        {
+          "tag": "A",
+          "text": "ViewSet publisher_cascade details.",
+          "name": ""
+        }
+      ]
+    },
+    {
+      "case": {
+        "language": "en",
+        "mode": "blocked",
+        "pk": 2,
+        "url": "/publisher_cascade/2/delete/"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "modal",
+      "filename": "en-blocked-modal-1440x900.png",
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "text": "Publisher\nThis preview is incomplete. Custom deletion behavior may affect additional objects.\nDeletion is blocked by protected relationships Other objects still reference this one; remove or reassign them before deleting it.\nSome related objects that will also be deleted (partial counts):\nbook: 2\nbook note: 2\nDetails about the related objects to be deleted:\nen blocked — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text",
+      "alerts": [
+        "This preview is incomplete. Custom deletion behavior may affect additional objects.",
+        "Deletion is blocked by protected relationships Other objects still reference this one; remove or reassign them before deleting it.",
+        "Some related objects that will also be deleted (partial counts):\nbook: 2\nbook note: 2",
+        "Details about the related objects to be deleted:\nen blocked — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text"
+      ],
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "text": "",
+          "name": ""
+        }
+      ]
+    },
+    {
+      "case": {
+        "language": "en",
+        "mode": "blocked",
+        "pk": 2,
+        "url": "/publisher_cascade/2/delete/"
+      },
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "mode": "page",
+      "filename": "en-blocked-page-768x1024.png",
+      "scrollWidth": 720,
+      "clientWidth": 720,
+      "text": "Publisher\nList of all Publishers\nDelete Publisher “en blocked — München 東京”\nViewSet publisher_cascade details.\nDelete Publisher en blocked — München 東京\nThis preview is incomplete. Custom deletion behavior may affect additional objects.\nDeletion is blocked by protected relationships Other objects still reference this one; remove or reassign them before deleting it.\nSome related objects that will also be deleted (partial counts):\nbook: 2\nbook note: 2\nDetails about the related objects to be deleted:\nen blocked — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text",
+      "alerts": [
+        "This preview is incomplete. Custom deletion behavior may affect additional objects.",
+        "Deletion is blocked by protected relationships Other objects still reference this one; remove or reassign them before deleting it.",
+        "Some related objects that will also be deleted (partial counts):\nbook: 2\nbook note: 2",
+        "Details about the related objects to be deleted:\nen blocked — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text"
+      ],
+      "controls": [
+        {
+          "tag": "A",
+          "text": "List of all Publishers",
+          "name": ""
+        },
+        {
+          "tag": "A",
+          "text": "Delete Publisher “en blocked — München 東京”",
+          "name": ""
+        },
+        {
+          "tag": "A",
+          "text": "ViewSet publisher_cascade details.",
+          "name": ""
+        }
+      ]
+    },
+    {
+      "case": {
+        "language": "en",
+        "mode": "blocked",
+        "pk": 2,
+        "url": "/publisher_cascade/2/delete/"
+      },
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "mode": "modal",
+      "filename": "en-blocked-modal-768x1024.png",
+      "scrollWidth": 768,
+      "clientWidth": 768,
+      "text": "Publisher\nThis preview is incomplete. Custom deletion behavior may affect additional objects.\nDeletion is blocked by protected relationships Other objects still reference this one; remove or reassign them before deleting it.\nSome related objects that will also be deleted (partial counts):\nbook: 2\nbook note: 2\nDetails about the related objects to be deleted:\nen blocked — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text",
+      "alerts": [
+        "This preview is incomplete. Custom deletion behavior may affect additional objects.",
+        "Deletion is blocked by protected relationships Other objects still reference this one; remove or reassign them before deleting it.",
+        "Some related objects that will also be deleted (partial counts):\nbook: 2\nbook note: 2",
+        "Details about the related objects to be deleted:\nen blocked — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text"
+      ],
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "text": "",
+          "name": ""
+        }
+      ]
+    },
+    {
+      "case": {
+        "language": "en",
+        "mode": "blocked",
+        "pk": 2,
+        "url": "/publisher_cascade/2/delete/"
+      },
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "mode": "page",
+      "filename": "en-blocked-page-375x812.png",
+      "scrollWidth": 375,
+      "clientWidth": 375,
+      "text": "Publisher\nList of all Publishers\nDelete Publisher “en blocked — München 東京”\nViewSet publisher_cascade details.\nDelete Publisher en blocked — München 東京\nThis preview is incomplete. Custom deletion behavior may affect additional objects.\nDeletion is blocked by protected relationships Other objects still reference this one; remove or reassign them before deleting it.\nSome related objects that will also be deleted (partial counts):\nbook: 2\nbook note: 2\nDetails about the related objects to be deleted:\nen blocked — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text",
+      "alerts": [
+        "This preview is incomplete. Custom deletion behavior may affect additional objects.",
+        "Deletion is blocked by protected relationships Other objects still reference this one; remove or reassign them before deleting it.",
+        "Some related objects that will also be deleted (partial counts):\nbook: 2\nbook note: 2",
+        "Details about the related objects to be deleted:\nen blocked — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text"
+      ],
+      "controls": [
+        {
+          "tag": "A",
+          "text": "List of all Publishers",
+          "name": ""
+        },
+        {
+          "tag": "A",
+          "text": "Delete Publisher “en blocked — München 東京”",
+          "name": ""
+        },
+        {
+          "tag": "A",
+          "text": "ViewSet publisher_cascade details.",
+          "name": ""
+        }
+      ]
+    },
+    {
+      "case": {
+        "language": "en",
+        "mode": "blocked",
+        "pk": 2,
+        "url": "/publisher_cascade/2/delete/"
+      },
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "mode": "modal",
+      "filename": "en-blocked-modal-375x812.png",
+      "scrollWidth": 375,
+      "clientWidth": 375,
+      "text": "Publisher\nThis preview is incomplete. Custom deletion behavior may affect additional objects.\nDeletion is blocked by protected relationships Other objects still reference this one; remove or reassign them before deleting it.\nSome related objects that will also be deleted (partial counts):\nbook: 2\nbook note: 2\nDetails about the related objects to be deleted:\nen blocked — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text",
+      "alerts": [
+        "This preview is incomplete. Custom deletion behavior may affect additional objects.",
+        "Deletion is blocked by protected relationships Other objects still reference this one; remove or reassign them before deleting it.",
+        "Some related objects that will also be deleted (partial counts):\nbook: 2\nbook note: 2",
+        "Details about the related objects to be deleted:\nen blocked — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text"
+      ],
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "text": "",
+          "name": ""
+        }
+      ]
+    },
+    {
+      "case": {
+        "language": "de",
+        "mode": "partial",
+        "pk": 5,
+        "url": "/publisher_cascade/5/delete/"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "page",
+      "filename": "de-partial-page-1440x900.png",
+      "scrollWidth": 1320,
+      "clientWidth": 1320,
+      "text": "Publisher\nAlle Publishers\nPublisher »de partial — München 東京« löschen\nViewSet publisher_cascade Details.\nPublisher de partial — München 東京 löschen\nDiese Vorschau ist unvollständig. Benutzerdefiniertes Löschverhalten kann weitere Objekte betreffen.\nEinige verknüpfte Objekte, die ebenfalls gelöscht werden (Teilanzahlen):\nbook: 2\nbook note: 2\nDetails zu den zu löschenden verknüpften Objekten:\nde partial — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nLöschen bestätigen*\nLöschen Abbrechen",
+      "alerts": [
+        "Diese Vorschau ist unvollständig. Benutzerdefiniertes Löschverhalten kann weitere Objekte betreffen.",
+        "Einige verknüpfte Objekte, die ebenfalls gelöscht werden (Teilanzahlen):\nbook: 2\nbook note: 2",
+        "Details zu den zu löschenden verknüpften Objekten:\nde partial — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text"
+      ],
+      "controls": [
+        {
+          "tag": "A",
+          "text": "Alle Publishers",
+          "name": ""
+        },
+        {
+          "tag": "A",
+          "text": "Publisher »de partial — München 東京« löschen",
+          "name": ""
+        },
+        {
+          "tag": "A",
+          "text": "ViewSet publisher_cascade Details.",
+          "name": ""
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "name": "csrfmiddlewaretoken"
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "name": "csrfmiddlewaretoken"
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "name": "confirm"
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Löschen",
+          "name": "delete"
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Abbrechen",
+          "name": "reset"
+        }
+      ]
+    },
+    {
+      "case": {
+        "language": "de",
+        "mode": "partial",
+        "pk": 5,
+        "url": "/publisher_cascade/5/delete/"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "modal",
+      "filename": "de-partial-modal-1440x900.png",
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "text": "Publisher\nDiese Vorschau ist unvollständig. Benutzerdefiniertes Löschverhalten kann weitere Objekte betreffen.\nEinige verknüpfte Objekte, die ebenfalls gelöscht werden (Teilanzahlen):\nbook: 2\nbook note: 2\nDetails zu den zu löschenden verknüpften Objekten:\nde partial — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nLöschen bestätigen*\nLöschen Abbrechen",
+      "alerts": [
+        "Diese Vorschau ist unvollständig. Benutzerdefiniertes Löschverhalten kann weitere Objekte betreffen.",
+        "Einige verknüpfte Objekte, die ebenfalls gelöscht werden (Teilanzahlen):\nbook: 2\nbook note: 2",
+        "Details zu den zu löschenden verknüpften Objekten:\nde partial — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text"
+      ],
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "text": "",
+          "name": ""
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "name": "csrfmiddlewaretoken"
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "name": "csrfmiddlewaretoken"
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "name": "confirm"
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Löschen",
+          "name": "delete"
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Abbrechen",
+          "name": "reset"
+        }
+      ]
+    },
+    {
+      "case": {
+        "language": "de",
+        "mode": "partial",
+        "pk": 5,
+        "url": "/publisher_cascade/5/delete/"
+      },
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "mode": "page",
+      "filename": "de-partial-page-768x1024.png",
+      "scrollWidth": 720,
+      "clientWidth": 720,
+      "text": "Publisher\nAlle Publishers\nPublisher »de partial — München 東京« löschen\nViewSet publisher_cascade Details.\nPublisher de partial — München 東京 löschen\nDiese Vorschau ist unvollständig. Benutzerdefiniertes Löschverhalten kann weitere Objekte betreffen.\nEinige verknüpfte Objekte, die ebenfalls gelöscht werden (Teilanzahlen):\nbook: 2\nbook note: 2\nDetails zu den zu löschenden verknüpften Objekten:\nde partial — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nLöschen bestätigen*\nLöschen Abbrechen",
+      "alerts": [
+        "Diese Vorschau ist unvollständig. Benutzerdefiniertes Löschverhalten kann weitere Objekte betreffen.",
+        "Einige verknüpfte Objekte, die ebenfalls gelöscht werden (Teilanzahlen):\nbook: 2\nbook note: 2",
+        "Details zu den zu löschenden verknüpften Objekten:\nde partial — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text"
+      ],
+      "controls": [
+        {
+          "tag": "A",
+          "text": "Alle Publishers",
+          "name": ""
+        },
+        {
+          "tag": "A",
+          "text": "Publisher »de partial — München 東京« löschen",
+          "name": ""
+        },
+        {
+          "tag": "A",
+          "text": "ViewSet publisher_cascade Details.",
+          "name": ""
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "name": "csrfmiddlewaretoken"
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "name": "csrfmiddlewaretoken"
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "name": "confirm"
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Löschen",
+          "name": "delete"
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Abbrechen",
+          "name": "reset"
+        }
+      ]
+    },
+    {
+      "case": {
+        "language": "de",
+        "mode": "partial",
+        "pk": 5,
+        "url": "/publisher_cascade/5/delete/"
+      },
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "mode": "modal",
+      "filename": "de-partial-modal-768x1024.png",
+      "scrollWidth": 768,
+      "clientWidth": 768,
+      "text": "Publisher\nDiese Vorschau ist unvollständig. Benutzerdefiniertes Löschverhalten kann weitere Objekte betreffen.\nEinige verknüpfte Objekte, die ebenfalls gelöscht werden (Teilanzahlen):\nbook: 2\nbook note: 2\nDetails zu den zu löschenden verknüpften Objekten:\nde partial — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nLöschen bestätigen*\nLöschen Abbrechen",
+      "alerts": [
+        "Diese Vorschau ist unvollständig. Benutzerdefiniertes Löschverhalten kann weitere Objekte betreffen.",
+        "Einige verknüpfte Objekte, die ebenfalls gelöscht werden (Teilanzahlen):\nbook: 2\nbook note: 2",
+        "Details zu den zu löschenden verknüpften Objekten:\nde partial — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text"
+      ],
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "text": "",
+          "name": ""
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "name": "csrfmiddlewaretoken"
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "name": "csrfmiddlewaretoken"
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "name": "confirm"
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Löschen",
+          "name": "delete"
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Abbrechen",
+          "name": "reset"
+        }
+      ]
+    },
+    {
+      "case": {
+        "language": "de",
+        "mode": "partial",
+        "pk": 5,
+        "url": "/publisher_cascade/5/delete/"
+      },
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "mode": "page",
+      "filename": "de-partial-page-375x812.png",
+      "scrollWidth": 375,
+      "clientWidth": 375,
+      "text": "Publisher\nAlle Publishers\nPublisher »de partial — München 東京« löschen\nViewSet publisher_cascade Details.\nPublisher de partial — München 東京 löschen\nDiese Vorschau ist unvollständig. Benutzerdefiniertes Löschverhalten kann weitere Objekte betreffen.\nEinige verknüpfte Objekte, die ebenfalls gelöscht werden (Teilanzahlen):\nbook: 2\nbook note: 2\nDetails zu den zu löschenden verknüpften Objekten:\nde partial — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nLöschen bestätigen*\nLöschen Abbrechen",
+      "alerts": [
+        "Diese Vorschau ist unvollständig. Benutzerdefiniertes Löschverhalten kann weitere Objekte betreffen.",
+        "Einige verknüpfte Objekte, die ebenfalls gelöscht werden (Teilanzahlen):\nbook: 2\nbook note: 2",
+        "Details zu den zu löschenden verknüpften Objekten:\nde partial — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text"
+      ],
+      "controls": [
+        {
+          "tag": "A",
+          "text": "Alle Publishers",
+          "name": ""
+        },
+        {
+          "tag": "A",
+          "text": "Publisher »de partial — München 東京« löschen",
+          "name": ""
+        },
+        {
+          "tag": "A",
+          "text": "ViewSet publisher_cascade Details.",
+          "name": ""
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "name": "csrfmiddlewaretoken"
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "name": "csrfmiddlewaretoken"
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "name": "confirm"
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Löschen",
+          "name": "delete"
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Abbrechen",
+          "name": "reset"
+        }
+      ]
+    },
+    {
+      "case": {
+        "language": "de",
+        "mode": "partial",
+        "pk": 5,
+        "url": "/publisher_cascade/5/delete/"
+      },
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "mode": "modal",
+      "filename": "de-partial-modal-375x812.png",
+      "scrollWidth": 375,
+      "clientWidth": 375,
+      "text": "Publisher\nDiese Vorschau ist unvollständig. Benutzerdefiniertes Löschverhalten kann weitere Objekte betreffen.\nEinige verknüpfte Objekte, die ebenfalls gelöscht werden (Teilanzahlen):\nbook: 2\nbook note: 2\nDetails zu den zu löschenden verknüpften Objekten:\nde partial — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nLöschen bestätigen*\nLöschen Abbrechen",
+      "alerts": [
+        "Diese Vorschau ist unvollständig. Benutzerdefiniertes Löschverhalten kann weitere Objekte betreffen.",
+        "Einige verknüpfte Objekte, die ebenfalls gelöscht werden (Teilanzahlen):\nbook: 2\nbook note: 2",
+        "Details zu den zu löschenden verknüpften Objekten:\nde partial — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text"
+      ],
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "text": "",
+          "name": ""
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "name": "csrfmiddlewaretoken"
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "name": "csrfmiddlewaretoken"
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "name": "confirm"
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Löschen",
+          "name": "delete"
+        },
+        {
+          "tag": "BUTTON",
+          "text": "Abbrechen",
+          "name": "reset"
+        }
+      ]
+    },
+    {
+      "case": {
+        "language": "de",
+        "mode": "blocked",
+        "pk": 6,
+        "url": "/publisher_cascade/6/delete/"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "page",
+      "filename": "de-blocked-page-1440x900.png",
+      "scrollWidth": 1320,
+      "clientWidth": 1320,
+      "text": "Publisher\nAlle Publishers\nPublisher »de blocked — München 東京« löschen\nViewSet publisher_cascade Details.\nPublisher de blocked — München 東京 löschen\nDiese Vorschau ist unvollständig. Benutzerdefiniertes Löschverhalten kann weitere Objekte betreffen.\nDas Löschen wird durch geschützte Beziehungen verhindert Andere Objekte verweisen noch auf dieses Objekt; entfernen Sie diese Verweise oder ordnen Sie sie neu zu, bevor Sie es löschen.\nEinige verknüpfte Objekte, die ebenfalls gelöscht werden (Teilanzahlen):\nbook: 2\nbook note: 2\nDetails zu den zu löschenden verknüpften Objekten:\nde blocked — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text",
+      "alerts": [
+        "Diese Vorschau ist unvollständig. Benutzerdefiniertes Löschverhalten kann weitere Objekte betreffen.",
+        "Das Löschen wird durch geschützte Beziehungen verhindert Andere Objekte verweisen noch auf dieses Objekt; entfernen Sie diese Verweise oder ordnen Sie sie neu zu, bevor Sie es löschen.",
+        "Einige verknüpfte Objekte, die ebenfalls gelöscht werden (Teilanzahlen):\nbook: 2\nbook note: 2",
+        "Details zu den zu löschenden verknüpften Objekten:\nde blocked — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text"
+      ],
+      "controls": [
+        {
+          "tag": "A",
+          "text": "Alle Publishers",
+          "name": ""
+        },
+        {
+          "tag": "A",
+          "text": "Publisher »de blocked — München 東京« löschen",
+          "name": ""
+        },
+        {
+          "tag": "A",
+          "text": "ViewSet publisher_cascade Details.",
+          "name": ""
+        }
+      ]
+    },
+    {
+      "case": {
+        "language": "de",
+        "mode": "blocked",
+        "pk": 6,
+        "url": "/publisher_cascade/6/delete/"
+      },
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "mode": "modal",
+      "filename": "de-blocked-modal-1440x900.png",
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "text": "Publisher\nDiese Vorschau ist unvollständig. Benutzerdefiniertes Löschverhalten kann weitere Objekte betreffen.\nDas Löschen wird durch geschützte Beziehungen verhindert Andere Objekte verweisen noch auf dieses Objekt; entfernen Sie diese Verweise oder ordnen Sie sie neu zu, bevor Sie es löschen.\nEinige verknüpfte Objekte, die ebenfalls gelöscht werden (Teilanzahlen):\nbook: 2\nbook note: 2\nDetails zu den zu löschenden verknüpften Objekten:\nde blocked — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text",
+      "alerts": [
+        "Diese Vorschau ist unvollständig. Benutzerdefiniertes Löschverhalten kann weitere Objekte betreffen.",
+        "Das Löschen wird durch geschützte Beziehungen verhindert Andere Objekte verweisen noch auf dieses Objekt; entfernen Sie diese Verweise oder ordnen Sie sie neu zu, bevor Sie es löschen.",
+        "Einige verknüpfte Objekte, die ebenfalls gelöscht werden (Teilanzahlen):\nbook: 2\nbook note: 2",
+        "Details zu den zu löschenden verknüpften Objekten:\nde blocked — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text"
+      ],
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "text": "",
+          "name": ""
+        }
+      ]
+    },
+    {
+      "case": {
+        "language": "de",
+        "mode": "blocked",
+        "pk": 6,
+        "url": "/publisher_cascade/6/delete/"
+      },
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "mode": "page",
+      "filename": "de-blocked-page-768x1024.png",
+      "scrollWidth": 720,
+      "clientWidth": 720,
+      "text": "Publisher\nAlle Publishers\nPublisher »de blocked — München 東京« löschen\nViewSet publisher_cascade Details.\nPublisher de blocked — München 東京 löschen\nDiese Vorschau ist unvollständig. Benutzerdefiniertes Löschverhalten kann weitere Objekte betreffen.\nDas Löschen wird durch geschützte Beziehungen verhindert Andere Objekte verweisen noch auf dieses Objekt; entfernen Sie diese Verweise oder ordnen Sie sie neu zu, bevor Sie es löschen.\nEinige verknüpfte Objekte, die ebenfalls gelöscht werden (Teilanzahlen):\nbook: 2\nbook note: 2\nDetails zu den zu löschenden verknüpften Objekten:\nde blocked — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text",
+      "alerts": [
+        "Diese Vorschau ist unvollständig. Benutzerdefiniertes Löschverhalten kann weitere Objekte betreffen.",
+        "Das Löschen wird durch geschützte Beziehungen verhindert Andere Objekte verweisen noch auf dieses Objekt; entfernen Sie diese Verweise oder ordnen Sie sie neu zu, bevor Sie es löschen.",
+        "Einige verknüpfte Objekte, die ebenfalls gelöscht werden (Teilanzahlen):\nbook: 2\nbook note: 2",
+        "Details zu den zu löschenden verknüpften Objekten:\nde blocked — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text"
+      ],
+      "controls": [
+        {
+          "tag": "A",
+          "text": "Alle Publishers",
+          "name": ""
+        },
+        {
+          "tag": "A",
+          "text": "Publisher »de blocked — München 東京« löschen",
+          "name": ""
+        },
+        {
+          "tag": "A",
+          "text": "ViewSet publisher_cascade Details.",
+          "name": ""
+        }
+      ]
+    },
+    {
+      "case": {
+        "language": "de",
+        "mode": "blocked",
+        "pk": 6,
+        "url": "/publisher_cascade/6/delete/"
+      },
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "mode": "modal",
+      "filename": "de-blocked-modal-768x1024.png",
+      "scrollWidth": 768,
+      "clientWidth": 768,
+      "text": "Publisher\nDiese Vorschau ist unvollständig. Benutzerdefiniertes Löschverhalten kann weitere Objekte betreffen.\nDas Löschen wird durch geschützte Beziehungen verhindert Andere Objekte verweisen noch auf dieses Objekt; entfernen Sie diese Verweise oder ordnen Sie sie neu zu, bevor Sie es löschen.\nEinige verknüpfte Objekte, die ebenfalls gelöscht werden (Teilanzahlen):\nbook: 2\nbook note: 2\nDetails zu den zu löschenden verknüpften Objekten:\nde blocked — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text",
+      "alerts": [
+        "Diese Vorschau ist unvollständig. Benutzerdefiniertes Löschverhalten kann weitere Objekte betreffen.",
+        "Das Löschen wird durch geschützte Beziehungen verhindert Andere Objekte verweisen noch auf dieses Objekt; entfernen Sie diese Verweise oder ordnen Sie sie neu zu, bevor Sie es löschen.",
+        "Einige verknüpfte Objekte, die ebenfalls gelöscht werden (Teilanzahlen):\nbook: 2\nbook note: 2",
+        "Details zu den zu löschenden verknüpften Objekten:\nde blocked — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text"
+      ],
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "text": "",
+          "name": ""
+        }
+      ]
+    },
+    {
+      "case": {
+        "language": "de",
+        "mode": "blocked",
+        "pk": 6,
+        "url": "/publisher_cascade/6/delete/"
+      },
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "mode": "page",
+      "filename": "de-blocked-page-375x812.png",
+      "scrollWidth": 375,
+      "clientWidth": 375,
+      "text": "Publisher\nAlle Publishers\nPublisher »de blocked — München 東京« löschen\nViewSet publisher_cascade Details.\nPublisher de blocked — München 東京 löschen\nDiese Vorschau ist unvollständig. Benutzerdefiniertes Löschverhalten kann weitere Objekte betreffen.\nDas Löschen wird durch geschützte Beziehungen verhindert Andere Objekte verweisen noch auf dieses Objekt; entfernen Sie diese Verweise oder ordnen Sie sie neu zu, bevor Sie es löschen.\nEinige verknüpfte Objekte, die ebenfalls gelöscht werden (Teilanzahlen):\nbook: 2\nbook note: 2\nDetails zu den zu löschenden verknüpften Objekten:\nde blocked — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text",
+      "alerts": [
+        "Diese Vorschau ist unvollständig. Benutzerdefiniertes Löschverhalten kann weitere Objekte betreffen.",
+        "Das Löschen wird durch geschützte Beziehungen verhindert Andere Objekte verweisen noch auf dieses Objekt; entfernen Sie diese Verweise oder ordnen Sie sie neu zu, bevor Sie es löschen.",
+        "Einige verknüpfte Objekte, die ebenfalls gelöscht werden (Teilanzahlen):\nbook: 2\nbook note: 2",
+        "Details zu den zu löschenden verknüpften Objekten:\nde blocked — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text"
+      ],
+      "controls": [
+        {
+          "tag": "A",
+          "text": "Alle Publishers",
+          "name": ""
+        },
+        {
+          "tag": "A",
+          "text": "Publisher »de blocked — München 東京« löschen",
+          "name": ""
+        },
+        {
+          "tag": "A",
+          "text": "ViewSet publisher_cascade Details.",
+          "name": ""
+        }
+      ]
+    },
+    {
+      "case": {
+        "language": "de",
+        "mode": "blocked",
+        "pk": 6,
+        "url": "/publisher_cascade/6/delete/"
+      },
+      "viewport": {
+        "width": 375,
+        "height": 812
+      },
+      "mode": "modal",
+      "filename": "de-blocked-modal-375x812.png",
+      "scrollWidth": 375,
+      "clientWidth": 375,
+      "text": "Publisher\nDiese Vorschau ist unvollständig. Benutzerdefiniertes Löschverhalten kann weitere Objekte betreffen.\nDas Löschen wird durch geschützte Beziehungen verhindert Andere Objekte verweisen noch auf dieses Objekt; entfernen Sie diese Verweise oder ordnen Sie sie neu zu, bevor Sie es löschen.\nEinige verknüpfte Objekte, die ebenfalls gelöscht werden (Teilanzahlen):\nbook: 2\nbook note: 2\nDetails zu den zu löschenden verknüpften Objekten:\nde blocked — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text",
+      "alerts": [
+        "Diese Vorschau ist unvollständig. Benutzerdefiniertes Löschverhalten kann weitere Objekte betreffen.",
+        "Das Löschen wird durch geschützte Beziehungen verhindert Andere Objekte verweisen noch auf dieses Objekt; entfernen Sie diese Verweise oder ordnen Sie sie neu zu, bevor Sie es löschen.",
+        "Einige verknüpfte Objekte, die ebenfalls gelöscht werden (Teilanzahlen):\nbook: 2\nbook note: 2",
+        "Details zu den zu löschenden verknüpften Objekten:\nde blocked — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text"
+      ],
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "text": "",
+          "name": ""
+        }
+      ]
+    }
+  ],
+  "keyboard": [
+    {
+      "label": "keyboard Enter opens modal",
+      "tag": "DIV",
+      "id": "cv-modal",
+      "text": "Publisher\nThis preview is incomplete. Custom deletion behavior may affect additional objec",
+      "modal": true,
+      "focusVisible": true,
+      "outline": "rgb(33, 37, 41) none 0px",
+      "boxShadow": "none"
+    },
+    {
+      "label": "initial Tab 1",
+      "tag": "BUTTON",
+      "id": "",
+      "text": "",
+      "modal": true,
+      "focusVisible": true,
+      "outline": "rgb(0, 0, 0) none 0px",
+      "boxShadow": "rgba(13, 110, 253, 0.25) 0px 0px 0px 4px"
+    },
+    {
+      "label": "initial Tab 2",
+      "tag": "INPUT",
+      "id": "id_confirm",
+      "text": "",
+      "modal": true,
+      "focusVisible": true,
+      "outline": "rgb(0, 0, 0) none 0px",
+      "boxShadow": "rgba(13, 110, 253, 0.25) 0px 0px 0px 4px"
+    },
+    {
+      "label": "initial Tab 3",
+      "tag": "BUTTON",
+      "id": "submit-id-delete",
+      "text": "Delete",
+      "modal": true,
+      "focusVisible": true,
+      "outline": "rgb(255, 255, 255) none 0px",
+      "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px"
+    },
+    {
+      "label": "initial Tab 4",
+      "tag": "BUTTON",
+      "id": "button-id-reset",
+      "text": "Cancel",
+      "modal": true,
+      "focusVisible": true,
+      "outline": "rgb(255, 255, 255) none 0px",
+      "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px"
+    },
+    {
+      "label": "initial Tab 5",
+      "tag": "BUTTON",
+      "id": "",
+      "text": "",
+      "modal": true,
+      "focusVisible": true,
+      "outline": "rgb(0, 0, 0) none 0px",
+      "boxShadow": "rgba(13, 110, 253, 0.25) 0px 0px 0px 4px"
+    },
+    {
+      "label": "initial Tab 6",
+      "tag": "INPUT",
+      "id": "id_confirm",
+      "text": "",
+      "modal": true,
+      "focusVisible": true,
+      "outline": "rgb(0, 0, 0) none 0px",
+      "boxShadow": "rgba(13, 110, 253, 0.25) 0px 0px 0px 4px"
+    },
+    {
+      "label": "after unchecked 422 replacement",
+      "tag": "BODY",
+      "id": "",
+      "text": "Publisher\nThis preview is incomplete. Custom deletion behavior may affect additional objec",
+      "modal": false,
+      "focusVisible": false,
+      "outline": "rgb(33, 37, 41) none 3px",
+      "boxShadow": "none"
+    },
+    {
+      "label": "after 422 Tab 1",
+      "tag": "BUTTON",
+      "id": "",
+      "text": "",
+      "modal": true,
+      "focusVisible": true,
+      "outline": "rgb(0, 0, 0) none 0px",
+      "boxShadow": "rgba(13, 110, 253, 0.25) 0px 0px 0px 4px"
+    },
+    {
+      "label": "after 422 Tab 2",
+      "tag": "INPUT",
+      "id": "id_confirm",
+      "text": "",
+      "modal": true,
+      "focusVisible": true,
+      "outline": "rgb(0, 0, 0) none 0px",
+      "boxShadow": "rgba(220, 53, 69, 0.25) 0px 0px 0px 4px"
+    },
+    {
+      "label": "after 422 Tab 3",
+      "tag": "BUTTON",
+      "id": "submit-id-delete",
+      "text": "Delete",
+      "modal": true,
+      "focusVisible": true,
+      "outline": "rgb(255, 255, 255) none 0px",
+      "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px"
+    },
+    {
+      "label": "after 422 Tab 4",
+      "tag": "BUTTON",
+      "id": "button-id-reset",
+      "text": "Cancel",
+      "modal": true,
+      "focusVisible": true,
+      "outline": "rgb(255, 255, 255) none 0px",
+      "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px"
+    },
+    {
+      "label": "after 422 Tab 5",
+      "tag": "BUTTON",
+      "id": "",
+      "text": "",
+      "modal": true,
+      "focusVisible": true,
+      "outline": "rgb(0, 0, 0) none 0px",
+      "boxShadow": "rgba(13, 110, 253, 0.25) 0px 0px 0px 4px"
+    },
+    {
+      "label": "after 422 Tab 6",
+      "tag": "INPUT",
+      "id": "id_confirm",
+      "text": "",
+      "modal": true,
+      "focusVisible": true,
+      "outline": "rgb(0, 0, 0) none 0px",
+      "boxShadow": "rgba(220, 53, 69, 0.25) 0px 0px 0px 4px"
+    },
+    {
+      "label": "checkbox toggled using Space",
+      "tag": "INPUT",
+      "id": "id_confirm",
+      "text": "",
+      "modal": true,
+      "focusVisible": true,
+      "outline": "rgb(0, 0, 0) none 0px",
+      "boxShadow": "rgba(220, 53, 69, 0.25) 0px 0px 0px 4px"
+    },
+    {
+      "label": "after blocked 422 replacement",
+      "tag": "BODY",
+      "id": "",
+      "text": "Publisher\nThis preview is incomplete. Custom deletion behavior may affect additional objec",
+      "modal": false,
+      "focusVisible": false,
+      "outline": "rgb(33, 37, 41) none 3px",
+      "boxShadow": "none"
+    },
+    {
+      "label": "first Tab after blocked replacement",
+      "tag": "BUTTON",
+      "id": "",
+      "text": "",
+      "modal": true,
+      "focusVisible": true,
+      "outline": "rgb(0, 0, 0) none 0px",
+      "boxShadow": "rgba(13, 110, 253, 0.25) 0px 0px 0px 4px"
+    },
+    {
+      "label": "Close via keyboard",
+      "tag": "BODY",
+      "id": "",
+      "text": "Django ViewSet\nHome\nPhase 06.3 fixture review\nOpen delete modal",
+      "modal": false,
+      "focusVisible": false,
+      "outline": "rgb(33, 37, 41) none 3px",
+      "boxShadow": "none"
+    },
+    {
+      "label": "Cancel via keyboard",
+      "url": "http://127.0.0.1:8143/publisher_cascade/"
+    },
+    {
+      "label": "Confirmed Delete via keyboard",
+      "status": 204,
+      "state": {
+        "exists": false,
+        "events": [
+          {
+            "kind": "custom_notes",
+            "using": "default"
+          }
+        ]
+      }
+    }
+  ],
+  "pageErrors": []
+}

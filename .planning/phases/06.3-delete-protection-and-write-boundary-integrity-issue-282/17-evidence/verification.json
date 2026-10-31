@@ -1,0 +1,31 @@
+{
+  "source_sha256": "bc5a56a8c8b9254bfe0e87d893a74ff57e72e38f85646b31b6206e1222717a12",
+  "review_capture_head": "9ebbd196fb1ba25db38ce691d9173d7c0784b772",
+  "record_kind": "executor-recorded terminal results; plan16 raw sessions remain canonical",
+  "checks": [
+    {
+      "command": "PYTHONPATH=\"$PWD/src:$PWD\" .nox/crispy_floor-3-12-django-6-0/bin/python -m pytest tests/test1/test_delete_inspection.py -k 'partial_notice_modes_and_german or complete_preview_retains_copy' -q -p no:cacheprovider",
+      "exit_code": 0,
+      "result": "74 passed, 129 deselected in 21.92s",
+      "scope": "rendered semantics only"
+    },
+    {
+      "command": "python3 .planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/16-evidence/check.py --group all",
+      "exit_code": 0,
+      "result": "GAP_MATRIX_OK group=all focused_nodes=2011 required_families=426 source=bc5a56a8c8b9254bfe0e87d893a74ff57e72e38f85646b31b6206e1222717a12",
+      "scope": "all16 completed sessions revalidated once; unchanged full/quality suites reused"
+    },
+    {
+      "command": "node .planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/17-evidence/browser.cjs",
+      "exit_code": 0,
+      "result": "24 viewport captures, 3 keyboard captures, real keyboard/control/422 assertions, zero page errors",
+      "scope": "objective observations include UI-F01 focus loss; exit zero is not visual acceptance"
+    },
+    {
+      "command": "node .planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/17-evidence/scroll.cjs",
+      "exit_code": 0,
+      "result": "28 total screenshot hashes; mobile German modal scrolled481 of1293px with812px client height",
+      "scope": "capture artifact; human readability still pending"
+    }
+  ]
+}

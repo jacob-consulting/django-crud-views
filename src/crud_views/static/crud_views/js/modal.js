@@ -102,6 +102,22 @@ function cvModalInject(html, recoverFocus = false) {
     cvModalFocus(els.modal, true);
 }
 
+function cvModalObserveHidden(session, adapter) {
+    if (typeof adapter.onHidden !== "function") {
+        throw new Error("cv.adapters.modal.onHidden(modalEl, callback) is required; update your custom modal adapter.");
+    }
+    const unsubscribe = adapter.onHidden(session.modal, function () {
+        if (cvModalSession !== session || (!session.shown && !session.replacingVisible)) return;
+        const target = session.opener;
+        cvModalRelease(session);
+        cvModalRestore(target, session.modal);
+    });
+    if (typeof unsubscribe !== "function") {
+        throw new Error("cv.adapters.modal.onHidden must return an unsubscribe function.");
+    }
+    session.unsubscribe = unsubscribe;
+}
+
 function cvModalOpen(url, size, opener = document.activeElement) {
     const els = cvModalElements();
     const replacingVisible = (cvModalSession?.shown || cvModalSession?.replacingVisible) &&
@@ -110,6 +126,17 @@ function cvModalOpen(url, size, opener = document.activeElement) {
     const session = {modal: els.modal, opener, replacingVisible, shown: false, unsubscribe: null};
     cvModalSession = session;
     cvModalGeneration++;
+    function fail(error) {
+        if (cvModalSession !== session) return;
+        cvModalRelease(session);
+        console.error(error);
+        globalThis.location.assign(url);
+    }
+    // A visible shell can be dismissed while the next request is pending. Keep its
+    // completed-hide subscription live throughout that request so late work is cancelled.
+    try {
+        if (replacingVisible) cvModalObserveHidden(session, cv.adapters.modal);
+    } catch (error) { fail(error); return; }
     fetch(url, {headers: {"X-CV-Modal": "true"}})
         .then(function (response) {
             if (cvModalSession !== session) return null;
@@ -123,18 +150,7 @@ function cvModalOpen(url, size, opener = document.activeElement) {
         .then(function (html) {
             if (html === null || cvModalSession !== session) return;
             const adapter = cv.adapters.modal;
-            if (typeof adapter.onHidden !== "function") {
-                throw new Error("cv.adapters.modal.onHidden(modalEl, callback) is required; update your custom modal adapter.");
-            }
-            session.unsubscribe = adapter.onHidden(els.modal, function () {
-                if (cvModalSession !== session || !session.shown) return;
-                const target = session.opener;
-                cvModalRelease(session);
-                cvModalRestore(target, els.modal);
-            });
-            if (typeof session.unsubscribe !== "function") {
-                throw new Error("cv.adapters.modal.onHidden must return an unsubscribe function.");
-            }
+            if (!session.unsubscribe) cvModalObserveHidden(session, adapter);
             adapter.setSize(els.dialog, size || "");
             els.modal.setAttribute(CVModalConst.urlAttr, url);
             session.shown = replacingVisible && cvModalUsable(els.modal);
@@ -143,14 +159,7 @@ function cvModalOpen(url, size, opener = document.activeElement) {
             session.shown = true;
             adapter.show(els.modal);
         })
-        .catch(function (error) {
-            if (cvModalSession !== session) return;
-            // A malformed return value is not callable during cleanup.
-            if (typeof session.unsubscribe !== "function") session.unsubscribe = null;
-            cvModalRelease(session);
-            console.error(error);
-            globalThis.location.assign(url);
-        });
+        .catch(fail);
 }
 
 function cvModalSubmit(form, submitter) {

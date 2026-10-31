@@ -61,15 +61,16 @@
   },
   {
     "id": "prohibition-01",
-    "status": "unresolved / unverified-prohibition",
+    "status": "accepted / described maintainer authorization scope",
     "evidence": [
       "Plan 01 DEL-01 prohibition; VERIFICATION",
-      "APPROVAL/GAP-APPROVAL preserve actual responses and hashes; independent review and test counts are not approval. FOCUS-APPROVAL records the separate actual approve response before plan-19 product commits."
+      "APPROVAL/GAP-APPROVAL preserve actual responses and hashes; independent review and test counts are not approval. FOCUS-APPROVAL records the separate actual approve response before plan-19 product commits.",
+      "Maintainer replied approve after requesting and receiving detailed descriptions of the original contract, CR-01/02/03 plus CT-01 repair contract, and modal focus/onHidden adapter contract. This accepts prohibition-01: the three recorded implementation approvals reflect intended authorization. The answer does not grant release/theme-freeze approval or resolve the remaining precision/unclassified items. See guided-review.json."
     ],
     "question": "Review whether actual maintainer decisions alone authorized each material contract change; give a justified disposition.",
-    "actual_response": null,
-    "reviewer": null,
-    "timestamp": null
+    "actual_response": "approve",
+    "reviewer": "user (maintainer)",
+    "timestamp": "2026-10-31T13:16:27.206004+00:00"
   },
   {
     "id": "prohibition-02",

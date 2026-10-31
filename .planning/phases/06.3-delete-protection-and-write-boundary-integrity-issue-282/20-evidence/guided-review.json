@@ -283,6 +283,21 @@
       "recorded_at": "2026-10-31T13:12:26.405325+00:00",
       "status": "accepted",
       "scope": "Evidence establishes only the cases actually checked; historical green or substituted previews do not prove uncovered guarantees."
+    },
+    {
+      "item": "prohibition-01",
+      "part": "owner authorization scope disposition",
+      "question": "Does the detailed description of the three recorded implementation approvals accurately reflect the scope you intended to authorize?",
+      "reviewed_scope": [
+        "Initial callback-safe inspection, partial previews/providers, deletion provenance, selected database and bounded Guardian policy, with immediate migrations.",
+        "CR-01 selected-database native graph, CR-02 field-owner provider identity/migration, CR-03 nullable joins, CT-01 configured Guardian content-type permission discovery.",
+        "Modal focus recovery/return and required onHidden adapter migration."
+      ],
+      "actual_response": "approve",
+      "reviewer": "user (maintainer)",
+      "recorded_at": "2026-10-31T13:16:27.206004+00:00",
+      "status": "accepted",
+      "scope": "Acceptance of prohibition-01 after detailed explanation; original approval records remain unchanged. Not release/theme-freeze approval or acceptance of remaining items."
     }
   ],
   "repairs": [

@@ -122,15 +122,16 @@
   },
   {
     "id": "UI-02",
-    "status": "human_needed",
+    "status": "accepted / reviewed browser readability and localization",
     "evidence": [
       "UI-REVIEW narrow language/Unicode gap; UI-SPEC",
-      "Actual English/German wrapping, escaped labels/nested rows, equal root scroll/client widths; CJK text survives DOM but cached browser fonts display missing glyph boxes. Superseded captures: 19-evidence/visual-results.json, 24 states / 36 current images, including confirmation scrolled into view; missing CJK glyphs remain."
+      "Actual English/German wrapping, escaped labels/nested rows, equal root scroll/client widths; CJK text survives DOM but cached browser fonts display missing glyph boxes. Superseded captures: 19-evidence/visual-results.json, 24 states / 36 current images, including confirmation scrolled into view; missing CJK glyphs remain.",
+      "Explicit UI-02 acceptance follows English review and twelve German page/modal \u00d7 partial/blocked \u00d7 1440x900/768x1024/375x812 checks. Maintainer confirmed German warnings/buttons, long-label wrapping and M\u00fcnchen / \u6771\u4eac / \u96ea glyph readability in their browser. Automated cached-browser missing-glyph captures remain environment-specific historical evidence. See guided-review.json."
     ],
     "question": "Review complete-copy readability and localization; a suitable-font host/browser is still needed to judge CJK glyph readability.",
-    "actual_response": null,
-    "reviewer": null,
-    "timestamp": null
+    "actual_response": "accept UI-02",
+    "reviewer": "user (maintainer)",
+    "timestamp": "2026-10-31T13:08:39.639900+00:00"
   },
   {
     "id": "UI-03",

@@ -180,6 +180,79 @@
       "recorded_at": "2026-10-31T13:05:41.437905+00:00",
       "status": "accepted",
       "scope": "12 English partial/blocked page/modal combinations at the three specified sizes; German/Unicode review remains pending under UI-02."
+    },
+    {
+      "item": "UI-02",
+      "part": "German partial-preview readability and Unicode",
+      "viewports": [
+        {
+          "width": 1440,
+          "height": 900
+        },
+        {
+          "width": 768,
+          "height": 1024
+        },
+        {
+          "width": 375,
+          "height": 812
+        }
+      ],
+      "surfaces": [
+        "page",
+        "modal"
+      ],
+      "fixture": "publisher 5 with review_language=de",
+      "steps": [
+        "German warnings and buttons remain readable.",
+        "Long labels wrap without clipping.",
+        "München, 東京 and 雪 display as characters rather than empty boxes."
+      ],
+      "actual_response": "pass",
+      "reviewer": "user (maintainer)",
+      "recorded_at": "2026-10-31T13:07:09.549615+00:00",
+      "scope": "All six German partial-preview combinations passed in the maintainer browser, including reported Unicode glyph readability. Cached automated browser missing-glyph observations remain historical and environment-specific. German blocked-preview checks and final UI-02 disposition remain pending."
+    },
+    {
+      "item": "UI-02",
+      "part": "German blocked-preview readability and Unicode",
+      "viewports": [
+        {
+          "width": 1440,
+          "height": 900
+        },
+        {
+          "width": 768,
+          "height": 1024
+        },
+        {
+          "width": 375,
+          "height": 812
+        }
+      ],
+      "surfaces": [
+        "page",
+        "modal"
+      ],
+      "fixture": "publisher 6 with review_language=de",
+      "steps": [
+        "Both German warnings are readable and clearly distinct.",
+        "Long labels and München / 東京 / 雪 remain readable without clipping.",
+        "No confirmation checkbox or Delete button appears; modal Close remains reachable."
+      ],
+      "actual_response": "pass",
+      "reviewer": "user (maintainer)",
+      "recorded_at": "2026-10-31T13:08:02.470656+00:00",
+      "scope": "All six German blocked-preview combinations passed in the maintainer browser. Final UI-02 disposition remains pending; cached automated-browser missing-glyph observations remain environment-specific historical evidence."
+    },
+    {
+      "item": "UI-02",
+      "part": "overall owner readability and localization disposition",
+      "actual_response": "accept UI-02",
+      "reviewer": "user (maintainer)",
+      "recorded_at": "2026-10-31T13:08:39.639900+00:00",
+      "status": "accepted",
+      "scope": "English/German readability and Unicode in the browser and fixtures reviewed at the three specified sizes; no universal font/browser claim."
     }
   ],
   "repairs": [

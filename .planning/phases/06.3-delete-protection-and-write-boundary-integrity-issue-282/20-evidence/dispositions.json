@@ -133,15 +133,16 @@
   },
   {
     "id": "UI-03",
-    "status": "human_needed",
+    "status": "accepted / tested-browser keyboard UX",
     "evidence": [
       "UI-REVIEW keyboard/422 gap; UI-SPEC",
       "Plan 19 current browser-results.json: real unchecked/blocked 422 focus, Close/Escape, main fallback, repeated/rapid opens, native dialog, Tab/Space/Cancel/204; independent targeted review clean. Objective checks do not establish UX acceptance.",
-      "Guided review: unchecked/Escape and stale-blocked/Close passed; Cancel destination HTTP 500 reported by maintainer. Fixture table corrected; strengthened current browser-results.json passes all ten cases. Final UX disposition and Cancel retest pending; see guided-review.json and ../06.3-FOCUS-REVIEW.md."
+      "Guided review: unchecked/Escape and stale-blocked/Close passed; Cancel destination HTTP 500 reported by maintainer. Fixture table corrected; strengthened current browser-results.json passes all ten cases. Maintainer passed the corrected keyboard navigation and Cancel retest; final UX disposition pending; see guided-review.json and ../06.3-FOCUS-REVIEW.md.",
+      "Explicit UI-03 acceptance follows four guided keyboard checks: unchecked validation/Escape, stale blocked response/Close, corrected Tab/Shift+Tab and Cancel, successful confirmed deletion. See guided-review.json. Scope is the browser and fixture exercised; no screen-reader or universal browser acceptance is inferred."
     ],
     "question": "Review the repaired keyboard/focus experience using current captures or the repeatable fixture; give an actual UX disposition.",
-    "actual_response": null,
-    "reviewer": null,
-    "timestamp": null
+    "actual_response": "accept UI-03",
+    "reviewer": "user (maintainer)",
+    "timestamp": "2026-10-31T12:58:11.458045+00:00"
   }
 ]

@@ -41,6 +41,53 @@
       "status": "failed",
       "reproduced": "Authenticated local GET /publisher_cascade/ returns HTTP 500 with the same exception.",
       "scope": "Tab navigation was not separately confirmed. Cancel navigation reached the configured destination, which failed to render."
+    },
+    {
+      "item": "UI-03",
+      "part": "keyboard navigation and Cancel retest after fixture correction",
+      "steps": [
+        "Tab and Shift+Tab keep focus inside the modal.",
+        "Activate Cancel with Enter; publisher list renders without error."
+      ],
+      "actual_response": "pass",
+      "reviewer": "user",
+      "recorded_at": "2026-10-31T12:56:02.821191+00:00",
+      "server_state_after_response": {
+        "exists": true,
+        "events": []
+      },
+      "scope": "This subcheck passed; overall UI-03 disposition remains pending."
+    },
+    {
+      "item": "UI-03",
+      "part": "successful deletion by keyboard",
+      "steps": [
+        "Open English success fixture publisher 4 using keyboard.",
+        "Check confirmation using Space and activate Delete using Enter.",
+        "Modal closes and publisher list loads without an error; en success record is absent."
+      ],
+      "actual_response": "pass",
+      "reviewer": "user",
+      "recorded_at": "2026-10-31T12:56:52.893806+00:00",
+      "server_state_after_response": {
+        "exists": false,
+        "events": [
+          {
+            "kind": "custom_notes",
+            "using": "default"
+          }
+        ]
+      },
+      "scope": "This subcheck passed; final overall UI-03 disposition has not yet been requested."
+    },
+    {
+      "item": "UI-03",
+      "part": "overall owner UX disposition",
+      "actual_response": "accept UI-03",
+      "reviewer": "user (maintainer)",
+      "recorded_at": "2026-10-31T12:58:11.458045+00:00",
+      "status": "accepted",
+      "scope": "Keyboard/focus experience in the browser and fixture exercised by the maintainer; does not assert screen-reader or all-browser coverage."
     }
   ],
   "repairs": [
@@ -58,7 +105,7 @@
         "origin": "Restarted corrected harness on 9000. Authenticated list GET returns 200 with populated table; publisher 1 exists and events is empty.",
         "prior_screenshots": "All prior 19-evidence/browser-results.json screenshot hashes still match after reused basenames."
       },
-      "owner_retest": "pending"
+      "owner_retest": "pass: user confirmed keyboard navigation and Cancel destination after correction"
     }
   ]
 }

@@ -1154,3 +1154,22 @@ about these.
   ([Delete previews and protected objects](#delete-previews-and-protected-objects)).
 - [ ] A Guardian manage template that reads `guardian_config.cv_guardian_accept_global_perms` renders an empty cell
   ([The Guardian manage page](#the-guardian-manage-page)).
+
+## Modal adapter completed-hide lifecycle
+
+Hand-written `cv.adapters.modal` objects must now provide `onHidden(modalEl, callback)` alongside
+`show`, `hide` and `setSize`. There is no compatibility grace period. The method subscribes to completed
+hiding and returns an idempotent unsubscribe function; it must not invoke the callback during subscription.
+Notify after the modal is hidden and its focus trap/inertness is released, for Close, Escape, backdrop and
+API dismissal alike. A prevented hide must not notify. Core consumes the callback once per open session
+and unsubscribes on completed hide, failed open or replacement by a new session.
+
+`cv.bootstrapAdapters(ns)` supplies this automatically, including Bootstrap and Tabler consumers.
+Custom asynchronous adapters must await their completed-hide event; calling the callback immediately after
+starting a hide animation is too early. Synchronous adapters may notify after completing hide and trap release.
+Missing hooks and hooks that do not return a function log a descriptive error and navigate to the full page
+before injecting/showing a modal. See the complete [native-dialog recipe](reference/javascript.md#a-non-bootstrap-modal).
+
+The modal recovers focus lost during a 422 replacement and restores the opener after completed dismissal.
+If the opener is removed, disabled or hidden, a usable main landmark is preferred, then an external focusable
+control; the body is the last resort. Initial-show focus remains the adapter's responsibility.

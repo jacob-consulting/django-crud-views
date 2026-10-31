@@ -80,7 +80,7 @@ async function main() {
         await page.locator('#cv-modal').waitFor({state: 'visible'}); await delay(400);
         await page.evaluate(() => {
             window.focusEvents = [];
-            document.getElementById('cv-modal').addEventListener('hidden.bs.modal', () => focusEvents.push('hidden'));
+            document.getElementById('cv-modal').addEventListener('hidden.bs.modal', () => focusEvents.push('hidden'), {capture: true});
             document.getElementById('launch').addEventListener('focus', () => focusEvents.push('opener'));
         });
         await page.locator('#cv-modal [type="submit"]').focus();
@@ -101,7 +101,8 @@ async function main() {
         result.state = await (await context.request.get(`${base}/state/${c.pk}/`)).json();
         check('invalid request does not delete or call custom handler', result.state.exists && result.state.events.length === 0);
         await page.locator('#cv-modal [data-cv-modal-dismiss]').focus(); await page.keyboard.press('Enter');
-        await page.locator('#cv-modal').waitFor({state: 'hidden'}); await delay(100);
+        await page.locator('#cv-modal').waitFor({state: 'hidden'});
+        await page.waitForFunction(() => focusEvents.includes('hidden'));
         result.close = await page.evaluate(() => ({id: document.activeElement.id, events: focusEvents}));
         check('completed hide returns exact opener', result.close.id === 'launch' && result.close.events.join(',') === 'hidden,opener');
         check('no page errors', record.pageErrors.length === 0);

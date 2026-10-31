@@ -12,6 +12,11 @@ globalThis.cv = globalThis.cv || {};
     cv.bootstrapAdapters = function (ns) {
         return {
             modal: {
+                onHidden(modalEl, callback) {
+                    const hidden = event => { if (event.target === modalEl) callback(); };
+                    modalEl.addEventListener("hidden.bs.modal", hidden);
+                    return () => modalEl.removeEventListener("hidden.bs.modal", hidden);
+                },
                 show(modalEl) { const Modal = component(ns, "Modal"); if (!Modal) throw missing("Modal"); Modal.getOrCreateInstance(modalEl).show(); },
                 hide(modalEl) { component(ns, "Modal")?.getInstance(modalEl)?.hide(); },
                 setSize(dialogEl, size) {

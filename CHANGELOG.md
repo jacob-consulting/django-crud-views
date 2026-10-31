@@ -6,6 +6,12 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Breaking
 
+- **Custom modal adapter lifecycle.** Modal adapters must now provide `onHidden(modalEl, callback)` returning
+  an idempotent unsubscribe function. Notify only after hiding completes and the focus trap is released.
+  Bootstrap/Tabler factory consumers receive the method automatically; hand-written adapters must migrate now.
+  Missing or malformed hooks fall back to full-page navigation. See the
+  [migration](docs/migrating-1.0.md#modal-adapter-completed-hide-lifecycle).
+
 - **Guardian configured content-type defaults.** `GuardianViewSet` discovers default/custom permissions only on
   Guardian's configured content type. With the polymorphic-base resolver, Car now infers `app.view_vehicle`
   and Vehicle custom keys instead of Car defaults; child-only permissions are no longer inferred. Explicit

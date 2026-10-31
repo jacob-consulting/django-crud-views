@@ -7,6 +7,7 @@
       "command": "PYTHONPATH=\"$PWD/src:$PWD\" .nox/crispy_floor-3-12-django-6-0/bin/python -m pytest tests/test1/test_delete_inspection.py -k 'partial_notice_modes_and_german or complete_preview_retains_copy' -q -p no:cacheprovider",
       "exit_code": 0,
       "result": "74 passed, 129 deselected in 21.92s",
+      "post_commit_tracer_result": "74 passed, 129 deselected in 21.72s after 996bd82",
       "scope": "rendered semantics only"
     },
     {

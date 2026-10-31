@@ -1,0 +1,146 @@
+[
+  {
+    "id": "GUA-precision",
+    "status": "human_needed/insufficient_spec",
+    "evidence": [
+      "Plan 06 structured backstop; GUARDIAN-REVIEW; WINDOWS 11",
+      "Ordinary int/UUID, configured exact keys, custom permission suffixes and same-alias controls pass; no general custom-PK/database-cast/collation identity predicate supplied."
+    ],
+    "question": "Define the intended identity predicate and supported PK/backend/collation cases, or record an explicit evidence-backed bounded disposition.",
+    "actual_response": null,
+    "reviewer": null,
+    "timestamp": null
+  },
+  {
+    "id": "DEL-01-unclassified",
+    "status": "unresolved / insufficient_spec",
+    "evidence": [
+      "Plan 01 unidentified detector row; VERIFICATION",
+      "Actual original and gap design approvals are recorded with reviewed hashes; the original unidentified condition has no acceptance predicate."
+    ],
+    "question": "Recover this detector condition or explicitly justify its disposition independently of named approval checks.",
+    "actual_response": null,
+    "reviewer": null,
+    "timestamp": null
+  },
+  {
+    "id": "DEL-03-unclassified",
+    "status": "unresolved / insufficient_spec",
+    "evidence": [
+      "Plan 04 unidentified detector row; VERIFICATION",
+      "Real callback/transaction/native/converter cases pass in all three series; CR-01/02/03 do not identify the unknown signal."
+    ],
+    "question": "Identify the condition beyond named provenance controls, or provide an evidence-backed disposition of that unknown.",
+    "actual_response": null,
+    "reviewer": null,
+    "timestamp": null
+  },
+  {
+    "id": "DEL-04-unclassified",
+    "status": "unresolved / insufficient_spec",
+    "evidence": [
+      "Plan 05 unidentified detector row; VERIFICATION",
+      "Independent aliases, selected native rows/parents and commit routing pass; no general central-auth/cross-database guarantee."
+    ],
+    "question": "Recover the original database condition or explicitly dispose of it with bounded reasoning.",
+    "actual_response": null,
+    "reviewer": null,
+    "timestamp": null
+  },
+  {
+    "id": "AUTH-06-unclassified",
+    "status": "unresolved / insufficient_spec",
+    "evidence": [
+      "Phase 6.2 AUTH-06 transfer; plan 06; GUARDIAN-REVIEW",
+      "Named strict/per-view/helper/manage/actor policy plus repaired CT-01 positive access pass. CT-01 is not known to be this unidentified predicate."
+    ],
+    "question": "Identify or justify closure of the original AUTH-06 detector signal separately from CT-01.",
+    "actual_response": null,
+    "reviewer": null,
+    "timestamp": null
+  },
+  {
+    "id": "prohibition-01",
+    "status": "unresolved / unverified-prohibition",
+    "evidence": [
+      "Plan 01 DEL-01 prohibition; VERIFICATION",
+      "APPROVAL/GAP-APPROVAL preserve actual responses and hashes; independent review and test counts are not approval. FOCUS-APPROVAL records the separate actual approve response before plan-19 product commits."
+    ],
+    "question": "Review whether actual maintainer decisions alone authorized each material contract change; give a justified disposition.",
+    "actual_response": null,
+    "reviewer": null,
+    "timestamp": null
+  },
+  {
+    "id": "prohibition-02",
+    "status": "unresolved / unverified-prohibition",
+    "evidence": [
+      "Plan 02 DEL-02/AUTH-01 prohibition; VERIFICATION",
+      "Direct event lists, real commits/rollback and positive callback controls in `test_delete_inspection.py` and `test_delete_provenance.py`; row rollback never establishes absence of external events."
+    ],
+    "question": "Review the direct external-event evidence and confirm or challenge the bounded no-premature-callback claim.",
+    "actual_response": null,
+    "reviewer": null,
+    "timestamp": null
+  },
+  {
+    "id": "prohibition-03",
+    "status": "unresolved / unverified-prohibition",
+    "evidence": [
+      "Plan 03 DEL-05/AUTH-03 prohibition; VERIFICATION",
+      "Owner-qualified boundary controls, English/German partial-count headings and independent warning; real page/modal screenshots. Finite evidence does not prove universal comprehension."
+    ],
+    "question": "Review whether incomplete previews/counts communicate their limits; give a justified disposition.",
+    "actual_response": null,
+    "reviewer": null,
+    "timestamp": null
+  },
+  {
+    "id": "prohibition-09",
+    "status": "unresolved / unverified-prohibition",
+    "evidence": [
+      "Plan 09 DEL-06 prohibition; VERIFICATION",
+      "Source/import/node/JUnit checks cover fresh assertion sessions; historical observations and substituted previews are not used as repair acceptance. Current source hashes/negative controls and backend-provenance.json distinguish new client proof from 468 unchanged backend paths."
+    ],
+    "question": "Review the fresh independent predicates and their limits; confirm or challenge the evidence boundary.",
+    "actual_response": null,
+    "reviewer": null,
+    "timestamp": null
+  },
+  {
+    "id": "UI-01",
+    "status": "human_needed",
+    "evidence": [
+      "UI-REVIEW visual hierarchy gap; UI-SPEC",
+      "24 real fixture-backed screenshots: page/modal × partial/blocked × English/German × 1440×900/768×1024/375×812. Notices ordered; unblocked form present, blocked form absent. Superseded captures: 19-evidence/visual-results.json, 24 states / 36 current images, including confirmation scrolled into view; missing CJK glyphs remain."
+    ],
+    "question": "Review screenshot hierarchy, scrolling and confirmation availability at each viewport; accept or identify a concrete issue.",
+    "actual_response": null,
+    "reviewer": null,
+    "timestamp": null
+  },
+  {
+    "id": "UI-02",
+    "status": "human_needed",
+    "evidence": [
+      "UI-REVIEW narrow language/Unicode gap; UI-SPEC",
+      "Actual English/German wrapping, escaped labels/nested rows, equal root scroll/client widths; CJK text survives DOM but cached browser fonts display missing glyph boxes. Superseded captures: 19-evidence/visual-results.json, 24 states / 36 current images, including confirmation scrolled into view; missing CJK glyphs remain."
+    ],
+    "question": "Review complete-copy readability and localization; a suitable-font host/browser is still needed to judge CJK glyph readability.",
+    "actual_response": null,
+    "reviewer": null,
+    "timestamp": null
+  },
+  {
+    "id": "UI-03",
+    "status": "human_needed",
+    "evidence": [
+      "UI-REVIEW keyboard/422 gap; UI-SPEC",
+      "Plan 19 current browser-results.json: real unchecked/blocked 422 focus, Close/Escape, main fallback, repeated/rapid opens, native dialog, Tab/Space/Cancel/204; independent targeted review clean. Objective checks do not establish UX acceptance."
+    ],
+    "question": "Review the repaired keyboard/focus experience using current captures or the repeatable fixture; give an actual UX disposition.",
+    "actual_response": null,
+    "reviewer": null,
+    "timestamp": null
+  }
+]

@@ -263,6 +263,16 @@
       "recorded_at": "2026-10-31T13:09:43.112274+00:00",
       "status": "accepted",
       "scope": "Owner comprehension of the reviewed incomplete-preview copy; no universal comprehension claim."
+    },
+    {
+      "item": "prohibition-02",
+      "part": "owner direct callback evidence disposition",
+      "question": "Accept direct event-list evidence for tested preview/rejection paths, with successful deletion as a positive control and no inference from database rollback alone?",
+      "actual_response": "accept prohibition-02",
+      "reviewer": "user (maintainer)",
+      "recorded_at": "2026-10-31T13:10:58.567037+00:00",
+      "status": "accepted",
+      "scope": "Direct callback-event evidence for tested paths. Callbacks may run before later failures; database rollback does not prove absence of external effects."
     }
   ],
   "repairs": [

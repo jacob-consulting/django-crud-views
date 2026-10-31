@@ -73,15 +73,16 @@
   },
   {
     "id": "prohibition-02",
-    "status": "unresolved / unverified-prohibition",
+    "status": "accepted / direct callback evidence and tested scope",
     "evidence": [
       "Plan 02 DEL-02/AUTH-01 prohibition; VERIFICATION",
-      "Direct event lists, real commits/rollback and positive callback controls in `test_delete_inspection.py` and `test_delete_provenance.py`; row rollback never establishes absence of external events."
+      "Direct event lists, real commits/rollback and positive callback controls in `test_delete_inspection.py` and `test_delete_provenance.py`; row rollback never establishes absence of external events.",
+      "Maintainer accepted direct callback-event evidence: guided blocked/Cancel paths had empty event lists; successful deletion recorded custom_notes as a positive control. Automated tests distinguish callback events from durable database state, preserving events when later failures roll back rows. Acceptance is bounded to tested preview/rejection paths, not a universal no-external-effect guarantee. See guided-review.json."
     ],
     "question": "Review the direct external-event evidence and confirm or challenge the bounded no-premature-callback claim.",
-    "actual_response": null,
-    "reviewer": null,
-    "timestamp": null
+    "actual_response": "accept prohibition-02",
+    "reviewer": "user (maintainer)",
+    "timestamp": "2026-10-31T13:10:58.567037+00:00"
   },
   {
     "id": "prohibition-03",

@@ -1,15 +1,16 @@
 [
   {
     "id": "GUA-precision",
-    "status": "human_needed/insufficient_spec",
+    "status": "accepted / tested scope; general precision unverified",
     "evidence": [
       "Plan 06 structured backstop; GUARDIAN-REVIEW; WINDOWS 11",
-      "Ordinary int/UUID, configured exact keys, custom permission suffixes and same-alias controls pass; no general custom-PK/database-cast/collation identity predicate supplied."
+      "Ordinary int/UUID, configured exact keys, custom permission suffixes and same-alias controls pass; no general custom-PK/database-cast/collation identity predicate supplied.",
+      "Maintainer accepted the named integer/UUID, exact configured permission-key including Unicode, queryset-scope and database-alias evidence. General custom-PK/database-cast/collation identity remains unverified; no broader predicate was supplied or inferred. This is a bounded owner disposition, not universal precision proof or global GUA-01 completion. See guided-review.json."
     ],
     "question": "Define the intended identity predicate and supported PK/backend/collation cases, or record an explicit evidence-backed bounded disposition.",
-    "actual_response": null,
-    "reviewer": null,
-    "timestamp": null
+    "actual_response": "accept tested scope",
+    "reviewer": "user (maintainer)",
+    "timestamp": "2026-10-31T13:17:27.872675+00:00"
   },
   {
     "id": "DEL-01-unclassified",

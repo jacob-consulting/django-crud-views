@@ -298,6 +298,16 @@
       "recorded_at": "2026-10-31T13:16:27.206004+00:00",
       "status": "accepted",
       "scope": "Acceptance of prohibition-01 after detailed explanation; original approval records remain unchanged. Not release/theme-freeze approval or acceptance of remaining items."
+    },
+    {
+      "item": "GUA-precision",
+      "part": "owner bounded identity disposition",
+      "question": "Accept tested integer/UUID, exact configured permission-key, queryset-scope and database-alias evidence while retaining the broader custom-PK/database-conversion/text-comparison limitation?",
+      "actual_response": "accept tested scope",
+      "reviewer": "user (maintainer)",
+      "recorded_at": "2026-10-31T13:17:27.872675+00:00",
+      "status": "accepted / tested scope",
+      "retained_limitation": "General custom-PK/database-cast/collation precision remains unverified. No global GUA-01 completion or universal identity guarantee."
     }
   ],
   "repairs": [

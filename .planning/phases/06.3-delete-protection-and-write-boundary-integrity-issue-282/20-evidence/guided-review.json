@@ -1,0 +1,64 @@
+{
+  "review": "Guided maintainer review",
+  "observations": [
+    {
+      "item": "UI-03",
+      "part": "unchecked confirmation and Escape return",
+      "steps": [
+        "Open delete modal by keyboard for English partial fixture, publisher 1.",
+        "Submit Delete with confirmation unchecked; validation appears and focus moves to confirmation checkbox.",
+        "Press Escape; visible focus returns to the exact opener."
+      ],
+      "actual_response": "pass",
+      "reviewer": "user",
+      "recorded_at": "2026-10-31T12:47:26.821522+00:00",
+      "scope": "This subcheck passed; overall UI-03 disposition remains pending."
+    },
+    {
+      "item": "UI-03",
+      "part": "stale delete blocked and Close return",
+      "steps": [
+        "Open English stale fixture publisher 3 before protection is added.",
+        "After protection is added, check confirmation with Space and submit Delete using Enter.",
+        "Blocked-deletion notice appears, deletion form disappears, and visible focus moves to Close.",
+        "Activate Close with Enter; focus returns to the opener."
+      ],
+      "actual_response": "pass",
+      "reviewer": "user",
+      "recorded_at": "2026-10-31T12:50:01.703502+00:00",
+      "server_state_after_response": {
+        "exists": true,
+        "events": []
+      },
+      "scope": "This subcheck passed; overall UI-03 disposition remains pending."
+    },
+    {
+      "item": "UI-03",
+      "part": "keyboard navigation and Cancel",
+      "actual_response": "ViewSetKeyFoundError at /publisher_cascade/: key detail not registered at publisher_cascade after Cancel",
+      "reviewer": "user",
+      "recorded_at": "2026-10-31T12:52:20.545647+00:00",
+      "status": "failed",
+      "reproduced": "Authenticated local GET /publisher_cascade/ returns HTTP 500 with the same exception.",
+      "scope": "Tab navigation was not separately confirmed. Cancel navigation reached the configured destination, which failed to render."
+    }
+  ],
+  "repairs": [
+    {
+      "item": "UI-03 Cancel destination",
+      "recorded_at": "2026-10-31T12:54:39.665367+00:00",
+      "root_cause": "PublisherCascadeListView reused PublisherTable.id LinkDetailColumn, but its ViewSet does not register detail. Strict configuration checking raises during list rendering.",
+      "change": "Use PublisherCascadeTable with a plain id column. Browser regression now requires HTTP 200 and rendered table rows at both Cancel and confirmed-delete destinations.",
+      "red_evidence": "cancel-red.json",
+      "green_evidence": "browser-results.json",
+      "verification": {
+        "browser": "All 10 cases passed; strengthened source-bound evidence validator passed.",
+        "python_checkout": "178 passed: tests/test1/test_modal.py and tests/test1/test_delete.py, Django 6.0.9; PYTHONPATH explicitly includes checkout src and root. See cancel-pytest-checkout.log.",
+        "invalid_environment_run": "Initial command without PYTHONPATH imported the older installed site-packages/crud_views and yielded 126 failed, 52 passed. Not checkout validation; full named failures retained in cancel-pytest.log.",
+        "origin": "Restarted corrected harness on 9000. Authenticated list GET returns 200 with populated table; publisher 1 exists and events is empty.",
+        "prior_screenshots": "All prior 19-evidence/browser-results.json screenshot hashes still match after reused basenames."
+      },
+      "owner_retest": "pending"
+    }
+  ]
+}

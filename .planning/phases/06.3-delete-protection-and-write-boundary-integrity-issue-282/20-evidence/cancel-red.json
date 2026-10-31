@@ -1,0 +1,95 @@
+{
+  "captured": "2026-10-31T12:52:30.039Z",
+  "revision": "fdb079573f6947d2f55e20474235dad6bb663548",
+  "sourceHashes": {
+    "src/crud_views/static/crud_views/js/modal.js": "d83524a2ec90670d9df82aac7cd0b69c0af37fc4093176dcbfdd79944c7cf9cb",
+    "src/crud_views/static/crud_views/js/adapters.js": "6134473b5f0fb183aae7f4b035ad38a56a902b8f58c8b5c688c9638d1cef2580",
+    "tests/js/modal.test.js": "c35c243ba1b667e24191c0cd057e6d54518562717e48cc28e7955ca36357d40f",
+    "tests/js/adapters.test.js": "d62b08bb9fd113b5cbdf83b1a9922b864b4d702e3011cc515a8f32116c68121c",
+    "CHANGELOG.md": "ceae060f1272f3c7994fcf7afdf68a9ea63f7b63b1de41a3379aba0916daa2d1",
+    "docs/migrating-1.0.md": "1e39865fb95377a77403a99473e2fd96f91c7f85ee10388afdd2f7de90cb2b76",
+    "src/crud_views/lib/deletion.py": "91b3464f8337006d79b839e4af344dd223fcf12e2ee536f14d0545c3f36280b6",
+    "src/crud_views/lib/views/delete.py": "4c9e0eba468e16e57a4738226b540b2b1dfa3ee27f8a3e6538e23ff30a377d7e",
+    "src/crud_views/templates/crud_views/view_delete.content.html": "63c6fae38dbaf038eed76f7269ce333b88816b121908f73aa08cf131174c3c66",
+    "tests/test1/app/templates/app/base.html": "f2f325b993a2e91be2f7cd235f0f1bcab8f3cfa9f51c5709c4e4f15ff85f1c08",
+    "tests/browser/modal-focus.cjs": "a80b2bbc0cf54d5e1a386b2e17626751acfe295191a84be1ba9a9e84d313e7c3",
+    "tests/test1/app/views.py": "ad759b20fb7773b6794fec75bb8576fc2575b6b8bfce8c9a9eb8df03bbfc635b",
+    "docs/reference/javascript.md": "a898961e7176fd76db7fa4c32979ea4a1be6dbfdd076030262377aff1eea6a56",
+    "docs/reference/modals.md": "1db9b5176a5b5e8e9067f5ba42b0900f079577764e03a5ea655117b9c47af573",
+    ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/17-evidence/server.py": "19160e33bd34943829258db4faf4560e840a0f598cd8717b1822ccd9314ede67",
+    "src/crud_views/templates/crud_views/modal/shell.html": "bc5b91977d517671b9c246cbbbce5a813a0d8bc10caf36f8c78f214df15328ee",
+    "src/crud_views/templates/crud_views/modal/content.html": "385a9fe7721f506cd760f5f6b1171a30f779280b50c42a32a9e937e99cc12e67",
+    "package-lock.json": "567bff553002a1452d08db94660a206507d70df9711cdd11fd82ee51f4175d2e"
+  },
+  "command": [
+    "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
+    "/home/alex/projects/alex/django-crud-views/tests/browser/modal-focus.cjs",
+    "--case",
+    "controls",
+    "--output",
+    ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/20-evidence/cancel-red.json"
+  ],
+  "runtime": {
+    "node": "v24.21.0",
+    "nodePath": "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]\n6.0.9",
+    "pythonPath": "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+    "playwrightPath": "/home/alex/.npm/_npx/e41f203b7505f1fb/node_modules/playwright",
+    "chromiumPath": "/home/alex/.cache/ms-playwright/chromium-1228/chrome-linux64/chrome",
+    "browser": "149.0.7827.55"
+  },
+  "completed": true,
+  "passed": false,
+  "cases": [
+    {
+      "id": "controls",
+      "passed": false,
+      "assertions": [
+        {
+          "name": "Tab stays inside modal",
+          "passed": true
+        },
+        {
+          "name": "Tab stays inside modal",
+          "passed": true
+        },
+        {
+          "name": "Tab stays inside modal",
+          "passed": true
+        },
+        {
+          "name": "Tab stays inside modal",
+          "passed": true
+        },
+        {
+          "name": "Tab stays inside modal",
+          "passed": true
+        },
+        {
+          "name": "Tab stays inside modal",
+          "passed": true
+        },
+        {
+          "name": "Tab stays inside modal",
+          "passed": true
+        },
+        {
+          "name": "Tab stays inside modal",
+          "passed": true
+        },
+        {
+          "name": "Cancel navigates to configured URL",
+          "passed": true
+        },
+        {
+          "name": "Cancel destination renders successfully",
+          "passed": false
+        }
+      ],
+      "screenshots": [],
+      "observations": []
+    }
+  ],
+  "pageErrors": [],
+  "error": "AssertionError [ERR_ASSERTION]: controls: Cancel destination renders successfully\n    at check (/home/alex/projects/alex/django-crud-views/tests/browser/modal-focus.cjs:165:110)\n    at main (/home/alex/projects/alex/django-crud-views/tests/browser/modal-focus.cjs:278:17)"
+}

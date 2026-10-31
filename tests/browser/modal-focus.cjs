@@ -25,7 +25,7 @@ const inputs = [
     'tests/js/modal.test.js', 'tests/js/adapters.test.js', 'CHANGELOG.md', 'docs/migrating-1.0.md',
     'src/crud_views/lib/deletion.py', 'src/crud_views/lib/views/delete.py',
     'src/crud_views/templates/crud_views/view_delete.content.html', 'tests/test1/app/templates/app/base.html',
-    'tests/browser/modal-focus.cjs', 'docs/reference/javascript.md', 'docs/reference/modals.md',
+    'tests/browser/modal-focus.cjs', 'tests/test1/app/views.py', 'docs/reference/javascript.md', 'docs/reference/modals.md',
     `${phase}/17-evidence/server.py`, 'src/crud_views/templates/crud_views/modal/shell.html',
     'src/crud_views/templates/crud_views/modal/content.html', 'package-lock.json',
 ];
@@ -49,7 +49,7 @@ function checkEvidence(file) {
         const required = ['no page errors'];
         if (['unchecked', 'native-dialog'].includes(result.id)) required.push('real HTTP status', 'invalid confirmation retains keyboard focus', 'one visible form and field error', 'row retained and zero custom callbacks');
         if (result.id === 'blocked') required.push('real protection added', 'real HTTP status', 'blocked response focuses Close', 'blocked focus remains visible', 'both notices remain and form is absent', 'filtered hidden label stays hidden', 'row retained and zero custom callbacks');
-        if (result.id === 'controls') required.push('Tab stays inside modal', 'Cancel navigates to configured URL', 'row retained and zero custom callbacks', 'Space checks confirmation', 'real HTTP status', 'confirmed Delete removes row and calls real custom handler');
+        if (result.id === 'controls') required.push('Tab stays inside modal', 'Cancel navigates to configured URL', 'Cancel destination renders successfully', 'row retained and zero custom callbacks', 'Space checks confirmation', 'real HTTP status', 'Delete destination renders successfully', 'confirmed Delete removes row and calls real custom handler');
         else required.push('completed dismissal hides dialog', 'exact usable return target', 'return focus is visible and outside dialog', 'hidden event observes completed hiding', 'restore after completed hide');
         assert(required.every(name => names.includes(name)), `Missing required assertion: ${result.id}`);
         if (['unchecked', 'blocked', 'native-dialog'].includes(result.id)) assert.deepEqual(result.statuses, [422]);
@@ -271,12 +271,18 @@ async function main() {
             } else if (id === 'controls') {
                 for (let i = 0; i < 8; i++) { await page.keyboard.press('Tab'); check('Tab stays inside modal', (await snapshot()).inModal); }
                 const cancel = page.locator('#cv-modal [data-cv-cancel-url]'); const url = await cancel.getAttribute('data-cv-cancel-url');
-                await cancel.focus(); await page.keyboard.press('Enter'); await page.waitForURL(base + url);
-                check('Cancel navigates to configured URL', page.url() === base + url); await noWrites(c);
+                await cancel.focus();
+                const cancelResponse = page.waitForResponse(response => response.request().isNavigationRequest() && response.url() === base + url);
+                await page.keyboard.press('Enter'); await page.waitForURL(base + url);
+                check('Cancel navigates to configured URL', page.url() === base + url);
+                check('Cancel destination renders successfully', (await cancelResponse).status() === 200 && await page.locator('table tbody tr').count() > 0);
+                await noWrites(c);
                 const success = cases.find(c => c.mode === 'success' && c.language === 'en'); await open(success);
                 await page.locator('#cv-modal input[name="confirm"]').focus(); await page.keyboard.press('Space');
                 check('Space checks confirmation', await page.locator('#cv-modal input[name="confirm"]').isChecked()); await capture('confirmed');
+                const deleteResponse = page.waitForResponse(response => response.request().isNavigationRequest() && response.url() === base + url);
                 await submit(success, 204); await page.waitForURL(url => !url.pathname.includes('/harness/'));
+                check('Delete destination renders successfully', (await deleteResponse).status() === 200 && await page.locator('table tbody tr').count() > 0);
                 const state = await (await context.request.get(`${base}/state/${success.pk}/`)).json(); result.deletedState = state;
                 check('confirmed Delete removes row and calls real custom handler', !state.exists && state.events.length > 0);
             }

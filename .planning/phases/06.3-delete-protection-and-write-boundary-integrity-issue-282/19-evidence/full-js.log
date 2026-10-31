@@ -1,0 +1,21 @@
+06-js-verify: node v24.21.0 (/home/alex/.nvm/versions/node/v24.21.0/bin/node); npm 11.19.0 (/home/alex/.nvm/versions/node/v24.21.0/lib/node_modules/npm/bin/npm-cli.js); lock sha256 567bff553002a1452d08db94660a206507d70df9711cdd11fd82ee51f4175d2e; 71 installed packages match the lock, 72 engine ranges satisfied; 25 optional packages for other platforms skipped; jquery@3.7.1 jsdom@30.1.2 vitest@5.0.3
+
+> django-crud-views-js-tests@1.0.0 test
+> vitest run
+
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.js:1:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.3 /home/alex/projects/alex/django-crud-views
+
+Not implemented: navigation to another Document
+Not implemented: navigation to another Document
+Not implemented: navigation to another Document
+Not implemented: navigation to another Document
+
+ Test Files  8 passed (8)
+      Tests  263 passed (263)
+   Start at  08:45:04
+   Duration  4.42s (environment 47%, tests 43%, transform 5%, setup 4%, import 1%)
+

@@ -1,0 +1,458 @@
+{"ready": "http://127.0.0.1:8143", "database": "disposable temporary SQLite"}
+127.0.0.1 - - [31/Oct/2026 08:45:32] "GET /cases/ HTTP/1.1" 200 692
+127.0.0.1 - - [31/Oct/2026 08:45:33] "GET /signin/ HTTP/1.1" 302 0
+127.0.0.1 - - [31/Oct/2026 08:45:33] "GET /harness/ HTTP/1.1" 200 3640
+127.0.0.1 - - [31/Oct/2026 08:45:33] "GET /static/crud_views/js/adapters.js HTTP/1.1" 200 5683
+127.0.0.1 - - [31/Oct/2026 08:45:33] "GET /static/crud_views/css/property.css HTTP/1.1" 200 247
+127.0.0.1 - - [31/Oct/2026 08:45:33] "GET /static/crud_views/css/table.css HTTP/1.1" 200 1539
+127.0.0.1 - - [31/Oct/2026 08:45:33] "GET /static/crud_views/js/viewset.js HTTP/1.1" 200 1997
+127.0.0.1 - - [31/Oct/2026 08:45:33] "GET /static/crud_views/js/formset.js HTTP/1.1" 200 20320
+127.0.0.1 - - [31/Oct/2026 08:45:33] "GET /static/crud_views/css/formset.css HTTP/1.1" 200 755
+127.0.0.1 - - [31/Oct/2026 08:45:33] "GET /static/crud_views/css/icons.css HTTP/1.1" 200 86
+127.0.0.1 - - [31/Oct/2026 08:45:33] "GET /static/crud_views/js/list.filter.js HTTP/1.1" 200 3099
+127.0.0.1 - - [31/Oct/2026 08:45:33] "GET /static/crud_views/js/modal.js HTTP/1.1" 200 9917
+127.0.0.1 - - [31/Oct/2026 08:45:33] "GET /static/crud_views/js/toggle.js HTTP/1.1" 200 2502
+127.0.0.1 - - [31/Oct/2026 08:45:33] "GET /static/crud_views/js/tooltip.js HTTP/1.1" 200 3395
+Not Found: /favicon.ico
+127.0.0.1 - - [31/Oct/2026 08:45:33] "GET /favicon.ico HTTP/1.1" 404 61116
+127.0.0.1 - - [31/Oct/2026 08:45:33] "GET /cases/ HTTP/1.1" 200 692
+127.0.0.1 - - [31/Oct/2026 08:45:33] "GET /harness/?target=%2Fpublisher_cascade%2F1%2Fdelete%2F HTTP/1.1" 200 3710
+127.0.0.1 - - [31/Oct/2026 08:45:33] "GET /publisher_cascade/1/delete/ HTTP/1.1" 200 3177
+Unprocessable Entity: /publisher_cascade/1/delete/
+127.0.0.1 - - [31/Oct/2026 08:45:34] "POST /publisher_cascade/1/delete/ HTTP/1.1" 422 3347
+127.0.0.1 - - [31/Oct/2026 08:45:34] "GET /state/1/ HTTP/1.1" 200 30
+127.0.0.1 - - [31/Oct/2026 08:45:34] "GET /harness/?target=%2Fpublisher_cascade%2F3%2Fdelete%2F HTTP/1.1" 200 3710
+127.0.0.1 - - [31/Oct/2026 08:45:35] "GET /publisher_cascade/3/delete/ HTTP/1.1" 200 3175
+127.0.0.1 - - [31/Oct/2026 08:45:35] "POST /protect/3/ HTTP/1.1" 200 19
+Unprocessable Entity: /publisher_cascade/3/delete/
+127.0.0.1 - - [31/Oct/2026 08:45:35] "POST /publisher_cascade/3/delete/ HTTP/1.1" 422 2331
+127.0.0.1 - - [31/Oct/2026 08:45:35] "GET /state/3/ HTTP/1.1" 200 30
+127.0.0.1 - - [31/Oct/2026 08:45:36] "GET /harness/?target=%2Fpublisher_cascade%2F1%2Fdelete%2F HTTP/1.1" 200 3710
+127.0.0.1 - - [31/Oct/2026 08:45:36] "GET /static/crud_views/js/modal.js HTTP/1.1" 304 0
+127.0.0.1 - - [31/Oct/2026 08:45:36] "GET /publisher_cascade/1/delete/ HTTP/1.1" 200 3177
+127.0.0.1 - - [31/Oct/2026 08:45:37] "GET /harness/?target=%2Fpublisher_cascade%2F1%2Fdelete%2F HTTP/1.1" 200 3710
+127.0.0.1 - - [31/Oct/2026 08:45:37] "GET /publisher_cascade/1/delete/ HTTP/1.1" 200 3177
+127.0.0.1 - - [31/Oct/2026 08:45:38] "GET /harness/?target=%2Fpublisher_cascade%2F1%2Fdelete%2F HTTP/1.1" 200 3710
+127.0.0.1 - - [31/Oct/2026 08:45:38] "GET /publisher_cascade/1/delete/ HTTP/1.1" 200 3177
+127.0.0.1 - - [31/Oct/2026 08:45:39] "GET /harness/?target=%2Fpublisher_cascade%2F1%2Fdelete%2F HTTP/1.1" 200 3710
+127.0.0.1 - - [31/Oct/2026 08:45:39] "GET /static/crud_views/js/modal.js HTTP/1.1" 304 0
+127.0.0.1 - - [31/Oct/2026 08:45:39] "GET /publisher_cascade/1/delete/ HTTP/1.1" 200 3177
+127.0.0.1 - - [31/Oct/2026 08:45:40] "GET /harness/?target=%2Fpublisher_cascade%2F1%2Fdelete%2F HTTP/1.1" 200 3710
+127.0.0.1 - - [31/Oct/2026 08:45:40] "GET /publisher_cascade/1/delete/ HTTP/1.1" 200 3177
+127.0.0.1 - - [31/Oct/2026 08:45:41] "GET /harness/?target=%2Fpublisher_cascade%2F1%2Fdelete%2F HTTP/1.1" 200 3710
+127.0.0.1 - - [31/Oct/2026 08:45:41] "GET /publisher_cascade/1/delete/ HTTP/1.1" 200 3177
+127.0.0.1 - - [31/Oct/2026 08:45:42] "GET /publisher_cascade/1/delete/ HTTP/1.1" 200 3177
+127.0.0.1 - - [31/Oct/2026 08:45:43] "GET /publisher_cascade/1/delete/ HTTP/1.1" 200 3177
+127.0.0.1 - - [31/Oct/2026 08:45:44] "GET /publisher_cascade/1/delete/ HTTP/1.1" 200 3177
+127.0.0.1 - - [31/Oct/2026 08:45:45] "GET /publisher_cascade/1/delete/ HTTP/1.1" 200 3177
+127.0.0.1 - - [31/Oct/2026 08:45:46] "GET /publisher_cascade/1/delete/ HTTP/1.1" 200 3177
+Unprocessable Entity: /publisher_cascade/1/delete/
+127.0.0.1 - - [31/Oct/2026 08:45:46] "POST /publisher_cascade/1/delete/ HTTP/1.1" 422 3347
+127.0.0.1 - - [31/Oct/2026 08:45:47] "GET /harness/?target=%2Fpublisher_cascade%2F1%2Fdelete%2F HTTP/1.1" 200 3710
+127.0.0.1 - - [31/Oct/2026 08:45:47] "GET /static/crud_views/js/modal.js HTTP/1.1" 304 0
+127.0.0.1 - - [31/Oct/2026 08:45:47] "GET /publisher_cascade/1/delete/ HTTP/1.1" 200 3177
+Unprocessable Entity: /publisher_cascade/1/delete/
+127.0.0.1 - - [31/Oct/2026 08:45:47] "POST /publisher_cascade/1/delete/ HTTP/1.1" 422 3347
+127.0.0.1 - - [31/Oct/2026 08:45:47] "GET /state/1/ HTTP/1.1" 200 30
+127.0.0.1 - - [31/Oct/2026 08:45:47] "GET /publisher_cascade/1/delete/ HTTP/1.1" 200 3177
+127.0.0.1 - - [31/Oct/2026 08:45:47] "GET /harness/?target=%2Fpublisher_cascade%2F1%2Fdelete%2F HTTP/1.1" 200 3710
+127.0.0.1 - - [31/Oct/2026 08:45:47] "GET /publisher_cascade/1/delete/ HTTP/1.1" 200 3177
+Internal Server Error: /publisher_cascade/
+Traceback (most recent call last):
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/core/handlers/base.py", line 221, in _get_response
+    response = response.render()
+               ^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/response.py", line 92, in rendered_content
+    return template.render(context, self._request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 174, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 166, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 1052, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/loader_tags.py", line 160, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 166, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 1052, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/loader_tags.py", line 160, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 166, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 1052, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/loader_tags.py", line 66, in render
+    result = block.nodelist.render(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 1052, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/loader_tags.py", line 66, in render
+    result = block.nodelist.render(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 1052, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/loader_tags.py", line 211, in render
+    return template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 176, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 166, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 1052, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django_tables2/templatetags/django_tables2.py", line 168, in render
+    return template.render(context={"table": table}, request=request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 174, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 166, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 1052, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/loader_tags.py", line 56, in render
+    result = self.nodelist.render(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 1052, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/loader_tags.py", line 56, in render
+    result = self.nodelist.render(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 1052, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/loader_tags.py", line 56, in render
+    result = self.nodelist.render(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 1052, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/defaulttags.py", line 249, in render
+    nodelist.append(node.render_annotated(context))
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 1052, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/loader_tags.py", line 56, in render
+    result = self.nodelist.render(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 1052, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/defaulttags.py", line 201, in render
+    values = list(values)
+             ^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django_tables2/rows.py", line 226, in items
+    column.current_value = self.get_cell(column.name)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django_tables2/rows.py", line 188, in get_cell
+    return self._get_and_render_with(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django_tables2/rows.py", line 171, in _get_and_render_with
+    return render_func(bound_column, value)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django_tables2/rows.py", line 197, in _call_render
+    return bound_column.link(content, **render_kwargs) if bound_column.link else content
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django_tables2/columns/base.py", line 151, in __call__
+    attrs = self.get_attrs(**kwargs)
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django_tables2/columns/base.py", line 146, in get_attrs
+    attrs["href"] = self.compose_url(**kwargs)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django_tables2/columns/base.py", line 100, in compose_url
+    return call_with_appropriate(self.url, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django_tables2/utils.py", line 570, in call_with_appropriate
+    return fn(**kwargs)
+           ^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/exceptions.py", line 50, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/table/columns.py", line 50, in get_url
+    return table.view.cv_get_url("detail", obj=record)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/view/base.py", line 566, in cv_get_url
+    router_name, _args, kwargs = self.cv_get_router_and_args(key=key, obj=obj, extra_kwargs=extra_kwargs)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/view/base.py", line 533, in cv_get_router_and_args
+    cls = self.cv_get_cls_assert_object(key, obj)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/view/base.py", line 509, in cv_get_cls_assert_object
+    cls = self.cv_get_cls(key)
+          ^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/view/base.py", line 502, in cv_get_cls
+    cls = self.__class__ if key == self.cv_key else self.cv_viewset.get_view_class(key)
+                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/viewset/__init__.py", line 342, in get_view_class
+    cv_raise(self.is_view_registered(key), f"key {key} not registered at {self}", ViewSetKeyFoundError)
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/exceptions.py", line 29, in cv_raise
+    raise exception(msg)
+crud_views.lib.exceptions.ViewSetKeyFoundError: key detail not registered at publisher_cascade
+127.0.0.1 - - [31/Oct/2026 08:45:48] "GET /publisher_cascade/ HTTP/1.1" 500 415890
+127.0.0.1 - - [31/Oct/2026 08:45:48] "GET /state/1/ HTTP/1.1" 200 30
+127.0.0.1 - - [31/Oct/2026 08:45:48] "GET /harness/?target=%2Fpublisher_cascade%2F4%2Fdelete%2F HTTP/1.1" 200 3710
+127.0.0.1 - - [31/Oct/2026 08:45:48] "GET /publisher_cascade/4/delete/ HTTP/1.1" 200 3177
+127.0.0.1 - - [31/Oct/2026 08:45:49] "POST /publisher_cascade/4/delete/ HTTP/1.1" 204 0
+Internal Server Error: /publisher_cascade/
+Traceback (most recent call last):
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/core/handlers/base.py", line 221, in _get_response
+    response = response.render()
+               ^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/response.py", line 92, in rendered_content
+    return template.render(context, self._request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 174, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 166, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 1052, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/loader_tags.py", line 160, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 166, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 1052, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/loader_tags.py", line 160, in render
+    return compiled_parent._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 166, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 1052, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/loader_tags.py", line 66, in render
+    result = block.nodelist.render(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 1052, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/loader_tags.py", line 66, in render
+    result = block.nodelist.render(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 1052, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/loader_tags.py", line 211, in render
+    return template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 176, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 166, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 1052, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django_tables2/templatetags/django_tables2.py", line 168, in render
+    return template.render(context={"table": table}, request=request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/backends/django.py", line 107, in render
+    return self.template.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 174, in render
+    return self._render(context)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 166, in _render
+    return self.nodelist.render(context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 1052, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/loader_tags.py", line 56, in render
+    result = self.nodelist.render(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 1052, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/loader_tags.py", line 56, in render
+    result = self.nodelist.render(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 1052, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/loader_tags.py", line 56, in render
+    result = self.nodelist.render(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 1052, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/defaulttags.py", line 249, in render
+    nodelist.append(node.render_annotated(context))
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 1052, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/loader_tags.py", line 56, in render
+    result = self.nodelist.render(context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 1091, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/base.py", line 1052, in render_annotated
+    return self.render(context)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/template/defaulttags.py", line 201, in render
+    values = list(values)
+             ^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django_tables2/rows.py", line 226, in items
+    column.current_value = self.get_cell(column.name)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django_tables2/rows.py", line 188, in get_cell
+    return self._get_and_render_with(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django_tables2/rows.py", line 171, in _get_and_render_with
+    return render_func(bound_column, value)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django_tables2/rows.py", line 197, in _call_render
+    return bound_column.link(content, **render_kwargs) if bound_column.link else content
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django_tables2/columns/base.py", line 151, in __call__
+    attrs = self.get_attrs(**kwargs)
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django_tables2/columns/base.py", line 146, in get_attrs
+    attrs["href"] = self.compose_url(**kwargs)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django_tables2/columns/base.py", line 100, in compose_url
+    return call_with_appropriate(self.url, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django_tables2/utils.py", line 570, in call_with_appropriate
+    return fn(**kwargs)
+           ^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/exceptions.py", line 50, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/table/columns.py", line 50, in get_url
+    return table.view.cv_get_url("detail", obj=record)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/view/base.py", line 566, in cv_get_url
+    router_name, _args, kwargs = self.cv_get_router_and_args(key=key, obj=obj, extra_kwargs=extra_kwargs)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/view/base.py", line 533, in cv_get_router_and_args
+    cls = self.cv_get_cls_assert_object(key, obj)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/view/base.py", line 509, in cv_get_cls_assert_object
+    cls = self.cv_get_cls(key)
+          ^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/view/base.py", line 502, in cv_get_cls
+    cls = self.__class__ if key == self.cv_key else self.cv_viewset.get_view_class(key)
+                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/viewset/__init__.py", line 342, in get_view_class
+    cv_raise(self.is_view_registered(key), f"key {key} not registered at {self}", ViewSetKeyFoundError)
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/exceptions.py", line 29, in cv_raise
+    raise exception(msg)
+crud_views.lib.exceptions.ViewSetKeyFoundError: key detail not registered at publisher_cascade
+127.0.0.1 - - [31/Oct/2026 08:45:49] "GET /publisher_cascade/ HTTP/1.1" 500 413561
+127.0.0.1 - - [31/Oct/2026 08:45:49] "GET /state/4/ HTTP/1.1" 200 75

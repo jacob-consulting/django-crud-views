@@ -1,0 +1,36 @@
+{
+  "checker_sha256": "d03f5870180fba3e7b2d3879ccf774b848892547d84de45de92ca73c158cdd13",
+  "positive_baseline_exit": 0,
+  "results": [
+    {
+      "case": "failed case",
+      "exit_code": 1,
+      "rejected_for": "Failed assertions"
+    },
+    {
+      "case": "missing case",
+      "exit_code": 1,
+      "rejected_for": "Missing/duplicate case"
+    },
+    {
+      "case": "missing predicate",
+      "exit_code": 1,
+      "rejected_for": "Missing required assertion"
+    },
+    {
+      "case": "stale source",
+      "exit_code": 1,
+      "rejected_for": "Stale source hashes"
+    },
+    {
+      "case": "missing screenshot",
+      "exit_code": 1,
+      "rejected_for": "ENOENT"
+    },
+    {
+      "case": "page error",
+      "exit_code": 1,
+      "rejected_for": "Page errors"
+    }
+  ]
+}

@@ -9,15 +9,63 @@ globalThis.cv = globalThis.cv || {};
     function missing(name) {
         return new Error(`cv.adapters: Bootstrap 5 JavaScript not loaded (no ${name} on the namespace); load Bootstrap's bundle or assign cv.adapters.`);
     }
+    // One lifecycle observer per shell, shared by factory instances. Callback subscriptions
+    // are removed per session; the WeakMap and shell-owned listeners do not retain detached shells.
+    const modalLifecycles = new WeakMap();
+    function modalLifecycle(modalEl) {
+        let state = modalLifecycles.get(modalEl);
+        if (state) return state;
+        state = {hideEvent: null, pendingShow: null, subscribers: new Set()};
+        modalLifecycles.set(modalEl, state);
+        function showPending() {
+            const pending = state.pendingShow;
+            state.pendingShow = null;
+            if (pending && [...pending.subscribers].some(entry => state.subscribers.has(entry))) pending.show();
+        }
+        modalEl.addEventListener("hide.bs.modal", event => {
+            if (event.target !== modalEl) return;
+            state.hideEvent = event;
+            // Later listeners may prevent dismissal. Reconcile only after the full dispatch.
+            queueMicrotask(() => {
+                if (state.hideEvent === event && event.defaultPrevented) {
+                    state.hideEvent = null;
+                    for (const entry of state.subscribers) if (entry.skipHide === event) entry.skipHide = null;
+                    showPending();
+                }
+            });
+        });
+        modalEl.addEventListener("hidden.bs.modal", event => {
+            if (event.target !== modalEl) return;
+            state.hideEvent = null;
+            for (const entry of [...state.subscribers]) {
+                if (!state.subscribers.has(entry)) continue;
+                if (entry.skipHide) entry.skipHide = null;
+                else entry.callback();
+            }
+            // Bootstrap ignores show() during a hide transition. A replacement session
+            // waits for that old transition, without consuming its own hide subscription.
+            showPending();
+        });
+        return state;
+    }
     cv.bootstrapAdapters = function (ns) {
         return {
             modal: {
                 onHidden(modalEl, callback) {
-                    const hidden = event => { if (event.target === modalEl) callback(); };
-                    modalEl.addEventListener("hidden.bs.modal", hidden);
-                    return () => modalEl.removeEventListener("hidden.bs.modal", hidden);
+                    const state = modalLifecycle(modalEl), entry = {callback, skipHide: state.hideEvent};
+                    state.subscribers.add(entry);
+                    return () => {
+                        state.subscribers.delete(entry);
+                        if (!state.subscribers.size) state.pendingShow = null;
+                    };
                 },
-                show(modalEl) { const Modal = component(ns, "Modal"); if (!Modal) throw missing("Modal"); Modal.getOrCreateInstance(modalEl).show(); },
+                show(modalEl) {
+                    const Modal = component(ns, "Modal"); if (!Modal) throw missing("Modal");
+                    const state = modalLifecycle(modalEl);
+                    const show = () => Modal.getOrCreateInstance(modalEl).show();
+                    if (state.hideEvent) state.pendingShow = {show, subscribers: new Set(state.subscribers)};
+                    else show();
+                },
                 hide(modalEl) { component(ns, "Modal")?.getInstance(modalEl)?.hide(); },
                 setSize(dialogEl, size) {
                     // only the size classes change: a shell override may carry modal-dialog-centered etc.

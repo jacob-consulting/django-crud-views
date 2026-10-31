@@ -47,7 +47,7 @@ function cvModalUsable(el) {
     if (!(el instanceof HTMLElement) || !el.isConnected || !el.getClientRects().length) return false;
     if (el.matches(":disabled, [aria-disabled='true']")) return false;
     for (let node = el; node; node = node.parentElement) {
-        if (node.hidden || node.inert || node.getAttribute("aria-hidden") === "true") return false;
+        if (node.hidden || node.inert || node.hasAttribute("inert") || node.getAttribute("aria-hidden") === "true") return false;
         const style = getComputedStyle(node);
         if (style.display === "none" || style.visibility === "hidden" || style.visibility === "collapse") return false;
     }
@@ -104,8 +104,10 @@ function cvModalInject(html, recoverFocus = false) {
 
 function cvModalOpen(url, size, opener = document.activeElement) {
     const els = cvModalElements();
+    const replacingVisible = (cvModalSession?.shown || cvModalSession?.replacingVisible) &&
+        cvModalSession.modal === els.modal && cvModalUsable(els.modal);
     if (cvModalSession) cvModalRelease(cvModalSession);
-    const session = {modal: els.modal, opener, shown: false, unsubscribe: null};
+    const session = {modal: els.modal, opener, replacingVisible, shown: false, unsubscribe: null};
     cvModalSession = session;
     cvModalGeneration++;
     fetch(url, {headers: {"X-CV-Modal": "true"}})
@@ -135,7 +137,8 @@ function cvModalOpen(url, size, opener = document.activeElement) {
             }
             adapter.setSize(els.dialog, size || "");
             els.modal.setAttribute(CVModalConst.urlAttr, url);
-            cvModalInject(html);
+            session.shown = replacingVisible && cvModalUsable(els.modal);
+            cvModalInject(html, true);
             if (cvModalSession !== session) return;
             session.shown = true;
             adapter.show(els.modal);

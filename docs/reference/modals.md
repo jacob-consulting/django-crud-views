@@ -71,3 +71,18 @@ modal.addEventListener("cv:modal:unload", function () { /* tear them down; the o
 
 Rows that formsets add after page load get the analogous `cv:formset:row-added` event; see
 [Formsets](formsets.md#initializing-widgets-in-added-rows).
+
+## Keyboard focus
+
+Initial-show focus and trapping belong to the modal adapter. When a 422 response replaces the currently
+focused dialog control, core preserves usable focus assigned by a `cv:modal:loaded` listener. Otherwise it
+tries the first visible, enabled invalid field, then a dismiss control, then the shell. Hidden, inert,
+aria-hidden, disabled and disconnected targets are ignored. Direct injection outside an active session
+and replacement while focus is outside the content do not steal focus.
+
+After completed dismissal, focus returns to the actual opener (including clicks on nested icons). Calls to
+`cvModalOpen(url, size)` capture the active element before fetching. If that opener is no longer usable,
+core tries a visible main landmark, then an external focusable control, then the document body as a last
+resort. Any tabindex added to make a shell/landmark/body focusable is removed on blur; existing tabindex
+values are retained. Stale responses and hide callbacks cannot replace a newer session or steal its focus.
+See the required [completed-hide adapter lifecycle](javascript.md#a-non-bootstrap-modal).

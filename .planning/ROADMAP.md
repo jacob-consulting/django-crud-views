@@ -461,7 +461,7 @@ No architecture is chosen; do not run a blanket automatic `--fix` pass.
 The user explicitly added GUA-01 on 2026-10-30: AUTH-06’s residual review flag and IN-02/IN-03 transfer
 here unresolved, alongside #282 rather than as an amendment to the external issue.
 WR-01 was fixed separately in 6.2 by quick 261030-csg. IN-01/IN-04 are closed with rationale and IN-05 is fixed in 6.2.
-**Plans**: 16/17 plans executed; plan 10's concrete contract delta and bounded CT-01 scope are approved. Plan 11's selected native identity, plan 12's configured Guardian CT-01 and plan 13's declaring-owner boundary/migration controls pass on Django 4.2/6.0. Plan 14's absent native null joins pass 64 cases on all three series and 307 affected controls on 4.2/6.0. Plan 15's actual Guardian migration (3 tests), deletion recipes (33 tests) and strict docs pass with paired Breaking guidance. Two evidence/review plans (16–17) remain under the bound approval. All twelve human items remain pending; phase verification remains `gaps_found`.
+**Plans**: 17/17 plans executed. Plan 10's concrete contract delta and bounded CT-01 scope are approved; plans 11–15 supply four candidate repairs with paired migration guidance. Plan 16 records 2,011 focused passes per Django 4.2/5.2/6.0 series, full 7,507/7,508/7,508 passes with exact existing CSP/golden exclusions, JS234/docs/Ruff green and unchanged source/import identities. Plan 17 supplies the twelve-row final human ledger, 28 real browser screenshots and bounded repair/security/affected-6.2 reconciliation. UI-F01 focus loss after 422 is newly observed on unchanged JS and remains open. All twelve human dispositions and independent final review remain pending; phase verification remains `gaps_found`. Executed plans do not imply phase acceptance.
 
 Plans:
 **Wave 1**
@@ -508,8 +508,8 @@ Plans:
 **Wave 14** *(plan 16 complete; source-bound focused/full and quality evidence ready)*
 - [x] 06.3-16-PLAN.md — Fresh three-series automated evidence
 
-**Wave 15** *(ready; human dispositions and independent acceptance review remain pending)*
-- [ ] 06.3-17-PLAN.md — Human review and acceptance reconciliation
+**Wave 15** *(executed; human dispositions, UI-F01 and independent acceptance review remain pending)*
+- [x] 06.3-17-PLAN.md — Human review and acceptance reconciliation
 
 ### Phase 7: Theme-surface stability policy
 
@@ -576,5 +576,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 6. Form-button leaf | 10/10 | Complete    | 2026-10-28 |
 | 6.1. Cancel form button as a link | 3/3 | Complete    | 2026-10-29 |
 | 6.2. Request authorization and write integrity | 9/9 | Complete    | 2026-10-30 |
-| 6.3. Delete protection and write-boundary integrity | 16/17 | In Progress | - |
+| 6.3. Delete protection and write-boundary integrity | 17/17 | In Progress | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

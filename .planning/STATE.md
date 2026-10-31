@@ -4,16 +4,16 @@ milestone: v1.0
 current_phase: "06.3"
 current_phase_name: "Delete protection and write-boundary integrity — issue #282"
 status: in_progress
-stopped_at: Completed 06.3-16-PLAN.md; all source-bound three-series focused/full and quality gates pass; next plan 17; all twelve human items remain pending
-last_updated: "2026-10-31T00:18:22.128Z"
+stopped_at: Completed 06.3-17-PLAN.md; 17/17 executed, independent final review and all twelve human dispositions pending; UI-F01 focus finding open
+last_updated: "2026-10-31T00:28:26.173Z"
 last_activity: 2026-10-31
-last_activity_desc: Plan 16 complete; 6,033 focused and 22,523 full passing executions; all quality gates pass
-state_head: f8204fe06a3e251f2f885cc73d30538ba996c398
+last_activity_desc: Plan 17 complete; four repair candidates reviewable, twelve human dispositions pending, UI-F01 focus finding open
+state_head: 000d9af7cda732a00da76c0936dd2cc9dd7ae936
 progress:
   total_phases: 10
   completed_phases: 8
   total_plans: 53
-  completed_plans: 52
+  completed_plans: 53
 milestone_name: milestone
 ---
 
@@ -29,12 +29,12 @@ See: .planning/PROJECT.md (updated 2026-10-30)
 ## Current Position
 
 Phase: 06.3 (Delete protection and write-boundary integrity — issue #282) — IN PROGRESS
-Plan: 17 of 17 — next to execute; plans 01–16 complete
-Status: CR-01, CR-02, CR-03 and CT-01 bounded repair controls pass; final verification and human dispositions remain open
-Last activity: 2026-10-31 — 16-02 committed (f8204fe); three-series source-bound focused/full and all quality gates pass
+Plan: 17 of 17 — all plans executed; independent verification and final acceptance pending
+Status: Four repair candidates have source-bound evidence; all twelve human dispositions and UI-F01 focus finding remain open
+Last activity: 2026-10-31 — task commits 996bd82/a271dc9 and summary 000d9af; real browser packet and reconciliation delivered
 
-Progress: 52/53 plans executed; 8/10 phases complete. Phase 06.3 is not accepted.
-Next: Execute approved plan 17; preserve independent final verification and all twelve human dispositions.
+Progress: 53/53 plans executed; 8/10 phases complete. Phase 06.3 is not accepted.
+Next: Independent code/security/verifier review, UI-F01 disposition, then actual final owner responses to the twelve-item GAP-REVIEW ledger.
 
 ### Phase 06.3 gap execution approval
 
@@ -49,7 +49,8 @@ Next: Execute approved plan 17; preserve independent final verification and all 
 - Plan 14 is executed: absent native null joins retain exact counts, actual blockers, custom boundaries and unrelated parents.
 - Plan 15 is executed: actual Guardian migration/access, all deletion recipes and strict docs pass; Breaking guidance is paired.
 - Plan 16 is executed: all 2,011 focused cases per series and full 4.2/5.2/6.0 suites pass on identical source; JS234, strict docs and scoped Ruff pass. Exact existing CSP/golden exclusions remain recorded in MATRIX.
-- Plan 17 remains unexecuted under the bound contract. Do not repeat plans 10–16 or unchanged source/quality gates.
+- Plan 17 is executed: twelve-row actual-response ledger, 28 real browser screenshots, candidate repair/security/6.2 reconciliation and validation handoff. All twelve final responses remain absent; UI-F01 focus loss after 422 is newly observed on unchanged JS.
+- Do not repeat plans 10–17 or unchanged source/quality gates; independent final review is the next step.
 - Independent final verification and all twelve human items remain unresolved; AUTH-06/GUA-01 are not globally complete and phase acceptance is unchanged.
 
 ### Phase 06.3 gap planning
@@ -163,6 +164,7 @@ Next: Execute approved plan 17; preserve independent final verification and all 
 | Phase 06.3 P14 | 5min | 2 tasks | 8 files |
 | Phase 06.3 P15 | 5min | 2 tasks | 10 files |
 | Phase 06.3 P16 | 24min | 2 tasks | 66 files |
+| Phase 06.3 P17 | 6min measured artifact window; initial reads excluded | 2 tasks | 13 files |
 
 ## Accumulated Context
 
@@ -281,6 +283,9 @@ Recent decisions affecting current work:
 - [Phase 06.3]: 16: All three cached runtimes use explicit checkout imports; current-byte source/import/node/JUnit evidence proves focused/full assertions without reinstalling wheels.
 - [Phase 06.3]: 16: Reuse completed source/quality runs while source is unchanged; preserve exact checker capture revisions and independently revalidate after evidence-only fixes.
 - [Phase 06.3]: 16: All twelve human items and overall phase acceptance remain pending for plan 17 and independent review.
+- [Phase 06.3]: 17: Four concrete repair candidates await independent review; canonical verification and the current security gate remain open.
+- [Phase 06.3]: 17: All twelve final human dispositions remain pending; actual design approval authorizes the bound repair delta only.
+- [Phase 06.3]: 17: Real cached Chromium captures reveal UI-F01 focus loss after 422 on unchanged modal JS; keep it open without unreviewed product scope.
 
 ### Pending Todos
 
@@ -327,6 +332,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-31T00:18:21.346Z
-Stopped at: Completed 06.3-16-PLAN.md; all source-bound three-series focused/full and quality gates pass; next plan 17; all twelve human items remain pending
+Last session: 2026-10-31T00:28:25.476Z
+Stopped at: Completed 06.3-17-PLAN.md; 17/17 executed, independent final review and all twelve human dispositions pending; UI-F01 focus finding open
 Resume file: None

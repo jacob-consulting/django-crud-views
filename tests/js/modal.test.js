@@ -1,5 +1,5 @@
 import $ from "jquery";
-import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { loadScript, nav, resetNav } from "./helpers/load.js";
 import { modalSkeleton } from "./helpers/dom.js";
 
@@ -33,7 +33,7 @@ describe("modal.js", () => {
         show = vi.fn();
         hide = vi.fn();
         setSize = vi.fn();
-        window.cv = { ...window.cv, adapters: { modal: { show, hide, setSize } } };
+        window.cv = { ...window.cv, adapters: { modal: { show, hide, setSize, onHidden: () => () => {} } } };
     });
 
     describe("cvModalOpen", () => {
@@ -422,5 +422,127 @@ describe("modal.js", () => {
             vi.stubGlobal("$", $);
             vi.stubGlobal("jQuery", $);
         });
+    });
+});
+
+describe("modal focus lifecycle", () => {
+    let modal, content, opener, callbacks, cleanups, adapter, geometry;
+    const formHTML = '<form action="/save" novalidate><input id="field" required><button type="submit">Save</button></form><button id="close" data-cv-modal-dismiss>Close</button>';
+    beforeEach(() => {
+        modalSkeleton();
+        document.body.insertAdjacentHTML('afterbegin', '<main id="main"><button id="opener">Open</button><button id="alternate"><span id="icon">Alt</span></button></main>');
+        modal = document.getElementById('cv-modal'); content = document.getElementById('cv-modal-content');
+        opener = document.getElementById('opener'); callbacks = []; cleanups = [];
+        // jsdom has no layout. Model rendered geometry only; focus and DOM lifecycle are real.
+        geometry = vi.spyOn(HTMLElement.prototype, 'getClientRects').mockImplementation(function () {
+            return this.hidden || this.style.display === 'none' || this.type === 'hidden' ? [] : [{width: 20, height: 20}];
+        });
+        adapter = {
+            show: vi.fn(() => { modal.removeAttribute('aria-hidden'); modal.focus(); }),
+            hide: vi.fn(), setSize: vi.fn(),
+            onHidden: vi.fn((_el, callback) => { const cleanup = vi.fn(); callbacks.push(callback); cleanups.push(cleanup); return cleanup; }),
+        };
+        window.cv.adapters = {modal: adapter};
+    });
+    afterEach(() => { geometry.mockRestore(); });
+    async function open(html = formHTML, trigger = opener) {
+        adapter.show.mockClear(); trigger.focus(); stubFetch(textResponse(html)); window.cv.cvModalOpen('/open', '');
+        await vi.waitFor(() => expect(adapter.show).toHaveBeenCalled());
+    }
+    async function replace(html) {
+        const loaded = new Promise(resolve => modal.addEventListener("cv:modal:loaded", resolve, {once: true}));
+        stubFetch(textResponse(html, {status: 422})); window.cv.cvModalSubmit(content.querySelector("form"));
+        await loaded;
+    }
+    function complete(index = callbacks.length - 1) {
+        modal.setAttribute('aria-hidden', 'true'); callbacks[index]();
+    }
+    it('does not steal focus before initial show or when injecting without a session', async () => {
+        opener.focus(); window.cv.cvModalInject(formHTML); expect(document.activeElement).toBe(opener);
+        adapter.show.mockImplementation(() => { expect(document.activeElement).toBe(opener); modal.removeAttribute('aria-hidden'); modal.focus(); });
+        await open(); expect(document.activeElement).toBe(modal);
+    });
+    it('keeps usable focus assigned by loaded listeners after 422', async () => {
+        await open(); content.querySelector('input').focus();
+        modal.addEventListener('cv:modal:loaded', () => content.querySelector('#close').focus(), {once: true});
+        await replace(formHTML.replace('id="field"', 'id="replacement"'));
+        expect(document.activeElement.id).toBe('close');
+    });
+    it('ignores hidden, disabled, inert and aria-hidden invalid fields', async () => {
+        await open(); content.querySelector('input').focus();
+        await replace('<input required hidden><input required disabled><div inert><input required></div><div aria-hidden="true"><input required></div><input required id="valid-target">');
+        expect(document.activeElement.id).toBe('valid-target');
+    });
+    it('tries dismiss then shell when invalid candidates cannot take focus and restores only added tabindex', async () => {
+        await open(); content.querySelector('input').focus();
+        modal.removeAttribute('tabindex');
+        await replace('<div aria-invalid="true">Not focusable</div><button disabled data-cv-modal-dismiss>Unavailable</button>');
+        expect(document.activeElement).toBe(modal); expect(modal.getAttribute('tabindex')).toBe('-1');
+        complete(); expect(document.activeElement).toBe(opener); expect(modal.hasAttribute('tabindex')).toBe(false);
+    });
+    it('does not recover if the active element is outside the replaced content', async () => {
+        await open(); opener.focus(); await replace('<input required id="replacement">'); expect(document.activeElement).toBe(opener);
+    });
+    it('waits for async hide completion; a prevented hide does not restore focus', async () => {
+        await open(); const close = content.querySelector('#close'); close.focus(); close.click();
+        expect(adapter.hide).toHaveBeenCalled(); expect(document.activeElement).toBe(close); expect(cleanups[0]).not.toHaveBeenCalled();
+        complete(); expect(document.activeElement).toBe(opener); expect(cleanups[0]).toHaveBeenCalledTimes(1);
+        document.getElementById('alternate').focus(); callbacks[0](); expect(document.activeElement.id).toBe('alternate');
+    });
+    it('supports synchronous completed hide and cleans the subscription', async () => {
+        await open(); adapter.hide.mockImplementation(() => complete()); content.querySelector('#close').click();
+        expect(document.activeElement).toBe(opener); expect(cleanups[0]).toHaveBeenCalledTimes(1);
+    });
+    it.each(['removed', 'disabled', 'hidden', 'inert', 'aria-hidden'])('uses main when opener is %s, cleaning temporary tabindex on blur', async (kind) => {
+        await open();
+        if (kind === 'removed') opener.remove(); else if (kind === 'aria-hidden') opener.setAttribute(kind, 'true'); else opener[kind] = true;
+        complete(); const main = document.getElementById('main'); expect(document.activeElement).toBe(main); expect(main.getAttribute('tabindex')).toBe('-1');
+        document.getElementById('alternate').focus(); expect(main.hasAttribute('tabindex')).toBe(false);
+    });
+    it('keeps existing landmark tabindex and uses external control then body as last resorts', async () => {
+        await open(); const main = document.getElementById('main'); main.setAttribute('tabindex', '0'); opener.remove(); complete();
+        expect(document.activeElement).toBe(main); document.getElementById('alternate').focus(); expect(main.getAttribute('tabindex')).toBe('0');
+        await open(formHTML, document.getElementById('alternate')); document.querySelector('main').remove();
+        document.body.insertAdjacentHTML('beforeend', '<button id="fallback">Fallback</button>'); complete(); expect(document.activeElement.id).toBe('fallback');
+        await open(formHTML, document.getElementById('fallback')); document.getElementById('fallback').remove(); complete();
+        expect(document.activeElement).toBe(document.body); expect(document.body.getAttribute('tabindex')).toBe('-1');
+        modal.removeAttribute('aria-hidden'); modal.focus(); expect(document.body.hasAttribute('tabindex')).toBe(false);
+    });
+    it('captures the delegated trigger when a nested icon was clicked', async () => {
+        const alternate = document.getElementById('alternate'); alternate.setAttribute('data-cv-modal', 'true'); alternate.setAttribute('href', '/open');
+        opener.focus(); stubFetch(textResponse(formHTML)); document.getElementById('icon').click();
+        await vi.waitFor(() => expect(adapter.show).toHaveBeenCalled()); complete(); expect(document.activeElement).toBe(alternate);
+    });
+    it('ignores stale hidden callbacks after a new open and releases previous subscriptions', async () => {
+        await open(); const old = callbacks[0]; adapter.show.mockClear(); await open(formHTML, document.getElementById('alternate'));
+        expect(cleanups[0]).toHaveBeenCalledTimes(1); const active = document.activeElement; old(); expect(document.activeElement).toBe(active);
+        complete(); expect(document.activeElement.id).toBe('alternate'); expect(cleanups[1]).toHaveBeenCalledTimes(1);
+    });
+    it.each(['hidden', 'replaced'])('ignores a late 422 after the session is %s', async kind => {
+        await open(); let resolve; vi.stubGlobal('fetch', () => new Promise(r => { resolve = r; }));
+        window.cv.cvModalSubmit(content.querySelector('form'));
+        if (kind === 'hidden') complete(); else { adapter.show.mockClear(); await open('<p>new session</p>', document.getElementById('alternate')); }
+        const previous = content.innerHTML, active = document.activeElement;
+        resolve(textResponse('<input required id="stale">', {status: 422})); await new Promise(r => setTimeout(r, 0));
+        expect(content.innerHTML).toBe(previous); expect(document.activeElement).toBe(active);
+    });
+    it('ignores an old open response and old request errors after a newer open', async () => {
+        let resolve; vi.stubGlobal('fetch', () => new Promise(r => { resolve = r; })); window.cv.cvModalOpen('/old', '');
+        await open('<p>new</p>'); resolve(textResponse('<p>old</p>')); await new Promise(r => setTimeout(r, 0));
+        expect(content.innerHTML).toBe('<p>new</p>'); expect(nav.assign).not.toHaveBeenCalled();
+    });
+    it.each([undefined, () => null])('falls back before injection for missing/malformed lifecycle hooks', async hook => {
+        adapter.onHidden = hook; const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+        try { stubFetch(textResponse(formHTML)); window.cv.cvModalOpen('/open', '');
+            await vi.waitFor(() => expect(nav.assign).toHaveBeenCalledWith('/open'));
+            expect(content.innerHTML).toBe(''); expect(adapter.show).not.toHaveBeenCalled(); expect(error).toHaveBeenCalled();
+        } finally { error.mockRestore(); }
+    });
+    it('unsubscribes after a failed show', async () => {
+        adapter.show.mockImplementation(() => { throw new Error('failed show'); });
+        const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+        try { stubFetch(textResponse(formHTML)); window.cv.cvModalOpen('/open'); await vi.waitFor(() => expect(nav.assign).toHaveBeenCalled());
+            expect(cleanups[0]).toHaveBeenCalledTimes(1);
+        } finally { error.mockRestore(); }
     });
 });

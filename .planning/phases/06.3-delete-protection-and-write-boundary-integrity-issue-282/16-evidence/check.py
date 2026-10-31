@@ -22,7 +22,8 @@ def load(label, kind, series, expected):
     assert record["source_sha256"] == record["source_after_sha256"] == source()["sha256"], label
     # Preserve the exact checker captured by early sessions, then independently validate with this stricter revision.
     assert record["tools"]["run.py"] == sha(HERE / "run.py"), label
-    assert record["tools"]["check.py"] in {sha(HERE / "check.py"), sha(HERE / "capture-check.py")}, label
+    captured_checkers = {sha(HERE / name) for name in ("check.py", "capture-check.py", "focused-check.py")}
+    assert record["tools"]["check.py"] in captured_checkers, label
     for suffix, digest in record["artifacts"].items():
         assert sha(HERE / f"{label}.{suffix}") == digest, (label, suffix)
     assert "log" in record["artifacts"], label
@@ -82,8 +83,15 @@ def load(label, kind, series, expected):
             len(cases) == len(nodes["nodes"]) and not junit.findall(".//failure") and not junit.findall(".//error")
         ), label
         assert len(junit.findall(".//skipped")) == len(skips), label
-        junit_nodes = {case.attrib["classname"].replace(".", "/") + ".py::" + case.attrib["name"] for case in cases}
-        assert junit_nodes == set(nodes["nodes"]), (label, "JUnit node mismatch")
+        expected_cases = set()
+        for node in nodes["nodes"]:
+            module, remainder = node.split("::", 1)
+            qualified, bracket, parameters = remainder.partition("[")
+            *classes, name = qualified.split("::")
+            classname = ".".join([module.removesuffix(".py").replace("/", "."), *classes])
+            expected_cases.add((classname, name + bracket + parameters))
+        junit_cases = {(case.attrib["classname"], case.attrib["name"]) for case in cases}
+        assert junit_cases == expected_cases, (label, "JUnit node mismatch")
     print(
         json.dumps(
             {

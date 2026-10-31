@@ -2,9 +2,9 @@
 schema_version: 1
 open_count: 6
 waived_count: 0
-fixed_count: 8
-total_count: 14
-last_updated: 2026-10-31T00:01:09.404Z
+fixed_count: 9
+total_count: 15
+last_updated: 2026-10-31T00:05:46.035Z
 ---
 
 # Broken Windows Ledger
@@ -29,6 +29,7 @@ last_updated: 2026-10-31T00:01:09.404Z
 | 12 | 06.3 | deviation | tests/test1/test_delete.py | 1397 | Plan 13 synthetic deletion metadata fixtures now supply declaring field owners; directly impacted compatibility correction verified on Django 4.2 and 6.0. | fixed |  | 2026-10-30T23:41:34.442Z | 2026-10-30T23:41:41.882Z |
 | 13 | 06.3 | deviation | src/crud_views/lib/deletion.py | 258 | Fixed absent nullable parent joins in _native_parent_rows alongside inspection; prevents unrelated null-key parent deletion. | fixed |  | 2026-10-30T23:46:34.873Z | 2026-10-30T23:47:17.135Z |
 | 14 | 06.3 | deviation | .planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/16-evidence/check.py |  | Plan 16 checker now independently validates overlapping package and imported-module hashes; original capture checker retained and 11 invalid variants rejected. | fixed |  | 2026-10-31T00:00:58.208Z | 2026-10-31T00:01:09.404Z |
+| 15 | 06.3 | deviation | .planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/16-evidence/check.py |  | Plan 16 JUnit reconciliation now handles class-qualified full-suite nodes; copied class controls pass and mismatches reject, without repeating unchanged product suites. | fixed |  | 2026-10-31T00:05:45.859Z | 2026-10-31T00:05:46.035Z |
 
 ````json
 [
@@ -203,6 +204,19 @@ last_updated: 2026-10-31T00:01:09.404Z
     "reason": "",
     "recorded_at": "2026-10-31T00:00:58.208Z",
     "resolved_at": "2026-10-31T00:01:09.404Z",
+    "milestone": "v1.0"
+  },
+  {
+    "id": 15,
+    "kind": "deviation",
+    "phase": "06.3",
+    "file": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/16-evidence/check.py",
+    "line": null,
+    "description": "Plan 16 JUnit reconciliation now handles class-qualified full-suite nodes; copied class controls pass and mismatches reject, without repeating unchanged product suites.",
+    "status": "fixed",
+    "reason": "",
+    "recorded_at": "2026-10-31T00:05:45.859Z",
+    "resolved_at": "2026-10-31T00:05:46.035Z",
     "milestone": "v1.0"
   }
 ]

@@ -461,7 +461,7 @@ No architecture is chosen; do not run a blanket automatic `--fix` pass.
 The user explicitly added GUA-01 on 2026-10-30: AUTH-06’s residual review flag and IN-02/IN-03 transfer
 here unresolved, alongside #282 rather than as an amendment to the external issue.
 WR-01 was fixed separately in 6.2 by quick 261030-csg. IN-01/IN-04 are closed with rationale and IN-05 is fixed in 6.2.
-**Plans**: 17/17 plans executed. Plan 10's concrete contract delta and bounded CT-01 scope are approved; plans 11–15 supply four candidate repairs with paired migration guidance. Plan 16 records 2,011 focused passes per Django 4.2/5.2/6.0 series, full 7,507/7,508/7,508 passes with exact existing CSP/golden exclusions, JS234/docs/Ruff green and unchanged source/import identities. Plan 17 supplies the twelve-row final human ledger, 28 real browser screenshots and bounded repair/security/affected-6.2 reconciliation. UI-F01 focus loss after 422 is newly observed on unchanged JS and remains open. All twelve human dispositions and independent final review remain pending; phase verification remains `gaps_found`. Executed plans do not imply phase acceptance.
+**Plans**: 20 plans — 17 executed, 3 new gap-closure plans pending. Independent verification closes CR-01/02/03 and CT-01 within their recorded scope; CR-04/UI-F01 modal focus and twelve human dispositions remain. Plans 18–20 review the concrete focus/adapter contract, repair and prove the real browser lifecycle, then record individual final dispositions. The new required custom-adapter migration needs its own bound maintainer approval before implementation. Existing backend matrix and historical evidence remain intact; phase verification remains `gaps_found` and executed plans do not imply acceptance.
 
 Plans:
 **Wave 1**
@@ -510,6 +510,15 @@ Plans:
 
 **Wave 15** *(executed; human dispositions, UI-F01 and independent acceptance review remain pending)*
 - [x] 06.3-17-PLAN.md — Human review and acceptance reconciliation
+
+**Wave 16** *(new; concrete FOCUS-DESIGN is reviewable, approval pending)*
+- [ ] 06.3-18-PLAN.md — Bound focus lifecycle contract and maintainer decision
+
+**Wave 17** *(blocked on Wave 16 approval)*
+- [ ] 06.3-19-PLAN.md — Modal focus repair, actual browser regressions and adapter migration
+
+**Wave 18** *(blocked on Wave 17 proof)*
+- [ ] 06.3-20-PLAN.md — Current review packet and twelve individual human dispositions
 
 ### Phase 7: Theme-surface stability policy
 

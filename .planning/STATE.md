@@ -4,10 +4,10 @@ milestone: v1.0
 current_phase: "06.3"
 current_phase_name: "Delete protection and write-boundary integrity — issue #282"
 status: gaps_found
-stopped_at: Phase 06.3 gap plans 18–20 planned and checked; focus design approval and twelve human dispositions remain
+stopped_at: Phase 06.3 task 18-01 committed; task 18-02 awaits actual focus-contract approval
 last_updated: "2026-10-31T08:08:02.321Z"
 last_activity: 2026-10-31
-last_activity_desc: Plans 18–20 and concrete focus design passed independent plan review; implementation pending
+last_activity_desc: Focus review packet bound and validated; blocking-human decision at task 18-02
 state_head: c6e703795e759f47c0f3f823f96cbe365e45529a
 progress:
   total_phases: 10
@@ -28,13 +28,21 @@ See: .planning/PROJECT.md (updated 2026-10-30)
 
 ## Current Position
 
-Phase: 06.3 (Delete protection and write-boundary integrity — issue #282) — READY TO EXECUTE
-Plan: 17 of 20 executed — gap plans 18–20 ready; independent phase verification remains gaps_found (75/81)
+Phase: 06.3 (Delete protection and write-boundary integrity — issue #282) — AWAITING DESIGN DECISION
+Plan: 17 of 20 executed — plan 18 task 1 of 2 complete; independent phase verification remains gaps_found (75/81)
 Status: CR-01/02/03 and CT-01 closed; CR-04/UI-F01 focus blocker and twelve human dispositions remain
-Last activity: 2026-10-31 — focus gap plans 18–20 passed plan review and coverage checks; no phase advancement
+Last activity: 2026-10-31 — task 18-01 committed in bda8e96; checkpoint summary in 8733759; no phase advancement
 
-Progress: 53/53 plans executed; 8/10 phases complete. Phase 06.3 is not accepted.
-Next: `$gsd-plan-phase 06.3 --gaps` for CR-04/UI-F01; retain twelve-item GAP-REVIEW ledger for actual owner dispositions.
+Progress: 53/56 plans executed; 8/10 phases complete. Phase 06.3 is not accepted.
+Next: Actual maintainer response to task 18-02 for FOCUS-DESIGN and plans 18–20; then record bound approval before plan 19. Retain twelve-item GAP-REVIEW ledger for later individual owner dispositions.
+
+### Phase 06.3 focus approval checkpoint
+
+- Review binding covers FOCUS-DESIGN and plans 18–20 at revision 3f44f5cbeb2d1c62c4c51977d3234d12c14b50e1.
+- Task 18-01: FOCUS_REVIEWABLE passes; 28 temporary-copy positive/negative controls and scoped Ruff pass.
+- Task 18-02 remains blocking-human. No FOCUS-APPROVAL.md or actual response exists; real approval gate correctly fails.
+- Resume from the recorded checkpoint, not task 18-01. Plan 18 SUMMARY is halted, not complete; plans 19/20 remain dependent.
+- No product source changed; twelve final human acceptance items and canonical gaps_found remain unchanged.
 
 ### Phase 06.3 gap execution approval
 

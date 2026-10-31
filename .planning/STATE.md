@@ -3,12 +3,12 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "06.3"
 current_phase_name: "Delete protection and write-boundary integrity — issue #282"
-status: in_progress
-stopped_at: Completed 06.3-17-PLAN.md; 17/17 executed, independent final review and all twelve human dispositions pending; UI-F01 focus finding open
-last_updated: "2026-10-31T00:28:26.173Z"
+status: gaps_found
+stopped_at: Phase 06.3 gap plans 10–17 executed; verified 75/81; CR-04/UI-F01 and twelve human dispositions remain
+last_updated: "2026-10-31T00:49:42.341013+00:00"
 last_activity: 2026-10-31
-last_activity_desc: Plan 17 complete; four repair candidates reviewable, twelve human dispositions pending, UI-F01 focus finding open
-state_head: 000d9af7cda732a00da76c0936dd2cc9dd7ae936
+last_activity_desc: Independent verification closes four repairs; modal focus blocker and human dispositions remain
+state_head: 63621db16e2b660b956a26a00fd449d0a903b1e4
 progress:
   total_phases: 10
   completed_phases: 8
@@ -28,13 +28,13 @@ See: .planning/PROJECT.md (updated 2026-10-30)
 
 ## Current Position
 
-Phase: 06.3 (Delete protection and write-boundary integrity — issue #282) — IN PROGRESS
-Plan: 17 of 17 — all plans executed; independent verification and final acceptance pending
-Status: Four repair candidates have source-bound evidence; all twelve human dispositions and UI-F01 focus finding remain open
-Last activity: 2026-10-31 — task commits 996bd82/a271dc9 and summary 000d9af; real browser packet and reconciliation delivered
+Phase: 06.3 (Delete protection and write-boundary integrity — issue #282) — GAPS FOUND
+Plan: 17 of 17 executed — independent verification gaps_found (75/81)
+Status: CR-01/02/03 and CT-01 closed; CR-04/UI-F01 focus blocker and twelve human dispositions remain
+Last activity: 2026-10-31 — final code/security/verifier review complete; no phase advancement
 
 Progress: 53/53 plans executed; 8/10 phases complete. Phase 06.3 is not accepted.
-Next: Independent code/security/verifier review, UI-F01 disposition, then actual final owner responses to the twelve-item GAP-REVIEW ledger.
+Next: `$gsd-plan-phase 06.3 --gaps` for CR-04/UI-F01; retain twelve-item GAP-REVIEW ledger for actual owner dispositions.
 
 ### Phase 06.3 gap execution approval
 
@@ -50,8 +50,8 @@ Next: Independent code/security/verifier review, UI-F01 disposition, then actual
 - Plan 15 is executed: actual Guardian migration/access, all deletion recipes and strict docs pass; Breaking guidance is paired.
 - Plan 16 is executed: all 2,011 focused cases per series and full 4.2/5.2/6.0 suites pass on identical source; JS234, strict docs and scoped Ruff pass. Exact existing CSP/golden exclusions remain recorded in MATRIX.
 - Plan 17 is executed: twelve-row actual-response ledger, 28 real browser screenshots, candidate repair/security/6.2 reconciliation and validation handoff. All twelve final responses remain absent; UI-F01 focus loss after 422 is newly observed on unchanged JS.
-- Do not repeat plans 10–17 or unchanged source/quality gates; independent final review is the next step.
-- Independent final verification and all twelve human items remain unresolved; AUTH-06/GUA-01 are not globally complete and phase acceptance is unchanged.
+- Do not repeat plans 10–17 or unchanged source/quality gates. Independent final review is complete.
+- Independent code review closes CR-01/02/03 and CT-01; security confirms all31declared mitigations. Canonical VERIFICATION is gaps_found,75/81; CR-04/UI-F01 focus loss and all twelve human items remain open. AUTH-06/GUA-01 are not globally complete; no phase.complete or next-phase advancement.
 
 ### Phase 06.3 gap planning
 
@@ -332,6 +332,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-31T00:28:25.476Z
-Stopped at: Completed 06.3-17-PLAN.md; 17/17 executed, independent final review and all twelve human dispositions pending; UI-F01 focus finding open
+Last session: 2026-10-31T00:49:42.341013+00:00
+Stopped at: Phase 06.3 gap plans 10–17 executed; verified 75/81; CR-04/UI-F01 and twelve human dispositions remain
 Resume file: None

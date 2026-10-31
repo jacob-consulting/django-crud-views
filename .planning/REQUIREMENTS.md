@@ -84,13 +84,13 @@ Phase 6.2 retained-scope verification and UAT passed on 2026-10-30. This does no
 
 | Requirement | Retained Phase 6.2 evidence | Outstanding obligation / owner |
 | --- | --- | --- |
-| AUTH-01 | HTTP DELETE rejection and named POST form/hook/atomic controls | CR-02/03/04: callback-safe inspection, unknown-error propagation and database alignment → 6.3; overall unresolved |
+| AUTH-01 | HTTP DELETE rejection and named POST form/hook/atomic controls | Concrete deletion/write repairs independently verified; phase acceptance and human dispositions pending |
 | AUTH-02 | Fragment authorization/ancestry and first-child round trips | A19 sibling-index round trip → proposed 6.4, not 6.3; IN-04 closed as documented integer/UUID-only fragment boundary |
-| AUTH-03 | Permitted protected labels, independent notice, fixed CR-01/WR-02 response scope | CR-02/04: obtain blocked state without callbacks and from the target database → 6.3; overall unresolved |
+| AUTH-03 | Permitted protected labels, independent notice, fixed CR-01/WR-02 response scope | Authorization/projection regressions pass; CR-04/UI-F01 modal focus blocker remains |
 | AUTH-04 | Parent-None dispatch and Guardian helper/state regressions | WR-01 core rendered-state agreement fixed by quick 261030-csg (bd31992); 25 core and 86 preservation cases pass on both supported cached versions; retained-scope verification and UAT passed on 2026-10-30 |
 | AUTH-05 | Named inactive-actor request/helper regressions | Retain recorded evidence; no new result or broader certification |
-| AUTH-06 | Named per-view configuration, helper and manage regressions | Unspecified review flag and IN-02/IN-03 → Phase 6.3 GUA-01, unresolved; IN-05 composition guard fixed; checked item covers named evidence only |
-| AUTH-07 | Recorded actor/native-template replay and paired documentation | Real-preview, converter, routing and preservation re-review → 6.3; existing suite passes do not cover CR-02–CR-04 |
+| AUTH-06 | Named per-view configuration, helper and manage regressions | Named 6.2 evidence retained; bounded CT-01 fixed; residual unidentified flag/precision → GUA-01 pending |
+| AUTH-07 | Recorded actor/native-template replay and paired documentation | Fresh three-series evidence and migrations verified; final phase acceptance pending |
 
 ### Delete protection remediation and bounded Guardian policy review (Phase 6.3)
 
@@ -191,20 +191,20 @@ Which phases cover which requirements. Updated during roadmap creation.
 | FORM-11 | Phase 6 (plan 2) | Complete |
 | FORM-12 | Phase 6 (plan 2) | Complete |
 | FORM-13 | Phase 6 (plan 2) | Complete |
-| AUTH-01 | Phase 6.2 + 6.3 | Partial; CR-02–CR-04 unresolved in 6.3 |
+| AUTH-01 | Phase 6.2 + 6.3 | Concrete deletion/write repairs independently verified; phase acceptance and human dispositions pending |
 | AUTH-02 | Phase 6.2 | Named evidence retained; A19 open; IN-04 documented unsupported boundary |
-| AUTH-03 | Phase 6.2 + 6.3 | Partial; CR-02/CR-04 unresolved in 6.3 |
+| AUTH-03 | Phase 6.2 + 6.3 | Authorization/projection regressions pass; CR-04/UI-F01 modal focus blocker remains |
 | AUTH-04 | Phase 6.2 | Complete; WR-01 fixed; verification/UAT passed |
 | AUTH-05 | Phase 6.2 | Complete |
-| AUTH-06 | Phase 6.2 + 6.3 | Named 6.2 evidence retained; residual flag and IN-02/03 → GUA-01; IN-05 fixed |
-| AUTH-07 | Phase 6.2 + 6.3 | Partial; #282 re-review pending in 6.3 |
-| DEL-01 | Phase 6.3 | Pending; unresolved |
-| DEL-02 | Phase 6.3 | Pending; unresolved |
-| DEL-03 | Phase 6.3 | Pending; unresolved |
-| DEL-04 | Phase 6.3 | Partial; CR-01 selected native identity repaired in plan 11; integrated verification and DEL-04-unclassified pending |
-| DEL-05 | Phase 6.3 | Pending; unresolved |
-| DEL-06 | Phase 6.3 | Pending; unresolved |
-| GUA-01 | Phase 6.3 | Pending; AUTH-06 review flag and IN-02/03 unresolved |
+| AUTH-06 | Phase 6.2 + 6.3 | Named 6.2 evidence retained; bounded CT-01 fixed; residual unidentified flag/precision → GUA-01 pending |
+| AUTH-07 | Phase 6.2 + 6.3 | Fresh three-series evidence and migrations verified; final phase acceptance pending |
+| DEL-01 | Phase 6.3 | Actual design and repair-delta approval recorded; DEL-01-unclassified/prohibition-01 pending |
+| DEL-02 | Phase 6.3 | Callback-safe inspection and repaired owner/null joins verified; final human dispositions pending |
+| DEL-03 | Phase 6.3 | Native/custom exception provenance verified; DEL-03-unclassified pending |
+| DEL-04 | Phase 6.3 | Selected native row/parent identity independently verified; DEL-04-unclassified pending |
+| DEL-05 | Phase 6.3 | Authorization and partial notices verified; CR-04/UI-F01 focus blocker open |
+| DEL-06 | Phase 6.3 | Three-series full/quality and migrations verified; CR-04 and final human acceptance pending |
+| GUA-01 | Phase 6.3 | Bounded CT-01 repaired; IN-02/03 evidence retained; unidentified AUTH-06 and GUA-precision pending |
 | STAB-01 | Phase 7 (plan 4) | Pending |
 | STAB-02 | Phase 7 (plan 4) | Pending |
 | STAB-03 | Phase 7 (plan 4) | Pending |

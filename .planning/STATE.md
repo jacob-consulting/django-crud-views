@@ -4,16 +4,16 @@ milestone: v1.0
 current_phase: "06.3"
 current_phase_name: "Delete protection and write-boundary integrity — issue #282"
 status: in_progress
-stopped_at: Completed 06.3-15-PLAN.md; executable migrations and strict docs pass; next plan 16; all twelve human items remain pending
-last_updated: "2026-10-30T23:51:46.500Z"
-last_activity: 2026-10-30
-last_activity_desc: Plan 15 complete; 3 Guardian recipe tests, 33 deletion recipes and strict docs pass
-state_head: a14f7022ff68de2f55fa13411e3c717b9f5a0dfe
+stopped_at: Completed 06.3-16-PLAN.md; all source-bound three-series focused/full and quality gates pass; next plan 17; all twelve human items remain pending
+last_updated: "2026-10-31T00:18:22.128Z"
+last_activity: 2026-10-31
+last_activity_desc: Plan 16 complete; 6,033 focused and 22,523 full passing executions; all quality gates pass
+state_head: f8204fe06a3e251f2f885cc73d30538ba996c398
 progress:
   total_phases: 10
   completed_phases: 8
   total_plans: 53
-  completed_plans: 51
+  completed_plans: 52
 milestone_name: milestone
 ---
 
@@ -29,12 +29,12 @@ See: .planning/PROJECT.md (updated 2026-10-30)
 ## Current Position
 
 Phase: 06.3 (Delete protection and write-boundary integrity — issue #282) — IN PROGRESS
-Plan: 16 of 17 — next to execute; plans 01–15 complete
+Plan: 17 of 17 — next to execute; plans 01–16 complete
 Status: CR-01, CR-02, CR-03 and CT-01 bounded repair controls pass; final verification and human dispositions remain open
-Last activity: 2026-10-30 — 15-02 committed (a14f702); 3 Guardian migration tests, 33 deletion recipes and strict docs pass
+Last activity: 2026-10-31 — 16-02 committed (f8204fe); three-series source-bound focused/full and all quality gates pass
 
-Progress: 51/53 plans executed; 8/10 phases complete. Phase 06.3 is not accepted.
-Next: Execute approved plans 16–17; preserve independent final verification and all twelve human dispositions.
+Progress: 52/53 plans executed; 8/10 phases complete. Phase 06.3 is not accepted.
+Next: Execute approved plan 17; preserve independent final verification and all twelve human dispositions.
 
 ### Phase 06.3 gap execution approval
 
@@ -48,7 +48,8 @@ Next: Execute approved plans 16–17; preserve independent final verification an
 - Plan 13 is executed: declaring-owner boundaries, partial notices and actual owner-qualified migration recipes pass.
 - Plan 14 is executed: absent native null joins retain exact counts, actual blockers, custom boundaries and unrelated parents.
 - Plan 15 is executed: actual Guardian migration/access, all deletion recipes and strict docs pass; Breaking guidance is paired.
-- Plans 16–17 remain unexecuted under the bound contract. Do not repeat plans 10–15.
+- Plan 16 is executed: all 2,011 focused cases per series and full 4.2/5.2/6.0 suites pass on identical source; JS234, strict docs and scoped Ruff pass. Exact existing CSP/golden exclusions remain recorded in MATRIX.
+- Plan 17 remains unexecuted under the bound contract. Do not repeat plans 10–16 or unchanged source/quality gates.
 - Independent final verification and all twelve human items remain unresolved; AUTH-06/GUA-01 are not globally complete and phase acceptance is unchanged.
 
 ### Phase 06.3 gap planning
@@ -161,6 +162,7 @@ Next: Execute approved plans 16–17; preserve independent final verification an
 | Phase 06.3 P13 | 7min | 2 tasks | 19 files |
 | Phase 06.3 P14 | 5min | 2 tasks | 8 files |
 | Phase 06.3 P15 | 5min | 2 tasks | 10 files |
+| Phase 06.3 P16 | 24min | 2 tasks | 66 files |
 
 ## Accumulated Context
 
@@ -276,6 +278,9 @@ Recent decisions affecting current work:
 - [Phase 06.3]: Apply absent-null-join semantics to native reverse/parent inspection and selected parent collection; preserve unknown owner boundaries and propagate read errors.
 - [Phase 06.3]: Keep owner-qualified unknown handlers incomplete even for null joins; ordinary confirmation remains available and real custom effects execute only for actual matches.
 - [Phase 06.3]: 15: Publish configured Guardian type migration with real grants and registered-list fence execution; preserve explicit maps, startup caches and all twelve pending human items.
+- [Phase 06.3]: 16: All three cached runtimes use explicit checkout imports; current-byte source/import/node/JUnit evidence proves focused/full assertions without reinstalling wheels.
+- [Phase 06.3]: 16: Reuse completed source/quality runs while source is unchanged; preserve exact checker capture revisions and independently revalidate after evidence-only fixes.
+- [Phase 06.3]: 16: All twelve human items and overall phase acceptance remain pending for plan 17 and independent review.
 
 ### Pending Todos
 
@@ -322,6 +327,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-30T23:51:45.730Z
-Stopped at: Completed 06.3-15-PLAN.md; executable migrations and strict docs pass; next plan 16; all twelve human items remain pending
+Last session: 2026-10-31T00:18:21.346Z
+Stopped at: Completed 06.3-16-PLAN.md; all source-bound three-series focused/full and quality gates pass; next plan 17; all twelve human items remain pending
 Resume file: None

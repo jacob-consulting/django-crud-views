@@ -1,0 +1,15 @@
+# Cloudflare tunnel for developing on a remote VM, started with `task cf`.
+# Host networking so the tunnel can reach the dev server on localhost:9000; the
+# hostname -> localhost:9000 route itself is configured in the Cloudflare dashboard.
+# Not restarted automatically: the example project runs with DEBUG = True, so it
+# should only be reachable while `task cf` is running.
+name: django-crud-views-cloudflared
+
+services:
+  cloudflared:
+    image: cloudflare/cloudflared:2026.6.1
+    restart: "no"
+    network_mode: host
+    command: tunnel --no-autoupdate run
+    environment:
+      TUNNEL_TOKEN: ${TUNNEL_TOKEN:?set TUNNEL_TOKEN in dev/.env}

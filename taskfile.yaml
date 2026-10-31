@@ -32,6 +32,15 @@ tasks:
     cmds:
       - task: examples:run
 
+  cf:
+    desc: Run the Cloudflare tunnel to the dev server on localhost:9000 until Ctrl+C (configured in dev/.env)
+    dir: dev
+    preconditions:
+      - sh: test -f .env
+        msg: "dev/.env not found: copy dev/.env.example to dev/.env and fill it in."
+    cmds:
+      - docker compose up
+
   format:
     cmds:
       - uv run ruff format .

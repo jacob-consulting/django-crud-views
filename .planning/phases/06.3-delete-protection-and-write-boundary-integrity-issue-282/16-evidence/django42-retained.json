@@ -1,0 +1,73 @@
+{
+  "argv": [
+    ".nox/crispy_floor-3-12-django-4-2/bin/python",
+    ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/16-evidence/run.py",
+    "_pytest",
+    "/home/alex/projects/alex/django-crud-views/.planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/16-evidence/django42-retained.nodes.json",
+    "tests/test1/test_delete_inspection.py",
+    "tests/test1/test_delete_provenance.py",
+    "tests/test1/test_delete_databases.py",
+    "tests/test1/test_delete_migration_docs.py",
+    "tests/test1/test_delete.py",
+    "tests/test1/test_guardian_delete.py",
+    "tests/test1/test_guardian.py",
+    "tests/test1/test_guardian_inactive.py",
+    "tests/test1/test_polymorphic.py",
+    "tests/test1/test_transactions.py",
+    "tests/test1/test_authorization_matrix.py",
+    "tests/test1/test_authorization_templates.py",
+    "tests/test1/test_guardian_policy.py",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "-ra",
+    "--junitxml=/home/alex/projects/alex/django-crud-views/.planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/16-evidence/django42-retained.xml"
+  ],
+  "artifacts": {
+    "log": "379eece16aa639d1beb0099b7353424fd8e6677dec1e7c33b98c433db7d92ee1",
+    "nodes.json": "999e75fd89e447783499a68724ef1f4fa0c7a53f8b0f59f84d26911c463e4402",
+    "xml": "c784a6c2d51f9a153f1017573c3a153418b827357d4b8f8612c473c1badada75"
+  },
+  "command": ".nox/crispy_floor-3-12-django-4-2/bin/python .planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/16-evidence/run.py _pytest /home/alex/projects/alex/django-crud-views/.planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/16-evidence/django42-retained.nodes.json tests/test1/test_delete_inspection.py tests/test1/test_delete_provenance.py tests/test1/test_delete_databases.py tests/test1/test_delete_migration_docs.py tests/test1/test_delete.py tests/test1/test_guardian_delete.py tests/test1/test_guardian.py tests/test1/test_guardian_inactive.py tests/test1/test_polymorphic.py tests/test1/test_transactions.py tests/test1/test_authorization_matrix.py tests/test1/test_authorization_templates.py tests/test1/test_guardian_policy.py -q -p no:cacheprovider -ra --junitxml=/home/alex/projects/alex/django-crud-views/.planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/16-evidence/django42-retained.xml",
+  "duration_seconds": 268.122,
+  "environment": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONPATH": "/home/alex/projects/alex/django-crud-views/src:/home/alex/projects/alex/django-crud-views"
+  },
+  "exit_code": 0,
+  "finished": "2026-10-31T00:00:00.956733+00:00",
+  "head": "df98db6d67fc722e0ba18dc026c40519e8d436b0",
+  "kind": "test",
+  "label": "django42-retained",
+  "pid": 46228,
+  "pytest_argv": [
+    "tests/test1/test_delete_inspection.py",
+    "tests/test1/test_delete_provenance.py",
+    "tests/test1/test_delete_databases.py",
+    "tests/test1/test_delete_migration_docs.py",
+    "tests/test1/test_delete.py",
+    "tests/test1/test_guardian_delete.py",
+    "tests/test1/test_guardian.py",
+    "tests/test1/test_guardian_inactive.py",
+    "tests/test1/test_polymorphic.py",
+    "tests/test1/test_transactions.py",
+    "tests/test1/test_authorization_matrix.py",
+    "tests/test1/test_authorization_templates.py",
+    "tests/test1/test_guardian_policy.py",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "-ra",
+    "--junitxml=/home/alex/projects/alex/django-crud-views/.planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/16-evidence/django42-retained.xml"
+  ],
+  "series": "4.2",
+  "source_after_sha256": "bc5a56a8c8b9254bfe0e87d893a74ff57e72e38f85646b31b6206e1222717a12",
+  "source_sha256": "bc5a56a8c8b9254bfe0e87d893a74ff57e72e38f85646b31b6206e1222717a12",
+  "started": "2026-10-30T23:55:32.833854+00:00",
+  "status": "complete",
+  "tools": {
+    "check.py": "1879bd9898383524ab6648f0abd2be255f7c5adde7e56218cf53689c5e0b31a8",
+    "run.py": "9abc3a69ddef1822c090f0e805978f1b8fb9776f7fc01280c601305462886048"
+  },
+  "tracked_diff_sha256": "1f2a99e5d384d7fab75c5ab169ada980d0e5ca40ae68105f8a822cb00c5fc6c1"
+}

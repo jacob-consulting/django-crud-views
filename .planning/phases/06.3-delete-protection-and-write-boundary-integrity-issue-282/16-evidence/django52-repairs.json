@@ -1,0 +1,53 @@
+{
+  "argv": [
+    ".nox/tests-3-12-django-5-2/bin/python",
+    ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/16-evidence/run.py",
+    "_pytest",
+    "/home/alex/projects/alex/django-crud-views/.planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/16-evidence/django52-repairs.nodes.json",
+    "tests/test1/test_delete_join_identity.py",
+    "tests/test1/test_guardian_content_types.py",
+    "tests/test1/test_guardian_content_type_docs.py",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "-ra",
+    "--junitxml=/home/alex/projects/alex/django-crud-views/.planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/16-evidence/django52-repairs.xml"
+  ],
+  "artifacts": {
+    "log": "1923bb3ae57c4e81360cb1878de08d5398b400e65aed76b74a57b3fb49dbda54",
+    "nodes.json": "9ed711a7bc4085cda710cbc866079f1dc2a423f5e9f6933f00a79aaa6caf7158",
+    "xml": "859b88a8e97296649b8f6372b6580fd6c4c9d8b95576ded5cf7110a954fff205"
+  },
+  "command": ".nox/tests-3-12-django-5-2/bin/python .planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/16-evidence/run.py _pytest /home/alex/projects/alex/django-crud-views/.planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/16-evidence/django52-repairs.nodes.json tests/test1/test_delete_join_identity.py tests/test1/test_guardian_content_types.py tests/test1/test_guardian_content_type_docs.py -q -p no:cacheprovider -ra --junitxml=/home/alex/projects/alex/django-crud-views/.planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/16-evidence/django52-repairs.xml",
+  "duration_seconds": 8.242,
+  "environment": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONPATH": "/home/alex/projects/alex/django-crud-views/src:/home/alex/projects/alex/django-crud-views"
+  },
+  "exit_code": 0,
+  "finished": "2026-10-30T23:55:32.114711+00:00",
+  "head": "df98db6d67fc722e0ba18dc026c40519e8d436b0",
+  "kind": "test",
+  "label": "django52-repairs",
+  "pid": 46105,
+  "pytest_argv": [
+    "tests/test1/test_delete_join_identity.py",
+    "tests/test1/test_guardian_content_types.py",
+    "tests/test1/test_guardian_content_type_docs.py",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "-ra",
+    "--junitxml=/home/alex/projects/alex/django-crud-views/.planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/16-evidence/django52-repairs.xml"
+  ],
+  "series": "5.2",
+  "source_after_sha256": "bc5a56a8c8b9254bfe0e87d893a74ff57e72e38f85646b31b6206e1222717a12",
+  "source_sha256": "bc5a56a8c8b9254bfe0e87d893a74ff57e72e38f85646b31b6206e1222717a12",
+  "started": "2026-10-30T23:55:23.872279+00:00",
+  "status": "complete",
+  "tools": {
+    "check.py": "1879bd9898383524ab6648f0abd2be255f7c5adde7e56218cf53689c5e0b31a8",
+    "run.py": "9abc3a69ddef1822c090f0e805978f1b8fb9776f7fc01280c601305462886048"
+  },
+  "tracked_diff_sha256": "1f2a99e5d384d7fab75c5ab169ada980d0e5ca40ae68105f8a822cb00c5fc6c1"
+}

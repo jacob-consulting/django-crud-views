@@ -2,9 +2,9 @@
 schema_version: 1
 open_count: 6
 waived_count: 0
-fixed_count: 7
-total_count: 13
-last_updated: 2026-10-30T23:47:17.135Z
+fixed_count: 8
+total_count: 14
+last_updated: 2026-10-31T00:01:09.404Z
 ---
 
 # Broken Windows Ledger
@@ -28,6 +28,7 @@ last_updated: 2026-10-30T23:47:17.135Z
 | 11 | 06.3 | unmet-truth | .planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-GUARDIAN-REVIEW.md |  | GUA-01 precision backstop remains human_needed/insufficient_spec: normal int/UUID and exact configured-key tests pass, but no general custom-PK/coercion predicate was supplied. | open |  | 2026-10-30T13:36:14.791Z |  |
 | 12 | 06.3 | deviation | tests/test1/test_delete.py | 1397 | Plan 13 synthetic deletion metadata fixtures now supply declaring field owners; directly impacted compatibility correction verified on Django 4.2 and 6.0. | fixed |  | 2026-10-30T23:41:34.442Z | 2026-10-30T23:41:41.882Z |
 | 13 | 06.3 | deviation | src/crud_views/lib/deletion.py | 258 | Fixed absent nullable parent joins in _native_parent_rows alongside inspection; prevents unrelated null-key parent deletion. | fixed |  | 2026-10-30T23:46:34.873Z | 2026-10-30T23:47:17.135Z |
+| 14 | 06.3 | deviation | .planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/16-evidence/check.py |  | Plan 16 checker now independently validates overlapping package and imported-module hashes; original capture checker retained and 11 invalid variants rejected. | fixed |  | 2026-10-31T00:00:58.208Z | 2026-10-31T00:01:09.404Z |
 
 ````json
 [
@@ -189,6 +190,19 @@ last_updated: 2026-10-30T23:47:17.135Z
     "reason": "",
     "recorded_at": "2026-10-30T23:46:34.873Z",
     "resolved_at": "2026-10-30T23:47:17.135Z",
+    "milestone": "v1.0"
+  },
+  {
+    "id": 14,
+    "kind": "deviation",
+    "phase": "06.3",
+    "file": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/16-evidence/check.py",
+    "line": null,
+    "description": "Plan 16 checker now independently validates overlapping package and imported-module hashes; original capture checker retained and 11 invalid variants rejected.",
+    "status": "fixed",
+    "reason": "",
+    "recorded_at": "2026-10-31T00:00:58.208Z",
+    "resolved_at": "2026-10-31T00:01:09.404Z",
     "milestone": "v1.0"
   }
 ]

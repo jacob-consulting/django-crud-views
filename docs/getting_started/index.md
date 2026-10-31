@@ -26,7 +26,7 @@ The example project contains the tutorial's `library/` app plus one app per feat
 git clone https://github.com/jacob-consulting/django-crud-views.git
 cd django-crud-views
 task dev   # create the venv (requires uv and task)
-task run   # migrate, seed and serve http://localhost:8000/
+task run   # migrate, seed and serve http://localhost:9000/
 ```
 
 Log in with `alice` / `alice` and explore.

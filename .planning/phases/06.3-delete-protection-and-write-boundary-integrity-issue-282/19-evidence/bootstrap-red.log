@@ -1,0 +1,68 @@
+06-js-verify: node v24.21.0 (/home/alex/.nvm/versions/node/v24.21.0/bin/node); npm 11.19.0 (/home/alex/.nvm/versions/node/v24.21.0/lib/node_modules/npm/bin/npm-cli.js); lock sha256 567bff553002a1452d08db94660a206507d70df9711cdd11fd82ee51f4175d2e; 71 installed packages match the lock, 72 engine ranges satisfied; 25 optional packages for other platforms skipped; jquery@3.7.1 jsdom@30.1.2 vitest@5.0.3
+
+> django-crud-views-js-tests@1.0.0 test
+> vitest run tests/js/adapters.test.js
+
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.js:1:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.3 /home/alex/projects/alex/django-crud-views
+
+ ❯ tests/js/adapters.test.js (40 tests | 2 failed) 57ms
+   ❯ adapters.js (40)
+     × queues a replacement open during hide and does not deliver the old hidden event to it 8ms
+     × cancels pending shows on unsubscribe and handles a later listener preventing hide 2ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/js/adapters.test.js > adapters.js > queues a replacement open during hide and does not deliver the old hidden event to it
+AssertionError: expected "vi.fn()" to not be called at all, but actually been called 1 times
+
+Received:
+
+  1st vi.fn() call:
+
+    Array []
+
+
+Number of calls: 1
+
+ ❯ tests/js/adapters.test.js:87:38
+     85|         modal.dispatchEvent(new Event("hide.bs.modal", {cancelable: tr…
+     86|         const stopSecond = adapter.onHidden(modal, second); adapter.sh…
+     87|         expect(ns.instance.show).not.toHaveBeenCalled();
+       |                                      ^
+     88|         modal.dispatchEvent(new Event("hidden.bs.modal"));
+     89|         expect(first).not.toHaveBeenCalled(); expect(second).not.toHav…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/js/adapters.test.js > adapters.js > cancels pending shows on unsubscribe and handles a later listener preventing hide
+AssertionError: expected "vi.fn()" to not be called at all, but actually been called 1 times
+
+Received:
+
+  1st vi.fn() call:
+
+    Array []
+
+
+Number of calls: 1
+
+ ❯ tests/js/adapters.test.js:99:118
+     97|         let stop = adapter.onHidden(modal, callback);
+     98|         modal.dispatchEvent(new Event("hide.bs.modal")); stop(); stop …
+     99|         adapter.show(modal); stop(); modal.dispatchEvent(new Event("hi…
+       |                                                                                                                      ^
+    100|         stop = adapter.onHidden(modal, callback);
+    101|         modal.addEventListener("hide.bs.modal", event => event.prevent…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 38 passed (40)
+   Start at  08:41:56
+   Duration  812ms (environment 74%, tests 9%, transform 9%, setup 7%, import 1%, worker 1%)
+

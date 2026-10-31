@@ -71,8 +71,37 @@ describe("adapters.js", () => {
         expect(callback).not.toHaveBeenCalled();
         dialog.dispatchEvent(new Event("cancel", {cancelable: true})); child.dispatchEvent(new Event("close", {bubbles: true}));
         expect(callback).not.toHaveBeenCalled();
+        dialog.open = true; // A queued close from the previous session arrives after reopening.
+        dialog.dispatchEvent(new Event("close")); expect(callback).not.toHaveBeenCalled();
+        dialog.open = false;
         dialog.dispatchEvent(new Event("close")); expect(callback).toHaveBeenCalledTimes(1);
         unsubscribe(); unsubscribe(); dialog.dispatchEvent(new Event("close")); expect(callback).toHaveBeenCalledTimes(1);
+    });
+
+    it("queues a replacement open during hide and does not deliver the old hidden event to it", async () => {
+        await loadScript("adapters"); const ns = fakeNamespace(), adapter = window.cv.bootstrapAdapters(ns).modal;
+        const modal = document.getElementById("m"), first = vi.fn(), second = vi.fn();
+        const unsubscribe = adapter.onHidden(modal, first); adapter.show(modal); ns.instance.show.mockClear();
+        modal.dispatchEvent(new Event("hide.bs.modal", {cancelable: true})); unsubscribe();
+        const stopSecond = adapter.onHidden(modal, second); adapter.show(modal);
+        expect(ns.instance.show).not.toHaveBeenCalled();
+        modal.dispatchEvent(new Event("hidden.bs.modal"));
+        expect(first).not.toHaveBeenCalled(); expect(second).not.toHaveBeenCalled(); expect(ns.instance.show).toHaveBeenCalledTimes(1);
+        modal.dispatchEvent(new Event("hide.bs.modal")); modal.dispatchEvent(new Event("hidden.bs.modal"));
+        expect(second).toHaveBeenCalledTimes(1); stopSecond();
+    });
+
+    it("cancels pending shows on unsubscribe and handles a later listener preventing hide", async () => {
+        await loadScript("adapters"); const ns = fakeNamespace(), adapter = window.cv.bootstrapAdapters(ns).modal;
+        const modal = document.getElementById("m"), callback = vi.fn();
+        let stop = adapter.onHidden(modal, callback);
+        modal.dispatchEvent(new Event("hide.bs.modal")); stop(); stop = adapter.onHidden(modal, callback);
+        adapter.show(modal); stop(); modal.dispatchEvent(new Event("hidden.bs.modal")); expect(ns.instance.show).not.toHaveBeenCalled();
+        stop = adapter.onHidden(modal, callback);
+        modal.addEventListener("hide.bs.modal", event => event.preventDefault(), {once: true});
+        modal.dispatchEvent(new Event("hide.bs.modal", {cancelable: true}));
+        adapter.show(modal); await Promise.resolve();
+        expect(ns.instance.show).toHaveBeenCalledTimes(1); expect(callback).not.toHaveBeenCalled(); stop();
     });
 
     it("modal.show / hide drive Modal.getOrCreateInstance / getInstance", async () => {

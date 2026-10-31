@@ -21,12 +21,10 @@ function stubFetch(responseOrError) {
     return fetchMock;
 }
 
+beforeAll(async () => { await loadScript("modal"); });
+
 describe("modal.js", () => {
     let show, hide, setSize;
-
-    beforeAll(async () => {
-        await loadScript("modal");
-    });
 
     beforeEach(() => {
         modalSkeleton();
@@ -413,14 +411,22 @@ describe("modal.js", () => {
         });
     });
 
-    // Keep last: re-loading the script registers a second set of document listeners.
+    // Remove the probe load’s handlers and restore the original controller after this test.
     describe("without jQuery", () => {
         it("loads and wires its handlers without jQuery", async () => {
             vi.stubGlobal("$", undefined);
             vi.stubGlobal("jQuery", undefined);
-            await expect(loadScript("modal")).resolves.toBeUndefined();
-            vi.stubGlobal("$", $);
-            vi.stubGlobal("jQuery", $);
+            const previous = {...window.cv};
+            const listeners = vi.spyOn(document, "addEventListener");
+            try {
+                await expect(loadScript("modal")).resolves.toBeUndefined();
+            } finally {
+                for (const [type, listener, options] of listeners.mock.calls) document.removeEventListener(type, listener, options);
+                listeners.mockRestore();
+                window.cv = previous;
+                vi.stubGlobal("$", $);
+                vi.stubGlobal("jQuery", $);
+            }
         });
     });
 });
@@ -512,6 +518,16 @@ describe("modal focus lifecycle", () => {
         const alternate = document.getElementById('alternate'); alternate.setAttribute('data-cv-modal', 'true'); alternate.setAttribute('href', '/open');
         opener.focus(); stubFetch(textResponse(formHTML)); document.getElementById('icon').click();
         await vi.waitFor(() => expect(adapter.show).toHaveBeenCalled()); complete(); expect(document.activeElement).toBe(alternate);
+    });
+    it('recovers focus when an already visible modal navigates to replacement content', async () => {
+        await open(); content.querySelector('input').focus();
+        const loaded = new Promise(resolve => modal.addEventListener('cv:modal:loaded', resolve, {once: true}));
+        stubFetch(textResponse('<input required id="next-field">'));
+        // A real adapter does not refocus an already shown shell on a second show call.
+        adapter.show.mockImplementation(() => {});
+        window.cv.cvModalOpen('/next', '', content.querySelector('input'));
+        await loaded;
+        expect(document.activeElement.id).toBe('next-field');
     });
     it('ignores stale hidden callbacks after a new open and releases previous subscriptions', async () => {
         await open(); const old = callbacks[0]; adapter.show.mockClear(); await open(formHTML, document.getElementById('alternate'));

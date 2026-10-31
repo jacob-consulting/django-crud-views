@@ -253,6 +253,16 @@
       "recorded_at": "2026-10-31T13:08:39.639900+00:00",
       "status": "accepted",
       "scope": "English/German readability and Unicode in the browser and fixtures reviewed at the three specified sizes; no universal font/browser claim."
+    },
+    {
+      "item": "prohibition-03",
+      "part": "owner incomplete-preview meaning disposition",
+      "question": "Do the reviewed English/German screens make clear that displayed objects/counts cover only the inspected portion and deletion may affect additional objects the preview cannot show?",
+      "actual_response": "accept prohibition-03",
+      "reviewer": "user (maintainer)",
+      "recorded_at": "2026-10-31T13:09:43.112274+00:00",
+      "status": "accepted",
+      "scope": "Owner comprehension of the reviewed incomplete-preview copy; no universal comprehension claim."
     }
   ],
   "repairs": [

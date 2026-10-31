@@ -85,15 +85,16 @@
   },
   {
     "id": "prohibition-03",
-    "status": "unresolved / unverified-prohibition",
+    "status": "accepted / reviewed incomplete-preview meaning",
     "evidence": [
       "Plan 03 DEL-05/AUTH-03 prohibition; VERIFICATION",
-      "Owner-qualified boundary controls, English/German partial-count headings and independent warning; real page/modal screenshots. Finite evidence does not prove universal comprehension."
+      "Owner-qualified boundary controls, English/German partial-count headings and independent warning; real page/modal screenshots. Finite evidence does not prove universal comprehension.",
+      "Maintainer explicitly accepted that the reviewed English/German screens communicate partial objects/counts and possible additional effects outside the preview. This is the actual owner comprehension judgment for the reviewed fixtures, not universal comprehension. See guided-review.json."
     ],
     "question": "Review whether incomplete previews/counts communicate their limits; give a justified disposition.",
-    "actual_response": null,
-    "reviewer": null,
-    "timestamp": null
+    "actual_response": "accept prohibition-03",
+    "reviewer": "user (maintainer)",
+    "timestamp": "2026-10-31T13:09:43.112274+00:00"
   },
   {
     "id": "prohibition-09",

@@ -109,15 +109,16 @@
   },
   {
     "id": "UI-01",
-    "status": "human_needed",
+    "status": "accepted / reviewed English layouts",
     "evidence": [
       "UI-REVIEW visual hierarchy gap; UI-SPEC",
-      "24 real fixture-backed screenshots: page/modal \u00d7 partial/blocked \u00d7 English/German \u00d7 1440\u00d7900/768\u00d71024/375\u00d7812. Notices ordered; unblocked form present, blocked form absent. Superseded captures: 19-evidence/visual-results.json, 24 states / 36 current images, including confirmation scrolled into view; missing CJK glyphs remain."
+      "24 real fixture-backed screenshots: page/modal \u00d7 partial/blocked \u00d7 English/German \u00d7 1440\u00d7900/768\u00d71024/375\u00d7812. Notices ordered; unblocked form present, blocked form absent. Superseded captures: 19-evidence/visual-results.json, 24 states / 36 current images, including confirmation scrolled into view; missing CJK glyphs remain.",
+      "Maintainer passed all 12 English page/modal \u00d7 partial/blocked \u00d7 1440x900/768x1024/375x812 combinations and explicitly accepted UI-01. Warning hierarchy, nested rows, scrolling, confirmation availability, blocked form absence and reachable Close were reviewed. German/Unicode readability remains pending under UI-02. See guided-review.json."
     ],
     "question": "Review screenshot hierarchy, scrolling and confirmation availability at each viewport; accept or identify a concrete issue.",
-    "actual_response": null,
-    "reviewer": null,
-    "timestamp": null
+    "actual_response": "accept UI-01",
+    "reviewer": "user (maintainer)",
+    "timestamp": "2026-10-31T13:05:41.437905+00:00"
   },
   {
     "id": "UI-02",

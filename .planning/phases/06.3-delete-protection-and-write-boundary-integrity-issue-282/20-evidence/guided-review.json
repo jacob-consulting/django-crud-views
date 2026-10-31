@@ -88,6 +88,98 @@
       "recorded_at": "2026-10-31T12:58:11.458045+00:00",
       "status": "accepted",
       "scope": "Keyboard/focus experience in the browser and fixture exercised by the maintainer; does not assert screen-reader or all-browser coverage."
+    },
+    {
+      "item": "UI-01",
+      "part": "English partial preview desktop layout",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "surfaces": [
+        "page",
+        "modal"
+      ],
+      "fixture": "publisher 1",
+      "steps": [
+        "Incomplete-preview warning is easy to notice.",
+        "Related objects and nested rows have a clear hierarchy.",
+        "Scrolling reaches confirmation checkbox and buttons without clipping."
+      ],
+      "actual_response": "pass",
+      "reviewer": "user (maintainer)",
+      "recorded_at": "2026-10-31T13:00:51.586907+00:00",
+      "scope": "Desktop English partial-preview subcheck passed; remaining UI-01 sizes/states and final disposition pending."
+    },
+    {
+      "item": "UI-01",
+      "part": "English partial preview tablet and phone layout",
+      "viewports": [
+        {
+          "width": 768,
+          "height": 1024
+        },
+        {
+          "width": 375,
+          "height": 812
+        }
+      ],
+      "surfaces": [
+        "page",
+        "modal"
+      ],
+      "fixture": "publisher 1",
+      "steps": [
+        "Warnings and nested rows remain readable without horizontal scrolling.",
+        "Nothing overlaps or gets clipped.",
+        "Vertical scrolling reaches the confirmation checkbox and buttons."
+      ],
+      "actual_response": "pass",
+      "reviewer": "user (maintainer)",
+      "recorded_at": "2026-10-31T13:02:25.064834+00:00",
+      "scope": "All four requested tablet/phone English partial-preview combinations passed; blocked layouts and final UI-01 disposition pending."
+    },
+    {
+      "item": "UI-01",
+      "part": "English blocked preview desktop, tablet, and phone layout",
+      "viewports": [
+        {
+          "width": 1440,
+          "height": 900
+        },
+        {
+          "width": 768,
+          "height": 1024
+        },
+        {
+          "width": 375,
+          "height": 812
+        }
+      ],
+      "surfaces": [
+        "page",
+        "modal"
+      ],
+      "fixture": "publisher 2",
+      "steps": [
+        "Incomplete-preview warning and blocked-deletion notice are easy to notice.",
+        "Related rows remain readable without overlap or horizontal scrolling.",
+        "No confirmation checkbox or Delete button is present.",
+        "Modal Close control remains reachable."
+      ],
+      "actual_response": "pass",
+      "reviewer": "user (maintainer)",
+      "recorded_at": "2026-10-31T13:04:00.041593+00:00",
+      "scope": "All six requested English blocked-preview combinations passed; final UI-01 disposition pending. German/Unicode review remains pending under UI-02."
+    },
+    {
+      "item": "UI-01",
+      "part": "overall owner layout disposition",
+      "actual_response": "accept UI-01",
+      "reviewer": "user (maintainer)",
+      "recorded_at": "2026-10-31T13:05:41.437905+00:00",
+      "status": "accepted",
+      "scope": "12 English partial/blocked page/modal combinations at the three specified sizes; German/Unicode review remains pending under UI-02."
     }
   ],
   "repairs": [
@@ -107,5 +199,38 @@
       },
       "owner_retest": "pass: user confirmed keyboard navigation and Cancel destination after correction"
     }
-  ]
+  ],
+  "language_review_setup": {
+    "temporary_script": "/tmp/dcv-focus-tunnel-bbn9ns4x/server.py",
+    "sha256": "7f47233531fa0101a7c46c691fc08f7dddd7a6d5dfcd4f5afae1976dd63d5aeb",
+    "change": "Temporary language selector authenticates the disposable reviewer, sets review_language cookie and redirects to the language-specific fixture. Canonical historical server.py and product code unchanged.",
+    "restart": "Disposable database reset; previous observations remain historical.",
+    "local_checks": [
+      {
+        "pk": 5,
+        "modal": false,
+        "status": 200,
+        "german_warning_present": true
+      },
+      {
+        "pk": 5,
+        "modal": true,
+        "status": 200,
+        "german_warning_present": true
+      },
+      {
+        "pk": 6,
+        "modal": false,
+        "status": 200,
+        "german_warning_present": true
+      },
+      {
+        "pk": 6,
+        "modal": true,
+        "status": 200,
+        "german_warning_present": true
+      }
+    ],
+    "public_access": "Maintainer browser only via Cloudflare; no public access probe."
+  }
 }

@@ -542,6 +542,26 @@ describe("modal focus lifecycle", () => {
         expect(cleanups[0]).toHaveBeenCalledTimes(1); const active = document.activeElement; old(); expect(document.activeElement).toBe(active);
         complete(); expect(document.activeElement.id).toBe('alternate'); expect(cleanups[1]).toHaveBeenCalledTimes(1);
     });
+    it.each(['headers', 'body', 'failure'])('cancels a pending visible replacement on completed hide before %s', async stage => {
+        await open(); content.querySelector('input').focus();
+        let resolve, reject;
+        const pending = new Promise((yes, no) => { resolve = yes; reject = no; });
+        vi.stubGlobal('fetch', () => stage === 'body' ? Promise.resolve({ok: true, text: () => pending}) : pending);
+        adapter.show.mockClear();
+        window.cv.cvModalOpen('/pending');
+        await new Promise(r => setTimeout(r, 0));
+        const previous = content.innerHTML;
+        complete();
+        expect(document.activeElement.id).toBe('main');
+        if (stage === 'failure') reject(new Error('late network failure'));
+        else resolve(stage === 'body' ? '<input id="late">' : textResponse('<input id="late">'));
+        await new Promise(r => setTimeout(r, 0));
+        expect(adapter.show).not.toHaveBeenCalled();
+        expect(content.innerHTML).toBe(previous);
+        expect(document.activeElement.id).toBe('main');
+        expect(nav.assign).not.toHaveBeenCalled();
+        expect(cleanups.at(-1)).toHaveBeenCalledTimes(1);
+    });
     it.each(['hidden', 'replaced'])('ignores a late 422 after the session is %s', async kind => {
         await open(); let resolve; vi.stubGlobal('fetch', () => new Promise(r => { resolve = r; }));
         window.cv.cvModalSubmit(content.querySelector('form'));

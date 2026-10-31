@@ -33,7 +33,7 @@ const digest = file => crypto.createHash('sha256').update(fs.readFileSync(file))
 const hashes = () => Object.fromEntries(inputs.map(file => [file, digest(file)]));
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-const CASE_IDS = ['unchecked', 'blocked', 'close', 'escape', 'removed-opener', 'disabled-opener', 'hidden-opener', 'repeated-open', 'native-dialog', 'controls'];
+const CASE_IDS = ['unchecked', 'blocked', 'close', 'escape', 'removed-opener', 'disabled-opener', 'hidden-opener', 'repeated-open', 'native-dialog', 'pending-close', 'native-pending-close', 'controls'];
 function checkEvidence(file) {
     const record = JSON.parse(fs.readFileSync(file));
     assert(record.completed && record.passed && !record.error, 'Run incomplete or failed');
@@ -49,6 +49,7 @@ function checkEvidence(file) {
         const required = ['no page errors'];
         if (['unchecked', 'native-dialog'].includes(result.id)) required.push('real HTTP status', 'invalid confirmation retains keyboard focus', 'one visible form and field error', 'row retained and zero custom callbacks');
         if (result.id === 'blocked') required.push('real protection added', 'real HTTP status', 'blocked response focuses Close', 'blocked focus remains visible', 'both notices remain and form is absent', 'filtered hidden label stays hidden', 'row retained and zero custom callbacks');
+        if (['pending-close', 'native-pending-close'].includes(result.id)) required.push('late real GET succeeds', 'late replacement leaves dismissed modal closed', 'late replacement preserves fallback focus', 'row retained and zero custom callbacks');
         if (result.id === 'controls') required.push('Tab stays inside modal', 'Cancel navigates to configured URL', 'Cancel destination renders successfully', 'row retained and zero custom callbacks', 'Space checks confirmation', 'real HTTP status', 'Delete destination renders successfully', 'confirmed Delete removes row and calls real custom handler');
         else required.push('completed dismissal hides dialog', 'exact usable return target', 'return focus is visible and outside dialog', 'hidden event observes completed hiding', 'restore after completed hide');
         assert(required.every(name => names.includes(name)), `Missing required assertion: ${result.id}`);
@@ -164,7 +165,7 @@ async function main() {
             const result = {id, passed: false, assertions: [], screenshots: [], observations: []}; record.cases.push(result);
             const check = (name, condition) => { result.assertions.push({name, passed: Boolean(condition)}); assert(condition, `${id}: ${name}`); };
             const c = cases.find(c => c.mode === (id === 'blocked' ? 'stale' : 'partial') && c.language === 'en');
-            const native = id === 'native-dialog';
+            const native = ['native-dialog', 'native-pending-close'].includes(id);
             async function capture(label) {
                 const state = await snapshot(); result.observations.push({label, ...state});
                 const file = `${screenshotDir}/${path.basename(output, '.json')}-${id}-${label}.png`;
@@ -268,6 +269,33 @@ async function main() {
                 await submit(c, 422); await page.waitForFunction(() => document.querySelector('#cv-modal .invalid-feedback'));
                 check('reopened session still recovers replacement focus', (await snapshot()).name === 'confirm');
                 await dismiss('Escape', 'alternate');
+            } else if (['pending-close', 'native-pending-close'].includes(id)) {
+                const pendingUrl = base + c.url + '?pending=1';
+                let release, started, routing;
+                const gate = new Promise(resolve => { release = resolve; });
+                const intercepted = new Promise(resolve => { started = resolve; });
+                // Delay dispatch only: the request and response still come from the real Django view.
+                const holdRequest = route => {
+                    started();
+                    routing = (async () => { await gate; await route.continue(); })();
+                    return routing;
+                };
+                await page.route(pendingUrl, holdRequest);
+                try {
+                    await page.locator('#cv-modal-content').evaluate((el, url) => {
+                        const link = document.createElement('a'); link.id = 'pending-link'; link.href = url;
+                        link.dataset.cvModal = 'true'; link.textContent = 'Next'; el.append(link);
+                    }, pendingUrl);
+                    await page.locator('#pending-link').focus(); await page.keyboard.press('Enter'); await intercepted;
+                    await dismiss('Escape', 'main');
+                    const response = page.waitForResponse(pendingUrl);
+                    release(); const received = await response; await received.finished(); await delay(400);
+                    check('late real GET succeeds', received.status() === 200);
+                    const state = await capture('late-response');
+                    check('late replacement leaves dismissed modal closed', !await page.locator('#cv-modal').isVisible());
+                    check('late replacement preserves fallback focus', state.main && state.visible && state.focusVisible && !state.inModal);
+                    await noWrites(c);
+                } finally { release(); if (routing) await routing; await page.unroute(pendingUrl, holdRequest); }
             } else if (id === 'controls') {
                 for (let i = 0; i < 8; i++) { await page.keyboard.press('Tab'); check('Tab stays inside modal', (await snapshot()).inModal); }
                 const cancel = page.locator('#cv-modal [data-cv-cancel-url]'); const url = await cancel.getAttribute('data-cv-cancel-url');

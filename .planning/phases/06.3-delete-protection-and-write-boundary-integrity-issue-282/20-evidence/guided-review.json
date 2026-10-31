@@ -308,6 +308,20 @@
       "recorded_at": "2026-10-31T13:17:27.872675+00:00",
       "status": "accepted / tested scope",
       "retained_limitation": "General custom-PK/database-cast/collation precision remains unverified. No global GUA-01 completion or universal identity guarantee."
+    },
+    {
+      "items": [
+        "DEL-01-unclassified",
+        "DEL-03-unclassified",
+        "DEL-04-unclassified",
+        "AUTH-06-unclassified"
+      ],
+      "part": "owner disposition of four unclassified detector items",
+      "actual_response": "retain all four unresolved",
+      "reviewer": "user (maintainer)",
+      "recorded_at": "2026-10-31T13:19:48.100891+00:00",
+      "status": "retained unresolved / insufficient_spec",
+      "scope": "All four named obligations remain open until original predicates are recovered or separately justified; not four demonstrated bugs and not phase acceptance."
     }
   ],
   "repairs": [

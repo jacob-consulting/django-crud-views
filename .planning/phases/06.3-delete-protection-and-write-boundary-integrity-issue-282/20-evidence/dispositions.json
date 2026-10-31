@@ -14,51 +14,55 @@
   },
   {
     "id": "DEL-01-unclassified",
-    "status": "unresolved / insufficient_spec",
+    "status": "retained unresolved / insufficient_spec",
     "evidence": [
       "Plan 01 unidentified detector row; VERIFICATION",
-      "Actual original and gap design approvals are recorded with reviewed hashes; the original unidentified condition has no acceptance predicate."
+      "Actual original and gap design approvals are recorded with reviewed hashes; the original unidentified condition has no acceptance predicate.",
+      "Owner explicitly retained this item unresolved as one of the four named unclassified detector items. The original condition remains unspecified; no acceptance predicate, passing test or dismissal is inferred. This completes its owner disposition while retaining the obligation."
     ],
     "question": "Recover this detector condition or explicitly justify its disposition independently of named approval checks.",
-    "actual_response": null,
-    "reviewer": null,
-    "timestamp": null
+    "actual_response": "retain all four unresolved",
+    "reviewer": "user (maintainer)",
+    "timestamp": "2026-10-31T13:19:48.100891+00:00"
   },
   {
     "id": "DEL-03-unclassified",
-    "status": "unresolved / insufficient_spec",
+    "status": "retained unresolved / insufficient_spec",
     "evidence": [
       "Plan 04 unidentified detector row; VERIFICATION",
-      "Real callback/transaction/native/converter cases pass in all three series; CR-01/02/03 do not identify the unknown signal."
+      "Real callback/transaction/native/converter cases pass in all three series; CR-01/02/03 do not identify the unknown signal.",
+      "Owner explicitly retained this item unresolved as one of the four named unclassified detector items. The original condition remains unspecified; no acceptance predicate, passing test or dismissal is inferred. This completes its owner disposition while retaining the obligation."
     ],
     "question": "Identify the condition beyond named provenance controls, or provide an evidence-backed disposition of that unknown.",
-    "actual_response": null,
-    "reviewer": null,
-    "timestamp": null
+    "actual_response": "retain all four unresolved",
+    "reviewer": "user (maintainer)",
+    "timestamp": "2026-10-31T13:19:48.100891+00:00"
   },
   {
     "id": "DEL-04-unclassified",
-    "status": "unresolved / insufficient_spec",
+    "status": "retained unresolved / insufficient_spec",
     "evidence": [
       "Plan 05 unidentified detector row; VERIFICATION",
-      "Independent aliases, selected native rows/parents and commit routing pass; no general central-auth/cross-database guarantee."
+      "Independent aliases, selected native rows/parents and commit routing pass; no general central-auth/cross-database guarantee.",
+      "Owner explicitly retained this item unresolved as one of the four named unclassified detector items. The original condition remains unspecified; no acceptance predicate, passing test or dismissal is inferred. This completes its owner disposition while retaining the obligation."
     ],
     "question": "Recover the original database condition or explicitly dispose of it with bounded reasoning.",
-    "actual_response": null,
-    "reviewer": null,
-    "timestamp": null
+    "actual_response": "retain all four unresolved",
+    "reviewer": "user (maintainer)",
+    "timestamp": "2026-10-31T13:19:48.100891+00:00"
   },
   {
     "id": "AUTH-06-unclassified",
-    "status": "unresolved / insufficient_spec",
+    "status": "retained unresolved / insufficient_spec",
     "evidence": [
       "Phase 6.2 AUTH-06 transfer; plan 06; GUARDIAN-REVIEW",
-      "Named strict/per-view/helper/manage/actor policy plus repaired CT-01 positive access pass. CT-01 is not known to be this unidentified predicate."
+      "Named strict/per-view/helper/manage/actor policy plus repaired CT-01 positive access pass. CT-01 is not known to be this unidentified predicate.",
+      "Owner explicitly retained this item unresolved as one of the four named unclassified detector items. The original condition remains unspecified; no acceptance predicate, passing test or dismissal is inferred. This completes its owner disposition while retaining the obligation."
     ],
     "question": "Identify or justify closure of the original AUTH-06 detector signal separately from CT-01.",
-    "actual_response": null,
-    "reviewer": null,
-    "timestamp": null
+    "actual_response": "retain all four unresolved",
+    "reviewer": "user (maintainer)",
+    "timestamp": "2026-10-31T13:19:48.100891+00:00"
   },
   {
     "id": "prohibition-01",

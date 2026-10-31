@@ -461,7 +461,7 @@ No architecture is chosen; do not run a blanket automatic `--fix` pass.
 The user explicitly added GUA-01 on 2026-10-30: AUTH-06’s residual review flag and IN-02/IN-03 transfer
 here unresolved, alongside #282 rather than as an amendment to the external issue.
 WR-01 was fixed separately in 6.2 by quick 261030-csg. IN-01/IN-04 are closed with rationale and IN-05 is fixed in 6.2.
-**Plans**: 20 plans — 17 executed, 3 new gap-closure plans pending. Independent verification closes CR-01/02/03 and CT-01 within their recorded scope; CR-04/UI-F01 modal focus and twelve human dispositions remain. Plans 18–20 review the concrete focus/adapter contract, repair and prove the real browser lifecycle, then record individual final dispositions. The new required custom-adapter migration needs its own bound maintainer approval before implementation. Existing backend matrix and historical evidence remain intact; phase verification remains `gaps_found` and executed plans do not imply acceptance.
+**Plans**: 20/20 executed. All twelve owner dispositions are recorded: eight scoped acceptances and four explicitly retained unresolved predicates. Focus repairs including CR-05 are independently reviewed; final goal verification remains pending. General Guardian precision outside tested scope stays unverified. Execution completion does not imply phase acceptance.
 
 Plans:
 **Wave 1**
@@ -518,7 +518,7 @@ Plans:
 - [x] 06.3-19-PLAN.md — Modal focus repair, actual browser regressions and adapter migration
 
 **Wave 18** *(task 20-01 complete; task 20-02 awaits twelve individual owner dispositions)*
-- [ ] 06.3-20-PLAN.md — Current review packet and twelve individual human dispositions
+- [x] 06.3-20-PLAN.md — Current review packet and twelve individual human dispositions
 
 ### Phase 7: Theme-surface stability policy
 
@@ -585,5 +585,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 6. Form-button leaf | 10/10 | Complete    | 2026-10-28 |
 | 6.1. Cancel form button as a link | 3/3 | Complete    | 2026-10-29 |
 | 6.2. Request authorization and write integrity | 9/9 | Complete    | 2026-10-30 |
-| 6.3. Delete protection and write-boundary integrity | 19/20 | In Progress | - |
+| 6.3. Delete protection and write-boundary integrity | 20/20 | In Progress | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

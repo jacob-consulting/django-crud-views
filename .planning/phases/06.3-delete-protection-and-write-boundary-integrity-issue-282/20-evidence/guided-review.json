@@ -273,6 +273,16 @@
       "recorded_at": "2026-10-31T13:10:58.567037+00:00",
       "status": "accepted",
       "scope": "Direct callback-event evidence for tested paths. Callbacks may run before later failures; database rollback does not prove absence of external effects."
+    },
+    {
+      "item": "prohibition-09",
+      "part": "owner evidence-boundary disposition",
+      "question": "Accept current source-matched browser evidence, retained failure/fix/retest history, historical backend evidence limited to its tested cases, and scoped actual UI acceptance?",
+      "actual_response": "accept prohibition-09",
+      "reviewer": "user (maintainer)",
+      "recorded_at": "2026-10-31T13:12:26.405325+00:00",
+      "status": "accepted",
+      "scope": "Evidence establishes only the cases actually checked; historical green or substituted previews do not prove uncovered guarantees."
     }
   ],
   "repairs": [

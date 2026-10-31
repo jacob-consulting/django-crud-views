@@ -4,16 +4,16 @@ milestone: v1.0
 current_phase: "06.3"
 current_phase_name: "Delete protection and write-boundary integrity — issue #282"
 status: gaps_found
-stopped_at: Phase 06.3 task 18-01 committed; task 18-02 awaits actual focus-contract approval
-last_updated: "2026-10-31T08:08:02.321Z"
+stopped_at: Phase 06.3 plans 18–19 complete; task 20-01 packet committed; task 20-02 awaits twelve owner dispositions
+last_updated: "2026-10-31T08:51:35.611082+00:00"
 last_activity: 2026-10-31
-last_activity_desc: Focus review packet bound and validated; blocking-human decision at task 18-02
+last_activity_desc: Focus repair verified and independently reviewed; final twelve-item packet ready
 state_head: c6e703795e759f47c0f3f823f96cbe365e45529a
 progress:
   total_phases: 10
   completed_phases: 8
   total_plans: 56
-  completed_plans: 53
+  completed_plans: 55
 milestone_name: milestone
 ---
 
@@ -28,15 +28,30 @@ See: .planning/PROJECT.md (updated 2026-10-30)
 
 ## Current Position
 
-Phase: 06.3 (Delete protection and write-boundary integrity — issue #282) — AWAITING DESIGN DECISION
-Plan: 17 of 20 executed — plan 18 task 1 of 2 complete; independent phase verification remains gaps_found (75/81)
-Status: CR-01/02/03 and CT-01 closed; CR-04/UI-F01 focus blocker and twelve human dispositions remain
-Last activity: 2026-10-31 — task 18-01 committed in bda8e96; checkpoint summary in 8733759; no phase advancement
+Phase: 06.3 (Delete protection and write-boundary integrity — issue #282) — AWAITING FINAL DISPOSITIONS
+Plan: 19 of 20 executed — plan 20 task 1 of 2 complete; canonical phase verification remains gaps_found pending final review
+Status: CR-01/02/03 and CT-01 retain scoped closure; CR-04/UI-F01 repair independently reviewed; twelve human dispositions and final phase gates remain
+Last activity: 2026-10-31 — plan 19 completed; task 20-01 packet committed in 63c9918; no phase advancement
 
-Progress: 53/56 plans executed; 8/10 phases complete. Phase 06.3 is not accepted.
-Next: Actual maintainer response to task 18-02 for FOCUS-DESIGN and plans 18–20; then record bound approval before plan 19. Retain twelve-item GAP-REVIEW ledger for later individual owner dispositions.
+Progress: 55/56 plans executed; 8/10 phases complete. Phase 06.3 is not accepted.
+Next: Task 20-02 actual individual dispositions (or explicit retain-unresolved decisions) for the twelve named rows in FOCUS-REVIEW/dispositions.json. Then run final phase gates without inferring acceptance.
 
-### Phase 06.3 focus approval checkpoint
+### Phase 06.3 focus repair and final checkpoint
+
+- Plans 18/19 are complete; task 20-01 packet ready. Plan 20 SUMMARY is halted at task 20-02, not complete.
+- Full JS 263 passed; all ten actual browser cases pass; strict docs pass; modal tests 27 each on 4.2/6.0.
+- Independent focused code review is clean after red/green fixes for rapid reopen and overlapping-session races.
+- Current visual packet: 24 states / 36 screenshots; CJK glyph limitation retained. Six evidence-negative controls pass.
+- 468 backend/template/translation paths match historical matrix capture b3e7026; unchanged full suites were not rerun.
+- Exact twelve final responses remain null. The actual design approve response is not final acceptance.
+- FOCUS-REVIEW and 20-evidence/dispositions.json are the next review surface; no phase.complete or next-phase advance.
+
+### Phase 06.3 focus approval
+
+- Maintainer replied `approve`; exact response and four matching hashes recorded in bdea5a0.
+- FOCUS_APPROVAL_BOUND passes. Plan 18 is complete; the checkpoint history below is superseded.
+
+### Phase 06.3 focus approval checkpoint (history)
 
 - Review binding covers FOCUS-DESIGN and plans 18–20 at revision 3f44f5cbeb2d1c62c4c51977d3234d12c14b50e1.
 - Task 18-01: FOCUS_REVIEWABLE passes; 28 temporary-copy positive/negative controls and scoped Ruff pass.

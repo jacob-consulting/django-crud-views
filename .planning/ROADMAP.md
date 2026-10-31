@@ -511,13 +511,13 @@ Plans:
 **Wave 15** *(executed; human dispositions, UI-F01 and independent acceptance review remain pending)*
 - [x] 06.3-17-PLAN.md — Human review and acceptance reconciliation
 
-**Wave 16** *(new; concrete FOCUS-DESIGN is reviewable, approval pending)*
-- [ ] 06.3-18-PLAN.md — Bound focus lifecycle contract and maintainer decision
+**Wave 16** *(complete; actual bound focus-contract approval recorded)*
+- [x] 06.3-18-PLAN.md — Bound focus lifecycle contract and maintainer decision
 
-**Wave 17** *(blocked on Wave 16 approval)*
-- [ ] 06.3-19-PLAN.md — Modal focus repair, actual browser regressions and adapter migration
+**Wave 17** *(complete; focus repair and current verification independently reviewed)*
+- [x] 06.3-19-PLAN.md — Modal focus repair, actual browser regressions and adapter migration
 
-**Wave 18** *(blocked on Wave 17 proof)*
+**Wave 18** *(task 20-01 complete; task 20-02 awaits twelve individual owner dispositions)*
 - [ ] 06.3-20-PLAN.md — Current review packet and twelve individual human dispositions
 
 ### Phase 7: Theme-surface stability policy
@@ -585,5 +585,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 6. Form-button leaf | 10/10 | Complete    | 2026-10-28 |
 | 6.1. Cancel form button as a link | 3/3 | Complete    | 2026-10-29 |
 | 6.2. Request authorization and write integrity | 9/9 | Complete    | 2026-10-30 |
-| 6.3. Delete protection and write-boundary integrity | 17/17 | In Progress | - |
+| 6.3. Delete protection and write-boundary integrity | 19/20 | In Progress | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

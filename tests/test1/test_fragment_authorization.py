@@ -1308,9 +1308,15 @@ def test_fragment_raw_wrappers_balance_before_dom_parsing(fr, world, mode):
 
 
 @pytest.mark.parametrize("mode", ["outer", "nested"])
+@pytest.mark.parametrize("capability", ["default", "native-unordered", "native-ordered"])
 @pytest.mark.django_db
-def test_server_fragment_dom_round_trip(fr, world, mode):
+def test_server_fragment_dom_round_trip(fr, world, mode, capability, monkeypatch):
     """Vitest optionally supplies a real JS driver; ordinary Python runs remain Node-free."""
+    if capability != "default":
+        monkeypatch.setattr("crud_views.lib.ordered.get_ordered_model", lambda: None)
+        for klass in (SecretBookFormSet, SecretNoteFormSet):
+            monkeypatch.setattr(klass, "can_delete_extra", False)
+            monkeypatch.setattr(klass, "can_order", capability == "native-ordered")
     pa, ba = world.publisher_a, world.book_a
     client = _editor_client(fr, world, viewset=fr.g2pub_vs)
     url = _url(fr.g2pub_vs, "update", pk=pa.pk)
@@ -1346,7 +1352,8 @@ def test_server_fragment_dom_round_trip(fr, world, mode):
     if driver:
         result = subprocess.run(
             [os.environ["CV_FRAGMENT_NODE"], driver],
-            input=json.dumps({"page": page.content.decode(), "steps": steps, "values": values}),
+            input=json.dumps({"page": page.content.decode(), "steps": steps, "values": values,
+                              "native": capability != "default", "ordered": capability == "native-ordered"}),
             text=True,
             capture_output=True,
             check=True,
@@ -1356,7 +1363,14 @@ def test_server_fragment_dom_round_trip(fr, world, mode):
         payload = rendered["payload"]
         assert len(rendered["events"]) == len(steps)
         with Path(os.environ["CV_FRAGMENT_RESULTS"]).open("a") as output:
-            output.write(json.dumps({"mode": mode, "events": rendered["events"]}) + "\n")
+            output.write(json.dumps({"mode": mode, "capability": capability, "events": rendered["events"]}) + "\n")
+    if capability != "default":
+        assert f"books-{pa.pk}-0-0-DELETE" in payload  # persisted initial row
+        for step in steps:
+            added = step["fragment"]["rows"][0]
+            assert f"{added}-DELETE" not in payload
+            if capability == "native-ordered":
+                assert int(payload[f"{added}-ORDER"]) >= 1
     response = client.post(url, payload)
     assert response.status_code == 302, response.content[:2000]
     child = BookNote.objects.get(note="dom-added-child")

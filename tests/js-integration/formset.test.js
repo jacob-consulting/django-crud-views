@@ -36,6 +36,18 @@ function insertServerFragments(fixture, JSDOM, jquery, assert, source) {
         const total = totals.find(el => el.name === `${step.prefix}-TOTAL_FORMS`);
         assert.equal(Number(total.value), before);
         const last = rows().at(-1);
+        if (fixture.native) {
+            for (const row of rows()) {
+                const bound = row.getAttribute("cv-data-formset-form-prefix");
+                const index = Number(bound.slice(step.prefix.length + 1));
+                const initial = Number([...form.elements].find(el => el.name === `${step.prefix}-INITIAL_FORMS`).value);
+                const deleteField = [...row.querySelectorAll("input")].find(el => el.name === `${bound}-DELETE`);
+                const deleteButton = [...row.querySelectorAll(".cv-form-ctrl-delete")]
+                    .find(el => el.getAttribute("cv-data-formset-form-prefix") === bound);
+                assert.equal(Boolean(deleteField), index < initial);
+                assert.equal(Boolean(deleteButton), index < initial);
+            }
+        }
         const button = [...last.querySelectorAll("button.cv-form-ctrl-add")]
             .find(el => el.getAttribute("cv-data-formset-form-prefix") === last.getAttribute("cv-data-formset-form-prefix"));
         assert.ok(button, "real Add control exists");
@@ -68,6 +80,9 @@ function insertServerFragments(fixture, JSDOM, jquery, assert, source) {
         assert.ok(control, name);
         control.value = value;
     }
+    const submit = new win.Event("submit", { bubbles: true, cancelable: true });
+    form.dispatchEvent(submit);
+    assert.equal(submit.defaultPrevented, false, "valid native rows allow ordered submit");
     const payload = Object.fromEntries(new win.FormData(form));
     dom.window.close();
     return { payload, events };
@@ -122,10 +137,13 @@ process.stdout.write(JSON.stringify(insert(fixture, JSDOM, jquery, assert, ${JSO
             });
             expect(result.error, `CV_FRAGMENT_PYTHON=${python}`).toBeUndefined();
             expect(result.status, `CV_FRAGMENT_PYTHON=${python}\n${result.stdout}\n${result.stderr}`).toBe(0);
-            expect(result.stdout).toContain("2 passed");
+            expect(result.stdout).toContain("6 passed");
             const records = fs.readFileSync(results, "utf8").trim().split("\n").map(line => JSON.parse(line));
-            expect(records.map(record => record.mode)).toEqual(["outer", "nested"]);
-            expect(records.map(record => record.events.length)).toEqual([2, 1]);
+            expect(records.map(record => record.mode)).toEqual(["outer", "nested", "outer", "nested", "outer", "nested"]);
+            expect(records.map(record => record.capability)).toEqual([
+                "default", "default", "native-unordered", "native-unordered", "native-ordered", "native-ordered",
+            ]);
+            expect(records.map(record => record.events.length)).toEqual([2, 1, 2, 1, 2, 1]);
         } finally {
             fs.rmSync(directory, { recursive: true, force: true });
         }

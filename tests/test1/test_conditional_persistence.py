@@ -8,8 +8,11 @@ from unittest.mock import patch
 import pytest
 from django import forms
 from django.core.exceptions import ImproperlyConfigured, ValidationError
+from django.core.files.base import ContentFile
+from django.core.files.storage import FileSystemStorage
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.forms.models import inlineformset_factory
-from django.test import RequestFactory
+from django.test import RequestFactory, override_settings
 
 from crud_views.lib.conditional.group import ConditionalGroup, ConditionalGroupFormMixin
 from crud_views.lib.conditional.toggle import ModelFieldToggle
@@ -187,9 +190,188 @@ def test_unsupported_custom_field_requires_explicit_value():
         text = Custom()
         cv_conditional_groups = [ConditionalGroup(ModelFieldToggle("active"), ["text"])]
 
-    with pytest.raises(ImproperlyConfigured, match="active.*text"):
+    with pytest.raises(ImproperlyConfigured, match=r"active.*text"):
         Plain(data={}).is_valid()
     Plain.cv_conditional_groups = [ConditionalGroup(ModelFieldToggle("active"), ["text"], empty_values={"text": ""})]
     form = Plain(data={})
     assert form.is_valid()
     assert form.cleaned_data["text"] == ""
+
+
+@pytest.fixture
+def isolated_storage(tmp_path, monkeypatch):
+    # ImageField references deliberately require neither uploaded image bytes nor Pillow.
+    with override_settings(MEDIA_ROOT=tmp_path):
+        stores = {}
+        for name in ("attachment", "image"):
+            storage = FileSystemStorage(location=tmp_path / name)
+            monkeypatch.setattr(Record._meta.get_field(name), "storage", storage)
+            stores[name] = storage
+        yield stores
+    # pytest's tmp_path cleanup owns fixture content; product save has no cleanup policy.
+
+
+def seed_reference(row, name, storage):
+    stored = storage.save("original.bin", ContentFile(b"original fixture content"))
+    setattr(row, name, stored)
+    row.save()
+    return stored
+
+
+@pytest.mark.parametrize("name", ["attachment", "image"])
+def test_unchanged_inline_file_reference_clears_without_deleting_content(row, isolated_storage, name):
+    storage = isolated_storage[name]
+    stored = seed_reference(row, name, storage)
+    trees, form = inline_tree(row, record_form([name]), extra=1)
+    assert trees.all_valid()
+    assert not form.has_changed()
+    assert not trees.x_formsets[0].instance.forms[1].has_changed()
+    original_save = Record.save
+    with (
+        patch.object(storage, "delete", wraps=storage.delete) as delete,
+        patch.object(storage, "save", wraps=storage.save) as write,
+        patch.object(Record, "save", autospec=True, side_effect=original_save) as save,
+    ):
+        trees.save()
+        assert save.call_count == 1
+        delete.assert_not_called()
+        write.assert_not_called()
+    row.refresh_from_db()
+    assert getattr(row, name).name == ""
+    assert storage.exists(stored)
+    with storage.open(stored, "rb") as content:
+        assert content.read() == b"original fixture content"
+    assert Record.objects.count() == 1
+
+
+@pytest.mark.parametrize("name", ["attachment", "image"])
+@pytest.mark.parametrize("mode", ["disabled", "explicit-none", "already-empty"])
+def test_file_no_change_controls_do_not_force_save(row, isolated_storage, name, mode):
+    storage = isolated_storage[name]
+    stored = "" if mode == "already-empty" else seed_reference(row, name, storage)
+    form_class = record_form(
+        [name],
+        empty_values={name: None} if mode == "explicit-none" else {name: False},
+        disabled=[name] if mode == "disabled" else [],
+    )
+    trees, form = inline_tree(row, form_class, extra=1)
+    assert trees.all_valid()
+    assert not form.has_changed()
+    with patch.object(Record, "save", autospec=True) as save, patch.object(storage, "delete") as delete:
+        trees.save()
+        save.assert_not_called()
+        delete.assert_not_called()
+    row.refresh_from_db()
+    assert getattr(row, name).name == stored
+    if stored:
+        assert storage.exists(stored)
+    assert Record.objects.count() == 1
+
+
+@pytest.mark.parametrize("disabled", [False, True])
+def test_received_off_file_upload_is_discarded_with_no_storage_write(row, isolated_storage, disabled):
+    storage = isolated_storage["attachment"]
+    stored = seed_reference(row, "attachment", storage)
+    upload = SimpleUploadedFile("forged-upload.txt", b"untrusted received upload")
+    trees, form = inline_tree(
+        row,
+        record_form(["attachment"], empty_values={"attachment": False}, disabled=["attachment"] if disabled else []),
+        files={"attachment": upload},
+    )
+    assert form.files[form.add_prefix("attachment")].read() == b"untrusted received upload"
+    with patch.object(storage, "save", wraps=storage.save) as write, patch.object(storage, "delete") as delete:
+        assert trees.all_valid()
+        trees.save()
+        write.assert_not_called()
+        delete.assert_not_called()
+    row.refresh_from_db()
+    assert row.attachment.name == (stored if disabled else "")
+    assert storage.exists(stored)
+    assert not storage.exists("conditional/forged-upload.txt")
+    assert storage.listdir("")[1] == [stored]
+
+
+def test_unchanged_inline_relation_uses_native_save_m2m(row):
+    tag = Publisher.objects.create(name="tag")
+    row.tags.add(tag)
+    trees, form = inline_tree(row, record_form(["tags"], empty_values={"tags": []}), {"tags": [str(tag.pk)]}, extra=1)
+    assert trees.all_valid()
+    assert not form.has_changed()
+    original_save = Record.save
+    with patch.object(Record, "save", autospec=True, side_effect=original_save) as save:
+        trees.save()
+        assert save.call_count == 1
+    row.refresh_from_db()
+    assert list(row.tags.all()) == []
+    assert Record.objects.count() == 1
+
+
+@pytest.mark.parametrize("posted", [{}, {"tags": ["999999"]}])
+def test_disabled_relation_retains_trusted_values_before_override(row, posted):
+    tag = Publisher.objects.create(name="trusted tag")
+    row.tags.add(tag)
+    trees, form = inline_tree(row, record_form(["tags"], empty_values={"tags": []}, disabled=["tags"]), posted)
+    assert trees.all_valid()
+    assert not form.has_changed()
+    with patch.object(Record, "save", autospec=True) as save:
+        trees.save()
+        save.assert_not_called()
+    row.refresh_from_db()
+    assert list(row.tags.all()) == [tag]
+
+
+@pytest.mark.parametrize("empty", [False, "", None])
+def test_explicit_file_values_keep_native_false_empty_string_none_meanings(row, isolated_storage, empty):
+    storage = isolated_storage["attachment"]
+    stored = seed_reference(row, "attachment", storage)
+    form = record_form(["attachment"], empty_values={"attachment": empty})(instance=row, data={})
+    with patch.object(storage, "delete") as delete:
+        assert form.is_valid(), form.errors
+        form.save()
+        delete.assert_not_called()
+    row.refresh_from_db()
+    assert row.attachment.name == (stored if empty is None else "")
+    assert storage.exists(stored)
+
+
+@pytest.mark.parametrize("empty", [False, "", None])
+def test_explicit_scalar_falsy_values_are_not_reinterpreted(row, empty):
+    name = "flag" if empty is False else "nullable_text"
+    form = record_form([name], empty_values={name: empty})(instance=row, data={})
+    assert form.is_valid(), form.errors
+    form.save()
+    row.refresh_from_db()
+    assert getattr(row, name) == empty
+
+
+def test_explicit_m2m_empty_collection_uses_commit_false_then_save_m2m(row):
+    tag = Publisher.objects.create(name="tag")
+    row.tags.add(tag)
+    form = record_form(["tags"], empty_values={"tags": []})(instance=row, data={})
+    assert form.is_valid(), form.errors
+    instance = form.save(commit=False)
+    assert list(row.tags.all()) == [tag]
+    instance.save()
+    form.save_m2m()
+    row.refresh_from_db()
+    assert list(row.tags.all()) == []
+
+
+def test_file_clearing_cannot_bypass_model_invariant(row, isolated_storage, monkeypatch):
+    storage = isolated_storage["attachment"]
+    stored = seed_reference(row, "attachment", storage)
+
+    def clean(instance):
+        if not instance.attachment:
+            raise ValidationError("file invariant")
+
+    monkeypatch.setattr(Record, "clean", clean)
+    trees, form = inline_tree(row, record_form(["attachment"]))
+    with patch.object(storage, "delete") as delete, patch.object(Record, "save", autospec=True) as save:
+        assert not trees.all_valid()
+        assert "file invariant" in str(form.non_field_errors())
+        save.assert_not_called()
+        delete.assert_not_called()
+    row.refresh_from_db()
+    assert row.attachment.name == stored
+    assert storage.exists(stored)

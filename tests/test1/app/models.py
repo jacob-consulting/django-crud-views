@@ -235,6 +235,9 @@ class ConditionalPersistenceRecord(models.Model):
     duration = models.DurationField(null=True, blank=True)
     token = models.UUIDField(null=True, blank=True)
     reference = models.ForeignKey(Publisher, null=True, blank=True, on_delete=models.SET_NULL)
+    attachment = models.FileField(upload_to="conditional/", blank=True)
+    image = models.ImageField(upload_to="conditional/", blank=True)
+    tags = models.ManyToManyField(Publisher, blank=True, related_name="conditional_tags")
 
 
 class UUIDFragmentRow(models.Model):

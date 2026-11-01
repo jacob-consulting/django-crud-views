@@ -135,7 +135,7 @@ Implementation/verification progress is tracked below; A8, A25, jQuery removal a
 - [x] **COND-02**: Immediate native visibility composes every inactive ancestor with independently changed disabled reasons, includes native action buttons, preserves unsaved values and management controls, and recovers stranded focus without disrupting accepted modal focus.
 - [x] **COND-03**: Native reset resynchronizes only its owning form after default reset, respects cancellation including later listeners, and preserves dynamic rows and management POST/re-render behavior.
 - [x] **COND-04**: Inactive supported fields persist field-aware empty values including defaulted/omitted scalar fields, Boolean, FileField/ImageField and M2M; explicit values retain native meaning and server-disabled fields retain trusted values.
-- [ ] **COND-05**: Unsupported clearing shapes require explicit values and produce descriptive group/field configuration errors at static checks where detectable and at runtime otherwise; inherited form/model invariants remain authoritative.
+- [x] **COND-05**: Unsupported clearing shapes require explicit values and produce descriptive group/field configuration errors at static checks where detectable and at runtime otherwise; inherited form/model invariants remain authoritative.
 - [ ] **FSET-01**: All accepted active formset classes reject nonblank edit-only extras and missing/malformed/unauthorized existing-row IDs before any main/sibling/nested save, with generic identity errors and valid ordinary edits/new rows retained.
 - [ ] **FSET-02**: Documented root initializers automatically and repeatedly initialize page, modal/422 and added/nested content, include roots and late scripts/toggles, scope controllers per form, and preserve add/delete/order/submit/widget and event contracts.
 - [ ] **FSET-03**: A19 non-first sibling and deeper child fragments preserve authorized request coordinates, rendered prefixes, management totals and successful POST/database round trips; retain AUTH-02 ancestry and access gates.
@@ -236,7 +236,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | COND-02 | Phase 6.4 | Complete in 06.4-05: composed disabled ownership, management FormData and focus unit contracts; final Chromium acceptance remains in 08/10 |
 | COND-03 | Phase 6.4 | Complete in 06.4-05: deferred native reset and later cancellation unit contracts; real click/keyboard and POST/re-render acceptance remains in 08/10 |
 | COND-04 | Phase 6.4 | Complete: plan 02 persisted scalar/file/image-reference/M2M matrix and real unchanged inline saves; 218 affected tests per Django 4.2/5.2/6.0. Image validation evidence remains reference-only. |
-| COND-05 | Phase 6.4 | Partial: plan 02 runtime unsupported-field errors and inherited form/model/uniqueness invariants pass; plan 03 static diagnostics remain pending. |
+| COND-05 | Phase 6.4 | Complete in 06.4-03: per-form main/inline E312 checks, dynamic pre-save refusal and native custom-hook/invariant contracts; 104 tests pass on Django 4.2/5.2/6.0. Final phase source-bound acceptance remains in 10. |
 | FSET-01 | Phase 6.4 | Planned; pending execution/verification |
 | FSET-02 | Phase 6.4 | Partial in 06.4-01/05: conditional root initializer, bound wrappers, late startup and modal observation teardown; automatic formset lifecycle remains pending later plans |
 | FSET-03 | Phase 6.4 | Planned; pending execution/verification |

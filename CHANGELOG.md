@@ -9,7 +9,8 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 - **Conditional bound markers and lifecycle.** Copied conditional templates must render the exact bound
   `cv_toggle_field`/`x_formset.cv_toggle_field` name; unprefixed suffix matching is removed. Use the repeat-safe
   `cv.initConditional(root=document)` and `cv.initFormsets(root=document)` for custom insertion. Native formset
-  buttons retain semantic hooks and owning-form scope. See the tested
+  buttons retain semantic hooks and owning-form scope; copied controls must test `'DELETE' in form.fields`
+  for native row deletion eligibility, independently of Add/Move. See the tested
   [migration](docs/migrating-1.0.md#conditional-bound-markers-and-lifecycle).
 - **Conditional clearing and E312.** Off groups use supported field-aware empty values instead of universal `None`.
   File/image references clear with `False`; explicit `None` retains them. Trusted server-disabled fields retain
@@ -17,7 +18,8 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
   runtime `ImproperlyConfigured`. Inherited/model/uniqueness constraints still apply. See the executable
   [migration](docs/migrating-1.0.md#conditional-clearing-and-e312).
 - **Formset row validation before saving.** Active edit-only extras and missing/foreign/filtered/mismatched
-  existing row IDs reject the whole submission before save hooks, including with custom inline cleaning.
+  existing row IDs reject the whole submission before save hooks, including with custom inline cleaning
+  or repeated native recleaning on accepted package/native adapters.
   Inactive conditional skip/purge policy is retained. See the
   [migration](docs/migrating-1.0.md#formset-row-validation-before-saving).
 
@@ -298,6 +300,14 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
   `collapse.toggle` returns `false` while the panel is animating and the filter toggle then leaves its state alone.
 
 ### Fixed
+
+- Conditional groups that become missing/ambiguous after binding retain their last owned state while ancestor and
+  independent disabled reasons still apply; restoring one exact checkbox retries its current state.
+- Formset deletion eligibility follows each row's original bound index through movement/insertion. Native extra
+  rows without a DELETE field retain permitted Add/Move/submission rather than throwing or gaining deletion.
+- JavaScript tests separate ordinary Node-only `npm test` from required `npm run test:integration`, which uses an
+  explicit `CV_FRAGMENT_PYTHON` and checkout `PYTHONPATH` and fails on a missing runtime. See
+  [test commands](docs/reference/javascript.md#javascript-test-commands).
 
 - **Delete inspection and write provenance (#282).** GET, invalid confirmation and early-blocked POST no longer
   execute deletion handlers, `SET`/default factories, private collection hooks, model deletion or delete signals.

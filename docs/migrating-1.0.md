@@ -352,15 +352,29 @@ For custom DOM insertion, call `cv.initConditional(root)` and `cv.initFormsets(r
 [initialization recipe](reference/javascript.md#conditional-and-formset-initialization). They accept Document,
 Element and DocumentFragment roots and are repeat-safe, including late checkbox retries. Page load, modal loaded/422
 replacement and outer row-added events initialize automatically. Duplicate exact checkboxes in one owning form log
-the local ambiguity diagnostic; separate forms with repeated names remain independent. Keep native `button type="button"`
+the local ambiguity diagnostic; separate forms with repeated names remain independent. An initially unresolved group
+leaves its own presentation unmanaged; a previously bound group retains its last owned state while missing or
+ambiguous, composed with ancestor and independent disabled ownership. Restore exactly one matching checkbox and
+reinitialize to apply its current state. Keep native `button type="button"`
 row controls, their [semantic hooks and projection](reference/formsets.md#template-projection-and-native-controls),
 management inputs and balanced fragment wrappers. Internal controller constructors are not an insertion API.
+
+In copied row controls, use the executable [native capability recipe](reference/formsets.md#native-row-capability-recipe):
+`'DELETE' in form.fields` determines deletion eligibility, including `can_delete_extra=False`. Do not require a DELETE
+field for permitted Add/Move or submit, or infer initial/extra eligibility from the row's current visual order.
+The original bound index remains authoritative after insertion or movement. `edit_only` and `can_order` remain
+independent capabilities; browser controls do not grant write authority.
 
 Deploy the updated templates and static assets using your normal static-file process, refresh caches as appropriate,
 and reload already-open pages so markup and scripts agree. No deployment-specific rollout policy is required.
 Conditional visibility is immediate; disabled state composes independent reasons and all bound ancestors, while native
 reset respects cancellation and owning-form scope. This does not settle final dynamic-row reset policy (A8).
 Existing form leaf/label/escaping, Cancel links and modal completed-hide/focus contracts remain in force.
+
+For contributor acceptance, run ordinary Node-only `npm test` **and** the required explicit-runtime
+[`npm run test:integration` command](reference/javascript.md#javascript-test-commands), with `CV_FRAGMENT_PYTHON`
+pointing to the prepared interpreter and checkout `PYTHONPATH`. Missing integration runtime is a failure, not a skip.
+This documentation is a repair handoff, not Phase 06.4 acceptance or human visual/storage-policy approval.
 
 ### Conditional clearing and E312
 
@@ -392,6 +406,12 @@ copied templates; invalid pages render HTTP 200 and invalid modals HTTP 422. See
 [validation contract](reference/formsets.md#validation-before-saves), the executable
 [integer/UUID projection recipes](reference/formsets.md#exact-json-projections) and their actual runtime comparisons
 in `tests/test1/test_conditional_migration_docs.py`; server rejection/zero-save cases live in `test_formsets_policy.py`.
+
+Mandatory policy is reapplied after native `full_clean()` replaces cached errors, including when a later custom
+clean recleans an earlier collection. See the executed
+[repeated-validation regression recipe](reference/formsets.md#repeated-validation-regression-recipe): prohibited
+extras and invalid identities remain rejected across repeated validation, for package and accepted native/custom
+adapters, before any save. This does not make internal tree constructors/methods or an A8 `commit=False` policy public.
 
 Conditional formsets that are off retain default skip (rows untouched) and explicit purge (managed queryset deleted),
 with the existing parent-change permission and routed transaction. Native/custom validation and rollback remain

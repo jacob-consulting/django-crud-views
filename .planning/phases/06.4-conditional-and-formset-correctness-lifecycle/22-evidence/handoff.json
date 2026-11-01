@@ -3207,7 +3207,25 @@
     "H1": {
       "status": "pending",
       "instructions": "On corrected real stock and native hosts, review nested Add/Delete/Move discoverability, full labels and error readability, keyboard/Space/Tab and hidden-content focus, native reset, modal 422 replacement and screen-reader announcements. Inspect desktop/mobile/tablet evidence. Record actual person, browser/assistive technology, environment, results and limits with source/evidence hashes. Screenshots or an agent UI score are not approval.",
-      "context": "End-of-phase actual human judgment required. UI24/24 and old fixture warnings closed; stock desktop/mobile/tablet images inspected. Native has no screenshots; direct native evaluation remains required."
+      "context": "End-of-phase actual human judgment required. UI24/24 and old fixture warnings closed; stock desktop/mobile/tablet images inspected. Native has no screenshots; direct native evaluation remains required.",
+      "owner": "orchestrator end-of-phase human-review owner; start/check real disposable fixture and own exact PID cleanup",
+      "owner_instructions": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-REVIEW-DISPOSITION.md",
+        "section": "Plan22 final ownership handoff / H1"
+      },
+      "fixture": {
+        "interpreter": ".nox/crispy_floor-3-12-django-6-0/bin/python",
+        "script": "tests/browser/conditional_formsets_server.py",
+        "pythonpath": "$PWD/src:$PWD",
+        "port_environment": "CV_CONDITIONAL_PORT",
+        "suggested_port": 8144,
+        "verify_paths": [
+          "/edit/stock/1/",
+          "/edit/native/1/"
+        ],
+        "live_server_claimed": false,
+        "physical_device_or_at_approval": false
+      }
     },
     "H2": {
       "status": "pending",
@@ -3227,7 +3245,11 @@
           "case": "tests/test1/test_conditional_persistence.py::test_unchanged_inline_file_reference_clears_without_deleting_content[image]"
         }
       ],
-      "context": "End-of-phase genuine attributed human disposition or real fail-first enforcement route required. T36 high remains open; authored resolved/test is separate from flagged-unverified."
+      "context": "End-of-phase genuine attributed human disposition or real fail-first enforcement route required. T36 high remains open; authored resolved/test is separate from flagged-unverified.",
+      "owner_instructions": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-REVIEW-DISPOSITION.md",
+        "section": "Plan22 final ownership handoff / H2"
+      }
     }
   },
   "ready": false,
@@ -4363,7 +4385,9 @@
     "preserve_historical_report": true,
     "exclude_from_covered_files": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/handoff.json",
     "reason": "Handoff embeds canonical report digest; including it in that report's covered_files would create circular binding.",
-    "final_rebind_owner": "orchestrator, after canonical report is written"
+    "final_rebind_owner": "orchestrator, after canonical report is written",
+    "remaining_truths": "Preserve original8/10 verified truths; independently reevaluate G6/WR05, security35/36/40, H1/H2 and31 flags",
+    "final_rebind_scope": "Only reports.verification path/hash/status/context from actual independent result, then --check-handoff; never auto-close T40"
   },
   "executor_metadata_corrections": {
     "actor": "/root/execute_22",
@@ -4374,5 +4398,24 @@
       "bootstrap prose states actual staged payload/record controls plus ordinary complete positive"
     ],
     "scope": "Handoff/preparation metadata only; source/runner/21 packet unchanged; no reviewer attribution retroactively applied to corrected metadata."
+  },
+  "hook_fulfillment": {
+    "execute:post/code-review": {
+      "report": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-review.md",
+        "sha256": "01c4405f723b40f3581da2118aa0d9d7f284d6bfd46ac0a64b9b8f2b60e9522f"
+      },
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
+      "packet_sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+    },
+    "verify:post/secure-phase": {
+      "report": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+        "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+      },
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
+      "packet_sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0",
+      "status": "OPEN_THREATS"
+    }
   }
 }

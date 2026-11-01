@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "version": "06.4-24/v1",
-  "recorded": "2026-11-01T20:51:25.502215+00:00",
+  "recorded": "2026-11-01T21:04:47.509409+00:00",
   "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
   "runner_sha256": "75f8057f55d869ccb9591a0a9868e57d606f9e65f2f0eebffa5fca8d5313ad66",
   "packet": {
@@ -14,28 +14,66 @@
   },
   "reports": {
     "code": {
-      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-review.md",
-      "sha256": "01c4405f723b40f3581da2118aa0d9d7f284d6bfd46ac0a64b9b8f2b60e9522f",
-      "status": "pending",
-      "context": "Existing report retained at its true hash as historical input; current source review pending plan25/26. Original actor/time/source and dispositions are preserved under history."
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/code-review.md",
+      "sha256": "a4b591404b8f4175462877f8a9a868b336bab7a09f598b45da04c1129878a334",
+      "status": "passed",
+      "actor": "/root/execute_25/code_25",
+      "recorded": "2026-11-01T20:56:45.272080+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Independent bounded current-source code review passed; WR-05 closes with fourteen actual CLI observations. Canonical G6, security and human acceptance remain separate.",
+      "context": "Independent bounded current-source code review passed; WR-05 closes with fourteen actual CLI observations. Canonical G6, security and human acceptance remain separate.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/code-review.md",
+          "sha256": "a4b591404b8f4175462877f8a9a868b336bab7a09f598b45da04c1129878a334"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "security": {
-      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
-      "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f",
-      "status": "pending",
-      "context": "Existing report retained at its true hash as historical input; current source review pending plan25/26. Original actor/time/source and dispositions are preserved under history."
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+      "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502",
+      "status": "open",
+      "verdict": "OPEN_THREATS",
+      "actor": "/root/execute_25/security_25",
+      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "ASVS1/high independent audit records supported partial closures while overall OPEN_THREATS remains; no accepted risk or transfer.",
+      "context": "ASVS1/high independent audit records supported partial closures while overall OPEN_THREATS remains; no accepted risk or transfer.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "ui": {
       "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UI-REVIEW.md",
       "sha256": "e25c2374fe704060195a806e00c616198b13d8659b4359d4008cf1148459af32",
       "status": "pending",
-      "context": "Existing report retained at its true hash as historical input; current source review pending plan25/26. Original actor/time/source and dispositions are preserved under history."
+      "context": "Previous independent 24/24 bounded UI report remains applicable to unchanged product/UI, fixture assets and exact retained captures; original attribution/source hash retained. Actual native/stock H1 and H2 remain pending."
     },
     "verification": {
       "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VERIFICATION.md",
       "sha256": "5048486226b2d48556280f99f5ae12a24d4ef581c9585ff8c4a4da7e1d9b3ced",
       "status": "pending",
-      "context": "Existing report retained at its true hash as historical input; current source review pending plan25/26. Original actor/time/source and dispositions are preserved under history."
+      "context": "Unchanged previous canonical gaps_found 8/10 result at its actual digest; current canonical reassessment is pending plan26. This is not a new verification assessment.",
+      "historical": true
     },
     "code_bounded": {
       "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-review.md",
@@ -94,9 +132,29 @@
           "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-notes]"
         }
       ],
-      "status": "pending",
-      "context": "Current-source applicability review pending plan25; historical bounded closure remains attributed under history and is not reopened.",
-      "historical_status": "closed"
+      "status": "closed",
+      "context": "G1: current independently assessed bounded closure; no broader guarantee or human acceptance.",
+      "historical_status": "closed",
+      "review": "code",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/code_25",
+      "recorded": "2026-11-01T20:56:45.272080+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "G1: current independently assessed bounded closure; no broader guarantee or human acceptance.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/code-review.md",
+          "sha256": "a4b591404b8f4175462877f8a9a868b336bab7a09f598b45da04c1129878a334"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "CR-01": {
       "review_ids": [
@@ -147,10 +205,30 @@
           "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-notes]"
         }
       ],
-      "status": "pending",
-      "context": "Current-source applicability review pending plan25; historical bounded closure remains attributed under history and is not reopened.",
+      "status": "closed",
+      "context": "CR-01: current independently assessed bounded closure; no broader guarantee or human acceptance.",
       "gap": "G1",
-      "historical_status": "closed"
+      "historical_status": "closed",
+      "review": "code",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/code_25",
+      "recorded": "2026-11-01T20:56:45.272080+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "CR-01: current independently assessed bounded closure; no broader guarantee or human acceptance.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/code-review.md",
+          "sha256": "a4b591404b8f4175462877f8a9a868b336bab7a09f598b45da04c1129878a334"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "G2": {
       "review_ids": [
@@ -191,9 +269,29 @@
           "gate": "javascript-integration"
         }
       ],
-      "status": "pending",
-      "context": "Current-source applicability review pending plan25; historical bounded closure remains attributed under history and is not reopened.",
-      "historical_status": "closed"
+      "status": "closed",
+      "context": "G2: current independently assessed bounded closure; no broader guarantee or human acceptance.",
+      "historical_status": "closed",
+      "review": "code",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/code_25",
+      "recorded": "2026-11-01T20:56:45.272080+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "G2: current independently assessed bounded closure; no broader guarantee or human acceptance.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/code-review.md",
+          "sha256": "a4b591404b8f4175462877f8a9a868b336bab7a09f598b45da04c1129878a334"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "CR-02": {
       "review_ids": [
@@ -234,10 +332,30 @@
           "gate": "javascript-integration"
         }
       ],
-      "status": "pending",
-      "context": "Current-source applicability review pending plan25; historical bounded closure remains attributed under history and is not reopened.",
+      "status": "closed",
+      "context": "CR-02: current independently assessed bounded closure; no broader guarantee or human acceptance.",
       "gap": "G2",
-      "historical_status": "closed"
+      "historical_status": "closed",
+      "review": "code",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/code_25",
+      "recorded": "2026-11-01T20:56:45.272080+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "CR-02: current independently assessed bounded closure; no broader guarantee or human acceptance.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/code-review.md",
+          "sha256": "a4b591404b8f4175462877f8a9a868b336bab7a09f598b45da04c1129878a334"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "G3": {
       "review_ids": [
@@ -271,9 +389,29 @@
           "case": "tests/js/formset.test.js::formset.js native row deletion eligibility allows Add and submit without extra DELETE (ordered=false)"
         }
       ],
-      "status": "pending",
-      "context": "Current-source applicability review pending plan25; historical bounded closure remains attributed under history and is not reopened.",
-      "historical_status": "closed"
+      "status": "closed",
+      "context": "G3: current independently assessed bounded closure; no broader guarantee or human acceptance.",
+      "historical_status": "closed",
+      "review": "code",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/code_25",
+      "recorded": "2026-11-01T20:56:45.272080+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "G3: current independently assessed bounded closure; no broader guarantee or human acceptance.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/code-review.md",
+          "sha256": "a4b591404b8f4175462877f8a9a868b336bab7a09f598b45da04c1129878a334"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "CR-03": {
       "review_ids": [
@@ -307,10 +445,30 @@
           "case": "tests/js/formset.test.js::formset.js native row deletion eligibility allows Add and submit without extra DELETE (ordered=false)"
         }
       ],
-      "status": "pending",
-      "context": "Current-source applicability review pending plan25; historical bounded closure remains attributed under history and is not reopened.",
+      "status": "closed",
+      "context": "CR-03: current independently assessed bounded closure; no broader guarantee or human acceptance.",
       "gap": "G3",
-      "historical_status": "closed"
+      "historical_status": "closed",
+      "review": "code",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/code_25",
+      "recorded": "2026-11-01T20:56:45.272080+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "CR-03: current independently assessed bounded closure; no broader guarantee or human acceptance.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/code-review.md",
+          "sha256": "a4b591404b8f4175462877f8a9a868b336bab7a09f598b45da04c1129878a334"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "G4": {
       "review_ids": [
@@ -351,9 +509,29 @@
           "case": "tests/js/formset.test.js::formset.js native row deletion eligibility refuses custom extra Delete after upward movement (delegated)"
         }
       ],
-      "status": "pending",
-      "context": "Current-source applicability review pending plan25; historical bounded closure remains attributed under history and is not reopened.",
-      "historical_status": "closed"
+      "status": "closed",
+      "context": "G4: current independently assessed bounded closure; no broader guarantee or human acceptance.",
+      "historical_status": "closed",
+      "review": "code",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/code_25",
+      "recorded": "2026-11-01T20:56:45.272080+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "G4: current independently assessed bounded closure; no broader guarantee or human acceptance.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/code-review.md",
+          "sha256": "a4b591404b8f4175462877f8a9a868b336bab7a09f598b45da04c1129878a334"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "CR-04": {
       "review_ids": [
@@ -394,10 +572,30 @@
           "case": "tests/js/formset.test.js::formset.js native row deletion eligibility refuses custom extra Delete after upward movement (delegated)"
         }
       ],
-      "status": "pending",
-      "context": "Current-source applicability review pending plan25; historical bounded closure remains attributed under history and is not reopened.",
+      "status": "closed",
+      "context": "CR-04: current independently assessed bounded closure; no broader guarantee or human acceptance.",
       "gap": "G4",
-      "historical_status": "closed"
+      "historical_status": "closed",
+      "review": "code",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/code_25",
+      "recorded": "2026-11-01T20:56:45.272080+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "CR-04: current independently assessed bounded closure; no broader guarantee or human acceptance.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/code-review.md",
+          "sha256": "a4b591404b8f4175462877f8a9a868b336bab7a09f598b45da04c1129878a334"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "G5": {
       "review_ids": [
@@ -445,9 +643,29 @@
           "case": "tests/js/toggle.test.js::conditional disabled ownership keeps a formerly bound inactive group safe during ambiguity and uniquely recovers"
         }
       ],
-      "status": "pending",
-      "context": "Current-source applicability review pending plan25; historical bounded closure remains attributed under history and is not reopened.",
-      "historical_status": "closed"
+      "status": "closed",
+      "context": "G5: current independently assessed bounded closure; no broader guarantee or human acceptance.",
+      "historical_status": "closed",
+      "review": "code",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/code_25",
+      "recorded": "2026-11-01T20:56:45.272080+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "G5: current independently assessed bounded closure; no broader guarantee or human acceptance.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/code-review.md",
+          "sha256": "a4b591404b8f4175462877f8a9a868b336bab7a09f598b45da04c1129878a334"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "CR-05": {
       "review_ids": [
@@ -495,10 +713,30 @@
           "case": "tests/js/toggle.test.js::conditional disabled ownership keeps a formerly bound inactive group safe during ambiguity and uniquely recovers"
         }
       ],
-      "status": "pending",
-      "context": "Current-source applicability review pending plan25; historical bounded closure remains attributed under history and is not reopened.",
+      "status": "closed",
+      "context": "CR-05: current independently assessed bounded closure; no broader guarantee or human acceptance.",
       "gap": "G5",
-      "historical_status": "closed"
+      "historical_status": "closed",
+      "review": "code",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/code_25",
+      "recorded": "2026-11-01T20:56:45.272080+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "CR-05: current independently assessed bounded closure; no broader guarantee or human acceptance.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/code-review.md",
+          "sha256": "a4b591404b8f4175462877f8a9a868b336bab7a09f598b45da04c1129878a334"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "G6": {
       "review_ids": [
@@ -550,15 +788,17 @@
           "gate": "ruff-format"
         }
       ],
-      "status": "open",
-      "context": "Current-source applicability review pending plan25; historical bounded closure remains attributed under history and is not reopened.",
+      "status": "pending",
+      "context": "Current independent code review closes WR01\u201305 within bounded scope; canonical G6 disposition belongs to actual plan26 verifier.",
       "new_findings": [
         "WR-05"
       ],
       "historical_status": "open",
       "current_open_findings": [
         "WR-05"
-      ]
+      ],
+      "independent_disposition": "code-bounded-closed",
+      "canonical_disposition": "pending-plan26"
     },
     "WR-01": {
       "review_ids": [
@@ -607,10 +847,30 @@
           "gate": "ruff-format"
         }
       ],
-      "status": "pending",
-      "context": "Current-source applicability review pending plan25; historical bounded closure remains attributed under history and is not reopened.",
+      "status": "closed",
+      "context": "WR-01: current independently assessed bounded closure; no broader guarantee or human acceptance.",
       "gap": "G6",
-      "historical_status": "closed"
+      "historical_status": "closed",
+      "review": "code",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/code_25",
+      "recorded": "2026-11-01T20:56:45.272080+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "WR-01: current independently assessed bounded closure; no broader guarantee or human acceptance.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/code-review.md",
+          "sha256": "a4b591404b8f4175462877f8a9a868b336bab7a09f598b45da04c1129878a334"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "WR-02": {
       "review_ids": [
@@ -659,13 +919,33 @@
           "gate": "ruff-format"
         }
       ],
-      "status": "pending",
-      "context": "Current-source applicability review pending plan25; historical bounded closure remains attributed under history and is not reopened.",
+      "status": "closed",
+      "context": "WR-02: current independently assessed bounded closure; no broader guarantee or human acceptance.",
       "gap": "G6",
-      "historical_status": "closed"
+      "historical_status": "closed",
+      "review": "code",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/code_25",
+      "recorded": "2026-11-01T20:56:45.272080+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "WR-02: current independently assessed bounded closure; no broader guarantee or human acceptance.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/code-review.md",
+          "sha256": "a4b591404b8f4175462877f8a9a868b336bab7a09f598b45da04c1129878a334"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "WR-03": {
-      "status": "pending",
+      "status": "closed",
       "review_ids": [
         "WR-03"
       ],
@@ -701,11 +981,31 @@
           "gate": "conditional-browser"
         }
       ],
-      "context": "Current-source applicability review pending plan25; historical bounded closure remains attributed under history and is not reopened.",
-      "historical_status": "closed"
+      "context": "WR-03: current independently assessed bounded closure; no broader guarantee or human acceptance.",
+      "historical_status": "closed",
+      "review": "code",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/code_25",
+      "recorded": "2026-11-01T20:56:45.272080+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "WR-03: current independently assessed bounded closure; no broader guarantee or human acceptance.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/code-review.md",
+          "sha256": "a4b591404b8f4175462877f8a9a868b336bab7a09f598b45da04c1129878a334"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "WR-04": {
-      "status": "pending",
+      "status": "closed",
       "review_ids": [
         "WR-04"
       ],
@@ -741,11 +1041,31 @@
           "gate": "conditional-browser"
         }
       ],
-      "context": "Current-source applicability review pending plan25; historical bounded closure remains attributed under history and is not reopened.",
-      "historical_status": "closed"
+      "context": "WR-04: current independently assessed bounded closure; no broader guarantee or human acceptance.",
+      "historical_status": "closed",
+      "review": "code",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/code_25",
+      "recorded": "2026-11-01T20:56:45.272080+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "WR-04: current independently assessed bounded closure; no broader guarantee or human acceptance.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/code-review.md",
+          "sha256": "a4b591404b8f4175462877f8a9a868b336bab7a09f598b45da04c1129878a334"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "WR-05": {
-      "status": "open",
+      "status": "closed",
       "review_ids": [
         "WR-05"
       ],
@@ -780,332 +1100,1191 @@
           "gate": "ruff-format"
         }
       ],
-      "context": "Predicate repair and full fresh67-test/35-control evidence prepared; independent disposition pending plan25, canonical verification plan26."
+      "context": "WR-05: current independently assessed bounded closure; no broader guarantee or human acceptance.",
+      "review": "code",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/code_25",
+      "recorded": "2026-11-01T20:56:45.272080+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "WR-05: current independently assessed bounded closure; no broader guarantee or human acceptance.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/code-review.md",
+          "sha256": "a4b591404b8f4175462877f8a9a868b336bab7a09f598b45da04c1129878a334"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     }
   },
   "threats": {
     "T-06.4-01": {
       "status": "pending",
-      "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "severity": "medium"
+      "severity": "medium",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/security_25",
+      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "T-06.4-02": {
       "status": "pending",
-      "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "severity": "medium"
+      "severity": "medium",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/security_25",
+      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "T-06.4-03": {
       "status": "pending",
-      "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "severity": "high"
+      "severity": "high",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/security_25",
+      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "T-06.4-04": {
       "status": "pending",
-      "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "severity": "high"
+      "severity": "high",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/security_25",
+      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "T-06.4-05": {
       "status": "pending",
-      "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "severity": "high"
+      "severity": "high",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/security_25",
+      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "T-06.4-06": {
       "status": "pending",
-      "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "severity": "high"
+      "severity": "high",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/security_25",
+      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "T-06.4-07": {
       "status": "pending",
-      "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "severity": "high"
+      "severity": "high",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/security_25",
+      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "T-06.4-08": {
       "status": "pending",
-      "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "severity": "high"
+      "severity": "high",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/security_25",
+      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "T-06.4-09": {
       "status": "pending",
-      "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "severity": "medium"
+      "severity": "medium",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/security_25",
+      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "T-06.4-10": {
       "status": "pending",
-      "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "severity": "high"
+      "severity": "high",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/security_25",
+      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "T-06.4-11": {
       "status": "pending",
-      "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "severity": "medium"
+      "severity": "medium",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/security_25",
+      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "T-06.4-12": {
       "status": "pending",
-      "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "severity": "medium"
+      "severity": "medium",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/security_25",
+      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "T-06.4-13": {
       "status": "pending",
-      "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "severity": "high"
+      "severity": "high",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/security_25",
+      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "T-06.4-14": {
       "status": "pending",
-      "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "severity": "high"
+      "severity": "high",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/security_25",
+      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "T-06.4-15": {
       "status": "pending",
-      "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "severity": "medium"
+      "severity": "medium",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/security_25",
+      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "T-06.4-16": {
       "status": "pending",
-      "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "severity": "high"
+      "severity": "high",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/security_25",
+      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "T-06.4-17": {
       "status": "pending",
-      "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "severity": "high"
+      "severity": "high",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/security_25",
+      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "T-06.4-18": {
       "status": "pending",
-      "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "severity": "medium"
+      "severity": "medium",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/security_25",
+      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "T-06.4-19": {
       "status": "pending",
-      "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "severity": "high"
+      "severity": "high",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/security_25",
+      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "T-06.4-20": {
       "status": "pending",
-      "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "severity": "medium"
+      "severity": "medium",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/security_25",
+      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "T-06.4-21": {
       "status": "pending",
-      "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "severity": "medium"
+      "severity": "medium",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/security_25",
+      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "T-06.4-22": {
       "status": "pending",
-      "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "severity": "high"
+      "severity": "high",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/security_25",
+      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "T-06.4-23": {
       "status": "pending",
-      "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "severity": "high"
+      "severity": "high",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/security_25",
+      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "T-06.4-24": {
       "status": "pending",
-      "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "severity": "high"
+      "severity": "high",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/security_25",
+      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "T-06.4-25": {
       "status": "pending",
-      "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "severity": "high"
+      "severity": "high",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/security_25",
+      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "T-06.4-26": {
       "status": "pending",
-      "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "severity": "medium"
+      "severity": "medium",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/security_25",
+      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "T-06.4-27": {
       "status": "pending",
-      "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "severity": "medium"
+      "severity": "medium",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/security_25",
+      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "T-06.4-28": {
       "status": "pending",
-      "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "severity": "high"
+      "severity": "high",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/security_25",
+      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "T-06.4-29": {
       "status": "pending",
-      "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "severity": "high"
+      "severity": "high",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/security_25",
+      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "T-06.4-30": {
       "status": "pending",
-      "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "severity": "high"
+      "severity": "high",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/security_25",
+      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "T-06.4-31": {
       "status": "pending",
-      "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "severity": "medium"
+      "severity": "medium",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/security_25",
+      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "T-06.4-32": {
       "status": "pending",
-      "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "severity": "medium"
+      "severity": "medium",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/security_25",
+      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "T-06.4-33": {
       "status": "pending",
-      "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "severity": "high"
+      "severity": "high",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/security_25",
+      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "T-06.4-34": {
       "status": "pending",
-      "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "severity": "high"
+      "severity": "high",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/security_25",
+      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "T-06.4-35": {
       "status": "open",
-      "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+      "context": "OPEN/high: attribution/readiness guards exist, but genuine H1/H2 and final independent acceptance outcomes remain absent.",
       "blocking": true,
       "historical_independent_disposition": "open",
-      "severity": "high"
+      "severity": "high",
+      "independent_disposition": "open",
+      "actor": "/root/execute_25/security_25",
+      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "OPEN/high: attribution/readiness guards exist, but genuine H1/H2 and final independent acceptance outcomes remain absent.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "T-06.4-36": {
       "status": "open",
-      "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+      "context": "OPEN/high: H2 has no genuine enforcement descriptor/RED\u2013GREEN route or attributed human disposition; native reference/storage tests do not supply it.",
       "blocking": true,
       "historical_independent_disposition": "open",
-      "severity": "high"
+      "severity": "high",
+      "independent_disposition": "open",
+      "actor": "/root/execute_25/security_25",
+      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "OPEN/high: H2 has no genuine enforcement descriptor/RED\u2013GREEN route or attributed human disposition; native reference/storage tests do not supply it.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "T-06.4-SC": {
       "status": "pending",
-      "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+      "context": "CLOSED/high within no-install scope: existing runtime paths and dependency/lock inputs unchanged; no install occurred; future-install gate unexercised.",
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "severity": "high"
+      "severity": "high",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/security_25",
+      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "CLOSED/high within no-install scope: existing runtime paths and dependency/lock inputs unchanged; no install occurred; future-install gate unexercised.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "T-06.4-37": {
       "status": "pending",
       "severity": "high",
       "component": "corruption subprocess evidence and control bootstrap",
-      "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
       "blocking": false,
-      "historical_independent_disposition": "closed"
+      "historical_independent_disposition": "closed",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/security_25",
+      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "T-06.4-38": {
       "status": "pending",
       "severity": "medium",
       "component": "conditional screenshot file/path/hash/device observations",
-      "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+      "context": "CLOSED/medium within original capture-integrity bounds: inventories, confined distinct paths, current PNG bytes/digests and viewport/containment/glyph observations remain enforced. Former diagnostic defect did not demonstrate acceptance bypass.",
       "blocking": false,
-      "historical_independent_disposition": "closed"
+      "historical_independent_disposition": "closed",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/security_25",
+      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "CLOSED/medium within original capture-integrity bounds: inventories, confined distinct paths, current PNG bytes/digests and viewport/containment/glyph observations remain enforced. Former diagnostic defect did not demonstrate acceptance bypass.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "T-06.4-39": {
       "status": "pending",
       "severity": "high",
       "component": "bounded source-diff retained execution refresh",
-      "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
       "blocking": false,
-      "historical_independent_disposition": "closed"
+      "historical_independent_disposition": "closed",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/security_25",
+      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "T-06.4-40": {
       "status": "open",
       "severity": "high",
       "component": "independent report attribution and canonical handoff",
-      "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+      "context": "OPEN/high: current-source final canonical verification and final report-hash rebind remain pending; reviewed canonical digest identifies previous result.",
       "blocking": true,
-      "historical_independent_disposition": "open"
+      "historical_independent_disposition": "open",
+      "independent_disposition": "open",
+      "actor": "/root/execute_25/security_25",
+      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "OPEN/high: current-source final canonical verification and final report-hash rebind remain pending; reviewed canonical digest identifies previous result.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     "T-06.4-41": {
       "status": "pending",
-      "severity": "high",
-      "context": "WR-05 numeric rejection predicate; mitigation evidence prepared, independent owner has not yet supplied a current disposition.",
+      "severity": "medium",
+      "context": "CLOSED/medium as authored: local overflow refusal, both dimensions, registered controls and mandatory WR05/G6 links independently verified through four exact CLI refusals.",
       "plans": [
         "23",
         "24",
         "25",
         "26"
+      ],
+      "independent_disposition": "closed",
+      "blocking": false,
+      "actor": "/root/execute_25/security_25",
+      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "CLOSED/medium as authored: local overflow refusal, both dimensions, registered controls and mandatory WR05/G6 links independently verified through four exact CLI refusals.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
       ]
     },
     "T-06.4-42": {
       "status": "pending",
       "severity": "high",
-      "context": "WR-05 refresh provenance and handoff; mitigation evidence prepared, independent owner has not yet supplied a current disposition.",
+      "context": "CLOSED/high within refresh bounds: exact824/822/2 source continuity,17 retained objects/runtime equality,67/35 fresh identities and historical handoff preservation independently checked.",
       "plans": [
         "23",
         "24",
         "25",
         "26"
+      ],
+      "independent_disposition": "closed",
+      "blocking": false,
+      "actor": "/root/execute_25/security_25",
+      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "CLOSED/high within refresh bounds: exact824/822/2 source continuity,17 retained objects/runtime equality,67/35 fresh identities and historical handoff preservation independently checked.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
       ]
     },
     "T-06.4-43": {
-      "status": "pending",
+      "status": "open",
       "severity": "high",
-      "context": "Independent review and canonical binding; mitigation evidence prepared, independent owner has not yet supplied a current disposition.",
+      "context": "OPEN/high: independent observations supplied, but stable final review binding, immutable pre-replacement replay, successor canonical output and post-summary final rebind/check have not occurred at auditor snapshot.",
       "plans": [
         "23",
         "24",
         "25",
         "26"
+      ],
+      "independent_disposition": "open",
+      "blocking": true,
+      "actor": "/root/execute_25/security_25",
+      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "OPEN/high: independent observations supplied, but stable final review binding, immutable pre-replacement replay, successor canonical output and post-summary final rebind/check have not occurred at auditor snapshot.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
       ]
     }
   },
@@ -2472,7 +3651,7 @@
   },
   "new_findings": {
     "WR-05": {
-      "status": "open",
+      "status": "closed",
       "severity": "warning",
       "gap": "G6",
       "title": "Oversized integer glyph rejection diagnostic",
@@ -2511,42 +3690,35 @@
         "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
         "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
       },
-      "context": "Plan23 repair and24 affected evidence captured; no new independent review outcome yet."
+      "context": "Current independently executed width/height overflow refusals through both real CLIs close the bounded diagnostic warning. G6 remains canonical-pending plan26.",
+      "review": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/code-review.md",
+        "sha256": "a4b591404b8f4175462877f8a9a868b336bab7a09f598b45da04c1129878a334"
+      },
+      "independently_confirmed_by": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+        "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+      },
+      "independent_disposition": "closed",
+      "actor": "/root/execute_25/code_25",
+      "recorded": "2026-11-01T20:56:45.272080+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d"
     }
   },
   "security_accounting": {
-    "current_independent_review": "pending",
-    "historical_accounting": {
-      "total": 41,
-      "historical_total": 37,
-      "historical_closed": 31,
-      "historical_open_total": 6,
-      "historical_open_blocking_high": 5,
-      "historical_open_nonblocking_medium": 1,
-      "current_independent_review": "OPEN_THREATS",
-      "new_threats": [
-        "T-06.4-37",
-        "T-06.4-38",
-        "T-06.4-39",
-        "T-06.4-40"
-      ],
-      "machine_status_qualification": "Schema1 requires overall security=passed before threat.status=verified. Actual independent38closed are explicitly recorded while their machine status stays pending;3high stay open. No partial result is SECURED.",
-      "independently_closed": 38,
-      "open_total": 3,
-      "open_blocking_high": 3,
-      "open_nonblocking_medium": 0
-    },
-    "new_planning_threats": [
-      "T-06.4-41",
-      "T-06.4-42",
-      "T-06.4-43"
-    ],
-    "retained_open_high": [
+    "total": 44,
+    "independently_closed": 40,
+    "open_total": 4,
+    "open_blocking_high": 4,
+    "open_nonblocking_medium": 0,
+    "current_independent_review": "OPEN_THREATS",
+    "open_threat_ids": [
       "T-06.4-35",
       "T-06.4-36",
-      "T-06.4-40"
+      "T-06.4-40",
+      "T-06.4-43"
     ],
-    "qualification": "Historical38/41 closures remain historical; no current aggregate security verdict or accepted risk is inferred."
+    "qualification": "Unique authored01\u201343 plus SC once; historical38/41 remains under history. T41 uses authored medium severity. Schema1 reserves machine verified for overall passed security, so partial independently closed entries remain machine pending."
   },
   "independent_reports": {
     "historical": {
@@ -2575,10 +3747,27 @@
         }
       }
     },
-    "current": {},
-    "status": "pending"
+    "current": {
+      "code": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/code-review.md",
+        "sha256": "a4b591404b8f4175462877f8a9a868b336bab7a09f598b45da04c1129878a334"
+      },
+      "security": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+        "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+      },
+      "validation": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VALIDATION.md",
+        "sha256": "cd2aa62b66b7a6951fbe3e9513ea840f98076aae9c732e0fbfbb956b76302958"
+      },
+      "observations": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+        "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+      }
+    },
+    "status": "actual-current-qualified; canonical-and-human-pending"
   },
-  "next_gate": "Plan25 actual independent code/security/validation outcomes; plan26 canonical reassessment/final binding; actual H1/H2 remain end-of-phase checks. No phase advancement.",
+  "next_gate": "Plan26 immutable pre-replacement replay, independent canonical reassessment, actual final rebind/check; genuine H1/H2 remain end-of-phase human checks. No phase advancement.",
   "history": {
     "handoff": {
       "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/handoff.json",
@@ -7009,7 +8198,1216 @@
       "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VERIFICATION.md",
       "sha256": "5048486226b2d48556280f99f5ae12a24d4ef581c9585ff8c4a4da7e1d9b3ced"
     },
-    "qualification": "Complete original22 attribution and nested19 history are preserved verbatim. Pending current source review does not reopen bounded historical G1-G5/CR01-05/WR01-04 closures."
+    "qualification": "Complete original22 attribution and nested19 history are preserved verbatim. Pending current source review does not reopen bounded historical G1-G5/CR01-05/WR01-04 closures.",
+    "pre_plan25_current_bindings": {
+      "captured": "2026-11-01T21:04:47.509409+00:00",
+      "reports": {
+        "code": {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-review.md",
+          "sha256": "01c4405f723b40f3581da2118aa0d9d7f284d6bfd46ac0a64b9b8f2b60e9522f",
+          "status": "pending",
+          "context": "Existing report retained at its true hash as historical input; current source review pending plan25/26. Original actor/time/source and dispositions are preserved under history."
+        },
+        "security": {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+          "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f",
+          "status": "pending",
+          "context": "Existing report retained at its true hash as historical input; current source review pending plan25/26. Original actor/time/source and dispositions are preserved under history."
+        },
+        "ui": {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UI-REVIEW.md",
+          "sha256": "e25c2374fe704060195a806e00c616198b13d8659b4359d4008cf1148459af32",
+          "status": "pending",
+          "context": "Existing report retained at its true hash as historical input; current source review pending plan25/26. Original actor/time/source and dispositions are preserved under history."
+        },
+        "verification": {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VERIFICATION.md",
+          "sha256": "5048486226b2d48556280f99f5ae12a24d4ef581c9585ff8c4a4da7e1d9b3ced",
+          "status": "pending",
+          "context": "Existing report retained at its true hash as historical input; current source review pending plan25/26. Original actor/time/source and dispositions are preserved under history."
+        },
+        "code_bounded": {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-review.md",
+          "sha256": "01c4405f723b40f3581da2118aa0d9d7f284d6bfd46ac0a64b9b8f2b60e9522f",
+          "status": "pending",
+          "context": "Existing report retained at its true hash as historical input; current source review pending plan25/26. Original actor/time/source and dispositions are preserved under history."
+        }
+      },
+      "findings": {
+        "G1": {
+          "review_ids": [
+            "CR-01"
+          ],
+          "threats": [
+            "T-06.4-07",
+            "T-06.4-08",
+            "T-06.4-09",
+            "T-06.4-24"
+          ],
+          "plans": [
+            "11",
+            "16",
+            "18",
+            "19",
+            "20",
+            "21",
+            "22"
+          ],
+          "requirements": [
+            "FSET-01",
+            "LIFE-02"
+          ],
+          "evidence": [
+            {
+              "gate": "django6.0-focused",
+              "case": "tests/test1/test_formsets_policy.py::test_reclean_edit_only_extra_stays_invalid[package]"
+            },
+            {
+              "gate": "django6.0-focused",
+              "case": "tests/test1/test_formsets_policy.py::test_reclean_edit_only_extra_stays_invalid[native]"
+            },
+            {
+              "gate": "django6.0-focused",
+              "case": "tests/test1/test_formsets_policy.py::test_reclean_invalid_existing_ids_never_save[package-missing-False-True]"
+            },
+            {
+              "gate": "django6.0-focused",
+              "case": "tests/test1/test_formsets_policy.py::test_reclean_invalid_existing_ids_never_save[package-missing-False-False]"
+            },
+            {
+              "gate": "django6.0-focused",
+              "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-siblings]"
+            },
+            {
+              "gate": "django6.0-focused",
+              "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-notes]"
+            }
+          ],
+          "status": "pending",
+          "context": "Current-source applicability review pending plan25; historical bounded closure remains attributed under history and is not reopened.",
+          "historical_status": "closed"
+        },
+        "CR-01": {
+          "review_ids": [
+            "CR-01"
+          ],
+          "threats": [
+            "T-06.4-07",
+            "T-06.4-08",
+            "T-06.4-09",
+            "T-06.4-24"
+          ],
+          "plans": [
+            "11",
+            "16",
+            "18",
+            "19",
+            "20",
+            "21",
+            "22"
+          ],
+          "requirements": [
+            "FSET-01",
+            "LIFE-02"
+          ],
+          "evidence": [
+            {
+              "gate": "django6.0-focused",
+              "case": "tests/test1/test_formsets_policy.py::test_reclean_edit_only_extra_stays_invalid[package]"
+            },
+            {
+              "gate": "django6.0-focused",
+              "case": "tests/test1/test_formsets_policy.py::test_reclean_edit_only_extra_stays_invalid[native]"
+            },
+            {
+              "gate": "django6.0-focused",
+              "case": "tests/test1/test_formsets_policy.py::test_reclean_invalid_existing_ids_never_save[package-missing-False-True]"
+            },
+            {
+              "gate": "django6.0-focused",
+              "case": "tests/test1/test_formsets_policy.py::test_reclean_invalid_existing_ids_never_save[package-missing-False-False]"
+            },
+            {
+              "gate": "django6.0-focused",
+              "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-siblings]"
+            },
+            {
+              "gate": "django6.0-focused",
+              "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-notes]"
+            }
+          ],
+          "status": "pending",
+          "context": "Current-source applicability review pending plan25; historical bounded closure remains attributed under history and is not reopened.",
+          "gap": "G1",
+          "historical_status": "closed"
+        },
+        "G2": {
+          "review_ids": [
+            "CR-02"
+          ],
+          "threats": [
+            "T-06.4-22",
+            "T-06.4-25"
+          ],
+          "plans": [
+            "12",
+            "15",
+            "17",
+            "18",
+            "19",
+            "20",
+            "21",
+            "22"
+          ],
+          "requirements": [
+            "FSET-03",
+            "LIFE-02"
+          ],
+          "evidence": [
+            {
+              "gate": "javascript",
+              "case": "tests/js/runtime-contract.test.js::test runtime boundary runs every other ordinary JS file in a checkout with only Node available"
+            },
+            {
+              "gate": "javascript",
+              "case": "tests/js/runtime-contract.test.js::test runtime boundary fails the required integration lane for a missing selected Python"
+            },
+            {
+              "gate": "javascript",
+              "case": "tests/js/runtime-contract.test.js::test runtime boundary fails the required integration lane for a invalid selected Python"
+            },
+            {
+              "gate": "javascript-integration"
+            }
+          ],
+          "status": "pending",
+          "context": "Current-source applicability review pending plan25; historical bounded closure remains attributed under history and is not reopened.",
+          "historical_status": "closed"
+        },
+        "CR-02": {
+          "review_ids": [
+            "CR-02"
+          ],
+          "threats": [
+            "T-06.4-22",
+            "T-06.4-25"
+          ],
+          "plans": [
+            "12",
+            "15",
+            "17",
+            "18",
+            "19",
+            "20",
+            "21",
+            "22"
+          ],
+          "requirements": [
+            "FSET-03",
+            "LIFE-02"
+          ],
+          "evidence": [
+            {
+              "gate": "javascript",
+              "case": "tests/js/runtime-contract.test.js::test runtime boundary runs every other ordinary JS file in a checkout with only Node available"
+            },
+            {
+              "gate": "javascript",
+              "case": "tests/js/runtime-contract.test.js::test runtime boundary fails the required integration lane for a missing selected Python"
+            },
+            {
+              "gate": "javascript",
+              "case": "tests/js/runtime-contract.test.js::test runtime boundary fails the required integration lane for a invalid selected Python"
+            },
+            {
+              "gate": "javascript-integration"
+            }
+          ],
+          "status": "pending",
+          "context": "Current-source applicability review pending plan25; historical bounded closure remains attributed under history and is not reopened.",
+          "gap": "G2",
+          "historical_status": "closed"
+        },
+        "G3": {
+          "review_ids": [
+            "CR-03"
+          ],
+          "threats": [
+            "T-06.4-15",
+            "T-06.4-26"
+          ],
+          "plans": [
+            "13",
+            "16",
+            "17",
+            "18",
+            "19",
+            "20",
+            "21",
+            "22"
+          ],
+          "requirements": [
+            "FSET-02",
+            "COND-02"
+          ],
+          "evidence": [
+            {
+              "gate": "javascript",
+              "case": "tests/js/formset.test.js::formset.js native row deletion eligibility allows Add and submit without extra DELETE (ordered=true)"
+            },
+            {
+              "gate": "javascript",
+              "case": "tests/js/formset.test.js::formset.js native row deletion eligibility allows Add and submit without extra DELETE (ordered=false)"
+            }
+          ],
+          "status": "pending",
+          "context": "Current-source applicability review pending plan25; historical bounded closure remains attributed under history and is not reopened.",
+          "historical_status": "closed"
+        },
+        "CR-03": {
+          "review_ids": [
+            "CR-03"
+          ],
+          "threats": [
+            "T-06.4-15",
+            "T-06.4-26"
+          ],
+          "plans": [
+            "13",
+            "16",
+            "17",
+            "18",
+            "19",
+            "20",
+            "21",
+            "22"
+          ],
+          "requirements": [
+            "FSET-02",
+            "COND-02"
+          ],
+          "evidence": [
+            {
+              "gate": "javascript",
+              "case": "tests/js/formset.test.js::formset.js native row deletion eligibility allows Add and submit without extra DELETE (ordered=true)"
+            },
+            {
+              "gate": "javascript",
+              "case": "tests/js/formset.test.js::formset.js native row deletion eligibility allows Add and submit without extra DELETE (ordered=false)"
+            }
+          ],
+          "status": "pending",
+          "context": "Current-source applicability review pending plan25; historical bounded closure remains attributed under history and is not reopened.",
+          "gap": "G3",
+          "historical_status": "closed"
+        },
+        "G4": {
+          "review_ids": [
+            "CR-04"
+          ],
+          "threats": [
+            "T-06.4-15",
+            "T-06.4-26"
+          ],
+          "plans": [
+            "13",
+            "16",
+            "17",
+            "18",
+            "19",
+            "20",
+            "21",
+            "22"
+          ],
+          "requirements": [
+            "FSET-02"
+          ],
+          "evidence": [
+            {
+              "gate": "javascript",
+              "case": "tests/js/formset.test.js::formset.js native row deletion eligibility moves a native extra above an initial row and then deletes the initial row"
+            },
+            {
+              "gate": "javascript",
+              "case": "tests/js/formset.test.js::formset.js native row deletion eligibility inserts an extra before an initial row without renumbering bound prefixes"
+            },
+            {
+              "gate": "javascript",
+              "case": "tests/js/formset.test.js::formset.js native row deletion eligibility refuses custom extra Delete after upward movement (direct)"
+            },
+            {
+              "gate": "javascript",
+              "case": "tests/js/formset.test.js::formset.js native row deletion eligibility refuses custom extra Delete after upward movement (delegated)"
+            }
+          ],
+          "status": "pending",
+          "context": "Current-source applicability review pending plan25; historical bounded closure remains attributed under history and is not reopened.",
+          "historical_status": "closed"
+        },
+        "CR-04": {
+          "review_ids": [
+            "CR-04"
+          ],
+          "threats": [
+            "T-06.4-15",
+            "T-06.4-26"
+          ],
+          "plans": [
+            "13",
+            "16",
+            "17",
+            "18",
+            "19",
+            "20",
+            "21",
+            "22"
+          ],
+          "requirements": [
+            "FSET-02"
+          ],
+          "evidence": [
+            {
+              "gate": "javascript",
+              "case": "tests/js/formset.test.js::formset.js native row deletion eligibility moves a native extra above an initial row and then deletes the initial row"
+            },
+            {
+              "gate": "javascript",
+              "case": "tests/js/formset.test.js::formset.js native row deletion eligibility inserts an extra before an initial row without renumbering bound prefixes"
+            },
+            {
+              "gate": "javascript",
+              "case": "tests/js/formset.test.js::formset.js native row deletion eligibility refuses custom extra Delete after upward movement (direct)"
+            },
+            {
+              "gate": "javascript",
+              "case": "tests/js/formset.test.js::formset.js native row deletion eligibility refuses custom extra Delete after upward movement (delegated)"
+            }
+          ],
+          "status": "pending",
+          "context": "Current-source applicability review pending plan25; historical bounded closure remains attributed under history and is not reopened.",
+          "gap": "G4",
+          "historical_status": "closed"
+        },
+        "G5": {
+          "review_ids": [
+            "CR-05"
+          ],
+          "threats": [
+            "T-06.4-01",
+            "T-06.4-27"
+          ],
+          "plans": [
+            "14",
+            "16",
+            "17",
+            "18",
+            "19",
+            "20",
+            "21",
+            "22"
+          ],
+          "requirements": [
+            "COND-01",
+            "COND-02",
+            "COND-03",
+            "FSET-02"
+          ],
+          "evidence": [
+            {
+              "gate": "javascript",
+              "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound true state across zero, two and one matches"
+            },
+            {
+              "gate": "javascript",
+              "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound false state across zero, two and one matches"
+            },
+            {
+              "gate": "javascript",
+              "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during missing modal disposal and reinsert"
+            },
+            {
+              "gate": "javascript",
+              "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during ambiguous modal disposal and reinsert"
+            },
+            {
+              "gate": "javascript",
+              "case": "tests/js/toggle.test.js::conditional disabled ownership keeps a formerly bound inactive group safe during ambiguity and uniquely recovers"
+            }
+          ],
+          "status": "pending",
+          "context": "Current-source applicability review pending plan25; historical bounded closure remains attributed under history and is not reopened.",
+          "historical_status": "closed"
+        },
+        "CR-05": {
+          "review_ids": [
+            "CR-05"
+          ],
+          "threats": [
+            "T-06.4-01",
+            "T-06.4-27"
+          ],
+          "plans": [
+            "14",
+            "16",
+            "17",
+            "18",
+            "19",
+            "20",
+            "21",
+            "22"
+          ],
+          "requirements": [
+            "COND-01",
+            "COND-02",
+            "COND-03",
+            "FSET-02"
+          ],
+          "evidence": [
+            {
+              "gate": "javascript",
+              "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound true state across zero, two and one matches"
+            },
+            {
+              "gate": "javascript",
+              "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound false state across zero, two and one matches"
+            },
+            {
+              "gate": "javascript",
+              "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during missing modal disposal and reinsert"
+            },
+            {
+              "gate": "javascript",
+              "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during ambiguous modal disposal and reinsert"
+            },
+            {
+              "gate": "javascript",
+              "case": "tests/js/toggle.test.js::conditional disabled ownership keeps a formerly bound inactive group safe during ambiguity and uniquely recovers"
+            }
+          ],
+          "status": "pending",
+          "context": "Current-source applicability review pending plan25; historical bounded closure remains attributed under history and is not reopened.",
+          "gap": "G5",
+          "historical_status": "closed"
+        },
+        "G6": {
+          "review_ids": [
+            "WR-01",
+            "WR-02",
+            "WR-03",
+            "WR-04",
+            "WR-05"
+          ],
+          "threats": [
+            "T-06.4-22",
+            "T-06.4-28",
+            "T-06.4-29",
+            "T-06.4-31",
+            "T-06.4-33",
+            "T-06.4-41",
+            "T-06.4-42",
+            "T-06.4-43"
+          ],
+          "plans": [
+            "15",
+            "18",
+            "19",
+            "20",
+            "21",
+            "22",
+            "23",
+            "24",
+            "25",
+            "26"
+          ],
+          "requirements": [
+            "LIFE-02"
+          ],
+          "evidence": [
+            {
+              "gate": "evidence-self-tests"
+            },
+            {
+              "gate": "javascript"
+            },
+            {
+              "gate": "strict-docs"
+            },
+            {
+              "gate": "ruff-check"
+            },
+            {
+              "gate": "ruff-format"
+            }
+          ],
+          "status": "open",
+          "context": "Current-source applicability review pending plan25; historical bounded closure remains attributed under history and is not reopened.",
+          "new_findings": [
+            "WR-05"
+          ],
+          "historical_status": "open",
+          "current_open_findings": [
+            "WR-05"
+          ]
+        },
+        "WR-01": {
+          "review_ids": [
+            "WR-01",
+            "WR-02"
+          ],
+          "threats": [
+            "T-06.4-22",
+            "T-06.4-28",
+            "T-06.4-29",
+            "T-06.4-31",
+            "T-06.4-33",
+            "T-06.4-41",
+            "T-06.4-42",
+            "T-06.4-43"
+          ],
+          "plans": [
+            "15",
+            "18",
+            "19",
+            "20",
+            "21",
+            "22",
+            "23",
+            "24",
+            "25",
+            "26"
+          ],
+          "requirements": [
+            "LIFE-02"
+          ],
+          "evidence": [
+            {
+              "gate": "evidence-self-tests"
+            },
+            {
+              "gate": "javascript"
+            },
+            {
+              "gate": "strict-docs"
+            },
+            {
+              "gate": "ruff-check"
+            },
+            {
+              "gate": "ruff-format"
+            }
+          ],
+          "status": "pending",
+          "context": "Current-source applicability review pending plan25; historical bounded closure remains attributed under history and is not reopened.",
+          "gap": "G6",
+          "historical_status": "closed"
+        },
+        "WR-02": {
+          "review_ids": [
+            "WR-01",
+            "WR-02"
+          ],
+          "threats": [
+            "T-06.4-22",
+            "T-06.4-28",
+            "T-06.4-29",
+            "T-06.4-31",
+            "T-06.4-33",
+            "T-06.4-41",
+            "T-06.4-42",
+            "T-06.4-43"
+          ],
+          "plans": [
+            "15",
+            "18",
+            "19",
+            "20",
+            "21",
+            "22",
+            "23",
+            "24",
+            "25",
+            "26"
+          ],
+          "requirements": [
+            "LIFE-02"
+          ],
+          "evidence": [
+            {
+              "gate": "evidence-self-tests"
+            },
+            {
+              "gate": "javascript"
+            },
+            {
+              "gate": "strict-docs"
+            },
+            {
+              "gate": "ruff-check"
+            },
+            {
+              "gate": "ruff-format"
+            }
+          ],
+          "status": "pending",
+          "context": "Current-source applicability review pending plan25; historical bounded closure remains attributed under history and is not reopened.",
+          "gap": "G6",
+          "historical_status": "closed"
+        },
+        "WR-03": {
+          "status": "pending",
+          "review_ids": [
+            "WR-03"
+          ],
+          "gap": "G6",
+          "threats": [
+            "T-06.4-22",
+            "T-06.4-28",
+            "T-06.4-29",
+            "T-06.4-31",
+            "T-06.4-33",
+            "T-06.4-41",
+            "T-06.4-42",
+            "T-06.4-43"
+          ],
+          "plans": [
+            "20",
+            "21",
+            "22",
+            "23",
+            "24",
+            "25",
+            "26"
+          ],
+          "requirements": [
+            "LIFE-01",
+            "LIFE-02"
+          ],
+          "evidence": [
+            {
+              "gate": "evidence-self-tests"
+            },
+            {
+              "gate": "conditional-browser"
+            }
+          ],
+          "context": "Current-source applicability review pending plan25; historical bounded closure remains attributed under history and is not reopened.",
+          "historical_status": "closed"
+        },
+        "WR-04": {
+          "status": "pending",
+          "review_ids": [
+            "WR-04"
+          ],
+          "gap": "G6",
+          "threats": [
+            "T-06.4-22",
+            "T-06.4-28",
+            "T-06.4-29",
+            "T-06.4-31",
+            "T-06.4-33",
+            "T-06.4-41",
+            "T-06.4-42",
+            "T-06.4-43"
+          ],
+          "plans": [
+            "20",
+            "21",
+            "22",
+            "23",
+            "24",
+            "25",
+            "26"
+          ],
+          "requirements": [
+            "LIFE-01",
+            "LIFE-02"
+          ],
+          "evidence": [
+            {
+              "gate": "evidence-self-tests"
+            },
+            {
+              "gate": "conditional-browser"
+            }
+          ],
+          "context": "Current-source applicability review pending plan25; historical bounded closure remains attributed under history and is not reopened.",
+          "historical_status": "closed"
+        },
+        "WR-05": {
+          "status": "open",
+          "review_ids": [
+            "WR-05"
+          ],
+          "gap": "G6",
+          "threats": [
+            "T-06.4-22",
+            "T-06.4-28",
+            "T-06.4-29",
+            "T-06.4-31",
+            "T-06.4-33",
+            "T-06.4-41",
+            "T-06.4-42",
+            "T-06.4-43"
+          ],
+          "plans": [
+            "23",
+            "24",
+            "25",
+            "26"
+          ],
+          "requirements": [
+            "LIFE-02"
+          ],
+          "evidence": [
+            {
+              "gate": "evidence-self-tests"
+            },
+            {
+              "gate": "ruff-check"
+            },
+            {
+              "gate": "ruff-format"
+            }
+          ],
+          "context": "Predicate repair and full fresh67-test/35-control evidence prepared; independent disposition pending plan25, canonical verification plan26."
+        }
+      },
+      "threats": {
+        "T-06.4-01": {
+          "status": "pending",
+          "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+          "blocking": false,
+          "historical_independent_disposition": "closed",
+          "severity": "medium"
+        },
+        "T-06.4-02": {
+          "status": "pending",
+          "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+          "blocking": false,
+          "historical_independent_disposition": "closed",
+          "severity": "medium"
+        },
+        "T-06.4-03": {
+          "status": "pending",
+          "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+          "blocking": false,
+          "historical_independent_disposition": "closed",
+          "severity": "high"
+        },
+        "T-06.4-04": {
+          "status": "pending",
+          "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+          "blocking": false,
+          "historical_independent_disposition": "closed",
+          "severity": "high"
+        },
+        "T-06.4-05": {
+          "status": "pending",
+          "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+          "blocking": false,
+          "historical_independent_disposition": "closed",
+          "severity": "high"
+        },
+        "T-06.4-06": {
+          "status": "pending",
+          "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+          "blocking": false,
+          "historical_independent_disposition": "closed",
+          "severity": "high"
+        },
+        "T-06.4-07": {
+          "status": "pending",
+          "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+          "blocking": false,
+          "historical_independent_disposition": "closed",
+          "severity": "high"
+        },
+        "T-06.4-08": {
+          "status": "pending",
+          "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+          "blocking": false,
+          "historical_independent_disposition": "closed",
+          "severity": "high"
+        },
+        "T-06.4-09": {
+          "status": "pending",
+          "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+          "blocking": false,
+          "historical_independent_disposition": "closed",
+          "severity": "medium"
+        },
+        "T-06.4-10": {
+          "status": "pending",
+          "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+          "blocking": false,
+          "historical_independent_disposition": "closed",
+          "severity": "high"
+        },
+        "T-06.4-11": {
+          "status": "pending",
+          "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+          "blocking": false,
+          "historical_independent_disposition": "closed",
+          "severity": "medium"
+        },
+        "T-06.4-12": {
+          "status": "pending",
+          "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+          "blocking": false,
+          "historical_independent_disposition": "closed",
+          "severity": "medium"
+        },
+        "T-06.4-13": {
+          "status": "pending",
+          "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+          "blocking": false,
+          "historical_independent_disposition": "closed",
+          "severity": "high"
+        },
+        "T-06.4-14": {
+          "status": "pending",
+          "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+          "blocking": false,
+          "historical_independent_disposition": "closed",
+          "severity": "high"
+        },
+        "T-06.4-15": {
+          "status": "pending",
+          "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+          "blocking": false,
+          "historical_independent_disposition": "closed",
+          "severity": "medium"
+        },
+        "T-06.4-16": {
+          "status": "pending",
+          "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+          "blocking": false,
+          "historical_independent_disposition": "closed",
+          "severity": "high"
+        },
+        "T-06.4-17": {
+          "status": "pending",
+          "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+          "blocking": false,
+          "historical_independent_disposition": "closed",
+          "severity": "high"
+        },
+        "T-06.4-18": {
+          "status": "pending",
+          "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+          "blocking": false,
+          "historical_independent_disposition": "closed",
+          "severity": "medium"
+        },
+        "T-06.4-19": {
+          "status": "pending",
+          "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+          "blocking": false,
+          "historical_independent_disposition": "closed",
+          "severity": "high"
+        },
+        "T-06.4-20": {
+          "status": "pending",
+          "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+          "blocking": false,
+          "historical_independent_disposition": "closed",
+          "severity": "medium"
+        },
+        "T-06.4-21": {
+          "status": "pending",
+          "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+          "blocking": false,
+          "historical_independent_disposition": "closed",
+          "severity": "medium"
+        },
+        "T-06.4-22": {
+          "status": "pending",
+          "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+          "blocking": false,
+          "historical_independent_disposition": "closed",
+          "severity": "high"
+        },
+        "T-06.4-23": {
+          "status": "pending",
+          "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+          "blocking": false,
+          "historical_independent_disposition": "closed",
+          "severity": "high"
+        },
+        "T-06.4-24": {
+          "status": "pending",
+          "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+          "blocking": false,
+          "historical_independent_disposition": "closed",
+          "severity": "high"
+        },
+        "T-06.4-25": {
+          "status": "pending",
+          "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+          "blocking": false,
+          "historical_independent_disposition": "closed",
+          "severity": "high"
+        },
+        "T-06.4-26": {
+          "status": "pending",
+          "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+          "blocking": false,
+          "historical_independent_disposition": "closed",
+          "severity": "medium"
+        },
+        "T-06.4-27": {
+          "status": "pending",
+          "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+          "blocking": false,
+          "historical_independent_disposition": "closed",
+          "severity": "medium"
+        },
+        "T-06.4-28": {
+          "status": "pending",
+          "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+          "blocking": false,
+          "historical_independent_disposition": "closed",
+          "severity": "high"
+        },
+        "T-06.4-29": {
+          "status": "pending",
+          "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+          "blocking": false,
+          "historical_independent_disposition": "closed",
+          "severity": "high"
+        },
+        "T-06.4-30": {
+          "status": "pending",
+          "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+          "blocking": false,
+          "historical_independent_disposition": "closed",
+          "severity": "high"
+        },
+        "T-06.4-31": {
+          "status": "pending",
+          "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+          "blocking": false,
+          "historical_independent_disposition": "closed",
+          "severity": "medium"
+        },
+        "T-06.4-32": {
+          "status": "pending",
+          "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+          "blocking": false,
+          "historical_independent_disposition": "closed",
+          "severity": "medium"
+        },
+        "T-06.4-33": {
+          "status": "pending",
+          "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+          "blocking": false,
+          "historical_independent_disposition": "closed",
+          "severity": "high"
+        },
+        "T-06.4-34": {
+          "status": "pending",
+          "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+          "blocking": false,
+          "historical_independent_disposition": "closed",
+          "severity": "high"
+        },
+        "T-06.4-35": {
+          "status": "open",
+          "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+          "blocking": true,
+          "historical_independent_disposition": "open",
+          "severity": "high"
+        },
+        "T-06.4-36": {
+          "status": "open",
+          "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+          "blocking": true,
+          "historical_independent_disposition": "open",
+          "severity": "high"
+        },
+        "T-06.4-SC": {
+          "status": "pending",
+          "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+          "blocking": false,
+          "historical_independent_disposition": "closed",
+          "severity": "high"
+        },
+        "T-06.4-37": {
+          "status": "pending",
+          "severity": "high",
+          "component": "corruption subprocess evidence and control bootstrap",
+          "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+          "blocking": false,
+          "historical_independent_disposition": "closed"
+        },
+        "T-06.4-38": {
+          "status": "pending",
+          "severity": "medium",
+          "component": "conditional screenshot file/path/hash/device observations",
+          "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+          "blocking": false,
+          "historical_independent_disposition": "closed"
+        },
+        "T-06.4-39": {
+          "status": "pending",
+          "severity": "high",
+          "component": "bounded source-diff retained execution refresh",
+          "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+          "blocking": false,
+          "historical_independent_disposition": "closed"
+        },
+        "T-06.4-40": {
+          "status": "open",
+          "severity": "high",
+          "component": "independent report attribution and canonical handoff",
+          "context": "Current source independent reassessment pending plan25/26; complete prior independent attribution is historical.",
+          "blocking": true,
+          "historical_independent_disposition": "open"
+        },
+        "T-06.4-41": {
+          "status": "pending",
+          "severity": "high",
+          "context": "WR-05 numeric rejection predicate; mitigation evidence prepared, independent owner has not yet supplied a current disposition.",
+          "plans": [
+            "23",
+            "24",
+            "25",
+            "26"
+          ]
+        },
+        "T-06.4-42": {
+          "status": "pending",
+          "severity": "high",
+          "context": "WR-05 refresh provenance and handoff; mitigation evidence prepared, independent owner has not yet supplied a current disposition.",
+          "plans": [
+            "23",
+            "24",
+            "25",
+            "26"
+          ]
+        },
+        "T-06.4-43": {
+          "status": "pending",
+          "severity": "high",
+          "context": "Independent review and canonical binding; mitigation evidence prepared, independent owner has not yet supplied a current disposition.",
+          "plans": [
+            "23",
+            "24",
+            "25",
+            "26"
+          ]
+        }
+      },
+      "security_accounting": {
+        "current_independent_review": "pending",
+        "historical_accounting": {
+          "total": 41,
+          "historical_total": 37,
+          "historical_closed": 31,
+          "historical_open_total": 6,
+          "historical_open_blocking_high": 5,
+          "historical_open_nonblocking_medium": 1,
+          "current_independent_review": "OPEN_THREATS",
+          "new_threats": [
+            "T-06.4-37",
+            "T-06.4-38",
+            "T-06.4-39",
+            "T-06.4-40"
+          ],
+          "machine_status_qualification": "Schema1 requires overall security=passed before threat.status=verified. Actual independent38closed are explicitly recorded while their machine status stays pending;3high stay open. No partial result is SECURED.",
+          "independently_closed": 38,
+          "open_total": 3,
+          "open_blocking_high": 3,
+          "open_nonblocking_medium": 0
+        },
+        "new_planning_threats": [
+          "T-06.4-41",
+          "T-06.4-42",
+          "T-06.4-43"
+        ],
+        "retained_open_high": [
+          "T-06.4-35",
+          "T-06.4-36",
+          "T-06.4-40"
+        ],
+        "qualification": "Historical38/41 closures remain historical; no current aggregate security verdict or accepted risk is inferred."
+      },
+      "independent_reports": {
+        "historical": {
+          "historical": {
+            "code": {
+              "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/code-review.md",
+              "sha256": "1e4e1384618101b31fafb8f24b5c50fa045baa594a35630cf4f57020de4822e4"
+            },
+            "security": {
+              "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
+              "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+            },
+            "ui": {
+              "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/ui-review.md",
+              "sha256": "55300f0060bf8879e9d5afbde5759437638f58628c68b01e6779529be345d8c5"
+            }
+          },
+          "current": {
+            "code": {
+              "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-review.md",
+              "sha256": "01c4405f723b40f3581da2118aa0d9d7f284d6bfd46ac0a64b9b8f2b60e9522f"
+            },
+            "security": {
+              "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+              "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+            }
+          }
+        },
+        "current": {},
+        "status": "pending"
+      },
+      "new_findings": {
+        "WR-05": {
+          "status": "open",
+          "severity": "warning",
+          "gap": "G6",
+          "title": "Oversized integer glyph rejection diagnostic",
+          "historical_discovery": {
+            "status": "open",
+            "severity": "warning",
+            "gap": "G6",
+            "threats": [
+              "T-06.4-38"
+            ],
+            "title": "Oversized integer glyph observation escapes the rejection diagnostic boundary",
+            "review": {
+              "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-review.md",
+              "sha256": "01c4405f723b40f3581da2118aa0d9d7f284d6bfd46ac0a64b9b8f2b60e9522f"
+            },
+            "independently_confirmed_by": {
+              "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+              "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+            },
+            "evidence": {
+              "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-controls/boundary-outcomes.json",
+              "sha256": "a89837d0fcca4f4b6dfec0c9b4ba0546ad1e74f6044634ef00546f305f977d8c"
+            },
+            "context": "10**400 glyph width produces exit1/OverflowError traceback through both real CLIs; no successful acceptance or readiness bypass.",
+            "required_repair": "Guard positive finite-number conversion and add bounded dual-CLI regression; then refresh affected checker tests/Ruff/controls and current source continuity before report rebinding.",
+            "affected_evidence": [
+              "evidence-self-tests",
+              "ruff-check",
+              "ruff-format",
+              "checker_control_evidence",
+              "source applicability",
+              "current code/security report source bindings"
+            ]
+          },
+          "current_evidence": {
+            "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+            "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+          },
+          "context": "Plan23 repair and24 affected evidence captured; no new independent review outcome yet."
+        }
+      },
+      "qualification": "Verbatim pre-plan25 snapshot; previous actor/time/source and qualified pending bindings remain historical."
+    }
   },
   "applicability": {
     "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/applicability.md",
@@ -7026,6 +9424,50 @@
     "historical_report": {
       "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VERIFICATION.md",
       "sha256": "5048486226b2d48556280f99f5ae12a24d4ef581c9585ff8c4a4da7e1d9b3ced"
+    }
+  },
+  "hook_fulfillment": {
+    "execute:post/code-review": {
+      "report": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/code-review.md",
+        "sha256": "a4b591404b8f4175462877f8a9a868b336bab7a09f598b45da04c1129878a334"
+      },
+      "actor": "/root/execute_25/code_25",
+      "recorded": "2026-11-01T20:56:45.272080+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "packet_sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd",
+      "scope": "Frozen plan23 runner/test delta, complete24 refresh continuity, retained bounded closures; no product/UI change.",
+      "status": "passed-bounded"
+    },
+    "verify:post/secure-phase": {
+      "report": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+        "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+      },
+      "actor": "/root/execute_25/security_25",
+      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "packet_sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd",
+      "scope": "All44 unique authored registered threats; ASVS1/high; actual14 independent CLI observations.",
+      "status": "OPEN_THREATS"
+    },
+    "verify:post/validate-phase": {
+      "report": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VALIDATION.md",
+        "sha256": "cd2aa62b66b7a6951fbe3e9513ea840f98076aae9c732e0fbfbb956b76302958"
+      },
+      "status": "partial",
+      "nyquist_compliant": false
+    },
+    "execute:post/ui-review": {
+      "report": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UI-REVIEW.md",
+        "sha256": "e25c2374fe704060195a806e00c616198b13d8659b4359d4008cf1148459af32",
+        "status": "pending",
+        "context": "Previous independent 24/24 bounded UI report remains applicable to unchanged product/UI, fixture assets and exact retained captures; original attribution/source hash retained. Actual native/stock H1 and H2 remain pending."
+      },
+      "status": "retained-applicable",
+      "qualification": "Existing24/24 independent UI review and unchanged capture/fixture/product inputs remain applicable; no fresh visual/human approval is inferred."
     }
   }
 }

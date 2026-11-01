@@ -4,6 +4,7 @@ Only temporary SQLite and media are used. ImageField coverage is stored-referenc
 """
 
 # ruff: noqa: E402 -- configure Django before importing models.
+import hashlib
 import json
 import os
 import signal
@@ -66,7 +67,13 @@ from django.template.response import TemplateResponse
 from django.urls import path
 from ordered_model.models import OrderedModel
 
-from crud_views.lib.conditional import ConditionalGroup, ConditionalGroupFormMixin, ModelFieldToggle, ToggleGroup
+from crud_views.lib.conditional import (
+    ConditionalFormSet,
+    ConditionalGroup,
+    ConditionalGroupFormMixin,
+    ModelFieldToggle,
+    ToggleGroup,
+)
 from crud_views.lib.crispy import CrispyModelForm, CrispyViewMixin
 from crud_views.lib.formsets import FormSet, FormSetMixin, FormSets, Formsets, InlineFormSet
 from crud_views.lib.view.base import cv_is_modal_request
@@ -221,7 +228,9 @@ Records = inlineformset_factory(
 )
 
 
-class ProfileForm(BrowserRowForm):
+class ProfileForm(ConditionalGroupFormMixin, BrowserRowForm):
+    cv_conditional_groups = [ConditionalGroup(ModelFieldToggle("with_contact"), ["email", "phone"])]
+
     class Meta:
         model = Profile
         fields = ["name", "with_contact", "email", "phone"]
@@ -250,6 +259,7 @@ class BrowserEdit(CrispyViewMixin, FormSetMixin, UpdateViewPermissionRequired):
             books=FormSet(
                 title="Books",
                 klass=Books,
+                conditional=ConditionalFormSet(toggle=ModelFieldToggle("outer")),
                 children=OrderedDict(
                     notes=FormSet(title="Notes", klass=Notes),
                     memos=FormSet(title="Memos", klass=Memos),
@@ -294,6 +304,10 @@ class BrowserEdit(CrispyViewMixin, FormSetMixin, UpdateViewPermissionRequired):
         return valid
 
     def cv_form_valid_redirect(self, context):
+        if cv_is_modal_request(self.request):
+            response = HttpResponse(status=204)
+            response["X-CV-Redirect"] = self.request.path
+            return response
         return JsonResponse({"saved": True})
 
     def cv_form_invalid(self, context):
@@ -386,6 +400,11 @@ def state(request):
             "notes": list(BookNote.objects.values()),
             "memos": list(BrowserMemo.objects.values()),
             "records": records,
+            "storageContent": {
+                str(p.relative_to(settings.MEDIA_ROOT)): hashlib.sha256(p.read_bytes()).hexdigest()
+                for p in Path(settings.MEDIA_ROOT).rglob("*")
+                if p.is_file()
+            },
             "storage": sorted(
                 str(p.relative_to(settings.MEDIA_ROOT)) for p in Path(settings.MEDIA_ROOT).rglob("*") if p.is_file()
             ),

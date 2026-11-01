@@ -1,0 +1,8 @@
+<div>
+{% if formset.can_order %}
+<button type="button" class="cv-form-ctrl-up" cv-data-formset-form-prefix="{{ form.prefix }}" aria-label="Move up">Move up</button>
+<button type="button" class="cv-form-ctrl-down" cv-data-formset-form-prefix="{{ form.prefix }}" aria-label="Move down">Move down</button>
+{% endif %}
+{% if not formset.edit_only %}<button type="button" class="cv-form-ctrl-add" cv-data-formset-form-prefix="{{ form.prefix }}" aria-label="Add row">Add row</button>{% endif %}
+{% if formset.can_delete %}<button type="button" class="cv-form-ctrl-delete" data-cv-class="cv-form-ctrl-delete" data-cv-class-danger="cv-form-ctrl-delete" cv-data-formset-form-prefix="{{ form.prefix }}" aria-label="Delete row">Delete row</button>{% endif %}
+</div>

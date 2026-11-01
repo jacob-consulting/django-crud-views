@@ -8,7 +8,7 @@
 <script src="/jquery.js"></script>
 <script src="{% static 'crud_views/js/adapters.js' %}"></script>
 <script>globalThis.cv.config = {modalShellId: "cv-modal", modalContentId: "cv-modal-content"};</script>
-<script src="{% static 'crud_views/js/toggle.js' %}"></script>
+{% if not request.GET.late %}<script src="{% static 'crud_views/js/toggle.js' %}"></script>{% endif %}
 <script src="{% static 'crud_views/js/formset.js' %}"></script>
 <script src="{% static 'crud_views/js/modal.js' %}"></script>
 <script>
@@ -35,7 +35,7 @@ cv.adapters.modal = {
 {% endif %}
 {% if modal %}<button type="button" data-cv-modal-dismiss aria-label="Close">Close</button>{% endif %}
 {% if form %}
-<form id="editor" class="cv-form" method="post" enctype="multipart/form-data" novalidate>
+<form id="editor" class="cv-form" method="post" action="{{ request.get_full_path }}" enctype="multipart/form-data" novalidate>
 {% csrf_token %}{% crispy form form.helper %}
 <button type="reset" class="native-reset">Reset fields</button>
 {% if not form.helper.inputs %}<button type="submit" class="fixture-save">Save</button>{% endif %}

@@ -8,6 +8,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 HERE = Path(__file__).resolve().parent
 SPEC = importlib.util.spec_from_file_location("phase64_successor", HERE / "run.py")
@@ -156,6 +157,41 @@ class QualityEvidence(unittest.TestCase):
             corrupted = subprocess.run([*command, "--only", "javascript"], text=True, capture_output=True)
             self.assertNotEqual(corrupted.returncode, 0)
             self.assertIn("command", corrupted.stderr)
+
+
+class CurrentCapture(unittest.TestCase):
+    def test_wr02_invalid_python_fails_before_unrelated_command(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "capture.json"
+            with (
+                patch.dict(runner.os.environ, {"CV_FOCUS_PYTHON": "/missing/selected-review-python"}),
+                patch.object(runner, "command_record", side_effect=ValueError("unrelated gate started")) as command,
+            ):
+                with self.assertRaisesRegex(ValueError, "CV_FOCUS_PYTHON.*selected-review-python"):
+                    runner.run(output, only="strict-docs")
+                command.assert_not_called()
+            self.assertFalse(output.exists())
+            self.assertFalse((output.parent / "source-manifest.json").exists())
+
+    def test_wr02_invalid_runtime_subprocess_preserves_output(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "capture.json"
+            original = {"source_manifest": runner.source(), "gates": {}}
+            runner.write_json(output, original)
+            before = output.read_bytes()
+            result = subprocess.run(
+                [sys.executable, str(HERE / "run.py"), "--run", "--only", "strict-docs", "--output", str(output)],
+                env={**runner.os.environ, "CV_FOCUS_PYTHON": "/missing/selected-review-python"},
+                text=True,
+                capture_output=True,
+            )
+            self.assertNotEqual(result.returncode, 0, result.stdout)
+            self.assertIn("CV_FOCUS_PYTHON", result.stderr)
+            self.assertIn("selected-review-python", result.stderr)
+            self.assertNotIn("START ", result.stdout)
+            self.assertNotIn("REUSE ", result.stdout)
+            self.assertEqual(output.read_bytes(), before)
+            self.assertFalse((output.parent / "source-manifest.json").exists())
 
 
 if __name__ == "__main__":

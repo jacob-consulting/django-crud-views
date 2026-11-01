@@ -548,6 +548,112 @@ class ConditionalCaptureEvidence(CompletePacketFixture, unittest.TestCase):
     def test_oversized_glyph_width_rejects_cli_and_handoff(self):
         self.assert_oversized_dimension_rejects_everywhere("width")
 
+    def test_oversized_glyph_height_rejects_cli_and_handoff(self):
+        self.assert_oversized_dimension_rejects_everywhere("height")
+
+    def test_dimension_numeric_contract(self):
+        original = copy.deepcopy(self.case())
+        for dimension in ("width", "height"):
+            for value in (1, 1.5, 10**300, sys.float_info.max, 5e-324):
+                with self.subTest(dimension=dimension, valid=value):
+                    case = copy.deepcopy(original)
+                    case["captures"][0]["icons"]["glyphs"][0][dimension] = value
+                    runner.validate_conditional_captures(case)
+            for value in (
+                0,
+                -1,
+                0.0,
+                -0.5,
+                True,
+                False,
+                None,
+                "1",
+                [],
+                {},
+                (),
+                float("nan"),
+                float("inf"),
+                float("-inf"),
+                10**400,
+                -(10**400),
+            ):
+                with self.subTest(dimension=dimension, invalid=value):
+                    case = copy.deepcopy(original)
+                    case["captures"][0]["icons"]["glyphs"][0][dimension] = value
+                    with self.assertRaisesRegex(ValueError, "^Conditional capture icon observations invalid: desktop$"):
+                        runner.validate_conditional_captures(case)
+
+    def test_overflow_controls_use_capture_diagnostic(self):
+        original_controls = {
+            "exit-code",
+            "required-case-list",
+            "raw-balance-assertion",
+            "inline-clear-assertion",
+            "source-hash",
+            "tracer-absent",
+            "tracer-skipped",
+            "tracer-failed",
+            "tracer-zero-selected",
+            "disabled-opt-in",
+            "disabled-node-absence",
+            "negative-control-setup-error",
+            "js-filtered-command",
+            "js-wrong-executable",
+            "js-missing-file",
+            "js-duplicate-file",
+            "js-missing-case",
+            "js-duplicate-case",
+            "js-failed-case",
+            "js-skipped-case",
+            "js-false-counts",
+            "integration-missing",
+            "docs-non-strict",
+            "ruff-wrong-subcommand",
+            "ruff-format-missing-check",
+            "capture-missing",
+            "capture-digest",
+            "capture-observation",
+            "control-missing-evidence",
+            "control-missing-summary",
+            "control-success-outcome",
+            "control-wrong-command",
+            "control-wrong-diagnostic",
+        }
+        overflow_controls = {"capture-width-overflow", "capture-height-overflow"}
+        self.assertEqual(set(runner.CORRUPTIONS), original_controls | overflow_controls)
+        self.assertEqual(len(runner.CORRUPTIONS), 35)
+        self.assertEqual(set(runner.CONTROL_DIAGNOSTICS), set(runner.CORRUPTIONS))
+        self.assertTrue(overflow_controls <= set(runner.PAYLOAD_CORRUPTIONS))
+        original = copy.deepcopy(self.packet)
+        paths = [HERE.parent / "18-evidence/results.json"] + [
+            runner.ROOT / capture["path"] for capture in self.case()["captures"]
+        ]
+        digests = {path: runner.sha(path) for path in paths}
+        for dimension in ("width", "height"):
+            with self.subTest(dimension=dimension):
+                kind = f"capture-{dimension}-overflow"
+                diagnostic = "Conditional capture icon observations invalid: desktop"
+                self.assertEqual(runner.CONTROL_DIAGNOSTICS[kind], diagnostic)
+                self.packet = copy.deepcopy(original)
+                runner.corrupt(self.packet, kind)
+                expected = copy.deepcopy(original)
+                case = next(
+                    c
+                    for c in expected["gates"]["conditional-browser"]["browser"]["cases"]
+                    if c["id"] == "gap-ambiguity" and c["theme"] == "stock"
+                )
+                case["captures"][0]["icons"]["glyphs"][0][dimension] = 10**400
+                self.assertEqual(self.packet, expected)
+                observations = [(handoff, self.cli(handoff)) for handoff in (False, True)]
+                for handoff, result in observations:
+                    self.assertEqual(
+                        (result.returncode, result.stdout, result.stderr),
+                        (1, "", f"MATRIX_REJECTED: {diagnostic}\n"),
+                        f"{kind}, handoff={handoff}",
+                    )
+        self.packet = original
+        self.assertEqual({path: runner.sha(path) for path in paths}, digests)
+
     def test_current_three_stock_and_explicit_empty_native_are_valid(self):
         self.assertEqual([c["device"]["id"] for c in self.case()["captures"]], ["desktop", "mobile", "tablet"])
         self.assertEqual(self.case("native")["captures"], [])
@@ -905,6 +1011,23 @@ class HandoffEvidence(unittest.TestCase):
         result = runner.validate_handoff(self.data)
         self.assertEqual(result, {"structurally_valid": True, "ready": False, "disposition": "not-ready"})
         self.matrix_validator.assert_called_once()
+
+    def test_wr05_is_required_for_g6(self):
+        self.assertIn("WR-05", self.data["findings"])
+        self.assertIn("WR-05", self.data["findings"]["G6"]["review_ids"])
+        self.assertIn("T-06.4-41", self.data["findings"]["G6"]["threats"])
+        self.assertIn("T-06.4-41", self.data["findings"]["WR-05"]["threats"])
+        self.assertIn("T-06.4-41", self.data["threats"])
+        result = runner.validate_handoff(self.data)
+        self.assertEqual(result, {"structurally_valid": True, "ready": False, "disposition": "not-ready"})
+        missing = copy.deepcopy(self.data)
+        missing["findings"].pop("WR-05")
+        with self.assertRaisesRegex(ValueError, "^Missing/extra G/CR/WR handoff finding$"):
+            runner.validate_handoff(missing)
+        unlinked = copy.deepcopy(self.data)
+        unlinked["findings"]["G6"]["review_ids"].remove("WR-05")
+        with self.assertRaisesRegex(ValueError, "^Missing canonical finding links: G6$"):
+            runner.validate_handoff(unlinked)
 
     def test_missing_findings_and_links_reject(self):
         for identity in self.data["findings"]:

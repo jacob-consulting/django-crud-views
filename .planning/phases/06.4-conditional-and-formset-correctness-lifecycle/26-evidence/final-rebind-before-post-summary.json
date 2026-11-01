@@ -1,0 +1,168 @@
+{
+  "actor": "/root",
+  "canonical": {
+    "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VERIFICATION.md",
+    "sha256": "2c52acdd18df4056097141521bbbab65102b9ccb03d1d899e0070886e98055b5",
+    "verdict": "human_needed"
+  },
+  "digest_cycle_exclusions": [
+    ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-ACCEPTANCE.md",
+    ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-REVIEW-DISPOSITION.md",
+    ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VERIFICATION.md",
+    ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/handoff.json",
+    ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/final-rebind.json"
+  ],
+  "finished": "2026-11-01T21:17:15.335317+00:00",
+  "handoff": {
+    "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/handoff.json",
+    "sha256": "39e9851ded226a7272b14ec37b1aa5fc795754865c27fb66f494fed5a9fa5061"
+  },
+  "manifest": {
+    "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/source-manifest.json",
+    "sha256": "7dc2541183e999d8709d4c173a9db50f21a0bab52312e22767db896b80a0bf9b"
+  },
+  "mode": "final-handoff",
+  "packet": {
+    "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+    "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+  },
+  "result": {
+    "disposition": "not-ready",
+    "ready": false,
+    "structurally_valid": true
+  },
+  "runner": {
+    "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+    "sha256": "75f8057f55d869ccb9591a0a9868e57d606f9e65f2f0eebffa5fca8d5313ad66"
+  },
+  "runs": [
+    {
+      "actor": "/root",
+      "bindings": {
+        "canonical": {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VERIFICATION.md",
+          "sha256": "2c52acdd18df4056097141521bbbab65102b9ccb03d1d899e0070886e98055b5"
+        },
+        "handoff": {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/handoff.json",
+          "sha256": "39e9851ded226a7272b14ec37b1aa5fc795754865c27fb66f494fed5a9fa5061"
+        },
+        "packet": {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      },
+      "command": [
+        "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+        "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+        "--check",
+        "--output",
+        "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json"
+      ],
+      "finished": "2026-11-01T21:17:09.113254+00:00",
+      "name": "clean-aggregate",
+      "returncode": 0,
+      "started": "2026-11-01T21:17:04.744656+00:00",
+      "stderr": "",
+      "stdout": "PHASE64_MATRIX_OK 20 gates source=5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d\n"
+    },
+    {
+      "actor": "/root",
+      "bindings": {
+        "canonical": {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VERIFICATION.md",
+          "sha256": "2c52acdd18df4056097141521bbbab65102b9ccb03d1d899e0070886e98055b5"
+        },
+        "handoff": {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/handoff.json",
+          "sha256": "39e9851ded226a7272b14ec37b1aa5fc795754865c27fb66f494fed5a9fa5061"
+        },
+        "packet": {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      },
+      "command": [
+        "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+        "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+        "--check-handoff",
+        "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/handoff.json"
+      ],
+      "finished": "2026-11-01T21:17:15.335239+00:00",
+      "name": "clean-handoff-after-report-rebind",
+      "returncode": 0,
+      "started": "2026-11-01T21:17:09.113282+00:00",
+      "stderr": "",
+      "stdout": "{\"disposition\": \"not-ready\", \"ready\": false, \"structurally_valid\": true}\n"
+    }
+  ],
+  "schema": 1,
+  "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+  "stable_inputs": [
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+      "sha256": "75f8057f55d869ccb9591a0a9868e57d606f9e65f2f0eebffa5fca8d5313ad66"
+    },
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/test_runner.py",
+      "sha256": "a37d5e636ad612d9e4b3a330392bd61e31ca6290c04ba6f3fa0692a09903e7bf"
+    },
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+      "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+    },
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/source-manifest.json",
+      "sha256": "7dc2541183e999d8709d4c173a9db50f21a0bab52312e22767db896b80a0bf9b"
+    },
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/applicability.md",
+      "sha256": "98e2af40d6ca6f45a9bec45c5e6da2f0e40b51b9e1593a830e324d128758713d"
+    },
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/18-evidence/results.json",
+      "sha256": "a2ae7e5116683ae54b80243ac7c394909512ea922a3c4fe1b72cd7f633b6e674"
+    },
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/18-evidence/source-manifest.json",
+      "sha256": "160d004bec9883e920b78ea5eacb8c98e1d42903b8b88ec8da9362d47b78f4cf"
+    },
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/code-review.md",
+      "sha256": "a4b591404b8f4175462877f8a9a868b336bab7a09f598b45da04c1129878a334"
+    },
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+      "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+    },
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+      "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+    },
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-REVIEW.md",
+      "sha256": "c936cabfe05f8ee3e18eaf1721d1348182dc822a66661b9308a172e212956292"
+    },
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+      "sha256": "b44c6391ac813239898d1f89531bcbd8f562986b729d9ff15433a26285f25bf8"
+    },
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VALIDATION.md",
+      "sha256": "cd2aa62b66b7a6951fbe3e9513ea840f98076aae9c732e0fbfbb956b76302958"
+    },
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UI-REVIEW.md",
+      "sha256": "e25c2374fe704060195a806e00c616198b13d8659b4359d4008cf1148459af32"
+    },
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-25-SUMMARY.md",
+      "sha256": "4da3188678f283a01f8b51f42d718e4871f9ecef0ed8fc32e625cac8c52ee27f"
+    },
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-checks.py",
+      "sha256": "d7c7da70f5ba516b0dd5f4bb891bcd65a9ff9f864b731531a4c1ee4df3705824"
+    }
+  ],
+  "started": "2026-11-01T21:17:04.744628+00:00"
+}

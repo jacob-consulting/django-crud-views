@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "version": "06.4-24/v1",
-  "recorded": "2026-11-01T21:16:40.073388+00:00",
+  "recorded": "2026-11-01T21:20:26.042313+00:00",
   "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
   "runner_sha256": "75f8057f55d869ccb9591a0a9868e57d606f9e65f2f0eebffa5fca8d5313ad66",
   "packet": {
@@ -70,19 +70,19 @@
     },
     "verification": {
       "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VERIFICATION.md",
-      "sha256": "2c52acdd18df4056097141521bbbab65102b9ccb03d1d899e0070886e98055b5",
+      "sha256": "de9103d24246ccb48440cba53770ab6e7349b849c2dfe84b6bc18a03b0c3bd00",
       "status": "open",
       "context": "Actual independent canonical assessment: human_needed 9/10, G6/WR-05 closed within scope; H1/H2,31 flags and independently attributed security obligations remain open.",
       "historical": false,
       "verdict": "human_needed",
       "actor": "/root/canonical_26",
-      "recorded": "2026-11-01T21:12:57Z",
+      "recorded": "2026-11-01T21:19:05Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
       "response": "Actual independent canonical assessment: human_needed 9/10, G6/WR-05 closed within scope; H1/H2,31 flags and independently attributed security obligations remain open.",
       "evidence_files": [
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VERIFICATION.md",
-          "sha256": "2c52acdd18df4056097141521bbbab65102b9ccb03d1d899e0070886e98055b5"
+          "sha256": "de9103d24246ccb48440cba53770ab6e7349b849c2dfe84b6bc18a03b0c3bd00"
         },
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
@@ -814,13 +814,13 @@
       "canonical_disposition": "closed-bounded",
       "review": "code",
       "actor": "/root/canonical_26",
-      "recorded": "2026-11-01T21:12:57Z",
+      "recorded": "2026-11-01T21:19:05Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
       "response": "Independent code review and actual canonical replay close G6/WR-01\u201305 within their stated evidence scope; phase human/security acceptance remains pending.",
       "evidence_files": [
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VERIFICATION.md",
-          "sha256": "2c52acdd18df4056097141521bbbab65102b9ccb03d1d899e0070886e98055b5"
+          "sha256": "de9103d24246ccb48440cba53770ab6e7349b849c2dfe84b6bc18a03b0c3bd00"
         },
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/code-review.md",
@@ -9594,9 +9594,9 @@
     },
     "report": {
       "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VERIFICATION.md",
-      "sha256": "2c52acdd18df4056097141521bbbab65102b9ccb03d1d899e0070886e98055b5"
+      "sha256": "de9103d24246ccb48440cba53770ab6e7349b849c2dfe84b6bc18a03b0c3bd00"
     },
-    "rebound_at": "2026-11-01T21:16:40.073388+00:00"
+    "rebound_at": "2026-11-01T21:20:26.042313+00:00"
   },
   "hook_fulfillment": {
     "execute:post/code-review": {

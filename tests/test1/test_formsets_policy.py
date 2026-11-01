@@ -275,6 +275,58 @@ def test_direct_all_valid_rejects_extra(policy_routes, policy_world):
     assert tree.x_formsets[0].instance.non_form_errors().as_data()[0].code == "cv_additions_not_allowed"
 
 
+def test_reclean_edit_only_extra_stays_invalid(policy_routes, policy_world):
+    _, payload = editor(policy_routes, policy_world)
+    payload[f"books-{policy_world.parent.pk}-0-1-title"] = "forged"
+    tree = runtime(policy_routes, policy_world, payload)
+    assert tree.all_valid() is False
+    for _ in range(2):
+        tree.x_formsets[0].instance.full_clean()
+        for _ in range(2):
+            assert tree.all_valid() is False
+            errors = tree.x_formsets[0].instance.non_form_errors().as_data()
+            assert [(e.code, e.messages) for e in errors] == [
+                ("cv_additions_not_allowed", ["Additions are not allowed."])
+            ]
+
+
+def test_reclean_http_rejects_before_any_save(policy_routes, policy_world, monkeypatch):
+    # A consuming view may deliberately revalidate after native/custom cleaning.
+    from django.urls import resolve
+
+    url, payload = editor(policy_routes, policy_world)
+    view = resolve(url).func.view_class
+    original = view.cv_form_is_valid
+
+    def revalidate(self, context):
+        original(self, context)
+        context["formsets"].x_formsets[0].instance.full_clean()
+        return original(self, context)
+
+    monkeypatch.setattr(view, "cv_form_is_valid", revalidate)
+    payload["name"] = "Positive reclean control"
+    assert policy_routes.client.post(url, payload).status_code == 302
+    _, payload = editor(policy_routes, policy_world)
+    payload["name"] = "Must not save"
+    payload[f"books-{policy_world.parent.pk}-0-0-title"] = "must not edit"
+    payload[f"siblings-{policy_world.parent.pk}-0-0-title"] = "sibling must not edit"
+    payload[f"books-notes-{policy_world.parent.pk}-0-0-{policy_world.book.pk}-0-0-note"] = "must not edit"
+    payload[f"books-{policy_world.parent.pk}-0-1-title"] = "forged"
+    saves = observe_saves(monkeypatch)
+    response = policy_routes.client.post(url, payload)
+    assert response.status_code == 200
+    assert b"Additions are not allowed." in response.content
+    errors = response.context["formsets"].x_formsets[0].instance.non_form_errors().as_data()
+    assert [e.code for e in errors].count("cv_additions_not_allowed") == 1
+    assert saves == []
+    policy_world.book.refresh_from_db()
+    policy_world.sibling.refresh_from_db()
+    policy_world.note.refresh_from_db()
+    assert policy_world.book.title == "book"
+    assert policy_world.sibling.title == "sibling original"
+    assert policy_world.note.note == "original note"
+
+
 def test_custom_clean_is_preserved(policy_routes, policy_world, monkeypatch):
     calls = []
     original = policy_routes.family.clean

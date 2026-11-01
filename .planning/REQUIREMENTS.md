@@ -132,8 +132,8 @@ Source: A1–A7 and the AUTH-02/A19 handoff; locked decisions D-01–D-19 in
 Implementation/verification progress is tracked below; A8, A25, jQuery removal and broader Guardian #286 are excluded.
 
 - [x] **COND-01**: Each group uses its exact bound checkbox name in its owning form, across prefixes, sibling/nested rows and injected content; ambiguous markup is diagnosed locally without changing that group's own state or bypassing a bound ancestor.
-- [ ] **COND-02**: Immediate native visibility composes every inactive ancestor with independently changed disabled reasons, includes native action buttons, preserves unsaved values and management controls, and recovers stranded focus without disrupting accepted modal focus.
-- [ ] **COND-03**: Native reset resynchronizes only its owning form after default reset, respects cancellation including later listeners, and preserves dynamic rows and management POST/re-render behavior.
+- [x] **COND-02**: Immediate native visibility composes every inactive ancestor with independently changed disabled reasons, includes native action buttons, preserves unsaved values and management controls, and recovers stranded focus without disrupting accepted modal focus.
+- [x] **COND-03**: Native reset resynchronizes only its owning form after default reset, respects cancellation including later listeners, and preserves dynamic rows and management POST/re-render behavior.
 - [x] **COND-04**: Inactive supported fields persist field-aware empty values including defaulted/omitted scalar fields, Boolean, FileField/ImageField and M2M; explicit values retain native meaning and server-disabled fields retain trusted values.
 - [ ] **COND-05**: Unsupported clearing shapes require explicit values and produce descriptive group/field configuration errors at static checks where detectable and at runtime otherwise; inherited form/model invariants remain authoritative.
 - [ ] **FSET-01**: All accepted active formset classes reject nonblank edit-only extras and missing/malformed/unauthorized existing-row IDs before any main/sibling/nested save, with generic identity errors and valid ordinary edits/new rows retained.
@@ -233,12 +233,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DEL-06 | Phase 6.3 | Complete; recorded three-series evidence, migrations, repairs and scoped human acceptance verified |
 | GUA-01 | Phase 6.3 | Complete within explicit bounded identity scope; IN-02/03 and CT-01 fixed; broader compatibility unverified in issue #286 |
 | COND-01 | Phase 6.4 | Implemented in 06.4-01; automated binding/tracer checks pass on Django 4.2/5.2/6.0; final phase verification pending |
-| COND-02 | Phase 6.4 | Planned; pending execution/verification |
-| COND-03 | Phase 6.4 | Planned; pending execution/verification |
+| COND-02 | Phase 6.4 | Complete in 06.4-05: composed disabled ownership, management FormData and focus unit contracts; final Chromium acceptance remains in 08/10 |
+| COND-03 | Phase 6.4 | Complete in 06.4-05: deferred native reset and later cancellation unit contracts; real click/keyboard and POST/re-render acceptance remains in 08/10 |
 | COND-04 | Phase 6.4 | Complete: plan 02 persisted scalar/file/image-reference/M2M matrix and real unchanged inline saves; 218 affected tests per Django 4.2/5.2/6.0. Image validation evidence remains reference-only. |
 | COND-05 | Phase 6.4 | Partial: plan 02 runtime unsupported-field errors and inherited form/model/uniqueness invariants pass; plan 03 static diagnostics remain pending. |
 | FSET-01 | Phase 6.4 | Planned; pending execution/verification |
-| FSET-02 | Phase 6.4 | Partial in 06.4-01: conditional root initializer and bound wrappers; automatic formset lifecycle remains pending later plans |
+| FSET-02 | Phase 6.4 | Partial in 06.4-01/05: conditional root initializer, bound wrappers, late startup and modal observation teardown; automatic formset lifecycle remains pending later plans |
 | FSET-03 | Phase 6.4 | Planned; pending execution/verification |
 | LIFE-01 | Phase 6.4 | Planned; pending execution/verification |
 | LIFE-02 | Phase 6.4 | Planned; pending execution/verification |

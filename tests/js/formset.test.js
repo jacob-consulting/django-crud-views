@@ -607,6 +607,64 @@ describe("formset.js", () => {
             expect(() => s.context(0).delete()).not.toThrow();
             expect(s.submit().get(`${s.prefix}-0-ORDER`)).toBe("1");
         });
+
+        it.each(["-1", "1.5", "1x", "", "9007199254740992", "0-1"])("rejects malformed bound row suffix %s", suffix => {
+            const s = setup({ canOrder: false });
+            const prefix = `${s.prefix}-${suffix}`;
+            const row = s.row(0);
+            row.setAttribute("cv-data-formset-form-prefix", prefix);
+            row.setAttribute("cv-data-formset-form", JSON.stringify({
+                key: "book", prefix, formset_prefix: s.prefix,
+            }));
+            expect(() => new window.cv.XForm({ form: s.form }, prefix)).toThrow(/bound form index/);
+        });
+
+        it.each(["12", "0a1b2c3d-0000-4000-8000-00000000000a"])("keeps native capabilities scoped to a nested %s parent and owning form", pk => {
+            const s = setup({ key: "line-items-child-notes", pk, canOrder: false });
+            const nested = `line-items-child-notes-${pk}-0-1-${pk}-1`;
+            document.body.innerHTML = document.body.innerHTML.replaceAll(s.prefix, nested);
+            const first = document.querySelector("form");
+            const other = first.cloneNode(true);
+            document.body.append(other);
+            const content = other.querySelector(".cv-formset-content");
+            const data = JSON.parse(content.getAttribute("cv-data-formset"));
+            content.setAttribute("cv-data-formset", JSON.stringify({ ...data,
+                pk: pk === "12" ? "\\d+" : "[0-9a-f-]{36}", prefix_key: `${pk}-0-1-${pk}-1`,
+            }));
+            window.cv.initFormsets(other);
+            const rows = other.querySelectorAll(".cv-formset-row");
+            rows[0].before(rows[1]);
+            rows[0].querySelector(".cv-form-ctrl-delete").click();
+            expect(other.querySelector(`input[name="${nested}-0-DELETE"]`).value).toBe("1");
+            expect(first.querySelector(`input[name="${nested}-0-DELETE"]`).value).toBe("0");
+            expect(other.querySelector(`input[name="${nested}-1-DELETE"]`)).toBeNull();
+        });
+
+        it("serializes native mixed rows in final order before modal fetch", () => {
+            const s = setup();
+            const markup = s.form.outerHTML;
+            const win = new JSDOM(`<div id="cv-modal"><div id="cv-modal-dialog"><div id="cv-modal-content">${markup}</div></div></div>`,
+                { runScripts: "outside-only", url: "https://example.test/" }).window;
+            try {
+                win.console.log = () => {};
+                win.eval(fs.readFileSync("node_modules/jquery/dist/jquery.js", "utf8"));
+                for (const name of ["modal", "formset"]) {
+                    win.eval(fs.readFileSync(`src/crud_views/static/crud_views/js/${name}.js`, "utf8"));
+                }
+                win.cv.initFormsets();
+                const form = win.document.querySelector("form");
+                form.querySelectorAll(".cv-formset-row")[1].querySelector(".cv-form-ctrl-up").click();
+                form.querySelectorAll('input[name$="-ORDER"]').forEach(el => { el.value = "99"; });
+                const bodies = [];
+                win.fetch = (_url, options) => { bodies.push(options.body); return new Promise(() => {}); };
+                form.dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+                expect(bodies).toHaveLength(1);
+                expect(bodies[0].get("book-None-0-0-ORDER")).toBe("2");
+                expect(bodies[0].get("book-None-0-1-ORDER")).toBe("1");
+                expect(bodies[0].get("book-None-0-1-DELETE")).toBeNull();
+                expect(bodies[0].get("book-None-0-INITIAL_FORMS")).toBe("1");
+            } finally { win.close(); }
+        });
     });
 
     describe("start-up guard", () => {

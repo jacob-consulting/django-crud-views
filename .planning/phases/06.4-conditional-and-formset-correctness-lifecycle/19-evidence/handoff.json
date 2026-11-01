@@ -1,0 +1,1596 @@
+{
+  "schema": 1,
+  "version": "06.4-19/v1",
+  "recorded": "2026-11-01",
+  "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+  "runner_sha256": "cc9f3a7c4e99408267d0f0b4b731c6ceb6f7e6b6070faf90fee634743690fc4c",
+  "packet": {
+    "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/18-evidence/results.json",
+    "sha256": "a2ae7e5116683ae54b80243ac7c394909512ea922a3c4fe1b72cd7f633b6e674"
+  },
+  "source_manifest": {
+    "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/18-evidence/source-manifest.json",
+    "sha256": "160d004bec9883e920b78ea5eacb8c98e1d42903b8b88ec8da9362d47b78f4cf"
+  },
+  "reports": {
+    "code": {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-REVIEW.md",
+      "sha256": "0d5d1137a3ae3db8e2b7a6507081d63a3f855eb45d62c714cbef05175c1a7e0c",
+      "status": "pending",
+      "context": "Historical report retained; current-source independent reassessment pending."
+    },
+    "security": {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+      "sha256": "8b8d331e54eceb3c65a07d2becb510954ab9b30a15e47b9e777fcce8e5df6b82",
+      "status": "pending",
+      "context": "Historical report retained; current-source independent reassessment pending."
+    },
+    "ui": {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UI-REVIEW.md",
+      "sha256": "c8939d5161145cf6a992fee5517020955a7ff2d47c28e35f1321c027ba5577a9",
+      "status": "pending",
+      "context": "Historical report retained; current-source independent reassessment pending."
+    },
+    "verification": {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VERIFICATION.md",
+      "sha256": "0cf7f41eff41f9e261ddd675ed5bda813248793e68fea99295e40bc390ce3d8f",
+      "status": "pending",
+      "context": "Historical report retained; current-source independent reassessment pending."
+    }
+  },
+  "findings": {
+    "G1": {
+      "review_ids": [
+        "CR-01"
+      ],
+      "threats": [
+        "T-06.4-07",
+        "T-06.4-08",
+        "T-06.4-09",
+        "T-06.4-24"
+      ],
+      "plans": [
+        "11",
+        "16",
+        "18",
+        "19"
+      ],
+      "requirements": [
+        "FSET-01",
+        "LIFE-02"
+      ],
+      "evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_edit_only_extra_stays_invalid[package]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_edit_only_extra_stays_invalid[native]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_invalid_existing_ids_never_save[package-missing-False-True]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_invalid_existing_ids_never_save[package-missing-False-False]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-siblings]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-notes]"
+        }
+      ],
+      "status": "pending",
+      "context": "Repair evidence available; independent closure pending."
+    },
+    "CR-01": {
+      "review_ids": [
+        "CR-01"
+      ],
+      "threats": [
+        "T-06.4-07",
+        "T-06.4-08",
+        "T-06.4-09",
+        "T-06.4-24"
+      ],
+      "plans": [
+        "11",
+        "16",
+        "18",
+        "19"
+      ],
+      "requirements": [
+        "FSET-01",
+        "LIFE-02"
+      ],
+      "evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_edit_only_extra_stays_invalid[package]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_edit_only_extra_stays_invalid[native]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_invalid_existing_ids_never_save[package-missing-False-True]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_invalid_existing_ids_never_save[package-missing-False-False]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-siblings]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-notes]"
+        }
+      ],
+      "status": "pending",
+      "context": "Repair evidence available; independent closure pending.",
+      "gap": "G1"
+    },
+    "G2": {
+      "review_ids": [
+        "CR-02"
+      ],
+      "threats": [
+        "T-06.4-22",
+        "T-06.4-25"
+      ],
+      "plans": [
+        "12",
+        "15",
+        "17",
+        "18",
+        "19"
+      ],
+      "requirements": [
+        "FSET-03",
+        "LIFE-02"
+      ],
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/runtime-contract.test.js::test runtime boundary runs every other ordinary JS file in a checkout with only Node available"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/runtime-contract.test.js::test runtime boundary fails the required integration lane for a missing selected Python"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/runtime-contract.test.js::test runtime boundary fails the required integration lane for a invalid selected Python"
+        },
+        {
+          "gate": "javascript-integration"
+        }
+      ],
+      "status": "pending",
+      "context": "Repair evidence available; independent closure pending."
+    },
+    "CR-02": {
+      "review_ids": [
+        "CR-02"
+      ],
+      "threats": [
+        "T-06.4-22",
+        "T-06.4-25"
+      ],
+      "plans": [
+        "12",
+        "15",
+        "17",
+        "18",
+        "19"
+      ],
+      "requirements": [
+        "FSET-03",
+        "LIFE-02"
+      ],
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/runtime-contract.test.js::test runtime boundary runs every other ordinary JS file in a checkout with only Node available"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/runtime-contract.test.js::test runtime boundary fails the required integration lane for a missing selected Python"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/runtime-contract.test.js::test runtime boundary fails the required integration lane for a invalid selected Python"
+        },
+        {
+          "gate": "javascript-integration"
+        }
+      ],
+      "status": "pending",
+      "context": "Repair evidence available; independent closure pending.",
+      "gap": "G2"
+    },
+    "G3": {
+      "review_ids": [
+        "CR-03"
+      ],
+      "threats": [
+        "T-06.4-15",
+        "T-06.4-26"
+      ],
+      "plans": [
+        "13",
+        "16",
+        "17",
+        "18",
+        "19"
+      ],
+      "requirements": [
+        "FSET-02",
+        "COND-02"
+      ],
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility allows Add and submit without extra DELETE (ordered=true)"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility allows Add and submit without extra DELETE (ordered=false)"
+        }
+      ],
+      "status": "pending",
+      "context": "Repair evidence available; independent closure pending."
+    },
+    "CR-03": {
+      "review_ids": [
+        "CR-03"
+      ],
+      "threats": [
+        "T-06.4-15",
+        "T-06.4-26"
+      ],
+      "plans": [
+        "13",
+        "16",
+        "17",
+        "18",
+        "19"
+      ],
+      "requirements": [
+        "FSET-02",
+        "COND-02"
+      ],
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility allows Add and submit without extra DELETE (ordered=true)"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility allows Add and submit without extra DELETE (ordered=false)"
+        }
+      ],
+      "status": "pending",
+      "context": "Repair evidence available; independent closure pending.",
+      "gap": "G3"
+    },
+    "G4": {
+      "review_ids": [
+        "CR-04"
+      ],
+      "threats": [
+        "T-06.4-15",
+        "T-06.4-26"
+      ],
+      "plans": [
+        "13",
+        "16",
+        "17",
+        "18",
+        "19"
+      ],
+      "requirements": [
+        "FSET-02"
+      ],
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility moves a native extra above an initial row and then deletes the initial row"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility inserts an extra before an initial row without renumbering bound prefixes"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility refuses custom extra Delete after upward movement (direct)"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility refuses custom extra Delete after upward movement (delegated)"
+        }
+      ],
+      "status": "pending",
+      "context": "Repair evidence available; independent closure pending."
+    },
+    "CR-04": {
+      "review_ids": [
+        "CR-04"
+      ],
+      "threats": [
+        "T-06.4-15",
+        "T-06.4-26"
+      ],
+      "plans": [
+        "13",
+        "16",
+        "17",
+        "18",
+        "19"
+      ],
+      "requirements": [
+        "FSET-02"
+      ],
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility moves a native extra above an initial row and then deletes the initial row"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility inserts an extra before an initial row without renumbering bound prefixes"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility refuses custom extra Delete after upward movement (direct)"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility refuses custom extra Delete after upward movement (delegated)"
+        }
+      ],
+      "status": "pending",
+      "context": "Repair evidence available; independent closure pending.",
+      "gap": "G4"
+    },
+    "G5": {
+      "review_ids": [
+        "CR-05"
+      ],
+      "threats": [
+        "T-06.4-01",
+        "T-06.4-27"
+      ],
+      "plans": [
+        "14",
+        "16",
+        "17",
+        "18",
+        "19"
+      ],
+      "requirements": [
+        "COND-01",
+        "COND-02",
+        "COND-03",
+        "FSET-02"
+      ],
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound true state across zero, two and one matches"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound false state across zero, two and one matches"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during missing modal disposal and reinsert"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during ambiguous modal disposal and reinsert"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::conditional disabled ownership keeps a formerly bound inactive group safe during ambiguity and uniquely recovers"
+        }
+      ],
+      "status": "pending",
+      "context": "Repair evidence available; independent closure pending."
+    },
+    "CR-05": {
+      "review_ids": [
+        "CR-05"
+      ],
+      "threats": [
+        "T-06.4-01",
+        "T-06.4-27"
+      ],
+      "plans": [
+        "14",
+        "16",
+        "17",
+        "18",
+        "19"
+      ],
+      "requirements": [
+        "COND-01",
+        "COND-02",
+        "COND-03",
+        "FSET-02"
+      ],
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound true state across zero, two and one matches"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound false state across zero, two and one matches"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during missing modal disposal and reinsert"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during ambiguous modal disposal and reinsert"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::conditional disabled ownership keeps a formerly bound inactive group safe during ambiguity and uniquely recovers"
+        }
+      ],
+      "status": "pending",
+      "context": "Repair evidence available; independent closure pending.",
+      "gap": "G5"
+    },
+    "G6": {
+      "review_ids": [
+        "WR-01",
+        "WR-02"
+      ],
+      "threats": [
+        "T-06.4-22",
+        "T-06.4-28",
+        "T-06.4-29"
+      ],
+      "plans": [
+        "15",
+        "18",
+        "19"
+      ],
+      "requirements": [
+        "LIFE-02"
+      ],
+      "evidence": [
+        {
+          "gate": "evidence-self-tests"
+        },
+        {
+          "gate": "javascript"
+        },
+        {
+          "gate": "strict-docs"
+        },
+        {
+          "gate": "ruff-check"
+        },
+        {
+          "gate": "ruff-format"
+        }
+      ],
+      "status": "pending",
+      "context": "Repair evidence available; independent closure pending."
+    },
+    "WR-01": {
+      "review_ids": [
+        "WR-01",
+        "WR-02"
+      ],
+      "threats": [
+        "T-06.4-22",
+        "T-06.4-28",
+        "T-06.4-29"
+      ],
+      "plans": [
+        "15",
+        "18",
+        "19"
+      ],
+      "requirements": [
+        "LIFE-02"
+      ],
+      "evidence": [
+        {
+          "gate": "evidence-self-tests"
+        },
+        {
+          "gate": "javascript"
+        },
+        {
+          "gate": "strict-docs"
+        },
+        {
+          "gate": "ruff-check"
+        },
+        {
+          "gate": "ruff-format"
+        }
+      ],
+      "status": "pending",
+      "context": "Repair evidence available; independent closure pending.",
+      "gap": "G6"
+    },
+    "WR-02": {
+      "review_ids": [
+        "WR-01",
+        "WR-02"
+      ],
+      "threats": [
+        "T-06.4-22",
+        "T-06.4-28",
+        "T-06.4-29"
+      ],
+      "plans": [
+        "15",
+        "18",
+        "19"
+      ],
+      "requirements": [
+        "LIFE-02"
+      ],
+      "evidence": [
+        {
+          "gate": "evidence-self-tests"
+        },
+        {
+          "gate": "javascript"
+        },
+        {
+          "gate": "strict-docs"
+        },
+        {
+          "gate": "ruff-check"
+        },
+        {
+          "gate": "ruff-format"
+        }
+      ],
+      "status": "pending",
+      "context": "Repair evidence available; independent closure pending.",
+      "gap": "G6"
+    }
+  },
+  "threats": {
+    "T-06.4-01": {
+      "status": "pending",
+      "context": "Source-current independent security disposition pending."
+    },
+    "T-06.4-02": {
+      "status": "pending",
+      "context": "Source-current independent security disposition pending."
+    },
+    "T-06.4-03": {
+      "status": "pending",
+      "context": "Source-current independent security disposition pending."
+    },
+    "T-06.4-04": {
+      "status": "pending",
+      "context": "Source-current independent security disposition pending."
+    },
+    "T-06.4-05": {
+      "status": "pending",
+      "context": "Source-current independent security disposition pending."
+    },
+    "T-06.4-06": {
+      "status": "pending",
+      "context": "Source-current independent security disposition pending."
+    },
+    "T-06.4-07": {
+      "status": "pending",
+      "context": "Source-current independent security disposition pending."
+    },
+    "T-06.4-08": {
+      "status": "pending",
+      "context": "Source-current independent security disposition pending."
+    },
+    "T-06.4-09": {
+      "status": "pending",
+      "context": "Source-current independent security disposition pending."
+    },
+    "T-06.4-10": {
+      "status": "pending",
+      "context": "Source-current independent security disposition pending."
+    },
+    "T-06.4-11": {
+      "status": "pending",
+      "context": "Source-current independent security disposition pending."
+    },
+    "T-06.4-12": {
+      "status": "pending",
+      "context": "Source-current independent security disposition pending."
+    },
+    "T-06.4-13": {
+      "status": "pending",
+      "context": "Source-current independent security disposition pending."
+    },
+    "T-06.4-14": {
+      "status": "pending",
+      "context": "Source-current independent security disposition pending."
+    },
+    "T-06.4-15": {
+      "status": "pending",
+      "context": "Source-current independent security disposition pending."
+    },
+    "T-06.4-16": {
+      "status": "pending",
+      "context": "Source-current independent security disposition pending."
+    },
+    "T-06.4-17": {
+      "status": "pending",
+      "context": "Source-current independent security disposition pending."
+    },
+    "T-06.4-18": {
+      "status": "pending",
+      "context": "Source-current independent security disposition pending."
+    },
+    "T-06.4-19": {
+      "status": "pending",
+      "context": "Source-current independent security disposition pending."
+    },
+    "T-06.4-20": {
+      "status": "pending",
+      "context": "Source-current independent security disposition pending."
+    },
+    "T-06.4-21": {
+      "status": "pending",
+      "context": "Source-current independent security disposition pending."
+    },
+    "T-06.4-22": {
+      "status": "pending",
+      "context": "Source-current independent security disposition pending."
+    },
+    "T-06.4-23": {
+      "status": "pending",
+      "context": "Source-current independent security disposition pending."
+    },
+    "T-06.4-24": {
+      "status": "pending",
+      "context": "Source-current independent security disposition pending."
+    },
+    "T-06.4-25": {
+      "status": "pending",
+      "context": "Source-current independent security disposition pending."
+    },
+    "T-06.4-26": {
+      "status": "pending",
+      "context": "Source-current independent security disposition pending."
+    },
+    "T-06.4-27": {
+      "status": "pending",
+      "context": "Source-current independent security disposition pending."
+    },
+    "T-06.4-28": {
+      "status": "pending",
+      "context": "Source-current independent security disposition pending."
+    },
+    "T-06.4-29": {
+      "status": "pending",
+      "context": "Source-current independent security disposition pending."
+    },
+    "T-06.4-30": {
+      "status": "pending",
+      "context": "Source-current independent security disposition pending."
+    },
+    "T-06.4-31": {
+      "status": "pending",
+      "context": "Source-current independent security disposition pending."
+    },
+    "T-06.4-32": {
+      "status": "pending",
+      "context": "Source-current independent security disposition pending."
+    },
+    "T-06.4-33": {
+      "status": "pending",
+      "context": "Source-current independent security disposition pending."
+    },
+    "T-06.4-34": {
+      "status": "pending",
+      "context": "Source-current independent security disposition pending."
+    },
+    "T-06.4-35": {
+      "status": "pending",
+      "context": "Source-current independent security disposition pending."
+    },
+    "T-06.4-36": {
+      "status": "pending",
+      "context": "Source-current independent security disposition pending."
+    },
+    "T-06.4-SC": {
+      "status": "pending",
+      "context": "Source-current independent security disposition pending."
+    }
+  },
+  "decisions": [
+    "D-01",
+    "D-02",
+    "D-03",
+    "D-04",
+    "D-05",
+    "D-06",
+    "D-07",
+    "D-08",
+    "D-09",
+    "D-10",
+    "D-11",
+    "D-12",
+    "D-13",
+    "D-14",
+    "D-15",
+    "D-16",
+    "D-17",
+    "D-18",
+    "D-19"
+  ],
+  "decision_reconciliation": {},
+  "research_constraints": [],
+  "fallback_edges": [
+    {
+      "id": 1,
+      "requirement": "AUTH-02",
+      "category": "concurrency",
+      "status": "flagged-unresolved",
+      "contract": "A19 only: existing per-request authorization/ancestry and atomic boundaries; repeated/interleaved requests remain isolated (12/16/18), no new concurrency API.",
+      "evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_fragment_authorization.py::test_two_child_declaration_round_trips_emitted_index_and_keeps_gates"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 2,
+      "requirement": "COND-01",
+      "category": "boundary",
+      "status": "flagged-unresolved",
+      "contract": "Zero/one/multiple exact checkbox matches, escaped Unicode/special names and two-form separation; no numeric coercion or ordering-based match (retained01;14/16/18).",
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound true state across zero, two and one matches"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound false state across zero, two and one matches"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during missing modal disposal and reinsert"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during ambiguous modal disposal and reinsert"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::conditional disabled ownership keeps a formerly bound inactive group safe during ambiguity and uniquely recovers"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 3,
+      "requirement": "COND-01",
+      "category": "adjacency",
+      "status": "flagged-unresolved",
+      "contract": "Zero/one/multiple exact checkbox matches, escaped Unicode/special names and two-form separation; no numeric coercion or ordering-based match (retained01;14/16/18).",
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound true state across zero, two and one matches"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound false state across zero, two and one matches"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during missing modal disposal and reinsert"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during ambiguous modal disposal and reinsert"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::conditional disabled ownership keeps a formerly bound inactive group safe during ambiguity and uniquely recovers"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 4,
+      "requirement": "COND-01",
+      "category": "empty",
+      "status": "flagged-unresolved",
+      "contract": "Zero/one/multiple exact checkbox matches, escaped Unicode/special names and two-form separation; no numeric coercion or ordering-based match (retained01;14/16/18).",
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound true state across zero, two and one matches"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound false state across zero, two and one matches"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during missing modal disposal and reinsert"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during ambiguous modal disposal and reinsert"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::conditional disabled ownership keeps a formerly bound inactive group safe during ambiguity and uniquely recovers"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 5,
+      "requirement": "COND-01",
+      "category": "encoding",
+      "status": "flagged-unresolved",
+      "contract": "Zero/one/multiple exact checkbox matches, escaped Unicode/special names and two-form separation; no numeric coercion or ordering-based match (retained01;14/16/18).",
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound true state across zero, two and one matches"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound false state across zero, two and one matches"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during missing modal disposal and reinsert"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during ambiguous modal disposal and reinsert"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::conditional disabled ownership keeps a formerly bound inactive group safe during ambiguity and uniquely recovers"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 6,
+      "requirement": "COND-01",
+      "category": "ordering",
+      "status": "flagged-unresolved",
+      "contract": "Zero/one/multiple exact checkbox matches, escaped Unicode/special names and two-form separation; no numeric coercion or ordering-based match (retained01;14/16/18).",
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound true state across zero, two and one matches"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound false state across zero, two and one matches"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during missing modal disposal and reinsert"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during ambiguous modal disposal and reinsert"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::conditional disabled ownership keeps a formerly bound inactive group safe during ambiguity and uniquely recovers"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 7,
+      "requirement": "COND-01",
+      "category": "precision",
+      "status": "flagged-unresolved",
+      "contract": "Zero/one/multiple exact checkbox matches, escaped Unicode/special names and two-form separation; no numeric coercion or ordering-based match (retained01;14/16/18).",
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound true state across zero, two and one matches"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound false state across zero, two and one matches"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during missing modal disposal and reinsert"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during ambiguous modal disposal and reinsert"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::conditional disabled ownership keeps a formerly bound inactive group safe during ambiguity and uniquely recovers"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 8,
+      "requirement": "COND-02",
+      "category": "adjacency",
+      "status": "flagged-unresolved",
+      "contract": "Nested/frozen/empty group ownership and both initialization orders; independent disabled reasons persist (14/16/18).",
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound true state across zero, two and one matches"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound false state across zero, two and one matches"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during missing modal disposal and reinsert"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during ambiguous modal disposal and reinsert"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::conditional disabled ownership keeps a formerly bound inactive group safe during ambiguity and uniquely recovers"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 9,
+      "requirement": "COND-02",
+      "category": "empty",
+      "status": "flagged-unresolved",
+      "contract": "Nested/frozen/empty group ownership and both initialization orders; independent disabled reasons persist (14/16/18).",
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound true state across zero, two and one matches"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound false state across zero, two and one matches"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during missing modal disposal and reinsert"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during ambiguous modal disposal and reinsert"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::conditional disabled ownership keeps a formerly bound inactive group safe during ambiguity and uniquely recovers"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 10,
+      "requirement": "COND-02",
+      "category": "ordering",
+      "status": "flagged-unresolved",
+      "contract": "Nested/frozen/empty group ownership and both initialization orders; independent disabled reasons persist (14/16/18).",
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound true state across zero, two and one matches"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound false state across zero, two and one matches"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during missing modal disposal and reinsert"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during ambiguous modal disposal and reinsert"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::conditional disabled ownership keeps a formerly bound inactive group safe during ambiguity and uniquely recovers"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 11,
+      "requirement": "COND-03",
+      "category": "unclassified",
+      "status": "flagged-unresolved",
+      "contract": "UNCLASSIFIED flagged assumption: locked cancellable native reset after default action, scoped owning form, dynamic management preserved; retained05/14/16/18 prove concrete contract; no inferred new reset policy.",
+      "evidence": [
+        {
+          "gate": "conditional-browser",
+          "case": "stock:native-reset-user-default"
+        },
+        {
+          "gate": "conditional-browser",
+          "case": "stock:native-reset-user-cancelled"
+        },
+        {
+          "gate": "conditional-browser",
+          "case": "native:native-reset-user-default"
+        },
+        {
+          "gate": "conditional-browser",
+          "case": "native:native-reset-user-cancelled"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 12,
+      "requirement": "COND-04",
+      "category": "idempotency",
+      "status": "flagged-unresolved",
+      "contract": "Retain native repeated-save/file-reference/M2M behavior and routed atomic rollback; consuming-application storage hooks remain H2 scope (retained02;18/19).",
+      "evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_conditional_persistence.py::test_unchanged_inline_file_reference_clears_without_deleting_content[attachment]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_conditional_persistence.py::test_unchanged_inline_file_reference_clears_without_deleting_content[image]"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 13,
+      "requirement": "COND-04",
+      "category": "concurrency",
+      "status": "flagged-unresolved",
+      "contract": "Retain native repeated-save/file-reference/M2M behavior and routed atomic rollback; consuming-application storage hooks remain H2 scope (retained02;18/19).",
+      "evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_conditional_persistence.py::test_unchanged_inline_file_reference_clears_without_deleting_content[attachment]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_conditional_persistence.py::test_unchanged_inline_file_reference_clears_without_deleting_content[image]"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 14,
+      "requirement": "COND-05",
+      "category": "adjacency",
+      "status": "flagged-unresolved",
+      "contract": "Retain shared static/runtime resolver, explicit empty-value membership and inherited clean/model validation order (retained03;17/18).",
+      "evidence": [
+        {
+          "gate": "django6.0-focused"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 15,
+      "requirement": "COND-05",
+      "category": "empty",
+      "status": "flagged-unresolved",
+      "contract": "Retain shared static/runtime resolver, explicit empty-value membership and inherited clean/model validation order (retained03;17/18).",
+      "evidence": [
+        {
+          "gate": "django6.0-focused"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 16,
+      "requirement": "COND-05",
+      "category": "ordering",
+      "status": "flagged-unresolved",
+      "contract": "Retain shared static/runtime resolver, explicit empty-value membership and inherited clean/model validation order (retained03;17/18).",
+      "evidence": [
+        {
+          "gate": "django6.0-focused"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 17,
+      "requirement": "FSET-01",
+      "category": "adjacency",
+      "status": "flagged-unresolved",
+      "contract": "Active adapters revalidate policy across repeated/late cleaning; blank extras and valid rows survive; invalid identities reject before every save (11/18).",
+      "evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_edit_only_extra_stays_invalid[package]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_edit_only_extra_stays_invalid[native]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_invalid_existing_ids_never_save[package-missing-False-True]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_invalid_existing_ids_never_save[package-missing-False-False]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-siblings]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-notes]"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 18,
+      "requirement": "FSET-01",
+      "category": "empty",
+      "status": "flagged-unresolved",
+      "contract": "Active adapters revalidate policy across repeated/late cleaning; blank extras and valid rows survive; invalid identities reject before every save (11/18).",
+      "evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_edit_only_extra_stays_invalid[package]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_edit_only_extra_stays_invalid[native]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_invalid_existing_ids_never_save[package-missing-False-True]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_invalid_existing_ids_never_save[package-missing-False-False]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-siblings]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-notes]"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 19,
+      "requirement": "FSET-01",
+      "category": "ordering",
+      "status": "flagged-unresolved",
+      "contract": "Active adapters revalidate policy across repeated/late cleaning; blank extras and valid rows survive; invalid identities reject before every save (11/18).",
+      "evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_edit_only_extra_stays_invalid[package]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_edit_only_extra_stays_invalid[native]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_invalid_existing_ids_never_save[package-missing-False-True]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_invalid_existing_ids_never_save[package-missing-False-False]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-siblings]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-notes]"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 20,
+      "requirement": "FSET-01",
+      "category": "idempotency",
+      "status": "flagged-unresolved",
+      "contract": "Active adapters revalidate policy across repeated/late cleaning; blank extras and valid rows survive; invalid identities reject before every save (11/18).",
+      "evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_edit_only_extra_stays_invalid[package]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_edit_only_extra_stays_invalid[native]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_invalid_existing_ids_never_save[package-missing-False-True]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_invalid_existing_ids_never_save[package-missing-False-False]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-siblings]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-notes]"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 21,
+      "requirement": "FSET-01",
+      "category": "concurrency",
+      "status": "flagged-unresolved",
+      "contract": "Active adapters revalidate policy across repeated/late cleaning; blank extras and valid rows survive; invalid identities reject before every save (11/18).",
+      "evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_edit_only_extra_stays_invalid[package]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_edit_only_extra_stays_invalid[native]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_invalid_existing_ids_never_save[package-missing-False-True]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_invalid_existing_ids_never_save[package-missing-False-False]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-siblings]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-notes]"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 22,
+      "requirement": "FSET-02",
+      "category": "idempotency",
+      "status": "flagged-unresolved",
+      "contract": "Repeated initialization, interleaved modal/row lifecycle and single event ownership remain form-scoped; stable bound capability independent of display order (13/14/16/18).",
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility allows Add and submit without extra DELETE (ordered=true)"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility allows Add and submit without extra DELETE (ordered=false)"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility moves a native extra above an initial row and then deletes the initial row"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility inserts an extra before an initial row without renumbering bound prefixes"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility refuses custom extra Delete after upward movement (direct)"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility refuses custom extra Delete after upward movement (delegated)"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 23,
+      "requirement": "FSET-02",
+      "category": "concurrency",
+      "status": "flagged-unresolved",
+      "contract": "Repeated initialization, interleaved modal/row lifecycle and single event ownership remain form-scoped; stable bound capability independent of display order (13/14/16/18).",
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility allows Add and submit without extra DELETE (ordered=true)"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility allows Add and submit without extra DELETE (ordered=false)"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility moves a native extra above an initial row and then deletes the initial row"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility inserts an extra before an initial row without renumbering bound prefixes"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility refuses custom extra Delete after upward movement (direct)"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility refuses custom extra Delete after upward movement (delegated)"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 24,
+      "requirement": "FSET-03",
+      "category": "boundary",
+      "status": "flagged-unresolved",
+      "contract": "Retain int/UUID, unsaved parents, second/deeper siblings, exact management coordinates, no float identity coercion; repeat requests retain authorization (retained07;12/13/16/18).",
+      "evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_fragment_authorization.py::test_two_child_declaration_round_trips_emitted_index_and_keeps_gates"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 25,
+      "requirement": "FSET-03",
+      "category": "precision",
+      "status": "flagged-unresolved",
+      "contract": "Retain int/UUID, unsaved parents, second/deeper siblings, exact management coordinates, no float identity coercion; repeat requests retain authorization (retained07;12/13/16/18).",
+      "evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_fragment_authorization.py::test_two_child_declaration_round_trips_emitted_index_and_keeps_gates"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 26,
+      "requirement": "FSET-03",
+      "category": "concurrency",
+      "status": "flagged-unresolved",
+      "contract": "Retain int/UUID, unsaved parents, second/deeper siblings, exact management coordinates, no float identity coercion; repeat requests retain authorization (retained07;12/13/16/18).",
+      "evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_fragment_authorization.py::test_two_child_declaration_round_trips_emitted_index_and_keeps_gates"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 27,
+      "requirement": "LIFE-01",
+      "category": "adjacency",
+      "status": "flagged-unresolved",
+      "contract": "Real stock/native empty/late/adjacent/nested/modal order and management/keyboard behavior; H1 human judgment remains pending (16/18/19).",
+      "evidence": [
+        {
+          "gate": "conditional-browser"
+        },
+        {
+          "gate": "modal-browser"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 28,
+      "requirement": "LIFE-01",
+      "category": "empty",
+      "status": "flagged-unresolved",
+      "contract": "Real stock/native empty/late/adjacent/nested/modal order and management/keyboard behavior; H1 human judgment remains pending (16/18/19).",
+      "evidence": [
+        {
+          "gate": "conditional-browser"
+        },
+        {
+          "gate": "modal-browser"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 29,
+      "requirement": "LIFE-01",
+      "category": "ordering",
+      "status": "flagged-unresolved",
+      "contract": "Real stock/native empty/late/adjacent/nested/modal order and management/keyboard behavior; H1 human judgment remains pending (16/18/19).",
+      "evidence": [
+        {
+          "gate": "conditional-browser"
+        },
+        {
+          "gate": "modal-browser"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 30,
+      "requirement": "LIFE-02",
+      "category": "empty",
+      "status": "flagged-unresolved",
+      "contract": "Missing evidence/runtime and malformed/encoded records fail explicitly; complete docs/projection and escaping contracts remain (15/17/18/19).",
+      "evidence": [
+        {
+          "gate": "evidence-self-tests"
+        },
+        {
+          "gate": "javascript"
+        },
+        {
+          "gate": "strict-docs"
+        },
+        {
+          "gate": "ruff-check"
+        },
+        {
+          "gate": "ruff-format"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 31,
+      "requirement": "LIFE-02",
+      "category": "encoding",
+      "status": "flagged-unresolved",
+      "contract": "Missing evidence/runtime and malformed/encoded records fail explicitly; complete docs/projection and escaping contracts remain (15/17/18/19).",
+      "evidence": [
+        {
+          "gate": "evidence-self-tests"
+        },
+        {
+          "gate": "javascript"
+        },
+        {
+          "gate": "strict-docs"
+        },
+        {
+          "gate": "ruff-check"
+        },
+        {
+          "gate": "ruff-format"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    }
+  ],
+  "human_checks": {
+    "H1": {
+      "status": "pending",
+      "instructions": "On corrected real stock and native hosts, review nested Add/Delete/Move discoverability, full labels and error readability, keyboard/Space/Tab and hidden-content focus, native reset, modal 422 replacement and screen-reader announcements. Inspect desktop/mobile/tablet evidence. Record actual person, browser/assistive technology, environment, results and limits with source/evidence hashes. Screenshots or an agent UI score are not approval."
+    },
+    "H2": {
+      "status": "pending",
+      "canonical_status": "flagged-unverified",
+      "prohibition": "Switching a conditional file field off must not silently authorize deletion of the stored file content.",
+      "authored_status": "resolved",
+      "authored_verification": "test",
+      "descriptor_present": false,
+      "instructions": "Review the exact prohibition against native reference-clearing/storage-spy/retained-byte evidence, ImageField reference-only and consuming-application hook limits. Supply an explicit attributed human disposition or require a genuinely locatable fail-first enforcement route. Existing tests and prior-phase approval are not approval of this item.",
+      "reference_only_storage_observations": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_conditional_persistence.py::test_unchanged_inline_file_reference_clears_without_deleting_content[attachment]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_conditional_persistence.py::test_unchanged_inline_file_reference_clears_without_deleting_content[image]"
+        }
+      ]
+    }
+  },
+  "ready": false,
+  "retained_truths": [
+    "R3",
+    "R7",
+    "E1",
+    "E2"
+  ],
+  "bounds": [
+    "Python3.12.3 / Django4.2.30,5.2.18,6.0.9 / cached Chromium149 only",
+    "AUTH-02 A19 int/UUID sibling/deeper handoff only",
+    "ImageField reference-only; no byte decoding/dimension hooks",
+    "Exact existing CSP skip/floor golden deselection",
+    "A8 commit=False, A25, #210/jQuery, broader Guardian #286/custom-PK/backend excluded",
+    "Historical skipped probe remains skipped; 31 fallback assumptions flagged"
+  ],
+  "checker_controls": {
+    "packet_field": "checker_control_evidence",
+    "control_count": 25,
+    "self_test_gate": "evidence-self-tests",
+    "selected_tests": [
+      "test_runner.CurrentCapture.test_all_invalid_selections_fail_before_any_process",
+      "test_runner.CurrentCapture.test_changed_valid_browser_selection_reruns_affected_gate",
+      "test_runner.CurrentCapture.test_effective_selections_affect_only_relevant_gates",
+      "test_runner.CurrentCapture.test_matching_selection_reuses_real_docs_and_historical_check_ignores_current_overrides",
+      "test_runner.CurrentCapture.test_wr02_invalid_python_fails_before_unrelated_command",
+      "test_runner.CurrentCapture.test_wr02_invalid_runtime_subprocess_preserves_output",
+      "test_runner.HandoffEvidence.test_false_readiness_rejects",
+      "test_runner.HandoffEvidence.test_malformed_packet_subprocess_rejects",
+      "test_runner.HandoffEvidence.test_missing_case_reference_rejects",
+      "test_runner.HandoffEvidence.test_missing_findings_and_links_reject",
+      "test_runner.HandoffEvidence.test_missing_human_state_or_prohibition_rejects",
+      "test_runner.HandoffEvidence.test_pending_packet_is_structurally_valid_but_not_ready",
+      "test_runner.HandoffEvidence.test_stale_report_hash_rejects",
+      "test_runner.HandoffEvidence.test_stale_source_provenance_rejects",
+      "test_runner.HandoffEvidence.test_unattributed_human_approval_rejects",
+      "test_runner.HandoffEvidence.test_unreviewed_finding_cannot_close",
+      "test_runner.HistoricalCounterexamples.test_focused_accepts_strengthened_reclean_identity_family",
+      "test_runner.HistoricalCounterexamples.test_wr01_rejects_filtered_javascript_with_consistent_green_counts",
+      "test_runner.HistoricalCounterexamples.test_wr01_rejects_non_strict_docs",
+      "test_runner.QualityEvidence.test_duplicate_case",
+      "test_runner.QualityEvidence.test_duplicate_file",
+      "test_runner.QualityEvidence.test_failed_case",
+      "test_runner.QualityEvidence.test_false_console",
+      "test_runner.QualityEvidence.test_false_counts",
+      "test_runner.QualityEvidence.test_filtered_collection_command",
+      "test_runner.QualityEvidence.test_filtered_command",
+      "test_runner.QualityEvidence.test_missing_case",
+      "test_runner.QualityEvidence.test_missing_file",
+      "test_runner.QualityEvidence.test_real_complete_ordinary_capture",
+      "test_runner.QualityEvidence.test_required_bridge_is_independent",
+      "test_runner.QualityEvidence.test_required_integration_case_missing",
+      "test_runner.QualityEvidence.test_scoped_copy_checks_but_cannot_claim_complete",
+      "test_runner.QualityEvidence.test_skipped_case",
+      "test_runner.QualityEvidence.test_stale_collection_source",
+      "test_runner.QualityEvidence.test_wrong_lint_subcommands_and_flags",
+      "test_runner.QualityEvidence.test_wrong_node_executable",
+      "test_runner.QualityEvidence.test_wrong_vitest_subcommand"
+    ]
+  }
+}

@@ -671,6 +671,8 @@ class EvidenceRefresh(CompletePacketFixture, unittest.TestCase):
         packet = runner.prepare_refresh(origin, self.manifest, request)
         packet["test_fixture"] = "Synthetic fresh gate observations; never acceptance evidence"
         packet["gates"].update({k: self.packet["gates"][k] for k in runner.FRESH_GATES})
+        for label in runner.FRESH_GATES:
+            packet["gates"][label].update(started=runner.now(), finished=runner.now())
         packet.update(completed=True, finished=runner.now())
         packet["checker_controls"] = self.packet["checker_controls"]
         packet["checker_control_evidence"] = self.packet["checker_control_evidence"]
@@ -682,14 +684,18 @@ class EvidenceRefresh(CompletePacketFixture, unittest.TestCase):
         # main(), provenance, complete aggregate, controls and handoff are real.
         fixtures = self.directory / "synthetic-fresh.json"
         runner.write_json(
-            fixtures, {k: self.packet["gates"][k] for k in ("evidence-self-tests", "ruff-check", "ruff-format")}
+            fixtures,
+            {
+                k: dict(self.packet["gates"][k], test_fixture="Synthetic observations; never acceptance evidence")
+                for k in ("evidence-self-tests", "ruff-check", "ruff-format")
+            },
         )
         script = (
             "import importlib.util,json,sys; "
             "s=importlib.util.spec_from_file_location('refresh_cli',sys.argv[1]); "
             "r=importlib.util.module_from_spec(s); s.loader.exec_module(r); "
             "f=json.load(open(sys.argv[2])); "
-            "r.quality_gate=lambda name,selection=None:f[name]; "
+            "r.quality_gate=lambda name,selection=None:dict(f[name],started=r.now(),finished=r.now()); "
             "sys.argv=[sys.argv[1],*sys.argv[3:]]; sys.exit(r.main())"
         )
         result = subprocess.run(
@@ -733,6 +739,7 @@ class EvidenceRefresh(CompletePacketFixture, unittest.TestCase):
 
     def test_changed_effective_selection_rejects_before_output_writes(self):
         request = runner.capture_request()
+        request["selections"]["javascript"] = copy.deepcopy(request["selections"]["javascript"])
         request["selections"]["javascript"]["environment"]["CI"] = "invented"
         with self.assertRaisesRegex(ValueError, "Refresh runtime/command selection changed: javascript"):
             runner.prepare_refresh(HERE.parent / "18-evidence/results.json", self.manifest, request)
@@ -750,6 +757,35 @@ class EvidenceRefresh(CompletePacketFixture, unittest.TestCase):
                 self.packet = copy.deepcopy(packet)
                 mutate(self.packet)
                 self.assert_rejected_everywhere(pattern)
+
+    def test_changed_product_input_and_command_reject_real_refresh_cli(self):
+        original = runner.load_json(HERE.parent / "18-evidence/results.json")
+        for kind, pattern in (
+            ("product", "Refresh source inputs differ: README.md"),
+            ("command", "javascript: wrong quality command"),
+        ):
+            with self.subTest(kind=kind):
+                packet = copy.deepcopy(original)
+                if kind == "product":
+                    manifest = packet["source_manifest"]
+                    manifest["files"]["README.md"] = "0" * 64
+                    manifest["sha256"] = runner.hashlib.sha256(
+                        json.dumps(manifest["files"], sort_keys=True).encode()
+                    ).hexdigest()
+                else:
+                    packet["gates"]["javascript"]["command"].insert(3, "-t=one")
+                origin = self.directory / kind / "results.json"
+                output = self.directory / (kind + "-output") / "results.json"
+                runner.write_json(origin, packet)
+                runner.write_json(origin.parent / "source-manifest.json", packet["source_manifest"])
+                result = subprocess.run(
+                    [sys.executable, str(HERE / "run.py"), "--refresh-from", str(origin), "--output", str(output)],
+                    capture_output=True,
+                    text=True,
+                )
+                self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+                self.assertIn(pattern, result.stderr)
+                self.assertFalse(output.parent.exists())
 
     def test_mutated_origin_and_missing_manifest_reject_everywhere(self):
         self.refreshed_fixture()

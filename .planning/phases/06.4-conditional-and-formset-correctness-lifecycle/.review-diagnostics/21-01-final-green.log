@@ -1,0 +1,12 @@
+test_changed_effective_selection_rejects_before_output_writes (__main__.EvidenceRefresh.test_changed_effective_selection_rejects_before_output_writes) ... ok
+test_changed_product_input_and_command_reject_real_refresh_cli (__main__.EvidenceRefresh.test_changed_product_input_and_command_reject_real_refresh_cli) ... ok
+test_invalid_runtime_preflight_preserves_outputs (__main__.EvidenceRefresh.test_invalid_runtime_preflight_preserves_outputs) ... ok
+test_missing_fresh_gates_controls_and_forged_timestamps_reject_everywhere (__main__.EvidenceRefresh.test_missing_fresh_gates_controls_and_forged_timestamps_reject_everywhere) ... ok
+test_mutated_origin_and_missing_manifest_reject_everywhere (__main__.EvidenceRefresh.test_mutated_origin_and_missing_manifest_reject_everywhere) ... ok
+test_original_gate_survives_real_refresh_cli_check_and_handoff (__main__.EvidenceRefresh.test_original_gate_survives_real_refresh_cli_check_and_handoff) ... ok
+test_source_continuity_rejects_product_runtime_and_path_set_changes (__main__.EvidenceRefresh.test_source_continuity_rejects_product_runtime_and_path_set_changes) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 262.784s
+
+OK

@@ -58,6 +58,7 @@ FOCUSED = [
 ]
 ROUTES = ("focused", "enabled-full", "disabled-full", "missing-runtime")
 QUALITY = ("javascript", "javascript-integration", "strict-docs", "ruff-check", "ruff-format", "evidence-self-tests")
+FRESH_GATES = ("evidence-self-tests", "ruff-check", "ruff-format")
 BROWSERS = ("conditional-browser", "modal-browser")
 PAYLOAD_CORRUPTIONS = (
     "exit-code",
@@ -615,7 +616,11 @@ def quality_gate(name, selection=None):
         env["PYTHONPATH"] = f"{ROOT}/src:{ROOT}"
     with tempfile.TemporaryDirectory(prefix="cv64-quality-") as directory:
         report = str(Path(directory) / "vitest.json")
-        record = command_record(expected_quality(name, selection, report=report), env, timeout=300)
+        record = command_record(
+            expected_quality(name, selection, report=report),
+            env,
+            timeout=1200 if name == "evidence-self-tests" else 300,
+        )
         if name in ("javascript", "javascript-integration"):
             record["vitest"] = json.loads(Path(report).read_text()) if Path(report).exists() else {}
             record["inventory"] = command_record(expected_quality(name, selection, collection=True), env, timeout=300)
@@ -663,12 +668,12 @@ def normalized_js_command(command):
     return args
 
 
-def validate_quality(r, manifest):
+def validate_quality(r, manifest, provenance_runner=None):
     label = r["id"]
     selection = r.get("selection")
     command = normalized_js_command(r["command"]) if label in ("javascript", "javascript-integration") else r["command"]
     need(command == expected_quality(label, selection), f"{label}: wrong quality command")
-    need(r.get("runner_sha256") == sha(__file__), f"{label}: runner source changed")
+    need(r.get("runner_sha256") == (provenance_runner or sha(__file__)), f"{label}: runner source changed")
     if label == "evidence-self-tests":
         selected = self_test_ids()
         text = r["stdout"] + r["stderr"]
@@ -722,7 +727,7 @@ def validate_quality(r, manifest):
     need(match and int(match[1]) == int(match[2]) == len(cases), "JS console/count mismatch")
 
 
-def validate_gate(record, manifest):
+def validate_gate(record, manifest, provenance_runner=None):
     label = record["id"]
     need(
         record.get("source_sha256") == record.get("source_after_sha256") == manifest["sha256"],
@@ -738,7 +743,7 @@ def validate_gate(record, manifest):
     else:
         need(record.get("returncode") == 0, f"{label}: command failed")
         if label in QUALITY:
-            validate_quality(record, manifest)
+            validate_quality(record, manifest, provenance_runner=provenance_runner)
         if label in BROWSERS:
             validate_browser(record)
     if record.get("selection"):
@@ -1174,13 +1179,130 @@ def validate_controls(data):
         validate_control_record(kind, details[kind])
 
 
+def validate_continuity(original, current):
+    """Only these two checker inputs may differ; path additions/deletions never do."""
+    old, new = original["files"], current["files"]
+    allowed = {str(HERE.relative_to(ROOT) / name) for name in ("run.py", "test_runner.py")}
+    changed = sorted(set(old) ^ set(new) | {p for p in set(old) & set(new) if old[p] != new[p] and p not in allowed})
+    need(not changed, "Refresh source inputs differ: " + ", ".join(changed))
+    for item in (original, current):
+        need(
+            item["sha256"] == hashlib.sha256(json.dumps(item["files"], sort_keys=True).encode()).hexdigest(),
+            "Refresh manifest digest inconsistent",
+        )
+
+
+def refresh_origin(reference, manifest):
+    need(isinstance(reference, dict) and set(reference) == {"results", "source_manifest"}, "Missing retained origin")
+    paths = {}
+    for key in ("results", "source_manifest"):
+        value = reference[key]
+        need(isinstance(value, dict) and set(value) == {"path", "sha256"}, "Malformed retained origin reference")
+        path = (ROOT / value["path"]).resolve()
+        need(path.is_relative_to(ROOT), "Retained origin outside checkout")
+        need(path.is_file(), "Missing original results/manifest: " + str(path))
+        need(sha(path) == value["sha256"], "Retained origin hash mismatch: " + str(path))
+        paths[key] = path
+    need(
+        paths["source_manifest"] == paths["results"].parent / "source-manifest.json",
+        "Missing matching original source manifest",
+    )
+    original = load_json(paths["results"])
+    old_manifest = load_json(paths["source_manifest"])
+    need(
+        original.get("schema") == 2 and original.get("completed") is True and original.get("only") is None,
+        "Incomplete original matrix / scoped packet",
+    )
+    need(original.get("source_manifest") == old_manifest, "Original source manifest mismatch")
+    need(
+        original.get("required_gate_ids") == expected_ids() and set(original.get("gates", {})) == set(expected_ids()),
+        "Original gate inventory incomplete",
+    )
+    need(
+        original.get("runner_sha256") == old_manifest["files"][str(HERE.relative_to(ROOT) / "run.py")],
+        "Original runner provenance mismatch",
+    )
+    validate_continuity(old_manifest, manifest)
+    return original
+
+
+def prepare_refresh(origin, manifest, request):
+    origin = Path(origin).resolve()
+    sidecar = origin.parent / "source-manifest.json"
+    need(origin.is_file() and sidecar.is_file(), "Missing original results/manifest")
+    reference = {
+        key: {"path": str(path.relative_to(ROOT)), "sha256": sha(path)}
+        for key, path in (("results", origin), ("source_manifest", sidecar))
+    }
+    original = refresh_origin(reference, manifest)
+    for label in expected_ids():
+        selection = original.get("capture_request", {}).get("selections", {}).get(label)
+        need(
+            selection == request["selections"].get(label) and original["gates"][label].get("selection") == selection,
+            "Refresh runtime/command selection changed: " + label,
+        )
+        if label not in FRESH_GATES:
+            validate_gate(original["gates"][label], original["source_manifest"], original["runner_sha256"])
+    return {
+        "schema": 3,
+        "only": None,
+        "completed": False,
+        "started": now(),
+        "source_manifest": manifest,
+        "runner_sha256": sha(__file__),
+        "required_gate_ids": expected_ids(),
+        "capture_request": request,
+        "runtime_overrides": overrides(),
+        "retained_from": reference,
+        "gate_origins": {label: "fresh" if label in FRESH_GATES else "retained" for label in expected_ids()},
+        "gates": {label: original["gates"][label] for label in expected_ids() if label not in FRESH_GATES},
+    }
+
+
+def refresh(origin, output):
+    # Runtime preflight and complete applicability proof precede any output mutation.
+    request = capture_request()
+    manifest = source()
+    data = prepare_refresh(origin, manifest, request)
+    need(not output.exists(), "Refresh output already exists; preserve prior attempt and select a new output")
+    need(output.parent != Path(origin).resolve().parent, "Refresh must preserve original evidence directory")
+    write_json(output.parent / "source-manifest.json", manifest)
+    write_json(output, data)
+    for label in FRESH_GATES:
+        print(f"START fresh {label}", flush=True)
+        record = quality_gate(label, request["selections"][label])
+        data["gates"][label] = record
+        write_json(output, data)
+        validate_gate(record, manifest)
+        print(f"PASS fresh {label} {record['duration_seconds']}s", flush=True)
+    data.update(completed=True, finished=now())
+    validate(data, manifest, require_controls=False)
+    write_json(output, data)
+    generate_controls(data, manifest, output)
+    check(output)
+
+
 def validate(data, manifest, require_controls=True, only=None):
-    need(data.get("schema") == 2, "Unsupported successor schema")
+    need(data.get("schema") in (2, 3), "Unsupported successor schema")
     need(data.get("completed") is (only is None) and data.get("only") == only, "Incomplete matrix / scoped packet")
     need(data.get("runner_sha256") == sha(__file__), "Evidence checker source changed since capture")
     need(data.get("source_manifest") == manifest, "Missing/stale source manifest")
     need(data.get("required_gate_ids") == expected_ids(), "Corrupted required-case list")
     need(sorted(data.get("gates", {})) == sorted([only] if only else expected_ids()), "Missing/extra matrix gates")
+    original = None
+    if data["schema"] == 3:
+        need(only is None, "Refresh cannot be scoped")
+        original = refresh_origin(data.get("retained_from"), manifest)
+        need(
+            data.get("gate_origins") == {k: "fresh" if k in FRESH_GATES else "retained" for k in expected_ids()},
+            "Refresh gate origins incomplete",
+        )
+        for label in expected_ids():
+            need(
+                data.get("capture_request", {}).get("selections", {}).get(label)
+                == original.get("capture_request", {}).get("selections", {}).get(label),
+                "Refresh runtime/command selection changed: " + label,
+            )
     for label, gate in data["gates"].items():
         need(gate.get("id") == label, f"{label}: contradictory gate identity")
         need(
@@ -1188,7 +1310,16 @@ def validate(data, manifest, require_controls=True, only=None):
             and gate.get("selection"),
             f"{label}: contradictory captured runtime selection",
         )
-        validate_gate(gate, manifest)
+        if original is not None and label not in FRESH_GATES:
+            validate_gate(gate, original["source_manifest"], original["runner_sha256"])
+            need(gate == original["gates"][label], "Retained gate changed: " + label)
+        else:
+            validate_gate(gate, manifest)
+            if original is not None:
+                need(
+                    data["started"] <= gate["started"] <= gate["finished"] <= data.get("finished", ""),
+                    "Fresh gate timestamps outside refresh: " + label,
+                )
     if only:
         return
     for series in SERIES:
@@ -1683,6 +1814,7 @@ def main():
     mode.add_argument("--run", action="store_true")
     mode.add_argument("--check", action="store_true")
     mode.add_argument("--check-handoff", type=Path, metavar="JSON")
+    mode.add_argument("--refresh-from", type=Path, metavar="OLD")
     parser.add_argument("--output", type=Path, default=HERE / "results.json")
     parser.add_argument("--only", choices=expected_ids())
     args = parser.parse_args()
@@ -1692,6 +1824,9 @@ def main():
             print(json.dumps(validate_handoff(load_json(args.check_handoff)), sort_keys=True))
         elif args.run:
             run(args.output.resolve(), only=args.only)
+        elif args.refresh_from:
+            need(not args.only, "Refresh cannot be scoped")
+            refresh(args.refresh_from, args.output.resolve())
         else:
             check(args.output.resolve(), only=args.only)
     except (ValueError, KeyError, TypeError, OSError, ET.ParseError, subprocess.SubprocessError) as error:

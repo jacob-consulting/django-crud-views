@@ -129,9 +129,9 @@ and Tabler adoption seams in proposed 6.6. These proposals are not inserted by t
 
 Source: A1–A7 and the AUTH-02/A19 handoff; locked decisions D-01–D-19 in
 `.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-CONTEXT.md`.
-All items remain pending implementation/verification; A8, A25, jQuery removal and broader Guardian #286 are excluded.
+Implementation/verification progress is tracked below; A8, A25, jQuery removal and broader Guardian #286 are excluded.
 
-- [ ] **COND-01**: Each group uses its exact bound checkbox name in its owning form, across prefixes, sibling/nested rows and injected content; ambiguous markup is diagnosed locally without changing that group's own state or bypassing a bound ancestor.
+- [x] **COND-01**: Each group uses its exact bound checkbox name in its owning form, across prefixes, sibling/nested rows and injected content; ambiguous markup is diagnosed locally without changing that group's own state or bypassing a bound ancestor.
 - [ ] **COND-02**: Immediate native visibility composes every inactive ancestor with independently changed disabled reasons, includes native action buttons, preserves unsaved values and management controls, and recovers stranded focus without disrupting accepted modal focus.
 - [ ] **COND-03**: Native reset resynchronizes only its owning form after default reset, respects cancellation including later listeners, and preserves dynamic rows and management POST/re-render behavior.
 - [ ] **COND-04**: Inactive supported fields persist field-aware empty values including defaulted/omitted scalar fields, Boolean, FileField/ImageField and M2M; explicit values retain native meaning and server-disabled fields retain trusted values.
@@ -232,13 +232,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DEL-05 | Phase 6.3 | Complete; authorization, partial notices and repaired focus verified |
 | DEL-06 | Phase 6.3 | Complete; recorded three-series evidence, migrations, repairs and scoped human acceptance verified |
 | GUA-01 | Phase 6.3 | Complete within explicit bounded identity scope; IN-02/03 and CT-01 fixed; broader compatibility unverified in issue #286 |
-| COND-01 | Phase 6.4 | Planned; pending execution/verification |
+| COND-01 | Phase 6.4 | Implemented in 06.4-01; automated binding/tracer checks pass on Django 4.2/5.2/6.0; final phase verification pending |
 | COND-02 | Phase 6.4 | Planned; pending execution/verification |
 | COND-03 | Phase 6.4 | Planned; pending execution/verification |
 | COND-04 | Phase 6.4 | Planned; pending execution/verification |
 | COND-05 | Phase 6.4 | Planned; pending execution/verification |
 | FSET-01 | Phase 6.4 | Planned; pending execution/verification |
-| FSET-02 | Phase 6.4 | Planned; pending execution/verification |
+| FSET-02 | Phase 6.4 | Partial in 06.4-01: conditional root initializer and bound wrappers; automatic formset lifecycle remains pending later plans |
 | FSET-03 | Phase 6.4 | Planned; pending execution/verification |
 | LIFE-01 | Phase 6.4 | Planned; pending execution/verification |
 | LIFE-02 | Phase 6.4 | Planned; pending execution/verification |

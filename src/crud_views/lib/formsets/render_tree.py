@@ -256,7 +256,12 @@ class XFormSet(BaseModel, arbitrary_types_allowed=True):
         for form in update_forms:
             # just make sure x-form exists for this form
             self._get_x_form(form)
-            if form.has_changed():
+            conditional_change = (
+                not form.instance._state.adding
+                and not form.errors
+                and getattr(form, "_cv_conditional_requires_save", False)
+            )
+            if form.has_changed() or conditional_change:
                 self._save_changed_form(form, can_order)
 
         # now save the x_forms

@@ -73,7 +73,31 @@ function insertServerFragments(fixture, JSDOM, jquery, assert, source) {
     return { payload, events };
 }
 
+function selectedPython() {
+    const selected = process.env.CV_FRAGMENT_PYTHON;
+    if (!selected) {
+        throw new Error("CV_FRAGMENT_PYTHON is required: select an installed Python interpreter with the Django test dependencies.");
+    }
+    try {
+        // Preserve the virtualenv launcher path: realpath would select its base Python.
+        const executable = path.resolve(selected);
+        fs.accessSync(executable, fs.constants.X_OK);
+        const probe = spawnSync(executable, ["-c", 'print("CV_FRAGMENT_PYTHON_OK")'], {
+            encoding: "utf8", timeout: 5000,
+        });
+        if (probe.error || probe.status !== 0 || probe.stdout.trim() !== "CV_FRAGMENT_PYTHON_OK") {
+            throw new Error(probe.error?.message || probe.stderr || "not a usable Python interpreter");
+        }
+        return executable;
+    } catch (error) {
+        throw new Error(`CV_FRAGMENT_PYTHON=${selected} is unusable: ${error.message}. Select an installed Python interpreter with the Django test dependencies.`);
+    }
+}
+
 describe("real Django fragment insertion", () => {
+    let python;
+    beforeAll(() => { python = selectedPython(); });
+
     it("inserts outer and second-sibling fragments and POSTs their real FormData", () => {
         const require = createRequire(import.meta.url);
         const directory = fs.mkdtempSync(path.join(os.tmpdir(), "cv-fragment-"));
@@ -90,7 +114,7 @@ const fixture = JSON.parse(fs.readFileSync(0, "utf8"));
 process.stdout.write(JSON.stringify(insert(fixture, JSDOM, jquery, assert, ${JSON.stringify(source)})));
 `);
         try {
-            const result = spawnSync(".nox/crispy_floor-3-12-django-6-0/bin/python", [
+            const result = spawnSync(python, [
                 "-m", "pytest", "tests/test1/test_fragment_authorization.py", "-k", "test_server_fragment_dom_round_trip",
                 "-q", "-p", "no:cacheprovider", "--tb=short",
             ], {
@@ -98,8 +122,8 @@ process.stdout.write(JSON.stringify(insert(fixture, JSDOM, jquery, assert, ${JSO
                 env: { ...process.env, PYTHONPATH: `${process.cwd()}/src:${process.cwd()}`,
                     CV_FRAGMENT_DRIVER: driver, CV_FRAGMENT_NODE: process.execPath, CV_FRAGMENT_RESULTS: results },
             });
-            expect(result.error).toBeUndefined();
-            expect(result.status, `${result.stdout}\n${result.stderr}`).toBe(0);
+            expect(result.error, `CV_FRAGMENT_PYTHON=${python}`).toBeUndefined();
+            expect(result.status, `CV_FRAGMENT_PYTHON=${python}\n${result.stdout}\n${result.stderr}`).toBe(0);
             expect(result.stdout).toContain("2 passed");
             const records = fs.readFileSync(results, "utf8").trim().split("\n").map(line => JSON.parse(line));
             expect(records.map(record => record.mode)).toEqual(["outer", "nested"]);

@@ -128,6 +128,49 @@ def test_disabled_validation_errors_survive_off_group(row):
     assert "trusted invalid" in str(form.errors["blank_text"])
 
 
+def test_declared_disabled_required_field_retains_native_error():
+    class Plain(ConditionalGroupFormMixin, forms.Form):
+        active = forms.BooleanField(required=False)
+        protected = forms.CharField(disabled=True)
+        cv_conditional_groups = [ConditionalGroup(ModelFieldToggle("active"), ["protected"])]
+
+    form = Plain(data={"protected": "forged"})
+    assert not form.is_valid()
+    assert form.errors["protected"] == ["This field is required."]
+
+
+def test_inherited_form_nonfield_error_is_not_suppressed(row):
+    class InvariantForm(forms.ModelForm):
+        class Meta:
+            model = Record
+            fields = ["active", "blank_text"]
+
+        def clean(self):
+            cleaned = super().clean()
+            self.add_error(None, "inherited invariant")
+            return cleaned
+
+    class Conditional(ConditionalGroupFormMixin, InvariantForm):
+        cv_conditional_groups = [ConditionalGroup(ModelFieldToggle("active"), ["blank_text"])]
+
+    form = Conditional(instance=row, data={"blank_text": "forged"})
+    assert not form.is_valid()
+    assert "inherited invariant" in str(form.non_field_errors())
+    with pytest.raises(ValueError):
+        form.save()
+    row.refresh_from_db()
+    assert row.blank_text == "default text"
+
+
+def test_model_uniqueness_validation_is_retained(row):
+    Record.objects.create(parent=row.parent, unique_text="reserved")
+    form = record_form(["unique_text"], empty_values={"unique_text": "reserved"})(instance=row, data={})
+    assert not form.is_valid()
+    assert "already exists" in str(form.errors["unique_text"])
+    row.refresh_from_db()
+    assert row.unique_text is None
+
+
 def test_model_clean_sees_final_state_and_blocks_persistence(row, monkeypatch):
     observed = []
 
@@ -255,6 +298,13 @@ def test_file_no_change_controls_do_not_force_save(row, isolated_storage, name, 
         disabled=[name] if mode == "disabled" else [],
     )
     trees, form = inline_tree(row, form_class, extra=1)
+    if name == "image" and mode == "disabled":
+        # Native ImageField validates a nonempty disabled initial through Pillow.
+        # This reference-only fixture supplies native None/no-change instead:
+        # the model still holds its real stored ImageFieldFile reference.
+        form.initial[name] = None
+        assert type(form.fields[name]) is forms.ImageField
+        assert row.image.name == stored
     assert trees.all_valid()
     assert not form.has_changed()
     with patch.object(Record, "save", autospec=True) as save, patch.object(storage, "delete") as delete:
@@ -291,10 +341,11 @@ def test_received_off_file_upload_is_discarded_with_no_storage_write(row, isolat
     assert storage.listdir("")[1] == [stored]
 
 
-def test_unchanged_inline_relation_uses_native_save_m2m(row):
+@pytest.mark.parametrize("empty_values", [None, {"tags": []}])
+def test_unchanged_inline_relation_uses_native_save_m2m(row, empty_values):
     tag = Publisher.objects.create(name="tag")
     row.tags.add(tag)
-    trees, form = inline_tree(row, record_form(["tags"], empty_values={"tags": []}), {"tags": [str(tag.pk)]}, extra=1)
+    trees, form = inline_tree(row, record_form(["tags"], empty_values=empty_values), {"tags": [str(tag.pk)]}, extra=1)
     assert trees.all_valid()
     assert not form.has_changed()
     original_save = Record.save
@@ -355,6 +406,39 @@ def test_explicit_m2m_empty_collection_uses_commit_false_then_save_m2m(row):
     form.save_m2m()
     row.refresh_from_db()
     assert list(row.tags.all()) == []
+
+
+def test_already_empty_relation_does_not_force_existing_save(row):
+    trees, form = inline_tree(row, record_form(["tags"]), extra=1)
+    assert trees.all_valid()
+    assert not form.has_changed()
+    with patch.object(Record, "save", autospec=True) as save:
+        trees.save()
+        save.assert_not_called()
+    assert Record.objects.count() == 1
+
+
+def test_revalidation_keeps_the_persisted_change_until_saved(row):
+    trees, form = inline_tree(row, record_form(["blank_text"]), {"blank_text": row.blank_text})
+    assert trees.all_valid()
+    form.full_clean()
+    assert form.is_valid()
+    assert not form.has_changed()
+    trees.save()
+    row.refresh_from_db()
+    assert row.blank_text == ""
+
+
+@pytest.mark.parametrize("data", [{}, {"reference": "999999"}])
+def test_disabled_foreign_key_keeps_trusted_value(row, data):
+    reference = Publisher.objects.create(name="trusted")
+    row.reference = reference
+    row.save()
+    form = record_form(["reference"], empty_values={"reference": None}, disabled=["reference"])(instance=row, data=data)
+    assert form.is_valid(), form.errors
+    form.save()
+    row.refresh_from_db()
+    assert row.reference == reference
 
 
 def test_file_clearing_cannot_bypass_model_invariant(row, isolated_storage, monkeypatch):

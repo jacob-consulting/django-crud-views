@@ -225,6 +225,7 @@ class ConditionalPersistenceRecord(models.Model):
     active = models.BooleanField(default=False)
     nullable_text = models.CharField(max_length=100, null=True, blank=True, default="default text")
     blank_text = models.CharField(max_length=100, blank=True, default="default text")
+    unique_text = models.CharField(max_length=100, blank=True, null=True, unique=True)
     flag = models.BooleanField(default=True)
     nullable_flag = models.BooleanField(null=True, blank=True, default=True)
     number = models.IntegerField(null=True, blank=True, default=42)

@@ -60,9 +60,17 @@ def resolve_conditional_empty_value(form_field, model_field, group, field_name):
                 expected = forms.NullBooleanField if model_field.null else forms.BooleanField
                 if type(form_field) is expected:
                     return None if model_field.null else False
-            if type(model_field) in scalar_pairs:
-                if type(form_field) is scalar_pairs[type(model_field)] and model_field.null:
-                    return None
+            if (
+                type(model_field) in scalar_pairs
+                and type(form_field) is scalar_pairs[type(model_field)]
+                and model_field.null
+            ):
+                return None
+            file_pairs = {models.FileField: forms.FileField, models.ImageField: forms.ImageField}
+            if type(model_field) in file_pairs and type(form_field) is file_pairs[type(model_field)]:
+                return False
+            if type(model_field) is models.ManyToManyField and type(form_field) is forms.ModelMultipleChoiceField:
+                return []
     raise ImproperlyConfigured(
         f"Conditional group '{group.toggle.field_name()}' field '{field_name}' has no supported automatic "
         "empty value; configure empty_values explicitly."
@@ -111,6 +119,7 @@ class ConditionalGroupFormMixin:
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self._cv_conditional_original_values = {}
         for group in self.cv_conditional_groups:
             # Inject transient UI toggle fields that are not model fields.
             tname = group.toggle.field_name()
@@ -118,7 +127,7 @@ class ConditionalGroupFormMixin:
                 self.fields[tname] = BooleanField(required=False)
             # Disarm Django's premature field-level required check; clean() owns it.
             for name in group.fields:
-                if name in self.fields:
+                if name in self.fields and not self.fields[name].disabled:
                     self.fields[name].required = False
 
     def clean(self):
@@ -149,8 +158,18 @@ class ConditionalGroupFormMixin:
         if isinstance(self, forms.ModelForm):
             for name, value in self._cv_conditional_values.items():
                 field = self._cv_model_field(name)
-                if field is not None and not field.many_to_many:
-                    previous = field.value_from_object(self.instance)
+                if field is not None and field.many_to_many:
+                    if not self.instance._state.adding:
+                        previous = self._cv_conditional_original_values.setdefault(
+                            name, {obj.pk for obj in field.value_from_object(self.instance)}
+                        )
+                        resolved = {getattr(obj, "pk", obj) for obj in value}
+                        if previous != resolved:
+                            self._cv_conditional_requires_save = True
+                elif field is not None:
+                    previous = self._cv_conditional_original_values.setdefault(
+                        name, field.value_from_object(self.instance)
+                    )
                     field.save_form_data(self.instance, value)
                     if previous != field.value_from_object(self.instance):
                         self._cv_conditional_requires_save = True

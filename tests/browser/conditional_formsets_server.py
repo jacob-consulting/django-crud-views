@@ -195,6 +195,19 @@ class RestrictedBooks(Rows):
 Books = inlineformset_factory(Publisher, Book, form=BookForm, formset=RestrictedBooks, extra=1, can_delete=True)
 Notes = inlineformset_factory(Book, BookNote, form=NoteForm, formset=Rows, extra=1, can_delete=True)
 Memos = inlineformset_factory(Book, BrowserMemo, form=MemoForm, formset=Rows, extra=1, can_delete=True, can_order=True)
+CapabilityMemos = inlineformset_factory(
+    Book, BrowserMemo, form=MemoForm, formset=Rows, extra=1, can_delete=True, can_order=True, can_delete_extra=False
+)
+
+
+class EmptyMemos(Rows):
+    def get_queryset(self):
+        return super().get_queryset().none()
+
+
+ExtraMemos = inlineformset_factory(
+    Book, BrowserMemo, form=MemoForm, formset=EmptyMemos, extra=1, can_delete=True, can_order=True, can_delete_extra=False
+)
 EditBooks = inlineformset_factory(
     Publisher, Book, form=BookForm, formset=RestrictedBooks, extra=0, can_delete=True, edit_only=True
 )
@@ -281,6 +294,10 @@ class BrowserEdit(CrispyViewMixin, FormSetMixin, UpdateViewPermissionRequired):
         result = super().cv_get_formsets()
         if self.request.GET.get("policy") == "edit":
             result.formsets["books"].klass = EditBooks
+        if self.request.GET.get("capability"):
+            result.formsets["books"].children["memos"].klass = (
+                ExtraMemos if self.request.GET["capability"] == "all-extra" else CapabilityMemos
+            )
         return result
 
     def cv_form_is_valid(self, context):
@@ -291,6 +308,10 @@ class BrowserEdit(CrispyViewMixin, FormSetMixin, UpdateViewPermissionRequired):
             }
         )
         valid = super().cv_form_is_valid(context)
+        if self.request.GET.get("reclean"):
+            for tree in context["formsets"].x_formsets:
+                tree.instance.full_clean()
+            valid = super().cv_form_is_valid(context)
         for tree in context["formsets"].x_formsets:
             for row in tree.forms:
                 observed.append(
@@ -334,6 +355,7 @@ for mode in ("stock", "native"):
         "lifecycle",
         "tampered-post",
         "late-init",
+        "gap-capability",
     ):
         parent = Publisher.objects.create(name=f"{mode} {case}")
         book = Book.objects.create(publisher=parent, title="Initial book")
@@ -350,6 +372,8 @@ for mode in ("stock", "native"):
             setattr(record, name, stored)
             references[name] = stored
         record.save()
+        empty_parent = Publisher.objects.create(name=f"{mode} {case} empty")
+        empty_book = Book.objects.create(publisher=empty_parent, title="Empty memo owner")
         cases.append(
             {
                 "theme": mode,
@@ -360,6 +384,9 @@ for mode in ("stock", "native"):
                 "foreign": foreign.pk,
                 "profile": profile.pk,
                 "record": record.pk,
+                "emptyBook": empty_book.pk,
+                "emptyPk": empty_parent.pk,
+                "emptyUrl": f"/edit/{mode}/{empty_parent.pk}/",
                 "references": references,
                 "url": f"/edit/{mode}/{parent.pk}/",
                 "filesUrl": f"/files/{mode}/{profile.pk}/",
@@ -370,7 +397,10 @@ for model in (Publisher, Profile, Book, BookNote, BrowserMemo, BrowserConditiona
 events.clear()
 
 
-def edit(request, mode, pk, files=False):
+def edit(request, mode, pk, files=False, capability=None):
+    if capability:
+        request.GET = request.GET.copy()
+        request.GET["capability"] = capability
     token = theme.set(mode)
     try:
         response = (BrowserFiles if files else BrowserEdit).as_view()(request, pk=pk)
@@ -429,6 +459,7 @@ urlpatterns = [
     path("cases/", lambda request: JsonResponse(cases, safe=False)),
     path("state/", state),
     path("edit/<str:mode>/<int:pk>/", edit),
+    path("capability/<str:capability>/<str:mode>/<int:pk>/", edit),
     path("files/<str:mode>/<int:pk>/", lambda request, mode, pk: edit(request, mode, pk, files=True)),
     path("harness/<str:mode>/<int:pk>/", harness),
     path(

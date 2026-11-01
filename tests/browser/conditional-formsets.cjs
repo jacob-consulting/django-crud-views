@@ -25,7 +25,6 @@ function option(name, fallback) {
 }
 const output = option('--output', '.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/08-browser-results.json');
 const requested = option('--case', 'all');
-assert(['tracer', 'all'].includes(requested), 'Use --case tracer|all');
 const portText = process.env.CV_CONDITIONAL_PORT || '8144';
 assert(/^\d+$/.test(portText), 'Invalid CV_CONDITIONAL_PORT');
 const port = Number(portText);
@@ -58,7 +57,9 @@ const REQUIRED = {
     'lifecycle': ['no-early-focus', 'real-422', '422-focus-usable', 'unload-before-replacement', 'reinitialized-once', 'completed-close-restores-opener', 'cancel-restores-opener', 'delete-reorder-management', 'widgets-once', 'authorized-modal-persistence'],
     'tampered-post': ['edit-only-extra', 'missing-id', 'foreign-id', 'filtered-id', 'invalid-zero-saves', 'generic-policy-errors', 'js-disabled-direct-post'],
     'late-init': ['fragment-element-roots', 'late-checkbox-retry', 'late-script-ready', 'reinit-single-action'],
+    'gap-capability': ['native-delete-presence', 'add-once', 'extra-before-initial', 'stable-initial-delete', 'ordered-post-persisted', 'all-extra-add-order-post', 'reclean-policy-zero-saves', 'host-assets'],
 };
+assert(requested === 'all' || Object.hasOwn(REQUIRED, requested), 'Unknown --case');
 function checkEvidence(file) {
     const r = JSON.parse(fs.readFileSync(file));
     validateEvidence(r);
@@ -78,9 +79,10 @@ function checkEvidence(file) {
 function validateEvidence(r) {
     assert(r.completed && r.passed && !r.error && r.pageErrors.length === 0, 'Incomplete/failed browser record');
     assert.deepEqual(r.sourceHashes, hashes(), 'Stale source hashes or wrong input set');
-    const expected = r.scope === 'tracer' ? ['stock:tracer'] : ['stock', 'native'].flatMap(t => Object.keys(REQUIRED).map(id => `${t}:${id}`));
+    assert(r.scope === 'all' || Object.hasOwn(REQUIRED, r.scope), 'Unknown evidence scope');
+    const expected = r.scope === 'tracer' ? ['stock:tracer'] : ['stock', 'native'].flatMap(t => (r.scope === 'all' ? Object.keys(REQUIRED) : [r.scope]).map(id => `${t}:${id}`));
     assert.deepEqual(r.cases.map(c => `${c.theme}:${c.id}`).sort(), expected.sort(), 'Missing/duplicate/extra case');
-    if (requested === 'all') assert.equal(r.scope, 'all', 'Tracer cannot satisfy all-case acceptance');
+    assert.equal(r.scope, requested, 'Evidence must match exact requested scope');
     for (const c of r.cases) {
         assert(c.passed && !c.skipped, `Case failed/skipped: ${c.id}`);
         assert.deepEqual(c.assertions.map(a => a.id).sort(), REQUIRED[c.id].slice().sort(), `Missing/duplicate assertion ${c.id}`);
@@ -134,7 +136,7 @@ async function main() {
         const context = await browser.newContext({ignoreHTTPSErrors:true});
         await context.request.get(`${base}/signin/`);
         const fixtures = await (await context.request.get(`${base}/cases/`)).json();
-        const selected = requested === 'tracer' ? fixtures.filter(c => c.theme === 'stock' && c.id === 'tracer') : fixtures;
+        const selected = requested === 'tracer' ? fixtures.filter(c => c.theme === 'stock' && c.id === 'tracer') : requested === 'all' ? fixtures : fixtures.filter(c=>c.id===requested);
         for (const c of selected) {
             const result = {theme:c.theme, id:c.id, assertions:[], requests:[], passed:false}; record.cases.push(result);
             const check = (id, value, detail) => { result.assertions.push({id, passed:Boolean(value), ...(detail === undefined ? {} : {detail})}); assert(value, `${c.theme}:${c.id}: ${id} ${JSON.stringify(detail)}`); };
@@ -227,7 +229,51 @@ async function runCase({c, page, context, base, before, result, check, load, sta
                 management:[...form.querySelectorAll('input[name$="-TOTAL_FORMS"]')].map(el=>[el.name,el.value])};
         });
     }
-    if (c.id === 'fragment-raw-balance') {
+    if (c.id === 'gap-capability') {
+        const initialUrl=`/capability/initial/${c.theme}/${c.pk}/`;
+        const emptyUrl=`/capability/all-extra/${c.theme}/${c.emptyPk}/`;
+        await load(initialUrl);
+        let prefix=`books-memos-${c.pk}-0-0-${c.book}-1`;
+        const row = index => page.locator(`#editor input[name="${prefix}-${index}-text"]`).locator('xpath=ancestor::div[contains(@class,"cv-formset-row")][1]');
+        const presence=await row(1).evaluate(el=>({deleteInputs:el.querySelectorAll('[name$="-DELETE"]').length,deleteButtons:el.querySelectorAll('.cv-form-ctrl-delete').length}));
+        check('native-delete-presence',presence.deleteInputs===0&&presence.deleteButtons===0,presence);
+        const eventBefore=await page.evaluate(()=>widgetEvents.length);
+        const body=await add(row(1).locator('.cv-form-ctrl-add'));
+        check('add-once',body.rows.length===1&&await page.evaluate(()=>widgetEvents.length)===eventBefore+1);
+        await row(1).locator('input[name$="-text"]').fill('Capability first extra');
+        await row(2).locator('input[name$="-text"]').fill('Capability second extra');
+        await row(1).locator('.cv-form-ctrl-up').click();
+        check('extra-before-initial',await row(1).evaluate(el=>el.previousElementSibling===null||!el.previousElementSibling.classList.contains('cv-formset-row')));
+        await row(0).locator('.cv-form-ctrl-delete').click();
+        check('stable-initial-delete',await row(0).locator('input[name$="-DELETE"]').inputValue()==='1');
+        const saved=await post('#editor',initialUrl);
+        const final=await state();
+        result.capability={prefix,initialPrefix:`${prefix}-0`,extraPrefix:`${prefix}-1`,presence,state:final};
+        const memos=final.memos.filter(m=>m.book_id===c.book);
+        check('ordered-post-persisted',saved.status===200&&memos.length===2&&memos.find(m=>m.text==='Capability first extra')?.order===0&&memos.find(m=>m.text==='Capability second extra')?.order===1,{status:saved.status,memos});
+        await load(emptyUrl);
+        prefix=`books-memos-${c.emptyPk}-0-0-${c.emptyBook}-1`;
+        const extra=await add(row(0).locator('.cv-form-ctrl-add'));
+        await row(0).locator('input[name$="-text"]').fill('All extra first');
+        await row(1).locator('input[name$="-text"]').fill('All extra moved');
+        await row(1).locator('.cv-form-ctrl-up').click();
+        const allSaved=await post('#editor',emptyUrl);
+        const allState=await state();result.allExtra={rows:extra.rows,state:allState};
+        check('all-extra-add-order-post',allSaved.status===200&&await page.locator(`#editor input[name^="${prefix}"][name$="-DELETE"]`).count()===0&&allState.memos.some(m=>m.book_id===c.emptyBook&&m.text==='All extra moved'&&m.order===0),{status:allSaved.status,memos:allState.memos.filter(m=>m.book_id===c.emptyBook)});
+        await load();
+        const beforeInvalid=await state();
+        const invalid=[];
+        for(const identity of [null,String(c.foreign),String(c.filtered)]) {
+            const response=await post('#editor',c.url+'?reclean=1',{[`books-${c.pk}-0-0-id`]:identity,name:'Must not save'});
+            invalid.push({status:response.status,generic:response.body.includes('Invalid row.')});
+        }
+        const editOnly=await post('#editor',c.url+'?policy=edit&reclean=1',{[`books-${c.pk}-0-1-title`]:'Forbidden extra',name:'Must not save'});
+        invalid.push({status:editOnly.status,generic:editOnly.body.includes('Additions are not allowed.')});
+        const rejected=await state();result.reclean={invalid,eventsBefore:beforeInvalid.events.length,eventsAfter:rejected.events.length};
+        check('reclean-policy-zero-saves',invalid.every(r=>r.status===422&&r.generic)&&rejected.events.length===beforeInvalid.events.length,result.reclean);
+        const host=await page.evaluate(()=>({viewport:document.querySelector('meta[name="viewport"]')?.content,container:!!document.querySelector('main.container'),icons:!!document.querySelector('link[href*="font-awesome/6.7.2"]')}));
+        check('host-assets',host.viewport==='width=device-width, initial-scale=1'&&host.container&&host.icons,host);
+    } else if (c.id === 'fragment-raw-balance') {
         // Same actual selected child declarations as the full editor; inspect raw bytes before DOM proof.
         const memos = page.locator('#editor .cv-formset-content').filter({has: page.locator(`input[name="books-memos-${c.pk}-0-0-${c.book}-1-TOTAL_FORMS"]`)}).last();
         const body = await add(memos.locator('.cv-form-ctrl-add').first());

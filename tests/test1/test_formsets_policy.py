@@ -275,22 +275,24 @@ def test_direct_all_valid_rejects_extra(policy_routes, policy_world):
     assert tree.x_formsets[0].instance.non_form_errors().as_data()[0].code == "cv_additions_not_allowed"
 
 
-def test_native_custom_clean_is_preserved(policy_routes, policy_world, monkeypatch):
-    if policy_routes.family is not PolicyNativeInlineFormSet:
-        return  # the package family's own clean is covered by the nested validity gate suite
+def test_custom_clean_is_preserved(policy_routes, policy_world, monkeypatch):
     calls = []
-    original = PolicyNativeInlineFormSet.clean
+    original = policy_routes.family.clean
 
     def clean(self):
         calls.append(self.prefix)
-        return original(self)
+        result = original(self)
+        if self.data.get("policy-custom-error"):
+            raise ValidationError("Custom clean retained.", code="custom_clean")
+        return result
 
-    monkeypatch.setattr(PolicyNativeInlineFormSet, "clean", clean)
+    monkeypatch.setattr(policy_routes.family, "clean", clean)
     url, payload = editor(policy_routes, policy_world)
     payload["policy-custom-error"] = "on"
     response = policy_routes.client.post(url, payload)
     assert response.status_code == 200
     assert calls
+    assert len(calls) == len(set(calls))
     assert "custom_clean" in [
         e.code for e in response.context["formsets"].x_formsets[0].instance.non_form_errors().as_data()
     ]

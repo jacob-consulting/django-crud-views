@@ -23,8 +23,10 @@ import json
 from collections.abc import Iterable
 from typing import Any
 
+from django.core.exceptions import ValidationError
 from django.forms.forms import BaseForm
 from django.forms.formsets import BaseFormSet
+from django.utils.translation import gettext_lazy as _
 from pydantic import BaseModel, Field
 
 from crud_views.lib.exceptions import CrudViewError
@@ -198,9 +200,37 @@ class XFormSet(BaseModel, arbitrary_types_allowed=True):
         return self.cv_bound_toggle_field
 
     def is_valid(self) -> Iterable[tuple[Any, bool]]:
-        yield self, self.instance.is_valid()
+        valid = self.instance.is_valid()
+        self._cv_validate_row_policy()
+        yield self, valid and not self.instance.non_form_errors()
         for x_form in self.forms:
             yield from x_form.is_valid()
+
+    def _cv_validate_row_policy(self):
+        """Enforce row capabilities for every accepted inline formset class.
+
+        Run after normal Django/custom cleaning, including on DELETE-marked
+        rows. Inactive top-level trees never enter this validation traversal.
+        """
+        if not self.instance.is_bound or not self.instance.management_form.is_valid():
+            return
+        if self.formset.edit_only:
+            extras = self.forms[self.instance.initial_form_count() :]
+            if any(self._cv_row_has_data(row) for row in extras):
+                self._cv_add_policy_error("cv_additions_not_allowed", _("Additions are not allowed."))
+
+    @staticmethod
+    def _cv_row_has_data(row):
+        # A nested-only addition is still an addition to this extra parent.
+        # has_changed includes DELETE even where Django ignores deleted forms.
+        return row.form.has_changed() or any(
+            XFormSet._cv_row_has_data(child_row) for child in row.formsets for child_row in child.forms
+        )
+
+    def _cv_add_policy_error(self, code, message):
+        errors = self.instance.non_form_errors()
+        if not any(error.code == code for error in errors.as_data()):
+            errors.append(ValidationError(message, code=code))
 
     def _get_x_form(self, form):
         for x_form in self.forms:

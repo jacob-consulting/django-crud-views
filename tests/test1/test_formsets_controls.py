@@ -26,14 +26,21 @@ class Buttons(HTMLParser):
 @pytest.mark.parametrize("can_delete", [False, True])
 @pytest.mark.parametrize("can_order", [False, True])
 @pytest.mark.parametrize("can_delete_extra", [False, True])
-def test_stock_controls_render_real_formset_capabilities(monkeypatch, edit_only, can_delete, can_order, can_delete_extra):
+def test_stock_controls_render_real_formset_capabilities(
+    monkeypatch, edit_only, can_delete, can_order, can_delete_extra
+):
     # Exercise the supported optional-ordered-model configuration. The template's
     # capability projection is independent of the startup model-ordering check.
     monkeypatch.setattr("crud_views.lib.ordered.get_ordered_model", lambda: None)
     klass = type(
         "ControlFormSet",
         (BookFormSet,),
-        {"edit_only": edit_only, "can_delete": can_delete, "can_order": can_order, "can_delete_extra": can_delete_extra},
+        {
+            "edit_only": edit_only,
+            "can_delete": can_delete,
+            "can_order": can_order,
+            "can_delete_extra": can_delete_extra,
+        },
     )
     declaration = FormSet(title="Books", klass=klass)
     runtime = klass(formset=declaration, instance=Publisher(), prefix="line-items-None-0")

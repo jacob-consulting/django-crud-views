@@ -6,6 +6,22 @@ if (globalThis.__cvFormsetInit) {
 globalThis.__cvFormsetInit = true;
 const controllers = new WeakMap();
 
+// Bound identity belongs to the owning formset; DOM position is only for movement.
+function boundRowIndex(formset, prefix) {
+    const start = `${formset.prefix}-`;
+    const suffix = typeof prefix === "string" && prefix.startsWith(start) ? prefix.slice(start.length) : "";
+    const index = Number(suffix);
+    if (!/^\d+$/.test(suffix) || !Number.isSafeInteger(index)) {
+        throw new Error("invalid bound form index");
+    }
+    return index;
+}
+
+function canDeleteRow(formset, prefix) {
+    const index = boundRowIndex(formset, prefix);
+    return formset.can_delete && (formset.can_delete_extra || index < formset.get_initial_forms());
+}
+
 /**
  * CVFSConst
  *
@@ -248,7 +264,7 @@ class XFormset extends XBase {
 
             let order = this.assert_def(field("ORDER")),
                 // get delete input (maybe checkbox or hidden)
-                del = this.can_delete ? this.assert_def(field("DELETE")) : null,
+                del = canDeleteRow(this, prefix) ? this.assert_def(field("DELETE")) : null,
                 // get empty fields defined by suffix in options.empty_fields
                 fields = empty_fields_check.map(field).filter(Boolean),
                 // are all fields empty?
@@ -310,7 +326,8 @@ class XForm extends XBase {
         this.row_last = this.formset.rows.last();
 
         // get delete input
-        this.delete_input = this.formset.can_delete ? this.exact("input", "name", `${this.prefix}-DELETE`, this.row) : null;
+        this.can_delete = canDeleteRow(this.formset, this.prefix);
+        this.delete_input = this.can_delete ? this.exact("input", "name", `${this.prefix}-DELETE`, this.row) : null;
 
         this.debug("form", this);
     }
@@ -433,6 +450,7 @@ class XForm extends XBase {
     }
 
     delete() {
+        if (!this.can_delete) return;
         this.debug("delete");
         let deleted = this.get_delete(),
             sel_highlight = this.get_inputs();
@@ -444,10 +462,12 @@ class XForm extends XBase {
     }
 
     get_delete() {
+        if (!this.can_delete) return false;
         return this.delete_input[0].type === "checkbox" ? this.delete_input[0].checked : this.delete_input.val() === "1";
     }
 
     set_delete(value) {
+        if (!this.can_delete) return;
         let button = this.row.find("button.cv-form-ctrl-delete")
             .filter((_, el) => el.getAttribute(CVFSConst.attr.form_prefix) === this.prefix);
         // class strings come from the template (data attributes), never from literals here
@@ -506,8 +526,7 @@ class CrudViewsFormset extends XBase {
                     button.matches(CrudViewsFormset.const[key])).replace("form_control_", "");
                 const flags = row.formset;
                 if (action === "add" && flags.edit_only) return;
-                if (action === "delete" && (!flags.can_delete ||
-                    (!flags.can_delete_extra && row.row_index >= flags.get_initial_forms()))) return;
+                if (action === "delete" && !row.can_delete) return;
                 if ((action === "up" || action === "down") && !flags.can_order) return;
                 row[action]();
             } catch (error) {

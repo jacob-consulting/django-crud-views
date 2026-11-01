@@ -22,7 +22,7 @@
                 {% cv_icon "formset-add" %}
             </button>
             {% endif %}
-            {% if formset.can_delete %}
+            {% if 'DELETE' in form.fields %}
                 <button type="button" class="{% cv_button_class 'formset' 'control' %} cv-form-ctrl-delete" data-cv-class="{% cv_button_class 'formset' 'control' %}"
                         data-cv-class-danger="{% cv_button_class 'formset' 'control-danger' %}" title="{% translate 'Delete row' %}" data-cv-tooltip="formset" aria-label="{% translate 'Delete row' %}"
                         cv-data-formset-form-prefix="{{ form.prefix }}">

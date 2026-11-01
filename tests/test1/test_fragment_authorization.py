@@ -1352,8 +1352,15 @@ def test_server_fragment_dom_round_trip(fr, world, mode, capability, monkeypatch
     if driver:
         result = subprocess.run(
             [os.environ["CV_FRAGMENT_NODE"], driver],
-            input=json.dumps({"page": page.content.decode(), "steps": steps, "values": values,
-                              "native": capability != "default", "ordered": capability == "native-ordered"}),
+            input=json.dumps(
+                {
+                    "page": page.content.decode(),
+                    "steps": steps,
+                    "values": values,
+                    "native": capability != "default",
+                    "ordered": capability == "native-ordered",
+                }
+            ),
             text=True,
             capture_output=True,
             check=True,
@@ -1369,8 +1376,8 @@ def test_server_fragment_dom_round_trip(fr, world, mode, capability, monkeypatch
         for step in steps:
             added = step["fragment"]["rows"][0]
             assert f"{added}-DELETE" not in payload
-            if capability == "native-ordered":
-                assert int(payload[f"{added}-ORDER"]) >= 1
+            if capability == "native-ordered" and driver:
+                assert payload[f"{added}-ORDER"] == ("2" if step["prefix"] == f"books-{pa.pk}-0" else "1")
     response = client.post(url, payload)
     assert response.status_code == 302, response.content[:2000]
     child = BookNote.objects.get(note="dom-added-child")

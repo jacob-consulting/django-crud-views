@@ -95,6 +95,7 @@ class XFormSet(BaseModel, arbitrary_types_allowed=True):
     prefix_key: str
     formset: Any
     cv_active: bool = True
+    cv_bound_toggle_field: str = ""
     instance: BaseFormSet
     management_form: Any
     forms: list[XForm] = Field(default_factory=lambda: [])
@@ -194,8 +195,7 @@ class XFormSet(BaseModel, arbitrary_types_allowed=True):
 
     @property
     def cv_toggle_field(self) -> str:
-        conditional = self.formset.conditional
-        return conditional.toggle.field_name() if conditional is not None else ""
+        return self.cv_bound_toggle_field
 
     def is_valid(self) -> Iterable[tuple[Any, bool]]:
         yield self, self.instance.is_valid()

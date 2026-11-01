@@ -166,6 +166,11 @@ class FormSet(BaseModel, arbitrary_types_allowed=True):
                 formset=self,
                 parent=parent,
                 management_form=formset_instance.management_form,
+                cv_bound_toggle_field=(
+                    form.add_prefix(self.conditional.toggle.field_name())
+                    if level == 0 and self.conditional is not None
+                    else ""
+                ),
             )
 
             for formset_instance_form_index, formset_instance_form in enumerate(formset_instance.forms):

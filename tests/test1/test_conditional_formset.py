@@ -416,6 +416,11 @@ def test_prefixed_conditional_wrapper_preserves_management_payload(saved, invali
 
 
 def test_unconditional_formset_projection_has_no_toggle():
-    formsets, _, _ = _make("skip", "")
-    formsets.x_formsets[0].formset.conditional = None
+    from django.template.loader import render_to_string
+
+    formsets, main_form, _ = _make("skip", "")
+    formsets["items"].conditional = None
+    formsets.x_formsets.clear()
+    formsets.init(request=RequestFactory().get("/"), form=main_form)
     assert formsets.x_formsets[0].cv_toggle_field == ""
+    assert "cv-data-toggle-group" not in render_to_string("crud_views/formsets/formsets.html", {"formsets": formsets})

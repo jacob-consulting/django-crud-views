@@ -11,6 +11,7 @@ import pytest
 from django.forms.models import BaseInlineFormSet
 from django.test.client import Client
 
+from crud_views.lib.formsets import FormSets
 from tests.lib.helper.forms import field_key, form_payload
 from tests.test1.app.models import BookNote, Publisher
 from tests.test1.app.views_formset import BookNoteInlineFormSet
@@ -43,3 +44,38 @@ def test_cross_form_add_error_without_raise_rejects_submission(
     assert b"boom: parent missing" in response.content
     assert not Publisher.objects.filter(name="Ace Books").exists()
     assert not BookNote.objects.exists()
+
+
+@pytest.mark.django_db
+def test_child_clean_main_form_error_rejects_before_save(monkeypatch, client_user_publisher_formset):
+    """The top-level main form participates in the second validity pass too."""
+    main = {}
+    original_init = FormSets.init
+
+    def init(self, request, form):
+        main["form"] = form
+        return original_init(self, request, form)
+
+    def clean(self):
+        BaseInlineFormSet.clean(self)
+        main["form"].add_error(None, "main error from child clean")
+
+    monkeypatch.setattr(FormSets, "init", init)
+    monkeypatch.setattr(BookNoteInlineFormSet, "clean", clean)
+    saves = []
+    original_save = Publisher.save
+
+    def save(self, *args, **kwargs):
+        saves.append(self.pk)
+        return original_save(self, *args, **kwargs)
+
+    monkeypatch.setattr(Publisher, "save", save)
+    client_user_publisher_formset.raise_request_exception = False
+    page = client_user_publisher_formset.get("/publisher-formset/create/")
+    payload = form_payload(page)
+    payload["name"] = "must not save main"
+    response = client_user_publisher_formset.post("/publisher-formset/create/", payload)
+    assert response.status_code == 200
+    assert b"main error from child clean" in response.content
+    assert saves == []
+    assert not Publisher.objects.filter(name="must not save main").exists()

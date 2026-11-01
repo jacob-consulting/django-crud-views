@@ -18,6 +18,7 @@ from django.test import RequestFactory
 from lxml import html
 
 from crud_views.lib.conditional import ToggleGroup
+from crud_views.lib.crispy import CrispyModelForm
 from crud_views.lib.formsets import FormSet, FormSets, InlineFormSet
 from tests.test1.app.models import Author, Book, Profile, Publisher, UUIDFragmentRow
 from tests.test1.app.models import ConditionalPersistenceRecord as Record
@@ -94,9 +95,11 @@ def test_published_formset_and_row_json_match_actual_projection(kind):
         parent = Publisher.objects.create(pk=42, name="projection")
         child, fields, grammar, offset = Book, ["title"], FormSet.PK.INT, 0
     else:
-        parent = Author.objects.create(pk="12345678-1234-1234-1234-123456789abc", name="projection")
+        parent = Author.objects.create(pk="12345678-1234-1234-1234-123456789abc", first_name="projection")
         child, fields, grammar, offset = UUIDFragmentRow, ["text"], FormSet.PK.UUID, 2
-    klass = inlineformset_factory(type(parent), child, formset=InlineFormSet, fields=fields, extra=1)
+    klass = inlineformset_factory(
+        type(parent), child, formset=InlineFormSet, form=CrispyModelForm, fields=fields, extra=1
+    )
     tree = FormSets(formsets={"rows": FormSet(title="Rows", klass=klass, pk=grammar, fields=fields, path="/editor/")})
     main = forms.modelform_factory(type(parent), fields=[])(instance=parent)
     tree.init(RequestFactory().get("/editor/"), main)

@@ -177,7 +177,8 @@ mismatch is a **400** before anything renders:
 - Every identity in `pk` and `formset_parent_prefix_key` must match its declaration's `FormSet.PK` grammar and convert
   with the owning model's primary key field.
 - The root identity must be the endpoint's own object, or `None` on a create page. The top-level formset index is
-  always `0`, and every nested level must use the declared child index.
+    always `0`, and every nested level must use the declared child index (the zero-based position in its parent's
+    ordered `children` mapping).
 - Each saved identity must be a stored row whose foreign key points at the identity above it. This ancestry is checked
   on every request, so moving a row to another parent takes effect on the next request. Once an identity is `None`
   (an unsaved row), every deeper one must be `None` too.
@@ -202,12 +203,96 @@ The endpoint only decides who may receive the editor's rows. Which choices a row
 who may open the editor is still up to your form: restrict its `queryset` as you would on any form. A conditional
 formset's server-side purge keeps its own policy; see [Conditional formsets](#conditional-formsets).
 
-!!! note "Known limitation: a second child declaration"
-    A row request for a child formset that is not the first declared child of its parent (`books|memos` when the
-    `books` formset declares `notes` before `memos`) returns rows with index `0`, while the page initialized that
-    formset with index `1`. The added rows do not extend the formset on the page. Top-level formsets and, at every
-    nesting level, the first declared child formset are not affected. Authorization and ancestry checks apply to every
-    declaration either way. A fix is planned with the formset lifecycle work after 1.0's authorization changes.
+Second and deeper sibling declarations now retain their declared index in both page and fragment prefixes.
+For example `books|memos`, after sibling `notes`, uses child index `1`. Authorized integer/UUID second-sibling and
+deeper additions bind through management data and save; newly inserted descendants also retain the editor endpoint
+inside modals. This replaces the former first-declared-child limitation, with real fragment/POST tests and stock/native
+HTTP browser acceptance. The integer/UUID grammar and permission/ancestry boundaries above still apply. Row-choice
+queryset filtering remains the application's responsibility; unrelated Guardian and primary-key extensions are excluded.
+
+The `pk` request parameter is the actual authorized parent row identity or the unsaved `None` sentinel. It is distinct
+from the `pk` grammar/type metadata in the [JSON projections](#exact-json-projections) below; do not send a regex or
+`PK.INT` as the request's row identity.
+
+## Validation before saves
+
+Active formsets enforce `edit_only` and submitted row identity after ordinary/custom cleaning, before main, sibling
+or nested saves. Nonempty extra rows (including DELETE-marked or nested-only extras) in an edit-only collection
+receive nonform error `cv_additions_not_allowed` ("Additions are not allowed."). Missing, malformed, foreign or
+filtered existing IDs, and IDs disagreeing with the retained persisted instance, receive generic `cv_invalid_row`
+("Invalid row."). Membership uses the authorized managed queryset and its selected database alias. Native/custom
+inline formset subclasses cannot bypass this policy with a `clean()` override.
+
+Ordinary full-page invalid submissions re-render with HTTP **200**; modal invalid submissions re-render with HTTP
+**422**. No save hooks run for these policy failures. Native form/model errors, errors added to the main form during
+child cleaning, and routed atomic rollback remain authoritative. A disabled or hidden browser action is no substitute
+for this server validation. Inactive conditional formsets use their separate default skip/opt-in managed-queryset purge
+policy, including ignored inactive management data, as described under [Conditional formsets](#conditional-formsets).
+
+## Template projection and native controls
+
+Theme overrides may consume the runtime data passed by the shipped formset templates. This supports rendering;
+it does not make `XForm`/`XFormSet` constructors, validation/save methods or JavaScript controllers public APIs.
+
+| Context / projection | Supported rendering data |
+|---|---|
+| `formsets.x_formsets` | Collection supplied to `crud_views/formsets/formsets.html` |
+| `x_formset` | `prefix`, `prefix_key`, `key`, `title`, `management_form`, `instance.non_form_errors`, `forms`; nested/rows-only flags `has_parent`, `render_rows_only`; `cv_active`, bound `cv_toggle_field` |
+| Layout data | `level`, `has_pre_col`, `col`, `col_pre`, `css_col`, `css_col_pre` |
+| Each `x_form` | `prefix`, `prefix_key`, `key`, `form`, `helper`, nested `formsets` |
+| Capabilities | `x_formset.formset.can_delete`, `can_delete_extra`, `can_order`, `edit_only`; these also appear in formset JSON |
+| `x_formset.json_data` | `key`, `prefix`, `prefix_key`, `hierarchy`, `parent_prefix`, `parent_prefix_key`, `can_delete`, `can_delete_extra`, `can_order`, `edit_only`, `path`, `fields`, `pk_field`, `pk` |
+| `x_form.json_data` | `key`, `prefix`, `prefix_key`, `formset_prefix`, `pk` |
+
+Retain `cv-formset-content` and `cv-data-formset-prefix`/`cv-data-formset` on the content container, and
+`cv-formset-row` with `cv-data-formset-form-prefix`/`cv-data-formset-form` on each row. Render management inputs,
+and retain each row's `cv-data-formset-prefix` identifying its containing formset. Render
+nonform errors, the actual form/helper, and nested formsets. Render Django JSON strings with normal template
+escaping in attributes. In row-only fragments omit the containing fieldset/content/management wrapper together;
+keep original opening/closing wrappers balanced.
+
+Action hooks are native `<button type="button">` controls with `cv-form-ctrl-add`, `cv-form-ctrl-delete`,
+`cv-form-ctrl-up` or `cv-form-ctrl-down`, plus `cv-data-formset-form-prefix` identifying their row. Give each an
+accessible name. Preserve capability predicates and `data-cv-class`/`data-cv-class-danger` for delete styling.
+The controller ignores actions that are disabled, hidden, inert, ARIA-disabled/hidden or disallowed by capabilities;
+non-button synthetic substitutes are outside this contract. Owning-form initialization isolates identical prefixes
+in separate forms. Submit reorders only that form before modal FormData serialization; cancellation or reorder failure
+prevents fetch. See [initialization](javascript.md#conditional-and-formset-initialization).
+
+### Exact JSON projections
+
+These are separate complete examples for a declaration named `rows`, editor path `/editor/`, one extra row, native
+default deletion capabilities and no ordering/edit-only. `prefix_key` is coordinates, not a standalone object ID.
+In **XFormSet.data**, `pk` is the declaration's **grammar** (`FormSet.PK.value`), not an actual row identity.
+In **XForm.data**, the retained `pk` is the enum spelling `PK.INT` or `PK.UUID`; do not normalize it or rename keys.
+
+Integer declaration with parent ID `42` and field `title`, formset JSON:
+
+```json
+{"key":"rows","prefix":"rows-42-0","prefix_key":"42-0","hierarchy":["rows"],"parent_prefix":"","parent_prefix_key":"","can_delete":true,"can_delete_extra":true,"can_order":false,"edit_only":false,"path":"/editor/","fields":["title"],"pk_field":"id","pk":"\\d+"}
+```
+
+Its first row JSON (row index `0`):
+
+```json
+{"key":"rows","prefix":"rows-42-0-0","prefix_key":"42-0-0","formset_prefix":"rows-42-0","pk":"PK.INT"}
+```
+
+UUID declaration with parent ID `12345678-1234-1234-1234-123456789abc` and field `text`, formset JSON:
+
+```json
+{"key":"rows","prefix":"rows-12345678-1234-1234-1234-123456789abc-0","prefix_key":"12345678-1234-1234-1234-123456789abc-0","hierarchy":["rows"],"parent_prefix":"","parent_prefix_key":"","can_delete":true,"can_delete_extra":true,"can_order":false,"edit_only":false,"path":"/editor/","fields":["text"],"pk_field":"id","pk":"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"}
+```
+
+Its first row JSON:
+
+```json
+{"key":"rows","prefix":"rows-12345678-1234-1234-1234-123456789abc-0-0","prefix_key":"12345678-1234-1234-1234-123456789abc-0-0","formset_prefix":"rows-12345678-1234-1234-1234-123456789abc-0","pk":"PK.UUID"}
+```
+
+An unsaved parent instead uses `None` in these coordinates, even if a UUID default has assigned a prospective PK.
+The `prefix_key` segments also carry nested parent coordinates and declaration indices, as validated by the fragment
+endpoint. Both integer and UUID examples are compared with real runtime projections in the documentation tests.
 
 ### Initializing widgets in added rows
 

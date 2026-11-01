@@ -1,10 +1,10 @@
 ---
 schema_version: 1
-open_count: 4
+open_count: 6
 waived_count: 1
 fixed_count: 14
-total_count: 19
-last_updated: 2026-11-01T11:11:17.692Z
+total_count: 21
+last_updated: 2026-11-01T17:22:40.406Z
 ---
 
 # Broken Windows Ledger
@@ -34,6 +34,8 @@ last_updated: 2026-11-01T11:11:17.692Z
 | 17 | 06.3 | unrun-verify | .planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-GAP-REVIEW.md |  | Plan 17 final human checks pending for all twelve individually tracked IDs: GUA-precision, four unclassified predicates, four prohibitions and UI-01/02/03. Design approval does not answer these final questions. | fixed | All twelve owner responses preserved; four detector flags dismissed after investigation; bounded precision predicate established and broader scope deferred to issue 286 under formal reconciliation. | 2026-10-31T00:26:22.432Z | 2026-11-01T07:57:07.320Z |
 | 18 | 06.4 | deviation | .planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-01-SUMMARY.md |  | Sequential execution preserves required prior-phase HEAD; FSET-02 remains pending later lifecycle plans. | fixed |  | 2026-11-01T10:52:17.888Z | 2026-11-01T10:53:29.098Z |
 | 19 | 06.4 | deviation | tests/test1/test_conditional_persistence.py |  | Disabled ImageField reference-only fixture uses native initial=None/no-change because validating a nonempty disabled image initial requires Pillow; production image validation remains unchanged. | fixed |  | 2026-11-01T11:10:51.632Z | 2026-11-01T11:11:17.692Z |
+| 20 | 06.4 | deviation | .planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py | 984 | WR-03: aggregate checker accepts missing or contradictory corruption subprocess evidence; independent security T22/T28/T33 remains blocking | open |  | 2026-11-01T17:22:40.240Z |  |
+| 21 | 06.4 | deviation | .planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py | 857 | WR-04: aggregate checker omits conditional screenshot inventory/hash contract; security T22/T33 high and T31 medium remain open | open |  | 2026-11-01T17:22:40.406Z |  |
 
 ````json
 [
@@ -273,6 +275,32 @@ last_updated: 2026-11-01T11:11:17.692Z
     "reason": "",
     "recorded_at": "2026-11-01T11:10:51.632Z",
     "resolved_at": "2026-11-01T11:11:17.692Z",
+    "milestone": "v1.0"
+  },
+  {
+    "id": 20,
+    "kind": "deviation",
+    "phase": "06.4",
+    "file": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+    "line": 984,
+    "description": "WR-03: aggregate checker accepts missing or contradictory corruption subprocess evidence; independent security T22/T28/T33 remains blocking",
+    "status": "open",
+    "reason": "",
+    "recorded_at": "2026-11-01T17:22:40.240Z",
+    "resolved_at": null,
+    "milestone": "v1.0"
+  },
+  {
+    "id": 21,
+    "kind": "deviation",
+    "phase": "06.4",
+    "file": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+    "line": 857,
+    "description": "WR-04: aggregate checker omits conditional screenshot inventory/hash contract; security T22/T33 high and T31 medium remain open",
+    "status": "open",
+    "reason": "",
+    "recorded_at": "2026-11-01T17:22:40.406Z",
+    "resolved_at": null,
     "milestone": "v1.0"
   }
 ]

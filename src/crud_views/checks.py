@@ -2,11 +2,13 @@ import dataclasses
 
 from django.core.checks import Error, register
 from django.core.checks import Warning as DjangoWarning
+from django.core.exceptions import FieldDoesNotExist, ImproperlyConfigured
 
 from crud_views.lib import assets
 from crud_views.lib import ordered as ordered_helper
 from crud_views.lib import pipeline as pipeline_helper
 from crud_views.lib.button_classes import button_class_check_messages
+from crud_views.lib.conditional.group import ConditionalGroupFormMixin, resolve_conditional_empty_value
 from crud_views.lib.formsets.formsets import FormSet
 from crud_views.lib.icons import ICON_VALUE_HINT, icon_check_messages, is_icon_value, unregistered_prefix
 from crud_views.lib.settings import crud_views_settings
@@ -50,7 +52,7 @@ def _registry_needs_ordered_model() -> bool:
     return False
 
 
-def _conditional_messages(nested_conditionals, missing_toggles, non_nullable_clears, purge_conflicts=()):
+def _conditional_messages(nested_conditionals, missing_toggles, unsupported_clears, purge_conflicts=()):
     """Pure formatter — turns collected findings into Django check messages.
 
     Kept separate from registry traversal so it is unit-testable without the
@@ -76,12 +78,13 @@ def _conditional_messages(nested_conditionals, missing_toggles, non_nullable_cle
                 id="crud_views.E311",
             )
         )
-    for form_name, field in non_nullable_clears:
+    for form_name, toggle, field in unsupported_clears:
         messages.append(
-            DjangoWarning(
-                f"ConditionalGroup clears '{field}' on '{form_name}' but the model field is not null/blank.",
-                hint="Set null=True, blank=True on the field, or provide empty_values for it.",
-                id="crud_views.W320",
+            Error(
+                f"Conditional group '{toggle}' field '{field}' on form '{form_name}' has no supported "
+                "automatic empty value.",
+                hint="Configure empty_values explicitly for this field.",
+                id="crud_views.E312",
             )
         )
     for key, reason in purge_conflicts:
@@ -102,8 +105,9 @@ class _ConditionalFindings:
 
     nested_conditionals: list = dataclasses.field(default_factory=list)
     missing_toggles: list = dataclasses.field(default_factory=list)
-    non_nullable_clears: list = dataclasses.field(default_factory=list)
+    unsupported_clears: list = dataclasses.field(default_factory=list)
     purge_conflicts: list = dataclasses.field(default_factory=list)
+    inspected_forms: set = dataclasses.field(default_factory=set)
 
 
 def _purge_conflict(klass) -> str | None:
@@ -129,6 +133,7 @@ def _check_top_level_conditional(formset, key, form_class, available_toggles, fi
 
 def _walk_formset(formset, key, is_top, form_class, available_toggles, findings):
     """Only top-level formsets may carry a conditional; recurse into children."""
+    _collect_form_findings(getattr(formset.klass, "form", None), findings)
     if formset.conditional is not None:
         if is_top:
             _check_top_level_conditional(formset, key, form_class, available_toggles, findings)
@@ -138,45 +143,52 @@ def _walk_formset(formset, key, is_top, form_class, available_toggles, findings)
         _walk_formset(child, f"{key}-{ckey}", False, form_class, available_toggles, findings)
 
 
-def _non_nullable_clears(model, group):
-    """Group fields that clearing (toggle off) would set to an invalid empty value."""
-    for fname in group.fields:
-        try:
-            mf = model._meta.get_field(fname)
-        except Exception:
-            continue
-        if not (getattr(mf, "null", False) and getattr(mf, "blank", False)) and fname not in group.empty_values:
-            yield fname
-
-
 def _collect_group_findings(form_class, groups, declared, findings):
     model = getattr(getattr(form_class, "_meta", None), "model", None)
     for group in groups:
         tname = group.toggle.field_name()
-        if not group.toggle.inject and tname not in declared:
+        if tname not in declared:
             findings.missing_toggles.append((form_class.__name__, tname))
-        if model is not None:
-            findings.non_nullable_clears.extend(
-                (form_class.__name__, fname) for fname in _non_nullable_clears(model, group)
-            )
+        for name in group.fields:
+            field = form_class.base_fields.get(name)
+            if field is None or field.disabled:
+                continue
+            model_field = None
+            if model is not None:
+                try:
+                    model_field = model._meta.get_field(name)
+                except FieldDoesNotExist:
+                    pass
+            try:
+                resolve_conditional_empty_value(field, model_field, group, name)
+            except ImproperlyConfigured:
+                findings.unsupported_clears.append((form_class.__name__, tname, name))
+
+
+def _form_toggle_names(form_class):
+    """Return only this form's declared and actually injected toggle names."""
+    declared = set(getattr(form_class, "base_fields", {}))
+    if form_class is not None and issubclass(form_class, ConditionalGroupFormMixin):
+        declared.update(g.toggle.field_name() for g in form_class.cv_conditional_groups if g.toggle.inject)
+    return declared
+
+
+def _collect_form_findings(form_class, findings):
+    if form_class is None or form_class in findings.inspected_forms:
+        return
+    findings.inspected_forms.add(form_class)
+    groups = getattr(form_class, "cv_conditional_groups", ())
+    _collect_group_findings(form_class, groups, _form_toggle_names(form_class), findings)
 
 
 def _collect_view_findings(view, findings):
     form_class = getattr(view, "form_class", None)
-    declared = set(getattr(form_class, "base_fields", {}).keys()) if form_class else set()
-
-    groups = getattr(form_class, "cv_conditional_groups", None) if form_class else None
-    # ConditionalGroupFormMixin injects these at form init — the only
-    # injection path there is; formset toggles are never auto-injected.
-    group_injected = {g.toggle.field_name() for g in groups or [] if g.toggle.inject}
+    _collect_form_findings(form_class, findings)
 
     formsets = getattr(view, "cv_formsets", None)
     if formsets is not None:
         for key, fs in formsets.items():
-            _walk_formset(fs, key, True, form_class, declared | group_injected, findings)
-
-    if groups:
-        _collect_group_findings(form_class, groups, declared, findings)
+            _walk_formset(fs, key, True, form_class, _form_toggle_names(form_class), findings)
 
 
 @register(TAG)
@@ -198,10 +210,10 @@ def check_conditional(app_configs=None, **kwargs):
         (key, cond) for key, cond in findings.nested_conditionals if not (key in seen_nested or seen_nested.add(key))
     ]
     missing_toggles = list(dict.fromkeys(findings.missing_toggles))
-    non_nullable_clears = list(dict.fromkeys(findings.non_nullable_clears))
+    unsupported_clears = list(dict.fromkeys(findings.unsupported_clears))
     purge_conflicts = list(dict.fromkeys(findings.purge_conflicts))
 
-    return _conditional_messages(nested_conditionals, missing_toggles, non_nullable_clears, purge_conflicts)
+    return _conditional_messages(nested_conditionals, missing_toggles, unsupported_clears, purge_conflicts)
 
 
 @register(TAG)

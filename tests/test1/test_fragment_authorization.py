@@ -11,11 +11,15 @@ builds it (A06) and assert exact ``rows``, usable ``html`` and no database write
 """
 
 import json
+import os
 import re
+import subprocess
 import sys
 import types
 import uuid
 from collections import OrderedDict
+from html.parser import HTMLParser
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
@@ -23,6 +27,7 @@ from crispy_forms.layout import Row
 from django import forms
 from django.db import connection, models
 from django.forms.models import ModelChoiceIterator, inlineformset_factory
+from django.template.loader import render_to_string
 from django.test import Client, override_settings
 from django.test.utils import isolate_apps
 from django.urls import clear_url_caches, include, path, reverse
@@ -1230,6 +1235,121 @@ def _assert_fragment_rows(fragment):
         controls = matches[0].cssselect(".cv-formset-form input[name], .cv-formset-form select[name]")
         assert controls
         assert all(el.get("name").startswith(f"{row}-") for el in controls)
+
+
+def _assert_raw_wrappers(markup):
+    """Check the original tag stream: a DOM parser silently repairs the defect this guards."""
+
+    class Wrappers(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.stack = []
+
+        def handle_starttag(self, tag, attrs):
+            if tag in {"div", "fieldset"}:
+                self.stack.append(tag)
+
+        def handle_endtag(self, tag):
+            if tag in {"div", "fieldset"}:
+                assert self.stack, f"unmatched closing {tag}"
+                assert self.stack[-1] == tag, f"out-of-order closing {tag}: {self.stack}"
+                self.stack.pop()
+
+    parser = Wrappers()
+    parser.feed(markup)
+    parser.close()
+    assert parser.stack == [], f"unclosed wrappers: {parser.stack}"
+
+
+@pytest.mark.parametrize("mode", ["full", "outer", "nested", "second-sibling"])
+@pytest.mark.django_db
+def test_fragment_raw_wrappers_balance_before_dom_parsing(fr, world, mode):
+    client = _editor_client(fr, world, viewset=fr.g2pub_vs)
+    pa, ba = world.publisher_a, world.book_a
+    url = _url(fr.g2pub_vs, "update", pk=pa.pk)
+    page = client.get(url)
+    assert page.status_code == 200
+    prefix = f"books-{pa.pk}-0"
+    if mode == "full":
+        markup = render_to_string(
+            "crud_views/formsets/formset.html", {"x_formset": page.context["formsets"].x_formsets[0]}
+        )
+        assert f'id="cv-formset-fieldset-{prefix}"' in markup
+    else:
+        if mode != "outer":
+            child, index = ("notes", 0) if mode == "nested" else ("memos", 1)
+            prefix = f"books-{child}-{pa.pk}-0-0-{ba.pk}-{index}"
+        response = client.get(url, browser_add_row(page.content, prefix))
+        assert response.status_code == 200
+        markup = response.json()["html"]
+        assert f'id="cv-formset-fieldset-{prefix}"' not in markup
+        assert f'name="{prefix}-TOTAL_FORMS"' not in markup
+    _assert_raw_wrappers(markup)
+    # The exact old extra suffix must be rejected even though browser parsers discard it.
+    with pytest.raises(AssertionError, match="unmatched closing"):
+        _assert_raw_wrappers(markup + "</div></fieldset></div></div>")
+    with pytest.raises(AssertionError, match="out-of-order"):
+        _assert_raw_wrappers("<div><fieldset></div></fieldset>")
+
+
+@pytest.mark.parametrize("mode", ["outer", "nested"])
+@pytest.mark.django_db
+def test_server_fragment_dom_round_trip(fr, world, mode):
+    """Vitest optionally supplies a real JS driver; ordinary Python runs remain Node-free."""
+    pa, ba = world.publisher_a, world.book_a
+    client = _editor_client(fr, world, viewset=fr.g2pub_vs)
+    url = _url(fr.g2pub_vs, "update", pk=pa.pk)
+    page = client.get(url)
+    assert page.status_code == 200
+    payload = form_payload(page)
+    steps = []
+    if mode == "outer":
+        prefix = f"books-{pa.pk}-0"
+        params = browser_add_row(page.content, prefix)
+        fragment = _assert_fragment(client.get(url, params), [f"{prefix}-2"], ["title"])
+        _assert_raw_wrappers(fragment["html"])
+        steps.append({"prefix": prefix, "params": params, "fragment": fragment})
+        payload.update(_fragment_inputs(fragment["html"]))
+        payload[f"{prefix}-TOTAL_FORMS"] = "3"
+        content = fragment["html"].encode()
+        child_prefix = f"books-memos-{pa.pk}-0-2-None-1"
+        values = {f"{prefix}-2-title": "dom-added-parent"}
+    else:
+        content = page.content
+        child_prefix = f"books-memos-{pa.pk}-0-0-{ba.pk}-1"
+        values = {}
+    params = browser_add_row(content, child_prefix)
+    fragment = _assert_fragment(client.get(url, params), [f"{child_prefix}-1"], ["note"])
+    _assert_raw_wrappers(fragment["html"])
+    _assert_fragment_rows(fragment)
+    steps.append({"prefix": child_prefix, "params": params, "fragment": fragment})
+    payload.update(_fragment_inputs(fragment["html"]))
+    payload[f"{child_prefix}-TOTAL_FORMS"] = "2"
+    values[f"{child_prefix}-1-note"] = "dom-added-child"
+    payload.update(values)
+    driver = os.environ.get("CV_FRAGMENT_DRIVER")
+    if driver:
+        result = subprocess.run(
+            [os.environ["CV_FRAGMENT_NODE"], driver],
+            input=json.dumps({"page": page.content.decode(), "steps": steps, "values": values}),
+            text=True,
+            capture_output=True,
+            check=True,
+            timeout=20,
+        )
+        rendered = json.loads(result.stdout)
+        payload = rendered["payload"]
+        assert len(rendered["events"]) == len(steps)
+        with Path(os.environ["CV_FRAGMENT_RESULTS"]).open("a") as output:
+            output.write(json.dumps({"mode": mode, "events": rendered["events"]}) + "\n")
+    response = client.post(url, payload)
+    assert response.status_code == 302, response.content[:2000]
+    child = BookNote.objects.get(note="dom-added-child")
+    parent = Book.objects.get(title="dom-added-parent") if mode == "outer" else ba
+    child.refresh_from_db()
+    parent.refresh_from_db()
+    pa.refresh_from_db()
+    assert child.book_id == parent.pk and parent.publisher_id == pa.pk
 
 
 @pytest.mark.parametrize("creating", [False, True], ids=["persisted-int-root", "unsaved-int-root"])

@@ -643,6 +643,131 @@ class ConditionalCaptureEvidence(CompletePacketFixture, unittest.TestCase):
             self.case()["humanReview"][identity] = "pending"
 
 
+class EvidenceRefresh(CompletePacketFixture, unittest.TestCase):
+    """Owned synthetic envelopes exercise real CLI validators, never acceptance."""
+
+    def test_invalid_runtime_preflight_preserves_outputs(self):
+        output = self.directory / "new" / "results.json"
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(HERE / "run.py"),
+                "--refresh-from",
+                str(HERE.parent / "18-evidence/results.json"),
+                "--output",
+                str(output),
+            ],
+            env={**runner.os.environ, "CV_FOCUS_PYTHON": "/missing/refresh-python"},
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(result.returncode, 1, result.stderr)
+        self.assertIn("CV_FOCUS_PYTHON='/missing/refresh-python'", result.stderr)
+        self.assertFalse(output.parent.exists())
+
+    def refreshed_fixture(self):
+        origin = HERE.parent / "18-evidence/results.json"
+        request = runner.capture_request()
+        packet = runner.prepare_refresh(origin, self.manifest, request)
+        packet["test_fixture"] = "Synthetic fresh gate observations; never acceptance evidence"
+        packet["gates"].update({k: self.packet["gates"][k] for k in runner.FRESH_GATES})
+        packet.update(completed=True, finished=runner.now())
+        packet["checker_controls"] = self.packet["checker_controls"]
+        packet["checker_control_evidence"] = self.packet["checker_control_evidence"]
+        self.packet = packet
+        return packet
+
+    def test_original_gate_survives_real_refresh_cli_check_and_handoff(self):
+        # Only fresh execution is replaced by explicitly synthetic test records.
+        # main(), provenance, complete aggregate, controls and handoff are real.
+        fixtures = self.directory / "synthetic-fresh.json"
+        runner.write_json(
+            fixtures, {k: self.packet["gates"][k] for k in ("evidence-self-tests", "ruff-check", "ruff-format")}
+        )
+        script = (
+            "import importlib.util,json,sys; "
+            "s=importlib.util.spec_from_file_location('refresh_cli',sys.argv[1]); "
+            "r=importlib.util.module_from_spec(s); s.loader.exec_module(r); "
+            "f=json.load(open(sys.argv[2])); "
+            "r.quality_gate=lambda name,selection=None:f[name]; "
+            "sys.argv=[sys.argv[1],*sys.argv[3:]]; sys.exit(r.main())"
+        )
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-c",
+                script,
+                str(HERE / "run.py"),
+                str(fixtures),
+                "--refresh-from",
+                str(HERE.parent / "18-evidence/results.json"),
+                "--output",
+                str(self.output),
+            ],
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.packet = runner.load_json(self.output)
+        original = runner.load_json(HERE.parent / "18-evidence/results.json")
+        for name in set(original["gates"]) - set(runner.FRESH_GATES):
+            self.assertEqual(self.packet["gates"][name], original["gates"][name], name)
+        self.assertEqual(self.cli().returncode, 0)
+        result = self.cli(handoff=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertFalse(json.loads(result.stdout)["ready"])
+
+    def test_source_continuity_rejects_product_runtime_and_path_set_changes(self):
+        original = runner.load_json(HERE.parent / "18-evidence/source-manifest.json")
+        for label, mutate in (
+            ("product", lambda m: m["files"].__setitem__("README.md", "0" * 64)),
+            ("addition", lambda m: m["files"].__setitem__("tests/invented.py", "0" * 64)),
+            ("deletion", lambda m: m["files"].pop("README.md")),
+        ):
+            with self.subTest(label=label):
+                changed = copy.deepcopy(self.manifest)
+                mutate(changed)
+                with self.assertRaisesRegex(ValueError, "Refresh source inputs differ"):
+                    runner.validate_continuity(original, changed)
+        runner.validate_continuity(original, self.manifest)
+
+    def test_changed_effective_selection_rejects_before_output_writes(self):
+        request = runner.capture_request()
+        request["selections"]["javascript"]["environment"]["CI"] = "invented"
+        with self.assertRaisesRegex(ValueError, "Refresh runtime/command selection changed: javascript"):
+            runner.prepare_refresh(HERE.parent / "18-evidence/results.json", self.manifest, request)
+
+    def test_missing_fresh_gates_controls_and_forged_timestamps_reject_everywhere(self):
+        packet = copy.deepcopy(self.refreshed_fixture())
+        mutations = (
+            (lambda p: p["gates"].pop("evidence-self-tests"), "Missing/extra matrix gates"),
+            (lambda p: p.pop("checker_control_evidence"), "Checker control evidence inventory"),
+            (lambda p: p["gates"]["javascript"].__setitem__("started", runner.now()), "Retained gate changed"),
+            (lambda p: p.__setitem__("completed", False), "Incomplete matrix"),
+        )
+        for mutate, pattern in mutations:
+            with self.subTest(pattern=pattern):
+                self.packet = copy.deepcopy(packet)
+                mutate(self.packet)
+                self.assert_rejected_everywhere(pattern)
+
+    def test_mutated_origin_and_missing_manifest_reject_everywhere(self):
+        self.refreshed_fixture()
+        origin = runner.load_json(HERE.parent / "18-evidence/results.json")
+        owned = self.directory / "origin" / "results.json"
+        runner.write_json(owned, origin)
+        reference = {"path": str(owned.relative_to(runner.ROOT)), "sha256": runner.sha(owned)}
+        self.packet["retained_from"]["results"] = reference
+        self.assert_rejected_everywhere("Missing.*original.*manifest")
+        runner.write_json(owned.parent / "source-manifest.json", origin["source_manifest"])
+        self.packet["retained_from"]["source_manifest"] = {
+            "path": str((owned.parent / "source-manifest.json").relative_to(runner.ROOT)),
+            "sha256": runner.sha(owned.parent / "source-manifest.json"),
+        }
+        owned.write_text(owned.read_text() + "\n")
+        self.assert_rejected_everywhere("Retained origin hash mismatch")
+
+
 class HandoffEvidence(unittest.TestCase):
     def setUp(self):
         # Synthetic unit fixture, never a claimed acceptance packet. Full-matrix

@@ -210,6 +210,11 @@ class FormSet(BaseModel, arbitrary_types_allowed=True):
         Yes, it's similar to init but not the same.
         """
 
+        # A fragment can be inserted into a modal hosted at a different URL. Nested
+        # actions must keep the authorized editor endpoint just like initialized rows.
+        if self.cv_view is not None:
+            self.path = self.cv_view.request.path
+
         # get parent prefix with -
         parent_prefix_ = f"{parent_prefix}-" if parent_prefix else ""
 

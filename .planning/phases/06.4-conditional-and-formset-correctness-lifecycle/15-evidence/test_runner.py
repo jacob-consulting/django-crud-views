@@ -300,6 +300,171 @@ class CurrentCapture(unittest.TestCase):
             )
 
 
+class CompletePacketFixture:
+    """Explicitly synthetic provenance, never saved as acceptance evidence.
+
+    Retain the full historical gate structure, rebinding only source-dependent
+    observations needed to exercise the current validators without a product run.
+    """
+
+    def setUp(self):
+        self.temporary = tempfile.TemporaryDirectory(dir=HERE)
+        self.addCleanup(self.temporary.cleanup)
+        self.directory = Path(self.temporary.name)
+        self.manifest = runner.source()
+        self.packet = json.loads((HERE.parent / "18-evidence/results.json").read_text())
+        self.packet.update(source_manifest=self.manifest, runner_sha256=runner.sha(runner.__file__))
+        for gate in self.packet["gates"].values():
+            gate.update(
+                source_sha256=self.manifest["sha256"],
+                source_after_sha256=self.manifest["sha256"],
+                runner_sha256=runner.sha(runner.__file__),
+            )
+            if "inventory" in gate:
+                gate["inventory"].update(
+                    source_sha256=self.manifest["sha256"], source_after_sha256=self.manifest["sha256"]
+                )
+        selected = runner.self_test_ids()
+        gate = self.packet["gates"]["evidence-self-tests"]
+        gate.update(
+            selected_tests=selected,
+            stdout="",
+            stderr="\n".join(f"{identity.rsplit('.', 1)[1]} ({identity}) ... ok" for identity in selected)
+            + f"\nRan {len(selected)} tests in 1.0s\n\nOK\n",
+        )
+        self.output = self.directory / "packet.json"
+        self.handoff = json.loads((HERE.parent / "19-evidence/handoff.json").read_text())
+        self.handoff.update(source_sha256=self.manifest["sha256"], runner_sha256=runner.sha(runner.__file__))
+        # Pending dispositions exercise structural validity without inventing reviews.
+        for report in self.handoff["reports"].values():
+            report["status"] = "pending"
+        findings = {}
+        for gap, reviews in runner.GAP_REVIEWS.items():
+            for identity in [gap, *reviews]:
+                findings[identity] = {
+                    "status": "pending",
+                    "threats": ["T-06.4-" + n for n in runner.GAP_THREATS[gap]],
+                    "evidence": [{"gate": "javascript"}],
+                }
+            findings[gap]["review_ids"] = reviews
+        self.handoff["findings"] = findings
+        self.handoff["threats"] = {
+            "T-06.4-" + n: {"status": "pending"}
+            for n in {n for values in runner.GAP_THREATS.values() for n in values} | {"35", "36"}
+        }
+
+    def save(self):
+        runner.write_json(self.output, self.packet)
+        runner.write_json(self.directory / "source-manifest.json", self.manifest)
+        self.handoff["packet"] = {"path": str(self.output.relative_to(runner.ROOT)), "sha256": runner.sha(self.output)}
+        runner.write_json(self.directory / "handoff.json", self.handoff)
+
+    def cli(self, handoff=False):
+        self.save()
+        args = (
+            ["--check-handoff", str(self.directory / "handoff.json")]
+            if handoff
+            else ["--check", "--output", str(self.output)]
+        )
+        return subprocess.run([sys.executable, str(HERE / "run.py"), *args], capture_output=True, text=True)
+
+    def assert_rejected_everywhere(self, pattern):
+        with self.assertRaisesRegex(ValueError, pattern):
+            runner.validate(self.packet, self.manifest)
+        self.save()
+        with self.assertRaisesRegex(ValueError, pattern):
+            runner.validate_handoff(self.handoff)
+        for handoff in (False, True):
+            with self.subTest(handoff=handoff):
+                result = self.cli(handoff)
+                self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+                self.assertIn("MATRIX_REJECTED", result.stderr)
+                self.assertRegex(result.stderr, pattern)
+                self.assertNotIn("MATRIX_OK", result.stdout)
+
+
+class CheckerControlEvidence(CompletePacketFixture, unittest.TestCase):
+    def test_complete_packet_cli_and_pending_handoff_positive(self):
+        runner.validate(self.packet, self.manifest)
+        result = self.cli()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("PHASE64_MATRIX_OK", result.stdout)
+        result = self.cli(handoff=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            json.loads(result.stdout), {"structurally_valid": True, "ready": False, "disposition": "not-ready"}
+        )
+
+    def test_missing_detailed_inventory_rejects_cli_aggregate_and_handoff(self):
+        self.packet.pop("checker_control_evidence")
+        self.assert_rejected_everywhere("Checker control evidence inventory")
+
+    def test_contradictory_success_outcomes_reject_everywhere(self):
+        for outcome in self.packet["checker_control_evidence"].values():
+            outcome.update(returncode=0, stdout="PHASE64_MATRIX_OK", stderr="")
+        self.assert_rejected_everywhere("Checker control exit")
+
+    def test_malformed_outcomes_are_not_rejections(self):
+        original = copy.deepcopy(self.packet)
+        cases = [
+            ("returncode", True, "exit"),
+            ("returncode", -9, "exit"),
+            ("returncode", 127, "exit"),
+            ("returncode", "1", "exit"),
+            ("stdout", "PHASE64_MATRIX_OK", "diagnostic"),
+            ("stderr", "", "diagnostic"),
+            ("stderr", "MATRIX_REJECTED: Missing/stale source manifest\n", "diagnostic"),
+            ("stderr", "Traceback: setup failed\n", "diagnostic"),
+        ]
+        for key, value, pattern in cases:
+            with self.subTest(key=key, value=value):
+                self.packet = copy.deepcopy(original)
+                self.packet["checker_control_evidence"]["exit-code"][key] = value
+                with self.assertRaisesRegex(ValueError, "Checker control " + pattern):
+                    runner.validate(self.packet, self.manifest)
+
+    def test_command_identity_normalizes_only_transport_directory(self):
+        original = copy.deepcopy(self.packet)
+        for index, value in (
+            (0, "/bin/true"),
+            (1, "/tmp/run.py"),
+            (2, "--run"),
+            (3, "--only"),
+            (4, "/tmp/other.json"),
+            (4, "exit-code.json"),
+        ):
+            with self.subTest(index=index, value=value):
+                self.packet = copy.deepcopy(original)
+                self.packet["checker_control_evidence"]["exit-code"]["command"][index] = value
+                with self.assertRaisesRegex(ValueError, "Checker control command"):
+                    runner.validate(self.packet, self.manifest)
+
+    def test_exact_summary_and_detail_inventory(self):
+        original = copy.deepcopy(self.packet)
+        for key in ("checker_controls", "checker_control_evidence"):
+            for extra in (False, True):
+                with self.subTest(key=key, extra=extra):
+                    self.packet = copy.deepcopy(original)
+                    if extra:
+                        self.packet[key]["invented"] = copy.deepcopy(self.packet[key]["exit-code"])
+                    else:
+                        self.packet[key].pop("exit-code")
+                    with self.assertRaisesRegex(ValueError, "Checker control.*inventory"):
+                        runner.validate(self.packet, self.manifest)
+
+    def test_duplicate_keys_reject_at_both_cli_entry_points(self):
+        self.save()
+        text = self.output.read_text()
+        self.output.write_text(text.replace('"schema": 2', '"schema": 2, "schema": 2', 1))
+        self.handoff["packet"]["sha256"] = runner.sha(self.output)
+        handoff = self.directory / "handoff.json"
+        runner.write_json(handoff, self.handoff)
+        for args in (["--check", "--output", str(self.output)], ["--check-handoff", str(handoff)]):
+            result = subprocess.run([sys.executable, str(HERE / "run.py"), *args], capture_output=True, text=True)
+            self.assertEqual(result.returncode, 1, result.stdout)
+            self.assertIn("MATRIX_REJECTED: Duplicate JSON key: schema", result.stderr)
+
+
 class HandoffEvidence(unittest.TestCase):
     def setUp(self):
         # Synthetic unit fixture, never a claimed acceptance packet. Full-matrix

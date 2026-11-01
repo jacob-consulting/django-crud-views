@@ -21,6 +21,7 @@ import sys
 import tempfile
 import time
 import xml.etree.ElementTree as ET
+from collections import Counter
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
@@ -54,7 +55,7 @@ FOCUSED = [
     )
 ]
 ROUTES = ("focused", "enabled-full", "disabled-full", "missing-runtime")
-QUALITY = ("javascript", "strict-docs", "ruff-check", "ruff-format")
+QUALITY = ("javascript", "javascript-integration", "strict-docs", "ruff-check", "ruff-format", "evidence-self-tests")
 BROWSERS = ("conditional-browser", "modal-browser")
 CORRUPTIONS = (
     "exit-code",
@@ -69,6 +70,19 @@ CORRUPTIONS = (
     "disabled-opt-in",
     "disabled-node-absence",
     "negative-control-setup-error",
+    "js-filtered-command",
+    "js-wrong-executable",
+    "js-missing-file",
+    "js-duplicate-file",
+    "js-missing-case",
+    "js-duplicate-case",
+    "js-failed-case",
+    "js-skipped-case",
+    "js-false-counts",
+    "integration-missing",
+    "docs-non-strict",
+    "ruff-wrong-subcommand",
+    "ruff-format-missing-check",
 )
 RUNTIME_MANIFEST = ".planning/phases/06-form-button-leaf/06-JS-RUNTIME.json"
 BASE = "74dcd53ad425d7a97a8a1249a41e23092723edfc"
@@ -93,6 +107,10 @@ def source():
         "package.json",
         "package-lock.json",
         "vitest.config.js",
+        "vitest.integration.config.js",
+        ".github/workflows/js.yml",
+        str(HERE.relative_to(ROOT) / "run.py"),
+        str(HERE.relative_to(ROOT) / "test_runner.py"),
         "mkdocs.yml",
         RUNTIME_MANIFEST,
         ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/17-evidence/server.py",
@@ -129,7 +147,12 @@ def node_path():
 
 def touched_python():
     paths = git("diff", "--name-only", BASE, "--", "src", "tests", "examples").splitlines()
-    return [p for p in paths if p.endswith(".py")] + [str(HERE.relative_to(ROOT) / "run.py")]
+    return sorted(
+        set(
+            [p for p in paths if p.endswith(".py")]
+            + [str(HERE.relative_to(ROOT) / n) for n in ("run.py", "test_runner.py")]
+        )
+    )
 
 
 def expected_ids():
@@ -343,21 +366,149 @@ def browser_gate(name):
         return record
 
 
-def quality_gate(name):
+def expected_quality(name, selection=None, report="<vitest-report>", collection=False):
+    """Only the report filename is a transport slot; every semantic token is fixed."""
+    node = selection["node"]["path"] if selection else node_path()
+    if name in ("javascript", "javascript-integration"):
+        args = [node, "node_modules/vitest/vitest.mjs", "list" if collection else "run"]
+        if name == "javascript-integration":
+            args += ["--config", "vitest.integration.config.js"]
+        return args + (
+            ["--json", "--staticParse=false"]
+            if collection
+            else ["--reporter=default", "--reporter=json", "--outputFile.json", report]
+        )
     commands = {
-        "javascript": [node_path(), "node_modules/vitest/vitest.mjs", "run"],
         "strict-docs": [str(ROOT / ".venv/bin/mkdocs"), "build", "--strict"],
         "ruff-check": [str(ROOT / ".venv/bin/ruff"), "check", *touched_python()],
         "ruff-format": [str(ROOT / ".venv/bin/ruff"), "format", "--check", *touched_python()],
+        "evidence-self-tests": [
+            str(ROOT / SERIES["6.0"]),
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            str(HERE.relative_to(ROOT)),
+            "-p",
+            "test_runner.py",
+            "-v",
+        ],
     }
-    record = command_record(commands[name], dict(os.environ), timeout=300)
+    return commands[name]
+
+
+def quality_gate(name, selection=None):
+    env = dict(os.environ)
+    if name == "javascript-integration":
+        env["CV_FRAGMENT_PYTHON"] = (selection or {}).get("fragment_python", {}).get("path", str(ROOT / SERIES["6.0"]))
+        env["PYTHONPATH"] = f"{ROOT}/src:{ROOT}"
+    with tempfile.TemporaryDirectory(prefix="cv64-quality-") as directory:
+        report = str(Path(directory) / "vitest.json")
+        record = command_record(expected_quality(name, selection, report=report), env, timeout=300)
+        if name in ("javascript", "javascript-integration"):
+            record["vitest"] = json.loads(Path(report).read_text()) if Path(report).exists() else {}
+            record["inventory"] = command_record(expected_quality(name, selection, collection=True), env, timeout=300)
+            record["counts"] = vitest_counts(record["vitest"])
+        if name == "evidence-self-tests":
+            record["selected_tests"] = self_test_ids()
     record["id"] = name
-    if name == "javascript":
-        # The human reporter is kept verbatim, including individual files and totals.
-        plain = re.sub(r"\x1b\[[0-9;]*m", "", record["stdout"])
-        match = re.search(r"Tests\s+(\d+) passed\s*\((\d+)\)", plain)
-        record["counts"] = {"passed": int(match[1]), "collected": int(match[2])} if match else {}
+    record["selection"] = selection or {"node": {"path": node_path()}}
     return record
+
+
+def vitest_counts(report):
+    cases = [case for file in report.get("testResults", []) for case in file["assertionResults"]]
+    return {
+        "passed": sum(c["status"] == "passed" for c in cases),
+        "collected": len(cases),
+        "files": len(report.get("testResults", [])),
+    }
+
+
+def self_test_ids():
+    import ast
+
+    tree = ast.parse((HERE / "test_runner.py").read_text())
+    return sorted(
+        f"test_runner.{cls.name}.{method.name}"
+        for cls in tree.body
+        if isinstance(cls, ast.ClassDef)
+        for method in cls.body
+        if isinstance(method, ast.FunctionDef) and method.name.startswith("test_")
+    )
+
+
+def normalized_js_command(command):
+    args = list(command)
+    need(
+        len(args) >= 2
+        and args[-2] == "--outputFile.json"
+        and isinstance(args[-1], str)
+        and Path(args[-1]).is_absolute()
+        and Path(args[-1]).name == "vitest.json",
+        "JS command: invalid reporter transport",
+    )
+    args[-1] = "<vitest-report>"
+    return args
+
+
+def validate_quality(r, manifest):
+    label = r["id"]
+    selection = r.get("selection")
+    command = normalized_js_command(r["command"]) if label in ("javascript", "javascript-integration") else r["command"]
+    need(command == expected_quality(label, selection), f"{label}: wrong quality command")
+    need(r.get("runner_sha256") == sha(__file__), f"{label}: runner source changed")
+    if label == "evidence-self-tests":
+        selected = self_test_ids()
+        text = r["stdout"] + r["stderr"]
+        observed = re.findall(r"^(test_\w+) \((test_runner\.\w+\.test_\w+)\) \.\.\. ok$", text, re.M)
+        need(
+            r.get("selected_tests") == selected
+            and sorted(identity for _, identity in observed) == selected
+            and f"Ran {len(selected)} tests" in text
+            and text.rstrip().endswith("OK"),
+            "Self-tests missing/failed/skipped",
+        )
+    if label not in ("javascript", "javascript-integration"):
+        return
+    inventory = r.get("inventory", {})
+    need(
+        inventory.get("command") == expected_quality(label, selection, collection=True), "JS inventory command changed"
+    )
+    need(
+        inventory.get("source_sha256") == inventory.get("source_after_sha256") == manifest["sha256"]
+        and inventory.get("process_completed") is True
+        and inventory.get("returncode") == 0
+        and not inventory.get("timeout"),
+        "JS inventory stale/failed",
+    )
+    collected = json.loads(inventory.get("stdout", ""))
+    expected = [(str(Path(c["file"]).resolve().relative_to(ROOT)), c["name"]) for c in collected]
+    # Native it.each cases can deliberately share a display name. Preserve their
+    # independent collection multiplicity; any additional copy is a duplicate.
+    need(expected, "JS inventory empty")
+    report = r.get("vitest", {})
+    files, cases = [], []
+    for file in report.get("testResults", []):
+        path = str(Path(file["name"]).resolve().relative_to(ROOT))
+        files.append(path)
+        need(file.get("status") == "passed" and not file.get("message"), f"JS failed file: {path}")
+        for case in file.get("assertionResults", []):
+            need(case.get("status") == "passed" and not case.get("failureMessages"), "JS failed/skipped required case")
+            cases.append((path, " > ".join([*case["ancestorTitles"], case["title"]])))
+    need(len(files) == len(set(files)) and set(files) == {f for f, _ in expected}, "JS missing/duplicate file")
+    need(Counter(cases) == Counter(expected), "JS missing/duplicate case selection")
+    counts = vitest_counts(report)
+    need(r.get("counts") == counts and counts["passed"] == counts["collected"] > 0, "JS inconsistent counts")
+    need(
+        report.get("success") is True
+        and report.get("numTotalTests") == report.get("numPassedTests") == len(cases)
+        and report.get("numFailedTests") == report.get("numPendingTests") == report.get("numTodoTests") == 0,
+        "JS summary disagrees with case outcomes",
+    )
+    plain = re.sub(r"\x1b\[[0-9;]*m", "", r["stdout"])
+    match = re.search(r"Tests\s+(\d+) passed\s*\((\d+)\)", plain)
+    need(match and int(match[1]) == int(match[2]) == len(cases), "JS console/count mismatch")
 
 
 def validate_gate(record, manifest):
@@ -375,14 +526,8 @@ def validate_gate(record, manifest):
         validate_python(record)
     else:
         need(record.get("returncode") == 0, f"{label}: command failed")
-        if label in ("ruff-check", "ruff-format"):
-            need(record.get("runner_sha256") == sha(__file__), f"{label}: runner source changed since lint")
-            need(record["command"][0] == str(ROOT / ".venv/bin/ruff"), f"{label}: wrong lint executable")
-            offset = 2 if label == "ruff-check" else 3
-            need(record["command"][offset:] == touched_python(), f"{label}: missing touched Python files")
-        if label == "javascript":
-            counts = record.get("counts", {})
-            need(counts.get("passed", 0) > 0 and counts["passed"] == counts.get("collected"), "JS empty/partial")
+        if label in QUALITY:
+            validate_quality(record, manifest)
         if label in BROWSERS:
             validate_browser(record)
 
@@ -630,15 +775,18 @@ def validate_browser(r):
                 need(sha(ROOT / shot["path"]) == shot["sha256"], "Stale modal screenshot")
 
 
-def validate(data, manifest, require_controls=True):
-    need(data.get("schema") == 1 and data.get("completed") is True, "Incomplete matrix")
+def validate(data, manifest, require_controls=True, only=None):
+    need(data.get("schema") == 2, "Unsupported successor schema")
+    need(data.get("completed") is (only is None) and data.get("only") == only, "Incomplete matrix / scoped packet")
     need(data.get("runner_sha256") == sha(__file__), "Evidence checker source changed since capture")
     need(data.get("source_manifest") == manifest, "Missing/stale source manifest")
     need(data.get("required_gate_ids") == expected_ids(), "Corrupted required-case list")
-    need(sorted(data.get("gates", {})) == sorted(expected_ids()), "Missing/extra matrix gates")
+    need(sorted(data.get("gates", {})) == sorted([only] if only else expected_ids()), "Missing/extra matrix gates")
     for label, gate in data["gates"].items():
         need(gate.get("id") == label, f"{label}: contradictory gate identity")
         validate_gate(gate, manifest)
+    if only:
+        return
     for series in SERIES:
         focus = set(data["gates"][f"django{series}-focused"]["selected"])
         enabled = set(data["gates"][f"django{series}-enabled-full"]["selected"])
@@ -662,7 +810,37 @@ def validate(data, manifest, require_controls=True):
 def corrupt(data, kind):
     first = data["gates"]["django4.2-focused"]
     conditional = data["gates"]["conditional-browser"]["browser"]
-    if kind == "exit-code":
+    js = data["gates"]["javascript"]
+    if kind == "js-filtered-command":
+        js["command"].insert(3, "-t=renders")
+        js["counts"] = {"passed": 1, "collected": 1, "files": 1}
+    elif kind == "js-wrong-executable":
+        js["command"][0] = "/bin/true"
+    elif kind == "js-missing-file":
+        js["vitest"]["testResults"].pop()
+    elif kind == "js-duplicate-file":
+        js["vitest"]["testResults"].append(copy.deepcopy(js["vitest"]["testResults"][0]))
+    elif kind == "js-missing-case":
+        js["vitest"]["testResults"][0]["assertionResults"].pop()
+    elif kind == "js-duplicate-case":
+        js["vitest"]["testResults"][0]["assertionResults"].append(
+            copy.deepcopy(js["vitest"]["testResults"][0]["assertionResults"][0])
+        )
+    elif kind in ("js-failed-case", "js-skipped-case"):
+        js["vitest"]["testResults"][0]["assertionResults"][0]["status"] = (
+            "failed" if kind == "js-failed-case" else "pending"
+        )
+    elif kind == "js-false-counts":
+        js["counts"]["passed"] = 1
+    elif kind == "integration-missing":
+        data["gates"].pop("javascript-integration")
+    elif kind == "docs-non-strict":
+        data["gates"]["strict-docs"]["command"].remove("--strict")
+    elif kind == "ruff-wrong-subcommand":
+        data["gates"]["ruff-check"]["command"][1] = "format"
+    elif kind == "ruff-format-missing-check":
+        data["gates"]["ruff-format"]["command"].remove("--check")
+    elif kind == "exit-code":
         first["returncode"] = 9
     elif kind == "required-case-list":
         data["required_gate_ids"].pop()
@@ -705,21 +883,25 @@ def corrupt(data, kind):
         control["reports"] = [p for p in control["reports"] if p["when"] != "call"]
 
 
-def check(output, controls=True):
+def check(output, controls=True, only=None):
     manifest = source()
     data = json.loads(output.read_text())
-    validate(data, manifest, require_controls=controls)
-    need(json.loads((HERE / "source-manifest.json").read_text()) == manifest, "Sidecar source manifest stale")
-    print(f"PHASE64_MATRIX_OK {len(data['gates'])} gates source={manifest['sha256']}", flush=True)
+    validate(data, manifest, require_controls=controls, only=only)
+    need(json.loads((output.parent / "source-manifest.json").read_text()) == manifest, "Sidecar source manifest stale")
+    print(
+        f"PHASE64_{'SCOPED' if only else 'MATRIX'}_OK {len(data['gates'])} gates source={manifest['sha256']}",
+        flush=True,
+    )
 
 
-def run(output):
+def run(output, only=None):
     manifest = source()
     data = json.loads(output.read_text()) if output.exists() else {}
     if data.get("source_manifest") != manifest:
         need(not data, "Source changed: preserve old results elsewhere before beginning a new evidence capture")
     data.update(
-        schema=1,
+        schema=2,
+        only=only,
         source_manifest=manifest,
         required_gate_ids=expected_ids(),
         completed=False,
@@ -740,7 +922,11 @@ def run(output):
                 gate["junit_normalization"] = (
                     "Actual module path plus nested class names; outcomes/properties unchanged"
                 )
-    write_json(HERE / "source-manifest.json", manifest)
+    need(
+        not data["gates"] or set(data["gates"]) <= set([only] if only else expected_ids()),
+        "Cannot mix scoped and full captures",
+    )
+    write_json(output.parent / "source-manifest.json", manifest)
 
     def reusable(label):
         if label not in data["gates"]:
@@ -762,6 +948,8 @@ def run(output):
     for route in ("focused", "missing-runtime"):
         for series in SERIES:
             label = f"django{series}-{route}"
+            if only and only != label:
+                continue
             if not reusable(label):
                 print(f"START {label}", flush=True)
                 save(python_gate(series, route))
@@ -772,6 +960,8 @@ def run(output):
         for route in ("enabled-full", "disabled-full"):
             for series in SERIES:
                 label = f"django{series}-{route}"
+                if only and only != label:
+                    continue
                 if not reusable(label):
                     print(f"QUEUE {label}", flush=True)
                     pending[pool.submit(python_gate, series, route)] = label
@@ -786,21 +976,29 @@ def run(output):
                 print(f"FAILED {failures[-1]}", flush=True)
         need(not failures, "; ".join(failures))
     for label in QUALITY:
+        if only and only != label:
+            continue
         if not reusable(label):
             print(f"START {label}", flush=True)
             save(quality_gate(label))
     # A failed modal packet does not invalidate a completed conditional packet.
     # If conditional must run anew, modal must follow it to prove cleanup order.
-    if not reusable(BROWSERS[0]):
+    if only in (None, BROWSERS[0]) and not reusable(BROWSERS[0]):
         print(f"START {BROWSERS[0]}", flush=True)
         save(browser_gate(BROWSERS[0]))
-    modal_reuse = reusable(BROWSERS[1])
-    if not modal_reuse or data["gates"][BROWSERS[1]]["started"] < data["gates"][BROWSERS[0]]["finished"]:
+    modal_reuse = reusable(BROWSERS[1]) if only in (None, BROWSERS[1]) else True
+    if only in (None, BROWSERS[1]) and (
+        not modal_reuse
+        or (only is None and data["gates"][BROWSERS[1]]["started"] < data["gates"][BROWSERS[0]]["finished"])
+    ):
         print(f"START {BROWSERS[1]}", flush=True)
         save(browser_gate(BROWSERS[1]))
-    data.update(completed=True, finished=now())
-    validate(data, manifest, require_controls=False)
+    data.update(completed=only is None, finished=now())
+    validate(data, manifest, require_controls=False, only=only)
     write_json(output, data)
+    if only:
+        check(output, only=only)
+        return
     controls = {}
     control_evidence = {}
     # Actual --check subprocesses read temporary corrupted copies; real evidence is untouched.
@@ -811,6 +1009,7 @@ def run(output):
             corrupt(altered, kind)
             path = Path(directory) / f"{kind}.json"
             write_json(path, altered)
+            write_json(path.parent / "source-manifest.json", manifest)
             result = subprocess.run(
                 [sys.executable, __file__, "--check", "--output", str(path)],
                 cwd=ROOT,
@@ -839,12 +1038,13 @@ def main():
     mode.add_argument("--run", action="store_true")
     mode.add_argument("--check", action="store_true")
     parser.add_argument("--output", type=Path, default=HERE / "results.json")
+    parser.add_argument("--only", choices=expected_ids())
     args = parser.parse_args()
     try:
         if args.run:
-            run(args.output.resolve())
+            run(args.output.resolve(), only=args.only)
         else:
-            check(args.output.resolve())
+            check(args.output.resolve(), only=args.only)
     except (ValueError, KeyError, TypeError, OSError, ET.ParseError, subprocess.SubprocessError) as error:
         print(f"MATRIX_REJECTED: {error}", file=sys.stderr)
         return 1

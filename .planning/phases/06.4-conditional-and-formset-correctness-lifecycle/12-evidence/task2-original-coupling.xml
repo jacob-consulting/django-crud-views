@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="3" failures="1" errors="0" time="6.396812211">
+    <testsuite name="tests/js/runtime-contract.test.js" timestamp="2026-11-01T14:59:44.184Z" hostname="weaver-dev" tests="3" failures="1" errors="0" skipped="2" time="6.396812211">
+        <testcase classname="tests/js/runtime-contract.test.js" name="test runtime boundary &gt; runs every other ordinary JS file in a checkout with only Node available" time="6.383492251">
+            <failure message="AssertionError: expected Error: spawnSync .nox/crispy_floor-3-12-d… { …(5) } to be undefined
+    at /tmp/cv-node-only-bWg3Dx/tests/js/formset.test.js:107:34
+    at file:///home/alex/projects/alex/django-crud-views/node_modules/vitest/dist/chunks/run.BTlFXlnv.js:1628:35
+    at file:///home/alex/projects/alex/django-crud-views/node_modules/vitest/dist/chunks/run.BTlFXlnv.js:2783:26
+    at file:///home/alex/projects/alex/django-crud-views/node_modules/vitest/dist/chunks/run.BTlFXlnv.js:3321:20
+    at new Promise (&lt;anonymous&gt;)
+    at runWithCancel (file:///home/alex/projects/alex/django-crud-views/node_modules/vitest/dist/chunks/run.BTlFXlnv.js:3316:10)
+    at file:///home/alex/projects/alex/django-crud-views/node_modules/vitest/dist/chunks/run.BTlFXlnv.js:3301:20
+    at new Promise (&lt;anonymous&gt;)
+    at runWithTimeout (file:///home/alex/projects/alex/django-crud-views/node_modules/vitest/dist/chunks/run.BTlFXlnv.js:3259:10)
+    at file:///home/alex/projects/alex/django-crud-views/node_modules/vitest/dist/chunks/run.BTlFXlnv.js:3882:64: expected 1 to be +0 // Object.is equality" type="AssertionError">
+AssertionError: AssertionError: expected Error: spawnSync .nox/crispy_floor-3-12-d… { …(5) } to be undefined
+    at /tmp/cv-node-only-bWg3Dx/tests/js/formset.test.js:107:34
+    at file:///home/alex/projects/alex/django-crud-views/node_modules/vitest/dist/chunks/run.BTlFXlnv.js:1628:35
+    at file:///home/alex/projects/alex/django-crud-views/node_modules/vitest/dist/chunks/run.BTlFXlnv.js:2783:26
+    at file:///home/alex/projects/alex/django-crud-views/node_modules/vitest/dist/chunks/run.BTlFXlnv.js:3321:20
+    at new Promise (&lt;anonymous&gt;)
+    at runWithCancel (file:///home/alex/projects/alex/django-crud-views/node_modules/vitest/dist/chunks/run.BTlFXlnv.js:3316:10)
+    at file:///home/alex/projects/alex/django-crud-views/node_modules/vitest/dist/chunks/run.BTlFXlnv.js:3301:20
+    at new Promise (&lt;anonymous&gt;)
+    at runWithTimeout (file:///home/alex/projects/alex/django-crud-views/node_modules/vitest/dist/chunks/run.BTlFXlnv.js:3259:10)
+    at file:///home/alex/projects/alex/django-crud-views/node_modules/vitest/dist/chunks/run.BTlFXlnv.js:3882:64: expected 1 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ ../../../../../tmp/cv-node-only-bWg3Dx/tests/js/formset.test.js:107:34
+ ❯ tests/js/runtime-contract.test.js:72:41
+            </failure>
+        </testcase>
+        <testcase classname="tests/js/runtime-contract.test.js" name="test runtime boundary &gt; fails the required integration lane for a missing selected Python" time="0">
+            <skipped/>
+        </testcase>
+        <testcase classname="tests/js/runtime-contract.test.js" name="test runtime boundary &gt; fails the required integration lane for a invalid selected Python" time="0">
+            <skipped/>
+        </testcase>
+    </testsuite>
+</testsuites>

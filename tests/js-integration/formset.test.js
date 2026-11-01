@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import jquery from "jquery";
 import fs from "node:fs";
 import os from "node:os";
@@ -95,10 +95,8 @@ function selectedPython() {
 }
 
 describe("real Django fragment insertion", () => {
-    let python;
-    beforeAll(() => { python = selectedPython(); });
-
     it("inserts outer and second-sibling fragments and POSTs their real FormData", () => {
+        const python = selectedPython();
         const require = createRequire(import.meta.url);
         const directory = fs.mkdtempSync(path.join(os.tmpdir(), "cv-fragment-"));
         const driver = path.join(directory, "driver.cjs");

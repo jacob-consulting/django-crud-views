@@ -916,6 +916,15 @@ def validate_python(r):
             need(any(family in c["nodeid"] and c["status"] == "passed" for c in cases), f"{label}: missing {family}")
 
 
+def _is_positive_finite_dimension(value):
+    if type(value) not in (int, float):
+        return False
+    try:
+        return math.isfinite(value) and value > 0
+    except OverflowError:
+        return False
+
+
 def validate_conditional_captures(case):
     """Recheck present artifacts; historical browser exit codes confer no authority.
 
@@ -983,9 +992,7 @@ def validate_conditional_captures(case):
                 and g["content"].strip() not in ("", "none", "normal", '""', "''")
                 and isinstance(g.get("family"), str)
                 and g["family"].strip()
-                and all(
-                    type(g.get(k)) in (int, float) and math.isfinite(g[k]) and g[k] > 0 for k in ("width", "height")
-                )
+                and all(_is_positive_finite_dimension(g.get(k)) for k in ("width", "height"))
                 for g in icons["glyphs"]
             ),
             f"Conditional capture icon observations invalid: {identity}",

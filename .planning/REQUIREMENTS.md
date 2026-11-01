@@ -125,6 +125,23 @@ policy, IN-04 as a documented unsupported slug-fragment boundary, and IN-05 is f
 The revised analysis schedules conditional/formset work in proposed 6.4, presentation cleanup in proposed 6.5,
 and Tabler adoption seams in proposed 6.6. These proposals are not inserted by this task; Phase 7 stays last.
 
+### Conditional and formset correctness/lifecycle (Phase 6.4)
+
+Source: A1–A7 and the AUTH-02/A19 handoff; locked decisions D-01–D-19 in
+`.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-CONTEXT.md`.
+All items remain pending implementation/verification; A8, A25, jQuery removal and broader Guardian #286 are excluded.
+
+- [ ] **COND-01**: Each group uses its exact bound checkbox name in its owning form, across prefixes, sibling/nested rows and injected content; ambiguous markup is diagnosed locally without changing that group's own state or bypassing a bound ancestor.
+- [ ] **COND-02**: Immediate native visibility composes every inactive ancestor with independently changed disabled reasons, includes native action buttons, preserves unsaved values and management controls, and recovers stranded focus without disrupting accepted modal focus.
+- [ ] **COND-03**: Native reset resynchronizes only its owning form after default reset, respects cancellation including later listeners, and preserves dynamic rows and management POST/re-render behavior.
+- [ ] **COND-04**: Inactive supported fields persist field-aware empty values including defaulted/omitted scalar fields, Boolean, FileField/ImageField and M2M; explicit values retain native meaning and server-disabled fields retain trusted values.
+- [ ] **COND-05**: Unsupported clearing shapes require explicit values and produce descriptive group/field configuration errors at static checks where detectable and at runtime otherwise; inherited form/model invariants remain authoritative.
+- [ ] **FSET-01**: All accepted active formset classes reject nonblank edit-only extras and missing/malformed/unauthorized existing-row IDs before any main/sibling/nested save, with generic identity errors and valid ordinary edits/new rows retained.
+- [ ] **FSET-02**: Documented root initializers automatically and repeatedly initialize page, modal/422 and added/nested content, include roots and late scripts/toggles, scope controllers per form, and preserve add/delete/order/submit/widget and event contracts.
+- [ ] **FSET-03**: A19 non-first sibling and deeper child fragments preserve authorized request coordinates, rendered prefixes, management totals and successful POST/database round trips; retain AUTH-02 ancestry and access gates.
+- [ ] **LIFE-01**: Real HTTP/browser evidence covers stock and minimal non-Bootstrap crispy/group/formset rendering, keyboard/focus, two forms, native reset, dynamic rows, 422 replacement, management payloads, and JS-off/tampered validation.
+- [ ] **LIFE-02**: Publish tested DOM, initializer, template projection, clearing and validation contracts with paired Breaking/migration guidance and Phase 7 inventory; preserve authorization, parent denial, restricted querysets, rollback, skip/purge, form-leaf, escaping, label and cancel contracts.
+
 ### Stability policy (plan 4)
 
 - [ ] **STAB-01**: `docs/development/stability.md` lists the theme surface (icons, buttons, alerts, JavaScript adapters/events/DOM contract, theme hooks, leaf templates) with explicit names, no wildcards
@@ -215,6 +232,16 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DEL-05 | Phase 6.3 | Complete; authorization, partial notices and repaired focus verified |
 | DEL-06 | Phase 6.3 | Complete; recorded three-series evidence, migrations, repairs and scoped human acceptance verified |
 | GUA-01 | Phase 6.3 | Complete within explicit bounded identity scope; IN-02/03 and CT-01 fixed; broader compatibility unverified in issue #286 |
+| COND-01 | Phase 6.4 | Planned; pending execution/verification |
+| COND-02 | Phase 6.4 | Planned; pending execution/verification |
+| COND-03 | Phase 6.4 | Planned; pending execution/verification |
+| COND-04 | Phase 6.4 | Planned; pending execution/verification |
+| COND-05 | Phase 6.4 | Planned; pending execution/verification |
+| FSET-01 | Phase 6.4 | Planned; pending execution/verification |
+| FSET-02 | Phase 6.4 | Planned; pending execution/verification |
+| FSET-03 | Phase 6.4 | Planned; pending execution/verification |
+| LIFE-01 | Phase 6.4 | Planned; pending execution/verification |
+| LIFE-02 | Phase 6.4 | Planned; pending execution/verification |
 | STAB-01 | Phase 7 (plan 4) | Pending |
 | STAB-02 | Phase 7 (plan 4) | Pending |
 | STAB-03 | Phase 7 (plan 4) | Pending |
@@ -224,8 +251,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 **Coverage:**
 
-- v1 requirements: 55 total
-- Mapped to phases: 55
+- v1 requirements: 65 total
+- Mapped to phases: 65
 - Unmapped: 0 ✓
 
 ---

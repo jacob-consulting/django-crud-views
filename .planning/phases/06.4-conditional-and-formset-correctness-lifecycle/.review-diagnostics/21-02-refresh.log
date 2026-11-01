@@ -1,0 +1,40 @@
+START fresh evidence-self-tests
+PASS fresh evidence-self-tests 592.284s
+START fresh ruff-check
+PASS fresh ruff-check 0.052s
+START fresh ruff-format
+PASS fresh ruff-format 0.048s
+REJECTED corruption exit-code
+REJECTED corruption required-case-list
+REJECTED corruption raw-balance-assertion
+REJECTED corruption inline-clear-assertion
+REJECTED corruption source-hash
+REJECTED corruption tracer-absent
+REJECTED corruption tracer-skipped
+REJECTED corruption tracer-failed
+REJECTED corruption tracer-zero-selected
+REJECTED corruption disabled-opt-in
+REJECTED corruption disabled-node-absence
+REJECTED corruption negative-control-setup-error
+REJECTED corruption js-filtered-command
+REJECTED corruption js-wrong-executable
+REJECTED corruption js-missing-file
+REJECTED corruption js-duplicate-file
+REJECTED corruption js-missing-case
+REJECTED corruption js-duplicate-case
+REJECTED corruption js-failed-case
+REJECTED corruption js-skipped-case
+REJECTED corruption js-false-counts
+REJECTED corruption integration-missing
+REJECTED corruption docs-non-strict
+REJECTED corruption ruff-wrong-subcommand
+REJECTED corruption ruff-format-missing-check
+REJECTED corruption capture-missing
+REJECTED corruption capture-digest
+REJECTED corruption capture-observation
+REJECTED corruption control-missing-evidence
+REJECTED corruption control-missing-summary
+REJECTED corruption control-success-outcome
+REJECTED corruption control-wrong-command
+REJECTED corruption control-wrong-diagnostic
+PHASE64_MATRIX_OK 20 gates source=d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490

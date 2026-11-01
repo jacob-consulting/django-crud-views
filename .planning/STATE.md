@@ -1,20 +1,19 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 7
-current_phase_name: Theme-surface stability policy
+current_phase: "6.4"
+current_phase_name: Conditional and formset correctness/lifecycle
 status: planning
-stopped_at: Phase 06.3 complete, ready to plan Phase 7
-last_updated: "2026-11-01T08:03:45.918Z"
+stopped_at: Phase 6.4 context gathered
+last_updated: "2026-11-01T08:26:34.032Z"
 last_activity: 2026-11-01
-last_activity_desc: Phase 06.3 complete, transitioned to Phase 7
-state_head: 1b9f49a9312a124bd4a3ce87d1e32d61e3122478
+last_activity_desc: Captured Phase 6.4 decisions across all four discussion areas; ready for planning
+state_head: 76ff1a607d4afb3f07a71ef69fb0e4ee033e96e4
 progress:
-  total_phases: 10
+  total_phases: 11
   completed_phases: 9
   total_plans: 56
   completed_plans: 56
-  percent: 90
 milestone_name: milestone
 ---
 
@@ -25,17 +24,17 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-10-30)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 7 — Theme-surface stability policy (requires its spec/maintainer decisions before planning)
+**Current focus:** Phase 6.4 — Conditional and formset correctness/lifecycle (context gathered; ready for planning)
 
 ## Current Position
 
-Phase: 7 — Theme-surface stability policy
+Phase: 6.4 — Conditional and formset correctness/lifecycle
 Plan: Not started
 Status: Ready to plan
-Last activity: 2026-11-01 — Phase 06.3 complete, transitioned to Phase 7
+Last activity: 2026-11-01 — Captured Phase 6.4 decisions across all four discussion areas; ready for planning
 
-Progress: [█████████░] 90%
-Next: Define/specify Phase 7 before planning. Phase 06.3 is complete; broader Guardian identity compatibility remains unverified in issue #286. No Phase 7 work has started.
+Progress: [████████░░] 82%
+Next: $gsd-plan-phase 6.4 — use 06.4-CONTEXT.md for locked decisions and the A19 handoff. Phase 7 waits for 6.4; proposed 6.5/6.6 remain unscheduled.
 
 ### Phase 06.3 completed — 2026-11-01
 
@@ -352,6 +351,7 @@ None yet.
 - Phase 6.1 inserted after Phase 6: Cancel form button as a link (#275); complete before Phase 7 freezes the theme surface (URGENT)
 - Phase 6.2 inserted after Phase 6.1: Request authorization and write integrity (analysis B1–B7); complete before Phase 7 freezes the theme surface (URGENT)
 - Phase 06.3 inserted after Phase 6: Delete protection and write-boundary integrity — issue #282 (URGENT)
+- Phase 6.4 inserted after Phase 6.3: Conditional and formset correctness/lifecycle (analysis A1–A7); complete before Phase 7 freezes the theme surface (URGENT)
 
 ## Deferred Items
 
@@ -361,6 +361,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-31T00:49:42.341013+00:00
-Stopped at: Phase 06.3 complete, ready to plan Phase 7
-Resume file: None
+Last session: 2026-11-01T08:26:33.151Z
+Stopped at: Phase 6.4 context gathered
+Resume file: .planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-CONTEXT.md

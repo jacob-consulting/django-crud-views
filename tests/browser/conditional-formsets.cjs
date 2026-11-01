@@ -38,7 +38,7 @@ function filesIn(dir) {
 function hashes() {
     const files = [runtimeManifest, 'package-lock.json', 'tests/browser/conditional-formsets.cjs',
         'tests/browser/conditional_formsets_server.py', 'tests/test1/app/models.py', 'tests/test1/conftest.py',
-        'tests/test1/test_fragment_authorization.py',
+        'tests/test1/test_fragment_authorization.py', 'tests/test1/app/templates/app/base.html',
         ...filesIn('tests/browser/templates/conditional_formsets'), ...filesIn('src/crud_views/lib/conditional'),
         ...filesIn('src/crud_views/lib/formsets'), ...filesIn('src/crud_views/templates/crud_views/formsets'),
         ...filesIn('src/crud_views/templates/crud_views/conditional'),
@@ -58,6 +58,7 @@ const REQUIRED = {
     'tampered-post': ['edit-only-extra', 'missing-id', 'foreign-id', 'filtered-id', 'invalid-zero-saves', 'generic-policy-errors', 'js-disabled-direct-post'],
     'late-init': ['fragment-element-roots', 'late-checkbox-retry', 'late-script-ready', 'reinit-single-action'],
     'gap-capability': ['native-delete-presence', 'add-once', 'extra-before-initial', 'stable-initial-delete', 'ordered-post-persisted', 'all-extra-add-order-post', 'reclean-policy-zero-saves', 'host-assets'],
+    'gap-ambiguity': ['bound-off-native-valid', 'ambiguous-retains-state', 'no-arbitrary-checkbox-follow', 'obsolete-listener-detached', 'unique-recovery', 'independent-owner-retained', 'ancestor-owner-retained', 'other-form-unaffected', 'native-reset-focus', 'modal-422-ambiguity-focus', 'modal-reset-focus', 'responsive-containment', 'loaded-rendered-glyphs', 'screenshot-provenance', 'human-review-pending'],
 };
 assert(requested === 'all' || Object.hasOwn(REQUIRED, requested), 'Unknown --case');
 function checkEvidence(file) {
@@ -87,6 +88,15 @@ function validateEvidence(r) {
         assert(c.passed && !c.skipped, `Case failed/skipped: ${c.id}`);
         assert.deepEqual(c.assertions.map(a => a.id).sort(), REQUIRED[c.id].slice().sort(), `Missing/duplicate assertion ${c.id}`);
         assert(c.assertions.every(a => a.passed === true), `False assertion ${c.id}`);
+        if(c.id==='gap-ambiguity') {
+            assert(c.humanReview.H1==='pending'&&c.humanReview.H2==='pending');
+            assert.equal(c.captures.length,c.theme==='stock'?3:0);
+            for(const capture of c.captures) {
+                assert.equal(capture.sha256,digest(capture.path),'Missing/stale screenshot');
+                assert.equal(capture.document.scrollWidth,capture.document.clientWidth,'Document overflow');
+                assert(capture.icons.loaded&&capture.icons.glyphs.length>0);
+            }
+        }
     }
     for (const key of ['nodePath', 'pythonPath', 'playwrightPath', 'chromiumPath', 'node', 'python', 'django', 'playwright', 'chromium']) assert(r.runtime[key], `Missing runtime ${key}`);
     assert(r.command.length && r.revision && r.captured && r.cleanup.reaped, 'Missing provenance/cleanup');
@@ -141,6 +151,7 @@ async function main() {
             const result = {theme:c.theme, id:c.id, assertions:[], requests:[], passed:false}; record.cases.push(result);
             const check = (id, value, detail) => { result.assertions.push({id, passed:Boolean(value), ...(detail === undefined ? {} : {detail})}); assert(value, `${c.theme}:${c.id}: ${id} ${JSON.stringify(detail)}`); };
             const page = await context.newPage(); page.setDefaultTimeout(12000);
+            result.diagnostics=[];page.on('console',message=>{if(message.type()==='warning')result.diagnostics.push(message.text());});
             page.on('pageerror', e => record.pageErrors.push(e.message));
             const before = await (await context.request.get(`${base}/state/`)).json();
             async function state() { return (await context.request.get(`${base}/state/`)).json(); }
@@ -236,10 +247,11 @@ async function runCase({c, page, context, base, before, result, check, load, sta
         let prefix=`books-memos-${c.pk}-0-0-${c.book}-1`;
         const row = index => page.locator(`#editor input[name="${prefix}-${index}-text"]`).locator('xpath=ancestor::div[contains(@class,"cv-formset-row")][1]');
         const presence=await row(1).evaluate(el=>({deleteInputs:el.querySelectorAll('[name$="-DELETE"]').length,deleteButtons:el.querySelectorAll('.cv-form-ctrl-delete').length}));
-        check('native-delete-presence',presence.deleteInputs===0&&presence.deleteButtons===0,presence);
+        presence.initialDeleteInputs=await row(0).locator('input[name$="-DELETE"]').count();
+        check('native-delete-presence',presence.initialDeleteInputs===1&&presence.deleteInputs===0&&presence.deleteButtons===0,presence);
         const eventBefore=await page.evaluate(()=>widgetEvents.length);
         const body=await add(row(1).locator('.cv-form-ctrl-add'));
-        check('add-once',body.rows.length===1&&await page.evaluate(()=>widgetEvents.length)===eventBefore+1);
+        check('add-once',body.rows.length===1&&await page.evaluate(()=>widgetEvents.length)===eventBefore+1&&await row(2).locator('input[name$="-DELETE"]').count()===0);
         await row(1).locator('input[name$="-text"]').fill('Capability first extra');
         await row(2).locator('input[name$="-text"]').fill('Capability second extra');
         await row(1).locator('.cv-form-ctrl-up').click();
@@ -273,6 +285,87 @@ async function runCase({c, page, context, base, before, result, check, load, sta
         check('reclean-policy-zero-saves',invalid.every(r=>r.status===422&&r.generic)&&rejected.events.length===beforeInvalid.events.length,result.reclean);
         const host=await page.evaluate(()=>({viewport:document.querySelector('meta[name="viewport"]')?.content,container:!!document.querySelector('main.container'),icons:!!document.querySelector('link[href*="font-awesome/6.7.2"]')}));
         check('host-assets',host.viewport==='width=device-width, initial-scale=1'&&host.container&&host.icons,host);
+    } else if (c.id === 'gap-ambiguity') {
+        const offState=()=>page.locator('#editor').evaluate(f=>({valid:f.checkValidity(),disabled:f.elements.contact.disabled,
+            hidden:getComputedStyle(f.querySelector('[cv-data-toggle-field="outer"]')).display==='none',
+            contactSent:new FormData(f).has('contact'),management:[...new FormData(f).keys()].some(k=>k.endsWith('-TOTAL_FORMS'))}));
+        await contact.evaluate(el=>{el.required=true;el.value='';});
+        await outer.uncheck();await sync();
+        const off=await offState();
+        check('bound-off-native-valid',off.valid&&off.disabled&&off.hidden&&!off.contactSent&&off.management,off);
+        await page.evaluate(()=>{const f=document.getElementById('editor');window.oldToggle=f.elements.outer;
+            const copy=oldToggle.cloneNode(true);copy.removeAttribute('id');copy.dataset.fixture='duplicate-toggle';f.prepend(copy);cv.initConditional(f);});
+        const ambiguous=await offState();
+        check('ambiguous-retains-state',ambiguous.valid&&ambiguous.disabled&&ambiguous.hidden&&!ambiguous.contactSent,ambiguous);
+        await page.evaluate(()=>{oldToggle.checked=true;oldToggle.dispatchEvent(new Event('change',{bubbles:true}));});await sync();
+        check('no-arbitrary-checkbox-follow',(await offState()).hidden&&result.diagnostics.some(text=>text.includes('ambiguous conditional toggle')));
+        const detached=await page.evaluate(()=>{const f=document.getElementById('editor');f.elements.inner.checked=false;
+            oldToggle.dispatchEvent(new Event('change',{bubbles:true}));
+            const unchanged=f.querySelector('[cv-data-toggle-field="inner"]').style.display!=='none';
+            f.elements.inner.checked=true;oldToggle.remove();cv.initConditional(f);return unchanged;});
+        check('obsolete-listener-detached',detached);
+        await page.locator('#editor input[name="outer"]').check();await sync();
+        check('unique-recovery',!await contact.isDisabled()&&!((await offState()).hidden));
+        await contact.evaluate(el=>{el.disabled=true;});await sync();
+        await page.locator('#editor input[name="outer"]').uncheck();await page.locator('#editor input[name="outer"]').check();await sync();
+        check('independent-owner-retained',await contact.isDisabled());
+        await page.evaluate(()=>{const f=document.getElementById('editor'),copy=f.elements.inner.cloneNode(true);copy.removeAttribute('id');copy.dataset.fixture='duplicate-inner';f.querySelector('[cv-data-toggle-field="outer"]').prepend(copy);cv.initConditional(f);});
+        await page.locator('#editor input[name="outer"]').uncheck();await sync();
+        check('ancestor-owner-retained',await detail.isDisabled()&&(await offState()).hidden);
+        check('other-form-unaffected',await page.locator('#other input[name="outer"]').isChecked()&&!await page.locator('#other input[name="contact"]').isDisabled());
+        await page.locator('#editor [data-fixture="duplicate-inner"]').evaluate(el=>el.remove());
+        await page.locator('#editor .native-reset').focus();await page.keyboard.press('Enter');await sync();
+        check('native-reset-focus',await page.locator('#editor input[name="outer"]').isChecked()&&await contact.isDisabled()&&await page.locator('#editor .native-reset').evaluate(el=>document.activeElement===el));
+        await load(`/harness/${c.theme}/${c.pk}/`);
+        await page.locator('#launch').focus();await page.keyboard.press('Enter');await page.locator('#editor').waitFor();await delay(c.theme==='stock'?400:60);
+        await page.locator('#editor input[name="name"]').fill('');
+        const response=page.waitForResponse(r=>r.request().method()==='POST'&&r.url().includes(c.url));
+        await page.locator('#editor [type="submit"]').first().focus();await page.keyboard.press('Enter');
+        const actual=await response;await actual.finished();await page.waitForFunction(()=>loadedCount===2);await sync();
+        result.requests.push({status:actual.status(),url:actual.url()});
+        const focused=await page.locator('#editor input[name="name"]').evaluate(el=>document.activeElement===el&&!el.disabled&&el.getClientRects().length>0);
+        await page.locator('#editor input[name="contact"]').evaluate(el=>{el.required=true;el.value='';});
+        await page.locator('#editor input[name="outer"]').uncheck();
+        await page.locator('#editor input[name="name"]').focus();
+        await page.evaluate(()=>{const f=document.getElementById('editor'),copy=f.elements.outer.cloneNode(true);copy.removeAttribute('id');copy.dataset.fixture='modal-duplicate';f.prepend(copy);cv.initConditional(f);});
+        const modal=await offState();
+        check('modal-422-ambiguity-focus',actual.status()===422&&focused&&modal.disabled&&modal.hidden&&!modal.contactSent&&await page.locator('#editor input[name="name"]').evaluate(el=>document.activeElement===el),modal);
+        await page.locator('#editor [data-fixture="modal-duplicate"]').evaluate(el=>el.remove());
+        await page.locator('#editor .native-reset').focus();await page.keyboard.press('Enter');await sync();
+        check('modal-reset-focus',await page.locator('#editor input[name="outer"]').isChecked()&&!await page.locator('#editor input[name="contact"]').isDisabled()&&await page.locator('#editor .native-reset').evaluate(el=>document.activeElement===el));
+        result.captures=[];
+        if(c.theme==='stock') {
+            const directory='.planning/ui-reviews/06.4-gap-repair';fs.mkdirSync(directory,{recursive:true});
+            for(const device of [{id:'desktop',width:1440,height:900,isMobile:false,hasTouch:false,deviceScaleFactor:1},
+                {id:'mobile',width:375,height:812,isMobile:true,hasTouch:true,deviceScaleFactor:1},
+                {id:'tablet',width:768,height:1024,isMobile:false,hasTouch:false,deviceScaleFactor:1}]) {
+                const captureContext=await context.browser().newContext({ignoreHTTPSErrors:true,viewport:{width:device.width,height:device.height},
+                    isMobile:device.isMobile,hasTouch:device.hasTouch,deviceScaleFactor:device.deviceScaleFactor});
+                try {
+                    await captureContext.addCookies(await context.cookies());const capturePage=await captureContext.newPage();
+                    const response=await capturePage.goto(base+c.url);assert.equal(response.status(),200);
+                    await capturePage.evaluate(()=>document.fonts.ready);
+                    // Force the actual configured font resource; a blank/missing remote asset fails capture.
+                    await capturePage.evaluate(()=>document.fonts.load('900 16px "Font Awesome 6 Free"'));
+                    const observation=await capturePage.evaluate(()=>({
+                        document:{clientWidth:document.documentElement.clientWidth,scrollWidth:document.documentElement.scrollWidth,innerWidth},
+                        viewport:document.querySelector('meta[name="viewport"]').content,
+                        icons:{loaded:document.fonts.check('900 16px "Font Awesome 6 Free"')&&[...document.fonts].some(f=>f.family.includes('Font Awesome 6 Free')&&f.status==='loaded'),
+                            glyphs:[...document.querySelectorAll('.cv-form-ctrl button i')].map(el=>({content:getComputedStyle(el,'::before').content,
+                                family:getComputedStyle(el,'::before').fontFamily,width:el.getBoundingClientRect().width,height:el.getBoundingClientRect().height})).filter(g=>g.content!=='none'&&g.content!=='normal'&&g.content!=='""'&&g.width>0&&g.height>0)}
+                    }));
+                    const screenshot=`${directory}/${device.id}.png`;
+                    cp.execFileSync('git',['check-ignore',screenshot]);
+                    await capturePage.screenshot({path:screenshot,fullPage:true});
+                    result.captures.push({path:screenshot,sha256:digest(screenshot),device,...observation});
+                } finally {await captureContext.close();}
+            }
+        }
+        check('responsive-containment',result.captures.every(capture=>capture.document.clientWidth===capture.document.scrollWidth),result.captures.map(capture=>({device:capture.device,...capture.document})));
+        check('loaded-rendered-glyphs',result.captures.every(capture=>capture.icons.loaded&&capture.icons.glyphs.length>0));
+        check('screenshot-provenance',result.captures.every(capture=>capture.sha256===digest(capture.path)));
+        result.humanReview={H1:'pending',H2:'pending',limitations:'Headless Chromium on Linux; mobile viewport/touch emulation only, no physical device or screen reader. Fixture duplicate forms and reset buttons are test-host surfaces. No human acceptance inferred.'};
+        check('human-review-pending',result.humanReview.H1==='pending'&&result.humanReview.H2==='pending');
     } else if (c.id === 'fragment-raw-balance') {
         // Same actual selected child declarations as the full editor; inspect raw bytes before DOM proof.
         const memos = page.locator('#editor .cv-formset-content').filter({has: page.locator(`input[name="books-memos-${c.pk}-0-0-${c.book}-1-TOTAL_FORMS"]`)}).last();

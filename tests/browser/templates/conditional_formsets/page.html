@@ -39,14 +39,14 @@ cv.adapters.modal = {
 {% endif %}
 {% if modal %}<button type="button" data-cv-modal-dismiss aria-label="Close">Close</button>{% endif %}
 {% if form %}
-<form id="editor" class="cv-form" method="post" action="{{ request.get_full_path }}" enctype="multipart/form-data" novalidate>
+<form id="editor" class="cv-form" aria-label="Browser test-host editor" method="post" action="{{ request.get_full_path }}" enctype="multipart/form-data" novalidate>
 {% csrf_token %}{% crispy form form.helper %}
-<button type="reset" class="native-reset">Reset fields</button>
-{% if not form.helper.inputs %}<button type="submit" class="fixture-save">Save</button>{% endif %}
+<button type="reset" class="native-reset" data-fixture-only="native-reset" title="Test-host native reset">Reset fields</button>
+{% if not form.helper.inputs %}<button type="submit" class="fixture-save" data-fixture-only="submit" title="Test-host submit">Save</button>{% endif %}
 </form>
 {% if not modal %}
-<form id="other" class="cv-form" method="post">{% csrf_token %}{% crispy other_form other_form.helper %}
-<button type="reset" class="native-reset">Reset other fields</button></form>
+<form id="other" class="cv-form" aria-label="Test-host isolation form" data-fixture-only="isolation" method="post">{% csrf_token %}{% crispy other_form other_form.helper %}
+<button type="reset" class="native-reset" data-fixture-only="native-reset" title="Test-host isolation reset">Reset other fields</button></form>
 {% endif %}
 {% endif %}
 {% if not modal %}

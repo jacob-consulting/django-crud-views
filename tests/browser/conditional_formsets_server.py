@@ -206,7 +206,14 @@ class EmptyMemos(Rows):
 
 
 ExtraMemos = inlineformset_factory(
-    Book, BrowserMemo, form=MemoForm, formset=EmptyMemos, extra=1, can_delete=True, can_order=True, can_delete_extra=False
+    Book,
+    BrowserMemo,
+    form=MemoForm,
+    formset=EmptyMemos,
+    extra=1,
+    can_delete=True,
+    can_order=True,
+    can_delete_extra=False,
 )
 EditBooks = inlineformset_factory(
     Publisher, Book, form=BookForm, formset=RestrictedBooks, extra=0, can_delete=True, edit_only=True
@@ -356,6 +363,7 @@ for mode in ("stock", "native"):
         "tampered-post",
         "late-init",
         "gap-capability",
+        "gap-ambiguity",
     ):
         parent = Publisher.objects.create(name=f"{mode} {case}")
         book = Book.objects.create(publisher=parent, title="Initial book")

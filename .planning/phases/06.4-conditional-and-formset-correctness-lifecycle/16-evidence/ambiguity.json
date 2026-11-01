@@ -1,0 +1,1187 @@
+{
+  "captured": "2026-11-01T15:47:55.010Z",
+  "revision": "d273c074c9a81e43d1a5757812e975a2b1d280fa",
+  "sourceHashes": {
+    ".planning/phases/06-form-button-leaf/06-JS-RUNTIME.json": "651e0c8b36938eeab7872bcfb66539124bf6fdefd2f9035616863c820e027aec",
+    "package-lock.json": "567bff553002a1452d08db94660a206507d70df9711cdd11fd82ee51f4175d2e",
+    "src/crud_views/lib/conditional/__init__.py": "8786ad65931be19f7d07f38bda1865a44e8ebbc8c4285962fd8ddd38aeec9ae1",
+    "src/crud_views/lib/conditional/formset.py": "c900b5994c2492c5d3a5b3284d7517ea21eb2a7655ed2d0bf3d7ade98e81afa6",
+    "src/crud_views/lib/conditional/group.py": "e233775a91b1037feea36a96820b8b3766d557ca0369120076515655e2817ea2",
+    "src/crud_views/lib/conditional/layout.py": "6c6b43ca87354dc65020470514b2759f2ea357a4abc2ff86cc9ee5a103d59c5f",
+    "src/crud_views/lib/conditional/toggle.py": "70eee69f0980e05119a9350b35af18f99fe7416022f38deb1996743c42bc56b8",
+    "src/crud_views/lib/formsets/__init__.py": "a96eaf24bfc5c29f376b842669b712a1d782596d3d8f921fba19204d86d30b69",
+    "src/crud_views/lib/formsets/formsets.py": "27d9b999020bddc50bda435e248d84775a48db3597ba1747596c81faa590d48f",
+    "src/crud_views/lib/formsets/inline_formset.py": "3d83d1860546d9cc10cac25dfbae739c5527581da2e4745d10d6e8ce1b3254b4",
+    "src/crud_views/lib/formsets/layout.py": "106b1674878702897b9f16936dad6e42f58d3d48fd62d2458df581361c7b9937",
+    "src/crud_views/lib/formsets/mixins.py": "a7c424b9e86a9aef3cecd094c2680fe9dcd47607257e5fef1e9742f2e6f0985c",
+    "src/crud_views/lib/formsets/render_tree.py": "af32f4b3cb4745cbc972a6db5eb72eae91be05c58fe8b919f2aa7db5b097d2eb",
+    "src/crud_views/lib/view/base.py": "7b22c4563d2a492046d4a3aa9efe84be30448a7b0681080efe520969817cf3c2",
+    "src/crud_views/lib/views/mixins.py": "0fdc2acabec44fbc80d700581762bedd25605d3337eca8e165541f8b6967b856",
+    "src/crud_views/lib/views/update.py": "bd9b274bc616f25c40f1d7ac964f48666f4d860a6d1f039c6f0798f7090a1dc7",
+    "src/crud_views/static/crud_views/js/adapters.js": "6134473b5f0fb183aae7f4b035ad38a56a902b8f58c8b5c688c9638d1cef2580",
+    "src/crud_views/static/crud_views/js/formset.js": "7f60fcc6afe66b50eced9e87d66a59f9a83555623a3e52d24a298ae8a8e71fbb",
+    "src/crud_views/static/crud_views/js/modal.js": "c8acbd5973f7e73f48537758394920c4923a67c6ccc10b6490742ca0e63c651e",
+    "src/crud_views/static/crud_views/js/toggle.js": "057805c08eea725b67ac6ce9bf40d656d9bf506231a88cc79da35e762525fc21",
+    "src/crud_views/templates/crud_views/conditional/toggle_group.html": "2b69481a30ed7279e97ec65edffc2780f89c24ee225edfdd2d2c975301f824d0",
+    "src/crud_views/templates/crud_views/formsets/control.html": "eed84cc006d4de94bddf442c366f2faf32d3ab135872e4631fb58f30338d974e",
+    "src/crud_views/templates/crud_views/formsets/formset.html": "d1fcb4ccb2f89f13b88ae6b31b44ee88b861cc57e61b30b848aea7bd76115383",
+    "src/crud_views/templates/crud_views/formsets/formsets.html": "1c6f6e86aff72847f044a62963cfb9fa41489a4d511578d13273c4ade1e83626",
+    "tests/browser/conditional-formsets.cjs": "547b68f04a745b8c7671568de772631b09bb9e8150f932e0ab9974c08d842d7c",
+    "tests/browser/conditional_formsets_server.py": "0a6d661ed8f0d58cff35bb807a892543793e5f1e617d955fd622af7262a439be",
+    "tests/browser/templates/conditional_formsets/native_control.html": "6163b7168522f909a2e68881ce4315477854fd834b6e8b64a6ff64b6e07bd2a5",
+    "tests/browser/templates/conditional_formsets/native_formset.html": "03ae7569f1b7a4ac8f60b7236f99a8f995acdc88d6f6314af81a9f8c4767b46e",
+    "tests/browser/templates/conditional_formsets/native_formsets.html": "2bd6207e5acc6591c2d530755fd8950e36eb583376150c22a98d0b54dd6abafa",
+    "tests/browser/templates/conditional_formsets/native_toggle_group.html": "95c26b5476faf74611921ea876442c45373fec4dd21e9d74bcec6c2ccdbac527",
+    "tests/browser/templates/conditional_formsets/page.html": "cc337c3331429b1247b9f1ddf3fb3479f2b94ea0b96eb6456bfa3cd27d314bd7",
+    "tests/test1/app/models.py": "a9d988813207f37e5a2c99a777c0974637d1ddf4ac6dfb9964c3f1d71fecb3f3",
+    "tests/test1/app/templates/app/base.html": "f2f325b993a2e91be2f7cd235f0f1bcab8f3cfa9f51c5709c4e4f15ff85f1c08",
+    "tests/test1/conftest.py": "397926e3d24e6b72bde95f33ce57a04aab1c6cda9068927e780c2f49eae0b565",
+    "tests/test1/test_fragment_authorization.py": "adb10a0335870f6959b7a8deba6f92a299251f834db6eedab5c41a1a1e409f4b"
+  },
+  "command": [
+    "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
+    "/home/alex/projects/alex/django-crud-views/tests/browser/conditional-formsets.cjs",
+    "--case",
+    "gap-ambiguity",
+    "--output",
+    ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/16-evidence/ambiguity.json"
+  ],
+  "scope": "gap-ambiguity",
+  "runtime": {
+    "node": "v24.21.0",
+    "nodePath": "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
+    "pythonPath": "/usr/bin/python3.12",
+    "playwrightPath": "/home/alex/.npm/_npx/e41f203b7505f1fb/node_modules/playwright",
+    "chromiumPath": "/home/alex/.cache/ms-playwright/chromium-1228/chrome-linux64/chrome",
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "django": "6.0.9",
+    "playwright": "1.64.1",
+    "chromium": "149.0.7827.55"
+  },
+  "cases": [
+    {
+      "theme": "stock",
+      "id": "gap-ambiguity",
+      "assertions": [
+        {
+          "id": "bound-off-native-valid",
+          "passed": true,
+          "detail": {
+            "valid": true,
+            "disabled": true,
+            "hidden": true,
+            "contactSent": false,
+            "management": true
+          }
+        },
+        {
+          "id": "ambiguous-retains-state",
+          "passed": true,
+          "detail": {
+            "valid": true,
+            "disabled": true,
+            "hidden": true,
+            "contactSent": false,
+            "management": true
+          }
+        },
+        {
+          "id": "no-arbitrary-checkbox-follow",
+          "passed": true
+        },
+        {
+          "id": "obsolete-listener-detached",
+          "passed": true
+        },
+        {
+          "id": "unique-recovery",
+          "passed": true
+        },
+        {
+          "id": "independent-owner-retained",
+          "passed": true
+        },
+        {
+          "id": "ancestor-owner-retained",
+          "passed": true
+        },
+        {
+          "id": "other-form-unaffected",
+          "passed": true
+        },
+        {
+          "id": "native-reset-focus",
+          "passed": true
+        },
+        {
+          "id": "modal-422-ambiguity-focus",
+          "passed": true,
+          "detail": {
+            "valid": false,
+            "disabled": true,
+            "hidden": true,
+            "contactSent": false,
+            "management": true
+          }
+        },
+        {
+          "id": "modal-reset-focus",
+          "passed": true
+        },
+        {
+          "id": "responsive-containment",
+          "passed": true,
+          "detail": [
+            {
+              "device": {
+                "id": "desktop",
+                "width": 1440,
+                "height": 900,
+                "isMobile": false,
+                "hasTouch": false,
+                "deviceScaleFactor": 1
+              },
+              "clientWidth": 1440,
+              "scrollWidth": 1440,
+              "innerWidth": 1440
+            },
+            {
+              "device": {
+                "id": "mobile",
+                "width": 375,
+                "height": 812,
+                "isMobile": true,
+                "hasTouch": true,
+                "deviceScaleFactor": 1
+              },
+              "clientWidth": 375,
+              "scrollWidth": 375,
+              "innerWidth": 375
+            },
+            {
+              "device": {
+                "id": "tablet",
+                "width": 768,
+                "height": 1024,
+                "isMobile": false,
+                "hasTouch": false,
+                "deviceScaleFactor": 1
+              },
+              "clientWidth": 768,
+              "scrollWidth": 768,
+              "innerWidth": 768
+            }
+          ]
+        },
+        {
+          "id": "loaded-rendered-glyphs",
+          "passed": true
+        },
+        {
+          "id": "screenshot-provenance",
+          "passed": true
+        },
+        {
+          "id": "human-review-pending",
+          "passed": true
+        }
+      ],
+      "requests": [
+        {
+          "status": 422,
+          "url": "http://127.0.0.1:8144/edit/stock/34/"
+        }
+      ],
+      "passed": true,
+      "diagnostics": [
+        "crud_views: ambiguous conditional toggle outer",
+        "crud_views: ambiguous conditional toggle outer",
+        "crud_views: ambiguous conditional toggle inner",
+        "crud_views: ambiguous conditional toggle outer",
+        "crud_views: ambiguous conditional toggle outer"
+      ],
+      "captures": [
+        {
+          "path": ".planning/ui-reviews/06.4-gap-repair/desktop.png",
+          "sha256": "6af0369c076c37eb02a9e132e6da01fd1b04a52bc1ec428f7e2fc59f8f2b81ef",
+          "device": {
+            "id": "desktop",
+            "width": 1440,
+            "height": 900,
+            "isMobile": false,
+            "hasTouch": false,
+            "deviceScaleFactor": 1
+          },
+          "document": {
+            "clientWidth": 1440,
+            "scrollWidth": 1440,
+            "innerWidth": 1440
+          },
+          "viewport": "width=device-width, initial-scale=1",
+          "icons": {
+            "loaded": true,
+            "glyphs": [
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              },
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              },
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 10,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 10,
+                "height": 16
+              },
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 10,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 10,
+                "height": 16
+              },
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              },
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              },
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 10,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 10,
+                "height": 16
+              },
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              },
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              },
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              },
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 10,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 10,
+                "height": 16
+              },
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 10,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 10,
+                "height": 16
+              },
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              },
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              },
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 10,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 10,
+                "height": 16
+              },
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              }
+            ]
+          }
+        },
+        {
+          "path": ".planning/ui-reviews/06.4-gap-repair/mobile.png",
+          "sha256": "314006515ef104b3a93a7b390aec27addf67733df5b37fc53752e447b731edfe",
+          "device": {
+            "id": "mobile",
+            "width": 375,
+            "height": 812,
+            "isMobile": true,
+            "hasTouch": true,
+            "deviceScaleFactor": 1
+          },
+          "document": {
+            "clientWidth": 375,
+            "scrollWidth": 375,
+            "innerWidth": 375
+          },
+          "viewport": "width=device-width, initial-scale=1",
+          "icons": {
+            "loaded": true,
+            "glyphs": [
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              },
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              },
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 10,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 10,
+                "height": 16
+              },
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 10,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 10,
+                "height": 16
+              },
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              },
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              },
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 10,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 10,
+                "height": 16
+              },
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              },
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              },
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              },
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 10,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 10,
+                "height": 16
+              },
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 10,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 10,
+                "height": 16
+              },
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              },
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              },
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 10,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 10,
+                "height": 16
+              },
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              }
+            ]
+          }
+        },
+        {
+          "path": ".planning/ui-reviews/06.4-gap-repair/tablet.png",
+          "sha256": "55c2ee11a8e16140abb64a9fe37f55feb07428322e5fa6a4ed9e76f33be16282",
+          "device": {
+            "id": "tablet",
+            "width": 768,
+            "height": 1024,
+            "isMobile": false,
+            "hasTouch": false,
+            "deviceScaleFactor": 1
+          },
+          "document": {
+            "clientWidth": 768,
+            "scrollWidth": 768,
+            "innerWidth": 768
+          },
+          "viewport": "width=device-width, initial-scale=1",
+          "icons": {
+            "loaded": true,
+            "glyphs": [
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              },
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              },
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 10,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 10,
+                "height": 16
+              },
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 10,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 10,
+                "height": 16
+              },
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              },
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              },
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 10,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 10,
+                "height": 16
+              },
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              },
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              },
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              },
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 10,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 10,
+                "height": 16
+              },
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 10,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 10,
+                "height": 16
+              },
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              },
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              },
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 10,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 10,
+                "height": 16
+              },
+              {
+                "content": "\"+\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 15,
+                "height": 16
+              },
+              {
+                "content": "\"\"",
+                "family": "\"Font Awesome 6 Free\"",
+                "width": 14,
+                "height": 16
+              }
+            ]
+          }
+        }
+      ],
+      "humanReview": {
+        "H1": "pending",
+        "H2": "pending",
+        "limitations": "Headless Chromium on Linux; mobile viewport/touch emulation only, no physical device or screen reader. Fixture duplicate forms and reset buttons are test-host surfaces. No human acceptance inferred."
+      }
+    },
+    {
+      "theme": "native",
+      "id": "gap-ambiguity",
+      "assertions": [
+        {
+          "id": "bound-off-native-valid",
+          "passed": true,
+          "detail": {
+            "valid": true,
+            "disabled": true,
+            "hidden": true,
+            "contactSent": false,
+            "management": true
+          }
+        },
+        {
+          "id": "ambiguous-retains-state",
+          "passed": true,
+          "detail": {
+            "valid": true,
+            "disabled": true,
+            "hidden": true,
+            "contactSent": false,
+            "management": true
+          }
+        },
+        {
+          "id": "no-arbitrary-checkbox-follow",
+          "passed": true
+        },
+        {
+          "id": "obsolete-listener-detached",
+          "passed": true
+        },
+        {
+          "id": "unique-recovery",
+          "passed": true
+        },
+        {
+          "id": "independent-owner-retained",
+          "passed": true
+        },
+        {
+          "id": "ancestor-owner-retained",
+          "passed": true
+        },
+        {
+          "id": "other-form-unaffected",
+          "passed": true
+        },
+        {
+          "id": "native-reset-focus",
+          "passed": true
+        },
+        {
+          "id": "modal-422-ambiguity-focus",
+          "passed": true,
+          "detail": {
+            "valid": false,
+            "disabled": true,
+            "hidden": true,
+            "contactSent": false,
+            "management": true
+          }
+        },
+        {
+          "id": "modal-reset-focus",
+          "passed": true
+        },
+        {
+          "id": "responsive-containment",
+          "passed": true,
+          "detail": []
+        },
+        {
+          "id": "loaded-rendered-glyphs",
+          "passed": true
+        },
+        {
+          "id": "screenshot-provenance",
+          "passed": true
+        },
+        {
+          "id": "human-review-pending",
+          "passed": true
+        }
+      ],
+      "requests": [
+        {
+          "status": 422,
+          "url": "http://127.0.0.1:8144/edit/native/70/"
+        }
+      ],
+      "passed": true,
+      "diagnostics": [
+        "crud_views: ambiguous conditional toggle outer",
+        "crud_views: ambiguous conditional toggle outer",
+        "crud_views: ambiguous conditional toggle inner",
+        "crud_views: ambiguous conditional toggle outer",
+        "crud_views: ambiguous conditional toggle outer"
+      ],
+      "captures": [],
+      "humanReview": {
+        "H1": "pending",
+        "H2": "pending",
+        "limitations": "Headless Chromium on Linux; mobile viewport/touch emulation only, no physical device or screen reader. Fixture duplicate forms and reset buttons are test-host surfaces. No human acceptance inferred."
+      }
+    }
+  ],
+  "pageErrors": [],
+  "cleanup": {
+    "reaped": true
+  },
+  "completed": true,
+  "passed": true
+}

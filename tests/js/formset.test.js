@@ -294,6 +294,61 @@ describe("formset.js", () => {
     });
 
     describe("CrudViewsFormset", () => {
+        it("rejects a custom Add on an edit-only formset at activation", () => {
+            formsetFixture({ editOnly: true });
+            const row = document.querySelector(".cv-formset-row");
+            row.insertAdjacentHTML("beforeend", '<button type="button" class="cv-form-ctrl-add" cv-data-formset-form-prefix="book-None-0-0"></button>');
+            const ajax = vi.spyOn($, "ajax").mockImplementation(() => {});
+            new window.cv.CrudViewsFormset();
+            row.querySelector(".cv-form-ctrl-add").dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+            expect(ajax).not.toHaveBeenCalled();
+            ajax.mockRestore();
+        });
+
+        it("initializes same-prefix forms repeatedly through automatic page and modal events", () => {
+            formsetFixture({ rows: 2 });
+            const page = document.querySelector("form");
+            const modal = document.createElement("div");
+            document.body.append(modal);
+            document.dispatchEvent(new Event("DOMContentLoaded"));
+            const other = page.cloneNode(true);
+            modal.append(other);
+            modal.dispatchEvent(new CustomEvent("cv:modal:loaded", { bubbles: true }));
+            expect(typeof window.cv.initFormsets).toBe("function");
+            for (const root of [document, modal, other, other.querySelector(".cv-formset-content"), other.querySelector("button")]) {
+                window.cv.initFormsets(root);
+            }
+            other.querySelector(".cv-form-ctrl-delete").click();
+            other.querySelector(".cv-form-ctrl-down").click();
+            expect(page.querySelector('input[name="book-None-0-0-DELETE"]').value).toBe("0");
+            expect(other.querySelector('input[name="book-None-0-0-DELETE"]').value).toBe("1");
+            expect([...other.querySelectorAll(".cv-formset-row")].map(row => row.getAttribute("cv-data-formset-form-prefix")))
+                .toEqual(["book-None-0-1", "book-None-0-0"]);
+            const ajax = vi.spyOn($, "ajax").mockImplementation(options => options.success({ html: rowHtml(2), rows: ["book-None-0-2"] }));
+            other.querySelector(".cv-form-ctrl-add").click();
+            expect(ajax).toHaveBeenCalledTimes(1);
+            expect(other.querySelector('input[name="book-None-0-TOTAL_FORMS"]').value).toBe("3");
+            expect(page.querySelector('input[name="book-None-0-TOTAL_FORMS"]').value).toBe("2");
+            ajax.mockRestore();
+        });
+
+        it("blocks disabled, inactive and non-button override actions including synthetic clicks", () => {
+            formsetFixture();
+            document.dispatchEvent(new Event("DOMContentLoaded"));
+            const ajax = vi.spyOn($, "ajax").mockImplementation(() => {});
+            const add = document.querySelector(".cv-form-ctrl-add");
+            add.disabled = true;
+            add.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+            add.disabled = false;
+            add.closest("fieldset").disabled = true;
+            add.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+            add.closest("fieldset").disabled = false;
+            add.closest(".cv-formset-row").hidden = true;
+            add.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+            expect(ajax).not.toHaveBeenCalled();
+            ajax.mockRestore();
+        });
+
         it("initializes on a non-orderable formset without aborting (regression)", () => {
             formsetFixture({ canOrder: false });
             expect(() => new window.cv.CrudViewsFormset()).not.toThrow();

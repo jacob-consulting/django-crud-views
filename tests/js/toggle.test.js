@@ -22,6 +22,112 @@ function wire() {
     document.dispatchEvent(new Event("DOMContentLoaded", { bubbles: true }));
 }
 
+function change(checkbox, checked) {
+    checkbox.checked = checked;
+    checkbox.dispatchEvent(new Event("change", { bubbles: true }));
+}
+
+function nestedFixture() {
+    document.body.innerHTML = `<form><input type="checkbox" name="outer" checked>
+        <div cv-data-toggle-group cv-data-toggle-field="outer">
+            <input type="checkbox" name="inner" checked>
+            <div cv-data-toggle-group cv-data-toggle-field="inner">
+                <input name="value" value="unsaved"><input name="baseline" disabled>
+            </div>
+        </div></form>`;
+    wire();
+    return Object.fromEntries(["outer", "inner", "value", "baseline"].map(name => [name, document.getElementsByName(name)[0]]));
+}
+
+describe("conditional disabled ownership", () => {
+    beforeAll(async () => { await loadScript("toggle"); });
+
+    it.each(["inner-first", "outer-first"])("composes nested owners in %s order and retains baseline", order => {
+        const { outer, inner, value, baseline } = nestedFixture();
+        const first = order === "inner-first" ? inner : outer;
+        const second = first === inner ? outer : inner;
+        change(first, false);
+        change(second, false);
+        change(first, true);
+        expect(value.disabled).toBe(true);
+        globalThis.cv.initConditional(document);
+        change(second, true);
+        expect(value.disabled).toBe(false);
+        expect(baseline.disabled).toBe(true);
+        expect(value.value).toBe("unsaved");
+    });
+
+    it("preserves same-value external disabled writes before synchronous resync", () => {
+        const { outer, value } = nestedFixture();
+        change(outer, false);
+        value.disabled = true; // Same property value still expresses an independent owner.
+        change(outer, true); // Must drain records before this synchronous transition.
+        expect(value.disabled).toBe(true);
+        change(outer, false);
+        value.disabled = false;
+        globalThis.cv.initConditional(document);
+        expect(value.disabled).toBe(true);
+        change(outer, true);
+        expect(value.disabled).toBe(false);
+    });
+
+    it("reacts to external attribute changes while active or inactive", async () => {
+        const { outer, value } = nestedFixture();
+        value.setAttribute("disabled", "");
+        await Promise.resolve();
+        expect(value.disabled).toBe(true);
+        value.removeAttribute("disabled");
+        await Promise.resolve();
+        expect(value.disabled).toBe(false);
+        change(outer, false);
+        value.removeAttribute("disabled");
+        await Promise.resolve();
+        expect(value.disabled).toBe(true);
+        change(outer, true);
+        expect(value.disabled).toBe(false);
+    });
+
+    it("disables custom native actions but preserves values, files, management and native fieldsets", () => {
+        const { group, checkbox } = fixture();
+        group.insertAdjacentHTML("beforeend", `<input type="file" name="upload">
+            <button type="button">Custom Add</button><button type="button">Delete</button>
+            <button type="button" disabled>Reorder</button><fieldset disabled><input name="native" value="keep"></fieldset>
+            <input type="hidden" name="rows-INITIAL_FORMS" value="1">
+            <input type="hidden" name="rows-MIN_NUM_FORMS" value="0">
+            <input type="hidden" name="rows-MAX_NUM_FORMS" value="1000" disabled>`);
+        const title = group.querySelector("[name=title]");
+        title.value = "unsaved text";
+        const upload = group.querySelector("[type=file]");
+        const files = upload.files;
+        wire();
+        change(checkbox, false);
+        expect([...group.querySelectorAll("button")].every(button => button.disabled)).toBe(true);
+        const data = new FormData(checkbox.form);
+        expect([...data.keys()]).toEqual(expect.arrayContaining(["book-None-0-TOTAL_FORMS", "rows-INITIAL_FORMS", "rows-MIN_NUM_FORMS"]));
+        expect(data.has("rows-MAX_NUM_FORMS")).toBe(false);
+        expect(data.has("title")).toBe(false);
+        change(checkbox, true);
+        expect([...group.querySelectorAll("button")].map(button => button.disabled)).toEqual([false, false, true]);
+        expect(title.value).toBe("unsaved text");
+        expect(upload.files).toBe(files);
+        const activeData = new FormData(checkbox.form);
+        expect(activeData.get("title")).toBe("unsaved text");
+        expect(activeData.has("native")).toBe(false);
+        expect(group.querySelector("fieldset").disabled).toBe(true);
+    });
+
+    it("captures new descendants without capturing temporary disabled state", () => {
+        const { outer, value } = nestedFixture();
+        change(outer, false);
+        value.after(document.createElement("textarea"));
+        globalThis.cv.initConditional(value.parentElement);
+        expect(value.nextElementSibling.disabled).toBe(true);
+        change(outer, true);
+        expect(value.disabled).toBe(false);
+        expect(value.nextElementSibling.disabled).toBe(false);
+    });
+});
+
 describe("toggle.js", () => {
     beforeAll(async () => {
         await loadScript("toggle");

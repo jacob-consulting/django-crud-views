@@ -1,5 +1,7 @@
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import jquery from "jquery";
+import fs from "node:fs";
+import { JSDOM } from "jsdom";
 import { loadScript } from "./helpers/load.js";
 import { formsetFixture, rowHtml } from "./helpers/dom.js";
 
@@ -345,7 +347,72 @@ describe("formset.js", () => {
             add.closest("fieldset").disabled = false;
             add.closest(".cv-formset-row").hidden = true;
             add.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+            add.closest(".cv-formset-row").hidden = false;
+            add.insertAdjacentHTML("afterend", '<a class="cv-form-ctrl-add" cv-data-formset-form-prefix="book-None-0-0">Add</a>');
+            add.parentElement.querySelector("a").dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+            add.type = "submit";
+            add.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
             expect(ajax).not.toHaveBeenCalled();
+            ajax.mockRestore();
+        });
+
+        it.each(["12", "0a1b2c3d-0000-4000-8000-00000000000a"])("uses exact names and prefixes through deep ancestry with pk %s", pk => {
+            const key = "line-items-child-notes-grand-items";
+            const opts = { key, pk, rows: 2 };
+            formsetFixture(opts);
+            const oldPrefix = `${key}-${pk}-0`;
+            const prefixKey = `${pk}-0-1-${pk}-0-2-${pk}-0`;
+            const prefix = `${key}-${prefixKey}`;
+            document.body.innerHTML = document.body.innerHTML.replaceAll(oldPrefix, prefix);
+            const page = document.querySelector("form");
+            const content = page.querySelector(".cv-formset-content");
+            const metadata = JSON.parse(content.getAttribute("cv-data-formset"));
+            content.setAttribute("cv-data-formset", JSON.stringify({ ...metadata, prefix_key: prefixKey,
+                parent_prefix_key: `${pk}-0-1-${pk}-0-2`, hierarchy: ["line-items", "child-notes", "grand-items"],
+                pk: pk.length > 5 ? "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}" : "\\d+" }));
+            // Near-match management names and suffix-only row fields precede
+            // real controls, so a startsWith/endsWith lookup selects the decoy.
+            content.insertAdjacentHTML("afterbegin", `<input name="${prefix}-TOTAL_FORMS-extra" value="99">`);
+            const row = content.querySelector(".cv-formset-row");
+            row.insertAdjacentHTML("afterbegin", `<input name="decoy-${prefix}-0-id" value="decoy"><input name="decoy-${prefix}-0-DELETE" value="1"><input name="decoy-${prefix}-0-ORDER" value="77">`);
+            const decoy = row.cloneNode(true);
+            decoy.setAttribute("cv-data-formset-prefix", `${prefix}-extra`);
+            decoy.setAttribute("cv-data-formset-form-prefix", `${prefix}-0-extra`);
+            decoy.querySelectorAll("input").forEach(input => { input.name = `near-${input.name}`; });
+            content.prepend(decoy);
+            const other = page.cloneNode(true);
+            document.body.append(other);
+            document.dispatchEvent(new Event("DOMContentLoaded"));
+            const ctl = { form: other };
+            const fs = new window.cv.XFormset(ctl, prefix);
+            expect(fs.pk).toBe(pk);
+            expect(fs.rows).toHaveLength(2);
+            expect(fs.get_total_forms()).toBe(2);
+            const exact = (selector, attr, value) => [...other.querySelectorAll(selector)].find(el => el.getAttribute(attr) === value);
+            const button = action => exact(`button.cv-form-ctrl-${action}`, "cv-data-formset-form-prefix", `${prefix}-0`);
+            button("delete").click();
+            expect(exact("input", "name", `${prefix}-0-DELETE`).value).toBe("1");
+            expect([...page.querySelectorAll("input")].find(input => input.name === `${prefix}-0-DELETE`).value).toBe("0");
+            button("down").click();
+            expect(new window.cv.XFormset(ctl, prefix).rows.toArray().map(el => el.getAttribute("cv-data-formset-form-prefix")))
+                .toEqual([`${prefix}-1`, `${prefix}-0`]);
+            expect(exact("input", "name", `decoy-${prefix}-0-ORDER`).value).toBe("77");
+            const events = [];
+            const listener = event => events.push(event);
+            document.addEventListener("cv:formset:row-added", listener);
+            const ajax = vi.spyOn($, "ajax").mockImplementation(options => options.success({
+                html: rowHtml(2, opts).replaceAll(oldPrefix, prefix), rows: [`${prefix}-2`],
+            }));
+            button("add").click();
+            document.removeEventListener("cv:formset:row-added", listener);
+            expect(ajax).toHaveBeenCalledTimes(1);
+            expect(ajax.mock.calls[0][0].data).toMatchObject({ pk, num: 2, template: "line-items|child-notes|grand-items", formset_parent_prefix_key: `${pk}-0-1-${pk}-0-2` });
+            expect(fs.get_total_forms()).toBe(3);
+            expect(events).toHaveLength(1);
+            expect(events[0].target).toBe(exact(".cv-formset-row", "cv-data-formset-form-prefix", `${prefix}-2`));
+            expect(events[0].detail).toEqual({ prefix: `${prefix}-2`, rows: [`${prefix}-2`] });
+            expect([...page.querySelectorAll("input")].find(input => input.name === `${prefix}-TOTAL_FORMS`).value).toBe("2");
+            expect(exact("input", "name", `${prefix}-TOTAL_FORMS-extra`).value).toBe("99");
             ajax.mockRestore();
         });
 
@@ -389,7 +456,7 @@ describe("formset.js", () => {
             expect(prefixes).toEqual(["book-None-0-1", "book-None-0-0"]);
         });
 
-        it("binds nothing for a new row whose lookup fails", () => {
+        it("delegates remaining native actions when an override omits order buttons", () => {
             formsetFixture({ rows: 1 });
             const controller = new window.cv.CrudViewsFormset();
             // a new row lacking its up/down buttons although the formset is orderable
@@ -397,9 +464,9 @@ describe("formset.js", () => {
             document.querySelectorAll('[cv-data-formset-form-prefix="book-None-0-1"].cv-form-ctrl-up, '
                 + '[cv-data-formset-form-prefix="book-None-0-1"].cv-form-ctrl-down').forEach((el) => el.remove());
 
-            expect(() => controller.add_form_control_for_new_rows(["book-None-0-1"])).toThrow("up not found");
+            expect(() => controller.add_form_control_for_new_rows(["book-None-0-1"])).not.toThrow();
             document.querySelector('button.cv-form-ctrl-delete[cv-data-formset-form-prefix="book-None-0-1"]').click();
-            expect(document.querySelector('input[name="book-None-0-1-DELETE"]').getAttribute("value")).toBe("0");
+            expect(document.querySelector('input[name="book-None-0-1-DELETE"]').getAttribute("value")).toBe("1");
         });
 
         it("reorders all formsets on submit and lets the submit proceed", () => {
@@ -417,8 +484,8 @@ describe("formset.js", () => {
             formsetFixture({ rows: 2 });
             const controller = new window.cv.CrudViewsFormset();
             const form = document.querySelector("form.cv-form");
-            // make reorder_formsets throw: the controller can no longer find form.cv-form
-            form.className = "";
+            // An actual controller failure cancels native submit.
+            vi.spyOn(controller, "reorder_formsets").mockImplementation(() => { throw new Error("broken reorder"); });
             const event = new Event("submit", { bubbles: true, cancelable: true });
             form.dispatchEvent(event);
             expect(event.defaultPrevented).toBe(true);
@@ -426,84 +493,73 @@ describe("formset.js", () => {
     });
 
     describe("start-up guard", () => {
-        beforeEach(() => {
-            delete window.cv?.formsetController;
-        });
-
-        afterEach(() => {
-            delete document.readyState;
-            console.error.mockRestore?.(); // only this spy; setup.js keeps console.log silenced
-            vi.stubGlobal("$", jquery);
-            vi.stubGlobal("jQuery", jquery);
-        });
-
-        it("starts the controller when a formset and jQuery are present", async () => {
+        let win;
+        const formsetSource = fs.readFileSync("src/crud_views/static/crud_views/js/formset.js", "utf8");
+        const jquerySource = fs.readFileSync("node_modules/jquery/dist/jquery.js", "utf8");
+        function boot({ ready = "complete", jq = true, empty = false } = {}) {
             formsetFixture();
-            await loadScript("formset");
-            expect(window.cv.formsetController).toBeDefined();
-        });
+            win = new JSDOM(empty ? "" : document.body.innerHTML, { runScripts: "outside-only", url: "https://example.test/" }).window;
+            Object.defineProperty(win.document, "readyState", { value: ready, configurable: true });
+            win.console.error = vi.fn();
+            win.console.log = vi.fn();
+            if (jq) win.eval(jquerySource);
+            win.eval(formsetSource);
+            return win;
+        }
+        function assertLive() {
+            win.document.querySelector(".cv-form-ctrl-delete").click();
+            expect(win.document.querySelector('input[name="book-None-0-0-DELETE"]').value).toBe("1");
+        }
+        afterEach(() => win?.close());
 
-        it("stays silent on a page without formsets", async () => {
-            document.body.innerHTML = "";
-            const error = vi.spyOn(console, "error").mockImplementation(() => {});
-            vi.stubGlobal("$", undefined);
-            vi.stubGlobal("jQuery", undefined);
-            await loadScript("formset");
-            expect(error).not.toHaveBeenCalled();
-            expect(window.cv.formsetController).toBeUndefined();
+        it("starts automatically when executed after the page is ready", () => {
+            boot();
+            assertLive();
         });
-
-        it("reports jQuery once when a formset is present and jQuery is not", async () => {
-            formsetFixture();
-            const error = vi.spyOn(console, "error").mockImplementation(() => {});
-            vi.stubGlobal("$", undefined);
-            vi.stubGlobal("jQuery", undefined);
-            await expect(loadScript("formset")).resolves.toBeUndefined();
-            expect(error).toHaveBeenCalledTimes(1);
-            expect(error.mock.calls[0][0]).toMatch(/jQuery/);
-            expect(window.cv.formsetController).toBeUndefined();
+        it("stays silent on a page without formsets", () => {
+            boot({ jq: false, empty: true });
+            expect(win.console.error).not.toHaveBeenCalled();
         });
-
-        it("waits for DOMContentLoaded, so jQuery may load after formset.js", async () => {
-            formsetFixture();
-            Object.defineProperty(document, "readyState", { value: "loading", configurable: true });
-            vi.stubGlobal("$", undefined);
-            vi.stubGlobal("jQuery", undefined);
-            await loadScript("formset");
-            expect(window.cv.formsetController).toBeUndefined();
-            vi.stubGlobal("$", jquery);
-            vi.stubGlobal("jQuery", jquery);
-            document.dispatchEvent(new Event("DOMContentLoaded"));
-            expect(window.cv.formsetController).toBeDefined();
+        it("reports missing jQuery once and supports an explicit late retry", () => {
+            boot({ jq: false });
+            win.cv.initFormsets();
+            expect(win.console.error).toHaveBeenCalledTimes(1);
+            expect(win.console.error.mock.calls[0][0]).toMatch(/jQuery/);
+            win.eval(jquerySource);
+            win.cv.initFormsets();
+            assertLive();
         });
-
-        it("retries once on window load when deferred jQuery arrives after formset.js", async () => {
-            formsetFixture();
-            const error = vi.spyOn(console, "error").mockImplementation(() => {});
-            Object.defineProperty(document, "readyState", { value: "interactive", configurable: true });
-            vi.stubGlobal("$", undefined);
-            vi.stubGlobal("jQuery", undefined);
-            await loadScript("formset");
-            expect(error).not.toHaveBeenCalled();
-            expect(window.cv.formsetController).toBeUndefined();
-            vi.stubGlobal("$", jquery);
-            vi.stubGlobal("jQuery", jquery);
-            window.dispatchEvent(new Event("load"));
-            expect(window.cv.formsetController).toBeDefined();
-            expect(error).not.toHaveBeenCalled();
+        it("waits for DOMContentLoaded so jQuery can load later", () => {
+            boot({ ready: "loading", jq: false });
+            expect(win.console.error).not.toHaveBeenCalled();
+            win.eval(jquerySource);
+            win.document.dispatchEvent(new win.Event("DOMContentLoaded"));
+            assertLive();
         });
-
-        it("reports jQuery exactly once when it is still missing at window load", async () => {
-            formsetFixture();
-            const error = vi.spyOn(console, "error").mockImplementation(() => {});
-            Object.defineProperty(document, "readyState", { value: "interactive", configurable: true });
-            vi.stubGlobal("$", undefined);
-            vi.stubGlobal("jQuery", undefined);
-            await loadScript("formset");
-            window.dispatchEvent(new Event("load"));
-            expect(error).toHaveBeenCalledTimes(1);
-            expect(error.mock.calls[0][0]).toMatch(/jQuery/);
-            expect(window.cv.formsetController).toBeUndefined();
+        it("retries on window load for deferred jQuery", () => {
+            boot({ ready: "interactive", jq: false });
+            expect(win.console.error).not.toHaveBeenCalled();
+            win.eval(jquerySource);
+            win.dispatchEvent(new win.Event("load"));
+            assertLive();
+        });
+        it("reports missing jQuery once after the load retry", () => {
+            boot({ ready: "interactive", jq: false });
+            win.dispatchEvent(new win.Event("load"));
+            win.cv.initFormsets();
+            expect(win.console.error).toHaveBeenCalledTimes(1);
+        });
+        it("initializes a DocumentFragment and root formset/control elements", () => {
+            boot({ empty: true });
+            const fragment = win.document.createDocumentFragment();
+            const container = win.document.createElement("div");
+            container.innerHTML = document.body.innerHTML;
+            fragment.append(container);
+            win.cv.initFormsets(fragment);
+            win.document.body.append(fragment);
+            win.cv.initFormsets(container.querySelector(".cv-formset-content"));
+            win.cv.initFormsets(container.querySelector("button"));
+            assertLive();
         });
     });
 });

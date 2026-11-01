@@ -29,17 +29,24 @@ def test_stock_controls_render_real_formset_capabilities(monkeypatch, edit_only,
     # Exercise the supported optional-ordered-model configuration. The template's
     # capability projection is independent of the startup model-ordering check.
     monkeypatch.setattr("crud_views.lib.ordered.get_ordered_model", lambda: None)
-    klass = type("ControlFormSet", (BookFormSet,), dict(
-        edit_only=edit_only, can_delete=can_delete, can_order=can_order,
-    ))
+    klass = type(
+        "ControlFormSet",
+        (BookFormSet,),
+        {"edit_only": edit_only, "can_delete": can_delete, "can_order": can_order},
+    )
     declaration = FormSet(title="Books", klass=klass)
     runtime = klass(formset=declaration, instance=Publisher(), prefix="line-items-None-0")
     form = runtime.empty_form
-    buttons = Buttons(render_to_string("crud_views/formsets/control.html", {
-        "formset": declaration, "form": form,
-    })).buttons
-    controls = {next(c for c in button["class"].split() if c.startswith("cv-form-ctrl-")): button
-                for button in buttons}
+    buttons = Buttons(
+        render_to_string(
+            "crud_views/formsets/control.html",
+            {
+                "formset": declaration,
+                "form": form,
+            },
+        )
+    ).buttons
+    controls = {next(c for c in button["class"].split() if c.startswith("cv-form-ctrl-")): button for button in buttons}
     assert ("cv-form-ctrl-add" in controls) is (not edit_only)
     assert ("cv-form-ctrl-delete" in controls) is can_delete
     assert ("cv-form-ctrl-up" in controls) is can_order

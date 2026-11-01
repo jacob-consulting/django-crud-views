@@ -44,6 +44,61 @@ function nestedFixture() {
 describe("conditional disabled ownership", () => {
     beforeAll(async () => { await loadScript("toggle"); });
 
+    it("keeps a formerly bound inactive group safe during ambiguity and uniquely recovers", () => {
+        const warning = vi.spyOn(console, "warn").mockImplementation(() => {});
+        try {
+            const { group, checkbox } = fixture({ checked: false });
+            const form = checkbox.form;
+            const title = group.querySelector("[name=title]");
+            title.required = true;
+            form.insertAdjacentHTML("beforeend", `<input type="checkbox" name="independent" checked>
+                <div cv-data-toggle-group cv-data-toggle-field="independent"><input name="other"></div>`);
+            const independent = form.querySelector("[name=independent]");
+            const other = form.querySelector("[name=other]");
+            globalThis.cv.initConditional(form);
+            expect(group.style.display).toBe("none");
+            expect(title.disabled).toBe(true);
+            expect(form.checkValidity()).toBe(true);
+            expect(new FormData(form).has("title")).toBe(false);
+
+            const duplicate = checkbox.cloneNode();
+            duplicate.checked = true;
+            checkbox.after(duplicate);
+            globalThis.cv.initConditional(group);
+            expect(warning).toHaveBeenCalledTimes(1);
+            expect(group.style.display).toBe("none");
+            expect(title.disabled).toBe(true);
+            expect(form.checkValidity()).toBe(true);
+            expect(new FormData(form).has("title")).toBe(false);
+            change(checkbox, true);
+            change(duplicate, false);
+            change(independent, false);
+            expect(other.disabled).toBe(true);
+            expect(title.disabled).toBe(true);
+            expect(group.style.display).toBe("none");
+
+            checkbox.remove();
+            duplicate.checked = true;
+            const listener = vi.spyOn(duplicate, "addEventListener");
+            independent.focus();
+            globalThis.cv.initConditional(duplicate);
+            globalThis.cv.initConditional(group);
+            expect(listener.mock.calls.filter(([type]) => type === "change")).toHaveLength(1);
+            expect(document.activeElement).toBe(independent);
+            expect(group.style.display).toBe("");
+            expect(title.disabled).toBe(false);
+            expect(form.checkValidity()).toBe(false);
+            title.value = "retained entry";
+            expect(new FormData(form).get("title")).toBe("retained entry");
+            change(duplicate, false);
+            expect(form.checkValidity()).toBe(true);
+            expect(new FormData(form).has("title")).toBe(false);
+            change(duplicate, true);
+            expect(title.value).toBe("retained entry");
+            expect(new FormData(form).get("title")).toBe("retained entry");
+        } finally { vi.restoreAllMocks(); }
+    });
+
     it.each(["inner-first", "outer-first"])("composes nested owners in %s order and retains baseline", order => {
         const { outer, inner, value, baseline } = nestedFixture();
         const first = order === "inner-first" ? inner : outer;

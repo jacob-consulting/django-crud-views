@@ -296,3 +296,134 @@ def test_custom_clean_is_preserved(policy_routes, policy_world, monkeypatch):
     assert "custom_clean" in [
         e.code for e in response.context["formsets"].x_formsets[0].instance.non_form_errors().as_data()
     ]
+
+
+@pytest.mark.parametrize("edit_only", [True, False])
+@pytest.mark.parametrize("deleted", [False, True])
+@pytest.mark.parametrize("identity", ["missing", "malformed", "nonexistent", "foreign", "filtered"])
+def test_invalid_existing_ids_never_save(policy_routes, policy_world, monkeypatch, edit_only, deleted, identity):
+    url, good = editor(policy_routes, policy_world, edit_only=edit_only)
+    assert policy_routes.client.post(url, good).status_code == 302
+    foreign_parent = Publisher.objects.create(name="Other parent")
+    foreign = Book.objects.create(publisher=foreign_parent, title="foreign")
+    filtered = Book.objects.create(publisher=policy_world.parent, title="filtered")
+    url, payload = editor(policy_routes, policy_world, edit_only=edit_only)
+    prefix = f"books-{policy_world.parent.pk}-0"
+    payload["name"] = "Must not save"
+    payload[f"{prefix}-0-title"] = "must not edit"
+    payload[f"siblings-{policy_world.parent.pk}-0-0-title"] = "sibling must not edit"
+    ids = {
+        "missing": "",
+        "malformed": "bad-pk",
+        "nonexistent": "99999999",
+        "foreign": str(foreign.pk),
+        "filtered": str(filtered.pk),
+    }
+    payload[f"{prefix}-0-id"] = ids[identity]
+    if identity == "missing":
+        del payload[f"{prefix}-0-id"]
+    if deleted:
+        payload[f"{prefix}-0-DELETE"] = "on"
+    saves = observe_saves(monkeypatch)
+    policy = observe_policy(monkeypatch)
+    response = policy_routes.client.post(url, payload)
+    assert response.status_code == 200
+    errors = response.context["formsets"].x_formsets[0].instance.non_form_errors().as_data()
+    assert [(e.code, e.messages) for e in errors] == [("cv_invalid_row", ["Invalid row."])]
+    assert policy
+    assert saves == []
+    policy_world.parent.refresh_from_db()
+    policy_world.book.refresh_from_db()
+    policy_world.sibling.refresh_from_db()
+    foreign.refresh_from_db()
+    filtered.refresh_from_db()
+    assert policy_world.parent.name == "Original"
+    assert policy_world.book.title == "book"
+    assert policy_world.sibling.title == "sibling original"
+    assert foreign.title == "foreign"
+    assert filtered.title == "filtered"
+
+
+@pytest.mark.parametrize(
+    "variant",
+    [
+        "lower-initial",
+        "raise-initial",
+        "authorized-extra",
+        "foreign-extra",
+        "filtered-extra",
+        "malformed-extra",
+        "negative-initial",
+        "negative-total",
+        "initial-over-total",
+        "missing-management",
+        "malformed-management",
+    ],
+)
+def test_tampered_management_or_extra_ids_never_save(policy_routes, policy_world, monkeypatch, variant):
+    url, good = editor(policy_routes, policy_world, edit_only=False)
+    assert policy_routes.client.post(url, good).status_code == 302
+    other_parent = Publisher.objects.create(name="Other")
+    foreign = Book.objects.create(publisher=other_parent, title="foreign")
+    filtered = Book.objects.create(publisher=policy_world.parent, title="filtered")
+    url, payload = editor(policy_routes, policy_world, edit_only=False)
+    prefix = f"books-{policy_world.parent.pk}-0"
+    payload["name"] = "Must not save"
+    payload[f"{prefix}-0-title"] = "must not edit"
+    if variant == "lower-initial":
+        payload[f"{prefix}-INITIAL_FORMS"] = "0"
+    elif variant == "raise-initial":
+        payload[f"{prefix}-INITIAL_FORMS"] = "2"
+    elif variant.endswith("-extra"):
+        payload[f"{prefix}-1-id"] = {
+            "authorized-extra": str(policy_world.book.pk),
+            "foreign-extra": str(foreign.pk),
+            "filtered-extra": str(filtered.pk),
+            "malformed-extra": "bad-pk",
+        }[variant]
+        payload[f"{prefix}-1-title"] = "replacement"
+    elif variant == "negative-initial":
+        payload[f"{prefix}-INITIAL_FORMS"] = "-1"
+    elif variant == "negative-total":
+        payload[f"{prefix}-TOTAL_FORMS"] = "-1"
+    elif variant == "initial-over-total":
+        payload[f"{prefix}-INITIAL_FORMS"] = "3"
+    elif variant == "missing-management":
+        del payload[f"{prefix}-INITIAL_FORMS"]
+    elif variant == "malformed-management":
+        payload[f"{prefix}-INITIAL_FORMS"] = "invalid"
+    saves = observe_saves(monkeypatch)
+    policy = observe_policy(monkeypatch)
+    response = policy_routes.client.post(url, payload)
+    assert response.status_code == 200
+    errors = response.context["formsets"].x_formsets[0].instance.non_form_errors().as_data()
+    code = "missing_management_form" if variant in {"missing-management", "malformed-management"} else "cv_invalid_row"
+    assert code in [e.code for e in errors]
+    assert policy
+    assert saves == []
+    policy_world.parent.refresh_from_db()
+    policy_world.book.refresh_from_db()
+    assert policy_world.parent.name == "Original"
+    assert policy_world.book.title == "book"
+    assert not Book.objects.filter(title="replacement").exists()
+
+
+def test_identity_must_match_bound_instance(policy_routes, policy_world):
+    other = Book.objects.create(publisher=policy_world.parent, title="other authorized")
+    _, payload = editor(policy_routes, policy_world, edit_only=False)
+    tree = runtime(policy_routes, policy_world, payload, edit_only=False)
+    row = tree.x_formsets[0].forms[0].form
+    # Simulate custom construction binding a different authorized row. Membership alone is insufficient.
+    row.instance = other
+    assert tree.all_valid() is False
+    assert tree.x_formsets[0].instance.non_form_errors().as_data()[0].code == "cv_invalid_row"
+
+
+def test_permitted_new_rows_save_with_blank_id(policy_routes, policy_world):
+    url, payload = editor(policy_routes, policy_world, edit_only=False)
+    prefix = f"books-{policy_world.parent.pk}-0"
+    assert payload[f"{prefix}-1-id"] == ""
+    payload[f"{prefix}-1-title"] = "legitimate new row"
+    response = policy_routes.client.post(url, payload)
+    assert response.status_code == 302
+    assert Book.objects.get(title="legitimate new row").publisher_id == policy_world.parent.pk

@@ -12,6 +12,9 @@
     // formset's data anyway.
     const MGMT_FIELD = /-(TOTAL_FORMS|INITIAL_FORMS|MIN_NUM_FORMS|MAX_NUM_FORMS)$/;
     const bindings = new WeakMap();
+    // An unresolved binding releases its listener, not its last owned state.
+    // Absence means this group has never resolved and owns no conditional state.
+    const ownedStates = new WeakMap();
     const forms = new WeakMap();
     const baselines = new WeakMap();
     const GROUP = "[cv-data-toggle-group]";
@@ -82,9 +85,11 @@
         try {
             state.groups.forEach(function (group) {
                 const binding = bindings.get(group);
-                if (binding) {
-                    if (!binding.checkbox.checked && group.style.display !== "none" && group.contains(active)) hidden.push(group);
-                    group.style.display = binding.checkbox.checked ? "" : "none";
+                if (binding) ownedStates.set(group, binding.checkbox.checked);
+                if (ownedStates.has(group)) {
+                    const enabled = ownedStates.get(group);
+                    if (!enabled && group.style.display !== "none" && group.contains(active)) hidden.push(group);
+                    group.style.display = enabled ? "" : "none";
                 }
                 group.querySelectorAll(CONTROLS).forEach(function (el) {
                     if (!baselines.has(el)) baselines.set(el, el.disabled);
@@ -95,8 +100,7 @@
                 let inactive = false;
                 if (!MGMT_FIELD.test(el.name || "")) {
                     for (let group = el.parentElement; group && group !== state.form; group = group.parentElement) {
-                        const binding = bindings.get(group);
-                        if (binding && !binding.checkbox.checked) inactive = true;
+                        if (ownedStates.get(group) === false) inactive = true;
                     }
                 }
                 const disabled = baselines.get(el) || inactive;
@@ -136,6 +140,7 @@
                 const previous = bindings.get(group);
                 previous?.checkbox.removeEventListener("change", previous.onChange);
                 bindings.delete(group);
+                ownedStates.delete(group);
             }
         });
         state.groups = groups;
@@ -202,6 +207,7 @@
                 const binding = bindings.get(group);
                 binding?.checkbox.removeEventListener("change", binding.onChange);
                 bindings.delete(group);
+                ownedStates.delete(group);
             });
             forms.delete(form);
         });

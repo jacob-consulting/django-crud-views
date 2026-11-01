@@ -120,3 +120,40 @@ def test_reference_evidence_and_example_comments_remain_explicit():
     assert "crud_views.W320" not in example
     assert "crud_views.E312" in example
     assert "docs/reference/conditional.md#clearing-matrix" in example
+
+
+def test_breaking_changes_pair_migration_recipes_and_public_inventory():
+    changelog = (ROOT / "CHANGELOG.md").read_text().split("### Breaking", 1)[1].split("\n### ", 1)[0]
+    migration = (ROOT / "docs/migrating-1.0.md").read_text()
+    changes = {
+        "Conditional bound markers and lifecycle": "conditional-bound-markers-and-lifecycle",
+        "Conditional clearing and E312": "conditional-clearing-and-e312",
+        "Formset row validation before saving": "formset-row-validation-before-saving",
+    }
+    for title, anchor in changes.items():
+        assert f"**{title}.**" in changelog, f"Missing paired Breaking item: {title}"
+        assert f"docs/migrating-1.0.md#{anchor}" in changelog
+        assert migration.count(f"### {title}\n") == 1
+        section = migration.split(f"### {title}\n", 1)[1].split("\n### ", 1)[0]
+        assert "reference/" in section and "recipe" in section
+    inventory = ROOT / ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-PUBLIC-SURFACE.md"
+    assert inventory.is_file(), "Phase 7 needs an explicit supported-surface handoff"
+    text = inventory.read_text()
+    for name in (
+        "cv.initConditional(root=document)",
+        "cv.initFormsets(root=document)",
+        "cv_toggle_field",
+        "cv:formset:row-added",
+        "{prefix, rows}",
+        "{html, rows}",
+        "E312",
+        "E310",
+        "E311",
+        "W321",
+        "XFormSet",
+        "A8",
+        "jQuery",
+    ):
+        assert name in text
+    assert "test_conditional_migration_docs.py" in text
+    assert "not complete" in text

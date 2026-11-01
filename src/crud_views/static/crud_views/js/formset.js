@@ -495,9 +495,10 @@ class CrudViewsFormset extends XBase {
             if (!button || button.form !== this.form || event.defaultPrevented) return;
             event.preventDefault();
             if (button.type !== "button" || button.matches(":disabled") || !button.isConnected) return;
-            for (let node = button; node && node !== this.form; node = node.parentElement) {
+            for (let node = button; node; node = node.parentElement) {
                 if (node.hidden || node.hasAttribute("inert") || node.getAttribute("aria-disabled") === "true" ||
-                    node.getAttribute("aria-hidden") === "true" || getComputedStyle(node).display === "none") return;
+                    node.getAttribute("aria-hidden") === "true" || getComputedStyle(node).display === "none" ||
+                    ["hidden", "collapse"].includes(getComputedStyle(node).visibility)) return;
             }
             try {
                 const row = this.get_form_context($(button));
@@ -541,16 +542,15 @@ class CrudViewsFormset extends XBase {
     }
 
     reorder_formsets() {
-        this.sel(CVFSConst.sel.content).each((index, content) => {
-            const formset = new XFormset(this, $(content).attr(CVFSConst.attr.formset_prefix));
-            // Task 06-02 aggregates failures rather than losing each() returns.
+        for (const content of this.sel(CVFSConst.sel.content).toArray()) {
             try {
+                const formset = new XFormset(this, $(content).attr(CVFSConst.attr.formset_prefix));
                 formset.reorder();
             } catch (error) {
                 this.debug("error", error);
                 return false;
             }
-        });
+        }
         return true;
     }
 

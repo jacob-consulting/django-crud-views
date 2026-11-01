@@ -356,6 +356,23 @@ describe("formset.js", () => {
             ajax.mockRestore();
         });
 
+        it("rechecks Delete and Reorder capabilities on each activation", () => {
+            formsetFixture({ rows: 2 });
+            document.dispatchEvent(new Event("DOMContentLoaded"));
+            const content = document.querySelector(".cv-formset-content");
+            const data = JSON.parse(content.getAttribute("cv-data-formset"));
+            content.setAttribute("cv-data-formset", JSON.stringify({ ...data, can_delete: false, can_order: false }));
+            document.querySelector(".cv-form-ctrl-delete").click();
+            document.querySelector(".cv-form-ctrl-down").click();
+            expect(document.querySelector('input[name="book-None-0-0-DELETE"]').value).toBe("0");
+            expect([...content.querySelectorAll(".cv-formset-row")].map(row => row.getAttribute("cv-data-formset-form-prefix")))
+                .toEqual(["book-None-0-0", "book-None-0-1"]);
+            content.setAttribute("cv-data-formset", JSON.stringify({ ...data, can_delete_extra: false }));
+            document.querySelector('input[name="book-None-0-INITIAL_FORMS"]').value = "1";
+            content.querySelectorAll(".cv-form-ctrl-delete")[1].click();
+            expect(document.querySelector('input[name="book-None-0-1-DELETE"]').value).toBe("0");
+        });
+
         it.each(["12", "0a1b2c3d-0000-4000-8000-00000000000a"])("uses exact names and prefixes through deep ancestry with pk %s", pk => {
             const key = "line-items-child-notes-grand-items";
             const opts = { key, pk, rows: 2 };

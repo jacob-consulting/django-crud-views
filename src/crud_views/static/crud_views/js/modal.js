@@ -225,7 +225,7 @@ document.addEventListener("click", function (event) {
 });
 
 document.addEventListener("submit", function (event) {
-    if (!(event.target instanceof Element) || !event.target.closest("#" + CVModalConst.content)) {
+    if (event.defaultPrevented || !(event.target instanceof Element) || !event.target.closest("#" + CVModalConst.content)) {
         return;
     }
     event.preventDefault();

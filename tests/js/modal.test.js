@@ -65,6 +65,18 @@ describe("composed formset conditional and modal listeners", () => {
         expect(fetchMock).not.toHaveBeenCalled();
     });
 
+    it("reorders an orderable formset with no delete capability before serialization", async () => {
+        const fixture = document.createElement("div");
+        fixture.innerHTML = formsetHtml({ canDelete: false });
+        const form = await open(fixture.innerHTML);
+        form.querySelectorAll('input[name$="-ORDER"]').forEach(input => { input.value = "99"; });
+        const fetchMock = stubFetch(textResponse("", { status: 204 }));
+        submit(form);
+        expect(fetchMock).toHaveBeenCalledTimes(1);
+        expect(fetchMock.mock.calls[0][1].body.get("book-None-0-0-ORDER")).toBe("1");
+        expect(fetchMock.mock.calls[0][1].body.get("book-None-0-1-ORDER")).toBe("2");
+    });
+
     it("serializes final owning-form row order and management before modal fetch", async () => {
         const form = await open();
         form.querySelector(".cv-form-ctrl-down").click();
@@ -118,6 +130,12 @@ describe("composed formset conditional and modal listeners", () => {
         expect(ajax).not.toHaveBeenCalled();
         ajax.mockRestore();
         adapter.hide(modal);
+        const closedAjax = vi.spyOn($, "ajax").mockImplementation(() => {});
+        replacement.querySelector('[name="with_items"]').checked = true;
+        replacement.querySelector('[name="with_items"]').dispatchEvent(new Event("change", { bubbles: true }));
+        replacement.querySelector(".cv-form-ctrl-add").dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+        expect(closedAjax).not.toHaveBeenCalled();
+        closedAjax.mockRestore();
         const reopened = await open();
         reopened.querySelector(".cv-form-ctrl-delete").click();
         expect(reopened.querySelector('input[name="book-None-0-0-DELETE"]').value).toBe("1");
@@ -155,6 +173,22 @@ describe("composed formset conditional and modal listeners", () => {
         toggle.dispatchEvent(new Event("change", { bubbles: true }));
         expect(nested.querySelector(".cv-form-ctrl-add").disabled).toBe(true);
         expect(new FormData(form).get("book-notes-None-0-TOTAL_FORMS")).toBe("1");
+        ajax.mockRestore();
+    });
+
+    it("ignores an outstanding Add response after its owning form is replaced", async () => {
+        const form = await open();
+        let respond;
+        const ajax = vi.spyOn($, "ajax").mockImplementation(options => { respond = options.success; });
+        form.querySelector(".cv-form-ctrl-add").click();
+        window.cv.cvModalInject(html);
+        const widgets = vi.fn();
+        document.addEventListener("cv:formset:row-added", widgets);
+        respond({ html: rowHtml(2), rows: ["book-None-0-2"] });
+        document.removeEventListener("cv:formset:row-added", widgets);
+        expect(widgets).not.toHaveBeenCalled();
+        expect(content.querySelectorAll(".cv-formset-row")).toHaveLength(2);
+        expect(content.querySelector('input[name="book-None-0-TOTAL_FORMS"]').value).toBe("2");
         ajax.mockRestore();
     });
 });

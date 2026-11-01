@@ -2,9 +2,9 @@
 import importlib.util
 import json
 import os
-from pathlib import Path
 import shutil
 import subprocess
+from pathlib import Path
 
 import pytest
 from crispy_forms.helper import FormHelper
@@ -12,8 +12,8 @@ from crispy_forms.layout import Layout, Row
 from crispy_forms.utils import render_crispy_form
 from django import forms
 
-from crud_views.lib.conditional.layout import ToggleGroup
 from crud_views.lib.conditional.group import ConditionalGroup, ConditionalGroupFormMixin
+from crud_views.lib.conditional.layout import ToggleGroup
 from crud_views.lib.conditional.toggle import ModelFieldToggle
 from crud_views.lib.crispy import Column6
 from tests.test1.app.models import Profile
@@ -128,10 +128,16 @@ def _resolve_tracer_node(root):
         ).stdout.strip()
         jsdom = subprocess.run(
             [executable, "-e", 'require("jsdom"); console.log(require("jsdom/package.json").version)'],
-            cwd=root, capture_output=True, text=True, check=True, timeout=15,
+            cwd=root,
+            capture_output=True,
+            text=True,
+            check=True,
+            timeout=15,
         ).stdout.strip()
     except (OSError, subprocess.SubprocessError) as exc:
-        pytest.fail(f"Conditional tracer Node {selected!r} or repository jsdom unusable: {exc}; check runtime/dependencies")
+        pytest.fail(
+            f"Conditional tracer Node {selected!r} or repository jsdom unusable: {exc}; check runtime/dependencies"
+        )
     return executable, version, jsdom
 
 
@@ -141,8 +147,10 @@ def test_tracer_disabled_import_never_probes_runtime(monkeypatch):
     monkeypatch.delenv("CV_CONDITIONAL_TRACER", raising=False)
     monkeypatch.delenv("CV_FOCUS_NODE", raising=False)
     monkeypatch.setenv("PATH", "")
+
     def forbidden(*args, **kwargs):
         pytest.fail("Disabled tracer performed a runtime probe or manifest read")
+
     monkeypatch.setattr(subprocess, "run", forbidden)
     monkeypatch.setattr(shutil, "which", forbidden)
     monkeypatch.setattr(Path, "read_text", forbidden)
@@ -150,16 +158,22 @@ def test_tracer_disabled_import_never_probes_runtime(monkeypatch):
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     assert module.test_tracer_rendered_conditional_round_trip.__test__ is False
-    ordinary = [(name, obj) for name, obj in inspect.getmembers(module, inspect.isfunction)
-                if name.startswith("test_") and getattr(obj, "__test__", True)]
+    ordinary = [
+        (name, obj)
+        for name, obj in inspect.getmembers(module, inspect.isfunction)
+        if name.startswith("test_") and getattr(obj, "__test__", True)
+    ]
     assert any(name == "test_toggle_group_renders_marker_attributes" for name, _ in ordinary)
 
 
 def test_tracer_rendered_conditional_round_trip(monkeypatch, tmp_path, record_property):
     root = Path(__file__).resolve().parents[2]
+    node, version, jsdom = _resolve_tracer_node(root)
     with monkeypatch.context() as patch:
         patch.delenv("CV_FOCUS_NODE", raising=False)
-        node, version, jsdom = _resolve_tracer_node(root)
+        default_node, _, _ = _resolve_tracer_node(root)
+        manifest = root / ".planning/phases/06-form-button-leaf/06-JS-RUNTIME.json"
+        assert default_node == json.loads(manifest.read_text())["node"]["path"]
     record_property("tracer_node_path", node)
     record_property("tracer_node_version", version)
     record_property("tracer_jsdom_version", jsdom)
@@ -169,7 +183,7 @@ def test_tracer_rendered_conditional_round_trip(monkeypatch, tmp_path, record_pr
     for override in ["", str(tmp_path / "missing-node")]:
         with monkeypatch.context() as patch:
             patch.setenv("CV_FOCUS_NODE", override)
-            with pytest.raises(pytest.fail.Exception, match="Conditional tracer.*Node"):
+            with pytest.raises(pytest.fail.Exception, match=r"Conditional tracer.*Node"):
                 _resolve_tracer_node(root)
     with monkeypatch.context() as patch:
         patch.delenv("CV_FOCUS_NODE", raising=False)
@@ -179,15 +193,24 @@ def test_tracer_rendered_conditional_round_trip(monkeypatch, tmp_path, record_pr
         with pytest.raises(pytest.fail.Exception, match="manifest"):
             _resolve_tracer_node(root)
     with monkeypatch.context() as patch:
+        patch.delenv("CV_FOCUS_NODE", raising=False)
+        patch.setattr(Path, "read_text", lambda *a, **kw: json.dumps({"node": {"path": str(tmp_path / "absent")}}))
+        with pytest.raises(pytest.fail.Exception, match="unavailable"):
+            _resolve_tracer_node(root)
+    with monkeypatch.context() as patch:
         patch.setenv("CV_FOCUS_NODE", node)
+
         def unusable(*args, **kwargs):
             raise subprocess.CalledProcessError(1, args[0], stderr="unusable runtime/jsdom")
+
         patch.setattr(subprocess, "run", unusable)
         with pytest.raises(pytest.fail.Exception, match="unusable"):
             _resolve_tracer_node(root)
 
     class ContactForm(ConditionalGroupFormMixin, _LayoutForm):
-        cv_conditional_groups = [ConditionalGroup(ModelFieldToggle("with_contact"), ["email", "phone"], required=["email"])]
+        cv_conditional_groups = [
+            ConditionalGroup(ModelFieldToggle("with_contact"), ["email", "phone"], required=["email"])
+        ]
 
     first = Profile.objects.create(name="first", with_contact=True, email="first@example.com", phone="111")
     second = Profile.objects.create(name="second", with_contact=True, email="second@example.com", phone="222")
@@ -198,7 +221,7 @@ def test_tracer_rendered_conditional_round_trip(monkeypatch, tmp_path, record_pr
         helper.form_tag = False
         rendered.append(render_crispy_form(form, helper=helper))
     html = "<form>" + "".join(rendered) + "</form>"
-    script = r'''
+    script = r"""
 const fs = require("node:fs"), assert = require("node:assert/strict");
 const {JSDOM} = require("jsdom");
 const dom = new JSDOM(fs.readFileSync(0, "utf8"), {runScripts: "outside-only"});
@@ -218,7 +241,7 @@ assert.equal(payload["rows-1-name"], "second");
 assert.equal("rows-1-email" in payload, false);
 console.log(JSON.stringify(payload));
 dom.window.close();
-'''
+"""
     result = subprocess.run([node, "-e", script], input=html, cwd=root, capture_output=True, text=True, timeout=30)
     assert result.returncode == 0, f"Node tracer {node} failed: {result.stderr}"
     form = ContactForm(data=json.loads(result.stdout), instance=second, prefix="rows-1")

@@ -11,13 +11,14 @@
     // error once the user re-enables the toggle. The server ignores an off
     // formset's data anyway.
     const MGMT_FIELD = /-(TOTAL_FORMS|INITIAL_FORMS|MIN_NUM_FORMS|MAX_NUM_FORMS)$/;
+    const bindings = new WeakMap();
 
-    function findCheckbox(scope, name) {
-        // Match the toggle checkbox within the nearest form/row scope.
-        const escaped = globalThis.CSS?.escape ? CSS.escape(name) : name;
-        return scope.querySelector(
-            'input[type="checkbox"][name="' + escaped + '"], input[type="checkbox"][name$="-' + escaped + '"]'
-        );
+    function findCheckboxes(form, name) {
+        // Form ownership includes controls using form= and excludes controls
+        // reassigned to another form. Names are data, never selector syntax.
+        return Array.from(form.elements).filter(function (el) {
+            return el.tagName === "INPUT" && el.type === "checkbox" && el.form === form && el.name === name;
+        });
     }
 
     function apply(group, checkbox) {
@@ -31,37 +32,57 @@
         });
     }
 
-    function wireGroups(root) {
-        root.querySelectorAll("[cv-data-toggle-group]").forEach(function (group) {
-            if (group.__cvToggleWired) {
-                return;
-            }
-            group.__cvToggleWired = true;
+    function initConditional(root = document) {
+        const selector = "[cv-data-toggle-group]";
+        const groups = new Set(root.querySelectorAll(selector));
+        if (root.matches?.(selector)) {
+            groups.add(root);
+        }
+        // A theme may supply just a newly inserted checkbox as the root.
+        const form = root.closest?.("form") || root.form;
+        if (form) {
+            form.querySelectorAll(selector).forEach(group => groups.add(group));
+        }
+        groups.forEach(function (group) {
             const name = group.getAttribute("cv-data-toggle-field");
-            const scope = group.closest("form") || document;
-            const checkbox = findCheckbox(scope, name);
+            const owner = group.closest("form");
+            const matches = owner ? findCheckboxes(owner, name) : [];
+            const previous = bindings.get(group);
+            const checkbox = matches.length === 1 ? matches[0] : null;
+            if (previous && previous.checkbox !== checkbox) {
+                previous.checkbox.removeEventListener("change", previous.onChange);
+                bindings.delete(group);
+            }
             if (!checkbox) {
+                if (matches.length > 1) {
+                    console.warn("crud_views: ambiguous conditional toggle", name);
+                }
                 return;
             }
             apply(group, checkbox);
-            checkbox.addEventListener("change", function () {
-                apply(group, checkbox);
-            });
+            if (!bindings.has(group)) {
+                const onChange = function () { apply(group, checkbox); };
+                bindings.set(group, { checkbox, onChange });
+                checkbox.addEventListener("change", onChange);
+            }
         });
     }
 
+    globalThis.cv = globalThis.cv || {};
+    globalThis.cv.initConditional = initConditional;
+
     document.addEventListener("DOMContentLoaded", function () {
-        wireGroups(document);
+        initConditional(document);
     });
 
     // Modal content is injected via innerHTML after DOMContentLoaded; modal.js
     // dispatches this event exactly so scripts can re-initialize inside it.
     document.addEventListener("cv:modal:loaded", function (event) {
-        wireGroups(event.target);
+        initConditional(event.target);
     });
 
     // Same for formset rows added by formset.js after page load.
     document.addEventListener("cv:formset:row-added", function (event) {
-        wireGroups(event.target);
+        initConditional(event.target);
     });
 })();

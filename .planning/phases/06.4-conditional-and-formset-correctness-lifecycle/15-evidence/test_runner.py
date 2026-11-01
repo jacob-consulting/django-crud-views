@@ -350,6 +350,7 @@ class CompletePacketFixture:
         # Pending dispositions exercise structural validity without inventing reviews.
         for report in self.handoff["reports"].values():
             report["status"] = "pending"
+            report["sha256"] = runner.sha(runner.ROOT / report["path"])
         findings = {}
         for gap, reviews in runner.GAP_REVIEWS.items():
             for identity in [gap, *reviews]:
@@ -504,6 +505,48 @@ class ConditionalCaptureEvidence(CompletePacketFixture, unittest.TestCase):
         return next(
             c for c in self.conditional()["browser"]["cases"] if c["id"] == "gap-ambiguity" and c["theme"] == theme
         )
+
+    def assert_oversized_dimension_rejects_everywhere(self, dimension):
+        positive = self.cli()
+        self.assertEqual(positive.returncode, 0, positive.stderr)
+        self.assertIn("PHASE64_MATRIX_OK", positive.stdout)
+        self.assertEqual(positive.stderr, "")
+        positive = self.cli(handoff=True)
+        self.assertEqual(positive.returncode, 0, positive.stderr)
+        self.assertEqual(
+            json.loads(positive.stdout), {"structurally_valid": True, "ready": False, "disposition": "not-ready"}
+        )
+        self.assertEqual(positive.stderr, "")
+
+        self.case()["captures"][0]["icons"]["glyphs"][0][dimension] = 10**400
+        # Collect both real entry points before assertions or direct validation:
+        # an escaping exception must not hide the other CLI's observation.
+        observations = [(handoff, self.cli(handoff)) for handoff in (False, True)]
+        message = "Conditional capture icon observations invalid: desktop"
+        for handoff, result in observations:
+            self.assertEqual(
+                (result.returncode, result.stdout, result.stderr),
+                (1, "", f"MATRIX_REJECTED: {message}\n"),
+                f"handoff={handoff}",
+            )
+        packet = runner.load_json(self.output)
+        case = next(
+            c
+            for c in packet["gates"]["conditional-browser"]["browser"]["cases"]
+            if c["id"] == "gap-ambiguity" and c["theme"] == "stock"
+        )
+        for name, validate in (
+            ("capture", lambda: runner.validate_conditional_captures(case)),
+            ("aggregate", lambda: runner.validate(packet, self.manifest)),
+            ("handoff", lambda: runner.validate_handoff(runner.load_json(self.directory / "handoff.json"))),
+        ):
+            with self.subTest(validator=name):
+                with self.assertRaisesRegex(ValueError, f"^{message}$") as caught:
+                    validate()
+                self.assertIs(type(caught.exception), ValueError)
+
+    def test_oversized_glyph_width_rejects_cli_and_handoff(self):
+        self.assert_oversized_dimension_rejects_everywhere("width")
 
     def test_current_three_stock_and_explicit_empty_native_are_valid(self):
         self.assertEqual([c["device"]["id"] for c in self.case()["captures"]], ["desktop", "mobile", "tablet"])

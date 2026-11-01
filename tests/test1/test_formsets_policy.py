@@ -208,6 +208,21 @@ def observe_policy(monkeypatch):
     return calls
 
 
+def reclean_view(monkeypatch, url):
+    """Install consuming-view revalidation without changing the registered route."""
+    from django.urls import resolve
+
+    view = resolve(url).func.view_class
+    original = view.cv_form_is_valid
+
+    def revalidate(self, context):
+        original(self, context)
+        context["formsets"].x_formsets[0].instance.full_clean()
+        return original(self, context)
+
+    monkeypatch.setattr(view, "cv_form_is_valid", revalidate)
+
+
 @pytest.mark.parametrize("edit_only", [True, False])
 @pytest.mark.parametrize("operation", ["create", "update"])
 def test_policy_routes_accept_valid_posts(policy_routes, policy_world, edit_only, operation):
@@ -224,9 +239,14 @@ def test_policy_routes_accept_valid_posts(policy_routes, policy_world, edit_only
 
 @pytest.mark.parametrize("operation", ["create", "update"])
 @pytest.mark.parametrize("variant", ["changed", "deleted", "nested-only"])
-def test_edit_only_extras_rejected_before_any_save(policy_routes, policy_world, monkeypatch, operation, variant):
+@pytest.mark.parametrize("reclean", [False, True])
+def test_edit_only_extras_rejected_before_any_save(
+    policy_routes, policy_world, monkeypatch, operation, variant, reclean
+):
     # Prove the same route/adapter can validate and save before exercising the rejection.
     url, good = editor(policy_routes, policy_world, operation=operation)
+    if reclean:
+        reclean_view(monkeypatch, url)
     good["name"] = "Positive control"
     assert policy_routes.client.post(url, good).status_code == 302
     url, payload = editor(policy_routes, policy_world, operation=operation)
@@ -292,18 +312,8 @@ def test_reclean_edit_only_extra_stays_invalid(policy_routes, policy_world):
 
 def test_reclean_http_rejects_before_any_save(policy_routes, policy_world, monkeypatch):
     # A consuming view may deliberately revalidate after native/custom cleaning.
-    from django.urls import resolve
-
     url, payload = editor(policy_routes, policy_world)
-    view = resolve(url).func.view_class
-    original = view.cv_form_is_valid
-
-    def revalidate(self, context):
-        original(self, context)
-        context["formsets"].x_formsets[0].instance.full_clean()
-        return original(self, context)
-
-    monkeypatch.setattr(view, "cv_form_is_valid", revalidate)
+    reclean_view(monkeypatch, url)
     payload["name"] = "Positive reclean control"
     assert policy_routes.client.post(url, payload).status_code == 302
     _, payload = editor(policy_routes, policy_world)
@@ -325,6 +335,33 @@ def test_reclean_http_rejects_before_any_save(policy_routes, policy_world, monke
     assert policy_world.book.title == "book"
     assert policy_world.sibling.title == "sibling original"
     assert policy_world.note.note == "original note"
+
+
+@pytest.mark.parametrize("error", ["custom_clean", "too_few_forms"])
+def test_reclean_preserves_native_and_custom_nonform_errors(policy_routes, policy_world, monkeypatch, error):
+    original = policy_routes.family.clean
+
+    def clean(self):
+        original(self)
+        raise ValidationError("Custom clean retained.", code="custom_clean")
+
+    _, payload = editor(policy_routes, policy_world)
+    payload[f"books-{policy_world.parent.pk}-0-1-title"] = "forged"
+    tree = runtime(policy_routes, policy_world, payload)
+    instance = tree.x_formsets[0].instance
+    if error == "custom_clean":
+        monkeypatch.setattr(policy_routes.family, "clean", clean)
+    else:
+        instance.min_num = 3
+        instance.validate_min = True
+    for _ in range(3):
+        instance.full_clean()
+        for _ in range(2):
+            assert tree.all_valid() is False
+            errors = instance.non_form_errors().as_data()
+            assert [e.code for e in errors] == [error, "cv_additions_not_allowed"]
+            if error == "custom_clean":
+                assert errors[0].messages == ["Custom clean retained."]
 
 
 def test_custom_clean_is_preserved(policy_routes, policy_world, monkeypatch):
@@ -353,8 +390,11 @@ def test_custom_clean_is_preserved(policy_routes, policy_world, monkeypatch):
 @pytest.mark.parametrize("edit_only", [True, False])
 @pytest.mark.parametrize("deleted", [False, True])
 @pytest.mark.parametrize("identity", ["missing", "malformed", "nonexistent", "foreign", "filtered"])
-def test_invalid_existing_ids_never_save(policy_routes, policy_world, monkeypatch, edit_only, deleted, identity):
+def test_reclean_invalid_existing_ids_never_save(
+    policy_routes, policy_world, monkeypatch, edit_only, deleted, identity
+):
     url, good = editor(policy_routes, policy_world, edit_only=edit_only)
+    reclean_view(monkeypatch, url)
     assert policy_routes.client.post(url, good).status_code == 302
     foreign_parent = Publisher.objects.create(name="Other parent")
     foreign = Book.objects.create(publisher=foreign_parent, title="foreign")
@@ -460,15 +500,23 @@ def test_tampered_management_or_extra_ids_never_save(policy_routes, policy_world
     assert not Book.objects.filter(title="replacement").exists()
 
 
-def test_identity_must_match_bound_instance(policy_routes, policy_world):
+@pytest.mark.parametrize("deleted", [False, True])
+def test_reclean_identity_must_match_bound_instance(policy_routes, policy_world, deleted):
     other = Book.objects.create(publisher=policy_world.parent, title="other authorized")
     _, payload = editor(policy_routes, policy_world, edit_only=False)
+    if deleted:
+        payload[f"books-{policy_world.parent.pk}-0-0-DELETE"] = "on"
     tree = runtime(policy_routes, policy_world, payload, edit_only=False)
     row = tree.x_formsets[0].forms[0].form
     # Simulate custom construction binding a different authorized row. Membership alone is insufficient.
     row.instance = other
     assert tree.all_valid() is False
     assert tree.x_formsets[0].instance.non_form_errors().as_data()[0].code == "cv_invalid_row"
+    for _ in range(2):
+        tree.x_formsets[0].instance.full_clean()
+        assert tree.all_valid() is False
+        errors = tree.x_formsets[0].instance.non_form_errors().as_data()
+        assert [(e.code, e.messages) for e in errors] == [("cv_invalid_row", ["Invalid row."])]
 
 
 def test_permitted_new_rows_save_with_blank_id(policy_routes, policy_world):
@@ -503,10 +551,16 @@ def uuid_runtime(family, author, payload, *, queryset=None):
 
 
 @pytest.mark.parametrize("family", [PolicyPackageInlineFormSet, PolicyNativeInlineFormSet], ids=["package", "native"])
-@pytest.mark.parametrize("identity", ["missing", "malformed", "nonexistent", "valid"])
-def test_uuid_existing_identity_and_unsaved_default_are_distinct(family, identity):
+@pytest.mark.parametrize(
+    "identity", ["missing", "malformed", "nonexistent", "foreign", "filtered", "misbound", "valid"]
+)
+@pytest.mark.parametrize("deleted", [False, True])
+def test_reclean_uuid_existing_identity_and_unsaved_default_are_distinct(family, identity, deleted):
     author = Author.objects.create(first_name="Ursula", last_name="Le Guin")
     row = UUIDFragmentRow.objects.create(author=author, text="original")
+    other_author = Author.objects.create(first_name="Other", last_name="Author")
+    foreign = UUIDFragmentRow.objects.create(author=other_author, text="foreign")
+    other = UUIDFragmentRow.objects.create(author=author, text="other authorized")
     prefix = f"rows-{author.pk}-0"
     payload = {
         "first_name": "Ursula",
@@ -517,21 +571,39 @@ def test_uuid_existing_identity_and_unsaved_default_are_distinct(family, identit
             "missing": "",
             "malformed": "bad-pk",
             "nonexistent": str(uuid.uuid4()),
+            "foreign": str(foreign.pk),
+            "filtered": str(row.pk),
+            "misbound": str(row.pk),
             "valid": str(row.pk),
         }[identity],
         f"{prefix}-0-text": "edited",
         f"{prefix}-1-id": "",
         f"{prefix}-1-text": "new default UUID",
     }
-    tree = uuid_runtime(family, author, payload)
+    if deleted:
+        payload[f"{prefix}-0-DELETE"] = "on"
+    queryset = UUIDFragmentRow.objects.filter(author=author).exclude(pk=row.pk) if identity == "filtered" else None
+    tree = uuid_runtime(family, author, payload, queryset=queryset)
+    if identity == "misbound":
+        tree.x_formsets[0].forms[0].form.instance = other
     extra = tree.x_formsets[0].forms[1].form.instance
     assert isinstance(extra.pk, uuid.UUID)
     assert extra._state.adding is True
     assert tree.all_valid() is (identity == "valid")
+    for _ in range(2):
+        tree.x_formsets[0].instance.full_clean()
+        for _ in range(2):
+            assert tree.all_valid() is (identity == "valid")
+            if identity != "valid":
+                errors = tree.x_formsets[0].instance.non_form_errors().as_data()
+                assert [(e.code, e.messages) for e in errors] == [("cv_invalid_row", ["Invalid row."])]
     if identity == "valid":
         tree.save()
-        row.refresh_from_db()
-        assert row.text == "edited"
+        if deleted:
+            assert not UUIDFragmentRow.objects.filter(pk=row.pk).exists()
+        else:
+            row.refresh_from_db()
+            assert row.text == "edited"
         assert UUIDFragmentRow.objects.get(text="new default UUID").author_id == author.pk
     else:
         errors = tree.x_formsets[0].instance.non_form_errors().as_data()
@@ -561,5 +633,7 @@ def test_authorized_membership_uses_queryset_database(family, database_routes, d
         assert tree.x_formsets[0].instance.is_valid()
         assert tree.x_formsets[0].instance.get_queryset().db == "shard"
     with database_routes("default"), django_assert_num_queries(0, using="default"):
+        assert tree.all_valid() is True
+        tree.x_formsets[0].instance.full_clean()
         assert tree.all_valid() is True
     assert not UUIDFragmentRow.objects.using("default").filter(pk=row.pk).exists()

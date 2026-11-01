@@ -15,6 +15,9 @@ from crud_views.lib.formsets import FormSets
 from tests.lib.helper.forms import field_key, form_payload
 from tests.test1.app.models import BookNote, Publisher
 from tests.test1.app.views_formset import BookNoteInlineFormSet
+from tests.test1.test_formsets_policy import editor, observe_saves
+from tests.test1.test_formsets_policy import policy_routes as policy_routes
+from tests.test1.test_formsets_policy import policy_world as policy_world
 
 
 @pytest.mark.django_db
@@ -79,3 +82,67 @@ def test_child_clean_main_form_error_rejects_before_save(monkeypatch, client_use
     assert b"main error from child clean" in response.content
     assert saves == []
     assert not Publisher.objects.filter(name="must not save main").exists()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("cleaner", ["siblings", "notes"])
+@pytest.mark.parametrize("violation", ["addition", "identity"])
+def test_late_clean_reclean_restores_row_policy_before_http_save(
+    policy_routes, policy_world, monkeypatch, cleaner, violation
+):
+    """Later custom clean erases an earlier error; phase two must restore it."""
+    trees = []
+    recleans = []
+    original_init = FormSets.init
+    original_clean = policy_routes.family.clean
+
+    def init(self, request, form):
+        result = original_init(self, request, form)
+        if request.method == "POST":
+            trees.append(self)
+        return result
+
+    def clean(self):
+        original_clean(self)
+        if self.formset.original_key == cleaner:
+            earlier = trees[-1].x_formsets[0].instance
+            recleans.append([e.code for e in earlier.non_form_errors().as_data()])
+            earlier.full_clean()
+
+    monkeypatch.setattr(FormSets, "init", init)
+    monkeypatch.setattr(policy_routes.family, "clean", clean)
+    url, payload = editor(policy_routes, policy_world)
+    payload["name"] = "Positive late clean control"
+    assert policy_routes.client.post(url, payload).status_code == 302
+    recleans.clear()
+    _, payload = editor(policy_routes, policy_world)
+    payload["name"] = "Must not save"
+    prefix = f"books-{policy_world.parent.pk}-0"
+    payload[f"{prefix}-0-title"] = "must not edit"
+    payload[f"siblings-{policy_world.parent.pk}-0-0-title"] = "sibling must not edit"
+    payload[f"books-notes-{policy_world.parent.pk}-0-0-{policy_world.book.pk}-0-0-note"] = "must not edit"
+    if violation == "addition":
+        payload[f"{prefix}-1-title"] = "forged"
+        code, message = "cv_additions_not_allowed", "Additions are not allowed."
+    else:
+        payload[f"{prefix}-0-id"] = "bad-pk"
+        payload[f"{prefix}-0-DELETE"] = "on"
+        code, message = "cv_invalid_row", "Invalid row."
+    saves = observe_saves(monkeypatch)
+    response = policy_routes.client.post(url, payload)
+    assert response.status_code == 200
+    assert any(code in codes for codes in recleans)
+    tree = response.context["formsets"]
+    assert tree.all_valid() is False
+    errors = tree.x_formsets[0].instance.non_form_errors().as_data()
+    assert [(e.code, e.messages) for e in errors] == [(code, [message])]
+    assert message.encode() in response.content
+    assert saves == []
+    policy_world.parent.refresh_from_db()
+    policy_world.book.refresh_from_db()
+    policy_world.sibling.refresh_from_db()
+    policy_world.note.refresh_from_db()
+    assert policy_world.parent.name == "Positive late clean control"
+    assert policy_world.book.title == "book"
+    assert policy_world.sibling.title == "sibling original"
+    assert policy_world.note.note == "original note"

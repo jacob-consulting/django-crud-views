@@ -7,5 +7,7 @@
   "expected": "all_valid() remains False after full_clean()",
   "actual": "all_valid() returned True; both HTTP cases returned 302 instead of 200",
   "reportPath": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/11-evidence/task1-red.xml",
-  "semanticAssessment": "Target executed and failed on the planned boolean assertion after native recleaning; no setup or collection faults."
+  "semanticAssessment": "Target executed and failed on the planned boolean assertion after native recleaning; no setup or collection faults.",
+  "runStartedAt": "2026-11-01T14:44:54.942602+00:00",
+  "reportModifiedAt": "2026-11-01T14:44:56.924400+00:00"
 }

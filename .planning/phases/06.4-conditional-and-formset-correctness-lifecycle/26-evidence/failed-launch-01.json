@@ -1,0 +1,11 @@
+{
+  "actor": "/root/canonical_26",
+  "stage": "pre-capture helper import",
+  "command": "PYTHONDONTWRITEBYTECODE=1 .nox/crispy_floor-3-12-django-6-0/bin/python .planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-checks.py --capture",
+  "returncode": 1,
+  "stdout": "",
+  "stderr": "Traceback (most recent call last):\n  File \"/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-checks.py\", line 16, in <module>\n    import yaml\nModuleNotFoundError: No module named 'yaml'\n",
+  "observations": [],
+  "completed": false,
+  "time_note": "The launching tool did not record UTC start/finish; none is invented. This failed launch precedes canonical-outcomes.json capture."
+}

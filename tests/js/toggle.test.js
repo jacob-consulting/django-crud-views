@@ -175,6 +175,26 @@ describe("conditional reset and focus lifecycle", () => {
         expect(group.querySelector("[name=title]").value).toBe("unsaved");
     });
 
+    it("restores checked defaults without releasing independent disables or duplicating reset handlers", async () => {
+        vi.useFakeTimers();
+        const { group, checkbox } = fixture();
+        const form = checkbox.form;
+        const spy = vi.spyOn(form, "addEventListener");
+        const title = group.querySelector("[name=title]");
+        title.disabled = true;
+        wire();
+        globalThis.cv.initConditional(form);
+        expect(spy.mock.calls.filter(([type]) => type === "reset")).toHaveLength(1);
+        change(checkbox, false);
+        form.reset();
+        expect(checkbox.checked).toBe(true);
+        expect(group.style.display).toBe("none");
+        await vi.runAllTimersAsync();
+        expect(group.style.display).toBe("");
+        expect(title.disabled).toBe(true);
+        expect(group.querySelector("select").disabled).toBe(false);
+    });
+
     function visibleGeometry() {
         vi.spyOn(HTMLElement.prototype, "getClientRects").mockReturnValue([{}]);
     }
@@ -280,6 +300,19 @@ describe("conditional reset and focus lifecycle", () => {
         globalThis.cv.initConditional(form);
         expect(group.style.display).toBe("");
         expect(group.querySelector("input").disabled).toBe(false);
+    });
+
+    it("recaptures independent changes made while modal content was disposed", () => {
+        const { group, checkbox } = fixture({ checked: false });
+        wire();
+        const form = checkbox.form;
+        form.dispatchEvent(new CustomEvent("cv:modal:unload", { bubbles: true }));
+        const title = group.querySelector("[name=title]");
+        title.disabled = true;
+        checkbox.checked = true;
+        globalThis.cv.initConditional(form);
+        expect(title.disabled).toBe(true);
+        expect(group.querySelector("select").disabled).toBe(false);
     });
 });
 

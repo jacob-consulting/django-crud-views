@@ -36,15 +36,56 @@
             attributeFilter: ["disabled"], attributeOldValue: true });
     }
 
+    function usable(el) {
+        if (!(el instanceof HTMLElement) || !el.isConnected || !el.getClientRects().length) return false;
+        for (let node = el; node; node = node.parentElement) {
+            if (node.hidden || node.hasAttribute("inert") || node.inert ||
+                node.getAttribute("aria-hidden") === "true" || node.getAttribute("aria-disabled") === "true" ||
+                node.matches(":disabled")) return false;
+            const style = getComputedStyle(node);
+            if (style.display === "none" || style.visibility === "hidden" || style.visibility === "collapse") return false;
+        }
+        return true;
+    }
+
+    function focus(el, temporary = false) {
+        if (!usable(el)) return false;
+        const added = temporary && !el.hasAttribute("tabindex");
+        const clean = function () {
+            if (added && el.getAttribute("tabindex") === "-1") el.removeAttribute("tabindex");
+            el.removeEventListener("blur", clean);
+        };
+        if (added) el.setAttribute("tabindex", "-1");
+        el.focus();
+        if (document.activeElement !== el) { clean(); return false; }
+        if (added) el.addEventListener("blur", clean, { once: true });
+        return true;
+    }
+
+    function recoverFocus(state, hidden) {
+        for (const group of hidden) {
+            for (let node = group; node && node !== state.form; node = node.parentElement) {
+                const binding = bindings.get(node);
+                if (binding && binding.checkbox.form === state.form && focus(binding.checkbox)) return;
+            }
+        }
+        focus(state.form, true);
+    }
+
     function sync(state) {
         // A same-value external `disabled = true` still creates a record. Drain
         // it before disconnecting, so our temporary writes never become baseline.
         rememberExternal(state.observer.takeRecords());
         state.observer.disconnect();
+        const active = document.activeElement;
+        const hidden = [];
         try {
             state.groups.forEach(function (group) {
                 const binding = bindings.get(group);
-                if (binding) group.style.display = binding.checkbox.checked ? "" : "none";
+                if (binding) {
+                    if (!binding.checkbox.checked && group.style.display !== "none" && group.contains(active)) hidden.push(group);
+                    group.style.display = binding.checkbox.checked ? "" : "none";
+                }
                 group.querySelectorAll(CONTROLS).forEach(function (el) {
                     if (!baselines.has(el)) baselines.set(el, el.disabled);
                     state.controls.add(el);
@@ -64,6 +105,7 @@
         } finally {
             observe(state);
         }
+        if (hidden.length) recoverFocus(state, hidden.reverse());
     }
 
     function initForm(form) {
@@ -75,6 +117,14 @@
                 sync(state);
             });
             forms.set(form, state);
+            state.onReset = function (event) {
+                // Native defaults run after event dispatch. A task also observes
+                // preventDefault() by listeners later in the propagation path.
+                setTimeout(function () {
+                    if (!event.defaultPrevented && forms.get(form) === state) initForm(form);
+                }, 0);
+            };
+            form.addEventListener("reset", state.onReset);
             observe(state);
         }
         rememberExternal(state.observer.takeRecords());
@@ -129,8 +179,32 @@
     globalThis.cv = globalThis.cv || {};
     globalThis.cv.initConditional = initConditional;
 
-    document.addEventListener("DOMContentLoaded", function () {
-        initConditional(document);
+    document.addEventListener("DOMContentLoaded", function () { initConditional(document); });
+    if (document.readyState !== "loading") initConditional(document);
+
+    document.addEventListener("cv:modal:unload", function (event) {
+        const owners = new Set(event.target.querySelectorAll("form"));
+        if (event.target.matches?.("form")) owners.add(event.target);
+        owners.forEach(function (form) {
+            const state = forms.get(form);
+            if (!state) return;
+            rememberExternal(state.observer.takeRecords());
+            state.observer.disconnect();
+            form.removeEventListener("reset", state.onReset);
+            // Release only our temporary state before forgetting ownership. A
+            // theme may retain and later reinsert this exact detached content.
+            state.controls.forEach(function (el) {
+                const disabled = baselines.get(el);
+                if (el.disabled !== disabled) el.disabled = disabled;
+                baselines.delete(el);
+            });
+            state.groups.forEach(function (group) {
+                const binding = bindings.get(group);
+                binding?.checkbox.removeEventListener("change", binding.onChange);
+                bindings.delete(group);
+            });
+            forms.delete(form);
+        });
     });
 
     // Modal content is injected via innerHTML after DOMContentLoaded; modal.js

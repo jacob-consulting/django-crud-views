@@ -12,7 +12,7 @@ from crispy_forms.utils import render_crispy_form
 from django import forms
 from django.core.files.base import ContentFile
 from django.core.files.storage import FileSystemStorage
-from django.forms.models import inlineformset_factory
+from django.forms.models import BaseInlineFormSet, inlineformset_factory
 from django.template import Context, Engine
 from django.test import RequestFactory
 from lxml import html
@@ -109,6 +109,65 @@ def test_published_formset_and_row_json_match_actual_projection(kind):
     assert projections[offset]["pk"] == grammar.value
     assert projections[offset + 1]["pk"] == str(grammar)
     assert projections[offset]["pk"] != str(parent.pk)
+
+
+def test_published_native_controls_follow_actual_delete_field_presence():
+    source = recipe(FORMSETS, "### Native row capability recipe", "django")[0]
+    parent = Publisher.objects.create(name="controls")
+    Book.objects.create(publisher=parent, title="initial")
+    klass = inlineformset_factory(
+        Publisher, Book, fields=["title"], extra=1, can_delete=True, can_delete_extra=False, can_order=True
+    )
+    native = klass(instance=parent, prefix="rows")
+    render = Engine.get_default().from_string(source)
+    for index, form in enumerate(native.forms):
+        tree = html.fromstring(render.render(Context({"form": form, "formset": native})))
+        controls = tree.xpath(".//button")
+        classes = {button.get("class") for button in controls}
+        assert {"cv-form-ctrl-add", "cv-form-ctrl-up", "cv-form-ctrl-down"} <= classes
+        assert ("cv-form-ctrl-delete" in classes) is (index == 0)
+        assert ("DELETE" in form.fields) is (index == 0)
+        assert all(button.get("type") == "button" for button in controls)
+        assert all(button.get("cv-data-formset-form-prefix") == form.prefix for button in controls)
+        assert all(button.get("aria-label") for button in controls)
+
+
+@pytest.mark.parametrize("adapter", [InlineFormSet, BaseInlineFormSet], ids=["package", "native"])
+@pytest.mark.parametrize("violation", ["extra", "identity"])
+def test_published_reclean_sequence_reapplies_policy(adapter, violation):
+    # Native accepted adapters supply rendering context without inheriting package clean().
+    from tests.test1.test_formsets_policy import PolicyNativeInlineFormSet
+
+    if adapter is BaseInlineFormSet:
+        adapter = PolicyNativeInlineFormSet
+    parent = Publisher.objects.create(name="reclean")
+    child = Book.objects.create(publisher=parent, title="existing")
+    klass = inlineformset_factory(
+        Publisher, Book, formset=adapter, form=CrispyModelForm, fields=["title"], extra=1, edit_only=True
+    )
+    prefix = f"rows-{parent.pk}-0"
+    data = {
+        f"{prefix}-TOTAL_FORMS": "2",
+        f"{prefix}-INITIAL_FORMS": "1",
+        f"{prefix}-0-id": str(child.pk) if violation == "extra" else "999999",
+        f"{prefix}-0-title": "existing",
+        f"{prefix}-1-title": "forged" if violation == "extra" else "",
+    }
+    formsets = FormSets(formsets={"rows": FormSet(title="Rows", klass=klass, fields=["title"])})
+    main = forms.modelform_factory(Publisher, fields=[])(instance=parent, data=data)
+    formsets.init(RequestFactory().post("/editor/", data), main)
+    namespace = {
+        "formsets": formsets,
+        "expected_code": "cv_additions_not_allowed" if violation == "extra" else "cv_invalid_row",
+    }
+    source = recipe(FORMSETS, "### Repeated validation regression recipe", "python")[0]
+    with patch.object(FormSets, "save") as save, patch.object(klass, "save") as child_save:
+        exec(compile(source, str(FORMSETS), "exec"), namespace)
+        save.assert_not_called()
+        child_save.assert_not_called()
+    child.refresh_from_db()
+    assert child.title == "existing"
+    assert Book.objects.filter(publisher=parent).count() == 1
 
 
 def test_reference_evidence_and_example_comments_remain_explicit():

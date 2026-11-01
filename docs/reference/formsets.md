@@ -223,11 +223,36 @@ filtered existing IDs, and IDs disagreeing with the retained persisted instance,
 ("Invalid row."). Membership uses the authorized managed queryset and its selected database alias. Native/custom
 inline formset subclasses cannot bypass this policy with a `clean()` override.
 
+Policy is reapplied after native recleaning, including when later custom child cleaning replaces an earlier
+formset's cached errors. Repeated validation must still reject the same prohibited addition or invalid identity
+before **any** main, sibling or nested save. This applies to package inline formsets and accepted native/custom
+adapters; a client capability flag never grants persistence authority.
+
 Ordinary full-page invalid submissions re-render with HTTP **200**; modal invalid submissions re-render with HTTP
 **422**. No save hooks run for these policy failures. Native form/model errors, errors added to the main form during
 child cleaning, and routed atomic rollback remain authoritative. A disabled or hidden browser action is no substitute
 for this server validation. Inactive conditional formsets use their separate default skip/opt-in managed-queryset purge
 policy, including ignored inactive management data, as described under [Conditional formsets](#conditional-formsets).
+
+### Repeated validation regression recipe
+
+The documentation test supplies a bound runtime tree named `formsets`, with an active edit-only extra or invalid
+existing identity, and `expected_code` equal to `cv_additions_not_allowed` or `cv_invalid_row`. This executable
+regression snippet deliberately inspects internal test plumbing; it is not an application validation/save API.
+Applications continue to use `FormSetMixin`'s normal view flow. `XForm`/`XFormSet` and their methods remain private.
+
+```python
+assert formsets.all_valid() is False
+for _ in range(2):
+    formsets.x_formsets[0].instance.full_clean()
+    for _ in range(2):
+        assert formsets.all_valid() is False
+        errors = formsets.x_formsets[0].instance.non_form_errors().as_data()
+        assert sum(error.code == expected_code for error in errors) == 1
+```
+
+The test runs this exact sequence with package and native adapters and verifies zero save calls and unchanged rows.
+Inherited field/nonfield/model validation and selected-queryset/database checks remain authoritative.
 
 ## Template projection and native controls
 
@@ -258,6 +283,43 @@ The controller ignores actions that are disabled, hidden, inert, ARIA-disabled/h
 non-button synthetic substitutes are outside this contract. Owning-form initialization isolates identical prefixes
 in separate forms. Submit reorders only that form before modal FormData serialization; cancellation or reorder failure
 prevents fetch. See [initialization](javascript.md#conditional-and-formset-initialization).
+
+### Native row capability recipe
+
+Native Django forms expose `DELETE` only for rows eligible for deletion: `can_delete=True` enables it for initial
+rows, while extra rows also require `can_delete_extra=True`. Test **`'DELETE' in form.fields`** rather than the
+truthiness of `form.DELETE` or a row's current visual position. Moving or inserting rows never changes their native
+initial/extra eligibility. A missing DELETE field is normal on a nondeletable extra; it must not disable permitted
+Add, Move or submission. `edit_only` independently prevents Add, and `can_order` independently permits Move.
+
+This complete minimal `crud_views/formsets/control.html` override receives `form` and the `formset` declaration.
+It keeps native buttons, accessible names, exact bound prefixes and delete styling hooks; customize its labels or
+classes as needed. Keep the actual form fields, management inputs and enclosing row/content hooks described above.
+
+```django
+{% load crud_views i18n %}
+<div class="cv-form-ctrl">
+{% if formset.can_order %}
+    <button type="button" class="cv-form-ctrl-up" aria-label="{% translate 'Move up' %}"
+            cv-data-formset-form-prefix="{{ form.prefix }}">{% translate 'Move up' %}</button>
+    <button type="button" class="cv-form-ctrl-down" aria-label="{% translate 'Move down' %}"
+            cv-data-formset-form-prefix="{{ form.prefix }}">{% translate 'Move down' %}</button>
+{% endif %}
+{% if not formset.edit_only %}
+    <button type="button" class="cv-form-ctrl-add" aria-label="{% translate 'Add row' %}"
+            cv-data-formset-form-prefix="{{ form.prefix }}">{% translate 'Add row' %}</button>
+{% endif %}
+{% if 'DELETE' in form.fields %}
+    <button type="button" class="cv-form-ctrl-delete" aria-label="{% translate 'Delete row' %}"
+            data-cv-class="{% cv_button_class 'formset' 'control' %}"
+            data-cv-class-danger="{% cv_button_class 'formset' 'control-danger' %}"
+            cv-data-formset-form-prefix="{{ form.prefix }}">{% translate 'Delete row' %}</button>
+{% endif %}
+</div>
+```
+
+The documentation test renders this exact recipe against real native initial and extra forms with
+`can_delete_extra=False`: both retain Add/Move, and only the initial row exposes Delete.
 
 ### Exact JSON projections
 

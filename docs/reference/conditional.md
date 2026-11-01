@@ -172,9 +172,14 @@ minimal override retains the optional legend and generated inner content:
 Conditional formset wrappers likewise render their `x_formset.cv_toggle_field` directly; it is the parent form's
 bound toggle name. Checkbox lookup uses exact `name` equality and actual owning-form identity, including native
 `form=` ownership. Repeated names in separate forms are independent. Multiple matching checkboxes in one form log
-`console.warn("crud_views: ambiguous conditional toggle", name)` and leave that group's own binding unmanaged;
-an already bound off ancestor still hides/disables its descendants. Missing checkboxes remain retryable: insert
-the checkbox and call `cv.initConditional(root)` again. See [root initialization](javascript.md#conditional-and-formset-initialization).
+`console.warn("crud_views: ambiguous conditional toggle", name)`. On first initialization an unresolved group
+(missing or ambiguous checkbox) leaves its own presentation unmanaged. A previously bound group that becomes
+unresolved retains its **last owned on/off state**, without learning a new disabled baseline from its temporary state.
+That own state still composes with all bound ancestors and independent disabled reasons: an off ancestor continues
+to hide/disable descendants even when their own binding is unresolved. Other groups remain independent.
+Both missing and ambiguous bindings are retryable: restore exactly one checkbox and call `cv.initConditional(root)`
+again to apply its current checked state, without duplicate handlers or baseline loss.
+See [root initialization](javascript.md#conditional-and-formset-initialization).
 
 ### Visibility, disabled ownership, focus and reset
 

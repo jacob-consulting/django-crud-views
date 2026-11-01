@@ -161,8 +161,139 @@ def expected_ids():
 
 def overrides():
     return {
-        key: value for key, value in os.environ.items() if key.startswith("CV_FOCUS_") or key == "CV_CONDITIONAL_PORT"
+        key: value
+        for key, value in os.environ.items()
+        if key.startswith("CV_FOCUS_") or key in ("CV_CONDITIONAL_PORT", "CV_FRAGMENT_PYTHON")
     }
+
+
+def selected_path(variable, default, executable=True):
+    raw = os.environ.get(variable, default)
+    found = shutil.which(raw) if raw else None
+    if not executable:
+        found = raw if raw and Path(raw).is_dir() else None
+    need(found, f"{variable}={raw!r}: selected runtime unavailable")
+    path = os.path.abspath(found)
+    need(not executable or os.access(path, os.X_OK), f"{variable}={raw!r}: selected path is not executable")
+    return path if "PYTHON" in variable or variable.startswith("Django") else str(Path(path).resolve())
+
+
+def runtime_probe(variable, path, argv, env):
+    try:
+        result = subprocess.run([path, *argv], cwd=ROOT, env=env, capture_output=True, text=True, timeout=30)
+    except (OSError, subprocess.SubprocessError) as error:
+        raise ValueError(f"{variable}={path!r}: runtime probe failed: {error}") from error
+    need(result.returncode == 0 and result.stdout.strip(), f"{variable}={path!r}: runtime/version probe failed")
+    return {"path": path, "realpath": str(Path(path).resolve()), "sha256": sha(path), "version": result.stdout.strip()}
+
+
+def capture_request():
+    """Resolve current intent. Validate ALL paths before any process or output write.
+
+    Keep a virtualenv's invocation path as well as its realpath: resolving a Python
+    symlink before invocation would silently discard its environment's packages.
+    """
+    node_default = json.loads((ROOT / RUNTIME_MANIFEST).read_text())["node"]["path"]
+    paths = {
+        "node": ("CV_FOCUS_NODE", selected_path("CV_FOCUS_NODE", node_default)),
+        "focus_python": ("CV_FOCUS_PYTHON", selected_path("CV_FOCUS_PYTHON", str(ROOT / SERIES["6.0"]))),
+        "fragment_python": ("CV_FRAGMENT_PYTHON", selected_path("CV_FRAGMENT_PYTHON", str(ROOT / SERIES["6.0"]))),
+        "chromium": (
+            "CV_FOCUS_CHROMIUM",
+            selected_path("CV_FOCUS_CHROMIUM", "/home/alex/.cache/ms-playwright/chromium-1228/chrome-linux64/chrome"),
+        ),
+        "ruff": ("ruff", selected_path("ruff", str(ROOT / ".venv/bin/ruff"))),
+        "mkdocs": ("mkdocs", selected_path("mkdocs", str(ROOT / ".venv/bin/mkdocs"))),
+        **{
+            f"python{series}": (f"Django {series}", selected_path(f"Django {series}", str(ROOT / path)))
+            for series, path in SERIES.items()
+        },
+    }
+    playwright = selected_path(
+        "CV_FOCUS_PLAYWRIGHT", "/home/alex/.npm/_npx/e41f203b7505f1fb/node_modules/playwright", executable=False
+    )
+    need((Path(playwright) / "package.json").is_file(), f"CV_FOCUS_PLAYWRIGHT={playwright!r}: package.json missing")
+    port_text = os.environ.get("CV_CONDITIONAL_PORT", "8144")
+    need(bool(re.fullmatch(r"[0-9]+", port_text)), f"CV_CONDITIONAL_PORT={port_text!r}: invalid port")
+    port = int(port_text)
+    need(1024 <= port <= 65535 and port != 8143, f"CV_CONDITIONAL_PORT={port_text!r}: invalid/reserved port")
+    env = dict(os.environ, PYTHONPATH=f"{ROOT}/src:{ROOT}")
+    runtimes = {}
+    python_probe = (
+        'import json,platform,django,importlib.util; print(json.dumps({"python":platform.python_version(),'
+        '"django":django.get_version(),"packages":{n:importlib.util.find_spec(n).origin for n in '
+        '["crud_views","crud_views_guardian","crud_views_polymorphic","crud_views_workflow",'
+        '"crud_views_object_detail"]}},sort_keys=True))'
+    )
+    for key, (variable, path) in paths.items():
+        argv = ["-c", python_probe] if "python" in key else ["--version"]
+        runtimes[key] = runtime_probe(variable, path, argv, env)
+        if "python" in key:
+            details = json.loads(runtimes[key]["version"])
+            need(
+                all(
+                    Path(origin).resolve() == ROOT / "src" / name / "__init__.py"
+                    for name, origin in details["packages"].items()
+                ),
+                f"{variable}: imports outside checkout",
+            )
+        elif key == "node":
+            need(bool(re.fullmatch(r"v\d+\.\d+\.\d+", runtimes[key]["version"])), f"{variable}={path!r}: not Node")
+        elif key == "chromium":
+            need(
+                runtimes[key]["version"].startswith(("Chromium ", "Google Chrome ")),
+                f"{variable}={path!r}: not Chromium",
+            )
+    playwright_probe = runtime_probe(
+        "CV_FOCUS_PLAYWRIGHT",
+        paths["node"][1],
+        ["-e", "const p=require(process.argv[1]); console.log(p.version)", str(Path(playwright) / "package.json")],
+        env,
+    )
+    runtimes["playwright"] = {
+        "path": playwright,
+        "realpath": str(Path(playwright).resolve()),
+        "sha256": sha(Path(playwright) / "package.json"),
+        "version": playwright_probe["version"],
+    }
+    runtimes["vitest"] = {
+        "path": str(ROOT / "node_modules/vitest/vitest.mjs"),
+        "sha256": sha(ROOT / "node_modules/vitest/package.json"),
+        "version": json.loads((ROOT / "node_modules/vitest/package.json").read_text())["version"],
+    }
+    common = {
+        "PYTHONPATH": env["PYTHONPATH"],
+        "PATH": env.get("PATH"),
+        "NODE_OPTIONS": env.get("NODE_OPTIONS"),
+        "CI": env.get("CI"),
+    }
+    selections = {}
+    for series in SERIES:
+        for route in ROUTES:
+            selected = {"python": runtimes[f"python{series}"], "environment": {"PYTHONPATH": common["PYTHONPATH"]}}
+            if route in ("focused", "enabled-full"):
+                selected.update(node=runtimes["node"], environment=common)
+            selections[f"django{series}-{route}"] = selected
+    for label in ("javascript", "javascript-integration"):
+        selections[label] = {"node": runtimes["node"], "vitest": runtimes["vitest"], "environment": common}
+    selections["javascript-integration"]["fragment_python"] = runtimes["fragment_python"]
+    for label in BROWSERS:
+        selections[label] = {key: runtimes[key] for key in ("node", "focus_python", "playwright", "chromium")}
+        selections[label].update(port=port if label == "conditional-browser" else 8143, environment=common)
+    selections["strict-docs"] = {"executable": runtimes["mkdocs"], "environment": {"PATH": common["PATH"]}}
+    selections["ruff-check"] = selections["ruff-format"] = {"executable": runtimes["ruff"]}
+    selections["evidence-self-tests"] = {**runtimes, "environment": common, "port": port}
+    return {"selections": selections, "runtime_overrides": overrides()}
+
+
+def can_reuse(record, manifest, selection):
+    if record.get("selection") != selection:
+        return False
+    try:
+        validate_gate(record, manifest)
+    except (ValueError, KeyError, TypeError, OSError):
+        return False
+    return True
 
 
 def command_record(argv, env, timeout=2400):
@@ -340,7 +471,7 @@ def port_available(port):
     return True
 
 
-def browser_gate(name):
+def browser_gate(name, selection=None):
     conditional = name == "conditional-browser"
     port = int(os.environ.get("CV_CONDITIONAL_PORT", "8144")) if conditional else 8143
     need(port_available(port), f"Occupied port {port}; refusing to touch unrelated process")
@@ -348,7 +479,23 @@ def browser_gate(name):
     with tempfile.TemporaryDirectory(prefix="cv64-browser-") as directory:
         output = str(Path(directory) / "browser.json")
         command = [node_path(), runner, "--case", "all", "--output", output]
-        record = command_record(command, dict(os.environ), timeout=600)
+        env = dict(os.environ)
+        if selection:
+            env.update(
+                {
+                    "CV_FOCUS_" + key: selection[field]["path"]
+                    for key, field in (
+                        ("NODE", "node"),
+                        ("PYTHON", "focus_python"),
+                        ("PLAYWRIGHT", "playwright"),
+                        ("CHROMIUM", "chromium"),
+                    )
+                }
+            )
+            env["CV_CONDITIONAL_PORT"] = str(
+                selection["port"] if conditional else os.environ.get("CV_CONDITIONAL_PORT", "8144")
+            )
+        record = command_record(command, env, timeout=600)
         record.update(
             id=name,
             port=port,
@@ -361,15 +508,15 @@ def browser_gate(name):
         if Path(output + ".server.log").exists():
             record["server_log"] = Path(output + ".server.log").read_text()
         record["canonical_check"] = command_record(
-            [node_path(), runner, "--case", "all", "--check-evidence", output], dict(os.environ), timeout=60
+            [node_path(), runner, "--case", "all", "--check-evidence", output], env, timeout=60
         )
         return record
 
 
 def expected_quality(name, selection=None, report="<vitest-report>", collection=False):
     """Only the report filename is a transport slot; every semantic token is fixed."""
-    node = selection["node"]["path"] if selection else node_path()
     if name in ("javascript", "javascript-integration"):
+        node = selection["node"]["path"] if selection else node_path()
         args = [node, "node_modules/vitest/vitest.mjs", "list" if collection else "run"]
         if name == "javascript-integration":
             args += ["--config", "vitest.integration.config.js"]
@@ -398,7 +545,10 @@ def expected_quality(name, selection=None, report="<vitest-report>", collection=
 
 
 def quality_gate(name, selection=None):
+    selection = selection or capture_request()["selections"][name]
     env = dict(os.environ)
+    if selection.get("environment", {}).get("PYTHONPATH"):
+        env["PYTHONPATH"] = selection["environment"]["PYTHONPATH"]
     if name == "javascript-integration":
         env["CV_FRAGMENT_PYTHON"] = (selection or {}).get("fragment_python", {}).get("path", str(ROOT / SERIES["6.0"]))
         env["PYTHONPATH"] = f"{ROOT}/src:{ROOT}"
@@ -530,6 +680,23 @@ def validate_gate(record, manifest):
             validate_quality(record, manifest)
         if label in BROWSERS:
             validate_browser(record)
+    if record.get("selection"):
+        for key, runtime in record["selection"].items():
+            if not isinstance(runtime, dict) or "path" not in runtime:
+                continue
+            path = Path(runtime["path"])
+            digest_path = (
+                path / "package.json"
+                if key == "playwright"
+                else ROOT / "node_modules/vitest/package.json"
+                if key == "vitest"
+                else path
+            )
+            need(
+                path.exists() and runtime.get("sha256") == sha(digest_path),
+                f"{label}: recorded runtime bytes changed: {key}",
+            )
+            need(runtime.get("version"), f"{label}: missing recorded runtime version: {key}")
 
 
 def validate_python(r):
@@ -655,7 +822,9 @@ def validate_python(r):
             all(props.get(k) for k in ("tracer_node_path", "tracer_node_version", "tracer_jsdom_version")),
             f"{label}: tracer runtime provenance absent",
         )
-        selected = r.get("runtime_overrides", {}).get("CV_FOCUS_NODE")
+        selected = r.get("selection", {}).get("node", {}).get("path") or r.get("runtime_overrides", {}).get(
+            "CV_FOCUS_NODE"
+        )
         if selected is None:
             selected = json.loads((ROOT / RUNTIME_MANIFEST).read_text())["node"]["path"]
         selected = shutil.which(selected) if selected else None
@@ -683,6 +852,7 @@ def validate_python(r):
 
 def validate_browser(r):
     label = r["id"]
+    need(r.get("port") == r.get("selection", {}).get("port", r.get("port")), f"{label}: captured port mismatch")
     need(r.get("port_free_before") is True and r.get("port_free_after") is True, f"{label}: occupied/leaked port")
     need(r.get("canonical_check", {}).get("returncode") == 0, f"{label}: canonical browser checker failed")
     b = r.get("browser", {})
@@ -703,13 +873,16 @@ def validate_browser(r):
     for key in ("nodePath", "pythonPath", "playwrightPath", "chromiumPath", "node", "python"):
         need(runtime.get(key), f"{label}: missing runtime {key}")
     defaults = {
-        "NODE": node_path(),
+        "NODE": json.loads((ROOT / RUNTIME_MANIFEST).read_text())["node"]["path"],
         "PYTHON": str(ROOT / SERIES["6.0"]),
         "PLAYWRIGHT": "/home/alex/.npm/_npx/e41f203b7505f1fb/node_modules/playwright",
         "CHROMIUM": "/home/alex/.cache/ms-playwright/chromium-1228/chrome-linux64/chrome",
     }
     for key, default in defaults.items():
-        selected = r.get("runtime_overrides", {}).get("CV_FOCUS_" + key, default)
+        field = {"NODE": "node", "PYTHON": "focus_python", "PLAYWRIGHT": "playwright", "CHROMIUM": "chromium"}[key]
+        selected = r.get("selection", {}).get(field, {}).get("path") or r.get("runtime_overrides", {}).get(
+            "CV_FOCUS_" + key, default
+        )
         actual = runtime[key.lower() + "Path"]
         need(Path(actual).resolve() == Path(selected).resolve(), f"{label}: runtime override mismatch {key}")
     if label == "conditional-browser":
@@ -784,6 +957,11 @@ def validate(data, manifest, require_controls=True, only=None):
     need(sorted(data.get("gates", {})) == sorted([only] if only else expected_ids()), "Missing/extra matrix gates")
     for label, gate in data["gates"].items():
         need(gate.get("id") == label, f"{label}: contradictory gate identity")
+        need(
+            gate.get("selection") == data.get("capture_request", {}).get("selections", {}).get(label)
+            and gate.get("selection"),
+            f"{label}: contradictory captured runtime selection",
+        )
         validate_gate(gate, manifest)
     if only:
         return
@@ -895,10 +1073,19 @@ def check(output, controls=True, only=None):
 
 
 def run(output, only=None):
+    # Preflight is intentionally before reading or modifying any capture metadata.
+    request = capture_request()
     manifest = source()
     data = json.loads(output.read_text()) if output.exists() else {}
     if data.get("source_manifest") != manifest:
         need(not data, "Source changed: preserve old results elsewhere before beginning a new evidence capture")
+    need(not data or data.get("only") == only, "Cannot reinterpret a scoped/full capture")
+    selections = request["selections"]
+    # Drop affected records before replacing the top-level contract. An interrupted
+    # capture must never pair a new requested runtime with contradictory old gates.
+    data["gates"] = {
+        label: gate for label, gate in data.get("gates", {}).items() if gate.get("selection") == selections.get(label)
+    }
     data.update(
         schema=2,
         only=only,
@@ -907,6 +1094,7 @@ def run(output, only=None):
         completed=False,
         runner_sha256=sha(__file__),
         runtime_overrides=overrides(),
+        capture_request=request,
     )
     data.setdefault("started", now())
     data.setdefault("gates", {})
@@ -931,14 +1119,13 @@ def run(output, only=None):
     def reusable(label):
         if label not in data["gates"]:
             return False
-        try:
-            validate_gate(data["gates"][label], manifest)
-        except (ValueError, KeyError, TypeError, OSError):
+        if not can_reuse(data["gates"][label], manifest, selections[label]):
             return False
         print(f"REUSE {label}", flush=True)
         return True
 
     def save(record):
+        record["selection"] = selections[record["id"]]
         data["gates"][record["id"]] = record
         write_json(output, data)
         validate_gate(record, manifest)
@@ -980,19 +1167,19 @@ def run(output, only=None):
             continue
         if not reusable(label):
             print(f"START {label}", flush=True)
-            save(quality_gate(label))
+            save(quality_gate(label, selections[label]))
     # A failed modal packet does not invalidate a completed conditional packet.
     # If conditional must run anew, modal must follow it to prove cleanup order.
     if only in (None, BROWSERS[0]) and not reusable(BROWSERS[0]):
         print(f"START {BROWSERS[0]}", flush=True)
-        save(browser_gate(BROWSERS[0]))
+        save(browser_gate(BROWSERS[0], selections[BROWSERS[0]]))
     modal_reuse = reusable(BROWSERS[1]) if only in (None, BROWSERS[1]) else True
     if only in (None, BROWSERS[1]) and (
         not modal_reuse
         or (only is None and data["gates"][BROWSERS[1]]["started"] < data["gates"][BROWSERS[0]]["finished"])
     ):
         print(f"START {BROWSERS[1]}", flush=True)
-        save(browser_gate(BROWSERS[1]))
+        save(browser_gate(BROWSERS[1], selections[BROWSERS[1]]))
     data.update(completed=only is None, finished=now())
     validate(data, manifest, require_controls=False, only=only)
     write_json(output, data)
@@ -1032,16 +1219,204 @@ def run(output, only=None):
     check(output)
 
 
+GAP_REVIEWS = {
+    "G1": ["CR-01"],
+    "G2": ["CR-02"],
+    "G3": ["CR-03"],
+    "G4": ["CR-04"],
+    "G5": ["CR-05"],
+    "G6": ["WR-01", "WR-02"],
+}
+GAP_THREATS = {
+    "G1": ["07", "08", "09", "24"],
+    "G2": ["22", "25"],
+    "G3": ["15", "26"],
+    "G4": ["15", "26"],
+    "G5": ["01", "27"],
+    "G6": ["22", "28", "29"],
+}
+PROHIBITION = "Switching a conditional file field off must not silently authorize deletion of the stored file content."
+
+
+def bound_file(reference):
+    need(isinstance(reference, dict) and isinstance(reference.get("path"), str), "Missing file reference")
+    path = (ROOT / reference["path"]).resolve()
+    need(path.is_relative_to(ROOT) and path.is_file(), f"Missing/outside handoff file: {reference['path']}")
+    need(reference.get("sha256") == sha(path), f"Stale handoff file hash: {reference['path']}")
+    return path
+
+
+def attributed(record, source_sha):
+    need(
+        all(
+            isinstance(record.get(key), str) and record[key].strip()
+            for key in ("actor", "recorded", "response", "context")
+        ),
+        "Unattributed accepted/closed disposition",
+    )
+    datetime.datetime.fromisoformat(record["recorded"].replace("Z", "+00:00"))
+    need(record.get("source_sha256") == source_sha, "Disposition source provenance stale")
+    references = record.get("evidence_files", record.get("evidence"))
+    need(references, "Accepted/closed disposition lacks evidence")
+    for reference in references:
+        bound_file(reference)
+
+
+def evidence_link(reference, matrix):
+    need(isinstance(reference, dict) and reference.get("gate") in matrix["gates"], "Missing handoff gate reference")
+    gate = matrix["gates"][reference["gate"]]
+    case = reference.get("case")
+    if case is None:
+        need(gate["returncode"] == 0, "Failed gate cannot close a finding")
+        return
+    cases = {c["nodeid"] for c in gate.get("junit", []) if c["status"] == "passed"}
+    cases.update(
+        str(Path(file["name"]).resolve().relative_to(ROOT)) + "::" + c["fullName"]
+        for file in gate.get("vitest", {}).get("testResults", [])
+        for c in file["assertionResults"]
+        if c["status"] == "passed"
+    )
+    for c in gate.get("browser", {}).get("cases", []):
+        if c.get("passed"):
+            identity = (c["theme"] + ":" if "theme" in c else "") + c["id"]
+            cases.add(identity)
+            cases.update(identity + ":" + a.get("id", a.get("name", "")) for a in c["assertions"] if a.get("passed"))
+    need(case in cases, f"Missing/failed handoff case: {case}")
+
+
+def validate_handoff(data):
+    """Structural validity is distinct from readiness; pending humans stay pending.
+
+    Plan19 packet contract: schema=1, packet/report file references {path,sha256},
+    findings keyed by all G/CR/WR IDs, threats, decisions D-01..19, fallback_edges
+    1..31 and explicit human_checks.H1/H2. Closed items require attributed,
+    current-source report evidence. This function never invents a disposition.
+    """
+    need(isinstance(data, dict) and data.get("schema") == 1, "Malformed handoff schema")
+    manifest = source()
+    need(
+        data.get("source_sha256") == manifest["sha256"] and data.get("runner_sha256") == sha(__file__),
+        "Handoff source/runner provenance stale",
+    )
+    packet_path = bound_file(data.get("packet"))
+    matrix = json.loads(packet_path.read_text())
+    validate(matrix, manifest)
+    need(
+        json.loads((packet_path.parent / "source-manifest.json").read_text()) == manifest,
+        "Handoff matrix sidecar stale",
+    )
+    reports = data.get("reports", {})
+    need(isinstance(reports, dict) and all(isinstance(value, dict) for value in reports.values()), "Malformed reports")
+    need(set(reports) >= {"code", "security", "ui", "verification"}, "Missing independent report")
+    ready = True
+    for name, report in reports.items():
+        bound_file(report)
+        need(report.get("status") in ("pending", "open", "passed"), f"Invalid report disposition: {name}")
+        if report["status"] == "passed":
+            attributed(report, manifest["sha256"])
+        else:
+            ready = False
+    findings = data.get("findings", {})
+    need(
+        isinstance(findings, dict) and all(isinstance(value, dict) for value in findings.values()), "Malformed findings"
+    )
+    required = set(GAP_REVIEWS) | {review for reviews in GAP_REVIEWS.values() for review in reviews}
+    need(set(findings) == required, "Missing/extra G/CR/WR handoff finding")
+    for gap, reviews in GAP_REVIEWS.items():
+        need(findings[gap].get("review_ids") == reviews, f"Missing canonical finding links: {gap}")
+        expected_threats = {"T-06.4-" + number for number in GAP_THREATS[gap]}
+        for identity in [gap, *reviews]:
+            finding = findings[identity]
+            need(expected_threats <= set(finding.get("threats", [])), f"Missing threat links: {identity}")
+            need(finding.get("status") in ("pending", "open", "closed"), f"Invalid finding disposition: {identity}")
+            need(finding.get("evidence"), f"Missing regression evidence: {identity}")
+            for reference in finding["evidence"]:
+                evidence_link(reference, matrix)
+            if finding["status"] == "closed":
+                review = reports.get(finding.get("review"), {})
+                need(review.get("status") == "passed", f"Closed finding without independent passed report: {identity}")
+                attributed(finding, manifest["sha256"])
+            else:
+                ready = False
+    threats = data.get("threats", {})
+    need(isinstance(threats, dict) and all(isinstance(value, dict) for value in threats.values()), "Malformed threats")
+    required_threats = {"T-06.4-" + number for numbers in GAP_THREATS.values() for number in numbers} | {
+        "T-06.4-35",
+        "T-06.4-36",
+    }
+    need(required_threats <= set(threats), "Missing reopened/new high threat dispositions")
+    for identity, threat in threats.items():
+        need(threat.get("status") in ("pending", "open", "verified"), f"Invalid threat disposition: {identity}")
+        if threat["status"] == "verified":
+            need(reports["security"]["status"] == "passed", "High threat closure lacks independent security report")
+            attributed(threat, manifest["sha256"])
+        else:
+            ready = False
+    need(set(data.get("decisions", [])) == {f"D-{i:02}" for i in range(1, 20)}, "Missing decision reconciliation")
+    edges = data.get("fallback_edges", [])
+    need(
+        isinstance(edges, list)
+        and all(isinstance(e, dict) for e in edges)
+        and len(edges) == 31
+        and {e.get("id") for e in edges} == set(range(1, 32)),
+        "Missing fallback edge reconciliation",
+    )
+    for edge in edges:
+        need(
+            edge.get("status") in ("flagged-unresolved", "verified", "human-disposition"),
+            "Invalid fallback disposition",
+        )
+        if edge["status"] == "flagged-unresolved":
+            ready = False
+        else:
+            attributed(edge, manifest["sha256"])
+    humans = data.get("human_checks", {})
+    need(
+        isinstance(humans, dict) and all(isinstance(value, dict) for value in humans.values()), "Malformed human states"
+    )
+    need(set(humans) == {"H1", "H2"}, "Missing explicit H1/H2 states")
+    need(humans["H2"].get("prohibition") == PROHIBITION, "File-deletion prohibition changed/missing")
+    for identity, human in humans.items():
+        need(human.get("status") in ("pending", "accepted", "closed"), f"Invalid human disposition: {identity}")
+        if human["status"] == "pending":
+            need(
+                not any(human.get(key) for key in ("actor", "recorded", "response", "evidence")),
+                "Pending human has an invented response",
+            )
+            if identity == "H2":
+                need(
+                    human.get("canonical_status") == "flagged-unverified",
+                    "Descriptor-less prohibition silently resolved",
+                )
+            ready = False
+        else:
+            attributed(human, manifest["sha256"])
+            kind = human.get("kind")
+            need(
+                kind == "human" or (identity == "H2" and kind == "enforcement"),
+                "Missing genuine human/enforcement disposition",
+            )
+            if kind == "enforcement":
+                for field in ("descriptor", "red_evidence", "green_evidence"):
+                    bound_file(human.get(field))
+    need(data.get("ready", False) is ready, "Handoff readiness contradicts open obligations")
+    return {"structurally_valid": True, "ready": ready, "disposition": "ready" if ready else "not-ready"}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     mode = parser.add_mutually_exclusive_group(required=True)
     mode.add_argument("--run", action="store_true")
     mode.add_argument("--check", action="store_true")
+    mode.add_argument("--check-handoff", type=Path, metavar="JSON")
     parser.add_argument("--output", type=Path, default=HERE / "results.json")
     parser.add_argument("--only", choices=expected_ids())
     args = parser.parse_args()
     try:
-        if args.run:
+        if args.check_handoff:
+            need(not args.only, "--only is not a handoff mode")
+            print(json.dumps(validate_handoff(json.loads(args.check_handoff.read_text())), sort_keys=True))
+        elif args.run:
             run(args.output.resolve(), only=args.only)
         else:
             check(args.output.resolve(), only=args.only)

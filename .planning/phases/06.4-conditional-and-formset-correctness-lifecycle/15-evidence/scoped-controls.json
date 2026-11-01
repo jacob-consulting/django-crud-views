@@ -1,0 +1,42 @@
+{
+  "scoped-check": {
+    "command": [
+      "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+      ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+      "--output",
+      ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/self-tests/results.json",
+      "--check",
+      "--only",
+      "evidence-self-tests"
+    ],
+    "returncode": 0,
+    "stdout": "PHASE64_SCOPED_OK 1 gates source=0d37ecadf7298c9d72cc2a02c62d10bc87073065a3fb9b2ceb26c9739742e9d2\n",
+    "stderr": ""
+  },
+  "scoped-reuse": {
+    "command": [
+      "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+      ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+      "--output",
+      ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/self-tests/results.json",
+      "--run",
+      "--only",
+      "evidence-self-tests"
+    ],
+    "returncode": 0,
+    "stdout": "REUSE evidence-self-tests\nPHASE64_SCOPED_OK 1 gates source=0d37ecadf7298c9d72cc2a02c62d10bc87073065a3fb9b2ceb26c9739742e9d2\n",
+    "stderr": ""
+  },
+  "whole-check-rejects-partial": {
+    "command": [
+      "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+      ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+      "--output",
+      ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/self-tests/results.json",
+      "--check"
+    ],
+    "returncode": 1,
+    "stdout": "",
+    "stderr": "MATRIX_REJECTED: Incomplete matrix / scoped packet\n"
+  }
+}

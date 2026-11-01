@@ -140,6 +140,7 @@ class QualityEvidence(unittest.TestCase):
             "source_manifest": self.manifest,
             "required_gate_ids": runner.expected_ids(),
             "gates": {"javascript": self.javascript},
+            "capture_request": {"selections": {"javascript": self.javascript["selection"]}},
         }
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / "capture.json"
@@ -192,6 +193,215 @@ class CurrentCapture(unittest.TestCase):
             self.assertNotIn("REUSE ", result.stdout)
             self.assertEqual(output.read_bytes(), before)
             self.assertFalse((output.parent / "source-manifest.json").exists())
+
+    def test_all_invalid_selections_fail_before_any_process(self):
+        variables = (
+            "CV_FOCUS_PYTHON",
+            "CV_FOCUS_NODE",
+            "CV_FOCUS_CHROMIUM",
+            "CV_FOCUS_PLAYWRIGHT",
+            "CV_FRAGMENT_PYTHON",
+            "CV_CONDITIONAL_PORT",
+        )
+        for variable in variables:
+            with (
+                self.subTest(variable=variable),
+                patch.dict(runner.os.environ, {variable: "/missing/selected-runtime"}),
+                patch.object(runner.subprocess, "run") as processes,
+            ):
+                with self.assertRaisesRegex(ValueError, variable):
+                    runner.capture_request()
+                processes.assert_not_called()
+
+    def test_effective_selections_affect_only_relevant_gates(self):
+        original = runner.capture_request()["selections"]
+        with patch.dict(runner.os.environ, {"CV_FOCUS_PYTHON": str(runner.ROOT / runner.SERIES["5.2"])}):
+            changed = runner.capture_request()["selections"]
+        self.assertNotEqual(original["conditional-browser"], changed["conditional-browser"])
+        self.assertNotEqual(original["modal-browser"], changed["modal-browser"])
+        self.assertEqual(original["javascript"], changed["javascript"])
+        with patch.dict(runner.os.environ, {"CV_FRAGMENT_PYTHON": str(runner.ROOT / runner.SERIES["5.2"])}):
+            bridge = runner.capture_request()["selections"]
+        self.assertNotEqual(original["javascript-integration"], bridge["javascript-integration"])
+        self.assertEqual(original["conditional-browser"], bridge["conditional-browser"])
+        with patch.dict(runner.os.environ, {"CV_CONDITIONAL_PORT": "8244"}):
+            port = runner.capture_request()["selections"]
+        self.assertNotEqual(original["conditional-browser"], port["conditional-browser"])
+        self.assertEqual(original["modal-browser"], port["modal-browser"])
+        with patch.object(runner, "validate_gate") as validate:
+            record = {"selection": original["conditional-browser"]}
+            self.assertTrue(runner.can_reuse(record, {}, original["conditional-browser"]))
+            self.assertFalse(runner.can_reuse(record, {}, changed["conditional-browser"]))
+            validate.assert_called_once()
+
+    def test_matching_selection_reuses_real_docs_and_historical_check_ignores_current_overrides(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "capture.json"
+            command = [sys.executable, str(HERE / "run.py"), "--output", str(output), "--only", "strict-docs"]
+            first = subprocess.run([*command, "--run"], capture_output=True, text=True)
+            self.assertEqual(first.returncode, 0, first.stderr)
+            before = json.loads(output.read_text())["gates"]["strict-docs"]
+            second = subprocess.run([*command, "--run"], capture_output=True, text=True)
+            self.assertEqual(second.returncode, 0, second.stderr)
+            self.assertIn("REUSE strict-docs", second.stdout)
+            self.assertEqual(json.loads(output.read_text())["gates"]["strict-docs"], before)
+            historical = subprocess.run(
+                [*command, "--check"],
+                env={
+                    **runner.os.environ,
+                    "CV_FOCUS_NODE": "/missing/historical-node",
+                    "CV_FOCUS_PYTHON": "/missing/historical-python",
+                    "CV_FRAGMENT_PYTHON": "/missing/historical-bridge",
+                },
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(historical.returncode, 0, historical.stderr)
+            packet = json.loads(output.read_text())
+            packet["source_manifest"]["sha256"] = "stale"
+            runner.write_json(output, packet)
+            stale = subprocess.run([*command, "--check"], capture_output=True, text=True)
+            self.assertNotEqual(stale.returncode, 0)
+            self.assertIn("stale", stale.stderr)
+
+    def test_changed_valid_browser_selection_reruns_affected_gate(self):
+        # Isolate orchestration from real browser execution; no matrix is launched.
+        def browser(label, selection=None):
+            return {"id": label, "selection": selection, "duration_seconds": 0}
+
+        with (
+            tempfile.TemporaryDirectory() as directory,
+            patch.object(runner, "validate_gate"),
+            patch.object(runner, "browser_gate", side_effect=browser) as gate,
+        ):
+            output = Path(directory) / "capture.json"
+            runner.run(output, only="conditional-browser")
+            runner.run(output, only="conditional-browser")
+            self.assertEqual(gate.call_count, 1)
+            with patch.dict(runner.os.environ, {"CV_FOCUS_PYTHON": str(runner.ROOT / runner.SERIES["5.2"])}):
+                runner.run(output, only="conditional-browser")
+            self.assertEqual(gate.call_count, 2)
+            saved = json.loads(output.read_text())
+            self.assertEqual(
+                saved["gates"]["conditional-browser"]["selection"],
+                saved["capture_request"]["selections"]["conditional-browser"],
+            )
+
+
+class HandoffEvidence(unittest.TestCase):
+    def setUp(self):
+        # Synthetic unit fixture, never a claimed acceptance packet. Full-matrix
+        # validation is a separate tested gate, mocked here to test handoff rules.
+        self.temporary = tempfile.TemporaryDirectory(dir=HERE)
+        self.addCleanup(self.temporary.cleanup)
+        directory = Path(self.temporary.name)
+        self.manifest = runner.source()
+        matrix = {"gates": {"javascript": {"returncode": 0}}}
+        packet_path = directory / "packet.json"
+        runner.write_json(packet_path, matrix)
+        runner.write_json(directory / "source-manifest.json", self.manifest)
+        report_path = directory / "report.txt"
+        report_path.write_text("Unit fixture: independent review pending; no acceptance claim.\n")
+        self.reference = {"path": str(report_path.relative_to(runner.ROOT)), "sha256": runner.sha(report_path)}
+        findings = {}
+        for gap, reviews in runner.GAP_REVIEWS.items():
+            for identity in [gap, *reviews]:
+                findings[identity] = {
+                    "status": "pending",
+                    "threats": ["T-06.4-" + n for n in runner.GAP_THREATS[gap]],
+                    "evidence": [{"gate": "javascript"}],
+                }
+            findings[gap]["review_ids"] = reviews
+        required_threats = {"T-06.4-" + n for ns in runner.GAP_THREATS.values() for n in ns} | {
+            "T-06.4-35",
+            "T-06.4-36",
+        }
+        self.data = {
+            "schema": 1,
+            "ready": False,
+            "source_sha256": self.manifest["sha256"],
+            "runner_sha256": runner.sha(runner.__file__),
+            "packet": {"path": str(packet_path.relative_to(runner.ROOT)), "sha256": runner.sha(packet_path)},
+            "reports": {
+                key: {**self.reference, "status": "pending"} for key in ("code", "security", "ui", "verification")
+            },
+            "findings": findings,
+            "threats": {key: {"status": "pending"} for key in required_threats},
+            "decisions": [f"D-{i:02}" for i in range(1, 20)],
+            "fallback_edges": [{"id": i, "status": "flagged-unresolved"} for i in range(1, 32)],
+            "human_checks": {
+                "H1": {"status": "pending"},
+                "H2": {
+                    "status": "pending",
+                    "prohibition": runner.PROHIBITION,
+                    "canonical_status": "flagged-unverified",
+                },
+            },
+        }
+        validator = patch.object(runner, "validate")
+        self.matrix_validator = validator.start()
+        self.addCleanup(validator.stop)
+
+    def test_pending_packet_is_structurally_valid_but_not_ready(self):
+        result = runner.validate_handoff(self.data)
+        self.assertEqual(result, {"structurally_valid": True, "ready": False, "disposition": "not-ready"})
+        self.matrix_validator.assert_called_once()
+
+    def test_missing_findings_and_links_reject(self):
+        for identity in self.data["findings"]:
+            with self.subTest(identity=identity):
+                altered = copy.deepcopy(self.data)
+                altered["findings"].pop(identity)
+                with self.assertRaisesRegex(ValueError, "finding"):
+                    runner.validate_handoff(altered)
+
+    def test_missing_case_reference_rejects(self):
+        self.data["findings"]["G6"]["evidence"][0]["case"] = "not-a-real-case"
+        with self.assertRaisesRegex(ValueError, "case"):
+            runner.validate_handoff(self.data)
+
+    def test_stale_report_hash_rejects(self):
+        self.data["reports"]["security"]["sha256"] = "stale"
+        with self.assertRaisesRegex(ValueError, "hash"):
+            runner.validate_handoff(self.data)
+
+    def test_stale_source_provenance_rejects(self):
+        self.data["source_sha256"] = "stale"
+        with self.assertRaisesRegex(ValueError, "provenance"):
+            runner.validate_handoff(self.data)
+
+    def test_false_readiness_rejects(self):
+        self.data["ready"] = True
+        with self.assertRaisesRegex(ValueError, "readiness"):
+            runner.validate_handoff(self.data)
+
+    def test_unattributed_human_approval_rejects(self):
+        for identity in ("H1", "H2"):
+            with self.subTest(identity=identity):
+                altered = copy.deepcopy(self.data)
+                altered["human_checks"][identity]["status"] = "accepted"
+                with self.assertRaisesRegex(ValueError, "Unattributed"):
+                    runner.validate_handoff(altered)
+
+    def test_unreviewed_finding_cannot_close(self):
+        self.data["findings"]["WR-01"]["status"] = "closed"
+        self.data["findings"]["WR-01"]["review"] = "code"
+        with self.assertRaisesRegex(ValueError, "independent passed report"):
+            runner.validate_handoff(self.data)
+
+    def test_missing_human_state_or_prohibition_rejects(self):
+        self.data["human_checks"].pop("H1")
+        with self.assertRaisesRegex(ValueError, "H1/H2"):
+            runner.validate_handoff(self.data)
+
+    def test_malformed_packet_subprocess_rejects(self):
+        output = Path(self.temporary.name) / "handoff.json"
+        runner.write_json(output, {"schema": 1})
+        result = subprocess.run(
+            [sys.executable, str(HERE / "run.py"), "--check-handoff", str(output)], capture_output=True, text=True
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("MATRIX_REJECTED", result.stderr)
 
 
 if __name__ == "__main__":

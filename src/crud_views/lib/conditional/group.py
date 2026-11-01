@@ -80,8 +80,9 @@ def resolve_conditional_empty_value(form_field, model_field, group, field_name):
 class ConditionalGroup:
     """A group of form fields governed by a single boolean toggle.
 
-    When the toggle is on, ``required`` fields are enforced. When off, every
-    field in the group is cleared to its empty value and never validated.
+    When the toggle is on, ``required`` fields are enforced. When off, editable
+    fields are cleared and their ordinary field errors suppressed. Inherited
+    nonfield errors and model validation still apply to the resulting state.
     """
 
     def __init__(
@@ -131,6 +132,13 @@ class ConditionalGroupFormMixin:
                     self.fields[name].required = False
 
     def clean(self):
+        # Configuration must support switching off even for an active submission.
+        # Run here to include fields added by request-dependent subclass __init__
+        # methods, without constructing arbitrary forms during startup checks.
+        for group in self.cv_conditional_groups:
+            for name in group.fields:
+                if name in self.fields and not self.fields[name].disabled:
+                    resolve_conditional_empty_value(self.fields[name], self._cv_model_field(name), group, name)
         cleaned = super().clean()
         for group in self.cv_conditional_groups:
             if group.is_on(self):

@@ -3,19 +3,21 @@
 import datetime
 import uuid
 from decimal import Decimal
+from types import SimpleNamespace
 from unittest.mock import patch
 
 import pytest
 from django import forms
-from django.db import models
 from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.core.files.base import ContentFile
 from django.core.files.storage import FileSystemStorage
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.db import models
 from django.forms.models import inlineformset_factory
 from django.test import RequestFactory, override_settings
 from django.test.utils import isolate_apps
 
+from crud_views import checks
 from crud_views.lib.conditional.group import ConditionalGroup, ConditionalGroupFormMixin
 from crud_views.lib.conditional.toggle import ModelFieldToggle
 from crud_views.lib.formsets import FormSet, FormSets, InlineFormSet
@@ -23,6 +25,13 @@ from tests.test1.app.models import ConditionalPersistenceRecord as Record
 from tests.test1.app.models import Profile, Publisher
 
 pytestmark = pytest.mark.django_db
+
+
+def configuration_messages(monkeypatch, form_class):
+    view = SimpleNamespace(form_class=form_class, cv_formsets=None)
+    viewset = SimpleNamespace(get_all_views=lambda: {"create": view})
+    monkeypatch.setattr(checks, "_REGISTRY", {"probe": viewset})
+    return checks.check_conditional()
 
 
 def record_form(names, *, empty_values=None, disabled=()):
@@ -464,7 +473,7 @@ def test_file_clearing_cannot_bypass_model_invariant(row, isolated_storage, monk
 
 
 @pytest.mark.parametrize("active", [False, True])
-def test_dynamic_model_form_refuses_configuration_before_any_save(row, active):
+def test_dynamic_model_form_refuses_configuration_before_any_save(row, active, monkeypatch):
     class Dynamic(record_form([])):
         cv_conditional_groups = [ConditionalGroup(ModelFieldToggle("active"), ["dynamic"])]
 
@@ -473,6 +482,7 @@ def test_dynamic_model_form_refuses_configuration_before_any_save(row, active):
             self.fields["dynamic"] = forms.JSONField()
 
     assert "dynamic" not in Dynamic.base_fields
+    assert configuration_messages(monkeypatch, Dynamic) == []  # Request-created, not statically detectable.
     form = Dynamic(instance=row, data={"active": "on", "dynamic": '{"ok": 1}'} if active else {})
     with patch.object(Record, "save", autospec=True) as save:
         with pytest.raises(ImproperlyConfigured, match=r"active.*dynamic"):
@@ -491,12 +501,15 @@ def test_explicit_values_reach_custom_persistence_hook_unmodified(row, monkeypat
         original(instance, f"native:{value!r}")
 
     monkeypatch.setattr(field, "save_form_data", save_form_data)
+    assert any(m.id == "crud_views.E312" for m in configuration_messages(monkeypatch, record_form(["blank_text"])))
     with patch.object(Record, "save", autospec=True) as save:
         with pytest.raises(ImproperlyConfigured, match=r"active.*blank_text"):
             record_form(["blank_text"])(instance=row, data={}).is_valid()
         save.assert_not_called()
     assert received == []
-    form = record_form(["blank_text"], empty_values={"blank_text": empty})(instance=row, data={})
+    form_class = record_form(["blank_text"], empty_values={"blank_text": empty})
+    assert configuration_messages(monkeypatch, form_class) == []
+    form = form_class(instance=row, data={})
     assert form.is_valid(), form.errors
     assert received and all(value is empty for value in received)
     form.save()
@@ -516,7 +529,7 @@ def test_nonnull_numeric_and_foreign_key_refuse_automatic_clear_before_save(row,
 
 @isolate_apps()
 @pytest.mark.parametrize("kind", ["json", "custom"])
-def test_json_and_custom_model_fields_need_explicit_native_clearing(kind):
+def test_json_and_custom_model_fields_need_explicit_native_clearing(kind, monkeypatch):
     class CustomText(models.CharField):
         pass
 
@@ -534,12 +547,14 @@ def test_json_and_custom_model_fields_need_explicit_native_clearing(kind):
             model = Unsupported
             fields = ["active", "value"]
 
+    assert any(m.id == "crud_views.E312" for m in configuration_messages(monkeypatch, CustomForm))
     with patch.object(Unsupported, "save", autospec=True) as save:
         with pytest.raises(ImproperlyConfigured, match=r"active.*value"):
             CustomForm(data={}).save()
         save.assert_not_called()
     empty = [] if kind == "json" else ""
     CustomForm.cv_conditional_groups[0].empty_values["value"] = empty
+    assert configuration_messages(monkeypatch, CustomForm) == []
     form = CustomForm(data={})
     assert form.is_valid(), form.errors
     instance = form.save(commit=False)

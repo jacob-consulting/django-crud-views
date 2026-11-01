@@ -1,4 +1,5 @@
 import dataclasses
+from contextlib import suppress
 
 from django.core.checks import Error, register
 from django.core.checks import Warning as DjangoWarning
@@ -155,10 +156,8 @@ def _collect_group_findings(form_class, groups, declared, findings):
                 continue
             model_field = None
             if model is not None:
-                try:
+                with suppress(FieldDoesNotExist):
                     model_field = model._meta.get_field(name)
-                except FieldDoesNotExist:
-                    pass
             try:
                 resolve_conditional_empty_value(field, model_field, group, name)
             except ImproperlyConfigured:

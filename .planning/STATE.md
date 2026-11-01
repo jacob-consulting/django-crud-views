@@ -1,19 +1,20 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.3"
-current_phase_name: "Delete protection and write-boundary integrity — issue #282"
-status: human_needed
-stopped_at: Phase 06.3 executed and independently verified human_needed; four unspecified obligations retained
-last_updated: "2026-10-31T13:51:09.185024+00:00"
-last_activity: 2026-10-31
-last_activity_desc: 89/91 verified; all12owner decisions recorded; no concrete implementation gaps; retained limits prevent phase completion
-state_head: c6e703795e759f47c0f3f823f96cbe365e45529a
+current_phase: 7
+current_phase_name: Theme-surface stability policy
+status: planning
+stopped_at: Phase 06.3 complete, ready to plan Phase 7
+last_updated: "2026-11-01T08:03:45.918Z"
+last_activity: 2026-11-01
+last_activity_desc: Phase 06.3 complete, transitioned to Phase 7
+state_head: 1b9f49a9312a124bd4a3ce87d1e32d61e3122478
 progress:
   total_phases: 10
-  completed_phases: 8
+  completed_phases: 9
   total_plans: 56
   completed_plans: 56
+  percent: 90
 milestone_name: milestone
 ---
 
@@ -24,28 +25,31 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-10-30)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.3 — Delete protection and write-boundary integrity — issue #282
+**Current focus:** Phase 7 — Theme-surface stability policy (requires its spec/maintainer decisions before planning)
 
 ## Current Position
 
-Phase: 06.3 — HUMAN_NEEDED; verification89/91, retained unspecified obligations remain open
-Plan: 20 of 20 executed; all twelve owner dispositions recorded
-Status: Eight scoped acceptances, four explicit retain-unresolved decisions. General Guardian precision remains unverified outside tested scope.
-Last activity: 2026-10-31 — CR-05 repaired in 8a26b39; independent code review clean; security36/36closed.
+Phase: 7 — Theme-surface stability policy
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-11-01 — Phase 06.3 complete, transitioned to Phase 7
 
-Progress: 56/56 plans executed; 8/10 phases complete. Phase06.3 acceptance remains withheld.
-Next: Recover or separately justify the four unspecified predicates; retain broader Guardian precision limit. No repeated owner review is needed for the twelve recorded decisions. No phase.complete or next-phase advancement.
+Progress: [█████████░] 90%
+Next: Define/specify Phase 7 before planning. Phase 06.3 is complete; broader Guardian identity compatibility remains unverified in issue #286. No Phase 7 work has started.
 
-### Phase 06.3 final review outcome
+### Phase 06.3 completed — 2026-11-01
 
-- All20plans complete, including actual task20-02 decisions in dispositions.json/guided-review.json.
-- Final JavaScript266passed;12real browser cases pass;178checkout modal/deletion tests passed after fixture correction.
-- CR-04/UI-F01 and the newly found CR-05 are independently closed. Prior CR-01/02/03 and CT-01 scoped closures retained.
-- Security audit36/36closed, including a focused recheck after CR-05 repair.
-- Canonical final verification: human_needed,89/91 truths; zero concrete implementation gaps, zero unanswered owner checkpoints, no overrides.
-- UI01/02/03 accepted by actual owner review at specified viewports/languages; Unicode readable in owner's browser.
-- DEL01/03/04-unclassified and AUTH06-unclassified explicitly retained unresolved; broader Guardian precision unverified.
-- Temporary review harness remains running on9000 at the user's request; protected tunnel access is user-browser only.
+- All 20 plans / 45 mapped tasks complete; canonical verification passed **91/91**, no overrides and no outstanding in-scope human checks.
+- All twelve original owner responses preserved; four detector fallbacks dismissed by reproducible investigation.
+- Guardian identity contract clarified for tested integer/UUID/exact-key/queryset/alias cases. Broader custom-PK/backend/collation compatibility remains unverified follow-up in issue #286.
+- Fresh gates: JavaScript 266 passed; Django 4.2 Guardian 298 passed; preceding Django 6.0 bounded review 531 passed; current twelve-case browser evidence and approval bindings validated.
+- Source/test/docs/manifest continuity confirmed for 624 tracked files from reviewed implementation 8a26b39; recorded three-series backend evidence remains scoped to its original runs.
+- Independent code review clean; CR-01/02/03, CT-01, CR-04/UI-F01 and CR-05 closed. Security 36/36 closed; validation coverage complete within reconciled scope.
+- GSD phase.complete advanced tracking to Phase 7: 9/10 phases complete, 56/56 executed plans.
+- Completion scanner's nine path-reference warnings were checked: all referenced files exist relative to the phase or the installed Django package; no missing evidence was found.
+- Review harness service/tunnel was not changed by this reconciliation. No release, merge or GitHub issue #282 closure is inferred.
+
+The following dated checkpoints and accumulated decisions preserve execution history; current status is above.
 
 ### Phase 06.3 focus approval
 
@@ -115,7 +119,7 @@ Next: Recover or separately justify the four unspecified predicates; retain broa
 
 **Velocity:**
 
-- Total plans completed: 45
+- Total plans completed: 56
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -131,6 +135,7 @@ Next: Recover or separately justify the four unspecified predicates; retain broa
 | 06 | 10 | - | - |
 | 06.1 | 3 | - | - |
 | 06.2 | 9 | - | - |
+| 06.3 | 20 | - | - |
 
 **Recent Trend:**
 
@@ -330,7 +335,7 @@ None yet.
 - Phase 2: Both source-probe classifier limitations remain documented; explicit tests and completed human prose UAT independently establish acceptance. See 02-VERIFICATION.md.
 - Phase 7: carry the Phase 6 form surface (`form` location, `tags/button/form.html`, `FORM_LEAF_KEYS`, `get_form_actions()`, icons `save`/`cancel`/`filter-reset`) into the stability doc.
 - Phase 7: carry the Phase 6.1 additions (`form:cancel-tag` key, `Button(tag=...)` keyword, `cv_tag` leaf field, `crud_views.E365`) into the stability doc.
-- Phase 06.2 retained scope complete: CR-02–CR-04 unresolved, deferred to Phase 6.3 / issue #282; AUTH-01/03/07 split recorded in ACCEPTANCE and REQUIREMENTS. AUTH-06 residual flag and IN-02/IN-03 transferred unresolved to 6.3 GUA-01; WR-01 fixed in bd31992; IN-01/IN-04 closed with explicit rationale, IN-05 fixed with startup/runtime composition guards; canonical verification and UAT pass recorded after Playwright checked the final blocked-delete interaction.
+- Phase 06.2 retained scope complete: CR-02–CR-04 transferred to Phase 6.3 / issue #282 and closed by its 2026-11-01 verification; AUTH-01/03/07 split recorded in ACCEPTANCE and REQUIREMENTS. AUTH-06 residual flag and IN-02/IN-03 transfer completed within 6.3 GUA-01 scope; broader Guardian identity compatibility remains in #286; WR-01 fixed in bd31992; IN-01/IN-04 closed with explicit rationale, IN-05 fixed with startup/runtime composition guards; canonical verification and UAT pass recorded after Playwright checked the final blocked-delete interaction.
 
 ### Quick Tasks Completed
 
@@ -341,7 +346,7 @@ None yet.
 
 ### Roadmap Evolution
 
-- Phase 06.3 scope extended by user decision: GUA-01 owns bounded AUTH-06 residual review plus IN-02/IN-03. Completed AUTH-06 evidence stays in 6.2; transfer remains unresolved; WR-01 fixed separately in quick task 261030-csg.
+- Phase 06.3 scope extended by user decision: GUA-01 owns bounded AUTH-06 residual review plus IN-02/IN-03. Completed AUTH-06 evidence stays in 6.2; transfer completed within reconciled 6.3 scope on 2026-11-01; WR-01 fixed separately in quick task 261030-csg.
 
 - Phase 06 edited: User decision D-18: verify completed Phase 1/2 contracts on executing working branch before spec; main merge no longer prerequisite
 - Phase 6.1 inserted after Phase 6: Cancel form button as a link (#275); complete before Phase 7 freezes the theme surface (URGENT)
@@ -357,5 +362,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-10-31T00:49:42.341013+00:00
-Stopped at: Phase 06.3 gap plans 10–17 executed; verified 75/81; CR-04/UI-F01 and twelve human dispositions remain
+Stopped at: Phase 06.3 complete, ready to plan Phase 7
 Resume file: None

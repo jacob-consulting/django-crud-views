@@ -316,7 +316,9 @@ class CompletePacketFixture:
         self.packet.update(source_manifest=self.manifest, runner_sha256=runner.sha(runner.__file__))
         # Synthetic record defects supplement the original payload records. Only
         # test_real_staged_controls claims executions for this synthetic packet.
-        for kind in runner.RECORD_CORRUPTIONS:
+        for kind in runner.CORRUPTIONS:
+            if kind in self.packet["checker_control_evidence"]:
+                continue
             self.packet["checker_controls"][kind] = "rejected"
             self.packet["checker_control_evidence"][kind] = {
                 "command": [sys.executable, str(HERE / "run.py"), "--check", "--output", f"/tmp/synthetic/{kind}.json"],

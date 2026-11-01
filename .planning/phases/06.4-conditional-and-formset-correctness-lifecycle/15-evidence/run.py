@@ -10,12 +10,14 @@ import copy
 import datetime
 import hashlib
 import json
+import math
 import os
 import re
 import shlex
 import shutil
 import signal
 import socket
+import struct
 import subprocess
 import sys
 import tempfile
@@ -83,6 +85,9 @@ PAYLOAD_CORRUPTIONS = (
     "docs-non-strict",
     "ruff-wrong-subcommand",
     "ruff-format-missing-check",
+    "capture-missing",
+    "capture-digest",
+    "capture-observation",
 )
 RECORD_CORRUPTIONS = (
     "control-missing-evidence",
@@ -120,6 +125,9 @@ CONTROL_DIAGNOSTICS = {
     "docs-non-strict": "strict-docs: wrong quality command",
     "ruff-wrong-subcommand": "ruff-check: wrong quality command",
     "ruff-format-missing-check": "ruff-format: wrong quality command",
+    "capture-missing": "Conditional capture inventory invalid: stock",
+    "capture-digest": "Conditional capture digest mismatch: desktop",
+    "capture-observation": "Conditional capture icon observations invalid: desktop",
     "control-missing-evidence": "Checker control evidence inventory incomplete",
     "control-missing-summary": "Checker control summary inventory incomplete",
     "control-success-outcome": "Checker control exit invalid: exit-code",
@@ -903,6 +911,128 @@ def validate_python(r):
             need(any(family in c["nodeid"] and c["status"] == "passed" for c in cases), f"{label}: missing {family}")
 
 
+def validate_conditional_captures(case):
+    """Recheck present artifacts; historical browser exit codes confer no authority.
+
+    Full-page PNG height is independent of the recorded CSS viewport height.
+    Empty native captures are intentional and supply no visual acceptance.
+    """
+    theme = case["theme"]
+    captures = case.get("captures")
+    devices = {
+        identity: {
+            "id": identity,
+            "width": width,
+            "height": height,
+            "deviceScaleFactor": 1,
+            "hasTouch": identity == "mobile",
+            "isMobile": identity == "mobile",
+        }
+        for identity, width, height in (("desktop", 1440, 900), ("mobile", 375, 812), ("tablet", 768, 1024))
+    }
+    need(
+        isinstance(captures, list)
+        and all(isinstance(c, dict) and isinstance(c.get("device"), dict) for c in captures)
+        and (
+            captures == []
+            if theme == "native"
+            else len(captures) == 3 and Counter(c["device"].get("id") for c in captures) == Counter(devices.keys())
+        ),
+        f"Conditional capture inventory invalid: {theme}",
+    )
+    base = ROOT / ".planning/ui-reviews/06.4-gap-repair"
+    need(base.resolve().is_relative_to(ROOT), "Conditional capture path escape")
+    paths = set()
+    observations = []
+    for capture in captures:
+        device = capture["device"]
+        identity = device["id"]
+        expected = devices[identity]
+        need(
+            device == expected and all(type(device[k]) is type(v) for k, v in expected.items()),
+            f"Conditional capture device mismatch: {identity}",
+        )
+        need(
+            capture.get("viewport") == "width=device-width, initial-scale=1",
+            f"Conditional capture viewport mismatch: {identity}",
+        )
+        document = capture.get("document")
+        need(
+            isinstance(document, dict)
+            and all(
+                type(document.get(k)) is int and document[k] == device["width"]
+                for k in ("clientWidth", "innerWidth", "scrollWidth")
+            ),
+            f"Conditional capture containment invalid: {identity}",
+        )
+        observations.append({"device": device, **document})
+        icons = capture.get("icons")
+        need(
+            isinstance(icons, dict)
+            and icons.get("loaded") is True
+            and isinstance(icons.get("glyphs"), list)
+            and icons["glyphs"]
+            and all(
+                isinstance(g, dict)
+                and isinstance(g.get("content"), str)
+                and g["content"].strip() not in ("", "none", "normal", '""', "''")
+                and isinstance(g.get("family"), str)
+                and g["family"].strip()
+                and all(
+                    type(g.get(k)) in (int, float) and math.isfinite(g[k]) and g[k] > 0 for k in ("width", "height")
+                )
+                for g in icons["glyphs"]
+            ),
+            f"Conditional capture icon observations invalid: {identity}",
+        )
+        reference = capture.get("path")
+        need(isinstance(reference, str) and reference, f"Conditional capture path invalid: {identity}")
+        relative = Path(reference)
+        need(
+            not relative.is_absolute()
+            and ".." not in relative.parts
+            and relative.is_relative_to(base.relative_to(ROOT))
+            and relative.suffix == ".png",
+            f"Conditional capture path escape: {identity}",
+        )
+        path = (ROOT / relative).resolve()
+        need(
+            path.is_relative_to(base.resolve()) and path not in paths,
+            f"Conditional capture path escape/duplicate: {identity}",
+        )
+        paths.add(path)
+        need(path.is_file() and path.stat().st_size > 0, f"Conditional capture bytes missing: {identity}")
+        digest = capture.get("sha256")
+        need(
+            isinstance(digest, str) and re.fullmatch(r"[0-9a-f]{64}", digest) and sha(path) == digest,
+            f"Conditional capture digest mismatch: {identity}",
+        )
+        png = path.read_bytes()
+        need(
+            len(png) > 33 and png[:8] == b"\x89PNG\r\n\x1a\n" and png[12:16] == b"IHDR",
+            f"Conditional capture PNG invalid: {identity}",
+        )
+        width, height = struct.unpack(">II", png[16:24])
+        need(width == device["width"] and height > 0, f"Conditional capture PNG dimensions invalid: {identity}")
+    assertions = {a["id"]: a for a in case["assertions"]}
+    need(
+        assertions["responsive-containment"].get("detail") == observations,
+        "Conditional capture containment observations disagree",
+    )
+    need(
+        all(
+            assertions[key].get("passed") is True
+            for key in ("responsive-containment", "loaded-rendered-glyphs", "screenshot-provenance")
+        ),
+        "Conditional capture observations missing/false",
+    )
+    human = case.get("humanReview", {})
+    need(
+        isinstance(human, dict) and human.get("H1") == human.get("H2") == "pending",
+        "Conditional capture human review must remain pending",
+    )
+
+
 def validate_browser(r):
     label = r["id"]
     need(r.get("port") == r.get("selection", {}).get("port", r.get("port")), f"{label}: captured port mismatch")
@@ -950,6 +1080,8 @@ def validate_browser(r):
                 and all(a.get("passed") is True for a in case["assertions"]),
                 f"Missing/false assertion {case['id']}",
             )
+            if case["id"] == "gap-ambiguity":
+                validate_conditional_captures(case)
             if case["id"] == "inline-file-clear-unchanged":
                 for key in ("referenceState", "uploadState"):
                     state = case.get(key, {})
@@ -1084,7 +1216,15 @@ def corrupt(data, kind):
     first = data["gates"]["django4.2-focused"]
     conditional = data["gates"]["conditional-browser"]["browser"]
     js = data["gates"]["javascript"]
-    if kind == "control-missing-evidence":
+    if kind.startswith("capture-"):
+        case = next(c for c in conditional["cases"] if c["id"] == "gap-ambiguity" and c["theme"] == "stock")
+        if kind == "capture-missing":
+            case["captures"].pop()
+        elif kind == "capture-digest":
+            case["captures"][0]["sha256"] = "0" * 64
+        else:
+            case["captures"][0].pop("icons")
+    elif kind == "control-missing-evidence":
         data.pop("checker_control_evidence", None)
     elif kind == "control-missing-summary":
         data.pop("checker_controls", None)

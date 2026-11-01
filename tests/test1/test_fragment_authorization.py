@@ -1353,7 +1353,7 @@ def deep_leaf_formset():
             BookNote,
             DeepLeaf,
             form=DeepLeafForm,
-            formset=InlineFormSet,
+            formset=FragmentLeafInlineFormSet,
             fields=["text"],
             extra=1,
             can_delete=True,

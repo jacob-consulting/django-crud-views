@@ -423,8 +423,8 @@ class FormSets(BaseModel, arbitrary_types_allowed=True):
 
         Returns the canonical ``(pk, num, parent_prefix)`` passed to ``get_template``.
 
-        Note: ``get_template`` still emits index 0 for the selected formset itself, so a fragment of a non-first
-        child declaration does not extend that formset's initialized prefix (known limitation, A19).
+        ``get_template`` uses the selected child's position in its parent's ordered declaration, matching
+        ``FormSet.init``; a top-level declaration uses index 0.
         """
         chain: list[FormSet] = []
         node = None
@@ -519,7 +519,8 @@ class FormSets(BaseModel, arbitrary_types_allowed=True):
         for level, key in enumerate(key_path):
             formset = self.get(key) if level == 0 else formset.children[key]
 
-        x_formsets = list(formset.template(index=0, parent_prefix=parent_prefix, force_form_index=num, pk=pk))
+        index = 0 if formset.parent is None else list(formset.parent.children).index(formset.original_key)
+        x_formsets = list(formset.template(index=index, parent_prefix=parent_prefix, force_form_index=num, pk=pk))
         assert len(x_formsets) == 1
         x_formset = x_formsets[0]
         data = {"x_formset": x_formset}

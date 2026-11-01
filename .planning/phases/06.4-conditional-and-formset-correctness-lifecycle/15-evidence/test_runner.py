@@ -40,6 +40,18 @@ class HistoricalCounterexamples(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "command"):
             runner.validate_gate(record, manifest)
 
+    def test_focused_accepts_strengthened_reclean_identity_family(self):
+        # Synthetic validator fixture: plan11 strengthens the original family
+        # with recleaning; its new exact name must remain a required selection.
+        record = json.loads(
+            json.dumps(self.historical["gates"]["django6.0-focused"]).replace(
+                "test_invalid_existing_ids_never_save", "test_reclean_invalid_existing_ids_never_save"
+            )
+        )
+        runner.validate_python(record)
+        with self.assertRaisesRegex(ValueError, "missing test_reclean_invalid_existing_ids_never_save"):
+            runner.validate_python(self.historical["gates"]["django6.0-focused"])
+
 
 class QualityEvidence(unittest.TestCase):
     @classmethod

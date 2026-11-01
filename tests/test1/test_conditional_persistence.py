@@ -7,12 +7,14 @@ from unittest.mock import patch
 
 import pytest
 from django import forms
+from django.db import models
 from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.core.files.base import ContentFile
 from django.core.files.storage import FileSystemStorage
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.forms.models import inlineformset_factory
 from django.test import RequestFactory, override_settings
+from django.test.utils import isolate_apps
 
 from crud_views.lib.conditional.group import ConditionalGroup, ConditionalGroupFormMixin
 from crud_views.lib.conditional.toggle import ModelFieldToggle
@@ -459,3 +461,113 @@ def test_file_clearing_cannot_bypass_model_invariant(row, isolated_storage, monk
     row.refresh_from_db()
     assert row.attachment.name == stored
     assert storage.exists(stored)
+
+
+@pytest.mark.parametrize("active", [False, True])
+def test_dynamic_model_form_refuses_configuration_before_any_save(row, active):
+    class Dynamic(record_form([])):
+        cv_conditional_groups = [ConditionalGroup(ModelFieldToggle("active"), ["dynamic"])]
+
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.fields["dynamic"] = forms.JSONField()
+
+    assert "dynamic" not in Dynamic.base_fields
+    form = Dynamic(instance=row, data={"active": "on", "dynamic": '{"ok": 1}'} if active else {})
+    with patch.object(Record, "save", autospec=True) as save:
+        with pytest.raises(ImproperlyConfigured, match=r"active.*dynamic"):
+            form.save()
+        save.assert_not_called()
+
+
+@pytest.mark.parametrize("empty", [False, None, "", []])
+def test_explicit_values_reach_custom_persistence_hook_unmodified(row, monkeypatch, empty):
+    field = Record._meta.get_field("blank_text")
+    original = field.save_form_data
+    received = []
+
+    def save_form_data(instance, value):
+        received.append(value)
+        original(instance, f"native:{value!r}")
+
+    monkeypatch.setattr(field, "save_form_data", save_form_data)
+    with patch.object(Record, "save", autospec=True) as save:
+        with pytest.raises(ImproperlyConfigured, match=r"active.*blank_text"):
+            record_form(["blank_text"])(instance=row, data={}).is_valid()
+        save.assert_not_called()
+    assert received == []
+    form = record_form(["blank_text"], empty_values={"blank_text": empty})(instance=row, data={})
+    assert form.is_valid(), form.errors
+    assert received and all(value is empty for value in received)
+    form.save()
+    row.refresh_from_db()
+    assert row.blank_text == f"native:{empty!r}"
+
+
+@pytest.mark.parametrize("name", ["number", "parent"])
+def test_nonnull_numeric_and_foreign_key_refuse_automatic_clear_before_save(row, monkeypatch, name):
+    monkeypatch.setattr(Record._meta.get_field(name), "null", False)
+    form = record_form([name])(instance=row, data={})
+    with patch.object(Record, "save", autospec=True) as save:
+        with pytest.raises(ImproperlyConfigured, match=rf"active.*{name}"):
+            form.save()
+        save.assert_not_called()
+
+
+@isolate_apps()
+@pytest.mark.parametrize("kind", ["json", "custom"])
+def test_json_and_custom_model_fields_need_explicit_native_clearing(kind):
+    class CustomText(models.CharField):
+        pass
+
+    class Unsupported(models.Model):
+        active = models.BooleanField(default=False)
+        value = models.JSONField(null=True, blank=True) if kind == "json" else CustomText(max_length=30, blank=True)
+
+        class Meta:
+            app_label = "conditional_probe"
+
+    class CustomForm(ConditionalGroupFormMixin, forms.ModelForm):
+        cv_conditional_groups = [ConditionalGroup(ModelFieldToggle("active"), ["value"])]
+
+        class Meta:
+            model = Unsupported
+            fields = ["active", "value"]
+
+    with patch.object(Unsupported, "save", autospec=True) as save:
+        with pytest.raises(ImproperlyConfigured, match=r"active.*value"):
+            CustomForm(data={}).save()
+        save.assert_not_called()
+    empty = [] if kind == "json" else ""
+    CustomForm.cv_conditional_groups[0].empty_values["value"] = empty
+    form = CustomForm(data={})
+    assert form.is_valid(), form.errors
+    instance = form.save(commit=False)
+    assert instance.value is empty
+
+
+def test_suppressed_field_error_does_not_suppress_inherited_nonfield_invariant(row):
+    class Invariant(forms.ModelForm):
+        class Meta:
+            model = Record
+            fields = ["active", "blank_text"]
+
+        def clean(self):
+            cleaned = super().clean()
+            assert "blank_text" in self.errors
+            self.add_error(None, "application invariant")
+            return cleaned
+
+    class Conditional(ConditionalGroupFormMixin, Invariant):
+        cv_conditional_groups = [ConditionalGroup(ModelFieldToggle("active"), ["blank_text"])]
+
+    form = Conditional(instance=row, data={"blank_text": "x" * 200})
+    with patch.object(Record, "save", autospec=True) as save:
+        assert not form.is_valid()
+        assert "blank_text" not in form.errors
+        assert form.non_field_errors() == ["application invariant"]
+        with pytest.raises(ValueError):
+            form.save()
+        save.assert_not_called()
+    row.refresh_from_db()
+    assert row.blank_text == "default text"

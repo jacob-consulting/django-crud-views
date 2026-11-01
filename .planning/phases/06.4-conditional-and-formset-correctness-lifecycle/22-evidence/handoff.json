@@ -77,9 +77,9 @@
     },
     "verification": {
       "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VERIFICATION.md",
-      "sha256": "ff6bd89f315e8b664bf5c2c4ffee8129c012cac5dc9a8a5afc7785f015460b10",
+      "sha256": "5048486226b2d48556280f99f5ae12a24d4ef581c9585ff8c4a4da7e1d9b3ced",
       "status": "open",
-      "context": "Historical gaps_found 8/10; orchestrator owns independent re-verification and final hash rebind."
+      "context": "Independent /root/canonical_verify result at 2026-11-01T19:59:46Z: gaps_found, 8/10. WR-03/04 closed within scope; G6/WR-05, H1/H2, 31 flags and independently open T35/T36/T40 retained. Orchestrator rebound this actual canonical digest; ready=false and no automatic T40 closure. Previous canonical report preserved at 22-evidence/pre-gap-final-verification.md."
     },
     "code_bounded": {
       "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-review.md",

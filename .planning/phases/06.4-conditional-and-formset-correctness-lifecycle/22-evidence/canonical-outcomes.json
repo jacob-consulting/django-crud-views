@@ -1,0 +1,194 @@
+{
+  "actor": "/root/canonical_verify",
+  "started": "2026-11-01T19:57:47.580612+00:00",
+  "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
+  "packet_sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0",
+  "continuity": {
+    "paths": 824,
+    "unchanged": 822,
+    "changed": [
+      ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+      ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/test_runner.py"
+    ],
+    "added": [],
+    "deleted": [],
+    "retained_exact": 17
+  },
+  "runs": [
+    {
+      "name": "clean-aggregate",
+      "command": [
+        "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+        "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+        "--check",
+        "--output",
+        "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json"
+      ],
+      "started": "2026-11-01T19:57:47.655519+00:00",
+      "finished": "2026-11-01T19:57:51.944402+00:00",
+      "returncode": 0,
+      "stdout": "PHASE64_MATRIX_OK 20 gates source=d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490\n",
+      "stderr": ""
+    },
+    {
+      "name": "clean-handoff-before-report-replacement",
+      "command": [
+        "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+        "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+        "--check-handoff",
+        "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/handoff.json"
+      ],
+      "started": "2026-11-01T19:57:51.944437+00:00",
+      "finished": "2026-11-01T19:57:58.241881+00:00",
+      "returncode": 0,
+      "stdout": "{\"disposition\": \"not-ready\", \"ready\": false, \"structurally_valid\": true}\n",
+      "stderr": ""
+    },
+    {
+      "name": "missing-controls:aggregate",
+      "command": [
+        "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+        "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+        "--check",
+        "--output",
+        "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/canonical-probe-46roied_/packet.json"
+      ],
+      "started": "2026-11-01T19:57:59.247366+00:00",
+      "finished": "2026-11-01T19:58:03.669923+00:00",
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "MATRIX_REJECTED: Checker control evidence inventory incomplete\n"
+    },
+    {
+      "name": "missing-controls:handoff",
+      "command": [
+        "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+        "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+        "--check-handoff",
+        "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/canonical-probe-46roied_/handoff.json"
+      ],
+      "started": "2026-11-01T19:58:03.669956+00:00",
+      "finished": "2026-11-01T19:58:07.957829+00:00",
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "MATRIX_REJECTED: Checker control evidence inventory incomplete\n"
+    },
+    {
+      "name": "successful-controls:aggregate",
+      "command": [
+        "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+        "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+        "--check",
+        "--output",
+        "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/canonical-probe-46roied_/packet.json"
+      ],
+      "started": "2026-11-01T19:58:08.967959+00:00",
+      "finished": "2026-11-01T19:58:13.156594+00:00",
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "MATRIX_REJECTED: Checker control exit invalid: exit-code\n"
+    },
+    {
+      "name": "successful-controls:handoff",
+      "command": [
+        "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+        "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+        "--check-handoff",
+        "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/canonical-probe-46roied_/handoff.json"
+      ],
+      "started": "2026-11-01T19:58:13.156632+00:00",
+      "finished": "2026-11-01T19:58:17.409007+00:00",
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "MATRIX_REJECTED: Checker control exit invalid: exit-code\n"
+    },
+    {
+      "name": "missing-captures:aggregate",
+      "command": [
+        "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+        "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+        "--check",
+        "--output",
+        "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/canonical-probe-46roied_/packet.json"
+      ],
+      "started": "2026-11-01T19:58:18.383058+00:00",
+      "finished": "2026-11-01T19:58:19.545133+00:00",
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "MATRIX_REJECTED: Conditional capture inventory invalid: stock\n"
+    },
+    {
+      "name": "missing-captures:handoff",
+      "command": [
+        "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+        "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+        "--check-handoff",
+        "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/canonical-probe-46roied_/handoff.json"
+      ],
+      "started": "2026-11-01T19:58:19.545158+00:00",
+      "finished": "2026-11-01T19:58:20.778741+00:00",
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "MATRIX_REJECTED: Conditional capture inventory invalid: stock\n"
+    },
+    {
+      "name": "stale-capture:aggregate",
+      "command": [
+        "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+        "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+        "--check",
+        "--output",
+        "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/canonical-probe-46roied_/packet.json"
+      ],
+      "started": "2026-11-01T19:58:21.833919+00:00",
+      "finished": "2026-11-01T19:58:22.950917+00:00",
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "MATRIX_REJECTED: Conditional capture digest mismatch: desktop\n"
+    },
+    {
+      "name": "stale-capture:handoff",
+      "command": [
+        "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+        "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+        "--check-handoff",
+        "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/canonical-probe-46roied_/handoff.json"
+      ],
+      "started": "2026-11-01T19:58:22.950947+00:00",
+      "finished": "2026-11-01T19:58:24.126488+00:00",
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "MATRIX_REJECTED: Conditional capture digest mismatch: desktop\n"
+    },
+    {
+      "name": "oversized-glyph:aggregate",
+      "command": [
+        "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+        "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+        "--check",
+        "--output",
+        "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/canonical-probe-46roied_/packet.json"
+      ],
+      "started": "2026-11-01T19:58:25.087541+00:00",
+      "finished": "2026-11-01T19:58:26.312771+00:00",
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py\", line 1839, in <module>\n    raise SystemExit(main())\n                     ^^^^^^\n  File \"/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py\", line 1831, in main\n    check(args.output.resolve(), only=args.only)\n  File \"/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py\", line 1443, in check\n    validate(data, manifest, only=only)\n  File \"/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py\", line 1314, in validate\n    validate_gate(gate, original[\"source_manifest\"], original[\"runner_sha256\"])\n  File \"/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py\", line 748, in validate_gate\n    validate_browser(record)\n  File \"/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py\", line 1089, in validate_browser\n    validate_conditional_captures(case)\n  File \"/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py\", line 980, in validate_conditional_captures\n    and all(\n        ^^^^\n  File \"/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py\", line 986, in <genexpr>\n    and all(\n        ^^^^\n  File \"/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py\", line 987, in <genexpr>\n    type(g.get(k)) in (int, float) and math.isfinite(g[k]) and g[k] > 0 for k in (\"width\", \"height\")\n                                       ^^^^^^^^^^^^^^^^^^^\nOverflowError: int too large to convert to float\n"
+    },
+    {
+      "name": "oversized-glyph:handoff",
+      "command": [
+        "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+        "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+        "--check-handoff",
+        "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/canonical-probe-46roied_/handoff.json"
+      ],
+      "started": "2026-11-01T19:58:26.312808+00:00",
+      "finished": "2026-11-01T19:58:27.496348+00:00",
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py\", line 1839, in <module>\n    raise SystemExit(main())\n                     ^^^^^^\n  File \"/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py\", line 1824, in main\n    print(json.dumps(validate_handoff(load_json(args.check_handoff)), sort_keys=True))\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py\", line 1708, in validate_handoff\n    validate(matrix, manifest)\n  File \"/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py\", line 1314, in validate\n    validate_gate(gate, original[\"source_manifest\"], original[\"runner_sha256\"])\n  File \"/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py\", line 748, in validate_gate\n    validate_browser(record)\n  File \"/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py\", line 1089, in validate_browser\n    validate_conditional_captures(case)\n  File \"/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py\", line 980, in validate_conditional_captures\n    and all(\n        ^^^^\n  File \"/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py\", line 986, in <genexpr>\n    and all(\n        ^^^^\n  File \"/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py\", line 987, in <genexpr>\n    type(g.get(k)) in (int, float) and math.isfinite(g[k]) and g[k] > 0 for k in (\"width\", \"height\")\n                                       ^^^^^^^^^^^^^^^^^^^\nOverflowError: int too large to convert to float\n"
+    }
+  ],
+  "finished": "2026-11-01T19:58:27.507549+00:00"
+}

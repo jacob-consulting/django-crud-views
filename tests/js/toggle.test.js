@@ -185,6 +185,251 @@ describe("conditional disabled ownership", () => {
     });
 });
 
+describe("unresolved conditional ownership lifecycle", () => {
+    beforeAll(async () => { await loadScript("toggle"); });
+    afterEach(() => {
+        document.querySelectorAll("form").forEach(form => {
+            form.dispatchEvent(new CustomEvent("cv:modal:unload", { bubbles: true }));
+        });
+        vi.useRealTimers();
+        vi.restoreAllMocks();
+    });
+
+    it.each([true, false])("retains a formerly bound %s state across zero, two and one matches", checked => {
+        const warning = vi.spyOn(console, "warn").mockImplementation(() => {});
+        const { group, checkbox } = fixture({ checked });
+        const form = checkbox.form;
+        const title = group.querySelector("[name=title]");
+        title.value = "unsaved entry";
+        form.insertAdjacentHTML("afterend", `<form><input type="checkbox" name="active" checked>
+            <div cv-data-toggle-group cv-data-toggle-field="active"><input name="other"></div></form>`);
+        const otherToggle = document.querySelectorAll("[name=active]")[1];
+        const other = document.querySelector("[name=other]");
+        globalThis.cv.initConditional(document);
+
+        checkbox.remove();
+        globalThis.cv.initConditional(group);
+        expect(group.style.display).toBe(checked ? "" : "none");
+        expect(title.disabled).toBe(!checked);
+        expect(new FormData(form).has("title")).toBe(checked);
+        change(checkbox, !checked); // Detached obsolete listener must have no effect.
+        expect(title.disabled).toBe(!checked);
+        expect(warning).not.toHaveBeenCalled();
+
+        const replacement = checkbox.cloneNode();
+        replacement.checked = !checked;
+        const duplicate = replacement.cloneNode();
+        form.prepend(replacement, duplicate);
+        globalThis.cv.initConditional(replacement);
+        expect(warning).toHaveBeenCalledTimes(1);
+        change(replacement, checked);
+        change(duplicate, !checked);
+        change(otherToggle, false);
+        expect(other.disabled).toBe(true);
+        expect(title.disabled).toBe(!checked);
+        expect(group.style.display).toBe(checked ? "" : "none");
+
+        duplicate.remove();
+        replacement.checked = !checked;
+        const listener = vi.spyOn(replacement, "addEventListener");
+        globalThis.cv.initConditional(group);
+        globalThis.cv.initConditional(form);
+        expect(listener.mock.calls.filter(([type]) => type === "change")).toHaveLength(1);
+        expect(group.style.display).toBe(checked ? "none" : "");
+        expect(title.disabled).toBe(checked);
+        expect(title.value).toBe("unsaved entry");
+        expect(other.disabled).toBe(true);
+        change(replacement, true);
+        expect(new FormData(form).get("title")).toBe("unsaved entry");
+    });
+
+    it.each([
+        ["inner", true, "inner-first"], ["inner", false, "inner-first"],
+        ["inner", true, "outer-first"], ["inner", false, "outer-first"],
+        ["outer", true, "inner-first"], ["outer", false, "inner-first"],
+        ["outer", true, "outer-first"], ["outer", false, "outer-first"],
+    ])("composes frozen %s=%s ownership in %s initialization order", (name, checked, order) => {
+        vi.spyOn(console, "warn").mockImplementation(() => {});
+        document.body.innerHTML = `<form><input type="checkbox" name="outer" checked>
+            <div cv-data-toggle-group cv-data-toggle-field="outer">
+                <input type="checkbox" name="inner" checked>
+                <div cv-data-toggle-group cv-data-toggle-field="inner">
+                    <input name="value" value="unsaved"><input name="baseline" disabled>
+                    <button type="button">Add</button><button type="button" disabled>Reorder</button>
+                    <input type="hidden" name="rows-TOTAL_FORMS" value="2">
+                    <input type="hidden" name="rows-MAX_NUM_FORMS" value="1000" disabled>
+                </div>
+            </div></form>`;
+        const form = document.querySelector("form");
+        const outer = form.querySelector("[name=outer]");
+        const inner = form.querySelector("[name=inner]");
+        const frozen = name === "inner" ? inner : outer;
+        const bound = name === "inner" ? outer : inner;
+        const group = form.querySelector(`[cv-data-toggle-field=${name}]`);
+        const value = form.querySelector("[name=value]");
+        frozen.checked = checked;
+        const groups = [...form.querySelectorAll("[cv-data-toggle-group]")];
+        if (order === "inner-first") groups.reverse();
+        groups.forEach(root => globalThis.cv.initConditional(root));
+        const duplicate = frozen.cloneNode();
+        frozen.after(duplicate);
+        globalThis.cv.initConditional(group);
+        change(frozen, !checked);
+        change(duplicate, !checked);
+        change(bound, false);
+        expect(value.disabled).toBe(true);
+        change(bound, true);
+        expect(value.disabled).toBe(!checked);
+        expect(group.style.display).toBe(checked ? "" : "none");
+        expect(form.querySelector("[name=baseline]").disabled).toBe(true);
+        expect([...form.querySelectorAll("button")].map(button => button.disabled)).toEqual([!checked, true]);
+        expect(new FormData(form).get("rows-TOTAL_FORMS")).toBe("2");
+        expect(new FormData(form).has("rows-MAX_NUM_FORMS")).toBe(false);
+
+        value.disabled = true; // Same-value writes must remain independent while frozen off.
+        globalThis.cv.initConditional(group);
+        duplicate.remove();
+        frozen.checked = true;
+        globalThis.cv.initConditional(group);
+        expect(value.disabled).toBe(true);
+        // Freeze again, then release only the independent owner.
+        frozen.checked = checked;
+        globalThis.cv.initConditional(group);
+        frozen.after(duplicate);
+        globalThis.cv.initConditional(group);
+        value.disabled = false;
+        globalThis.cv.initConditional(group);
+        expect(value.disabled).toBe(!checked);
+        duplicate.remove();
+        frozen.checked = true;
+        globalThis.cv.initConditional(group);
+        expect(value.disabled).toBe(false);
+        expect(new FormData(form).get("value")).toBe("unsaved");
+    });
+
+    it.each(["form", "document"])("retries only its form after reset and honors cancellation at %s", async where => {
+        vi.useFakeTimers();
+        vi.spyOn(console, "warn").mockImplementation(() => {});
+        const { group, checkbox } = fixture({ checked: false });
+        const form = checkbox.form;
+        const title = group.querySelector("[name=title]");
+        form.insertAdjacentHTML("afterend", `<form><input type="checkbox" name="active" checked>
+            <div cv-data-toggle-group cv-data-toggle-field="active"><input name="other"></div></form>`);
+        globalThis.cv.initConditional(document);
+        const otherToggle = document.querySelectorAll("[name=active]")[1];
+        const duplicate = checkbox.cloneNode();
+        checkbox.after(duplicate);
+        globalThis.cv.initConditional(group);
+        checkbox.checked = true;
+        title.value = "keep on cancellation";
+        otherToggle.checked = false; // Owning-form reset must never resync this form.
+        const target = where === "form" ? form : document;
+        target.addEventListener("reset", event => event.preventDefault(), { once: true });
+        form.reset();
+        await vi.runAllTimersAsync();
+        expect(checkbox.checked).toBe(true);
+        expect(title.value).toBe("keep on cancellation");
+        expect(group.style.display).toBe("none");
+        expect(title.disabled).toBe(true);
+        expect(document.querySelector("[name=other]").disabled).toBe(false);
+
+        // With both checkboxes present native defaults reset, but own state stays frozen.
+        form.reset();
+        expect(checkbox.checked).toBe(false);
+        expect(title.value).toBe("");
+        await vi.runAllTimersAsync();
+        expect(title.disabled).toBe(true);
+        duplicate.remove();
+        checkbox.defaultChecked = true;
+        checkbox.checked = false;
+        form.reset();
+        expect(group.style.display).toBe("none");
+        await Promise.resolve();
+        expect(group.style.display).toBe("none");
+        await vi.runAllTimersAsync();
+        expect(group.style.display).toBe("");
+        expect(title.disabled).toBe(false);
+        globalThis.cv.initConditional(form);
+        form.reset();
+        await vi.runAllTimersAsync();
+        expect(document.querySelector("[name=other]").disabled).toBe(false);
+        expect(new FormData(form).get("book-None-0-TOTAL_FORMS")).toBe("2");
+    });
+
+    it.each(["missing", "ambiguous"])("releases frozen ownership during %s modal disposal and reinsert", async mode => {
+        vi.useFakeTimers();
+        vi.spyOn(console, "warn").mockImplementation(() => {});
+        const { group, checkbox } = fixture({ checked: false });
+        const form = checkbox.form;
+        const title = group.querySelector("[name=title]");
+        title.value = "retained content";
+        group.insertAdjacentHTML("beforeend", '<input name="independent" disabled>');
+        const independent = group.querySelector("[name=independent]");
+        const modal = document.createElement("div");
+        form.before(modal);
+        modal.append(form);
+        modal.dispatchEvent(new CustomEvent("cv:modal:loaded", { bubbles: true }));
+        const duplicate = checkbox.cloneNode();
+        if (mode === "missing") checkbox.remove();
+        else checkbox.after(duplicate);
+        globalThis.cv.initConditional(group);
+        expect(title.disabled).toBe(true);
+        form.dispatchEvent(new Event("reset")); // Queue work that must be invalidated by unload.
+        modal.dispatchEvent(new CustomEvent("cv:modal:unload", { bubbles: true }));
+        expect(title.disabled).toBe(false);
+        expect(independent.disabled).toBe(true);
+        form.remove();
+        change(checkbox, true);
+        change(duplicate, true);
+        await vi.runAllTimersAsync();
+        expect(group.style.display).toBe("none");
+        expect(title.disabled).toBe(false);
+        title.disabled = true;
+        await Promise.resolve();
+        title.disabled = false;
+        duplicate.remove();
+        form.prepend(checkbox);
+        checkbox.checked = true;
+        modal.append(form);
+        modal.dispatchEvent(new CustomEvent("cv:modal:loaded", { bubbles: true }));
+        globalThis.cv.initConditional(group);
+        expect(group.style.display).toBe("");
+        expect(title.disabled).toBe(false);
+        expect(independent.disabled).toBe(true);
+        change(checkbox, false);
+        change(checkbox, true);
+        expect(title.disabled).toBe(false);
+        expect(new FormData(form).get("title")).toBe("retained content");
+    });
+
+    it.each([true, false])("ignores a stale unresolved toggle during focus recovery with usable ancestor=%s", ancestorUsable => {
+        vi.spyOn(console, "warn").mockImplementation(() => {});
+        vi.spyOn(HTMLElement.prototype, "getClientRects").mockReturnValue([{}]);
+        const { outer, inner, value } = nestedFixture();
+        const form = outer.form;
+        const group = value.parentElement;
+        inner.name = "retired";
+        globalThis.cv.initConditional(group);
+        expect(group.style.display).toBe("");
+        // The obsolete checkbox remains usable outside the group. Only the
+        // new resolved owner (hidden here), then ancestor/form, may get focus.
+        const replacement = inner.cloneNode();
+        replacement.name = "inner";
+        replacement.checked = false;
+        replacement.hidden = true;
+        group.before(replacement);
+        outer.hidden = !ancestorUsable;
+        value.focus();
+        globalThis.cv.initConditional(replacement);
+        expect(document.activeElement).toBe(ancestorUsable ? outer : form);
+        expect(group.style.display).toBe("none");
+        change(replacement, true);
+        value.focus();
+        globalThis.cv.initConditional(form);
+        expect(document.activeElement).toBe(value);
+    });
+});
+
 describe("conditional reset and focus lifecycle", () => {
     beforeAll(async () => { await loadScript("toggle"); });
     afterEach(() => { vi.useRealTimers(); vi.restoreAllMocks(); });

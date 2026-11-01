@@ -75,7 +75,7 @@ export function rowHtml(i, opts = {}) {
         </div>`;
 }
 
-export function formsetFixture(opts = {}) {
+export function formsetHtml(opts = {}) {
     const o = { ...FORMSET_DEFAULTS, ...opts };
     const prefix = formsetPrefix(o);
     const data = JSON.stringify({
@@ -95,7 +95,7 @@ export function formsetFixture(opts = {}) {
         pk: o.pk,
     });
     const rowsHtml = Array.from({ length: o.rows }, (_, i) => rowHtml(i, o)).join("");
-    document.body.innerHTML = `
+    return `
         <form class="cv-form">
             <fieldset class="cv-formset-fieldset" cv-data-formset-key="${o.key}" cv-data-formset-prefix="${prefix}">
                 <div class="cv-formset-content" cv-data-formset='${data}' cv-data-formset-prefix="${prefix}">
@@ -107,5 +107,24 @@ export function formsetFixture(opts = {}) {
                 </div>
             </fieldset>
         </form>`;
-    return { prefix };
+}
+
+export function formsetFixture(opts = {}) {
+    document.body.innerHTML = formsetHtml(opts);
+    return { prefix: formsetPrefix(opts) };
+}
+
+// Compose the existing package-shaped row fixture with a real modal form and
+// conditional wrapper. All lifecycle tests load the actual three shipped scripts.
+export function formsetModalHtml(opts = {}) {
+    formsetFixture(opts);
+    const form = document.querySelector("form");
+    form.action = "/formsets/save/";
+    form.setAttribute("novalidate", "");
+    const fieldset = form.querySelector("fieldset");
+    fieldset.setAttribute("cv-data-toggle-group", "items");
+    fieldset.setAttribute("cv-data-toggle-field", "with_items");
+    form.insertAdjacentHTML("afterbegin", '<input type="checkbox" name="with_items" checked>');
+    form.insertAdjacentHTML("beforeend", '<button type="submit" name="save" value="yes">Save</button>');
+    return form.outerHTML;
 }

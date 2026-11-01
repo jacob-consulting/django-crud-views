@@ -12,7 +12,7 @@ from django.forms.forms import BaseForm
 from django.forms.models import BaseInlineFormSet, ModelForm
 from django.http.request import HttpRequest
 from django.template.loader import render_to_string
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, PrivateAttr, model_validator
 
 from crud_views.lib.conditional.formset import ConditionalFormSet
 from crud_views.lib.lazy import LazyStr
@@ -293,6 +293,7 @@ class FormSets(BaseModel, arbitrary_types_allowed=True):
     x_formsets: list[XFormSet] = Field(default_factory=lambda: [])
     js_data: dict = Field(default_factory=lambda: {})
     scripts: bool = True
+    _cv_main_form: BaseForm | None = PrivateAttr(default=None)
 
     @model_validator(mode="before")
     @classmethod
@@ -371,7 +372,9 @@ class FormSets(BaseModel, arbitrary_types_allowed=True):
         # Discard results — collected in hierarchy order, before later cleans ran.
         list(self.is_valid())
         # Phase 2: re-collect; reflects errors added to any form during phase 1.
-        return all(valid for _, valid in self.is_valid())
+        formsets_valid = all(valid for _, valid in self.is_valid())
+        main_valid = self._cv_main_form is None or not self._cv_main_form.is_bound or self._cv_main_form.is_valid()
+        return formsets_valid and main_valid
 
     def save(self, commit: bool = True):
         for x_formset in self.x_formsets:
@@ -388,6 +391,7 @@ class FormSets(BaseModel, arbitrary_types_allowed=True):
             x_formset.save(commit=commit)
 
     def init(self, request: HttpRequest, form: ModelForm):
+        self._cv_main_form = form
         for _key, formset in self.items():
             x_formsets = list(formset.init(request=request, forms=[form]))
             self.x_formsets.extend(x_formsets)

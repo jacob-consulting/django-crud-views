@@ -57,7 +57,9 @@ def test_purge_respects_commit_false(profile_with_items_purge_off):
     assert ProfileItem.objects.filter(profile=profile).count() == 2
 
 
-def test_purge_only_deletes_formset_queryset():
+@pytest.mark.parametrize("edit_only", [False, True])
+@pytest.mark.parametrize("can_delete", [False, True])
+def test_purge_only_deletes_formset_queryset(edit_only, can_delete):
     # A formset that narrows its queryset must purge only the rows it manages,
     # never every child of the parent.
     profile = Profile.objects.create(name="p", with_items=False)
@@ -75,7 +77,8 @@ def test_purge_only_deletes_formset_queryset():
         form=_ItemForm,
         fields=["label"],
         extra=1,
-        can_delete=True,
+        can_delete=can_delete,
+        edit_only=edit_only,
     )
     formsets = FormSets(
         formsets=OrderedDict(
@@ -99,6 +102,65 @@ def test_purge_only_deletes_formset_queryset():
 
     remaining = list(ProfileItem.objects.filter(profile=profile))
     assert remaining == [keep]
+
+
+@pytest.mark.parametrize("on_off", ["skip", "purge"])
+@pytest.mark.parametrize("edit_only", [False, True])
+@pytest.mark.parametrize("can_delete", [False, True])
+def test_inactive_tree_skips_mandatory_row_policy(monkeypatch, on_off, edit_only, can_delete):
+    from crud_views.lib.formsets.render_tree import XFormSet
+
+    profile = Profile.objects.create(name="p", with_items=False)
+    keep = ProfileItem.objects.create(profile=profile, label="keep")
+    drop = ProfileItem.objects.create(profile=profile, label="drop")
+
+    class DropOnly(_ItemInlineFormSet):
+        def get_queryset(self):
+            return super().get_queryset().filter(label="drop")
+
+    klass = inlineformset_factory(
+        Profile,
+        ProfileItem,
+        formset=DropOnly,
+        form=_ItemForm,
+        fields=["label"],
+        extra=1,
+        edit_only=edit_only,
+        can_delete=can_delete,
+    )
+    tree = FormSets(
+        formsets=OrderedDict(
+            items=FormSet(
+                title="Items",
+                klass=klass,
+                conditional=ConditionalFormSet(toggle=ModelFieldToggle("with_items"), on_off=on_off),
+            )
+        )
+    )
+    prefix = f"items-{profile.pk}-0"
+    post = {
+        "name": "p",
+        f"{prefix}-TOTAL_FORMS": "2",
+        f"{prefix}-INITIAL_FORMS": "1",
+        f"{prefix}-0-id": "malformed",
+        f"{prefix}-0-label": "forged edit",
+        f"{prefix}-1-label": "forged addition",
+        f"{prefix}-1-DELETE": "on",
+    }
+    main = _ProfileForm(cv_view=None, instance=profile, data=post)
+    assert main.is_valid()
+    tree.init(RequestFactory().post("/", post), main)
+    tree.apply_conditional(main)
+
+    def unexpected_policy(self):
+        raise AssertionError("inactive tree entered active policy")
+
+    monkeypatch.setattr(XFormSet, "_cv_validate_row_policy", unexpected_policy)
+    assert tree.all_valid() is True
+    tree.save()
+    assert ProfileItem.objects.filter(pk=keep.pk).exists()
+    assert ProfileItem.objects.filter(pk=drop.pk).exists() is (on_off == "skip")
+    assert not ProfileItem.objects.filter(label__startswith="forged").exists()
 
 
 def test_purge_rolls_back_when_sibling_formset_save_fails(monkeypatch):

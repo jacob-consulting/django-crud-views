@@ -27,7 +27,7 @@ from django.core.exceptions import ValidationError
 from django.forms.forms import BaseForm
 from django.forms.formsets import BaseFormSet
 from django.utils.translation import gettext_lazy as _
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, PrivateAttr
 
 from crud_views.lib.exceptions import CrudViewError
 
@@ -103,6 +103,7 @@ class XFormSet(BaseModel, arbitrary_types_allowed=True):
     forms: list[XForm] = Field(default_factory=lambda: [])
     parent: XForm | None = None
     render_rows_only: bool = False  # True for the AJAX row template: skip the fieldset wrapper
+    _cv_row_policy_checked: bool = PrivateAttr(default=False)
 
     def __str__(self):
         return f"XFormSet({self.prefix},{self.prefix_key},{self.level})"
@@ -212,10 +213,40 @@ class XFormSet(BaseModel, arbitrary_types_allowed=True):
         Run after normal Django/custom cleaning, including on DELETE-marked
         rows. Inactive top-level trees never enter this validation traversal.
         """
-        if not self.instance.is_bound or not self.instance.management_form.is_valid():
+        if self._cv_row_policy_checked or not self.instance.is_bound:
             return
+        self._cv_row_policy_checked = True
+        if not self.instance.management_form.is_valid():
+            return
+        initial = self.instance.initial_form_count()
+        total = self.instance.management_form.cleaned_data["TOTAL_FORMS"]
+        invalid_row = not 0 <= initial <= total
+        pk_field = self.instance.model._meta.pk
+        queryset = self.instance.get_queryset()
+        # Evaluate the managed queryset on its own selected alias. Never consult
+        # the PK ModelChoiceField, whose queryset may include unrelated rows.
+        authorized_ids = set(queryset.values_list("pk", flat=True))
+        for index, row in enumerate(self.forms):
+            form = row.form
+            raw_pk = form.data.get(form.add_prefix(pk_field.name))
+            persisted = not form.instance._state.adding
+            if index < initial or raw_pk not in (None, "") or persisted:
+                try:
+                    submitted_pk = pk_field.to_python(raw_pk)
+                except (ValidationError, ValueError, TypeError):
+                    invalid_row = True
+                    continue
+                if (
+                    submitted_pk is None
+                    or submitted_pk not in authorized_ids
+                    or not persisted
+                    or submitted_pk != form.instance.pk
+                ):
+                    invalid_row = True
+        if invalid_row:
+            self._cv_add_policy_error("cv_invalid_row", _("Invalid row."))
         if self.formset.edit_only:
-            extras = self.forms[self.instance.initial_form_count() :]
+            extras = self.forms[initial:]
             if any(self._cv_row_has_data(row) for row in extras):
                 self._cv_add_policy_error("cv_additions_not_allowed", _("Additions are not allowed."))
 

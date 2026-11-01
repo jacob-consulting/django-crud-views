@@ -10,15 +10,15 @@ import pytest
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Field, Layout
 from django.core.exceptions import ValidationError
-from django.forms.models import BaseInlineFormSet, inlineformset_factory
+from django.forms.models import BaseInlineFormSet, inlineformset_factory, modelform_factory
 from django.test import Client, RequestFactory, override_settings
 from django.urls import clear_url_caches, reverse
 
-from crud_views.lib.crispy import CrispyViewMixin
+from crud_views.lib.crispy import CrispyModelForm, CrispyViewMixin
 from crud_views.lib.formsets import FormSet, FormSetMixin, FormSets, InlineFormSet
 from crud_views.lib.formsets.render_tree import XFormSet
 from tests.lib.helper.forms import form_payload
-from tests.test1.app.models import Book, BookNote, Publisher
+from tests.test1.app.models import Author, Book, BookNote, Publisher, UUIDFragmentRow
 from tests.test1.app.views_formset import BookFormSetForm, BookNoteFormSetForm, PublisherFormSetForm
 
 pytestmark = pytest.mark.django_db
@@ -427,3 +427,87 @@ def test_permitted_new_rows_save_with_blank_id(policy_routes, policy_world):
     response = policy_routes.client.post(url, payload)
     assert response.status_code == 302
     assert Book.objects.get(title="legitimate new row").publisher_id == policy_world.parent.pk
+
+
+def uuid_runtime(family, author, payload, *, queryset=None):
+    class UUIDFormSet(family):
+        def get_queryset(self):
+            return super().get_queryset() if queryset is None else queryset
+
+    klass = inlineformset_factory(
+        Author,
+        UUIDFragmentRow,
+        formset=UUIDFormSet,
+        form=CrispyModelForm,
+        fields=["text"],
+        extra=1,
+    )
+    main_class = modelform_factory(Author, form=CrispyModelForm, fields=["first_name", "last_name"])
+    main = main_class(cv_view=None, instance=author, data=payload)
+    assert main.is_valid()
+    tree = FormSets(formsets=OrderedDict(rows=FormSet(title="Rows", klass=klass)))
+    tree.init(RequestFactory().post("/", payload), main)
+    return tree
+
+
+@pytest.mark.parametrize("family", [PolicyPackageInlineFormSet, PolicyNativeInlineFormSet], ids=["package", "native"])
+@pytest.mark.parametrize("identity", ["missing", "malformed", "nonexistent", "valid"])
+def test_uuid_existing_identity_and_unsaved_default_are_distinct(family, identity):
+    author = Author.objects.create(first_name="Ursula", last_name="Le Guin")
+    row = UUIDFragmentRow.objects.create(author=author, text="original")
+    prefix = f"rows-{author.pk}-0"
+    payload = {
+        "first_name": "Ursula",
+        "last_name": "Le Guin",
+        f"{prefix}-TOTAL_FORMS": "2",
+        f"{prefix}-INITIAL_FORMS": "1",
+        f"{prefix}-0-id": {
+            "missing": "",
+            "malformed": "bad-pk",
+            "nonexistent": str(uuid.uuid4()),
+            "valid": str(row.pk),
+        }[identity],
+        f"{prefix}-0-text": "edited",
+        f"{prefix}-1-id": "",
+        f"{prefix}-1-text": "new default UUID",
+    }
+    tree = uuid_runtime(family, author, payload)
+    extra = tree.x_formsets[0].forms[1].form.instance
+    assert isinstance(extra.pk, uuid.UUID)
+    assert extra._state.adding is True
+    assert tree.all_valid() is (identity == "valid")
+    if identity == "valid":
+        tree.save()
+        row.refresh_from_db()
+        assert row.text == "edited"
+        assert UUIDFragmentRow.objects.get(text="new default UUID").author_id == author.pk
+    else:
+        errors = tree.x_formsets[0].instance.non_form_errors().as_data()
+        assert [(e.code, e.messages) for e in errors] == [("cv_invalid_row", ["Invalid row."])]
+
+
+@pytest.mark.django_db(databases=["default", "shard"])
+@pytest.mark.parametrize("family", [PolicyPackageInlineFormSet, PolicyNativeInlineFormSet], ids=["package", "native"])
+def test_authorized_membership_uses_queryset_database(family, database_routes, django_assert_num_queries):
+    author = Author.objects.using("shard").create(first_name="Shard", last_name="Author")
+    row = UUIDFragmentRow.objects.using("shard").create(author=author, text="authorized only on shard")
+    prefix = f"rows-{author.pk}-0"
+    payload = {
+        "first_name": "Shard",
+        "last_name": "Author",
+        f"{prefix}-TOTAL_FORMS": "1",
+        f"{prefix}-INITIAL_FORMS": "1",
+        f"{prefix}-0-id": str(row.pk),
+        f"{prefix}-0-text": "edited on shard",
+    }
+    # Construction follows the selected shard; subsequent policy must retain
+    # the explicitly selected queryset even after the ambient router changes.
+    with database_routes("shard"):
+        tree = uuid_runtime(
+            family, author, payload, queryset=UUIDFragmentRow.objects.using("shard").filter(author=author)
+        )
+        assert tree.x_formsets[0].instance.is_valid()
+        assert tree.x_formsets[0].instance.get_queryset().db == "shard"
+    with database_routes("default"), django_assert_num_queries(0, using="default"):
+        assert tree.all_valid() is True
+    assert not UUIDFragmentRow.objects.using("default").filter(pk=row.pk).exists()

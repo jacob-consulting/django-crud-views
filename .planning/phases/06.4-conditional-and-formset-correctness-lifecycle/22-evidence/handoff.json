@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "version": "06.4-22/v1",
-  "recorded": "2026-11-01T19:37:08.642206+00:00",
+  "recorded": "2026-11-01T19:48:52.613305+00:00",
   "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
   "runner_sha256": "dc0594d2ccac677c2e2a45b7eaf1ba8d56cd29bf3c675229e848ab9d9aedf6d5",
   "packet": {
@@ -14,16 +14,60 @@
   },
   "reports": {
     "code": {
-      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-REVIEW.md",
-      "sha256": "93dee0a51ca7357063d81e5e669e9af18edb79eba39bdbdb6146bff4695ec6cc",
-      "status": "pending",
-      "context": "Current independent review pending; original bounded closures preserved under history."
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-review.md",
+      "sha256": "01c4405f723b40f3581da2118aa0d9d7f284d6bfd46ac0a64b9b8f2b60e9522f",
+      "status": "open",
+      "actor": "/root/execute_22/code_review",
+      "recorded": "2026-11-01T19:42:33Z",
+      "response": "CR-01\u201305/WR-01\u201304 closed within exact bounded counterexamples; WR-05 diagnostic warning and G6 remain open.",
+      "context": "New independent source applicability, real dual-CLI controls and bounded Python12/JS36 preservation checks; not a full product replay.",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-review.md",
+          "sha256": "01c4405f723b40f3581da2118aa0d9d7f284d6bfd46ac0a64b9b8f2b60e9522f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-controls/outcomes.json",
+          "sha256": "d9c9aa32aa0aac768118594801491a040bd0e3e7dcfbc3f761cecdbd9487336a"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-controls/boundary-outcomes.json",
+          "sha256": "a89837d0fcca4f4b6dfec0c9b4ba0546ad1e74f6044634ef00546f305f977d8c"
+        }
+      ]
     },
     "security": {
-      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
-      "sha256": "31c90957236d0da033094b1ba7f8b8a50afd33075c81338c52928164af46b3c4",
-      "status": "pending",
-      "context": "Current independent ASVS1/high reassessment pending; no automatic risk acceptance."
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+      "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f",
+      "status": "open",
+      "actor": "/root/execute_22/security_review",
+      "recorded": "2026-11-01T19:43:33.367307+00:00",
+      "response": "OPEN_THREATS:41total,38closed,3high open35/36/40,0medium open; no risk accepted.",
+      "context": "Actual independent ASVS1/high reassessment; shared mutation fixture authorship disclosed, commands/outcomes independently observed. Executor persisted the auditor terminal return under its single-writer rule.",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+          "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
+        }
+      ]
     },
     "ui": {
       "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UI-REVIEW.md",
@@ -36,6 +80,38 @@
       "sha256": "ff6bd89f315e8b664bf5c2c4ffee8129c012cac5dc9a8a5afc7785f015460b10",
       "status": "open",
       "context": "Historical gaps_found 8/10; orchestrator owns independent re-verification and final hash rebind."
+    },
+    "code_bounded": {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-review.md",
+      "sha256": "01c4405f723b40f3581da2118aa0d9d7f284d6bfd46ac0a64b9b8f2b60e9522f",
+      "status": "passed",
+      "actor": "/root/execute_22/code_review",
+      "recorded": "2026-11-01T19:42:33Z",
+      "response": "CR-01\u201305/WR-01\u201304 closed within exact bounded counterexamples; WR-05 diagnostic warning and G6 remain open.",
+      "context": "Passed ONLY for CR-01\u201305/WR-01\u201304 bounded repair/applicability table; overall code report stays open for WR-05/G6.",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-review.md",
+          "sha256": "01c4405f723b40f3581da2118aa0d9d7f284d6bfd46ac0a64b9b8f2b60e9522f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-controls/outcomes.json",
+          "sha256": "d9c9aa32aa0aac768118594801491a040bd0e3e7dcfbc3f761cecdbd9487336a"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-controls/boundary-outcomes.json",
+          "sha256": "a89837d0fcca4f4b6dfec0c9b4ba0546ad1e74f6044634ef00546f305f977d8c"
+        }
+      ]
     }
   },
   "findings": {
@@ -88,9 +164,36 @@
           "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-notes]"
         }
       ],
-      "status": "pending",
-      "context": "Original bounded disposition preserved in history; awaiting actual independent current-source applicability outcome.",
-      "historical_status": "closed"
+      "status": "closed",
+      "context": "New independent source applicability, real dual-CLI controls and bounded Python12/JS36 preservation checks; not a full product replay.",
+      "historical_status": "closed",
+      "actor": "/root/execute_22/code_review",
+      "recorded": "2026-11-01T19:42:33Z",
+      "response": "Closed within original bounded counterexample scope; current applicability independently confirmed.",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-review.md",
+          "sha256": "01c4405f723b40f3581da2118aa0d9d7f284d6bfd46ac0a64b9b8f2b60e9522f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-controls/outcomes.json",
+          "sha256": "d9c9aa32aa0aac768118594801491a040bd0e3e7dcfbc3f761cecdbd9487336a"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-controls/boundary-outcomes.json",
+          "sha256": "a89837d0fcca4f4b6dfec0c9b4ba0546ad1e74f6044634ef00546f305f977d8c"
+        }
+      ],
+      "review": "code_bounded"
     },
     "CR-01": {
       "review_ids": [
@@ -141,10 +244,37 @@
           "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-notes]"
         }
       ],
-      "status": "pending",
-      "context": "Original bounded disposition preserved in history; awaiting actual independent current-source applicability outcome.",
+      "status": "closed",
+      "context": "New independent source applicability, real dual-CLI controls and bounded Python12/JS36 preservation checks; not a full product replay.",
       "gap": "G1",
-      "historical_status": "closed"
+      "historical_status": "closed",
+      "actor": "/root/execute_22/code_review",
+      "recorded": "2026-11-01T19:42:33Z",
+      "response": "Closed within original bounded counterexample scope; current applicability independently confirmed.",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-review.md",
+          "sha256": "01c4405f723b40f3581da2118aa0d9d7f284d6bfd46ac0a64b9b8f2b60e9522f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-controls/outcomes.json",
+          "sha256": "d9c9aa32aa0aac768118594801491a040bd0e3e7dcfbc3f761cecdbd9487336a"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-controls/boundary-outcomes.json",
+          "sha256": "a89837d0fcca4f4b6dfec0c9b4ba0546ad1e74f6044634ef00546f305f977d8c"
+        }
+      ],
+      "review": "code_bounded"
     },
     "G2": {
       "review_ids": [
@@ -185,9 +315,36 @@
           "gate": "javascript-integration"
         }
       ],
-      "status": "pending",
-      "context": "Original bounded disposition preserved in history; awaiting actual independent current-source applicability outcome.",
-      "historical_status": "closed"
+      "status": "closed",
+      "context": "New independent source applicability, real dual-CLI controls and bounded Python12/JS36 preservation checks; not a full product replay.",
+      "historical_status": "closed",
+      "actor": "/root/execute_22/code_review",
+      "recorded": "2026-11-01T19:42:33Z",
+      "response": "Closed within original bounded counterexample scope; current applicability independently confirmed.",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-review.md",
+          "sha256": "01c4405f723b40f3581da2118aa0d9d7f284d6bfd46ac0a64b9b8f2b60e9522f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-controls/outcomes.json",
+          "sha256": "d9c9aa32aa0aac768118594801491a040bd0e3e7dcfbc3f761cecdbd9487336a"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-controls/boundary-outcomes.json",
+          "sha256": "a89837d0fcca4f4b6dfec0c9b4ba0546ad1e74f6044634ef00546f305f977d8c"
+        }
+      ],
+      "review": "code_bounded"
     },
     "CR-02": {
       "review_ids": [
@@ -228,10 +385,37 @@
           "gate": "javascript-integration"
         }
       ],
-      "status": "pending",
-      "context": "Original bounded disposition preserved in history; awaiting actual independent current-source applicability outcome.",
+      "status": "closed",
+      "context": "New independent source applicability, real dual-CLI controls and bounded Python12/JS36 preservation checks; not a full product replay.",
       "gap": "G2",
-      "historical_status": "closed"
+      "historical_status": "closed",
+      "actor": "/root/execute_22/code_review",
+      "recorded": "2026-11-01T19:42:33Z",
+      "response": "Closed within original bounded counterexample scope; current applicability independently confirmed.",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-review.md",
+          "sha256": "01c4405f723b40f3581da2118aa0d9d7f284d6bfd46ac0a64b9b8f2b60e9522f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-controls/outcomes.json",
+          "sha256": "d9c9aa32aa0aac768118594801491a040bd0e3e7dcfbc3f761cecdbd9487336a"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-controls/boundary-outcomes.json",
+          "sha256": "a89837d0fcca4f4b6dfec0c9b4ba0546ad1e74f6044634ef00546f305f977d8c"
+        }
+      ],
+      "review": "code_bounded"
     },
     "G3": {
       "review_ids": [
@@ -265,9 +449,36 @@
           "case": "tests/js/formset.test.js::formset.js native row deletion eligibility allows Add and submit without extra DELETE (ordered=false)"
         }
       ],
-      "status": "pending",
-      "context": "Original bounded disposition preserved in history; awaiting actual independent current-source applicability outcome.",
-      "historical_status": "closed"
+      "status": "closed",
+      "context": "New independent source applicability, real dual-CLI controls and bounded Python12/JS36 preservation checks; not a full product replay.",
+      "historical_status": "closed",
+      "actor": "/root/execute_22/code_review",
+      "recorded": "2026-11-01T19:42:33Z",
+      "response": "Closed within original bounded counterexample scope; current applicability independently confirmed.",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-review.md",
+          "sha256": "01c4405f723b40f3581da2118aa0d9d7f284d6bfd46ac0a64b9b8f2b60e9522f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-controls/outcomes.json",
+          "sha256": "d9c9aa32aa0aac768118594801491a040bd0e3e7dcfbc3f761cecdbd9487336a"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-controls/boundary-outcomes.json",
+          "sha256": "a89837d0fcca4f4b6dfec0c9b4ba0546ad1e74f6044634ef00546f305f977d8c"
+        }
+      ],
+      "review": "code_bounded"
     },
     "CR-03": {
       "review_ids": [
@@ -301,10 +512,37 @@
           "case": "tests/js/formset.test.js::formset.js native row deletion eligibility allows Add and submit without extra DELETE (ordered=false)"
         }
       ],
-      "status": "pending",
-      "context": "Original bounded disposition preserved in history; awaiting actual independent current-source applicability outcome.",
+      "status": "closed",
+      "context": "New independent source applicability, real dual-CLI controls and bounded Python12/JS36 preservation checks; not a full product replay.",
       "gap": "G3",
-      "historical_status": "closed"
+      "historical_status": "closed",
+      "actor": "/root/execute_22/code_review",
+      "recorded": "2026-11-01T19:42:33Z",
+      "response": "Closed within original bounded counterexample scope; current applicability independently confirmed.",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-review.md",
+          "sha256": "01c4405f723b40f3581da2118aa0d9d7f284d6bfd46ac0a64b9b8f2b60e9522f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-controls/outcomes.json",
+          "sha256": "d9c9aa32aa0aac768118594801491a040bd0e3e7dcfbc3f761cecdbd9487336a"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-controls/boundary-outcomes.json",
+          "sha256": "a89837d0fcca4f4b6dfec0c9b4ba0546ad1e74f6044634ef00546f305f977d8c"
+        }
+      ],
+      "review": "code_bounded"
     },
     "G4": {
       "review_ids": [
@@ -345,9 +583,36 @@
           "case": "tests/js/formset.test.js::formset.js native row deletion eligibility refuses custom extra Delete after upward movement (delegated)"
         }
       ],
-      "status": "pending",
-      "context": "Original bounded disposition preserved in history; awaiting actual independent current-source applicability outcome.",
-      "historical_status": "closed"
+      "status": "closed",
+      "context": "New independent source applicability, real dual-CLI controls and bounded Python12/JS36 preservation checks; not a full product replay.",
+      "historical_status": "closed",
+      "actor": "/root/execute_22/code_review",
+      "recorded": "2026-11-01T19:42:33Z",
+      "response": "Closed within original bounded counterexample scope; current applicability independently confirmed.",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-review.md",
+          "sha256": "01c4405f723b40f3581da2118aa0d9d7f284d6bfd46ac0a64b9b8f2b60e9522f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-controls/outcomes.json",
+          "sha256": "d9c9aa32aa0aac768118594801491a040bd0e3e7dcfbc3f761cecdbd9487336a"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-controls/boundary-outcomes.json",
+          "sha256": "a89837d0fcca4f4b6dfec0c9b4ba0546ad1e74f6044634ef00546f305f977d8c"
+        }
+      ],
+      "review": "code_bounded"
     },
     "CR-04": {
       "review_ids": [
@@ -388,10 +653,37 @@
           "case": "tests/js/formset.test.js::formset.js native row deletion eligibility refuses custom extra Delete after upward movement (delegated)"
         }
       ],
-      "status": "pending",
-      "context": "Original bounded disposition preserved in history; awaiting actual independent current-source applicability outcome.",
+      "status": "closed",
+      "context": "New independent source applicability, real dual-CLI controls and bounded Python12/JS36 preservation checks; not a full product replay.",
       "gap": "G4",
-      "historical_status": "closed"
+      "historical_status": "closed",
+      "actor": "/root/execute_22/code_review",
+      "recorded": "2026-11-01T19:42:33Z",
+      "response": "Closed within original bounded counterexample scope; current applicability independently confirmed.",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-review.md",
+          "sha256": "01c4405f723b40f3581da2118aa0d9d7f284d6bfd46ac0a64b9b8f2b60e9522f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-controls/outcomes.json",
+          "sha256": "d9c9aa32aa0aac768118594801491a040bd0e3e7dcfbc3f761cecdbd9487336a"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-controls/boundary-outcomes.json",
+          "sha256": "a89837d0fcca4f4b6dfec0c9b4ba0546ad1e74f6044634ef00546f305f977d8c"
+        }
+      ],
+      "review": "code_bounded"
     },
     "G5": {
       "review_ids": [
@@ -439,9 +731,36 @@
           "case": "tests/js/toggle.test.js::conditional disabled ownership keeps a formerly bound inactive group safe during ambiguity and uniquely recovers"
         }
       ],
-      "status": "pending",
-      "context": "Original bounded disposition preserved in history; awaiting actual independent current-source applicability outcome.",
-      "historical_status": "closed"
+      "status": "closed",
+      "context": "New independent source applicability, real dual-CLI controls and bounded Python12/JS36 preservation checks; not a full product replay.",
+      "historical_status": "closed",
+      "actor": "/root/execute_22/code_review",
+      "recorded": "2026-11-01T19:42:33Z",
+      "response": "Closed within original bounded counterexample scope; current applicability independently confirmed.",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-review.md",
+          "sha256": "01c4405f723b40f3581da2118aa0d9d7f284d6bfd46ac0a64b9b8f2b60e9522f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-controls/outcomes.json",
+          "sha256": "d9c9aa32aa0aac768118594801491a040bd0e3e7dcfbc3f761cecdbd9487336a"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-controls/boundary-outcomes.json",
+          "sha256": "a89837d0fcca4f4b6dfec0c9b4ba0546ad1e74f6044634ef00546f305f977d8c"
+        }
+      ],
+      "review": "code_bounded"
     },
     "CR-05": {
       "review_ids": [
@@ -489,10 +808,37 @@
           "case": "tests/js/toggle.test.js::conditional disabled ownership keeps a formerly bound inactive group safe during ambiguity and uniquely recovers"
         }
       ],
-      "status": "pending",
-      "context": "Original bounded disposition preserved in history; awaiting actual independent current-source applicability outcome.",
+      "status": "closed",
+      "context": "New independent source applicability, real dual-CLI controls and bounded Python12/JS36 preservation checks; not a full product replay.",
       "gap": "G5",
-      "historical_status": "closed"
+      "historical_status": "closed",
+      "actor": "/root/execute_22/code_review",
+      "recorded": "2026-11-01T19:42:33Z",
+      "response": "Closed within original bounded counterexample scope; current applicability independently confirmed.",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-review.md",
+          "sha256": "01c4405f723b40f3581da2118aa0d9d7f284d6bfd46ac0a64b9b8f2b60e9522f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-controls/outcomes.json",
+          "sha256": "d9c9aa32aa0aac768118594801491a040bd0e3e7dcfbc3f761cecdbd9487336a"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-controls/boundary-outcomes.json",
+          "sha256": "a89837d0fcca4f4b6dfec0c9b4ba0546ad1e74f6044634ef00546f305f977d8c"
+        }
+      ],
+      "review": "code_bounded"
     },
     "G6": {
       "review_ids": [
@@ -537,12 +883,42 @@
         }
       ],
       "status": "open",
-      "context": "Original bounded disposition preserved in history; awaiting actual independent current-source applicability outcome.",
+      "context": "New independent source applicability, real dual-CLI controls and bounded Python12/JS36 preservation checks; not a full product replay.",
       "new_findings": [
         "WR-03",
         "WR-04"
       ],
-      "historical_status": "open"
+      "historical_status": "open",
+      "actor": "/root/execute_22/code_review",
+      "recorded": "2026-11-01T19:42:33Z",
+      "response": "WR-03/04 original evidence omissions closed; G6 remains open for new WR-05 malformed-number rejection diagnostic.",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-review.md",
+          "sha256": "01c4405f723b40f3581da2118aa0d9d7f284d6bfd46ac0a64b9b8f2b60e9522f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-controls/outcomes.json",
+          "sha256": "d9c9aa32aa0aac768118594801491a040bd0e3e7dcfbc3f761cecdbd9487336a"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-controls/boundary-outcomes.json",
+          "sha256": "a89837d0fcca4f4b6dfec0c9b4ba0546ad1e74f6044634ef00546f305f977d8c"
+        }
+      ],
+      "review": "code",
+      "current_open_findings": [
+        "WR-05"
+      ]
     },
     "WR-01": {
       "review_ids": [
@@ -584,10 +960,37 @@
           "gate": "ruff-format"
         }
       ],
-      "status": "pending",
-      "context": "Original bounded disposition preserved in history; awaiting actual independent current-source applicability outcome.",
+      "status": "closed",
+      "context": "New independent source applicability, real dual-CLI controls and bounded Python12/JS36 preservation checks; not a full product replay.",
       "gap": "G6",
-      "historical_status": "closed"
+      "historical_status": "closed",
+      "actor": "/root/execute_22/code_review",
+      "recorded": "2026-11-01T19:42:33Z",
+      "response": "Closed within original bounded counterexample scope; current applicability independently confirmed.",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-review.md",
+          "sha256": "01c4405f723b40f3581da2118aa0d9d7f284d6bfd46ac0a64b9b8f2b60e9522f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-controls/outcomes.json",
+          "sha256": "d9c9aa32aa0aac768118594801491a040bd0e3e7dcfbc3f761cecdbd9487336a"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-controls/boundary-outcomes.json",
+          "sha256": "a89837d0fcca4f4b6dfec0c9b4ba0546ad1e74f6044634ef00546f305f977d8c"
+        }
+      ],
+      "review": "code_bounded"
     },
     "WR-02": {
       "review_ids": [
@@ -629,13 +1032,40 @@
           "gate": "ruff-format"
         }
       ],
-      "status": "pending",
-      "context": "Original bounded disposition preserved in history; awaiting actual independent current-source applicability outcome.",
+      "status": "closed",
+      "context": "New independent source applicability, real dual-CLI controls and bounded Python12/JS36 preservation checks; not a full product replay.",
       "gap": "G6",
-      "historical_status": "closed"
+      "historical_status": "closed",
+      "actor": "/root/execute_22/code_review",
+      "recorded": "2026-11-01T19:42:33Z",
+      "response": "Closed within original bounded counterexample scope; current applicability independently confirmed.",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-review.md",
+          "sha256": "01c4405f723b40f3581da2118aa0d9d7f284d6bfd46ac0a64b9b8f2b60e9522f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-controls/outcomes.json",
+          "sha256": "d9c9aa32aa0aac768118594801491a040bd0e3e7dcfbc3f761cecdbd9487336a"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-controls/boundary-outcomes.json",
+          "sha256": "a89837d0fcca4f4b6dfec0c9b4ba0546ad1e74f6044634ef00546f305f977d8c"
+        }
+      ],
+      "review": "code_bounded"
     },
     "WR-03": {
-      "status": "open",
+      "status": "closed",
       "review_ids": [
         "WR-03"
       ],
@@ -664,10 +1094,37 @@
           "gate": "conditional-browser"
         }
       ],
-      "context": "Repaired in plan20/21; awaiting actual independent outcome."
+      "context": "New independent source applicability, real dual-CLI controls and bounded Python12/JS36 preservation checks; not a full product replay.",
+      "actor": "/root/execute_22/code_review",
+      "recorded": "2026-11-01T19:42:33Z",
+      "response": "Closed within original bounded counterexample scope; current applicability independently confirmed.",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-review.md",
+          "sha256": "01c4405f723b40f3581da2118aa0d9d7f284d6bfd46ac0a64b9b8f2b60e9522f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-controls/outcomes.json",
+          "sha256": "d9c9aa32aa0aac768118594801491a040bd0e3e7dcfbc3f761cecdbd9487336a"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-controls/boundary-outcomes.json",
+          "sha256": "a89837d0fcca4f4b6dfec0c9b4ba0546ad1e74f6044634ef00546f305f977d8c"
+        }
+      ],
+      "review": "code_bounded"
     },
     "WR-04": {
-      "status": "open",
+      "status": "closed",
       "review_ids": [
         "WR-04"
       ],
@@ -696,666 +1153,1266 @@
           "gate": "conditional-browser"
         }
       ],
-      "context": "Repaired in plan20/21; awaiting actual independent outcome."
+      "context": "New independent source applicability, real dual-CLI controls and bounded Python12/JS36 preservation checks; not a full product replay.",
+      "actor": "/root/execute_22/code_review",
+      "recorded": "2026-11-01T19:42:33Z",
+      "response": "Closed within original bounded counterexample scope; current applicability independently confirmed.",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-review.md",
+          "sha256": "01c4405f723b40f3581da2118aa0d9d7f284d6bfd46ac0a64b9b8f2b60e9522f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-controls/outcomes.json",
+          "sha256": "d9c9aa32aa0aac768118594801491a040bd0e3e7dcfbc3f761cecdbd9487336a"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-controls/boundary-outcomes.json",
+          "sha256": "a89837d0fcca4f4b6dfec0c9b4ba0546ad1e74f6044634ef00546f305f977d8c"
+        }
+      ],
+      "review": "code_bounded"
     }
   },
   "threats": {
     "T-06.4-01": {
       "status": "pending",
-      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "context": "Actual independent ASVS1/high reassessment; shared mutation fixture authorship disclosed, commands/outcomes independently observed. Executor persisted the auditor terminal return under its single-writer rule.",
       "independent_disposition": "closed",
-      "actor": "gsd-security-auditor independent lane",
-      "recorded": "2026-11-01T17:14:15Z",
-      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "actor": "/root/execute_22/security_review",
+      "recorded": "2026-11-01T19:43:33.367307+00:00",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
-          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+          "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
         }
       ],
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "current_review": "pending"
+      "current_review": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+        "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+      },
+      "response": "OPEN_THREATS:41total,38closed,3high open35/36/40,0medium open; no risk accepted.",
+      "severity": "medium"
     },
     "T-06.4-02": {
       "status": "pending",
-      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "context": "Actual independent ASVS1/high reassessment; shared mutation fixture authorship disclosed, commands/outcomes independently observed. Executor persisted the auditor terminal return under its single-writer rule.",
       "independent_disposition": "closed",
-      "actor": "gsd-security-auditor independent lane",
-      "recorded": "2026-11-01T17:14:15Z",
-      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "actor": "/root/execute_22/security_review",
+      "recorded": "2026-11-01T19:43:33.367307+00:00",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
-          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+          "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
         }
       ],
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "current_review": "pending"
+      "current_review": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+        "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+      },
+      "response": "OPEN_THREATS:41total,38closed,3high open35/36/40,0medium open; no risk accepted.",
+      "severity": "medium"
     },
     "T-06.4-03": {
       "status": "pending",
-      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "context": "Actual independent ASVS1/high reassessment; shared mutation fixture authorship disclosed, commands/outcomes independently observed. Executor persisted the auditor terminal return under its single-writer rule.",
       "independent_disposition": "closed",
-      "actor": "gsd-security-auditor independent lane",
-      "recorded": "2026-11-01T17:14:15Z",
-      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "actor": "/root/execute_22/security_review",
+      "recorded": "2026-11-01T19:43:33.367307+00:00",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
-          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+          "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
         }
       ],
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "current_review": "pending"
+      "current_review": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+        "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+      },
+      "response": "OPEN_THREATS:41total,38closed,3high open35/36/40,0medium open; no risk accepted.",
+      "severity": "high"
     },
     "T-06.4-04": {
       "status": "pending",
-      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "context": "Actual independent ASVS1/high reassessment; shared mutation fixture authorship disclosed, commands/outcomes independently observed. Executor persisted the auditor terminal return under its single-writer rule.",
       "independent_disposition": "closed",
-      "actor": "gsd-security-auditor independent lane",
-      "recorded": "2026-11-01T17:14:15Z",
-      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "actor": "/root/execute_22/security_review",
+      "recorded": "2026-11-01T19:43:33.367307+00:00",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
-          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+          "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
         }
       ],
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "current_review": "pending"
+      "current_review": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+        "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+      },
+      "response": "OPEN_THREATS:41total,38closed,3high open35/36/40,0medium open; no risk accepted.",
+      "severity": "high"
     },
     "T-06.4-05": {
       "status": "pending",
-      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "context": "Actual independent ASVS1/high reassessment; shared mutation fixture authorship disclosed, commands/outcomes independently observed. Executor persisted the auditor terminal return under its single-writer rule.",
       "independent_disposition": "closed",
-      "actor": "gsd-security-auditor independent lane",
-      "recorded": "2026-11-01T17:14:15Z",
-      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "actor": "/root/execute_22/security_review",
+      "recorded": "2026-11-01T19:43:33.367307+00:00",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
-          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+          "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
         }
       ],
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "current_review": "pending"
+      "current_review": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+        "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+      },
+      "response": "OPEN_THREATS:41total,38closed,3high open35/36/40,0medium open; no risk accepted.",
+      "severity": "high"
     },
     "T-06.4-06": {
       "status": "pending",
-      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "context": "Actual independent ASVS1/high reassessment; shared mutation fixture authorship disclosed, commands/outcomes independently observed. Executor persisted the auditor terminal return under its single-writer rule.",
       "independent_disposition": "closed",
-      "actor": "gsd-security-auditor independent lane",
-      "recorded": "2026-11-01T17:14:15Z",
-      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "actor": "/root/execute_22/security_review",
+      "recorded": "2026-11-01T19:43:33.367307+00:00",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
-          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+          "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
         }
       ],
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "current_review": "pending"
+      "current_review": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+        "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+      },
+      "response": "OPEN_THREATS:41total,38closed,3high open35/36/40,0medium open; no risk accepted.",
+      "severity": "high"
     },
     "T-06.4-07": {
       "status": "pending",
-      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "context": "Actual independent ASVS1/high reassessment; shared mutation fixture authorship disclosed, commands/outcomes independently observed. Executor persisted the auditor terminal return under its single-writer rule.",
       "independent_disposition": "closed",
-      "actor": "gsd-security-auditor independent lane",
-      "recorded": "2026-11-01T17:14:15Z",
-      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "actor": "/root/execute_22/security_review",
+      "recorded": "2026-11-01T19:43:33.367307+00:00",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
-          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+          "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
         }
       ],
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "current_review": "pending"
+      "current_review": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+        "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+      },
+      "response": "OPEN_THREATS:41total,38closed,3high open35/36/40,0medium open; no risk accepted.",
+      "severity": "high"
     },
     "T-06.4-08": {
       "status": "pending",
-      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "context": "Actual independent ASVS1/high reassessment; shared mutation fixture authorship disclosed, commands/outcomes independently observed. Executor persisted the auditor terminal return under its single-writer rule.",
       "independent_disposition": "closed",
-      "actor": "gsd-security-auditor independent lane",
-      "recorded": "2026-11-01T17:14:15Z",
-      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "actor": "/root/execute_22/security_review",
+      "recorded": "2026-11-01T19:43:33.367307+00:00",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
-          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+          "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
         }
       ],
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "current_review": "pending"
+      "current_review": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+        "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+      },
+      "response": "OPEN_THREATS:41total,38closed,3high open35/36/40,0medium open; no risk accepted.",
+      "severity": "high"
     },
     "T-06.4-09": {
       "status": "pending",
-      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "context": "Actual independent ASVS1/high reassessment; shared mutation fixture authorship disclosed, commands/outcomes independently observed. Executor persisted the auditor terminal return under its single-writer rule.",
       "independent_disposition": "closed",
-      "actor": "gsd-security-auditor independent lane",
-      "recorded": "2026-11-01T17:14:15Z",
-      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "actor": "/root/execute_22/security_review",
+      "recorded": "2026-11-01T19:43:33.367307+00:00",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
-          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+          "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
         }
       ],
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "current_review": "pending"
+      "current_review": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+        "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+      },
+      "response": "OPEN_THREATS:41total,38closed,3high open35/36/40,0medium open; no risk accepted.",
+      "severity": "medium"
     },
     "T-06.4-10": {
       "status": "pending",
-      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "context": "Actual independent ASVS1/high reassessment; shared mutation fixture authorship disclosed, commands/outcomes independently observed. Executor persisted the auditor terminal return under its single-writer rule.",
       "independent_disposition": "closed",
-      "actor": "gsd-security-auditor independent lane",
-      "recorded": "2026-11-01T17:14:15Z",
-      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "actor": "/root/execute_22/security_review",
+      "recorded": "2026-11-01T19:43:33.367307+00:00",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
-          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+          "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
         }
       ],
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "current_review": "pending"
+      "current_review": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+        "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+      },
+      "response": "OPEN_THREATS:41total,38closed,3high open35/36/40,0medium open; no risk accepted.",
+      "severity": "high"
     },
     "T-06.4-11": {
       "status": "pending",
-      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "context": "Actual independent ASVS1/high reassessment; shared mutation fixture authorship disclosed, commands/outcomes independently observed. Executor persisted the auditor terminal return under its single-writer rule.",
       "independent_disposition": "closed",
-      "actor": "gsd-security-auditor independent lane",
-      "recorded": "2026-11-01T17:14:15Z",
-      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "actor": "/root/execute_22/security_review",
+      "recorded": "2026-11-01T19:43:33.367307+00:00",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
-          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+          "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
         }
       ],
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "current_review": "pending"
+      "current_review": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+        "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+      },
+      "response": "OPEN_THREATS:41total,38closed,3high open35/36/40,0medium open; no risk accepted.",
+      "severity": "medium"
     },
     "T-06.4-12": {
       "status": "pending",
-      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "context": "Actual independent ASVS1/high reassessment; shared mutation fixture authorship disclosed, commands/outcomes independently observed. Executor persisted the auditor terminal return under its single-writer rule.",
       "independent_disposition": "closed",
-      "actor": "gsd-security-auditor independent lane",
-      "recorded": "2026-11-01T17:14:15Z",
-      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "actor": "/root/execute_22/security_review",
+      "recorded": "2026-11-01T19:43:33.367307+00:00",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
-          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+          "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
         }
       ],
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "current_review": "pending"
+      "current_review": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+        "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+      },
+      "response": "OPEN_THREATS:41total,38closed,3high open35/36/40,0medium open; no risk accepted.",
+      "severity": "medium"
     },
     "T-06.4-13": {
       "status": "pending",
-      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "context": "Actual independent ASVS1/high reassessment; shared mutation fixture authorship disclosed, commands/outcomes independently observed. Executor persisted the auditor terminal return under its single-writer rule.",
       "independent_disposition": "closed",
-      "actor": "gsd-security-auditor independent lane",
-      "recorded": "2026-11-01T17:14:15Z",
-      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "actor": "/root/execute_22/security_review",
+      "recorded": "2026-11-01T19:43:33.367307+00:00",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
-          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+          "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
         }
       ],
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "current_review": "pending"
+      "current_review": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+        "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+      },
+      "response": "OPEN_THREATS:41total,38closed,3high open35/36/40,0medium open; no risk accepted.",
+      "severity": "high"
     },
     "T-06.4-14": {
       "status": "pending",
-      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "context": "Actual independent ASVS1/high reassessment; shared mutation fixture authorship disclosed, commands/outcomes independently observed. Executor persisted the auditor terminal return under its single-writer rule.",
       "independent_disposition": "closed",
-      "actor": "gsd-security-auditor independent lane",
-      "recorded": "2026-11-01T17:14:15Z",
-      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "actor": "/root/execute_22/security_review",
+      "recorded": "2026-11-01T19:43:33.367307+00:00",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
-          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+          "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
         }
       ],
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "current_review": "pending"
+      "current_review": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+        "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+      },
+      "response": "OPEN_THREATS:41total,38closed,3high open35/36/40,0medium open; no risk accepted.",
+      "severity": "high"
     },
     "T-06.4-15": {
       "status": "pending",
-      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "context": "Actual independent ASVS1/high reassessment; shared mutation fixture authorship disclosed, commands/outcomes independently observed. Executor persisted the auditor terminal return under its single-writer rule.",
       "independent_disposition": "closed",
-      "actor": "gsd-security-auditor independent lane",
-      "recorded": "2026-11-01T17:14:15Z",
-      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "actor": "/root/execute_22/security_review",
+      "recorded": "2026-11-01T19:43:33.367307+00:00",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
-          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+          "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
         }
       ],
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "current_review": "pending"
+      "current_review": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+        "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+      },
+      "response": "OPEN_THREATS:41total,38closed,3high open35/36/40,0medium open; no risk accepted.",
+      "severity": "medium"
     },
     "T-06.4-16": {
       "status": "pending",
-      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "context": "Actual independent ASVS1/high reassessment; shared mutation fixture authorship disclosed, commands/outcomes independently observed. Executor persisted the auditor terminal return under its single-writer rule.",
       "independent_disposition": "closed",
-      "actor": "gsd-security-auditor independent lane",
-      "recorded": "2026-11-01T17:14:15Z",
-      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "actor": "/root/execute_22/security_review",
+      "recorded": "2026-11-01T19:43:33.367307+00:00",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
-          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+          "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
         }
       ],
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "current_review": "pending"
+      "current_review": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+        "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+      },
+      "response": "OPEN_THREATS:41total,38closed,3high open35/36/40,0medium open; no risk accepted.",
+      "severity": "high"
     },
     "T-06.4-17": {
       "status": "pending",
-      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "context": "Actual independent ASVS1/high reassessment; shared mutation fixture authorship disclosed, commands/outcomes independently observed. Executor persisted the auditor terminal return under its single-writer rule.",
       "independent_disposition": "closed",
-      "actor": "gsd-security-auditor independent lane",
-      "recorded": "2026-11-01T17:14:15Z",
-      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "actor": "/root/execute_22/security_review",
+      "recorded": "2026-11-01T19:43:33.367307+00:00",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
-          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+          "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
         }
       ],
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "current_review": "pending"
+      "current_review": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+        "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+      },
+      "response": "OPEN_THREATS:41total,38closed,3high open35/36/40,0medium open; no risk accepted.",
+      "severity": "high"
     },
     "T-06.4-18": {
       "status": "pending",
-      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "context": "Actual independent ASVS1/high reassessment; shared mutation fixture authorship disclosed, commands/outcomes independently observed. Executor persisted the auditor terminal return under its single-writer rule.",
       "independent_disposition": "closed",
-      "actor": "gsd-security-auditor independent lane",
-      "recorded": "2026-11-01T17:14:15Z",
-      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "actor": "/root/execute_22/security_review",
+      "recorded": "2026-11-01T19:43:33.367307+00:00",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
-          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+          "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
         }
       ],
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "current_review": "pending"
+      "current_review": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+        "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+      },
+      "response": "OPEN_THREATS:41total,38closed,3high open35/36/40,0medium open; no risk accepted.",
+      "severity": "medium"
     },
     "T-06.4-19": {
       "status": "pending",
-      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "context": "Actual independent ASVS1/high reassessment; shared mutation fixture authorship disclosed, commands/outcomes independently observed. Executor persisted the auditor terminal return under its single-writer rule.",
       "independent_disposition": "closed",
-      "actor": "gsd-security-auditor independent lane",
-      "recorded": "2026-11-01T17:14:15Z",
-      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "actor": "/root/execute_22/security_review",
+      "recorded": "2026-11-01T19:43:33.367307+00:00",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
-          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+          "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
         }
       ],
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "current_review": "pending"
+      "current_review": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+        "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+      },
+      "response": "OPEN_THREATS:41total,38closed,3high open35/36/40,0medium open; no risk accepted.",
+      "severity": "high"
     },
     "T-06.4-20": {
       "status": "pending",
-      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "context": "Actual independent ASVS1/high reassessment; shared mutation fixture authorship disclosed, commands/outcomes independently observed. Executor persisted the auditor terminal return under its single-writer rule.",
       "independent_disposition": "closed",
-      "actor": "gsd-security-auditor independent lane",
-      "recorded": "2026-11-01T17:14:15Z",
-      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "actor": "/root/execute_22/security_review",
+      "recorded": "2026-11-01T19:43:33.367307+00:00",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
-          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+          "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
         }
       ],
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "current_review": "pending"
+      "current_review": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+        "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+      },
+      "response": "OPEN_THREATS:41total,38closed,3high open35/36/40,0medium open; no risk accepted.",
+      "severity": "medium"
     },
     "T-06.4-21": {
       "status": "pending",
-      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "context": "Actual independent ASVS1/high reassessment; shared mutation fixture authorship disclosed, commands/outcomes independently observed. Executor persisted the auditor terminal return under its single-writer rule.",
       "independent_disposition": "closed",
-      "actor": "gsd-security-auditor independent lane",
-      "recorded": "2026-11-01T17:14:15Z",
-      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "actor": "/root/execute_22/security_review",
+      "recorded": "2026-11-01T19:43:33.367307+00:00",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
-          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+          "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
         }
       ],
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "current_review": "pending"
+      "current_review": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+        "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+      },
+      "response": "OPEN_THREATS:41total,38closed,3high open35/36/40,0medium open; no risk accepted.",
+      "severity": "medium"
     },
     "T-06.4-22": {
-      "status": "open",
-      "context": "Open independent security obligation; no risk accepted. See exact report row.",
-      "independent_disposition": "open",
-      "actor": "gsd-security-auditor independent lane",
-      "recorded": "2026-11-01T17:14:15Z",
-      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "status": "pending",
+      "context": "Actual independent ASVS1/high reassessment; shared mutation fixture authorship disclosed, commands/outcomes independently observed. Executor persisted the auditor terminal return under its single-writer rule.",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_22/security_review",
+      "recorded": "2026-11-01T19:43:33.367307+00:00",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
-          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+          "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
         }
       ],
-      "blocking": true,
+      "blocking": false,
       "historical_independent_disposition": "open",
-      "current_review": "pending"
+      "current_review": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+        "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+      },
+      "response": "OPEN_THREATS:41total,38closed,3high open35/36/40,0medium open; no risk accepted.",
+      "severity": "high"
     },
     "T-06.4-23": {
       "status": "pending",
-      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "context": "Actual independent ASVS1/high reassessment; shared mutation fixture authorship disclosed, commands/outcomes independently observed. Executor persisted the auditor terminal return under its single-writer rule.",
       "independent_disposition": "closed",
-      "actor": "gsd-security-auditor independent lane",
-      "recorded": "2026-11-01T17:14:15Z",
-      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "actor": "/root/execute_22/security_review",
+      "recorded": "2026-11-01T19:43:33.367307+00:00",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
-          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+          "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
         }
       ],
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "current_review": "pending"
+      "current_review": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+        "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+      },
+      "response": "OPEN_THREATS:41total,38closed,3high open35/36/40,0medium open; no risk accepted.",
+      "severity": "high"
     },
     "T-06.4-24": {
       "status": "pending",
-      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "context": "Actual independent ASVS1/high reassessment; shared mutation fixture authorship disclosed, commands/outcomes independently observed. Executor persisted the auditor terminal return under its single-writer rule.",
       "independent_disposition": "closed",
-      "actor": "gsd-security-auditor independent lane",
-      "recorded": "2026-11-01T17:14:15Z",
-      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "actor": "/root/execute_22/security_review",
+      "recorded": "2026-11-01T19:43:33.367307+00:00",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
-          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+          "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
         }
       ],
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "current_review": "pending"
+      "current_review": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+        "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+      },
+      "response": "OPEN_THREATS:41total,38closed,3high open35/36/40,0medium open; no risk accepted.",
+      "severity": "high"
     },
     "T-06.4-25": {
       "status": "pending",
-      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "context": "Actual independent ASVS1/high reassessment; shared mutation fixture authorship disclosed, commands/outcomes independently observed. Executor persisted the auditor terminal return under its single-writer rule.",
       "independent_disposition": "closed",
-      "actor": "gsd-security-auditor independent lane",
-      "recorded": "2026-11-01T17:14:15Z",
-      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "actor": "/root/execute_22/security_review",
+      "recorded": "2026-11-01T19:43:33.367307+00:00",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
-          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+          "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
         }
       ],
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "current_review": "pending"
+      "current_review": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+        "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+      },
+      "response": "OPEN_THREATS:41total,38closed,3high open35/36/40,0medium open; no risk accepted.",
+      "severity": "high"
     },
     "T-06.4-26": {
       "status": "pending",
-      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "context": "Actual independent ASVS1/high reassessment; shared mutation fixture authorship disclosed, commands/outcomes independently observed. Executor persisted the auditor terminal return under its single-writer rule.",
       "independent_disposition": "closed",
-      "actor": "gsd-security-auditor independent lane",
-      "recorded": "2026-11-01T17:14:15Z",
-      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "actor": "/root/execute_22/security_review",
+      "recorded": "2026-11-01T19:43:33.367307+00:00",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
-          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+          "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
         }
       ],
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "current_review": "pending"
+      "current_review": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+        "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+      },
+      "response": "OPEN_THREATS:41total,38closed,3high open35/36/40,0medium open; no risk accepted.",
+      "severity": "medium"
     },
     "T-06.4-27": {
       "status": "pending",
-      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "context": "Actual independent ASVS1/high reassessment; shared mutation fixture authorship disclosed, commands/outcomes independently observed. Executor persisted the auditor terminal return under its single-writer rule.",
       "independent_disposition": "closed",
-      "actor": "gsd-security-auditor independent lane",
-      "recorded": "2026-11-01T17:14:15Z",
-      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "actor": "/root/execute_22/security_review",
+      "recorded": "2026-11-01T19:43:33.367307+00:00",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
-          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+          "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
         }
       ],
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "current_review": "pending"
+      "current_review": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+        "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+      },
+      "response": "OPEN_THREATS:41total,38closed,3high open35/36/40,0medium open; no risk accepted.",
+      "severity": "medium"
     },
     "T-06.4-28": {
-      "status": "open",
-      "context": "Open independent security obligation; no risk accepted. See exact report row.",
-      "independent_disposition": "open",
-      "actor": "gsd-security-auditor independent lane",
-      "recorded": "2026-11-01T17:14:15Z",
-      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "status": "pending",
+      "context": "Actual independent ASVS1/high reassessment; shared mutation fixture authorship disclosed, commands/outcomes independently observed. Executor persisted the auditor terminal return under its single-writer rule.",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_22/security_review",
+      "recorded": "2026-11-01T19:43:33.367307+00:00",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
-          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+          "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
         }
       ],
-      "blocking": true,
+      "blocking": false,
       "historical_independent_disposition": "open",
-      "current_review": "pending"
+      "current_review": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+        "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+      },
+      "response": "OPEN_THREATS:41total,38closed,3high open35/36/40,0medium open; no risk accepted.",
+      "severity": "high"
     },
     "T-06.4-29": {
       "status": "pending",
-      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "context": "Actual independent ASVS1/high reassessment; shared mutation fixture authorship disclosed, commands/outcomes independently observed. Executor persisted the auditor terminal return under its single-writer rule.",
       "independent_disposition": "closed",
-      "actor": "gsd-security-auditor independent lane",
-      "recorded": "2026-11-01T17:14:15Z",
-      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "actor": "/root/execute_22/security_review",
+      "recorded": "2026-11-01T19:43:33.367307+00:00",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
-          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+          "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
         }
       ],
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "current_review": "pending"
+      "current_review": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+        "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+      },
+      "response": "OPEN_THREATS:41total,38closed,3high open35/36/40,0medium open; no risk accepted.",
+      "severity": "high"
     },
     "T-06.4-30": {
       "status": "pending",
-      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "context": "Actual independent ASVS1/high reassessment; shared mutation fixture authorship disclosed, commands/outcomes independently observed. Executor persisted the auditor terminal return under its single-writer rule.",
       "independent_disposition": "closed",
-      "actor": "gsd-security-auditor independent lane",
-      "recorded": "2026-11-01T17:14:15Z",
-      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "actor": "/root/execute_22/security_review",
+      "recorded": "2026-11-01T19:43:33.367307+00:00",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
-          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+          "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
         }
       ],
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "current_review": "pending"
+      "current_review": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+        "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+      },
+      "response": "OPEN_THREATS:41total,38closed,3high open35/36/40,0medium open; no risk accepted.",
+      "severity": "high"
     },
     "T-06.4-31": {
-      "status": "open",
-      "context": "Open independent security obligation; no risk accepted. See exact report row.",
-      "independent_disposition": "open",
-      "actor": "gsd-security-auditor independent lane",
-      "recorded": "2026-11-01T17:14:15Z",
-      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "status": "pending",
+      "context": "Actual independent ASVS1/high reassessment; shared mutation fixture authorship disclosed, commands/outcomes independently observed. Executor persisted the auditor terminal return under its single-writer rule.",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_22/security_review",
+      "recorded": "2026-11-01T19:43:33.367307+00:00",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
-          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+          "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
         }
       ],
       "blocking": false,
       "historical_independent_disposition": "open",
-      "current_review": "pending"
+      "current_review": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+        "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+      },
+      "response": "OPEN_THREATS:41total,38closed,3high open35/36/40,0medium open; no risk accepted.",
+      "severity": "medium"
     },
     "T-06.4-32": {
       "status": "pending",
-      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "context": "Actual independent ASVS1/high reassessment; shared mutation fixture authorship disclosed, commands/outcomes independently observed. Executor persisted the auditor terminal return under its single-writer rule.",
       "independent_disposition": "closed",
-      "actor": "gsd-security-auditor independent lane",
-      "recorded": "2026-11-01T17:14:15Z",
-      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "actor": "/root/execute_22/security_review",
+      "recorded": "2026-11-01T19:43:33.367307+00:00",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
-          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+          "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
         }
       ],
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "current_review": "pending"
+      "current_review": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+        "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+      },
+      "response": "OPEN_THREATS:41total,38closed,3high open35/36/40,0medium open; no risk accepted.",
+      "severity": "medium"
     },
     "T-06.4-33": {
-      "status": "open",
-      "context": "Open independent security obligation; no risk accepted. See exact report row.",
-      "independent_disposition": "open",
-      "actor": "gsd-security-auditor independent lane",
-      "recorded": "2026-11-01T17:14:15Z",
-      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "status": "pending",
+      "context": "Actual independent ASVS1/high reassessment; shared mutation fixture authorship disclosed, commands/outcomes independently observed. Executor persisted the auditor terminal return under its single-writer rule.",
+      "independent_disposition": "closed",
+      "actor": "/root/execute_22/security_review",
+      "recorded": "2026-11-01T19:43:33.367307+00:00",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
-          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+          "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
         }
       ],
-      "blocking": true,
+      "blocking": false,
       "historical_independent_disposition": "open",
-      "current_review": "pending"
+      "current_review": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+        "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+      },
+      "response": "OPEN_THREATS:41total,38closed,3high open35/36/40,0medium open; no risk accepted.",
+      "severity": "high"
     },
     "T-06.4-34": {
       "status": "pending",
-      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "context": "Actual independent ASVS1/high reassessment; shared mutation fixture authorship disclosed, commands/outcomes independently observed. Executor persisted the auditor terminal return under its single-writer rule.",
       "independent_disposition": "closed",
-      "actor": "gsd-security-auditor independent lane",
-      "recorded": "2026-11-01T17:14:15Z",
-      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "actor": "/root/execute_22/security_review",
+      "recorded": "2026-11-01T19:43:33.367307+00:00",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
-          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+          "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
         }
       ],
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "current_review": "pending"
+      "current_review": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+        "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+      },
+      "response": "OPEN_THREATS:41total,38closed,3high open35/36/40,0medium open; no risk accepted.",
+      "severity": "high"
     },
     "T-06.4-35": {
       "status": "open",
-      "context": "Open independent security obligation; no risk accepted. See exact report row.",
+      "context": "Actual independent ASVS1/high reassessment; shared mutation fixture authorship disclosed, commands/outcomes independently observed. Executor persisted the auditor terminal return under its single-writer rule.",
       "independent_disposition": "open",
-      "actor": "gsd-security-auditor independent lane",
-      "recorded": "2026-11-01T17:14:15Z",
-      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "actor": "/root/execute_22/security_review",
+      "recorded": "2026-11-01T19:43:33.367307+00:00",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
-          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+          "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
         }
       ],
       "blocking": true,
       "historical_independent_disposition": "open",
-      "current_review": "pending"
+      "current_review": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+        "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+      },
+      "response": "OPEN_THREATS:41total,38closed,3high open35/36/40,0medium open; no risk accepted.",
+      "severity": "high"
     },
     "T-06.4-36": {
       "status": "open",
-      "context": "Open independent security obligation; no risk accepted. See exact report row.",
+      "context": "Actual independent ASVS1/high reassessment; shared mutation fixture authorship disclosed, commands/outcomes independently observed. Executor persisted the auditor terminal return under its single-writer rule.",
       "independent_disposition": "open",
-      "actor": "gsd-security-auditor independent lane",
-      "recorded": "2026-11-01T17:14:15Z",
-      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "actor": "/root/execute_22/security_review",
+      "recorded": "2026-11-01T19:43:33.367307+00:00",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
-          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+          "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
         }
       ],
       "blocking": true,
       "historical_independent_disposition": "open",
-      "current_review": "pending"
+      "current_review": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+        "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+      },
+      "response": "OPEN_THREATS:41total,38closed,3high open35/36/40,0medium open; no risk accepted.",
+      "severity": "high"
     },
     "T-06.4-SC": {
       "status": "pending",
-      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "context": "Actual independent ASVS1/high reassessment; shared mutation fixture authorship disclosed, commands/outcomes independently observed. Executor persisted the auditor terminal return under its single-writer rule.",
       "independent_disposition": "closed",
-      "actor": "gsd-security-auditor independent lane",
-      "recorded": "2026-11-01T17:14:15Z",
-      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "actor": "/root/execute_22/security_review",
+      "recorded": "2026-11-01T19:43:33.367307+00:00",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
-          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+          "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
         }
       ],
       "blocking": false,
       "historical_independent_disposition": "closed",
-      "current_review": "pending"
+      "current_review": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+        "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+      },
+      "response": "OPEN_THREATS:41total,38closed,3high open35/36/40,0medium open; no risk accepted.",
+      "severity": "high"
     },
     "T-06.4-37": {
-      "status": "open",
+      "status": "pending",
       "severity": "high",
-      "independent_disposition": "pending",
+      "independent_disposition": "closed",
       "component": "corruption subprocess evidence and control bootstrap",
-      "current_review": "pending"
+      "current_review": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+        "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+      },
+      "actor": "/root/execute_22/security_review",
+      "recorded": "2026-11-01T19:43:33.367307+00:00",
+      "response": "OPEN_THREATS:41total,38closed,3high open35/36/40,0medium open; no risk accepted.",
+      "context": "Actual independent ASVS1/high reassessment; shared mutation fixture authorship disclosed, commands/outcomes independently observed. Executor persisted the auditor terminal return under its single-writer rule.",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+          "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
+        }
+      ],
+      "blocking": false
     },
     "T-06.4-38": {
-      "status": "open",
-      "severity": "high",
-      "independent_disposition": "pending",
+      "status": "pending",
+      "severity": "medium",
+      "independent_disposition": "closed",
       "component": "conditional screenshot file/path/hash/device observations",
-      "current_review": "pending"
+      "current_review": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+        "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+      },
+      "actor": "/root/execute_22/security_review",
+      "recorded": "2026-11-01T19:43:33.367307+00:00",
+      "response": "OPEN_THREATS:41total,38closed,3high open35/36/40,0medium open; no risk accepted.",
+      "context": "Actual independent ASVS1/high reassessment; shared mutation fixture authorship disclosed, commands/outcomes independently observed. Executor persisted the auditor terminal return under its single-writer rule.",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+          "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
+        }
+      ],
+      "blocking": false
     },
     "T-06.4-39": {
-      "status": "open",
+      "status": "pending",
       "severity": "high",
-      "independent_disposition": "pending",
+      "independent_disposition": "closed",
       "component": "bounded source-diff retained execution refresh",
-      "current_review": "pending"
+      "current_review": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+        "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+      },
+      "actor": "/root/execute_22/security_review",
+      "recorded": "2026-11-01T19:43:33.367307+00:00",
+      "response": "OPEN_THREATS:41total,38closed,3high open35/36/40,0medium open; no risk accepted.",
+      "context": "Actual independent ASVS1/high reassessment; shared mutation fixture authorship disclosed, commands/outcomes independently observed. Executor persisted the auditor terminal return under its single-writer rule.",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+          "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
+        }
+      ],
+      "blocking": false
     },
     "T-06.4-40": {
       "status": "open",
       "severity": "high",
-      "independent_disposition": "pending",
+      "independent_disposition": "open",
       "component": "independent report attribution and canonical handoff",
-      "current_review": "pending"
+      "current_review": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+        "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+      },
+      "actor": "/root/execute_22/security_review",
+      "recorded": "2026-11-01T19:43:33.367307+00:00",
+      "response": "OPEN_THREATS:41total,38closed,3high open35/36/40,0medium open; no risk accepted.",
+      "context": "Actual independent ASVS1/high reassessment; shared mutation fixture authorship disclosed, commands/outcomes independently observed. Executor persisted the auditor terminal return under its single-writer rule.",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+          "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
+        }
+      ],
+      "blocking": true
     }
   },
   "decisions": [
@@ -2192,12 +3249,75 @@
     "packet_field": "checker_control_evidence",
     "control_count": 33,
     "self_test_gate": "evidence-self-tests",
-    "selected_tests": [],
-    "bootstrap": "Each mutation is checked by a real --check subprocess under record-local mode; clean complete positive control is separate."
+    "selected_tests": [
+      "test_runner.CheckerControlEvidence.test_command_identity_normalizes_only_transport_directory",
+      "test_runner.CheckerControlEvidence.test_complete_packet_cli_and_pending_handoff_positive",
+      "test_runner.CheckerControlEvidence.test_contradictory_success_outcomes_reject_everywhere",
+      "test_runner.CheckerControlEvidence.test_duplicate_keys_reject_at_both_cli_entry_points",
+      "test_runner.CheckerControlEvidence.test_exact_summary_and_detail_inventory",
+      "test_runner.CheckerControlEvidence.test_internal_payload_result_cannot_supply_final_acceptance",
+      "test_runner.CheckerControlEvidence.test_malformed_outcomes_are_not_rejections",
+      "test_runner.CheckerControlEvidence.test_missing_detailed_inventory_rejects_cli_aggregate_and_handoff",
+      "test_runner.CheckerControlEvidence.test_real_staged_controls_and_final_positive",
+      "test_runner.ConditionalCaptureEvidence.test_changed_deleted_or_non_png_owned_bytes_reject_without_touching_originals",
+      "test_runner.ConditionalCaptureEvidence.test_current_three_stock_and_explicit_empty_native_are_valid",
+      "test_runner.ConditionalCaptureEvidence.test_device_viewport_and_containment_observations",
+      "test_runner.ConditionalCaptureEvidence.test_exact_stock_and_native_inventories",
+      "test_runner.ConditionalCaptureEvidence.test_historical_human_markers_stay_pending",
+      "test_runner.ConditionalCaptureEvidence.test_missing_capture_inventory_rejects_aggregate_cli_and_handoff",
+      "test_runner.ConditionalCaptureEvidence.test_missing_or_false_rendered_icon_observations",
+      "test_runner.ConditionalCaptureEvidence.test_paths_are_bounded_and_distinct",
+      "test_runner.ConditionalCaptureEvidence.test_stale_digest_rejects_despite_historical_canonical_success",
+      "test_runner.CurrentCapture.test_all_invalid_selections_fail_before_any_process",
+      "test_runner.CurrentCapture.test_changed_valid_browser_selection_reruns_affected_gate",
+      "test_runner.CurrentCapture.test_effective_selections_affect_only_relevant_gates",
+      "test_runner.CurrentCapture.test_matching_selection_reuses_real_docs_and_historical_check_ignores_current_overrides",
+      "test_runner.CurrentCapture.test_wr02_invalid_python_fails_before_unrelated_command",
+      "test_runner.CurrentCapture.test_wr02_invalid_runtime_subprocess_preserves_output",
+      "test_runner.EvidenceRefresh.test_changed_effective_selection_rejects_before_output_writes",
+      "test_runner.EvidenceRefresh.test_changed_product_input_and_command_reject_real_refresh_cli",
+      "test_runner.EvidenceRefresh.test_invalid_runtime_preflight_preserves_outputs",
+      "test_runner.EvidenceRefresh.test_missing_fresh_gates_controls_and_forged_timestamps_reject_everywhere",
+      "test_runner.EvidenceRefresh.test_mutated_origin_and_missing_manifest_reject_everywhere",
+      "test_runner.EvidenceRefresh.test_original_gate_survives_real_refresh_cli_check_and_handoff",
+      "test_runner.EvidenceRefresh.test_source_continuity_rejects_product_runtime_and_path_set_changes",
+      "test_runner.HandoffEvidence.test_false_readiness_rejects",
+      "test_runner.HandoffEvidence.test_malformed_packet_subprocess_rejects",
+      "test_runner.HandoffEvidence.test_missing_case_reference_rejects",
+      "test_runner.HandoffEvidence.test_missing_findings_and_links_reject",
+      "test_runner.HandoffEvidence.test_missing_human_state_or_prohibition_rejects",
+      "test_runner.HandoffEvidence.test_pending_packet_is_structurally_valid_but_not_ready",
+      "test_runner.HandoffEvidence.test_stale_report_hash_rejects",
+      "test_runner.HandoffEvidence.test_stale_source_provenance_rejects",
+      "test_runner.HandoffEvidence.test_unattributed_human_approval_rejects",
+      "test_runner.HandoffEvidence.test_unreviewed_finding_cannot_close",
+      "test_runner.HistoricalCounterexamples.test_focused_accepts_strengthened_reclean_identity_family",
+      "test_runner.HistoricalCounterexamples.test_wr01_rejects_filtered_javascript_with_consistent_green_counts",
+      "test_runner.HistoricalCounterexamples.test_wr01_rejects_non_strict_docs",
+      "test_runner.QualityEvidence.test_duplicate_case",
+      "test_runner.QualityEvidence.test_duplicate_file",
+      "test_runner.QualityEvidence.test_failed_case",
+      "test_runner.QualityEvidence.test_false_console",
+      "test_runner.QualityEvidence.test_false_counts",
+      "test_runner.QualityEvidence.test_filtered_collection_command",
+      "test_runner.QualityEvidence.test_filtered_command",
+      "test_runner.QualityEvidence.test_missing_case",
+      "test_runner.QualityEvidence.test_missing_file",
+      "test_runner.QualityEvidence.test_real_complete_ordinary_capture",
+      "test_runner.QualityEvidence.test_required_bridge_is_independent",
+      "test_runner.QualityEvidence.test_required_integration_case_missing",
+      "test_runner.QualityEvidence.test_scoped_copy_checks_but_cannot_claim_complete",
+      "test_runner.QualityEvidence.test_skipped_case",
+      "test_runner.QualityEvidence.test_stale_collection_source",
+      "test_runner.QualityEvidence.test_wrong_lint_subcommands_and_flags",
+      "test_runner.QualityEvidence.test_wrong_node_executable",
+      "test_runner.QualityEvidence.test_wrong_vitest_subcommand"
+    ],
+    "bootstrap": "Real payload controls precede real record controls; each observed subprocess outcome is validated before recording. An ordinary complete clean --check follows."
   },
   "new_findings": {
     "WR-03": {
-      "status": "open",
+      "status": "closed",
       "severity": "warning",
       "gap": "G6",
       "threats": [
@@ -2215,7 +3335,7 @@
         "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
       },
       "required_repair": "Require exact control-record keys/command/mode/nonzero rejection outcomes; add missing/contradictory-record negative controls.",
-      "current_disposition": "pending-independent-review",
+      "current_disposition": "closed-bounded",
       "repair_evidence": [
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
@@ -2225,10 +3345,41 @@
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
           "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
         }
-      ]
+      ],
+      "actor": "/root/execute_22/code_review",
+      "recorded": "2026-11-01T19:42:33Z",
+      "response": "CR-01\u201305/WR-01\u201304 closed within exact bounded counterexamples; WR-05 diagnostic warning and G6 remain open.",
+      "context": "New independent source applicability, real dual-CLI controls and bounded Python12/JS36 preservation checks; not a full product replay.",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-review.md",
+          "sha256": "01c4405f723b40f3581da2118aa0d9d7f284d6bfd46ac0a64b9b8f2b60e9522f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-controls/outcomes.json",
+          "sha256": "d9c9aa32aa0aac768118594801491a040bd0e3e7dcfbc3f761cecdbd9487336a"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-controls/boundary-outcomes.json",
+          "sha256": "a89837d0fcca4f4b6dfec0c9b4ba0546ad1e74f6044634ef00546f305f977d8c"
+        }
+      ],
+      "current_review": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-review.md",
+        "sha256": "01c4405f723b40f3581da2118aa0d9d7f284d6bfd46ac0a64b9b8f2b60e9522f"
+      }
     },
     "WR-04": {
-      "status": "open",
+      "status": "closed",
       "severity": "warning",
       "gap": "G6",
       "threats": [
@@ -2246,7 +3397,7 @@
         "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
       },
       "required_repair": "Revalidate current stock capture inventory, files/hashes and required observations; add missing/stale-capture negative controls.",
-      "current_disposition": "pending-independent-review",
+      "current_disposition": "closed-bounded",
       "repair_evidence": [
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
@@ -2256,6 +3407,68 @@
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
           "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
         }
+      ],
+      "actor": "/root/execute_22/code_review",
+      "recorded": "2026-11-01T19:42:33Z",
+      "response": "CR-01\u201305/WR-01\u201304 closed within exact bounded counterexamples; WR-05 diagnostic warning and G6 remain open.",
+      "context": "New independent source applicability, real dual-CLI controls and bounded Python12/JS36 preservation checks; not a full product replay.",
+      "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-review.md",
+          "sha256": "01c4405f723b40f3581da2118aa0d9d7f284d6bfd46ac0a64b9b8f2b60e9522f"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-controls/outcomes.json",
+          "sha256": "d9c9aa32aa0aac768118594801491a040bd0e3e7dcfbc3f761cecdbd9487336a"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-controls/boundary-outcomes.json",
+          "sha256": "a89837d0fcca4f4b6dfec0c9b4ba0546ad1e74f6044634ef00546f305f977d8c"
+        }
+      ],
+      "current_review": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-review.md",
+        "sha256": "01c4405f723b40f3581da2118aa0d9d7f284d6bfd46ac0a64b9b8f2b60e9522f"
+      }
+    },
+    "WR-05": {
+      "status": "open",
+      "severity": "warning",
+      "gap": "G6",
+      "threats": [
+        "T-06.4-38"
+      ],
+      "title": "Oversized integer glyph observation escapes the rejection diagnostic boundary",
+      "review": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-review.md",
+        "sha256": "01c4405f723b40f3581da2118aa0d9d7f284d6bfd46ac0a64b9b8f2b60e9522f"
+      },
+      "independently_confirmed_by": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+        "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+      },
+      "evidence": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-controls/boundary-outcomes.json",
+        "sha256": "a89837d0fcca4f4b6dfec0c9b4ba0546ad1e74f6044634ef00546f305f977d8c"
+      },
+      "context": "10**400 glyph width produces exit1/OverflowError traceback through both real CLIs; no successful acceptance or readiness bypass.",
+      "required_repair": "Guard positive finite-number conversion and add bounded dual-CLI regression; then refresh affected checker tests/Ruff/controls and current source continuity before report rebinding.",
+      "affected_evidence": [
+        "evidence-self-tests",
+        "ruff-check",
+        "ruff-format",
+        "checker_control_evidence",
+        "source applicability",
+        "current code/security report source bindings"
       ]
     }
   },
@@ -2266,14 +3479,18 @@
     "historical_open_total": 6,
     "historical_open_blocking_high": 5,
     "historical_open_nonblocking_medium": 1,
-    "current_independent_review": "pending",
+    "current_independent_review": "OPEN_THREATS",
     "new_threats": [
       "T-06.4-37",
       "T-06.4-38",
       "T-06.4-39",
       "T-06.4-40"
     ],
-    "machine_status_qualification": "Historical individually closed threats remain pending at schema1 machine level while overall security remains open; no attribution is refreshed by copying."
+    "machine_status_qualification": "Schema1 requires overall security=passed before threat.status=verified. Actual independent38closed are explicitly recorded while their machine status stays pending;3high stay open. No partial result is SECURED.",
+    "independently_closed": 38,
+    "open_total": 3,
+    "open_blocking_high": 3,
+    "open_nonblocking_medium": 0
   },
   "independent_reports": {
     "historical": {
@@ -2290,9 +3507,18 @@
         "sha256": "55300f0060bf8879e9d5afbde5759437638f58628c68b01e6779529be345d8c5"
       }
     },
-    "current": "pending"
+    "current": {
+      "code": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-review.md",
+        "sha256": "01c4405f723b40f3581da2118aa0d9d7f284d6bfd46ac0a64b9b8f2b60e9522f"
+      },
+      "security": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
+        "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
+      }
+    }
   },
-  "next_gate": "Independent code/security reassessment, then orchestrator-owned canonical verification/hash rebind and actual H1/H2 dispositions; all31 flags remain unresolved.",
+  "next_gate": "Orchestrator independent canonical verification and final hash rebind; WR-05 scoped repair/evidence refresh if pursued; actual H1/H2 outcomes and31 flagged assumptions remain outstanding. No phase advancement.",
   "history": {
     "handoff": {
       "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/handoff.json",
@@ -3138,5 +4364,15 @@
     "exclude_from_covered_files": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/handoff.json",
     "reason": "Handoff embeds canonical report digest; including it in that report's covered_files would create circular binding.",
     "final_rebind_owner": "orchestrator, after canonical report is written"
+  },
+  "executor_metadata_corrections": {
+    "actor": "/root/execute_22",
+    "recorded": "2026-11-01T19:48:52.693061+00:00",
+    "changes": [
+      "T-06.4-38 restored to authored medium severity",
+      "checker_controls.selected_tests carries actual62 selected_tests identities",
+      "bootstrap prose states actual staged payload/record controls plus ordinary complete positive"
+    ],
+    "scope": "Handoff/preparation metadata only; source/runner/21 packet unchanged; no reviewer attribution retroactively applied to corrected metadata."
   }
 }

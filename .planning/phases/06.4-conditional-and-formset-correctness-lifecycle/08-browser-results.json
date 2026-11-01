@@ -1,0 +1,1859 @@
+{
+  "captured": "2026-11-01T12:07:31.727Z",
+  "revision": "0e3b6d7516212e240d0262595536d837136e9c4a",
+  "sourceHashes": {
+    ".planning/phases/06-form-button-leaf/06-JS-RUNTIME.json": "651e0c8b36938eeab7872bcfb66539124bf6fdefd2f9035616863c820e027aec",
+    "package-lock.json": "567bff553002a1452d08db94660a206507d70df9711cdd11fd82ee51f4175d2e",
+    "src/crud_views/lib/conditional/__init__.py": "8786ad65931be19f7d07f38bda1865a44e8ebbc8c4285962fd8ddd38aeec9ae1",
+    "src/crud_views/lib/conditional/formset.py": "c900b5994c2492c5d3a5b3284d7517ea21eb2a7655ed2d0bf3d7ade98e81afa6",
+    "src/crud_views/lib/conditional/group.py": "e233775a91b1037feea36a96820b8b3766d557ca0369120076515655e2817ea2",
+    "src/crud_views/lib/conditional/layout.py": "6c6b43ca87354dc65020470514b2759f2ea357a4abc2ff86cc9ee5a103d59c5f",
+    "src/crud_views/lib/conditional/toggle.py": "70eee69f0980e05119a9350b35af18f99fe7416022f38deb1996743c42bc56b8",
+    "src/crud_views/lib/formsets/__init__.py": "a96eaf24bfc5c29f376b842669b712a1d782596d3d8f921fba19204d86d30b69",
+    "src/crud_views/lib/formsets/formsets.py": "0f23d2eec308ab5c4ece685dfc54271b5531d36c2845e6c5ba41beaadb10c4fd",
+    "src/crud_views/lib/formsets/inline_formset.py": "3d83d1860546d9cc10cac25dfbae739c5527581da2e4745d10d6e8ce1b3254b4",
+    "src/crud_views/lib/formsets/layout.py": "106b1674878702897b9f16936dad6e42f58d3d48fd62d2458df581361c7b9937",
+    "src/crud_views/lib/formsets/mixins.py": "a7c424b9e86a9aef3cecd094c2680fe9dcd47607257e5fef1e9742f2e6f0985c",
+    "src/crud_views/lib/formsets/render_tree.py": "85ed45833d68389a595e0a7bf7e5e1116091efcb578671784ced89de09bf82c9",
+    "src/crud_views/lib/view/base.py": "7b22c4563d2a492046d4a3aa9efe84be30448a7b0681080efe520969817cf3c2",
+    "src/crud_views/lib/views/mixins.py": "0fdc2acabec44fbc80d700581762bedd25605d3337eca8e165541f8b6967b856",
+    "src/crud_views/lib/views/update.py": "bd9b274bc616f25c40f1d7ac964f48666f4d860a6d1f039c6f0798f7090a1dc7",
+    "src/crud_views/static/crud_views/js/adapters.js": "6134473b5f0fb183aae7f4b035ad38a56a902b8f58c8b5c688c9638d1cef2580",
+    "src/crud_views/static/crud_views/js/formset.js": "07b3962724b743ae4f1a37102c880eed1921b419670c26abee28d4704de9c3c2",
+    "src/crud_views/static/crud_views/js/modal.js": "c8acbd5973f7e73f48537758394920c4923a67c6ccc10b6490742ca0e63c651e",
+    "src/crud_views/static/crud_views/js/toggle.js": "9c60d90ac1ea1abdd0df0fbbd74223c30421ac0159ea0848001e8aa832ebee53",
+    "src/crud_views/templates/crud_views/conditional/toggle_group.html": "2b69481a30ed7279e97ec65edffc2780f89c24ee225edfdd2d2c975301f824d0",
+    "src/crud_views/templates/crud_views/formsets/control.html": "281ab966a5e9ebb6f799953e3d5e0db9cd11eb9f811531a8aae21a3e4a932a72",
+    "src/crud_views/templates/crud_views/formsets/formset.html": "d1fcb4ccb2f89f13b88ae6b31b44ee88b861cc57e61b30b848aea7bd76115383",
+    "src/crud_views/templates/crud_views/formsets/formsets.html": "1c6f6e86aff72847f044a62963cfb9fa41489a4d511578d13273c4ade1e83626",
+    "tests/browser/conditional-formsets.cjs": "11cf7f8e7f67e3c51eb0cfd4c5be0dc66a4698277f3479d0ac95d70c7095445b",
+    "tests/browser/conditional_formsets_server.py": "7348fdb2d0846e50cd20f8cb9b1d69a05ea19b5bc9ff6630e64c8913d88072fa",
+    "tests/browser/templates/conditional_formsets/page.html": "0bbcea06c9bb9a8906c033a1bd8eda88a476e4c78c69dec025fcd91e946b2808",
+    "tests/test1/app/models.py": "a9d988813207f37e5a2c99a777c0974637d1ddf4ac6dfb9964c3f1d71fecb3f3",
+    "tests/test1/conftest.py": "397926e3d24e6b72bde95f33ce57a04aab1c6cda9068927e780c2f49eae0b565"
+  },
+  "command": [
+    "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
+    "/home/alex/projects/alex/django-crud-views/tests/browser/conditional-formsets.cjs",
+    "--case",
+    "tracer",
+    "--output",
+    ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/08-browser-results.json"
+  ],
+  "scope": "tracer",
+  "runtime": {
+    "node": "v24.21.0",
+    "nodePath": "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
+    "pythonPath": "/usr/bin/python3.12",
+    "playwrightPath": "/home/alex/.npm/_npx/e41f203b7505f1fb/node_modules/playwright",
+    "chromiumPath": "/home/alex/.cache/ms-playwright/chromium-1228/chrome-linux64/chrome",
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "django": "6.0.9",
+    "playwright": "1.64.1",
+    "chromium": "149.0.7827.55"
+  },
+  "cases": [
+    {
+      "theme": "stock",
+      "id": "tracer",
+      "assertions": [
+        {
+          "id": "real-page",
+          "passed": true
+        },
+        {
+          "id": "prefixed-group",
+          "passed": true
+        },
+        {
+          "id": "actual-fragment",
+          "passed": true
+        },
+        {
+          "id": "post-management",
+          "passed": true,
+          "detail": {
+            "status": 200,
+            "sent": [
+              [
+                "csrfmiddlewaretoken",
+                "OJCBIVJZ5slH9hP7FpNkRc8f5glqGhtp23gnNwWHxLAvhjxkMDUZGuMhFWF1kxXl"
+              ],
+              [
+                "csrfmiddlewaretoken",
+                "OJCBIVJZ5slH9hP7FpNkRc8f5glqGhtp23gnNwWHxLAvhjxkMDUZGuMhFWF1kxXl"
+              ],
+              [
+                "name",
+                "stock tracer"
+              ],
+              [
+                "outer",
+                "on"
+              ],
+              [
+                "contact",
+                "default contact"
+              ],
+              [
+                "inner",
+                "on"
+              ],
+              [
+                "detail",
+                "default detail"
+              ],
+              [
+                "books-1-0-TOTAL_FORMS",
+                "3"
+              ],
+              [
+                "books-1-0-INITIAL_FORMS",
+                "1"
+              ],
+              [
+                "books-1-0-MIN_NUM_FORMS",
+                "0"
+              ],
+              [
+                "books-1-0-MAX_NUM_FORMS",
+                "1000"
+              ],
+              [
+                "books-1-0-0-title",
+                "Initial book"
+              ],
+              [
+                "books-1-0-0-DELETE",
+                ""
+              ],
+              [
+                "books-1-0-0-id",
+                "1"
+              ],
+              [
+                "books-1-0-0-publisher",
+                "1"
+              ],
+              [
+                "books-notes-1-0-0-1-0-TOTAL_FORMS",
+                "2"
+              ],
+              [
+                "books-notes-1-0-0-1-0-INITIAL_FORMS",
+                "1"
+              ],
+              [
+                "books-notes-1-0-0-1-0-MIN_NUM_FORMS",
+                "0"
+              ],
+              [
+                "books-notes-1-0-0-1-0-MAX_NUM_FORMS",
+                "1000"
+              ],
+              [
+                "books-notes-1-0-0-1-0-0-note",
+                "Initial note"
+              ],
+              [
+                "books-notes-1-0-0-1-0-0-DELETE",
+                ""
+              ],
+              [
+                "books-notes-1-0-0-1-0-0-id",
+                "1"
+              ],
+              [
+                "books-notes-1-0-0-1-0-0-book",
+                "1"
+              ],
+              [
+                "books-notes-1-0-0-1-0-1-note",
+                ""
+              ],
+              [
+                "books-notes-1-0-0-1-0-1-DELETE",
+                ""
+              ],
+              [
+                "books-notes-1-0-0-1-0-1-id",
+                ""
+              ],
+              [
+                "books-notes-1-0-0-1-0-1-book",
+                "1"
+              ],
+              [
+                "books-memos-1-0-0-1-1-TOTAL_FORMS",
+                "2"
+              ],
+              [
+                "books-memos-1-0-0-1-1-INITIAL_FORMS",
+                "1"
+              ],
+              [
+                "books-memos-1-0-0-1-1-MIN_NUM_FORMS",
+                "0"
+              ],
+              [
+                "books-memos-1-0-0-1-1-MAX_NUM_FORMS",
+                "1000"
+              ],
+              [
+                "books-memos-1-0-0-1-1-0-text",
+                "Initial memo"
+              ],
+              [
+                "books-memos-1-0-0-1-1-0-ORDER",
+                "1"
+              ],
+              [
+                "books-memos-1-0-0-1-1-0-DELETE",
+                ""
+              ],
+              [
+                "books-memos-1-0-0-1-1-0-id",
+                "1"
+              ],
+              [
+                "books-memos-1-0-0-1-1-0-book",
+                "1"
+              ],
+              [
+                "books-memos-1-0-0-1-1-1-text",
+                ""
+              ],
+              [
+                "books-memos-1-0-0-1-1-1-ORDER",
+                ""
+              ],
+              [
+                "books-memos-1-0-0-1-1-1-DELETE",
+                ""
+              ],
+              [
+                "books-memos-1-0-0-1-1-1-id",
+                ""
+              ],
+              [
+                "books-memos-1-0-0-1-1-1-book",
+                "1"
+              ],
+              [
+                "books-1-0-2-title",
+                "Browser added book"
+              ],
+              [
+                "books-1-0-2-DELETE",
+                ""
+              ],
+              [
+                "books-1-0-2-id",
+                ""
+              ],
+              [
+                "books-1-0-2-publisher",
+                ""
+              ],
+              [
+                "books-notes-1-0-2-None-0-TOTAL_FORMS",
+                "1"
+              ],
+              [
+                "books-notes-1-0-2-None-0-INITIAL_FORMS",
+                "0"
+              ],
+              [
+                "books-notes-1-0-2-None-0-MIN_NUM_FORMS",
+                "0"
+              ],
+              [
+                "books-notes-1-0-2-None-0-MAX_NUM_FORMS",
+                "1000"
+              ],
+              [
+                "books-notes-1-0-2-None-0-0-note",
+                ""
+              ],
+              [
+                "books-notes-1-0-2-None-0-0-DELETE",
+                ""
+              ],
+              [
+                "books-notes-1-0-2-None-0-0-id",
+                ""
+              ],
+              [
+                "books-notes-1-0-2-None-0-0-book",
+                ""
+              ],
+              [
+                "books-memos-1-0-2-None-1-TOTAL_FORMS",
+                "1"
+              ],
+              [
+                "books-memos-1-0-2-None-1-INITIAL_FORMS",
+                "0"
+              ],
+              [
+                "books-memos-1-0-2-None-1-MIN_NUM_FORMS",
+                "0"
+              ],
+              [
+                "books-memos-1-0-2-None-1-MAX_NUM_FORMS",
+                "1000"
+              ],
+              [
+                "books-memos-1-0-2-None-1-0-text",
+                ""
+              ],
+              [
+                "books-memos-1-0-2-None-1-0-ORDER",
+                ""
+              ],
+              [
+                "books-memos-1-0-2-None-1-0-DELETE",
+                ""
+              ],
+              [
+                "books-memos-1-0-2-None-1-0-id",
+                ""
+              ],
+              [
+                "books-memos-1-0-2-None-1-0-book",
+                ""
+              ],
+              [
+                "books-1-0-1-title",
+                ""
+              ],
+              [
+                "books-1-0-1-DELETE",
+                ""
+              ],
+              [
+                "books-1-0-1-id",
+                ""
+              ],
+              [
+                "books-1-0-1-publisher",
+                "1"
+              ],
+              [
+                "books-notes-1-0-1-None-0-TOTAL_FORMS",
+                "1"
+              ],
+              [
+                "books-notes-1-0-1-None-0-INITIAL_FORMS",
+                "0"
+              ],
+              [
+                "books-notes-1-0-1-None-0-MIN_NUM_FORMS",
+                "0"
+              ],
+              [
+                "books-notes-1-0-1-None-0-MAX_NUM_FORMS",
+                "1000"
+              ],
+              [
+                "books-notes-1-0-1-None-0-0-note",
+                ""
+              ],
+              [
+                "books-notes-1-0-1-None-0-0-DELETE",
+                ""
+              ],
+              [
+                "books-notes-1-0-1-None-0-0-id",
+                ""
+              ],
+              [
+                "books-notes-1-0-1-None-0-0-book",
+                ""
+              ],
+              [
+                "books-memos-1-0-1-None-1-TOTAL_FORMS",
+                "1"
+              ],
+              [
+                "books-memos-1-0-1-None-1-INITIAL_FORMS",
+                "0"
+              ],
+              [
+                "books-memos-1-0-1-None-1-MIN_NUM_FORMS",
+                "0"
+              ],
+              [
+                "books-memos-1-0-1-None-1-MAX_NUM_FORMS",
+                "1000"
+              ],
+              [
+                "books-memos-1-0-1-None-1-0-text",
+                ""
+              ],
+              [
+                "books-memos-1-0-1-None-1-0-ORDER",
+                ""
+              ],
+              [
+                "books-memos-1-0-1-None-1-0-DELETE",
+                ""
+              ],
+              [
+                "books-memos-1-0-1-None-1-0-id",
+                ""
+              ],
+              [
+                "books-memos-1-0-1-None-1-0-book",
+                ""
+              ]
+            ],
+            "body": "{\"saved\": true}"
+          }
+        },
+        {
+          "id": "persisted-added-row",
+          "passed": true
+        }
+      ],
+      "requests": [
+        {
+          "status": 200,
+          "url": "http://127.0.0.1:8144/edit/stock/1/?template=books&pk=1&num=2&formset_parent_prefix_key=",
+          "rows": [
+            "books-1-0-2"
+          ],
+          "html": "\n\n\n\n\n<!-- forms books-1-0 -->\n\n\n    <!-- form books-1-0-2 #0 -->\n    <div class=\"cv-formset-row\"\n         cv-data-formset-form=\"{&quot;key&quot;: &quot;books&quot;, &quot;prefix&quot;: &quot;books-1-0-2&quot;, &quot;prefix_key&quot;: &quot;1-0-2&quot;, &quot;formset_prefix&quot;: &quot;books-1-0&quot;, &quot;pk&quot;: &quot;PK.INT&quot;}\"\n         cv-data-formset-prefix=\"books-1-0\"\n         cv-data-formset-form-prefix=\"books-1-0-2\">\n\n        <!-- crispy form: start books-1-0-2 -->\n        <div class=\"cv-formset-form\">\n            \n\n<div id=\"div_id_books-1-0-2-title\" class=\"mb-3\"> <input type=\"text\" name=\"books-1-0-2-title\" maxlength=\"200\" class=\"textinput form-control\" id=\"id_books-1-0-2-title\"> </div> <div class=\"cv-form-ctrl\"> <fieldset class=\"btn-group\" aria-label=\"Row controls\"> <fieldset class=\"btn-group\" aria-label=\"Add or delete\"> <button type=\"button\" class=\"btn btn-light cv-form-ctrl-add\" title=\"Add row\" data-cv-tooltip=\"formset\" aria-label=\"Add row\"\n                    cv-data-formset-form-prefix=\"books-1-0-2\"> <i class=\"fa-solid fa-plus\" aria-hidden=\"true\"></i> </button> <button type=\"button\" class=\"btn btn-light cv-form-ctrl-delete\" data-cv-class=\"btn btn-light\"\n                        data-cv-class-danger=\"btn btn-danger\" title=\"Delete row\" data-cv-tooltip=\"formset\" aria-label=\"Delete row\"\n                        cv-data-formset-form-prefix=\"books-1-0-2\"> <i class=\"fa-solid fa-square-xmark\" aria-hidden=\"true\"></i> </button> </fieldset> </fieldset>\n\n</div> <input type=\"hidden\" name=\"books-1-0-2-DELETE\" id=\"id_books-1-0-2-DELETE\"> <input type=\"hidden\" name=\"books-1-0-2-id\" id=\"id_books-1-0-2-id\"> <input type=\"hidden\" name=\"books-1-0-2-publisher\" id=\"id_books-1-0-2-publisher\">\n\n        </div>\n        <!-- crispy form: end books-1-0-2 -->\n\n        <!-- x_form.formsets: start books-1-0-2 -->\n        \n            \n\n\n\n\n    <!-- formsets: start books-notes-1-0-2-None-0 -->\n    <div class=\"row\">\n\n    \n        <div class=\"col-1\">&nbsp;</div>\n    \n\n    <div class=\"col-11\">\n\n    <fieldset class=\"cv-formset-fieldset\" id=\"cv-formset-fieldset-books-notes-1-0-2-None-0\"\n              cv-data-formset-key=\"books-notes\" cv-data-formset-prefix=\"books-notes-1-0-2-None-0\">\n\n    <legend>Notes</legend>\n\n    <div class=\"cv-formset-content\" cv-data-formset=\"{&quot;key&quot;: &quot;books-notes&quot;, &quot;prefix&quot;: &quot;books-notes-1-0-2-None-0&quot;, &quot;prefix_key&quot;: &quot;1-0-2-None-0&quot;, &quot;hierarchy&quot;: [&quot;books&quot;, &quot;notes&quot;], &quot;parent_prefix&quot;: &quot;books-1-0-2&quot;, &quot;parent_prefix_key&quot;: &quot;1-0-2&quot;, &quot;can_delete&quot;: true, &quot;can_delete_extra&quot;: true, &quot;can_order&quot;: false, &quot;edit_only&quot;: false, &quot;path&quot;: null, &quot;fields&quot;: [&quot;note&quot;], &quot;pk_field&quot;: &quot;id&quot;, &quot;pk&quot;: &quot;\\\\d+&quot;}\"\n         cv-data-formset-prefix=\"books-notes-1-0-2-None-0\">\n\n    <!-- management form books-notes-1-0-2-None-0 1 -->\n    <input type=\"hidden\" name=\"books-notes-1-0-2-None-0-TOTAL_FORMS\" value=\"1\" id=\"id_books-notes-1-0-2-None-0-TOTAL_FORMS\"><input type=\"hidden\" name=\"books-notes-1-0-2-None-0-INITIAL_FORMS\" value=\"0\" id=\"id_books-notes-1-0-2-None-0-INITIAL_FORMS\"><input type=\"hidden\" name=\"books-notes-1-0-2-None-0-MIN_NUM_FORMS\" value=\"0\" id=\"id_books-notes-1-0-2-None-0-MIN_NUM_FORMS\"><input type=\"hidden\" name=\"books-notes-1-0-2-None-0-MAX_NUM_FORMS\" value=\"1000\" id=\"id_books-notes-1-0-2-None-0-MAX_NUM_FORMS\">\n\n    <!-- non_form_errors books-notes-1-0-2-None-0 1 -->\n    \n\n\n\n\n\n<!-- forms books-notes-1-0-2-None-0 -->\n\n\n    <!-- form books-notes-1-0-2-None-0-0 #0 -->\n    <div class=\"cv-formset-row\"\n         cv-data-formset-form=\"{&quot;key&quot;: &quot;books-notes&quot;, &quot;prefix&quot;: &quot;books-notes-1-0-2-None-0-0&quot;, &quot;prefix_key&quot;: &quot;1-0-2-None-0-0&quot;, &quot;formset_prefix&quot;: &quot;books-notes-1-0-2-None-0&quot;, &quot;pk&quot;: &quot;PK.INT&quot;}\"\n         cv-data-formset-prefix=\"books-notes-1-0-2-None-0\"\n         cv-data-formset-form-prefix=\"books-notes-1-0-2-None-0-0\">\n\n        <!-- crispy form: start books-notes-1-0-2-None-0-0 -->\n        <div class=\"cv-formset-form\">\n            \n\n<div id=\"div_id_books-notes-1-0-2-None-0-0-note\" class=\"mb-3\"> <input type=\"text\" name=\"books-notes-1-0-2-None-0-0-note\" maxlength=\"200\" class=\"textinput form-control\" id=\"id_books-notes-1-0-2-None-0-0-note\"> </div> <div class=\"cv-form-ctrl\"> <fieldset class=\"btn-group\" aria-label=\"Row controls\"> <fieldset class=\"btn-group\" aria-label=\"Add or delete\"> <button type=\"button\" class=\"btn btn-light cv-form-ctrl-add\" title=\"Add row\" data-cv-tooltip=\"formset\" aria-label=\"Add row\"\n                    cv-data-formset-form-prefix=\"books-notes-1-0-2-None-0-0\"> <i class=\"fa-solid fa-plus\" aria-hidden=\"true\"></i> </button> <button type=\"button\" class=\"btn btn-light cv-form-ctrl-delete\" data-cv-class=\"btn btn-light\"\n                        data-cv-class-danger=\"btn btn-danger\" title=\"Delete row\" data-cv-tooltip=\"formset\" aria-label=\"Delete row\"\n                        cv-data-formset-form-prefix=\"books-notes-1-0-2-None-0-0\"> <i class=\"fa-solid fa-square-xmark\" aria-hidden=\"true\"></i> </button> </fieldset> </fieldset>\n\n</div> <input type=\"hidden\" name=\"books-notes-1-0-2-None-0-0-DELETE\" id=\"id_books-notes-1-0-2-None-0-0-DELETE\"> <input type=\"hidden\" name=\"books-notes-1-0-2-None-0-0-id\" id=\"id_books-notes-1-0-2-None-0-0-id\"> <input type=\"hidden\" name=\"books-notes-1-0-2-None-0-0-book\" id=\"id_books-notes-1-0-2-None-0-0-book\">\n\n        </div>\n        <!-- crispy form: end books-notes-1-0-2-None-0-0 -->\n\n        <!-- x_form.formsets: start books-notes-1-0-2-None-0-0 -->\n        \n        <!-- x_form.formsets: end books-notes-1-0-2-None-0-0 -->\n\n    </div>\n\n\n\n\n\n    </div>\n\n    </fieldset>\n\n    </div>\n\n    </div>\n\n\n\n        \n            \n\n\n\n\n    <!-- formsets: start books-memos-1-0-2-None-1 -->\n    <div class=\"row\">\n\n    \n        <div class=\"col-1\">&nbsp;</div>\n    \n\n    <div class=\"col-11\">\n\n    <fieldset class=\"cv-formset-fieldset\" id=\"cv-formset-fieldset-books-memos-1-0-2-None-1\"\n              cv-data-formset-key=\"books-memos\" cv-data-formset-prefix=\"books-memos-1-0-2-None-1\">\n\n    <legend>Memos</legend>\n\n    <div class=\"cv-formset-content\" cv-data-formset=\"{&quot;key&quot;: &quot;books-memos&quot;, &quot;prefix&quot;: &quot;books-memos-1-0-2-None-1&quot;, &quot;prefix_key&quot;: &quot;1-0-2-None-1&quot;, &quot;hierarchy&quot;: [&quot;books&quot;, &quot;memos&quot;], &quot;parent_prefix&quot;: &quot;books-1-0-2&quot;, &quot;parent_prefix_key&quot;: &quot;1-0-2&quot;, &quot;can_delete&quot;: true, &quot;can_delete_extra&quot;: true, &quot;can_order&quot;: true, &quot;edit_only&quot;: false, &quot;path&quot;: null, &quot;fields&quot;: [&quot;text&quot;], &quot;pk_field&quot;: &quot;id&quot;, &quot;pk&quot;: &quot;\\\\d+&quot;}\"\n         cv-data-formset-prefix=\"books-memos-1-0-2-None-1\">\n\n    <!-- management form books-memos-1-0-2-None-1 1 -->\n    <input type=\"hidden\" name=\"books-memos-1-0-2-None-1-TOTAL_FORMS\" value=\"1\" id=\"id_books-memos-1-0-2-None-1-TOTAL_FORMS\"><input type=\"hidden\" name=\"books-memos-1-0-2-None-1-INITIAL_FORMS\" value=\"0\" id=\"id_books-memos-1-0-2-None-1-INITIAL_FORMS\"><input type=\"hidden\" name=\"books-memos-1-0-2-None-1-MIN_NUM_FORMS\" value=\"0\" id=\"id_books-memos-1-0-2-None-1-MIN_NUM_FORMS\"><input type=\"hidden\" name=\"books-memos-1-0-2-None-1-MAX_NUM_FORMS\" value=\"1000\" id=\"id_books-memos-1-0-2-None-1-MAX_NUM_FORMS\">\n\n    <!-- non_form_errors books-memos-1-0-2-None-1 1 -->\n    \n\n\n\n\n\n<!-- forms books-memos-1-0-2-None-1 -->\n\n\n    <!-- form books-memos-1-0-2-None-1-0 #0 -->\n    <div class=\"cv-formset-row\"\n         cv-data-formset-form=\"{&quot;key&quot;: &quot;books-memos&quot;, &quot;prefix&quot;: &quot;books-memos-1-0-2-None-1-0&quot;, &quot;prefix_key&quot;: &quot;1-0-2-None-1-0&quot;, &quot;formset_prefix&quot;: &quot;books-memos-1-0-2-None-1&quot;, &quot;pk&quot;: &quot;PK.INT&quot;}\"\n         cv-data-formset-prefix=\"books-memos-1-0-2-None-1\"\n         cv-data-formset-form-prefix=\"books-memos-1-0-2-None-1-0\">\n\n        <!-- crispy form: start books-memos-1-0-2-None-1-0 -->\n        <div class=\"cv-formset-form\">\n            \n\n<div id=\"div_id_books-memos-1-0-2-None-1-0-text\" class=\"mb-3\"> <input type=\"text\" name=\"books-memos-1-0-2-None-1-0-text\" maxlength=\"100\" class=\"textinput form-control\" id=\"id_books-memos-1-0-2-None-1-0-text\"> </div> <div class=\"cv-form-ctrl\"> <fieldset class=\"btn-group\" aria-label=\"Row controls\"> <fieldset class=\"btn-group\" aria-label=\"Order\"> <button type=\"button\" class=\"btn btn-light cv-form-ctrl-up\" title=\"Move up\" data-cv-tooltip=\"formset\" aria-label=\"Move up\"\n                        cv-data-formset-form-prefix=\"books-memos-1-0-2-None-1-0\"> <i class=\"fa-solid fa-caret-up\" aria-hidden=\"true\"></i> </button> <button type=\"button\" class=\"btn btn-light cv-form-ctrl-down\" title=\"Move down\" data-cv-tooltip=\"formset\" aria-label=\"Move down\"\n                        cv-data-formset-form-prefix=\"books-memos-1-0-2-None-1-0\"> <i class=\"fa-solid fa-caret-down\" aria-hidden=\"true\"></i> </button> </fieldset> <fieldset class=\"btn-group\" aria-label=\"Add or delete\"> <button type=\"button\" class=\"btn btn-light cv-form-ctrl-add\" title=\"Add row\" data-cv-tooltip=\"formset\" aria-label=\"Add row\"\n                    cv-data-formset-form-prefix=\"books-memos-1-0-2-None-1-0\"> <i class=\"fa-solid fa-plus\" aria-hidden=\"true\"></i> </button> <button type=\"button\" class=\"btn btn-light cv-form-ctrl-delete\" data-cv-class=\"btn btn-light\"\n                        data-cv-class-danger=\"btn btn-danger\" title=\"Delete row\" data-cv-tooltip=\"formset\" aria-label=\"Delete row\"\n                        cv-data-formset-form-prefix=\"books-memos-1-0-2-None-1-0\"> <i class=\"fa-solid fa-square-xmark\" aria-hidden=\"true\"></i> </button> </fieldset> </fieldset>\n\n</div> <input type=\"hidden\" name=\"books-memos-1-0-2-None-1-0-ORDER\" id=\"id_books-memos-1-0-2-None-1-0-ORDER\"> <input type=\"hidden\" name=\"books-memos-1-0-2-None-1-0-DELETE\" id=\"id_books-memos-1-0-2-None-1-0-DELETE\"> <input type=\"hidden\" name=\"books-memos-1-0-2-None-1-0-id\" id=\"id_books-memos-1-0-2-None-1-0-id\"> <input type=\"hidden\" name=\"books-memos-1-0-2-None-1-0-book\" id=\"id_books-memos-1-0-2-None-1-0-book\">\n\n        </div>\n        <!-- crispy form: end books-memos-1-0-2-None-1-0 -->\n\n        <!-- x_form.formsets: start books-memos-1-0-2-None-1-0 -->\n        \n        <!-- x_form.formsets: end books-memos-1-0-2-None-1-0 -->\n\n    </div>\n\n\n\n\n\n    </div>\n\n    </fieldset>\n\n    </div>\n\n    </div>\n\n\n\n        \n        <!-- x_form.formsets: end books-1-0-2 -->\n\n    </div>\n\n\n\n\n"
+        },
+        {
+          "status": 200,
+          "sent": [
+            [
+              "csrfmiddlewaretoken",
+              "OJCBIVJZ5slH9hP7FpNkRc8f5glqGhtp23gnNwWHxLAvhjxkMDUZGuMhFWF1kxXl"
+            ],
+            [
+              "csrfmiddlewaretoken",
+              "OJCBIVJZ5slH9hP7FpNkRc8f5glqGhtp23gnNwWHxLAvhjxkMDUZGuMhFWF1kxXl"
+            ],
+            [
+              "name",
+              "stock tracer"
+            ],
+            [
+              "outer",
+              "on"
+            ],
+            [
+              "contact",
+              "default contact"
+            ],
+            [
+              "inner",
+              "on"
+            ],
+            [
+              "detail",
+              "default detail"
+            ],
+            [
+              "books-1-0-TOTAL_FORMS",
+              "3"
+            ],
+            [
+              "books-1-0-INITIAL_FORMS",
+              "1"
+            ],
+            [
+              "books-1-0-MIN_NUM_FORMS",
+              "0"
+            ],
+            [
+              "books-1-0-MAX_NUM_FORMS",
+              "1000"
+            ],
+            [
+              "books-1-0-0-title",
+              "Initial book"
+            ],
+            [
+              "books-1-0-0-DELETE",
+              ""
+            ],
+            [
+              "books-1-0-0-id",
+              "1"
+            ],
+            [
+              "books-1-0-0-publisher",
+              "1"
+            ],
+            [
+              "books-notes-1-0-0-1-0-TOTAL_FORMS",
+              "2"
+            ],
+            [
+              "books-notes-1-0-0-1-0-INITIAL_FORMS",
+              "1"
+            ],
+            [
+              "books-notes-1-0-0-1-0-MIN_NUM_FORMS",
+              "0"
+            ],
+            [
+              "books-notes-1-0-0-1-0-MAX_NUM_FORMS",
+              "1000"
+            ],
+            [
+              "books-notes-1-0-0-1-0-0-note",
+              "Initial note"
+            ],
+            [
+              "books-notes-1-0-0-1-0-0-DELETE",
+              ""
+            ],
+            [
+              "books-notes-1-0-0-1-0-0-id",
+              "1"
+            ],
+            [
+              "books-notes-1-0-0-1-0-0-book",
+              "1"
+            ],
+            [
+              "books-notes-1-0-0-1-0-1-note",
+              ""
+            ],
+            [
+              "books-notes-1-0-0-1-0-1-DELETE",
+              ""
+            ],
+            [
+              "books-notes-1-0-0-1-0-1-id",
+              ""
+            ],
+            [
+              "books-notes-1-0-0-1-0-1-book",
+              "1"
+            ],
+            [
+              "books-memos-1-0-0-1-1-TOTAL_FORMS",
+              "2"
+            ],
+            [
+              "books-memos-1-0-0-1-1-INITIAL_FORMS",
+              "1"
+            ],
+            [
+              "books-memos-1-0-0-1-1-MIN_NUM_FORMS",
+              "0"
+            ],
+            [
+              "books-memos-1-0-0-1-1-MAX_NUM_FORMS",
+              "1000"
+            ],
+            [
+              "books-memos-1-0-0-1-1-0-text",
+              "Initial memo"
+            ],
+            [
+              "books-memos-1-0-0-1-1-0-ORDER",
+              "1"
+            ],
+            [
+              "books-memos-1-0-0-1-1-0-DELETE",
+              ""
+            ],
+            [
+              "books-memos-1-0-0-1-1-0-id",
+              "1"
+            ],
+            [
+              "books-memos-1-0-0-1-1-0-book",
+              "1"
+            ],
+            [
+              "books-memos-1-0-0-1-1-1-text",
+              ""
+            ],
+            [
+              "books-memos-1-0-0-1-1-1-ORDER",
+              ""
+            ],
+            [
+              "books-memos-1-0-0-1-1-1-DELETE",
+              ""
+            ],
+            [
+              "books-memos-1-0-0-1-1-1-id",
+              ""
+            ],
+            [
+              "books-memos-1-0-0-1-1-1-book",
+              "1"
+            ],
+            [
+              "books-1-0-2-title",
+              "Browser added book"
+            ],
+            [
+              "books-1-0-2-DELETE",
+              ""
+            ],
+            [
+              "books-1-0-2-id",
+              ""
+            ],
+            [
+              "books-1-0-2-publisher",
+              ""
+            ],
+            [
+              "books-notes-1-0-2-None-0-TOTAL_FORMS",
+              "1"
+            ],
+            [
+              "books-notes-1-0-2-None-0-INITIAL_FORMS",
+              "0"
+            ],
+            [
+              "books-notes-1-0-2-None-0-MIN_NUM_FORMS",
+              "0"
+            ],
+            [
+              "books-notes-1-0-2-None-0-MAX_NUM_FORMS",
+              "1000"
+            ],
+            [
+              "books-notes-1-0-2-None-0-0-note",
+              ""
+            ],
+            [
+              "books-notes-1-0-2-None-0-0-DELETE",
+              ""
+            ],
+            [
+              "books-notes-1-0-2-None-0-0-id",
+              ""
+            ],
+            [
+              "books-notes-1-0-2-None-0-0-book",
+              ""
+            ],
+            [
+              "books-memos-1-0-2-None-1-TOTAL_FORMS",
+              "1"
+            ],
+            [
+              "books-memos-1-0-2-None-1-INITIAL_FORMS",
+              "0"
+            ],
+            [
+              "books-memos-1-0-2-None-1-MIN_NUM_FORMS",
+              "0"
+            ],
+            [
+              "books-memos-1-0-2-None-1-MAX_NUM_FORMS",
+              "1000"
+            ],
+            [
+              "books-memos-1-0-2-None-1-0-text",
+              ""
+            ],
+            [
+              "books-memos-1-0-2-None-1-0-ORDER",
+              ""
+            ],
+            [
+              "books-memos-1-0-2-None-1-0-DELETE",
+              ""
+            ],
+            [
+              "books-memos-1-0-2-None-1-0-id",
+              ""
+            ],
+            [
+              "books-memos-1-0-2-None-1-0-book",
+              ""
+            ],
+            [
+              "books-1-0-1-title",
+              ""
+            ],
+            [
+              "books-1-0-1-DELETE",
+              ""
+            ],
+            [
+              "books-1-0-1-id",
+              ""
+            ],
+            [
+              "books-1-0-1-publisher",
+              "1"
+            ],
+            [
+              "books-notes-1-0-1-None-0-TOTAL_FORMS",
+              "1"
+            ],
+            [
+              "books-notes-1-0-1-None-0-INITIAL_FORMS",
+              "0"
+            ],
+            [
+              "books-notes-1-0-1-None-0-MIN_NUM_FORMS",
+              "0"
+            ],
+            [
+              "books-notes-1-0-1-None-0-MAX_NUM_FORMS",
+              "1000"
+            ],
+            [
+              "books-notes-1-0-1-None-0-0-note",
+              ""
+            ],
+            [
+              "books-notes-1-0-1-None-0-0-DELETE",
+              ""
+            ],
+            [
+              "books-notes-1-0-1-None-0-0-id",
+              ""
+            ],
+            [
+              "books-notes-1-0-1-None-0-0-book",
+              ""
+            ],
+            [
+              "books-memos-1-0-1-None-1-TOTAL_FORMS",
+              "1"
+            ],
+            [
+              "books-memos-1-0-1-None-1-INITIAL_FORMS",
+              "0"
+            ],
+            [
+              "books-memos-1-0-1-None-1-MIN_NUM_FORMS",
+              "0"
+            ],
+            [
+              "books-memos-1-0-1-None-1-MAX_NUM_FORMS",
+              "1000"
+            ],
+            [
+              "books-memos-1-0-1-None-1-0-text",
+              ""
+            ],
+            [
+              "books-memos-1-0-1-None-1-0-ORDER",
+              ""
+            ],
+            [
+              "books-memos-1-0-1-None-1-0-DELETE",
+              ""
+            ],
+            [
+              "books-memos-1-0-1-None-1-0-id",
+              ""
+            ],
+            [
+              "books-memos-1-0-1-None-1-0-book",
+              ""
+            ]
+          ],
+          "body": "{\"saved\": true}"
+        }
+      ],
+      "passed": true,
+      "state": {
+        "events": [
+          {
+            "model": "Publisher",
+            "pk": 1
+          },
+          {
+            "model": "Book",
+            "pk": null
+          }
+        ],
+        "observed": [
+          {
+            "prefix": "books-1-0-0",
+            "changed": false,
+            "changed_data": [],
+            "pk": 1
+          },
+          {
+            "prefix": "books-1-0-1",
+            "changed": false,
+            "changed_data": [],
+            "pk": null
+          },
+          {
+            "prefix": "books-1-0-2",
+            "changed": true,
+            "changed_data": [
+              "title"
+            ],
+            "pk": null
+          }
+        ],
+        "received": [
+          {
+            "post": {
+              "csrfmiddlewaretoken": [
+                "OJCBIVJZ5slH9hP7FpNkRc8f5glqGhtp23gnNwWHxLAvhjxkMDUZGuMhFWF1kxXl",
+                "OJCBIVJZ5slH9hP7FpNkRc8f5glqGhtp23gnNwWHxLAvhjxkMDUZGuMhFWF1kxXl"
+              ],
+              "name": [
+                "stock tracer"
+              ],
+              "outer": [
+                "on"
+              ],
+              "contact": [
+                "default contact"
+              ],
+              "inner": [
+                "on"
+              ],
+              "detail": [
+                "default detail"
+              ],
+              "books-1-0-TOTAL_FORMS": [
+                "3"
+              ],
+              "books-1-0-INITIAL_FORMS": [
+                "1"
+              ],
+              "books-1-0-MIN_NUM_FORMS": [
+                "0"
+              ],
+              "books-1-0-MAX_NUM_FORMS": [
+                "1000"
+              ],
+              "books-1-0-0-title": [
+                "Initial book"
+              ],
+              "books-1-0-0-DELETE": [
+                ""
+              ],
+              "books-1-0-0-id": [
+                "1"
+              ],
+              "books-1-0-0-publisher": [
+                "1"
+              ],
+              "books-notes-1-0-0-1-0-TOTAL_FORMS": [
+                "2"
+              ],
+              "books-notes-1-0-0-1-0-INITIAL_FORMS": [
+                "1"
+              ],
+              "books-notes-1-0-0-1-0-MIN_NUM_FORMS": [
+                "0"
+              ],
+              "books-notes-1-0-0-1-0-MAX_NUM_FORMS": [
+                "1000"
+              ],
+              "books-notes-1-0-0-1-0-0-note": [
+                "Initial note"
+              ],
+              "books-notes-1-0-0-1-0-0-DELETE": [
+                ""
+              ],
+              "books-notes-1-0-0-1-0-0-id": [
+                "1"
+              ],
+              "books-notes-1-0-0-1-0-0-book": [
+                "1"
+              ],
+              "books-notes-1-0-0-1-0-1-note": [
+                ""
+              ],
+              "books-notes-1-0-0-1-0-1-DELETE": [
+                ""
+              ],
+              "books-notes-1-0-0-1-0-1-id": [
+                ""
+              ],
+              "books-notes-1-0-0-1-0-1-book": [
+                "1"
+              ],
+              "books-memos-1-0-0-1-1-TOTAL_FORMS": [
+                "2"
+              ],
+              "books-memos-1-0-0-1-1-INITIAL_FORMS": [
+                "1"
+              ],
+              "books-memos-1-0-0-1-1-MIN_NUM_FORMS": [
+                "0"
+              ],
+              "books-memos-1-0-0-1-1-MAX_NUM_FORMS": [
+                "1000"
+              ],
+              "books-memos-1-0-0-1-1-0-text": [
+                "Initial memo"
+              ],
+              "books-memos-1-0-0-1-1-0-ORDER": [
+                "1"
+              ],
+              "books-memos-1-0-0-1-1-0-DELETE": [
+                ""
+              ],
+              "books-memos-1-0-0-1-1-0-id": [
+                "1"
+              ],
+              "books-memos-1-0-0-1-1-0-book": [
+                "1"
+              ],
+              "books-memos-1-0-0-1-1-1-text": [
+                ""
+              ],
+              "books-memos-1-0-0-1-1-1-ORDER": [
+                ""
+              ],
+              "books-memos-1-0-0-1-1-1-DELETE": [
+                ""
+              ],
+              "books-memos-1-0-0-1-1-1-id": [
+                ""
+              ],
+              "books-memos-1-0-0-1-1-1-book": [
+                "1"
+              ],
+              "books-1-0-2-title": [
+                "Browser added book"
+              ],
+              "books-1-0-2-DELETE": [
+                ""
+              ],
+              "books-1-0-2-id": [
+                ""
+              ],
+              "books-1-0-2-publisher": [
+                ""
+              ],
+              "books-notes-1-0-2-None-0-TOTAL_FORMS": [
+                "1"
+              ],
+              "books-notes-1-0-2-None-0-INITIAL_FORMS": [
+                "0"
+              ],
+              "books-notes-1-0-2-None-0-MIN_NUM_FORMS": [
+                "0"
+              ],
+              "books-notes-1-0-2-None-0-MAX_NUM_FORMS": [
+                "1000"
+              ],
+              "books-notes-1-0-2-None-0-0-note": [
+                ""
+              ],
+              "books-notes-1-0-2-None-0-0-DELETE": [
+                ""
+              ],
+              "books-notes-1-0-2-None-0-0-id": [
+                ""
+              ],
+              "books-notes-1-0-2-None-0-0-book": [
+                ""
+              ],
+              "books-memos-1-0-2-None-1-TOTAL_FORMS": [
+                "1"
+              ],
+              "books-memos-1-0-2-None-1-INITIAL_FORMS": [
+                "0"
+              ],
+              "books-memos-1-0-2-None-1-MIN_NUM_FORMS": [
+                "0"
+              ],
+              "books-memos-1-0-2-None-1-MAX_NUM_FORMS": [
+                "1000"
+              ],
+              "books-memos-1-0-2-None-1-0-text": [
+                ""
+              ],
+              "books-memos-1-0-2-None-1-0-ORDER": [
+                ""
+              ],
+              "books-memos-1-0-2-None-1-0-DELETE": [
+                ""
+              ],
+              "books-memos-1-0-2-None-1-0-id": [
+                ""
+              ],
+              "books-memos-1-0-2-None-1-0-book": [
+                ""
+              ],
+              "books-1-0-1-title": [
+                ""
+              ],
+              "books-1-0-1-DELETE": [
+                ""
+              ],
+              "books-1-0-1-id": [
+                ""
+              ],
+              "books-1-0-1-publisher": [
+                "1"
+              ],
+              "books-notes-1-0-1-None-0-TOTAL_FORMS": [
+                "1"
+              ],
+              "books-notes-1-0-1-None-0-INITIAL_FORMS": [
+                "0"
+              ],
+              "books-notes-1-0-1-None-0-MIN_NUM_FORMS": [
+                "0"
+              ],
+              "books-notes-1-0-1-None-0-MAX_NUM_FORMS": [
+                "1000"
+              ],
+              "books-notes-1-0-1-None-0-0-note": [
+                ""
+              ],
+              "books-notes-1-0-1-None-0-0-DELETE": [
+                ""
+              ],
+              "books-notes-1-0-1-None-0-0-id": [
+                ""
+              ],
+              "books-notes-1-0-1-None-0-0-book": [
+                ""
+              ],
+              "books-memos-1-0-1-None-1-TOTAL_FORMS": [
+                "1"
+              ],
+              "books-memos-1-0-1-None-1-INITIAL_FORMS": [
+                "0"
+              ],
+              "books-memos-1-0-1-None-1-MIN_NUM_FORMS": [
+                "0"
+              ],
+              "books-memos-1-0-1-None-1-MAX_NUM_FORMS": [
+                "1000"
+              ],
+              "books-memos-1-0-1-None-1-0-text": [
+                ""
+              ],
+              "books-memos-1-0-1-None-1-0-ORDER": [
+                ""
+              ],
+              "books-memos-1-0-1-None-1-0-DELETE": [
+                ""
+              ],
+              "books-memos-1-0-1-None-1-0-id": [
+                ""
+              ],
+              "books-memos-1-0-1-None-1-0-book": [
+                ""
+              ]
+            },
+            "files": {}
+          }
+        ],
+        "books": [
+          {
+            "id": 61,
+            "title": "Browser added book",
+            "publisher_id": 1
+          },
+          {
+            "id": 2,
+            "title": "FILTERED",
+            "publisher_id": 1
+          },
+          {
+            "id": 5,
+            "title": "FILTERED",
+            "publisher_id": 3
+          },
+          {
+            "id": 8,
+            "title": "FILTERED",
+            "publisher_id": 5
+          },
+          {
+            "id": 11,
+            "title": "FILTERED",
+            "publisher_id": 7
+          },
+          {
+            "id": 14,
+            "title": "FILTERED",
+            "publisher_id": 9
+          },
+          {
+            "id": 17,
+            "title": "FILTERED",
+            "publisher_id": 11
+          },
+          {
+            "id": 20,
+            "title": "FILTERED",
+            "publisher_id": 13
+          },
+          {
+            "id": 23,
+            "title": "FILTERED",
+            "publisher_id": 15
+          },
+          {
+            "id": 26,
+            "title": "FILTERED",
+            "publisher_id": 17
+          },
+          {
+            "id": 29,
+            "title": "FILTERED",
+            "publisher_id": 19
+          },
+          {
+            "id": 32,
+            "title": "FILTERED",
+            "publisher_id": 21
+          },
+          {
+            "id": 35,
+            "title": "FILTERED",
+            "publisher_id": 23
+          },
+          {
+            "id": 38,
+            "title": "FILTERED",
+            "publisher_id": 25
+          },
+          {
+            "id": 41,
+            "title": "FILTERED",
+            "publisher_id": 27
+          },
+          {
+            "id": 44,
+            "title": "FILTERED",
+            "publisher_id": 29
+          },
+          {
+            "id": 47,
+            "title": "FILTERED",
+            "publisher_id": 31
+          },
+          {
+            "id": 50,
+            "title": "FILTERED",
+            "publisher_id": 33
+          },
+          {
+            "id": 53,
+            "title": "FILTERED",
+            "publisher_id": 35
+          },
+          {
+            "id": 56,
+            "title": "FILTERED",
+            "publisher_id": 37
+          },
+          {
+            "id": 59,
+            "title": "FILTERED",
+            "publisher_id": 39
+          },
+          {
+            "id": 3,
+            "title": "Foreign book",
+            "publisher_id": 2
+          },
+          {
+            "id": 6,
+            "title": "Foreign book",
+            "publisher_id": 4
+          },
+          {
+            "id": 9,
+            "title": "Foreign book",
+            "publisher_id": 6
+          },
+          {
+            "id": 12,
+            "title": "Foreign book",
+            "publisher_id": 8
+          },
+          {
+            "id": 15,
+            "title": "Foreign book",
+            "publisher_id": 10
+          },
+          {
+            "id": 18,
+            "title": "Foreign book",
+            "publisher_id": 12
+          },
+          {
+            "id": 21,
+            "title": "Foreign book",
+            "publisher_id": 14
+          },
+          {
+            "id": 24,
+            "title": "Foreign book",
+            "publisher_id": 16
+          },
+          {
+            "id": 27,
+            "title": "Foreign book",
+            "publisher_id": 18
+          },
+          {
+            "id": 30,
+            "title": "Foreign book",
+            "publisher_id": 20
+          },
+          {
+            "id": 33,
+            "title": "Foreign book",
+            "publisher_id": 22
+          },
+          {
+            "id": 36,
+            "title": "Foreign book",
+            "publisher_id": 24
+          },
+          {
+            "id": 39,
+            "title": "Foreign book",
+            "publisher_id": 26
+          },
+          {
+            "id": 42,
+            "title": "Foreign book",
+            "publisher_id": 28
+          },
+          {
+            "id": 45,
+            "title": "Foreign book",
+            "publisher_id": 30
+          },
+          {
+            "id": 48,
+            "title": "Foreign book",
+            "publisher_id": 32
+          },
+          {
+            "id": 51,
+            "title": "Foreign book",
+            "publisher_id": 34
+          },
+          {
+            "id": 54,
+            "title": "Foreign book",
+            "publisher_id": 36
+          },
+          {
+            "id": 57,
+            "title": "Foreign book",
+            "publisher_id": 38
+          },
+          {
+            "id": 60,
+            "title": "Foreign book",
+            "publisher_id": 40
+          },
+          {
+            "id": 1,
+            "title": "Initial book",
+            "publisher_id": 1
+          },
+          {
+            "id": 4,
+            "title": "Initial book",
+            "publisher_id": 3
+          },
+          {
+            "id": 7,
+            "title": "Initial book",
+            "publisher_id": 5
+          },
+          {
+            "id": 10,
+            "title": "Initial book",
+            "publisher_id": 7
+          },
+          {
+            "id": 13,
+            "title": "Initial book",
+            "publisher_id": 9
+          },
+          {
+            "id": 16,
+            "title": "Initial book",
+            "publisher_id": 11
+          },
+          {
+            "id": 19,
+            "title": "Initial book",
+            "publisher_id": 13
+          },
+          {
+            "id": 22,
+            "title": "Initial book",
+            "publisher_id": 15
+          },
+          {
+            "id": 25,
+            "title": "Initial book",
+            "publisher_id": 17
+          },
+          {
+            "id": 28,
+            "title": "Initial book",
+            "publisher_id": 19
+          },
+          {
+            "id": 31,
+            "title": "Initial book",
+            "publisher_id": 21
+          },
+          {
+            "id": 34,
+            "title": "Initial book",
+            "publisher_id": 23
+          },
+          {
+            "id": 37,
+            "title": "Initial book",
+            "publisher_id": 25
+          },
+          {
+            "id": 40,
+            "title": "Initial book",
+            "publisher_id": 27
+          },
+          {
+            "id": 43,
+            "title": "Initial book",
+            "publisher_id": 29
+          },
+          {
+            "id": 46,
+            "title": "Initial book",
+            "publisher_id": 31
+          },
+          {
+            "id": 49,
+            "title": "Initial book",
+            "publisher_id": 33
+          },
+          {
+            "id": 52,
+            "title": "Initial book",
+            "publisher_id": 35
+          },
+          {
+            "id": 55,
+            "title": "Initial book",
+            "publisher_id": 37
+          },
+          {
+            "id": 58,
+            "title": "Initial book",
+            "publisher_id": 39
+          }
+        ],
+        "notes": [
+          {
+            "id": 1,
+            "book_id": 1,
+            "note": "Initial note"
+          },
+          {
+            "id": 2,
+            "book_id": 4,
+            "note": "Initial note"
+          },
+          {
+            "id": 3,
+            "book_id": 7,
+            "note": "Initial note"
+          },
+          {
+            "id": 4,
+            "book_id": 10,
+            "note": "Initial note"
+          },
+          {
+            "id": 5,
+            "book_id": 13,
+            "note": "Initial note"
+          },
+          {
+            "id": 6,
+            "book_id": 16,
+            "note": "Initial note"
+          },
+          {
+            "id": 7,
+            "book_id": 19,
+            "note": "Initial note"
+          },
+          {
+            "id": 8,
+            "book_id": 22,
+            "note": "Initial note"
+          },
+          {
+            "id": 9,
+            "book_id": 25,
+            "note": "Initial note"
+          },
+          {
+            "id": 10,
+            "book_id": 28,
+            "note": "Initial note"
+          },
+          {
+            "id": 11,
+            "book_id": 31,
+            "note": "Initial note"
+          },
+          {
+            "id": 12,
+            "book_id": 34,
+            "note": "Initial note"
+          },
+          {
+            "id": 13,
+            "book_id": 37,
+            "note": "Initial note"
+          },
+          {
+            "id": 14,
+            "book_id": 40,
+            "note": "Initial note"
+          },
+          {
+            "id": 15,
+            "book_id": 43,
+            "note": "Initial note"
+          },
+          {
+            "id": 16,
+            "book_id": 46,
+            "note": "Initial note"
+          },
+          {
+            "id": 17,
+            "book_id": 49,
+            "note": "Initial note"
+          },
+          {
+            "id": 18,
+            "book_id": 52,
+            "note": "Initial note"
+          },
+          {
+            "id": 19,
+            "book_id": 55,
+            "note": "Initial note"
+          },
+          {
+            "id": 20,
+            "book_id": 58,
+            "note": "Initial note"
+          }
+        ],
+        "memos": [
+          {
+            "id": 1,
+            "order": 0,
+            "book_id": 1,
+            "text": "Initial memo"
+          },
+          {
+            "id": 2,
+            "order": 0,
+            "book_id": 4,
+            "text": "Initial memo"
+          },
+          {
+            "id": 3,
+            "order": 0,
+            "book_id": 7,
+            "text": "Initial memo"
+          },
+          {
+            "id": 4,
+            "order": 0,
+            "book_id": 10,
+            "text": "Initial memo"
+          },
+          {
+            "id": 5,
+            "order": 0,
+            "book_id": 13,
+            "text": "Initial memo"
+          },
+          {
+            "id": 6,
+            "order": 0,
+            "book_id": 16,
+            "text": "Initial memo"
+          },
+          {
+            "id": 7,
+            "order": 0,
+            "book_id": 19,
+            "text": "Initial memo"
+          },
+          {
+            "id": 8,
+            "order": 0,
+            "book_id": 22,
+            "text": "Initial memo"
+          },
+          {
+            "id": 9,
+            "order": 0,
+            "book_id": 25,
+            "text": "Initial memo"
+          },
+          {
+            "id": 10,
+            "order": 0,
+            "book_id": 28,
+            "text": "Initial memo"
+          },
+          {
+            "id": 11,
+            "order": 0,
+            "book_id": 31,
+            "text": "Initial memo"
+          },
+          {
+            "id": 12,
+            "order": 0,
+            "book_id": 34,
+            "text": "Initial memo"
+          },
+          {
+            "id": 13,
+            "order": 0,
+            "book_id": 37,
+            "text": "Initial memo"
+          },
+          {
+            "id": 14,
+            "order": 0,
+            "book_id": 40,
+            "text": "Initial memo"
+          },
+          {
+            "id": 15,
+            "order": 0,
+            "book_id": 43,
+            "text": "Initial memo"
+          },
+          {
+            "id": 16,
+            "order": 0,
+            "book_id": 46,
+            "text": "Initial memo"
+          },
+          {
+            "id": 17,
+            "order": 0,
+            "book_id": 49,
+            "text": "Initial memo"
+          },
+          {
+            "id": 18,
+            "order": 0,
+            "book_id": 52,
+            "text": "Initial memo"
+          },
+          {
+            "id": 19,
+            "order": 0,
+            "book_id": 55,
+            "text": "Initial memo"
+          },
+          {
+            "id": 20,
+            "order": 0,
+            "book_id": 58,
+            "text": "Initial memo"
+          }
+        ],
+        "records": [
+          {
+            "id": 1,
+            "parent_id": 1,
+            "active": false,
+            "attachment": "seed/1-attachment.bin",
+            "image": "seed/1-image.bin",
+            "protected": "seed/1-protected.bin",
+            "unchanged": "seed/1-unchanged.bin"
+          },
+          {
+            "id": 2,
+            "parent_id": 2,
+            "active": false,
+            "attachment": "seed/2-attachment.bin",
+            "image": "seed/2-image.bin",
+            "protected": "seed/2-protected.bin",
+            "unchanged": "seed/2-unchanged.bin"
+          },
+          {
+            "id": 3,
+            "parent_id": 3,
+            "active": false,
+            "attachment": "seed/3-attachment.bin",
+            "image": "seed/3-image.bin",
+            "protected": "seed/3-protected.bin",
+            "unchanged": "seed/3-unchanged.bin"
+          },
+          {
+            "id": 4,
+            "parent_id": 4,
+            "active": false,
+            "attachment": "seed/4-attachment.bin",
+            "image": "seed/4-image.bin",
+            "protected": "seed/4-protected.bin",
+            "unchanged": "seed/4-unchanged.bin"
+          },
+          {
+            "id": 5,
+            "parent_id": 5,
+            "active": false,
+            "attachment": "seed/5-attachment.bin",
+            "image": "seed/5-image.bin",
+            "protected": "seed/5-protected.bin",
+            "unchanged": "seed/5-unchanged.bin"
+          },
+          {
+            "id": 6,
+            "parent_id": 6,
+            "active": false,
+            "attachment": "seed/6-attachment.bin",
+            "image": "seed/6-image.bin",
+            "protected": "seed/6-protected.bin",
+            "unchanged": "seed/6-unchanged.bin"
+          },
+          {
+            "id": 7,
+            "parent_id": 7,
+            "active": false,
+            "attachment": "seed/7-attachment.bin",
+            "image": "seed/7-image.bin",
+            "protected": "seed/7-protected.bin",
+            "unchanged": "seed/7-unchanged.bin"
+          },
+          {
+            "id": 8,
+            "parent_id": 8,
+            "active": false,
+            "attachment": "seed/8-attachment.bin",
+            "image": "seed/8-image.bin",
+            "protected": "seed/8-protected.bin",
+            "unchanged": "seed/8-unchanged.bin"
+          },
+          {
+            "id": 9,
+            "parent_id": 9,
+            "active": false,
+            "attachment": "seed/9-attachment.bin",
+            "image": "seed/9-image.bin",
+            "protected": "seed/9-protected.bin",
+            "unchanged": "seed/9-unchanged.bin"
+          },
+          {
+            "id": 10,
+            "parent_id": 10,
+            "active": false,
+            "attachment": "seed/10-attachment.bin",
+            "image": "seed/10-image.bin",
+            "protected": "seed/10-protected.bin",
+            "unchanged": "seed/10-unchanged.bin"
+          },
+          {
+            "id": 11,
+            "parent_id": 11,
+            "active": false,
+            "attachment": "seed/11-attachment.bin",
+            "image": "seed/11-image.bin",
+            "protected": "seed/11-protected.bin",
+            "unchanged": "seed/11-unchanged.bin"
+          },
+          {
+            "id": 12,
+            "parent_id": 12,
+            "active": false,
+            "attachment": "seed/12-attachment.bin",
+            "image": "seed/12-image.bin",
+            "protected": "seed/12-protected.bin",
+            "unchanged": "seed/12-unchanged.bin"
+          },
+          {
+            "id": 13,
+            "parent_id": 13,
+            "active": false,
+            "attachment": "seed/13-attachment.bin",
+            "image": "seed/13-image.bin",
+            "protected": "seed/13-protected.bin",
+            "unchanged": "seed/13-unchanged.bin"
+          },
+          {
+            "id": 14,
+            "parent_id": 14,
+            "active": false,
+            "attachment": "seed/14-attachment.bin",
+            "image": "seed/14-image.bin",
+            "protected": "seed/14-protected.bin",
+            "unchanged": "seed/14-unchanged.bin"
+          },
+          {
+            "id": 15,
+            "parent_id": 15,
+            "active": false,
+            "attachment": "seed/15-attachment.bin",
+            "image": "seed/15-image.bin",
+            "protected": "seed/15-protected.bin",
+            "unchanged": "seed/15-unchanged.bin"
+          },
+          {
+            "id": 16,
+            "parent_id": 16,
+            "active": false,
+            "attachment": "seed/16-attachment.bin",
+            "image": "seed/16-image.bin",
+            "protected": "seed/16-protected.bin",
+            "unchanged": "seed/16-unchanged.bin"
+          },
+          {
+            "id": 17,
+            "parent_id": 17,
+            "active": false,
+            "attachment": "seed/17-attachment.bin",
+            "image": "seed/17-image.bin",
+            "protected": "seed/17-protected.bin",
+            "unchanged": "seed/17-unchanged.bin"
+          },
+          {
+            "id": 18,
+            "parent_id": 18,
+            "active": false,
+            "attachment": "seed/18-attachment.bin",
+            "image": "seed/18-image.bin",
+            "protected": "seed/18-protected.bin",
+            "unchanged": "seed/18-unchanged.bin"
+          },
+          {
+            "id": 19,
+            "parent_id": 19,
+            "active": false,
+            "attachment": "seed/19-attachment.bin",
+            "image": "seed/19-image.bin",
+            "protected": "seed/19-protected.bin",
+            "unchanged": "seed/19-unchanged.bin"
+          },
+          {
+            "id": 20,
+            "parent_id": 20,
+            "active": false,
+            "attachment": "seed/20-attachment.bin",
+            "image": "seed/20-image.bin",
+            "protected": "seed/20-protected.bin",
+            "unchanged": "seed/20-unchanged.bin"
+          }
+        ],
+        "storage": [
+          "seed/1-attachment.bin",
+          "seed/1-image.bin",
+          "seed/1-protected.bin",
+          "seed/1-unchanged.bin",
+          "seed/10-attachment.bin",
+          "seed/10-image.bin",
+          "seed/10-protected.bin",
+          "seed/10-unchanged.bin",
+          "seed/11-attachment.bin",
+          "seed/11-image.bin",
+          "seed/11-protected.bin",
+          "seed/11-unchanged.bin",
+          "seed/12-attachment.bin",
+          "seed/12-image.bin",
+          "seed/12-protected.bin",
+          "seed/12-unchanged.bin",
+          "seed/13-attachment.bin",
+          "seed/13-image.bin",
+          "seed/13-protected.bin",
+          "seed/13-unchanged.bin",
+          "seed/14-attachment.bin",
+          "seed/14-image.bin",
+          "seed/14-protected.bin",
+          "seed/14-unchanged.bin",
+          "seed/15-attachment.bin",
+          "seed/15-image.bin",
+          "seed/15-protected.bin",
+          "seed/15-unchanged.bin",
+          "seed/16-attachment.bin",
+          "seed/16-image.bin",
+          "seed/16-protected.bin",
+          "seed/16-unchanged.bin",
+          "seed/17-attachment.bin",
+          "seed/17-image.bin",
+          "seed/17-protected.bin",
+          "seed/17-unchanged.bin",
+          "seed/18-attachment.bin",
+          "seed/18-image.bin",
+          "seed/18-protected.bin",
+          "seed/18-unchanged.bin",
+          "seed/19-attachment.bin",
+          "seed/19-image.bin",
+          "seed/19-protected.bin",
+          "seed/19-unchanged.bin",
+          "seed/2-attachment.bin",
+          "seed/2-image.bin",
+          "seed/2-protected.bin",
+          "seed/2-unchanged.bin",
+          "seed/20-attachment.bin",
+          "seed/20-image.bin",
+          "seed/20-protected.bin",
+          "seed/20-unchanged.bin",
+          "seed/3-attachment.bin",
+          "seed/3-image.bin",
+          "seed/3-protected.bin",
+          "seed/3-unchanged.bin",
+          "seed/4-attachment.bin",
+          "seed/4-image.bin",
+          "seed/4-protected.bin",
+          "seed/4-unchanged.bin",
+          "seed/5-attachment.bin",
+          "seed/5-image.bin",
+          "seed/5-protected.bin",
+          "seed/5-unchanged.bin",
+          "seed/6-attachment.bin",
+          "seed/6-image.bin",
+          "seed/6-protected.bin",
+          "seed/6-unchanged.bin",
+          "seed/7-attachment.bin",
+          "seed/7-image.bin",
+          "seed/7-protected.bin",
+          "seed/7-unchanged.bin",
+          "seed/8-attachment.bin",
+          "seed/8-image.bin",
+          "seed/8-protected.bin",
+          "seed/8-unchanged.bin",
+          "seed/9-attachment.bin",
+          "seed/9-image.bin",
+          "seed/9-protected.bin",
+          "seed/9-unchanged.bin"
+        ]
+      }
+    }
+  ],
+  "pageErrors": [],
+  "cleanup": {
+    "reaped": true
+  },
+  "completed": true,
+  "passed": true
+}

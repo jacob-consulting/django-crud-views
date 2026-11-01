@@ -1,5 +1,7 @@
-import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { loadScript } from "./helpers/load.js";
+import { readFileSync } from "node:fs";
+import { JSDOM } from "jsdom";
 
 function fixture({ field = "active", checked = true, checkboxName = field } = {}) {
     document.body.innerHTML = `
@@ -125,6 +127,159 @@ describe("conditional disabled ownership", () => {
         change(outer, true);
         expect(value.disabled).toBe(false);
         expect(value.nextElementSibling.disabled).toBe(false);
+    });
+});
+
+describe("conditional reset and focus lifecycle", () => {
+    beforeAll(async () => { await loadScript("toggle"); });
+    afterEach(() => { vi.useRealTimers(); vi.restoreAllMocks(); });
+
+    it("resynchronizes native reset only after the task and only in its owning form", async () => {
+        vi.useFakeTimers();
+        const { group, checkbox } = fixture({ checked: false });
+        const form = checkbox.form;
+        form.insertAdjacentHTML("beforeend", `<button type="reset">Reset</button>`);
+        form.insertAdjacentHTML("afterend", `<form><input type="checkbox" name="active" checked>
+            <div cv-data-toggle-group cv-data-toggle-field="active"><input name="other"></div></form>`);
+        wire();
+        change(checkbox, true);
+        group.querySelector("[name=title]").value = "unsaved";
+        const other = document.getElementsByName("other")[0];
+        document.querySelectorAll("[name=active]")[1].checked = false; // No change event in other form.
+        form.querySelector("[type=reset]").click();
+        expect(checkbox.checked).toBe(false); // Native reset already ran.
+        expect(group.style.display).toBe("");
+        await Promise.resolve();
+        expect(group.style.display).toBe(""); // A microtask must not synchronize it.
+        await vi.runAllTimersAsync();
+        expect(group.style.display).toBe("none");
+        expect(group.querySelector("[name=title]").disabled).toBe(true);
+        expect(group.querySelector("[name=title]").value).toBe("");
+        expect(other.disabled).toBe(false);
+        expect(group.querySelector("[name$=-TOTAL_FORMS]").value).toBe("2");
+    });
+
+    it.each(["form", "document"])("honors later reset cancellation at %s", async where => {
+        vi.useFakeTimers();
+        const { group, checkbox } = fixture({ checked: false });
+        wire();
+        change(checkbox, true);
+        group.querySelector("[name=title]").value = "unsaved";
+        const target = where === "form" ? checkbox.form : document;
+        target.addEventListener("reset", event => event.preventDefault(), { once: true });
+        checkbox.form.reset();
+        await vi.runAllTimersAsync();
+        expect(checkbox.checked).toBe(true);
+        expect(group.style.display).toBe("");
+        expect(group.querySelector("[name=title]").disabled).toBe(false);
+        expect(group.querySelector("[name=title]").value).toBe("unsaved");
+    });
+
+    function visibleGeometry() {
+        vi.spyOn(HTMLElement.prototype, "getClientRects").mockReturnValue([{}]);
+    }
+
+    it("returns stranded focus to the controlling checkbox without stealing outside focus", () => {
+        visibleGeometry();
+        const { group, checkbox } = fixture();
+        wire();
+        group.querySelector("input").focus();
+        change(checkbox, false);
+        expect(document.activeElement).toBe(checkbox);
+        change(checkbox, true);
+        const outside = document.createElement("button");
+        document.body.append(outside);
+        outside.focus();
+        change(checkbox, false);
+        expect(document.activeElement).toBe(outside);
+    });
+
+    it("uses the nearest usable ancestor toggle when an inner target is hidden", () => {
+        visibleGeometry();
+        const { outer, inner, value } = nestedFixture();
+        value.focus();
+        outer.checked = false;
+        change(inner, false);
+        expect(document.activeElement).toBe(outer);
+    });
+
+    it.each(["hidden", "inert", "aria-hidden", "aria-disabled", "disabled", "failed-focus"])("rejects %s toggle and focuses its visible in-modal form", reason => {
+        visibleGeometry();
+        const { group, checkbox } = fixture();
+        const form = checkbox.form;
+        const modal = document.createElement("div");
+        modal.id = "cv-modal";
+        form.before(modal);
+        modal.append(form);
+        const wrapper = document.createElement("div");
+        checkbox.before(wrapper);
+        wrapper.append(checkbox);
+        if (reason === "failed-focus") vi.spyOn(checkbox, "focus").mockImplementation(() => {});
+        else if (reason === "disabled") checkbox.disabled = true;
+        else wrapper.setAttribute(reason, reason.startsWith("aria-") ? "true" : "");
+        wire();
+        group.querySelector("input").focus();
+        change(checkbox, false);
+        expect(document.activeElement).toBe(form);
+        expect(form.getAttribute("tabindex")).toBe("-1");
+        const button = document.createElement("button");
+        form.append(button);
+        button.focus();
+        expect(form.hasAttribute("tabindex")).toBe(false);
+    });
+
+    it("does not focus a hidden initial modal shell and preserves existing fallback tabindex", () => {
+        visibleGeometry();
+        const { group, checkbox } = fixture();
+        const form = checkbox.form;
+        form.setAttribute("tabindex", "0");
+        checkbox.hidden = true;
+        const shell = document.createElement("div");
+        shell.setAttribute("aria-hidden", "true");
+        form.before(shell);
+        shell.append(form);
+        wire();
+        group.querySelector("input").focus();
+        const active = document.activeElement;
+        change(checkbox, false);
+        expect(document.activeElement).toBe(active);
+        expect(form.getAttribute("tabindex")).toBe("0");
+        shell.removeAttribute("aria-hidden");
+        change(checkbox, true);
+        group.querySelector("input").focus();
+        change(checkbox, false);
+        expect(document.activeElement).toBe(form);
+        expect(form.getAttribute("tabindex")).toBe("0");
+    });
+
+    it("starts immediately when a script loads after DOMContentLoaded", async () => {
+        const dom = new JSDOM(`<form><input type="checkbox" name="late">
+            <div cv-data-toggle-group cv-data-toggle-field="late"><input name="value"></div></form>`, { runScripts: "outside-only" });
+        try {
+            await new Promise(resolve => dom.window.addEventListener("load", resolve, { once: true }));
+            dom.window.eval(readFileSync("src/crud_views/static/crud_views/js/toggle.js", "utf8"));
+            expect(dom.window.document.querySelector("[cv-data-toggle-group]").style.display).toBe("none");
+        } finally { dom.window.close(); }
+    });
+
+    it("disposes modal observation and handlers on unload, then permits explicit reuse", async () => {
+        const { group, checkbox } = fixture({ checked: false });
+        const form = checkbox.form;
+        const modal = document.createElement("div");
+        form.before(modal);
+        modal.append(form);
+        wire();
+        modal.dispatchEvent(new CustomEvent("cv:modal:unload", { bubbles: true }));
+        form.remove();
+        group.querySelector("input").disabled = false;
+        await Promise.resolve();
+        expect(group.querySelector("input").disabled).toBe(false);
+        change(checkbox, true);
+        expect(group.style.display).toBe("none");
+        modal.append(form);
+        globalThis.cv.initConditional(form);
+        expect(group.style.display).toBe("");
+        expect(group.querySelector("input").disabled).toBe(false);
     });
 });
 

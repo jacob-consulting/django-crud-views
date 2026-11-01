@@ -47,9 +47,9 @@
     },
     "verification": {
       "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VERIFICATION.md",
-      "sha256": "0cf7f41eff41f9e261ddd675ed5bda813248793e68fea99295e40bc390ce3d8f",
-      "status": "pending",
-      "context": "Historical canonical report preserved; parent owns fresh canonical verification. Rebind its hash after actual update."
+      "sha256": "ff6bd89f315e8b664bf5c2c4ffee8129c012cac5dc9a8a5afc7785f015460b10",
+      "status": "open",
+      "context": "Fresh independent canonical verification: gaps_found, 8/10. G6/WR-03/04, five high security obligations, H1/H2 and fallback flags remain."
     },
     "code_original": {
       "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/code-review.md",
@@ -2284,5 +2284,5 @@
       "sha256": "55300f0060bf8879e9d5afbde5759437638f58628c68b01e6779529be345d8c5"
     }
   },
-  "next_gate": "Repair WR-03/04 and obtain independent code/security re-review, then parent canonical goal verification and genuine end-of-phase H1/H2. Parent must refresh canonical verification report hash after authoring it. No phase completion."
+  "next_gate": "Repair WR-03/04 through gap planning, independently re-review evidence/security, and obtain genuine H1/H2 dispositions before canonical re-verification."
 }

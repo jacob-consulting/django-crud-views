@@ -232,16 +232,16 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DEL-05 | Phase 6.3 | Complete; authorization, partial notices and repaired focus verified |
 | DEL-06 | Phase 6.3 | Complete; recorded three-series evidence, migrations, repairs and scoped human acceptance verified |
 | GUA-01 | Phase 6.3 | Complete within explicit bounded identity scope; IN-02/03 and CT-01 fixed; broader compatibility unverified in issue #286 |
-| COND-01 | Phase 6.4 | Pending — CR-05 violates ambiguity unchanged-state handling; original exact binding evidence retained |
-| COND-02 | Phase 6.4 | Pending — CR-05 releases disabled ownership in a hidden formerly bound group |
+| COND-01 | Phase 6.4 | Pending phase acceptance — canonical re-verification closes CR-05; exact binding, frozen ambiguous ownership and unique recovery verified against 18-evidence |
+| COND-02 | Phase 6.4 | Pending phase acceptance — canonical re-verification confirms composed baseline/ancestor/frozen ownership; CR-05 closed |
 | COND-03 | Phase 6.4 | Pending phase acceptance — canonical verifier confirms native reset behavior; no reset gap found |
 | COND-04 | Phase 6.4 | Pending phase acceptance — persistence implementation verified within recorded reference-only limits; descriptor-less prohibition flagged-unverified |
 | COND-05 | Phase 6.4 | Pending phase acceptance — canonical verifier confirms E312/runtime/invariant behavior |
-| FSET-01 | Phase 6.4 | Pending — CR-01 recleaning erases mandatory edit-only/identity errors and permits a forbidden insert |
-| FSET-02 | Phase 6.4 | Pending — CR-03/04 break optional DELETE handling and stable capabilities after reorder |
+| FSET-01 | Phase 6.4 | Pending phase acceptance — canonical re-verification closes CR-01; mandatory policy survives native and later sibling/child recleaning before any save |
+| FSET-02 | Phase 6.4 | Pending phase acceptance — canonical re-verification closes CR-03/04/05; native optional DELETE, stable bound capability and repeat-safe lifecycle verified |
 | FSET-03 | Phase 6.4 | Pending phase acceptance — canonical verifier confirms scoped A19 sibling/deeper round trips and authorization |
-| LIFE-01 | Phase 6.4 | Pending human UI judgment — automated browser packet retained; real-host readability/discoverability/accessibility follow-up |
-| LIFE-02 | Phase 6.4 | Pending — CR-02 clean Node-only CI failure and WR-01/02 evidence contract gaps; implementation blockers contradict published guarantees |
+| LIFE-01 | Phase 6.4 | Pending H1 human judgment — current 36-case/305-assertion browser packet verified and V1/V2/S1 closed; stock/native readability/discoverability/accessibility remains unapproved |
+| LIFE-02 | Phase 6.4 | Pending — CR-02 and original WR-01/02 closed; G6 remains blocked by WR-03/04 corruption-record and screenshot validation gaps, with high security obligations and H1/H2 unresolved |
 | STAB-01 | Phase 7 (plan 4) | Pending |
 | STAB-02 | Phase 7 (plan 4) | Pending |
 | STAB-03 | Phase 7 (plan 4) | Pending |

@@ -131,7 +131,7 @@ describe("composed formset conditional and modal listeners", () => {
         const fixture = document.createElement("div");
         fixture.innerHTML = formsetHtml({ key: "book-notes", rows: 1 });
         const child = fixture.querySelector("fieldset").outerHTML;
-        const outer = rowHtml(2).replace(/<\\/div>\\s*$/, child + "</div>");
+        const outer = rowHtml(2).replace(/<\/div>\s*$/, child + "</div>");
         const widgets = [];
         const onWidget = event => {
             widgets.push([event.target, Object.keys(event.detail).sort(), event.detail]);

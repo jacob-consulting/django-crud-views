@@ -245,9 +245,9 @@ it does not make `XForm`/`XFormSet` constructors, validation/save methods or Jav
 | `x_form.json_data` | `key`, `prefix`, `prefix_key`, `formset_prefix`, `pk` |
 
 Retain `cv-formset-content` and `cv-data-formset-prefix`/`cv-data-formset` on the content container, and
-`cv-formset-row` with `cv-data-formset-form-prefix`/`cv-data-formset-form` on each row. Render management inputs,
-and retain each row's `cv-data-formset-prefix` identifying its containing formset. Render
-nonform errors, the actual form/helper, and nested formsets. Render Django JSON strings with normal template
+`cv-formset-row` with `cv-data-formset-form-prefix`/`cv-data-formset-form` on each row. Retain each row's
+`cv-data-formset-prefix` identifying its containing formset. Render management inputs, nonform errors, the actual
+form/helper, and nested formsets. Render Django JSON strings with normal template
 escaping in attributes. In row-only fragments omit the containing fieldset/content/management wrapper together;
 keep original opening/closing wrappers balanced.
 

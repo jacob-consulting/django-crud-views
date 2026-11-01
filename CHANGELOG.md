@@ -6,6 +6,21 @@ Upgrading from 0.29.x? See [Migrating to 1.0.0](docs/migrating-1.0.md).
 
 ### Breaking
 
+- **Conditional bound markers and lifecycle.** Copied conditional templates must render the exact bound
+  `cv_toggle_field`/`x_formset.cv_toggle_field` name; unprefixed suffix matching is removed. Use the repeat-safe
+  `cv.initConditional(root=document)` and `cv.initFormsets(root=document)` for custom insertion. Native formset
+  buttons retain semantic hooks and owning-form scope. See the tested
+  [migration](docs/migrating-1.0.md#conditional-bound-markers-and-lifecycle).
+- **Conditional clearing and E312.** Off groups use supported field-aware empty values instead of universal `None`.
+  File/image references clear with `False`; explicit `None` retains them. Trusted server-disabled fields retain
+  native validation. Unsupported automatic pairs now fail `crud_views.E312` (replacing W320), or raise descriptive
+  runtime `ImproperlyConfigured`. Inherited/model/uniqueness constraints still apply. See the executable
+  [migration](docs/migrating-1.0.md#conditional-clearing-and-e312).
+- **Formset row validation before saving.** Active edit-only extras and missing/foreign/filtered/mismatched
+  existing row IDs reject the whole submission before save hooks, including with custom inline cleaning.
+  Inactive conditional skip/purge policy is retained. See the
+  [migration](docs/migrating-1.0.md#formset-row-validation-before-saving).
+
 - **Custom modal adapter lifecycle.** Modal adapters must now provide `onHidden(modalEl, callback)` returning
   an idempotent unsubscribe function. Notify only after hiding completes and the focus trap is released.
   Bootstrap/Tabler factory consumers receive the method automatically; hand-written adapters must migrate now.

@@ -338,6 +338,68 @@ nothing gains an icon until a project asks for one with the floor or a form map
 without a usable icon raises `ValueError` under `CRUD_VIEWS_STRICT` and otherwise logs a warning and keeps its label;
 see [Form buttons](reference/icons.md#form-buttons) for the icons and their order.
 
+## Conditional groups and formset lifecycle
+
+### Conditional bound markers and lifecycle
+
+Update copied `crud_views/conditional/toggle_group.html` and `crud_views/formsets/formsets.html` overrides to render
+`cv_toggle_field` and `x_formset.cv_toggle_field` directly. Their value is now the complete bound checkbox name
+(`editor-0-active`, for example), not the unprefixed declaration name. Remove hand-added prefixes and suffix-based
+checkbox selectors. Use the executable [copied-wrapper recipe](reference/conditional.md#copied-conditional-wrapper),
+which preserves escaping, inner content and the optional legend.
+
+For custom DOM insertion, call `cv.initConditional(root)` and `cv.initFormsets(root)` as in the
+[initialization recipe](reference/javascript.md#conditional-and-formset-initialization). They accept Document,
+Element and DocumentFragment roots and are repeat-safe, including late checkbox retries. Page load, modal loaded/422
+replacement and outer row-added events initialize automatically. Duplicate exact checkboxes in one owning form log
+the local ambiguity diagnostic; separate forms with repeated names remain independent. Keep native `button type="button"`
+row controls, their [semantic hooks and projection](reference/formsets.md#template-projection-and-native-controls),
+management inputs and balanced fragment wrappers. Internal controller constructors are not an insertion API.
+
+Deploy the updated templates and static assets using your normal static-file process, refresh caches as appropriate,
+and reload already-open pages so markup and scripts agree. No deployment-specific rollout policy is required.
+Conditional visibility is immediate; disabled state composes independent reasons and all bound ancestors, while native
+reset respects cancellation and owning-form scope. This does not settle final dynamic-row reset policy (A8).
+Existing form leaf/label/escaping, Cancel links and modal completed-hide/focus contracts remain in force.
+
+### Conditional clearing and E312
+
+Replace assumptions that every off field becomes `None` with the exact
+[clearing matrix](reference/conditional.md#clearing-matrix). Supported native text/Boolean/nullable scalar/relation,
+file/image and many-to-many pairs each use their native empty value, including omitted/defaulted and unchanged inline
+fields. Unsupported automatic pairs now produce Error `crud_views.E312`, replacing Warning W320. Request-added
+unsupported fields raise group/field-specific `ImproperlyConfigured` during `clean()`, including active submissions.
+Keep E310/E311/W321 handling; supply and test explicit `empty_values` for unsupported pairs.
+
+The executable [file-reference recipe](reference/conditional.md#explicit-file-reference-recipe) demonstrates explicit
+`False`/`""` to clear and `None` to retain a reference. Stored bytes are retained; no cleanup policy is added.
+Server-side `Field.disabled=True` retains Django's trusted initial and validation, ahead of any explicit off override.
+Inherited clean nonfield errors and model/uniqueness/database invariants remain authoritative. Remove descriptions
+that off groups are "never validated"; only ordinary errors on editable off fields are suppressed.
+
+ImageField reference clearing is supported with reference-only evidence: False/None/disabled/unchanged-inline cases
+do not exercise image-byte decoding. Actual discarded multipart uploads use FileField. Consuming applications keep
+Django's existing Pillow prerequisite for ImageField upload decoding; no image-validation or new dependency claim
+is made here. The documentation tests execute the actual recipe for both stored-reference field types.
+
+### Formset row validation before saving
+
+Review custom inline cleaning and callers that relied on silently ignored edit-only additions or untrusted existing
+IDs. Active collections now reject these submissions before any main/sibling/nested save hook: `cv_additions_not_allowed`
+for nonempty edit-only extras; generic `cv_invalid_row` for missing, malformed, foreign, filtered or mismatched retained
+identities. Removing an Add button does not establish server policy. Keep nonform errors and management fields in
+copied templates; invalid pages render HTTP 200 and invalid modals HTTP 422. See the
+[validation contract](reference/formsets.md#validation-before-saves), the executable
+[integer/UUID projection recipes](reference/formsets.md#exact-json-projections) and their actual runtime comparisons
+in `tests/test1/test_conditional_migration_docs.py`; server rejection/zero-save cases live in `test_formsets_policy.py`.
+
+Conditional formsets that are off retain default skip (rows untouched) and explicit purge (managed queryset deleted),
+with the existing parent-change permission and routed transaction. Native/custom validation and rollback remain
+authoritative. Second/deeper sibling fragments now retain declaration indices and nested modal editor paths; remove
+workarounds for the former first-child limitation. Request keys and `{html, rows}` responses are unchanged, and request
+`pk` remains the actual authorized parent identity or unsaved `None`, distinct from projected PK grammar/enum metadata.
+Integer/UUID-only prefixes, authorized ancestry and application-owned ModelChoice querysets remain the boundary.
+
 ## Request authorization and Guardian configuration
 
 1.0 closes several request paths that reached data or writes past the documented permission checks, and settles
@@ -814,8 +876,8 @@ These are fixes and need no change unless your app relied on the old behavior:
   request gets 400. `formset.js` sends valid requests. Custom JavaScript or tests that build `template`, `pk`, `num`
   and `formset_parent_prefix_key` by hand must send the values the page renders: `None` for the root of a create
   page and for unsaved rows (also with UUID keys), `0` as the top-level index, and the declared child index at each
-  nesting level. A row request for a child formset that is not the first declared child of its parent still returns
-  the wrong index. That is a known limitation, not fixed in 1.0; see
+  nesting level. Second/deeper child declarations now retain the same index in page and fragment rendering,
+  including nested actions in newly inserted modal rows. Integer/UUID-only prefixes remain the supported boundary; see
   [The AJAX template endpoint](reference/formsets.md#the-ajax-template-endpoint).
 
 ## A downstream theme

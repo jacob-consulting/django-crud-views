@@ -125,6 +125,7 @@ def test_reference_evidence_and_example_comments_remain_explicit():
 def test_breaking_changes_pair_migration_recipes_and_public_inventory():
     changelog = (ROOT / "CHANGELOG.md").read_text().split("### Breaking", 1)[1].split("\n### ", 1)[0]
     migration = (ROOT / "docs/migrating-1.0.md").read_text()
+    assert "the wrong index. That is a known limitation" not in migration
     changes = {
         "Conditional bound markers and lifecycle": "conditional-bound-markers-and-lifecycle",
         "Conditional clearing and E312": "conditional-clearing-and-e312",

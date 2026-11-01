@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "version": "06.4-24/v1",
-  "recorded": "2026-11-01T21:04:47.509409+00:00",
+  "recorded": "2026-11-01T21:16:40.073388+00:00",
   "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
   "runner_sha256": "75f8057f55d869ccb9591a0a9868e57d606f9e65f2f0eebffa5fca8d5313ad66",
   "packet": {
@@ -70,10 +70,25 @@
     },
     "verification": {
       "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VERIFICATION.md",
-      "sha256": "5048486226b2d48556280f99f5ae12a24d4ef581c9585ff8c4a4da7e1d9b3ced",
-      "status": "pending",
-      "context": "Unchanged previous canonical gaps_found 8/10 result at its actual digest; current canonical reassessment is pending plan26. This is not a new verification assessment.",
-      "historical": true
+      "sha256": "2c52acdd18df4056097141521bbbab65102b9ccb03d1d899e0070886e98055b5",
+      "status": "open",
+      "context": "Actual independent canonical assessment: human_needed 9/10, G6/WR-05 closed within scope; H1/H2,31 flags and independently attributed security obligations remain open.",
+      "historical": false,
+      "verdict": "human_needed",
+      "actor": "/root/canonical_26",
+      "recorded": "2026-11-01T21:12:57Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Actual independent canonical assessment: human_needed 9/10, G6/WR-05 closed within scope; H1/H2,31 flags and independently attributed security obligations remain open.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VERIFICATION.md",
+          "sha256": "2c52acdd18df4056097141521bbbab65102b9ccb03d1d899e0070886e98055b5"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+        }
+      ]
     },
     "code_bounded": {
       "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-review.md",
@@ -788,17 +803,34 @@
           "gate": "ruff-format"
         }
       ],
-      "status": "pending",
-      "context": "Current independent code review closes WR01\u201305 within bounded scope; canonical G6 disposition belongs to actual plan26 verifier.",
+      "status": "closed",
+      "context": "Independent code review and actual canonical replay close G6/WR-01\u201305 within their stated evidence scope; phase human/security acceptance remains pending.",
       "new_findings": [
         "WR-05"
       ],
       "historical_status": "open",
-      "current_open_findings": [
-        "WR-05"
-      ],
-      "independent_disposition": "code-bounded-closed",
-      "canonical_disposition": "pending-plan26"
+      "current_open_findings": [],
+      "independent_disposition": "closed-bounded",
+      "canonical_disposition": "closed-bounded",
+      "review": "code",
+      "actor": "/root/canonical_26",
+      "recorded": "2026-11-01T21:12:57Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Independent code review and actual canonical replay close G6/WR-01\u201305 within their stated evidence scope; phase human/security acceptance remains pending.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VERIFICATION.md",
+          "sha256": "2c52acdd18df4056097141521bbbab65102b9ccb03d1d899e0070886e98055b5"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/code-review.md",
+          "sha256": "a4b591404b8f4175462877f8a9a868b336bab7a09f598b45da04c1129878a334"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+        }
+      ]
     },
     "WR-01": {
       "review_ids": [
@@ -3767,7 +3799,7 @@
     },
     "status": "actual-current-qualified; canonical-and-human-pending"
   },
-  "next_gate": "Plan26 immutable pre-replacement replay, independent canonical reassessment, actual final rebind/check; genuine H1/H2 remain end-of-phase human checks. No phase advancement.",
+  "next_gate": "Genuine H1/H2 dispositions via $gsd-verify-work 06.4; independent outstanding security reassessment. No phase advancement.",
   "history": {
     "handoff": {
       "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/handoff.json",
@@ -9407,6 +9439,141 @@
         }
       },
       "qualification": "Verbatim pre-plan25 snapshot; previous actor/time/source and qualified pending bindings remain historical."
+    },
+    "pre_plan26_bindings": {
+      "reports": {
+        "code": {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/code-review.md",
+          "sha256": "a4b591404b8f4175462877f8a9a868b336bab7a09f598b45da04c1129878a334",
+          "status": "passed",
+          "actor": "/root/execute_25/code_25",
+          "recorded": "2026-11-01T20:56:45.272080+00:00",
+          "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+          "response": "Independent bounded current-source code review passed; WR-05 closes with fourteen actual CLI observations. Canonical G6, security and human acceptance remain separate.",
+          "context": "Independent bounded current-source code review passed; WR-05 closes with fourteen actual CLI observations. Canonical G6, security and human acceptance remain separate.",
+          "evidence_files": [
+            {
+              "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/code-review.md",
+              "sha256": "a4b591404b8f4175462877f8a9a868b336bab7a09f598b45da04c1129878a334"
+            },
+            {
+              "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+              "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+            },
+            {
+              "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+              "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+            }
+          ]
+        },
+        "security": {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502",
+          "status": "open",
+          "verdict": "OPEN_THREATS",
+          "actor": "/root/execute_25/security_25",
+          "recorded": "2026-11-01T20:57:16.620951+00:00",
+          "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+          "response": "ASVS1/high independent audit records supported partial closures while overall OPEN_THREATS remains; no accepted risk or transfer.",
+          "context": "ASVS1/high independent audit records supported partial closures while overall OPEN_THREATS remains; no accepted risk or transfer.",
+          "evidence_files": [
+            {
+              "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+              "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+            },
+            {
+              "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+              "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+            },
+            {
+              "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+              "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+            }
+          ]
+        },
+        "ui": {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UI-REVIEW.md",
+          "sha256": "e25c2374fe704060195a806e00c616198b13d8659b4359d4008cf1148459af32",
+          "status": "pending",
+          "context": "Previous independent 24/24 bounded UI report remains applicable to unchanged product/UI, fixture assets and exact retained captures; original attribution/source hash retained. Actual native/stock H1 and H2 remain pending."
+        },
+        "verification": {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VERIFICATION.md",
+          "sha256": "5048486226b2d48556280f99f5ae12a24d4ef581c9585ff8c4a4da7e1d9b3ced",
+          "status": "pending",
+          "context": "Unchanged previous canonical gaps_found 8/10 result at its actual digest; current canonical reassessment is pending plan26. This is not a new verification assessment.",
+          "historical": true
+        },
+        "code_bounded": {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-review.md",
+          "sha256": "01c4405f723b40f3581da2118aa0d9d7f284d6bfd46ac0a64b9b8f2b60e9522f",
+          "status": "pending",
+          "context": "Existing report retained at its true hash as historical input; current source review pending plan25/26. Original actor/time/source and dispositions are preserved under history."
+        }
+      },
+      "G6": {
+        "review_ids": [
+          "WR-01",
+          "WR-02",
+          "WR-03",
+          "WR-04",
+          "WR-05"
+        ],
+        "threats": [
+          "T-06.4-22",
+          "T-06.4-28",
+          "T-06.4-29",
+          "T-06.4-31",
+          "T-06.4-33",
+          "T-06.4-41",
+          "T-06.4-42",
+          "T-06.4-43"
+        ],
+        "plans": [
+          "15",
+          "18",
+          "19",
+          "20",
+          "21",
+          "22",
+          "23",
+          "24",
+          "25",
+          "26"
+        ],
+        "requirements": [
+          "LIFE-02"
+        ],
+        "evidence": [
+          {
+            "gate": "evidence-self-tests"
+          },
+          {
+            "gate": "javascript"
+          },
+          {
+            "gate": "strict-docs"
+          },
+          {
+            "gate": "ruff-check"
+          },
+          {
+            "gate": "ruff-format"
+          }
+        ],
+        "status": "pending",
+        "context": "Current independent code review closes WR01\u201305 within bounded scope; canonical G6 disposition belongs to actual plan26 verifier.",
+        "new_findings": [
+          "WR-05"
+        ],
+        "historical_status": "open",
+        "current_open_findings": [
+          "WR-05"
+        ],
+        "independent_disposition": "code-bounded-closed",
+        "canonical_disposition": "pending-plan26"
+      },
+      "recorded_before_rebind": "2026-11-01T21:16:40.073388+00:00"
     }
   },
   "applicability": {
@@ -9414,17 +9581,22 @@
     "sha256": "98e2af40d6ca6f45a9bec45c5e6da2f0e40b51b9e1593a830e324d128758713d"
   },
   "canonical_reverification": {
-    "owner": "plan26 independent canonical verifier, after plan25 actual independent reports and SUMMARY",
-    "status": "pending",
+    "owner": "/root/canonical_26",
+    "status": "human_needed",
     "preserve_historical_report": true,
     "exclude_from_covered_files": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/handoff.json",
     "reason": "Handoff embeds canonical digest; exclude it to avoid circular fingerprint binding.",
-    "final_rebind_owner": "plan26/orchestrator after actual canonical report is written",
-    "remaining_truths": "Retain8/10 historical truths; reassess G6/WR05, T35/T36/T40, H1/H2 and31flags",
+    "final_rebind_owner": "/root",
+    "remaining_truths": "9/10 verified; H1pending/H2flagged-unverified,31flags and independent security40/44 snapshot remain",
     "historical_report": {
       "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VERIFICATION.md",
       "sha256": "5048486226b2d48556280f99f5ae12a24d4ef581c9585ff8c4a4da7e1d9b3ced"
-    }
+    },
+    "report": {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VERIFICATION.md",
+      "sha256": "2c52acdd18df4056097141521bbbab65102b9ccb03d1d899e0070886e98055b5"
+    },
+    "rebound_at": "2026-11-01T21:16:40.073388+00:00"
   },
   "hook_fulfillment": {
     "execute:post/code-review": {

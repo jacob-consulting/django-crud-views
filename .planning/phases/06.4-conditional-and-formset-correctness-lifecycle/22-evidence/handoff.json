@@ -1,0 +1,3142 @@
+{
+  "schema": 1,
+  "version": "06.4-22/v1",
+  "recorded": "2026-11-01T19:37:08.642206+00:00",
+  "source_sha256": "d896bc53d2b9bd51be66ddf93282727a72518270ba535ab9a19eae3e33da8490",
+  "runner_sha256": "dc0594d2ccac677c2e2a45b7eaf1ba8d56cd29bf3c675229e848ab9d9aedf6d5",
+  "packet": {
+    "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+    "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+  },
+  "source_manifest": {
+    "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/source-manifest.json",
+    "sha256": "61321dd218c3bfcead5d89eac5f126498ffb09123dabb3c8559f09f1214f1646"
+  },
+  "reports": {
+    "code": {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-REVIEW.md",
+      "sha256": "93dee0a51ca7357063d81e5e669e9af18edb79eba39bdbdb6146bff4695ec6cc",
+      "status": "pending",
+      "context": "Current independent review pending; original bounded closures preserved under history."
+    },
+    "security": {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+      "sha256": "31c90957236d0da033094b1ba7f8b8a50afd33075c81338c52928164af46b3c4",
+      "status": "pending",
+      "context": "Current independent ASVS1/high reassessment pending; no automatic risk acceptance."
+    },
+    "ui": {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UI-REVIEW.md",
+      "sha256": "e25c2374fe704060195a806e00c616198b13d8659b4359d4008cf1148459af32",
+      "status": "pending",
+      "context": "24/24 historical scope only; original attribution preserved under history; H1 pending."
+    },
+    "verification": {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VERIFICATION.md",
+      "sha256": "ff6bd89f315e8b664bf5c2c4ffee8129c012cac5dc9a8a5afc7785f015460b10",
+      "status": "open",
+      "context": "Historical gaps_found 8/10; orchestrator owns independent re-verification and final hash rebind."
+    }
+  },
+  "findings": {
+    "G1": {
+      "review_ids": [
+        "CR-01"
+      ],
+      "threats": [
+        "T-06.4-07",
+        "T-06.4-08",
+        "T-06.4-09",
+        "T-06.4-24"
+      ],
+      "plans": [
+        "11",
+        "16",
+        "18",
+        "19",
+        "20",
+        "21",
+        "22"
+      ],
+      "requirements": [
+        "FSET-01",
+        "LIFE-02"
+      ],
+      "evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_edit_only_extra_stays_invalid[package]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_edit_only_extra_stays_invalid[native]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_invalid_existing_ids_never_save[package-missing-False-True]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_invalid_existing_ids_never_save[package-missing-False-False]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-siblings]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-notes]"
+        }
+      ],
+      "status": "pending",
+      "context": "Original bounded disposition preserved in history; awaiting actual independent current-source applicability outcome.",
+      "historical_status": "closed"
+    },
+    "CR-01": {
+      "review_ids": [
+        "CR-01"
+      ],
+      "threats": [
+        "T-06.4-07",
+        "T-06.4-08",
+        "T-06.4-09",
+        "T-06.4-24"
+      ],
+      "plans": [
+        "11",
+        "16",
+        "18",
+        "19",
+        "20",
+        "21",
+        "22"
+      ],
+      "requirements": [
+        "FSET-01",
+        "LIFE-02"
+      ],
+      "evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_edit_only_extra_stays_invalid[package]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_edit_only_extra_stays_invalid[native]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_invalid_existing_ids_never_save[package-missing-False-True]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_invalid_existing_ids_never_save[package-missing-False-False]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-siblings]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-notes]"
+        }
+      ],
+      "status": "pending",
+      "context": "Original bounded disposition preserved in history; awaiting actual independent current-source applicability outcome.",
+      "gap": "G1",
+      "historical_status": "closed"
+    },
+    "G2": {
+      "review_ids": [
+        "CR-02"
+      ],
+      "threats": [
+        "T-06.4-22",
+        "T-06.4-25"
+      ],
+      "plans": [
+        "12",
+        "15",
+        "17",
+        "18",
+        "19",
+        "20",
+        "21",
+        "22"
+      ],
+      "requirements": [
+        "FSET-03",
+        "LIFE-02"
+      ],
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/runtime-contract.test.js::test runtime boundary runs every other ordinary JS file in a checkout with only Node available"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/runtime-contract.test.js::test runtime boundary fails the required integration lane for a missing selected Python"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/runtime-contract.test.js::test runtime boundary fails the required integration lane for a invalid selected Python"
+        },
+        {
+          "gate": "javascript-integration"
+        }
+      ],
+      "status": "pending",
+      "context": "Original bounded disposition preserved in history; awaiting actual independent current-source applicability outcome.",
+      "historical_status": "closed"
+    },
+    "CR-02": {
+      "review_ids": [
+        "CR-02"
+      ],
+      "threats": [
+        "T-06.4-22",
+        "T-06.4-25"
+      ],
+      "plans": [
+        "12",
+        "15",
+        "17",
+        "18",
+        "19",
+        "20",
+        "21",
+        "22"
+      ],
+      "requirements": [
+        "FSET-03",
+        "LIFE-02"
+      ],
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/runtime-contract.test.js::test runtime boundary runs every other ordinary JS file in a checkout with only Node available"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/runtime-contract.test.js::test runtime boundary fails the required integration lane for a missing selected Python"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/runtime-contract.test.js::test runtime boundary fails the required integration lane for a invalid selected Python"
+        },
+        {
+          "gate": "javascript-integration"
+        }
+      ],
+      "status": "pending",
+      "context": "Original bounded disposition preserved in history; awaiting actual independent current-source applicability outcome.",
+      "gap": "G2",
+      "historical_status": "closed"
+    },
+    "G3": {
+      "review_ids": [
+        "CR-03"
+      ],
+      "threats": [
+        "T-06.4-15",
+        "T-06.4-26"
+      ],
+      "plans": [
+        "13",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20",
+        "21",
+        "22"
+      ],
+      "requirements": [
+        "FSET-02",
+        "COND-02"
+      ],
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility allows Add and submit without extra DELETE (ordered=true)"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility allows Add and submit without extra DELETE (ordered=false)"
+        }
+      ],
+      "status": "pending",
+      "context": "Original bounded disposition preserved in history; awaiting actual independent current-source applicability outcome.",
+      "historical_status": "closed"
+    },
+    "CR-03": {
+      "review_ids": [
+        "CR-03"
+      ],
+      "threats": [
+        "T-06.4-15",
+        "T-06.4-26"
+      ],
+      "plans": [
+        "13",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20",
+        "21",
+        "22"
+      ],
+      "requirements": [
+        "FSET-02",
+        "COND-02"
+      ],
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility allows Add and submit without extra DELETE (ordered=true)"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility allows Add and submit without extra DELETE (ordered=false)"
+        }
+      ],
+      "status": "pending",
+      "context": "Original bounded disposition preserved in history; awaiting actual independent current-source applicability outcome.",
+      "gap": "G3",
+      "historical_status": "closed"
+    },
+    "G4": {
+      "review_ids": [
+        "CR-04"
+      ],
+      "threats": [
+        "T-06.4-15",
+        "T-06.4-26"
+      ],
+      "plans": [
+        "13",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20",
+        "21",
+        "22"
+      ],
+      "requirements": [
+        "FSET-02"
+      ],
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility moves a native extra above an initial row and then deletes the initial row"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility inserts an extra before an initial row without renumbering bound prefixes"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility refuses custom extra Delete after upward movement (direct)"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility refuses custom extra Delete after upward movement (delegated)"
+        }
+      ],
+      "status": "pending",
+      "context": "Original bounded disposition preserved in history; awaiting actual independent current-source applicability outcome.",
+      "historical_status": "closed"
+    },
+    "CR-04": {
+      "review_ids": [
+        "CR-04"
+      ],
+      "threats": [
+        "T-06.4-15",
+        "T-06.4-26"
+      ],
+      "plans": [
+        "13",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20",
+        "21",
+        "22"
+      ],
+      "requirements": [
+        "FSET-02"
+      ],
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility moves a native extra above an initial row and then deletes the initial row"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility inserts an extra before an initial row without renumbering bound prefixes"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility refuses custom extra Delete after upward movement (direct)"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility refuses custom extra Delete after upward movement (delegated)"
+        }
+      ],
+      "status": "pending",
+      "context": "Original bounded disposition preserved in history; awaiting actual independent current-source applicability outcome.",
+      "gap": "G4",
+      "historical_status": "closed"
+    },
+    "G5": {
+      "review_ids": [
+        "CR-05"
+      ],
+      "threats": [
+        "T-06.4-01",
+        "T-06.4-27"
+      ],
+      "plans": [
+        "14",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20",
+        "21",
+        "22"
+      ],
+      "requirements": [
+        "COND-01",
+        "COND-02",
+        "COND-03",
+        "FSET-02"
+      ],
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound true state across zero, two and one matches"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound false state across zero, two and one matches"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during missing modal disposal and reinsert"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during ambiguous modal disposal and reinsert"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::conditional disabled ownership keeps a formerly bound inactive group safe during ambiguity and uniquely recovers"
+        }
+      ],
+      "status": "pending",
+      "context": "Original bounded disposition preserved in history; awaiting actual independent current-source applicability outcome.",
+      "historical_status": "closed"
+    },
+    "CR-05": {
+      "review_ids": [
+        "CR-05"
+      ],
+      "threats": [
+        "T-06.4-01",
+        "T-06.4-27"
+      ],
+      "plans": [
+        "14",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20",
+        "21",
+        "22"
+      ],
+      "requirements": [
+        "COND-01",
+        "COND-02",
+        "COND-03",
+        "FSET-02"
+      ],
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound true state across zero, two and one matches"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound false state across zero, two and one matches"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during missing modal disposal and reinsert"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during ambiguous modal disposal and reinsert"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::conditional disabled ownership keeps a formerly bound inactive group safe during ambiguity and uniquely recovers"
+        }
+      ],
+      "status": "pending",
+      "context": "Original bounded disposition preserved in history; awaiting actual independent current-source applicability outcome.",
+      "gap": "G5",
+      "historical_status": "closed"
+    },
+    "G6": {
+      "review_ids": [
+        "WR-01",
+        "WR-02",
+        "WR-03",
+        "WR-04"
+      ],
+      "threats": [
+        "T-06.4-22",
+        "T-06.4-28",
+        "T-06.4-29",
+        "T-06.4-31",
+        "T-06.4-33"
+      ],
+      "plans": [
+        "15",
+        "18",
+        "19",
+        "20",
+        "21",
+        "22"
+      ],
+      "requirements": [
+        "LIFE-02"
+      ],
+      "evidence": [
+        {
+          "gate": "evidence-self-tests"
+        },
+        {
+          "gate": "javascript"
+        },
+        {
+          "gate": "strict-docs"
+        },
+        {
+          "gate": "ruff-check"
+        },
+        {
+          "gate": "ruff-format"
+        }
+      ],
+      "status": "open",
+      "context": "Original bounded disposition preserved in history; awaiting actual independent current-source applicability outcome.",
+      "new_findings": [
+        "WR-03",
+        "WR-04"
+      ],
+      "historical_status": "open"
+    },
+    "WR-01": {
+      "review_ids": [
+        "WR-01",
+        "WR-02"
+      ],
+      "threats": [
+        "T-06.4-22",
+        "T-06.4-28",
+        "T-06.4-29",
+        "T-06.4-31",
+        "T-06.4-33"
+      ],
+      "plans": [
+        "15",
+        "18",
+        "19",
+        "20",
+        "21",
+        "22"
+      ],
+      "requirements": [
+        "LIFE-02"
+      ],
+      "evidence": [
+        {
+          "gate": "evidence-self-tests"
+        },
+        {
+          "gate": "javascript"
+        },
+        {
+          "gate": "strict-docs"
+        },
+        {
+          "gate": "ruff-check"
+        },
+        {
+          "gate": "ruff-format"
+        }
+      ],
+      "status": "pending",
+      "context": "Original bounded disposition preserved in history; awaiting actual independent current-source applicability outcome.",
+      "gap": "G6",
+      "historical_status": "closed"
+    },
+    "WR-02": {
+      "review_ids": [
+        "WR-01",
+        "WR-02"
+      ],
+      "threats": [
+        "T-06.4-22",
+        "T-06.4-28",
+        "T-06.4-29",
+        "T-06.4-31",
+        "T-06.4-33"
+      ],
+      "plans": [
+        "15",
+        "18",
+        "19",
+        "20",
+        "21",
+        "22"
+      ],
+      "requirements": [
+        "LIFE-02"
+      ],
+      "evidence": [
+        {
+          "gate": "evidence-self-tests"
+        },
+        {
+          "gate": "javascript"
+        },
+        {
+          "gate": "strict-docs"
+        },
+        {
+          "gate": "ruff-check"
+        },
+        {
+          "gate": "ruff-format"
+        }
+      ],
+      "status": "pending",
+      "context": "Original bounded disposition preserved in history; awaiting actual independent current-source applicability outcome.",
+      "gap": "G6",
+      "historical_status": "closed"
+    },
+    "WR-03": {
+      "status": "open",
+      "review_ids": [
+        "WR-03"
+      ],
+      "gap": "G6",
+      "threats": [
+        "T-06.4-22",
+        "T-06.4-28",
+        "T-06.4-29",
+        "T-06.4-31",
+        "T-06.4-33"
+      ],
+      "plans": [
+        "20",
+        "21",
+        "22"
+      ],
+      "requirements": [
+        "LIFE-01",
+        "LIFE-02"
+      ],
+      "evidence": [
+        {
+          "gate": "evidence-self-tests"
+        },
+        {
+          "gate": "conditional-browser"
+        }
+      ],
+      "context": "Repaired in plan20/21; awaiting actual independent outcome."
+    },
+    "WR-04": {
+      "status": "open",
+      "review_ids": [
+        "WR-04"
+      ],
+      "gap": "G6",
+      "threats": [
+        "T-06.4-22",
+        "T-06.4-28",
+        "T-06.4-29",
+        "T-06.4-31",
+        "T-06.4-33"
+      ],
+      "plans": [
+        "20",
+        "21",
+        "22"
+      ],
+      "requirements": [
+        "LIFE-01",
+        "LIFE-02"
+      ],
+      "evidence": [
+        {
+          "gate": "evidence-self-tests"
+        },
+        {
+          "gate": "conditional-browser"
+        }
+      ],
+      "context": "Repaired in plan20/21; awaiting actual independent outcome."
+    }
+  },
+  "threats": {
+    "T-06.4-01": {
+      "status": "pending",
+      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "independent_disposition": "closed",
+      "actor": "gsd-security-auditor independent lane",
+      "recorded": "2026-11-01T17:14:15Z",
+      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
+          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+        }
+      ],
+      "blocking": false,
+      "historical_independent_disposition": "closed",
+      "current_review": "pending"
+    },
+    "T-06.4-02": {
+      "status": "pending",
+      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "independent_disposition": "closed",
+      "actor": "gsd-security-auditor independent lane",
+      "recorded": "2026-11-01T17:14:15Z",
+      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
+          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+        }
+      ],
+      "blocking": false,
+      "historical_independent_disposition": "closed",
+      "current_review": "pending"
+    },
+    "T-06.4-03": {
+      "status": "pending",
+      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "independent_disposition": "closed",
+      "actor": "gsd-security-auditor independent lane",
+      "recorded": "2026-11-01T17:14:15Z",
+      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
+          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+        }
+      ],
+      "blocking": false,
+      "historical_independent_disposition": "closed",
+      "current_review": "pending"
+    },
+    "T-06.4-04": {
+      "status": "pending",
+      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "independent_disposition": "closed",
+      "actor": "gsd-security-auditor independent lane",
+      "recorded": "2026-11-01T17:14:15Z",
+      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
+          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+        }
+      ],
+      "blocking": false,
+      "historical_independent_disposition": "closed",
+      "current_review": "pending"
+    },
+    "T-06.4-05": {
+      "status": "pending",
+      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "independent_disposition": "closed",
+      "actor": "gsd-security-auditor independent lane",
+      "recorded": "2026-11-01T17:14:15Z",
+      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
+          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+        }
+      ],
+      "blocking": false,
+      "historical_independent_disposition": "closed",
+      "current_review": "pending"
+    },
+    "T-06.4-06": {
+      "status": "pending",
+      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "independent_disposition": "closed",
+      "actor": "gsd-security-auditor independent lane",
+      "recorded": "2026-11-01T17:14:15Z",
+      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
+          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+        }
+      ],
+      "blocking": false,
+      "historical_independent_disposition": "closed",
+      "current_review": "pending"
+    },
+    "T-06.4-07": {
+      "status": "pending",
+      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "independent_disposition": "closed",
+      "actor": "gsd-security-auditor independent lane",
+      "recorded": "2026-11-01T17:14:15Z",
+      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
+          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+        }
+      ],
+      "blocking": false,
+      "historical_independent_disposition": "closed",
+      "current_review": "pending"
+    },
+    "T-06.4-08": {
+      "status": "pending",
+      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "independent_disposition": "closed",
+      "actor": "gsd-security-auditor independent lane",
+      "recorded": "2026-11-01T17:14:15Z",
+      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
+          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+        }
+      ],
+      "blocking": false,
+      "historical_independent_disposition": "closed",
+      "current_review": "pending"
+    },
+    "T-06.4-09": {
+      "status": "pending",
+      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "independent_disposition": "closed",
+      "actor": "gsd-security-auditor independent lane",
+      "recorded": "2026-11-01T17:14:15Z",
+      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
+          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+        }
+      ],
+      "blocking": false,
+      "historical_independent_disposition": "closed",
+      "current_review": "pending"
+    },
+    "T-06.4-10": {
+      "status": "pending",
+      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "independent_disposition": "closed",
+      "actor": "gsd-security-auditor independent lane",
+      "recorded": "2026-11-01T17:14:15Z",
+      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
+          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+        }
+      ],
+      "blocking": false,
+      "historical_independent_disposition": "closed",
+      "current_review": "pending"
+    },
+    "T-06.4-11": {
+      "status": "pending",
+      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "independent_disposition": "closed",
+      "actor": "gsd-security-auditor independent lane",
+      "recorded": "2026-11-01T17:14:15Z",
+      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
+          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+        }
+      ],
+      "blocking": false,
+      "historical_independent_disposition": "closed",
+      "current_review": "pending"
+    },
+    "T-06.4-12": {
+      "status": "pending",
+      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "independent_disposition": "closed",
+      "actor": "gsd-security-auditor independent lane",
+      "recorded": "2026-11-01T17:14:15Z",
+      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
+          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+        }
+      ],
+      "blocking": false,
+      "historical_independent_disposition": "closed",
+      "current_review": "pending"
+    },
+    "T-06.4-13": {
+      "status": "pending",
+      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "independent_disposition": "closed",
+      "actor": "gsd-security-auditor independent lane",
+      "recorded": "2026-11-01T17:14:15Z",
+      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
+          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+        }
+      ],
+      "blocking": false,
+      "historical_independent_disposition": "closed",
+      "current_review": "pending"
+    },
+    "T-06.4-14": {
+      "status": "pending",
+      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "independent_disposition": "closed",
+      "actor": "gsd-security-auditor independent lane",
+      "recorded": "2026-11-01T17:14:15Z",
+      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
+          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+        }
+      ],
+      "blocking": false,
+      "historical_independent_disposition": "closed",
+      "current_review": "pending"
+    },
+    "T-06.4-15": {
+      "status": "pending",
+      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "independent_disposition": "closed",
+      "actor": "gsd-security-auditor independent lane",
+      "recorded": "2026-11-01T17:14:15Z",
+      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
+          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+        }
+      ],
+      "blocking": false,
+      "historical_independent_disposition": "closed",
+      "current_review": "pending"
+    },
+    "T-06.4-16": {
+      "status": "pending",
+      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "independent_disposition": "closed",
+      "actor": "gsd-security-auditor independent lane",
+      "recorded": "2026-11-01T17:14:15Z",
+      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
+          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+        }
+      ],
+      "blocking": false,
+      "historical_independent_disposition": "closed",
+      "current_review": "pending"
+    },
+    "T-06.4-17": {
+      "status": "pending",
+      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "independent_disposition": "closed",
+      "actor": "gsd-security-auditor independent lane",
+      "recorded": "2026-11-01T17:14:15Z",
+      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
+          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+        }
+      ],
+      "blocking": false,
+      "historical_independent_disposition": "closed",
+      "current_review": "pending"
+    },
+    "T-06.4-18": {
+      "status": "pending",
+      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "independent_disposition": "closed",
+      "actor": "gsd-security-auditor independent lane",
+      "recorded": "2026-11-01T17:14:15Z",
+      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
+          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+        }
+      ],
+      "blocking": false,
+      "historical_independent_disposition": "closed",
+      "current_review": "pending"
+    },
+    "T-06.4-19": {
+      "status": "pending",
+      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "independent_disposition": "closed",
+      "actor": "gsd-security-auditor independent lane",
+      "recorded": "2026-11-01T17:14:15Z",
+      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
+          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+        }
+      ],
+      "blocking": false,
+      "historical_independent_disposition": "closed",
+      "current_review": "pending"
+    },
+    "T-06.4-20": {
+      "status": "pending",
+      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "independent_disposition": "closed",
+      "actor": "gsd-security-auditor independent lane",
+      "recorded": "2026-11-01T17:14:15Z",
+      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
+          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+        }
+      ],
+      "blocking": false,
+      "historical_independent_disposition": "closed",
+      "current_review": "pending"
+    },
+    "T-06.4-21": {
+      "status": "pending",
+      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "independent_disposition": "closed",
+      "actor": "gsd-security-auditor independent lane",
+      "recorded": "2026-11-01T17:14:15Z",
+      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
+          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+        }
+      ],
+      "blocking": false,
+      "historical_independent_disposition": "closed",
+      "current_review": "pending"
+    },
+    "T-06.4-22": {
+      "status": "open",
+      "context": "Open independent security obligation; no risk accepted. See exact report row.",
+      "independent_disposition": "open",
+      "actor": "gsd-security-auditor independent lane",
+      "recorded": "2026-11-01T17:14:15Z",
+      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
+          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+        }
+      ],
+      "blocking": true,
+      "historical_independent_disposition": "open",
+      "current_review": "pending"
+    },
+    "T-06.4-23": {
+      "status": "pending",
+      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "independent_disposition": "closed",
+      "actor": "gsd-security-auditor independent lane",
+      "recorded": "2026-11-01T17:14:15Z",
+      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
+          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+        }
+      ],
+      "blocking": false,
+      "historical_independent_disposition": "closed",
+      "current_review": "pending"
+    },
+    "T-06.4-24": {
+      "status": "pending",
+      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "independent_disposition": "closed",
+      "actor": "gsd-security-auditor independent lane",
+      "recorded": "2026-11-01T17:14:15Z",
+      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
+          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+        }
+      ],
+      "blocking": false,
+      "historical_independent_disposition": "closed",
+      "current_review": "pending"
+    },
+    "T-06.4-25": {
+      "status": "pending",
+      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "independent_disposition": "closed",
+      "actor": "gsd-security-auditor independent lane",
+      "recorded": "2026-11-01T17:14:15Z",
+      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
+          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+        }
+      ],
+      "blocking": false,
+      "historical_independent_disposition": "closed",
+      "current_review": "pending"
+    },
+    "T-06.4-26": {
+      "status": "pending",
+      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "independent_disposition": "closed",
+      "actor": "gsd-security-auditor independent lane",
+      "recorded": "2026-11-01T17:14:15Z",
+      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
+          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+        }
+      ],
+      "blocking": false,
+      "historical_independent_disposition": "closed",
+      "current_review": "pending"
+    },
+    "T-06.4-27": {
+      "status": "pending",
+      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "independent_disposition": "closed",
+      "actor": "gsd-security-auditor independent lane",
+      "recorded": "2026-11-01T17:14:15Z",
+      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
+          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+        }
+      ],
+      "blocking": false,
+      "historical_independent_disposition": "closed",
+      "current_review": "pending"
+    },
+    "T-06.4-28": {
+      "status": "open",
+      "context": "Open independent security obligation; no risk accepted. See exact report row.",
+      "independent_disposition": "open",
+      "actor": "gsd-security-auditor independent lane",
+      "recorded": "2026-11-01T17:14:15Z",
+      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
+          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+        }
+      ],
+      "blocking": true,
+      "historical_independent_disposition": "open",
+      "current_review": "pending"
+    },
+    "T-06.4-29": {
+      "status": "pending",
+      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "independent_disposition": "closed",
+      "actor": "gsd-security-auditor independent lane",
+      "recorded": "2026-11-01T17:14:15Z",
+      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
+          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+        }
+      ],
+      "blocking": false,
+      "historical_independent_disposition": "closed",
+      "current_review": "pending"
+    },
+    "T-06.4-30": {
+      "status": "pending",
+      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "independent_disposition": "closed",
+      "actor": "gsd-security-auditor independent lane",
+      "recorded": "2026-11-01T17:14:15Z",
+      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
+          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+        }
+      ],
+      "blocking": false,
+      "historical_independent_disposition": "closed",
+      "current_review": "pending"
+    },
+    "T-06.4-31": {
+      "status": "open",
+      "context": "Open independent security obligation; no risk accepted. See exact report row.",
+      "independent_disposition": "open",
+      "actor": "gsd-security-auditor independent lane",
+      "recorded": "2026-11-01T17:14:15Z",
+      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
+          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+        }
+      ],
+      "blocking": false,
+      "historical_independent_disposition": "open",
+      "current_review": "pending"
+    },
+    "T-06.4-32": {
+      "status": "pending",
+      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "independent_disposition": "closed",
+      "actor": "gsd-security-auditor independent lane",
+      "recorded": "2026-11-01T17:14:15Z",
+      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
+          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+        }
+      ],
+      "blocking": false,
+      "historical_independent_disposition": "closed",
+      "current_review": "pending"
+    },
+    "T-06.4-33": {
+      "status": "open",
+      "context": "Open independent security obligation; no risk accepted. See exact report row.",
+      "independent_disposition": "open",
+      "actor": "gsd-security-auditor independent lane",
+      "recorded": "2026-11-01T17:14:15Z",
+      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
+          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+        }
+      ],
+      "blocking": true,
+      "historical_independent_disposition": "open",
+      "current_review": "pending"
+    },
+    "T-06.4-34": {
+      "status": "pending",
+      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "independent_disposition": "closed",
+      "actor": "gsd-security-auditor independent lane",
+      "recorded": "2026-11-01T17:14:15Z",
+      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
+          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+        }
+      ],
+      "blocking": false,
+      "historical_independent_disposition": "closed",
+      "current_review": "pending"
+    },
+    "T-06.4-35": {
+      "status": "open",
+      "context": "Open independent security obligation; no risk accepted. See exact report row.",
+      "independent_disposition": "open",
+      "actor": "gsd-security-auditor independent lane",
+      "recorded": "2026-11-01T17:14:15Z",
+      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
+          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+        }
+      ],
+      "blocking": true,
+      "historical_independent_disposition": "open",
+      "current_review": "pending"
+    },
+    "T-06.4-36": {
+      "status": "open",
+      "context": "Open independent security obligation; no risk accepted. See exact report row.",
+      "independent_disposition": "open",
+      "actor": "gsd-security-auditor independent lane",
+      "recorded": "2026-11-01T17:14:15Z",
+      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
+          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+        }
+      ],
+      "blocking": true,
+      "historical_independent_disposition": "open",
+      "current_review": "pending"
+    },
+    "T-06.4-SC": {
+      "status": "pending",
+      "context": "Individual mitigation independently closed; machine verified promotion awaits overall passed security report, which is blocked.",
+      "independent_disposition": "closed",
+      "actor": "gsd-security-auditor independent lane",
+      "recorded": "2026-11-01T17:14:15Z",
+      "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
+          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+        }
+      ],
+      "blocking": false,
+      "historical_independent_disposition": "closed",
+      "current_review": "pending"
+    },
+    "T-06.4-37": {
+      "status": "open",
+      "severity": "high",
+      "independent_disposition": "pending",
+      "component": "corruption subprocess evidence and control bootstrap",
+      "current_review": "pending"
+    },
+    "T-06.4-38": {
+      "status": "open",
+      "severity": "high",
+      "independent_disposition": "pending",
+      "component": "conditional screenshot file/path/hash/device observations",
+      "current_review": "pending"
+    },
+    "T-06.4-39": {
+      "status": "open",
+      "severity": "high",
+      "independent_disposition": "pending",
+      "component": "bounded source-diff retained execution refresh",
+      "current_review": "pending"
+    },
+    "T-06.4-40": {
+      "status": "open",
+      "severity": "high",
+      "independent_disposition": "pending",
+      "component": "independent report attribution and canonical handoff",
+      "current_review": "pending"
+    }
+  },
+  "decisions": [
+    "D-01",
+    "D-02",
+    "D-03",
+    "D-04",
+    "D-05",
+    "D-06",
+    "D-07",
+    "D-08",
+    "D-09",
+    "D-10",
+    "D-11",
+    "D-12",
+    "D-13",
+    "D-14",
+    "D-15",
+    "D-16",
+    "D-17",
+    "D-18",
+    "D-19"
+  ],
+  "decision_reconciliation": {},
+  "research_constraints": [],
+  "fallback_edges": [
+    {
+      "id": 1,
+      "requirement": "AUTH-02",
+      "category": "concurrency",
+      "status": "flagged-unresolved",
+      "contract": "A19 only: existing per-request authorization/ancestry and atomic boundaries; repeated/interleaved requests remain isolated (12/16/18), no new concurrency API.",
+      "evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_fragment_authorization.py::test_two_child_declaration_round_trips_emitted_index_and_keeps_gates"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 2,
+      "requirement": "COND-01",
+      "category": "boundary",
+      "status": "flagged-unresolved",
+      "contract": "Zero/one/multiple exact checkbox matches, escaped Unicode/special names and two-form separation; no numeric coercion or ordering-based match (retained01;14/16/18).",
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound true state across zero, two and one matches"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound false state across zero, two and one matches"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during missing modal disposal and reinsert"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during ambiguous modal disposal and reinsert"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::conditional disabled ownership keeps a formerly bound inactive group safe during ambiguity and uniquely recovers"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 3,
+      "requirement": "COND-01",
+      "category": "adjacency",
+      "status": "flagged-unresolved",
+      "contract": "Zero/one/multiple exact checkbox matches, escaped Unicode/special names and two-form separation; no numeric coercion or ordering-based match (retained01;14/16/18).",
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound true state across zero, two and one matches"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound false state across zero, two and one matches"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during missing modal disposal and reinsert"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during ambiguous modal disposal and reinsert"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::conditional disabled ownership keeps a formerly bound inactive group safe during ambiguity and uniquely recovers"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 4,
+      "requirement": "COND-01",
+      "category": "empty",
+      "status": "flagged-unresolved",
+      "contract": "Zero/one/multiple exact checkbox matches, escaped Unicode/special names and two-form separation; no numeric coercion or ordering-based match (retained01;14/16/18).",
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound true state across zero, two and one matches"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound false state across zero, two and one matches"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during missing modal disposal and reinsert"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during ambiguous modal disposal and reinsert"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::conditional disabled ownership keeps a formerly bound inactive group safe during ambiguity and uniquely recovers"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 5,
+      "requirement": "COND-01",
+      "category": "encoding",
+      "status": "flagged-unresolved",
+      "contract": "Zero/one/multiple exact checkbox matches, escaped Unicode/special names and two-form separation; no numeric coercion or ordering-based match (retained01;14/16/18).",
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound true state across zero, two and one matches"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound false state across zero, two and one matches"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during missing modal disposal and reinsert"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during ambiguous modal disposal and reinsert"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::conditional disabled ownership keeps a formerly bound inactive group safe during ambiguity and uniquely recovers"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 6,
+      "requirement": "COND-01",
+      "category": "ordering",
+      "status": "flagged-unresolved",
+      "contract": "Zero/one/multiple exact checkbox matches, escaped Unicode/special names and two-form separation; no numeric coercion or ordering-based match (retained01;14/16/18).",
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound true state across zero, two and one matches"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound false state across zero, two and one matches"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during missing modal disposal and reinsert"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during ambiguous modal disposal and reinsert"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::conditional disabled ownership keeps a formerly bound inactive group safe during ambiguity and uniquely recovers"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 7,
+      "requirement": "COND-01",
+      "category": "precision",
+      "status": "flagged-unresolved",
+      "contract": "Zero/one/multiple exact checkbox matches, escaped Unicode/special names and two-form separation; no numeric coercion or ordering-based match (retained01;14/16/18).",
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound true state across zero, two and one matches"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound false state across zero, two and one matches"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during missing modal disposal and reinsert"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during ambiguous modal disposal and reinsert"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::conditional disabled ownership keeps a formerly bound inactive group safe during ambiguity and uniquely recovers"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 8,
+      "requirement": "COND-02",
+      "category": "adjacency",
+      "status": "flagged-unresolved",
+      "contract": "Nested/frozen/empty group ownership and both initialization orders; independent disabled reasons persist (14/16/18).",
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound true state across zero, two and one matches"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound false state across zero, two and one matches"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during missing modal disposal and reinsert"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during ambiguous modal disposal and reinsert"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::conditional disabled ownership keeps a formerly bound inactive group safe during ambiguity and uniquely recovers"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 9,
+      "requirement": "COND-02",
+      "category": "empty",
+      "status": "flagged-unresolved",
+      "contract": "Nested/frozen/empty group ownership and both initialization orders; independent disabled reasons persist (14/16/18).",
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound true state across zero, two and one matches"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound false state across zero, two and one matches"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during missing modal disposal and reinsert"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during ambiguous modal disposal and reinsert"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::conditional disabled ownership keeps a formerly bound inactive group safe during ambiguity and uniquely recovers"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 10,
+      "requirement": "COND-02",
+      "category": "ordering",
+      "status": "flagged-unresolved",
+      "contract": "Nested/frozen/empty group ownership and both initialization orders; independent disabled reasons persist (14/16/18).",
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound true state across zero, two and one matches"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound false state across zero, two and one matches"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during missing modal disposal and reinsert"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during ambiguous modal disposal and reinsert"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::conditional disabled ownership keeps a formerly bound inactive group safe during ambiguity and uniquely recovers"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 11,
+      "requirement": "COND-03",
+      "category": "unclassified",
+      "status": "flagged-unresolved",
+      "contract": "UNCLASSIFIED flagged assumption: locked cancellable native reset after default action, scoped owning form, dynamic management preserved; retained05/14/16/18 prove concrete contract; no inferred new reset policy.",
+      "evidence": [
+        {
+          "gate": "conditional-browser",
+          "case": "stock:native-reset-user-default"
+        },
+        {
+          "gate": "conditional-browser",
+          "case": "stock:native-reset-user-cancelled"
+        },
+        {
+          "gate": "conditional-browser",
+          "case": "native:native-reset-user-default"
+        },
+        {
+          "gate": "conditional-browser",
+          "case": "native:native-reset-user-cancelled"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 12,
+      "requirement": "COND-04",
+      "category": "idempotency",
+      "status": "flagged-unresolved",
+      "contract": "Retain native repeated-save/file-reference/M2M behavior and routed atomic rollback; consuming-application storage hooks remain H2 scope (retained02;18/19).",
+      "evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_conditional_persistence.py::test_unchanged_inline_file_reference_clears_without_deleting_content[attachment]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_conditional_persistence.py::test_unchanged_inline_file_reference_clears_without_deleting_content[image]"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 13,
+      "requirement": "COND-04",
+      "category": "concurrency",
+      "status": "flagged-unresolved",
+      "contract": "Retain native repeated-save/file-reference/M2M behavior and routed atomic rollback; consuming-application storage hooks remain H2 scope (retained02;18/19).",
+      "evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_conditional_persistence.py::test_unchanged_inline_file_reference_clears_without_deleting_content[attachment]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_conditional_persistence.py::test_unchanged_inline_file_reference_clears_without_deleting_content[image]"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 14,
+      "requirement": "COND-05",
+      "category": "adjacency",
+      "status": "flagged-unresolved",
+      "contract": "Retain shared static/runtime resolver, explicit empty-value membership and inherited clean/model validation order (retained03;17/18).",
+      "evidence": [
+        {
+          "gate": "django6.0-focused"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 15,
+      "requirement": "COND-05",
+      "category": "empty",
+      "status": "flagged-unresolved",
+      "contract": "Retain shared static/runtime resolver, explicit empty-value membership and inherited clean/model validation order (retained03;17/18).",
+      "evidence": [
+        {
+          "gate": "django6.0-focused"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 16,
+      "requirement": "COND-05",
+      "category": "ordering",
+      "status": "flagged-unresolved",
+      "contract": "Retain shared static/runtime resolver, explicit empty-value membership and inherited clean/model validation order (retained03;17/18).",
+      "evidence": [
+        {
+          "gate": "django6.0-focused"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 17,
+      "requirement": "FSET-01",
+      "category": "adjacency",
+      "status": "flagged-unresolved",
+      "contract": "Active adapters revalidate policy across repeated/late cleaning; blank extras and valid rows survive; invalid identities reject before every save (11/18).",
+      "evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_edit_only_extra_stays_invalid[package]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_edit_only_extra_stays_invalid[native]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_invalid_existing_ids_never_save[package-missing-False-True]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_invalid_existing_ids_never_save[package-missing-False-False]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-siblings]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-notes]"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 18,
+      "requirement": "FSET-01",
+      "category": "empty",
+      "status": "flagged-unresolved",
+      "contract": "Active adapters revalidate policy across repeated/late cleaning; blank extras and valid rows survive; invalid identities reject before every save (11/18).",
+      "evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_edit_only_extra_stays_invalid[package]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_edit_only_extra_stays_invalid[native]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_invalid_existing_ids_never_save[package-missing-False-True]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_invalid_existing_ids_never_save[package-missing-False-False]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-siblings]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-notes]"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 19,
+      "requirement": "FSET-01",
+      "category": "ordering",
+      "status": "flagged-unresolved",
+      "contract": "Active adapters revalidate policy across repeated/late cleaning; blank extras and valid rows survive; invalid identities reject before every save (11/18).",
+      "evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_edit_only_extra_stays_invalid[package]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_edit_only_extra_stays_invalid[native]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_invalid_existing_ids_never_save[package-missing-False-True]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_invalid_existing_ids_never_save[package-missing-False-False]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-siblings]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-notes]"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 20,
+      "requirement": "FSET-01",
+      "category": "idempotency",
+      "status": "flagged-unresolved",
+      "contract": "Active adapters revalidate policy across repeated/late cleaning; blank extras and valid rows survive; invalid identities reject before every save (11/18).",
+      "evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_edit_only_extra_stays_invalid[package]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_edit_only_extra_stays_invalid[native]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_invalid_existing_ids_never_save[package-missing-False-True]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_invalid_existing_ids_never_save[package-missing-False-False]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-siblings]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-notes]"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 21,
+      "requirement": "FSET-01",
+      "category": "concurrency",
+      "status": "flagged-unresolved",
+      "contract": "Active adapters revalidate policy across repeated/late cleaning; blank extras and valid rows survive; invalid identities reject before every save (11/18).",
+      "evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_edit_only_extra_stays_invalid[package]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_edit_only_extra_stays_invalid[native]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_invalid_existing_ids_never_save[package-missing-False-True]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_invalid_existing_ids_never_save[package-missing-False-False]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-siblings]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-notes]"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 22,
+      "requirement": "FSET-02",
+      "category": "idempotency",
+      "status": "flagged-unresolved",
+      "contract": "Repeated initialization, interleaved modal/row lifecycle and single event ownership remain form-scoped; stable bound capability independent of display order (13/14/16/18).",
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility allows Add and submit without extra DELETE (ordered=true)"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility allows Add and submit without extra DELETE (ordered=false)"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility moves a native extra above an initial row and then deletes the initial row"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility inserts an extra before an initial row without renumbering bound prefixes"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility refuses custom extra Delete after upward movement (direct)"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility refuses custom extra Delete after upward movement (delegated)"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 23,
+      "requirement": "FSET-02",
+      "category": "concurrency",
+      "status": "flagged-unresolved",
+      "contract": "Repeated initialization, interleaved modal/row lifecycle and single event ownership remain form-scoped; stable bound capability independent of display order (13/14/16/18).",
+      "evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility allows Add and submit without extra DELETE (ordered=true)"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility allows Add and submit without extra DELETE (ordered=false)"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility moves a native extra above an initial row and then deletes the initial row"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility inserts an extra before an initial row without renumbering bound prefixes"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility refuses custom extra Delete after upward movement (direct)"
+        },
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js native row deletion eligibility refuses custom extra Delete after upward movement (delegated)"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 24,
+      "requirement": "FSET-03",
+      "category": "boundary",
+      "status": "flagged-unresolved",
+      "contract": "Retain int/UUID, unsaved parents, second/deeper siblings, exact management coordinates, no float identity coercion; repeat requests retain authorization (retained07;12/13/16/18).",
+      "evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_fragment_authorization.py::test_two_child_declaration_round_trips_emitted_index_and_keeps_gates"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 25,
+      "requirement": "FSET-03",
+      "category": "precision",
+      "status": "flagged-unresolved",
+      "contract": "Retain int/UUID, unsaved parents, second/deeper siblings, exact management coordinates, no float identity coercion; repeat requests retain authorization (retained07;12/13/16/18).",
+      "evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_fragment_authorization.py::test_two_child_declaration_round_trips_emitted_index_and_keeps_gates"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 26,
+      "requirement": "FSET-03",
+      "category": "concurrency",
+      "status": "flagged-unresolved",
+      "contract": "Retain int/UUID, unsaved parents, second/deeper siblings, exact management coordinates, no float identity coercion; repeat requests retain authorization (retained07;12/13/16/18).",
+      "evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_fragment_authorization.py::test_two_child_declaration_round_trips_emitted_index_and_keeps_gates"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 27,
+      "requirement": "LIFE-01",
+      "category": "adjacency",
+      "status": "flagged-unresolved",
+      "contract": "Real stock/native empty/late/adjacent/nested/modal order and management/keyboard behavior; H1 human judgment remains pending (16/18/19).",
+      "evidence": [
+        {
+          "gate": "conditional-browser"
+        },
+        {
+          "gate": "modal-browser"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 28,
+      "requirement": "LIFE-01",
+      "category": "empty",
+      "status": "flagged-unresolved",
+      "contract": "Real stock/native empty/late/adjacent/nested/modal order and management/keyboard behavior; H1 human judgment remains pending (16/18/19).",
+      "evidence": [
+        {
+          "gate": "conditional-browser"
+        },
+        {
+          "gate": "modal-browser"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 29,
+      "requirement": "LIFE-01",
+      "category": "ordering",
+      "status": "flagged-unresolved",
+      "contract": "Real stock/native empty/late/adjacent/nested/modal order and management/keyboard behavior; H1 human judgment remains pending (16/18/19).",
+      "evidence": [
+        {
+          "gate": "conditional-browser"
+        },
+        {
+          "gate": "modal-browser"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 30,
+      "requirement": "LIFE-02",
+      "category": "empty",
+      "status": "flagged-unresolved",
+      "contract": "Missing evidence/runtime and malformed/encoded records fail explicitly; complete docs/projection and escaping contracts remain (15/17/18/19).",
+      "evidence": [
+        {
+          "gate": "evidence-self-tests"
+        },
+        {
+          "gate": "javascript"
+        },
+        {
+          "gate": "strict-docs"
+        },
+        {
+          "gate": "ruff-check"
+        },
+        {
+          "gate": "ruff-format"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    },
+    {
+      "id": 31,
+      "requirement": "LIFE-02",
+      "category": "encoding",
+      "status": "flagged-unresolved",
+      "contract": "Missing evidence/runtime and malformed/encoded records fail explicitly; complete docs/projection and escaping contracts remain (15/17/18/19).",
+      "evidence": [
+        {
+          "gate": "evidence-self-tests"
+        },
+        {
+          "gate": "javascript"
+        },
+        {
+          "gate": "strict-docs"
+        },
+        {
+          "gate": "ruff-check"
+        },
+        {
+          "gate": "ruff-format"
+        }
+      ],
+      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+    }
+  ],
+  "human_checks": {
+    "H1": {
+      "status": "pending",
+      "instructions": "On corrected real stock and native hosts, review nested Add/Delete/Move discoverability, full labels and error readability, keyboard/Space/Tab and hidden-content focus, native reset, modal 422 replacement and screen-reader announcements. Inspect desktop/mobile/tablet evidence. Record actual person, browser/assistive technology, environment, results and limits with source/evidence hashes. Screenshots or an agent UI score are not approval.",
+      "context": "End-of-phase actual human judgment required. UI24/24 and old fixture warnings closed; stock desktop/mobile/tablet images inspected. Native has no screenshots; direct native evaluation remains required."
+    },
+    "H2": {
+      "status": "pending",
+      "canonical_status": "flagged-unverified",
+      "prohibition": "Switching a conditional file field off must not silently authorize deletion of the stored file content.",
+      "authored_status": "resolved",
+      "authored_verification": "test",
+      "descriptor_present": false,
+      "instructions": "Review the exact prohibition against native reference-clearing/storage-spy/retained-byte evidence, ImageField reference-only and consuming-application hook limits. Supply an explicit attributed human disposition or require a genuinely locatable fail-first enforcement route. Existing tests and prior-phase approval are not approval of this item.",
+      "reference_only_storage_observations": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_conditional_persistence.py::test_unchanged_inline_file_reference_clears_without_deleting_content[attachment]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_conditional_persistence.py::test_unchanged_inline_file_reference_clears_without_deleting_content[image]"
+        }
+      ],
+      "context": "End-of-phase genuine attributed human disposition or real fail-first enforcement route required. T36 high remains open; authored resolved/test is separate from flagged-unverified."
+    }
+  },
+  "ready": false,
+  "retained_truths": [
+    "R3",
+    "R7",
+    "E1",
+    "E2"
+  ],
+  "bounds": [
+    "Python3.12.3 / Django4.2.30,5.2.18,6.0.9 / cached Chromium149 only",
+    "AUTH-02 A19 int/UUID sibling/deeper handoff only",
+    "ImageField reference-only; no byte decoding/dimension hooks",
+    "Exact existing CSP skip/floor golden deselection",
+    "A8 commit=False, A25, #210/jQuery, broader Guardian #286/custom-PK/backend excluded",
+    "Historical skipped probe remains skipped; 31 fallback assumptions flagged"
+  ],
+  "checker_controls": {
+    "packet_field": "checker_control_evidence",
+    "control_count": 33,
+    "self_test_gate": "evidence-self-tests",
+    "selected_tests": [],
+    "bootstrap": "Each mutation is checked by a real --check subprocess under record-local mode; clean complete positive control is separate."
+  },
+  "new_findings": {
+    "WR-03": {
+      "status": "open",
+      "severity": "warning",
+      "gap": "G6",
+      "threats": [
+        "T-06.4-22",
+        "T-06.4-28",
+        "T-06.4-33"
+      ],
+      "title": "Missing or success-rewritten corruption subprocess records accepted",
+      "review": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/code-review.md",
+        "sha256": "1e4e1384618101b31fafb8f24b5c50fa045baa594a35630cf4f57020de4822e4"
+      },
+      "independently_confirmed_by": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
+        "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+      },
+      "required_repair": "Require exact control-record keys/command/mode/nonzero rejection outcomes; add missing/contradictory-record negative controls.",
+      "current_disposition": "pending-independent-review",
+      "repair_evidence": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
+        }
+      ]
+    },
+    "WR-04": {
+      "status": "open",
+      "severity": "warning",
+      "gap": "G6",
+      "threats": [
+        "T-06.4-22",
+        "T-06.4-31",
+        "T-06.4-33"
+      ],
+      "title": "Aggregate conditional screenshot inventory and hash contract omitted",
+      "review": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/code-review.md",
+        "sha256": "1e4e1384618101b31fafb8f24b5c50fa045baa594a35630cf4f57020de4822e4"
+      },
+      "independently_confirmed_by": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
+        "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+      },
+      "required_repair": "Revalidate current stock capture inventory, files/hashes and required observations; add missing/stale-capture negative controls.",
+      "current_disposition": "pending-independent-review",
+      "repair_evidence": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/results.json",
+          "sha256": "717f3495fbf3a11c4a23f037bece1136727082314854ad3fd371b56ffce40ab0"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+          "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
+        }
+      ]
+    }
+  },
+  "security_accounting": {
+    "total": 41,
+    "historical_total": 37,
+    "historical_closed": 31,
+    "historical_open_total": 6,
+    "historical_open_blocking_high": 5,
+    "historical_open_nonblocking_medium": 1,
+    "current_independent_review": "pending",
+    "new_threats": [
+      "T-06.4-37",
+      "T-06.4-38",
+      "T-06.4-39",
+      "T-06.4-40"
+    ],
+    "machine_status_qualification": "Historical individually closed threats remain pending at schema1 machine level while overall security remains open; no attribution is refreshed by copying."
+  },
+  "independent_reports": {
+    "historical": {
+      "code": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/code-review.md",
+        "sha256": "1e4e1384618101b31fafb8f24b5c50fa045baa594a35630cf4f57020de4822e4"
+      },
+      "security": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
+        "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+      },
+      "ui": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/ui-review.md",
+        "sha256": "55300f0060bf8879e9d5afbde5759437638f58628c68b01e6779529be345d8c5"
+      }
+    },
+    "current": "pending"
+  },
+  "next_gate": "Independent code/security reassessment, then orchestrator-owned canonical verification/hash rebind and actual H1/H2 dispositions; all31 flags remain unresolved.",
+  "history": {
+    "handoff": {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/handoff.json",
+      "sha256": "4caa5e8c3fd8bcd7f581c9e5fd8687c159648bab11aa4ca64b1c5271d04b544b"
+    },
+    "reports": {
+      "code": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-REVIEW.md",
+        "sha256": "93dee0a51ca7357063d81e5e669e9af18edb79eba39bdbdb6146bff4695ec6cc",
+        "status": "open",
+        "context": "Independent original seven bounded counterexamples closed; new WR-03/04 open; G6 remains open."
+      },
+      "security": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+        "sha256": "31c90957236d0da033094b1ba7f8b8a50afd33075c81338c52928164af46b3c4",
+        "status": "open",
+        "context": "Independent OPEN_THREATS:31/37 individually closed,5high blocking+1medium open. No risk accepted."
+      },
+      "ui": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UI-REVIEW.md",
+        "sha256": "e25c2374fe704060195a806e00c616198b13d8659b4359d4008cf1148459af32",
+        "status": "passed",
+        "context": "Scoped UI re-audit; actual stock images inspected, no native images or new interaction run; no human approval.",
+        "actor": "gsd-ui-auditor independent lane",
+        "recorded": "2026-11-01T17:20:00Z",
+        "response": "24/24 bounded UI preservation; V1/V2/S1 closed; H1 pending and H2 flagged-unverified.",
+        "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+        "evidence_files": [
+          {
+            "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/ui-review.md",
+            "sha256": "55300f0060bf8879e9d5afbde5759437638f58628c68b01e6779529be345d8c5"
+          },
+          {
+            "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/18-evidence/results.json",
+            "sha256": "a2ae7e5116683ae54b80243ac7c394909512ea922a3c4fe1b72cd7f633b6e674"
+          }
+        ]
+      },
+      "verification": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VERIFICATION.md",
+        "sha256": "ff6bd89f315e8b664bf5c2c4ffee8129c012cac5dc9a8a5afc7785f015460b10",
+        "status": "open",
+        "context": "Fresh independent canonical verification: gaps_found, 8/10. G6/WR-03/04, five high security obligations, H1/H2 and fallback flags remain."
+      },
+      "code_original": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/code-review.md",
+        "sha256": "1e4e1384618101b31fafb8f24b5c50fa045baa594a35630cf4f57020de4822e4",
+        "status": "passed",
+        "actor": "gsd-code-reviewer independent lane",
+        "recorded": "2026-11-01T17:13:39Z",
+        "response": "Original CR-01\u201305 and WR-01\u201302 closed within exact bounded counterexamples.",
+        "context": "This report reference is restricted to original findings only. Overall code report remains open under new WR-03/04; no phase or human approval.",
+        "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+        "evidence_files": [
+          {
+            "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/code-review.md",
+            "sha256": "1e4e1384618101b31fafb8f24b5c50fa045baa594a35630cf4f57020de4822e4"
+          },
+          {
+            "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/18-evidence/results.json",
+            "sha256": "a2ae7e5116683ae54b80243ac7c394909512ea922a3c4fe1b72cd7f633b6e674"
+          }
+        ]
+      }
+    },
+    "findings": {
+      "G1": {
+        "review_ids": [
+          "CR-01"
+        ],
+        "threats": [
+          "T-06.4-07",
+          "T-06.4-08",
+          "T-06.4-09",
+          "T-06.4-24"
+        ],
+        "plans": [
+          "11",
+          "16",
+          "18",
+          "19"
+        ],
+        "requirements": [
+          "FSET-01",
+          "LIFE-02"
+        ],
+        "evidence": [
+          {
+            "gate": "django6.0-focused",
+            "case": "tests/test1/test_formsets_policy.py::test_reclean_edit_only_extra_stays_invalid[package]"
+          },
+          {
+            "gate": "django6.0-focused",
+            "case": "tests/test1/test_formsets_policy.py::test_reclean_edit_only_extra_stays_invalid[native]"
+          },
+          {
+            "gate": "django6.0-focused",
+            "case": "tests/test1/test_formsets_policy.py::test_reclean_invalid_existing_ids_never_save[package-missing-False-True]"
+          },
+          {
+            "gate": "django6.0-focused",
+            "case": "tests/test1/test_formsets_policy.py::test_reclean_invalid_existing_ids_never_save[package-missing-False-False]"
+          },
+          {
+            "gate": "django6.0-focused",
+            "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-siblings]"
+          },
+          {
+            "gate": "django6.0-focused",
+            "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-notes]"
+          }
+        ],
+        "status": "closed",
+        "context": "Independent original-finding table in code-review.md; current source and concrete regression/probe assertions inspected. New G6 warnings remain open.",
+        "review": "code_original",
+        "actor": "gsd-code-reviewer independent lane",
+        "recorded": "2026-11-01T17:13:39Z",
+        "response": "Closed within original counterexample scope.",
+        "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+        "evidence_files": [
+          {
+            "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/code-review.md",
+            "sha256": "1e4e1384618101b31fafb8f24b5c50fa045baa594a35630cf4f57020de4822e4"
+          },
+          {
+            "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/18-evidence/results.json",
+            "sha256": "a2ae7e5116683ae54b80243ac7c394909512ea922a3c4fe1b72cd7f633b6e674"
+          }
+        ]
+      },
+      "CR-01": {
+        "review_ids": [
+          "CR-01"
+        ],
+        "threats": [
+          "T-06.4-07",
+          "T-06.4-08",
+          "T-06.4-09",
+          "T-06.4-24"
+        ],
+        "plans": [
+          "11",
+          "16",
+          "18",
+          "19"
+        ],
+        "requirements": [
+          "FSET-01",
+          "LIFE-02"
+        ],
+        "evidence": [
+          {
+            "gate": "django6.0-focused",
+            "case": "tests/test1/test_formsets_policy.py::test_reclean_edit_only_extra_stays_invalid[package]"
+          },
+          {
+            "gate": "django6.0-focused",
+            "case": "tests/test1/test_formsets_policy.py::test_reclean_edit_only_extra_stays_invalid[native]"
+          },
+          {
+            "gate": "django6.0-focused",
+            "case": "tests/test1/test_formsets_policy.py::test_reclean_invalid_existing_ids_never_save[package-missing-False-True]"
+          },
+          {
+            "gate": "django6.0-focused",
+            "case": "tests/test1/test_formsets_policy.py::test_reclean_invalid_existing_ids_never_save[package-missing-False-False]"
+          },
+          {
+            "gate": "django6.0-focused",
+            "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-siblings]"
+          },
+          {
+            "gate": "django6.0-focused",
+            "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-notes]"
+          }
+        ],
+        "status": "closed",
+        "context": "Independent original-finding table in code-review.md; current source and concrete regression/probe assertions inspected. New G6 warnings remain open.",
+        "gap": "G1",
+        "review": "code_original",
+        "actor": "gsd-code-reviewer independent lane",
+        "recorded": "2026-11-01T17:13:39Z",
+        "response": "Closed within original counterexample scope.",
+        "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+        "evidence_files": [
+          {
+            "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/code-review.md",
+            "sha256": "1e4e1384618101b31fafb8f24b5c50fa045baa594a35630cf4f57020de4822e4"
+          },
+          {
+            "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/18-evidence/results.json",
+            "sha256": "a2ae7e5116683ae54b80243ac7c394909512ea922a3c4fe1b72cd7f633b6e674"
+          }
+        ]
+      },
+      "G2": {
+        "review_ids": [
+          "CR-02"
+        ],
+        "threats": [
+          "T-06.4-22",
+          "T-06.4-25"
+        ],
+        "plans": [
+          "12",
+          "15",
+          "17",
+          "18",
+          "19"
+        ],
+        "requirements": [
+          "FSET-03",
+          "LIFE-02"
+        ],
+        "evidence": [
+          {
+            "gate": "javascript",
+            "case": "tests/js/runtime-contract.test.js::test runtime boundary runs every other ordinary JS file in a checkout with only Node available"
+          },
+          {
+            "gate": "javascript",
+            "case": "tests/js/runtime-contract.test.js::test runtime boundary fails the required integration lane for a missing selected Python"
+          },
+          {
+            "gate": "javascript",
+            "case": "tests/js/runtime-contract.test.js::test runtime boundary fails the required integration lane for a invalid selected Python"
+          },
+          {
+            "gate": "javascript-integration"
+          }
+        ],
+        "status": "closed",
+        "context": "Independent original-finding table in code-review.md; current source and concrete regression/probe assertions inspected. New G6 warnings remain open.",
+        "review": "code_original",
+        "actor": "gsd-code-reviewer independent lane",
+        "recorded": "2026-11-01T17:13:39Z",
+        "response": "Closed within original counterexample scope.",
+        "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+        "evidence_files": [
+          {
+            "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/code-review.md",
+            "sha256": "1e4e1384618101b31fafb8f24b5c50fa045baa594a35630cf4f57020de4822e4"
+          },
+          {
+            "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/18-evidence/results.json",
+            "sha256": "a2ae7e5116683ae54b80243ac7c394909512ea922a3c4fe1b72cd7f633b6e674"
+          }
+        ]
+      },
+      "CR-02": {
+        "review_ids": [
+          "CR-02"
+        ],
+        "threats": [
+          "T-06.4-22",
+          "T-06.4-25"
+        ],
+        "plans": [
+          "12",
+          "15",
+          "17",
+          "18",
+          "19"
+        ],
+        "requirements": [
+          "FSET-03",
+          "LIFE-02"
+        ],
+        "evidence": [
+          {
+            "gate": "javascript",
+            "case": "tests/js/runtime-contract.test.js::test runtime boundary runs every other ordinary JS file in a checkout with only Node available"
+          },
+          {
+            "gate": "javascript",
+            "case": "tests/js/runtime-contract.test.js::test runtime boundary fails the required integration lane for a missing selected Python"
+          },
+          {
+            "gate": "javascript",
+            "case": "tests/js/runtime-contract.test.js::test runtime boundary fails the required integration lane for a invalid selected Python"
+          },
+          {
+            "gate": "javascript-integration"
+          }
+        ],
+        "status": "closed",
+        "context": "Independent original-finding table in code-review.md; current source and concrete regression/probe assertions inspected. New G6 warnings remain open.",
+        "gap": "G2",
+        "review": "code_original",
+        "actor": "gsd-code-reviewer independent lane",
+        "recorded": "2026-11-01T17:13:39Z",
+        "response": "Closed within original counterexample scope.",
+        "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+        "evidence_files": [
+          {
+            "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/code-review.md",
+            "sha256": "1e4e1384618101b31fafb8f24b5c50fa045baa594a35630cf4f57020de4822e4"
+          },
+          {
+            "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/18-evidence/results.json",
+            "sha256": "a2ae7e5116683ae54b80243ac7c394909512ea922a3c4fe1b72cd7f633b6e674"
+          }
+        ]
+      },
+      "G3": {
+        "review_ids": [
+          "CR-03"
+        ],
+        "threats": [
+          "T-06.4-15",
+          "T-06.4-26"
+        ],
+        "plans": [
+          "13",
+          "16",
+          "17",
+          "18",
+          "19"
+        ],
+        "requirements": [
+          "FSET-02",
+          "COND-02"
+        ],
+        "evidence": [
+          {
+            "gate": "javascript",
+            "case": "tests/js/formset.test.js::formset.js native row deletion eligibility allows Add and submit without extra DELETE (ordered=true)"
+          },
+          {
+            "gate": "javascript",
+            "case": "tests/js/formset.test.js::formset.js native row deletion eligibility allows Add and submit without extra DELETE (ordered=false)"
+          }
+        ],
+        "status": "closed",
+        "context": "Independent original-finding table in code-review.md; current source and concrete regression/probe assertions inspected. New G6 warnings remain open.",
+        "review": "code_original",
+        "actor": "gsd-code-reviewer independent lane",
+        "recorded": "2026-11-01T17:13:39Z",
+        "response": "Closed within original counterexample scope.",
+        "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+        "evidence_files": [
+          {
+            "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/code-review.md",
+            "sha256": "1e4e1384618101b31fafb8f24b5c50fa045baa594a35630cf4f57020de4822e4"
+          },
+          {
+            "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/18-evidence/results.json",
+            "sha256": "a2ae7e5116683ae54b80243ac7c394909512ea922a3c4fe1b72cd7f633b6e674"
+          }
+        ]
+      },
+      "CR-03": {
+        "review_ids": [
+          "CR-03"
+        ],
+        "threats": [
+          "T-06.4-15",
+          "T-06.4-26"
+        ],
+        "plans": [
+          "13",
+          "16",
+          "17",
+          "18",
+          "19"
+        ],
+        "requirements": [
+          "FSET-02",
+          "COND-02"
+        ],
+        "evidence": [
+          {
+            "gate": "javascript",
+            "case": "tests/js/formset.test.js::formset.js native row deletion eligibility allows Add and submit without extra DELETE (ordered=true)"
+          },
+          {
+            "gate": "javascript",
+            "case": "tests/js/formset.test.js::formset.js native row deletion eligibility allows Add and submit without extra DELETE (ordered=false)"
+          }
+        ],
+        "status": "closed",
+        "context": "Independent original-finding table in code-review.md; current source and concrete regression/probe assertions inspected. New G6 warnings remain open.",
+        "gap": "G3",
+        "review": "code_original",
+        "actor": "gsd-code-reviewer independent lane",
+        "recorded": "2026-11-01T17:13:39Z",
+        "response": "Closed within original counterexample scope.",
+        "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+        "evidence_files": [
+          {
+            "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/code-review.md",
+            "sha256": "1e4e1384618101b31fafb8f24b5c50fa045baa594a35630cf4f57020de4822e4"
+          },
+          {
+            "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/18-evidence/results.json",
+            "sha256": "a2ae7e5116683ae54b80243ac7c394909512ea922a3c4fe1b72cd7f633b6e674"
+          }
+        ]
+      },
+      "G4": {
+        "review_ids": [
+          "CR-04"
+        ],
+        "threats": [
+          "T-06.4-15",
+          "T-06.4-26"
+        ],
+        "plans": [
+          "13",
+          "16",
+          "17",
+          "18",
+          "19"
+        ],
+        "requirements": [
+          "FSET-02"
+        ],
+        "evidence": [
+          {
+            "gate": "javascript",
+            "case": "tests/js/formset.test.js::formset.js native row deletion eligibility moves a native extra above an initial row and then deletes the initial row"
+          },
+          {
+            "gate": "javascript",
+            "case": "tests/js/formset.test.js::formset.js native row deletion eligibility inserts an extra before an initial row without renumbering bound prefixes"
+          },
+          {
+            "gate": "javascript",
+            "case": "tests/js/formset.test.js::formset.js native row deletion eligibility refuses custom extra Delete after upward movement (direct)"
+          },
+          {
+            "gate": "javascript",
+            "case": "tests/js/formset.test.js::formset.js native row deletion eligibility refuses custom extra Delete after upward movement (delegated)"
+          }
+        ],
+        "status": "closed",
+        "context": "Independent original-finding table in code-review.md; current source and concrete regression/probe assertions inspected. New G6 warnings remain open.",
+        "review": "code_original",
+        "actor": "gsd-code-reviewer independent lane",
+        "recorded": "2026-11-01T17:13:39Z",
+        "response": "Closed within original counterexample scope.",
+        "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+        "evidence_files": [
+          {
+            "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/code-review.md",
+            "sha256": "1e4e1384618101b31fafb8f24b5c50fa045baa594a35630cf4f57020de4822e4"
+          },
+          {
+            "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/18-evidence/results.json",
+            "sha256": "a2ae7e5116683ae54b80243ac7c394909512ea922a3c4fe1b72cd7f633b6e674"
+          }
+        ]
+      },
+      "CR-04": {
+        "review_ids": [
+          "CR-04"
+        ],
+        "threats": [
+          "T-06.4-15",
+          "T-06.4-26"
+        ],
+        "plans": [
+          "13",
+          "16",
+          "17",
+          "18",
+          "19"
+        ],
+        "requirements": [
+          "FSET-02"
+        ],
+        "evidence": [
+          {
+            "gate": "javascript",
+            "case": "tests/js/formset.test.js::formset.js native row deletion eligibility moves a native extra above an initial row and then deletes the initial row"
+          },
+          {
+            "gate": "javascript",
+            "case": "tests/js/formset.test.js::formset.js native row deletion eligibility inserts an extra before an initial row without renumbering bound prefixes"
+          },
+          {
+            "gate": "javascript",
+            "case": "tests/js/formset.test.js::formset.js native row deletion eligibility refuses custom extra Delete after upward movement (direct)"
+          },
+          {
+            "gate": "javascript",
+            "case": "tests/js/formset.test.js::formset.js native row deletion eligibility refuses custom extra Delete after upward movement (delegated)"
+          }
+        ],
+        "status": "closed",
+        "context": "Independent original-finding table in code-review.md; current source and concrete regression/probe assertions inspected. New G6 warnings remain open.",
+        "gap": "G4",
+        "review": "code_original",
+        "actor": "gsd-code-reviewer independent lane",
+        "recorded": "2026-11-01T17:13:39Z",
+        "response": "Closed within original counterexample scope.",
+        "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+        "evidence_files": [
+          {
+            "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/code-review.md",
+            "sha256": "1e4e1384618101b31fafb8f24b5c50fa045baa594a35630cf4f57020de4822e4"
+          },
+          {
+            "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/18-evidence/results.json",
+            "sha256": "a2ae7e5116683ae54b80243ac7c394909512ea922a3c4fe1b72cd7f633b6e674"
+          }
+        ]
+      },
+      "G5": {
+        "review_ids": [
+          "CR-05"
+        ],
+        "threats": [
+          "T-06.4-01",
+          "T-06.4-27"
+        ],
+        "plans": [
+          "14",
+          "16",
+          "17",
+          "18",
+          "19"
+        ],
+        "requirements": [
+          "COND-01",
+          "COND-02",
+          "COND-03",
+          "FSET-02"
+        ],
+        "evidence": [
+          {
+            "gate": "javascript",
+            "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound true state across zero, two and one matches"
+          },
+          {
+            "gate": "javascript",
+            "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound false state across zero, two and one matches"
+          },
+          {
+            "gate": "javascript",
+            "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during missing modal disposal and reinsert"
+          },
+          {
+            "gate": "javascript",
+            "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during ambiguous modal disposal and reinsert"
+          },
+          {
+            "gate": "javascript",
+            "case": "tests/js/toggle.test.js::conditional disabled ownership keeps a formerly bound inactive group safe during ambiguity and uniquely recovers"
+          }
+        ],
+        "status": "closed",
+        "context": "Independent original-finding table in code-review.md; current source and concrete regression/probe assertions inspected. New G6 warnings remain open.",
+        "review": "code_original",
+        "actor": "gsd-code-reviewer independent lane",
+        "recorded": "2026-11-01T17:13:39Z",
+        "response": "Closed within original counterexample scope.",
+        "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+        "evidence_files": [
+          {
+            "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/code-review.md",
+            "sha256": "1e4e1384618101b31fafb8f24b5c50fa045baa594a35630cf4f57020de4822e4"
+          },
+          {
+            "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/18-evidence/results.json",
+            "sha256": "a2ae7e5116683ae54b80243ac7c394909512ea922a3c4fe1b72cd7f633b6e674"
+          }
+        ]
+      },
+      "CR-05": {
+        "review_ids": [
+          "CR-05"
+        ],
+        "threats": [
+          "T-06.4-01",
+          "T-06.4-27"
+        ],
+        "plans": [
+          "14",
+          "16",
+          "17",
+          "18",
+          "19"
+        ],
+        "requirements": [
+          "COND-01",
+          "COND-02",
+          "COND-03",
+          "FSET-02"
+        ],
+        "evidence": [
+          {
+            "gate": "javascript",
+            "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound true state across zero, two and one matches"
+          },
+          {
+            "gate": "javascript",
+            "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound false state across zero, two and one matches"
+          },
+          {
+            "gate": "javascript",
+            "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during missing modal disposal and reinsert"
+          },
+          {
+            "gate": "javascript",
+            "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle releases frozen ownership during ambiguous modal disposal and reinsert"
+          },
+          {
+            "gate": "javascript",
+            "case": "tests/js/toggle.test.js::conditional disabled ownership keeps a formerly bound inactive group safe during ambiguity and uniquely recovers"
+          }
+        ],
+        "status": "closed",
+        "context": "Independent original-finding table in code-review.md; current source and concrete regression/probe assertions inspected. New G6 warnings remain open.",
+        "gap": "G5",
+        "review": "code_original",
+        "actor": "gsd-code-reviewer independent lane",
+        "recorded": "2026-11-01T17:13:39Z",
+        "response": "Closed within original counterexample scope.",
+        "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+        "evidence_files": [
+          {
+            "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/code-review.md",
+            "sha256": "1e4e1384618101b31fafb8f24b5c50fa045baa594a35630cf4f57020de4822e4"
+          },
+          {
+            "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/18-evidence/results.json",
+            "sha256": "a2ae7e5116683ae54b80243ac7c394909512ea922a3c4fe1b72cd7f633b6e674"
+          }
+        ]
+      },
+      "G6": {
+        "review_ids": [
+          "WR-01",
+          "WR-02"
+        ],
+        "threats": [
+          "T-06.4-22",
+          "T-06.4-28",
+          "T-06.4-29"
+        ],
+        "plans": [
+          "15",
+          "18",
+          "19"
+        ],
+        "requirements": [
+          "LIFE-02"
+        ],
+        "evidence": [
+          {
+            "gate": "evidence-self-tests"
+          },
+          {
+            "gate": "javascript"
+          },
+          {
+            "gate": "strict-docs"
+          },
+          {
+            "gate": "ruff-check"
+          },
+          {
+            "gate": "ruff-format"
+          }
+        ],
+        "status": "open",
+        "context": "Original WR-01/02 fixed; independent new WR-03/04 leave G6/evidence-contract obligation open.",
+        "new_findings": [
+          "WR-03",
+          "WR-04"
+        ]
+      },
+      "WR-01": {
+        "review_ids": [
+          "WR-01",
+          "WR-02"
+        ],
+        "threats": [
+          "T-06.4-22",
+          "T-06.4-28",
+          "T-06.4-29"
+        ],
+        "plans": [
+          "15",
+          "18",
+          "19"
+        ],
+        "requirements": [
+          "LIFE-02"
+        ],
+        "evidence": [
+          {
+            "gate": "evidence-self-tests"
+          },
+          {
+            "gate": "javascript"
+          },
+          {
+            "gate": "strict-docs"
+          },
+          {
+            "gate": "ruff-check"
+          },
+          {
+            "gate": "ruff-format"
+          }
+        ],
+        "status": "closed",
+        "context": "Independent original-finding table in code-review.md; current source and concrete regression/probe assertions inspected. New G6 warnings remain open.",
+        "gap": "G6",
+        "review": "code_original",
+        "actor": "gsd-code-reviewer independent lane",
+        "recorded": "2026-11-01T17:13:39Z",
+        "response": "Closed within original counterexample scope.",
+        "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+        "evidence_files": [
+          {
+            "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/code-review.md",
+            "sha256": "1e4e1384618101b31fafb8f24b5c50fa045baa594a35630cf4f57020de4822e4"
+          },
+          {
+            "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/18-evidence/results.json",
+            "sha256": "a2ae7e5116683ae54b80243ac7c394909512ea922a3c4fe1b72cd7f633b6e674"
+          }
+        ]
+      },
+      "WR-02": {
+        "review_ids": [
+          "WR-01",
+          "WR-02"
+        ],
+        "threats": [
+          "T-06.4-22",
+          "T-06.4-28",
+          "T-06.4-29"
+        ],
+        "plans": [
+          "15",
+          "18",
+          "19"
+        ],
+        "requirements": [
+          "LIFE-02"
+        ],
+        "evidence": [
+          {
+            "gate": "evidence-self-tests"
+          },
+          {
+            "gate": "javascript"
+          },
+          {
+            "gate": "strict-docs"
+          },
+          {
+            "gate": "ruff-check"
+          },
+          {
+            "gate": "ruff-format"
+          }
+        ],
+        "status": "closed",
+        "context": "Independent original-finding table in code-review.md; current source and concrete regression/probe assertions inspected. New G6 warnings remain open.",
+        "gap": "G6",
+        "review": "code_original",
+        "actor": "gsd-code-reviewer independent lane",
+        "recorded": "2026-11-01T17:13:39Z",
+        "response": "Closed within original counterexample scope.",
+        "source_sha256": "bc68bdd3b135d8919f400da204eeb6dda6ebbb01f2ceee47d50f2d6655d41601",
+        "evidence_files": [
+          {
+            "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/code-review.md",
+            "sha256": "1e4e1384618101b31fafb8f24b5c50fa045baa594a35630cf4f57020de4822e4"
+          },
+          {
+            "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/18-evidence/results.json",
+            "sha256": "a2ae7e5116683ae54b80243ac7c394909512ea922a3c4fe1b72cd7f633b6e674"
+          }
+        ]
+      }
+    },
+    "new_findings": {
+      "WR-03": {
+        "status": "open",
+        "severity": "warning",
+        "gap": "G6",
+        "threats": [
+          "T-06.4-22",
+          "T-06.4-28",
+          "T-06.4-33"
+        ],
+        "title": "Missing or success-rewritten corruption subprocess records accepted",
+        "review": {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/code-review.md",
+          "sha256": "1e4e1384618101b31fafb8f24b5c50fa045baa594a35630cf4f57020de4822e4"
+        },
+        "independently_confirmed_by": {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
+          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+        },
+        "required_repair": "Require exact control-record keys/command/mode/nonzero rejection outcomes; add missing/contradictory-record negative controls."
+      },
+      "WR-04": {
+        "status": "open",
+        "severity": "warning",
+        "gap": "G6",
+        "threats": [
+          "T-06.4-22",
+          "T-06.4-31",
+          "T-06.4-33"
+        ],
+        "title": "Aggregate conditional screenshot inventory and hash contract omitted",
+        "review": {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/code-review.md",
+          "sha256": "1e4e1384618101b31fafb8f24b5c50fa045baa594a35630cf4f57020de4822e4"
+        },
+        "independently_confirmed_by": {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/security-review.md",
+          "sha256": "9b68043dfa5eb54bc351c28b5dcc0dfa52fe2b52d655e24ca883dad5f9d4984b"
+        },
+        "required_repair": "Revalidate current stock capture inventory, files/hashes and required observations; add missing/stale-capture negative controls."
+      }
+    },
+    "security_accounting": {
+      "total": 37,
+      "independently_closed": 31,
+      "open_total": 6,
+      "open_blocking_high": 5,
+      "open_nonblocking_medium": 1,
+      "machine_status_qualification": "Schema1 requires reports.security=passed for any threat.status=verified. Overall report is OPEN_THREATS, so individually closed31 use status=pending plus independent_disposition=closed until a genuinely clean independent security report. No result is silently promoted."
+    },
+    "qualification": "Original actor/time/source and bounded dispositions remain historical; none is relabeled current."
+  },
+  "applicability": {
+    "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/21-evidence/applicability.md",
+    "sha256": "6720be038f098013989d4f1b3aefea756e13ba44f7480b63ecebd226ed7c338c"
+  },
+  "canonical_reverification": {
+    "owner": "orchestrator independent gsd-verifier after plan22 SUMMARY",
+    "status": "pending",
+    "preserve_historical_report": true,
+    "exclude_from_covered_files": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/handoff.json",
+    "reason": "Handoff embeds canonical report digest; including it in that report's covered_files would create circular binding.",
+    "final_rebind_owner": "orchestrator, after canonical report is written"
+  }
+}

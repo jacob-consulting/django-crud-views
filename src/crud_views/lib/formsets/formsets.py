@@ -368,10 +368,11 @@ class FormSets(BaseModel, arbitrary_types_allowed=True):
         Two-phase and order-independent: a child formset's clean() may add_error() to a
         parent form, but in a single traversal the parent's validity is collected before
         the child's clean() runs. Phase 1 triggers every clean(); phase 2 re-derives
-        validity from the now-complete (shared) error state. Django's is_valid() runs
-        full_clean only once, so phase 2 re-runs no clean() and does no DB work, and it
-        delegates to Django's own per-formset validity (which already skips DELETE-marked
-        and empty extra forms).
+        validity from the now-complete (shared) error state. Django's is_valid() normally
+        uses cached cleaning results. Mandatory row policy still rechecks the authorized
+        queryset on each traversal, restoring policy errors if custom cleaning replaced
+        a native error cache. Django's own per-formset validity already skips DELETE-marked
+        and empty extra forms; mandatory row policy also checks those rows.
         """
         # Phase 1: trigger every formset's clean() (where cross-form add_error happens).
         # Discard results — collected in hierarchy order, before later cleans ran.

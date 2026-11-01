@@ -27,7 +27,7 @@ from django.core.exceptions import ValidationError
 from django.forms.forms import BaseForm
 from django.forms.formsets import BaseFormSet
 from django.utils.translation import gettext_lazy as _
-from pydantic import BaseModel, Field, PrivateAttr
+from pydantic import BaseModel, Field
 
 from crud_views.lib.exceptions import CrudViewError
 
@@ -103,7 +103,6 @@ class XFormSet(BaseModel, arbitrary_types_allowed=True):
     forms: list[XForm] = Field(default_factory=lambda: [])
     parent: XForm | None = None
     render_rows_only: bool = False  # True for the AJAX row template: skip the fieldset wrapper
-    _cv_row_policy_checked: bool = PrivateAttr(default=False)
 
     def __str__(self):
         return f"XFormSet({self.prefix},{self.prefix_key},{self.level})"
@@ -210,12 +209,12 @@ class XFormSet(BaseModel, arbitrary_types_allowed=True):
     def _cv_validate_row_policy(self):
         """Enforce row capabilities for every accepted inline formset class.
 
-        Run after normal Django/custom cleaning, including on DELETE-marked
-        rows. Inactive top-level trees never enter this validation traversal.
+        Run after normal Django/custom cleaning on every traversal, including
+        on DELETE-marked rows: full_clean() can replace the native error cache.
+        Inactive top-level trees never enter this validation traversal.
         """
-        if self._cv_row_policy_checked or not self.instance.is_bound:
+        if not self.instance.is_bound:
             return
-        self._cv_row_policy_checked = True
         if not self.instance.management_form.is_valid():
             return
         initial = self.instance.initial_form_count()

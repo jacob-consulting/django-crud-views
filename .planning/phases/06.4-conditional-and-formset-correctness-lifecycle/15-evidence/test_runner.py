@@ -314,6 +314,16 @@ class CompletePacketFixture:
         self.manifest = runner.source()
         self.packet = json.loads((HERE.parent / "18-evidence/results.json").read_text())
         self.packet.update(source_manifest=self.manifest, runner_sha256=runner.sha(runner.__file__))
+        # Synthetic record defects supplement the original payload records. Only
+        # test_real_staged_controls claims executions for this synthetic packet.
+        for kind in runner.RECORD_CORRUPTIONS:
+            self.packet["checker_controls"][kind] = "rejected"
+            self.packet["checker_control_evidence"][kind] = {
+                "command": [sys.executable, str(HERE / "run.py"), "--check", "--output", f"/tmp/synthetic/{kind}.json"],
+                "returncode": 1,
+                "stdout": "",
+                "stderr": f"MATRIX_REJECTED: {runner.CONTROL_DIAGNOSTICS[kind]}\n",
+            }
         for gate in self.packet["gates"].values():
             gate.update(
                 source_sha256=self.manifest["sha256"],
@@ -384,6 +394,25 @@ class CompletePacketFixture:
 
 
 class CheckerControlEvidence(CompletePacketFixture, unittest.TestCase):
+    def test_real_staged_controls_and_final_positive(self):
+        self.save()
+        runner.generate_controls(self.packet, self.manifest, self.output)
+        self.assertEqual(set(self.packet["checker_control_evidence"]), set(runner.CORRUPTIONS))
+        for kind, record in self.packet["checker_control_evidence"].items():
+            self.assertEqual(record["returncode"], 1, kind)
+            self.assertEqual(record["stderr"], f"MATRIX_REJECTED: {runner.CONTROL_DIAGNOSTICS[kind]}\n")
+        self.assertEqual(self.packet["checker_positive_control"]["returncode"], 0)
+        self.assertIn("PHASE64_MATRIX_OK", self.packet["checker_positive_control"]["stdout"])
+        self.assertEqual(self.cli(handoff=True).returncode, 0)
+
+    def test_internal_payload_result_cannot_supply_final_acceptance(self):
+        self.packet.pop("checker_control_evidence")
+        result = runner.validate(self.packet, self.manifest, require_controls=False)
+        self.assertIs(result["complete"], False)
+        rejected = self.cli()
+        self.assertEqual(rejected.returncode, 1)
+        self.assertIn("Checker control evidence inventory", rejected.stderr)
+
     def test_complete_packet_cli_and_pending_handoff_positive(self):
         runner.validate(self.packet, self.manifest)
         result = self.cli()

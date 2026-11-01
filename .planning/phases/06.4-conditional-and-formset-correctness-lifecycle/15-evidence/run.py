@@ -57,7 +57,7 @@ FOCUSED = [
 ROUTES = ("focused", "enabled-full", "disabled-full", "missing-runtime")
 QUALITY = ("javascript", "javascript-integration", "strict-docs", "ruff-check", "ruff-format", "evidence-self-tests")
 BROWSERS = ("conditional-browser", "modal-browser")
-CORRUPTIONS = (
+PAYLOAD_CORRUPTIONS = (
     "exit-code",
     "required-case-list",
     "raw-balance-assertion",
@@ -84,6 +84,48 @@ CORRUPTIONS = (
     "ruff-wrong-subcommand",
     "ruff-format-missing-check",
 )
+RECORD_CORRUPTIONS = (
+    "control-missing-evidence",
+    "control-missing-summary",
+    "control-success-outcome",
+    "control-wrong-command",
+    "control-wrong-diagnostic",
+)
+CORRUPTIONS = PAYLOAD_CORRUPTIONS + RECORD_CORRUPTIONS
+# Exact predicates, rather than any failure bearing a rejection label. Several
+# mutations intentionally exercise the same predicate with different inputs.
+CONTROL_DIAGNOSTICS = {
+    "exit-code": "django4.2-focused: green suite failed/empty",
+    "required-case-list": "Corrupted required-case list",
+    "raw-balance-assertion": "Missing/false assertion fragment-raw-balance",
+    "inline-clear-assertion": "Missing/false assertion inline-file-clear-unchanged",
+    "source-hash": "Missing/stale source manifest",
+    "tracer-absent": "django4.2-focused: required tracer missing/skipped/failed",
+    "tracer-skipped": "django4.2-focused: unexpected skip/reason",
+    "tracer-failed": "django4.2-focused: green suite failed/empty",
+    "tracer-zero-selected": "django4.2-focused: inconsistent/empty counts",
+    "disabled-opt-in": "django4.2-disabled-full: forged Node-free environment",
+    "disabled-node-absence": "django4.2-disabled-full: forged Node-free environment",
+    "negative-control-setup-error": "django4.2-missing-runtime: setup/collection failure is not runtime proof",
+    "js-filtered-command": "javascript: wrong quality command",
+    "js-wrong-executable": "javascript: wrong quality command",
+    "js-missing-file": "JS missing/duplicate file",
+    "js-duplicate-file": "JS missing/duplicate file",
+    "js-missing-case": "JS missing/duplicate case selection",
+    "js-duplicate-case": "JS missing/duplicate case selection",
+    "js-failed-case": "JS failed/skipped required case",
+    "js-skipped-case": "JS failed/skipped required case",
+    "js-false-counts": "JS inconsistent counts",
+    "integration-missing": "Missing/extra matrix gates",
+    "docs-non-strict": "strict-docs: wrong quality command",
+    "ruff-wrong-subcommand": "ruff-check: wrong quality command",
+    "ruff-format-missing-check": "ruff-format: wrong quality command",
+    "control-missing-evidence": "Checker control evidence inventory incomplete",
+    "control-missing-summary": "Checker control summary inventory incomplete",
+    "control-success-outcome": "Checker control exit invalid: exit-code",
+    "control-wrong-command": "Checker control command invalid: exit-code",
+    "control-wrong-diagnostic": "Checker control diagnostic mismatch: exit-code",
+}
 RUNTIME_MANIFEST = ".planning/phases/06-form-button-leaf/06-JS-RUNTIME.json"
 BASE = "74dcd53ad425d7a97a8a1249a41e23092723edfc"
 
@@ -134,6 +176,17 @@ def now():
 def need(condition, message):
     if not condition:
         raise ValueError(message)
+
+
+def load_json(path):
+    def unique(pairs):
+        result = {}
+        for key, value in pairs:
+            need(key not in result, f"Duplicate JSON key: {key}")
+            result[key] = value
+        return result
+
+    return json.loads(Path(path).read_text(), object_pairs_hook=unique)
 
 
 def node_path():
@@ -948,6 +1001,47 @@ def validate_browser(r):
                 need(sha(ROOT / shot["path"]) == shot["sha256"], "Stale modal screenshot")
 
 
+def validate_control_record(kind, record):
+    need(isinstance(record, dict), f"Checker control evidence malformed: {kind}")
+    need(type(record.get("returncode")) is int and record["returncode"] == 1, f"Checker control exit invalid: {kind}")
+    command = record.get("command")
+    need(
+        isinstance(command, list)
+        and len(command) == 5
+        and all(isinstance(arg, str) for arg in command)
+        and command[:4] == [sys.executable, str(Path(__file__).resolve()), "--check", "--output"]
+        and Path(command[4]).is_absolute()
+        and Path(command[4]).name == f"{kind}.json"
+        and ".." not in Path(command[4]).parts,
+        f"Checker control command invalid: {kind}",
+    )
+    need(
+        record.get("stdout") == "" and record.get("stderr") == f"MATRIX_REJECTED: {CONTROL_DIAGNOSTICS[kind]}\n",
+        f"Checker control diagnostic mismatch: {kind}",
+    )
+
+
+def validate_controls(data):
+    summary = data.get("checker_controls")
+    details = data.get("checker_control_evidence")
+    # Stage two mutations operate on real stage one outcomes. Validate those
+    # first, before asking for the stage two records which do not yet exist.
+    need(
+        isinstance(details, dict) and set(PAYLOAD_CORRUPTIONS) <= set(details),
+        "Checker control evidence inventory incomplete",
+    )
+    need(
+        isinstance(summary, dict) and set(PAYLOAD_CORRUPTIONS) <= set(summary),
+        "Checker control summary inventory incomplete",
+    )
+    for kind in PAYLOAD_CORRUPTIONS:
+        validate_control_record(kind, details[kind])
+    need(set(details) == set(CORRUPTIONS), "Checker control evidence inventory incomplete")
+    need(summary == dict.fromkeys(CORRUPTIONS, "rejected"), "Checker control summary inventory incomplete")
+    for kind in RECORD_CORRUPTIONS:
+        validate_control_record(kind, details[kind])
+
+
 def validate(data, manifest, require_controls=True, only=None):
     need(data.get("schema") == 2, "Unsupported successor schema")
     need(data.get("completed") is (only is None) and data.get("only") == only, "Incomplete matrix / scoped packet")
@@ -982,14 +1076,25 @@ def validate(data, manifest, require_controls=True, only=None):
         "Browser runners collided or did not run sequentially",
     )
     if require_controls:
-        need(data.get("checker_controls") == dict.fromkeys(CORRUPTIONS, "rejected"), "Checker controls incomplete")
+        validate_controls(data)
+    return {"complete": require_controls, "scope": only}
 
 
 def corrupt(data, kind):
     first = data["gates"]["django4.2-focused"]
     conditional = data["gates"]["conditional-browser"]["browser"]
     js = data["gates"]["javascript"]
-    if kind == "js-filtered-command":
+    if kind == "control-missing-evidence":
+        data.pop("checker_control_evidence", None)
+    elif kind == "control-missing-summary":
+        data.pop("checker_controls", None)
+    elif kind == "control-success-outcome":
+        data["checker_control_evidence"]["exit-code"]["returncode"] = 0
+    elif kind == "control-wrong-command":
+        data["checker_control_evidence"]["exit-code"]["command"][0] = "/bin/true"
+    elif kind == "control-wrong-diagnostic":
+        data["checker_control_evidence"]["exit-code"]["stderr"] = "MATRIX_REJECTED: Missing/stale source manifest\n"
+    elif kind == "js-filtered-command":
         js["command"].insert(3, "-t=renders")
         js["counts"] = {"passed": 1, "collected": 1, "files": 1}
     elif kind == "js-wrong-executable":
@@ -1061,11 +1166,11 @@ def corrupt(data, kind):
         control["reports"] = [p for p in control["reports"] if p["when"] != "call"]
 
 
-def check(output, controls=True, only=None):
+def check(output, only=None):
     manifest = source()
-    data = json.loads(output.read_text())
-    validate(data, manifest, require_controls=controls, only=only)
-    need(json.loads((output.parent / "source-manifest.json").read_text()) == manifest, "Sidecar source manifest stale")
+    data = load_json(output)
+    validate(data, manifest, only=only)
+    need(load_json(output.parent / "source-manifest.json") == manifest, "Sidecar source manifest stale")
     print(
         f"PHASE64_{'SCOPED' if only else 'MATRIX'}_OK {len(data['gates'])} gates source={manifest['sha256']}",
         flush=True,
@@ -1076,7 +1181,7 @@ def run(output, only=None):
     # Preflight is intentionally before reading or modifying any capture metadata.
     request = capture_request()
     manifest = source()
-    data = json.loads(output.read_text()) if output.exists() else {}
+    data = load_json(output) if output.exists() else {}
     if data.get("source_manifest") != manifest:
         need(not data, "Source changed: preserve old results elsewhere before beginning a new evidence capture")
     need(not data or data.get("only") == only, "Cannot reinterpret a scoped/full capture")
@@ -1186,37 +1291,66 @@ def run(output, only=None):
     if only:
         check(output, only=only)
         return
-    controls = {}
-    control_evidence = {}
+    generate_controls(data, manifest, output)
+    check(output)
+
+
+def generate_controls(data, manifest, output):
+    """Run payload controls, record controls, then an uncorrupted positive check.
+
+    No seed outcome is invented. Payload validation precedes controls in validate;
+    thus stage one fails on its mutation, and stage two on real stage one records.
+    """
+    data["checker_controls"] = {}
+    data["checker_control_evidence"] = {}
     # Actual --check subprocesses read temporary corrupted copies; real evidence is untouched.
     with tempfile.TemporaryDirectory(prefix="cv64-checker-controls-") as directory:
         for kind in CORRUPTIONS:
             altered = copy.deepcopy(data)
-            altered["checker_controls"] = dict.fromkeys(CORRUPTIONS, "rejected")
             corrupt(altered, kind)
             path = Path(directory) / f"{kind}.json"
             write_json(path, altered)
             write_json(path.parent / "source-manifest.json", manifest)
             result = subprocess.run(
-                [sys.executable, __file__, "--check", "--output", str(path)],
+                [sys.executable, str(Path(__file__).resolve()), "--check", "--output", str(path)],
                 cwd=ROOT,
                 capture_output=True,
                 text=True,
                 timeout=60,
             )
-            need(result.returncode != 0 and "MATRIX_REJECTED" in result.stderr, f"Checker accepted corruption: {kind}")
-            controls[kind] = "rejected"
-            control_evidence[kind] = {
+            record = {
                 "command": result.args,
                 "returncode": result.returncode,
                 "stdout": result.stdout,
                 "stderr": result.stderr,
             }
+            validate_control_record(kind, record)
+            data["checker_controls"][kind] = "rejected"
+            data["checker_control_evidence"][kind] = record
             print(f"REJECTED corruption {kind}", flush=True)
-    data["checker_controls"] = controls
-    data["checker_control_evidence"] = control_evidence
     write_json(output, data)
-    check(output)
+    positive = subprocess.run(
+        [sys.executable, str(Path(__file__).resolve()), "--check", "--output", str(output)],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+    need(
+        positive.returncode == 0
+        and positive.stderr == ""
+        and positive.stdout == f"PHASE64_MATRIX_OK {len(data['gates'])} gates source={manifest['sha256']}\n",
+        f"Final positive checker control failed: {positive.stderr}",
+    )
+    # This is an observation of the preceding complete check, not a prerequisite
+    # for that same check (which would require inventing a self-referential seed).
+    data["checker_positive_control"] = {
+        "command": positive.args,
+        "returncode": positive.returncode,
+        "stdout": positive.stdout,
+        "stderr": positive.stderr,
+    }
+    write_json(output, data)
 
 
 GAP_REVIEWS = {
@@ -1225,7 +1359,7 @@ GAP_REVIEWS = {
     "G3": ["CR-03"],
     "G4": ["CR-04"],
     "G5": ["CR-05"],
-    "G6": ["WR-01", "WR-02"],
+    "G6": ["WR-01", "WR-02", "WR-03", "WR-04"],
 }
 GAP_THREATS = {
     "G1": ["07", "08", "09", "24"],
@@ -1233,7 +1367,7 @@ GAP_THREATS = {
     "G3": ["15", "26"],
     "G4": ["15", "26"],
     "G5": ["01", "27"],
-    "G6": ["22", "28", "29"],
+    "G6": ["22", "28", "29", "31", "33"],
 }
 PROHIBITION = "Switching a conditional file field off must not silently authorize deletion of the stored file content."
 
@@ -1299,10 +1433,10 @@ def validate_handoff(data):
         "Handoff source/runner provenance stale",
     )
     packet_path = bound_file(data.get("packet"))
-    matrix = json.loads(packet_path.read_text())
+    matrix = load_json(packet_path)
     validate(matrix, manifest)
     need(
-        json.loads((packet_path.parent / "source-manifest.json").read_text()) == manifest,
+        load_json(packet_path.parent / "source-manifest.json") == manifest,
         "Handoff matrix sidecar stale",
     )
     reports = data.get("reports", {})
@@ -1415,7 +1549,7 @@ def main():
     try:
         if args.check_handoff:
             need(not args.only, "--only is not a handoff mode")
-            print(json.dumps(validate_handoff(json.loads(args.check_handoff.read_text())), sort_keys=True))
+            print(json.dumps(validate_handoff(load_json(args.check_handoff)), sort_keys=True))
         elif args.run:
             run(args.output.resolve(), only=args.only)
         else:

@@ -494,6 +494,153 @@ class CheckerControlEvidence(CompletePacketFixture, unittest.TestCase):
             self.assertIn("MATRIX_REJECTED: Duplicate JSON key: schema", result.stderr)
 
 
+class ConditionalCaptureEvidence(CompletePacketFixture, unittest.TestCase):
+    def conditional(self):
+        return self.packet["gates"]["conditional-browser"]
+
+    def case(self, theme="stock"):
+        return next(
+            c for c in self.conditional()["browser"]["cases"] if c["id"] == "gap-ambiguity" and c["theme"] == theme
+        )
+
+    def test_current_three_stock_and_explicit_empty_native_are_valid(self):
+        self.assertEqual([c["device"]["id"] for c in self.case()["captures"]], ["desktop", "mobile", "tablet"])
+        self.assertEqual(self.case("native")["captures"], [])
+        runner.validate_browser(self.conditional())
+
+    def test_missing_capture_inventory_rejects_aggregate_cli_and_handoff(self):
+        self.case()["captures"] = []
+        self.assert_rejected_everywhere("Conditional capture inventory")
+
+    def test_exact_stock_and_native_inventories(self):
+        original = copy.deepcopy(self.conditional())
+        mutations = [
+            lambda c: c["captures"].pop(),
+            lambda c: c["captures"].append(copy.deepcopy(c["captures"][0])),
+            lambda c: c["captures"].__setitem__(1, copy.deepcopy(c["captures"][0])),
+            lambda c: c["captures"][0]["device"].__setitem__("id", "other"),
+        ]
+        for alter in mutations:
+            self.packet["gates"]["conditional-browser"] = copy.deepcopy(original)
+            alter(self.case())
+            with self.assertRaisesRegex(ValueError, "Conditional capture inventory"):
+                runner.validate_browser(self.conditional())
+        for missing in (True, False):
+            with self.subTest(native_missing=missing):
+                self.packet["gates"]["conditional-browser"] = copy.deepcopy(original)
+                if missing:
+                    self.case("native").pop("captures")
+                else:
+                    self.case("native")["captures"] = copy.deepcopy(self.case()["captures"])
+                with self.assertRaisesRegex(ValueError, "Conditional capture inventory"):
+                    runner.validate_browser(self.conditional())
+        self.packet["gates"]["conditional-browser"] = copy.deepcopy(original)
+        self.case()["theme"] = "native"
+        with self.assertRaisesRegex(ValueError, "browser case"):
+            runner.validate_browser(self.conditional())
+
+    def test_device_viewport_and_containment_observations(self):
+        original = copy.deepcopy(self.conditional())
+        mutations = [
+            (lambda c: c["device"].__setitem__("width", 375), "device"),
+            (lambda c: c["device"].__setitem__("height", 812), "device"),
+            (lambda c: c["device"].__setitem__("deviceScaleFactor", 2), "device"),
+            (lambda c: c["device"].__setitem__("hasTouch", True), "device"),
+            (lambda c: c["device"].__setitem__("isMobile", "false"), "device"),
+            (lambda c: c.__setitem__("viewport", "width=1440"), "viewport"),
+            (lambda c: c["document"].__setitem__("clientWidth", 0), "containment"),
+            (lambda c: c["document"].__setitem__("innerWidth", 375), "containment"),
+            (lambda c: c["document"].__setitem__("scrollWidth", 1441), "containment"),
+        ]
+        for alter, pattern in mutations:
+            with self.subTest(pattern=pattern):
+                self.packet["gates"]["conditional-browser"] = copy.deepcopy(original)
+                alter(self.case()["captures"][0])
+                with self.assertRaisesRegex(ValueError, "Conditional capture " + pattern):
+                    runner.validate_browser(self.conditional())
+        self.packet["gates"]["conditional-browser"] = copy.deepcopy(original)
+        assertion = next(a for a in self.case()["assertions"] if a["id"] == "responsive-containment")
+        assertion["detail"][0]["innerWidth"] = 375
+        with self.assertRaisesRegex(ValueError, "Conditional capture containment"):
+            runner.validate_browser(self.conditional())
+
+    def test_missing_or_false_rendered_icon_observations(self):
+        original = copy.deepcopy(self.conditional())
+        mutations = [
+            lambda c: c.pop("icons"),
+            lambda c: c["icons"].__setitem__("loaded", False),
+            lambda c: c["icons"].__setitem__("glyphs", []),
+            lambda c: c["icons"]["glyphs"][0].__setitem__("content", "none"),
+            lambda c: c["icons"]["glyphs"][0].__setitem__("family", ""),
+            lambda c: c["icons"]["glyphs"][0].__setitem__("width", 0),
+            lambda c: c["icons"]["glyphs"][0].__setitem__("height", -1),
+            lambda c: c["icons"]["glyphs"][0].__setitem__("width", float("nan")),
+        ]
+        for alter in mutations:
+            self.packet["gates"]["conditional-browser"] = copy.deepcopy(original)
+            alter(self.case()["captures"][0])
+            with self.assertRaisesRegex(ValueError, "Conditional capture icon observations"):
+                runner.validate_browser(self.conditional())
+
+    def test_stale_digest_rejects_despite_historical_canonical_success(self):
+        self.assertEqual(self.conditional()["canonical_check"]["returncode"], 0)
+        self.case()["captures"][0]["sha256"] = "0" * 64
+        self.assert_rejected_everywhere("Conditional capture digest")
+
+    def test_paths_are_bounded_and_distinct(self):
+        original = copy.deepcopy(self.conditional())
+        first = self.case()["captures"][0]
+        absolute = str(runner.ROOT / first["path"])
+        paths = [absolute, ".planning/ui-reviews/06.4-gap-repair/../06.4-gap-repair/desktop.png", "tests/desktop.png"]
+        for path in paths:
+            with self.subTest(path=path):
+                self.packet["gates"]["conditional-browser"] = copy.deepcopy(original)
+                self.case()["captures"][0]["path"] = path
+                with self.assertRaisesRegex(ValueError, "Conditional capture path"):
+                    runner.validate_browser(self.conditional())
+        self.packet["gates"]["conditional-browser"] = copy.deepcopy(original)
+        self.case()["captures"][1]["path"] = self.case()["captures"][0]["path"]
+        with self.assertRaisesRegex(ValueError, "Conditional capture path"):
+            runner.validate_browser(self.conditional())
+        with tempfile.TemporaryDirectory(dir=runner.ROOT / ".planning/ui-reviews/06.4-gap-repair") as directory:
+            link = Path(directory) / "escape.png"
+            target = self.directory / "outside.png"
+            target.write_bytes((runner.ROOT / first["path"]).read_bytes())
+            link.symlink_to(target)
+            self.packet["gates"]["conditional-browser"] = copy.deepcopy(original)
+            self.case()["captures"][0]["path"] = str(link.relative_to(runner.ROOT))
+            with self.assertRaisesRegex(ValueError, "Conditional capture path"):
+                runner.validate_browser(self.conditional())
+
+    def test_changed_deleted_or_non_png_owned_bytes_reject_without_touching_originals(self):
+        capture = self.case()["captures"][0]
+        original = runner.ROOT / capture["path"]
+        digest = runner.sha(original)
+        with tempfile.TemporaryDirectory(dir=runner.ROOT / ".planning/ui-reviews/06.4-gap-repair") as directory:
+            owned = Path(directory) / "desktop.png"
+            owned.write_bytes(original.read_bytes())
+            capture["path"] = str(owned.relative_to(runner.ROOT))
+            runner.validate_browser(self.conditional())
+            owned.write_bytes(owned.read_bytes() + b"damaged")
+            with self.assertRaisesRegex(ValueError, "Conditional capture digest"):
+                runner.validate_browser(self.conditional())
+            owned.write_bytes(b"not a PNG")
+            capture["sha256"] = runner.sha(owned)
+            with self.assertRaisesRegex(ValueError, "Conditional capture PNG"):
+                runner.validate_browser(self.conditional())
+            owned.unlink()
+            with self.assertRaisesRegex(ValueError, "Conditional capture bytes"):
+                runner.validate_browser(self.conditional())
+        self.assertEqual(runner.sha(original), digest)
+
+    def test_historical_human_markers_stay_pending(self):
+        for identity in ("H1", "H2"):
+            self.case()["humanReview"][identity] = "accepted"
+            with self.assertRaisesRegex(ValueError, "Conditional capture human review"):
+                runner.validate_browser(self.conditional())
+            self.case()["humanReview"][identity] = "pending"
+
+
 class HandoffEvidence(unittest.TestCase):
     def setUp(self):
         # Synthetic unit fixture, never a claimed acceptance packet. Full-matrix

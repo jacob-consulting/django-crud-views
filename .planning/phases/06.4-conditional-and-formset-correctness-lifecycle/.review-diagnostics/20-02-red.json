@@ -1,0 +1,10 @@
+{
+  "command": ".nox/crispy_floor-3-12-django-6-0/bin/python .planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/test_runner.py ConditionalCaptureEvidence.test_missing_capture_inventory_rejects_aggregate_cli_and_handoff -v",
+  "exitCode": 1,
+  "output": "test_missing_capture_inventory_rejects_aggregate_cli_and_handoff (__main__.ConditionalCaptureEvidence.test_missing_capture_inventory_rejects_aggregate_cli_and_handoff) ... FAIL\n\n======================================================================\nFAIL: test_missing_capture_inventory_rejects_aggregate_cli_and_handoff (__main__.ConditionalCaptureEvidence.test_missing_capture_inventory_rejects_aggregate_cli_and_handoff)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/test_runner.py\", line 513, in test_missing_capture_inventory_rejects_aggregate_cli_and_handoff\n    self.assert_rejected_everywhere(\"Conditional capture inventory\")\n  File \"/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/test_runner.py\", line 382, in assert_rejected_everywhere\n    with self.assertRaisesRegex(ValueError, pattern):\nAssertionError: ValueError not raised\n\n----------------------------------------------------------------------\nRan 1 test in 3.353s\n\nFAILED (failures=1)\n",
+  "targetTest": "test_missing_capture_inventory_rejects_aggregate_cli_and_handoff",
+  "targetFile": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/test_runner.py",
+  "expected": "empty stock capture inventory raises ValueError",
+  "actual": "ValueError not raised",
+  "semanticAssessment": "Named behavior assertion fails because empty stock capture inventory is accepted; complete current-provenance synthetic packet passed all prior predicates."
+}

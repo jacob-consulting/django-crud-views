@@ -350,3 +350,72 @@ def test_off_formset_without_management_form_does_not_crash():
     # re-rendering the ignored formset must not raise either
     html = render_to_string("crud_views/formsets/formsets.html", {"formsets": formsets})
     assert 'cv-data-toggle-field="with_items"' in html
+
+
+@pytest.mark.parametrize("saved", [False, True], ids=["create", "update"])
+@pytest.mark.parametrize("invalid", [False, True], ids=["initial", "invalid-rerender"])
+@pytest.mark.parametrize("toggle_field", ["with_items", "with_contact"])
+def test_prefixed_conditional_wrapper_preserves_management_payload(saved, invalid, toggle_field):
+    from html.parser import HTMLParser
+
+    from django.template.loader import render_to_string
+
+    class MainForm(_ProfileForm):
+        class Meta(_ProfileForm.Meta):
+            fields = ["name", "with_items", "with_contact"]
+
+    class Inputs(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.values = {}
+
+        def handle_starttag(self, tag, attrs):
+            attrs = dict(attrs)
+            if tag == "input" and "name" in attrs:
+                self.values[attrs["name"]] = attrs.get("value", "")
+
+    profile = Profile.objects.create(name="p", with_items=True, with_contact=True) if saved else Profile()
+    if saved:
+        ProfileItem.objects.create(profile=profile, label="existing")
+    item_formset = inlineformset_factory(
+        Profile, ProfileItem, formset=_ItemInlineFormSet, form=_ItemForm, fields=["label"], extra=1, can_delete=True
+    )
+    declaration = FormSets(
+        formsets={
+            "items": FormSet(
+                title="Items",
+                klass=item_formset,
+                conditional=ConditionalFormSet(toggle=ModelFieldToggle(toggle_field)),
+            ),
+        }
+    )
+    main_form = MainForm(cv_view=None, instance=profile, prefix="account")
+    formsets = declaration.clone(cv_view=None)
+    formsets.init(request=RequestFactory().get("/"), form=main_form)
+    x_formset = formsets.x_formsets[0]
+    management = {field.html_name: str(field.value()) for field in x_formset.management_form}
+    if invalid:
+        post = {**management, "account-name": "", f"account-{toggle_field}": "on"}
+        if saved:
+            row = x_formset.forms[0].form
+            post.update({row.add_prefix("id"): str(row.instance.pk), row.add_prefix("label"): "existing"})
+        main_form = MainForm(cv_view=None, instance=profile, prefix="account", data=post)
+        assert not main_form.is_valid()
+        formsets = declaration.clone(cv_view=None)
+        formsets.init(request=RequestFactory().post("/", data=post), form=main_form)
+        formsets.apply_conditional(main_form)
+        assert formsets.x_formsets[0].cv_active
+
+    html = render_to_string("crud_views/formsets/formsets.html", {"formsets": formsets})
+    assert f'cv-data-toggle-field="account-{toggle_field}"' in html
+    assert formsets.x_formsets[0].cv_toggle_field == main_form.add_prefix(toggle_field)
+    parsed = Inputs()
+    parsed.feed(html)
+    assert len(management) == 4
+    assert {name: parsed.values[name] for name in management} == management
+
+
+def test_unconditional_formset_projection_has_no_toggle():
+    formsets, _, _ = _make("skip", "")
+    formsets.x_formsets[0].formset.conditional = None
+    assert formsets.x_formsets[0].cv_toggle_field == ""

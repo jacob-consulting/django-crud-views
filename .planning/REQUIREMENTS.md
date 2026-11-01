@@ -241,7 +241,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | FSET-02 | Phase 6.4 | Pending phase acceptance — canonical re-verification closes CR-03/04/05; native optional DELETE, stable bound capability and repeat-safe lifecycle verified |
 | FSET-03 | Phase 6.4 | Pending phase acceptance — canonical verifier confirms scoped A19 sibling/deeper round trips and authorization |
 | LIFE-01 | Phase 6.4 | Pending H1 human judgment — current 36-case/305-assertion browser packet verified and V1/V2/S1 closed; stock/native readability/discoverability/accessibility remains unapproved |
-| LIFE-02 | Phase 6.4 | Pending — CR-02 and original WR-01/02 closed; G6 remains blocked by WR-03/04 corruption-record and screenshot validation gaps, with high security obligations and H1/H2 unresolved |
+| LIFE-02 | Phase 6.4 | Pending — CR-02 and WR-01–04 independently closed within scope; G6 remains open for WR-05 oversized glyph diagnostic robustness, with high security obligations and H1/H2 unresolved |
 | STAB-01 | Phase 7 (plan 4) | Pending |
 | STAB-02 | Phase 7 (plan 4) | Pending |
 | STAB-03 | Phase 7 (plan 4) | Pending |

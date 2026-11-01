@@ -19,6 +19,8 @@ const FORMSET_DEFAULTS = {
     rows: 2,
     canOrder: true,
     canDelete: true,
+    canDeleteExtra: true,
+    initialForms: null,
     editOnly: false,
     fields: ["name"],
     pkField: "id",
@@ -49,7 +51,8 @@ export function rowHtml(i, opts = {}) {
     const orderInput = o.canOrder
         ? `<input type="hidden" name="${formPrefix}-ORDER" value="${i + 1}">`
         : "";
-    const deleteInput = o.canDelete
+    const canDelete = o.canDelete && (o.canDeleteExtra || i < (o.initialForms ?? o.rows));
+    const deleteInput = canDelete
         ? `<input type="hidden" name="${formPrefix}-DELETE" value="${deleted}">`
         : "";
     const orderButtons = o.canOrder
@@ -59,7 +62,7 @@ export function rowHtml(i, opts = {}) {
     const addButton = o.editOnly
         ? ""
         : `<button type="button" class="btn btn-light cv-form-ctrl-add" cv-data-formset-form-prefix="${formPrefix}"></button>`;
-    const deleteButton = o.canDelete
+    const deleteButton = canDelete
         ? `<button type="button" class="${o.deleteClass} cv-form-ctrl-delete" data-cv-class="${o.deleteClass}" data-cv-class-danger="${o.deleteDangerClass}" cv-data-formset-form-prefix="${formPrefix}"></button>`
         : "";
     return `
@@ -86,7 +89,7 @@ export function formsetHtml(opts = {}) {
         parent_prefix: "",
         parent_prefix_key: "",
         can_delete: o.canDelete,
-        can_delete_extra: true,
+        can_delete_extra: o.canDeleteExtra,
         can_order: o.canOrder,
         edit_only: o.editOnly,
         path: "/formset-rows/",
@@ -100,7 +103,7 @@ export function formsetHtml(opts = {}) {
             <fieldset class="cv-formset-fieldset" cv-data-formset-key="${o.key}" cv-data-formset-prefix="${prefix}">
                 <div class="cv-formset-content" cv-data-formset='${data}' cv-data-formset-prefix="${prefix}">
                     <input type="hidden" name="${prefix}-TOTAL_FORMS" value="${o.rows}">
-                    <input type="hidden" name="${prefix}-INITIAL_FORMS" value="${o.rows}">
+                    <input type="hidden" name="${prefix}-INITIAL_FORMS" value="${o.initialForms ?? o.rows}">
                     <input type="hidden" name="${prefix}-MIN_NUM_FORMS" value="0">
                     <input type="hidden" name="${prefix}-MAX_NUM_FORMS" value="1000">
                     ${rowsHtml}

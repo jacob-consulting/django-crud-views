@@ -508,6 +508,107 @@ describe("formset.js", () => {
         });
     });
 
+    describe("native row deletion eligibility", () => {
+        function setup(opts = {}) {
+            const options = { rows: 3, initialForms: 1, canDeleteExtra: false, ...opts };
+            const { prefix } = formsetFixture(options);
+            const form = document.querySelector("form");
+            window.cv.initFormsets(form);
+            const row = i => [...form.querySelectorAll(".cv-formset-row")]
+                .find(el => el.getAttribute("cv-data-formset-form-prefix") === `${prefix}-${i}`);
+            const field = (i, key) => [...form.elements].find(el => el.name === `${prefix}-${i}-${key}`);
+            const button = (i, action) => row(i).querySelector(`.cv-form-ctrl-${action}`);
+            const context = i => new window.cv.XForm({ form }, `${prefix}-${i}`);
+            const submit = () => {
+                const event = new Event("submit", { bubbles: true, cancelable: true });
+                form.dispatchEvent(event);
+                expect(event.defaultPrevented).toBe(false);
+                return new FormData(form);
+            };
+            return { options, prefix, form, row, field, button, context, submit };
+        }
+
+        it.each([true, false])("allows Add and submit without extra DELETE (ordered=%s)", canOrder => {
+            const s = setup({ canOrder, initialForms: 0 });
+            expect(s.field(0, "DELETE")).toBeUndefined();
+            const events = [];
+            s.form.addEventListener("cv:formset:row-added", event => events.push(event.detail));
+            const ajax = vi.spyOn($, "ajax").mockImplementation(request => request.success({
+                html: rowHtml(3, s.options), rows: [`${s.prefix}-3`],
+            }));
+            try {
+                s.button(0, "add").click();
+                expect(s.row(3)).toBeDefined();
+                expect(ajax).toHaveBeenCalledTimes(1);
+                expect(events).toEqual([{ prefix: `${s.prefix}-3`, rows: [`${s.prefix}-3`] }]);
+                expect(s.submit().get(`${s.prefix}-TOTAL_FORMS`)).toBe("4");
+            } finally { ajax.mockRestore(); }
+        });
+
+        it("keeps an initial row deletable after an extra moves above it", () => {
+            const s = setup({ canOrder: false });
+            // Existing custom templates may supply misleading extra DELETE markup.
+            s.row(1).insertAdjacentHTML("beforeend", `<input name="${s.prefix}-1-DELETE" value="0">`);
+            s.row(0).before(s.row(1));
+            s.button(0, "delete").click();
+            expect(s.field(0, "DELETE").value).toBe("1");
+            expect(s.submit().get(`${s.prefix}-INITIAL_FORMS`)).toBe("1");
+        });
+
+        it.each(["direct", "delegated"])("refuses custom extra Delete after upward movement (%s)", path => {
+            const s = setup({ canOrder: false });
+            s.row(1).insertAdjacentHTML("beforeend", `<input name="${s.prefix}-1-DELETE" value="0">
+                <button type="button" class="cv-form-ctrl-delete" cv-data-formset-form-prefix="${s.prefix}-1"></button>`);
+            s.row(0).before(s.row(1));
+            if (path === "direct") s.context(1).delete(); else s.button(1, "delete").click();
+            expect(s.field(1, "DELETE").value).toBe("0");
+            expect(s.field(0, "DELETE").value).toBe("0");
+        });
+
+        it("moves a native extra above an initial row and then deletes the initial row", () => {
+            const s = setup();
+            s.button(1, "up").click();
+            expect(s.row(1).nextElementSibling).toBe(s.row(0));
+            s.button(0, "delete").click();
+            expect(s.field(0, "DELETE").value).toBe("1");
+            const payload = s.submit();
+            expect(payload.get(`${s.prefix}-0-ORDER`)).toBe("");
+            expect(payload.get(`${s.prefix}-1-ORDER`)).toBe("1");
+            expect(payload.get(`${s.prefix}-2-ORDER`)).toBe("2");
+        });
+
+        it("inserts an extra before an initial row without renumbering bound prefixes", () => {
+            const s = setup({ initialForms: 2 });
+            const ajax = vi.spyOn($, "ajax").mockImplementation(request => request.success({
+                html: rowHtml(3, s.options), rows: [`${s.prefix}-3`],
+            }));
+            try {
+                s.button(0, "add").click();
+                expect(s.row(3).nextElementSibling).toBe(s.row(1));
+                s.button(1, "delete").click();
+                expect(s.field(1, "DELETE").value).toBe("1");
+                expect(s.submit().get(`${s.prefix}-TOTAL_FORMS`)).toBe("4");
+            } finally { ajax.mockRestore(); }
+        });
+
+        it.each([true, false])("rejects missing DELETE on eligible rows (ordered=%s)", canOrder => {
+            const s = setup({ canOrder });
+            s.field(0, "DELETE").remove();
+            expect(() => s.context(0)).toThrow();
+            if (canOrder) {
+                const event = new Event("submit", { bubbles: true, cancelable: true });
+                s.form.dispatchEvent(event);
+                expect(event.defaultPrevented).toBe(true);
+            }
+        });
+
+        it("permits ordered rows when deletion is disabled entirely", () => {
+            const s = setup({ canDelete: false });
+            expect(() => s.context(0).delete()).not.toThrow();
+            expect(s.submit().get(`${s.prefix}-0-ORDER`)).toBe("1");
+        });
+    });
+
     describe("start-up guard", () => {
         let win;
         const formsetSource = fs.readFileSync("src/crud_views/static/crud_views/js/formset.js", "utf8");

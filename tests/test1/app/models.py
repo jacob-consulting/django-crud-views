@@ -218,6 +218,25 @@ class ProfileItem(models.Model):
         return self.label
 
 
+class ConditionalPersistenceRecord(models.Model):
+    """Schema-backed conditional persistence fixture; no product migration."""
+
+    parent = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="conditional_records")
+    active = models.BooleanField(default=False)
+    nullable_text = models.CharField(max_length=100, null=True, blank=True, default="default text")
+    blank_text = models.CharField(max_length=100, blank=True, default="default text")
+    flag = models.BooleanField(default=True)
+    nullable_flag = models.BooleanField(null=True, blank=True, default=True)
+    number = models.IntegerField(null=True, blank=True, default=42)
+    decimal = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
+    date = models.DateField(null=True, blank=True)
+    time = models.TimeField(null=True, blank=True)
+    timestamp = models.DateTimeField(null=True, blank=True)
+    duration = models.DurationField(null=True, blank=True)
+    token = models.UUIDField(null=True, blank=True)
+    reference = models.ForeignKey(Publisher, null=True, blank=True, on_delete=models.SET_NULL)
+
+
 class UUIDFragmentRow(models.Model):
     """Test-only UUID-keyed inline row of an Author (formset fragment ancestry, Phase 6.2 B2)."""
 

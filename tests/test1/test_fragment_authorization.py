@@ -1166,6 +1166,21 @@ def test_multi_digit_integer_pks_round_trip_and_truncated_pks_are_rejected(fr, w
 
 
 @pytest.mark.django_db
+def test_added_outer_fragment_retains_endpoint_for_nested_actions(fr, world):
+    """A modal lives at another URL: every newly rendered child's Add must retain the editor endpoint."""
+    parent = world.publisher_a
+    client = _editor_client(fr, world, viewset=fr.g2pub_vs)
+    url = _url(fr.g2pub_vs, "update", pk=parent.pk)
+    page = client.get(url)
+    params = browser_add_row(page.content, f"books-{parent.pk}-0")
+    fragment = _get(client, url, params)
+    assert fragment.status_code == 200
+    metadata = _formset_metadata(fragment.json()["html"].encode())
+    assert len(metadata) == 2
+    assert {item[0]["path"] for item in metadata.values()} == {url}
+
+
+@pytest.mark.django_db
 def test_two_child_declaration_round_trips_emitted_index_and_keeps_gates(fr, world):
     """A19: a real second-child fragment extends its owner and survives an authorized POST."""
     pa, ba = world.publisher_a, world.book_a

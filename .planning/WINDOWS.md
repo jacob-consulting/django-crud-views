@@ -2,9 +2,9 @@
 schema_version: 1
 open_count: 4
 waived_count: 1
-fixed_count: 13
-total_count: 18
-last_updated: 2026-11-01T10:53:29.098Z
+fixed_count: 14
+total_count: 19
+last_updated: 2026-11-01T11:11:17.692Z
 ---
 
 # Broken Windows Ledger
@@ -33,6 +33,7 @@ last_updated: 2026-11-01T10:53:29.098Z
 | 16 | 06.3 | unmet-truth | src/crud_views/static/crud_views/js/modal.js | 43 | UI-F01: real keyboard invalid/blocked 422 modal replacement leaves focus on BODY until next Tab; Close also leaves BODY. Newly observed on unchanged baseline JS; independent severity/remediation review required. | fixed | UI-F01/CR-04 and CR-05 repaired; current twelve-case browser evidence source-validated and owner keyboard review accepted. | 2026-10-31T00:26:22.293Z | 2026-11-01T07:57:07.320Z |
 | 17 | 06.3 | unrun-verify | .planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-GAP-REVIEW.md |  | Plan 17 final human checks pending for all twelve individually tracked IDs: GUA-precision, four unclassified predicates, four prohibitions and UI-01/02/03. Design approval does not answer these final questions. | fixed | All twelve owner responses preserved; four detector flags dismissed after investigation; bounded precision predicate established and broader scope deferred to issue 286 under formal reconciliation. | 2026-10-31T00:26:22.432Z | 2026-11-01T07:57:07.320Z |
 | 18 | 06.4 | deviation | .planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-01-SUMMARY.md |  | Sequential execution preserves required prior-phase HEAD; FSET-02 remains pending later lifecycle plans. | fixed |  | 2026-11-01T10:52:17.888Z | 2026-11-01T10:53:29.098Z |
+| 19 | 06.4 | deviation | tests/test1/test_conditional_persistence.py |  | Disabled ImageField reference-only fixture uses native initial=None/no-change because validating a nonempty disabled image initial requires Pillow; production image validation remains unchanged. | fixed |  | 2026-11-01T11:10:51.632Z | 2026-11-01T11:11:17.692Z |
 
 ````json
 [
@@ -259,6 +260,19 @@ last_updated: 2026-11-01T10:53:29.098Z
     "reason": "",
     "recorded_at": "2026-11-01T10:52:17.888Z",
     "resolved_at": "2026-11-01T10:53:29.098Z",
+    "milestone": "v1.0"
+  },
+  {
+    "id": 19,
+    "kind": "deviation",
+    "phase": "06.4",
+    "file": "tests/test1/test_conditional_persistence.py",
+    "line": null,
+    "description": "Disabled ImageField reference-only fixture uses native initial=None/no-change because validating a nonempty disabled image initial requires Pillow; production image validation remains unchanged.",
+    "status": "fixed",
+    "reason": "",
+    "recorded_at": "2026-11-01T11:10:51.632Z",
+    "resolved_at": "2026-11-01T11:11:17.692Z",
     "milestone": "v1.0"
   }
 ]

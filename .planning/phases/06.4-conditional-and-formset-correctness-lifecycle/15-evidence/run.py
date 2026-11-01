@@ -89,6 +89,8 @@ PAYLOAD_CORRUPTIONS = (
     "capture-missing",
     "capture-digest",
     "capture-observation",
+    "capture-width-overflow",
+    "capture-height-overflow",
 )
 RECORD_CORRUPTIONS = (
     "control-missing-evidence",
@@ -129,6 +131,8 @@ CONTROL_DIAGNOSTICS = {
     "capture-missing": "Conditional capture inventory invalid: stock",
     "capture-digest": "Conditional capture digest mismatch: desktop",
     "capture-observation": "Conditional capture icon observations invalid: desktop",
+    "capture-width-overflow": "Conditional capture icon observations invalid: desktop",
+    "capture-height-overflow": "Conditional capture icon observations invalid: desktop",
     "control-missing-evidence": "Checker control evidence inventory incomplete",
     "control-missing-summary": "Checker control summary inventory incomplete",
     "control-success-outcome": "Checker control exit invalid: exit-code",
@@ -1360,6 +1364,10 @@ def corrupt(data, kind):
             case["captures"].pop()
         elif kind == "capture-digest":
             case["captures"][0]["sha256"] = "0" * 64
+        elif kind == "capture-width-overflow":
+            case["captures"][0]["icons"]["glyphs"][0]["width"] = 10**400
+        elif kind == "capture-height-overflow":
+            case["captures"][0]["icons"]["glyphs"][0]["height"] = 10**400
         else:
             case["captures"][0].pop("icons")
     elif kind == "control-missing-evidence":
@@ -1637,7 +1645,7 @@ GAP_REVIEWS = {
     "G3": ["CR-03"],
     "G4": ["CR-04"],
     "G5": ["CR-05"],
-    "G6": ["WR-01", "WR-02", "WR-03", "WR-04"],
+    "G6": ["WR-01", "WR-02", "WR-03", "WR-04", "WR-05"],
 }
 GAP_THREATS = {
     "G1": ["07", "08", "09", "24"],
@@ -1645,7 +1653,7 @@ GAP_THREATS = {
     "G3": ["15", "26"],
     "G4": ["15", "26"],
     "G5": ["01", "27"],
-    "G6": ["22", "28", "29", "31", "33"],
+    "G6": ["22", "28", "29", "31", "33", "41"],
 }
 PROHIBITION = "Switching a conditional file field off must not silently authorize deletion of the stored file content."
 

@@ -1,6 +1,6 @@
 # Tabler adoption handoff — plan 06.6-07
 
-The five-file adaptation in [07-tabler-adaptation.patch](07-tabler-adaptation.patch) passed a fresh exact-base replay against the current core. Plan 10 owns applying and committing these bytes in the supplied companion repository. This plan made no companion source/index changes and preserved the user's settings-only commit.
+The five-file adaptation in [07-tabler-adaptation.patch](07-tabler-adaptation.patch) passed exact-base replay and was delivered by plan 10 in companion commit `3315eef6671f502d859bba877322a5853388c508`. Plan 07's preparation left the companion untouched; plan 10's delivery preserved the user's settings-only commit and all unrelated source/index state. The original plan 07 evidence is described below, followed by the current delivered-source receipts.
 
 ## Bound inputs and retained evidence
 
@@ -103,3 +103,46 @@ To independently rerun the retained patch, set `CV_THEME_REPLAY_PATCH` to the ab
 For plan 10, validate the baseline/replay first, preserve the settings-only HEAD and all unrelated work, and apply only the five mapped paths. The `--delivered-source recorded` operand resolves the recorded companion root and copies current public tracked bytes into another isolated probe. Its partial `--case label-floor` result merges into `form_probe` without overwriting other delivery slots or claiming complete delivery. Run the plan 10 pre/post-commit delivery gates before closing THEME-05. This handoff grants no phase-wide completion and records no companion delivery commit.
 
 The necessary optional core-fixture dependencies were installed in the existing companion venv after verifying their official package identities: django-fsm-2 4.3.0, django-guardian 3.5.2, django-ordered-model 3.7.4, django-polymorphic 4.11.7 (plus django-stubs-ext 6.1.2). `uv pip check` passed. The baseline's recorded interpreter/version fingerprint remains valid. No credentials or private settings contents are retained in the patch or reports.
+
+## Actual companion delivery — plan 06.6-10
+
+[10-companion-delivery.json](10-companion-delivery.json) is the canonical completed delivery bundle. [06.6-10-SUMMARY.md](06.6-10-SUMMARY.md) records the resulting core evidence commit separately; the bundle records that commit's parent and owned paths to avoid a self-referential hash.
+
+| Receipt | Value |
+| --- | --- |
+| Companion root | `/home/alex/projects/alex/tabler-test` |
+| Original pinned baseline | `885dfc791a150fdc715d6fb34c2e6181d6b92f3c` |
+| Preserved user commit / delivery parent | `0b3baa896ef5b11aa010238c92d3bceb4663e337` |
+| Delivered companion commit | `3315eef6671f502d859bba877322a5853388c508` |
+| Delivered companion tree | `bd086eaaca95bfd6950c533c89ad9c6612ab4295` |
+| Companion delta SHA-256 | `1d70f1d983825d1ce0dbc184dcc79d34b07ebb8478b37dc787b0a8aee7998141` |
+| Core evidence parent | `03e1925bff27681ca4fe8e1db0180842e537928f` |
+| Current tested core inventory SHA-256 | `b55f1b85b81546d7dc45064a0cdaf55a624a4c939efef4253b913e1f057765fe` |
+| Settings content SHA-256, unchanged | `2c0d2130e6d28b3dc64bb76caa9e249f24691aebf3a9d1285a4f4d7934471cb2` |
+
+The companion commit contains exactly the five paths in the delivery map above, with the same approved after hashes. It follows the user commit directly. No native pack hunk exists, and no native message include, SVG definition, settings file or unrelated source was changed. The companion worktree/index is clean. No push was performed.
+
+Task 10-01 delivered only `apps.py`, `buttons.py`, and `icons.py`, then passed two fresh partial tracer runs. Their embedded `tracer_probe` and `tracer_gate` retain all 15 native action/mode combinations and 54 absent/None/empty cancel activations; synchronized test/alert checks remained explicitly pending. Task 10-02 delivered the remaining exact `tests.py` and alert hunks before the joint companion commit.
+
+The bundle retains these current slots, each with sanitized command argv/cwd, exit status, complete logs and digests:
+
+- `form_probe`: fresh partial owned-form/label-floor browser evidence, including native reset and all 54 cancel activations; it remains `complete:false`.
+- `delivered_probe`: provisional full-tree comparison, focused class-table/adoption/parity/package tests, and fresh owned-form/label-floor browsers before the companion commit.
+- `committed_probe`: the same fresh checks against the actual committed companion and its repository-qualified receipt, with task index/worktree changes rejected.
+- `canonical_validation`: a successful final `--require-committed` invocation while the private snapshot's original path was unavailable. Prior execution copies had already been removed. The clean-tree preservation record uses only hashes and empty patch/staged-entry data; no private settings or patch contents are embedded.
+
+The final bundle also retains the earlier full committed probe in `history`, the initial rejected extra-metadata attempt in `failed_attempts`, both helper-fix receipts, complete before/delivered source inventories, ignored-runtime metadata preservation hashes, the scoped companion receipt, and the exact reused replay fingerprints. No required result depends on a temporary log or private backup.
+
+The final provisional/committed checks each rerun all **11 focused tests**, the owned-form browser path, and the label-floor matrix. Three observed Tabler asset hashes match the refreshed full replay. The other six browser families and broad suite comparison are reused only against identical complete source/test/core/config/runtime fingerprints and unchanged asset bytes. The full replay was freshly rerun after plan 08's documentation changes and each delivery-helper correction; its `refresh_history` identifies superseded core fingerprints. The source patch, native assets, **167 paths**, **nine shadows**, and **205 required purposes** remain unchanged.
+
+The refreshed broad integration results remain **114 Django tests with the same three baseline failures**, and **34 passing pytest tests**. Required phase/browser/focused checks all pass. The final helper regressions pass **113 Python tests** with four workers and **21 config tests**. Plan 09 still owns phase-wide integration and human visual/AT acceptance.
+
+Both repositories used private temporary commit indexes, reviewed exact path allowlists, checked parent/branch/index identity, and reconciled the caller's index atomically under `index.lock`. Hook inspection found no `core.hooksPath` override or active executable hooks; post-commit source/tree checks nevertheless ran. Unrelated index entries and worktree bytes were unchanged. Generated, ignored `src/tabler_test.egg-info` files remain untouched and are excluded from source inventory; their original hashes are retained separately.
+
+To independently revalidate the delivered tree, no private snapshot environment variable is required for this originally clean companion:
+
+```bash
+env -u CV_THEME_PRIVATE_SNAPSHOT PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python tests/browser/theme_adoption_sources.py --verify-replay --delivered-source recorded --require-committed --output .planning/phases/06.6-theme-adoption-seams-from-the-tabler-sync/10-companion-delivery.json
+```
+
+This command reruns probes and updates the bundle with fresh evidence. Retain and review that new evidence before committing it. Read-only inspection can instead validate the embedded bundle, source receipt, exact inventories and logs without rewriting the artifact. The public core-parent receipt is completed by the separate core commit in the plan 10 summary; it does not claim that a manifest can contain its own commit hash.

@@ -238,6 +238,7 @@ def test_current_release_and_migration_claims_are_paired():
         "CardAction(no_label=True)` keeps working",
         "CardAction(no_label=True)` is unaffected",
         "CardAction(no_label=True)` still",
+        "(`CardAction(no_label=True)`)",
         "cv_no_label is no longer a leaf input",
         "cv_no_label` is no longer a `cv_button_data()` input and raises",
     ):
@@ -247,3 +248,92 @@ def test_current_release_and_migration_claims_are_paired():
     assert "cv_context_actions_label_mode" in migration and "cv_context_action_label_mode" in migration
     assert "badge_color" in unreleased and "badge_pill" in unreleased
     assert "reference/object_detail_layout_packs.md#collision-detection-boundary" in migration
+
+
+@pytest.mark.parametrize("icon", ["fas:pen", "", None])
+def test_retained_standalone_header_icon(icon):
+    from crud_views.lib.view import CrudView
+
+    class View(CrudView):
+        def cv_get_header_icon(self):
+            return icon
+
+    output = Template("{% load crud_views %}{% cv_header_icon %}").render(Context({"view": View()}))
+    if icon:
+        node = html.fromstring(output)
+        assert node.tag == "i"
+        assert node.get("class") == "fa-solid fa-pen"
+        assert node.get("aria-hidden") == "true"
+    else:
+        assert output == ""
+
+
+def test_public_surface_inventory_matches_real_contracts():
+    from dataclasses import fields
+    from inspect import signature
+
+    from crud_views.lib.button_classes import DEFAULT_BUTTON_CLASSES, button_class_check_messages
+    from crud_views.lib.pipeline import cv_sources
+    from crud_views.lib.view.card import CardAction
+    from crud_views.templatetags import crud_views as core
+    from crud_views_object_detail.lib.config import PropertyGroupConfig
+    from crud_views_object_detail.lib.mixins import ObjectDetailMixin
+    from crud_views_object_detail.lib.presentation import ComponentPresentation, GroupPresentation
+    from crud_views_object_detail.templatetags import crud_views_object_detail as detail
+
+    inventory = (
+        ROOT / ".planning/phases/06.5-remaining-presentation-contracts-and-decided-cleanup/06.5-PUBLIC-SURFACE.md"
+    )
+    text = inventory.read_text()
+    keys = {f"heading:size-{n}" for n in range(1, 7)} | {"heading:icon-host", "heading:icon-inline"}
+    assert keys <= DEFAULT_BUTTON_CLASSES.keys()
+    keys |= {
+        f"heading-{location}:icon-{slot}" for location in ("page", "modal", "group") for slot in ("host", "inline")
+    }
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES=dict.fromkeys(keys, "")):
+        assert not list(button_class_check_messages())
+    for key in keys:
+        assert key in text
+    for tag in ("cv_heading", "cv_heading_icon", "cv_header_icon"):
+        assert tag in core.register.tags and tag in text
+    assert set(signature(core.cv_heading_icon).parameters) == {"value", "location"}
+    assert {field.name for field in fields(core.HeadingIconPresentation)} == {"host_class", "inline_html"}
+    for name in ("size", "icon_class", "host_class", "inline_html"):
+        assert name in text
+    for cls, prefix in ((ComponentPresentation, "component"), (GroupPresentation, "presentation")):
+        for field in fields(cls):
+            assert f"{prefix}.{field.name}" in text
+    assert "id" in PropertyGroupConfig.model_fields
+    assert "id" in {field.name for field in fields(ResolvedGroup)}
+    assert "component_id" in signature(detail.render_object_detail).parameters
+    assert {"presentation", "component"} <= signature(detail.render_group).parameters.keys()
+    assert hasattr(ObjectDetailMixin, "cv_object_detail_id")
+    assert callable(ObjectDetailMixin.cv_get_object_detail_id)
+    assert {"badge_color", "badge_pill"} <= {field.name for field in fields(ResolvedProperty)}
+    assert "no_label" not in CardAction.model_fields
+    assert list(cv_sources("js")).count("crud_views_object_detail/js/tabs.js") == 1
+    for name in (
+        "PropertyGroupConfig.id",
+        "ResolvedGroup.id",
+        "component_id",
+        "object_detail_id",
+        "cv_get_object_detail_id",
+        "cv_object_detail_id",
+        "badge_color",
+        "badge_pill",
+        "cv_no_label",
+        "cv.initObjectDetailTabs(root=document)",
+        "data-cv-od-tabs",
+        "cv:modal:loaded",
+        "cv:modal:unload",
+        "standalone",
+        "superseded",
+        "test_retained_standalone_header_icon",
+        "Phase 7",
+        "private",
+        "docs/migrating-1.0.md#heading-hosts-and-sizing",
+        "docs/migrating-1.0.md#interactive-object-detail-templates-and-targets",
+        "docs/migrating-1.0.md#removed-card-label-keyword",
+    ):
+        assert name in text
+    assert "cv:dom-updated" not in LAYOUTS.read_text()

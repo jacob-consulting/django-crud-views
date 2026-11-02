@@ -1078,8 +1078,10 @@ Which template takes the markup:
 | `tags/context_actions.html`, `columns/actions.html` | `tags/button/container.html` (receives `cv_buttons`, `cv_group`, `cv_location`; the element is the `<location>:container-tag` key) |
 
 - **`tags/card_action.html` copies that branch on `cv_no_label`** break silently. The card action context no longer
-  carries `cv_no_label`; it carries `cv_label_mode`. So a copy renders the label on every button, the icon-only ones
-  (`CardAction(no_label=True)`) included. The leaf branches on `cv_label_mode` (`"label"`, `"icon"`, `"both"`)
+  carries `cv_no_label`; it carries `cv_label_mode`. So a copy renders the label on every button, including
+  supported icon-only actions (`CardAction(label_mode="icon")`). Removed Python `no_label` inputs fail validation
+  before rendering; see [Removed card label keyword](#removed-card-label-keyword).
+  The leaf branches on `cv_label_mode` (`"label"`, `"icon"`, `"both"`)
   ([The leaf contract](reference/buttons.md#the-leaf-contract)).
 
 ### Hooks instead of copies

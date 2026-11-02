@@ -1,18 +1,22 @@
 """Page-owned forms: raw nesting, enforced CSRF, and render-local helper policy."""
 
 from html.parser import HTMLParser
-from types import SimpleNamespace
+from types import ModuleType, SimpleNamespace
 
 import pytest
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, LayoutObject
 from django import forms
 from django.core.exceptions import ImproperlyConfigured
-from django.template import Context, Template
+from django.http import HttpResponse, HttpResponseRedirect
+from django.template import Context, RequestContext, Template
 from django.test import Client, override_settings
+from django.urls import path
 from django.utils.safestring import mark_safe
+from lxml import html as html_parser
 
 from crud_views.templatetags.crud_views import cv_render_form
+from tests.lib.helper.forms import form_payload
 from tests.test1 import test_crispy_buttons as button_tests
 from tests.test1.app.models import Author
 from tests.test1.app.views import AuthorForm
@@ -140,6 +144,101 @@ class HookHelper(FormHelper):
 class FalseyHelper(HookHelper):
     def __bool__(self):
         return False
+
+
+class HiddenRowForm(NameForm):
+    identity = forms.IntegerField(widget=forms.HiddenInput)
+    unmentioned = forms.CharField(required=False)
+
+
+@pytest.mark.parametrize("helper_class", [FormHelper, HookHelper, ReadOnlyHelper])
+@pytest.mark.parametrize("hidden_in_layout", [False, True])
+@pytest.mark.parametrize("render_hidden_fields", [False, True])
+def test_formset_hidden_fields_preserve_helper_hooks_and_flags(helper_class, hidden_in_layout, render_hidden_fields):
+    helper = _helper(helper_class)
+    helper.render_hidden_fields = render_hidden_fields
+    if hidden_in_layout:
+        helper.layout.append("identity")
+    snapshot = dict(helper.__dict__)
+    fields = list(helper.layout.fields)
+    rows = forms.formset_factory(HiddenRowForm, extra=0)(
+        initial=[{"name": "First", "identity": 42}, {"name": "Second", "identity": 73}], prefix="rows"
+    )
+    rows.helper = helper
+
+    for _ in range(2):
+        markup = cv_render_form(_context(rows))
+        document = html_parser.fragment_fromstring(markup, create_parent=True)
+        for index, identity in enumerate((42, 73)):
+            hidden = document.xpath(f'.//input[@name="rows-{index}-identity"]')
+            assert len(hidden) == 1
+            assert hidden[0].get("type") == "hidden"
+            assert hidden[0].get("value") == str(identity)
+        assert not document.xpath('.//input[contains(@name, "unmentioned")]')
+        assert not document.xpath('.//input[@name="csrfmiddlewaretoken"]')
+        assert len(document.xpath('.//input[@name="rows-TOTAL_FORMS"]')) == 1
+        if helper_class is HookHelper:
+            assert markup.count("HOOK_LAYOUT") == 2
+        assert helper.__dict__ == snapshot
+        assert helper.layout.fields == fields
+
+    # Crispy's formset policy must not leak into an ordinary form sharing the helper.
+    single = HiddenRowForm(initial={"name": "Single", "identity": 99})
+    single.helper = helper
+    single_markup = cv_render_form(_context(single))
+    assert ('name="identity"' in single_markup) is (hidden_in_layout or render_hidden_fields)
+    assert helper.__dict__ == snapshot
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("helper_class", [FormHelper, HookHelper])
+def test_model_formset_page_owned_csrf_post_round_trip(helper_class):
+    authors = [
+        Author.objects.create(first_name="First", last_name="Original"),
+        Author.objects.create(first_name="Second", last_name="Original"),
+    ]
+    formset_class = forms.modelformset_factory(Author, fields=["first_name", "last_name"], extra=0)
+    helper = helper_class()
+    helper.form_tag = False
+    helper.layout = Layout("first_name", "last_name")
+    snapshot = dict(helper.__dict__)
+
+    def edit_authors(request):
+        rows = formset_class(
+            request.POST if request.method == "POST" else None, queryset=Author.objects.order_by("order")
+        )
+        rows.helper = helper
+        if request.method == "POST" and rows.is_valid():
+            rows.save()
+            return HttpResponseRedirect("/saved/")
+        markup = Template(
+            '{% load crud_views %}<form class="cv-form" method="post">{% csrf_token %}{% cv_render_form %}</form>'
+        ).render(RequestContext(request, {"form": rows, "view": None}))
+        return HttpResponse(markup, status=422 if request.method == "POST" else 200)
+
+    urls = ModuleType("formset_ownership_urls")
+    urls.urlpatterns = [path("edit/", edit_authors)]
+    with override_settings(ROOT_URLCONF=urls):
+        client = Client(enforce_csrf_checks=True)
+        response = client.get("/edit/")
+        assert response.status_code == 200
+        assert_owned_form_markup(response.content.decode())
+        payload = form_payload(response)
+        assert [payload.get(f"form-{index}-id") for index in range(2)] == [str(author.pk) for author in authors]
+        for index in range(2):
+            payload[f"form-{index}-last_name"] = "Updated"
+        for token in (None, "invalid"):
+            rejected = {key: value for key, value in payload.items() if key != "csrfmiddlewaretoken"}
+            if token is not None:
+                rejected["csrfmiddlewaretoken"] = token
+            assert client.post("/edit/", rejected).status_code == 403
+            assert Author.objects.filter(last_name="Updated").count() == 0
+        response = client.post("/edit/", payload)
+        assert response.status_code == 302
+        assert response.url == "/saved/"
+    assert set(Author.objects.values_list("pk", flat=True)) == {author.pk for author in authors}
+    assert Author.objects.filter(last_name="Updated").count() == 2
+    assert helper.__dict__ == snapshot
 
 
 @pytest.mark.parametrize(

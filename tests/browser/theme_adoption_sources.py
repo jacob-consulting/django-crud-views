@@ -1557,8 +1557,32 @@ def validate_final_sources(baseline, browser, replay, delivery, *, env=None):
     # Candidate and fresh replay must independently satisfy the complete source/suite/branch contract.
     verify_replay({**browser, "patch": replay["patch"], "patch_sha256": replay["patch_sha256"]}, baseline, env=env)
     require(browser.get("core_inventory") == replay["core_inventory"], "stale candidate core evidence")
-    require(browser.get("assets") == replay.get("assets"), "candidate/replay asset mismatch")
+    validate_final_assets(browser.get("assets", []), replay.get("assets", []))
     return validate_committed_delivery(delivery, baseline, replay, candidate, env=env)
+
+
+def validate_final_assets(candidate, replay):
+    expected = {
+        "https://cdn.jsdelivr.net/npm/@tabler/core@1.6.1/dist/" + path
+        for path in ("css/tabler.min.css", "js/tabler-theme.min.js", "js/tabler.min.js")
+    }
+    expected.add("https://code.jquery.com/jquery-3.7.1.js")
+    maps = []
+    for rows in (candidate, replay):
+        by_url = {row.get("url"): row for row in rows}
+        require(len(rows) == len(by_url) and set(by_url) == expected, "missing/duplicate actual asset")
+        require(
+            all(
+                row.get("status") == 200
+                and re.fullmatch(r"[a-f0-9]{64}", row.get("sha256", ""))
+                and row.get("sri256")
+                and row.get("sri384")
+                for row in rows
+            ),
+            "incomplete actual asset content",
+        )
+        maps.append(by_url)
+    require(maps[0] == maps[1], "candidate/replay asset mismatch")
 
 
 def check_final(report, *, env=None):

@@ -941,6 +941,7 @@ def test_replay_checks_patch_full_tree_and_concrete_evidence(tmp_path, monkeypat
         origins=origins,
         origin_command=command(json.dumps(origins)),
         isolated_roots={"companion": str(isolated_companion), "core": str(isolated_core)},
+        assets=final_asset_fixture(),
     )
     for row in report["actions"]:
         row["source_sha256"] = sources.digest(sources.inventory(candidate_files))
@@ -1443,3 +1444,43 @@ def test_check_final_requires_gate_validation_before_companion_access(monkeypatc
     monkeypatch.setattr(sources, "load_json", unexpected)
     with pytest.raises(sources.EvidenceError):
         sources.check_final({})
+
+
+def final_asset_fixture():
+    urls = [
+        "https://cdn.jsdelivr.net/npm/@tabler/core@1.6.1/dist/" + p
+        for p in ("css/tabler.min.css", "js/tabler-theme.min.js", "js/tabler.min.js")
+    ]
+    return [
+        {
+            "url": u,
+            "status": 200,
+            "sha256": sources.digest(u.encode()),
+            "sri256": "sha256-test",
+            "sri384": "sha384-test",
+        }
+        for u in [*urls, "https://code.jquery.com/jquery-3.7.1.js"]
+    ]
+
+
+def test_final_assets_compare_content_independent_of_fetch_order():
+    assets = final_asset_fixture()
+    sources.validate_final_assets(assets, list(reversed(assets)))
+
+
+@pytest.mark.parametrize("mutation", ["missing", "duplicate", "changed", "empty", "failed"])
+def test_final_assets_reject_missing_duplicate_or_substituted_bytes(mutation):
+    assets = final_asset_fixture()
+    altered = copy.deepcopy(assets)
+    if mutation == "missing":
+        altered.pop()
+    elif mutation == "duplicate":
+        altered.append(altered[0])
+    elif mutation == "changed":
+        altered[0]["sha256"] = "a" * 64
+    elif mutation == "empty":
+        altered = []
+    else:
+        altered[0]["status"] = 500
+    with pytest.raises(sources.EvidenceError):
+        sources.validate_final_assets(assets, altered)

@@ -137,3 +137,88 @@ def test_duplicate_supplied_component_in_direct_scope_fails():
     render_object_detail(context, None, [ResolvedGroup(title="One")], layout="accordion", component_id="stable")
     with pytest.raises(ImproperlyConfigured, match="stable"):
         render_object_detail(context, None, [ResolvedGroup(title="Two")], layout="tabs-vertical", component_id="stable")
+
+
+@pytest.mark.parametrize("token", [False, 0, "", " ", "with.dot", "1bad", "é", 'x" onclick="bad'])
+def test_group_config_rejects_invalid_identity_before_coercion(token):
+    from crud_views_object_detail.lib.config import PropertyGroupConfig
+
+    with pytest.raises(ImproperlyConfigured, match="group id"):
+        PropertyGroupConfig(title="Title", properties=[], id=token)
+
+
+def test_group_identity_preserved_by_resolution_and_positional_compatibility():
+    from crud_views_object_detail.lib.config import PropertyGroupConfig
+    from crud_views_object_detail.lib.resolvers import resolve_group
+
+    config = PropertyGroupConfig(title="Title", properties=[], id="Biography_2")
+    assert getattr(resolve_group(None, config), "id", None) == "Biography_2"
+    assert getattr(ResolvedGroup("Title", None, None, []), "id", "missing") is None
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("native", [False, True])
+def test_real_detail_stable_page_modal_identity(client_user_author_view, author_douglas_adams, monkeypatch, native):
+    from django.conf import settings
+    from django.urls import reverse
+
+    from crud_views.lib.view.base import cv_is_modal_request
+    from tests.test1.app.views import AuthorDetailView
+
+    monkeypatch.setattr(AuthorDetailView, "cv_object_detail_layout", "identity-native" if native else "tabs-vertical")
+    monkeypatch.setattr(AuthorDetailView, "cv_object_detail_id", "author-page", raising=False)
+    groups = [
+        {"title": "Biography", "id": "bio", "properties": ["first_name"]},
+        {"title": "Dates", "id": "dates", "properties": ["first_name"]},
+    ]
+    monkeypatch.setattr(AuthorDetailView, "cv_property_display", groups)
+    templates = deepcopy(settings.TEMPLATES)
+    if native:
+        templates[0]["APP_DIRS"] = False
+        templates[0]["OPTIONS"]["loaders"] = [
+            ("django.template.loaders.locmem.Loader", {
+                "crud_views_object_detail/layouts/identity-native/group.html":
+                    '{% load crud_views_object_detail %}<section id="{{ presentation.panel_id }}" '
+                    'data-root="{{ component.id }}"><h2 id="{{ presentation.control_id }}">{{ group.title }}</h2>'
+                    '{% for prop in group.properties %}{% render_property prop layout="table-inline" %}{% endfor %}'
+                    '</section>',
+            }),
+            "django.template.loaders.app_directories.Loader",
+        ]
+
+    def expected(token):
+        base = f"cvod-c{len(token)}-{token}"
+        ids = {f"{base}-s{len(key)}-{key}-{kind}" for key in ("bio", "dates") for kind in ("control", "panel")}
+        if not native:
+            ids |= {f"{base}-{kind}" for kind in ("root", "tabs", "content")}
+        return ids
+
+    url = reverse("author-detail", kwargs={"pk": author_douglas_adams.pk})
+    with override_settings(TEMPLATES=templates):
+        # Attribute default must reach the actual content template, with no implicit suffix.
+        response = client_user_author_view.get(url)
+        assert response.status_code == 200
+        doc = html.fromstring(response.content)
+        assert set(doc.xpath('//@id[starts-with(., "cvod-")]')) == expected("author-page")
+
+        def identity(view):
+            return "author-modal" if cv_is_modal_request(view.request) else "author-page"
+
+        monkeypatch.setattr(AuthorDetailView, "cv_get_object_detail_id", identity, raising=False)
+        for repeated in range(2):
+            if repeated:
+                monkeypatch.setattr(AuthorDetailView, "cv_property_display", [
+                    {**group, "title": gettext_lazy("日本語 <translated>")} for group in reversed(groups)
+                ])
+            for modal, token in [(False, "author-page"), (True, "author-modal")]:
+                response = client_user_author_view.get(url, **({"HTTP_X_CV_MODAL": "true"} if modal else {}))
+                assert response.status_code == 200
+                assert response.context["object"].pk == author_douglas_adams.pk
+                assert response.context["object_detail_id"] == token
+                assert {group.id for group in response.context["object_detail_groups"]} == {"bio", "dates"}
+                doc = html.fromstring(response.content)
+                assert set(doc.xpath('//@id[starts-with(., "cvod-")]')) == expected(token)
+                assert author_douglas_adams.first_name in doc.text_content()
+                assert not doc.cssselect("translated")
+                if native:
+                    assert set(doc.xpath("//@data-root")) == {f"cvod-c{len(token)}-{token}-root"}

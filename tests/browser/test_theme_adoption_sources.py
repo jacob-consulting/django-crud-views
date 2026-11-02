@@ -926,6 +926,8 @@ def test_replay_checks_patch_full_tree_and_concrete_evidence(tmp_path, monkeypat
         {"command": command(argv=argv, cwd=isolated_companion)}
         for argv in sources.suite_commands(baseline["companion_python"])
     ]
+    baseline["suites"] = copy.deepcopy(report["suites"])
+    report["baseline_sha256"] = sources.digest(baseline)
     origins = {
         "modules": {
             name: str((isolated_core if name == "crud_views" else isolated_companion) / "src" / name / "__init__.py")
@@ -1006,6 +1008,13 @@ def test_baseline_failure_comparison_requires_unchanged_test_class_and_rejects_n
         sources.compare_suite_failures(new, baseline, before, before)
     with pytest.raises(sources.EvidenceError, match="missing baseline"):
         sources.compare_suite_failures(current, None, before, before)
+
+
+@pytest.mark.parametrize("output", ["Ran 1 test in 0.1s\nOK\n", "Ran 109 tests in 0.1s\nOK (skipped=108)\n"])
+def test_passing_companion_suite_cannot_hide_reduced_or_skipped_collection(output):
+    baseline = {"command": command("FAIL: test_old (theme.tests.OldTests.test_old)\nRan 109 tests in 1s\nFAILED (failures=1)\n", code=1)}
+    with pytest.raises(sources.EvidenceError, match="collection shrank|new skipped"):
+        sources.compare_suite_failures({"command": command(output)}, baseline, {}, {})
 
 
 def test_working_tree_allows_only_materialized_internal_documentation_link(tmp_path):

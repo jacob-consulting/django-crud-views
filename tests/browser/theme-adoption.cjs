@@ -348,8 +348,18 @@ async function csrfPost(page,base,report) {
         const response=await page.request.post(`${base}/${route}/`,{form:{...data,csrfmiddlewaretoken:token,submit:'Save'},maxRedirects:0});
         check(record,`${route}-valid-post`,response.status()===302,{status:response.status(),location:response.headers().location});
     }
+    const priorCsrf=(await page.context().cookies(base)).find(cookie=>cookie.name==='csrftoken')?.value;
     await page.request.get(base+'/signin/?denied=1');
+    const deniedCsrf=(await page.context().cookies(base)).find(cookie=>cookie.name==='csrftoken')?.value;
+    check(record,'denied-login-refreshes-csrf-cookie',Boolean(deniedCsrf && deniedCsrf!==priorCsrf));
     const forbidden=await page.request.get(base+'/create/');check(record,'authorization-denied',forbidden.status()===403);
+    const deniedBefore=await (await page.request.get(base+'/snapshot/')).json();
+    const deniedPost=await page.request.post(base+'/create/',{form:{csrfmiddlewaretoken:deniedCsrf,first_name:'Unauthorized',last_name:'Must not persist'},maxRedirects:0});
+    const csrfFailure=/CSRF verification failed/i.test(await deniedPost.text());
+    check(record,'authorization-denied-post-valid-csrf',deniedPost.status()===403 && !csrfFailure,{status:deniedPost.status(),csrf_cookie_rotated:true,csrf_failure_page:csrfFailure});
+    const deniedAfter=await (await page.request.get(base+'/snapshot/')).json();
+    assert.deepEqual(deniedAfter,deniedBefore);
+    check(record,'authorization-denied-post-zero-writes',true,{before:deniedBefore,after:deniedAfter});
     await page.request.get(base+'/signin/');
     record.passed=true;
 }

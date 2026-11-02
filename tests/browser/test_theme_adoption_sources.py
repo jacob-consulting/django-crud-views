@@ -1,6 +1,7 @@
 """Hermetic companion evidence tests; no production companion or Django imports."""
 
 import copy
+import ast
 import importlib.util
 import json
 import subprocess
@@ -15,6 +16,33 @@ SPEC = importlib.util.spec_from_file_location(
 sources = importlib.util.module_from_spec(SPEC)
 sys.modules[SPEC.name] = sources
 SPEC.loader.exec_module(sources)
+
+
+def test_floor_selection_covers_theme_modules():
+    tree = ast.parse((Path(__file__).resolve().parents[2] / "noxfile.py").read_text())
+    assignments = {
+        node.targets[0].id: ast.literal_eval(node.value)
+        for node in tree.body
+        if isinstance(node, ast.Assign)
+        and isinstance(node.targets[0], ast.Name)
+        and node.targets[0].id in {"CRISPY_FLOOR_TESTS", "CRISPY_FLOOR_DESELECT"}
+    }
+    required = {
+        "tests/test1/" + name
+        for name in (
+            "test_theme_form_ownership.py",
+            "test_theme_label_modes.py",
+            "test_theme_action_groups.py",
+            "test_theme_form_requests.py",
+            "test_theme_adoption_docs.py",
+            "test_alerts.py",
+            "test_button_classes.py",
+        )
+    }
+    assert required <= set(assignments["CRISPY_FLOOR_TESTS"])
+    assert assignments["CRISPY_FLOOR_DESELECT"] == [
+        "--deselect", "tests/test1/test_form_buttons_golden.py::test_filter_form_baseline"
+    ]
 
 
 @pytest.fixture(autouse=True)

@@ -420,7 +420,8 @@ keys are `LEAF_KEYS`:
 
 A renderer registered through the icon library config must emit `aria-hidden="true"` on the icon, as `render_icon()` does.
 The `"both"` branch of the bundled leaf relies on it: the visible `<span>` must be the button's only accessible name.
-A `cv_no_label` key in the context passed to `cv_button_data()` raises `ValueError`; use `cv_label_mode`.
+Use `cv_label_mode` in the context passed to `cv_button_data()`. A stray `cv_no_label` key is ignored and remains
+absent from the projected leaf data; it does not change the effective mode.
 
 `cv_key` is the key of the view a button targets, not the button's own key: `ContextButton(key="home",
 key_target="list")` renders `cv-key="list"`. The filter toggle is the exception — it toggles the filter of the page the

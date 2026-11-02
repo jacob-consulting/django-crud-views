@@ -47,8 +47,7 @@ You do not configure this on `CardAction`; the method and modal behaviour derive
 |---|---|---|---|
 | `key` | `str` | (required) | View key in the ViewSet (`"detail"`, `"update"`, `"delete"`, etc.) |
 | `label` | `str \| None` | `None` | Explicit button label. If None, falls back to the target view's short label. |
-| `label_mode` | `str \| None` | `None` | `"label"`, `"icon"` or `"both"`. If None (and `no_label` is not set), the button uses the effective view mode, including instance choices and the class-level `cv_get_card_actions_label_mode()` fallback. The action's `cv_label_mode` records the result. See [Card label-mode resolution](action_menus.md#card-label-mode-resolution). |
-| `no_label` | `bool` | `False` | Superseded by `label_mode="icon"`, which it equals. Setting it together with `label_mode` is a validation error. |
+| `label_mode` | `str \| None` | `None` | `"label"`, `"icon"` or `"both"`. If None, the button uses the effective view mode, including instance choices and the class-level `cv_get_card_actions_label_mode()` fallback. The action's `cv_label_mode` records the result. See [Card label-mode resolution](action_menus.md#card-label-mode-resolution). |
 | `variant` | `str \| None` | `None` | Button style: `"primary"`, `"secondary"`, `"tertiary"`, `"danger"`. If None, falls back to the target view's `cv_action_variant` (`primary` for create, `danger` for delete, else `secondary`). See [Buttons](buttons.md#variants). |
 | `flex` | `bool` | `False` | If True, the button gets the `card:flex` classes (`flex-grow-1` by default) |
 | `child_name` | `str \| None` | `None` | Child viewset name for cross-viewset links (like `LinkChildColumn`). When set, `key` is ignored for URL resolution. |
@@ -95,11 +94,16 @@ own choice; the class attribute is unchanged. Subclass resolver overrides remain
 without their own value.
 
 How explicit choices and defaults combine is described in
-[Card label-mode resolution](action_menus.md#card-label-mode-resolution). For cards,
-`CardAction(no_label=True)` currently still renders icon-only, ahead of the view attribute and the setting. An action
+[Card label-mode resolution](action_menus.md#card-label-mode-resolution). An action
 with an empty label is always rendered `"icon"`, and a `"both"` button whose view has no icon renders like `"label"`.
 `viewset.E210` rejects an unknown `label_mode`, or a `cv_card_actions_label_mode` that is set but not exactly
 `"label"`, `"icon"` or `"both"`.
+
+`CardAction.no_label` has been removed. Supplying the exact `no_label` key raises a validation error, including
+`False` or `None`, whether or not `label_mode` is also supplied. Constructor, `model_validate()` and
+`model_validate_json()` inputs follow the same rule. Use `CardAction(key="delete", label_mode="icon")` for an
+icon-only action, or omit `label_mode` to inherit the effective view mode. This targeted rejection leaves
+unrelated extra inputs under the existing Pydantic policy; it does not reject all unknown fields.
 
 Toolbar and row buttons have their own, key-based knob — a map of action key to mode in settings, on the ViewSet or
 on the view; see [Action menus](action_menus.md#label-mode).

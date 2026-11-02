@@ -214,17 +214,16 @@ def test_canonical_label_mode_resolution_sections():
     card = steps("### Card label-mode resolution")
     markers = (
         "`CardAction.label_mode`",
-        "no_label=True",
         "`cv_card_actions_label_mode`",
         '`default_label_mode("card")`',
     )
     assert len(card) == len(markers)
     for step, marker in zip(card, markers, strict=True):
         assert marker in step, (marker, step)
-    assert '"both"' in card[3]
+    assert '"both"' in card[2]
     card_body = _section(text, "### Card label-mode resolution")
     assert "`CardListView.cv_get_card_actions_label_mode()`" in card_body
-    assert "own instance" in _flat(card[2]) and "class-level" in _flat(card[2])
+    assert "own instance" in _flat(card[1]) and "class-level" in _flat(card[1])
     for marker in ("own instance None", "inherited class", "fallback hooks", "cv_label_mode"):
         assert marker in _flat(card_body), marker
 
@@ -864,6 +863,23 @@ def test_form_buttons_breaking_entry_pairs_with_migration():
     added = _bullets(_subsection(release, "### Added"))
     assert len([b for b in added if b.startswith(f"- `{FORM_MAP}`")]) == 1
     assert len([b for b in added if b.startswith(f"- `{SETTING}` sets")]) == 1
+
+
+def test_removed_card_alias_reference_contract():
+    card = CARD_MD.read_text()
+    assert "| `no_label` |" not in card
+    assert "CardAction.no_label has been removed" in _flat(card)
+    assert "False" in card and "None" in card
+    assert 'label_mode="icon"' in card
+    assert "currently still renders icon-only" not in card
+    assert "and `no_label` is not set" not in card
+    assert "unrelated extra" in card
+    menus = ACTION_MENUS_MD.read_text()
+    assert "no_label" not in _section(menus, "### Card label-mode resolution")
+    assert "superseded alias" not in menus
+    buttons = _flat(BUTTONS_MD.read_text())
+    assert "A stray cv_no_label key is ignored" in buttons
+    assert "absent from the projected leaf data" in buttons
 
 
 def test_example_enables_form_both_only():

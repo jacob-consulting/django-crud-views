@@ -14,10 +14,9 @@
     <div class="card">
         <div class="card-header">
             <div class="d-flex justify-content-between align-items-center mb-2">
-                {% cv_heading "header" level=1 class="h3 mb-0" %}
-                    {% block cv_header_icon %}
-                        {% cv_header_icon %}
-                    {% endblock cv_header_icon %}
+                {% cv_heading_icon view.cv_get_header_icon location="page" as title_icon %}
+                {% cv_heading "header" level=1 size=3 class="mb-0" icon_class=title_icon.host_class %}
+                    {{ title_icon.inline_html }}
                     {% block cv_header %}
                         {% cv_header %}
                     {% endblock cv_header %}

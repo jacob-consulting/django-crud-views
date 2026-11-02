@@ -1,7 +1,7 @@
 """Heading icon projection through real modal markup and the shared registry."""
 
-from pathlib import Path
 import re
+from pathlib import Path
 from unittest.mock import Mock
 
 import pytest

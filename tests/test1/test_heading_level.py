@@ -23,8 +23,8 @@ from tests.test1.app.models import Author, Campaign
 from tests.test1.app.views import cv_author, cv_author_modal, cv_campaign
 
 GOLDEN_DIR = Path(__file__).parent / "golden" / "heading_level"
-# the test project's base template wraps {% cv_header %} in its own headings (h5.d-flex > h3); those are the host's
-HEADINGS = " | ".join(f"//h{n}[not(ancestor-or-self::h5[contains(@class, 'd-flex')])]" for n in range(1, 7))
+# Only the test host's page title is excluded; card-header group headings remain content.
+HEADINGS = " | ".join(f"//h{n}[not(ancestor-or-self::*[@data-test-page-title])]" for n in range(1, 7))
 LAYOUTS = ["accordion", "card-rows", "list-group-3col", "split-card", "striped-rows", "table-inline", "tabs-vertical"]
 
 

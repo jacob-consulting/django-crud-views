@@ -129,7 +129,11 @@ def test_card_order_and_language_from_table(client):
 # structural keys whose value selects markup rather than classes (Phase 6.1): a valid value, never a CSS sentinel, so
 # the strict render of a cancel stays valid; they are left out of SENTINELS, which only holds CSS sentinels
 STRUCTURAL_VALUES = {"form:cancel-tag": "button"}
-SENTINEL_CLASSES = {key: STRUCTURAL_VALUES.get(key, "x-" + key.replace(":", "-")) for key in DEFAULT_BUTTON_CLASSES}
+SENTINEL_CLASSES = {
+    key: STRUCTURAL_VALUES.get(key, "x-" + key.replace(":", "-"))
+    for key in DEFAULT_BUTTON_CLASSES
+    if key.split(":", 1)[0] not in {"heading", "heading-page", "heading-modal", "heading-group"}
+}
 SENTINELS = frozenset(value for key, value in SENTINEL_CLASSES.items() if key not in STRUCTURAL_VALUES)
 # Bootstrap tokens the chain still carries because they are behaviour hooks, not looks. #232 is the list to empty.
 BEHAVIOUR_TOKENS = {

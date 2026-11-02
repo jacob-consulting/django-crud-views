@@ -41,12 +41,13 @@ its stock level, e.g. `<h2 class="h5 card-title">`. Themes can replace or clear 
 [modal](modals.md) the modal title is the view header, so it renders at the setting's level and the content one
 below, the same outline as the full page.
 
-Render the view title with `{% cv_heading "header" %}` and it follows the same setting. Semantic level and
+Render the view title with `{% cv_heading "header" level=1 %}` and it follows the same setting. Semantic level and
 visual size are independent:
 
 `{% cv_heading ["header"] level=N [size=N] [class=…] [icon_class=…] %}…{% endcv_heading %}`
 
-- `level` is a literal integer 1–6 (default 5), used while `CRUD_VIEWS_HEADER_LEVEL` is unset.
+- `level` is a required literal integer 1–6, used while `CRUD_VIEWS_HEADER_LEVEL` is unset.
+  It must still be supplied when that setting is configured; there is no implicit default.
 - Without `"header"` it renders at `CRUD_VIEWS_HEADER_LEVEL + 1`; with `"header"`, at the configured level.
 - Explicit `size` is a literal integer 1–6 and always resolves `heading:size-N`. Without it, the tag uses
   `heading:size-{level}` only when the semantic level differs from `level`, preserving the original default markup.

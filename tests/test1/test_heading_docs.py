@@ -60,6 +60,19 @@ def test_documented_heading_icon_defaults_match_registry():
     }
 
 
+@pytest.mark.parametrize("header_level", [None, 2])
+def test_published_inline_heading_example_compiles(monkeypatch, header_level):
+    """Even with a global level, the short copyable example needs a literal level argument."""
+    monkeypatch.setattr(crud_views_settings, "header_level", header_level)
+    examples = re.findall(r"`({% cv_heading [^%]+%})`", TEMPLATES.read_text())
+    assert examples
+    for example in examples:
+        rendered = Template("{% load crud_views %}" + example + "Title{% endcv_heading %}").render(Context())
+        heading = html.fromstring(rendered)
+        assert heading.tag == ("h1" if header_level is None else "h2")
+        assert heading.text_content() == "Title"
+
+
 @pytest.mark.parametrize("path,section,location,tag,size,utility", RECIPES)
 @pytest.mark.parametrize("icon", ["host:edit", "fas:pen", None, "", "disabled"])
 @pytest.mark.parametrize("clear_size", [False, True])

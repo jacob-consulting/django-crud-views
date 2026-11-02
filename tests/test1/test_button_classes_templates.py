@@ -190,6 +190,32 @@ def test_button_guard_accepts_heading_utilities_and_detects_button_and_label_lea
     assert _offenders(doc) == [("button", "mt-4"), ("span", "ps-4")]
 
 
+@pytest.mark.parametrize("key", ["form:actions", "form:filter-actions"])
+def test_button_guard_preserves_pack_group_margin_but_rejects_control_and_label_leaks(key):
+    from tests.test1.test_theme_action_groups import filter_helper, ordinary_group, render_group
+
+    group = ordinary_group() if key == "form:actions" else filter_helper().get_form_actions()
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES=SENTINEL_CLASSES):
+        doc = html.fromstring(render_group(group, field_class="", label_class=""))
+    assert set(_tokens(doc)) == {"mb-3", SENTINEL_CLASSES[key]}
+    assert _offenders(doc) == []
+    # The pack exception is on this wrapper only, never on descendants or unrelated CSS.
+    doc.set("class", doc.get("class") + " mt-4")
+    button = doc.cssselect("button")[0]
+    label = button.cssselect("span")[0]
+    button.set("class", button.get("class") + " mb-3")
+    label.set("class", (label.get("class") or "") + " mb-3")
+    assert _offenders(doc) == [("button", "mb-3"), ("div", "mt-4"), ("span", "mb-3")]
+
+
+@pytest.mark.parametrize(
+    ("tag", "key"), [("button", "form:actions"), ("span", "form:filter-actions"), ("div", "form:submit")]
+)
+def test_button_guard_pack_margin_exception_requires_group_wrapper(tag, key):
+    doc = html.fromstring(f'<{tag} class="{SENTINEL_CLASSES[key]} mb-3">Control</{tag}>')
+    assert _offenders(doc) == [(tag, "mb-3")]
+
+
 def _leaf_contract(location: str, mode: str) -> dict:
     """A flat leaf contract with every flag on (the shape of cv_button_data()'s output)."""
     return {

@@ -15,7 +15,9 @@ from tests.test1.od_app.models import Report
 
 
 def render(prop):
-    return Template("{% load crud_views_object_detail %}{% render_property_value prop %}").render(Context({"prop": prop}))
+    return Template("{% load crud_views_object_detail %}{% render_property_value prop %}").render(
+        Context({"prop": prop})
+    )
 
 
 def template_settings(templates):
@@ -42,8 +44,7 @@ def test_badge_semantics_callback_once_in_stock_and_native_templates(pill):
     templates = {
         "explicit.html": "EXPLICIT",
         "crud_views_object_detail/types/default/badge.html": (
-            '<b data-color="{{ prop.badge_color }}" data-pill="{{ prop.badge_pill|yesno:\"yes,no\" }}">'
-            "{{ value }}</b>"
+            '<b data-color="{{ prop.badge_color }}" data-pill="{{ prop.badge_pill|yesno:"yes,no" }}">{{ value }}</b>'
         ),
     }
     with override_settings(TEMPLATES=template_settings(templates)):
@@ -117,4 +118,16 @@ def test_badge_semantics_stock_escapes_color_label_and_value(label):
     assert set(node.attrib) == {"class"}
     assert node.get("class") == f"badge text-bg-{color} rounded-pill"
     assert node.text == (label or value)
+    templates = {
+        "crud_views_object_detail/types/default/badge.html": (
+            '<b data-color="{{ prop.badge_color }}">'
+            "{% if prop.badge_label %}{{ prop.badge_label }}{% else %}{{ value }}{% endif %}</b>"
+        ),
+    }
+    with override_settings(TEMPLATES=template_settings(templates)):
+        native = html.fromstring(render(prop))
+    assert native.tag == "b"
+    assert len(native) == 0
+    assert dict(native.attrib) == {"data-color": color}
+    assert native.text == (label or value)
     callback.assert_called_once_with(value)

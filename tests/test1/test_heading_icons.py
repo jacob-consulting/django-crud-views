@@ -237,3 +237,51 @@ def test_page_title_hostile_classes(monkeypatch, site):
     assert set(heading.attrib) == {"class"}
     assert heading.text_content().strip() == "<em>Title</em>"
     assert len(heading) == 0
+
+
+@pytest.mark.parametrize("layout", ["split-card", "striped-rows"])
+@pytest.mark.parametrize("icon", ["host:edit", "fas:pen", "", None, "disabled"])
+@pytest.mark.parametrize("hostile", [False, True])
+def test_plain_group_icon_belongs_to_title(monkeypatch, layout, icon, hostile):
+    from crud_views_object_detail.lib.resolvers import ResolvedGroup, ResolvedProperty
+
+    monkeypatch.setattr(crud_views_settings, "header_level", 2)
+    title = gettext_lazy('<em>Translated & "title"</em>')
+    group = ResolvedGroup(
+        title=title,
+        description="Description <text>",
+        icon=icon,
+        properties=[ResolvedProperty(path="name", label="Name", value="Value <text>", type="char")],
+    )
+    with override_settings(
+        CRUD_VIEWS_ICON_LIBRARIES=HOST_LIBRARY,
+        CRUD_VIEWS_ICONS={"disabled": None},
+        CRUD_VIEWS_BUTTON_CLASSES={
+            "heading:size-5": "native-size",
+            "heading-group:icon-host": '{name_class}" onclick="attack' if hostile else "group {name_class}",
+            "heading-group:icon-inline": 'inline" onerror="attack' if hostile else "group-inline",
+        },
+    ):
+        markup = Template("{% load crud_views_object_detail %}{% render_group group layout=layout %}").render(
+            Context({"group": group, "layout": layout})
+        )
+    doc = html.fromstring(markup)
+    (heading,) = doc.cssselect("h3")
+    assert heading.text_content() == str(title)
+    assert set(heading.attrib) == {"class"}
+    assert "native-size" in heading.get("class").split()
+    assert "mb-0" in heading.get("class").split()
+    assert not heading.cssselect("em")
+    assert len(doc.cssselect("i")) == (1 if icon == "fas:pen" else 0)
+    if icon == "host:edit":
+        assert "icon-edit" in heading.get("class")
+    if icon == "fas:pen":
+        (inline,) = heading.cssselect("i")
+        assert set(inline.attrib) == {"class", "aria-hidden"}
+        assert inline.get("aria-hidden") == "true"
+        assert (
+            "group-inline" in inline.get("class") if not hostile else 'inline" onerror="attack' in inline.get("class")
+        )
+    assert "Value <text>" in doc.text_content()
+    if layout == "split-card":
+        assert "Description <text>" in doc.text_content()

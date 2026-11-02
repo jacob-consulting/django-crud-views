@@ -115,8 +115,9 @@ Never derive panel selection from a `forloop` inside the separately rendered gro
 
 Tabs require Bootstrap's JavaScript and `crud_views_object_detail/js/tabs.js`, registered
 by the installed extension and emitted by `{% cv_js %}`. `cv.initObjectDetailTabs(root=document)`
-initializes only `data-cv-od-tabs` tablists, both on DOM ready and on `cv:dom-updated`.
-It is safe to call again after custom insertion. ArrowUp/ArrowDown wrap and immediately
+initializes only `data-cv-od-tabs` tablists, both on DOM ready and on `cv:modal:loaded`.
+`cv:modal:unload` disposes their Bootstrap instances before replacement. It is safe to
+call the initializer again after custom insertion. ArrowUp/ArrowDown wrap and immediately
 activate; Home/End activate the first/last tab. Bootstrap handles panel switching.
 Custom bundles with explicit keys need the [filtered asset recipe](../migrating-1.0.md#filtered-object-detail-assets).
 

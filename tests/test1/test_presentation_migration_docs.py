@@ -184,3 +184,66 @@ def test_copied_recipe_rejects_duplicate_group_keys_and_documents_focus_boundary
         "private scope",
     ):
         assert phrase in text
+
+
+MIGRATION = ROOT / "docs/migrating-1.0.md"
+
+
+def test_published_removed_keyword_replacement():
+    from pydantic import ValidationError
+
+    from crud_views.lib.view.card import CardAction
+
+    namespace = {}
+    exec(compile(recipe(MIGRATION, "### Removed card label keyword", "python"), str(MIGRATION), "exec"), namespace)
+    assert namespace["action"].label_mode == "icon"
+    assert namespace["inherited"].label_mode is None
+    for value in (False, True, None):
+        with pytest.raises(ValidationError, match='label_mode="icon"'):
+            CardAction(key="detail", no_label=value)
+    from tests.test1.test_button_data import base
+
+    context = base(cv_label='<img src=x onerror="bad">', cv_no_label=False, cv_access=True)
+    output = Template(recipe(MIGRATION, "### Removed card label keyword")).render(Context(context))
+    node = html.fromstring(output)
+    assert node.tag == "a" and node.get("href") == "/u/"
+    assert node.get("title") == '<img src=x onerror="bad">'
+    assert node.cssselect(".visually-hidden")
+    assert not node.cssselect("img, [onerror]")
+
+
+def test_published_filtered_object_detail_assets():
+    from crud_views.lib.pipeline import cv_sources
+
+    namespace = {}
+    exec(compile(recipe(MIGRATION, "### Filtered object-detail assets", "python"), str(MIGRATION), "exec"), namespace)
+    path = "crud_views_object_detail/js/tabs.js"
+    assert list(namespace["sources"]).count(path) == 1
+    assert list(cv_sources("js")).count(path) == 1
+    assert path not in list(cv_sources("js", keys=["crud_views"]))
+
+
+def test_current_release_and_migration_claims_are_paired():
+    unreleased = (ROOT / "CHANGELOG.md").read_text().split("## Unreleased", 1)[1].split("\n## ", 1)[0]
+    migration = MIGRATION.read_text()
+    for title, anchor in (
+        ("Heading hosts and sizing", "heading-hosts-and-sizing"),
+        ("Interactive object-detail templates and targets", "interactive-object-detail-templates-and-targets"),
+        ("Removed card label keyword", "removed-card-label-keyword"),
+    ):
+        assert f"**{title}.**" in unreleased
+        assert f"docs/migrating-1.0.md#{anchor}" in unreleased
+        assert migration.count(f"### {title}\n") == 1
+    for obsolete in (
+        "CardAction(no_label=True)` keeps working",
+        "CardAction(no_label=True)` is unaffected",
+        "CardAction(no_label=True)` still",
+        "cv_no_label is no longer a leaf input",
+        "cv_no_label` is no longer a `cv_button_data()` input and raises",
+    ):
+        assert obsolete not in unreleased
+        assert obsolete not in migration
+    assert "harmless" in unreleased and "unprojected" in unreleased
+    assert "cv_context_actions_label_mode" in migration and "cv_context_action_label_mode" in migration
+    assert "badge_color" in unreleased and "badge_pill" in unreleased
+    assert "reference/object_detail_layout_packs.md#collision-detection-boundary" in migration

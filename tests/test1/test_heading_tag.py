@@ -2,6 +2,7 @@
 
 import pytest
 from django.template import Context, Engine, Template, TemplateSyntaxError
+from django.test import override_settings
 
 from crud_views.lib.settings import crud_views_settings
 
@@ -85,7 +86,12 @@ def test_block_inside_heading_can_be_overridden(level):
         "{% cv_heading level=x %}X{% endcv_heading %}",
         "{% cv_heading level=True %}X{% endcv_heading %}",
         "{% cv_heading level=5|add:1 %}X{% endcv_heading %}",
-        "{% cv_heading level=5 size=5 %}X{% endcv_heading %}",
+        "{% cv_heading level=5 size=0 %}X{% endcv_heading %}",
+        "{% cv_heading level=5 size=7 %}X{% endcv_heading %}",
+        '{% cv_heading level=5 size="3" %}X{% endcv_heading %}',
+        "{% cv_heading level=5 size=x %}X{% endcv_heading %}",
+        "{% cv_heading level=5 size=True %}X{% endcv_heading %}",
+        "{% cv_heading level=5 size=3|add:1 %}X{% endcv_heading %}",
         '{% cv_heading "title" level=5 %}X{% endcv_heading %}',
         "{% cv_heading level=5 %}X",
     ],
@@ -95,3 +101,31 @@ def test_bad_arguments_fail_at_parse_time(source):
         Template("{% load crud_views %}" + source)
     # the tag's own validation, not Django's "unknown tag"
     assert "Invalid block tag" not in str(exc.value)
+
+
+@pytest.mark.parametrize("size", [None, "", "native-size"])
+def test_theme_size_preserves_semantics_and_caller_classes(level, size):
+    level(2)
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"heading:size-5": size}):
+        classes = f"{size} title mb-0" if size else "title mb-0"
+        assert _render('level=5 class="title mb-0"') == f'<h3 class="{classes}">X</h3>'
+
+
+def test_explicit_size_applies_even_when_level_matches(level):
+    level(2)
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"heading:size-3": "native-three"}):
+        assert _render("level=3 size=3") == '<h3 class="native-three">X</h3>'
+        assert _render("level=3") == "<h3>X</h3>"
+        assert _render('"header" level=5 size=3') == '<h2 class="native-three">X</h2>'
+
+
+def test_size_caller_and_icon_classes_are_escaped_independently(level):
+    level(None)
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"heading:size-3": 'size" onload="x'}):
+        result = _render(
+            "level=5 size=3 class=cls icon_class=icon",
+            context={"cls": 'caller" onclick="x', "icon": 'host" onerror="x'},
+        )
+    assert result == (
+        '<h5 class="size&quot; onload=&quot;x caller&quot; onclick=&quot;x host&quot; onerror=&quot;x">X</h5>'
+    )

@@ -13,6 +13,16 @@ from django.dispatch import receiver
 from django.utils.translation import gettext, gettext_noop
 
 DEFAULT_BUTTON_CLASSES: dict[str, str | None] = {
+    "heading:size-1": "h1",
+    "heading:size-2": "h2",
+    "heading:size-3": "h3",
+    "heading:size-4": "h4",
+    "heading:size-5": "h5",
+    "heading:size-6": "h6",
+    "heading:icon-host": "{name_class}",
+    "heading:icon-inline": "me-2",
+    "heading-page:icon-inline": "",
+    "heading-modal:icon-inline": "",
     "context:primary": "btn btn-outline-primary btn-lg",
     "context:secondary": "btn btn-outline-primary btn-lg",
     "context:tertiary": "btn btn-outline-primary btn-lg",
@@ -169,6 +179,20 @@ def get_icon_host_class(location: str, value: str | None) -> str:
         return get_button_class(location, "icon-host").format(name_class=name_class)
     except Exception:
         return ""
+
+
+def _heading_class(location: str, slot: str) -> str:
+    """Resolve heading styling by configuration layer first, then location specificity.
+
+    Presence (including None/empty) stops fallback. Read project settings at render time;
+    the merged button cache cannot preserve these layer boundaries.
+    """
+    for layer in (_settings_layer(), _THEME_BUTTON_CLASSES, DEFAULT_BUTTON_CLASSES):
+        for key in (f"heading-{location}:{slot}", f"heading:{slot}"):
+            if key in layer:
+                value = layer[key]
+                return value if isinstance(value, str) else ""
+    return ""
 
 
 CONTAINER_SINGLE_MODES: tuple[str, ...] = ("container", "bare")

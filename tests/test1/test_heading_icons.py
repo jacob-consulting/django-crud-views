@@ -10,7 +10,6 @@ from django.test import override_settings
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import CrudView
 
-
 HOST_LIBRARY = {"host": {"renderer": "font", "placement": "host", "class": "icon-{name}"}}
 
 
@@ -22,7 +21,7 @@ def render_modal(icon="host:edit", title="Edit <title>"):
     )
     view = Mock(spec=CrudView)
     view.do_not_call_in_templates = True
-    view.cv_get_header_icon.return_value = icon
+    view.cv_get_header_icon = Mock(spec=lambda: None, return_value=icon)
     view.cv_header = title
     view.cv_content_template = "body.html"
     result = engine.get_template("modal.html").render(Context({"view": view}))

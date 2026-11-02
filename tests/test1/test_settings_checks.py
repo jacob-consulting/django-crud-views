@@ -81,3 +81,26 @@ def test_header_level_invalid(value):
     assert len(messages) == 1
     assert messages[0].id == "crud_views.E107"
     assert "CRUD_VIEWS_HEADER_LEVEL" in messages[0].msg
+
+
+@pytest.mark.parametrize("configured", [None, [], {"form": "bad"}, {"typo": "both"}, {"form": None}])
+def test_theme_floor_does_not_suppress_e108(configured):
+    from django.test import override_settings
+
+    from crud_views.lib.view.label_mode import register_label_mode_defaults
+
+    register_label_mode_defaults({"form": "both"})
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS=configured):
+        errors = [m for m in CrudViewsSettings().check_messages if m.id == "crud_views.E108"]
+    assert len(errors) == 1
+    assert "CRUD_VIEWS_LABEL_MODE_DEFAULTS" in errors[0].msg
+
+
+def test_theme_and_valid_project_floors_are_quiet():
+    from django.test import override_settings
+
+    from crud_views.lib.view.label_mode import register_label_mode_defaults
+
+    register_label_mode_defaults({"form": "both", "card": "icon"})
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"form": "label"}):
+        assert CrudViewsSettings().check_messages == []

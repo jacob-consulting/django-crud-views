@@ -610,6 +610,27 @@ def test_default_package_forms_have_no_w292_in_icon_mode():
         assert [m for m in check_viewsets() if m.id == "viewset.W292"] == []
 
 
+def test_theme_effective_form_floor_checks_without_constructing_forms(create_form, monkeypatch):
+    from crud_views.lib.view.label_mode import register_label_mode_defaults
+
+    create_form(_NoSubmitIcon, mode=None)
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("W292 must not construct a request-dependent form")
+
+    monkeypatch.setattr(_NoSubmitIcon, "__init__", forbidden)
+    register_label_mode_defaults({"form": "icon"})
+    assert _w292(AuthorCreateView) == [("submit", "_NoSubmitIcon")]
+    assert _system_w292(AuthorCreateView) == [("submit", "_NoSubmitIcon")]
+    with _floor("both"):
+        assert _w292(AuthorCreateView) == []
+    monkeypatch.setattr(AuthorCreateView, ATTR, {"submit": "label"})
+    assert _w292(AuthorCreateView) == []
+    monkeypatch.setattr(AuthorCreateView, ATTR, {})
+    monkeypatch.setattr(_NoSubmitIcon, "submit_icon", "fa-solid fa-check")
+    assert _w292(AuthorCreateView) == []
+
+
 @pytest.mark.parametrize("mode", ["label", "both", None])
 def test_missing_icons_outside_icon_mode_are_silent(create_form, mode):
     create_form(_NoSubmitIcon, mode)

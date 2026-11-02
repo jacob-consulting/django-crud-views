@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="16" failures="6" errors="0" time="0.14860381">
+    <testsuite name="tests/js/object-detail-tabs.test.js" timestamp="2026-11-02T11:48:41.552Z" hostname="weaver-dev" tests="16" failures="6" errors="0" skipped="0" time="0.14860381">
+        <testcase classname="tests/js/object-detail-tabs.test.js" name="object-detail tabs real asset &gt; initializes every owned trigger on DOMContentLoaded" time="0.009996408">
+        </testcase>
+        <testcase classname="tests/js/object-detail-tabs.test.js" name="object-detail tabs real asset &gt; initializes immediately when loaded after DOMContentLoaded" time="0.003285846">
+        </testcase>
+        <testcase classname="tests/js/object-detail-tabs.test.js" name="object-detail tabs real asset &gt; includes the supplied root itself and supports one tab" time="0.003587702">
+        </testcase>
+        <testcase classname="tests/js/object-detail-tabs.test.js" name="object-detail tabs real asset &gt; does not capture nested unmarked tablists or unrelated triggers" time="0.003609053">
+        </testcase>
+        <testcase classname="tests/js/object-detail-tabs.test.js" name="object-detail tabs real asset &gt; performs no Bootstrap lookup for unmarked native content" time="0.001964112">
+        </testcase>
+        <testcase classname="tests/js/object-detail-tabs.test.js" name="object-detail tabs real asset &gt; leaves server selection intact without Bootstrap" time="0.002179206">
+        </testcase>
+        <testcase classname="tests/js/object-detail-tabs.test.js" name="object-detail tabs real asset &gt; does not show or focus a tab or change an already selected second tab" time="0.081207736">
+        </testcase>
+        <testcase classname="tests/js/object-detail-tabs.test.js" name="object-detail tabs real asset &gt; rejects unknown package keys clearly" time="0.003209461">
+        </testcase>
+        <testcase classname="tests/js/object-detail-tabs.test.js" name="object-detail tabs real asset &gt; initializes injected modal tabs without touching page siblings" time="0.009694863">
+            <failure message="expected [] to deeply equal [ &apos;injected-0&apos;, &apos;injected-1&apos; ]" type="AssertionError">
+AssertionError: expected [] to deeply equal [ &apos;injected-0&apos;, &apos;injected-1&apos; ]
+
+- Expected
++ Received
+
+- [
+-   &quot;injected-0&quot;,
+-   &quot;injected-1&quot;,
+- ]
++ []
+
+ ❯ tests/js/object-detail-tabs.test.js:141:61
+            </failure>
+        </testcase>
+        <testcase classname="tests/js/object-detail-tabs.test.js" name="object-detail tabs real asset &gt; disposes only existing modal instances while the content is attached" time="0.004518766">
+            <failure message="expected &quot;vi.fn()&quot; to be called once, but got 0 times" type="AssertionError">
+AssertionError: expected &quot;vi.fn()&quot; to be called once, but got 0 times
+ ❯ tests/js/object-detail-tabs.test.js:156:64
+ ❯ tests/js/object-detail-tabs.test.js:156:13
+            </failure>
+        </testcase>
+        <testcase classname="tests/js/object-detail-tabs.test.js" name="object-detail tabs real asset &gt; ignores nested unrelated tablists during disposal" time="0.006688799">
+            <failure message="expected [ …(4) ] to deeply equal [ &lt;button role=&quot;tab&quot; …(2)&gt;&lt;/button&gt; ]" type="AssertionError">
+AssertionError: expected [ …(4) ] to deeply equal [ &lt;button role=&quot;tab&quot; …(2)&gt;&lt;/button&gt; ]
+
+- Expected
++ Received
+
+@@ -2,6 +2,39 @@
+    &lt;button
+      data-bs-toggle=&quot;pill&quot;
+      id=&quot;foreign&quot;
+      role=&quot;tab&quot;
+    /&gt;,
++   &lt;button
++     aria-selected=&quot;true&quot;
++     class=&quot;nav-link active&quot;
++     data-bs-toggle=&quot;pill&quot;
++     id=&quot;page-0&quot;
++     role=&quot;tab&quot;
++     tabindex=&quot;0&quot;
++     type=&quot;button&quot;
++   &gt;
++     0
++   &lt;/button&gt;,
++   &lt;button
++     aria-selected=&quot;false&quot;
++     class=&quot;nav-link&quot;
++     data-bs-toggle=&quot;pill&quot;
++     id=&quot;page-1&quot;
++     role=&quot;tab&quot;
++     tabindex=&quot;-1&quot;
++     type=&quot;button&quot;
++   &gt;
++     1
++   &lt;/button&gt;,
++   &lt;button
++     aria-selected=&quot;true&quot;
++     class=&quot;nav-link active&quot;
++     data-bs-toggle=&quot;pill&quot;
++     id=&quot;nested-0&quot;
++     role=&quot;tab&quot;
++     tabindex=&quot;0&quot;
++     type=&quot;button&quot;
++   &gt;
++     0
++   &lt;/button&gt;,
+  ]
+
+ ❯ tests/js/object-detail-tabs.test.js:173:44
+            </failure>
+        </testcase>
+        <testcase classname="tests/js/object-detail-tabs.test.js" name="object-detail tabs real asset &gt; handles repeated load, unload, retained reopen and replacement using the root itself" time="0.003012394">
+            <failure message="expected [] to have a length of 2 but got +0" type="AssertionError">
+AssertionError: expected [] to have a length of 2 but got +0
+
+- Expected
++ Received
+
+- 2
++ 0
+
+ ❯ tests/js/object-detail-tabs.test.js:184:23
+            </failure>
+        </testcase>
+        <testcase classname="tests/js/object-detail-tabs.test.js" name="object-detail tabs real asset &gt; installs lifecycle listeners once across repeated script evaluation" time="0.002018174">
+            <failure message="expected [ &apos;DOMContentLoaded&apos; ] to deeply equal [ &apos;DOMContentLoaded&apos;, …(2) ]" type="AssertionError">
+AssertionError: expected [ &apos;DOMContentLoaded&apos; ] to deeply equal [ &apos;DOMContentLoaded&apos;, …(2) ]
+
+- Expected
++ Received
+
+  [
+    &quot;DOMContentLoaded&quot;,
+-   &quot;cv:modal:loaded&quot;,
+-   &quot;cv:modal:unload&quot;,
+  ]
+
+ ❯ tests/js/object-detail-tabs.test.js:202:53
+            </failure>
+        </testcase>
+        <testcase classname="tests/js/object-detail-tabs.test.js" name="object-detail tabs real asset &gt; preserves second-tab selection and focus on repeated modal loads" time="0.008292337">
+            <failure message="expected +0 to be 2 // Object.is equality" type="AssertionError">
+AssertionError: expected +0 to be 2 // Object.is equality
+
+- Expected
++ Received
+
+- 2
++ 0
+
+ ❯ tests/js/object-detail-tabs.test.js:221:37
+            </failure>
+        </testcase>
+        <testcase classname="tests/js/object-detail-tabs.test.js" name="object-detail tabs real asset &gt; makes no Bootstrap lookup for native or empty modal content" time="0.002086467">
+        </testcase>
+        <testcase classname="tests/js/object-detail-tabs.test.js" name="object-detail tabs real asset &gt; tolerates missing Bootstrap during loaded and unload lifecycle" time="0.001705923">
+        </testcase>
+    </testsuite>
+</testsuites>

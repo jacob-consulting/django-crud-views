@@ -129,4 +129,122 @@ describe("object-detail tabs real asset", () => {
         await expect(loadScript("tabs", "other")).rejects.toThrow("Unknown static package: other");
         await expect(loadScript("tabs", "toString")).rejects.toThrow("Unknown static package: toString");
     });
+
+    function modalEvent(root, name) {
+        root.dispatchEvent(new CustomEvent(`cv:modal:${name}`, { bubbles: true }));
+    }
+
+    it("initializes injected modal tabs without touching page siblings", async () => {
+        document.body.insertAdjacentHTML("beforeend", `<div id="modal">${tabs("injected")}</div>`);
+        await loadTabs();
+        modalEvent(document.getElementById("modal"), "loaded");
+        expect([...fake.instances.keys()].map(el => el.id)).toEqual(["injected-0", "injected-1"]);
+    });
+
+    it("disposes only existing modal instances while the content is attached", async () => {
+        document.body.insertAdjacentHTML("beforeend", `<div id="modal">${tabs("injected")}</div>`);
+        await loadTabs();
+        window.cv.initObjectDetailTabs();
+        const modal = document.getElementById("modal");
+        const old = [...modal.querySelectorAll('[role="tab"]')].map(el => [el, fake.instances.get(el)]);
+        old.forEach(([el, instance]) => instance.dispose.mockImplementation(() => {
+            expect(el.isConnected).toBe(true);
+            fake.instances.delete(el);
+        }));
+        fake.bootstrap.Tab.getOrCreateInstance.mockClear();
+        modalEvent(modal, "unload");
+        old.forEach(([, instance]) => expect(instance.dispose).toHaveBeenCalledOnce());
+        expect([...fake.instances.keys()].map(el => el.id)).toEqual(["page-0", "page-1"]);
+        expect(fake.bootstrap.Tab.getOrCreateInstance).not.toHaveBeenCalled();
+        modalEvent(modal, "unload");
+        old.forEach(([, instance]) => expect(instance.dispose).toHaveBeenCalledOnce());
+    });
+
+    it("ignores nested unrelated tablists during disposal", async () => {
+        const root = document.getElementById("page");
+        root.insertAdjacentHTML("beforeend", `
+            <div role="tablist"><button role="tab" data-bs-toggle="pill" id="foreign"></button></div>
+            ${tabs("nested", 1)}`);
+        await loadTabs();
+        const foreign = document.getElementById("foreign");
+        const instance = fake.bootstrap.Tab.getOrCreateInstance(foreign);
+        window.cv.initObjectDetailTabs();
+        modalEvent(root, "unload");
+        expect([...fake.instances.keys()]).toEqual([foreign]);
+        expect(instance.dispose).not.toHaveBeenCalled();
+        expect(fake.bootstrap.Tab.getInstance.mock.calls.map(([el]) => el.id))
+            .toEqual(["page-0", "page-1", "nested-0"]);
+    });
+
+    it("handles repeated load, unload, retained reopen and replacement using the root itself", async () => {
+        await loadTabs();
+        const root = document.getElementById("page");
+        modalEvent(root, "loaded");
+        const first = [...fake.instances.values()];
+        expect(first).toHaveLength(2);
+        modalEvent(root, "loaded");
+        expect([...fake.instances.values()]).toEqual(first);
+        modalEvent(root, "unload");
+        expect(fake.instances.size).toBe(0);
+        modalEvent(root, "loaded");
+        expect(fake.instances.size).toBe(2);
+        expect([...fake.instances.values()]).not.toEqual(first);
+        modalEvent(root, "unload");
+        root.innerHTML = '<button role="tab" data-bs-toggle="pill" id="replacement"></button>';
+        modalEvent(root, "loaded");
+        expect([...fake.instances.keys()]).toEqual([document.getElementById("replacement")]);
+    });
+
+    it("installs lifecycle listeners once across repeated script evaluation", async () => {
+        await loadTabs();
+        const hooks = ["DOMContentLoaded", "cv:modal:loaded", "cv:modal:unload"];
+        const before = listeners.filter(([type]) => hooks.includes(type));
+        expect(before.map(([type]) => type).sort()).toEqual([...hooks].sort());
+        await loadScript("tabs", "crud_views_object_detail");
+        expect(listeners.filter(([type]) => hooks.includes(type))).toEqual(before);
+        modalEvent(document.getElementById("page"), "loaded");
+        expect(fake.bootstrap.Tab.getOrCreateInstance).toHaveBeenCalledTimes(2);
+        modalEvent(document.getElementById("page"), "unload");
+        expect(fake.bootstrap.Tab.getInstance).toHaveBeenCalledTimes(2);
+    });
+
+    it("preserves second-tab selection and focus on repeated modal loads", async () => {
+        document.body.innerHTML = tabs("page", 2, 1);
+        const root = document.getElementById("page");
+        const second = document.getElementById("page-1");
+        second.focus();
+        const before = root.innerHTML;
+        const focus = vi.spyOn(second, "focus");
+        await loadTabs();
+        modalEvent(root, "loaded");
+        modalEvent(root, "loaded");
+        expect(fake.instances.size).toBe(2);
+        expect(root.innerHTML).toBe(before);
+        expect(document.activeElement).toBe(second);
+        expect(focus).not.toHaveBeenCalled();
+        fake.instances.forEach(instance => expect(instance.show).not.toHaveBeenCalled());
+    });
+
+    it("makes no Bootstrap lookup for native or empty modal content", async () => {
+        document.body.innerHTML = '<section id="native">Native</section><div data-cv-od-tabs id="empty"></div>';
+        const lookup = vi.spyOn(window, "bootstrap", "get").mockImplementation(() => {
+            throw new Error("Native layouts must not access Bootstrap");
+        });
+        await loadTabs();
+        for (const root of document.body.children) {
+            modalEvent(root, "loaded");
+            modalEvent(root, "unload");
+        }
+        expect(lookup).not.toHaveBeenCalled();
+    });
+
+    it("tolerates missing Bootstrap during loaded and unload lifecycle", async () => {
+        vi.stubGlobal("bootstrap", undefined);
+        const before = document.body.innerHTML;
+        await loadTabs();
+        const root = document.getElementById("page");
+        modalEvent(root, "loaded");
+        modalEvent(root, "unload");
+        expect(document.body.innerHTML).toBe(before);
+    });
 });

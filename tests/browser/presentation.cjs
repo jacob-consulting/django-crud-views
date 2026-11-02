@@ -443,16 +443,28 @@ async function main() {
         report.error = error.stack;
         process.exitCode = report.status === 'infrastructure_prerequisite_failed' ? 2 : 1;
     } finally {
+        const cleanupFailed = error => {
+            report.cleanup.error = [report.cleanup.error, error.message].filter(Boolean).join('; ');
+            report.passed = false; report.status = 'failed'; process.exitCode = 1;
+        };
         try {
             if (browser) await bounded(browser.close(), 5000, 'Browser cleanup timed out');
             report.cleanup.browserClosed = true;
+        } catch (error) {cleanupFailed(error);}
+        // Fixture ownership is independent of whether Chromium closed successfully.
+        try {
             if (child && child.exitCode === null && child.signalCode === null) child.kill('SIGTERM');
             if (childExit) {
                 try {report.cleanup.serverExit = await bounded(childExit, 5000, 'Fixture cleanup timed out');}
-                catch (error) {child.kill('SIGKILL'); await childExit; throw error;}
+                catch (error) {
+                    child.kill('SIGKILL');
+                    report.cleanup.serverExit = await childExit;
+                    report.cleanup.reaped = true;
+                    throw error;
+                }
             }
             report.cleanup.reaped = true;
-        } catch (error) {report.cleanup.error = error.message; report.passed = false; report.status = 'failed'; process.exitCode = 1;}
+        } catch (error) {cleanupFailed(error);}
         report.serverLog = serverLog;
         report.completed = report.passed && report.cleanup.reaped;
         fs.mkdirSync(path.dirname(output), {recursive: true});

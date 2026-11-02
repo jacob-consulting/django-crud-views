@@ -131,16 +131,16 @@ Source: A1–A7 and the AUTH-02/A19 handoff; locked decisions D-01–D-19 in
 `.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-CONTEXT.md`.
 Implementation/verification progress is tracked below; A8, A25, jQuery removal and broader Guardian #286 are excluded.
 
-- [ ] **COND-01**: Each group uses its exact bound checkbox name in its owning form, across prefixes, sibling/nested rows and injected content; ambiguous markup is diagnosed locally without changing that group's own state or bypassing a bound ancestor.
-- [ ] **COND-02**: Immediate native visibility composes every inactive ancestor with independently changed disabled reasons, includes native action buttons, preserves unsaved values and management controls, and recovers stranded focus without disrupting accepted modal focus.
-- [ ] **COND-03**: Native reset resynchronizes only its owning form after default reset, respects cancellation including later listeners, and preserves dynamic rows and management POST/re-render behavior.
-- [ ] **COND-04**: Inactive supported fields persist field-aware empty values including defaulted/omitted scalar fields, Boolean, FileField/ImageField and M2M; explicit values retain native meaning and server-disabled fields retain trusted values.
-- [ ] **COND-05**: Unsupported clearing shapes require explicit values and produce descriptive group/field configuration errors at static checks where detectable and at runtime otherwise; inherited form/model invariants remain authoritative.
-- [ ] **FSET-01**: All accepted active formset classes reject nonblank edit-only extras and missing/malformed/unauthorized existing-row IDs before any main/sibling/nested save, with generic identity errors and valid ordinary edits/new rows retained.
-- [ ] **FSET-02**: Documented root initializers automatically and repeatedly initialize page, modal/422 and added/nested content, include roots and late scripts/toggles, scope controllers per form, and preserve add/delete/order/submit/widget and event contracts.
-- [ ] **FSET-03**: A19 non-first sibling and deeper child fragments preserve authorized request coordinates, rendered prefixes, management totals and successful POST/database round trips; retain AUTH-02 ancestry and access gates.
-- [ ] **LIFE-01**: Real HTTP/browser evidence covers stock and minimal non-Bootstrap crispy/group/formset rendering, keyboard/focus, two forms, native reset, dynamic rows, 422 replacement, management payloads, and JS-off/tampered validation.
-- [ ] **LIFE-02**: Publish tested DOM, initializer, template projection, clearing and validation contracts with paired Breaking/migration guidance and Phase 7 inventory; preserve authorization, parent denial, restricted querysets, rollback, skip/purge, form-leaf, escaping, label and cancel contracts.
+- [x] **COND-01**: Each group uses its exact bound checkbox name in its owning form, across prefixes, sibling/nested rows and injected content; ambiguous markup is diagnosed locally without changing that group's own state or bypassing a bound ancestor.
+- [x] **COND-02**: Immediate native visibility composes every inactive ancestor with independently changed disabled reasons, includes native action buttons, preserves unsaved values and management controls, and recovers stranded focus without disrupting accepted modal focus.
+- [x] **COND-03**: Native reset resynchronizes only its owning form after default reset, respects cancellation including later listeners, and preserves dynamic rows and management POST/re-render behavior.
+- [x] **COND-04**: Inactive supported fields persist field-aware empty values including defaulted/omitted scalar fields, Boolean, FileField/ImageField and M2M; explicit values retain native meaning and server-disabled fields retain trusted values.
+- [x] **COND-05**: Unsupported clearing shapes require explicit values and produce descriptive group/field configuration errors at static checks where detectable and at runtime otherwise; inherited form/model invariants remain authoritative.
+- [x] **FSET-01**: All accepted active formset classes reject nonblank edit-only extras and missing/malformed/unauthorized existing-row IDs before any main/sibling/nested save, with generic identity errors and valid ordinary edits/new rows retained.
+- [x] **FSET-02**: Documented root initializers automatically and repeatedly initialize page, modal/422 and added/nested content, include roots and late scripts/toggles, scope controllers per form, and preserve add/delete/order/submit/widget and event contracts.
+- [x] **FSET-03**: A19 non-first sibling and deeper child fragments preserve authorized request coordinates, rendered prefixes, management totals and successful POST/database round trips; retain AUTH-02 ancestry and access gates.
+- [x] **LIFE-01**: Real HTTP/browser evidence covers stock and minimal non-Bootstrap crispy/group/formset rendering, keyboard/focus, two forms, native reset, dynamic rows, 422 replacement, management payloads, and JS-off/tampered validation.
+- [x] **LIFE-02**: Publish tested DOM, initializer, template projection, clearing and validation contracts with paired Breaking/migration guidance and Phase 7 inventory; preserve authorization, parent denial, restricted querysets, rollback, skip/purge, form-leaf, escaping, label and cancel contracts.
 
 ### Stability policy (plan 4)
 
@@ -232,16 +232,16 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DEL-05 | Phase 6.3 | Complete; authorization, partial notices and repaired focus verified |
 | DEL-06 | Phase 6.3 | Complete; recorded three-series evidence, migrations, repairs and scoped human acceptance verified |
 | GUA-01 | Phase 6.3 | Complete within explicit bounded identity scope; IN-02/03 and CT-01 fixed; broader compatibility unverified in issue #286 |
-| COND-01 | Phase 6.4 | Pending phase acceptance — canonical re-verification closes CR-05; exact binding, frozen ambiguous ownership and unique recovery verified against 18-evidence |
-| COND-02 | Phase 6.4 | Pending phase acceptance — canonical re-verification confirms composed baseline/ancestor/frozen ownership; CR-05 closed |
-| COND-03 | Phase 6.4 | Pending phase acceptance — canonical verifier confirms native reset behavior; no reset gap found |
-| COND-04 | Phase 6.4 | Pending phase acceptance — persistence implementation verified within recorded reference-only limits; descriptor-less prohibition flagged-unverified |
-| COND-05 | Phase 6.4 | Pending phase acceptance — canonical verifier confirms E312/runtime/invariant behavior |
-| FSET-01 | Phase 6.4 | Pending phase acceptance — canonical re-verification closes CR-01; mandatory policy survives native and later sibling/child recleaning before any save |
-| FSET-02 | Phase 6.4 | Pending phase acceptance — canonical re-verification closes CR-03/04/05; native optional DELETE, stable bound capability and repeat-safe lifecycle verified |
-| FSET-03 | Phase 6.4 | Pending phase acceptance — canonical verifier confirms scoped A19 sibling/deeper round trips and authorization |
-| LIFE-01 | Phase 6.4 | Pending H1 human judgment — current 36-case/305-assertion browser packet verified and V1/V2/S1 closed; stock/native readability/discoverability/accessibility remains unapproved |
-| LIFE-02 | Phase 6.4 | Pending — CR-02 and WR-01–04 independently closed within scope; G6 remains open for WR-05 oversized glyph diagnostic robustness, with high security obligations and H1/H2 unresolved |
+| COND-01 | Phase 6.4 | Complete — exact binding and ambiguous ownership/recovery verified; scoped fallback assessment passed. |
+| COND-02 | Phase 6.4 | Complete — external baseline, ancestor composition and frozen ownership verified. |
+| COND-03 | Phase 6.4 | Complete — cancellable owning-form native reset and management behavior verified. |
+| COND-04 | Phase 6.4 | Complete — native reference-only persistence verified; exact bounded H2 prohibition explicitly accepted; application hooks remain excluded. |
+| COND-05 | Phase 6.4 | Complete — E312/runtime configuration refusal and inherited invariants verified. |
+| FSET-01 | Phase 6.4 | Complete — edit-only and row identity policy survives native/sibling/nested recleaning before writes. |
+| FSET-02 | Phase 6.4 | Complete — optional DELETE, stable bound identity and repeat-safe page/modal/dynamic lifecycle verified. |
+| FSET-03 | Phase 6.4 | Complete — scoped A19 sibling/deeper round trips and authorization verified; broader AUTH-02 exclusions retained. |
+| LIFE-01 | Phase 6.4 | Complete — source-bound browser evidence plus actual Chrome/Orca stock/native and modal acceptance; versions/distribution unspecified. |
+| LIFE-02 | Phase 6.4 | Complete — executable contracts/docs, paired migration, independent WR-05 closure, security44/44 and canonical10/10 passed. |
 | STAB-01 | Phase 7 (plan 4) | Pending |
 | STAB-02 | Phase 7 (plan 4) | Pending |
 | STAB-03 | Phase 7 (plan 4) | Pending |
@@ -257,4 +257,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-10-25*
-*Last updated: 2026-11-01 — revert premature Phase 06.4 completion after canonical gaps_found; retain passing scoped evidence and AUTH-02/A19 history*
+*Last updated: 2026-11-02 — Phase 06.4 canonical10/10, UAT2/2, security44/44 and final handoff ready; scoped exclusions retained*

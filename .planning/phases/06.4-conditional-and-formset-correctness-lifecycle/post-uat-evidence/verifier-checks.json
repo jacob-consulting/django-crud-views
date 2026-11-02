@@ -1,0 +1,161 @@
+{
+  "actor": "/root/verify_64_final",
+  "recorded": "2026-11-02T07:20:03.665407+00:00",
+  "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+  "historical_replay": {
+    "status": "verified-against-original-snapshots",
+    "observations": 14,
+    "original_actor": "/root/canonical_26",
+    "original_started": "2026-11-01T21:10:35.901886+00:00",
+    "original_finished": "2026-11-01T21:11:26.021406+00:00",
+    "outcomes": {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+      "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+    },
+    "stable_mappings": 16,
+    "mutable_snapshots": 4,
+    "source_paths": 824,
+    "unchanged_from_origin": 822,
+    "retained_exact": [
+      "conditional-browser",
+      "django4.2-disabled-full",
+      "django4.2-enabled-full",
+      "django4.2-focused",
+      "django4.2-missing-runtime",
+      "django5.2-disabled-full",
+      "django5.2-enabled-full",
+      "django5.2-focused",
+      "django5.2-missing-runtime",
+      "django6.0-disabled-full",
+      "django6.0-enabled-full",
+      "django6.0-focused",
+      "django6.0-missing-runtime",
+      "javascript",
+      "javascript-integration",
+      "modal-browser",
+      "strict-docs"
+    ],
+    "note": "Independent read-only validation of sealed observations and their exact historical snapshots; old live STABLE helper was not run, patched or recaptured."
+  },
+  "current_bindings": [
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+      "sha256": "75f8057f55d869ccb9591a0a9868e57d606f9e65f2f0eebffa5fca8d5313ad66"
+    },
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+      "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+    },
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/handoff.json",
+      "sha256": "0f9940e7350dbc28165172c818ec244ee72b986309a2e4a45bf4aa97423247b3"
+    },
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VERIFICATION.md",
+      "sha256": "de9103d24246ccb48440cba53770ab6e7349b849c2dfe84b6bc18a03b0c3bd00"
+    },
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+      "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
+    },
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+      "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
+    }
+  ],
+  "checks": [
+    {
+      "name": "current-aggregate",
+      "actor": "/root/verify_64_final",
+      "command": [
+        "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+        "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+        "--check",
+        "--output",
+        "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json"
+      ],
+      "started": "2026-11-02T07:19:46.195908+00:00",
+      "finished": "2026-11-02T07:19:50.321894+00:00",
+      "returncode": 0,
+      "stdout": "PHASE64_MATRIX_OK 20 gates source=5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d\n",
+      "stderr": ""
+    },
+    {
+      "name": "current-handoff-before-new-report",
+      "actor": "/root/verify_64_final",
+      "command": [
+        "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+        "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+        "--check-handoff",
+        "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/handoff.json"
+      ],
+      "started": "2026-11-02T07:19:50.321933+00:00",
+      "finished": "2026-11-02T07:20:00.012478+00:00",
+      "returncode": 0,
+      "stdout": "{\"disposition\": \"not-ready\", \"ready\": false, \"structurally_valid\": true}\n",
+      "stderr": ""
+    },
+    {
+      "name": "binding-recovery",
+      "actor": "/root/verify_64_final",
+      "command": [
+        "node",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "tests/js/toggle.test.js",
+        "-t",
+        "keeps a formerly bound inactive group safe during ambiguity and uniquely recovers"
+      ],
+      "started": "2026-11-02T07:20:00.012510+00:00",
+      "finished": "2026-11-02T07:20:01.215320+00:00",
+      "returncode": 0,
+      "stdout": "\n RUN  v5.0.3 /home/alex/projects/alex/django-crud-views\n\n\n Test Files  1 passed (1)\n      Tests  1 passed | 54 skipped (55)\n   Start at  07:20:00\n   Duration  852ms (environment 67%, transform 13%, tests 12%, setup 7%, import 1%)\n\n",
+      "stderr": "(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:\n  - ESM syntax in a file loaded as CommonJS (vitest.config.js:1:1). Use a `.mjs` extension or set `\"type\": \"module\"` in the closest package.json\nSet `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.\n"
+    },
+    {
+      "name": "reset-order",
+      "actor": "/root/verify_64_final",
+      "command": [
+        "node",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "tests/js/toggle.test.js",
+        "-t",
+        "resynchronizes native reset only after the task and only in its owning form"
+      ],
+      "started": "2026-11-02T07:20:01.215339+00:00",
+      "finished": "2026-11-02T07:20:02.418492+00:00",
+      "returncode": 0,
+      "stdout": "\n RUN  v5.0.3 /home/alex/projects/alex/django-crud-views\n\n\n Test Files  1 passed (1)\n      Tests  1 passed | 54 skipped (55)\n   Start at  07:20:01\n   Duration  846ms (environment 74%, transform 14%, setup 7%, tests 3%, import 1%, worker 1%)\n\n",
+      "stderr": "(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:\n  - ESM syntax in a file loaded as CommonJS (vitest.config.js:1:1). Use a `.mjs` extension or set `\"type\": \"module\"` in the closest package.json\nSet `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.\n"
+    },
+    {
+      "name": "form-isolation",
+      "actor": "/root/verify_64_final",
+      "command": [
+        "node",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "tests/js/formset.test.js",
+        "-t",
+        "initializes same-prefix forms repeatedly through automatic page and modal events"
+      ],
+      "started": "2026-11-02T07:20:02.418522+00:00",
+      "finished": "2026-11-02T07:20:03.664426+00:00",
+      "returncode": 0,
+      "stdout": "\n RUN  v5.0.3 /home/alex/projects/alex/django-crud-views\n\n\n Test Files  1 passed (1)\n      Tests  1 passed | 61 skipped (62)\n   Start at  07:20:02\n   Duration  917ms (environment 61%, tests 20%, transform 10%, setup 7%, import 1%)\n\n",
+      "stderr": "(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:\n  - ESM syntax in a file loaded as CommonJS (vitest.config.js:1:1). Use a `.mjs` extension or set `\"type\": \"module\"` in the closest package.json\nSet `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.\n"
+    }
+  ],
+  "prior_attempts": [
+    {
+      "actor": "/root/verify_64_final",
+      "stage": "initial-historical-input-map-validation",
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 22, in <module>\nKeyError: '.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-review.md'\n",
+      "reason": "The preserved pre-canonical handoff also references unchanged plan22 reports outside the 16 STABLE entries; resolve those exact original paths directly and compare their recorded hashes."
+    }
+  ],
+  "validation_program": "import json, hashlib, copy, importlib.util, datetime, subprocess, os\nfrom pathlib import Path\nroot=Path.cwd(); p=root/\".planning/phases/06.4-conditional-and-formset-correctness-lifecycle\"\ndef sha(path): return hashlib.sha256(Path(path).read_bytes()).hexdigest()\ndef load(path): return json.loads(Path(path).read_text())\ndef mod(name,path):\n s=importlib.util.spec_from_file_location(name,path); m=importlib.util.module_from_spec(s); s.loader.exec_module(m); return m\nh=mod(\"historical\",p/\"26-evidence/canonical-checks.py\"); r=h.load_runner()\nrec=load(h.OUTCOMES); original=copy.deepcopy(rec)\nassert rec[\"record_sha256\"]==h.digest({k:v for k,v in rec.items() if k!=\"record_sha256\"})\nassert rec[\"schema\"]==1 and rec[\"completed\"] is True and rec[\"actor\"]==h.ACTOR and rec[\"mode\"]==\"capture\"\nassert rec[\"command\"]==[str(h.PY),str(p/\"26-evidence/canonical-checks.py\"),\"--capture\"]\nmapping=load(p/\"post-uat-evidence/plan26-stable-manifest.json\")[\"files\"]\nassert [{\"path\":x[\"path\"],\"sha256\":x[\"sha256\"]} for x in mapping]==rec[\"stable_inputs\"]\nfor x in mapping: assert sha(root/x.get(\"snapshot\",x.get(\"immutable_original\")))==x[\"sha256\"],x[\"path\"]\nassert rec[\"canonical_before\"]==h.reference(h.BEFORE) and rec[\"handoff_before\"]==h.reference(h.HANDOFF_BEFORE)\nbefore=load(h.HANDOFF_BEFORE)\nassert before[\"reports\"][\"verification\"][\"sha256\"]==sha(h.BEFORE)\nby_path={x[\"path\"]:x for x in mapping}\nfor key,report in before[\"reports\"].items():\n if key!=\"verification\":\n  x=by_path.get(report[\"path\"]); assert report[\"sha256\"]==(x[\"sha256\"] if x else sha(root/report[\"path\"]))\npacket=load(h.PACKET); manifest=r.source()\nassert rec[\"continuity\"]==h.continuity(r,packet,manifest)\nassert rec[\"source_sha256\"]==manifest[\"sha256\"] and rec[\"runner_sha256\"]==sha(h.RUNNER) and rec[\"packet_sha256\"]==sha(h.PACKET)\nassert rec[\"manifest_sha256\"]==sha(p/\"24-evidence/source-manifest.json\")\nlive={\"canonical\":{\"path\":str(h.CANONICAL.relative_to(root)),\"sha256\":sha(h.BEFORE)},\"handoff\":{\"path\":str(h.HANDOFF.relative_to(root)),\"sha256\":sha(h.HANDOFF_BEFORE)},\"packet\":h.reference(h.PACKET)}\nassert rec[\"live_before\"]==live\nexpected=[\"clean-aggregate\",\"clean-handoff-before-report-replacement\"]+[name+\":\"+mode for name in h.MUTATIONS for mode in (\"aggregate\",\"handoff\")]\nassert [x[\"name\"] for x in rec[\"runs\"]]==expected\ncursor=h.stamp(rec[\"started\"])\nfor item in rec[\"runs\"]:\n assert cursor<=h.stamp(item[\"started\"])<=h.stamp(item[\"finished\"])<=h.stamp(rec[\"finished\"]);cursor=h.stamp(item[\"finished\"])\n h.inspect_result(item,manifest[\"sha256\"])\n bindings=item[\"bindings\"]\n if item[\"name\"].startswith(\"clean-\"): assert bindings==live\n else:\n  name=item[\"name\"].split(\":\")[0]; assert bindings[\"packet\"][\"sha256\"]==h.digest(h.mutate(packet,name))\n  bound=copy.deepcopy(before);bound[\"packet\"]=bindings[\"packet\"]\n  assert bindings[\"handoff\"][\"sha256\"]==h.digest(bound)\n  assert bindings[\"sidecar\"][\"sha256\"]==rec[\"manifest_sha256\"] and bindings[\"canonical\"]==live[\"canonical\"]\n  for key in (\"packet\",\"handoff\",\"sidecar\"):\n   path=root/bindings[key][\"path\"];assert path.resolve().is_relative_to(root/\".git\") and path.parent.name.startswith(\"canonical26-\")\n aggregate=item[\"name\"]==\"clean-aggregate\" or item[\"name\"].endswith(\":aggregate\")\n args=[\"--check\",\"--output\",str(root/bindings[\"packet\"][\"path\"])] if aggregate else [\"--check-handoff\",str(root/bindings[\"handoff\"][\"path\"])]\n assert item[\"command\"]==[str(h.PY),str(h.RUNNER),*args]\ndef run(name,args):\n start=h.now();c=subprocess.run(args,cwd=root,text=True,capture_output=True,timeout=10,env={**os.environ,\"PYTHONDONTWRITEBYTECODE\":\"1\"})\n return dict(name=name,actor=\"/root/verify_64_final\",command=args,started=start,finished=h.now(),returncode=c.returncode,stdout=c.stdout,stderr=c.stderr)\nchecks=[]\nfor name,args in [(\"current-aggregate\",[\"--check\",\"--output\",str(h.PACKET)]),(\"current-handoff-before-new-report\",[\"--check-handoff\",str(h.HANDOFF)])]:\n checks.append(run(name,[str(h.PY),str(h.RUNNER),*args]))\nfor name,file,test in [\n (\"binding-recovery\",\"tests/js/toggle.test.js\",\"keeps a formerly bound inactive group safe during ambiguity and uniquely recovers\"),\n (\"reset-order\",\"tests/js/toggle.test.js\",\"resynchronizes native reset only after the task and only in its owning form\"),\n (\"form-isolation\",\"tests/js/formset.test.js\",\"initializes same-prefix forms repeatedly through automatic page and modal events\")]:\n checks.append(run(name,[\"node\",\"node_modules/vitest/vitest.mjs\",\"run\",file,\"-t\",test]))\nassert all(x[\"returncode\"]==0 for x in checks),checks\nassert load(h.OUTCOMES)==original\nout=dict(actor=\"/root/verify_64_final\",recorded=h.now(),source_sha256=manifest[\"sha256\"],\n historical_replay=dict(status=\"verified-against-original-snapshots\",observations=14,original_actor=rec[\"actor\"],original_started=rec[\"started\"],original_finished=rec[\"finished\"],outcomes=h.reference(h.OUTCOMES),stable_mappings=16,mutable_snapshots=4,source_paths=rec[\"continuity\"][\"paths\"],unchanged_from_origin=rec[\"continuity\"][\"unchanged\"],retained_exact=rec[\"continuity\"][\"retained_exact\"],note=\"Independent read-only validation of sealed observations and their exact historical snapshots; old live STABLE helper was not run, patched or recaptured.\"),\n current_bindings=[h.reference(x) for x in [h.RUNNER,h.PACKET,h.HANDOFF,h.CANONICAL,p/\"06.4-UAT.md\",p/\"06.4-SECURITY.md\"]],\n checks=checks)\nprint(json.dumps(out,indent=2))"
+}

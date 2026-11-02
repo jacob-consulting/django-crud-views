@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "version": "06.4-24/v1",
-  "recorded": "2026-11-02T07:10:44.772466+00:00",
+  "version": "06.4-post-uat-final/v1",
+  "recorded": "2026-11-02T07:30:50.192631+00:00",
   "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
   "runner_sha256": "75f8057f55d869ccb9591a0a9868e57d606f9e65f2f0eebffa5fca8d5313ad66",
   "packet": {
@@ -104,23 +104,30 @@
     },
     "verification": {
       "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VERIFICATION.md",
-      "sha256": "de9103d24246ccb48440cba53770ab6e7349b849c2dfe84b6bc18a03b0c3bd00",
-      "status": "open",
-      "context": "Actual historical canonical human_needed 9/10 with G6/WR-05 closed; stale after completed UAT and changed report inputs. Independent canonical reassessment and fallback evaluation required; no promotion.",
-      "historical": false,
-      "verdict": "human_needed",
-      "actor": "/root/canonical_26",
-      "recorded": "2026-11-01T21:19:05Z",
+      "sha256": "45cb0e73623007d0ebe67cdaebaf0daa82bae5321586690a9e40abde3862c7ca",
+      "status": "passed",
+      "verdict": "passed",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
-      "response": "Actual independent canonical assessment: human_needed 9/10, G6/WR-05 closed within scope; H1/H2,31 flags and independently attributed security obligations remain open.",
+      "response": "Independent phase goal verification passed10/10; actual H1/H2, security44/44 and31 authored scoped assumptions accounted for. Broader excluded guarantees remain unsupported.",
+      "context": "Current independent canonical assessment after report-only UAT/security reconciliation; historical executions remain historical. Final binding is performed by /root after report creation.",
       "evidence_files": [
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VERIFICATION.md",
-          "sha256": "de9103d24246ccb48440cba53770ab6e7349b849c2dfe84b6bc18a03b0c3bd00"
+          "sha256": "45cb0e73623007d0ebe67cdaebaf0daa82bae5321586690a9e40abde3862c7ca"
         },
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
-          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.json",
+          "sha256": "4250f8da7c5a980af38d422a91c7aec9e84a7ec9ec6b2be09bc8e76040b247a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/verifier-checks.json",
+          "sha256": "10ef275e1d9fbf9fb53978751fe9374b764290fceaee71cda40924a688f93170"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VALIDATION.md",
+          "sha256": "a7ec83666e2e7942b2ed7c06c916925afadab2b24b175a1ed28a10b1ec3d19aa"
         }
       ]
     }
@@ -847,7 +854,7 @@
       "response": "Independent code review and actual canonical replay close G6/WR-01\u201305 within their stated evidence scope; phase human/security acceptance remains pending.",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VERIFICATION.md",
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/before/06.4-VERIFICATION.md",
           "sha256": "de9103d24246ccb48440cba53770ab6e7349b849c2dfe84b6bc18a03b0c3bd00"
         },
         {
@@ -2816,7 +2823,7 @@
       "id": 1,
       "requirement": "AUTH-02",
       "category": "concurrency",
-      "status": "flagged-unresolved",
+      "status": "verified",
       "contract": "A19 only: existing per-request authorization/ancestry and atomic boundaries; repeated/interleaved requests remain isolated (12/16/18), no new concurrency API.",
       "evidence": [
         {
@@ -2824,13 +2831,46 @@
           "case": "tests/test1/test_fragment_authorization.py::test_two_child_declaration_round_trips_emitted_index_and_keeps_gates"
         }
       ],
-      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+      "qualification": "Independently verified within the authored scoped contract; original generic flags and broader unsupported guarantees preserved in history and assessment.",
+      "original_status": "flagged-unresolved",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "A19 request authorization and ancestry are re-evaluated on each request; mutable declaration trees are cloned per view.",
+      "context": "A19 request authorization and ancestry are re-evaluated on each request; mutable declaration trees are cloned per view. Limits: Parallel transaction serialization and isolation-level guarantees are not authored requirements.",
+      "implementation": "formsets/formsets.py:539; formsets/mixins.py:49",
+      "unsupported_expansion_or_limit": "Parallel transaction serialization and isolation-level guarantees are not authored requirements.",
+      "assessment": "verified-within-authored-scope",
+      "assessment_evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_fragment_authorization.py::test_parent_ownership_change_applies_on_next_request"
+        }
+      ],
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.json",
+          "sha256": "4250f8da7c5a980af38d422a91c7aec9e84a7ec9ec6b2be09bc8e76040b247a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.md",
+          "sha256": "f065d922b062f17cdb33b7d6b426efc4a94c84d1dd3903357e98607538d277c1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/verifier-checks.json",
+          "sha256": "10ef275e1d9fbf9fb53978751fe9374b764290fceaee71cda40924a688f93170"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     {
       "id": 2,
       "requirement": "COND-01",
       "category": "boundary",
-      "status": "flagged-unresolved",
+      "status": "verified",
       "contract": "Zero/one/multiple exact checkbox matches, escaped Unicode/special names and two-form separation; no numeric coercion or ordering-based match (retained01;14/16/18).",
       "evidence": [
         {
@@ -2854,13 +2894,46 @@
           "case": "tests/js/toggle.test.js::conditional disabled ownership keeps a formerly bound inactive group safe during ambiguity and uniquely recovers"
         }
       ],
-      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+      "qualification": "Independently verified within the authored scoped contract; original generic flags and broader unsupported guarantees preserved in history and assessment.",
+      "original_status": "flagged-unresolved",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Zero, one and multiple matches retain or recover the correct local owned state.",
+      "context": "Zero, one and multiple matches retain or recover the correct local owned state.",
+      "implementation": "js/toggle.js:23,137",
+      "unsupported_expansion_or_limit": "",
+      "assessment": "verified-within-authored-scope",
+      "assessment_evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::unresolved conditional ownership lifecycle retains a formerly bound false state across zero, two and one matches"
+        }
+      ],
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.json",
+          "sha256": "4250f8da7c5a980af38d422a91c7aec9e84a7ec9ec6b2be09bc8e76040b247a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.md",
+          "sha256": "f065d922b062f17cdb33b7d6b426efc4a94c84d1dd3903357e98607538d277c1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/verifier-checks.json",
+          "sha256": "10ef275e1d9fbf9fb53978751fe9374b764290fceaee71cda40924a688f93170"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     {
       "id": 3,
       "requirement": "COND-01",
       "category": "adjacency",
-      "status": "flagged-unresolved",
+      "status": "verified",
       "contract": "Zero/one/multiple exact checkbox matches, escaped Unicode/special names and two-form separation; no numeric coercion or ordering-based match (retained01;14/16/18).",
       "evidence": [
         {
@@ -2884,13 +2957,46 @@
           "case": "tests/js/toggle.test.js::conditional disabled ownership keeps a formerly bound inactive group safe during ambiguity and uniquely recovers"
         }
       ],
-      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+      "qualification": "Independently verified within the authored scoped contract; original generic flags and broader unsupported guarantees preserved in history and assessment.",
+      "original_status": "flagged-unresolved",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Adjacent sibling/nested prefixes and other forms do not supply a fallback match.",
+      "context": "Adjacent sibling/nested prefixes and other forms do not supply a fallback match.",
+      "implementation": "js/toggle.js:23",
+      "unsupported_expansion_or_limit": "",
+      "assessment": "verified-within-authored-scope",
+      "assessment_evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::toggle.js binds sibling and nested row prefixes independently despite shared suffixes"
+        }
+      ],
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.json",
+          "sha256": "4250f8da7c5a980af38d422a91c7aec9e84a7ec9ec6b2be09bc8e76040b247a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.md",
+          "sha256": "f065d922b062f17cdb33b7d6b426efc4a94c84d1dd3903357e98607538d277c1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/verifier-checks.json",
+          "sha256": "10ef275e1d9fbf9fb53978751fe9374b764290fceaee71cda40924a688f93170"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     {
       "id": 4,
       "requirement": "COND-01",
       "category": "empty",
-      "status": "flagged-unresolved",
+      "status": "verified",
       "contract": "Zero/one/multiple exact checkbox matches, escaped Unicode/special names and two-form separation; no numeric coercion or ordering-based match (retained01;14/16/18).",
       "evidence": [
         {
@@ -2914,13 +3020,46 @@
           "case": "tests/js/toggle.test.js::conditional disabled ownership keeps a formerly bound inactive group safe during ambiguity and uniquely recovers"
         }
       ],
-      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+      "qualification": "Independently verified within the authored scoped contract; original generic flags and broader unsupported guarantees preserved in history and assessment.",
+      "original_status": "flagged-unresolved",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Missing checkbox leaves an unbound group untouched and later unique binding retries.",
+      "context": "Missing checkbox leaves an unbound group untouched and later unique binding retries.",
+      "implementation": "js/toggle.js:148,156",
+      "unsupported_expansion_or_limit": "",
+      "assessment": "verified-within-authored-scope",
+      "assessment_evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::toggle.js includes an Element root and retries late checkboxes without duplicate handlers"
+        }
+      ],
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.json",
+          "sha256": "4250f8da7c5a980af38d422a91c7aec9e84a7ec9ec6b2be09bc8e76040b247a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.md",
+          "sha256": "f065d922b062f17cdb33b7d6b426efc4a94c84d1dd3903357e98607538d277c1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/verifier-checks.json",
+          "sha256": "10ef275e1d9fbf9fb53978751fe9374b764290fceaee71cda40924a688f93170"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     {
       "id": 5,
       "requirement": "COND-01",
       "category": "encoding",
-      "status": "flagged-unresolved",
+      "status": "verified",
       "contract": "Zero/one/multiple exact checkbox matches, escaped Unicode/special names and two-form separation; no numeric coercion or ordering-based match (retained01;14/16/18).",
       "evidence": [
         {
@@ -2944,13 +3083,46 @@
           "case": "tests/js/toggle.test.js::conditional disabled ownership keeps a formerly bound inactive group safe during ambiguity and uniquely recovers"
         }
       ],
-      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+      "qualification": "Independently verified within the authored scoped contract; original generic flags and broader unsupported guarantees preserved in history and assessment.",
+      "original_status": "flagged-unresolved",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Bound names are escaped at rendering and compared as literal DOM data.",
+      "context": "Bound names are escaped at rendering and compared as literal DOM data. Limits: No normalization or arbitrary encoding-conversion guarantee is introduced.",
+      "implementation": "conditional/layout.py:29; conditional/toggle_group.html:5; js/toggle.js:27",
+      "unsupported_expansion_or_limit": "No normalization or arbitrary encoding-conversion guarantee is introduced.",
+      "assessment": "verified-within-authored-scope",
+      "assessment_evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::toggle.js supports DocumentFragments and names containing selector punctuation"
+        }
+      ],
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.json",
+          "sha256": "4250f8da7c5a980af38d422a91c7aec9e84a7ec9ec6b2be09bc8e76040b247a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.md",
+          "sha256": "f065d922b062f17cdb33b7d6b426efc4a94c84d1dd3903357e98607538d277c1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/verifier-checks.json",
+          "sha256": "10ef275e1d9fbf9fb53978751fe9374b764290fceaee71cda40924a688f93170"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     {
       "id": 6,
       "requirement": "COND-01",
       "category": "ordering",
-      "status": "flagged-unresolved",
+      "status": "verified",
       "contract": "Zero/one/multiple exact checkbox matches, escaped Unicode/special names and two-form separation; no numeric coercion or ordering-based match (retained01;14/16/18).",
       "evidence": [
         {
@@ -2974,13 +3146,46 @@
           "case": "tests/js/toggle.test.js::conditional disabled ownership keeps a formerly bound inactive group safe during ambiguity and uniquely recovers"
         }
       ],
-      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+      "qualification": "Independently verified within the authored scoped contract; original generic flags and broader unsupported guarantees preserved in history and assessment.",
+      "original_status": "flagged-unresolved",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Binding uses exact owner/name equality rather than document position or suffix.",
+      "context": "Binding uses exact owner/name equality rather than document position or suffix.",
+      "implementation": "js/toggle.js:23",
+      "unsupported_expansion_or_limit": "",
+      "assessment": "verified-within-authored-scope",
+      "assessment_evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::toggle.js does not bind by suffix or to a checkbox owned by another form"
+        }
+      ],
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.json",
+          "sha256": "4250f8da7c5a980af38d422a91c7aec9e84a7ec9ec6b2be09bc8e76040b247a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.md",
+          "sha256": "f065d922b062f17cdb33b7d6b426efc4a94c84d1dd3903357e98607538d277c1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/verifier-checks.json",
+          "sha256": "10ef275e1d9fbf9fb53978751fe9374b764290fceaee71cda40924a688f93170"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     {
       "id": 7,
       "requirement": "COND-01",
       "category": "precision",
-      "status": "flagged-unresolved",
+      "status": "verified",
       "contract": "Zero/one/multiple exact checkbox matches, escaped Unicode/special names and two-form separation; no numeric coercion or ordering-based match (retained01;14/16/18).",
       "evidence": [
         {
@@ -3004,13 +3209,46 @@
           "case": "tests/js/toggle.test.js::conditional disabled ownership keeps a formerly bound inactive group safe during ambiguity and uniquely recovers"
         }
       ],
-      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+      "qualification": "Independently verified within the authored scoped contract; original generic flags and broader unsupported guarantees preserved in history and assessment.",
+      "original_status": "flagged-unresolved",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Identity is a string comparison; no numeric conversion or rounding occurs in toggle matching.",
+      "context": "Identity is a string comparison; no numeric conversion or rounding occurs in toggle matching. Limits: Numeric-range rounding/overflow APIs are inapplicable to this string identity contract.",
+      "implementation": "js/toggle.js:27",
+      "unsupported_expansion_or_limit": "Numeric-range rounding/overflow APIs are inapplicable to this string identity contract.",
+      "assessment": "verified-within-authored-scope",
+      "assessment_evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::toggle.js finds the checkbox by its exact bound name"
+        }
+      ],
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.json",
+          "sha256": "4250f8da7c5a980af38d422a91c7aec9e84a7ec9ec6b2be09bc8e76040b247a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.md",
+          "sha256": "f065d922b062f17cdb33b7d6b426efc4a94c84d1dd3903357e98607538d277c1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/verifier-checks.json",
+          "sha256": "10ef275e1d9fbf9fb53978751fe9374b764290fceaee71cda40924a688f93170"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     {
       "id": 8,
       "requirement": "COND-02",
       "category": "adjacency",
-      "status": "flagged-unresolved",
+      "status": "verified",
       "contract": "Nested/frozen/empty group ownership and both initialization orders; independent disabled reasons persist (14/16/18).",
       "evidence": [
         {
@@ -3034,13 +3272,46 @@
           "case": "tests/js/toggle.test.js::conditional disabled ownership keeps a formerly bound inactive group safe during ambiguity and uniquely recovers"
         }
       ],
-      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+      "qualification": "Independently verified within the authored scoped contract; original generic flags and broader unsupported guarantees preserved in history and assessment.",
+      "original_status": "flagged-unresolved",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Every ancestor contributes disabled ownership; unrelated groups remain independent.",
+      "context": "Every ancestor contributes disabled ownership; unrelated groups remain independent.",
+      "implementation": "js/toggle.js:99",
+      "unsupported_expansion_or_limit": "",
+      "assessment": "verified-within-authored-scope",
+      "assessment_evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::conditional disabled ownership composes nested owners in inner-first order and retains baseline"
+        }
+      ],
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.json",
+          "sha256": "4250f8da7c5a980af38d422a91c7aec9e84a7ec9ec6b2be09bc8e76040b247a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.md",
+          "sha256": "f065d922b062f17cdb33b7d6b426efc4a94c84d1dd3903357e98607538d277c1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/verifier-checks.json",
+          "sha256": "10ef275e1d9fbf9fb53978751fe9374b764290fceaee71cda40924a688f93170"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     {
       "id": 9,
       "requirement": "COND-02",
       "category": "empty",
-      "status": "flagged-unresolved",
+      "status": "verified",
       "contract": "Nested/frozen/empty group ownership and both initialization orders; independent disabled reasons persist (14/16/18).",
       "evidence": [
         {
@@ -3064,13 +3335,46 @@
           "case": "tests/js/toggle.test.js::conditional disabled ownership keeps a formerly bound inactive group safe during ambiguity and uniquely recovers"
         }
       ],
-      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+      "qualification": "Independently verified within the authored scoped contract; original generic flags and broader unsupported guarantees preserved in history and assessment.",
+      "original_status": "flagged-unresolved",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Unresolved groups do not invent a state or release an enclosing disabled owner.",
+      "context": "Unresolved groups do not invent a state or release an enclosing disabled owner. Limits: Empty DOM/control collections are harmless iteration inputs, not a promised synthetic state.",
+      "implementation": "js/toggle.js:88,103",
+      "unsupported_expansion_or_limit": "Empty DOM/control collections are harmless iteration inputs, not a promised synthetic state.",
+      "assessment": "verified-within-authored-scope",
+      "assessment_evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::toggle.js does not let an unresolved nested group bypass its bound ancestor"
+        }
+      ],
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.json",
+          "sha256": "4250f8da7c5a980af38d422a91c7aec9e84a7ec9ec6b2be09bc8e76040b247a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.md",
+          "sha256": "f065d922b062f17cdb33b7d6b426efc4a94c84d1dd3903357e98607538d277c1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/verifier-checks.json",
+          "sha256": "10ef275e1d9fbf9fb53978751fe9374b764290fceaee71cda40924a688f93170"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     {
       "id": 10,
       "requirement": "COND-02",
       "category": "ordering",
-      "status": "flagged-unresolved",
+      "status": "verified",
       "contract": "Nested/frozen/empty group ownership and both initialization orders; independent disabled reasons persist (14/16/18).",
       "evidence": [
         {
@@ -3094,13 +3398,46 @@
           "case": "tests/js/toggle.test.js::conditional disabled ownership keeps a formerly bound inactive group safe during ambiguity and uniquely recovers"
         }
       ],
-      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+      "qualification": "Independently verified within the authored scoped contract; original generic flags and broader unsupported guarantees preserved in history and assessment.",
+      "original_status": "flagged-unresolved",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Both nesting orders preserve baseline and unsaved entries; own temporary writes are not recaptured.",
+      "context": "Both nesting orders preserve baseline and unsaved entries; own temporary writes are not recaptured.",
+      "implementation": "js/toggle.js:78,135",
+      "unsupported_expansion_or_limit": "",
+      "assessment": "verified-within-authored-scope",
+      "assessment_evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/toggle.test.js::conditional disabled ownership composes nested owners in outer-first order and retains baseline"
+        }
+      ],
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.json",
+          "sha256": "4250f8da7c5a980af38d422a91c7aec9e84a7ec9ec6b2be09bc8e76040b247a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.md",
+          "sha256": "f065d922b062f17cdb33b7d6b426efc4a94c84d1dd3903357e98607538d277c1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/verifier-checks.json",
+          "sha256": "10ef275e1d9fbf9fb53978751fe9374b764290fceaee71cda40924a688f93170"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     {
       "id": 11,
       "requirement": "COND-03",
       "category": "unclassified",
-      "status": "flagged-unresolved",
+      "status": "verified",
       "contract": "UNCLASSIFIED flagged assumption: locked cancellable native reset after default action, scoped owning form, dynamic management preserved; retained05/14/16/18 prove concrete contract; no inferred new reset policy.",
       "evidence": [
         {
@@ -3120,13 +3457,46 @@
           "case": "native:native-reset-user-cancelled"
         }
       ],
-      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+      "qualification": "Independently verified within the authored scoped contract; original generic flags and broader unsupported guarantees preserved in history and assessment.",
+      "original_status": "flagged-unresolved",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Native reset waits until default action, observes cancellation, scopes the form and retains management rows.",
+      "context": "Native reset waits until default action, observes cancellation, scopes the form and retains management rows. Limits: Unclassified is a manual-review prompt, not an additional backstop requirement; H1 confirms actual reset usability.",
+      "implementation": "js/toggle.js:121",
+      "unsupported_expansion_or_limit": "Unclassified is a manual-review prompt, not an additional backstop requirement; H1 confirms actual reset usability.",
+      "assessment": "verified-within-authored-scope",
+      "assessment_evidence": [
+        {
+          "gate": "conditional-browser",
+          "case": "stock:native-reset-user-cancelled"
+        }
+      ],
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.json",
+          "sha256": "4250f8da7c5a980af38d422a91c7aec9e84a7ec9ec6b2be09bc8e76040b247a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.md",
+          "sha256": "f065d922b062f17cdb33b7d6b426efc4a94c84d1dd3903357e98607538d277c1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/verifier-checks.json",
+          "sha256": "10ef275e1d9fbf9fb53978751fe9374b764290fceaee71cda40924a688f93170"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     {
       "id": 12,
       "requirement": "COND-04",
       "category": "idempotency",
-      "status": "flagged-unresolved",
+      "status": "verified",
       "contract": "Retain native repeated-save/file-reference/M2M behavior and routed atomic rollback; consuming-application storage hooks remain H2 scope (retained02;18/19).",
       "evidence": [
         {
@@ -3138,13 +3508,46 @@
           "case": "tests/test1/test_conditional_persistence.py::test_unchanged_inline_file_reference_clears_without_deleting_content[image]"
         }
       ],
-      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+      "qualification": "Independently verified within the authored scoped contract; original generic flags and broader unsupported guarantees preserved in history and assessment.",
+      "original_status": "flagged-unresolved",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Repeated validation preserves the effective existing-row change; already-empty relationships do not force save.",
+      "context": "Repeated validation preserves the effective existing-row change; already-empty relationships do not force save. Limits: Not an exactly-once custom save-hook guarantee. H2 explicitly accepts native storage-reference limits.",
+      "implementation": "conditional/group.py:152,169; formsets/render_tree.py:333",
+      "unsupported_expansion_or_limit": "Not an exactly-once custom save-hook guarantee. H2 explicitly accepts native storage-reference limits.",
+      "assessment": "verified-within-authored-scope",
+      "assessment_evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_conditional_persistence.py::test_revalidation_keeps_the_persisted_change_until_saved"
+        }
+      ],
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.json",
+          "sha256": "4250f8da7c5a980af38d422a91c7aec9e84a7ec9ec6b2be09bc8e76040b247a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.md",
+          "sha256": "f065d922b062f17cdb33b7d6b426efc4a94c84d1dd3903357e98607538d277c1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/verifier-checks.json",
+          "sha256": "10ef275e1d9fbf9fb53978751fe9374b764290fceaee71cda40924a688f93170"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     {
       "id": 13,
       "requirement": "COND-04",
       "category": "concurrency",
-      "status": "flagged-unresolved",
+      "status": "verified",
       "contract": "Retain native repeated-save/file-reference/M2M behavior and routed atomic rollback; consuming-application storage hooks remain H2 scope (retained02;18/19).",
       "evidence": [
         {
@@ -3156,52 +3559,192 @@
           "case": "tests/test1/test_conditional_persistence.py::test_unchanged_inline_file_reference_clears_without_deleting_content[image]"
         }
       ],
-      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+      "qualification": "Independently verified within the authored scoped contract; original generic flags and broader unsupported guarantees preserved in history and assessment.",
+      "original_status": "flagged-unresolved",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Existing routed atomic save protects main/purge/sibling effects from partial failure.",
+      "context": "Existing routed atomic save protects main/purge/sibling effects from partial failure. Limits: No simultaneous-writer conflict resolution promised; custom storage hooks remain outside H2's accepted native-reference contract.",
+      "implementation": "formsets/mixins.py:114",
+      "unsupported_expansion_or_limit": "No simultaneous-writer conflict resolution promised; custom storage hooks remain outside H2's accepted native-reference contract.",
+      "assessment": "verified-within-authored-scope",
+      "assessment_evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_conditional_formset.py::test_purge_rolls_back_when_sibling_formset_save_fails"
+        }
+      ],
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.json",
+          "sha256": "4250f8da7c5a980af38d422a91c7aec9e84a7ec9ec6b2be09bc8e76040b247a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.md",
+          "sha256": "f065d922b062f17cdb33b7d6b426efc4a94c84d1dd3903357e98607538d277c1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/verifier-checks.json",
+          "sha256": "10ef275e1d9fbf9fb53978751fe9374b764290fceaee71cda40924a688f93170"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     {
       "id": 14,
       "requirement": "COND-05",
       "category": "adjacency",
-      "status": "flagged-unresolved",
+      "status": "verified",
       "contract": "Retain shared static/runtime resolver, explicit empty-value membership and inherited clean/model validation order (retained03;17/18).",
       "evidence": [
         {
           "gate": "django6.0-focused"
         }
       ],
-      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+      "qualification": "Independently verified within the authored scoped contract; original generic flags and broader unsupported guarantees preserved in history and assessment.",
+      "original_status": "flagged-unresolved",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Main/inline/nested declaration namespaces remain independent and unsupported fields are diagnosed locally.",
+      "context": "Main/inline/nested declaration namespaces remain independent and unsupported fields are diagnosed locally.",
+      "implementation": "checks.py:134,146",
+      "unsupported_expansion_or_limit": "",
+      "assessment": "verified-within-authored-scope",
+      "assessment_evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_conditional_checks.py::test_inline_namespaces_and_nested_custom_classes_are_independent"
+        }
+      ],
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.json",
+          "sha256": "4250f8da7c5a980af38d422a91c7aec9e84a7ec9ec6b2be09bc8e76040b247a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.md",
+          "sha256": "f065d922b062f17cdb33b7d6b426efc4a94c84d1dd3903357e98607538d277c1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/verifier-checks.json",
+          "sha256": "10ef275e1d9fbf9fb53978751fe9374b764290fceaee71cda40924a688f93170"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     {
       "id": 15,
       "requirement": "COND-05",
       "category": "empty",
-      "status": "flagged-unresolved",
+      "status": "verified",
       "contract": "Retain shared static/runtime resolver, explicit empty-value membership and inherited clean/model validation order (retained03;17/18).",
       "evidence": [
         {
           "gate": "django6.0-focused"
         }
       ],
-      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+      "qualification": "Independently verified within the authored scoped contract; original generic flags and broader unsupported guarantees preserved in history and assessment.",
+      "original_status": "flagged-unresolved",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Explicit falsy values are detected by key membership; unsupported automatic empty values fail descriptively.",
+      "context": "Explicit falsy values are detected by key membership; unsupported automatic empty values fail descriptively.",
+      "implementation": "conditional/group.py:17,74",
+      "unsupported_expansion_or_limit": "",
+      "assessment": "verified-within-authored-scope",
+      "assessment_evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_conditional_checks.py::test_custom_field_explicit_falsy_override_resolves_static_error[False]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_conditional_checks.py::test_custom_field_explicit_falsy_override_resolves_static_error[None]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_conditional_checks.py::test_custom_field_explicit_falsy_override_resolves_static_error[]"
+        }
+      ],
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.json",
+          "sha256": "4250f8da7c5a980af38d422a91c7aec9e84a7ec9ec6b2be09bc8e76040b247a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.md",
+          "sha256": "f065d922b062f17cdb33b7d6b426efc4a94c84d1dd3903357e98607538d277c1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/verifier-checks.json",
+          "sha256": "10ef275e1d9fbf9fb53978751fe9374b764290fceaee71cda40924a688f93170"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     {
       "id": 16,
       "requirement": "COND-05",
       "category": "ordering",
-      "status": "flagged-unresolved",
+      "status": "verified",
       "contract": "Retain shared static/runtime resolver, explicit empty-value membership and inherited clean/model validation order (retained03;17/18).",
       "evidence": [
         {
           "gate": "django6.0-focused"
         }
       ],
-      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+      "qualification": "Independently verified within the authored scoped contract; original generic flags and broader unsupported guarantees preserved in history and assessment.",
+      "original_status": "flagged-unresolved",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Resolved state precedes inherited model validation; nonfield/model invariants can reject it.",
+      "context": "Resolved state precedes inherited model validation; nonfield/model invariants can reject it.",
+      "implementation": "conditional/group.py:140,163,184",
+      "unsupported_expansion_or_limit": "",
+      "assessment": "verified-within-authored-scope",
+      "assessment_evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_conditional_persistence.py::test_model_clean_sees_final_state_and_blocks_persistence"
+        }
+      ],
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.json",
+          "sha256": "4250f8da7c5a980af38d422a91c7aec9e84a7ec9ec6b2be09bc8e76040b247a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.md",
+          "sha256": "f065d922b062f17cdb33b7d6b426efc4a94c84d1dd3903357e98607538d277c1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/verifier-checks.json",
+          "sha256": "10ef275e1d9fbf9fb53978751fe9374b764290fceaee71cda40924a688f93170"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     {
       "id": 17,
       "requirement": "FSET-01",
       "category": "adjacency",
-      "status": "flagged-unresolved",
+      "status": "verified",
       "contract": "Active adapters revalidate policy across repeated/late cleaning; blank extras and valid rows survive; invalid identities reject before every save (11/18).",
       "evidence": [
         {
@@ -3229,13 +3772,54 @@
           "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-notes]"
         }
       ],
-      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+      "qualification": "Independently verified within the authored scoped contract; original generic flags and broader unsupported guarantees preserved in history and assessment.",
+      "original_status": "flagged-unresolved",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Sibling or child cleaning cannot erase row-policy rejection before the write branch.",
+      "context": "Sibling or child cleaning cannot erase row-policy rejection before the write branch.",
+      "implementation": "formsets/render_tree.py:202; formsets/formsets.py:379",
+      "unsupported_expansion_or_limit": "",
+      "assessment": "verified-within-authored-scope",
+      "assessment_evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-siblings]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-notes]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-identity-siblings]"
+        }
+      ],
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.json",
+          "sha256": "4250f8da7c5a980af38d422a91c7aec9e84a7ec9ec6b2be09bc8e76040b247a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.md",
+          "sha256": "f065d922b062f17cdb33b7d6b426efc4a94c84d1dd3903357e98607538d277c1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/verifier-checks.json",
+          "sha256": "10ef275e1d9fbf9fb53978751fe9374b764290fceaee71cda40924a688f93170"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     {
       "id": 18,
       "requirement": "FSET-01",
       "category": "empty",
-      "status": "flagged-unresolved",
+      "status": "verified",
       "contract": "Active adapters revalidate policy across repeated/late cleaning; blank extras and valid rows survive; invalid identities reject before every save (11/18).",
       "evidence": [
         {
@@ -3263,13 +3847,50 @@
           "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-notes]"
         }
       ],
-      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+      "qualification": "Independently verified within the authored scoped contract; original generic flags and broader unsupported guarantees preserved in history and assessment.",
+      "original_status": "flagged-unresolved",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Legitimate blank-ID new rows remain valid; nonblank edit-only extras reject before saving.",
+      "context": "Legitimate blank-ID new rows remain valid; nonblank edit-only extras reject before saving. Limits: Blank extras and inactive skip/purge retain their separate policies.",
+      "implementation": "formsets/render_tree.py:227,247",
+      "unsupported_expansion_or_limit": "Blank extras and inactive skip/purge retain their separate policies.",
+      "assessment": "verified-within-authored-scope",
+      "assessment_evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_permitted_new_rows_save_with_blank_id[package]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_permitted_new_rows_save_with_blank_id[native]"
+        }
+      ],
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.json",
+          "sha256": "4250f8da7c5a980af38d422a91c7aec9e84a7ec9ec6b2be09bc8e76040b247a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.md",
+          "sha256": "f065d922b062f17cdb33b7d6b426efc4a94c84d1dd3903357e98607538d277c1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/verifier-checks.json",
+          "sha256": "10ef275e1d9fbf9fb53978751fe9374b764290fceaee71cda40924a688f93170"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     {
       "id": 19,
       "requirement": "FSET-01",
       "category": "ordering",
-      "status": "flagged-unresolved",
+      "status": "verified",
       "contract": "Active adapters revalidate policy across repeated/late cleaning; blank extras and valid rows survive; invalid identities reject before every save (11/18).",
       "evidence": [
         {
@@ -3297,13 +3918,54 @@
           "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-notes]"
         }
       ],
-      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+      "qualification": "Independently verified within the authored scoped contract; original generic flags and broader unsupported guarantees preserved in history and assessment.",
+      "original_status": "flagged-unresolved",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Both aggregate traversals precede the write branch; later cleaning errors are recollected.",
+      "context": "Both aggregate traversals precede the write branch; later cleaning errors are recollected.",
+      "implementation": "formsets/formsets.py:379; formsets/mixins.py:103",
+      "unsupported_expansion_or_limit": "",
+      "assessment": "verified-within-authored-scope",
+      "assessment_evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-siblings]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-notes]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-identity-siblings]"
+        }
+      ],
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.json",
+          "sha256": "4250f8da7c5a980af38d422a91c7aec9e84a7ec9ec6b2be09bc8e76040b247a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.md",
+          "sha256": "f065d922b062f17cdb33b7d6b426efc4a94c84d1dd3903357e98607538d277c1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/verifier-checks.json",
+          "sha256": "10ef275e1d9fbf9fb53978751fe9374b764290fceaee71cda40924a688f93170"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     {
       "id": 20,
       "requirement": "FSET-01",
       "category": "idempotency",
-      "status": "flagged-unresolved",
+      "status": "verified",
       "contract": "Active adapters revalidate policy across repeated/late cleaning; blank extras and valid rows survive; invalid identities reject before every save (11/18).",
       "evidence": [
         {
@@ -3331,13 +3993,54 @@
           "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-notes]"
         }
       ],
-      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+      "qualification": "Independently verified within the authored scoped contract; original generic flags and broader unsupported guarantees preserved in history and assessment.",
+      "original_status": "flagged-unresolved",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Recleaning reinstates mandatory errors without discarding or multiplying native/custom errors.",
+      "context": "Recleaning reinstates mandatory errors without discarding or multiplying native/custom errors.",
+      "implementation": "formsets/render_tree.py:202,257",
+      "unsupported_expansion_or_limit": "",
+      "assessment": "verified-within-authored-scope",
+      "assessment_evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_preserves_native_and_custom_nonform_errors[package-custom_clean]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_preserves_native_and_custom_nonform_errors[package-too_few_forms]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_reclean_preserves_native_and_custom_nonform_errors[native-custom_clean]"
+        }
+      ],
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.json",
+          "sha256": "4250f8da7c5a980af38d422a91c7aec9e84a7ec9ec6b2be09bc8e76040b247a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.md",
+          "sha256": "f065d922b062f17cdb33b7d6b426efc4a94c84d1dd3903357e98607538d277c1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/verifier-checks.json",
+          "sha256": "10ef275e1d9fbf9fb53978751fe9374b764290fceaee71cda40924a688f93170"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     {
       "id": 21,
       "requirement": "FSET-01",
       "category": "concurrency",
-      "status": "flagged-unresolved",
+      "status": "verified",
       "contract": "Active adapters revalidate policy across repeated/late cleaning; blank extras and valid rows survive; invalid identities reject before every save (11/18).",
       "evidence": [
         {
@@ -3365,13 +4068,50 @@
           "case": "tests/test1/test_formsets_validation_gate.py::test_late_clean_reclean_restores_row_policy_before_http_save[package-addition-notes]"
         }
       ],
-      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+      "qualification": "Independently verified within the authored scoped contract; original generic flags and broader unsupported guarantees preserved in history and assessment.",
+      "original_status": "flagged-unresolved",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Policy is per-bound-tree, rechecked against its authorized selected-database queryset before saving.",
+      "context": "Policy is per-bound-tree, rechecked against its authorized selected-database queryset before saving. Limits: Database-wide concurrent edit serialization is not promised by FSET-01.",
+      "implementation": "formsets/render_tree.py:223; formsets/mixins.py:114",
+      "unsupported_expansion_or_limit": "Database-wide concurrent edit serialization is not promised by FSET-01.",
+      "assessment": "verified-within-authored-scope",
+      "assessment_evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_authorized_membership_uses_queryset_database[package]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_formsets_policy.py::test_authorized_membership_uses_queryset_database[native]"
+        }
+      ],
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.json",
+          "sha256": "4250f8da7c5a980af38d422a91c7aec9e84a7ec9ec6b2be09bc8e76040b247a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.md",
+          "sha256": "f065d922b062f17cdb33b7d6b426efc4a94c84d1dd3903357e98607538d277c1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/verifier-checks.json",
+          "sha256": "10ef275e1d9fbf9fb53978751fe9374b764290fceaee71cda40924a688f93170"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     {
       "id": 22,
       "requirement": "FSET-02",
       "category": "idempotency",
-      "status": "flagged-unresolved",
+      "status": "verified",
       "contract": "Repeated initialization, interleaved modal/row lifecycle and single event ownership remain form-scoped; stable bound capability independent of display order (13/14/16/18).",
       "evidence": [
         {
@@ -3399,13 +4139,46 @@
           "case": "tests/js/formset.test.js::formset.js native row deletion eligibility refuses custom extra Delete after upward movement (delegated)"
         }
       ],
-      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+      "qualification": "Independently verified within the authored scoped contract; original generic flags and broader unsupported guarantees preserved in history and assessment.",
+      "original_status": "flagged-unresolved",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Repeated page/modal/root initialization creates one controller and one action binding per owning form.",
+      "context": "Repeated page/modal/root initialization creates one controller and one action binding per owning form.",
+      "implementation": "js/formset.js:507,602",
+      "unsupported_expansion_or_limit": "",
+      "assessment": "verified-within-authored-scope",
+      "assessment_evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/formset.test.js::formset.js CrudViewsFormset initializes same-prefix forms repeatedly through automatic page and modal events"
+        }
+      ],
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.json",
+          "sha256": "4250f8da7c5a980af38d422a91c7aec9e84a7ec9ec6b2be09bc8e76040b247a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.md",
+          "sha256": "f065d922b062f17cdb33b7d6b426efc4a94c84d1dd3903357e98607538d277c1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/verifier-checks.json",
+          "sha256": "10ef275e1d9fbf9fb53978751fe9374b764290fceaee71cda40924a688f93170"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     {
       "id": 23,
       "requirement": "FSET-02",
       "category": "concurrency",
-      "status": "flagged-unresolved",
+      "status": "verified",
       "contract": "Repeated initialization, interleaved modal/row lifecycle and single event ownership remain form-scoped; stable bound capability independent of display order (13/14/16/18).",
       "evidence": [
         {
@@ -3433,13 +4206,46 @@
           "case": "tests/js/formset.test.js::formset.js native row deletion eligibility refuses custom extra Delete after upward movement (delegated)"
         }
       ],
-      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+      "qualification": "Independently verified within the authored scoped contract; original generic flags and broader unsupported guarantees preserved in history and assessment.",
+      "original_status": "flagged-unresolved",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Interleaved page/modal lifecycles remain isolated and modal session cancellation prevents stale replacement.",
+      "context": "Interleaved page/modal lifecycles remain isolated and modal session cancellation prevents stale replacement. Limits: No new concurrent Add request queue or network race API is specified; existing synchronous formset fragment behavior is retained.",
+      "implementation": "js/formset.js:507,621; js/modal.js",
+      "unsupported_expansion_or_limit": "No new concurrent Add request queue or network race API is specified; existing synchronous formset fragment behavior is retained.",
+      "assessment": "verified-within-authored-scope",
+      "assessment_evidence": [
+        {
+          "gate": "javascript",
+          "case": "tests/js/modal.test.js::modal focus lifecycle cancels a pending visible replacement on completed hide before body"
+        }
+      ],
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.json",
+          "sha256": "4250f8da7c5a980af38d422a91c7aec9e84a7ec9ec6b2be09bc8e76040b247a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.md",
+          "sha256": "f065d922b062f17cdb33b7d6b426efc4a94c84d1dd3903357e98607538d277c1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/verifier-checks.json",
+          "sha256": "10ef275e1d9fbf9fb53978751fe9374b764290fceaee71cda40924a688f93170"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     {
       "id": 24,
       "requirement": "FSET-03",
       "category": "boundary",
-      "status": "flagged-unresolved",
+      "status": "verified",
       "contract": "Retain int/UUID, unsaved parents, second/deeper siblings, exact management coordinates, no float identity coercion; repeat requests retain authorization (retained07;12/13/16/18).",
       "evidence": [
         {
@@ -3447,13 +4253,54 @@
           "case": "tests/test1/test_fragment_authorization.py::test_two_child_declaration_round_trips_emitted_index_and_keeps_gates"
         }
       ],
-      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+      "qualification": "Independently verified within the authored scoped contract; original generic flags and broader unsupported guarantees preserved in history and assessment.",
+      "original_status": "flagged-unresolved",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Saved/unsaved integer and UUID parents plus non-first/deeper siblings round-trip exact coordinates.",
+      "context": "Saved/unsaved integer and UUID parents plus non-first/deeper siblings round-trip exact coordinates. Limits: Only the declared integer/UUID protocol; custom/slug identities remain excluded.",
+      "implementation": "formsets/formsets.py:455,528",
+      "unsupported_expansion_or_limit": "Only the declared integer/UUID protocol; custom/slug identities remain excluded.",
+      "assessment": "verified-within-authored-scope",
+      "assessment_evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_fragment_authorization.py::test_uuid_second_child_fragment_posts_to_its_emitted_parent[saved]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_fragment_authorization.py::test_uuid_second_child_fragment_posts_to_its_emitted_parent[extra]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_fragment_authorization.py::test_uuid_second_child_fragment_posts_to_its_emitted_parent[create]"
+        }
+      ],
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.json",
+          "sha256": "4250f8da7c5a980af38d422a91c7aec9e84a7ec9ec6b2be09bc8e76040b247a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.md",
+          "sha256": "f065d922b062f17cdb33b7d6b426efc4a94c84d1dd3903357e98607538d277c1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/verifier-checks.json",
+          "sha256": "10ef275e1d9fbf9fb53978751fe9374b764290fceaee71cda40924a688f93170"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     {
       "id": 25,
       "requirement": "FSET-03",
       "category": "precision",
-      "status": "flagged-unresolved",
+      "status": "verified",
       "contract": "Retain int/UUID, unsaved parents, second/deeper siblings, exact management coordinates, no float identity coercion; repeat requests retain authorization (retained07;12/13/16/18).",
       "evidence": [
         {
@@ -3461,13 +4308,46 @@
           "case": "tests/test1/test_fragment_authorization.py::test_two_child_declaration_round_trips_emitted_index_and_keeps_gates"
         }
       ],
-      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+      "qualification": "Independently verified within the authored scoped contract; original generic flags and broader unsupported guarantees preserved in history and assessment.",
+      "original_status": "flagged-unresolved",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Identity grammar and native PK conversion retain complete multi-digit/UUID identities; bound row indices reject unsafe integers.",
+      "context": "Identity grammar and native PK conversion retain complete multi-digit/UUID identities; bound row indices reject unsafe integers. Limits: No arbitrary custom-PK/backend or unbounded JavaScript-index guarantee.",
+      "implementation": "formsets/formsets.py:508,515; js/formset.js:10",
+      "unsupported_expansion_or_limit": "No arbitrary custom-PK/backend or unbounded JavaScript-index guarantee.",
+      "assessment": "verified-within-authored-scope",
+      "assessment_evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_fragment_authorization.py::test_multi_digit_integer_pks_round_trip_and_truncated_pks_are_rejected"
+        }
+      ],
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.json",
+          "sha256": "4250f8da7c5a980af38d422a91c7aec9e84a7ec9ec6b2be09bc8e76040b247a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.md",
+          "sha256": "f065d922b062f17cdb33b7d6b426efc4a94c84d1dd3903357e98607538d277c1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/verifier-checks.json",
+          "sha256": "10ef275e1d9fbf9fb53978751fe9374b764290fceaee71cda40924a688f93170"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     {
       "id": 26,
       "requirement": "FSET-03",
       "category": "concurrency",
-      "status": "flagged-unresolved",
+      "status": "verified",
       "contract": "Retain int/UUID, unsaved parents, second/deeper siblings, exact management coordinates, no float identity coercion; repeat requests retain authorization (retained07;12/13/16/18).",
       "evidence": [
         {
@@ -3475,13 +4355,50 @@
           "case": "tests/test1/test_fragment_authorization.py::test_two_child_declaration_round_trips_emitted_index_and_keeps_gates"
         }
       ],
-      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+      "qualification": "Independently verified within the authored scoped contract; original generic flags and broader unsupported guarantees preserved in history and assessment.",
+      "original_status": "flagged-unresolved",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Authorization changes affect the next fragment; sibling requests cannot borrow a different ancestor.",
+      "context": "Authorization changes affect the next fragment; sibling requests cannot borrow a different ancestor. Limits: No cross-request locking/atomic snapshot guarantee is added to A19.",
+      "implementation": "formsets/formsets.py:492; formsets/mixins.py:49",
+      "unsupported_expansion_or_limit": "No cross-request locking/atomic snapshot guarantee is added to A19.",
+      "assessment": "verified-within-authored-scope",
+      "assessment_evidence": [
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_fragment_authorization.py::test_revoked_guardian_grant_denies_next_fragment[False]"
+        },
+        {
+          "gate": "django6.0-focused",
+          "case": "tests/test1/test_fragment_authorization.py::test_revoked_guardian_grant_denies_next_fragment[True]"
+        }
+      ],
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.json",
+          "sha256": "4250f8da7c5a980af38d422a91c7aec9e84a7ec9ec6b2be09bc8e76040b247a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.md",
+          "sha256": "f065d922b062f17cdb33b7d6b426efc4a94c84d1dd3903357e98607538d277c1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/verifier-checks.json",
+          "sha256": "10ef275e1d9fbf9fb53978751fe9374b764290fceaee71cda40924a688f93170"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     {
       "id": 27,
       "requirement": "LIFE-01",
       "category": "adjacency",
-      "status": "flagged-unresolved",
+      "status": "verified",
       "contract": "Real stock/native empty/late/adjacent/nested/modal order and management/keyboard behavior; H1 human judgment remains pending (16/18/19).",
       "evidence": [
         {
@@ -3491,13 +4408,46 @@
           "gate": "modal-browser"
         }
       ],
-      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+      "qualification": "Independently verified within the authored scoped contract; original generic flags and broader unsupported guarantees preserved in history and assessment.",
+      "original_status": "flagged-unresolved",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Stock/native adjacent forms and nested controls have actual browser evidence and accepted human usability.",
+      "context": "Stock/native adjacent forms and nested controls have actual browser evidence and accepted human usability. Limits: Chrome/Orca versions and distribution unspecified; no physical-device certification.",
+      "implementation": "tests/browser/conditional-formsets.cjs; 06.4-UAT.md",
+      "unsupported_expansion_or_limit": "Chrome/Orca versions and distribution unspecified; no physical-device certification.",
+      "assessment": "verified-within-authored-scope",
+      "assessment_evidence": [
+        {
+          "gate": "conditional-browser",
+          "case": "native:lifecycle"
+        }
+      ],
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.json",
+          "sha256": "4250f8da7c5a980af38d422a91c7aec9e84a7ec9ec6b2be09bc8e76040b247a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.md",
+          "sha256": "f065d922b062f17cdb33b7d6b426efc4a94c84d1dd3903357e98607538d277c1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/verifier-checks.json",
+          "sha256": "10ef275e1d9fbf9fb53978751fe9374b764290fceaee71cda40924a688f93170"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     {
       "id": 28,
       "requirement": "LIFE-01",
       "category": "empty",
-      "status": "flagged-unresolved",
+      "status": "verified",
       "contract": "Real stock/native empty/late/adjacent/nested/modal order and management/keyboard behavior; H1 human judgment remains pending (16/18/19).",
       "evidence": [
         {
@@ -3507,13 +4457,46 @@
           "gate": "modal-browser"
         }
       ],
-      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+      "qualification": "Independently verified within the authored scoped contract; original generic flags and broader unsupported guarantees preserved in history and assessment.",
+      "original_status": "flagged-unresolved",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Empty collection, missing/late binding and optional DELETE lifecycle are exercised in both hosts.",
+      "context": "Empty collection, missing/late binding and optional DELETE lifecycle are exercised in both hosts. Limits: Native screenshots remain empty; actual native human evaluation is recorded.",
+      "implementation": "tests/browser/conditional-formsets.cjs; 06.4-UAT.md",
+      "unsupported_expansion_or_limit": "Native screenshots remain empty; actual native human evaluation is recorded.",
+      "assessment": "verified-within-authored-scope",
+      "assessment_evidence": [
+        {
+          "gate": "conditional-browser",
+          "case": "native:gap-capability"
+        }
+      ],
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.json",
+          "sha256": "4250f8da7c5a980af38d422a91c7aec9e84a7ec9ec6b2be09bc8e76040b247a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.md",
+          "sha256": "f065d922b062f17cdb33b7d6b426efc4a94c84d1dd3903357e98607538d277c1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/verifier-checks.json",
+          "sha256": "10ef275e1d9fbf9fb53978751fe9374b764290fceaee71cda40924a688f93170"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     {
       "id": 29,
       "requirement": "LIFE-01",
       "category": "ordering",
-      "status": "flagged-unresolved",
+      "status": "verified",
       "contract": "Real stock/native empty/late/adjacent/nested/modal order and management/keyboard behavior; H1 human judgment remains pending (16/18/19).",
       "evidence": [
         {
@@ -3523,13 +4506,46 @@
           "gate": "modal-browser"
         }
       ],
-      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+      "qualification": "Independently verified within the authored scoped contract; original generic flags and broader unsupported guarantees preserved in history and assessment.",
+      "original_status": "flagged-unresolved",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Reset/default/cancellation, modal replacement, submission order and focus are exercised and human accepted.",
+      "context": "Reset/default/cancellation, modal replacement, submission order and focus are exercised and human accepted. Limits: Human acceptance supplements automated records; no fabricated fresh capture.",
+      "implementation": "js/modal.js:227; 06.4-UAT.md",
+      "unsupported_expansion_or_limit": "Human acceptance supplements automated records; no fabricated fresh capture.",
+      "assessment": "verified-within-authored-scope",
+      "assessment_evidence": [
+        {
+          "gate": "conditional-browser",
+          "case": "native:native-reset-user-default"
+        }
+      ],
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.json",
+          "sha256": "4250f8da7c5a980af38d422a91c7aec9e84a7ec9ec6b2be09bc8e76040b247a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.md",
+          "sha256": "f065d922b062f17cdb33b7d6b426efc4a94c84d1dd3903357e98607538d277c1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/verifier-checks.json",
+          "sha256": "10ef275e1d9fbf9fb53978751fe9374b764290fceaee71cda40924a688f93170"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     {
       "id": 30,
       "requirement": "LIFE-02",
       "category": "empty",
-      "status": "flagged-unresolved",
+      "status": "verified",
       "contract": "Missing evidence/runtime and malformed/encoded records fail explicitly; complete docs/projection and escaping contracts remain (15/17/18/19).",
       "evidence": [
         {
@@ -3548,13 +4564,45 @@
           "gate": "ruff-format"
         }
       ],
-      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+      "qualification": "Independently verified within the authored scoped contract; original generic flags and broader unsupported guarantees preserved in history and assessment.",
+      "original_status": "flagged-unresolved",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Missing required records/runtime and malformed packets fail closed; required public docs/projection are present.",
+      "context": "Missing required records/runtime and malformed packets fail closed; required public docs/projection are present. Limits: All67 named self-tests and35 controls are retained actual executions; no new run asserted.",
+      "implementation": "15-evidence/run.py:675,1152,1172; test_runner.py",
+      "unsupported_expansion_or_limit": "All67 named self-tests and35 controls are retained actual executions; no new run asserted.",
+      "assessment": "verified-within-authored-scope",
+      "assessment_evidence": [
+        {
+          "gate": "evidence-self-tests"
+        }
+      ],
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.json",
+          "sha256": "4250f8da7c5a980af38d422a91c7aec9e84a7ec9ec6b2be09bc8e76040b247a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.md",
+          "sha256": "f065d922b062f17cdb33b7d6b426efc4a94c84d1dd3903357e98607538d277c1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/verifier-checks.json",
+          "sha256": "10ef275e1d9fbf9fb53978751fe9374b764290fceaee71cda40924a688f93170"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     },
     {
       "id": 31,
       "requirement": "LIFE-02",
       "category": "encoding",
-      "status": "flagged-unresolved",
+      "status": "verified",
       "contract": "Missing evidence/runtime and malformed/encoded records fail explicitly; complete docs/projection and escaping contracts remain (15/17/18/19).",
       "evidence": [
         {
@@ -3573,7 +4621,39 @@
           "gate": "ruff-format"
         }
       ],
-      "qualification": "Bounded evidence mapped; surfaced generic assumption remains flagged."
+      "qualification": "Independently verified within the authored scoped contract; original generic flags and broader unsupported guarantees preserved in history and assessment.",
+      "original_status": "flagged-unresolved",
+      "actor": "/root/verify_64_final",
+      "recorded": "2026-11-02T07:23:49Z",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Strict JSON decoding rejects duplicate/malformed records; DOM names and rendered projection remain escaped/literal.",
+      "context": "Strict JSON decoding rejects duplicate/malformed records; DOM names and rendered projection remain escaped/literal. Limits: No arbitrary Unicode normalization contract; exact encoded inputs and public escaping are the bounded claim.",
+      "implementation": "15-evidence/run.py:194; conditional/toggle_group.html",
+      "unsupported_expansion_or_limit": "No arbitrary Unicode normalization contract; exact encoded inputs and public escaping are the bounded claim.",
+      "assessment": "verified-within-authored-scope",
+      "assessment_evidence": [
+        {
+          "gate": "evidence-self-tests"
+        }
+      ],
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.json",
+          "sha256": "4250f8da7c5a980af38d422a91c7aec9e84a7ec9ec6b2be09bc8e76040b247a1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/fallback-assessment.md",
+          "sha256": "f065d922b062f17cdb33b7d6b426efc4a94c84d1dd3903357e98607538d277c1"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/verifier-checks.json",
+          "sha256": "10ef275e1d9fbf9fb53978751fe9374b764290fceaee71cda40924a688f93170"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        }
+      ]
     }
   ],
   "human_checks": {
@@ -3682,7 +4762,7 @@
       "kind": "human"
     }
   },
-  "ready": false,
+  "ready": true,
   "retained_truths": [
     "R3",
     "R7",
@@ -4328,7 +5408,7 @@
       },
       "validation": {
         "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VALIDATION.md",
-        "sha256": "1e86a3680cd9b5916ab03471fc0b3c4ecd67747ad693a5b09607d01256a801cb"
+        "sha256": "a7ec83666e2e7942b2ed7c06c916925afadab2b24b175a1ed28a10b1ec3d19aa"
       },
       "observations": {
         "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
@@ -4341,11 +5421,15 @@
       "uat": {
         "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
         "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
+      },
+      "verification": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VERIFICATION.md",
+        "sha256": "45cb0e73623007d0ebe67cdaebaf0daa82bae5321586690a9e40abde3862c7ca"
       }
     },
     "status": "current-code-ui-human-security-reconciled; validation-partial-canonical-stale"
   },
-  "next_gate": "Independent canonical reassessment using completed UAT/current reports; independently evaluate31 fallback flags, validate immutable replay against exact historical snapshots, then actual new final binding/check. No phase advancement.",
+  "next_gate": "Current canonical accepted; actual aggregate/handoff checks must confirm this final binding before phase completion.",
   "history": {
     "handoff": {
       "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/handoff.json",
@@ -10276,6 +11360,10 @@
         "qualification": "Unique authored01\u201343 plus SC once; historical38/41 remains under history. T41 uses authored medium severity. Schema1 reserves machine verified for overall passed security, so partial independently closed entries remain machine pending."
       },
       "qualification": "Historical exact pending/open records; superseded only by actual completed UAT and independent current SECURITY. Complete prior handoff preserved."
+    },
+    "pre_final_acceptance_handoff": {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/pre-final-handoff.json",
+      "sha256": "0f9940e7350dbc28165172c818ec244ee72b986309a2e4a45bf4aa97423247b3"
     }
   },
   "applicability": {
@@ -10283,22 +11371,22 @@
     "sha256": "98e2af40d6ca6f45a9bec45c5e6da2f0e40b51b9e1593a830e324d128758713d"
   },
   "canonical_reverification": {
-    "owner": "/root/canonical_26",
-    "status": "stale",
+    "owner": "/root/verify_64_final",
+    "status": "passed",
     "preserve_historical_report": true,
     "exclude_from_covered_files": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/handoff.json",
     "reason": "Handoff embeds canonical digest; exclude it to avoid circular fingerprint binding.",
     "final_rebind_owner": "/root",
-    "remaining_truths": "Historical9/10 human_needed superseded by actual UAT and SECURED44/44 inputs;31 fallback flags unchanged for independent evaluation. Fresh canonical verdict required.",
+    "remaining_truths": "None within authored phase scope; excluded broader guarantees retained explicitly.",
     "historical_report": {
       "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/pre-wr05-verification.md",
       "sha256": "5048486226b2d48556280f99f5ae12a24d4ef581c9585ff8c4a4da7e1d9b3ced"
     },
     "report": {
       "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VERIFICATION.md",
-      "sha256": "de9103d24246ccb48440cba53770ab6e7349b849c2dfe84b6bc18a03b0c3bd00"
+      "sha256": "45cb0e73623007d0ebe67cdaebaf0daa82bae5321586690a9e40abde3862c7ca"
     },
-    "rebound_at": "2026-11-01T21:20:26.042313+00:00",
+    "rebound_at": "2026-11-02T07:30:50.192631+00:00",
     "current_reconciliation": "2026-11-02T07:10:44.772466+00:00"
   },
   "hook_fulfillment": {
@@ -10370,6 +11458,16 @@
       },
       "status": "retained-applicable-human-complete",
       "qualification": "Existing bounded24/24 audit reused for unchanged source/captures; actual human Chrome and installed-Orca UAT now complete. No fresh visual audit or physical-device certification."
+    },
+    "execute:post/validate-phase": {
+      "report": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VALIDATION.md",
+        "sha256": "a7ec83666e2e7942b2ed7c06c916925afadab2b24b175a1ed28a10b1ec3d19aa"
+      },
+      "status": "complete",
+      "nyquist_compliant": true,
+      "actor": "/root/verify_64_final",
+      "qualification": "Independent current scoped assessment;31/31 contracts supported, original flags retained as history."
     }
   },
   "post_uat_reconciliation": {

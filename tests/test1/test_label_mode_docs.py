@@ -796,7 +796,7 @@ def test_migration_e108_location_inventory():
         'a mode that is not exactly `"label"`, `"icon"` or `"both"`',
         "At render an unknown key is ignored.",
         "An invalid mode raises `ValueError` in strict mode (`CRUD_VIEWS_STRICT`, which defaults to `DEBUG`)",
-        "otherwise it logs one warning and the location falls back to its package floor.",
+        "otherwise it logs one warning and the location falls back to its theme registration, then its package floor.",
     ):
         assert marker in paragraph, marker
     # paragraph-scoped: a form mention elsewhere (the Form buttons section, the reference tables) cannot satisfy it

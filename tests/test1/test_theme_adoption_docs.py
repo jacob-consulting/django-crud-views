@@ -17,6 +17,7 @@ from tests.test1.test_theme_form_ownership import _library_form, assert_owned_fo
 
 ROOT = Path(__file__).resolve().parents[2]
 THEME = ROOT / "docs/reference/theme.md"
+MIGRATION = ROOT / "docs/migrating-1.0.md"
 
 
 @pytest.fixture(autouse=True)
@@ -169,3 +170,46 @@ def test_custom_actions_recipe(kind):
     tree = html.fragment_fromstring(output, create_parent="div")
     assert tree.cssselect(".project-group.theme-actions")
     assert tree.cssselect("button[name=submit]")[0].get("type") == "submit"
+
+
+def test_breaking_migration_pair():
+    unreleased = (ROOT / "CHANGELOG.md").read_text().split("## Unreleased", 1)[1].split("\n## ", 1)[0]
+    migration = MIGRATION.read_text()
+    for title, anchor in (
+        ("Page-owned forms and helpers", "page-owned-forms-and-helpers"),
+        ("Copied form and workflow templates", "copied-form-and-workflow-templates"),
+        ("Standalone library form wrappers", "standalone-library-form-wrappers"),
+    ):
+        assert f"**{title}.**" in unreleased
+        assert f"docs/migrating-1.0.md#{anchor}" in unreleased
+        assert migration.count(f"### {title}\n") == 1
+    assert "nested forms and duplicate CSRF tokens" in unreleased.split("### Fixed", 1)[1]
+
+
+@pytest.mark.parametrize("strict", [False, True])
+def test_immediate_helper_migration(strict):
+    form = _python("### Page-owned forms and helpers", MIGRATION)["ContactForm"](initial={"name": "<b>literal</b>"})
+    with override_settings(CRUD_VIEWS_STRICT=strict):
+        output = Template(recipe(MIGRATION, "### Page-owned forms and helpers")).render(_context(form))
+    owner = assert_owned_form_markup(output)
+    assert owner["attrs"]["method"] == "post"
+    assert owner["attrs"]["action"] == "/save/?from=docs"
+    assert owner["attrs"]["enctype"] == "multipart/form-data"
+    assert not html.fromstring(output).cssselect("b, [onmouseover]")
+
+
+@pytest.mark.parametrize("choices", [False, True])
+def test_immediate_copied_template_migration(choices):
+    context = _context(_library_form())
+    context["has_workflow_choices"] = choices
+    with _theme_templates({"crud_views/tags/form.html": recipe(MIGRATION, "#### Selected inner helper")}):
+        output = Template(recipe(MIGRATION, "#### Workflow action body")).render(context)
+    if choices:
+        assert_owned_form_markup(output)
+    else:
+        assert "<form" not in output and "csrfmiddlewaretoken" not in output
+
+
+def test_immediate_standalone_migration():
+    output = Template(recipe(MIGRATION, "### Standalone library form wrappers")).render(_context(_library_form()))
+    assert_owned_form_markup(output)

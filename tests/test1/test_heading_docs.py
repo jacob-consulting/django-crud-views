@@ -11,6 +11,7 @@ from django.utils.html import escape
 from django.utils.translation import gettext_lazy
 from lxml import html
 
+from crud_views.lib.button_classes import DEFAULT_BUTTON_CLASSES
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import CrudView
 from tests.test1.test_heading_icons import HOST_LIBRARY
@@ -40,6 +41,23 @@ def native_classes():
     namespace = {}
     exec(compile(recipe(THEME, "### Native heading class table", "python"), str(THEME), "exec"), namespace)
     return namespace["CRUD_VIEWS_BUTTON_CLASSES"]
+
+
+def test_documented_heading_icon_defaults_match_registry():
+    """Theme authors can copy the reference without changing presence/fallback semantics."""
+    section = ICONS.read_text().split("## Heading icons", 1)[1].split("### Plain group title recipe", 1)[0]
+    rows = re.findall(r"^\| `(heading(?:-(?:page|modal|group))?:icon-(?:host|inline))` \| (.*?) \|$", section, re.M)
+    assert len(rows) == 8
+    documented = dict(rows)
+    for key, value in documented.items():
+        if value == "Absent (inherits shared styling)":
+            assert key not in DEFAULT_BUTTON_CLASSES
+        else:
+            assert value.startswith('`"') and value.endswith('"`')
+            assert DEFAULT_BUTTON_CLASSES[key] == value[2:-2]
+    assert {key for key in DEFAULT_BUTTON_CLASSES if ":icon-" in key and key.startswith("heading")} == {
+        key for key, value in documented.items() if value != "Absent (inherits shared styling)"
+    }
 
 
 @pytest.mark.parametrize("path,section,location,tag,size,utility", RECIPES)

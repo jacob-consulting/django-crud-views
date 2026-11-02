@@ -201,10 +201,19 @@ already escaped renderer output for an element library. Only one is populated. L
 and `group`; `page` is the default. Mixed libraries work per icon. Empty or disabled icon values yield neither
 field, preserving the visible title. A suppressed host icon never falls back to a standalone element.
 
-Styling uses shared `heading:icon-host` (default `{name_class}`) and `heading:icon-inline` (default `""`).
-Optional location keys are `heading-page:icon-host`, `heading-page:icon-inline`, `heading-modal:icon-host`,
-`heading-modal:icon-inline`, `heading-group:icon-host` and `heading-group:icon-inline`. Builtin group overrides
-are `{name_class}` and `me-2` respectively; page and modal inherit the shared defaults.
+Styling uses shared defaults and optional location overrides. The builtin registry contains these values;
+an absent override inherits the shared styling, while an explicit empty string stops that fallback:
+
+| Key | Builtin value |
+|---|---|
+| `heading:icon-host` | `"{name_class}"` |
+| `heading:icon-inline` | `"me-2"` |
+| `heading-page:icon-host` | Absent (inherits shared styling) |
+| `heading-page:icon-inline` | `""` |
+| `heading-modal:icon-host` | Absent (inherits shared styling) |
+| `heading-modal:icon-inline` | `""` |
+| `heading-group:icon-host` | Absent (inherits shared styling) |
+| `heading-group:icon-inline` | Absent (inherits shared styling) |
 
 Resolve by configuration layer first: **project location → project shared → theme location → theme shared →
 builtin location → builtin shared**. An explicit `None` or `""` stops fallback. For `icon-host` it suppresses the

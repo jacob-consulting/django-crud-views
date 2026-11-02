@@ -1,20 +1,20 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 7
-current_phase_name: Theme-surface stability policy
+current_phase: "06.6"
+current_phase_name: Theme-adoption seams from the Tabler sync
 status: planning
-stopped_at: Phase 06.5 complete, ready to plan Phase 7
-last_updated: "2026-11-02T15:49:39.502Z"
+stopped_at: Phase 06.6 context gathered
+last_updated: "2026-11-02T16:22:56.166Z"
 last_activity: 2026-11-02
-state_head: ed5c40c0b9eb02aaa12533a43792a36e9ae576b2
+state_head: dbf4450099065c748430a5d2af649b54abd64e5f
 progress:
-  total_phases: 12
+  total_phases: 13
   completed_phases: 11
   total_plans: 91
   completed_plans: 91
-last_activity_desc: Phase 06.5 complete, transitioned to Phase 7
 milestone_name: milestone
+last_activity_desc: Phase 06.5 complete, transitioned to Phase 7
 ---
 
 # Project State
@@ -24,17 +24,17 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-11-02)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 7 — Theme-surface stability policy
+**Current focus:** Phase 06.6 — Theme-adoption seams from the Tabler sync
 
 ## Current Position
 
-Phase: 7 — Theme-surface stability policy
+Phase: 06.6 — Theme-adoption seams from the Tabler sync
 Plan: Not started
 Status: Ready to plan
 Last activity: 2026-11-02
 
-Progress: [█████████░] 92%
-Next: $gsd-discuss-phase 7
+Progress: [████████░░] 85%
+Next: $gsd-plan-phase 06.6
 
 ### Phase 06.5 completion — 2026-11-02
 
@@ -551,6 +551,7 @@ None yet.
 - Phase 06.3 inserted after Phase 6: Delete protection and write-boundary integrity — issue #282 (URGENT)
 - Phase 6.4 inserted after Phase 6.3: Conditional and formset correctness/lifecycle (analysis A1–A7); complete before Phase 7 freezes the theme surface (URGENT)
 - Phase 6.5 inserted after Phase 6.4: Remaining presentation contracts and decided cleanup — source analysis §8 (#259, C1/C2, Python no_label and obsolete guard removal) (URGENT)
+- Phase 06.6 inserted after Phase 06.5: Theme-adoption seams from the Tabler sync (#277–#280); source analysis §8 slice 6.6; complete before Phase 7 freezes the theme surface (URGENT)
 
 ## Deferred Items
 
@@ -560,6 +561,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-02T15:49:08Z
-Stopped at: Phase 06.5 complete, ready to plan Phase 7
-Resume file: None
+Last session: 2026-11-02T16:22:53.912Z
+Stopped at: Phase 06.6 context gathered
+Resume file: .planning/phases/06.6-theme-adoption-seams-from-the-tabler-sync/06.6-CONTEXT.md

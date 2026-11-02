@@ -741,10 +741,11 @@ against Phase 6.3. Must complete before Phase 7.
      Pair any Breaking changelog entry with `docs/migrating-1.0.md`.
 
 **Decisions settled**: D-01–D-19 in 06.6-CONTEXT.md require immediate incompatible-helper errors, unused-wrapper
-warning/strict errors, atomic theme registration, both alert keys and isolated tested companion adaptations.
+warning/strict errors, atomic theme registration and both alert keys. The 2026-11-02 D-11/D-14 amendment
+authorizes verified companion delivery/local commits while retaining isolated baseline/replay and unrelated-work preservation.
 **Scope exclusions**: Reopening completed authorization/deletion/conditional/formset/presentation acceptance,
 full jQuery removal, and final stability-policy inventory.
-**Plans**: 9 plans
+**Plans**: 10 plans
 
 Plans:
 - [ ] 06.6-01-PLAN.md — Single-form/CSRF tracer and helper diagnostics (wave 1)
@@ -755,7 +756,8 @@ Plans:
 - [ ] 06.6-06-PLAN.md — Real companion acquisition and exact-source baseline (wave 1)
 - [ ] 06.6-07-PLAN.md — Real Tabler/browser acceptance and replayable patch (wave 3)
 - [ ] 06.6-08-PLAN.md — Executable adoption and paired migrations (wave 3)
-- [ ] 06.6-09-PLAN.md — Final regression evidence and Phase 7 handoff (wave 4)
+- [ ] 06.6-10-PLAN.md — Verified companion source delivery and local commit (wave 4)
+- [ ] 06.6-09-PLAN.md — Final regression evidence and Phase 7 handoff (wave 5)
 **UI hint**: yes (forms, action groups and alerts across stock and reference themes).
 
 ### Phase 7: Theme-surface stability policy

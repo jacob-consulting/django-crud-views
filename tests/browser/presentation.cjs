@@ -189,6 +189,13 @@ async function runTabs(page, detail, report) {
         }
     }
 }
+async function runIdentity(page, detail, report) {
+    const record = {id: 'identity-isolation', assertions: [], passed: false};
+    report.cases.push(record);
+    await page.goto(base + detail + '?expanded=1');
+    check(record, 'two-independent-page-tablists', await page.locator('main [role="tablist"]').count() === 2,
+        await page.locator('main [role="tablist"]').count());
+}
 async function main() {
     const sourceFiles = ['tests/browser/presentation.cjs', 'tests/browser/presentation_server.py',
         'tests/browser/presentation-config.test.cjs', 'tests/test1/app/templates/app/base.html',
@@ -239,7 +246,7 @@ async function main() {
         await preflight(page, base + detail, report);
         assetGate = false;
         await runTabs(page, detail, report);
-        if (requested === 'all') throw Error('Identity/icons/native cases not yet implemented');
+        if (requested === 'all') await runIdentity(page, detail, report);
         assert.equal(report.cases.length, 8);
         assert(report.cases.every(c => c.passed && c.assertions.length > 0 && c.assertions.every(a => a.passed)));
         assert.deepEqual(report.pageErrors, []);

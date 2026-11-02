@@ -92,9 +92,11 @@ def test_registration_merge_copy_and_snapshot():
 )
 def test_registration_atomicity(strict, invalid):
     register({"form": "icon", "list": "both"})
-    with override_settings(CRUD_VIEWS_STRICT=strict):
-        with pytest.raises(ValueError, match="register_label_mode_defaults") as error:
-            register(invalid)
+    with (
+        override_settings(CRUD_VIEWS_STRICT=strict),
+        pytest.raises(ValueError, match="register_label_mode_defaults") as error,
+    ):
+        register(invalid)
     assert "label" in str(error.value) and "icon" in str(error.value) and "both" in str(error.value)
     assert {key: label_mode.default_label_mode(key) for key in PACKAGE} == {**PACKAGE, "form": "icon", "list": "both"}
 

@@ -19,10 +19,13 @@ class LabelMode(StrEnum):
 
 LABEL_MODES: frozenset[str] = frozenset(mode.value for mode in LabelMode)
 
-# the package floor per button location: read-only, CRUD_VIEWS_LABEL_MODE_DEFAULTS is merged over it per key
+# Read-only package floor; themes and then live project settings override it per key.
 LABEL_MODE_DEFAULTS: Mapping[str, str] = MappingProxyType(
     {"context": "icon", "list": "icon", "card": "both", "form": "label"}
 )
+
+_THEME_LABEL_MODE_DEFAULTS: dict[str, str] = {}
+_theme_defaults_lock = threading.Lock()
 
 # marks CRUD_VIEWS_LABEL_MODE_DEFAULTS as absent (an explicit None is invalid, not absent)
 _UNSET = object()
@@ -34,6 +37,37 @@ _warned_lock = threading.Lock()
 
 def is_label_mode(value: object) -> bool:
     return isinstance(value, str) and value in LABEL_MODES
+
+
+def register_label_mode_defaults(defaults: dict[str, str]) -> None:
+    """Register theme floors per location; later registrations merge, and project settings still win.
+
+    Invalid input always raises before changing any value. Publish a copied mapping in one rebind so readers
+    observe a complete snapshot and concurrent registrations retain each other's keys.
+    """
+    from .button_data import LOCATIONS
+
+    global _THEME_LABEL_MODE_DEFAULTS
+    if not isinstance(defaults, dict):
+        raise ValueError(
+            f"register_label_mode_defaults requires a dict of location {sorted(LOCATIONS)} "
+            f"-> mode {sorted(LABEL_MODES)}, got {defaults!r}"
+        )
+    supplied = dict(defaults)
+    for location, mode in supplied.items():
+        if not isinstance(location, str) or location not in LOCATIONS or not is_label_mode(mode):
+            raise ValueError(
+                f"register_label_mode_defaults key {location!r} has value {mode!r}; "
+                f"locations must be one of {sorted(LOCATIONS)} and modes one of {sorted(LABEL_MODES)}"
+            )
+    with _theme_defaults_lock:
+        _THEME_LABEL_MODE_DEFAULTS = {**_THEME_LABEL_MODE_DEFAULTS, **supplied}
+
+
+def _theme_or_package_default(location: str) -> str:
+    """Resolve one snapshot without consulting project settings or the public resolver."""
+    theme = _THEME_LABEL_MODE_DEFAULTS
+    return theme.get(location, LABEL_MODE_DEFAULTS[location])
 
 
 def is_label_mode_map(value: object) -> bool:
@@ -98,7 +132,7 @@ def default_label_mode(location: str) -> str:
         raise ValueError(f"location must be one of {sorted(LOCATIONS)}, got {location!r}")
     raw = _raw_label_mode_defaults()
     if raw is _UNSET:
-        return LABEL_MODE_DEFAULTS[location]
+        return _theme_or_package_default(location)
     if not isinstance(raw, dict):
         return _invalid_label_mode(
             f"setting CRUD_VIEWS_LABEL_MODE_DEFAULTS must be a dict of location -> one of {sorted(LABEL_MODES)}",
@@ -107,7 +141,7 @@ def default_label_mode(location: str) -> str:
             lambda: LABEL_MODE_DEFAULTS[location],
         )
     if location not in raw:
-        return LABEL_MODE_DEFAULTS[location]
+        return _theme_or_package_default(location)
     value = raw[location]
     if is_label_mode(value):
         return value

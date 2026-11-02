@@ -142,15 +142,18 @@ apply to the buttons a map, a context button, a target view or `CRUD_VIEWS_LABEL
 | `alert:success` | `alert alert-success` |
 | `alert:info` | `alert alert-info` |
 | `alert:debug` | `alert alert-secondary` |
+| `alert:dismissible` | `alert-dismissible fade show` |
+| `alert:close` | `btn-close` |
 | `context:icon-host` / `list:icon-host` / `card:icon-host` / `menu:icon-host` / `form:icon-host` | `{name_class}` |
 | `heading:size-1` / `heading:size-2` / `heading:size-3` / `heading:size-4` / `heading:size-5` / `heading:size-6` | `h1` / `h2` / `h3` / `h4` / `h5` / `h6`, respectively |
 | `heading:icon-host` | `{name_class}` |
 | `heading:icon-inline` | `me-2` |
 | `heading-page:icon-inline` / `heading-modal:icon-inline` | `""` |
 
-The default table has 84 keys: the rows with four variants stand for four keys each, the rows with three locations
+The default table has 86 keys: the rows with four variants stand for four keys each, the rows with three locations
 for three, the `*:hidden-label` row of the button locations for four and the button `*:icon-host` row for five.
-Heading styling adds six size keys, two shared icon keys and two location defaults. The `context` and `list`
+Heading styling adds six size keys, two shared icon keys and two location defaults. Alert styling has five level
+keys and two dismissal utilities. The `context` and `list`
 buttons look the same for every variant by default, the `card` buttons distinguish them. Mode keys such as
 `card:tertiary:icon` and `form:submit:icon` are addressable but not shipped; their possible combinations are excluded
 from the default-table count.

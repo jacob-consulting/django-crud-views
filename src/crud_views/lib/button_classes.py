@@ -94,6 +94,8 @@ DEFAULT_BUTTON_CLASSES: dict[str, str | None] = {
     "alert:success": "alert alert-success",
     "alert:info": "alert alert-info",
     "alert:debug": "alert alert-secondary",
+    "alert:dismissible": "alert-dismissible fade show",
+    "alert:close": "btn-close",
     "context:hidden-label": "visually-hidden",
     "list:hidden-label": "visually-hidden",
     "card:hidden-label": "visually-hidden",

@@ -1,5 +1,6 @@
 """Real page/modal owners, template provenance and enforced-CSRF write contracts."""
 
+import json
 from pathlib import Path
 
 import pytest
@@ -7,7 +8,7 @@ from django.test import Client
 from lxml import html
 
 from crud_views_workflow.models import WorkflowInfo
-from tests.test1.app.models import Author, Campaign, CampaignState
+from tests.test1.app.models import Author, Campaign, CampaignState, Publisher
 from tests.test1.app.views import AuthorCreateView, AuthorUpdateView, CampaignWorkflowView
 from tests.test1.test_theme_form_ownership import _RawForms, assert_owned_form_markup
 
@@ -43,7 +44,7 @@ def _workflow_templates(response, modal, choices, record_property):
     else:
         assert "crud_views_workflow/view_workflow.history.html" in actual
     assert response.context["has_workflow_choices"] is choices
-    record_property("workflow_branch", {"modal": modal, "choices": choices, "templates": actual})
+    record_property("workflow_branch", json.dumps({"modal": modal, "choices": choices, "templates": actual}))
 
 
 def _owned(response, url, kind, modal):
@@ -64,8 +65,9 @@ def _owned(response, url, kind, modal):
     form = document.cssselect("form.cv-form")[0]
     for control in document.cssselect("input, select, textarea, button[type=submit]"):
         assert next(control.iterancestors("form"), None) is form
-    cancel = form.cssselect("a[href]")[0]
-    assert cancel.get("type") not in ("submit", "reset")
+    cancel = form.cssselect("[data-cv-cancel-url]")[0]
+    assert cancel.get("type") == "button"
+    assert cancel.get("data-cv-cancel-url")
     assert not form.cssselect("button[type=reset], input[type=reset]")
     return owner, form
 
@@ -175,3 +177,61 @@ def test_create_update_modal_support_stays_rejected(view, monkeypatch):
     assert view.cv_modal_supported is False
     monkeypatch.setattr(view, "cv_modal", True)
     assert any(message.id == "viewset.E251" for check in view.checks() for message in check.messages())
+
+
+@pytest.mark.parametrize(("kind", "modal"), MODES)
+def test_forbidden_actor_cannot_write(kind, modal, request, monkeypatch, user_a):
+    author = request.getfixturevalue("author_douglas_adams")
+    if kind == "workflow":
+        campaign = request.getfixturevalue("campaign_new")
+        monkeypatch.setattr(CampaignWorkflowView, "cv_modal", modal)
+        url = f"/campaign/{campaign.pk}/workflow/"
+    elif kind in ("custom", "delete"):
+        url = f"/author_modal/{author.pk}/{'contact' if kind == 'custom' else kind}/"
+    else:
+        url = "/author/create/" if kind == "create" else f"/author/{author.pk}/update/"
+    authorized = Client(enforce_csrf_checks=True)
+    authorized.force_login(request.getfixturevalue("user_author_add"))
+    token = assert_owned_form_markup(authorized.get("/author/create/").content.decode())["tokens"][0]
+    client = Client(enforce_csrf_checks=True)
+    client.force_login(user_a)
+    client.cookies["csrftoken"] = authorized.cookies["csrftoken"].value
+    headers = {"X-CV-Modal": "true"} if modal else {}
+    before = _snapshot()
+    assert client.get(url, headers=headers).status_code == 403
+    payload = {
+        "csrfmiddlewaretoken": token,
+        "first_name": "Denied",
+        "last_name": "Write",
+        "confirm": "on",
+        "subject": "Denied",
+        "body": "Write",
+        "transition": "wf_activate",
+    }
+    assert client.post(url, payload, headers=headers).status_code == 403
+    assert _snapshot() == before
+
+
+@pytest.mark.parametrize("modal", [False, True])
+def test_protected_form_omission(modal, request, publisher_penguin):
+    user = request.getfixturevalue("user_publisher_modal_protected_delete")
+    client = Client(enforce_csrf_checks=True)
+    client.force_login(user)
+    url = f"/publisher_modal_protected/{publisher_penguin.pk}/delete/"
+    headers = {"X-CV-Modal": "true"} if modal else {}
+    response = client.get(url, headers=headers)
+    assert response.status_code == 200
+    scanner = _RawForms()
+    scanner.feed(response.content.decode())
+    assert scanner.forms == []
+    assert b"csrfmiddlewaretoken" not in response.content
+    assert b"Cannot delete this publisher." in response.content
+    other = Client(enforce_csrf_checks=True)
+    other.force_login(request.getfixturevalue("user_author_add"))
+    token = assert_owned_form_markup(other.get("/author/create/").content.decode())["tokens"][0]
+    client.cookies["csrftoken"] = other.cookies["csrftoken"].value
+    response = client.post(url, {"confirm": "on", "csrfmiddlewaretoken": token}, headers=headers)
+    assert response.status_code == (422 if modal else 200)
+    assert b"Cannot delete this publisher." in response.content
+    assert b"csrfmiddlewaretoken" not in response.content
+    assert Publisher.objects.filter(pk=publisher_penguin.pk).exists()

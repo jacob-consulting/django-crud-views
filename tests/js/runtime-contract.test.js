@@ -25,6 +25,7 @@ describe("test runtime boundary", () => {
             "package.json", "vitest.config.js", "vitest.integration.config.js",
             "tests/js", "tests/js-integration", "tests/test1/golden/alerts",
             "src/crud_views/static/crud_views/js", "docs/reference/javascript.md",
+            "src/crud_views_object_detail/static/crud_views_object_detail/js",
         ]) {
             const destination = path.join(directory, relative);
             fs.mkdirSync(path.dirname(destination), { recursive: true });

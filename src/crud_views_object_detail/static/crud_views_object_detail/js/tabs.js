@@ -33,10 +33,26 @@
         triggers.forEach(el => Tab.getOrCreateInstance(el));
     }
 
+    function disposeObjectDetailTabs(root) {
+        const triggers = ownedTriggers(root);
+        if (!triggers.length) {
+            return;
+        }
+        const Tab = globalThis.bootstrap?.Tab;
+        if (!Tab) {
+            return;
+        }
+        // Never construct an instance during cleanup. modal.js dispatches unload
+        // before replacing attached content; Bootstrap releases its own handlers.
+        triggers.forEach(el => Tab.getInstance(el)?.dispose());
+    }
+
     globalThis.cv = globalThis.cv || {};
     globalThis.cv.initObjectDetailTabs = initObjectDetailTabs;
     document.addEventListener("DOMContentLoaded", () => initObjectDetailTabs(document));
     if (document.readyState !== "loading") {
         initObjectDetailTabs(document);
     }
+    document.addEventListener("cv:modal:loaded", event => initObjectDetailTabs(event.target));
+    document.addEventListener("cv:modal:unload", event => disposeObjectDetailTabs(event.target));
 })();

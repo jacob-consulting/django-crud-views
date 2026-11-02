@@ -1,6 +1,9 @@
 # Conditional Field-Groups & Conditional FormSets
 
-A checkbox toggle can hide a group of fields (or an entire **first-level** formset). When off, the group or formset is hidden client-side and — authoritatively **server-side** — skips validation and clears its data. JavaScript is convenience only: `toggle.js` shows/hides the group and disables its inputs so they are not submitted, but the server enforces the exact same contract on every submit, including tampered or JS-off POSTs.
+A checkbox toggle can hide a group of fields or an entire **first-level** formset. An off field-group clears
+editable fields using the [clearing matrix](#clearing-matrix); an off formset skips its rows by default, or
+purges its managed queryset when explicitly configured. JavaScript provides immediate native visibility and
+disabled controls; server validation and persistence remain authoritative, including for tampered or JS-off POSTs.
 
 !!! example "Try it live"
     The [Conditional example](https://django-crud-views-demo.onrender.com/conditional/registration/) in the live demo shows this in
@@ -28,10 +31,77 @@ Import everything from `crud_views.lib.conditional`.
 
 ### Contract
 
-- **Off** ⇒ group fields are cleared to their empty value on every save. Fields must be `null=True, blank=True` in the model (or provide explicit `empty_values=` in `ConditionalGroup`). Validation is skipped entirely for the group.
+- **Off** ⇒ editable group fields receive their field-aware empty value on save. Ordinary errors on those fields
+  are suppressed and submitted values discarded. Inherited `clean()` nonfield errors, model validation,
+  uniqueness and database invariants remain authoritative; an off group is not a validation bypass.
 - **On** ⇒ the `required` subset is enforced (defaults to all `fields` if `required` is not passed).
 
 The mixin disarms Django's field-level `required` check for group fields so the conditional required rule in `clean()` is the sole arbiter.
+
+Server-side `Field.disabled=True` takes precedence over clearing, including explicit `empty_values`: Django uses
+the trusted initial value and retains its validation errors. A browser `disabled` attribute alone is not this policy.
+
+### Clearing matrix
+
+Automatic values support the following standard Django form/model pairs. Custom subclasses or overridden persistence
+hooks require explicit `empty_values`; this is a bounded contract, not arbitrary custom-field/backend compatibility.
+The resulting model state must satisfy your application's constraints.
+
+| Editable field pair | Automatic off value | Persistence |
+|---|---|---|
+| Native text form fields with nullable Char/Text/Email/URL/Slug model fields | `None` | SQL NULL, including omitted fields with model defaults |
+| Native text fields with nonnullable, `blank=True` text models | `""` | Empty text, including defaulted fields |
+| Nonnullable BooleanField | `False` | False |
+| Nullable BooleanField with NullBooleanField | `None` | SQL NULL |
+| Nullable integer/float/decimal/date/time/datetime/duration/UUID model fields with matching native form fields | `None` | SQL NULL |
+| Nullable ForeignKey with ModelChoiceField | `None` | Clears the relation |
+| FileField with FileField | `False` | Clears the stored reference; leaves stored bytes intact |
+| ImageField with ImageField | `False` | Clears the stored reference; same reference-only evidence boundary below |
+| ManyToManyField with ModelMultipleChoiceField | `[]` | Clears relations via native `save_m2m()` |
+| Plain-form native text / MultipleChoice / Boolean / NullBoolean fields | field's `empty_value` / `[]` / `False` / `None` | Cleaned data; the application owns subsequent persistence |
+
+Explicit dictionary membership wins, including falsy values: `False`, `""`, `None` and `[]` are never replaced by
+a fallback. For file/image fields, `False` and `""` clear the reference; explicit `None` means native **no change**.
+Clearing does not call storage deletion or implement file cleanup. A changed conditional state is persisted even
+for an existing inline row whose ordinary `has_changed()` is false; blank extra rows are not created for clearing.
+With `commit=False`, save the instance and call `save_m2m()` as for an ordinary ModelForm.
+
+ImageField is supported for this reference-clearing contract. Its False/None, disabled and unchanged-inline evidence
+uses existing stored references and no uploaded image bytes: it is **reference-only**, not an image-byte decoding
+or image-upload-validation guarantee. The disabled-image fixture uses native `initial=None`/no-change to retain the
+stored reference without decoding it. Actual upload-discard evidence uses multipart FileField data, separately from
+images. Django ImageField upload decoding retains its existing Pillow prerequisite in consuming applications;
+this phase adds no dependency and does not exercise image-byte decoding.
+
+Unsupported automatic shapes (for example a nonnullable numeric field or custom field subclass) fail static
+`crud_views.E312` checks where inspectable. Request-added fields are checked during `clean()` and raise a descriptive
+`ImproperlyConfigured` naming the group and field, even on an active submission. Supply an explicit native-compatible
+`empty_values` value and verify its model constraints. E312 replaces the former W320 warning; it is not a user error.
+
+### Explicit file reference recipe
+
+For an application model with a BooleanField `active` and an editable FileField `attachment` (or ImageField `image`),
+this factory declares explicit native values. Import your model and call
+`reference_form(Document, field_name="attachment", empty_value=False)` to clear, or use `empty_value=None` to retain
+its reference. For `field_name="image"`, this example concerns existing references only, without uploaded bytes.
+
+```python
+from django import forms
+from crud_views.lib.conditional import ConditionalGroup, ConditionalGroupFormMixin, ModelFieldToggle
+
+
+def reference_form(model_class, *, field_name="attachment", empty_value=False):
+    class ReferenceForm(ConditionalGroupFormMixin, forms.ModelForm):
+        cv_conditional_groups = [
+            ConditionalGroup(ModelFieldToggle("active"), [field_name], empty_values={field_name: empty_value})
+        ]
+
+        class Meta:
+            model = model_class
+            fields = ["active", field_name]
+
+    return ReferenceForm
+```
 
 ### Usage
 
@@ -78,6 +148,55 @@ ConditionalGroup(
 ### `ToggleGroup` layout
 
 `ToggleGroup(toggle_field, *fields, css_class=None, legend=None)` is a Crispy layout element. By default it renders a `<div cv-data-toggle-group cv-data-toggle-field="…">` wrapper. Pass `legend="…"` to render a titled `<fieldset><legend>…</legend>…</fieldset>` instead; the toggle marker sits on the fieldset, so the whole group (legend included) hides when the toggle is off. The bundled `toggle.js` reads the toggle field's current value on page load and on change, and shows or hides the wrapper accordingly. No custom JavaScript is required.
+
+### Copied conditional wrapper
+
+In `crud_views/conditional/toggle_group.html`, `cv_toggle_field` is the **exact bound HTML checkbox name**,
+already computed with `form.add_prefix(...)`. For a form prefix `editor-0`, toggle `active` means `editor-0-active`.
+Render it directly with ordinary escaping; do not prepend another prefix or use suffix matching. This complete
+minimal override retains the optional legend and generated inner content:
+
+```django
+{% if cv_toggle_legend %}
+<fieldset cv-data-toggle-group cv-data-toggle-field="{{ cv_toggle_field }}" class="{{ cv_toggle_css }}">
+    <legend>{{ cv_toggle_legend }}</legend>
+    {{ cv_toggle_inner }}
+</fieldset>
+{% else %}
+<div cv-data-toggle-group cv-data-toggle-field="{{ cv_toggle_field }}" class="{{ cv_toggle_css }}">
+    {{ cv_toggle_inner }}
+</div>
+{% endif %}
+```
+
+Conditional formset wrappers likewise render their `x_formset.cv_toggle_field` directly; it is the parent form's
+bound toggle name. Checkbox lookup uses exact `name` equality and actual owning-form identity, including native
+`form=` ownership. Repeated names in separate forms are independent. Multiple matching checkboxes in one form log
+`console.warn("crud_views: ambiguous conditional toggle", name)`. On first initialization an unresolved group
+(missing or ambiguous checkbox) leaves its own presentation unmanaged. A previously bound group that becomes
+unresolved retains its **last owned on/off state**, without learning a new disabled baseline from its temporary state.
+That own state still composes with all bound ancestors and independent disabled reasons: an off ancestor continues
+to hide/disable descendants even when their own binding is unresolved. Other groups remain independent.
+Both missing and ambiguous bindings are retryable: restore exactly one checkbox and call `cv.initConditional(root)`
+again to apply its current checked state, without duplicate handlers or baseline loss.
+See [root initialization](javascript.md#conditional-and-formset-initialization).
+
+### Visibility, disabled ownership, focus and reset
+
+Visibility changes immediately, without animation or Bootstrap. Controls retain unsaved values across off/on.
+An editable control is enabled only when its independent disabled baseline and **all** bound ancestor groups allow it.
+External `disabled` changes, including setting it true while it is already temporarily disabled, update that baseline.
+Native input/select/textarea/button controls participate. Hidden `TOTAL_FORMS`, `INITIAL_FORMS`, `MIN_NUM_FORMS` and
+`MAX_NUM_FORMS` management inputs remain enabled by the conditional layer so invalid re-renders retain row counts;
+an independently disabled management input stays disabled.
+
+When hiding strands focus inside a group, focus returns to a usable governing checkbox, then a usable ancestor toggle,
+then the owning form. Focus already outside the hidden content is left alone. This composes with the modal's existing
+focus restoration and completed `onHidden` contract.
+
+A noncancelled native reset resynchronizes after the browser restores defaults. Cancellation, including by later
+reset listeners, preserves presentation. Only that form is synchronized; dynamic rows and management counts remain.
+This does not define a new final reset policy for dynamically added formset rows (A8 remains deferred).
 
 ---
 
@@ -139,7 +258,7 @@ The parent form must expose the toggle field. **`ConditionalFormSet` toggles are
 |---|---|---|
 | `crud_views.E310` | Error | `conditional=` placed on a nested (non-first-level) formset |
 | `crud_views.E311` | Error | Toggle field named in a `ConditionalGroup` or `ConditionalFormSet.toggle` is absent from the parent form (and not injected by a group on that form) |
-| `crud_views.W320` | Warning | A field cleared by an off group is not `null=True, blank=True` — saves will likely fail |
+| `crud_views.E312` | Error | No supported automatic clearing value for the inspected editable form/model field pair; configure `empty_values` explicitly (replaces W320) |
 | `crud_views.W321` | Warning | `on_off="purge"` combined with a formset that forbids row deletion (`can_delete=False` / `edit_only=True`) — the toggle bulk-deletes rows anyway |
 
 ---

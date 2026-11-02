@@ -5,7 +5,8 @@ from django.utils.translation import gettext_lazy as _
 class Registration(models.Model):
     name = models.CharField(_("name"), max_length=100)
     with_company = models.BooleanField(_("I represent a company"), default=False)
-    # null=True: a switched-off ConditionalGroup clears its fields to None on save (see crud_views.W320).
+    # These nullable text fields clear to None; other pairs use field-aware defaults or explicit empty_values.
+    # Unsupported automatic pairs fail crud_views.E312. See docs/reference/conditional.md#clearing-matrix.
     company_name = models.CharField(_("company name"), max_length=200, blank=True, null=True)  # NOSONAR S6553
     vat_id = models.CharField(_("VAT ID"), max_length=50, blank=True, null=True)  # NOSONAR S6553
     # governed by a transient UIFieldToggle ("add_note") — the checkbox itself is not stored

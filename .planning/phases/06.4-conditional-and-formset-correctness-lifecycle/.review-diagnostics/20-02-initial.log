@@ -1,0 +1,112 @@
+test_command_identity_normalizes_only_transport_directory (__main__.CheckerControlEvidence.test_command_identity_normalizes_only_transport_directory) ... 
+  test_command_identity_normalizes_only_transport_directory (__main__.CheckerControlEvidence.test_command_identity_normalizes_only_transport_directory) (index=0, value='/bin/true') ... FAIL
+  test_command_identity_normalizes_only_transport_directory (__main__.CheckerControlEvidence.test_command_identity_normalizes_only_transport_directory) (index=1, value='/tmp/run.py') ... FAIL
+  test_command_identity_normalizes_only_transport_directory (__main__.CheckerControlEvidence.test_command_identity_normalizes_only_transport_directory) (index=2, value='--run') ... FAIL
+  test_command_identity_normalizes_only_transport_directory (__main__.CheckerControlEvidence.test_command_identity_normalizes_only_transport_directory) (index=3, value='--only') ... FAIL
+  test_command_identity_normalizes_only_transport_directory (__main__.CheckerControlEvidence.test_command_identity_normalizes_only_transport_directory) (index=4, value='/tmp/other.json') ... FAIL
+  test_command_identity_normalizes_only_transport_directory (__main__.CheckerControlEvidence.test_command_identity_normalizes_only_transport_directory) (index=4, value='exit-code.json') ... FAIL
+test_complete_packet_cli_and_pending_handoff_positive (__main__.CheckerControlEvidence.test_complete_packet_cli_and_pending_handoff_positive) ... ERROR
+test_contradictory_success_outcomes_reject_everywhere (__main__.CheckerControlEvidence.test_contradictory_success_outcomes_reject_everywhere) ... FAIL
+test_duplicate_keys_reject_at_both_cli_entry_points (__main__.CheckerControlEvidence.test_duplicate_keys_reject_at_both_cli_entry_points) ... ok
+test_exact_summary_and_detail_inventory (__main__.CheckerControlEvidence.test_exact_summary_and_detail_inventory) ... 
+  test_exact_summary_and_detail_inventory (__main__.CheckerControlEvidence.test_exact_summary_and_detail_inventory) (key='checker_controls', extra=False) ... FAIL
+  test_exact_summary_and_detail_inventory (__main__.CheckerControlEvidence.test_exact_summary_and_detail_inventory) (key='checker_controls', extra=True) ... FAIL
+  test_exact_summary_and_detail_inventory (__main__.CheckerControlEvidence.test_exact_summary_and_detail_inventory) (key='checker_control_evidence', extra=False) ... FAIL
+  test_exact_summary_and_detail_inventory (__main__.CheckerControlEvidence.test_exact_summary_and_detail_inventory) (key='checker_control_evidence', extra=True) ... FAIL
+test_internal_payload_result_cannot_supply_final_acceptance (__main__.CheckerControlEvidence.test_internal_payload_result_cannot_supply_final_acceptance) ... ERROR
+test_malformed_outcomes_are_not_rejections (__main__.CheckerControlEvidence.test_malformed_outcomes_are_not_rejections) ... 
+  test_malformed_outcomes_are_not_rejections (__main__.CheckerControlEvidence.test_malformed_outcomes_are_not_rejections) (key='returncode', value=True) ... FAIL
+  test_malformed_outcomes_are_not_rejections (__main__.CheckerControlEvidence.test_malformed_outcomes_are_not_rejections) (key='returncode', value=-9) ... FAIL
+  test_malformed_outcomes_are_not_rejections (__main__.CheckerControlEvidence.test_malformed_outcomes_are_not_rejections) (key='returncode', value=127) ... FAIL
+  test_malformed_outcomes_are_not_rejections (__main__.CheckerControlEvidence.test_malformed_outcomes_are_not_rejections) (key='returncode', value='1') ... FAIL
+  test_malformed_outcomes_are_not_rejections (__main__.CheckerControlEvidence.test_malformed_outcomes_are_not_rejections) (key='stdout', value='PHASE64_MATRIX_OK') ... FAIL
+  test_malformed_outcomes_are_not_rejections (__main__.CheckerControlEvidence.test_malformed_outcomes_are_not_rejections) (key='stderr', value='') ... FAIL
+  test_malformed_outcomes_are_not_rejections (__main__.CheckerControlEvidence.test_malformed_outcomes_are_not_rejections) (key='stderr', value='MATRIX_REJECTED: Missing/stale source manifest\n') ... FAIL
+  test_malformed_outcomes_are_not_rejections (__main__.CheckerControlEvidence.test_malformed_outcomes_are_not_rejections) (key='stderr', value='Traceback: setup failed\n') ... FAIL
+test_missing_detailed_inventory_rejects_cli_aggregate_and_handoff (__main__.CheckerControlEvidence.test_missing_detailed_inventory_rejects_cli_aggregate_and_handoff) ... FAIL
+test_real_staged_controls_and_final_positive (__main__.CheckerControlEvidence.test_real_staged_controls_and_final_positive) ... ERROR
+test_changed_deleted_or_non_png_owned_bytes_reject_without_touching_originals (__main__.ConditionalCaptureEvidence.test_changed_deleted_or_non_png_owned_bytes_reject_without_touching_originals) ... ERROR
+test_current_three_stock_and_explicit_empty_native_are_valid (__main__.ConditionalCaptureEvidence.test_current_three_stock_and_explicit_empty_native_are_valid) ... ERROR
+test_device_viewport_and_containment_observations (__main__.ConditionalCaptureEvidence.test_device_viewport_and_containment_observations) ... Traceback (most recent call last):
+  File "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/test_runner.py", line 763, in <module>
+    unittest.main()
+  File "/usr/lib/python3.12/unittest/main.py", line 105, in __init__
+    self.runTests()
+  File "/usr/lib/python3.12/unittest/main.py", line 281, in runTests
+    self.result = testRunner.run(self.test)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/unittest/runner.py", line 240, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.12/unittest/case.py", line 690, in __call__
+    return self.run(*args, **kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/unittest/case.py", line 634, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.12/unittest/case.py", line 589, in _callTestMethod
+    if method() is not None:
+       ^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/test_runner.py", line 545, in test_device_viewport_and_containment_observations
+    original = copy.deepcopy(self.conditional())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 196, in _deepcopy_list
+    append(deepcopy(a, memo))
+           ^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 196, in _deepcopy_list
+    append(deepcopy(a, memo))
+           ^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 221, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+                             ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/copy.py", line 127, in deepcopy
+    d = id(x)
+        ^^^^^
+KeyboardInterrupt

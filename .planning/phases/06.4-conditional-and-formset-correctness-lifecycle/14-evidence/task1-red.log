@@ -1,0 +1,78 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.js:1:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.3 /home/alex/projects/alex/django-crud-views
+
+ ❯ tests/js/toggle.test.js (39 tests | 1 failed | 38 skipped) 25ms
+   ❯ conditional disabled ownership (7)
+     × keeps a formerly bound inactive group safe during ambiguity and uniquely recovers 22ms
+     ↓ composes nested owners in inner-first order and retains baseline
+     ↓ composes nested owners in outer-first order and retains baseline
+     ↓ preserves same-value external disabled writes before synchronous resync
+     ↓ reacts to external attribute changes while active or inactive
+     ↓ disables custom native actions but preserves values, files, management and native fieldsets
+     ↓ captures new descendants without capturing temporary disabled state
+   ↓ conditional reset and focus lifecycle (16)
+     ↓ resynchronizes native reset only after the task and only in its owning form
+     ↓ honors later reset cancellation at form
+     ↓ honors later reset cancellation at document
+     ↓ restores checked defaults without releasing independent disables or duplicating reset handlers
+     ↓ returns stranded focus to the controlling checkbox without stealing outside focus
+     ↓ uses the nearest usable ancestor toggle when an inner target is hidden
+     ↓ rejects hidden toggle and focuses its visible in-modal form
+     ↓ rejects inert toggle and focuses its visible in-modal form
+     ↓ rejects aria-hidden toggle and focuses its visible in-modal form
+     ↓ rejects aria-disabled toggle and focuses its visible in-modal form
+     ↓ rejects disabled toggle and focuses its visible in-modal form
+     ↓ rejects failed-focus toggle and focuses its visible in-modal form
+     ↓ does not focus a hidden initial modal shell and preserves existing fallback tabindex
+     ↓ starts immediately when a script loads after DOMContentLoaded
+     ↓ disposes modal observation and handlers on unload, then permits explicit reuse
+     ↓ recaptures independent changes made while modal content was disposed
+   ↓ toggle.js (16)
+     ↓ keeps a group with a checked toggle visible and enabled
+     ↓ hides and disables a group whose toggle is unchecked
+     ↓ keeps management-form hidden inputs enabled even when the group is off
+     ↓ reacts to checkbox change in both directions
+     ↓ finds the checkbox by its exact bound name
+     ↓ scopes the checkbox lookup to the nearest form
+     ↓ leaves a group without a matching checkbox untouched
+     ↓ wires groups injected into the modal via cv:modal:loaded
+     ↓ wires groups in a formset row added via cv:formset:row-added
+     ↓ does not double-bind an already-wired group
+     ↓ does not bind by suffix or to a checkbox owned by another form
+     ↓ binds sibling and nested row prefixes independently despite shared suffixes
+     ↓ keeps duplicate exact bindings local and warns without field values
+     ↓ does not let an unresolved nested group bypass its bound ancestor
+     ↓ includes an Element root and retries late checkboxes without duplicate handlers
+     ↓ supports DocumentFragments and names containing selector punctuation
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/js/toggle.test.js > conditional disabled ownership > keeps a formerly bound inactive group safe during ambiguity and uniquely recovers
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/js/toggle.test.js:70:36
+     68|             expect(warning).toHaveBeenCalledTimes(1);
+     69|             expect(group.style.display).toBe("none");
+     70|             expect(title.disabled).toBe(true);
+       |                                    ^
+     71|             expect(form.checkValidity()).toBe(true);
+     72|             expect(new FormData(form).has("title")).toBe(false);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 38 skipped (39)
+   Start at  15:05:15
+   Duration  811ms (environment 75%, transform 12%, setup 7%, tests 4%, import 1%, worker 1%)
+
+JUNIT report written to /home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/14-evidence/task1-red.xml

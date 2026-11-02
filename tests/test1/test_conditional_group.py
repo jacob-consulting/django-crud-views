@@ -1,6 +1,7 @@
 # tests/test1/test_conditional_group.py
 import pytest
 from django import forms
+from django.core.exceptions import ImproperlyConfigured
 
 from crud_views.lib.conditional.group import ConditionalGroup, ConditionalGroupFormMixin
 from crud_views.lib.conditional.toggle import ModelFieldToggle, UIFieldToggle
@@ -106,3 +107,42 @@ def test_ui_field_toggle_is_injected_and_not_a_model_field():
     assert form.fields["email"].required is False
     assert form.is_valid() is True
     assert form.cleaned_data["email"] is None
+
+
+@pytest.mark.parametrize("active", [False, True])
+@pytest.mark.parametrize(
+    "field_factory",
+    [
+        lambda: forms.TypedChoiceField(choices=[("1", "One")], coerce=int),
+        lambda: forms.SplitDateTimeField(),
+        lambda: forms.JSONField(),
+    ],
+    ids=["typed-choice", "multi-value", "json"],
+)
+def test_request_added_unsupported_field_is_configuration_error_even_when_active(active, field_factory):
+    class Dynamic(ConditionalGroupFormMixin, forms.Form):
+        active = forms.BooleanField(required=False)
+        cv_conditional_groups = [ConditionalGroup(ModelFieldToggle("active"), ["dynamic"])]
+
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.fields["dynamic"] = field_factory()
+
+    assert "dynamic" not in Dynamic.base_fields
+    form = Dynamic(data={"active": "on"} if active else {})
+    with pytest.raises(ImproperlyConfigured, match=r"active.*dynamic.*empty_values"):
+        form.is_valid()
+
+
+@pytest.mark.parametrize("empty", [False, None, "", []])
+def test_plain_form_custom_field_accepts_explicit_native_falsy_values(empty):
+    class Custom(forms.Field):
+        pass
+
+    class Plain(ConditionalGroupFormMixin, forms.Form):
+        value = Custom()
+        cv_conditional_groups = [ConditionalGroup(UIFieldToggle("enabled"), ["value"], empty_values={"value": empty})]
+
+    form = Plain(data={"value": "forged"})
+    assert form.is_valid(), form.errors
+    assert form.cleaned_data["value"] is empty

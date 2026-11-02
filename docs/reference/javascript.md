@@ -252,6 +252,59 @@ All three are bubbling `CustomEvent`s you can listen for on `document`:
 | `cv:modal:loaded` | `#cv-modal` | after every content injection into the modal, see [Modals](modals.md#extending) |
 | `cv:formset:row-added` | the new `div.cv-formset-row` | after a formset row was inserted, see [Formsets](formsets.md#initializing-widgets-in-added-rows) |
 
+## Conditional and formset initialization
+
+`cv.initConditional(root=document)` and `cv.initFormsets(root=document)` are public, repeat-safe initializers.
+Accepted roots are a `Document`, an `Element` (including the form, group or checkbox itself), or a `DocumentFragment`.
+They discover the root/descendant/owning forms; formset controllers are scoped to each actual form. Calling again
+does not duplicate handlers and conditional initialization synchronizes current state. An initially unresolved
+conditional group leaves its own presentation unmanaged; a formerly bound group retains its last owned state while
+missing or ambiguous. Ancestor and external disabled ownership still compose. Restore exactly one checkbox before
+retrying to apply its current checked state. A late-loaded script also initializes an already-ready document.
+
+For markup inserted by your own code, run this from an external script after both package scripts are loaded, with
+`root` referring to your inserted element or its owning form:
+
+```javascript
+cv.initConditional(root);
+cv.initFormsets(root);
+```
+
+For a DocumentFragment you can initialize its contained forms before insertion; after inserting loose controls into
+an existing form, initialize the inserted root or owning form so it has actual form ancestry. Formset initialization
+still requires jQuery, with the existing missing-jQuery diagnostic/retry; it does not remove that dependency.
+
+Package startup, `cv:modal:loaded` (including invalid 422 replacements) and `cv:formset:row-added` already call these
+initializers. On `cv:modal:unload`, while old content is still attached, conditional observers/bindings and formset
+controllers are released; retained content can be reinserted and initialized again. Custom widgets should initialize
+once per inserted root using their own guard. Row-added detail remains exactly `{prefix, rows}`, with one bubbling
+event per outer inserted row; that root contains nested rows. No additional event per descendant is needed.
+
+Use the [bound conditional markers](conditional.md#copied-conditional-wrapper) and
+[native formset hooks/projections](formsets.md#template-projection-and-native-controls) in overrides. The
+controller/owner/render-tree helpers behind these entry points remain internal. This preserves existing form-leaf
+label/escaping and Cancel behavior, and the modal adapter's completed `onHidden`/focus lifecycle. Final reset policy
+for dynamically added formset rows (A8) and a jQuery port remain deferred.
+
+## JavaScript test commands
+
+From the repository root, `npm test` runs the ordinary Node/jsdom suite. It requires the installed JavaScript
+dependencies but no Python, Django or `.nox` runtime. Ordinary Python tests likewise remain Node-free unless an
+explicit cross-runtime tracer is selected.
+
+The real Django fragment/FormData/POST bridge is a **separate required acceptance command**:
+
+```bash
+CV_FRAGMENT_PYTHON="$PWD/.nox/crispy_floor-3-12-django-6-0/bin/python" \
+PYTHONPATH="$PWD/src:$PWD" npm run test:integration
+```
+
+`CV_FRAGMENT_PYTHON` must name an existing executable interpreter with the test dependencies; use the appropriate
+already prepared supported-series runtime. The checkout `PYTHONPATH` ensures it imports this source tree. This
+integration route fails when the explicit runtime is absent, non-executable or cannot run Django; it never silently
+skips or installs dependencies. A passing `npm test` does not substitute for this route. Full supported-series and
+source-bound acceptance records additionally require their declared Python, browser, documentation and quality gates.
+
 ## The filter toggle contract
 
 `list.filter.js` drives the element with id `filter-collapse` from the button `#cv-filter-toggle`, like the modal shell

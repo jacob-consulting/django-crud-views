@@ -1,0 +1,49 @@
+test_all_invalid_selections_fail_before_any_process (test_runner.CurrentCapture.test_all_invalid_selections_fail_before_any_process) ... ok
+test_changed_valid_browser_selection_reruns_affected_gate (test_runner.CurrentCapture.test_changed_valid_browser_selection_reruns_affected_gate) ... START conditional-browser
+PASS conditional-browser 0s 
+PHASE64_SCOPED_OK 1 gates source=0d37ecadf7298c9d72cc2a02c62d10bc87073065a3fb9b2ceb26c9739742e9d2
+REUSE conditional-browser
+PHASE64_SCOPED_OK 1 gates source=0d37ecadf7298c9d72cc2a02c62d10bc87073065a3fb9b2ceb26c9739742e9d2
+START conditional-browser
+PASS conditional-browser 0s 
+PHASE64_SCOPED_OK 1 gates source=0d37ecadf7298c9d72cc2a02c62d10bc87073065a3fb9b2ceb26c9739742e9d2
+ok
+test_effective_selections_affect_only_relevant_gates (test_runner.CurrentCapture.test_effective_selections_affect_only_relevant_gates) ... ok
+test_matching_selection_reuses_real_docs_and_historical_check_ignores_current_overrides (test_runner.CurrentCapture.test_matching_selection_reuses_real_docs_and_historical_check_ignores_current_overrides) ... ok
+test_wr02_invalid_python_fails_before_unrelated_command (test_runner.CurrentCapture.test_wr02_invalid_python_fails_before_unrelated_command) ... ok
+test_wr02_invalid_runtime_subprocess_preserves_output (test_runner.CurrentCapture.test_wr02_invalid_runtime_subprocess_preserves_output) ... ok
+test_false_readiness_rejects (test_runner.HandoffEvidence.test_false_readiness_rejects) ... ok
+test_malformed_packet_subprocess_rejects (test_runner.HandoffEvidence.test_malformed_packet_subprocess_rejects) ... ok
+test_missing_case_reference_rejects (test_runner.HandoffEvidence.test_missing_case_reference_rejects) ... ok
+test_missing_findings_and_links_reject (test_runner.HandoffEvidence.test_missing_findings_and_links_reject) ... ok
+test_missing_human_state_or_prohibition_rejects (test_runner.HandoffEvidence.test_missing_human_state_or_prohibition_rejects) ... ok
+test_pending_packet_is_structurally_valid_but_not_ready (test_runner.HandoffEvidence.test_pending_packet_is_structurally_valid_but_not_ready) ... ok
+test_stale_report_hash_rejects (test_runner.HandoffEvidence.test_stale_report_hash_rejects) ... ok
+test_stale_source_provenance_rejects (test_runner.HandoffEvidence.test_stale_source_provenance_rejects) ... ok
+test_unattributed_human_approval_rejects (test_runner.HandoffEvidence.test_unattributed_human_approval_rejects) ... ok
+test_unreviewed_finding_cannot_close (test_runner.HandoffEvidence.test_unreviewed_finding_cannot_close) ... ok
+test_wr01_rejects_filtered_javascript_with_consistent_green_counts (test_runner.HistoricalCounterexamples.test_wr01_rejects_filtered_javascript_with_consistent_green_counts) ... ok
+test_wr01_rejects_non_strict_docs (test_runner.HistoricalCounterexamples.test_wr01_rejects_non_strict_docs) ... ok
+test_duplicate_case (test_runner.QualityEvidence.test_duplicate_case) ... ok
+test_duplicate_file (test_runner.QualityEvidence.test_duplicate_file) ... ok
+test_failed_case (test_runner.QualityEvidence.test_failed_case) ... ok
+test_false_console (test_runner.QualityEvidence.test_false_console) ... ok
+test_false_counts (test_runner.QualityEvidence.test_false_counts) ... ok
+test_filtered_collection_command (test_runner.QualityEvidence.test_filtered_collection_command) ... ok
+test_filtered_command (test_runner.QualityEvidence.test_filtered_command) ... ok
+test_missing_case (test_runner.QualityEvidence.test_missing_case) ... ok
+test_missing_file (test_runner.QualityEvidence.test_missing_file) ... ok
+test_real_complete_ordinary_capture (test_runner.QualityEvidence.test_real_complete_ordinary_capture) ... ok
+test_required_bridge_is_independent (test_runner.QualityEvidence.test_required_bridge_is_independent) ... ok
+test_required_integration_case_missing (test_runner.QualityEvidence.test_required_integration_case_missing) ... ok
+test_scoped_copy_checks_but_cannot_claim_complete (test_runner.QualityEvidence.test_scoped_copy_checks_but_cannot_claim_complete) ... ok
+test_skipped_case (test_runner.QualityEvidence.test_skipped_case) ... ok
+test_stale_collection_source (test_runner.QualityEvidence.test_stale_collection_source) ... ok
+test_wrong_lint_subcommands_and_flags (test_runner.QualityEvidence.test_wrong_lint_subcommands_and_flags) ... ok
+test_wrong_node_executable (test_runner.QualityEvidence.test_wrong_node_executable) ... ok
+test_wrong_vitest_subcommand (test_runner.QualityEvidence.test_wrong_vitest_subcommand) ... ok
+
+----------------------------------------------------------------------
+Ran 36 tests in 44.103s
+
+OK

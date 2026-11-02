@@ -1,0 +1,57 @@
+{% load crispy_forms_tags static %}
+{% if not modal %}
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Conditional formsets browser fixture</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+ integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+ crossorigin="anonymous" referrerpolicy="no-referrer">
+{% if theme == "stock" %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+{% endif %}
+<script src="/jquery.js"></script>
+<script src="{% static 'crud_views/js/adapters.js' %}"></script>
+<script>globalThis.cv.config = {modalShellId: "cv-modal", modalContentId: "cv-modal-content"};</script>
+{% if not request.GET.late %}<script src="{% static 'crud_views/js/toggle.js' %}"></script>{% endif %}
+<script src="{% static 'crud_views/js/formset.js' %}"></script>
+<script src="{% static 'crud_views/js/modal.js' %}"></script>
+<script>
+window.widgetEvents = [];
+const widgets = new WeakSet();
+document.addEventListener("cv:formset:row-added", e => {
+  const controls = [...e.target.querySelectorAll("input:not([type=hidden]),textarea")];
+  widgetEvents.push({prefix:e.detail.prefix, rows:e.detail.rows, count:controls.length, duplicate:controls.some(c=>widgets.has(c))});
+  controls.forEach(c=>widgets.add(c));
+});
+document.addEventListener("cv:modal:loaded", e => { window.loadedCount = (window.loadedCount || 0) + 1; });
+document.addEventListener("cv:modal:unload", e => { window.unloadAttached = e.target.isConnected; });
+{% if theme == "native" %}
+cv.adapters.modal = {
+  show(el) {el.showModal();}, hide(el) {el.close();}, setSize() {},
+  onHidden(el, callback) { const done = e => {if(e.target===el) callback();}; el.addEventListener("close",done); return () => el.removeEventListener("close",done); }
+};
+{% endif %}
+</script></head><body><main class="container">
+{% if harness %}
+<a id="launch" data-cv-modal="true" href="{{ target }}">Open editor</a>
+{% else %}
+{% endif %}
+{% endif %}
+{% if modal %}<button type="button" data-cv-modal-dismiss aria-label="Close">Close</button>{% endif %}
+{% if form %}
+<form id="editor" class="cv-form" aria-label="Browser test-host editor" method="post" action="{{ request.get_full_path }}" enctype="multipart/form-data" novalidate>
+{% csrf_token %}{% crispy form form.helper %}
+<button type="reset" class="native-reset" data-fixture-only="native-reset" title="Test-host native reset">Reset fields</button>
+{% if not form.helper.inputs %}<button type="submit" class="fixture-save" data-fixture-only="submit" title="Test-host submit">Save</button>{% endif %}
+</form>
+{% if not modal %}
+<form id="other" class="cv-form" aria-label="Test-host isolation form" data-fixture-only="isolation" method="post">{% csrf_token %}{% crispy other_form other_form.helper %}
+<button type="reset" class="native-reset" data-fixture-only="native-reset" title="Test-host isolation reset">Reset other fields</button></form>
+{% endif %}
+{% endif %}
+{% if not modal %}
+</main>
+{% if theme == "stock" %}{% include "crud_views/modal/shell.html" %}
+{% else %}<dialog id="cv-modal" tabindex="-1"><div id="cv-modal-content"></div></dialog>{% endif %}
+</body></html>
+{% endif %}

@@ -19,6 +19,8 @@ const FORMSET_DEFAULTS = {
     rows: 2,
     canOrder: true,
     canDelete: true,
+    canDeleteExtra: true,
+    initialForms: null,
     editOnly: false,
     fields: ["name"],
     pkField: "id",
@@ -49,7 +51,8 @@ export function rowHtml(i, opts = {}) {
     const orderInput = o.canOrder
         ? `<input type="hidden" name="${formPrefix}-ORDER" value="${i + 1}">`
         : "";
-    const deleteInput = o.canDelete
+    const canDelete = o.canDelete && (o.canDeleteExtra || i < (o.initialForms ?? o.rows));
+    const deleteInput = canDelete
         ? `<input type="hidden" name="${formPrefix}-DELETE" value="${deleted}">`
         : "";
     const orderButtons = o.canOrder
@@ -59,7 +62,7 @@ export function rowHtml(i, opts = {}) {
     const addButton = o.editOnly
         ? ""
         : `<button type="button" class="btn btn-light cv-form-ctrl-add" cv-data-formset-form-prefix="${formPrefix}"></button>`;
-    const deleteButton = o.canDelete
+    const deleteButton = canDelete
         ? `<button type="button" class="${o.deleteClass} cv-form-ctrl-delete" data-cv-class="${o.deleteClass}" data-cv-class-danger="${o.deleteDangerClass}" cv-data-formset-form-prefix="${formPrefix}"></button>`
         : "";
     return `
@@ -75,7 +78,7 @@ export function rowHtml(i, opts = {}) {
         </div>`;
 }
 
-export function formsetFixture(opts = {}) {
+export function formsetHtml(opts = {}) {
     const o = { ...FORMSET_DEFAULTS, ...opts };
     const prefix = formsetPrefix(o);
     const data = JSON.stringify({
@@ -86,7 +89,7 @@ export function formsetFixture(opts = {}) {
         parent_prefix: "",
         parent_prefix_key: "",
         can_delete: o.canDelete,
-        can_delete_extra: true,
+        can_delete_extra: o.canDeleteExtra,
         can_order: o.canOrder,
         edit_only: o.editOnly,
         path: "/formset-rows/",
@@ -95,17 +98,36 @@ export function formsetFixture(opts = {}) {
         pk: o.pk,
     });
     const rowsHtml = Array.from({ length: o.rows }, (_, i) => rowHtml(i, o)).join("");
-    document.body.innerHTML = `
+    return `
         <form class="cv-form">
             <fieldset class="cv-formset-fieldset" cv-data-formset-key="${o.key}" cv-data-formset-prefix="${prefix}">
                 <div class="cv-formset-content" cv-data-formset='${data}' cv-data-formset-prefix="${prefix}">
                     <input type="hidden" name="${prefix}-TOTAL_FORMS" value="${o.rows}">
-                    <input type="hidden" name="${prefix}-INITIAL_FORMS" value="${o.rows}">
+                    <input type="hidden" name="${prefix}-INITIAL_FORMS" value="${o.initialForms ?? o.rows}">
                     <input type="hidden" name="${prefix}-MIN_NUM_FORMS" value="0">
                     <input type="hidden" name="${prefix}-MAX_NUM_FORMS" value="1000">
                     ${rowsHtml}
                 </div>
             </fieldset>
         </form>`;
-    return { prefix };
+}
+
+export function formsetFixture(opts = {}) {
+    document.body.innerHTML = formsetHtml(opts);
+    return { prefix: formsetPrefix(opts) };
+}
+
+// Compose the existing package-shaped row fixture with a real modal form and
+// conditional wrapper. All lifecycle tests load the actual three shipped scripts.
+export function formsetModalHtml(opts = {}) {
+    formsetFixture(opts);
+    const form = document.querySelector("form");
+    form.action = "/formsets/save/";
+    form.setAttribute("novalidate", "");
+    const fieldset = form.querySelector("fieldset");
+    fieldset.setAttribute("cv-data-toggle-group", "items");
+    fieldset.setAttribute("cv-data-toggle-field", "with_items");
+    form.insertAdjacentHTML("afterbegin", '<input type="checkbox" name="with_items" checked>');
+    form.insertAdjacentHTML("beforeend", '<button type="submit" name="save" value="yes">Save</button>');
+    return form.outerHTML;
 }

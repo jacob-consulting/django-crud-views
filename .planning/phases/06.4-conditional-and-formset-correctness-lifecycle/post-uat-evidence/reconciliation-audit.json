@@ -1,0 +1,111 @@
+{
+  "actor": "/root/reconcile_64_acceptance",
+  "recorded": "2026-11-02T07:13:21.812664+00:00",
+  "status": "passed",
+  "assertions": [
+    "all before snapshots exact",
+    "all16 historical STABLE hashes exact via four snapshot reports and12 unchanged originals",
+    "complete previous report bodies retained verbatim as suffixes",
+    "19decisions/31fallback edges/findings/bounds/checker-controls/new-findings unchanged",
+    "all previous history objects unchanged",
+    "UAT/SECURITY/VERIFICATION/26outcomes/final-rebind unchanged",
+    "44threats verified at attributed SECURED44/44; no accepted risk",
+    "no obsolete active code_bounded report",
+    "31fallbacks flagged-unresolved; canonical open; readyfalse",
+    "actual requested virtualenv checks passed with empty stderr; final bound hashes current"
+  ],
+  "changed_existing_files": [
+    ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-REVIEW.md",
+    ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UI-REVIEW.md",
+    ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VALIDATION.md",
+    ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-REVIEW-DISPOSITION.md",
+    ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-ACCEPTANCE.md",
+    ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/handoff.json"
+  ],
+  "evidence_files": [
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/applicability.md",
+      "sha256": "d48ad52341c2d2f260fed5329b41bab5afea579b0994448c6e53c8c7f11db4d4"
+    },
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/before/06.4-ACCEPTANCE.md",
+      "sha256": "0e683f637d78cd00c17cc9a5ab10353ac6fba5da032aaa0139d17d1e31ba65bb"
+    },
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/before/06.4-REVIEW-DISPOSITION.md",
+      "sha256": "f72e381ba264c7645d0b57b80707584b075418dfd4edd46f0a274b5477bf0580"
+    },
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/before/06.4-REVIEW.md",
+      "sha256": "c936cabfe05f8ee3e18eaf1721d1348182dc822a66661b9308a172e212956292"
+    },
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/before/06.4-SECURITY.md",
+      "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
+    },
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/before/06.4-UAT.md",
+      "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
+    },
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/before/06.4-UI-REVIEW.md",
+      "sha256": "e25c2374fe704060195a806e00c616198b13d8659b4359d4008cf1148459af32"
+    },
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/before/06.4-VALIDATION.md",
+      "sha256": "cd2aa62b66b7a6951fbe3e9513ea840f98076aae9c732e0fbfbb956b76302958"
+    },
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/before/06.4-VERIFICATION.md",
+      "sha256": "de9103d24246ccb48440cba53770ab6e7349b849c2dfe84b6bc18a03b0c3bd00"
+    },
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/before/24-evidence__handoff.json",
+      "sha256": "664e23b79e73e302e6ba527cb6badf4e84d2f02704e5491cc329cbb7f2027512"
+    },
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/before/26-evidence__canonical-outcomes.json",
+      "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+    },
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/before/26-evidence__final-rebind.json",
+      "sha256": "8e9b6c7b42c42dd5a98827eec2be30a7fcb6a48151da4390a887c172967ba07d"
+    },
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/before-manifest.json",
+      "sha256": "f405fca1a8d34b249d7de051ee6c32a66b369dd0931abdc66fee2c26e00dc5d0"
+    },
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/current-checks.json",
+      "sha256": "5f55d0a71e292f30b3cb016c67358d410cf88cdecca3d466a21b83c5ba730c6b"
+    },
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/failed-checks-resolved-interpreter.json",
+      "sha256": "fee3d63acb5d2fc896fd3a59972d3c29c0bba930a6f389b6ffdbf62984c4a29a"
+    },
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/plan26-stable/06.4-REVIEW.md",
+      "sha256": "c936cabfe05f8ee3e18eaf1721d1348182dc822a66661b9308a172e212956292"
+    },
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/plan26-stable/06.4-SECURITY.md",
+      "sha256": "b44c6391ac813239898d1f89531bcbd8f562986b729d9ff15433a26285f25bf8"
+    },
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/plan26-stable/06.4-UI-REVIEW.md",
+      "sha256": "e25c2374fe704060195a806e00c616198b13d8659b4359d4008cf1148459af32"
+    },
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/plan26-stable/06.4-VALIDATION.md",
+      "sha256": "cd2aa62b66b7a6951fbe3e9513ea840f98076aae9c732e0fbfbb956b76302958"
+    },
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/plan26-stable-manifest.json",
+      "sha256": "18aa1ff12c404870b0f736628e4e8fa7cc28485685b4fac2f277c5ff32d72998"
+    },
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/report-bindings.json",
+      "sha256": "8b4aa2a28f2eccc222e689adbe8b257a891a839db93d3abb5e40bd909f876518"
+    }
+  ]
+}

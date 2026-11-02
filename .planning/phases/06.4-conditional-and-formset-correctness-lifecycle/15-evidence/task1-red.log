@@ -1,0 +1,23 @@
+test_wr01_rejects_filtered_javascript_with_consistent_green_counts (test_runner.HistoricalCounterexamples.test_wr01_rejects_filtered_javascript_with_consistent_green_counts) ... FAIL
+test_wr01_rejects_non_strict_docs (test_runner.HistoricalCounterexamples.test_wr01_rejects_non_strict_docs) ... FAIL
+
+======================================================================
+FAIL: test_wr01_rejects_filtered_javascript_with_consistent_green_counts (test_runner.HistoricalCounterexamples.test_wr01_rejects_filtered_javascript_with_consistent_green_counts)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/test_runner.py", line 30, in test_wr01_rejects_filtered_javascript_with_consistent_green_counts
+    with self.assertRaisesRegex(ValueError, "command"):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_wr01_rejects_non_strict_docs (test_runner.HistoricalCounterexamples.test_wr01_rejects_non_strict_docs)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/test_runner.py", line 36, in test_wr01_rejects_non_strict_docs
+    with self.assertRaisesRegex(ValueError, "command"):
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.423s
+
+FAILED (failures=2)

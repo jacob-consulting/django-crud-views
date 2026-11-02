@@ -1,0 +1,65 @@
+{
+  "actor": "/root/reconcile_64_acceptance",
+  "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+  "runs": [
+    {
+      "command": [
+        "/usr/bin/python3.12",
+        ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+        "--check",
+        "--output",
+        ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json"
+      ],
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started": "2026-11-02T07:11:10.695479+00:00",
+      "finished": "2026-11-02T07:11:14.822699+00:00",
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "MATRIX_REJECTED: Checker control command invalid: exit-code\n"
+    },
+    {
+      "command": [
+        "/usr/bin/python3.12",
+        ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+        "--check-handoff",
+        ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/handoff.json"
+      ],
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started": "2026-11-02T07:11:14.822805+00:00",
+      "finished": "2026-11-02T07:11:19.085612+00:00",
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "MATRIX_REJECTED: Checker control command invalid: exit-code\n"
+    }
+  ],
+  "bindings": [
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/handoff.json",
+      "sha256": "96fc87f0c31c263c4609986c1960003094f1c2e643f37029e9e6b6af59d084fa"
+    },
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+      "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+    },
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/source-manifest.json",
+      "sha256": "7dc2541183e999d8709d4c173a9db50f21a0bab52312e22767db896b80a0bf9b"
+    },
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+      "sha256": "75f8057f55d869ccb9591a0a9868e57d606f9e65f2f0eebffa5fca8d5313ad66"
+    },
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VERIFICATION.md",
+      "sha256": "de9103d24246ccb48440cba53770ab6e7349b849c2dfe84b6bc18a03b0c3bd00"
+    },
+    {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/report-bindings.json",
+      "sha256": "8b4aa2a28f2eccc222e689adbe8b257a891a839db93d3abb5e40bd909f876518"
+    }
+  ]
+}

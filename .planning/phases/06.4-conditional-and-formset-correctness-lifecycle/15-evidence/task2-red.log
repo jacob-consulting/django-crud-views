@@ -1,0 +1,31 @@
+test_wr02_invalid_python_fails_before_unrelated_command (test_runner.CurrentCapture.test_wr02_invalid_python_fails_before_unrelated_command) ... START strict-docs
+FAIL
+test_wr02_invalid_runtime_subprocess_preserves_output (test_runner.CurrentCapture.test_wr02_invalid_runtime_subprocess_preserves_output) ... FAIL
+
+======================================================================
+FAIL: test_wr02_invalid_python_fails_before_unrelated_command (test_runner.CurrentCapture.test_wr02_invalid_python_fails_before_unrelated_command)
+----------------------------------------------------------------------
+ValueError: unrelated gate started
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/test_runner.py", line 170, in test_wr02_invalid_python_fails_before_unrelated_command
+    with self.assertRaisesRegex(ValueError, "CV_FOCUS_PYTHON.*selected-review-python"):
+AssertionError: "CV_FOCUS_PYTHON.*selected-review-python" does not match "unrelated gate started"
+
+======================================================================
+FAIL: test_wr02_invalid_runtime_subprocess_preserves_output (test_runner.CurrentCapture.test_wr02_invalid_runtime_subprocess_preserves_output)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/alex/projects/alex/django-crud-views/.planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/test_runner.py", line 188, in test_wr02_invalid_runtime_subprocess_preserves_output
+    self.assertNotEqual(result.returncode, 0, result.stdout)
+AssertionError: 0 == 0 : START strict-docs
+PASS strict-docs 1.557s 
+PHASE64_SCOPED_OK 1 gates source=b99bd309b58d2507f4becab051b61eba53b3d17fe85aeff3299af0b41226a8aa
+
+
+----------------------------------------------------------------------
+Ran 2 tests in 1.880s
+
+FAILED (failures=2)

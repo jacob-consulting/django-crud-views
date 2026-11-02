@@ -1,0 +1,44 @@
+{
+  "actor": "/root",
+  "purpose": "Actual final post-UAT canonical hash binding and live checks; supersedes historical ready:false without rewriting observations.",
+  "commands": [
+    {
+      "argv": [
+        "env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        ".nox/crispy_floor-3-12-django-6-0/bin/python",
+        ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+        "--check",
+        "--output",
+        ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json"
+      ],
+      "started": "2026-11-02T07:30:52.591331+00:00",
+      "finished": "2026-11-02T07:30:56.789189+00:00",
+      "returncode": 0,
+      "stdout": "PHASE64_MATRIX_OK 20 gates source=5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "env",
+        "PYTHONDONTWRITEBYTECODE=1",
+        ".nox/crispy_floor-3-12-django-6-0/bin/python",
+        ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py",
+        "--check-handoff",
+        ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/handoff.json"
+      ],
+      "started": "2026-11-02T07:30:56.789483+00:00",
+      "finished": "2026-11-02T07:31:02.645255+00:00",
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "MATRIX_REJECTED: Stale handoff file hash: .planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VERIFICATION.md\n"
+    }
+  ],
+  "bindings": {
+    ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VERIFICATION.md": "45cb0e73623007d0ebe67cdaebaf0daa82bae5321586690a9e40abde3862c7ca",
+    ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VALIDATION.md": "a7ec83666e2e7942b2ed7c06c916925afadab2b24b175a1ed28a10b1ec3d19aa",
+    ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1",
+    ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e",
+    ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/handoff.json": "0eae51e429b21958154b820fdb13e42d520e748db86ac1adf9e6f1a6dd4096e4"
+  }
+}

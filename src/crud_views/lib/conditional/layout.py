@@ -26,7 +26,7 @@ class ToggleGroup(LayoutObject):
         inner_html = self.inner.render(form, context, **kwargs)
         context.update(
             {
-                "cv_toggle_field": self.toggle_field,
+                "cv_toggle_field": form.add_prefix(self.toggle_field),
                 "cv_toggle_css": self.css_class or "",
                 "cv_toggle_legend": self.legend or "",
                 "cv_toggle_inner": inner_html,

@@ -5,7 +5,11 @@ import { vi } from "vitest";
 
 // Resolve via path, not `new URL(relative, base)` — in the jsdom test
 // environment the global URL is jsdom's and rejects file-scheme resolution.
-const JS_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../../src/crud_views/static/crud_views/js");
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
+const JS_DIRS = new Map([
+    ["crud_views", path.resolve(ROOT, "src/crud_views/static/crud_views/js")],
+    ["crud_views_object_detail", path.resolve(ROOT, "src/crud_views_object_detail/static/crud_views_object_detail/js")],
+]);
 
 // jsdom's window.location is unforgeable (cannot be spied on or replaced) and
 // its navigation methods are no-ops. The shipped files always navigate via
@@ -29,8 +33,10 @@ function testWindow() {
     });
 }
 
-export async function loadScript(name) {
-    const code = fs.readFileSync(path.join(JS_DIR, `${name}.js`), "utf-8");
+export async function loadScript(name, packageName = "crud_views") {
+    const directory = JS_DIRS.get(packageName);
+    if (!directory) throw new Error(`Unknown static package: ${packageName}`);
+    const code = fs.readFileSync(path.join(directory, `${name}.js`), "utf-8");
     const win = testWindow();
     // Evaluates the package's own static JS inside the test window, as a <script> tag would.
     new Function("window", "globalThis", code)(win, win); // NOSONAR S1523

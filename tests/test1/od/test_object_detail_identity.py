@@ -130,13 +130,15 @@ def test_standalone_accordion_omits_unrendered_parent():
         assert control.get("aria-controls") == panel.get("id")
 
 
-def test_duplicate_supplied_component_in_direct_scope_fails():
+def test_direct_calls_without_active_render_have_independent_scopes():
     from crud_views_object_detail.templatetags.crud_views_object_detail import render_object_detail
 
     context = Context()
-    render_object_detail(context, None, [ResolvedGroup(title="One")], layout="accordion", component_id="stable")
-    with pytest.raises(ImproperlyConfigured, match="stable"):
-        render_object_detail(context, None, [ResolvedGroup(title="Two")], layout="tabs-vertical", component_id="stable")
+    first = render_object_detail(context, None, [ResolvedGroup(title="One")], layout="accordion", component_id="stable")
+    second = render_object_detail(
+        context, None, [ResolvedGroup(title="One")], layout="accordion", component_id="stable"
+    )
+    assert first == second
 
 
 @pytest.mark.parametrize("token", [False, 0, "", " ", "with.dot", "1bad", "é", 'x" onclick="bad'])
@@ -176,13 +178,15 @@ def test_real_detail_stable_page_modal_identity(client_user_author_view, author_
     if native:
         templates[0]["APP_DIRS"] = False
         templates[0]["OPTIONS"]["loaders"] = [
-            ("django.template.loaders.locmem.Loader", {
-                "crud_views_object_detail/layouts/identity-native/group.html":
-                    '{% load crud_views_object_detail %}<section id="{{ presentation.panel_id }}" '
+            (
+                "django.template.loaders.locmem.Loader",
+                {
+                    "crud_views_object_detail/layouts/identity-native/group.html": '{% load crud_views_object_detail %}<section id="{{ presentation.panel_id }}" '
                     'data-root="{{ component.id }}"><h2 id="{{ presentation.control_id }}">{{ group.title }}</h2>'
                     '{% for prop in group.properties %}{% render_property prop layout="table-inline" %}{% endfor %}'
-                    '</section>',
-            }),
+                    "</section>",
+                },
+            ),
             "django.template.loaders.app_directories.Loader",
         ]
 
@@ -207,9 +211,11 @@ def test_real_detail_stable_page_modal_identity(client_user_author_view, author_
         monkeypatch.setattr(AuthorDetailView, "cv_get_object_detail_id", identity, raising=False)
         for repeated in range(2):
             if repeated:
-                monkeypatch.setattr(AuthorDetailView, "cv_property_display", [
-                    {**group, "title": gettext_lazy("日本語 <translated>")} for group in reversed(groups)
-                ])
+                monkeypatch.setattr(
+                    AuthorDetailView,
+                    "cv_property_display",
+                    [{**group, "title": gettext_lazy("日本語 <translated>")} for group in reversed(groups)],
+                )
             for modal, token in [(False, "author-page"), (True, "author-modal")]:
                 response = client_user_author_view.get(url, **({"HTTP_X_CV_MODAL": "true"} if modal else {}))
                 assert response.status_code == 200
@@ -222,3 +228,131 @@ def test_real_detail_stable_page_modal_identity(client_user_author_view, author_
                 assert not doc.cssselect("translated")
                 if native:
                     assert set(doc.xpath("//@data-root")) == {f"cvod-c{len(token)}-{token}-root"}
+
+
+_STABLE_TAG = '{% load crud_views_object_detail %}{% render_object_detail obj groups layout="tabs-vertical" component_id="stable" %}'
+
+
+def _identity_engine(templates):
+    from django.template import Engine
+
+    return Engine(
+        loaders=[("django.template.loaders.locmem.Loader", templates)],
+        libraries={"crud_views_object_detail": "crud_views_object_detail.templatetags.crud_views_object_detail"},
+    )
+
+
+@pytest.mark.parametrize(
+    "outer",
+    [
+        _STABLE_TAG + _STABLE_TAG,
+        '{% include "piece" %}{% include "piece" %}',
+        '{% include "piece" only %}{% include "piece" only %}',
+        '{% extends "base" %}{% block second %}{% include "piece" %}{% endblock %}',
+    ],
+)
+def test_duplicate_component_detected_across_outer_render(outer):
+    engine = _identity_engine(
+        {"outer": outer, "piece": _STABLE_TAG, "base": '{% include "piece" %}{% block second %}{% endblock %}'}
+    )
+    with pytest.raises(ImproperlyConfigured, match="stable"):
+        engine.get_template("outer").render(Context({"groups": [ResolvedGroup("One", id="bio")]}))
+
+
+@pytest.mark.parametrize("token", [False, 0, "", " ", "with.dot", 'x" onclick="bad'])
+def test_direct_resolved_group_ids_are_validated(token):
+    with pytest.raises(ImproperlyConfigured, match="group id"):
+        render([ResolvedGroup("Title", id=token)])
+
+
+def test_duplicate_group_identity_rejected_before_scope_is_reserved():
+    from crud_views_object_detail.lib.presentation import _project_component
+
+    scope = set()
+    with pytest.raises(ImproperlyConfigured, match="bio"):
+        _project_component([ResolvedGroup("One", id="bio"), ResolvedGroup("Two", id="bio")], "stable", scope)
+    assert scope == set()
+    _project_component([ResolvedGroup("One", id="bio")], "stable", scope)
+
+
+def test_compiled_template_reused_context_and_request_allow_repeated_identity():
+    from django.test import RequestFactory
+
+    template = Template(_STABLE_TAG)
+    request = RequestFactory().get("/")
+    context = Context({"request": request, "groups": [ResolvedGroup("One", id="bio")]})
+    first = template.render(context)
+    assert template.render(context) == first
+    assert template.render(Context({"request": request, "groups": context["groups"]})) == first
+    assert context.render_context.dicts == [{"True": True, "False": False, "None": None}]
+
+
+def test_concurrent_independent_renders_share_no_registry():
+    from concurrent.futures import ThreadPoolExecutor
+    from threading import Barrier
+
+    template = Template(_STABLE_TAG)
+    barrier = Barrier(4)
+
+    def run(_):
+        barrier.wait(timeout=10)
+        return template.render(Context({"groups": [ResolvedGroup("One", id="bio")]}))
+
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        outputs = list(pool.map(run, range(4)))
+    assert len(set(outputs)) == 1
+
+
+def test_nested_independent_template_render_has_its_own_scope():
+    from django.template import Library
+
+    library = Library()
+
+    @library.simple_tag
+    def independent():
+        return Template(_STABLE_TAG).render(Context({"groups": []}))
+
+    engine = _identity_engine({})
+    engine.template_builtins.append(library)
+    output = engine.from_string(_STABLE_TAG + "{% independent %}").render(Context({"groups": []}))
+    assert output.count('id="cvod-c6-stable-root"') == 2
+
+
+def test_nested_property_template_shares_explicitly_transported_scope():
+    from django.conf import settings
+
+    templates = deepcopy(settings.TEMPLATES)
+    templates[0]["APP_DIRS"] = False
+    templates[0]["OPTIONS"]["loaders"] = [
+        ("django.template.loaders.locmem.Loader", {"nested-identity.html": _STABLE_TAG}),
+        "django.template.loaders.app_directories.Loader",
+    ]
+    prop = ResolvedProperty("name", "Name", "Value", template="nested-identity.html")
+    with override_settings(TEMPLATES=templates), pytest.raises(ImproperlyConfigured, match="stable"):
+        Template(_STABLE_TAG).render(Context({"groups": [ResolvedGroup("One", properties=[prop], id="bio")]}))
+
+
+def test_failed_render_releases_registry_for_next_render():
+    context = Context({"groups": [ResolvedGroup("One", id="bio")]})
+    with pytest.raises(ImproperlyConfigured, match="stable"):
+        Template(_STABLE_TAG * 2).render(context)
+    assert 'id="cvod-c6-stable-root"' in Template(_STABLE_TAG).render(context)
+
+
+def test_adversarial_component_group_pairs_remain_disjoint_and_unchanged():
+    from crud_views_object_detail.lib.presentation import _project_component
+
+    pairs = [("a", "b-c"), ("a-b", "c"), ("a-s1-b", "c"), ("a", "b-s1-c"), ("a", "i0")]
+    projections = [_project_component([ResolvedGroup("Same", id=group)], component) for component, group in pairs]
+    targets = [
+        value
+        for projection in projections
+        for entry in projection.groups
+        for value in (entry.control_id, entry.panel_id)
+    ]
+    assert len(targets) == len(set(targets))
+    for (component, group), projection in zip(pairs, projections, strict=True):
+        assert projection.groups[0].panel_id == f"cvod-c{len(component)}-{component}-s{len(group)}-{group}-panel"
+    positional = _project_component([ResolvedGroup("Same")], "a")
+    assert positional.groups[0].panel_id == "cvod-c1-a-i0-panel"
+    assert positional.groups[0].panel_id not in targets

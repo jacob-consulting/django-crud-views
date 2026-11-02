@@ -241,6 +241,9 @@ FORM_KINDS: frozenset[str] = frozenset({"submit", "cancel", "delete", "filter-su
 
 # the elements a form button may render as (Phase 6.1): exactly these strings, never stripped or case-folded
 FORM_TAGS: frozenset[str] = frozenset({"button", "a"})
+HEADING_LOCATION_KEYS: frozenset[str] = frozenset(
+    f"heading-{location}:{slot}" for location in ("page", "modal", "group") for slot in ("icon-host", "icon-inline")
+)
 # the class-table key selecting the element of an eligible cancel; a value of None means "button"
 CANCEL_TAG_KEY = "form:cancel-tag"
 
@@ -323,7 +326,7 @@ def button_class_check_messages() -> list[CheckMessage]:
     from .view.label_mode import LABEL_MODES
 
     for key in (*_THEME_BUTTON_CLASSES, *_settings_layer()):
-        if key in DEFAULT_BUTTON_CLASSES or _is_action_mode_key(key):
+        if key in DEFAULT_BUTTON_CLASSES or key in HEADING_LOCATION_KEYS or _is_action_mode_key(key):
             continue
         if (parts := _action_key_parts(key)) is not None:
             messages.append(

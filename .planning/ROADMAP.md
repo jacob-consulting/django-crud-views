@@ -748,7 +748,7 @@ full jQuery removal, and final stability-policy inventory.
 
 Plans:
 - [ ] 06.6-01-PLAN.md — Single-form/CSRF tracer and helper diagnostics (wave 1)
-- [ ] 06.6-02-PLAN.md — Atomic theme label defaults and effective checks (wave 1)
+- [ ] 06.6-02-PLAN.md — Atomic theme label defaults and effective checks (wave 2)
 - [ ] 06.6-03-PLAN.md — Supported-pack action-group styling (wave 2)
 - [ ] 06.6-04-PLAN.md — Alert utility classes and preserved dismissal (wave 1)
 - [ ] 06.6-05-PLAN.md — Full stock/workflow request and DOM preservation (wave 2)

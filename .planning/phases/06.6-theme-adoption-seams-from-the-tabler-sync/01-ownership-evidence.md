@@ -221,5 +221,65 @@ index e52c071..a0ae68b 100644
 
 Test-fixture corrections during GREEN: custom render_layout hook must return safe HTML (the initial test concatenation lost SafeString safety), and custom-template prefix assertion ignores the caller template's leading whitespace. Neither required a production change.
 
+## Task 03 diagnostic RED
+
+Classifier verdict: RED_EVIDENCE_OK. Target executes rendering with form_id and fails because strict mode does not yet raise. Original report retained; no fixture/import failure is counted as RED.
+
+```json
+{
+  "command": "PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_theme_form_ownership.py -k \"helper_wrapper_diagnostics and form_id and True\" -q --junitxml=/tmp/cv-plan01-diagnostic-red.xml",
+  "exitCode": 1,
+  "output": "<?xml version=\"1.0\" encoding=\"utf-8\"?><testsuites name=\"pytest tests\"><testsuite name=\"pytest\" errors=\"0\" failures=\"1\" skipped=\"0\" tests=\"1\" time=\"0.279\" timestamp=\"2026-11-02T20:38:58.824305+00:00\" hostname=\"weaver-dev\"><testcase classname=\"tests.test1.test_theme_form_ownership\" name=\"test_helper_wrapper_diagnostics[form_id-private-id-True]\" time=\"0.046\"><failure message=\"Failed: DID NOT RAISE ImproperlyConfigured\">strict = True, option = 'form_id', value = 'private-id'\ncaplog = &lt;_pytest.logging.LogCaptureFixture object at 0x789c016882c0&gt;\n\n    @pytest.mark.parametrize(\"strict\", [False, True])\n    @pytest.mark.parametrize(\n        (\"option\", \"value\"),\n        [(\"form_action\", \"missing-route:secret\"), (\"form_id\", \"private-id\"),\n         (\"attrs\", {\"data-private\": \"secret\"}), (\"form_class\", \"private-class\"), (\"form_method\", \"get\")],\n    )\n    def test_helper_wrapper_diagnostics(strict, option, value, caplog):\n        helper = _helper()\n        setattr(helper, option, value)\n        form = NameForm()\n        form.helper = helper\n        snapshot = dict(helper.__dict__)\n        layout_fields = list(helper.layout.fields)\n        context = _context(form)\n        layers = [dict(layer) for layer in context.dicts]\n        with override_settings(CRUD_VIEWS_STRICT=strict):\n            if strict:\n&gt;               with pytest.raises(ImproperlyConfigured, match=option) as error:\nE               Failed: DID NOT RAISE ImproperlyConfigured\n\ntests/test1/test_theme_form_ownership.py:329: Failed</failure></testcase></testsuite></testsuites>",
+  "targetTest": "test_helper_wrapper_diagnostics[form_id-private-id-True]",
+  "targetFile": "tests/test1/test_theme_form_ownership.py",
+  "expected": "strict wrapper option raises ImproperlyConfigured",
+  "actual": "Failed: DID NOT RAISE ImproperlyConfigured",
+  "semanticAssessment": "Target renders helper with unused form_id but strict configuration error is absent; assertion failure is intentional."
+}
+```
+
+## Final verification
+
+- Before task 03: combined 01-01/02 gate passed 313 tests in 5.79s; tracer gate rerun passed 1 test (24 deselected) in 0.69s. This was followed by atomic implementation/fixture commit 4679686.
+- Task 03 prescribed selection: ownership/frame/crispy-buttons passed 677 in 7.40s before adding two final regressions (falsey custom-template hook and actual enclosing crispy overlay).
+- Final superset of both prescribed selections: `PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_theme_form_ownership.py tests/test1/test_form_frame.py tests/test1/test_form_button_checks.py tests/test1/test_crispy_buttons.py -n 4 -q`.
+
+```text
+bringing up nodes...
+bringing up nodes...
+
+........................................................................ [  7%]
+........................................................................ [ 15%]
+........................................................................ [ 22%]
+........................................................................ [ 30%]
+........................................................................ [ 37%]
+........................................................................ [ 45%]
+........................................................................ [ 52%]
+........................................................................ [ 60%]
+........................................................................ [ 68%]
+........................................................................ [ 75%]
+........................................................................ [ 83%]
+........................................................................ [ 90%]
+........................................................................ [ 98%]
+................                                                         [100%]
+952 passed in 10.82s
+
+```
+
+- Cached floor: `PYTHONPATH=src:. .nox/crispy_floor-3-12-django-4-2/bin/python -m pytest tests/test1/test_theme_form_ownership.py -n 4 -q`; before the last enclosing-overlay test was added:
+
+```text
+bringing up nodes...
+bringing up nodes...
+
+.......................................                                  [100%]
+39 passed in 1.69s
+
+```
+
+- Ruff check and format --check passed all five modified Python files. No package installs.
+- Added raw owner assertions to stock, themed and modal frame tests without changing normalizers.
+- Diagnostics cover all five detectable options in both strict modes, quiet defaults, no action reversal, preserved source/layout state and context restoration. Explicit assignments equal to defaults cannot be detected. Standalone GET/custom helper policy remains outside this boundary.
+
 Plan 01 corrects cv_render_form and library helpers. Stock workflow still invokes crispy directly until plan 05 and may retain a duplicate token. Legacy copied inner/workflow templates bypassing cv_form_helper remain outside the one-token contract; no global mutation or HTML rewriting detects/repairs them. Plan 08 must document standalone library forms losing their wrapper but retaining their token; caller-owned markup must not add a second token.
 

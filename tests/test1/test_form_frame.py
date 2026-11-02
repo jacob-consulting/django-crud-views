@@ -70,7 +70,11 @@ def _theme_templates(overrides: dict):
 
 @pytest.mark.parametrize("name", list(FORM_TEMPLATES))
 def test_stock_markup_unchanged(name):
-    _check_golden(name, _render(FORM_TEMPLATES[name]))
+    from tests.test1.test_theme_form_ownership import assert_owned_form_markup
+
+    markup = _render(FORM_TEMPLATES[name])
+    assert_owned_form_markup(markup)
+    _check_golden(name, markup)
 
 
 def test_stock_delete_protection_markup_unchanged():
@@ -80,19 +84,25 @@ def test_stock_delete_protection_markup_unchanged():
 
 @pytest.mark.parametrize("name", list(FORM_TEMPLATES))
 def test_theme_frame_wraps_the_form(name):
+    from tests.test1.test_theme_form_ownership import assert_owned_form_markup
+
     with _theme_templates({"crud_views/snippets/form_frame.html": THEME_FRAME}):
         html = _norm(_render(FORM_TEMPLATES[name]))
     assert html.startswith('<div class="theme-card"><form class="cv-form"')
     assert html.endswith("</form></div>")
     assert html.count("<form") == html.count("</form>")
+    assert_owned_form_markup(html)
 
 
 @pytest.mark.parametrize("name", list(FORM_TEMPLATES))
 def test_theme_frame_leaves_the_modal_bare(name):
+    from tests.test1.test_theme_form_ownership import assert_owned_form_markup
+
     with _theme_templates({"crud_views/snippets/form_frame.html": THEME_FRAME}):
         html = _norm(_render(FORM_TEMPLATES[name], headers={"X-CV-Modal": "true"}))
     assert "theme-card" not in html
     assert html.startswith('<form class="cv-form"')
+    assert_owned_form_markup(html)
 
 
 def test_theme_frame_wraps_the_protection_alert():

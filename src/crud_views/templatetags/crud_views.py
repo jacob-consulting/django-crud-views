@@ -1,3 +1,4 @@
+import logging
 from dataclasses import dataclass
 
 from crispy_forms.helper import FormHelper
@@ -13,7 +14,7 @@ from django_tables2.templatetags import django_tables2 as _dt2
 
 from crud_views.lib import assets
 from crud_views.lib.button_classes import _heading_class, get_button_class, get_container_layout, get_icon_host_class
-from crud_views.lib.exceptions import ViewSetKeyFoundError, ignore_exception
+from crud_views.lib.exceptions import ViewSetKeyFoundError, ignore_exception, is_strict
 from crud_views.lib.icons import render_icon, resolve_icon_name_class
 from crud_views.lib.messages import alert_data, message_alerts
 from crud_views.lib.settings import crud_views_settings
@@ -22,6 +23,7 @@ from crud_views.lib.view.button_data import cv_button_data, icon_host_keys
 from crud_views.lib.view.visibility import cv_resolve_action
 
 register = template.Library()
+logger = logging.getLogger(__name__)
 
 # django-tables2 3.0.0 renamed the ``querystring`` tag to ``querystring_replace`` (to avoid shadowing
 # Django 5.1's built-in tag). Resolve whichever the installed version provides; both share the same
@@ -502,7 +504,33 @@ def _prepare_form_helper(form):
         raise ImproperlyConfigured(
             f"{type(helper).__name__}: cv_render_form requires form_tag=False; the page template owns the outer form."
         )
+    _diagnose_form_wrapper(helper)
     return _PageFormHelper(helper)
+
+
+def _diagnose_form_wrapper(helper):
+    """Diagnose detectable wrapper configuration without resolving form_action or exposing its value."""
+    configured = [
+        option
+        for option, attribute in (
+            ("form_action", "_form_action"),
+            ("form_id", "form_id"),
+            ("attrs", "attrs"),
+            ("form_class", "form_class"),
+        )
+        if getattr(helper, attribute, None)
+    ]
+    if helper.form_method != "post":
+        configured.append("form_method")
+    if not configured:
+        return
+    message = (
+        f"{type(helper).__name__}: {', '.join(configured)} outer-form configuration is ignored by cv_render_form. "
+        "Override the page template to configure its form; helper method/classes may still affect pack internals."
+    )
+    if is_strict():
+        raise ImproperlyConfigured(message)
+    logger.warning(message)
 
 
 @register.simple_tag(takes_context=True)

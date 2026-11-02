@@ -5,7 +5,7 @@ from types import SimpleNamespace
 
 import pytest
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout
+from crispy_forms.layout import Layout, LayoutObject
 from django import forms
 from django.core.exceptions import ImproperlyConfigured
 from django.template import Context, Template
@@ -186,6 +186,26 @@ def test_form_button_owner_tiers_survive_render_boundary(owners, form_owner, hel
     assert context.dicts == before
 
 
+def test_actual_enclosing_crispy_overlay_is_not_a_page_owner(owners):
+    inner = _owned_form(None)
+    inner.helper = _owner_helper(*_controls("inner"), view=None)
+
+    class InnerRender(LayoutObject):
+        def render(self, form, context, **kwargs):
+            before = [dict(layer) for layer in context.dicts]
+            with context.push(form=inner):
+                html = cv_render_form(context)
+            assert context.dicts == before
+            return html
+
+    helper = _owner_helper(InnerRender(), view=owners.H)
+    context = Context({"form": _owned_form(owners.OF), "helper": helper, "view": owners.P})
+    before = [dict(layer) for layer in context.dicts]
+    html = Template("{% load crispy_forms_tags %}{% crispy form helper %}").render(context)
+    assert _modes(html) == {"inner": _sig("P")}
+    assert context.dicts == before
+
+
 @pytest.mark.parametrize("hook", ["get_attributes", "render_layout"])
 def test_custom_hook_exception_and_context_preserved(hook):
     error = RuntimeError("original hook error")
@@ -206,8 +226,9 @@ def test_custom_hook_exception_and_context_preserved(hook):
     assert context.dicts == layers
 
 
-def test_helper_custom_template_preserves_attributes_hook():
-    helper = _helper(HookHelper)
+@pytest.mark.parametrize("helper_class", [HookHelper, FalseyHelper])
+def test_helper_custom_template_preserves_attributes_hook(helper_class):
+    helper = _helper(helper_class)
     helper.template = "custom-helper.html"
     form = NameForm()
     form.helper = helper
@@ -215,7 +236,7 @@ def test_helper_custom_template_preserves_attributes_hook():
     with _theme_templates({"custom-helper.html": custom}):
         html = cv_render_form(_context(form))
     assert html.lstrip().startswith("kept|True|")
-    assert "HOOK_LAYOUT" in html
+    assert ("HOOK_LAYOUT" in html) is (helper_class is HookHelper)
     assert helper.disable_csrf is False
 
 
@@ -368,6 +389,7 @@ def test_ordinary_helper_defaults_and_field_options_are_quiet(strict, caplog):
 
 def test_wrapper_diagnosis_does_not_resolve_action(monkeypatch):
     import crispy_forms.helper
+
     from crud_views.templatetags.crud_views import _diagnose_form_wrapper
 
     def forbidden(*args, **kwargs):

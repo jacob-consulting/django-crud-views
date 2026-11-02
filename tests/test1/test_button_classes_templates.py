@@ -135,6 +135,8 @@ SENTINEL_CLASSES = {
     if key.split(":", 1)[0] not in {"heading", "heading-page", "heading-modal", "heading-group"}
 }
 SENTINELS = frozenset(value for key, value in SENTINEL_CLASSES.items() if key not in STRUCTURAL_VALUES)
+# These utilities add to the pack's wrapper (D-17); they do not replace its spacing.
+PACK_GROUP_SENTINELS = {SENTINEL_CLASSES[key] for key in ("form:actions", "form:filter-actions")}
 # Bootstrap tokens the chain still carries because they are behaviour hooks, not looks. #232 is the list to empty.
 BEHAVIOUR_TOKENS = {
     "dropdown-toggle": "Bootstrap dropdown markup; a theme with a different dropdown DOM overrides the template (#232)",
@@ -152,12 +154,20 @@ def _styled(doc):
 
 def _offenders(doc) -> list[tuple[str, str]]:
     """(tag, token) for every class token on a sentinel-styled element or one of its span descendants that is
-    neither a sentinel, nor cv- prefixed, nor an exempted behaviour token. Icons are <i>, so never visited."""
+    neither a sentinel, nor cv- prefixed, nor an exempted behaviour token. The pack's mb-3 is allowed only on
+    additive action-group divs, never their controls/labels. Icons are <i>, so never visited."""
     found = set()
     for el in _styled(doc):
         for node in (el, *el.iter("span")):
             for token in _tokens(node):
                 if token in SENTINELS or token.startswith("cv-") or token in BEHAVIOUR_TOKENS:
+                    continue
+                if (
+                    node is el
+                    and el.tag == "div"
+                    and token == "mb-3"
+                    and PACK_GROUP_SENTINELS.intersection(_tokens(el))
+                ):
                     continue
                 found.add((node.tag, token))
     return sorted(found)

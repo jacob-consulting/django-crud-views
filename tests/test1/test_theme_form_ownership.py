@@ -307,3 +307,74 @@ def test_copied_inner_template_must_use_selected_helper(migrated):
         assert_owned_form_markup(html)
     else:
         assert html.count('name="csrfmiddlewaretoken"') == 2
+
+
+@pytest.mark.parametrize("strict", [False, True])
+@pytest.mark.parametrize(
+    ("option", "value"),
+    [
+        ("form_action", "missing-route:secret"),
+        ("form_id", "private-id"),
+        ("attrs", {"data-private": "secret"}),
+        ("form_class", "private-class"),
+        ("form_method", "get"),
+    ],
+)
+def test_helper_wrapper_diagnostics(strict, option, value, caplog):
+    helper = _helper()
+    setattr(helper, option, value)
+    form = NameForm()
+    form.helper = helper
+    snapshot = dict(helper.__dict__)
+    layout_fields = list(helper.layout.fields)
+    context = _context(form)
+    layers = [dict(layer) for layer in context.dicts]
+    with override_settings(CRUD_VIEWS_STRICT=strict):
+        if strict:
+            with pytest.raises(ImproperlyConfigured, match=option) as error:
+                cv_render_form(context)
+            message = str(error.value)
+        else:
+            for _ in range(2):
+                html = cv_render_form(context)
+                assert 'name="name"' in html
+                assert "csrfmiddlewaretoken" not in html
+                assert "<form" not in html
+            message = caplog.text
+            assert option in message
+    assert "FormHelper" in message
+    assert "page template" in message
+    assert "ignored" in message
+    assert "secret" not in message
+    assert helper.__dict__ == snapshot
+    assert helper.layout.fields == layout_fields
+    assert context.dicts == layers
+
+
+@pytest.mark.parametrize("strict", [False, True])
+def test_ordinary_helper_defaults_and_field_options_are_quiet(strict, caplog):
+    helper = _helper()
+    helper.field_class = "col-8"
+    helper.label_class = "col-4"
+    helper.include_media = False
+    helper.form_show_labels = False
+    helper.form_method = "POST"  # normalized default cannot be diagnosed as explicit configuration
+    form = NameForm()
+    form.helper = helper
+    with override_settings(CRUD_VIEWS_STRICT=strict):
+        cv_render_form(_context(form))
+    assert not caplog.records
+
+
+def test_wrapper_diagnosis_does_not_resolve_action(monkeypatch):
+    import crispy_forms.helper
+    from crud_views.templatetags.crud_views import _diagnose_form_wrapper
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("diagnostics must not resolve the action")
+
+    helper = _helper()
+    helper.form_action = "not-a-route:private"
+    monkeypatch.setattr(crispy_forms.helper, "reverse", forbidden)
+    with override_settings(CRUD_VIEWS_STRICT=True), pytest.raises(ImproperlyConfigured, match="form_action"):
+        _diagnose_form_wrapper(helper)

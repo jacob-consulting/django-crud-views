@@ -1299,7 +1299,43 @@ def final_report_fixture():
                 skipped=0,
             )
         elif name in {"modal-focus", "conditional-formsets"}:
-            gate.update(browser={"passed": True}, browser_sha256=sources.digest({"passed": True}))
+            ids = (
+                [
+                    "unchecked",
+                    "blocked",
+                    "close",
+                    "escape",
+                    "removed-opener",
+                    "disabled-opener",
+                    "hidden-opener",
+                    "repeated-open",
+                    "native-dialog",
+                    "pending-close",
+                    "native-pending-close",
+                    "controls",
+                ]
+                if name == "modal-focus"
+                else ["stock:lifecycle", "native:lifecycle"]
+            )
+            cases = [
+                {
+                    "id": i if name == "modal-focus" else "lifecycle",
+                    "theme": i.split(":")[0],
+                    "passed": True,
+                    "assertions": [{"passed": True}],
+                }
+                for i in ids
+            ]
+            browser = {
+                "passed": True,
+                "completed": True,
+                "pageErrors": [],
+                "cases": cases,
+                "sourceHashes": {
+                    "tests/browser/theme_adoption_sources.py": sources.digest(Path(sources.__file__).read_bytes())
+                },
+            }
+            gate.update(browser=browser, browser_sha256=sources.digest(browser))
         report["gates"][name] = gate
     return report
 
@@ -1331,6 +1367,8 @@ def test_final_required_gates_complete_positive_fixture():
         "failed-browser",
         "missing-limit",
         "wrong-count",
+        "zero-browser",
+        "skipped-browser",
     ],
 )
 def test_final_rejects_incomplete_or_substituted_gate_results(mutation):
@@ -1381,6 +1419,13 @@ def test_final_rejects_incomplete_or_substituted_gate_results(mutation):
         )
     elif mutation == "failed-browser":
         report["gates"]["modal-focus"]["browser"]["passed"] = False
+    elif mutation in {"zero-browser", "skipped-browser"}:
+        browser = report["gates"]["modal-focus"]["browser"]
+        if mutation == "zero-browser":
+            browser["cases"] = []
+        else:
+            browser["cases"][0]["skipped"] = True
+        report["gates"]["modal-focus"]["browser_sha256"] = sources.digest(browser)
     elif mutation == "missing-limit":
         report.pop("coverage_limits")
     else:

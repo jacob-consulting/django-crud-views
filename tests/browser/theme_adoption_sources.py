@@ -1465,6 +1465,48 @@ def validate_final_gates(report, expected_inventory):
             browser = gate.get("browser", {})
             require(browser and gate.get("browser_sha256") == digest(browser), f"missing {name} browser evidence")
             require(browser.get("passed") is True, f"failed {name} browser evidence")
+            require(
+                browser.get("completed") is True and not browser.get("error") and browser.get("pageErrors") == [],
+                f"incomplete {name} browser evidence",
+            )
+            cases = browser.get("cases", [])
+            expected = (
+                {
+                    "unchecked",
+                    "blocked",
+                    "close",
+                    "escape",
+                    "removed-opener",
+                    "disabled-opener",
+                    "hidden-opener",
+                    "repeated-open",
+                    "native-dialog",
+                    "pending-close",
+                    "native-pending-close",
+                    "controls",
+                }
+                if name == "modal-focus"
+                else {"stock:lifecycle", "native:lifecycle"}
+            )
+            identities = [c.get("id") if name == "modal-focus" else f"{c.get('theme')}:{c.get('id')}" for c in cases]
+            require(len(identities) == len(expected) and set(identities) == expected, f"missing {name} cases")
+            for case in cases:
+                require(
+                    case.get("passed") is True
+                    and not case.get("skipped")
+                    and case.get("assertions")
+                    and all(a.get("passed") is True for a in case["assertions"]),
+                    f"skipped/failing {name} case",
+                )
+            hashes = browser.get("sourceHashes", {})
+            require(
+                hashes
+                and all(
+                    (core_root() / path).is_file() and digest((core_root() / path).read_bytes()) == value
+                    for path, value in hashes.items()
+                ),
+                f"stale {name} browser source",
+            )
     require(
         report.get("coverage_limits", {}).get("django60_current_pack") == "untested-no-cached-runtime",
         "current-pack Django 6.0 limit missing",
@@ -1521,6 +1563,14 @@ def validate_final_sources(baseline, browser, replay, delivery, *, env=None):
 
 def check_final(report, *, env=None):
     validate_final_gates(report, final_inventory())
+    for name in FINAL_PYTHONS:
+        recorded = report["gates"][name]["runtime"]
+        actual = runtime_probe(recorded["executable"])
+        require(
+            actual["prefix"] == recorded["prefix"]
+            and all(actual["versions"].get(k) == v for k, v in recorded["versions"].items()),
+            f"changed {name} runtime since execution",
+        )
     phase = core_root() / PHASE_DIR
     receipts = validate_final_sources(
         load_json(phase / BASELINE_NAME),

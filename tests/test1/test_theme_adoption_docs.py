@@ -202,8 +202,8 @@ def test_immediate_helper_migration(strict):
 def test_immediate_copied_template_migration(choices):
     context = _context(_library_form())
     context["has_workflow_choices"] = choices
-    with _theme_templates({"crud_views/tags/form.html": recipe(MIGRATION, "#### Selected inner helper")}):
-        output = Template(recipe(MIGRATION, "#### Workflow action body")).render(context)
+    with _theme_templates({"crud_views/tags/form.html": recipe(MIGRATION, "### Selected inner helper")}):
+        output = Template(recipe(MIGRATION, "### Workflow action body")).render(context)
     if choices:
         assert_owned_form_markup(output)
     else:

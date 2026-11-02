@@ -61,7 +61,7 @@ reuse `crud_views.E106`, `viewset.E210`, `E211`, `W291` and `W292` ([Form checks
 `crud_views.E108` reports a `CRUD_VIEWS_LABEL_MODE_DEFAULTS` that is not a dict, a key that is not a button location
 (`"context"`, `"list"`, `"card"`, `"form"`) and a mode that is not exactly `"label"`, `"icon"` or `"both"`. At render an
 unknown key is ignored. An invalid mode raises `ValueError` in strict mode (`CRUD_VIEWS_STRICT`, which defaults to
-`DEBUG`); otherwise it logs one warning and the location falls back to its package floor.
+`DEBUG`); otherwise it logs one warning and the location falls back to its theme registration, then its package floor.
 
 A clean `check` is not the end: some changes render differently and raise nothing. They are collected under
 [Silent breaks](#silent-breaks).
@@ -324,6 +324,133 @@ None of these raise anything. Check your stylesheets, your JavaScript selectors 
   no container at all, so `[cv-list-container]` (or `cv-context-container`, `cv-card-container`) is not in every row
   any more. Selectors that expect it must handle its absence.
 - **Container label** (#266): the toolbar and list row `aria-label` is translated ("Aktionen" on a German page).
+
+## Form ownership and theme adoption
+
+Migrate application helpers and copied form templates immediately when upgrading. There is no compatibility
+period for nested helper-owned forms. The DOM fix and the helper/template policy changes are distinct:
+stock create/update/custom/delete frames remove the inner form and second CSRF input while preserving the
+outer attributes and controls; workflow now uses the same boundary. Only the target content owns this one
+form/token; auxiliary sibling forms retain their independent tokens. All nested forms, including unclassed ones,
+are invalid. No form/button golden changes beyond the reviewed ownership correction are required.
+
+### Page-owned forms and helpers
+
+Library helpers already use `form_tag=False`. Set it on your custom helper too; `cv_render_form` rejects
+`form_tag=True` with `ImproperlyConfigured` in both strict and non-strict modes. A computed helper remains valid:
+
+```python
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout
+from django import forms
+from crud_views.lib.crispy import Submit
+
+
+class ContactForm(forms.Form):
+    name = forms.CharField()
+
+    @property
+    def helper(self):
+        helper = FormHelper()
+        helper.form_tag = False
+        helper.layout = Layout("name", Submit("submit", "Send", icon="save"))
+        return helper
+```
+
+Move intended method/action/id/enctype/other outer attributes to the page template. They are never transferred
+from the helper. Supply `form_id` in context; retain the normal request and CSRF context:
+
+```django
+{% load crud_views %}
+<form class="cv-form" id="{{ form_id }}" method="post" action="{{ request.get_full_path }}" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    {% cv_render_form %}
+</form>
+```
+
+Nonempty raw `form_action`, `form_id`, `attrs`, `form_class`, and a `form_method` other than `"post"` warn when
+strict mode is off and raise `ImproperlyConfigured` when it is on. Ordinary defaults are quiet; an explicit
+assignment equal to a default is not promised detectable. Helper method/classes may still affect pack internals;
+field/label/media/layout settings remain separate. `cv_render_form` selects the helper once and suppresses only
+its inner token without mutating the caller's helper/layout. Do not put `safe` on caller-controlled attributes.
+Redundant parent helper overrides that only set `form_tag=False` may be removed; inherited library providers
+recover W292 inspection without form construction. Custom overrides retain their existing diagnostic boundary.
+
+### Copied form and workflow templates
+
+Update both kinds of copies below. A legacy template resolving `form.helper` again, or calling implicit crispy,
+can emit duplicate tokens even though the page calls `cv_render_form`. Such bypasses cannot be automatically
+diagnosed. The fix is to migrate the copy, not to strip HTML or override global crispy templates.
+
+### Selected inner helper
+
+Replace a copied `crud_views/tags/form.html` with this inner body. The selected render-local helper is provided by
+`cv_render_form`; do not reselect it:
+
+```django
+{% load crispy_forms_tags %}
+{% crispy form cv_form_helper %}
+```
+
+### Workflow action body
+
+In a copied `crud_views_workflow/view_workflow.action.html`, remove the unused `crispy_forms_tags` load and retain
+the heading, non-form errors, branch and outer token while replacing the direct crispy call:
+
+```django
+{% load i18n crud_views %}
+{% if has_workflow_choices %}
+    {% cv_heading level=5 %}{% translate "Workflow Action" %}{% endcv_heading %}
+    <form class="cv-form" method="post" novalidate>
+        {% csrf_token %}
+        {{ form.non_form_errors }}
+        {% cv_render_form %}
+    </form>
+{% else %}
+    {% translate "There are no workflow steps available from the current state." %}
+{% endif %}
+```
+
+Protected delete and full-page no-choice workflow still omit their own forms. Workflow modals deliberately retain
+the inherited `crud_views/view_custom_form.content.html`, including the generic no-choice form, and reject
+unavailable transitions. Do not replace their `cv_content_template` with this full-page workflow body.
+Create/update and parent formsets remain unsupported modal types; E251 still rejects opt-in.
+
+### Standalone library form wrappers
+
+Standalone crispy rendering of a library `CrispyModelForm` now produces fields and its token without its former
+helper-owned outer form. Add your own wrapper. Keep the crispy token and **do not add another CSRF tag**:
+
+```django
+{% load crispy_forms_tags %}
+<form class="cv-form" method="post" action="{{ request.get_full_path }}" enctype="multipart/form-data" novalidate>
+    {% crispy form form.helper %}
+</form>
+```
+
+This standalone POST recipe needs the normal request/CSRF context. It differs from the page-owned renderer above,
+where the page emits a token and the inner render suppresses it. Standalone custom helpers and GET filters retain
+their own wrapper/token policy. See the [complete ownership reference](reference/theme.md#page-owned-form-helpers).
+
+### Theme defaults and additive utilities
+
+Use [the registration recipe](reference/theme.md#register-theme-defaults) to register label defaults. Per-location
+precedence is package → theme → project; explicit view/button modes remain above it, and whole-owner-map selection
+is unchanged. Later theme calls win per key; invalid registration raises atomically. Invalid project values use
+the theme/package fallback in non-strict mode. No accepted singular/plural API is renamed.
+
+`form:actions` and `form:filter-actions` have empty defaults and add classes to the selected pack's wrapper.
+Custom action providers opt in through [the public super-based recipe](reference/theme.md#custom-action-group-opt-in).
+`alert:dismissible` and `alert:close` preserve Bootstrap defaults; replace/omit their values while retaining
+`role="alert"`, the conditional close control, translated accessible name and `data-cv-alert-dismiss`.
+
+The current crispy 2.7 / crispy-bootstrap5 2026.9 and crispy 2.0 / crispy-bootstrap5 2023.10 floor were tested
+separately. Only the installed floor pack's exact audited source uses the local compatibility bridge; custom
+origins/sources keep their own rendering and must consume the class value. There is no generic pack rewrite.
+General theme adoption is covered by executable recipes and isolated browser/replay evidence; that evidence
+does not claim a fully green downstream suite or live companion delivery. No downstream-specific configuration
+is required by these public contracts.
 
 ## Form buttons
 

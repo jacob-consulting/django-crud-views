@@ -158,6 +158,14 @@ buttons look the same for every variant by default, the `card` buttons distingui
 `card:tertiary:icon` and `form:submit:icon` are addressable but not shipped; their possible combinations are excluded
 from the default-table count.
 
+For dismissible alerts, `alert:dismissible` supplies classes on the alert frame and `alert:close` supplies
+classes on its close button. Theme registrations and project settings follow the same per-key precedence as
+the rest of the table. Setting either to `None` or `""` omits those classes: an omitted dismissal value adds no
+separator to the level classes, and an omitted close value leaves `class=""` on the button. Nonempty strings
+retain their supplied whitespace. Neither utility accepts a mode suffix, so `alert:close:icon` and
+`alert:dismissible:both` receive W362. These settings preserve the alert role, native button type, translated
+Close name and `data-cv-alert-dismiss` hook; they do not add a close control to nondismissible alerts.
+
 The table holds what a theme restyles: classes. What the markup needs to work stays in the templates and is not
 configurable here: the element, `href`, `type`, `disabled`, the `data-cv-*` attributes, `aria-*`, `cv-key`,
 `dropdown-toggle`, `data-bs-toggle` and the like. The one exception for an element is the exact key

@@ -190,6 +190,38 @@ def test_formset_hidden_fields_preserve_helper_hooks_and_flags(helper_class, hid
     assert helper.__dict__ == snapshot
 
 
+def test_formset_custom_layout_hook_can_render_hidden_fields_without_super():
+    calls = []
+
+    class Row(HiddenRowForm):
+        secondary = forms.IntegerField(widget=forms.HiddenInput)
+
+    class CustomHelper(FormHelper):
+        def render_layout(self, form, context, template_pack):
+            assert self is helper
+            calls.append((context["formset_form"], str(template_pack)))
+            form.rendered_fields = {"name", "identity"}
+            return mark_safe(form["name"].as_widget() + form["identity"].as_widget() + "CUSTOM_HOOK")
+
+    helper = _helper(CustomHelper)
+    helper.field_template = "custom-hidden-field.html"
+    helper.template_pack = "bootstrap5"
+    snapshot = dict(helper.__dict__)
+    rows = forms.formset_factory(Row, extra=0)(initial=[{"name": "First", "identity": 42, "secondary": 73}])
+    rows.helper = helper
+    with _theme_templates({"custom-hidden-field.html": "FIELD_TEMPLATE{{ field }}"}):
+        markup = cv_render_form(_context(rows))
+    document = html_parser.fragment_fromstring(markup, create_parent=True)
+    for name, value in (("identity", "42"), ("secondary", "73")):
+        hidden = document.xpath(f'.//input[@name="form-0-{name}"]')
+        assert len(hidden) == 1
+        assert hidden[0].get("value") == value
+    assert markup.count("CUSTOM_HOOK") == 1
+    assert markup.count("FIELD_TEMPLATE") == 1
+    assert calls == [(rows.forms[0], "bootstrap5")]
+    assert helper.__dict__ == snapshot
+
+
 @pytest.mark.django_db
 @pytest.mark.parametrize("helper_class", [FormHelper, HookHelper])
 def test_model_formset_page_owned_csrf_post_round_trip(helper_class):

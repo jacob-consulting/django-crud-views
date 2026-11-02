@@ -2,6 +2,7 @@ import logging
 from dataclasses import dataclass
 
 from crispy_forms.helper import FormHelper
+from crispy_forms.utils import TEMPLATE_PACK, render_field
 from django import template
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
@@ -477,14 +478,15 @@ class _PageFormHelper(FormHelper):
     """Delegate helper hooks unchanged; suppress CSRF only in a fresh render attribute mapping.
 
     Copying arbitrary helpers is unsafe: __copy__ can alias or raise, and disable_csrf can be read-only.
-    Bound methods stay bound to the source, retaining subclass hooks and shared layouts without assigning to them.
+    Hooks stay bound to the source, retaining subclass behavior and shared layouts without assigning to them.
+    Crispy's formset-only hidden-field request is applied after the source layout hook returns.
     """
 
     def __init__(self, source):
         object.__setattr__(self, "_source", source)
 
     def __getattribute__(self, name):
-        if name in {"_source", "get_attributes"}:
+        if name in {"_source", "get_attributes", "render_layout"}:
             return object.__getattribute__(self, name)
         return getattr(object.__getattribute__(self, "_source"), name)
 
@@ -493,6 +495,20 @@ class _PageFormHelper(FormHelper):
 
     def get_attributes(self, *args, **kwargs):
         return {**self._source.get_attributes(*args, **kwargs), "disable_csrf": True}
+
+    def render_layout(self, form, context, template_pack=TEMPLATE_PACK):
+        html = self._source.render_layout(form, context, template_pack=template_pack)
+        # Crispy sets this on the adapter for formsets. The source-bound hook cannot
+        # see that render-local flag; complete only the hidden fields it left out.
+        if object.__getattribute__(self, "__dict__").get("render_hidden_fields", False):
+            if not hasattr(form, "rendered_fields"):
+                form.rendered_fields = set()
+            if not hasattr(form, "crispy_field_template"):
+                form.crispy_field_template = self.field_template
+            for name, field in form.fields.items():
+                if field.widget.is_hidden and name not in form.rendered_fields:
+                    html += render_field(name, form, context, template_pack=template_pack)
+        return mark_safe(html)
 
 
 def _prepare_form_helper(form):

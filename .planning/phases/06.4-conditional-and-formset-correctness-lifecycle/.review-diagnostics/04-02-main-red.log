@@ -1,0 +1,77 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_____________ test_child_clean_main_form_error_rejects_before_save _____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7b0ef3cfba70>
+client_user_publisher_formset = <django.test.client.Client object at 0x7b0ef3cfbc80>
+
+    @pytest.mark.django_db
+    def test_child_clean_main_form_error_rejects_before_save(monkeypatch, client_user_publisher_formset):
+        """The top-level main form participates in the second validity pass too."""
+        main = {}
+        original_init = FormSets.init
+    
+        def init(self, request, form):
+            main["form"] = form
+            return original_init(self, request, form)
+    
+        def clean(self):
+            BaseInlineFormSet.clean(self)
+            main["form"].add_error(None, "main error from child clean")
+    
+        monkeypatch.setattr(FormSets, "init", init)
+        monkeypatch.setattr(BookNoteInlineFormSet, "clean", clean)
+        saves = []
+        original_save = Publisher.save
+    
+        def save(self, *args, **kwargs):
+            saves.append(self.pk)
+            return original_save(self, *args, **kwargs)
+    
+        monkeypatch.setattr(Publisher, "save", save)
+        client_user_publisher_formset.raise_request_exception = False
+        page = client_user_publisher_formset.get("/publisher-formset/create/")
+        payload = form_payload(page)
+        payload["name"] = "must not save main"
+        response = client_user_publisher_formset.post("/publisher-formset/create/", payload)
+>       assert response.status_code == 200
+E       assert 500 == 200
+E        +  where 500 = <HttpResponseServerError status_code=500, "text/html; charset=utf-8">.status_code
+
+tests/test1/test_formsets_validation_gate.py:78: AssertionError
+------------------------------ Captured log call -------------------------------
+ERROR    django.request:log.py:249 Internal Server Error: /publisher-formset/create/
+Traceback (most recent call last):
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/core/handlers/base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/views/generic/base.py", line 106, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/contrib/auth/mixins.py", line 110, in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/view/base.py", line 228, in dispatch
+    response = super().dispatch(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/views/generic/base.py", line 145, in dispatch
+    return handler(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/views/mixins.py", line 42, in post
+    self.cv_form_valid_process(context)
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/views/mixins.py", line 55, in cv_form_valid_process
+    self.cv_form_valid(context)
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/formsets/mixins.py", line 116, in cv_form_valid
+    super().cv_form_valid(context)
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/views/create.py", line 76, in cv_form_valid
+    self.object = context["form"].save()
+                  ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/models.py", line 565, in save
+    raise ValueError(
+ValueError: The Publisher could not be created because the data didn't validate.
+=========================== short test summary info ============================
+FAILED tests/test1/test_formsets_validation_gate.py::test_child_clean_main_form_error_rejects_before_save
+1 failed in 0.77s

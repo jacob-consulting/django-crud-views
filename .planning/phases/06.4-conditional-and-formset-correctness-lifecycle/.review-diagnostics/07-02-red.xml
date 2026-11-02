@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="1.040" timestamp="2026-11-01T11:58:21.014778+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_fragment_authorization" name="test_fragment_raw_wrappers_balance_before_dom_parsing[outer]" time="0.731"><failure message="AssertionError: unmatched closing div&#10;assert []&#10; +  where [] = &lt;tests.test1.test_fragment_authorization._assert_raw_wrappers.&lt;locals&gt;.Wrappers object at 0x752814678770&gt;.stack">fr = namespace(gpub_vs=ViewSet(frgpub9ba671cf), gbook_vs=ViewSet(frgbook9ba671cf), cpub_vs=ViewSet(frcpub9ba671cf), g2pub_v...eepUpdate=&lt;class 'tests.test1.test_fragment_authorization.fr.&lt;locals&gt;.FrDeepPublisherUpdateView'&gt;, calls={'render': 1})
+world = namespace(publisher_a=&lt;Publisher: Pan Books&gt;, publisher_b=&lt;Publisher: Gollancz&gt;, book_a=&lt;Book: Hitchhiker's Guide&gt;, book_b=&lt;Book: Mort&gt;)
+mode = 'outer'
+
+    @pytest.mark.parametrize("mode", ["full", "outer", "nested", "second-sibling"])
+    @pytest.mark.django_db
+    def test_fragment_raw_wrappers_balance_before_dom_parsing(fr, world, mode):
+        client = _editor_client(fr, world, viewset=fr.g2pub_vs)
+        pa, ba = world.publisher_a, world.book_a
+        url = _url(fr.g2pub_vs, "update", pk=pa.pk)
+        page = client.get(url)
+        assert page.status_code == 200
+        prefix = f"books-{pa.pk}-0"
+        if mode == "full":
+            markup = render_to_string(
+                "crud_views/formsets/formset.html", {"x_formset": page.context["formsets"].x_formsets[0]}
+            )
+            assert f'id="cv-formset-fieldset-{prefix}"' in markup
+        else:
+            if mode != "outer":
+                child, index = ("notes", 0) if mode == "nested" else ("memos", 1)
+                prefix = f"books-{child}-{pa.pk}-0-0-{ba.pk}-{index}"
+            response = client.get(url, browser_add_row(page.content, prefix))
+            assert response.status_code == 200
+            markup = response.json()["html"]
+            assert f'id="cv-formset-fieldset-{prefix}"' not in markup
+            assert f'name="{prefix}-TOTAL_FORMS"' not in markup
+&gt;       _assert_raw_wrappers(markup)
+
+tests/test1/test_fragment_authorization.py:1286: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test1/test_fragment_authorization.py:1258: in _assert_raw_wrappers
+    parser.feed(markup)
+/usr/lib/python3.12/html/parser.py:168: in feed
+    self.goahead(0)
+/usr/lib/python3.12/html/parser.py:262: in goahead
+    k = self.parse_endtag(i)
+        ^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/html/parser.py:521: in parse_endtag
+    self.handle_endtag(tag)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;tests.test1.test_fragment_authorization._assert_raw_wrappers.&lt;locals&gt;.Wrappers object at 0x752814678770&gt;
+tag = 'div'
+
+    def handle_endtag(self, tag):
+        if tag in {"div", "fieldset"}:
+&gt;           assert self.stack, f"unmatched closing {tag}"
+E           AssertionError: unmatched closing div
+E           assert []
+E            +  where [] = &lt;tests.test1.test_fragment_authorization._assert_raw_wrappers.&lt;locals&gt;.Wrappers object at 0x752814678770&gt;.stack
+
+tests/test1/test_fragment_authorization.py:1253: AssertionError</failure></testcase></testsuite></testsuites>

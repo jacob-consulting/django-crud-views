@@ -1,0 +1,1 @@
+Skipped — unavailable: the previous exact claude-fable-5-1 attempt returned the provider monthly spend limit. No retry or substitute model was authorized; configuration is unchanged. This is not a review or consensus vote.

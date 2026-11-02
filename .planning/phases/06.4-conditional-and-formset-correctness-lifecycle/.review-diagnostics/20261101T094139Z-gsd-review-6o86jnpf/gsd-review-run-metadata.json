@@ -1,0 +1,37 @@
+{
+  "phase": "06.4",
+  "cycle": 2,
+  "reviewed_at": "2026-11-01T09:41:39.545363+00:00",
+  "git_head": "75c1feafadb82755c7500dc45b7d0af55dbb6168",
+  "selected_reviewers": [
+    "fable-review",
+    "grok-review",
+    "gemini-review"
+  ],
+  "selection": "review.default_reviewers; no explicit flags",
+  "parallel_lanes": true,
+  "successful_reviewers": [
+    "fable-review",
+    "grok-review",
+    "gemini-review"
+  ],
+  "failed_reviewers": [],
+  "retries": 0,
+  "grounding_authority": "intel",
+  "configured_authority": "grep",
+  "current_high": 0,
+  "current_actionable": 3,
+  "plan_hashes": {
+    ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-01-PLAN.md": "6776301b5998e5a39034e6c3c06eff08b4424c6b5c58980a2e0f3352a01aafda",
+    ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-02-PLAN.md": "48ee9933d9008d1ce22415b68d0f8e1855aa6ba38c32efcd4f0ad90a5435d81e",
+    ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-03-PLAN.md": "ef250a39c28284247cf9e242f7ed4dcb22b9b06bea6cb9031c0c75af10e99eb3",
+    ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-04-PLAN.md": "4856b64a04dfdf9a2c6532686eba3914b5e4266129bac8cab48d5b8b153e5564",
+    ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-05-PLAN.md": "2b5406e620fb5f97d7989b6a04759fcf4b0ce846ceab7886241e57dadbbf313e",
+    ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-06-PLAN.md": "107768d462ccb17835497fc0ba546ac634cb680c92de2f0255100b64db6771b3",
+    ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-07-PLAN.md": "27b89467453b1a3de53e67ed72c95bbc037a403842c451b0259b6fd27ee35bc1",
+    ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-08-PLAN.md": "0cdfa233382ec022014e79f00857cff1ec245a21ab3d0782e69dde181b16569a",
+    ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-09-PLAN.md": "d995da8113f6c0b244828a614d7f8d3069eb376b51d5c38f463d2d8ae658fa89",
+    ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-10-PLAN.md": "39f4a28f7d5f4fb2758e217dc9c7f2f2e196abb4993916e9e2f8a99861bb6adf"
+  },
+  "prompt_note": "Opening shorthand mistakenly named some prior IDs; the full prior consolidated findings and dispositions and all ten current plans were included and are authoritative. Synthesis uses the exact prior open set H1-H3/A01,A02,A04,A06,A07,A08,A10,A11,A12,A13."
+}

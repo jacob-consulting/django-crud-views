@@ -55,16 +55,16 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 ### Active
 
+- [ ] **6.5** Heading presentation, stable object-detail identity/tab selection, semantic badges and decided alias cleanup; PRES-01–06, with immediate copied-template migrations before Phase 7.
 
 - [ ] **4** Theme surface in `docs/development/stability.md` (icons, buttons, alerts, JS, theme hooks) + guard test
   `tests/test1/test_stability_doc.py`; closes the theme part of #89
 
 ### Out of Scope
 
-- Removing `CardAction.no_label` / `cv_no_label` guard (#254 adjacent) — tracked for 1.0.0, not among the five findings
 - Renaming the `cv_context_actions_label_mode` / `cv_context_action_label_mode` pair — rejected, not deferred: both names stay stable (Phase 1 decision, LATER-02 won't rename)
 - E36x check for `container-tag` — tracked separately
-- #259 host placement for headings, #211 stale-override detection — tracked separately
+- #211 stale-override detection — tracked separately; #259 is now owned by Phase 6.5.
 - Tabler theme changes in its own repository — each phase only writes the Tabler follow-up into its acceptance note
 - The 1.0.0 version bump itself — follows after Phase 4
 

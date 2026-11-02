@@ -1,0 +1,22 @@
+{
+  "phase": "06.2",
+  "cycle": 1,
+  "reviewers": [
+    "fable-review",
+    "grok-review",
+    "gemini-review"
+  ],
+  "plan_ids": [
+    "06.2-01",
+    "06.2-02",
+    "06.2-03",
+    "06.2-04",
+    "06.2-05",
+    "06.2-06"
+  ],
+  "attempt_1_opencode_timeout_seconds": 660,
+  "retry_opencode_timeout_seconds": 1200,
+  "all_complete": true,
+  "current_high": 2,
+  "current_actionable": 17
+}

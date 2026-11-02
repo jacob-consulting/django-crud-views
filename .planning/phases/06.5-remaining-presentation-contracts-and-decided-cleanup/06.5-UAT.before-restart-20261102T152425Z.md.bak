@@ -1,0 +1,36 @@
+---
+status: testing
+phase: 06.5-remaining-presentation-contracts-and-decided-cleanup
+source: [06.5-VERIFICATION.md]
+started: 2026-11-02T15:20:22.344363+00:00
+updated: 2026-11-02T15:20:22.344363+00:00
+---
+
+## Current Test
+
+number: 1
+name: Required asset failure behavior — T22
+expected: |
+  Make one declared required CDN asset unavailable in the existing presentation runner and save a separate failure report, or add and run a named automated negative test. Expect infrastructure_prerequisite_failed, exit 2, passed/completed false, no accepted/skipped stock result and reaped resources. Restore normal availability afterward.
+awaiting: user response
+
+## Tests
+
+### 1. Required asset failure behavior — T22
+expected: Make one declared required CDN asset unavailable in the existing presentation runner and save a separate failure report, or add and run a named automated negative test. Expect infrastructure_prerequisite_failed, exit 2, passed/completed false, no accepted/skipped stock result and reaped resources. Restore normal availability afterward.
+result: [pending]
+
+### 2. Changed stock visual presentation
+expected: Inspect page/modal and split-card/striped-row/tab/accordion headings plus selected/focused tabs at desktop and narrow widths. Expect readable titles, one correctly placed icon, usable inherited wrapping/spacing and visible focus. No new overflow guarantees, native tab implementation, full native-theme certification or screen-reader certification is required.
+result: [pending]
+
+## Summary
+
+total: 2
+passed: 0
+issues: 0
+pending: 2
+skipped: 0
+blocked: 0
+
+## Gaps

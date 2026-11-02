@@ -1,0 +1,38 @@
+{
+  "current_high": 0,
+  "current_actionable": 1,
+  "high": [],
+  "actionable": [
+    {
+      "id": "A18",
+      "severity": "MEDIUM",
+      "plans": [
+        "01",
+        "10"
+      ],
+      "title": "Keep mandatory Node/jsdom acceptance compatible with ordinary Python CI",
+      "needed": "Choose an explicit opt-in/deselection boundary for the cross-runtime tracer in ordinary Python test sessions and require plan10 to enable it and verify its passed case in every claimed Django series, or explicitly own CI/nox provisioning of Node and jsdom. Preserve mandatory local acceptance and invalid-runtime failures once enabled.",
+      "evidence": [
+        ".github/workflows/tests.yml:18-25",
+        ".github/workflows/js.yml:14-19",
+        "noxfile.py:13-19",
+        ".planning/phases/06-form-button-leaf/06-JS-RUNTIME.json:7",
+        ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-01-PLAN.md:113",
+        ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-10-PLAN.md:96"
+      ]
+    }
+  ],
+  "closed_prior_high": [
+    "H1",
+    "H2",
+    "H3"
+  ],
+  "closed_prior_actionable": [
+    "A15",
+    "A16",
+    "A17"
+  ],
+  "prior_preserved": "A01-A14",
+  "new_high_gate": "Three real source-cited reviewers; no discount markers; no new HIGH raised.",
+  "low_notes": "Already incorporated mechanics, implementation details, or wording-only; see consensus disposition table."
+}

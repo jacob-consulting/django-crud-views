@@ -1,0 +1,5 @@
+{
+  "reason": "Prompt assembly initially expected Phase 6.4 heading but repository uses Phase 06.4. Invocations without complete prompt produced diagnostic stubs; the incomplete Fable runner was stopped. Assembly corrected before fresh final run. These stubs are not reviewer verdicts or final-run lane failures.",
+  "final_run": "gsd-review-6o86jnpf",
+  "all_final_lanes_successful": true
+}

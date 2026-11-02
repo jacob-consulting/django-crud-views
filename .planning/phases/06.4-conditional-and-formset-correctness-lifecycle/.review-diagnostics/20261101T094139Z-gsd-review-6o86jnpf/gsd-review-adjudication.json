@@ -1,0 +1,80 @@
+{
+  "current_high": 0,
+  "current_actionable": 3,
+  "high": [],
+  "actionable": [
+    {
+      "id": "A15",
+      "severity": "MEDIUM",
+      "plans": [
+        "02",
+        "08",
+        "09"
+      ],
+      "title": "Resolve the missing Pillow prerequisite for image-upload cases",
+      "needed": "Choose and document a runnable ImageField testing contract: an authorized audited Pillow dependency/setup path, or an explicit reference-only image test bound (without uploaded image bytes), propagated to the browser fixture and published matrix. Preserve file-upload discard coverage and do not silently skip required tests.",
+      "evidence": [
+        "pyproject.toml (Pillow absent)",
+        "noxfile.py (Pillow absent)",
+        "uv.lock (Pillow absent)",
+        ".nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/fields.py:724-729",
+        ".nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/fields/files.py:439-451",
+        ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-02-PLAN.md:110",
+        ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-08-PLAN.md:119",
+        ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-09-PLAN.md:102"
+      ]
+    },
+    {
+      "id": "A16",
+      "severity": "MEDIUM",
+      "plans": [
+        "06"
+      ],
+      "title": "Replace unsupported punctuation-bearing prefix acceptance",
+      "needed": "Correct the A12 regression/example and acceptance to use supported declaration/identity prefixes (UUID, deep hyphenated nesting, identical prefixes in two forms). Keep exact attribute equality tests and optionally assert punctuation keys remain rejected; do not expand the key grammar to satisfy the fixture.",
+      "evidence": [
+        "src/crud_views/lib/formsets/formsets.py:291-298",
+        ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-06-PLAN.md:99",
+        ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-06-PLAN.md:100"
+      ]
+    },
+    {
+      "id": "A17",
+      "severity": "LOW",
+      "plans": [
+        "01"
+      ],
+      "title": "Specify Node resolution for the pytest subprocess tracer",
+      "needed": "Name the supported runtime resolver (existing JS runtime manifest plus CV_FOCUS_NODE override) and clear missing-runtime failure for the tracer; explicitly inline the helper or declare its owned file. Plan08 runtime resolution does not cover this earlier pytest subprocess.",
+      "evidence": [
+        "tests/browser/modal-focus.cjs:10-17",
+        ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-01-PLAN.md:109",
+        ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-01-PLAN.md:112"
+      ]
+    }
+  ],
+  "closed_prior_high": [
+    "H1",
+    "H2",
+    "H3"
+  ],
+  "closed_prior_actionable": [
+    "A01",
+    "A02",
+    "A04",
+    "A06",
+    "A07",
+    "A08",
+    "A10",
+    "A11",
+    "A13"
+  ],
+  "refinement_required": [
+    "A12 -> A16"
+  ],
+  "raw_fable_count": 5,
+  "excluded_fable_low": [
+    "L2 W320 tests already owned and replacement required",
+    "L3 applicable form namespace and existing E311 meaning already preserved"
+  ]
+}

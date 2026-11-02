@@ -1,0 +1,44 @@
+{
+  "phase": "06.2",
+  "cycle": 3,
+  "revision_commit": "bb2b609",
+  "reviewers": [
+    "fable-review",
+    "grok-review",
+    "gemini-review"
+  ],
+  "plan_ids": [
+    "06.2-01",
+    "06.2-02",
+    "06.2-03",
+    "06.2-04",
+    "06.2-05",
+    "06.2-06"
+  ],
+  "opencode_timeout_seconds": 1200,
+  "all_complete": true,
+  "current_high": 0,
+  "current_actionable": 4,
+  "coverage": {
+    "fable-review": {
+      "complete": true,
+      "missing_ids": [],
+      "total": 6
+    },
+    "grok-review": {
+      "complete": true,
+      "missing_ids": [],
+      "total": 6
+    },
+    "gemini-review": {
+      "complete": true,
+      "missing_ids": [],
+      "total": 6
+    }
+  },
+  "subprocess_cwd": "/home/alex/projects/alex/django-crud-views",
+  "cli_effort": "high",
+  "project_config_modified": false,
+  "history_body_sha256": "c7cbdfa0aedd51e23b9b97891533cc8c5a523d4971456838b6b5483268ccf3d9",
+  "conflict_slot_sha256": "fe691e5e46229c6b5db6e0588e3f191d7e9402c1a37c30a71d69be90c75a74a6"
+}

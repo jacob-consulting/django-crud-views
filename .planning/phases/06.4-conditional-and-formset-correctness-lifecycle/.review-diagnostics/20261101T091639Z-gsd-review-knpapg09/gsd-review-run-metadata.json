@@ -1,0 +1,38 @@
+{
+  "phase": "06.4",
+  "cycle": 1,
+  "selected_reviewers": [
+    "fable-review",
+    "grok-review",
+    "gemini-review"
+  ],
+  "selection": "review.default_reviewers (no explicit reviewer flag)",
+  "parallel_lanes": true,
+  "successful_reviewers": [
+    "fable-review",
+    "grok-review"
+  ],
+  "failed_reviewers": [
+    "gemini-review"
+  ],
+  "failure": "Initial 660s outer timeout, second attempt stopped at parent-directed approximately 5-minute bound; both lack final assistant text.",
+  "retry_timeout_override": "Only in-process config-loader wrapper; project config unchanged.",
+  "phase_status": {
+    "verdict": "uncheckable",
+    "phase": "06.4",
+    "stateStatus": "Ready to plan",
+    "roadmapStatus": "Planning; initial draft",
+    "stateRank": 0,
+    "roadmapRank": null,
+    "authority": "STATE.md"
+  },
+  "grounding_authority": "intel",
+  "configured_authority": "grep",
+  "counts": {
+    "current_high": 3,
+    "current_actionable": 10
+  },
+  "git_head": "d84e727cd68f83bd0a082d67b4b2a14e2c9068af",
+  "git_branch": "introduce-gsd",
+  "reviewed_at": "2026-11-01T09:16:39.416672+00:00"
+}

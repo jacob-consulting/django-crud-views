@@ -1,0 +1,15 @@
+{
+  "phase_status": {
+    "verdict": "uncheckable",
+    "phase": "06.5",
+    "stateStatus": "Ready for planning",
+    "roadmapStatus": "Planned",
+    "stateRank": null,
+    "roadmapRank": 1,
+    "authority": "STATE.md"
+  },
+  "success_criteria": "Compared ROADMAP.md:668-685 with all nine must_haves.truths: no contradiction",
+  "requirements": "ROADMAP.md:659 PRES-01\u201306 agree with plan requirements and REQUIREMENTS.md:149-154",
+  "glossary": "CONTEXT.md D-01\u201317 compared against task actions: no contradictory definition; fresh backend boundary explicitly qualified in plan09",
+  "counts_excluded": true
+}

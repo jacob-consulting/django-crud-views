@@ -1,0 +1,26 @@
+{
+  "cycle": 3,
+  "reviewed_commit": "1366dac9bf3e74122de8382c1da03f1962800b74",
+  "configured_reviewers": [
+    "fable-review",
+    "grok-review",
+    "gemini-review"
+  ],
+  "invoked": [
+    "grok-review",
+    "gemini-review"
+  ],
+  "successful": [
+    "grok-review",
+    "gemini-review"
+  ],
+  "failed": [],
+  "skipped_unavailable": [
+    "fable-review"
+  ],
+  "parallel_lanes": true,
+  "attempts_per_invoked_lane": 1,
+  "source_grounding": "pass with explicit intel Python limits",
+  "temp_cleanup_pending": false,
+  "review_commit": "2fddc5e"
+}

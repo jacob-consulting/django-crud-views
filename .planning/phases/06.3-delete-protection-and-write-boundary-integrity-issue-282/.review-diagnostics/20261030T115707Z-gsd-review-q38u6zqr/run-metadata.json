@@ -1,0 +1,21 @@
+{
+  "cycle": 2,
+  "reviewed_commit": "cc5caa7668bae602db4e4c450cee47239e0f8b02",
+  "selected": [
+    "fable-review",
+    "grok-review",
+    "gemini-review"
+  ],
+  "successful": [
+    "gemini-review"
+  ],
+  "failed": [
+    "fable-review",
+    "grok-review"
+  ],
+  "grok_attempts": 2,
+  "parallel_lanes": true,
+  "source_grounding": "no hard block; intel Python/CLI UNCHECKABLE",
+  "temp_cleanup_pending": false,
+  "review_commit": "be97945"
+}

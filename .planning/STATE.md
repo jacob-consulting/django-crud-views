@@ -1,19 +1,19 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.4"
-current_phase_name: Conditional and formset correctness/lifecycle
-status: gaps_found
-stopped_at: Phase 06.4 execution complete; canonical verification gaps_found, 5 blockers and 2 warnings
-last_updated: "2026-11-01T14:23:16.419450+00:00"
-last_activity: 2026-11-01
-last_activity_desc: Phase 06.4 canonical verification gaps_found; gap planning required
-state_head: 0a65fb0e3f6659f026091e97ef503676418267f8
+current_phase: "06.5"
+current_phase_name: Remaining presentation contracts and decided cleanup
+status: verifying
+stopped_at: Phase 06.5 execution complete; verification human_needed 22/23; UAT two pending
+last_updated: "2026-11-02T15:20:03.725Z"
+last_activity: 2026-11-02
+last_activity_desc: Phase 06.5 UI-SPEC approved and committed; 28 state considerations confirmed; execution ready to resume
+state_head: f633f6871136d68b64459910646a9ab4e33c0a96
 progress:
-  total_phases: 11
-  completed_phases: 9
-  total_plans: 66
-  completed_plans: 66
+  total_phases: 12
+  completed_phases: 10
+  total_plans: 91
+  completed_plans: 91
 milestone_name: milestone
 ---
 
@@ -21,20 +21,166 @@ milestone_name: milestone
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-10-30)
+See: .planning/PROJECT.md (updated 2026-11-02)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.4 — Conditional and formset correctness/lifecycle
+**Current focus:** Phase 06.5 — Remaining presentation contracts and decided cleanup
 
 ## Current Position
 
-Phase: 06.4 (Conditional and formset correctness/lifecycle) — GAPS FOUND
-Plan: 10 of 10
-Status: 10/10 plans executed — 4/10 goal truths verified; gap repairs required
-Last activity: 2026-11-01 — Independent verification reproduced five blockers and two checker warnings
+Phase: 06.5 (Remaining presentation contracts and decided cleanup) — AWAITING VERIFICATION
+Plan: 9/9 complete
+Status: human_needed — 22/23 truths verified; two UAT checks pending
+Last activity: 2026-11-02 — Approved multicore floor rerun passed; independent reviews and final verification saved
 
-Progress: [████████░░] 82%
-Next: $gsd-plan-phase 06.4 --gaps. Phase 7 waits for repaired and verified 6.4; proposed 6.5/6.6 remain unscheduled.
+Progress: 10/12 phases marked complete; 91/91 plans executed.
+Next: $gsd-verify-work 06.5
+
+### Phase 06.5 final verification checkpoint — 2026-11-02
+
+- All nine plan summaries complete. Approved Django 6 floor rerun: 8328 passed with four workers and the exact existing wrapper-golden exclusion; original raw failure evidence preserved.
+- Review findings fixed and independently rechecked; security 20/20 closed. Final JavaScript regression: 363 passed.
+- Canonical verifier: human_needed, 22/23 truths verified. Required CDN asset failure behavior and changed stock visual/focus inspection remain pending in 06.5-UAT.md.
+- No blocking implementation gaps. Phase remains incomplete until verification passes. Historical checkpoints below are superseded by this entry.
+- Existing shared planning edits preserved unstaged; no merge or publication.
+
+### Phase 06.5 execution checkpoint — final raw gate
+
+- Plans 01–08 complete. Plan 09 docs, public-surface inventory and all verification outcomes committed; SUMMARY status halted, task 03 acceptance pending.
+- Full Django 4.2/5.2 each 8328 passed with existing Django-6-only CSP skip. Raw Django 6.0: 8328 passed, one failed pre-existing crispy-floor wrapper golden; no exclusion/waiver applied.
+- JS363, positive integration2/six real fragments, presentation browser12/297, lifecycle browser2/20, strict docs/Ruff/format pass. Exact reports in 09 SUMMARY/VALIDATION and evidence.
+- Existing nox crispy-floor policy excludes test_form_buttons_golden.py::test_filter_form_baseline; the reviewed plan explicitly requires the unfiltered floor command. Decision required to reconcile; no package install authorized and .venv Django6.1 is outside the required6.0 series.
+- User preference for multicore broad pytest runs recorded in CLAUDE.md/AGENTS.md, commit dfd1fb3. Current full runs were retained serial; future broad runs use xdist unless a concrete constraint applies.
+- No phase completion, independent final review/verifier, merge or publication. Existing shared planning edits remain unstaged.
+
+### Phase 06.5 UI contract approval — 2026-11-02
+
+- UI-SPEC approved by independent checker: six PASS dimensions and one nonblocking visual hierarchy FLAG, with clarification added.
+- User selected option 1 to accept all six classifications and 28 explicit state rules. Contract committed as adaa4fc.
+- UI safety gate now returns block:false; scope attribution remains degraded (no-task-commit-rows). This clears the missing-contract gate, not implementation acceptance.
+- Plans 01 and 06 remain complete; resume the other seven plans with $gsd-execute-phase 06.5.
+
+### Phase 06.5 execution checkpoint — 2026-11-02
+
+- Plans 01 and 06 committed with summaries and RED evidence.
+- Plan 01: 579 registry/button and 139 heading tests passed. Plan 06: 95 resolver/template and 19 documentation-selection tests passed. Ruff clean.
+- Schema gate clear; codebase drift advisory. Blocking UI safety gate: missing UI-SPEC.md. Later waves not dispatched.
+- Sequential execution follows fork-base mismatch fallback. Phase branch retains prerequisite-bearing HEAD. Existing shared planning edits preserved and unstaged.
+- Next: generate UI contract, resume execution. No phase completion, merge or publication.
+
+### Phase06.4 final acceptance — 2026-11-02
+
+- Canonical10/10 passed with248-file fingerprint; UAT2/2, security44/44, validation compliant.
+- Independent31-item assessment verifies authored scoped contracts; original flags/history
+  and broader unsupported guarantees remain explicitly preserved.
+- Current aggregate20gates passed; final handoff structurally_valid:true,ready:true;
+  installed verification and shared UAT-plus-verification completion predicates passed.
+- Required regression347tests/9files passed; independent verifier3named tests passed.
+- Actual final binding/output/timestamps in post-uat-evidence/final-rebind.json.
+- Completion CLI emitted13 advisory summary-reference warnings (relative diagnostic paths
+  and command strings interpreted as paths). They do not invalidate verified source-bound
+  records; original summaries retained to preserve history and fingerprint stability.
+- Shared pre-existing tracking/config edits preserved; no merge, release or deployment.
+
+### Phase06.4 independent security reassessment — 2026-11-02
+
+- Auditor /root/security_uat_reconcile verified all 44 authored mitigations at ASVS1/high.
+- T35/T36 close from actual attributed UAT and independent re-review; T40/T43 close their
+  demonstrated mitigation-presence/actual-sequence obligations, not current readiness.
+- Aggregate20gates, structurally-valid/not-ready handoff, and immutable14observations pass
+  at the pre-persistence audit snapshot. Canonical report check fails stale fingerprint.
+- SECURITY.md now reflects44/44closed and preserves all historical snapshots verbatim.
+- Updating SECURITY intentionally invalidates old helper stable-report binding; preserve
+  immutable outcomes and account explicitly for report-only successor changes.
+- No product changes, installations, suite replay, risk waiver, phase completion or advancement.
+
+### Phase06.4 Orca acceptance — 2026-11-02
+
+- User installed Orca and replied `pass` to the targeted stock/native screen-reader checklist.
+- H1 passes as a reported human observation; prior Chrome pass and H2 acceptance retained.
+- Browser/Orca versions and Linux distribution remain unspecified; no physical-device coverage inferred.
+- UAT completion predicate passes with two passed checks and no blockers.
+- Historical pending-human snapshots below are superseded by these actual responses.
+- Phase remains pending until independent security and canonical verification gates resolve.
+
+### Phase06.4 actual UAT responses — 2026-11-02
+
+- User reported `pass` for the browser checklist, then `chrome, I do not have a screen reader`.
+  Browser checks pass in Chrome; version/OS unspecified; screen-reader coverage untested.
+- User replied `accept` to the exact bounded H2 storage contract and stated exclusions.
+  H2 passes as human acceptance, not a newly implemented enforcement route or risk waiver.
+- UAT persisted/committed as partial: one passed, one blocked, zero issues, zero pending.
+  The completion predicate refuses phase closure because H1 remains blocked.
+- Updated UAT changes covered input. Canonical fingerprint/rebind and independently attributed
+  security obligations must be reconciled when acceptance work resumes; no old report was
+  silently promoted. Shared pre-existing tracking edits remain unstaged.
+
+### Phase06.4 WR-05 execution and independent finalization — 2026-11-01
+
+- Plans23–26/nine tasks completed on the existing phase branch, with atomic task and SUMMARY commits.
+- Predicate-local overflow repair has actual RED/GREEN through both CLIs. Full checker67passed, Ruff pass,
+  35genuine corruption refusals plus clean positive;17original gate objects unchanged.824source paths,
+  822unchanged and exactly runner/tests changed. Prior product totals remain historical.
+- Plan24's process survived a user interruption; continuation recovered the actual successful process/output
+  without restarting capture. Resumed harness PATH was not substituted into its original attribution.
+- Distinct code/security reviewers each recorded14real CLI observations. WR-05/G6closed within scope.
+  Independent validation remains partial. Security40/44closed;T35/T36/T40/T43fourhighopen,noacceptedrisk.
+- Same independent canonical verifier recorded14actual pre-replacement outcomes and immutable snapshots,
+  then human_needed9/10. Final post-summary fingerprint covers221files including all26summaries and UAT.
+  Actual live aggregate/handoff check after report binding passes structurally_valid:true,ready:false;
+  latest post-summary binding is26-evidence/final-rebind.json,priorobservationpreservedseparately.
+- H1pending,H2flagged-unverified,all31flags and19decisions retained. Two actual human tests persisted in UAT.
+  Existing UI24/24 is retained within original scope; no new visual/AT/person approval is inferred.
+- Final required npm regression347tests/9files passed. Schema/UI gates clear; map drift advisory;
+  parent06UATalreadycomplete. No phase.complete,Phase7advancement,releaseormerge.
+- Pre-existing shared STATE/ROADMAP/state.json/config and unrelated workspace changes preserved;
+  shared tracking remains unstaged. Exact final verification and rebind hashes are in their owned artifacts.
+
+### Phase 06.4 WR-05 gap planning — 2026-11-01
+
+- Plans 23–26: nine tasks across waves 17–20, covering predicate-local overflow diagnostics, both actual CLI regressions, bounded evidence refresh, independent reviews and canonical finalization.
+- Independent checker passed after correcting the stale-report-digest verification order and splitting review from finalization. Final review: zero blockers/warnings. Research skipped for gap closure.
+- Requirements 11/11 and decisions 19/19 covered; all twelve new verification commands state failure signals. Path probe remains not_applicable, not proof of filesystem resolution.
+- G6/WR-05, H1/H2, 31 flags and independently open security obligations remain unresolved until actual execution and acceptance. Canonical verification remains gaps_found; Phase 7 does not advance.
+- Shared STATE/ROADMAP/state.json contained pre-existing edits and remain unstaged; only four new plans and their coverage appendix are committed.
+
+### Phase 06.4 remaining gap execution and independent re-verification — 2026-11-01
+
+- Plans 20–22 / seven tasks completed in waves 14–16; atomic task and summary commits on the existing phase branch.
+- WR-03/04 repaired and independently closed within scope. Fresh checker suite: 62, Ruff check/format, 33 genuine corruption controls and clean positive pass; final packet: 20 gates valid with 17 original gate records unchanged. Source continuity: 824 paths, 822 unchanged, exactly two checker files changed. Prior product totals remain historical.
+- Independent code/security reviews and canonical verifier reproduce new WR-05: an oversized glyph integer raises uncaught OverflowError instead of MATRIX_REJECTED. Rejection remains fail-closed; G6 stays open.
+- Canonical VERIFICATION gaps_found 8/10 with fresh 202-file fingerprint; prior report preserved. Final canonical-hash rebind and --check-handoff pass structurally_valid:true,ready:false.
+- Security: 38/41 closed; T35/T36/T40 remain three high open obligations, no accepted risks. H1 pending, H2 flagged-unverified, 31 assumptions unresolved. Independent coverage audit remains partial/nyquist=false. Existing UI 24/24 retained within original scope.
+- Required regression hook npm test passed 347 tests across 9 files. Schema/UI gates nonblocking; general codebase-map drift remains advisory. Parent 06 UAT already complete/no gaps.
+- No phase.complete, Phase 7 advancement, release or merge. Next: $gsd-plan-phase 06.4 --gaps for the bounded WR-05 repair; human checks remain separate.
+- Existing shared tracking/config and unrelated changes preserved; updated STATE/ROADMAP/state.json remain unstaged.
+
+### Phase 06.4 remaining gap planning — 2026-11-01
+
+- Plans 20–22: seven tasks across waves 14–16, covering WR-03/04 checker enforcement, bounded provenance-preserving evidence refresh, independent reassessment and end-of-phase acceptance handoff.
+- Independent checker passed after five historical research questions received dated, evidence-backed resolutions. Research was not repeated; no product implementation changed.
+- Requirements 11/11 and decisions 19/19 covered; all ten new verification commands state failure signals. Path probe remains not_applicable, not proof of resolution.
+- H1/H2, all31 flagged assumptions, G6 and outstanding security obligations remain open. Planning completion is not phase acceptance; ready=false persists in acceptance evidence.
+- Shared STATE/ROADMAP/state.json contained pre-existing edits and remain unstaged; only new plans and the scoped research reconciliation are committed.
+
+### Phase 06.4 gap execution and canonical re-verification — 2026-11-01
+
+- Plans 11–19 / eighteen tasks executed across waves 9–13 on the existing phase branch; sequential dispatch followed GSD's fork-base mismatch fallback.
+- Current matrix: 20 gates; 48,220 Python passes across Django 4.2/5.2/6.0 focused and enabled/Node-free suites; JS347, integration2, runner37; browser36 cases/305 assertions; strict docs/Ruff pass. Only prescribed CSP/golden exclusions. All25 recorded corruption controls genuinely rejected.
+- Original CR-01–05/WR-01–02 independently closed within scope. New WR-03/04 leave G6 open: aggregate checker accepts absent/contradictory corruption outcome records and missing/stale screenshot provenance.
+- Canonical VERIFICATION: gaps_found, 8/10, nonstale. Security31/37 closed; five high and one medium obligations open, no accepted risk. UI 24/24 closes old host findings; H1/H2 and 31 fallback flags remain explicit. VALIDATION remains partial.
+- Two necessary integration corrections: strengthened required reclean test-family guard; DELETE fields supplied in two synthetic template fixtures. Invalidated attempts are preserved, final evidence freshly captured.
+- No phase.complete, Phase 7 advancement, release or merge. Next: $gsd-plan-phase 06.4 --gaps; unchanged completed plans are not rerun.
+- Pre-existing edits to STATE/ROADMAP/state.json/config and unrelated files preserved; shared tracking remains unstaged. Canonical report, scoped requirement descriptions and rebound handoff are committed separately.
+
+### Phase 06.4 gap planning — 2026-11-01
+
+- Plans 11–19: eighteen tasks in waves 9–13; independent checker passed without actionable defects.
+- G1–G6/CR-01–05/WR-01–02 and linked security obligations have executable repair and regression tasks.
+- Requirement coverage 11/11; decision coverage 19/19; command failure-direction checks pass. Path probe returned not_applicable, not affirmative resolution.
+- Research skipped for gap closure. Original plans/evidence retained; final evidence follows changed source and required integration gates.
+- H1/H2 remain pending human dispositions; planning does not close implementation gaps or authorize Phase 7.
+- Shared STATE/ROADMAP/state.json had pre-existing edits and remain unstaged; only newly authored planning artifacts are committed.
 
 ### Phase 06.4 execution and canonical verification — 2026-11-01
 
@@ -128,7 +274,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 56
+- Total plans completed: 82
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -145,6 +291,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.1 | 3 | - | - |
 | 06.2 | 9 | - | - |
 | 06.3 | 20 | - | - |
+| 06.4 | 26 | - | - |
 
 **Recent Trend:**
 
@@ -394,6 +541,7 @@ None yet.
 - Phase 6.2 inserted after Phase 6.1: Request authorization and write integrity (analysis B1–B7); complete before Phase 7 freezes the theme surface (URGENT)
 - Phase 06.3 inserted after Phase 6: Delete protection and write-boundary integrity — issue #282 (URGENT)
 - Phase 6.4 inserted after Phase 6.3: Conditional and formset correctness/lifecycle (analysis A1–A7); complete before Phase 7 freezes the theme surface (URGENT)
+- Phase 6.5 inserted after Phase 6.4: Remaining presentation contracts and decided cleanup — source analysis §8 (#259, C1/C2, Python no_label and obsolete guard removal) (URGENT)
 
 ## Deferred Items
 
@@ -403,6 +551,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-01T13:41:54.617Z
-Stopped at: Completed 06.4-10-PLAN.md; independent verification/security/review pending
-Resume file: None
+Last session: 2026-11-02T15:20:01.544Z
+Stopped at: Phase 06.5 execution complete; verification human_needed 22/23; UAT two pending
+Resume file: .planning/phases/06.5-remaining-presentation-contracts-and-decided-cleanup/06.5-UAT.md

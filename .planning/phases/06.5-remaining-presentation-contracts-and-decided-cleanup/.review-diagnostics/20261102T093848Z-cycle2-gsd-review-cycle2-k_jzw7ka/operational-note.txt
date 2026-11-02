@@ -1,0 +1,1 @@
+Cycle 2: actual process cwd is repository. --cwd resolves temporary config only. Both lanes bounded once at 1200 seconds. Gemini temporarily unavailable from prior timeout/database-lock/EPIPE evidence; skipped, not missing binary. No repository config mutation.

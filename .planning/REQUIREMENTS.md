@@ -142,6 +142,17 @@ Implementation/verification progress is tracked below; A8, A25, jQuery removal a
 - [x] **LIFE-01**: Real HTTP/browser evidence covers stock and minimal non-Bootstrap crispy/group/formset rendering, keyboard/focus, two forms, native reset, dynamic rows, 422 replacement, management payloads, and JS-off/tampered validation.
 - [x] **LIFE-02**: Publish tested DOM, initializer, template projection, clearing and validation contracts with paired Breaking/migration guidance and Phase 7 inventory; preserve authorization, parent denial, restricted querysets, rollback, skip/purge, form-leaf, escaping, label and cancel contracts.
 
+### Remaining presentation contracts and decided cleanup (Phase 6.5)
+
+Source: Phase 06.5 CONTEXT.md D-01–D-17. These requirements are pending execution and verification.
+
+- [ ] **PRES-01**: Heading sizing is theme-configurable with Bootstrap defaults, semantic levels, shared and page/modal/group icon styling, escaped classes and correct host/element icon placement with immediate custom-template migration.
+- [ ] **PRES-02**: Object-detail components and groups have collision-free generated IDs and optional stable supplied identities; rendering detects supplied collisions within its operation and documents separate-response uniqueness.
+- [ ] **PRES-03**: Vertical tabs initially select the first tab and visible panel for one or two groups; mouse and keyboard automatic activation work on page and freshly injected modal content with component isolation.
+- [ ] **PRES-04**: CardAction rejects any supplied no_label keyword including False with a label_mode migration error, removes the Python alias and obsolete cv_no_label template guard, and preserves unrelated extra handling and accepted label-mode APIs.
+- [ ] **PRES-05**: Badges expose resolved semantic color and pill alongside unchanged default CSS; arbitrary colors, one callback evaluation, ordinary-value fallbacks and badge-before-explicit-template precedence are preserved.
+- [ ] **PRES-06**: Executed copied/native template migrations preserve escaped titles, values and resolved context; real browser acceptance and preservation gates report their limits, paired Breaking migration entries and Phase 7 public-surface handoff.
+
 ### Stability policy (plan 4)
 
 - [ ] **STAB-01**: `docs/development/stability.md` lists the theme surface (icons, buttons, alerts, JavaScript adapters/events/DOM contract, theme hooks, leaf templates) with explicit names, no wildcards
@@ -155,10 +166,10 @@ Implementation/verification progress is tracked below; A8, A25, jQuery removal a
 
 Deferred; tracked for 1.0.0 outside this milestone.
 
-- **LATER-01**: Remove `CardAction.no_label` and the `cv_no_label` guard (#254 adjacent)
-- **LATER-02**: Decide rename of `cv_context_actions_label_mode` / `cv_context_action_label_mode`
+- **LATER-01**: Promoted to PRES-04 in Phase 6.5; alias/guard removal remains pending verification.
+- **LATER-02**: Decided in Phase 1: retain both `cv_context_actions_label_mode` / `cv_context_action_label_mode`; no rename.
 - **LATER-03**: E36x check for `container-tag`
-- **LATER-04**: #259 host placement for headings
+- **LATER-04**: Promoted to PRES-01 in Phase 6.5; #259 heading contract remains pending verification.
 - **LATER-05**: #211 stale-override detection
 - **LATER-06**: Class keys for alert frame classes (`btn-close`, `alert-dismissible fade show`)
 - **LATER-07**: Lowest-version crispy test session / Django 4.2 support decision for 1.0.0
@@ -183,6 +194,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
+| PRES-01 | Phase 6.5 | Pending |
+| PRES-02 | Phase 6.5 | Pending |
+| PRES-03 | Phase 6.5 | Pending |
+| PRES-04 | Phase 6.5 | Pending |
+| PRES-05 | Phase 6.5 | Pending |
+| PRES-06 | Phase 6.5 | Pending |
 | LMOD-01 | Phase 1 (plan 1A) | Complete |
 | LMOD-02 | Phase 1 (plan 1A) | Complete |
 | LMOD-03 | Phase 1 (plan 1A) | Complete |

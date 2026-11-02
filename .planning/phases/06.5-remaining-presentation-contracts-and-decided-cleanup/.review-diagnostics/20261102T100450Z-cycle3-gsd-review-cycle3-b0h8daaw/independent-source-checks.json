@@ -1,0 +1,198 @@
+{
+  "tests/js/helpers/load.js": {
+    "tracked": true,
+    "sha256": "4101d4fb37487a4fc58b5681946ffd1de6e13aa6e58fce3bbfb33d02ebd5ca5d",
+    "evidence": [
+      {
+        "start": 8,
+        "end": 8,
+        "quote": "8: const JS_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), \"../../../src/crud_views/static/crud_views/js\");"
+      },
+      {
+        "start": 32,
+        "end": 40,
+        "quote": "32: export async function loadScript(name) {\n33:     const code = fs.readFileSync(path.join(JS_DIR, `${name}.js`), \"utf-8\");\n34:     const win = testWindow();\n35:     // Evaluates the package's own static JS inside the test window, as a <script> tag would.\n36:     new Function(\"window\", \"globalThis\", code)(win, win); // NOSONAR S1523\n37:     // No shipped script queues its start-up on jQuery's ready any more (formset.js starts on\n38:     // DOMContentLoaded / readyState), so wiring is complete when the evaluation returns. The\n39:     // function stays async so callers keep awaiting it.\n40: }"
+      }
+    ],
+    "classification": "DIRECT_SOURCE_FACT; not an intel signature verification"
+  },
+  "tests/js/runtime-contract.test.js": {
+    "tracked": true,
+    "sha256": "f54055115537e61252bc1d5f19f259aeb147191d8d0f789b8f4396e379bc84ea",
+    "evidence": [
+      {
+        "start": 7,
+        "end": 11,
+        "quote": "7: const harness = \"tests/js/runtime-contract.test.js\";\n8: const requiredFiles = [\n9:     \"adapters\", \"formset\", \"harness\", \"list.filter\", \"modal\", \"toggle\", \"tooltip\", \"viewset\",\n10: ].map(name => `tests/js/${name}.test.js`);\n11: "
+      },
+      {
+        "start": 17,
+        "end": 40,
+        "quote": "17:         expectedFiles = fs.readdirSync(path.join(root, \"tests/js\"), { recursive: true })\n18:             .filter(name => name.endsWith(\".test.js\"))\n19:             .map(name => `tests/js/${name.split(path.sep).join(\"/\")}`)\n20:             .filter(name => name !== harness).sort();\n21:         directory = fs.mkdtempSync(path.join(os.tmpdir(), \"cv-node-only-\"));\n22:         // Only JS, config, executable documentation and HTML golden data are copied.\n23:         // Installed node_modules is linked; no Python tree, install, or checkout mutation.\n24:         for (const relative of [\n25:             \"package.json\", \"vitest.config.js\", \"vitest.integration.config.js\",\n26:             \"tests/js\", \"tests/js-integration\", \"tests/test1/golden/alerts\",\n27:             \"src/crud_views/static/crud_views/js\", \"docs/reference/javascript.md\",\n28:         ]) {\n29:             const destination = path.join(directory, relative);\n30:             fs.mkdirSync(path.dirname(destination), { recursive: true });\n31:             fs.cpSync(path.join(root, relative), destination, { recursive: true });\n32:         }\n33:         fs.symlinkSync(path.join(root, \"node_modules\"), path.join(directory, \"node_modules\"), \"junction\");\n34:         const bin = path.join(directory, \"bin\");\n35:         fs.mkdirSync(bin);\n36:         fs.symlinkSync(process.execPath, path.join(bin, \"node\"));\n37:         environment = { ...process.env, PATH: bin, NO_COLOR: \"1\" };\n38:         for (const name of Object.keys(environment)) {\n39:             if (name.startsWith(\"CV_FRAGMENT_\") || name.startsWith(\"PYTHON\") || name === \"VIRTUAL_ENV\") {\n40:                 delete environment[name];"
+      },
+      {
+        "start": 63,
+        "end": 83,
+        "quote": "63:     it(\"runs every other ordinary JS file in a checkout with only Node available\", () => {\n64:         expect(fs.existsSync(path.join(directory, \".nox\"))).toBe(false);\n65:         expect(fs.existsSync(path.join(directory, \".venv\"))).toBe(false);\n66:         expect(fs.readdirSync(environment.PATH)).toEqual([\"node\"]);\n67:         expect(environment.CV_FRAGMENT_PYTHON).toBeUndefined();\n68:         for (const name of requiredFiles) expect(expectedFiles).toContain(name);\n69:         const { result, report } = run(\"vitest.config.js\", \"ordinary\", [\"--exclude\", harness]);\n70:         const failures = report.testResults.flatMap(file => file.assertionResults)\n71:             .flatMap(test => test.failureMessages).join(\"\\n\");\n72:         expect(result.status, failures).toBe(0);\n73:         const files = report.testResults.map(file => path.relative(directory, file.name).split(path.sep).join(\"/\")).sort();\n74:         expect(files).toEqual(expectedFiles);\n75:         expect(files).not.toContain(harness);\n76:         expect(report.numTotalTests).toBeGreaterThan(0);\n77:         expect(report.numFailedTests).toBe(0);\n78:         expect(report.numPendingTests).toBe(0);\n79:         for (const file of report.testResults) {\n80:             expect(file.status, file.name).toBe(\"passed\");\n81:             expect(file.assertionResults.length, file.name).toBeGreaterThan(0);\n82:             for (const assertion of file.assertionResults) expect(assertion.status).toBe(\"passed\");\n83:         }"
+      },
+      {
+        "start": 86,
+        "end": 102,
+        "quote": "86:     it.each([\"missing\", \"invalid\"])(\"fails the required integration lane for a %s selected Python\", selection => {\n87:         const env = { ...environment };\n88:         const selected = path.join(directory, \"missing-python\");\n89:         if (selection === \"invalid\") env.CV_FRAGMENT_PYTHON = selected;\n90:         const { result, report } = run(\"vitest.integration.config.js\", selection, [], env);\n91:         expect(result.status).not.toBe(0);\n92:         expect(report.numTotalTests).toBeGreaterThan(0);\n93:         expect(report.numFailedTests).toBeGreaterThan(0);\n94:         expect(report.numPendingTests).toBe(0);\n95:         const failures = report.testResults.flatMap(file => file.assertionResults)\n96:             .flatMap(test => test.failureMessages).join(\"\\n\");\n97:         expect(failures).toContain(\"CV_FRAGMENT_PYTHON\");\n98:         expect(failures).toContain(\"installed Python interpreter\");\n99:         if (selection === \"invalid\") expect(failures).toContain(selected);\n100:         expect(report.testResults.map(file => path.relative(directory, file.name)))\n101:             .toEqual([\"tests/js-integration/formset.test.js\"]);\n102:     }, 30000);"
+      }
+    ],
+    "classification": "DIRECT_SOURCE_FACT; not an intel signature verification"
+  },
+  "vitest.config.js": {
+    "tracked": true,
+    "sha256": "b8a37f064ee7c4302b3e56a2cdefad1a3d8bbd78de5bc711d20c7aab0df76339",
+    "evidence": [
+      {
+        "start": 1,
+        "end": 9,
+        "quote": "1: import { defineConfig } from \"vitest/config\";\n2: \n3: export default defineConfig({\n4:     test: {\n5:         environment: \"jsdom\",\n6:         include: [\"tests/js/**/*.test.js\"],\n7:         setupFiles: [\"tests/js/helpers/setup.js\"],\n8:     },\n9: });"
+      }
+    ],
+    "classification": "DIRECT_SOURCE_FACT; not an intel signature verification"
+  },
+  "vitest.integration.config.js": {
+    "tracked": true,
+    "sha256": "b2c1ffab7fcf4420f51bb7750eeab0f858afe588ceb11c98aec6edfc42d33516",
+    "evidence": [
+      {
+        "start": 1,
+        "end": 9,
+        "quote": "1: import { defineConfig } from \"vitest/config\";\n2: \n3: export default defineConfig({\n4:     test: {\n5:         environment: \"jsdom\",\n6:         include: [\"tests/js-integration/**/*.test.js\"],\n7:         setupFiles: [\"tests/js/helpers/setup.js\"],\n8:     },\n9: });"
+      }
+    ],
+    "classification": "DIRECT_SOURCE_FACT; not an intel signature verification"
+  },
+  "tests/js-integration/formset.test.js": {
+    "tracked": true,
+    "sha256": "ee4188a11c64b8a51ae88b36993b1de79846cf6ebad7b999ad81d5d9905b568e",
+    "evidence": [
+      {
+        "start": 91,
+        "end": 108,
+        "quote": "91: function selectedPython() {\n92:     const selected = process.env.CV_FRAGMENT_PYTHON;\n93:     if (!selected) {\n94:         throw new Error(\"CV_FRAGMENT_PYTHON is required: select an installed Python interpreter with the Django test dependencies.\");\n95:     }\n96:     try {\n97:         // Preserve the virtualenv launcher path: realpath would select its base Python.\n98:         const executable = path.resolve(selected);\n99:         fs.accessSync(executable, fs.constants.X_OK);\n100:         const probe = spawnSync(executable, [\"-c\", 'print(\"CV_FRAGMENT_PYTHON_OK\")'], {\n101:             encoding: \"utf8\", timeout: 5000,\n102:         });\n103:         if (probe.error || probe.status !== 0 || probe.stdout.trim() !== \"CV_FRAGMENT_PYTHON_OK\") {\n104:             throw new Error(probe.error?.message || probe.stderr || \"not a usable Python interpreter\");\n105:         }\n106:         return executable;\n107:     } catch (error) {\n108:         throw new Error(`CV_FRAGMENT_PYTHON=${selected} is unusable: ${error.message}. Select an installed Python interpreter with the Django test dependencies.`);"
+      },
+      {
+        "start": 130,
+        "end": 146,
+        "quote": "130:             const result = spawnSync(python, [\n131:                 \"-m\", \"pytest\", \"tests/test1/test_fragment_authorization.py\", \"-k\", \"test_server_fragment_dom_round_trip\",\n132:                 \"-q\", \"-p\", \"no:cacheprovider\", \"--tb=short\",\n133:             ], {\n134:                 cwd: process.cwd(), encoding: \"utf8\", timeout: 30000,\n135:                 env: { ...process.env, PYTHONPATH: `${process.cwd()}/src:${process.cwd()}`,\n136:                     CV_FRAGMENT_DRIVER: driver, CV_FRAGMENT_NODE: process.execPath, CV_FRAGMENT_RESULTS: results },\n137:             });\n138:             expect(result.error, `CV_FRAGMENT_PYTHON=${python}`).toBeUndefined();\n139:             expect(result.status, `CV_FRAGMENT_PYTHON=${python}\\n${result.stdout}\\n${result.stderr}`).toBe(0);\n140:             expect(result.stdout).toContain(\"6 passed\");\n141:             const records = fs.readFileSync(results, \"utf8\").trim().split(\"\\n\").map(line => JSON.parse(line));\n142:             expect(records.map(record => record.mode)).toEqual([\"outer\", \"nested\", \"outer\", \"nested\", \"outer\", \"nested\"]);\n143:             expect(records.map(record => record.capability)).toEqual([\n144:                 \"default\", \"default\", \"native-unordered\", \"native-unordered\", \"native-ordered\", \"native-ordered\",\n145:             ]);\n146:             expect(records.map(record => record.events.length)).toEqual([2, 1, 2, 1, 2, 1]);"
+      },
+      {
+        "start": 153,
+        "end": 167,
+        "quote": "153: describe(\"integration runtime selection\", () => {\n154:     it(\"rejects an explicitly invalid interpreter without falling back\", () => {\n155:         const selected = path.join(os.tmpdir(), \"cv-missing-python-plan12\");\n156:         const result = spawnSync(process.execPath, [\n157:             \"node_modules/vitest/vitest.mjs\", \"run\", \"--config\", \"vitest.integration.config.js\",\n158:             \"-t\", \"inserts outer and second-sibling fragments and POSTs their real FormData\",\n159:         ], {\n160:             cwd: process.cwd(), encoding: \"utf8\", timeout: 45000,\n161:             env: { ...process.env, CV_FRAGMENT_PYTHON: selected, NO_COLOR: \"1\" },\n162:         });\n163:         expect(result.error).toBeUndefined();\n164:         expect(result.status, result.stdout + result.stderr).not.toBe(0);\n165:         expect(result.stdout + result.stderr).toContain(\"CV_FRAGMENT_PYTHON\");\n166:         expect(result.stdout + result.stderr).toContain(selected);\n167:     }, 50000);"
+      }
+    ],
+    "classification": "DIRECT_SOURCE_FACT; not an intel signature verification"
+  },
+  "examples/bootstrap5/project/templates/project/crud_views.html": {
+    "tracked": true,
+    "sha256": "2c8c53a54513bfea3c3fee5c4d2df35b62acd7895be7a239e541547994b2f8da",
+    "evidence": [
+      {
+        "start": 17,
+        "end": 24,
+        "quote": "17:                 {% cv_heading \"header\" level=1 class=\"h3 mb-0\" %}\n18:                     {% block cv_header_icon %}\n19:                         {% cv_header_icon %}\n20:                     {% endblock cv_header_icon %}\n21:                     {% block cv_header %}\n22:                         {% cv_header %}\n23:                     {% endblock cv_header %}\n24:                 {% endcv_heading %}"
+      }
+    ],
+    "classification": "DIRECT_SOURCE_FACT; not an intel signature verification"
+  },
+  "src/crud_views/lib/formsets/layout.py": {
+    "tracked": true,
+    "sha256": "106b1674878702897b9f16936dad6e42f58d3d48fd62d2458df581361c7b9937",
+    "evidence": [
+      {
+        "start": 10,
+        "end": 19,
+        "quote": "10:     def render(self, form, context, **kwargs):\n11:         # deferred: keeps the import of this module free of the crispy adapters and their dependencies\n12:         from crud_views.lib.crispy.buttons import _CV_PAGE_OWNER, _cv_page_tier\n13: \n14:         # a scoped copy: the caller's context is not touched. flatten() merges the page with the enclosing helper\n15:         # overlay, so the page owner of the form buttons in the rows is captured before and carried privately\n16:         data = context.flatten()\n17:         data[\"formsets\"] = context.get(\"formsets\")\n18:         data[_CV_PAGE_OWNER] = _cv_page_tier(context)\n19:         return render_to_string(self.template, data)"
+      },
+      {
+        "start": 28,
+        "end": 30,
+        "quote": "28:     def render(self, form, context, **kwargs):\n29:         context.update({\"form\": form, \"formset\": self.formset})\n30:         return render_to_string(self.template, context.flatten())"
+      }
+    ],
+    "classification": "DIRECT_SOURCE_FACT; not an intel signature verification"
+  },
+  "src/crud_views/templatetags/crud_views.py": {
+    "tracked": true,
+    "sha256": "c022181ebd937f910688db37f876aa10e954a6168373414a9f852376c7172e2c",
+    "evidence": [
+      {
+        "start": 311,
+        "end": 315,
+        "quote": "311: \n312: @register.simple_tag(takes_context=True)\n313: def cv_header_icon(context):\n314:     view: CrudView = cv_get_view(context)\n315:     return render_icon(view.cv_get_header_icon())"
+      }
+    ],
+    "classification": "DIRECT_SOURCE_FACT; not an intel signature verification"
+  },
+  "tests/browser/conditional_formsets_server.py": {
+    "tracked": true,
+    "sha256": "0a6d661ed8f0d58cff35bb807a892543793e5f1e617d955fd622af7262a439be",
+    "evidence": [
+      {
+        "start": 485,
+        "end": 488,
+        "quote": "485:     port = int(os.environ.get(\"CV_CONDITIONAL_PORT\", \"8144\"))\n486:     if not 1024 <= port <= 65535 or port == 8143:\n487:         raise ValueError(\"CV_CONDITIONAL_PORT must be 1024..65535 and cannot be modal-focus port 8143\")\n488:     application = StaticFilesHandler(get_wsgi_application())"
+      }
+    ],
+    "classification": "DIRECT_SOURCE_FACT; not an intel signature verification"
+  },
+  "src/crud_views/lib/view/base.py": {
+    "tracked": true,
+    "sha256": "7b22c4563d2a492046d4a3aa9efe84be30448a7b0681080efe520969817cf3c2",
+    "evidence": [
+      {
+        "start": 57,
+        "end": 59,
+        "quote": "57: def cv_is_modal_request(request) -> bool:\n58:     \"\"\"True when the client asked for the modal partial (X-CV-Modal header).\"\"\"\n59:     return request.headers.get(\"X-CV-Modal\") == \"true\""
+      }
+    ],
+    "classification": "DIRECT_SOURCE_FACT; not an intel signature verification"
+  },
+  "src/crud_views_object_detail/templatetags/crud_views_object_detail.py": {
+    "tracked": true,
+    "sha256": "f52b2b27ce71f3863dd0499af883cc48f15d7b4cd4bfbe89734d385c3ac3985c",
+    "evidence": [
+      {
+        "start": 15,
+        "end": 54,
+        "quote": "15: def render_object_detail(context, obj, groups=None, property_display=None, layout=None):\n16:     \"\"\"Render all property groups for an object.\n17: \n18:     ``groups`` can be pre-resolved ``ResolvedGroup`` instances (from the mixin)\n19:     or a raw ``property_display`` list that will be parsed and resolved here.\n20: \n21:     ``layout`` optionally overrides the layout pack (e.g. \"accordion\") for this\n22:     render only; it defaults to ``crud_views_object_detail_settings.template_pack_layout``\n23:     and is threaded down into the pack's own templates so nested ``render_group`` /\n24:     ``render_property`` calls use the same pack.\n25:     \"\"\"\n26:     if groups is None and property_display is not None:\n27:         configs = parse_property_display(property_display)\n28:         view = context.get(\"view\")\n29:         groups = resolve_all(obj, configs, view=view)\n30: \n31:     pack = layout or crud_views_object_detail_settings.template_pack_layout\n32:     tpl = select_template(\n33:         [\n34:             f\"crud_views_object_detail/layouts/{pack}/object_detail.html\",\n35:             \"crud_views_object_detail/object_detail.html\",\n36:         ]\n37:     )\n38:     return mark_safe(tpl.render({\"groups\": groups or [], \"layout\": pack}, context.get(\"request\")))\n39: \n40: \n41: @register.simple_tag(takes_context=True)\n42: def render_group(context, group, layout=None):\n43:     \"\"\"Render a single property group using the configured layout pack.\n44: \n45:     ``layout`` optionally overrides the layout pack for this render only (see\n46:     ``render_object_detail``); defaults to the settings singleton.\n47:     \"\"\"\n48:     pack = layout or crud_views_object_detail_settings.template_pack_layout\n49:     tpl = select_template(\n50:         [\n51:             f\"crud_views_object_detail/layouts/{pack}/group.html\",\n52:         ]\n53:     )\n54:     return mark_safe(tpl.render({\"group\": group, \"layout\": pack}, context.get(\"request\")))"
+      }
+    ],
+    "classification": "DIRECT_SOURCE_FACT; not an intel signature verification"
+  },
+  "tests/test1/test_button_classes_templates.py": {
+    "tracked": true,
+    "sha256": "168def991dca2258aa5604fc3ef924c0648dfc9772c055bd94e161bec3df9c96",
+    "evidence": [
+      {
+        "start": 131,
+        "end": 159,
+        "quote": "131: STRUCTURAL_VALUES = {\"form:cancel-tag\": \"button\"}\n132: SENTINEL_CLASSES = {key: STRUCTURAL_VALUES.get(key, \"x-\" + key.replace(\":\", \"-\")) for key in DEFAULT_BUTTON_CLASSES}\n133: SENTINELS = frozenset(value for key, value in SENTINEL_CLASSES.items() if key not in STRUCTURAL_VALUES)\n134: # Bootstrap tokens the chain still carries because they are behaviour hooks, not looks. #232 is the list to empty.\n135: BEHAVIOUR_TOKENS = {\n136:     \"dropdown-toggle\": \"Bootstrap dropdown markup; a theme with a different dropdown DOM overrides the template (#232)\",\n137: }\n138: \n139: \n140: def _tokens(el) -> list[str]:\n141:     return (el.get(\"class\") or \"\").split()\n142: \n143: \n144: def _styled(doc):\n145:     \"\"\"The elements the table styles: those carrying a sentinel class.\"\"\"\n146:     return [el for el in doc.iter() if isinstance(el.tag, str) and SENTINELS.intersection(_tokens(el))]\n147: \n148: \n149: def _offenders(doc) -> list[tuple[str, str]]:\n150:     \"\"\"(tag, token) for every class token on a sentinel-styled element or one of its span descendants that is\n151:     neither a sentinel, nor cv- prefixed, nor an exempted behaviour token. Icons are <i>, so never visited.\"\"\"\n152:     found = set()\n153:     for el in _styled(doc):\n154:         for node in (el, *el.iter(\"span\")):\n155:             for token in _tokens(node):\n156:                 if token in SENTINELS or token.startswith(\"cv-\") or token in BEHAVIOUR_TOKENS:\n157:                     continue\n158:                 found.add((node.tag, token))\n159:     return sorted(found)"
+      },
+      {
+        "start": 250,
+        "end": 267,
+        "quote": "250:     with override_settings(CRUD_VIEWS_BUTTON_CLASSES=SENTINEL_CLASSES):\n251:         for location in sorted(VARIANT_LOCATIONS):\n252:             for mode in sorted(LABEL_MODES):\n253:                 markup = render_to_string(\"crud_views/tags/button/action.html\", _leaf_contract(location, mode))\n254:                 check(f\"action.html:{location}:{mode}\", html.fromstring(f\"<div>{markup}</div>\"))\n255:             markup = render_to_string(\"crud_views/tags/button/menu_item.html\", _leaf_contract(location, \"icon\"))\n256:             check(f\"menu_item.html:{location}\", html.fromstring(f\"<div>{markup}</div>\"))\n257:         for kind in sorted(FORM_KINDS):\n258:             for mode in sorted(LABEL_MODES):\n259:                 markup = render_to_string(FORM_LEAF, cv_button_data(_form_contract(kind, mode), \"form\"))\n260:                 check(f\"form.html:{kind}:{mode}\", html.fromstring(f\"<div>{markup}</div>\"))\n261:         for client, url in pages:\n262:             resp = client.get(url)\n263:             assert resp.status_code == 200, url\n264:             check(url, html.fromstring(resp.content))\n265: \n266:     assert all(styled.values()), styled  # every render had table-styled elements to check\n267:     assert {name: found for name, found in offenders.items() if found} == {}"
+      }
+    ],
+    "classification": "DIRECT_SOURCE_FACT; not an intel signature verification"
+  },
+  "src/crud_views_object_detail/templates/crud_views_object_detail/object_detail.html": {
+    "tracked": true,
+    "sha256": "393a802a0043434ad75a111df965aaa08978db5e58d1b1da92a10cea00f5d899",
+    "evidence": [
+      {
+        "start": 1,
+        "end": 4,
+        "quote": "1: {% load crud_views_object_detail %}\n2: {% for group in groups %}\n3: {% render_group group layout=layout %}\n4: {% endfor %}"
+      }
+    ],
+    "classification": "DIRECT_SOURCE_FACT; not an intel signature verification"
+  }
+}

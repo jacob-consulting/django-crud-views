@@ -1,0 +1,446 @@
+{
+  "tests/js/helpers/load.js": [
+    {
+      "line": 6,
+      "text": "// Resolve via path, not `new URL(relative, base)` \u2014 in the jsdom test"
+    },
+    {
+      "line": 7,
+      "text": "// environment the global URL is jsdom's and rejects file-scheme resolution."
+    },
+    {
+      "line": 8,
+      "text": "const JS_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), \"../../../src/crud_views/static/crud_views/js\");"
+    },
+    {
+      "line": 32,
+      "text": "export async function loadScript(name) {"
+    },
+    {
+      "line": 33,
+      "text": "    const code = fs.readFileSync(path.join(JS_DIR, `${name}.js`), \"utf-8\");"
+    },
+    {
+      "line": 34,
+      "text": "    const win = testWindow();"
+    },
+    {
+      "line": 35,
+      "text": "    // Evaluates the package's own static JS inside the test window, as a <script> tag would."
+    },
+    {
+      "line": 36,
+      "text": "    new Function(\"window\", \"globalThis\", code)(win, win); // NOSONAR S1523"
+    }
+  ],
+  "tests/js/runtime-contract.test.js": [
+    {
+      "line": 17,
+      "text": "        expectedFiles = fs.readdirSync(path.join(root, \"tests/js\"), { recursive: true })"
+    },
+    {
+      "line": 18,
+      "text": "            .filter(name => name.endsWith(\".test.js\"))"
+    },
+    {
+      "line": 19,
+      "text": "            .map(name => `tests/js/${name.split(path.sep).join(\"/\")}`)"
+    },
+    {
+      "line": 20,
+      "text": "            .filter(name => name !== harness).sort();"
+    },
+    {
+      "line": 21,
+      "text": "        directory = fs.mkdtempSync(path.join(os.tmpdir(), \"cv-node-only-\"));"
+    },
+    {
+      "line": 22,
+      "text": "        // Only JS, config, executable documentation and HTML golden data are copied."
+    },
+    {
+      "line": 23,
+      "text": "        // Installed node_modules is linked; no Python tree, install, or checkout mutation."
+    },
+    {
+      "line": 24,
+      "text": "        for (const relative of ["
+    },
+    {
+      "line": 25,
+      "text": "            \"package.json\", \"vitest.config.js\", \"vitest.integration.config.js\","
+    },
+    {
+      "line": 26,
+      "text": "            \"tests/js\", \"tests/js-integration\", \"tests/test1/golden/alerts\","
+    },
+    {
+      "line": 27,
+      "text": "            \"src/crud_views/static/crud_views/js\", \"docs/reference/javascript.md\","
+    },
+    {
+      "line": 28,
+      "text": "        ]) {"
+    },
+    {
+      "line": 29,
+      "text": "            const destination = path.join(directory, relative);"
+    },
+    {
+      "line": 30,
+      "text": "            fs.mkdirSync(path.dirname(destination), { recursive: true });"
+    },
+    {
+      "line": 31,
+      "text": "            fs.cpSync(path.join(root, relative), destination, { recursive: true });"
+    },
+    {
+      "line": 32,
+      "text": "        }"
+    },
+    {
+      "line": 63,
+      "text": "    it(\"runs every other ordinary JS file in a checkout with only Node available\", () => {"
+    },
+    {
+      "line": 64,
+      "text": "        expect(fs.existsSync(path.join(directory, \".nox\"))).toBe(false);"
+    },
+    {
+      "line": 65,
+      "text": "        expect(fs.existsSync(path.join(directory, \".venv\"))).toBe(false);"
+    },
+    {
+      "line": 66,
+      "text": "        expect(fs.readdirSync(environment.PATH)).toEqual([\"node\"]);"
+    },
+    {
+      "line": 67,
+      "text": "        expect(environment.CV_FRAGMENT_PYTHON).toBeUndefined();"
+    },
+    {
+      "line": 68,
+      "text": "        for (const name of requiredFiles) expect(expectedFiles).toContain(name);"
+    },
+    {
+      "line": 69,
+      "text": "        const { result, report } = run(\"vitest.config.js\", \"ordinary\", [\"--exclude\", harness]);"
+    },
+    {
+      "line": 70,
+      "text": "        const failures = report.testResults.flatMap(file => file.assertionResults)"
+    },
+    {
+      "line": 71,
+      "text": "            .flatMap(test => test.failureMessages).join(\"\\n\");"
+    },
+    {
+      "line": 72,
+      "text": "        expect(result.status, failures).toBe(0);"
+    },
+    {
+      "line": 73,
+      "text": "        const files = report.testResults.map(file => path.relative(directory, file.name).split(path.sep).join(\"/\")).sort();"
+    },
+    {
+      "line": 74,
+      "text": "        expect(files).toEqual(expectedFiles);"
+    },
+    {
+      "line": 75,
+      "text": "        expect(files).not.toContain(harness);"
+    },
+    {
+      "line": 76,
+      "text": "        expect(report.numTotalTests).toBeGreaterThan(0);"
+    },
+    {
+      "line": 77,
+      "text": "        expect(report.numFailedTests).toBe(0);"
+    },
+    {
+      "line": 78,
+      "text": "        expect(report.numPendingTests).toBe(0);"
+    },
+    {
+      "line": 79,
+      "text": "        for (const file of report.testResults) {"
+    },
+    {
+      "line": 80,
+      "text": "            expect(file.status, file.name).toBe(\"passed\");"
+    },
+    {
+      "line": 81,
+      "text": "            expect(file.assertionResults.length, file.name).toBeGreaterThan(0);"
+    },
+    {
+      "line": 82,
+      "text": "            for (const assertion of file.assertionResults) expect(assertion.status).toBe(\"passed\");"
+    }
+  ],
+  "vitest.config.js": [
+    {
+      "line": 3,
+      "text": "export default defineConfig({"
+    },
+    {
+      "line": 4,
+      "text": "    test: {"
+    },
+    {
+      "line": 5,
+      "text": "        environment: \"jsdom\","
+    },
+    {
+      "line": 6,
+      "text": "        include: [\"tests/js/**/*.test.js\"],"
+    },
+    {
+      "line": 7,
+      "text": "        setupFiles: [\"tests/js/helpers/setup.js\"],"
+    },
+    {
+      "line": 8,
+      "text": "    },"
+    }
+  ],
+  "package.json": [
+    {
+      "line": 10,
+      "text": "  \"scripts\": {"
+    },
+    {
+      "line": 11,
+      "text": "    \"test\": \"vitest run\","
+    },
+    {
+      "line": 12,
+      "text": "    \"test:integration\": \"vitest run --config vitest.integration.config.js\","
+    },
+    {
+      "line": 13,
+      "text": "    \"test:watch\": \"vitest\""
+    },
+    {
+      "line": 14,
+      "text": "  },"
+    }
+  ],
+  "tests/browser/conditional_formsets_server.py": [
+    {
+      "line": 484,
+      "text": "def main():"
+    },
+    {
+      "line": 485,
+      "text": "    port = int(os.environ.get(\"CV_CONDITIONAL_PORT\", \"8144\"))"
+    },
+    {
+      "line": 486,
+      "text": "    if not 1024 <= port <= 65535 or port == 8143:"
+    },
+    {
+      "line": 487,
+      "text": "        raise ValueError(\"CV_CONDITIONAL_PORT must be 1024..65535 and cannot be modal-focus port 8143\")"
+    }
+  ],
+  "src/crud_views/lib/formsets/layout.py": [
+    {
+      "line": 14,
+      "text": "        # a scoped copy: the caller's context is not touched. flatten() merges the page with the enclosing helper"
+    },
+    {
+      "line": 15,
+      "text": "        # overlay, so the page owner of the form buttons in the rows is captured before and carried privately"
+    },
+    {
+      "line": 16,
+      "text": "        data = context.flatten()"
+    },
+    {
+      "line": 17,
+      "text": "        data[\"formsets\"] = context.get(\"formsets\")"
+    },
+    {
+      "line": 18,
+      "text": "        data[_CV_PAGE_OWNER] = _cv_page_tier(context)"
+    },
+    {
+      "line": 19,
+      "text": "        return render_to_string(self.template, data)"
+    },
+    {
+      "line": 28,
+      "text": "    def render(self, form, context, **kwargs):"
+    },
+    {
+      "line": 29,
+      "text": "        context.update({\"form\": form, \"formset\": self.formset})"
+    },
+    {
+      "line": 30,
+      "text": "        return render_to_string(self.template, context.flatten())"
+    }
+  ],
+  "tests/test1/test_button_classes.py": [
+    {
+      "line": 94,
+      "text": "def test_default_table_is_complete():"
+    },
+    {
+      "line": 95,
+      "text": "    assert len(EXPECTED_KEYS) == 74"
+    },
+    {
+      "line": 96,
+      "text": "    assert set(DEFAULT_BUTTON_CLASSES) == EXPECTED_KEYS"
+    },
+    {
+      "line": 97,
+      "text": "    assert get_button_class(\"context\", \"primary\") == \"btn btn-outline-primary btn-lg\""
+    },
+    {
+      "line": 98,
+      "text": "    assert get_button_class(\"card\", \"danger\") == \"btn btn-secondary btn-sm\""
+    },
+    {
+      "line": 99,
+      "text": "    assert get_button_class(\"menu\", \"item\") == \"dropdown-item\""
+    },
+    {
+      "line": 100,
+      "text": ""
+    },
+    {
+      "line": 101,
+      "text": ""
+    },
+    {
+      "line": 102,
+      "text": "def test_documented_default_key_count_matches_table():"
+    },
+    {
+      "line": 103,
+      "text": "    document = (Path(__file__).resolve().parents[2] / \"docs/reference/buttons.md\").read_text()"
+    },
+    {
+      "line": 104,
+      "text": "    counts = re.findall(r\"The default table has (\\d+) keys\\b\", document)"
+    },
+    {
+      "line": 105,
+      "text": "    assert len(counts) == 1, \"Expected exactly one canonical default-key count sentence\""
+    },
+    {
+      "line": 106,
+      "text": "    assert int(counts[0]) == len(DEFAULT_BUTTON_CLASSES)"
+    },
+    {
+      "line": 310,
+      "text": "def test_icon_host_default_slots():"
+    },
+    {
+      "line": 311,
+      "text": "    for location in (\"context\", \"list\", \"card\", \"menu\", \"form\"):"
+    },
+    {
+      "line": 312,
+      "text": "        assert DEFAULT_BUTTON_CLASSES[f\"{location}:icon-host\"] == \"{name_class}\""
+    },
+    {
+      "line": 313,
+      "text": "    assert len([key for key in DEFAULT_BUTTON_CLASSES if key.endswith(\":icon-host\")]) == 5"
+    }
+  ],
+  "tests/test1/app/templates/app/base.html": [
+    {
+      "line": 13,
+      "text": "    <!-- Bootstrap CSS and JS -->"
+    },
+    {
+      "line": 14,
+      "text": "    <link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css\""
+    },
+    {
+      "line": 15,
+      "text": "          integrity=\"sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH\""
+    },
+    {
+      "line": 16,
+      "text": "          crossorigin=\"anonymous\"/>"
+    },
+    {
+      "line": 17,
+      "text": "    <script src=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js\""
+    },
+    {
+      "line": 18,
+      "text": "            integrity=\"sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz\""
+    },
+    {
+      "line": 19,
+      "text": "            crossorigin=\"anonymous\"></script>"
+    },
+    {
+      "line": 20,
+      "text": ""
+    },
+    {
+      "line": 21,
+      "text": "    <!-- Font-Awesome -->"
+    },
+    {
+      "line": 22,
+      "text": "    <link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css\""
+    },
+    {
+      "line": 23,
+      "text": "          integrity=\"sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==\""
+    },
+    {
+      "line": 24,
+      "text": "          crossorigin=\"anonymous\" referrerpolicy=\"no-referrer\"/>"
+    },
+    {
+      "line": 25,
+      "text": ""
+    },
+    {
+      "line": 26,
+      "text": "    <!-- jquery -->"
+    },
+    {
+      "line": 27,
+      "text": "    <script"
+    },
+    {
+      "line": 28,
+      "text": "            src=\"https://code.jquery.com/jquery-3.7.1.js\""
+    },
+    {
+      "line": 29,
+      "text": "            integrity=\"sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=\""
+    },
+    {
+      "line": 30,
+      "text": "            crossorigin=\"anonymous\"></script>"
+    },
+    {
+      "line": 31,
+      "text": ""
+    },
+    {
+      "line": 32,
+      "text": "    <!-- ViewSet -->"
+    },
+    {
+      "line": 33,
+      "text": "    {% cv_config %}"
+    },
+    {
+      "line": 34,
+      "text": "    {% cv_js %}"
+    }
+  ]
+}

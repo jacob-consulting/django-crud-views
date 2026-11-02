@@ -1,0 +1,63 @@
+{"ready": "http://127.0.0.1:8143", "database": "disposable temporary SQLite"}
+127.0.0.1 - - [31/Oct/2026 12:52:46] "GET /cases/ HTTP/1.1" 200 692
+127.0.0.1 - - [31/Oct/2026 12:52:46] "GET /signin/ HTTP/1.1" 302 0
+127.0.0.1 - - [31/Oct/2026 12:52:46] "GET /harness/ HTTP/1.1" 200 3640
+127.0.0.1 - - [31/Oct/2026 12:52:46] "GET /static/crud_views/js/adapters.js HTTP/1.1" 200 5683
+127.0.0.1 - - [31/Oct/2026 12:52:46] "GET /static/crud_views/js/viewset.js HTTP/1.1" 200 1997
+127.0.0.1 - - [31/Oct/2026 12:52:46] "GET /static/crud_views/css/property.css HTTP/1.1" 200 247
+127.0.0.1 - - [31/Oct/2026 12:52:46] "GET /static/crud_views/css/table.css HTTP/1.1" 200 1539
+127.0.0.1 - - [31/Oct/2026 12:52:46] "GET /static/crud_views/css/formset.css HTTP/1.1" 200 755
+127.0.0.1 - - [31/Oct/2026 12:52:46] "GET /static/crud_views/js/formset.js HTTP/1.1" 200 20320
+127.0.0.1 - - [31/Oct/2026 12:52:46] "GET /static/crud_views/css/icons.css HTTP/1.1" 200 86
+127.0.0.1 - - [31/Oct/2026 12:52:46] "GET /static/crud_views/js/list.filter.js HTTP/1.1" 200 3099
+127.0.0.1 - - [31/Oct/2026 12:52:46] "GET /static/crud_views/js/modal.js HTTP/1.1" 200 9917
+127.0.0.1 - - [31/Oct/2026 12:52:46] "GET /static/crud_views/js/toggle.js HTTP/1.1" 200 2502
+127.0.0.1 - - [31/Oct/2026 12:52:46] "GET /static/crud_views/js/tooltip.js HTTP/1.1" 200 3395
+Not Found: /favicon.ico
+127.0.0.1 - - [31/Oct/2026 12:52:46] "GET /favicon.ico HTTP/1.1" 404 61116
+127.0.0.1 - - [31/Oct/2026 12:52:46] "GET /cases/ HTTP/1.1" 200 692
+127.0.0.1 - - [31/Oct/2026 12:52:46] "GET /harness/?target=%2Fpublisher_cascade%2F1%2Fdelete%2F HTTP/1.1" 200 3710
+127.0.0.1 - - [31/Oct/2026 12:52:46] "GET /publisher_cascade/1/delete/ HTTP/1.1" 200 3177
+Unprocessable Entity: /publisher_cascade/1/delete/
+127.0.0.1 - - [31/Oct/2026 12:52:47] "POST /publisher_cascade/1/delete/ HTTP/1.1" 422 3347
+127.0.0.1 - - [31/Oct/2026 12:52:47] "GET /state/1/ HTTP/1.1" 200 30
+127.0.0.1 - - [31/Oct/2026 12:52:48] "GET /harness/?target=%2Fpublisher_cascade%2F3%2Fdelete%2F HTTP/1.1" 200 3710
+127.0.0.1 - - [31/Oct/2026 12:52:48] "GET /publisher_cascade/3/delete/ HTTP/1.1" 200 3175
+127.0.0.1 - - [31/Oct/2026 12:52:48] "POST /protect/3/ HTTP/1.1" 200 19
+Unprocessable Entity: /publisher_cascade/3/delete/
+127.0.0.1 - - [31/Oct/2026 12:52:48] "POST /publisher_cascade/3/delete/ HTTP/1.1" 422 2331
+127.0.0.1 - - [31/Oct/2026 12:52:48] "GET /state/3/ HTTP/1.1" 200 30
+127.0.0.1 - - [31/Oct/2026 12:52:49] "GET /harness/?target=%2Fpublisher_cascade%2F1%2Fdelete%2F HTTP/1.1" 200 3710
+127.0.0.1 - - [31/Oct/2026 12:52:49] "GET /publisher_cascade/1/delete/ HTTP/1.1" 200 3177
+127.0.0.1 - - [31/Oct/2026 12:52:50] "GET /harness/?target=%2Fpublisher_cascade%2F1%2Fdelete%2F HTTP/1.1" 200 3710
+127.0.0.1 - - [31/Oct/2026 12:52:50] "GET /publisher_cascade/1/delete/ HTTP/1.1" 200 3177
+127.0.0.1 - - [31/Oct/2026 12:52:51] "GET /harness/?target=%2Fpublisher_cascade%2F1%2Fdelete%2F HTTP/1.1" 200 3710
+127.0.0.1 - - [31/Oct/2026 12:52:51] "GET /publisher_cascade/1/delete/ HTTP/1.1" 200 3177
+127.0.0.1 - - [31/Oct/2026 12:52:52] "GET /harness/?target=%2Fpublisher_cascade%2F1%2Fdelete%2F HTTP/1.1" 200 3710
+127.0.0.1 - - [31/Oct/2026 12:52:52] "GET /publisher_cascade/1/delete/ HTTP/1.1" 200 3177
+127.0.0.1 - - [31/Oct/2026 12:52:53] "GET /harness/?target=%2Fpublisher_cascade%2F1%2Fdelete%2F HTTP/1.1" 200 3710
+127.0.0.1 - - [31/Oct/2026 12:52:53] "GET /publisher_cascade/1/delete/ HTTP/1.1" 200 3177
+127.0.0.1 - - [31/Oct/2026 12:52:54] "GET /harness/?target=%2Fpublisher_cascade%2F1%2Fdelete%2F HTTP/1.1" 200 3710
+127.0.0.1 - - [31/Oct/2026 12:52:54] "GET /publisher_cascade/1/delete/ HTTP/1.1" 200 3177
+127.0.0.1 - - [31/Oct/2026 12:52:55] "GET /publisher_cascade/1/delete/ HTTP/1.1" 200 3177
+127.0.0.1 - - [31/Oct/2026 12:52:56] "GET /publisher_cascade/1/delete/ HTTP/1.1" 200 3177
+127.0.0.1 - - [31/Oct/2026 12:52:57] "GET /publisher_cascade/1/delete/ HTTP/1.1" 200 3177
+127.0.0.1 - - [31/Oct/2026 12:52:58] "GET /publisher_cascade/1/delete/ HTTP/1.1" 200 3177
+127.0.0.1 - - [31/Oct/2026 12:52:59] "GET /publisher_cascade/1/delete/ HTTP/1.1" 200 3177
+Unprocessable Entity: /publisher_cascade/1/delete/
+127.0.0.1 - - [31/Oct/2026 12:53:00] "POST /publisher_cascade/1/delete/ HTTP/1.1" 422 3347
+127.0.0.1 - - [31/Oct/2026 12:53:00] "GET /harness/?target=%2Fpublisher_cascade%2F1%2Fdelete%2F HTTP/1.1" 200 3710
+127.0.0.1 - - [31/Oct/2026 12:53:00] "GET /publisher_cascade/1/delete/ HTTP/1.1" 200 3177
+Unprocessable Entity: /publisher_cascade/1/delete/
+127.0.0.1 - - [31/Oct/2026 12:53:00] "POST /publisher_cascade/1/delete/ HTTP/1.1" 422 3347
+127.0.0.1 - - [31/Oct/2026 12:53:00] "GET /state/1/ HTTP/1.1" 200 30
+127.0.0.1 - - [31/Oct/2026 12:53:01] "GET /publisher_cascade/1/delete/ HTTP/1.1" 200 3177
+127.0.0.1 - - [31/Oct/2026 12:53:01] "GET /harness/?target=%2Fpublisher_cascade%2F1%2Fdelete%2F HTTP/1.1" 200 3710
+127.0.0.1 - - [31/Oct/2026 12:53:01] "GET /publisher_cascade/1/delete/ HTTP/1.1" 200 3177
+127.0.0.1 - - [31/Oct/2026 12:53:01] "GET /publisher_cascade/ HTTP/1.1" 200 13419
+127.0.0.1 - - [31/Oct/2026 12:53:02] "GET /state/1/ HTTP/1.1" 200 30
+127.0.0.1 - - [31/Oct/2026 12:53:02] "GET /harness/?target=%2Fpublisher_cascade%2F4%2Fdelete%2F HTTP/1.1" 200 3710
+127.0.0.1 - - [31/Oct/2026 12:53:02] "GET /publisher_cascade/4/delete/ HTTP/1.1" 200 3177
+127.0.0.1 - - [31/Oct/2026 12:53:02] "POST /publisher_cascade/4/delete/ HTTP/1.1" 204 0
+127.0.0.1 - - [31/Oct/2026 12:53:02] "GET /publisher_cascade/ HTTP/1.1" 200 12814
+127.0.0.1 - - [31/Oct/2026 12:53:02] "GET /state/4/ HTTP/1.1" 200 75

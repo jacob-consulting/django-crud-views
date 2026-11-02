@@ -1,0 +1,18 @@
+{
+  "reviewed_commit": "1366dac9bf3e74122de8382c1da03f1962800b74",
+  "files": {
+    ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-01-PLAN.md": "633f302a44eb45fb48609df4cc2f86129b181f22a35aae727f6c35ca2423e88a",
+    ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-02-PLAN.md": "024130206ec3a27d332f87a523900ea7487d0866218643606c4de776d1ed2b36",
+    ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-03-PLAN.md": "b58b1be79cd2cc5529db28f3a5f1e4b743146cea7724da8f179ebc022b96c12f",
+    ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-04-PLAN.md": "b6f48e5513d52134f83393111d612acc19b73f3b9e75d59e0983986de50b8e3d",
+    ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-05-PLAN.md": "b10d041e12cbd61a5e772057ee1afa8d0643a675ab41e73dce7834ff6e0b777a",
+    ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-06-PLAN.md": "b141e45df9ceb6b1788ec49a953cbf1b313cfd21bdb2f91dbfd81f35502223fb",
+    ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-07-PLAN.md": "362278d0fd05f2372e8eae09568ca8bea5bdd88ceafeecafa381392ac5d8274f",
+    ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-08-PLAN.md": "1e991bc92959c2d42c8f423193ab14fd75080c0d4581f331fc462116a3092b20",
+    ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-09-PLAN.md": "1e2dc2fc1a61ad96ea82658e068711626312d0f1d213cb7531c86ae29706d4eb",
+    ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-DESIGN.md": "1642a5751e0a8e0bd9ee9df8ca3429c962e701e4078988108f8878617174d7e4",
+    ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-CONTEXT.md": "f36ba58a1738e21053b07c6325dc9f1375ff25dc0a250e44a84eaaf2b15fcb4c",
+    ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-RESEARCH.md": "00e631a6b1307bd76b0563f124803b7d035d6b3f2d93581ff1316739e2691b71",
+    ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-VALIDATION.md": "8887115c50a5872caa2d8fc96dc61c58ce50e1b15b9614ee54b3a4755575f751"
+  }
+}

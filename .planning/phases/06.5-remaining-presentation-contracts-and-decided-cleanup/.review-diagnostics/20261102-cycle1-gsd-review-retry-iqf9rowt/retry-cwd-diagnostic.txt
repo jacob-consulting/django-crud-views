@@ -1,0 +1,1 @@
+Initial isolated-config attempt cancelled before completion: runner inherits process.cwd rather than --repo-root. Corrected retry loads temporary config with --cwd while process.cwd remains the source repository. No content from the cancelled attempt is counted. Timeout 1200 seconds per corrected lane.

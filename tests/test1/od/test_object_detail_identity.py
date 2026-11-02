@@ -162,11 +162,25 @@ def test_group_identity_preserved_by_resolution_and_positional_compatibility():
 @pytest.mark.parametrize("native", [False, True])
 def test_real_detail_stable_page_modal_identity(client_user_author_view, author_douglas_adams, monkeypatch, native):
     from django.conf import settings
+    from django.db import connection
+    from django.test.utils import CaptureQueriesContext
     from django.urls import reverse
 
     from crud_views.lib.view.base import cv_is_modal_request
     from tests.test1.app.views import AuthorDetailView
 
+    authorized_objects = []
+    get_object_for_detail = AuthorDetailView.get_object_for_detail
+
+    def record_object(view):
+        with CaptureQueriesContext(connection) as queries:
+            obj = get_object_for_detail(view)
+        assert len(queries) == 0
+        assert obj is view.object
+        authorized_objects.append(obj)
+        return obj
+
+    monkeypatch.setattr(AuthorDetailView, "get_object_for_detail", record_object)
     monkeypatch.setattr(AuthorDetailView, "cv_object_detail_layout", "identity-native" if native else "tabs-vertical")
     monkeypatch.setattr(AuthorDetailView, "cv_object_detail_id", "author-page", raising=False)
     groups = [
@@ -181,10 +195,12 @@ def test_real_detail_stable_page_modal_identity(client_user_author_view, author_
             (
                 "django.template.loaders.locmem.Loader",
                 {
-                    "crud_views_object_detail/layouts/identity-native/group.html": '{% load crud_views_object_detail %}<section id="{{ presentation.panel_id }}" '
-                    'data-root="{{ component.id }}"><h2 id="{{ presentation.control_id }}">{{ group.title }}</h2>'
-                    '{% for prop in group.properties %}{% render_property prop layout="table-inline" %}{% endfor %}'
-                    "</section>",
+                    "crud_views_object_detail/layouts/identity-native/group.html": (
+                        '{% load crud_views_object_detail %}<section id="{{ presentation.panel_id }}" '
+                        'data-root="{{ component.id }}"><h2 id="{{ presentation.control_id }}">{{ group.title }}</h2>'
+                        '{% for prop in group.properties %}{% render_property prop layout="table-inline" %}{% endfor %}'
+                        "</section>"
+                    ),
                 },
             ),
             "django.template.loaders.app_directories.Loader",
@@ -202,6 +218,8 @@ def test_real_detail_stable_page_modal_identity(client_user_author_view, author_
         # Attribute default must reach the actual content template, with no implicit suffix.
         response = client_user_author_view.get(url)
         assert response.status_code == 200
+        assert len(authorized_objects) == 1
+        assert response.context["object"] is authorized_objects[-1]
         doc = html.fromstring(response.content)
         assert set(doc.xpath('//@id[starts-with(., "cvod-")]')) == expected("author-page")
 
@@ -217,8 +235,11 @@ def test_real_detail_stable_page_modal_identity(client_user_author_view, author_
                     [{**group, "title": gettext_lazy("日本語 <translated>")} for group in reversed(groups)],
                 )
             for modal, token in [(False, "author-page"), (True, "author-modal")]:
+                previous_count = len(authorized_objects)
                 response = client_user_author_view.get(url, **({"HTTP_X_CV_MODAL": "true"} if modal else {}))
                 assert response.status_code == 200
+                assert len(authorized_objects) == previous_count + 1
+                assert response.context["object"] is authorized_objects[-1]
                 assert response.context["object"].pk == author_douglas_adams.pk
                 assert response.context["object_detail_id"] == token
                 assert {group.id for group in response.context["object_detail_groups"]} == {"bio", "dates"}
@@ -230,7 +251,10 @@ def test_real_detail_stable_page_modal_identity(client_user_author_view, author_
                     assert set(doc.xpath("//@data-root")) == {f"cvod-c{len(token)}-{token}-root"}
 
 
-_STABLE_TAG = '{% load crud_views_object_detail %}{% render_object_detail obj groups layout="tabs-vertical" component_id="stable" %}'
+_STABLE_TAG = (
+    "{% load crud_views_object_detail %}"
+    '{% render_object_detail obj groups layout="tabs-vertical" component_id="stable" %}'
+)
 
 
 def _identity_engine(templates):

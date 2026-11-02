@@ -121,6 +121,42 @@ register_button_classes(
 
 See [Button row as a list](buttons.md#button-row-as-a-list).
 
+## Heading presentation
+
+Heading semantic levels follow `CRUD_VIEWS_HEADER_LEVEL`; visual sizing and icon presentation use the same
+class registration/settings layers as buttons. Use the [heading tag and migration recipes](templates.md#heading-levels)
+to change sizes without copying templates. Keep utility classes supplied by the application separate from
+`size=` and `icon_class=`. The supported `cv_header` body block can still override visible title content.
+
+### Native heading class table
+
+This executable project-settings example replaces all six Bootstrap sizes and both shared icon slots.
+The corresponding CSS is supplied by your theme; the example establishes class/escaping behavior, not a full
+non-Bootstrap visual theme or screen-reader certification:
+
+```python
+CRUD_VIEWS_BUTTON_CLASSES = {
+    "heading:size-1": "native-size-1",
+    "heading:size-2": "native-size-2",
+    "heading:size-3": "native-size-3",
+    "heading:size-4": "native-size-4",
+    "heading:size-5": "native-size-5",
+    "heading:size-6": "native-size-6",
+    "heading:icon-host": "native-icon {name_class}",
+    "heading:icon-inline": "native-inline",
+}
+```
+
+A theme registers this mapping with `register_button_classes()` from `AppConfig.ready()` instead. Project
+settings still win. Replace any size value with `None` or `""` to omit that sizing class; semantic level,
+visible text and caller utility classes survive. An explicit `size=3` always consults its key, while an omitted
+size only adds the original level's class when the semantic level changes.
+
+Icon lookup is **layer first**: project location, project shared, theme location, theme shared, builtin location,
+builtin shared. Thus a project-wide `heading:icon-inline` replaces even a theme's group-specific value.
+Explicit empty/None ends inheritance; empty host styling suppresses the host icon, while empty inline styling
+does not suppress the element itself. See [the complete icon key list](icons.md#heading-icons).
+
 ## Worked example: restyle the buttons
 
 Register the classes as above — the `*:active` and `*:hidden-label` keys included when your framework spells those

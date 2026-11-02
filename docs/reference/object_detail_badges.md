@@ -32,11 +32,58 @@ from crud_views_object_detail.lib import x, BadgeConfig
 
 | Parameter   | Description |
 |-------------|-------------|
-| `color`     | Fixed Bootstrap color name (e.g. `"primary"`, `"danger"`) |
+| `color`     | Fixed color name (e.g. `"primary"`, `"danger"`, or a theme-owned name) |
 | `color_map` | `dict` mapping values to color names |
-| `color_fn`  | Callable that receives the value and returns a color name |
+| `color_fn`  | Callable that receives the value and returns a color name or `None` |
 | `label_map` | `dict` mapping values to display labels |
 | `pill`      | `True` to use rounded-pill style |
+
+## Resolution and template context
+
+Color resolution uses `color_fn` first, then a nonempty `color_map`, then fixed `color`.
+An empty map falls through to the fixed color. A missing entry in a nonempty map or a callback returning
+`None` leaves the ordinary value rendering in place, without a neutral badge fallback. A `None` property
+value skips the color callback entirely. The callback runs once per property resolution; rendering a
+resolved property does not call it again.
+
+Badge templates receive the resolved property as `prop`, plus its original value as `value`:
+
+| Field | Meaning |
+|-------|---------|
+| `prop.badge_color` | Original resolved color name, or `None` when unresolved |
+| `prop.badge_pill` | Requested pill state for a resolved badge; otherwise `False` |
+| `prop.badge_css` | Compatible Bootstrap classes, or `None` when unresolved |
+| `prop.badge_label` | Label-map result, or `None`; the stock template uses the raw value for an empty label |
+| `prop.value` / `value` | Original property value |
+
+Arbitrary color names pass through unchanged. Supported names and their visual styling belong to the theme.
+The stock template uses `text-bg-{color}` and appends `rounded-pill` when requested; its output is unchanged.
+An empty color string still resolves to the existing `text-bg-` class; only `None` means no resolved color.
+Label resolution stays independent: an unresolved color can still have a mapped label, but ordinary templates
+receive the original value.
+
+A resolved badge takes precedence over the property's explicit `template=`. Customize the badge template
+in your type pack to change badge output. When no color resolves, the explicit property template wins;
+without one, the ordinary typed template path is used.
+
+## Native semantic badge template
+
+For a type pack named `native`, set `CRUD_VIEWS_OBJECT_DETAIL_TEMPLATE_PACK_TYPES = "native"` and save this as
+`crud_views_object_detail/types/native/badge.html` in your project's template directory:
+
+```django
+<span class="status{% if prop.badge_color == 'brand-custom' %} status-brand{% endif %}{% if prop.badge_pill %} status-pill{% endif %}">{% if prop.badge_label %}{{ prop.badge_label }}{% else %}{{ value }}{% endif %}</span>
+```
+
+Define `status`, `status-brand`, and `status-pill` in your theme's stylesheet. This recipe maps `brand-custom`
+directly to a native color class and the pill flag to a native shape class, without parsing Bootstrap CSS.
+Extend the explicit color mapping for other names your theme supports. An unrecognized resolved name still
+reaches this template, but receives no color class from this minimal mapping.
+
+Keep Django autoescaping enabled: labels and values are text, including strings containing HTML.
+The recipe is exercised against real property resolution and template selection, including a counting callback,
+both pill states, missing colors, and explicit-template collisions. It is a template contract example;
+complete visual acceptance of a non-Bootstrap theme requires that theme's own styles and review.
 
 !!! example "Try it live"
     The [Object Detail example](https://django-crud-views-demo.onrender.com/object-detail/product/) in the live demo shows this in

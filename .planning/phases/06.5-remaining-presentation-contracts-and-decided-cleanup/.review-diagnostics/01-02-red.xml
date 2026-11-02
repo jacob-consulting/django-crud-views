@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.169" timestamp="2026-11-02T10:32:35.771724+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_button_classes_checks" name="test_optional_heading_keys_are_recognized" time="0.002"><failure message="assert [&lt;Warning: le..._views.W362'&gt;] == []&#10;  &#10;  Left contains 4 more items, first extra item: &lt;Warning: level=30, msg=&quot;Button class 'heading-page:icon-host' is not a known key (typo?).&quot;, hint='See the buttons documentation page for the list of keys.', obj=None, id='crud_views.W362'&gt;&#10;  Use -v to get more diff">def test_optional_heading_keys_are_recognized():
+        values = {
+            f"heading-{location}:{slot}": "{name_class}" if slot == "icon-host" else "spacing"
+            for location in ("page", "modal", "group")
+            for slot in ("icon-host", "icon-inline")
+        }
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=values):
+&gt;           assert check_button_classes() == []
+E           assert [&lt;Warning: le..._views.W362'&gt;] == []
+E             
+E             Left contains 4 more items, first extra item: &lt;Warning: level=30, msg="Button class 'heading-page:icon-host' is not a known key (typo?).", hint='See the buttons documentation page for the list of keys.', obj=None, id='crud_views.W362'&gt;
+E             Use -v to get more diff
+
+tests/test1/test_button_classes_checks.py:37: AssertionError</failure></testcase></testsuite></testsuites>

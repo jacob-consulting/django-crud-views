@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.103" timestamp="2026-11-02T10:30:39.761542+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_heading_icons" name="test_modal_host_icon_is_on_title" time="0.007"><failure message="assert '&lt;h2 class=&quot;title-small modal-title icon-edit&quot;&gt; Edit &amp;lt;title&amp;gt;&lt;/h2&gt;' in '\n&lt;div class=&quot;modal-header&quot;&gt;\n    &lt;h2 class=&quot;h5 modal-title&quot;&gt;&lt;i class=&quot;icon-edit&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt; Edit &amp;lt;ti...s=&quot;btn-close&quot; data-cv-modal-dismiss aria-label=&quot;Close&quot;&gt;&lt;/button&gt;\n&lt;/div&gt;\n&lt;div class=&quot;modal-body&quot;&gt;\n    Body\n&lt;/div&gt;\n'">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7931c185ecc0&gt;
+
+    def test_modal_host_icon_is_on_title(monkeypatch):
+        monkeypatch.setattr(crud_views_settings, "header_level", 2)
+        with override_settings(
+            CRUD_VIEWS_ICON_LIBRARIES=HOST_LIBRARY,
+            CRUD_VIEWS_BUTTON_CLASSES={"heading:size-5": "title-small"},
+        ):
+            result = render_modal()
+&gt;       assert '&lt;h2 class="title-small modal-title icon-edit"&gt; Edit &amp;lt;title&amp;gt;&lt;/h2&gt;' in result
+E       assert '&lt;h2 class="title-small modal-title icon-edit"&gt; Edit &amp;lt;title&amp;gt;&lt;/h2&gt;' in '\n&lt;div class="modal-header"&gt;\n    &lt;h2 class="h5 modal-title"&gt;&lt;i class="icon-edit" aria-hidden="true"&gt;&lt;/i&gt; Edit &amp;lt;ti...s="btn-close" data-cv-modal-dismiss aria-label="Close"&gt;&lt;/button&gt;\n&lt;/div&gt;\n&lt;div class="modal-body"&gt;\n    Body\n&lt;/div&gt;\n'
+
+tests/test1/test_heading_icons.py:40: AssertionError</failure></testcase></testsuite></testsuites>

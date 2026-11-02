@@ -28,6 +28,16 @@ def test_missing_sources_fail_closed(tmp_path):
         sources.inspect_sources(tmp_path / "absent", "abc", "https://example.invalid/theme.git")
 
 
+def test_working_inventory_excludes_generated_egg_info_without_deleting_it(tmp_path):
+    (tmp_path / "src").mkdir()
+    (tmp_path / "src/package.py").write_text("actual source")
+    metadata = tmp_path / "src/package.egg-info"
+    metadata.mkdir()
+    (metadata / "PKG-INFO").write_text("editable runtime metadata")
+    assert sources.working_files(tmp_path) == {"src/package.py": b"actual source"}
+    assert (metadata / "PKG-INFO").read_text() == "editable runtime metadata"
+
+
 @pytest.mark.parametrize("target", ["CLAUDE.md", "../private", "/etc/passwd", "absent.md", "AGENTS.md"])
 def test_archive_materializes_only_internal_regular_file_links(tmp_path, target):
     root, _ = repository(tmp_path / "linked", {"CLAUDE.md": b"project instructions"})

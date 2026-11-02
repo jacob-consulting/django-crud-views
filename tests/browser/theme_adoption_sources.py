@@ -150,7 +150,9 @@ def working_files(root):
     root = Path(root)
     files = {}
     for directory, directories, names in os.walk(root):
-        directories[:] = [name for name in directories if name not in RUNTIME_EXCLUDES]
+        directories[:] = [
+            name for name in directories if name not in RUNTIME_EXCLUDES and not name.endswith(".egg-info")
+        ]
         for name in directories + names:
             path = Path(directory) / name
             rel = path.relative_to(root)

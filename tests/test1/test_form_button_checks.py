@@ -563,6 +563,7 @@ class _CustomHelperForm(AuthorForm):
     @property
     def helper(self):
         helper = FormHelper()
+        helper.form_tag = False
         helper.layout = Layout(FormActions(Submit("submit", "Custom", icon=None)))
         return helper
 
@@ -581,6 +582,7 @@ class _DeleteCustomHelper(CrispyDeleteForm):
     @property
     def helper(self):
         helper = FormHelper()
+        helper.form_tag = False
         helper.layout = Layout(FormActions(Submit("delete", "Remove", slot="form:delete", icon=None)))
         return helper
 

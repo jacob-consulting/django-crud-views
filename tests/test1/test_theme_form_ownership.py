@@ -1,0 +1,309 @@
+"""Page-owned forms: raw nesting, enforced CSRF, and render-local helper policy."""
+
+from html.parser import HTMLParser
+from types import SimpleNamespace
+
+import pytest
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout
+from django import forms
+from django.core.exceptions import ImproperlyConfigured
+from django.template import Context, Template
+from django.test import Client, override_settings
+from django.utils.safestring import mark_safe
+
+from crud_views.templatetags.crud_views import cv_render_form
+from tests.test1 import test_crispy_buttons as button_tests
+from tests.test1.app.models import Author
+from tests.test1.app.views import AuthorForm
+from tests.test1.test_crispy_buttons import (
+    _controls,
+    _modes,
+    _owned_form,
+    _owner_helper,
+    _resolve_owner,
+    _sig,
+)
+from tests.test1.test_form_frame import _theme_templates
+
+owners = button_tests.owners
+
+
+class _RawForms(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.stack = []
+        self.forms = []
+
+    def handle_starttag(self, tag, attrs):
+        attrs = dict(attrs)
+        if tag == "form":
+            assert not self.stack, "nested raw form start tag"
+            owner = {"attrs": attrs, "tokens": [], "submitters": []}
+            self.forms.append(owner)
+            self.stack.append(owner)
+        elif self.stack:
+            if tag == "input" and attrs.get("name") == "csrfmiddlewaretoken":
+                self.stack[-1]["tokens"].append(attrs["value"])
+            if tag == "button" and attrs.get("type") == "submit":
+                self.stack[-1]["submitters"].append(attrs)
+
+    def handle_endtag(self, tag):
+        if tag == "form":
+            assert self.stack, "unmatched raw form end tag"
+            self.stack.pop()
+
+
+def assert_owned_form_markup(markup):
+    """Scan raw events, before a browser can repair nested/unclassed forms."""
+    parser = _RawForms()
+    parser.feed(markup)
+    assert not parser.stack, "unclosed raw form"
+    owners = [f for f in parser.forms if "cv-form" in f["attrs"].get("class", "").split()]
+    assert len(owners) == 1
+    assert len(owners[0]["tokens"]) == 1
+    return owners[0]
+
+
+@pytest.mark.django_db
+def test_create_ownership_csrf_round_trip(cv_author, user_author_add):
+    client = Client(enforce_csrf_checks=True)
+    client.force_login(user_author_add)
+    response = client.get("/author/create/")
+    assert response.status_code == 200
+    sibling = '<form method="post"><input name="csrfmiddlewaretoken" value="sibling"></form>'
+    owner = assert_owned_form_markup(sibling + response.content.decode() + sibling)
+    assert owner["attrs"]["method"] == "post"
+    assert owner["attrs"]["enctype"] == "multipart/form-data"
+    assert "novalidate" in owner["attrs"]
+    target = owner["attrs"]["action"]
+    submitter = owner["submitters"][0]
+    data = {"first_name": "Ownership", "last_name": "Tracer", submitter["name"]: submitter["value"]}
+    before = Author.objects.count()
+    for token in (None, "invalid"):
+        payload = dict(data)
+        if token is not None:
+            payload["csrfmiddlewaretoken"] = token
+        assert client.post(target, payload).status_code == 403
+        assert Author.objects.count() == before
+    response = client.post(target, {**data, "csrfmiddlewaretoken": owner["tokens"][0]})
+    assert response.status_code == 302
+    assert Author.objects.filter(first_name="Ownership", last_name="Tracer").exists()
+
+
+def test_raw_guard_rejects_unclassed_nested_form():
+    with pytest.raises(AssertionError, match="nested raw form"):
+        assert_owned_form_markup('<form class="cv-form"><form></form></form>')
+
+
+class NameForm(forms.Form):
+    name = forms.CharField()
+
+
+def _helper(cls=FormHelper):
+    helper = cls()
+    helper.form_tag = False
+    helper.layout = Layout("name")
+    return helper
+
+
+def _context(form):
+    return Context({"form": form, "csrf_token": "test-token", "view": None})
+
+
+class AliasingHelper(FormHelper):
+    def __copy__(self):
+        return self
+
+
+class RaisingCopyHelper(FormHelper):
+    def __copy__(self):
+        raise RuntimeError("copy forbidden")
+
+
+class ReadOnlyHelper(FormHelper):
+    __slots__ = ("extra",)
+
+    @property
+    def disable_csrf(self):
+        return False
+
+
+class HookHelper(FormHelper):
+    def get_attributes(self, *args, **kwargs):
+        return {**super().get_attributes(*args, **kwargs), "hook": "kept"}
+
+    def render_layout(self, *args, **kwargs):
+        return mark_safe(super().render_layout(*args, **kwargs) + "HOOK_LAYOUT")
+
+
+class FalseyHelper(HookHelper):
+    def __bool__(self):
+        return False
+
+
+@pytest.mark.parametrize(
+    "helper_class", [FormHelper, AliasingHelper, RaisingCopyHelper, ReadOnlyHelper, HookHelper, FalseyHelper]
+)
+def test_helper_adaptation_contract(helper_class):
+    helper = _helper(helper_class)
+    form = NameForm()
+    form.helper = helper
+    snapshot = dict(helper.__dict__)
+    fields = list(helper.layout.fields)
+    context = _context(form)
+    layers = list(context.dicts)
+    custom = "{% load crispy_forms_tags %}{% crispy form cv_form_helper %}"
+    for _ in range(2):
+        with _theme_templates({"crud_views/tags/form.html": custom}):
+            html = cv_render_form(context)
+        assert "csrfmiddlewaretoken" not in html
+        assert "<form" not in html
+        assert 'name="name"' in html
+        if helper_class is HookHelper:
+            assert "HOOK_LAYOUT" in html
+        assert helper.__dict__ == snapshot
+        assert helper.layout.fields == fields
+        assert context.dicts == layers
+
+
+@pytest.mark.parametrize(
+    ("form_owner", "helper_owner", "winner"),
+    [("R", "RH", "R"), (None, "RH", "RH"), (None, None, "P"), ("falsey", "RH", "S"), (None, "falsey", "S")],
+)
+def test_form_button_owner_tiers_survive_render_boundary(owners, form_owner, helper_owner, winner):
+    def resolve(value):
+        return None if value is None else _resolve_owner(owners, value)
+
+    form = _owned_form(resolve(form_owner))
+    form.helper = _owner_helper(*_controls("owned"), view=resolve(helper_owner))
+    context = Context({"view": owners.P, "csrf_token": "test-token"})
+    # A real crispy-shaped enclosing response is not a page owner, even above the page.
+    context.push(is_formset=False, template_pack="bootstrap5", inputs=[], form_method="post", view=owners.H)
+    context.push(form=form)
+    before = [dict(layer) for layer in context.dicts]
+    assert _modes(cv_render_form(context)) == {"owned": _sig(winner)}
+    assert context.dicts == before
+
+
+@pytest.mark.parametrize("hook", ["get_attributes", "render_layout"])
+def test_custom_hook_exception_and_context_preserved(hook):
+    error = RuntimeError("original hook error")
+
+    def fail(*args, **kwargs):
+        raise error
+
+    helper = _helper(type("BrokenHookHelper", (FormHelper,), {hook: fail}))
+    form = NameForm()
+    form.helper = helper
+    snapshot = dict(helper.__dict__)
+    context = _context(form)
+    layers = [dict(layer) for layer in context.dicts]
+    with pytest.raises(RuntimeError) as exc:
+        cv_render_form(context)
+    assert exc.value is error
+    assert helper.__dict__ == snapshot
+    assert context.dicts == layers
+
+
+def test_helper_custom_template_preserves_attributes_hook():
+    helper = _helper(HookHelper)
+    helper.template = "custom-helper.html"
+    form = NameForm()
+    form.helper = helper
+    custom = "{{ hook }}|{{ disable_csrf }}|{{ form.form_html }}"
+    with _theme_templates({"custom-helper.html": custom}):
+        html = cv_render_form(_context(form))
+    assert html.lstrip().startswith("kept|True|")
+    assert "HOOK_LAYOUT" in html
+    assert helper.disable_csrf is False
+
+
+@pytest.mark.parametrize("kind", ["missing", "none", "computed", "inherited"])
+def test_helper_selected_once(kind):
+    selected = _helper()
+
+    class ComputedForm(NameForm):
+        calls = 0
+
+        @property
+        def helper(self):
+            self.calls += 1
+            return selected
+
+    class ParentForm(NameForm):
+        helper = selected
+
+    class ChildForm(ParentForm):
+        pass
+
+    form = ComputedForm() if kind == "computed" else ChildForm() if kind == "inherited" else NameForm()
+    if kind == "none":
+        form.helper = None
+    html = cv_render_form(_context(form))
+    assert 'name="name"' in html
+    assert "<form" not in html
+    assert "csrfmiddlewaretoken" not in html
+    if kind == "computed":
+        assert form.calls == 1
+    assert selected.disable_csrf is False
+
+
+@pytest.mark.parametrize("strict", [False, True])
+def test_wrapping_helper_is_always_rejected(strict):
+    form = NameForm()
+    form.helper = FormHelper()
+    original = dict(form.helper.__dict__)
+    context = _context(form)
+    layers = list(context.dicts)
+    with override_settings(CRUD_VIEWS_STRICT=strict), pytest.raises(ImproperlyConfigured, match="form_tag=False"):
+        cv_render_form(context)
+    assert form.helper.__dict__ == original
+    assert context.dicts == layers
+
+
+def _library_form():
+    view = SimpleNamespace(
+        request=SimpleNamespace(user=None),
+        get_cancel_button_context=lambda **kw: {"cv_url": "/", "cv_action_label": "Cancel"},
+    )
+    return AuthorForm(cv_view=view)
+
+
+def test_standalone_library_and_custom_policy():
+    standalone = Template("{% load crispy_forms_tags %}{% crispy form %}")
+    form = _library_form()
+    html = standalone.render(_context(form))
+    assert "<form" not in html
+    assert html.count('name="csrfmiddlewaretoken"') == 1
+    assert 'name="first_name"' in html
+    caller = Template('{% load crispy_forms_tags %}<form class="cv-form" method="post">{% crispy form %}</form>')
+    assert_owned_form_markup(caller.render(_context(form)))
+    custom = NameForm()
+    custom.helper = FormHelper()
+    html = standalone.render(_context(custom))
+    assert html.count("<form") == 1
+    assert html.count('name="csrfmiddlewaretoken"') == 1
+    custom.helper.form_method = "get"
+    html = standalone.render(_context(custom))
+    assert html.count("<form") == 1
+    assert "csrfmiddlewaretoken" not in html
+
+
+@pytest.mark.parametrize("migrated", [False, True])
+def test_copied_inner_template_must_use_selected_helper(migrated):
+    template = (
+        "{% load crispy_forms_tags %}{% crispy form cv_form_helper %}"
+        if migrated
+        else "{% load crispy_forms_tags %}{% crispy form form.helper %}"
+    )
+    form = NameForm()
+    form.helper = _helper()
+    with _theme_templates({"crud_views/tags/form.html": template}):
+        html = Template(
+            '{% load crud_views %}<form class="cv-form">{% csrf_token %}{% cv_render_form %}</form>'
+        ).render(_context(form))
+    if migrated:
+        assert_owned_form_markup(html)
+    else:
+        assert html.count('name="csrfmiddlewaretoken"') == 2

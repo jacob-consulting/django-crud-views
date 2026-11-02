@@ -1,7 +1,9 @@
 from dataclasses import dataclass
 
+from crispy_forms.helper import FormHelper
 from django import template
 from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
 from django.template.loader import get_template, render_to_string
 from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
@@ -463,7 +465,44 @@ def cv_paragraph(context):
 
 @register.simple_tag(takes_context=True)
 def cv_render_form(context):
-    return render_to_string(f"{crud_views_settings.theme_path}/tags/form.html", context.flatten())
+    helper = _prepare_form_helper(context["form"])
+    template = get_template(f"{crud_views_settings.theme_path}/tags/form.html")
+    with context.push(cv_form_helper=helper):
+        return mark_safe(template.template.render(context))
+
+
+class _PageFormHelper(FormHelper):
+    """Delegate helper hooks unchanged; suppress CSRF only in a fresh render attribute mapping.
+
+    Copying arbitrary helpers is unsafe: __copy__ can alias or raise, and disable_csrf can be read-only.
+    Bound methods stay bound to the source, retaining subclass hooks and shared layouts without assigning to them.
+    """
+
+    def __init__(self, source):
+        object.__setattr__(self, "_source", source)
+
+    def __getattribute__(self, name):
+        if name in {"_source", "get_attributes"}:
+            return object.__getattribute__(self, name)
+        return getattr(object.__getattribute__(self, "_source"), name)
+
+    def __bool__(self):
+        return bool(self._source)
+
+    def get_attributes(self, *args, **kwargs):
+        return {**self._source.get_attributes(*args, **kwargs), "disable_csrf": True}
+
+
+def _prepare_form_helper(form):
+    helper = getattr(form, "helper", None)
+    if helper is None:
+        helper = FormHelper()
+        helper.form_tag = False
+    if helper.form_tag:
+        raise ImproperlyConfigured(
+            f"{type(helper).__name__}: cv_render_form requires form_tag=False; the page template owns the outer form."
+        )
+    return _PageFormHelper(helper)
 
 
 @register.simple_tag(takes_context=True)

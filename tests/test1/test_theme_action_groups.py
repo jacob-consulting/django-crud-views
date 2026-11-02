@@ -2,19 +2,22 @@
 
 import importlib.metadata
 import json
+from copy import deepcopy
 from types import SimpleNamespace
 
 import pytest
 from crispy_forms.bootstrap import FormActions
-from crispy_forms.layout import HTML
+from crispy_forms.layout import HTML, Layout
 from django import forms
 from django.conf import settings
-from django.template import Context
+from django.template import Context, Template
 from django.template.loader import get_template
-from django.test import override_settings
+from django.test import RequestFactory, override_settings
 from lxml import html
 
+from crud_views.lib import button_classes as bc
 from crud_views.lib.crispy import CrispyDeleteForm, CrispyForm
+from crud_views.lib.views.list import ListViewFilterFormHelper
 
 FLOOR_SOURCE = """<div{% if formactions.attrs %} {{ formactions.flat_attrs }}{% endif %} class="mb-3">
     {% if label_class %}
@@ -26,6 +29,16 @@ FLOOR_SOURCE = """<div{% if formactions.attrs %} {{ formactions.flat_attrs }}{% 
     </div>
 </div>
 """
+
+
+@pytest.fixture(autouse=True)
+def isolate_classes():
+    snapshot = dict(bc._THEME_BUTTON_CLASSES)
+    bc.reset_button_classes_cache()
+    yield
+    bc._THEME_BUTTON_CLASSES.clear()
+    bc._THEME_BUTTON_CLASSES.update(snapshot)
+    bc.reset_button_classes_cache()
 
 
 class OrdinaryForm(CrispyForm):
@@ -169,3 +182,116 @@ def test_pack_structure_custom_origin_never_bridged(filesystem, tmp_path):
     # Same object, different loader selection: no global bridge capability cache.
     with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"form:actions": "back-to-installed"}):
         assert "back-to-installed" in render_group(group)
+
+
+class FilterForm(forms.Form):
+    q = forms.CharField(required=False)
+
+
+def filter_helper(klass=ListViewFilterFormHelper):
+    return klass(SimpleNamespace(), RequestFactory().get("/?sort=name&order=name&dir=desc"))
+
+
+def render_filter(helper):
+    return Template("{% load crispy_forms_tags %}{% crispy form helper %}").render(
+        Context({"form": FilterForm(), "helper": helper})
+    )
+
+
+def filter_group(markup):
+    tree = html.fragment_fromstring(markup, create_parent="div")
+    return tree.cssselect("button[name=submit]")[0].getparent().getparent()
+
+
+def test_filter_group_independence():
+    classes = {"form:actions": "ordinary-only", "form:filter-actions": "filter-only"}
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES=classes):
+        wrapper = filter_group(render_filter(filter_helper()))
+        assert "filter-only" in wrapper.classes
+        assert "ordinary-only" not in wrapper.classes
+        ordinary = html.fromstring(render_group(ordinary_group()))
+        assert "ordinary-only" in ordinary.classes and "filter-only" not in ordinary.classes
+
+
+@pytest.mark.parametrize("key", ["form:actions", "form:filter-actions"])
+def test_action_keys_are_empty_base_only_utilities(key):
+    assert bc.DEFAULT_BUTTON_CLASSES[key] == ""
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={key: "gap-2"}):
+        assert not [m for m in bc.button_class_check_messages() if m.id == "crud_views.W362"]
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={key + ":icon": "gap-2"}):
+        assert len([m for m in bc.button_class_check_messages() if m.id == "crud_views.W362"]) == 1
+    assert key.split(":")[1] not in bc.FORM_KINDS
+
+
+def test_same_prepared_filter_reads_live_classes_and_deepcopy():
+    helper = filter_helper()
+    baseline = render_filter(helper)
+    group = helper._cv_actions
+    group.css_class = "authored"
+    bc.register_button_classes({"form:filter-actions": "first"})
+    assert filter_group(render_filter(helper)).classes == {"mb-3", "authored", "first"}
+    bc.register_button_classes({"form:filter-actions": "second"})
+    assert filter_group(render_filter(helper)).classes == {"mb-3", "authored", "second"}
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"form:filter-actions": "project"}):
+        assert filter_group(render_filter(helper)).classes == {"mb-3", "authored", "project"}
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"form:filter-actions": None}):
+            assert filter_group(render_filter(helper)).classes == {"mb-3", "authored"}
+        assert filter_group(render_filter(helper)).classes == {"mb-3", "authored", "project"}
+    for copied in (helper, deepcopy(helper)):
+        assert filter_group(render_filter(copied)).classes == {"mb-3", "authored", "second"}
+        assert render_filter(copied) == render_filter(copied)
+        assert copied._cv_actions.css_class == "authored"
+    assert helper._cv_actions is group
+    group.css_class = None
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"form:filter-actions": ""}):
+        assert render_filter(helper) == baseline
+
+
+def test_filter_hidden_inputs_keep_the_pack_trailing_wrapper():
+    helper = filter_helper()
+    before = html.fragment_fromstring(render_filter(helper), create_parent="div")
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"form:filter-actions": "group-only"}):
+        markup = render_filter(helper)
+    tree = html.fragment_fromstring(markup, create_parent="div")
+    hidden = tree.cssselect("input[type=hidden]")
+    assert [(i.get("name"), i.get("value")) for i in hidden] == [("sort", "name"), ("order", "name"), ("dir", "desc")]
+    wrapper = hidden[0].getparent().getparent()
+    assert html.tostring(wrapper) == html.tostring(before.cssselect("input[type=hidden]")[0].getparent().getparent())
+    assert "group-only" not in wrapper.classes
+    assert not wrapper.cssselect("button")
+    group = tree.cssselect("button[name=submit]")[0].getparent().getparent()
+    assert group.getparent() is wrapper.getparent()
+    assert list(group.getparent()).index(group) < list(wrapper.getparent()).index(wrapper)
+
+
+@pytest.mark.parametrize("kind", ["none", "empty", "custom"])
+def test_custom_filter_provider_keeps_ownership(kind):
+    class CustomHelper(ListViewFilterFormHelper):
+        layout = Layout("q")
+
+        def get_form_actions(self):
+            return {"none": None, "empty": FormActions(), "custom": HTML("<aside>Custom actions</aside>")}[kind]
+
+    helper = filter_helper(CustomHelper)
+    baseline = render_filter(helper)
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"form:filter-actions": "should-not-appear"}):
+        assert render_filter(helper) == baseline
+    assert not html.fragment_fromstring(baseline, create_parent="div").cssselect("button")
+
+
+@pytest.mark.parametrize("base", [OrdinaryForm, ListViewFilterFormHelper])
+def test_custom_group_opt_in(base):
+    class Custom(base):
+        def get_form_actions(self):
+            group = super().get_form_actions()
+            group.css_class = "authored"
+            return group
+
+    classes = {"form:actions": "theme", "form:filter-actions": "theme"}
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES=classes):
+        if base is OrdinaryForm:
+            wrapper = html.fromstring(render_group(Custom(None).get_form_actions()))
+        else:
+            wrapper = filter_group(render_filter(filter_helper(Custom)))
+    assert {"mb-3", "authored", "theme"} <= wrapper.classes
+    assert wrapper.get("class").split().count("theme") == 1

@@ -492,11 +492,17 @@ def suite_result(record, *, passing=False):
 def compare_suite_failures(current, baseline, before_files, after_files):
     """D-13: retain failed outcomes, accepting only unchanged source-bound baseline test failures."""
     result = suite_result(current["command"])
-    if not result["failures"]:
-        return {"retained_failures": [], "outcome": result["outcome"]}
-    require(baseline is not None, "missing baseline for failing suite")
+    require(baseline is not None, "missing baseline for companion suite")
     original = suite_result(baseline["command"])
     require(result["count"] >= original["count"], "companion test collection shrank")
+    skipped = []
+    for suite in (baseline, current):
+        output = validate_log(suite["command"])
+        counts = re.findall(r"skipped=(\d+)|\b(\d+) skipped\b", output)
+        skipped.append(max((int(a or b) for a, b in counts), default=0))
+    require(skipped[1] <= skipped[0], "new skipped companion tests")
+    if not result["failures"]:
+        return {"retained_failures": [], "outcome": result["outcome"]}
     require(set(result["failures"]) <= set(original["failures"]), "new companion regression")
     for failure in result["failures"]:
         match = re.fullmatch(r"test_\w+ \(([^)]+)\)", failure)
@@ -721,6 +727,31 @@ def validate_phase_evidence(report, files, baseline_files, *, complete=True):
             f"missing focused test outcome: {required}",
         )
     if complete:
+        csrf = next(case for case in cases if case["id"] == "csrf-post")
+        checks = {a.get("id"): a for a in csrf["assertions"]}
+        require(
+            all(
+                key in checks
+                for key in (
+                    "denied-login-refreshes-csrf-cookie",
+                    "authorization-denied-post-valid-csrf",
+                    "authorization-denied-post-zero-writes",
+                )
+            ),
+            "missing actual denied-write evidence",
+        )
+        post = checks["authorization-denied-post-valid-csrf"].get("observed", {})
+        require(
+            post.get("status") == 403
+            and post.get("csrf_cookie_rotated") is True
+            and post.get("csrf_failure_page") is False,
+            "denied write only proved CSRF failure",
+        )
+        persisted = checks["authorization-denied-post-zero-writes"].get("observed", {})
+        require(
+            persisted.get("before") and persisted.get("before") == persisted.get("after"),
+            "denied write changed persisted state",
+        )
         expected = {
             (modal, choices, method)
             for modal in (False, True)

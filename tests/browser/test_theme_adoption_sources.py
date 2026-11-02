@@ -510,12 +510,43 @@ def phase_report(native):
     }
     for row in report["actions"] + report["cancel_no_url"]:
         row["source_sha256"] = sources.digest(sources.inventory(adopted_files()[1]))
+    csrf = next(case for case in report["cases"] if case["id"] == "csrf-post")
+    csrf["assertions"] += [
+        {"id": "denied-login-refreshes-csrf-cookie", "passed": True},
+        {
+            "id": "authorization-denied-post-valid-csrf",
+            "passed": True,
+            "observed": {"status": 403, "csrf_cookie_rotated": True, "csrf_failure_page": False},
+        },
+        {
+            "id": "authorization-denied-post-zero-writes",
+            "passed": True,
+            "observed": {"before": {"authors": []}, "after": {"authors": []}},
+        },
+    ]
     return report
 
 
 def test_full_compatibility_records_pass():
     baseline, files, native = adopted_files()
     sources.validate_phase_evidence(phase_report(native), files, baseline)
+
+
+@pytest.mark.parametrize("mutation", ["missing", "csrf", "stale-token", "writes"])
+def test_actual_denied_write_cannot_be_replaced_by_csrf_or_get_evidence(mutation):
+    baseline, files, native = adopted_files()
+    report = phase_report(native)
+    checks = next(case for case in report["cases"] if case["id"] == "csrf-post")["assertions"]
+    if mutation == "missing":
+        checks.pop()
+    elif mutation == "csrf":
+        checks[-2]["observed"]["csrf_failure_page"] = True
+    elif mutation == "stale-token":
+        checks[-2]["observed"]["csrf_cookie_rotated"] = False
+    else:
+        checks[-1]["observed"]["after"]["authors"].append("unauthorized row")
+    with pytest.raises(sources.EvidenceError):
+        sources.validate_phase_evidence(report, files, baseline)
 
 
 @pytest.mark.parametrize("missing", ["workflow_branches", "alert_branches"])
@@ -1012,8 +1043,12 @@ def test_baseline_failure_comparison_requires_unchanged_test_class_and_rejects_n
 
 @pytest.mark.parametrize("output", ["Ran 1 test in 0.1s\nOK\n", "Ran 109 tests in 0.1s\nOK (skipped=108)\n"])
 def test_passing_companion_suite_cannot_hide_reduced_or_skipped_collection(output):
-    baseline = {"command": command("FAIL: test_old (theme.tests.OldTests.test_old)\nRan 109 tests in 1s\nFAILED (failures=1)\n", code=1)}
-    with pytest.raises(sources.EvidenceError, match="collection shrank|new skipped"):
+    baseline = {
+        "command": command(
+            "FAIL: test_old (theme.tests.OldTests.test_old)\nRan 109 tests in 1s\nFAILED (failures=1)\n", code=1
+        )
+    }
+    with pytest.raises(sources.EvidenceError, match=r"collection shrank|new skipped"):
         sources.compare_suite_failures({"command": command(output)}, baseline, {}, {})
 
 

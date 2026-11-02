@@ -5,7 +5,7 @@ from django.template import Context, Template
 from django.test import override_settings
 from lxml import html
 
-from crud_views_object_detail.lib.resolvers import ResolvedProperty
+from crud_views_object_detail.lib.resolvers import ResolvedGroup, ResolvedProperty
 
 
 @pytest.mark.parametrize("pack", ["accordion", "table-inline", "striped-rows"])
@@ -56,3 +56,20 @@ def test_tooltip_js_is_a_core_script():
     from crud_views.lib.settings import crud_views_settings
 
     assert crud_views_settings.javascript()["tooltip"] == "crud_views/js/tooltip.js"
+
+
+@pytest.mark.parametrize("pack", ["accordion", "tabs-vertical"])
+def test_interactive_layout_aria_references_resolve_to_unique_elements(pack):
+    groups = [ResolvedGroup(title=title) for title in ["Repeated", "Repeated"]]
+    markup = Template("{% load crud_views_object_detail %}{% render_object_detail obj groups layout=pack %}").render(
+        Context({"groups": groups, "pack": pack})
+    )
+    doc = html.fromstring(markup)
+    for element in doc.cssselect("[aria-controls], [aria-labelledby]"):
+        for attribute in ("aria-controls", "aria-labelledby"):
+            if target := element.get(attribute):
+                assert len(doc.xpath("//*[@id=$target]", target=target)) == 1
+    if pack == "tabs-vertical":
+        (selected,) = doc.cssselect('[role="tab"][aria-selected="true"]')
+        (visible,) = doc.cssselect('[role="tabpanel"].active.show')
+        assert selected.get("aria-controls") == visible.get("id")

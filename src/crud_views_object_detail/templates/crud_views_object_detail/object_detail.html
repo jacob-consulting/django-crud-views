@@ -1,4 +1,4 @@
 {% load crud_views_object_detail %}
-{% for group in groups %}
-{% render_group group layout=layout %}
+{% for entry in component.groups %}
+{% render_group entry.group layout=layout presentation=entry component=component %}
 {% endfor %}

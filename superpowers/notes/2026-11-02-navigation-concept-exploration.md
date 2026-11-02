@@ -562,6 +562,200 @@ optional sugar.
 
 ## 8. Next step
 
-The two fixes of decision 6 come first, each with a test that pins the link and the request to the same answer.
-Then a design doc for the navigation itself (`superpowers/specs/`) that carries the decisions above into the
-item model, the resolver API, the leaf contract and the check IDs, followed by a plan.
+The two fixes of decision 6 come first, as their own GSD phase before 1.0 (section 9), each with a test that pins
+the link and the request to the same answer. Then a design doc for the navigation itself (`superpowers/specs/`)
+that carries the decisions above into the item model, the resolver API, the leaf contract and the check IDs,
+followed by a plan after 1.0.
+
+## 9. Prerequisite phase: link visibility agrees with the request gate
+
+Brief for the implementer of the pre-1.0 GSD phase that closes the two `cv_has_access` gaps. Everything here is
+read from `introduce-gsd` @ `6bef437`; re-verify line numbers against the tip before planning.
+
+### 9.1 Phase framing
+
+- **Goal.** Wherever the package renders a link to a view, the link's visibility answer (`cv_has_access`) agrees
+  with the request's answer (`has_permission` / `dispatch` / `get_object`) for the same user and object. Today it
+  does not in two cases. The rule it restores is the one `theme.md` states: hiding is presentation, the request
+  is protection; but the presentation must not advertise a page the request will refuse.
+- **Numbering.** Phase 6.4 is the last inserted phase; `ROADMAP.md:541` keeps "proposed 6.4/6.5/6.6" ahead of
+  Phase 7, so this is phase **6.5** (or the next free decimal) and it "must land before Phase 7" like the others,
+  because Phase 7 lists the Guardian helpers it makes public (9.3). Branch per `config.json`:
+  `gsd/phase-6.5-<slug>`, e.g. `gsd/phase-6.5-link-access-parity`.
+- **Requirements.** Two new IDs in the AUTH group of `.planning/REQUIREMENTS.md` (AUTH-01..07 exist, `:71-77`),
+  with traceability rows:
+  - **AUTH-08** A `*PermissionRequired` view whose permission is not declared in `viewset.permissions` is never
+    linked: `cv_has_access` is `False`, the request still fails loudly as today.
+  - **AUTH-09** A link to a Guardian child view is visible only when the user holds the child ViewSet's parent
+    permission on the parent object the link leads to, by the same rule `dispatch` applies.
+- **Out of scope.** The navigation itself; any change to the toolbar's *markup*; the `cv_get_context` re-derivation
+  for create buttons (`mixins.py:133-184`), which already does the right thing and stays as it is.
+
+### 9.2 Gap 1: missing permission row makes the link visible
+
+**Today.**
+
+- `CrudViewPermissionRequiredMixin.cv_has_access` builds `perms = (perm,) if perm else ()` and returns
+  `user.has_perms(perms)` (`src/crud_views/lib/view/base.py:926-930`). `has_perms(())` is `all([])`, which is
+  `True` (`django/contrib/auth/models.py:408-413`), for every user including anonymous.
+- The request path for the same view asserts: `permission_required` raises `AssertionError` with the "run
+  `manage.py migrate`" message when the row is missing (`base.py:902-911`), so the page is a 500.
+- When it happens: a server started before `migrate` created the rows (#151; `default_permissions` retries while
+  empty, `viewset/__init__.py:447-470`), a custom `cv_permission` key that no model permission matches, or a
+  Resource ViewSet whose `resource_permissions` lacks the key (E260 catches the last one at startup,
+  `viewset/__init__.py:194-205`, the first two it cannot).
+
+**Change.** In `cv_has_access`, return `False` when `perm` is falsy; keep the `has_perms` call for the normal
+case so the ModelBackend cache still applies:
+
+```python
+@classmethod
+def cv_has_access(cls, user, obj=None):
+    perm = cls.cv_viewset.permissions.get(cls.cv_permission)
+    if not perm:
+        return False  # undeclared permission: never link; the request asserts (permission_required)
+    return user.has_perms((perm,))
+```
+
+Keep the assert in `permission_required` as it is; the request must stay loud, only the link goes quiet. Because
+`default_permissions` retries while empty, the links appear by themselves once `migrate` has run, with no
+restart, which is the #151 contract.
+
+**Call sites that change behaviour** (all through the one classmethod): sibling links (`base.py:720-726`),
+`ContextButton` (`src/crud_views/lib/view/buttons.py:109-118`), `ParentContextButton` (`:174-192`),
+`ChildContextButton` (`:237-243`), `SiblingContextButton` (`:296-302`), card actions
+(`src/crud_views/lib/views/card.py:59-93`), the `cv_context_has_permission` filter
+(`src/crud_views/templatetags/crud_views.py:467-473`). With `CRUD_VIEWS_INACCESSIBLE_ACTIONS = "disable"` the
+button renders disabled with `cv_disabled_reason="permission"` instead of vanishing
+(`src/crud_views/lib/view/visibility.py:14-20`); no change needed there.
+
+**Related, decide explicitly.** `GuardianObjectPermissionMixin._check_object_perm` and `cv_has_access` do
+`perm.split(".")` on the looked-up permission (`src/crud_views_guardian/lib/mixins.py:56-66, 79-92`); with a
+missing row that is an `AttributeError` on `None`. Return `False` from `cv_has_access` and raise
+`ImproperlyConfigured` from the request path for the same reason, or leave it and note it; recommended: the former,
+it is two lines and the same rule.
+
+**Tests** (`tests/test1/test_link_access_parity.py`, or next to the #151 test in `tests/test1/test_viewset.py`):
+
+1. Delete the model's `Permission` rows the way `test_viewset.py:85-100` does, build a throw-away ViewSet with a
+   `ListViewPermissionRequired` subclass, assert `cv_has_access(user, None) is False` for a user, a superuser
+   and `AnonymousUser`, then `create_permissions(...)`, assert `True` for a user with the permission. Pop the
+   ViewSet from `_REGISTRY` in `finally`.
+2. Parity: with the row missing, a GET through the client still fails (`pytest.raises(AssertionError)` or a 500
+   under the test client's `raise_request_exception`), and the toolbar of a sibling page does not contain the
+   link (`client_user_publisher_view` on the publisher list; assert the `cv-key` of the undeclared view is absent).
+3. Resource ViewSet: a view whose `cv_permission` is not in `resource_permissions` is hidden; E260 still fires.
+
+### 9.3 Gap 2: a Guardian child link ignores the parent gate
+
+**Today.**
+
+- Request: for every Guardian child view `dispatch` resolves the URL parent and requires the child ViewSet's
+  parent permission on it (`mixins.py:262-277` → `_guardian_check_parent` `:325-337` →
+  `_guardian_user_has_parent_perm` `:303-323`), with the key from `_guardian_resolve_parent_perm_key`
+  (`:287-297`: `cv_guardian_parent_create_permission` for `add`, else `cv_guardian_parent_permission`, default
+  `"view"`, `src/crud_views_guardian/lib/viewset.py:38-39`). A `None` key skips only the permission check.
+- Link: `GuardianQuerysetMixin.cv_has_access` is `return not _guardian_inactive_actor(user)` (`mixins.py:130-131`),
+  and `GuardianObjectPermissionMixin.cv_has_access` checks the *child* object only (`:79-92`). Neither consults
+  the parent rule. Only the create view does, in its own `cv_has_access` and `cv_create_has_access`
+  (`src/crud_views_guardian/lib/views.py:309-387`), through `_cv_guardian_create_parent` (`:274-296`).
+- Where it shows: `ChildContextButton` passes the parent instance as `obj` (`buttons.py:237-243`), card child
+  actions do the same (`card.py:59-72`), and on a child's own detail page the `list`/`home` buttons pass the
+  child instance. In all three the child list link renders for any active signed-in user.
+- Why the tests have not caught it: with the default parent key `"view"` the page that shows the link (the
+  parent's detail, or the parent list filtered by `get_objects_for_user`) already required `view` on the same
+  parent. The gap is visible as soon as the parent key differs from what the hosting page required, e.g.
+  `cv_guardian_parent_permission="change"` on the child ViewSet while the user holds `view` on the publisher:
+  the "Books" button renders on the publisher page and the click is a 403. The test fixture `cv_guardian_book`
+  sets `cv_guardian_parent_permission="view"` and `cv_guardian_parent_create_permission="change"`
+  (`tests/test1/app/views.py:715-720`), so the create rule is covered and the list rule is not.
+
+**Change.** Make the link check mirror `dispatch`, once, for every Guardian child view:
+
+1. **Promote the parent rule to a public classmethod** on `GuardianParentPermissionMixin`, e.g.
+   `cv_guardian_has_parent_access(cls, user, parent_obj) -> bool`, with `_guardian_user_has_parent_perm` kept
+   as a private alias so the create view and `_guardian_check_parent` are untouched. The navigation needs this
+   name too (decision 6).
+2. **Generalise parent resolution.** Move `_cv_guardian_create_parent` (`views.py:274-296`) up into
+   `GuardianParentPermissionMixin` as `_cv_guardian_resolve_parent(obj)`: a parent-model instance is the parent;
+   an own-model instance resolves its FK parent via `ParentViewSet.get_attribute()` for single-FK nesting;
+   M2M nesting (`many_to_many_through_attribute`), a missing relation, `None` and unrelated objects yield `None`.
+   The create view keeps calling it under its old name.
+3. **Gate in `GuardianParentPermissionMixin.cv_has_access`.** It is first in the MRO of every shipped
+   composition (`views.py:230-254`), so one method covers list, card, detail, update, delete and action; the
+   create view's own `cv_has_access` (`views.py:344`) is defined on the class and keeps winning:
+
+```python
+@classmethod
+def cv_has_access(cls, user, obj=None):
+    if cls.cv_viewset.parent is not None and obj is not None:
+        parent_obj = cls._cv_guardian_resolve_parent(obj)
+        if parent_obj is not None and not cls.cv_guardian_has_parent_access(user, parent_obj):
+            return False
+    return super().cv_has_access(user, obj)
+```
+
+   Then the object mixin's own check (child object) or the queryset mixin's (signed-in, active) runs as today,
+   which is exactly dispatch's order: parent gate, then the view's own gate.
+
+**Decisions for the implementer** (defaults recommended, record them as D-nn in the CONTEXT):
+
+- `obj is None` (the child's own list page rendering its own `list`/`filter` buttons; the nav's top-level
+  case): keep today's answer, `super().cv_has_access`. The page's parent was gated at dispatch, and a classmethod
+  has no kwargs. The `cv_get_context` override (`mixins.py:133-184`) could re-derive the parent from
+  `self.kwargs` for these keys as it does for `add`; recommended **not** to, since the answer cannot differ from
+  what dispatch already accepted.
+- Unresolvable `obj` (M2M nesting from an own child, an unrelated model): fall through to `super()` rather than
+  deny. The create view denies here because a create binds to one parent; a list or detail link under M2M
+  nesting leads to the URL parent dispatch will gate, and denying would hide the `list` button on every M2M
+  child page. Record this asymmetry in the docstring.
+- Cost: `ObjectPermissionChecker(user)` is built per call (`mixins.py:323`); a publisher card list with a
+  "Books" action now costs one or two guardian queries per card. Acceptable for this phase; the navigation phase
+  introduces the shared prefetched checker (3.8, C6). Pin the count with `django_assert_num_queries` so the nav
+  phase can show the improvement.
+- A `None` parent key: `cv_guardian_has_parent_access` returns `True` as the private rule does (`:313-315`);
+  nothing to decide, but test it.
+
+**Tests** (`tests/test1/test_guardian_link_visibility.py`; fixtures from `tests/test1/conftest.py:590-651`:
+`cv_guardian_publisher`, `cv_guardian_book`, `publisher_a`, `publisher_b`, `book_under_publisher_a`,
+`user_guardian`, `client_guardian`; grants through `cv_guardian_book.cv_viewset`'s parent
+`GuardianViewSet.assign_perm("view" | "change", user, publisher)` (`viewset.py:108-113`); the
+`pn` fixture and the monkeypatch style for a different parent key are in `tests/test1/test_guardian_parent_none.py`):
+
+1. Helper truth table for `GuardianBookListView.cv_has_access(user, obj)`: `obj=publisher_a` with and without the
+   parent grant; `obj=book_under_publisher_a` resolves to `publisher_a`; `obj=None` unchanged; inactive user
+   `False`; superuser `True`; parent key `None` → `True` without a grant.
+2. Rendered parity with the key set to `"change"` (monkeypatch `cv_guardian_book.cv_guardian_parent_permission`):
+   user holds `view` on `publisher_a` only; the publisher detail page renders without the `guardian_book` child
+   button (or disabled under `"disable"`), and a GET of the book list under `publisher_a` is 403. Then grant
+   `change`: button present, GET 200. Same pair for the card list's child action.
+3. Child detail page: the `list` button on `book_under_publisher_a`'s detail page stays visible for a user who
+   reached the page (parent `view` held), proving the own-child resolution does not hide the way back.
+4. Create view untouched: the existing `test_guardian_parent_none.py` and `test_guardian_policy.py` suites stay
+   green; `cv_create_has_access` behaviour is unchanged by the generalised resolver.
+5. Query count: one assertion for the card list with N publishers, so the nav phase has a baseline.
+
+### 9.4 Shared deliverables
+
+- **CHANGELOG** `### Fixed`, two entries: "A link to a `*PermissionRequired` view whose permission is not
+  declared is no longer rendered; the request keeps failing with the migrate hint (#151 follow-up)." and "Links to
+  Guardian child views apply the parent permission `dispatch` applies; the new public classmethod
+  `cv_guardian_has_parent_access(user, parent_obj)` is the rule." Not `### Breaking`: no template, setting or
+  public name changes meaning; links that disappear led to a 403 or a 500. Mention the Guardian `perm.split`
+  hardening if done.
+- **Docs.** `docs/reference/guardian.md`: a section next to "Create button visibility for child viewsets"
+  (`:185`) for list/object child links, naming the public classmethod and the M2M asymmetry; the policy table at
+  `:453` gains nothing. `docs/reference/context_buttons.md`: one sentence at the `ChildContextButton` access note
+  that the child view's parent rule is applied. `docs/reference/list_view.md` or `inaccessible_actions.md`: one
+  sentence that an undeclared permission hides the link.
+- **Stability.** `docs/development/stability.md`, `crud_views_guardian` section (`:84-85`): add
+  `cv_guardian_has_parent_access` to the public names, so Phase 7's listing includes it.
+- **Checks.** None new. E260 already covers the Resource case; a startup check cannot see permission rows. If a
+  `W` is wanted for "parent-only Guardian composition without the parent mixin on a child list", it belongs to
+  `crud_views_guardian.E001`'s family (`src/crud_views_guardian/checks.py:7-29`), not here.
+- **Quality gates** as for every phase (`.planning/PROJECT.md`, Constraints): `pytest tests -n auto`, vitest,
+  `mkdocs build --strict`, `ruff check`, `ruff format --check`; goldens under `tests/test1/golden/` stay
+  byte-identical, since no default markup changes.
+- **Acceptance.** For both gaps, one browser-visible check: a page that showed a doomed link no longer shows it,
+  and the same URL typed by hand still answers 403 or the migrate assertion. The navigation phase then builds on
+  `cv_has_access` without carrying either exception.

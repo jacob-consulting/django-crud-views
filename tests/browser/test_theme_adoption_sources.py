@@ -425,6 +425,49 @@ def phase_report(native):
             "classes": sources.ADOPTION_CLASSES,
         },
         "test_nodes": [{"id": name, "outcome": "passed"} for name in sources.FOCUSED_TESTS],
+        "workflow_branches": [
+            {
+                "modal": modal,
+                "has_workflow_choices": choices,
+                "method": method,
+                "passed": True,
+                "status": 422 if modal and method == "POST" else 200,
+                "forms": [{"attrs": {"class": "cv-form"}, "tokens": 1}] if modal or choices else [],
+                "nested": [],
+                "templates": [
+                    {"name": name, "origin": "/isolated/src/owner/templates/" + name}
+                    for name in (
+                        ["crud_views/view_custom_form.content.html"]
+                        if modal
+                        else [
+                            "crud_views_workflow/view_workflow.content.html",
+                            "crud_views_workflow/view_workflow.action.html",
+                        ]
+                    )
+                ],
+            }
+            for modal in (False, True)
+            for choices in (False, True)
+            for method in ("GET", "POST")
+        ],
+        "alert_branches": [
+            {
+                "native": native,
+                "variant": variant,
+                "activation": activation,
+                "passed": True,
+                "hook": {
+                    "name": "Close",
+                    "type": "button",
+                    "native": "alert" if native else None,
+                    "crud": None if native else "",
+                },
+                "adapter_calls": None if native else 1,
+            }
+            for native in (False, True)
+            for variant in (("default",) if native else ("default", "custom", "empty"))
+            for activation in ("click", "Enter", "Space")
+        ],
     }
     for row in report["actions"] + report["cancel_no_url"]:
         row["source_sha256"] = sources.digest(sources.inventory(adopted_files()[1]))
@@ -434,6 +477,15 @@ def phase_report(native):
 def test_full_compatibility_records_pass():
     baseline, files, native = adopted_files()
     sources.validate_phase_evidence(phase_report(native), files, baseline)
+
+
+@pytest.mark.parametrize("missing", ["workflow_branches", "alert_branches"])
+def test_full_replay_rejects_missing_distinct_render_branches(missing):
+    baseline, files, native = adopted_files()
+    report = phase_report(native)
+    report[missing].pop()
+    with pytest.raises(sources.EvidenceError, match="missing distinct"):
+        sources.validate_phase_evidence(report, files, baseline)
 
 
 @pytest.mark.parametrize(
@@ -884,6 +936,36 @@ def test_replay_checks_patch_full_tree_and_concrete_evidence(tmp_path, monkeypat
                 )
         with pytest.raises(sources.EvidenceError):
             sources.verify_replay(bad, baseline, env={})
+
+
+def test_baseline_failure_comparison_requires_unchanged_test_class_and_rejects_new_failures():
+    before = {"src/theme/tests.py": b"class OldTests:\n    def test_old(self):\n        assert False\n"}
+    failure = "test_old (theme.tests.OldTests.test_old)"
+    log = command(f"FAIL: {failure}\nRan 2 tests in 0.1s\nFAILED (failures=1)\n", code=1)
+    baseline = {"command": log}
+    current = {"command": log}
+    assert sources.compare_suite_failures(current, baseline, before, before)["retained_failures"] == [failure]
+    changed = {"src/theme/tests.py": before["src/theme/tests.py"].replace(b"False", b"True")}
+    with pytest.raises(sources.EvidenceError, match="changed baseline test"):
+        sources.compare_suite_failures(current, baseline, before, changed)
+    new = {
+        "command": command(
+            "FAIL: test_new (theme.tests.OldTests.test_new)\nRan 2 tests in 0.1s\nFAILED (failures=1)\n", code=1
+        )
+    }
+    with pytest.raises(sources.EvidenceError, match="new companion regression"):
+        sources.compare_suite_failures(new, baseline, before, before)
+    with pytest.raises(sources.EvidenceError, match="missing baseline"):
+        sources.compare_suite_failures(current, None, before, before)
+
+
+def test_working_tree_allows_only_materialized_internal_documentation_link(tmp_path):
+    (tmp_path / "CLAUDE.md").write_text("local instructions")
+    (tmp_path / "AGENTS.md").symlink_to("CLAUDE.md")
+    assert sources.working_files(tmp_path)["AGENTS.md"] == b"local instructions"
+    (tmp_path / "unsafe").symlink_to("/etc/passwd")
+    with pytest.raises(sources.EvidenceError, match="unexpected source symlink"):
+        sources.working_files(tmp_path)
 
 
 def test_failed_delivery_retains_prior_slot_and_actual_log(tmp_path, monkeypatch):

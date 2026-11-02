@@ -86,3 +86,28 @@ test('recorded root and runtime resolve from an isolated script location with sp
         }
     } finally {fs.rmSync(temp,{recursive:true,force:true});}
 });
+
+test('partial delivery form writer preserves every other slot and cannot certify completion',()=>{
+    const dir=fs.mkdtempSync(path.join(os.tmpdir(),'theme-delivery-slot-'));
+    try {
+        const output=path.join(dir,'bundle.json');const prior={schema:1,status:'provisional',delivered_probe:{receipt:'existing'},committed_probe:{receipt:'historical'}};
+        fs.writeFileSync(output,JSON.stringify(prior));
+        const harness=require(entry);const report={status:'partial',bindings:{source:'bound'},commands:[harness.commandRecord(['node','probe'],dir,0,'observed output','')],assertions:[{id:'actual',passed:true}],run_id:'fresh'};
+        const result=harness.mergeFormProbe(output,report);
+        assert.deepEqual(result.delivered_probe,prior.delivered_probe);assert.deepEqual(result.committed_probe,prior.committed_probe);
+        assert.equal(result.form_probe.scope,'partial');assert.equal(result.form_probe.complete,false);assert.equal(result.status,'provisional');
+        result.status='complete';fs.writeFileSync(output,JSON.stringify(result));
+        assert.throws(()=>harness.mergeFormProbe(output,report),/cannot overwrite completed/);
+    } finally {fs.rmSync(dir,{recursive:true,force:true});}
+});
+
+test('browser startup failure cleans up its owned server and temporary copies',()=>{
+    const dir=fs.mkdtempSync(path.join(os.tmpdir(),'theme-cleanup-'));
+    try {
+        const output=path.join(dir,'failure.json');const env={...process.env,CV_THEME_PORT:'8158',CV_FOCUS_PLAYWRIGHT:'/missing/playwright'};
+        delete env.CV_THEME_PYTHON;delete env.CV_FOCUS_PYTHON;
+        const result=cp.spawnSync(process.execPath,[entry,'--case','owned-form','--output',output],{env,encoding:'utf8',timeout:40000,shell:false});
+        assert.equal(result.status,1);const report=JSON.parse(fs.readFileSync(output));
+        assert.equal(report.status,'failed');assert.equal(report.cleanup.serverExit.code,0);assert.equal(report.cleanup.temporaryRemoved,true);
+    } finally {fs.rmSync(dir,{recursive:true,force:true});}
+});

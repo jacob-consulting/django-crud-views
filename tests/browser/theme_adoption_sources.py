@@ -154,6 +154,11 @@ def working_files(root):
         for name in directories + names:
             path = Path(directory) / name
             rel = path.relative_to(root)
+            if path.is_symlink() and rel.as_posix() == "AGENTS.md" and os.readlink(path) == "CLAUDE.md":
+                target = root / "CLAUDE.md"
+                require(target.is_file() and not target.is_symlink(), "invalid internal documentation link")
+                files[rel.as_posix()] = target.read_bytes()
+                continue
             require(not path.is_symlink(), f"unexpected source symlink: {rel}")
             if name not in {"db.sqlite3", ".coverage"} and path.is_file():
                 files[rel.as_posix()] = path.read_bytes()
@@ -481,6 +486,37 @@ def suite_result(record, *, passing=False):
     return {"count": count, "outcome": "passed" if record["exit_code"] == 0 else "failed", "failures": failures}
 
 
+def compare_suite_failures(current, baseline, before_files, after_files):
+    """D-13: retain failed outcomes, accepting only unchanged source-bound baseline test failures."""
+    result = suite_result(current["command"])
+    if not result["failures"]:
+        return {"retained_failures": [], "outcome": result["outcome"]}
+    require(baseline is not None, "missing baseline for failing suite")
+    original = suite_result(baseline["command"])
+    require(result["count"] >= original["count"], "companion test collection shrank")
+    require(set(result["failures"]) <= set(original["failures"]), "new companion regression")
+    for failure in result["failures"]:
+        match = re.fullmatch(r"test_\w+ \(([^)]+)\)", failure)
+        require(match, "unrecognized baseline failure identity")
+        qualified = match[1]
+        require(not any(qualified.startswith(name) for name in FOCUSED_TESTS), "required phase test failed")
+        module, klass, method = qualified.rsplit(".", 2)
+        suffix = module.replace(".", "/") + ".py"
+        paths = [p for p in before_files if p == suffix or p.endswith("/" + suffix)]
+        require(len(paths) == 1 and paths[0] in after_files, "missing baseline test source")
+        classes = []
+        for files in (before_files, after_files):
+            candidates = [n for n in ast.parse(files[paths[0]]).body if isinstance(n, ast.ClassDef) and n.name == klass]
+            require(len(candidates) == 1, "missing baseline test class")
+            require(
+                any(isinstance(n, ast.FunctionDef) and n.name == method for n in candidates[0].body),
+                "missing baseline test method",
+            )
+            classes.append(ast.dump(candidates[0], include_attributes=False))
+        require(classes[0] == classes[1], "changed baseline test cannot be grandfathered")
+    return {"retained_failures": result["failures"], "outcome": result["outcome"]}
+
+
 def suite_commands(executable):
     return [
         [
@@ -681,6 +717,66 @@ def validate_phase_evidence(report, files, baseline_files, *, complete=True):
             ),
             f"missing focused test outcome: {required}",
         )
+    if complete:
+        expected = {
+            (modal, choices, method)
+            for modal in (False, True)
+            for choices in (False, True)
+            for method in ("GET", "POST")
+        }
+        branches = report.get("workflow_branches", [])
+        require(
+            {(r.get("modal"), r.get("has_workflow_choices"), r.get("method")) for r in branches} >= expected,
+            "missing distinct workflow branch evidence",
+        )
+        for row in branches:
+            modal, choices, method = row["modal"], row["has_workflow_choices"], row["method"]
+            require(
+                row.get("passed") is True and row.get("status") == (422 if modal and method == "POST" else 200),
+                "workflow branch failed",
+            )
+            names = {t.get("name"): t.get("origin") for t in row.get("templates", [])}
+            required = (
+                ["crud_views/view_custom_form.content.html"]
+                if modal
+                else ["crud_views_workflow/view_workflow.content.html", "crud_views_workflow/view_workflow.action.html"]
+            )
+            for name in required:
+                origin = names.get(name)
+                require(
+                    origin and Path(origin).is_absolute() and origin.endswith("/templates/" + name),
+                    "workflow template origin missing",
+                )
+            require(
+                not modal or not any(n and n.startswith("crud_views_workflow/") for n in names),
+                "modal workflow conflated with full-page body",
+            )
+            owners = [f for f in row.get("forms", []) if "cv-form" in f.get("attrs", {}).get("class", "").split()]
+            require(not row.get("nested") and len(owners) == int(modal or choices), "workflow owner branch mismatch")
+            require(all(f.get("tokens") == 1 for f in owners), "workflow token ownership mismatch")
+        expected_alerts = {
+            (native, variant, activation)
+            for native in (False, True)
+            for variant in (("default",) if native else ("default", "custom", "empty"))
+            for activation in ("click", "Enter", "Space")
+        }
+        alerts = report.get("alert_branches", [])
+        require(
+            {(r.get("native"), r.get("variant"), r.get("activation")) for r in alerts} == expected_alerts,
+            "missing distinct native/CRUD alert dismissal evidence",
+        )
+        for row in alerts:
+            hook = row.get("hook", {})
+            require(
+                row.get("passed") is True and hook.get("name") == "Close" and hook.get("type") == "button",
+                "failed alert activation",
+            )
+            require(
+                (hook.get("native") == "alert" and hook.get("crud") is None)
+                if row["native"]
+                else (hook.get("native") is None and hook.get("crud") == "" and row.get("adapter_calls") == 1),
+                "wrong native/CRUD alert dispatch",
+            )
 
 
 def atomic_json(path, value):
@@ -943,19 +1039,18 @@ def validate_core_receipt(receipt, root):
     )
 
 
-def patched_files(base_files, patch):
+def patched_files(base_files, patch, *, commands=None):
     require(isinstance(patch, str) and patch, "missing exact candidate patch")
     with tempfile.TemporaryDirectory(prefix="cv-plan06-replay-") as temporary:
         target = Path(temporary) / "tabler-test"
         write_tree(base_files, target)
-        result = subprocess.run(
-            ["git", "apply", "--whitespace=nowarn", "-"],
-            input=patch.encode(),
-            cwd=target,
-            capture_output=True,
-            check=False,
-        )
-        require(result.returncode == 0, "candidate patch does not apply to pinned archive")
+        patch_path = Path(temporary) / "adaptation.patch"
+        patch_path.write_text(patch)
+        for arguments in (["--check"], []):
+            result = command_record(["git", "apply", *arguments, "--whitespace=nowarn", str(patch_path)], target)
+            if commands is not None:
+                commands.append(result)
+            require(result["exit_code"] == 0, "candidate patch does not apply to pinned archive")
         return working_files(target)
 
 
@@ -996,8 +1091,9 @@ def verify_replay(report, baseline, *, env=None, probe=runtime_probe):
     require(report.get("runtime") == baseline["runtime"], "replay runtime identity mismatch")
     require(len(report.get("suites", [])) == 2, "missing replay suites")
     validate_suite_commands(report, baseline["companion_python"])
-    for suite in report["suites"]:
-        suite_result(suite["command"], passing=True)
+    for index, suite in enumerate(report["suites"]):
+        original = baseline.get("suites", [])[index] if index < len(baseline.get("suites", [])) else None
+        compare_suite_failures(suite, original, before_files, after_files)
     validate_phase_evidence(report, after_files, before_files)
     require(
         all(row.get("source_sha256") == digest(inventory(after_files)) for row in report["actions"]),

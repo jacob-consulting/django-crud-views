@@ -272,6 +272,7 @@ context actions have, and what a dashboard page does not: the resolver must work
 | URL target with `permission` | `user.has_perm(permission)` (or `has_perms` for a list) | `models.py:384-411` |
 | URL target without `permission` | always, or `login_required=True` for `is_authenticated` | — |
 | Group | at least one visible child | `action_menus.md:267` |
+| Any item with `groups=[...]` (decision 2b) | additionally, the user is in any listed group, or is an active superuser | `manage.py:38`, `templatetags/crud_views.py:495-502` |
 | Any item | `inaccessible_actions`: hide (default) or render disabled, the same knob the buttons use | `base.py:263-270`, `settings.INACCESSIBLE_ACTIONS_VALUES` |
 
 Every rule above is request-free except the Guardian probe, so the matrix costs two queries per request for the
@@ -397,7 +398,7 @@ CRUD_VIEWS_NAVS = {
         NavItem(label=_("Dashboard"), icon="dashboard", url_name="dashboard:index"),
         NavItem(viewset="customer"),                       # label, icon, url, access, active: derived
         NavItem(viewset="product"),
-        NavGroup(label=_("Admin"), icon="settings", items=[
+        NavGroup(label=_("Admin"), icon="settings", groups=["admins"], items=[
             NavItem(label=_("Users"), url_name="dashboard:users", permission="auth.view_user"),
             NavProvider("crud_views.nav.manage_pages"),  # one item per ViewSet with a manage view
         ]),
@@ -538,23 +539,29 @@ Why not B as the primary: it cannot express the non-crud items every real navbar
 dashboard, users, admin), it needs settings-time group lookups inside a Pydantic validator, and it adds a field to
 the one class whose surface Phase 7 is about to freeze.
 
-## 7. Questions only you can answer
+## 7. Decisions (2026-11-02)
 
-1. **Where does the tree live?** Settings (`CRUD_VIEWS_NAVS`), a Python module the project points at, or both
-   (settings layer over a registry layer, as the class table does)? This decides whether an extension app can
-   contribute items without the project listing them.
-2. **Guardian list targets**: visible to every authenticated user (today's `cv_has_access` semantics, zero
-   queries) or hidden when the user can see no object (one query per item, cacheable with C3)? Default and knob
-   name.
-3. **Stale-but-fast**: is an opt-in cross-request cache (C3) with a documented staleness window acceptable in a
-   codebase that has just spent Phases 6.2–6.4 tightening authorization, or should the package stop at C1/C2 and
-   leave `{% cache %}` to projects?
-4. **Depth promise for the stock Bootstrap theme**: one dropdown level in the navbar (no custom JS) and an
-   unbounded `<ul>` tree in a sidebar/offcanvas template, or ship a small `cv.adapters.nav` for nested dropdowns?
-5. **Timing with 1.0**: the leaf contract, the `nav` location and the class keys would be part of the frozen
-   theme surface, and Phase 7's guard test pulls them in automatically (3.10). Ship before the freeze as frozen
-   names, or after 1.0 as the first additive feature, possibly marked provisional under the tiering Phase 7
-   introduces?
-6. **The two `cv_has_access` gaps** (missing permission row → link shown; Guardian child list ignores the parent
-   gate; 2.5): fix them in the existing link path as part of this work, or keep the nav bug-compatible with the
-   toolbar until they are fixed separately?
+Taken with the maintainer after this exploration; they bind the design that follows.
+
+| # | Question | Decision | Why |
+|---|---|---|---|
+| 1 | Where does the tree live? | **Registry plus setting.** Apps and themes register items from `AppConfig.ready()`; the project's `CRUD_VIEWS_NAVS` layers on top and wins per key, as the class table, icons and assets do (`button_classes.py:131-142`). | Only a registry lets an extension app or a reusable Tabler theme contribute a menu entry without the project listing it; it is also the shape every other theme hook already has. |
+| 2 | Guardian list targets | **Signed-in and active is enough** by default, matching today's `cv_has_access` (`mixins.py:130-131`); anonymous users never see guardian items. "Hide when the user can see no object" is a per-item opt-in (`non_empty=True`, one query per item through `GuardianViewSet.get_objects_for_user`). | Zero queries by default and the same rule as the toolbar's `list` button; the probe stays available where a narrow grant makes an empty table confusing. |
+| 2b | Group membership as a gate | **Added.** Any item, node or leaf, may carry `groups=[...]`: visible when the user is in **any** of them; **active superusers bypass** it, mirroring `has_perm` (`django/contrib/auth/models.py:393`); it is an extra **AND** on top of the permission rule, never a replacement. Costs one memoised query per request for the user's group names. Unknown group names cannot be checked at startup; strict mode logs them once at first render. | Precedent: the manage view gates on `CRUD_VIEWS_MANAGE_GROUP` (`manage.py:38`) and `cv_user_in_group` exists (`templatetags/crud_views.py:495-502`). A node gate carves role-based sections cheaply. |
+| 3 | Cross-request cache | **Opt-in, default off.** C1 (per-request memo) and C2 (process-level static tree) are the default speed story; C3 ships behind a setting with the staleness window and the signal set documented. C4/C5 are not built. | Phases 6.2–6.4 tightened authorization; a stale menu by default would undo part of that. The request gates stay in force either way. |
+| 4 | Depth promise | **Two stock templates, no new adapter.** `nav/navbar.html` renders one dropdown level (Bootstrap's documented limit, 2.8); `nav/sidebar.html` renders unbounded nested lists with collapse. A warning check fires for a tree deeper than its template. The Tabler theme overrides the group leaf and gets its three sidebar levels. | Bootstrap's dropdown JS closes sibling menus (2.8); collapse does not. A `cv.adapters.nav` entry stays possible later because only the group leaf would call it. |
+| 5 | Timing with 1.0 | **After 1.0, provisional at first.** The policy reserves deprecation for changing or removing a listed name (`stability.md:7-17, 87-93`); adding names in a minor release is ordinary. The nav surface is listed as provisional under Phase 7's tiering and promoted to stable once two consumers (core, Tabler) have rendered it. | Freezing a first-version leaf contract that no downstream has consumed would repeat the button leaf's early churn without the rounds that settled it. |
+| 6 | The two `cv_has_access` gaps | **Fix both first, as a prerequisite of the navigation work**, in the existing link path (toolbar and cards included): a missing permission row returns `False` (`base.py:926-930`), and the Guardian child list's `cv_has_access` applies the parent rule when a parent object is given, which means making `_guardian_user_has_parent_perm` public (`mixins.py:303-323`). | The nav would otherwise inherit and spread both; the second fix is also the rule the tree nav needs. |
+
+What the decisions change in the sections above: the item model (3.1) gains `groups`; the permission matrix
+(3.3) gains the group row and keeps the guardian default; the hook (3.4) is the two-layer shape; caching (3.8) is
+C1 + C2 + C6 by default with C3 opt-in; theming (3.9) ships `navbar` and `sidebar` templates; the process (3.10)
+is a post-1.0 phase preceded by a small fix phase for the two gaps. The recommended order in section 6 stands:
+primitives and resolver, then the declared tree, then the view-mixin tree nav; the ViewSet `nav=` field remains
+optional sugar.
+
+## 8. Next step
+
+The two fixes of decision 6 come first, each with a test that pins the link and the request to the same answer.
+Then a design doc for the navigation itself (`superpowers/specs/`) that carries the decisions above into the
+item model, the resolver API, the leaf contract and the check IDs, followed by a plan.

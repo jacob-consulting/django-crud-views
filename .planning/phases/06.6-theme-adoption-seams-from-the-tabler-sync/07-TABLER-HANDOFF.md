@@ -154,3 +154,11 @@ The candidate and fresh exact-patch replay were rerun after final validator/test
 Current strict core inventory SHA-256: `95c9ccaa12bc073ac5a1fbbb3e6a19ec683890f2172e17b291b20b68f68f79e1`. The complete delivery bundle has fresh provisional and committed owned-form/label-floor probes, with prior evidence retained. Its `core_receipt` now names the parent of the plan 09 two-file evidence refresh; the resulting core commit is recorded in `06.6-09-SUMMARY.md`. The original plan 10 commit remains historical proof of initial delivery. `09-final-evidence.json` binds these exact current artifact bytes.
 
 This refresh changes core evidence only. Companion commit `3315eef6671f502d859bba877322a5853388c508` and preserved settings parent `0b3baa896ef5b11aa010238c92d3bceb4663e337` remain unchanged. Human visual/AT acceptance and independent phase review remain pending.
+
+## Final source refresh — plan 06.6-09 review repairs
+
+The candidate and fresh exact-patch replay were rerun after final validator/test changes. All eight browser families passed again; focused companion tests remain 11/11, broad Django 114/three unchanged baseline failures, and pytest 34/34. Native assets, five companion files and user settings/index are unchanged. Final evidence utility tests pass 149 cases. The helper repair preserves omitted hidden formset row fields and caller helper state; actual denied POSTs use refreshed CSRF cookies and preserve data.
+
+Current strict core inventory SHA-256: `b2a7911ff5764f5323dee75fc9cef3f6bec4186fc25a57a331516d6902825cd0`. The complete delivery bundle has fresh provisional and committed owned-form/label-floor probes, with prior evidence retained. Its `core_receipt` now names the parent of the plan 09 two-file evidence refresh; the resulting core commit is recorded in `06.6-09-SUMMARY.md`. The original plan 10 commit remains historical proof of initial delivery. `09-final-evidence.json` binds these exact current artifact bytes.
+
+This refresh changes core evidence only. Companion commit `3315eef6671f502d859bba877322a5853388c508` and preserved settings parent `0b3baa896ef5b11aa010238c92d3bceb4663e337` remain unchanged. Human visual/AT acceptance and independent phase review remain pending.

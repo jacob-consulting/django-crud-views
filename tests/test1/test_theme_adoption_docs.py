@@ -69,9 +69,11 @@ def test_theme_registration_recipe():
     assert default_label_mode("form") == "icon"
     with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"form": "bad"}, CRUD_VIEWS_STRICT=False):
         assert default_label_mode("form") == "icon"
-    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"form": "bad"}, CRUD_VIEWS_STRICT=True):
-        with pytest.raises(ValueError, match="CRUD_VIEWS_LABEL_MODE_DEFAULTS"):
-            default_label_mode("form")
+    with (
+        override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"form": "bad"}, CRUD_VIEWS_STRICT=True),
+        pytest.raises(ValueError, match="CRUD_VIEWS_LABEL_MODE_DEFAULTS"),
+    ):
+        default_label_mode("form")
 
 
 @pytest.mark.parametrize("strict", [False, True])
@@ -124,7 +126,7 @@ def test_published_renderer_rejects_or_warns_helper_configuration(strict, config
     template = Template(recipe(THEME, "### Page-owned form recipe"))
     with override_settings(CRUD_VIEWS_STRICT=strict):
         if strict or configuration == "wrapping":
-            with pytest.raises(ImproperlyConfigured, match="form_tag=False|form_action"):
+            with pytest.raises(ImproperlyConfigured, match=r"form_tag=False|form_action"):
                 template.render(_context(form))
         else:
             owner = assert_owned_form_markup(template.render(_context(form)))

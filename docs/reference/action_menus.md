@@ -57,8 +57,9 @@ from [hide or disable](inaccessible_actions.md), which resolves on each action's
 
 ## Label mode
 
-Toolbar and row buttons are icon-only unless configured: their package floor is `"icon"`, which a project changes per
-location with [`CRUD_VIEWS_LABEL_MODE_DEFAULTS`](settings.md#label-mode-configuration). Crispy form buttons show their
+Toolbar and row buttons are icon-only unless configured: their package floor is `"icon"`, which themes can change
+through [registration](theme.md#theme-label-defaults) and projects override per location with
+[`CRUD_VIEWS_LABEL_MODE_DEFAULTS`](settings.md#label-mode-configuration). Crispy form buttons show their
 text: the `"form"` floor is `"label"`. A **label mode map** names the action keys, or form kinds, that look
 otherwise:
 
@@ -97,7 +98,7 @@ For one key of the context toolbar (and `{% cv_context_button %}`), the first st
 3. the map selected whole from `cv_context_actions_label_mode`, `ViewSet.context_actions_label_mode` and
    `CRUD_VIEWS_CONTEXT_ACTIONS_LABEL_MODE` (the first that is not `None`), if it names the key;
 4. the target view's `cv_context_action_label_mode`, the [target-view default](#target-view-default);
-5. `default_label_mode("context")`: the `"context"` entry of `CRUD_VIEWS_LABEL_MODE_DEFAULTS`, package default
+5. `default_label_mode("context")`: project `CRUD_VIEWS_LABEL_MODE_DEFAULTS`, then theme registration for `"context"`, then package default
    `"icon"`.
 
 The floor in step 5 is read only when no earlier step decides the key.
@@ -108,7 +109,7 @@ For one key of a list row:
 
 1. the map selected whole from `cv_list_actions_label_mode`, `ViewSet.list_actions_label_mode` and
    `CRUD_VIEWS_LIST_ACTIONS_LABEL_MODE` (the first that is not `None`), if it names the key;
-2. otherwise `default_label_mode("list")`: the `"list"` entry of `CRUD_VIEWS_LABEL_MODE_DEFAULTS`, package default
+2. otherwise `default_label_mode("list")`: project `CRUD_VIEWS_LABEL_MODE_DEFAULTS`, then theme registration for `"list"`, then package default
    `"icon"`.
 
 Row actions never read a context button's `label_mode` or the target view's `cv_context_action_label_mode`.
@@ -127,7 +128,7 @@ For one form kind of a crud_views owner (a `CrudView` class or instance):
 
 1. the map selected whole from `cv_form_actions_label_mode`, `ViewSet.form_actions_label_mode` and
    `CRUD_VIEWS_FORM_ACTIONS_LABEL_MODE` (the first that is not `None`), if it names the kind;
-2. otherwise `default_label_mode("form")`: the `"form"` entry of `CRUD_VIEWS_LABEL_MODE_DEFAULTS`, package default
+2. otherwise `default_label_mode("form")`: project `CRUD_VIEWS_LABEL_MODE_DEFAULTS`, then theme registration for `"form"`, then package default
    `"label"`.
 
 The owner answers through `cv_get_action_label_mode("form", kind)`, so a subclass override of it or of
@@ -185,7 +186,7 @@ Cards do not use the maps. For one inline card button:
 1. `CardAction.label_mode`, if it is not `None`;
 2. the card view's own instance `cv_card_actions_label_mode`, if it is not `None`; without an own instance value,
    the class-level resolver uses the class attribute if it is not `None`;
-3. `default_label_mode("card")`: the `"card"` entry of `CRUD_VIEWS_LABEL_MODE_DEFAULTS`, package default `"both"`.
+3. `default_label_mode("card")`: project `CRUD_VIEWS_LABEL_MODE_DEFAULTS`, then theme registration for `"card"`, then package default `"both"`.
 
 An own instance `None` opts directly into step 3, bypassing an inherited class value. This includes an explicit
 `None` passed to `as_view()` or assigned to `self` during a request. The floor is read lazily, only when needed.

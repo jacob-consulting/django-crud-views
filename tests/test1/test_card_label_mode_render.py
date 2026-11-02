@@ -115,19 +115,15 @@ def test_three_states_on_one_card(author_douglas_adams, monkeypatch):
 
 
 @pytest.mark.django_db
-def test_no_label_still_means_icon_only(author_douglas_adams, monkeypatch):
+def test_explicit_icon_mode_keeps_accessible_label(author_douglas_adams, monkeypatch):
     client = _client([AUTHOR_FULL])
-    legacy = _inline(
-        _author_card(client, [CardAction(key="delete", label="Delete", no_label=True)], monkeypatch), "delete"
-    )
     explicit = _inline(
         _author_card(client, [CardAction(key="delete", label="Delete", label_mode="icon")], monkeypatch), "delete"
     )
 
-    assert len(_icons(legacy)) == 1
-    assert legacy.cssselect("span.visually-hidden")[0].text_content().strip() == "Delete"
-    assert legacy.get("title") == "Delete"
-    assert _markup(legacy) == _markup(explicit)
+    assert len(_icons(explicit)) == 1
+    assert explicit.cssselect("span.visually-hidden")[0].text_content().strip() == "Delete"
+    assert explicit.get("title") == "Delete"
 
 
 @pytest.mark.django_db
@@ -296,16 +292,14 @@ def test_card_instance_mode_precedence(author_douglas_adams, user_author_view, s
     for permission in ("change", "delete"):
         user_viewset_permission(user_author_view, cv_author, permission)
 
-    # Defensive action-mode precedence even if a caller bypasses CardAction's validation.
-    explicit = CardAction(key="delete", label="Delete", no_label=True)
-    object.__setattr__(explicit, "label_mode", "both" if mode == "label" else "label")
+    explicit = CardAction(key="delete", label="Delete", label_mode="both" if mode == "label" else "label")
 
     class InstanceView(AuthorCardListView):
         cv_card_actions = [
             CardAction(key="detail", label="Details"),
             CardAction(key="update", label="Edit", label_mode="icon"),
             explicit,
-            CardAction(key="up", label="Up", no_label=True),
+            CardAction(key="up", label="Up", label_mode="icon"),
         ]
 
         def setup(self, request, *args, **kwargs):
@@ -463,7 +457,7 @@ def test_card_floor_renders_label_only(author_douglas_adams):
 
     _assert_label_only(_inline(card, "detail"), "Details")
     _assert_label_only(_inline(card, "update"), "Edit")
-    # the stock delete action keeps no_label=True, which still means icon-only with an accessible name (D-18)
+    # The stock delete action explicitly selects icon-only with an accessible name.
     _assert_icon_only(_inline(card, "delete"))
     assert [w for w in caught if issubclass(w.category, DeprecationWarning)] == []
 
@@ -471,28 +465,25 @@ def test_card_floor_renders_label_only(author_douglas_adams):
 @pytest.mark.django_db
 def test_card_mode_precedence_with_floor(author_douglas_adams, monkeypatch):
     client = _client([AUTHOR_FULL])
-    # CardAction validates at construction, so bypass the validator to model label_mode alongside no_label
-    explicit_over_no_label = CardAction(key="delete", label="Delete", no_label=True)
-    object.__setattr__(explicit_over_no_label, "label_mode", "label")
     actions = [
         CardAction(key="detail", label="Details"),
         CardAction(key="update", label="Edit", label_mode="both"),
-        explicit_over_no_label,
-        CardAction(key="up", label="Up", no_label=True),
+        CardAction(key="delete", label="Delete", label_mode="label"),
+        CardAction(key="up", label="Up", label_mode="icon"),
     ]
 
     with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS=CARD_LABEL):
         card = _author_card(client, actions, monkeypatch)
-    # unset action: the card floor; explicit action mode wins over the floor and over no_label
+    # Unset action: the card floor; explicit action mode wins over the floor.
     _assert_label_only(_inline(card, "detail"), "Details")
     update = _inline(card, "update")
     assert len(_icons(update)) == 1
     assert _text(update) == "Edit"
     _assert_label_only(_inline(card, "delete"), "Delete")
-    # no_label beats the floor
+    # Explicit icon mode beats the floor.
     _assert_icon_only(_inline(card, "up"))
 
-    # an explicitly assigned view attribute beats the floor; no_label still beats the view attribute
+    # An explicitly assigned view attribute beats the floor; action mode still beats the view attribute.
     monkeypatch.setattr(AuthorCardListView, "cv_card_actions_label_mode", "both")
     with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS=CARD_LABEL):
         card = _author_card(client, actions, monkeypatch)

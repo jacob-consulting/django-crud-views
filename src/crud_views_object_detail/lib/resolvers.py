@@ -70,6 +70,7 @@ class ResolvedGroup:
     description: str | None = None
     icon: str | None = None
     properties: list[ResolvedProperty] = field(default_factory=list)
+    id: str | None = None
 
 
 def _get_field_type(field_obj: models.Field) -> str:
@@ -261,6 +262,7 @@ def resolve_group(instance: models.Model, config: PropertyGroupConfig, view=None
         description=config.description,
         icon=config.icon,
         properties=[resolve_property(instance, prop, view=view) for prop in config.properties],
+        id=config.id,
     )
 
 

@@ -5,6 +5,7 @@ from typing import Any
 from pydantic import BaseModel, ConfigDict, field_validator
 
 from crud_views.lib.lazy import LazyStr
+from crud_views_object_detail.lib.presentation import _validate_id_token
 
 
 class LinkConfig(BaseModel):
@@ -60,6 +61,12 @@ class PropertyGroupConfig(BaseModel):
     description: LazyStr | None = None
     icon: str | None = None
     properties: list[PropertyConfig]
+    id: str | None = None
+
+    @field_validator("id", mode="before")
+    @classmethod
+    def validate_group_id(cls, value):
+        return None if value is None else _validate_id_token(value, "group id")
 
     @field_validator("properties", mode="before")
     @classmethod

@@ -1,12 +1,16 @@
 """Private, immutable presentation data for one object-detail render."""
 
+from __future__ import annotations
+
 import re
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 from uuid import uuid4
 
 from django.core.exceptions import ImproperlyConfigured
 
-from crud_views_object_detail.lib.resolvers import ResolvedGroup
+if TYPE_CHECKING:
+    from crud_views_object_detail.lib.resolvers import ResolvedGroup
 
 _SCOPE_KEY = "_cv_od_render_scope"
 

@@ -82,7 +82,7 @@ def render_property(context, prop, layout=None):
             f"crud_views_object_detail/layouts/{pack}/property.html",
         ]
     )
-    return mark_safe(tpl.render({"prop": prop}, context.get("request")))
+    return mark_safe(tpl.render({"prop": prop, _SCOPE_KEY: _render_scope(context)}, context.get("request")))
 
 
 @register.simple_tag(takes_context=True)
@@ -110,7 +110,10 @@ def render_property_value(context, prop):
     od_settings = {
         "property_text_newline": crud_views_object_detail_settings.property_text_newline,
     }
-    return tpl.render({"prop": prop, "value": prop.value, "od_settings": od_settings}, context.get("request"))
+    return tpl.render(
+        {"prop": prop, "value": prop.value, "od_settings": od_settings, _SCOPE_KEY: _render_scope(context)},
+        context.get("request"),
+    )
 
 
 @register.simple_tag

@@ -50,4 +50,11 @@ def _project_component(groups, component_id=None, scope=None):
         key = getattr(group, "id", None)
         suffix = f"s{len(key)}-{key}" if key is not None else f"i{index}"
         entries.append(GroupPresentation(group, f"{base}-{suffix}-control", f"{base}-{suffix}-panel", index == 0))
-    return ComponentPresentation(f"{base}-root", f"{base}-tabs", f"{base}-content", tuple(entries))
+    component = ComponentPresentation(f"{base}-root", f"{base}-tabs", f"{base}-content", tuple(entries))
+    ids = [component.id, component.tablist_id, component.content_id]
+    ids.extend(value for entry in entries for value in (entry.control_id, entry.panel_id))
+    if len(ids) != len(set(ids)) or (scope is not None and scope.intersection(ids)):
+        raise ImproperlyConfigured(f"Duplicate object-detail identity in component_id {token!r}: {ids!r}")
+    if scope is not None:
+        scope.update(ids)
+    return component

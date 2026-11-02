@@ -29,7 +29,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 6.2: Request authorization and write integrity (INSERTED)** - analysis B1–B7: secure request paths, safe delete previews and truthful Guardian configuration before the freeze (completed 2026-10-30)
 - [x] **Phase 6.3: Delete protection and write-boundary integrity (INSERTED)** - issue #282 (completed 2026-11-01)
 - [x] **Phase 6.4: Conditional and formset correctness/lifecycle (INSERTED)** - analysis A1–A7: correct conditional state, server save behavior and dynamic formset initialization before the freeze (completed 2026-11-02)
-- [ ] **Phase 6.5: Remaining presentation contracts and decided cleanup (INSERTED)** - analysis #259/C1/C2 and decided alias cleanup before the freeze
+- [x] **Phase 6.5: Remaining presentation contracts and decided cleanup (INSERTED)** - analysis #259/C1/C2 and decided alias cleanup before the freeze (completed 2026-11-02)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Phase Details
@@ -684,7 +684,7 @@ precedence. CONTEXT.md D-01–D-17 locks configurable headings, immediate migrat
 
 **Scope exclusions**: Completed authorization/deletion/conditional/formset acceptance, proposed Phase 6.6 Tabler
 seams (#277–#280), unrelated CSS cleanup, the jQuery port, optional diagnostics and the final stability policy.
-**Plans**: 9/9 plans executed — ready to execute; external review converged in 4 of 5 cycles (0 HIGH, 0 actionable findings, 0 conflicts).
+**Plans**: 9/9 plans complete; UAT 28/28 passed, canonical verification passed and security 20/20 closed. Completed 2026-11-02.
 
 Plans:
 
@@ -788,5 +788,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 6.2. Request authorization and write integrity | 9/9 | Complete    | 2026-10-30 |
 | 6.3. Delete protection and write-boundary integrity | 20/20 | Complete    | 2026-11-01 |
 | 6.4. Conditional and formset correctness/lifecycle | 26/26 | Complete    | 2026-11-02 |
-| 6.5. Remaining presentation contracts and decided cleanup | 9/9 | In Progress | - |
+| 6.5. Remaining presentation contracts and decided cleanup | 9/9 | Complete    | 2026-11-02 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

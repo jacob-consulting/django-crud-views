@@ -53,9 +53,9 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 - ✓ **6.3** Callback-safe deletion preview, exception propagation, database alignment and bounded Guardian policy review completed in the roadmap; broader custom-PK compatibility remains the separately tracked issue #286 follow-up.
 
-### Active
+- ✓ **6.5** Heading presentation, stable object-detail identity/tab selection, semantic badges and alias cleanup; PRES-01–06, paired migrations and public-surface handoff — Phase 06.5; UAT 28/28, canonical verification passed.
 
-- [ ] **6.5** Heading presentation, stable object-detail identity/tab selection, semantic badges and decided alias cleanup; PRES-01–06, with immediate copied-template migrations before Phase 7.
+### Active
 
 - [ ] **4** Theme surface in `docs/development/stability.md` (icons, buttons, alerts, JS, theme hooks) + guard test
   `tests/test1/test_stability_doc.py`; closes the theme part of #89
@@ -143,4 +143,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-11-02 after Phase 6.4 completion*
+*Last updated: 2026-11-02 after Phase 06.5 completion*

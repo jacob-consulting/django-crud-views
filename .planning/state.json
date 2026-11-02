@@ -56,7 +56,7 @@
     {
       "number": "6.5",
       "name": "Remaining presentation contracts and decided cleanup",
-      "status": "in_progress"
+      "status": "complete"
     },
     {
       "number": "7",
@@ -66,8 +66,8 @@
   ],
   "next": {
     "command": "$gsd-progress --next",
-    "label": "Advance to the next step",
-    "reason": "Phase 13 of 15 · 10% · executing"
+    "label": "Advance to the next step (plan phase 7)",
+    "reason": "Phase 15 of 15 — needs a plan"
   },
-  "updated_at": "2026-11-02T10:29:11.811Z"
+  "updated_at": "2026-11-02T15:49:08.732Z"
 }

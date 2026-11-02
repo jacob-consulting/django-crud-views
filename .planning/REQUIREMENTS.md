@@ -103,7 +103,6 @@ unverified follow-up under issue #286, outside this phase's gate. See
 [scope reconciliation](phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-SCOPE-RECONCILIATION.md).
 Formal re-verification passed 91/91 with no overrides; Phase 6.3 completed on 2026-11-01.
 
-
 Source: [issue #282](https://github.com/jacob-consulting/django-crud-views/issues/282), revised analysis addendum/§8,
 and [06.2-REVIEW](phases/06.2-request-authorization-and-write-integrity/06.2-REVIEW.md) CR-02–CR-04.
 These remediate the existing AUTH promises; deferral leaves them unresolved and does not reopen fixed CR-01/WR-02.
@@ -144,14 +143,14 @@ Implementation/verification progress is tracked below; A8, A25, jQuery removal a
 
 ### Remaining presentation contracts and decided cleanup (Phase 6.5)
 
-Source: Phase 06.5 CONTEXT.md D-01–D-17. These requirements are pending execution and verification.
+Source: Phase 06.5 CONTEXT.md D-01–D-17. Completed 2026-11-02: canonical verification passed and UAT 28/28 accepted, including the T22 human confirmation.
 
-- [ ] **PRES-01**: Heading sizing is theme-configurable with Bootstrap defaults, semantic levels, shared and page/modal/group icon styling, escaped classes and correct host/element icon placement with immediate custom-template migration.
-- [ ] **PRES-02**: Object-detail components and groups have collision-free generated IDs and optional stable supplied identities; rendering detects supplied collisions within its operation and documents separate-response uniqueness.
-- [ ] **PRES-03**: Vertical tabs initially select the first tab and visible panel for one or two groups; mouse and keyboard automatic activation work on page and freshly injected modal content with component isolation.
-- [ ] **PRES-04**: CardAction rejects any supplied no_label keyword including False with a label_mode migration error, removes the Python alias and obsolete cv_no_label template guard, and preserves unrelated extra handling and accepted label-mode APIs.
-- [ ] **PRES-05**: Badges expose resolved semantic color and pill alongside unchanged default CSS; arbitrary colors, one callback evaluation, ordinary-value fallbacks and badge-before-explicit-template precedence are preserved.
-- [ ] **PRES-06**: Executed copied/native template migrations preserve escaped titles, values and resolved context; real browser acceptance and preservation gates report their limits, paired Breaking migration entries and Phase 7 public-surface handoff.
+- [x] **PRES-01**: Heading sizing is theme-configurable with Bootstrap defaults, semantic levels, shared and page/modal/group icon styling, escaped classes and correct host/element icon placement with immediate custom-template migration.
+- [x] **PRES-02**: Object-detail components and groups have collision-free generated IDs and optional stable supplied identities; rendering detects supplied collisions within its operation and documents separate-response uniqueness.
+- [x] **PRES-03**: Vertical tabs initially select the first tab and visible panel for one or two groups; mouse and keyboard automatic activation work on page and freshly injected modal content with component isolation.
+- [x] **PRES-04**: CardAction rejects any supplied no_label keyword including False with a label_mode migration error, removes the Python alias and obsolete cv_no_label template guard, and preserves unrelated extra handling and accepted label-mode APIs.
+- [x] **PRES-05**: Badges expose resolved semantic color and pill alongside unchanged default CSS; arbitrary colors, one callback evaluation, ordinary-value fallbacks and badge-before-explicit-template precedence are preserved.
+- [x] **PRES-06**: Executed copied/native template migrations preserve escaped titles, values and resolved context; real browser acceptance and preservation gates report their limits, paired Breaking migration entries and Phase 7 public-surface handoff.
 
 ### Stability policy (plan 4)
 
@@ -194,12 +193,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PRES-01 | Phase 6.5 | Pending |
-| PRES-02 | Phase 6.5 | Pending |
-| PRES-03 | Phase 6.5 | Pending |
-| PRES-04 | Phase 6.5 | Pending |
-| PRES-05 | Phase 6.5 | Pending |
-| PRES-06 | Phase 6.5 | Pending |
+| PRES-01 | Phase 6.5 | Complete |
+| PRES-02 | Phase 6.5 | Complete |
+| PRES-03 | Phase 6.5 | Complete |
+| PRES-04 | Phase 6.5 | Complete |
+| PRES-05 | Phase 6.5 | Complete |
+| PRES-06 | Phase 6.5 | Complete |
 | LMOD-01 | Phase 1 (plan 1A) | Complete |
 | LMOD-02 | Phase 1 (plan 1A) | Complete |
 | LMOD-03 | Phase 1 (plan 1A) | Complete |

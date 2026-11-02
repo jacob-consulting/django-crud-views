@@ -1,19 +1,19 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: "06.5"
-current_phase_name: Remaining presentation contracts and decided cleanup
-status: verifying
-stopped_at: Phase 06.5 execution complete; verification human_needed 22/23; UAT two pending
-last_updated: "2026-11-02T15:20:03.725Z"
+current_phase: 7
+current_phase_name: Theme-surface stability policy
+status: planning
+stopped_at: Phase 06.5 complete, ready to plan Phase 7
+last_updated: "2026-11-02T15:49:39.502Z"
 last_activity: 2026-11-02
-last_activity_desc: Phase 06.5 UI-SPEC approved and committed; 28 state considerations confirmed; execution ready to resume
-state_head: f633f6871136d68b64459910646a9ab4e33c0a96
+state_head: ed5c40c0b9eb02aaa12533a43792a36e9ae576b2
 progress:
   total_phases: 12
-  completed_phases: 10
+  completed_phases: 11
   total_plans: 91
   completed_plans: 91
+last_activity_desc: Phase 06.5 complete, transitioned to Phase 7
 milestone_name: milestone
 ---
 
@@ -24,17 +24,25 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-11-02)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 06.5 — Remaining presentation contracts and decided cleanup
+**Current focus:** Phase 7 — Theme-surface stability policy
 
 ## Current Position
 
-Phase: 06.5 (Remaining presentation contracts and decided cleanup) — AWAITING VERIFICATION
-Plan: 9/9 complete
-Status: human_needed — 22/23 truths verified; two UAT checks pending
-Last activity: 2026-11-02 — Approved multicore floor rerun passed; independent reviews and final verification saved
+Phase: 7 — Theme-surface stability policy
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-11-02
 
-Progress: 10/12 phases marked complete; 91/91 plans executed.
-Next: $gsd-verify-work 06.5
+Progress: [█████████░] 92%
+Next: $gsd-discuss-phase 7
+
+### Phase 06.5 completion — 2026-11-02
+
+- Resumed existing UAT: 28/28 passed (five human confirmations and 23 carried automated results), no issues or pending checks. No tests rerun during this resume.
+- Canonical verification is current and passed; security has 20/20 threats closed. Completion predicate passed with no blockers.
+- All nine plans complete; PRES-01–06 accepted. Heading/icon projection, stable identity boundaries, tab lifecycle, semantic badges and removed aliases are handed to Phase 7.
+- Prior checkpoints below are historical and superseded by this completion entry. Existing floor exclusion and runtime/browser coverage limits remain unchanged.
+- Phase 7 needs discussion/spec decisions; proposed Phase 6.6 remains unaccepted and is not inserted by this transition.
 
 ### Phase 06.5 final verification checkpoint — 2026-11-02
 
@@ -274,7 +282,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 82
+- Total plans completed: 91
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -292,6 +300,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.2 | 9 | - | - |
 | 06.3 | 20 | - | - |
 | 06.4 | 26 | - | - |
+| 06.5 | 9 | - | - |
 
 **Recent Trend:**
 
@@ -514,7 +523,7 @@ None yet.
   Markdown files; product formatting passes. See phase deferred-items.md and WINDOWS entry 4.
 
 - Phase 7: needs a spec or maintainer decision before planning.
-- Phase 7: retain the decided stable label-mode names; track the separately planned `no_label` removal before 1.0.
+- Phase 7: retain the decided stable label-mode names and document the completed Phase 06.5 `no_label` removal.
 - Phase 7: carry the Phase 5 class key `pagination:hidden-label` into the stability surface.
 
 - [Phase 4] Four open Info review findings (IN-01 `[role~="alert"]`, IN-02 hand-copied allowlist, IN-04 no guard for
@@ -551,6 +560,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-02T15:20:01.544Z
-Stopped at: Phase 06.5 execution complete; verification human_needed 22/23; UAT two pending
-Resume file: .planning/phases/06.5-remaining-presentation-contracts-and-decided-cleanup/06.5-UAT.md
+Last session: 2026-11-02T15:49:08Z
+Stopped at: Phase 06.5 complete, ready to plan Phase 7
+Resume file: None

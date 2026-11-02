@@ -57,6 +57,9 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 ### Active
 
+- [ ] **6.6** Theme-adoption seams (#277–#280): page-owned forms and helper diagnostics, validated theme label defaults,
+  independent action-group/alert keys, real isolated companion acceptance and tested migrations before Phase 7.
+
 - [ ] **4** Theme surface in `docs/development/stability.md` (icons, buttons, alerts, JS, theme hooks) + guard test
   `tests/test1/test_stability_doc.py`; closes the theme part of #89
 
@@ -65,7 +68,7 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 - Renaming the `cv_context_actions_label_mode` / `cv_context_action_label_mode` pair — rejected, not deferred: both names stay stable (Phase 1 decision, LATER-02 won't rename)
 - E36x check for `container-tag` — tracked separately
 - #211 stale-override detection — tracked separately; #259 is now owned by Phase 6.5.
-- Tabler theme changes in its own repository — each phase only writes the Tabler follow-up into its acceptance note
+- Permanent Tabler theme changes in its own repository — Phase 06.6 permits isolated temporary adaptations and a tested patch handoff only; original companion worktrees remain unchanged
 - The 1.0.0 version bump itself — follows after Phase 4
 
 ## Context
@@ -100,7 +103,7 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 |----------|-----------|---------|
 | Group findings into phases by dependency, not rank order or one change | Reviewable units; #257 depends on 1A+1C; stability policy must be last | — Pending |
 | Option A: `form:<kind>:<mode>`; context/list/card retain variants | Independent finite vocabularies preserve W362 boundaries; form rendering and floors remain Phase 6 work | Validated (Phase 2) |
-| Label-mode defaults are a project-wide floor, not per-ViewSet/view | Per-ViewSet/view knobs already exist | Validated (Phase 1) |
+| Label-mode defaults are a per-location floor with package → theme → project-setting precedence; explicit owner modes remain above it | Phase 06.6 D-15 adds register_label_mode_defaults without renaming existing owner APIs or merging their maps | Phase 1 contract extended by Phase 06.6 |
 | Phase 3 (Bootstrap leak fixes) is the droppable one if 1.0.0 ships early | Additive DOM changes with a one-line migration note each | — Pending |
 | Milestone limited to the five findings | Keep scope reviewable; other 1.0.0 items tracked separately | — Pending |
 | Keep `cv_context_actions_label_mode` / `cv_context_action_label_mode` names; freeze as stable (LATER-02 → won't rename) | No renames before freeze; docs sharpen the distinction | Decided (Phase 1 discussion) |

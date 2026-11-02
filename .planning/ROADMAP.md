@@ -717,6 +717,47 @@ Plans:
 
 **UI hint**: existing heading and object-detail markup/behavior; browser acceptance required, no new screens.
 
+### Phase 06.6: Theme-adoption seams from the Tabler sync (INSERTED)
+
+**Goal**: Close the theme-adoption gaps from the Tabler sync before Phase 7 freezes the affected public names.
+**Source**: [Pre-1.0 analysis](../superpowers/notes/2026-10-28-pre-1.0-before-theme-freeze-analysis.md),
+2026-10-29 addendum, §8 slice 6.6 and §9 decisions 5–6; issues #277–#280.
+**Depends on**: Phase 6.5 for final integration. Builds on Phases 1, 4 and 6; check delete-page integration
+against Phase 6.3. Must complete before Phase 7.
+**Requirements**: THEME-01, THEME-02, THEME-03, THEME-04, THEME-05, THEME-06
+**Success Criteria** (what must be TRUE):
+
+  1. Create/update/custom/delete/workflow pages render one `<form>` and one CSRF input with POST behavior
+     unchanged (#277). Document the user-supplied crispy-helper policy; page templates own the form.
+  2. `register_label_mode_defaults()` supplies package → theme → project-setting precedence per key;
+     explicit view modes retain precedence (#278). Validate consistently with E108 and include the theme layer
+     in W292 diagnostics.
+  3. `form:actions` and `form:filter-actions` independently style action groups, with empty-string defaults;
+     update W362 and the documented key inventory (#279).
+  4. Add `alert:dismissible` / `alert:close` utility keys with byte-identical defaults and preserved accessible
+     names/dismissal behavior, as selected by D-08/D-17.
+  5. Re-run the reference Tabler theme; required overrides shrink or stay unchanged. Preserve stock defaults
+     except removal of the nested form, record that DOM fix, and hand every new name to Phase 7.
+     Pair any Breaking changelog entry with `docs/migrating-1.0.md`.
+
+**Decisions settled**: D-01–D-19 in 06.6-CONTEXT.md require immediate incompatible-helper errors, unused-wrapper
+warning/strict errors, atomic theme registration, both alert keys and isolated tested companion adaptations.
+**Scope exclusions**: Reopening completed authorization/deletion/conditional/formset/presentation acceptance,
+full jQuery removal, and final stability-policy inventory.
+**Plans**: 9 plans
+
+Plans:
+- [ ] 06.6-01-PLAN.md — Single-form/CSRF tracer and helper diagnostics (wave 1)
+- [ ] 06.6-02-PLAN.md — Atomic theme label defaults and effective checks (wave 1)
+- [ ] 06.6-03-PLAN.md — Supported-pack action-group styling (wave 2)
+- [ ] 06.6-04-PLAN.md — Alert utility classes and preserved dismissal (wave 1)
+- [ ] 06.6-05-PLAN.md — Full stock/workflow request and DOM preservation (wave 2)
+- [ ] 06.6-06-PLAN.md — Real companion acquisition and exact-source baseline (wave 1)
+- [ ] 06.6-07-PLAN.md — Real Tabler/browser acceptance and replayable patch (wave 3)
+- [ ] 06.6-08-PLAN.md — Executable adoption and paired migrations (wave 3)
+- [ ] 06.6-09-PLAN.md — Final regression evidence and Phase 7 handoff (wave 4)
+**UI hint**: yes (forms, action groups and alerts across stock and reference themes).
+
 ### Phase 7: Theme-surface stability policy
 
 **Goal**: Theme authors can see exactly which names they may rely on at 1.0.0, and a test stops any public theme name

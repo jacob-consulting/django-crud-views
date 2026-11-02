@@ -112,12 +112,20 @@ def test_card_empty_label_forces_icon():
     assert data["cv_label_mode"] == "icon"
 
 
-@pytest.mark.parametrize("value", [True, False])
-def test_cv_no_label_in_ctx_raises(value):
-    # presence, not truthiness: cv_no_label=False is the shape the old card-label tests passed
-    ctx = base(cv_label="Details", cv_no_label=value)
-    with pytest.raises(ValueError, match="cv_no_label"):
-        cv_button_data(ctx, "card")
+@pytest.mark.parametrize("location", ACTION_LOCATIONS)
+@pytest.mark.parametrize("mode", [None, "label", "icon", "both"])
+@pytest.mark.parametrize("value", [True, False, None, "legacy"])
+def test_cv_no_label_in_ctx_is_ignored(location, mode, value):
+    ctx = base(cv_label="Details")
+    if mode is not None:
+        ctx["cv_label_mode"] = mode
+    expected = cv_button_data(ctx, location)
+    ctx["cv_no_label"] = value
+    original = copy.deepcopy(ctx)
+    actual = cv_button_data(ctx, location)
+    assert actual == expected
+    assert "cv_no_label" not in actual
+    assert ctx == original
 
 
 @pytest.mark.parametrize("location", ACTION_LOCATIONS)

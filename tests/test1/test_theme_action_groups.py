@@ -2,7 +2,9 @@
 
 import importlib.metadata
 import json
+import re
 from copy import deepcopy
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
@@ -13,6 +15,7 @@ from django.conf import settings
 from django.template import Context, Template
 from django.template.loader import get_template
 from django.test import RequestFactory, override_settings
+from django.utils.safestring import mark_safe
 from lxml import html
 
 from crud_views.lib import button_classes as bc
@@ -146,7 +149,7 @@ def test_pack_structure_discriminator_requires_full_match(change, tmp_path):
     assert not _use_bootstrap5_floor_bridge("bootstrap5", candidate)
 
 
-def custom_templates(source, tmp_path=None):
+def custom_templates(source, tmp_path=None, name="bootstrap5/layout/formactions.html"):
     templates = [
         {
             **settings.TEMPLATES[0],
@@ -154,14 +157,14 @@ def custom_templates(source, tmp_path=None):
             "OPTIONS": {
                 **settings.TEMPLATES[0].get("OPTIONS", {}),
                 "loaders": [
-                    ("django.template.loaders.locmem.Loader", {"bootstrap5/layout/formactions.html": source}),
+                    ("django.template.loaders.locmem.Loader", {name: source}),
                     "django.template.loaders.app_directories.Loader",
                 ],
             },
         }
     ]
     if tmp_path is not None:
-        path = tmp_path / "bootstrap5/layout/formactions.html"
+        path = tmp_path / name
         path.parent.mkdir(parents=True)
         path.write_text(source)
         templates[0]["DIRS"] = [str(tmp_path)]
@@ -295,3 +298,69 @@ def test_custom_group_opt_in(base):
             wrapper = filter_group(render_filter(filter_helper(Custom)))
     assert {"mb-3", "authored", "theme"} <= wrapper.classes
     assert wrapper.get("class").split().count("theme") == 1
+
+
+@pytest.mark.parametrize("pack", ["bootstrap5", "custom"])
+@pytest.mark.parametrize("consumes", [True, False])
+def test_custom_pack_keeps_its_own_structure_even_when_classes_are_ignored(pack, consumes):
+    source = '<section class="native{% if formactions.css_class %} {{ formactions.css_class }}{% endif %}">'
+    if not consumes:
+        source = '<section class="native">'
+    source += "<nav>{{ fields_output|safe }}</nav></section>"
+    group = ordinary_group()
+    classes = override_settings(CRUD_VIEWS_BUTTON_CLASSES={"form:actions": "sentinel"})
+    with custom_templates(source, name=f"{pack}/layout/formactions.html"), classes:
+        markup = group.render(forms.Form(), Context(), template_pack=pack)
+    wrapper = html.fromstring(markup)
+    assert wrapper.tag == "section"
+    assert "native" in wrapper.classes
+    assert ("sentinel" in wrapper.classes) is consumes
+    assert len(wrapper.xpath("./nav/button")) == 2
+    assert not wrapper.cssselect("div")
+
+
+@pytest.mark.parametrize("safe", [False, True])
+@pytest.mark.parametrize("factory,key", [(ordinary_group, "form:actions"), (filter_helper, "form:filter-actions")])
+def test_hostile_group_classes_are_escaped(safe, factory, key):
+    value = 'x" autofocus onfocus="alert(1)<img src=x onerror=alert(2)>'
+    if safe:
+        value = mark_safe(value)
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={key: value}):
+        group = factory()
+        markup = render_group(group) if factory is ordinary_group else render_filter(group)
+    assert "&quot;" in markup and "&lt;img" in markup
+    tree = html.fragment_fromstring(markup, create_parent="div")
+    assert not tree.xpath(".//*[@autofocus or @onfocus or @onerror]")
+    assert not tree.cssselect("img")
+
+
+@pytest.mark.parametrize("label_class", ["", "grid-labels"])
+def test_empty_pack_structure_preserves_authored_attrs_and_fields(label_class):
+    group = ordinary_group()
+    group.flat_attrs = 'data-owner="group"'
+    group.attrs = {"data-owner": "group"}
+    group.id = "authored-group"
+    original = FormActions(*group.fields, css_id=group.id)
+    original.flat_attrs = group.flat_attrs
+    original.attrs = group.attrs
+    assert render_group(group, label_class=label_class) == render_group(original, label_class=label_class)
+
+
+@pytest.mark.parametrize("base", [OrdinaryForm, ListViewFilterFormHelper])
+def test_documented_custom_opt_in_keeps_native_controls(base):
+    document = (Path(__file__).resolve().parents[2] / "docs/reference/buttons.md").read_text()
+    snippet = next(
+        code for code in re.findall(r"```python\n(.*?)```", document, re.S) if "class ActionClassesMixin:" in code
+    )
+    namespace = {}
+    exec(compile(snippet, "docs/reference/buttons.md", "exec"), namespace)
+    custom = type("Documented", (namespace["ActionClassesMixin"], base), {})
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"form:actions": "theme", "form:filter-actions": "theme"}):
+        if base is OrdinaryForm:
+            group = html.fromstring(render_group(custom(None).get_form_actions()))
+            expected = [("submit", "submit"), ("reset", "button")]
+        else:
+            group = filter_group(render_filter(filter_helper(custom)))
+            expected = [("submit", "submit"), ("reset", "reset")]
+    assert {"mb-3", "my-actions", "theme"} <= group.classes
+    assert [(b.get("name"), b.get("type")) for b in group.cssselect("button")] == expected

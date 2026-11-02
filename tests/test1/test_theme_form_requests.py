@@ -252,6 +252,7 @@ class PlainContactView(CustomFormViewPermissionRequired):
     cv_key = "contact"
     form_class = PlainContactForm
     cv_header_template_code = "Plain contact"
+    cv_paragraph_template_code = "Send a plain message"
 
 
 class PlainSelectionView(PolymorphicCreateSelectViewPermissionRequired):
@@ -309,3 +310,23 @@ def test_owned_form_payload_preservation(kind, request, monkeypatch, settings, a
     else:
         assert result.url == "/author/"
     assert (_snapshot(), list(Vehicle.objects.values())) == before
+
+
+def test_existing_polymorphic_selection_route(user_vehicle_add):
+    client = Client(enforce_csrf_checks=True)
+    client.force_login(user_vehicle_add)
+    url = "/vehicle/create/select/"
+    response = client.get(url)
+    owner, form = _owned(response, url, "create", False)
+    car_type = ContentType.objects.get_for_model(Car)
+    assert form.xpath(".//select[@name='polymorphic_ctype_id']/option[@value=$value]", value=str(car_type.pk))
+    submitter = owner["submitters"][0]
+    payload = {"polymorphic_ctype_id": str(car_type.pk), submitter["name"]: submitter["value"]}
+    assert client.post(url, payload).status_code == 403
+    invalid = client.post(url, {"csrfmiddlewaretoken": owner["tokens"][0]})
+    assert invalid.status_code == 200
+    assert_owned_form_markup(invalid.content.decode())
+    result = client.post(url, {**payload, "csrfmiddlewaretoken": owner["tokens"][0]})
+    assert result.status_code == 302
+    assert result.url == f"/vehicle/create/ct/{car_type.pk}/"
+    assert Vehicle.objects.count() == 0

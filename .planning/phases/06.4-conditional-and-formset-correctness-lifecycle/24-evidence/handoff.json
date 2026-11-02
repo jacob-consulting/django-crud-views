@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "version": "06.4-24/v1",
-  "recorded": "2026-11-01T21:20:26.042313+00:00",
+  "recorded": "2026-11-02T07:10:44.772466+00:00",
   "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
   "runner_sha256": "75f8057f55d869ccb9591a0a9868e57d606f9e65f2f0eebffa5fca8d5313ad66",
   "packet": {
@@ -38,41 +38,75 @@
       ]
     },
     "security": {
-      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-      "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502",
-      "status": "open",
-      "verdict": "OPEN_THREATS",
-      "actor": "/root/execute_25/security_25",
-      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+      "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1",
+      "status": "passed",
+      "verdict": "SECURED",
+      "actor": "/root/security_uat_reconcile",
+      "recorded": "2026-11-02T06:57:54Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
-      "response": "ASVS1/high independent audit records supported partial closures while overall OPEN_THREATS remains; no accepted risk or transfer.",
-      "context": "ASVS1/high independent audit records supported partial closures while overall OPEN_THREATS remains; no accepted risk or transfer.",
+      "response": "Independent ASVS1 audit SECURED: 44/44 declared mitigations verified, zero open threats; no accepted risk or transfer. T40/T43 establish mitigation presence and historical sequence; current canonical remains stale and readiness false.",
+      "context": "Independent ASVS1 audit SECURED: 44/44 declared mitigations verified, zero open threats; no accepted risk or transfer. T40/T43 establish mitigation presence and historical sequence; current canonical remains stale and readiness false.",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+          "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
         },
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
-          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
         },
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
           "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/final-rebind.json",
+          "sha256": "8e9b6c7b42c42dd5a98827eec2be30a7fcb6a48151da4390a887c172967ba07d"
         }
       ]
     },
     "ui": {
       "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UI-REVIEW.md",
-      "sha256": "e25c2374fe704060195a806e00c616198b13d8659b4359d4008cf1148459af32",
-      "status": "pending",
-      "context": "Previous independent 24/24 bounded UI report remains applicable to unchanged product/UI, fixture assets and exact retained captures; original attribution/source hash retained. Actual native/stock H1 and H2 remain pending."
+      "sha256": "cab2aff3a2176b11a6f03fd1e4cbe09a1616b9b110557abed4f7f76f23586acb",
+      "status": "passed",
+      "actor": "/root/reconcile_64_acceptance",
+      "recorded": "2026-11-02T07:10:44.772466+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "Reused original independent 24/24 UI review for unchanged product/UI/fixture/capture inputs; actual user Chrome and installed-Orca UAT pass on stock/native including modal. This is report applicability reconciliation, not a new visual audit.",
+      "context": "Reused original independent 24/24 UI review for unchanged product/UI/fixture/capture inputs; actual user Chrome and installed-Orca UAT pass on stock/native including modal. This is report applicability reconciliation, not a new visual audit.",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UI-REVIEW.md",
+          "sha256": "cab2aff3a2176b11a6f03fd1e4cbe09a1616b9b110557abed4f7f76f23586acb"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/ui-review.md",
+          "sha256": "55300f0060bf8879e9d5afbde5759437638f58628c68b01e6779529be345d8c5"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/applicability.md",
+          "sha256": "98e2af40d6ca6f45a9bec45c5e6da2f0e40b51b9e1593a830e324d128758713d"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/code-review.md",
+          "sha256": "a4b591404b8f4175462877f8a9a868b336bab7a09f598b45da04c1129878a334"
+        }
+      ]
     },
     "verification": {
       "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VERIFICATION.md",
       "sha256": "de9103d24246ccb48440cba53770ab6e7349b849c2dfe84b6bc18a03b0c3bd00",
       "status": "open",
-      "context": "Actual independent canonical assessment: human_needed 9/10, G6/WR-05 closed within scope; H1/H2,31 flags and independently attributed security obligations remain open.",
+      "context": "Actual historical canonical human_needed 9/10 with G6/WR-05 closed; stale after completed UAT and changed report inputs. Independent canonical reassessment and fallback evaluation required; no promotion.",
       "historical": false,
       "verdict": "human_needed",
       "actor": "/root/canonical_26",
@@ -89,12 +123,6 @@
           "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
         }
       ]
-    },
-    "code_bounded": {
-      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-review.md",
-      "sha256": "01c4405f723b40f3581da2118aa0d9d7f284d6bfd46ac0a64b9b8f2b60e9522f",
-      "status": "pending",
-      "context": "Existing report retained at its true hash as historical input; current source review pending plan25/26. Original actor/time/source and dispositions are preserved under history."
     }
   },
   "findings": {
@@ -1157,1079 +1185,1489 @@
   },
   "threats": {
     "T-06.4-01": {
-      "status": "pending",
-      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "status": "verified",
+      "context": "T-06.4-01: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "blocking": false,
       "historical_independent_disposition": "closed",
       "severity": "medium",
       "independent_disposition": "closed",
-      "actor": "/root/execute_25/security_25",
-      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "actor": "/root/security_uat_reconcile",
+      "recorded": "2026-11-02T06:57:54Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
-      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "response": "T-06.4-01: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+          "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
         },
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
-          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
         },
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
           "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/final-rebind.json",
+          "sha256": "8e9b6c7b42c42dd5a98827eec2be30a7fcb6a48151da4390a887c172967ba07d"
         }
-      ]
+      ],
+      "disposition": "mitigate",
+      "review": "security"
     },
     "T-06.4-02": {
-      "status": "pending",
-      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "status": "verified",
+      "context": "T-06.4-02: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "blocking": false,
       "historical_independent_disposition": "closed",
       "severity": "medium",
       "independent_disposition": "closed",
-      "actor": "/root/execute_25/security_25",
-      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "actor": "/root/security_uat_reconcile",
+      "recorded": "2026-11-02T06:57:54Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
-      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "response": "T-06.4-02: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+          "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
         },
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
-          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
         },
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
           "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/final-rebind.json",
+          "sha256": "8e9b6c7b42c42dd5a98827eec2be30a7fcb6a48151da4390a887c172967ba07d"
         }
-      ]
+      ],
+      "disposition": "mitigate",
+      "review": "security"
     },
     "T-06.4-03": {
-      "status": "pending",
-      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "status": "verified",
+      "context": "T-06.4-03: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "blocking": false,
       "historical_independent_disposition": "closed",
       "severity": "high",
       "independent_disposition": "closed",
-      "actor": "/root/execute_25/security_25",
-      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "actor": "/root/security_uat_reconcile",
+      "recorded": "2026-11-02T06:57:54Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
-      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "response": "T-06.4-03: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+          "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
         },
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
-          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
         },
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
           "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/final-rebind.json",
+          "sha256": "8e9b6c7b42c42dd5a98827eec2be30a7fcb6a48151da4390a887c172967ba07d"
         }
-      ]
+      ],
+      "disposition": "mitigate",
+      "review": "security"
     },
     "T-06.4-04": {
-      "status": "pending",
-      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "status": "verified",
+      "context": "T-06.4-04: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "blocking": false,
       "historical_independent_disposition": "closed",
       "severity": "high",
       "independent_disposition": "closed",
-      "actor": "/root/execute_25/security_25",
-      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "actor": "/root/security_uat_reconcile",
+      "recorded": "2026-11-02T06:57:54Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
-      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "response": "T-06.4-04: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+          "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
         },
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
-          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
         },
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
           "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/final-rebind.json",
+          "sha256": "8e9b6c7b42c42dd5a98827eec2be30a7fcb6a48151da4390a887c172967ba07d"
         }
-      ]
+      ],
+      "disposition": "mitigate",
+      "review": "security"
     },
     "T-06.4-05": {
-      "status": "pending",
-      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "status": "verified",
+      "context": "T-06.4-05: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "blocking": false,
       "historical_independent_disposition": "closed",
       "severity": "high",
       "independent_disposition": "closed",
-      "actor": "/root/execute_25/security_25",
-      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "actor": "/root/security_uat_reconcile",
+      "recorded": "2026-11-02T06:57:54Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
-      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "response": "T-06.4-05: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+          "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
         },
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
-          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
         },
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
           "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/final-rebind.json",
+          "sha256": "8e9b6c7b42c42dd5a98827eec2be30a7fcb6a48151da4390a887c172967ba07d"
         }
-      ]
+      ],
+      "disposition": "mitigate",
+      "review": "security"
     },
     "T-06.4-06": {
-      "status": "pending",
-      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "status": "verified",
+      "context": "T-06.4-06: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "blocking": false,
       "historical_independent_disposition": "closed",
       "severity": "high",
       "independent_disposition": "closed",
-      "actor": "/root/execute_25/security_25",
-      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "actor": "/root/security_uat_reconcile",
+      "recorded": "2026-11-02T06:57:54Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
-      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "response": "T-06.4-06: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+          "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
         },
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
-          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
         },
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
           "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/final-rebind.json",
+          "sha256": "8e9b6c7b42c42dd5a98827eec2be30a7fcb6a48151da4390a887c172967ba07d"
         }
-      ]
+      ],
+      "disposition": "mitigate",
+      "review": "security"
     },
     "T-06.4-07": {
-      "status": "pending",
-      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "status": "verified",
+      "context": "T-06.4-07: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "blocking": false,
       "historical_independent_disposition": "closed",
       "severity": "high",
       "independent_disposition": "closed",
-      "actor": "/root/execute_25/security_25",
-      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "actor": "/root/security_uat_reconcile",
+      "recorded": "2026-11-02T06:57:54Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
-      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "response": "T-06.4-07: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+          "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
         },
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
-          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
         },
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
           "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/final-rebind.json",
+          "sha256": "8e9b6c7b42c42dd5a98827eec2be30a7fcb6a48151da4390a887c172967ba07d"
         }
-      ]
+      ],
+      "disposition": "mitigate",
+      "review": "security"
     },
     "T-06.4-08": {
-      "status": "pending",
-      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "status": "verified",
+      "context": "T-06.4-08: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "blocking": false,
       "historical_independent_disposition": "closed",
       "severity": "high",
       "independent_disposition": "closed",
-      "actor": "/root/execute_25/security_25",
-      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "actor": "/root/security_uat_reconcile",
+      "recorded": "2026-11-02T06:57:54Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
-      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "response": "T-06.4-08: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+          "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
         },
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
-          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
         },
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
           "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/final-rebind.json",
+          "sha256": "8e9b6c7b42c42dd5a98827eec2be30a7fcb6a48151da4390a887c172967ba07d"
         }
-      ]
+      ],
+      "disposition": "mitigate",
+      "review": "security"
     },
     "T-06.4-09": {
-      "status": "pending",
-      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "status": "verified",
+      "context": "T-06.4-09: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "blocking": false,
       "historical_independent_disposition": "closed",
       "severity": "medium",
       "independent_disposition": "closed",
-      "actor": "/root/execute_25/security_25",
-      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "actor": "/root/security_uat_reconcile",
+      "recorded": "2026-11-02T06:57:54Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
-      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "response": "T-06.4-09: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+          "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
         },
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
-          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
         },
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
           "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/final-rebind.json",
+          "sha256": "8e9b6c7b42c42dd5a98827eec2be30a7fcb6a48151da4390a887c172967ba07d"
         }
-      ]
+      ],
+      "disposition": "mitigate",
+      "review": "security"
     },
     "T-06.4-10": {
-      "status": "pending",
-      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "status": "verified",
+      "context": "T-06.4-10: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "blocking": false,
       "historical_independent_disposition": "closed",
       "severity": "high",
       "independent_disposition": "closed",
-      "actor": "/root/execute_25/security_25",
-      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "actor": "/root/security_uat_reconcile",
+      "recorded": "2026-11-02T06:57:54Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
-      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "response": "T-06.4-10: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+          "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
         },
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
-          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
         },
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
           "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/final-rebind.json",
+          "sha256": "8e9b6c7b42c42dd5a98827eec2be30a7fcb6a48151da4390a887c172967ba07d"
         }
-      ]
+      ],
+      "disposition": "mitigate",
+      "review": "security"
     },
     "T-06.4-11": {
-      "status": "pending",
-      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "status": "verified",
+      "context": "T-06.4-11: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "blocking": false,
       "historical_independent_disposition": "closed",
       "severity": "medium",
       "independent_disposition": "closed",
-      "actor": "/root/execute_25/security_25",
-      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "actor": "/root/security_uat_reconcile",
+      "recorded": "2026-11-02T06:57:54Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
-      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "response": "T-06.4-11: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+          "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
         },
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
-          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
         },
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
           "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/final-rebind.json",
+          "sha256": "8e9b6c7b42c42dd5a98827eec2be30a7fcb6a48151da4390a887c172967ba07d"
         }
-      ]
+      ],
+      "disposition": "mitigate",
+      "review": "security"
     },
     "T-06.4-12": {
-      "status": "pending",
-      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "status": "verified",
+      "context": "T-06.4-12: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "blocking": false,
       "historical_independent_disposition": "closed",
       "severity": "medium",
       "independent_disposition": "closed",
-      "actor": "/root/execute_25/security_25",
-      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "actor": "/root/security_uat_reconcile",
+      "recorded": "2026-11-02T06:57:54Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
-      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "response": "T-06.4-12: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+          "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
         },
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
-          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
         },
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
           "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/final-rebind.json",
+          "sha256": "8e9b6c7b42c42dd5a98827eec2be30a7fcb6a48151da4390a887c172967ba07d"
         }
-      ]
+      ],
+      "disposition": "mitigate",
+      "review": "security"
     },
     "T-06.4-13": {
-      "status": "pending",
-      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "status": "verified",
+      "context": "T-06.4-13: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "blocking": false,
       "historical_independent_disposition": "closed",
       "severity": "high",
       "independent_disposition": "closed",
-      "actor": "/root/execute_25/security_25",
-      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "actor": "/root/security_uat_reconcile",
+      "recorded": "2026-11-02T06:57:54Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
-      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "response": "T-06.4-13: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+          "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
         },
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
-          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
         },
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
           "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/final-rebind.json",
+          "sha256": "8e9b6c7b42c42dd5a98827eec2be30a7fcb6a48151da4390a887c172967ba07d"
         }
-      ]
+      ],
+      "disposition": "mitigate",
+      "review": "security"
     },
     "T-06.4-14": {
-      "status": "pending",
-      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "status": "verified",
+      "context": "T-06.4-14: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "blocking": false,
       "historical_independent_disposition": "closed",
       "severity": "high",
       "independent_disposition": "closed",
-      "actor": "/root/execute_25/security_25",
-      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "actor": "/root/security_uat_reconcile",
+      "recorded": "2026-11-02T06:57:54Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
-      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "response": "T-06.4-14: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+          "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
         },
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
-          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
         },
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
           "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/final-rebind.json",
+          "sha256": "8e9b6c7b42c42dd5a98827eec2be30a7fcb6a48151da4390a887c172967ba07d"
         }
-      ]
+      ],
+      "disposition": "mitigate",
+      "review": "security"
     },
     "T-06.4-15": {
-      "status": "pending",
-      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "status": "verified",
+      "context": "T-06.4-15: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "blocking": false,
       "historical_independent_disposition": "closed",
       "severity": "medium",
       "independent_disposition": "closed",
-      "actor": "/root/execute_25/security_25",
-      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "actor": "/root/security_uat_reconcile",
+      "recorded": "2026-11-02T06:57:54Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
-      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "response": "T-06.4-15: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+          "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
         },
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
-          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
         },
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
           "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/final-rebind.json",
+          "sha256": "8e9b6c7b42c42dd5a98827eec2be30a7fcb6a48151da4390a887c172967ba07d"
         }
-      ]
+      ],
+      "disposition": "mitigate",
+      "review": "security"
     },
     "T-06.4-16": {
-      "status": "pending",
-      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "status": "verified",
+      "context": "T-06.4-16: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "blocking": false,
       "historical_independent_disposition": "closed",
       "severity": "high",
       "independent_disposition": "closed",
-      "actor": "/root/execute_25/security_25",
-      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "actor": "/root/security_uat_reconcile",
+      "recorded": "2026-11-02T06:57:54Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
-      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "response": "T-06.4-16: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+          "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
         },
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
-          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
         },
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
           "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/final-rebind.json",
+          "sha256": "8e9b6c7b42c42dd5a98827eec2be30a7fcb6a48151da4390a887c172967ba07d"
         }
-      ]
+      ],
+      "disposition": "mitigate",
+      "review": "security"
     },
     "T-06.4-17": {
-      "status": "pending",
-      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "status": "verified",
+      "context": "T-06.4-17: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "blocking": false,
       "historical_independent_disposition": "closed",
       "severity": "high",
       "independent_disposition": "closed",
-      "actor": "/root/execute_25/security_25",
-      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "actor": "/root/security_uat_reconcile",
+      "recorded": "2026-11-02T06:57:54Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
-      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "response": "T-06.4-17: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+          "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
         },
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
-          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
         },
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
           "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/final-rebind.json",
+          "sha256": "8e9b6c7b42c42dd5a98827eec2be30a7fcb6a48151da4390a887c172967ba07d"
         }
-      ]
+      ],
+      "disposition": "mitigate",
+      "review": "security"
     },
     "T-06.4-18": {
-      "status": "pending",
-      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "status": "verified",
+      "context": "T-06.4-18: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "blocking": false,
       "historical_independent_disposition": "closed",
       "severity": "medium",
       "independent_disposition": "closed",
-      "actor": "/root/execute_25/security_25",
-      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "actor": "/root/security_uat_reconcile",
+      "recorded": "2026-11-02T06:57:54Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
-      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "response": "T-06.4-18: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+          "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
         },
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
-          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
         },
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
           "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/final-rebind.json",
+          "sha256": "8e9b6c7b42c42dd5a98827eec2be30a7fcb6a48151da4390a887c172967ba07d"
         }
-      ]
+      ],
+      "disposition": "mitigate",
+      "review": "security"
     },
     "T-06.4-19": {
-      "status": "pending",
-      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "status": "verified",
+      "context": "T-06.4-19: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "blocking": false,
       "historical_independent_disposition": "closed",
       "severity": "high",
       "independent_disposition": "closed",
-      "actor": "/root/execute_25/security_25",
-      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "actor": "/root/security_uat_reconcile",
+      "recorded": "2026-11-02T06:57:54Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
-      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "response": "T-06.4-19: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+          "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
         },
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
-          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
         },
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
           "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/final-rebind.json",
+          "sha256": "8e9b6c7b42c42dd5a98827eec2be30a7fcb6a48151da4390a887c172967ba07d"
         }
-      ]
+      ],
+      "disposition": "mitigate",
+      "review": "security"
     },
     "T-06.4-20": {
-      "status": "pending",
-      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "status": "verified",
+      "context": "T-06.4-20: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "blocking": false,
       "historical_independent_disposition": "closed",
       "severity": "medium",
       "independent_disposition": "closed",
-      "actor": "/root/execute_25/security_25",
-      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "actor": "/root/security_uat_reconcile",
+      "recorded": "2026-11-02T06:57:54Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
-      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "response": "T-06.4-20: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+          "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
         },
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
-          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
         },
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
           "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/final-rebind.json",
+          "sha256": "8e9b6c7b42c42dd5a98827eec2be30a7fcb6a48151da4390a887c172967ba07d"
         }
-      ]
+      ],
+      "disposition": "mitigate",
+      "review": "security"
     },
     "T-06.4-21": {
-      "status": "pending",
-      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "status": "verified",
+      "context": "T-06.4-21: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "blocking": false,
       "historical_independent_disposition": "closed",
       "severity": "medium",
       "independent_disposition": "closed",
-      "actor": "/root/execute_25/security_25",
-      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "actor": "/root/security_uat_reconcile",
+      "recorded": "2026-11-02T06:57:54Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
-      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "response": "T-06.4-21: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+          "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
         },
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
-          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
         },
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
           "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/final-rebind.json",
+          "sha256": "8e9b6c7b42c42dd5a98827eec2be30a7fcb6a48151da4390a887c172967ba07d"
         }
-      ]
+      ],
+      "disposition": "mitigate",
+      "review": "security"
     },
     "T-06.4-22": {
-      "status": "pending",
-      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "status": "verified",
+      "context": "T-06.4-22: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "blocking": false,
       "historical_independent_disposition": "closed",
       "severity": "high",
       "independent_disposition": "closed",
-      "actor": "/root/execute_25/security_25",
-      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "actor": "/root/security_uat_reconcile",
+      "recorded": "2026-11-02T06:57:54Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
-      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "response": "T-06.4-22: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+          "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
         },
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
-          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
         },
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
           "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/final-rebind.json",
+          "sha256": "8e9b6c7b42c42dd5a98827eec2be30a7fcb6a48151da4390a887c172967ba07d"
         }
-      ]
+      ],
+      "disposition": "mitigate",
+      "review": "security"
     },
     "T-06.4-23": {
-      "status": "pending",
-      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "status": "verified",
+      "context": "T-06.4-23: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "blocking": false,
       "historical_independent_disposition": "closed",
       "severity": "high",
       "independent_disposition": "closed",
-      "actor": "/root/execute_25/security_25",
-      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "actor": "/root/security_uat_reconcile",
+      "recorded": "2026-11-02T06:57:54Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
-      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "response": "T-06.4-23: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+          "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
         },
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
-          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
         },
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
           "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/final-rebind.json",
+          "sha256": "8e9b6c7b42c42dd5a98827eec2be30a7fcb6a48151da4390a887c172967ba07d"
         }
-      ]
+      ],
+      "disposition": "mitigate",
+      "review": "security"
     },
     "T-06.4-24": {
-      "status": "pending",
-      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "status": "verified",
+      "context": "T-06.4-24: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "blocking": false,
       "historical_independent_disposition": "closed",
       "severity": "high",
       "independent_disposition": "closed",
-      "actor": "/root/execute_25/security_25",
-      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "actor": "/root/security_uat_reconcile",
+      "recorded": "2026-11-02T06:57:54Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
-      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "response": "T-06.4-24: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+          "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
         },
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
-          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
         },
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
           "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/final-rebind.json",
+          "sha256": "8e9b6c7b42c42dd5a98827eec2be30a7fcb6a48151da4390a887c172967ba07d"
         }
-      ]
+      ],
+      "disposition": "mitigate",
+      "review": "security"
     },
     "T-06.4-25": {
-      "status": "pending",
-      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "status": "verified",
+      "context": "T-06.4-25: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "blocking": false,
       "historical_independent_disposition": "closed",
       "severity": "high",
       "independent_disposition": "closed",
-      "actor": "/root/execute_25/security_25",
-      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "actor": "/root/security_uat_reconcile",
+      "recorded": "2026-11-02T06:57:54Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
-      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "response": "T-06.4-25: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+          "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
         },
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
-          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
         },
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
           "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/final-rebind.json",
+          "sha256": "8e9b6c7b42c42dd5a98827eec2be30a7fcb6a48151da4390a887c172967ba07d"
         }
-      ]
+      ],
+      "disposition": "mitigate",
+      "review": "security"
     },
     "T-06.4-26": {
-      "status": "pending",
-      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "status": "verified",
+      "context": "T-06.4-26: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "blocking": false,
       "historical_independent_disposition": "closed",
       "severity": "medium",
       "independent_disposition": "closed",
-      "actor": "/root/execute_25/security_25",
-      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "actor": "/root/security_uat_reconcile",
+      "recorded": "2026-11-02T06:57:54Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
-      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "response": "T-06.4-26: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+          "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
         },
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
-          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
         },
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
           "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/final-rebind.json",
+          "sha256": "8e9b6c7b42c42dd5a98827eec2be30a7fcb6a48151da4390a887c172967ba07d"
         }
-      ]
+      ],
+      "disposition": "mitigate",
+      "review": "security"
     },
     "T-06.4-27": {
-      "status": "pending",
-      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "status": "verified",
+      "context": "T-06.4-27: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "blocking": false,
       "historical_independent_disposition": "closed",
       "severity": "medium",
       "independent_disposition": "closed",
-      "actor": "/root/execute_25/security_25",
-      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "actor": "/root/security_uat_reconcile",
+      "recorded": "2026-11-02T06:57:54Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
-      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "response": "T-06.4-27: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+          "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
         },
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
-          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
         },
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
           "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/final-rebind.json",
+          "sha256": "8e9b6c7b42c42dd5a98827eec2be30a7fcb6a48151da4390a887c172967ba07d"
         }
-      ]
+      ],
+      "disposition": "mitigate",
+      "review": "security"
     },
     "T-06.4-28": {
-      "status": "pending",
-      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "status": "verified",
+      "context": "T-06.4-28: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "blocking": false,
       "historical_independent_disposition": "closed",
       "severity": "high",
       "independent_disposition": "closed",
-      "actor": "/root/execute_25/security_25",
-      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "actor": "/root/security_uat_reconcile",
+      "recorded": "2026-11-02T06:57:54Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
-      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "response": "T-06.4-28: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+          "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
         },
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
-          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
         },
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
           "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/final-rebind.json",
+          "sha256": "8e9b6c7b42c42dd5a98827eec2be30a7fcb6a48151da4390a887c172967ba07d"
         }
-      ]
+      ],
+      "disposition": "mitigate",
+      "review": "security"
     },
     "T-06.4-29": {
-      "status": "pending",
-      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "status": "verified",
+      "context": "T-06.4-29: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "blocking": false,
       "historical_independent_disposition": "closed",
       "severity": "high",
       "independent_disposition": "closed",
-      "actor": "/root/execute_25/security_25",
-      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "actor": "/root/security_uat_reconcile",
+      "recorded": "2026-11-02T06:57:54Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
-      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "response": "T-06.4-29: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+          "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
         },
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
-          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
         },
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
           "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/final-rebind.json",
+          "sha256": "8e9b6c7b42c42dd5a98827eec2be30a7fcb6a48151da4390a887c172967ba07d"
         }
-      ]
+      ],
+      "disposition": "mitigate",
+      "review": "security"
     },
     "T-06.4-30": {
-      "status": "pending",
-      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "status": "verified",
+      "context": "T-06.4-30: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "blocking": false,
       "historical_independent_disposition": "closed",
       "severity": "high",
       "independent_disposition": "closed",
-      "actor": "/root/execute_25/security_25",
-      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "actor": "/root/security_uat_reconcile",
+      "recorded": "2026-11-02T06:57:54Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
-      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "response": "T-06.4-30: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+          "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
         },
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
-          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
         },
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
           "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/final-rebind.json",
+          "sha256": "8e9b6c7b42c42dd5a98827eec2be30a7fcb6a48151da4390a887c172967ba07d"
         }
-      ]
+      ],
+      "disposition": "mitigate",
+      "review": "security"
     },
     "T-06.4-31": {
-      "status": "pending",
-      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "status": "verified",
+      "context": "T-06.4-31: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "blocking": false,
       "historical_independent_disposition": "closed",
       "severity": "medium",
       "independent_disposition": "closed",
-      "actor": "/root/execute_25/security_25",
-      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "actor": "/root/security_uat_reconcile",
+      "recorded": "2026-11-02T06:57:54Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
-      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "response": "T-06.4-31: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+          "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
         },
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
-          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
         },
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
           "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/final-rebind.json",
+          "sha256": "8e9b6c7b42c42dd5a98827eec2be30a7fcb6a48151da4390a887c172967ba07d"
         }
-      ]
+      ],
+      "disposition": "mitigate",
+      "review": "security"
     },
     "T-06.4-32": {
-      "status": "pending",
-      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "status": "verified",
+      "context": "T-06.4-32: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "blocking": false,
       "historical_independent_disposition": "closed",
       "severity": "medium",
       "independent_disposition": "closed",
-      "actor": "/root/execute_25/security_25",
-      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "actor": "/root/security_uat_reconcile",
+      "recorded": "2026-11-02T06:57:54Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
-      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "response": "T-06.4-32: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+          "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
         },
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
-          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
         },
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
           "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/final-rebind.json",
+          "sha256": "8e9b6c7b42c42dd5a98827eec2be30a7fcb6a48151da4390a887c172967ba07d"
         }
-      ]
+      ],
+      "disposition": "mitigate",
+      "review": "security"
     },
     "T-06.4-33": {
-      "status": "pending",
-      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "status": "verified",
+      "context": "T-06.4-33: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "blocking": false,
       "historical_independent_disposition": "closed",
       "severity": "high",
       "independent_disposition": "closed",
-      "actor": "/root/execute_25/security_25",
-      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "actor": "/root/security_uat_reconcile",
+      "recorded": "2026-11-02T06:57:54Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
-      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "response": "T-06.4-33: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+          "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
         },
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
-          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
         },
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
           "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/final-rebind.json",
+          "sha256": "8e9b6c7b42c42dd5a98827eec2be30a7fcb6a48151da4390a887c172967ba07d"
         }
-      ]
+      ],
+      "disposition": "mitigate",
+      "review": "security"
     },
     "T-06.4-34": {
-      "status": "pending",
-      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "status": "verified",
+      "context": "T-06.4-34: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "blocking": false,
       "historical_independent_disposition": "closed",
       "severity": "high",
       "independent_disposition": "closed",
-      "actor": "/root/execute_25/security_25",
-      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "actor": "/root/security_uat_reconcile",
+      "recorded": "2026-11-02T06:57:54Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
-      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "response": "T-06.4-34: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+          "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
         },
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
-          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
         },
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
           "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/final-rebind.json",
+          "sha256": "8e9b6c7b42c42dd5a98827eec2be30a7fcb6a48151da4390a887c172967ba07d"
         }
-      ]
+      ],
+      "disposition": "mitigate",
+      "review": "security"
     },
     "T-06.4-35": {
-      "status": "open",
-      "context": "OPEN/high: attribution/readiness guards exist, but genuine H1/H2 and final independent acceptance outcomes remain absent.",
-      "blocking": true,
+      "status": "verified",
+      "context": "T-06.4-35: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
+      "blocking": false,
       "historical_independent_disposition": "open",
       "severity": "high",
-      "independent_disposition": "open",
-      "actor": "/root/execute_25/security_25",
-      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "independent_disposition": "closed",
+      "actor": "/root/security_uat_reconcile",
+      "recorded": "2026-11-02T06:57:54Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
-      "response": "OPEN/high: attribution/readiness guards exist, but genuine H1/H2 and final independent acceptance outcomes remain absent.",
+      "response": "T-06.4-35: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+          "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
         },
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
-          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
         },
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
           "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/final-rebind.json",
+          "sha256": "8e9b6c7b42c42dd5a98827eec2be30a7fcb6a48151da4390a887c172967ba07d"
         }
-      ]
+      ],
+      "disposition": "mitigate",
+      "review": "security"
     },
     "T-06.4-36": {
-      "status": "open",
-      "context": "OPEN/high: H2 has no genuine enforcement descriptor/RED\u2013GREEN route or attributed human disposition; native reference/storage tests do not supply it.",
-      "blocking": true,
+      "status": "verified",
+      "context": "T-06.4-36: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
+      "blocking": false,
       "historical_independent_disposition": "open",
       "severity": "high",
-      "independent_disposition": "open",
-      "actor": "/root/execute_25/security_25",
-      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "independent_disposition": "closed",
+      "actor": "/root/security_uat_reconcile",
+      "recorded": "2026-11-02T06:57:54Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
-      "response": "OPEN/high: H2 has no genuine enforcement descriptor/RED\u2013GREEN route or attributed human disposition; native reference/storage tests do not supply it.",
+      "response": "T-06.4-36: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+          "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
         },
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
-          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
         },
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
           "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/final-rebind.json",
+          "sha256": "8e9b6c7b42c42dd5a98827eec2be30a7fcb6a48151da4390a887c172967ba07d"
         }
-      ]
+      ],
+      "disposition": "mitigate",
+      "review": "security"
     },
     "T-06.4-SC": {
-      "status": "pending",
-      "context": "CLOSED/high within no-install scope: existing runtime paths and dependency/lock inputs unchanged; no install occurred; future-install gate unexercised.",
+      "status": "verified",
+      "context": "T-06.4-SC: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "blocking": false,
       "historical_independent_disposition": "closed",
       "severity": "high",
       "independent_disposition": "closed",
-      "actor": "/root/execute_25/security_25",
-      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "actor": "/root/security_uat_reconcile",
+      "recorded": "2026-11-02T06:57:54Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
-      "response": "CLOSED/high within no-install scope: existing runtime paths and dependency/lock inputs unchanged; no install occurred; future-install gate unexercised.",
+      "response": "T-06.4-SC: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+          "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
         },
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
-          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
         },
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
           "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/final-rebind.json",
+          "sha256": "8e9b6c7b42c42dd5a98827eec2be30a7fcb6a48151da4390a887c172967ba07d"
         }
-      ]
+      ],
+      "disposition": "mitigate",
+      "review": "security"
     },
     "T-06.4-37": {
-      "status": "pending",
+      "status": "verified",
       "severity": "high",
       "component": "corruption subprocess evidence and control bootstrap",
-      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "context": "T-06.4-37: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "blocking": false,
       "historical_independent_disposition": "closed",
       "independent_disposition": "closed",
-      "actor": "/root/execute_25/security_25",
-      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "actor": "/root/security_uat_reconcile",
+      "recorded": "2026-11-02T06:57:54Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
-      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "response": "T-06.4-37: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+          "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
         },
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
-          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
         },
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
           "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/final-rebind.json",
+          "sha256": "8e9b6c7b42c42dd5a98827eec2be30a7fcb6a48151da4390a887c172967ba07d"
         }
-      ]
+      ],
+      "disposition": "mitigate",
+      "review": "security"
     },
     "T-06.4-38": {
-      "status": "pending",
+      "status": "verified",
       "severity": "medium",
       "component": "conditional screenshot file/path/hash/device observations",
-      "context": "CLOSED/medium within original capture-integrity bounds: inventories, confined distinct paths, current PNG bytes/digests and viewport/containment/glyph observations remain enforced. Former diagnostic defect did not demonstrate acceptance bypass.",
+      "context": "T-06.4-38: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "blocking": false,
       "historical_independent_disposition": "closed",
       "independent_disposition": "closed",
-      "actor": "/root/execute_25/security_25",
-      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "actor": "/root/security_uat_reconcile",
+      "recorded": "2026-11-02T06:57:54Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
-      "response": "CLOSED/medium within original capture-integrity bounds: inventories, confined distinct paths, current PNG bytes/digests and viewport/containment/glyph observations remain enforced. Former diagnostic defect did not demonstrate acceptance bypass.",
+      "response": "T-06.4-38: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+          "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
         },
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
-          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
         },
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
           "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/final-rebind.json",
+          "sha256": "8e9b6c7b42c42dd5a98827eec2be30a7fcb6a48151da4390a887c172967ba07d"
         }
-      ]
+      ],
+      "disposition": "mitigate",
+      "review": "security"
     },
     "T-06.4-39": {
-      "status": "pending",
+      "status": "verified",
       "severity": "high",
       "component": "bounded source-diff retained execution refresh",
-      "context": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "context": "T-06.4-39: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "blocking": false,
       "historical_independent_disposition": "closed",
       "independent_disposition": "closed",
-      "actor": "/root/execute_25/security_25",
-      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "actor": "/root/security_uat_reconcile",
+      "recorded": "2026-11-02T06:57:54Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
-      "response": "Bounded mitigation continuity independently confirmed; no accepted risk or transfer.",
+      "response": "T-06.4-39: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+          "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
         },
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
-          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
         },
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
           "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/final-rebind.json",
+          "sha256": "8e9b6c7b42c42dd5a98827eec2be30a7fcb6a48151da4390a887c172967ba07d"
         }
-      ]
+      ],
+      "disposition": "mitigate",
+      "review": "security"
     },
     "T-06.4-40": {
-      "status": "open",
+      "status": "verified",
       "severity": "high",
       "component": "independent report attribution and canonical handoff",
-      "context": "OPEN/high: current-source final canonical verification and final report-hash rebind remain pending; reviewed canonical digest identifies previous result.",
-      "blocking": true,
+      "context": "T-06.4-40: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
+      "blocking": false,
       "historical_independent_disposition": "open",
-      "independent_disposition": "open",
-      "actor": "/root/execute_25/security_25",
-      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "independent_disposition": "closed",
+      "actor": "/root/security_uat_reconcile",
+      "recorded": "2026-11-02T06:57:54Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
-      "response": "OPEN/high: current-source final canonical verification and final report-hash rebind remain pending; reviewed canonical digest identifies previous result.",
+      "response": "T-06.4-40: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+          "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
         },
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
-          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
         },
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
           "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/final-rebind.json",
+          "sha256": "8e9b6c7b42c42dd5a98827eec2be30a7fcb6a48151da4390a887c172967ba07d"
         }
-      ]
+      ],
+      "disposition": "mitigate",
+      "review": "security"
     },
     "T-06.4-41": {
-      "status": "pending",
+      "status": "verified",
       "severity": "medium",
-      "context": "CLOSED/medium as authored: local overflow refusal, both dimensions, registered controls and mandatory WR05/G6 links independently verified through four exact CLI refusals.",
+      "context": "T-06.4-41: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "plans": [
         "23",
         "24",
@@ -2238,29 +2676,39 @@
       ],
       "independent_disposition": "closed",
       "blocking": false,
-      "actor": "/root/execute_25/security_25",
-      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "actor": "/root/security_uat_reconcile",
+      "recorded": "2026-11-02T06:57:54Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
-      "response": "CLOSED/medium as authored: local overflow refusal, both dimensions, registered controls and mandatory WR05/G6 links independently verified through four exact CLI refusals.",
+      "response": "T-06.4-41: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+          "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
         },
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
-          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
         },
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
           "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/final-rebind.json",
+          "sha256": "8e9b6c7b42c42dd5a98827eec2be30a7fcb6a48151da4390a887c172967ba07d"
         }
-      ]
+      ],
+      "disposition": "mitigate",
+      "review": "security"
     },
     "T-06.4-42": {
-      "status": "pending",
+      "status": "verified",
       "severity": "high",
-      "context": "CLOSED/high within refresh bounds: exact824/822/2 source continuity,17 retained objects/runtime equality,67/35 fresh identities and historical handoff preservation independently checked.",
+      "context": "T-06.4-42: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "plans": [
         "23",
         "24",
@@ -2269,55 +2717,75 @@
       ],
       "independent_disposition": "closed",
       "blocking": false,
-      "actor": "/root/execute_25/security_25",
-      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "actor": "/root/security_uat_reconcile",
+      "recorded": "2026-11-02T06:57:54Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
-      "response": "CLOSED/high within refresh bounds: exact824/822/2 source continuity,17 retained objects/runtime equality,67/35 fresh identities and historical handoff preservation independently checked.",
+      "response": "T-06.4-42: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+          "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
         },
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
-          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
         },
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
           "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/final-rebind.json",
+          "sha256": "8e9b6c7b42c42dd5a98827eec2be30a7fcb6a48151da4390a887c172967ba07d"
         }
-      ]
+      ],
+      "disposition": "mitigate",
+      "review": "security"
     },
     "T-06.4-43": {
-      "status": "open",
+      "status": "verified",
       "severity": "high",
-      "context": "OPEN/high: independent observations supplied, but stable final review binding, immutable pre-replacement replay, successor canonical output and post-summary final rebind/check have not occurred at auditor snapshot.",
+      "context": "T-06.4-43: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "plans": [
         "23",
         "24",
         "25",
         "26"
       ],
-      "independent_disposition": "open",
-      "blocking": true,
-      "actor": "/root/execute_25/security_25",
-      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "independent_disposition": "closed",
+      "blocking": false,
+      "actor": "/root/security_uat_reconcile",
+      "recorded": "2026-11-02T06:57:54Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
-      "response": "OPEN/high: independent observations supplied, but stable final review binding, immutable pre-replacement replay, successor canonical output and post-summary final rebind/check have not occurred at auditor snapshot.",
+      "response": "T-06.4-43: independently verified CLOSED in current SECURITY at ASVS1 within declared bounds; no accepted risk. Canonical readiness remains a separate stale gate.",
       "evidence_files": [
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+          "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
         },
         {
-          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
-          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
         },
         {
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
           "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+          "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/final-rebind.json",
+          "sha256": "8e9b6c7b42c42dd5a98827eec2be30a7fcb6a48151da4390a887c172967ba07d"
         }
-      ]
+      ],
+      "disposition": "mitigate",
+      "review": "security"
     }
   },
   "decisions": [
@@ -3110,9 +3578,9 @@
   ],
   "human_checks": {
     "H1": {
-      "status": "pending",
+      "status": "accepted",
       "instructions": "On corrected real stock and native hosts, review nested Add/Delete/Move discoverability, full labels and error readability, keyboard/Space/Tab and hidden-content focus, native reset, modal 422 replacement and screen-reader announcements. Inspect desktop/mobile/tablet evidence. Record actual person, browser/assistive technology, environment, results and limits with source/evidence hashes. Screenshots or an agent UI score are not approval.",
-      "context": "End-of-phase actual human judgment required. UI24/24 and old fixture warnings closed; stock desktop/mobile/tablet images inspected. Native has no screenshots; direct native evaluation remains required.",
+      "context": "User reported Chrome browser pass at 2026-11-02T06:28:27.017486+00:00; later installed Orca and reported pass at 2026-11-02T06:50:20.902056+00:00 for both stock/native hosts and modal checklist. Origin https://cv.jacob-consulting.org, disposable fixture port9000. Browser/Orca versions and Linux distribution not supplied; no physical-device coverage inferred.",
       "owner": "orchestrator end-of-phase human-review owner; start/check real disposable fixture and own exact PID cleanup",
       "owner_instructions": {
         "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-REVIEW-DISPOSITION.md",
@@ -3129,12 +3597,50 @@
           "/edit/native/1/"
         ],
         "live_server_claimed": false,
-        "physical_device_or_at_approval": false
+        "physical_device_or_at_approval": true,
+        "historical_setup_only": true,
+        "context": "Original automation setup; actual AT approval is recorded in UAT, no physical-device approval. No live server asserted.",
+        "physical_device_approval": false,
+        "assistive_technology_approval": "user-reported-pass; see attributed current H1/UAT"
+      },
+      "actor": "user in this conversation",
+      "recorded": "2026-11-02T06:50:20.902056+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "pass",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/source-manifest.json",
+          "sha256": "7dc2541183e999d8709d4c173a9db50f21a0bab52312e22767db896b80a0bf9b"
+        }
+      ],
+      "kind": "human",
+      "environment": {
+        "browser": "Chrome (version not supplied)",
+        "assistive_technology": "Orca (installed by user; version not supplied)",
+        "os": "not supplied",
+        "origin": "https://cv.jacob-consulting.org",
+        "fixture_port": 9000
+      },
+      "browser_response": {
+        "response": "pass",
+        "recorded": "2026-11-02T06:28:27.017486+00:00"
+      },
+      "assistive_technology_response": {
+        "response": "pass",
+        "recorded": "2026-11-02T06:50:20.902056+00:00"
       }
     },
     "H2": {
-      "status": "pending",
-      "canonical_status": "flagged-unverified",
+      "status": "accepted",
+      "canonical_status": "accepted-bounded-contract",
       "prohibition": "Switching a conditional file field off must not silently authorize deletion of the stored file content.",
       "authored_status": "resolved",
       "authored_verification": "test",
@@ -3150,11 +3656,30 @@
           "case": "tests/test1/test_conditional_persistence.py::test_unchanged_inline_file_reference_clears_without_deleting_content[image]"
         }
       ],
-      "context": "End-of-phase genuine attributed human disposition or real fail-first enforcement route required. T36 high remains open; authored resolved/test is separate from flagged-unverified.",
+      "context": "Actual explicit bounded acceptance of the exact prohibition. Native database-reference clearing with stored bytes retained; ImageField reference-only. Consuming-application save methods, signals, storage/custom hooks and image processing remain outside demonstrated guarantee. No new enforcement descriptor or security-risk waiver.",
       "owner_instructions": {
         "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-REVIEW-DISPOSITION.md",
         "section": "Plan22 final ownership handoff / H2"
-      }
+      },
+      "actor": "user in this conversation",
+      "recorded": "2026-11-02T06:31:44.186001+00:00",
+      "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+      "response": "accept",
+      "evidence_files": [
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+          "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+          "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+        },
+        {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/source-manifest.json",
+          "sha256": "7dc2541183e999d8709d4c173a9db50f21a0bab52312e22767db896b80a0bf9b"
+        }
+      ],
+      "kind": "human"
     }
   },
   "ready": false,
@@ -3739,18 +4264,13 @@
   },
   "security_accounting": {
     "total": 44,
-    "independently_closed": 40,
-    "open_total": 4,
-    "open_blocking_high": 4,
+    "independently_closed": 44,
+    "open_total": 0,
+    "open_blocking_high": 0,
     "open_nonblocking_medium": 0,
-    "current_independent_review": "OPEN_THREATS",
-    "open_threat_ids": [
-      "T-06.4-35",
-      "T-06.4-36",
-      "T-06.4-40",
-      "T-06.4-43"
-    ],
-    "qualification": "Unique authored01\u201343 plus SC once; historical38/41 remains under history. T41 uses authored medium severity. Schema1 reserves machine verified for overall passed security, so partial independently closed entries remain machine pending."
+    "current_independent_review": "SECURED",
+    "open_threat_ids": [],
+    "qualification": "All 44 unique authored threats (01\u201343 plus SC), 29 high/15 medium, disposition mitigate; current independent audit verifies all. Historical partial snapshots preserved under history. T41 authored medium. No accepted risk/transfer; current canonical readiness remains stale."
   },
   "independent_reports": {
     "historical": {
@@ -3777,6 +4297,24 @@
           "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/security-review.md",
           "sha256": "9e3ee2fe4a0d1787c7b56b479a244a5858c403fa8182408b9f5144b4067b213f"
         }
+      },
+      "pre_post_uat_current": {
+        "code": {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/code-review.md",
+          "sha256": "a4b591404b8f4175462877f8a9a868b336bab7a09f598b45da04c1129878a334"
+        },
+        "security": {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        },
+        "validation": {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VALIDATION.md",
+          "sha256": "cd2aa62b66b7a6951fbe3e9513ea840f98076aae9c732e0fbfbb956b76302958"
+        },
+        "observations": {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+          "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+        }
       }
     },
     "current": {
@@ -3785,21 +4323,29 @@
         "sha256": "a4b591404b8f4175462877f8a9a868b336bab7a09f598b45da04c1129878a334"
       },
       "security": {
-        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-        "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+        "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
       },
       "validation": {
         "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VALIDATION.md",
-        "sha256": "cd2aa62b66b7a6951fbe3e9513ea840f98076aae9c732e0fbfbb956b76302958"
+        "sha256": "1e86a3680cd9b5916ab03471fc0b3c4ecd67747ad693a5b09607d01256a801cb"
       },
       "observations": {
         "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
         "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+      },
+      "ui": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UI-REVIEW.md",
+        "sha256": "cab2aff3a2176b11a6f03fd1e4cbe09a1616b9b110557abed4f7f76f23586acb"
+      },
+      "uat": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+        "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
       }
     },
-    "status": "actual-current-qualified; canonical-and-human-pending"
+    "status": "current-code-ui-human-security-reconciled; validation-partial-canonical-stale"
   },
-  "next_gate": "Genuine H1/H2 dispositions via $gsd-verify-work 06.4; independent outstanding security reassessment. No phase advancement.",
+  "next_gate": "Independent canonical reassessment using completed UAT/current reports; independently evaluate31 fallback flags, validate immutable replay against exact historical snapshots, then actual new final binding/check. No phase advancement.",
   "history": {
     "handoff": {
       "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/handoff.json",
@@ -9574,6 +10120,162 @@
         "canonical_disposition": "pending-plan26"
       },
       "recorded_before_rebind": "2026-11-01T21:16:40.073388+00:00"
+    },
+    "pre_post_uat_reconciliation": {
+      "snapshot": {
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/before/24-evidence__handoff.json",
+        "sha256": "664e23b79e73e302e6ba527cb6badf4e84d2f02704e5491cc329cbb7f2027512"
+      },
+      "reports": {
+        "code": {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/code-review.md",
+          "sha256": "a4b591404b8f4175462877f8a9a868b336bab7a09f598b45da04c1129878a334",
+          "status": "passed",
+          "actor": "/root/execute_25/code_25",
+          "recorded": "2026-11-01T20:56:45.272080+00:00",
+          "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+          "response": "Independent bounded current-source code review passed; WR-05 closes with fourteen actual CLI observations. Canonical G6, security and human acceptance remain separate.",
+          "context": "Independent bounded current-source code review passed; WR-05 closes with fourteen actual CLI observations. Canonical G6, security and human acceptance remain separate.",
+          "evidence_files": [
+            {
+              "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/code-review.md",
+              "sha256": "a4b591404b8f4175462877f8a9a868b336bab7a09f598b45da04c1129878a334"
+            },
+            {
+              "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+              "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+            },
+            {
+              "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+              "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+            }
+          ]
+        },
+        "security": {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+          "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502",
+          "status": "open",
+          "verdict": "OPEN_THREATS",
+          "actor": "/root/execute_25/security_25",
+          "recorded": "2026-11-01T20:57:16.620951+00:00",
+          "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+          "response": "ASVS1/high independent audit records supported partial closures while overall OPEN_THREATS remains; no accepted risk or transfer.",
+          "context": "ASVS1/high independent audit records supported partial closures while overall OPEN_THREATS remains; no accepted risk or transfer.",
+          "evidence_files": [
+            {
+              "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
+              "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+            },
+            {
+              "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/independent-outcomes.json",
+              "sha256": "fe4c6b481cf129d55d90a567ebbc18a47d592f931f058dd053b1fa8321bec4a1"
+            },
+            {
+              "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/results.json",
+              "sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd"
+            }
+          ]
+        },
+        "ui": {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UI-REVIEW.md",
+          "sha256": "e25c2374fe704060195a806e00c616198b13d8659b4359d4008cf1148459af32",
+          "status": "pending",
+          "context": "Previous independent 24/24 bounded UI report remains applicable to unchanged product/UI, fixture assets and exact retained captures; original attribution/source hash retained. Actual native/stock H1 and H2 remain pending."
+        },
+        "verification": {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VERIFICATION.md",
+          "sha256": "de9103d24246ccb48440cba53770ab6e7349b849c2dfe84b6bc18a03b0c3bd00",
+          "status": "open",
+          "context": "Actual independent canonical assessment: human_needed 9/10, G6/WR-05 closed within scope; H1/H2,31 flags and independently attributed security obligations remain open.",
+          "historical": false,
+          "verdict": "human_needed",
+          "actor": "/root/canonical_26",
+          "recorded": "2026-11-01T21:19:05Z",
+          "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+          "response": "Actual independent canonical assessment: human_needed 9/10, G6/WR-05 closed within scope; H1/H2,31 flags and independently attributed security obligations remain open.",
+          "evidence_files": [
+            {
+              "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VERIFICATION.md",
+              "sha256": "de9103d24246ccb48440cba53770ab6e7349b849c2dfe84b6bc18a03b0c3bd00"
+            },
+            {
+              "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/canonical-outcomes.json",
+              "sha256": "4dd4503d34dc91d137b00afe9e8665f75acb3bb17467a6f53dcdde66146aa74d"
+            }
+          ]
+        },
+        "code_bounded": {
+          "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/22-evidence/code-review.md",
+          "sha256": "01c4405f723b40f3581da2118aa0d9d7f284d6bfd46ac0a64b9b8f2b60e9522f",
+          "status": "pending",
+          "context": "Existing report retained at its true hash as historical input; current source review pending plan25/26. Original actor/time/source and dispositions are preserved under history."
+        }
+      },
+      "human_checks": {
+        "H1": {
+          "status": "pending",
+          "instructions": "On corrected real stock and native hosts, review nested Add/Delete/Move discoverability, full labels and error readability, keyboard/Space/Tab and hidden-content focus, native reset, modal 422 replacement and screen-reader announcements. Inspect desktop/mobile/tablet evidence. Record actual person, browser/assistive technology, environment, results and limits with source/evidence hashes. Screenshots or an agent UI score are not approval.",
+          "context": "End-of-phase actual human judgment required. UI24/24 and old fixture warnings closed; stock desktop/mobile/tablet images inspected. Native has no screenshots; direct native evaluation remains required.",
+          "owner": "orchestrator end-of-phase human-review owner; start/check real disposable fixture and own exact PID cleanup",
+          "owner_instructions": {
+            "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-REVIEW-DISPOSITION.md",
+            "section": "Plan22 final ownership handoff / H1"
+          },
+          "fixture": {
+            "interpreter": ".nox/crispy_floor-3-12-django-6-0/bin/python",
+            "script": "tests/browser/conditional_formsets_server.py",
+            "pythonpath": "$PWD/src:$PWD",
+            "port_environment": "CV_CONDITIONAL_PORT",
+            "suggested_port": 8144,
+            "verify_paths": [
+              "/edit/stock/1/",
+              "/edit/native/1/"
+            ],
+            "live_server_claimed": false,
+            "physical_device_or_at_approval": false
+          }
+        },
+        "H2": {
+          "status": "pending",
+          "canonical_status": "flagged-unverified",
+          "prohibition": "Switching a conditional file field off must not silently authorize deletion of the stored file content.",
+          "authored_status": "resolved",
+          "authored_verification": "test",
+          "descriptor_present": false,
+          "instructions": "Review the exact prohibition against native reference-clearing/storage-spy/retained-byte evidence, ImageField reference-only and consuming-application hook limits. Supply an explicit attributed human disposition or require a genuinely locatable fail-first enforcement route. Existing tests and prior-phase approval are not approval of this item.",
+          "reference_only_storage_observations": [
+            {
+              "gate": "django6.0-focused",
+              "case": "tests/test1/test_conditional_persistence.py::test_unchanged_inline_file_reference_clears_without_deleting_content[attachment]"
+            },
+            {
+              "gate": "django6.0-focused",
+              "case": "tests/test1/test_conditional_persistence.py::test_unchanged_inline_file_reference_clears_without_deleting_content[image]"
+            }
+          ],
+          "context": "End-of-phase genuine attributed human disposition or real fail-first enforcement route required. T36 high remains open; authored resolved/test is separate from flagged-unverified.",
+          "owner_instructions": {
+            "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-REVIEW-DISPOSITION.md",
+            "section": "Plan22 final ownership handoff / H2"
+          }
+        }
+      },
+      "security_accounting": {
+        "total": 44,
+        "independently_closed": 40,
+        "open_total": 4,
+        "open_blocking_high": 4,
+        "open_nonblocking_medium": 0,
+        "current_independent_review": "OPEN_THREATS",
+        "open_threat_ids": [
+          "T-06.4-35",
+          "T-06.4-36",
+          "T-06.4-40",
+          "T-06.4-43"
+        ],
+        "qualification": "Unique authored01\u201343 plus SC once; historical38/41 remains under history. T41 uses authored medium severity. Schema1 reserves machine verified for overall passed security, so partial independently closed entries remain machine pending."
+      },
+      "qualification": "Historical exact pending/open records; superseded only by actual completed UAT and independent current SECURITY. Complete prior handoff preserved."
     }
   },
   "applicability": {
@@ -9582,21 +10284,22 @@
   },
   "canonical_reverification": {
     "owner": "/root/canonical_26",
-    "status": "human_needed",
+    "status": "stale",
     "preserve_historical_report": true,
     "exclude_from_covered_files": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/handoff.json",
     "reason": "Handoff embeds canonical digest; exclude it to avoid circular fingerprint binding.",
     "final_rebind_owner": "/root",
-    "remaining_truths": "9/10 verified; H1pending/H2flagged-unverified,31flags and independent security40/44 snapshot remain",
+    "remaining_truths": "Historical9/10 human_needed superseded by actual UAT and SECURED44/44 inputs;31 fallback flags unchanged for independent evaluation. Fresh canonical verdict required.",
     "historical_report": {
-      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VERIFICATION.md",
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/26-evidence/pre-wr05-verification.md",
       "sha256": "5048486226b2d48556280f99f5ae12a24d4ef581c9585ff8c4a4da7e1d9b3ced"
     },
     "report": {
       "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VERIFICATION.md",
       "sha256": "de9103d24246ccb48440cba53770ab6e7349b849c2dfe84b6bc18a03b0c3bd00"
     },
-    "rebound_at": "2026-11-01T21:20:26.042313+00:00"
+    "rebound_at": "2026-11-01T21:20:26.042313+00:00",
+    "current_reconciliation": "2026-11-02T07:10:44.772466+00:00"
   },
   "hook_fulfillment": {
     "execute:post/code-review": {
@@ -9613,33 +10316,69 @@
     },
     "verify:post/secure-phase": {
       "report": {
-        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/security-review.md",
-        "sha256": "a4af452e91b1aa02b18d2449b6b5ebabaf13fdff1e03530f6ac853220d239502"
+        "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-SECURITY.md",
+        "sha256": "a6e6398bebed46761bf3de8513f872c538a0ce0cee4d12b2d5bc9f67cf131bf1"
       },
-      "actor": "/root/execute_25/security_25",
-      "recorded": "2026-11-01T20:57:16.620951+00:00",
+      "actor": "/root/security_uat_reconcile",
+      "recorded": "2026-11-02T06:57:54Z",
       "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
       "packet_sha256": "0584675c935c5d7a81043a3c412a9bb43df5072532db49682aa5604e575effbd",
-      "scope": "All44 unique authored registered threats; ASVS1/high; actual14 independent CLI observations.",
-      "status": "OPEN_THREATS"
+      "scope": "All44 unique authored threats; ASVS1/high; completed UAT and immutable historical sequence independently assessed. No fresh canonical acceptance claimed.",
+      "status": "SECURED"
     },
     "verify:post/validate-phase": {
       "report": {
         "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-VALIDATION.md",
-        "sha256": "cd2aa62b66b7a6951fbe3e9513ea840f98076aae9c732e0fbfbb956b76302958"
+        "sha256": "1e86a3680cd9b5916ab03471fc0b3c4ecd67747ad693a5b09607d01256a801cb"
       },
       "status": "partial",
-      "nyquist_compliant": false
+      "nyquist_compliant": false,
+      "qualification": "Existing independent plan25 coverage audit reused for unchanged source; report-only delta reconciles actual plan26/UAT/SECURITY.31 fallback flags and canonical/final binding remain."
     },
     "execute:post/ui-review": {
       "report": {
         "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UI-REVIEW.md",
-        "sha256": "e25c2374fe704060195a806e00c616198b13d8659b4359d4008cf1148459af32",
-        "status": "pending",
-        "context": "Previous independent 24/24 bounded UI report remains applicable to unchanged product/UI, fixture assets and exact retained captures; original attribution/source hash retained. Actual native/stock H1 and H2 remain pending."
+        "sha256": "cab2aff3a2176b11a6f03fd1e4cbe09a1616b9b110557abed4f7f76f23586acb",
+        "status": "passed",
+        "actor": "/root/reconcile_64_acceptance",
+        "recorded": "2026-11-02T07:10:44.772466+00:00",
+        "source_sha256": "5140a723bcffd78d4920086beff692c03935969545226467767b5dd34706e97d",
+        "response": "Reused original independent 24/24 UI review for unchanged product/UI/fixture/capture inputs; actual user Chrome and installed-Orca UAT pass on stock/native including modal. This is report applicability reconciliation, not a new visual audit.",
+        "context": "Reused original independent 24/24 UI review for unchanged product/UI/fixture/capture inputs; actual user Chrome and installed-Orca UAT pass on stock/native including modal. This is report applicability reconciliation, not a new visual audit.",
+        "evidence_files": [
+          {
+            "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UI-REVIEW.md",
+            "sha256": "cab2aff3a2176b11a6f03fd1e4cbe09a1616b9b110557abed4f7f76f23586acb"
+          },
+          {
+            "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/19-evidence/ui-review.md",
+            "sha256": "55300f0060bf8879e9d5afbde5759437638f58628c68b01e6779529be345d8c5"
+          },
+          {
+            "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/06.4-UAT.md",
+            "sha256": "9f00559252e3696bf484ef7cd7a0a1b9af35d6d5a4cea39ddf95e9c9d94ab48e"
+          },
+          {
+            "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/24-evidence/applicability.md",
+            "sha256": "98e2af40d6ca6f45a9bec45c5e6da2f0e40b51b9e1593a830e324d128758713d"
+          },
+          {
+            "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/25-evidence/code-review.md",
+            "sha256": "a4b591404b8f4175462877f8a9a868b336bab7a09f598b45da04c1129878a334"
+          }
+        ]
       },
-      "status": "retained-applicable",
-      "qualification": "Existing24/24 independent UI review and unchanged capture/fixture/product inputs remain applicable; no fresh visual/human approval is inferred."
+      "status": "retained-applicable-human-complete",
+      "qualification": "Existing bounded24/24 audit reused for unchanged source/captures; actual human Chrome and installed-Orca UAT now complete. No fresh visual audit or physical-device certification."
+    }
+  },
+  "post_uat_reconciliation": {
+    "actor": "/root/reconcile_64_acceptance",
+    "recorded": "2026-11-02T07:10:44.772466+00:00",
+    "scope": "Report/handoff reconciliation only; source unchanged; original history preserved.",
+    "before": {
+      "path": ".planning/phases/06.4-conditional-and-formset-correctness-lifecycle/post-uat-evidence/before/24-evidence__handoff.json",
+      "sha256": "664e23b79e73e302e6ba527cb6badf4e84d2f02704e5491cc329cbb7f2027512"
     }
   }
 }

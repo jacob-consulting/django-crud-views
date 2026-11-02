@@ -27,6 +27,33 @@ def test_default_config_has_no_messages():
     assert check_button_classes() == []
 
 
+def test_optional_heading_keys_are_recognized():
+    values = {
+        f"heading-{location}:{slot}": "{name_class}" if slot == "icon-host" else "spacing"
+        for location in ("page", "modal", "group")
+        for slot in ("icon-host", "icon-inline")
+    }
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES=values):
+        assert check_button_classes() == []
+    register_button_classes(values)
+    assert check_button_classes() == []
+
+
+@pytest.mark.parametrize(
+    "key", ["heading:size-0", "heading:size-7", "heading-other:icon-host", "heading:icon-host:icon"]
+)
+def test_unknown_heading_keys_warn(key):
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={key: ""}):
+        assert ids(check_button_classes()) == ["crud_views.W362"]
+
+
+@pytest.mark.parametrize("key", ["heading:icon-host", "heading-page:icon-host", "heading-group:icon-host"])
+@pytest.mark.parametrize("value,error", [("{bad}", "crud_views.E363"), (42, "crud_views.E361")])
+def test_heading_host_validation(key, value, error):
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={key: value}):
+        assert ids(check_button_classes()) == [error]
+
+
 def test_form_submit_icon_key_reaches_checks_and_lookup():
     with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"form:submit:icon": "btn-form-submit-icon"}):
         assert check_button_classes() == []

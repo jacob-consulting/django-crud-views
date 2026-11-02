@@ -33,6 +33,13 @@ def _headings(markup: str) -> str:
     return "\n".join(lxml_html.tostring(h, encoding="unicode").strip() for h in doc.xpath(HEADINGS))
 
 
+def test_content_selector_excludes_only_marked_page_title():
+    markup = "<div data-test-page-title><h1>Page</h1></div>"
+    markup += '<div class="card-header"><h2>Card rows</h2></div>'
+    markup += '<div class="card-header"><h2>Striped rows</h2></div>'
+    assert _headings(markup) == "<h2>Card rows</h2>\n<h2>Striped rows</h2>"
+
+
 def _compare(name: str, actual: str):
     path = GOLDEN_DIR / f"{name}.html"
     if os.environ.get("CV_UPDATE_GOLDEN") == "1":

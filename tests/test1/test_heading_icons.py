@@ -1,12 +1,14 @@
 """Heading icon projection through real modal markup and the shared registry."""
 
 from pathlib import Path
+import re
 from unittest.mock import Mock
 
 import pytest
-from django.template import Context, Engine
+from django.template import Context, Engine, Template
 from django.test import override_settings
 from django.utils.html import format_html
+from django.utils.translation import gettext_lazy
 from lxml import html
 
 from crud_views.lib import button_classes as bc
@@ -155,3 +157,83 @@ def test_modal_disabled_host_retains_title(monkeypatch, disabled, level, classes
         result = render_modal()
     assert f'class="{classes}"> Edit &lt;title&gt;</h' in result
     assert "<i " not in result
+
+
+def example_title_source():
+    source = Path("examples/bootstrap5/project/templates/project/crud_views.html").read_text()
+    fragments = re.findall(
+        r'{% cv_heading_icon [^%]*location="page"[^%]*%}\s*{% cv_heading .*?{% endcv_heading %}',
+        source,
+        re.DOTALL,
+    )
+    assert len(fragments) == 1, "The actual example must contain exactly one complete page title fragment"
+    assert "{% block cv_header %}" in fragments[0]
+    return "{% load crud_views %}" + fragments[0]
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("site", ["page", "example"])
+@pytest.mark.parametrize("level,size", [(None, "h3"), (2, "native-size"), (3, "")])
+@pytest.mark.parametrize("icon", ["host:edit", "fas:pen", "", None, "disabled"])
+def test_page_title_contract(monkeypatch, site, level, size, icon):
+    from tests.test1.app.views import AuthorListView, cv_author
+    from tests.test1.test_heading_level import _client
+
+    title = gettext_lazy('<script>Title & "name"</script>')
+    monkeypatch.setattr(crud_views_settings, "header_level", level)
+    monkeypatch.setattr(AuthorListView, "cv_header", title)
+    monkeypatch.setattr(AuthorListView, "cv_get_header_icon", lambda self: icon)
+    overrides = {} if size == "h3" else {"heading:size-3": size}
+    with override_settings(
+        CRUD_VIEWS_ICON_LIBRARIES=HOST_LIBRARY,
+        CRUD_VIEWS_ICONS={"disabled": None},
+        CRUD_VIEWS_BUTTON_CLASSES=overrides,
+    ):
+        if site == "page":
+            response = _client(cv_author, ("view",)).get("/author/")
+            assert response.status_code == 200
+            (wrapper,) = html.fromstring(response.content).cssselect("[data-test-page-title]")
+        else:
+            view = AuthorListView()
+            wrapper = html.fromstring(
+                "<div>" + Template(example_title_source()).render(Context({"view": view})) + "</div>"
+            )
+    (heading,) = wrapper.xpath(".//*[self::h1 or self::h2 or self::h3 or self::h4 or self::h5 or self::h6]")
+    assert heading.tag == f"h{level or 1}"
+    assert heading.text_content().strip() == str(title)
+    expected = [
+        value
+        for value in (size, "mb-0" if site == "example" else "", "icon-edit" if icon == "host:edit" else "")
+        if value
+    ]
+    assert heading.get("class", "").split() == expected
+    assert len(heading.cssselect("i")) == (1 if icon == "fas:pen" else 0)
+    assert not heading.xpath(".//script")
+    assert all(node.get("aria-hidden") == "true" for node in heading.cssselect("i"))
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("site", ["page", "example"])
+def test_page_title_hostile_classes(monkeypatch, site):
+    from tests.test1.app.views import AuthorListView, cv_author
+    from tests.test1.test_heading_level import _client
+
+    monkeypatch.setattr(crud_views_settings, "header_level", 2)
+    monkeypatch.setattr(AuthorListView, "cv_header", "<em>Title</em>")
+    monkeypatch.setattr(AuthorListView, "cv_get_header_icon", lambda self: 'host:edit" onerror="attack')
+    with override_settings(
+        CRUD_VIEWS_ICON_LIBRARIES=HOST_LIBRARY,
+        CRUD_VIEWS_BUTTON_CLASSES={
+            "heading:size-3": 'size" onload="attack',
+            "heading:icon-host": '{name_class}" onclick="attack',
+        },
+    ):
+        if site == "page":
+            response = _client(cv_author, ("view",)).get("/author/")
+            assert response.status_code == 200
+            (heading,) = html.fromstring(response.content).cssselect("[data-test-page-title] h2")
+        else:
+            heading = html.fromstring(Template(example_title_source()).render(Context({"view": AuthorListView()})))
+    assert set(heading.attrib) == {"class"}
+    assert heading.text_content().strip() == "<em>Title</em>"
+    assert len(heading) == 0

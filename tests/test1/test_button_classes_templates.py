@@ -159,6 +159,33 @@ def _offenders(doc) -> list[tuple[str, str]]:
     return sorted(found)
 
 
+def test_button_sentinels_exclude_only_heading_namespaces():
+    heading_keys = {
+        key
+        for key in DEFAULT_BUTTON_CLASSES
+        if key.split(":", 1)[0] in {"heading", "heading-page", "heading-modal", "heading-group"}
+    }
+    assert set(SENTINEL_CLASSES) == set(DEFAULT_BUTTON_CLASSES) - heading_keys
+    assert heading_keys
+    assert all(SENTINEL_CLASSES[key] == value for key, value in STRUCTURAL_VALUES.items())
+
+
+def test_button_guard_accepts_heading_utilities_and_detects_button_and_label_leaks():
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES=SENTINEL_CLASSES):
+        title = Template(
+            '{% load crud_views %}{% cv_heading "header" level=1 size=3 class="mb-0" %}Title{% endcv_heading %}'
+        ).render(Context())
+        leaf = render_to_string(FORM_LEAF, cv_button_data(_form_contract("submit", "both"), "form"))
+    doc = html.fromstring(f"<div>{title}{leaf}</div>")
+    assert _styled(doc)
+    assert _offenders(doc) == []
+    (button,) = doc.cssselect("button")
+    (label,) = button.cssselect("span")
+    button.set("class", button.get("class") + " mt-4")
+    label.set("class", (label.get("class") or "") + " ps-4")
+    assert _offenders(doc) == [("button", "mt-4"), ("span", "ps-4")]
+
+
 def _leaf_contract(location: str, mode: str) -> dict:
     """A flat leaf contract with every flag on (the shape of cv_button_data()'s output)."""
     return {

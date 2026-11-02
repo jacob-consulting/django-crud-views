@@ -1,0 +1,269 @@
+diff --git a/src/crud_views_tabler/apps.py b/src/crud_views_tabler/apps.py
+--- a/src/crud_views_tabler/apps.py
++++ b/src/crud_views_tabler/apps.py
+@@ -23,6 +23,9 @@
+ 
+         register_icon_library("tabler", renderer="crud_views_tabler.icons.render")
+         register_icons(TABLER_ICONS)
++        from crud_views.lib.view.label_mode import register_label_mode_defaults
++
++        register_label_mode_defaults({"form": "both"})
+         register_button_classes(TABLER_BUTTON_CLASSES)
+         register_assets(
+             "crud_views_tabler",
+diff --git a/src/crud_views_tabler/buttons.py b/src/crud_views_tabler/buttons.py
+--- a/src/crud_views_tabler/buttons.py
++++ b/src/crud_views_tabler/buttons.py
+@@ -37,6 +37,10 @@
+     "context:menu-wrapper": "dropdown",
+     "list:menu-wrapper": "dropdown",
+     "form:delete": "btn btn-danger",
++    "form:actions": "d-flex flex-wrap gap-2",
++    "form:filter-actions": "d-flex flex-wrap gap-1",
++    "alert:dismissible": "alert-dismissible fade show",
++    "alert:close": "btn-close",
+     "card-order:toggle": "btn btn-icon",
+     "card-order:container": "btn-group",
+     "formset:control": "btn btn-icon",
+diff --git a/src/crud_views_tabler/icons.py b/src/crud_views_tabler/icons.py
+--- a/src/crud_views_tabler/icons.py
++++ b/src/crud_views_tabler/icons.py
+@@ -16,6 +16,9 @@
+     "create": "tabler:square-plus",
+     "update": "tabler:pencil",
+     "delete": "tabler:trash",
++    "save": "tabler:check",
++    "cancel": "tabler:arrow-left",
++    "filter-reset": "tabler:filter-x",
+     "order-up": "tabler:arrow-up",
+     "order-down": "tabler:arrow-down",
+     "manage": "tabler:settings",
+diff --git a/src/crud_views_tabler/templates/crud_views/tags/alert.html b/src/crud_views_tabler/templates/crud_views/tags/alert.html
+--- a/src/crud_views_tabler/templates/crud_views/tags/alert.html
++++ b/src/crud_views_tabler/templates/crud_views/tags/alert.html
+@@ -4,7 +4,7 @@
+ icon sits in .alert-icon; with a heading the body is the .alert-description below an .alert-heading. Colours are
+ crud_views' alert:* class keys (Tabler spells them like Bootstrap); the body comes from alert.body_template.
+ {% endcomment %}
+-<div class="{% cv_button_class "alert" alert.level %}{% if alert.dismissible %} alert-dismissible fade show{% endif %}{% if alert.extra_tags %} {{ alert.extra_tags }}{% endif %}" role="alert">
++<div class="{% cv_button_class "alert" alert.level %}{% if alert.dismissible %} {% cv_button_class "alert" "dismissible" %}{% endif %}{% if alert.extra_tags %} {{ alert.extra_tags }}{% endif %}" role="alert">
+   <div class="alert-icon">{% cv_icon alert.icon_name css="alert-icon" %}</div>
+   {% if alert.heading %}
+   <div>
+@@ -14,5 +14,5 @@
+   {% else %}
+   <div>{% include alert.body_template %}</div>
+   {% endif %}
+-  {% if alert.dismissible %}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{% translate 'Close' %}"></button>{% endif %}
++  {% if alert.dismissible %}<button type="button" class="{% cv_button_class 'alert' 'close' %}" data-cv-alert-dismiss="" aria-label="{% translate 'Close' %}"></button>{% endif %}
+ </div>
+diff --git a/src/crud_views_tabler/tests.py b/src/crud_views_tabler/tests.py
+--- a/src/crud_views_tabler/tests.py
++++ b/src/crud_views_tabler/tests.py
+@@ -131,6 +131,10 @@
+             "context:menu-wrapper": "dropdown",
+             "list:menu-wrapper": "dropdown",
+             "form:delete": "btn btn-danger",
++            "form:actions": "d-flex flex-wrap gap-2",
++            "form:filter-actions": "d-flex flex-wrap gap-1",
++            "alert:dismissible": "alert-dismissible fade show",
++            "alert:close": "btn-close",
+             "card-order:toggle": "btn btn-icon",
+             "card-order:container": "btn-group",
+             "formset:control": "btn btn-icon",
+@@ -554,6 +558,52 @@
+ 
+ 
+ class MessagesParityTests(SimpleTestCase):
++    def assert_message_parity(self, plain, themed):
++        from html.parser import HTMLParser
++        class Hooks(HTMLParser):
++            def __init__(self):
++                super().__init__()
++                self.alerts = 0
++                self.buttons = []
++            def handle_starttag(self, tag, attrs):
++                attrs = dict(attrs)
++                if attrs.get("role") == "alert":
++                    self.alerts += 1
++                if tag == "button":
++                    self.buttons.append(attrs)
++        native, crud = Hooks(), Hooks()
++        native.feed(plain)
++        crud.feed(themed)
++        self.assertGreater(native.alerts, 0)
++        self.assertEqual(native.alerts, crud.alerts)
++        self.assertEqual(len(native.buttons), native.alerts)
++        self.assertEqual(len(crud.buttons), crud.alerts)
++        for button in native.buttons:
++            self.assertEqual(button.get("data-bs-dismiss"), "alert")
++            self.assertNotIn("data-cv-alert-dismiss", button)
++        for button in crud.buttons:
++            self.assertEqual(button.get("data-cv-alert-dismiss"), "")
++            self.assertNotIn("data-bs-dismiss", button)
++        def normalized(value):
++            return re.sub(r">\s+<", "><", re.sub(r"\s+", " ", value)).strip()
++        self.assertEqual(normalized(plain.replace('data-bs-dismiss="alert"', 'data-cv-alert-dismiss=""')),
++                         normalized(themed))
++
++    def test_parity_rejects_wrong_missing_dual_hooks_and_unrelated_changes(self):
++        messages = [Message(constants.INFO, "unchanged body")]
++        native = render_to_string("django_tabler/includes/messages.html", {"messages": messages})
++        crud = Template("{% load crud_views %}{% cv_messages %}").render(Context({"messages": messages}))
++        self.assert_message_parity(native, crud)
++        for changed in (
++            crud.replace('data-cv-alert-dismiss=""', 'data-cv-alert-dismiss="wrong"'),
++            crud.replace('data-cv-alert-dismiss=""', ''),
++            crud.replace('data-cv-alert-dismiss=""', 'data-cv-alert-dismiss="" data-bs-dismiss="alert"'),
++            crud.replace('role="alert"', 'role="status"'),
++            crud.replace('unchanged body', 'changed body'),
++        ):
++            with self.subTest(changed=changed), self.assertRaises(AssertionError):
++                self.assert_message_parity(native, changed)
++
+     def test_plain_include_matches_cv_messages(self):
+         messages = [
+             Message(constants.DEBUG, "d"),
+@@ -569,7 +619,7 @@
+ 
+         plain = render_to_string("django_tabler/includes/messages.html", {"messages": messages})
+         themed = Template("{% load crud_views %}{% cv_messages %}").render(Context({"messages": messages}))
+-        self.assertEqual(normalized(plain), normalized(themed))
++        self.assert_message_parity(plain, themed)
+ 
+ 
+ class FilterToggleIconTests(SimpleTestCase):
+@@ -579,3 +629,133 @@
+         # :not([hidden]) matters: display: contents would otherwise reveal the hidden icon.
+         css = (Path(crud_views_tabler.__file__).parent / "static/crud_views_tabler/crud_views_tabler.css").read_text()
+         self.assertRegex(css, r"#cv-filter-toggle \[data-cv-filter-icon\]:not\(\[hidden\]\) \{\s*display: contents;")
++
++
++class ThemeAdoptionTests(TestCase):
++    """Native form floor, exact registrations and real action rendering contracts."""
++    @classmethod
++    def setUpTestData(cls):
++        cls.actor = get_user_model().objects.create_superuser("adoption", "adoption@example.invalid", None)
++        cls.customer = Customer.objects.create(name="Adoption")
++
++    def setUp(self):
++        self.client.force_login(self.actor)
++
++    def controls(self, markup):
++        from html.parser import HTMLParser
++        class Controls(HTMLParser):
++            def __init__(self):
++                super().__init__()
++                self.rows = []
++                self.current = None
++            def handle_starttag(self, tag, attrs):
++                attrs = dict(attrs)
++                if tag in ("button", "a"):
++                    self.current = {"tag": tag, "attrs": attrs, "paths": [], "text": "", "hidden": False}
++                elif self.current is not None and tag == "path" and attrs.get("stroke") != "none":
++                    self.current["paths"].append(attrs.get("d"))
++                elif self.current is not None and tag == "span" and "visually-hidden" in attrs.get("class", ""):
++                    self.current["hidden"] = True
++            def handle_data(self, data):
++                if self.current is not None:
++                    self.current["text"] += data
++            def handle_endtag(self, tag):
++                if tag in ("button", "a") and self.current is not None:
++                    self.rows.append(self.current)
++                    self.current = None
++        parser = Controls()
++        parser.feed(str(markup))
++        return parser.rows
++
++    def render_actions(self, mode=None, owner_mode=None, kind_mode=None, destination="absent", tag="button"):
++        from crispy_forms.bootstrap import FormActions
++        from crispy_forms.helper import FormHelper
++        from crispy_forms.layout import Layout
++        from crispy_forms.utils import render_crispy_form
++        from crud_views.lib.crispy.buttons import Button, Submit
++        from crud_views.lib.views.list import ListViewFilterFormHelper
++        from crud_views.lib.view import CrudView
++        class Owner(CrudView):
++            cv_abstract = True
++            cv_form_actions_label_mode = ({key: owner_mode for key in
++                ("submit", "delete", "cancel", "filter-submit", "filter-reset")} if owner_mode else {}) | (
++                {"cancel": kind_mode} if kind_mode else {})
++        owner = Owner()
++        form = ProbeForm(initial={"x": "initial"})
++        form.cv_view = owner
++        helper = FormHelper()
++        helper.form_tag = False
++        kwargs = {} if destination == "absent" else {"data_cv_cancel_url": None if destination == "none" else ""}
++        helper.layout = Layout("x", FormActions(Submit("save", "Save"), Submit("delete", "Delete", slot="form:delete"),
++                                               Button("cancel", "Cancel", tag=tag, **kwargs)))
++        filtered = ProbeForm(initial={"x": "initial"})
++        filtered.helper = ListViewFilterFormHelper(view=owner, request=RequestFactory().get("/"))
++        filtered.helper.layout = Layout("x")
++        with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={} if mode is None else {"form": mode}):
++            markup = render_crispy_form(form, helper) + render_crispy_form(filtered, filtered.helper)
++        return self.controls(markup), str(markup)
++
++    def test_registered_floor_exact_maps_and_native_action_modes(self):
++        from crud_views.lib.view.label_mode import default_label_mode
++        with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={}):
++            self.assertEqual(default_label_mode("form"), "both")
++        self.assertEqual({name: TABLER_ICONS[name] for name in ("save", "cancel", "filter-reset")},
++                         {"save": "tabler:check", "cancel": "tabler:arrow-left", "filter-reset": "tabler:filter-x"})
++        self.assertEqual({name: TABLER_BUTTON_CLASSES[name] for name in
++                          ("form:actions", "form:filter-actions", "alert:dismissible", "alert:close")},
++                         {"form:actions": "d-flex flex-wrap gap-2", "form:filter-actions": "d-flex flex-wrap gap-1",
++                          "alert:dismissible": "alert-dismissible fade show", "alert:close": "btn-close"})
++        for mode in ("both", "icon", "label"):
++            rows, markup = self.render_actions(mode)
++            self.assertEqual(len(rows), 5)
++            self.assertNotIn("fa-solid", markup)
++            for row, name in zip(rows, ("check", "trash", "arrow-left", "filter", "filter-x"), strict=True):
++                self.assertEqual(row["paths"], [] if mode == "label" else ICONS[name])
++                self.assertTrue(row["text"].strip())
++                self.assertEqual(row["hidden"], mode == "icon")
++            self.assertEqual(rows[-1]["attrs"]["type"], "reset")
++            self.assertTrue(rows[-1]["attrs"]["value"])
++        rows, _ = self.render_actions("label", "icon", "both")
++        self.assertTrue(rows[0]["hidden"])
++        self.assertFalse(rows[2]["hidden"])
++        self.assertEqual(rows[2]["paths"], ICONS["arrow-left"])
++        self.assertEqual(self.render_actions()[0][0]["paths"], ICONS["check"])
++
++    def test_missing_each_new_mapping_fails_native_render_assertion(self):
++        from crud_views.lib import icons
++        mappings = (("save", 0, "check"), ("cancel", 2, "arrow-left"), ("filter-reset", 4, "filter-x"))
++        for name, position, glyph in mappings:
++            with self.subTest(name=name), mock.patch.dict(icons._THEME_ICONS), override_settings(CRUD_VIEWS_ICONS={}):
++                icons._THEME_ICONS.pop(name)
++                icons.reset_icon_cache()
++                rows, _ = self.render_actions("both")
++                with self.assertRaises(AssertionError):
++                    self.assertEqual(rows[position]["paths"], ICONS[glyph])
++
++    def test_cancel_absent_none_empty_all_modes_and_requested_tags(self):
++        for destination in ("absent", "none", "empty"):
++            for tag in ("button", "a"):
++                for mode in ("both", "icon", "label"):
++                    with self.subTest(destination=destination, tag=tag, mode=mode):
++                        rows, _ = self.render_actions(mode, destination=destination, tag=tag)
++                        cancel = rows[2]
++                        self.assertEqual(cancel["tag"], "button")
++                        self.assertEqual(cancel["attrs"]["type"], "button")
++                        self.assertNotIn("href", cancel["attrs"])
++                        self.assertEqual("data-cv-cancel-url" in cancel["attrs"], destination == "empty")
++                        self.assertEqual(cancel["attrs"].get("data-cv-cancel-url"),
++                                         "" if destination == "empty" else None)
++                        self.assertEqual(cancel["text"].strip(), "Cancel")
++                        self.assertEqual(cancel["paths"], [] if mode == "label" else ICONS["arrow-left"])
++
++    def test_real_create_update_delete_and_filter_pages_have_native_controls(self):
++        for name, args in (("customer-create", []), ("customer-update", [self.customer.pk]),
++                           ("customer-delete", [self.customer.pk]), ("customer-list", [])):
++            with self.subTest(name=name):
++                response = self.client.get(reverse(name, args=args))
++                self.assertEqual(response.status_code, 200)
++                markup = response.content.decode()
++                self.assertNotIn("fa-solid", markup)
++                self.assertNotIn("fa-regular", markup)
++                glyph = "filter" if name == "customer-list" else "trash" if name == "customer-delete" else "check"
++                self.assertTrue(any(row["paths"] == ICONS[glyph] for row in self.controls(markup)))

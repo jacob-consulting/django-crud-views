@@ -146,3 +146,11 @@ env -u CV_THEME_PRIVATE_SNAPSHOT PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin
 ```
 
 This command reruns probes and updates the bundle with fresh evidence. Retain and review that new evidence before committing it. Read-only inspection can instead validate the embedded bundle, source receipt, exact inventories and logs without rewriting the artifact. The public core-parent receipt is completed by the separate core commit in the plan 10 summary; it does not claim that a manifest can contain its own commit hash.
+
+## Final source refresh — plan 06.6-09
+
+The candidate and fresh exact-patch replay were rerun after final validator/test changes. All eight browser families passed again; focused companion tests remain 11/11, broad Django 114/three unchanged baseline failures, and pytest 34/34. Native assets, five companion files and user settings/index are unchanged. Final helper tests pass 137 cases.
+
+Current strict core inventory SHA-256: `95c9ccaa12bc073ac5a1fbbb3e6a19ec683890f2172e17b291b20b68f68f79e1`. The complete delivery bundle has fresh provisional and committed owned-form/label-floor probes, with prior evidence retained. Its `core_receipt` now names the parent of the plan 09 two-file evidence refresh; the resulting core commit is recorded in `06.6-09-SUMMARY.md`. The original plan 10 commit remains historical proof of initial delivery. `09-final-evidence.json` binds these exact current artifact bytes.
+
+This refresh changes core evidence only. Companion commit `3315eef6671f502d859bba877322a5853388c508` and preserved settings parent `0b3baa896ef5b11aa010238c92d3bceb4663e337` remain unchanged. Human visual/AT acceptance and independent phase review remain pending.

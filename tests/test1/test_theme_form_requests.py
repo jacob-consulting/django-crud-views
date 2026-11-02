@@ -2,13 +2,19 @@
 
 import json
 from pathlib import Path
+from types import ModuleType
 
 import pytest
+from django import forms
+from django.contrib.contenttypes.models import ContentType
 from django.test import Client
+from django.urls import path
 from lxml import html
 
+from crud_views.lib.views.form import CustomFormViewPermissionRequired
+from crud_views_polymorphic.lib.create_select import PolymorphicCreateSelectViewPermissionRequired
 from crud_views_workflow.models import WorkflowInfo
-from tests.test1.app.models import Author, Campaign, CampaignState, Publisher
+from tests.test1.app.models import Author, Campaign, CampaignState, Car, Publisher, Vehicle
 from tests.test1.app.views import AuthorCreateView, AuthorUpdateView, CampaignWorkflowView
 from tests.test1.test_theme_form_ownership import _RawForms, assert_owned_form_markup
 
@@ -235,3 +241,71 @@ def test_protected_form_omission(modal, request, publisher_penguin):
     assert b"Cannot delete this publisher." in response.content
     assert b"csrfmiddlewaretoken" not in response.content
     assert Publisher.objects.filter(pk=publisher_penguin.pk).exists()
+
+
+class PlainContactForm(forms.Form):
+    message = forms.CharField()
+
+
+class PlainContactView(CustomFormViewPermissionRequired):
+    model = Author
+    cv_key = "contact"
+    form_class = PlainContactForm
+    cv_header_template_code = "Plain contact"
+
+
+class PlainSelectionView(PolymorphicCreateSelectViewPermissionRequired):
+    model = Vehicle
+
+
+@pytest.mark.parametrize("kind", ["plain", "selection"])
+def test_owned_form_payload_preservation(kind, request, monkeypatch, settings, author_douglas_adams):
+    from tests.test1.app.urls import urlpatterns
+    from tests.test1.app.views import cv_author, cv_vehicle
+
+    # Actual library views on local routes; only the form/provider configuration differs.
+    monkeypatch.setattr(PlainContactView, "cv_viewset", cv_author)
+    monkeypatch.setattr(PlainSelectionView, "cv_viewset", cv_vehicle)
+    urls = ModuleType("ownership_urls")
+    urls.urlpatterns = [
+        *urlpatterns,
+        path("ownership/plain/<uuid:pk>/", PlainContactView.as_view()),
+        path("ownership/select/", PlainSelectionView.as_view()),
+    ]
+    settings.ROOT_URLCONF = urls
+    client = Client(enforce_csrf_checks=True)
+    client.force_login(request.getfixturevalue("user_author_view" if kind == "plain" else "user_vehicle_add"))
+    url = f"/ownership/plain/{author_douglas_adams.pk}/" if kind == "plain" else "/ownership/select/"
+    car_type = ContentType.objects.get_for_model(Car)
+    data = {"message": "Plain payload"} if kind == "plain" else {"polymorphic_ctype_id": str(car_type.pk)}
+    response = client.get(url)
+    assert response.status_code == 200
+    assert not hasattr(response.context["form"], "helper")
+    owner = assert_owned_form_markup(response.content.decode())
+    assert owner["attrs"]["action"] == url
+    assert owner["attrs"]["enctype"] == "multipart/form-data"
+    document = html.fromstring(response.content)
+    form = document.cssselect("form.cv-form")[0]
+    for control in document.cssselect("input, select, textarea"):
+        assert next(control.iterancestors("form"), None) is form
+    if kind == "selection":
+        assert form.xpath(".//select[@name='polymorphic_ctype_id']/option[@value=$value]", value=str(car_type.pk))
+    before = (_snapshot(), list(Vehicle.objects.values()))
+    for token in (None, "invalid"):
+        payload = dict(data)
+        if token is not None:
+            payload["csrfmiddlewaretoken"] = token
+        assert client.post(url, payload).status_code == 403
+        assert (_snapshot(), list(Vehicle.objects.values())) == before
+    invalid = client.post(url, {"csrfmiddlewaretoken": owner["tokens"][0]})
+    assert invalid.status_code == 200
+    assert invalid.context["form"].errors
+    assert_owned_form_markup(invalid.content.decode())
+    assert not hasattr(invalid.context["form"], "helper")
+    result = client.post(url, {**data, "csrfmiddlewaretoken": owner["tokens"][0]})
+    assert result.status_code == 302
+    if kind == "selection":
+        assert result.url == f"/vehicle/create/ct/{car_type.pk}/"
+    else:
+        assert result.url == "/author/"
+    assert (_snapshot(), list(Vehicle.objects.values())) == before

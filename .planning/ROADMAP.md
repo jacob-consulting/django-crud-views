@@ -748,16 +748,26 @@ full jQuery removal, and final stability-policy inventory.
 **Plans**: 10 plans
 
 Plans:
+**Wave 1**
 - [ ] 06.6-01-PLAN.md — Single-form/CSRF tracer and helper diagnostics (wave 1)
+- [ ] 06.6-04-PLAN.md — Alert utility classes and preserved dismissal (wave 1)
+- [ ] 06.6-06-PLAN.md — Real companion acquisition and exact-source baseline (wave 1)
+
+**Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 06.6-02-PLAN.md — Atomic theme label defaults and effective checks (wave 2)
 - [ ] 06.6-03-PLAN.md — Supported-pack action-group styling (wave 2)
-- [ ] 06.6-04-PLAN.md — Alert utility classes and preserved dismissal (wave 1)
 - [ ] 06.6-05-PLAN.md — Full stock/workflow request and DOM preservation (wave 2)
-- [ ] 06.6-06-PLAN.md — Real companion acquisition and exact-source baseline (wave 1)
+
+**Wave 3** *(blocked on Wave 2 completion)*
 - [ ] 06.6-07-PLAN.md — Real Tabler/browser acceptance and replayable patch (wave 3)
 - [ ] 06.6-08-PLAN.md — Executable adoption and paired migrations (wave 3)
+
+**Wave 4** *(blocked on Wave 3 completion)*
 - [ ] 06.6-10-PLAN.md — Verified companion source delivery and local commit (wave 4)
+
+**Wave 5** *(blocked on Wave 4 completion)*
 - [ ] 06.6-09-PLAN.md — Final regression evidence and Phase 7 handoff (wave 5)
+
 **UI hint**: yes (forms, action groups and alerts across stock and reference themes).
 
 ### Phase 7: Theme-surface stability policy
@@ -832,4 +842,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 6.3. Delete protection and write-boundary integrity | 20/20 | Complete    | 2026-11-01 |
 | 6.4. Conditional and formset correctness/lifecycle | 26/26 | Complete    | 2026-11-02 |
 | 6.5. Remaining presentation contracts and decided cleanup | 9/9 | Complete    | 2026-11-02 |
+| 6.6. Theme-adoption seams from the Tabler sync | 0/10 | Planned | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

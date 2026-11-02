@@ -68,6 +68,9 @@ DEFAULT_BUTTON_CLASSES: dict[str, str | None] = {
     "form:delete": "btn btn-primary",
     "form:filter-submit": "btn btn-primary",
     "form:filter-reset": "btn btn-secondary",
+    # Library action groups add these utilities to the active pack's own wrapper classes.
+    "form:actions": "",
+    "form:filter-actions": "",
     # the element of an eligible cancel (Phase 6.1): "button" or "a" (a native link), None means "button"; a
     # structural value like container-tag, never classes, and without mode keys
     "form:cancel-tag": "button",

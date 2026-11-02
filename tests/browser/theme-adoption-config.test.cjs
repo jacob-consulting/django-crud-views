@@ -12,6 +12,18 @@ test('shared recorded interpreter resolver exists without starting the CLI', () 
     assert.equal(typeof harness.resolveCompanionPython, 'function');
 });
 
+test('asset capture reads each actual URL once and retains body errors without an unhandled rejection',async()=>{
+    const {observeAsset}=require(entry);const report={assets:[],assetErrors:[]},jobs=[],seen=new Set();
+    let reads=0;
+    const response={url:()=> 'https://fixture.invalid/asset',status:()=>200,body:async()=>{reads++;return Buffer.from('actual bytes');}};
+    observeAsset(response,report,jobs,seen);
+    observeAsset({...response,body:async()=>{throw Error('duplicate navigation lost body');}},report,jobs,seen);
+    observeAsset({...response,url:()=> 'https://fixture.invalid/failed',body:async()=>{throw Error('first response unavailable');}},report,jobs,seen);
+    await Promise.all(jobs);
+    assert.equal(reads,1);assert.equal(report.assets.length,1);
+    assert.deepEqual(report.assetErrors,[{url:'https://fixture.invalid/failed',error:'first response unavailable'}]);
+});
+
 test('real Tabler create uses the native check icon from its registered form floor',()=>{
     const temporary=fs.mkdtempSync(path.join(os.tmpdir(),'theme-native-check-'));
     try {

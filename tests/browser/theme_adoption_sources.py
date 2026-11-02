@@ -1022,20 +1022,15 @@ def check_baseline(report, *, env=None, probe=runtime_probe):
 
 def validate_core_receipt(receipt, root):
     require(receipt.get("repository_root") == str(root), "missing separate core receipt")
-    commit, parent = receipt.get("after_head", ""), receipt.get("before_head", "")
+    # Task 10-02 proves the companion commit before task 10-03 commits these very bytes.
+    # The resulting core commit belongs in SUMMARY, avoiding a self-referential manifest.
+    parent = receipt.get("before_head", "")
+    require(re.fullmatch(r"[0-9a-f]{40}", parent), "missing core evidence parent")
+    git(root, "merge-base", "--is-ancestor", parent, "HEAD")
     require(
-        re.fullmatch(r"[0-9a-f]{40}", commit) and re.fullmatch(r"[0-9a-f]{40}", parent), "missing core evidence commit"
-    )
-    require(git(root, "rev-parse", f"{commit}^").decode().strip() == parent, "wrong core receipt parent")
-    require(
-        git(root, "rev-parse", f"{commit}^{{tree}}").decode().strip() == receipt.get("tree"), "wrong core receipt tree"
-    )
-    require(
-        digest(git(root, "diff", "--binary", parent, commit)) == receipt.get("delta_sha256"), "wrong core receipt delta"
-    )
-    paths = set(git(root, "diff", "--name-only", parent, commit).decode().splitlines())
-    require(
-        paths == {PHASE_DIR + "/10-companion-delivery.json"}, "core receipt must identify its scoped delivery evidence"
+        set(receipt.get("evidence_paths", []))
+        == {PHASE_DIR + "/10-companion-delivery.json", PHASE_DIR + "/07-TABLER-HANDOFF.md"},
+        "core receipt must identify both scoped evidence paths",
     )
 
 
@@ -1180,6 +1175,8 @@ def check_delivery_tree(root, candidate_files, baseline, snapshot, *, receipt=No
     )
     if receipt is not None:
         verify_receipt(root, receipt, committed_files, snapshot["preserved"]["head"])
+        staged = set(git(root, "diff", "--cached", "--name-only").decode().splitlines())
+        require(staged <= set(snapshot["staged_entries"]), "uncommitted task or new staged hunk remains")
     return {
         "source_sha256": digest(inventory(candidate_files)),
         "preserved_dirty_sha256": digest(baseline["preserved"]),
@@ -1191,8 +1188,19 @@ def _delivered_probe(root, baseline, replay, output, *, require_committed=False,
     env = dict(os.environ) if env is None else env
     candidate = verify_replay(replay, baseline, env=env)
     executable = resolve_companion_python(baseline, env=env)
-    snapshot = load_json(absolute_path(env.get("CV_THEME_PRIVATE_SNAPSHOT"), "CV_THEME_PRIVATE_SNAPSHOT"))
     bundle = load_json(output)
+    if env.get("CV_THEME_PRIVATE_SNAPSHOT"):
+        snapshot = load_json(absolute_path(env["CV_THEME_PRIVATE_SNAPSHOT"], "CV_THEME_PRIVATE_SNAPSHOT"))
+        # Clean initial trees need only public hashes; never embed a user's private patch.
+        if not snapshot["worktree_patch"] and not snapshot["staged_entries"]:
+            bundle["preservation_snapshot"] = snapshot
+            atomic_json(output, bundle)
+    else:
+        snapshot = bundle.get("preservation_snapshot")
+        require(
+            isinstance(snapshot, dict) and snapshot.get("worktree_patch") == "" and not snapshot.get("staged_entries"),
+            "missing private snapshot or complete public clean-tree preservation evidence",
+        )
     if bundle.get("status") == "complete":
         historical = {key: value for key, value in bundle.items() if key != "history"}
         bundle.setdefault("history", []).append(historical)
@@ -1295,15 +1303,23 @@ def delivered_probe(root, baseline, replay, output, *, require_committed=False, 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    modes = parser.add_mutually_exclusive_group(required=True)
+    modes = parser.add_mutually_exclusive_group()
     modes.add_argument("--capture-baseline", action="store_true")
     modes.add_argument("--check-baseline", action="store_true")
     modes.add_argument("--verify-replay", action="store_true")
-    modes.add_argument("--delivered-source")
+    parser.add_argument("--delivered-source")
     parser.add_argument("--require-committed", action="store_true")
     parser.add_argument("--output", required=True)
     args = parser.parse_args(argv)
     try:
+        require(
+            args.capture_baseline or args.check_baseline or args.verify_replay or args.delivered_source,
+            "choose baseline, replay or delivered-source validation",
+        )
+        require(
+            not args.delivered_source or not (args.capture_baseline or args.check_baseline),
+            "baseline modes cannot validate delivery",
+        )
         require(not args.require_committed or args.delivered_source, "require-committed needs delivered-source")
         if args.capture_baseline:
             result = capture_baseline(args.output)
@@ -1312,7 +1328,7 @@ def main(argv=None):
             result = {"status": "baseline-validated"}
         else:
             baseline = load_json(core_root() / PHASE_DIR / BASELINE_NAME)
-            if args.verify_replay:
+            if args.verify_replay and not args.delivered_source:
                 verify_replay(load_json(args.output), baseline)
                 result = {"status": "replay-validated"}
             else:

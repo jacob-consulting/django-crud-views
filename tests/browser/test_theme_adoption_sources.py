@@ -1058,14 +1058,31 @@ def test_delivery_always_reruns_focused_and_owned_form_with_fresh_label_evidence
     run_git(root, "commit", "-m", "scoped delivery")
     provisional["companion_receipt"] = receipt(root, parent)
     sources.atomic_json(output, provisional)
-    core_parent = run_git(core, "rev-parse", "HEAD")
-    run_git(core, "add", str(output))
-    run_git(core, "commit", "-m", "delivery evidence")
-    provisional["core_receipt"] = receipt(core, core_parent)
+    # Companion commit/probes precede the core evidence commit; its parent/path boundary is non-self-referential.
+    provisional["core_receipt"] = {
+        "repository_root": str(core),
+        "before_head": run_git(core, "rev-parse", "HEAD"),
+        "evidence_paths": [
+            sources.PHASE_DIR + "/10-companion-delivery.json",
+            sources.PHASE_DIR + "/07-TABLER-HANDOFF.md",
+        ],
+    }
+    provisional["preservation_snapshot"] = sources.load_json(snapshot_path)
     sources.atomic_json(output, provisional)
     committed = sources.delivered_probe(root, baseline, replay, output, env=env, runner=runner, require_committed=True)
     assert committed["status"] == "complete" and len(calls) == 6
     assert sources.validate_bundle(committed, binding, committed=True)
+    # A valid HEAD/worktree alone cannot conceal a reverse-staged task hunk.
+    run_git(root, "read-tree", parent)
+    with pytest.raises(sources.EvidenceError, match="uncommitted task"):
+        sources.check_delivery_tree(
+            root, candidate, baseline, sources.load_json(snapshot_path), receipt=provisional["companion_receipt"]
+        )
+    run_git(root, "read-tree", "HEAD")
+    snapshot_path.unlink()
+    offline = sources.delivered_probe(root, baseline, replay, output, env={}, runner=runner, require_committed=True)
+    assert offline["status"] == "complete"
+    env = {}
     # Exit zero without replacing the partial record cannot pass a later verification.
     with pytest.raises(sources.EvidenceError, match="current execution"):
         sources.delivered_probe(
@@ -1080,6 +1097,71 @@ def test_delivery_always_reruns_focused_and_owned_form_with_fresh_label_evidence
     failed = sources.load_json(output)
     assert failed["status"] == "failed"
     assert failed["history"][-1]["status"] == "complete"
+
+
+def test_delivery_cli_accepts_the_planned_combined_flags(tmp_path, monkeypatch, capsys):
+    monkeypatch.setattr(sources, "load_json", lambda _: {})
+    monkeypatch.setattr(
+        sources, "resolve_recorded_source", lambda operand, **kw: Path("/recorded") if operand == "recorded" else None
+    )
+    calls = []
+    monkeypatch.setattr(sources, "delivered_probe", lambda *a, **kw: calls.append((a, kw)) or {"status": "complete"})
+    assert (
+        sources.main(
+            [
+                "--verify-replay",
+                "--delivered-source",
+                "recorded",
+                "--require-committed",
+                "--output",
+                str(tmp_path / "bundle.json"),
+            ]
+        )
+        == 0
+    )
+    assert calls[0][0][0] == Path("/recorded")
+    assert calls[0][1]["require_committed"] is True
+    assert json.loads(capsys.readouterr().out)["status"] == "complete"
+
+
+def test_core_receipt_binds_pending_evidence_parent_and_both_owned_paths(tmp_path):
+    root, parent = repository(tmp_path / "core")
+    record = {
+        "repository_root": str(root),
+        "before_head": parent,
+        "evidence_paths": [
+            sources.PHASE_DIR + "/10-companion-delivery.json",
+            sources.PHASE_DIR + "/07-TABLER-HANDOFF.md",
+        ],
+    }
+    sources.validate_core_receipt(record, root)
+    for changed in (
+        {**record, "repository_root": "/wrong"},
+        {**record, "before_head": "0" * 40},
+        {**record, "evidence_paths": record["evidence_paths"] + ["unrelated"]},
+    ):
+        with pytest.raises(sources.EvidenceError):
+            sources.validate_core_receipt(changed, root)
+
+
+def test_registration_only_tracer_defers_synchronized_tests_but_complete_gates_refuse(tmp_path):
+    spec = importlib.util.spec_from_file_location(
+        "theme_adoption_server", Path(__file__).with_name("theme_adoption_server.py")
+    )
+    server = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(server)
+    original = {"src/crud_views_tabler/tests.py": b"class ButtonClassTests: pass\n"}
+    pending = server.focused_selection(original, delivered=True)
+    assert pending["tests"] == ["django_tabler.tests.PackageTests"]
+    assert pending["pending"] == list(sources.FOCUSED_TESTS[:-1])
+    for kwargs in ({"delivered": False}, {"delivered": True, "full": True}):
+        with pytest.raises(sources.EvidenceError, match="synchronized"):
+            server.focused_selection(original, **kwargs)
+    synchronized = {"src/crud_views_tabler/tests.py": b"class ThemeAdoptionTests(TestCase): pass\n"}
+    assert server.focused_selection(synchronized, delivered=True) == {
+        "tests": list(sources.FOCUSED_TESTS),
+        "pending": [],
+    }
 
 
 def test_capture_missing_dependencies_halts_before_copying(repo, tmp_path, monkeypatch):

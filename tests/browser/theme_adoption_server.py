@@ -256,6 +256,15 @@ def current_core():
     }
 
 
+def focused_selection(files, *, delivered=False, full=False):
+    """The registration-only delivery tracer precedes the synchronized test/alert task."""
+    synchronized = b"class ThemeAdoptionTests(" in files.get("src/crud_views_tabler/tests.py", b"")
+    if synchronized:
+        return {"tests": list(sources.FOCUSED_TESTS), "pending": []}
+    sources.require(delivered and not full, "missing synchronized adoption tests for complete acceptance")
+    return {"tests": [sources.FOCUSED_TESTS[-1]], "pending": list(sources.FOCUSED_TESTS[:-1])}
+
+
 def prepare(target, delivered=None, full=False):
     baseline = sources.load_json(ROOT / sources.PHASE_DIR / sources.BASELINE_NAME)
     sources.check_baseline(baseline)
@@ -281,8 +290,9 @@ def prepare(target, delivered=None, full=False):
     sources.write_tree(files, companion)
     executable = sources.resolve_companion_python(baseline)
     origins, command = sources.probe_origins(executable, companion, core, files, core_files)
+    selection = focused_selection(files, delivered=bool(delivered), full=full)
     focused = sources.command_record(
-        [str(executable), "example/manage.py", "test", *sources.FOCUSED_TESTS, "--verbosity", "2"],
+        [str(executable), "example/manage.py", "test", *selection["tests"], "--verbosity", "2"],
         companion,
         env=sources.isolated_env(companion, core),
     )
@@ -357,6 +367,7 @@ def prepare(target, delivered=None, full=False):
         "native_icons": sources.literal_assignment(files["src/django_tabler/icons.py"], "ICONS"),
         "focused_command": focused,
         "focused_result": focused_result,
+        "focused_pending": selection["pending"],
         "test_nodes": nodes,
         "suites": suites,
         "isolated_roots": {"companion": str(companion), "core": str(core)},

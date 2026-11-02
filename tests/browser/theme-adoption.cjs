@@ -93,6 +93,19 @@ function commandRecord(argv,cwd,exit_code,stdout,stderr) {
     const value={argv,cwd,exit_code,stdout,stderr};
     return {...value,log_sha256:sha(JSON.stringify(canonical(value)))};
 }
+function observeAsset(response, report, jobs, seen) {
+    const url=response.url();
+    if(seen.has(url))return;
+    seen.add(url);
+    // Reading duplicate cached responses after a later navigation can lose their protocol body.
+    // Capture the first actual response once and handle rejection immediately so cleanup still runs.
+    jobs.push((async()=>{
+        const body=await response.body();
+        report.assets.push({url,status:response.status(),sha256:sha(body),
+            sri256:'sha256-'+crypto.createHash('sha256').update(body).digest('base64'),
+            sri384:'sha384-'+crypto.createHash('sha384').update(body).digest('base64')});
+    })().catch(error=>report.assetErrors.push({url,error:error.message})));
+}
 function mergeFormProbe(output, report) {
     const bundle=fs.existsSync(output)?JSON.parse(fs.readFileSync(output,'utf8')):{schema:1};
     assert.notEqual(bundle.status,'complete','partial form probe cannot overwrite completed delivery');
@@ -362,13 +375,8 @@ async function main() {
         browser=await require(playwright).chromium.launch({executablePath:chromium,headless:true});
         report.browser={playwright,chromium,version:browser.version()};
         const context=await browser.newContext(); const page=await context.newPage(); page.setDefaultTimeout(6000);
-        report.assets=[];const assetJobs=[];
-        page.on('response',response=>{if(response.url().startsWith('https://cdn.jsdelivr.net/npm/@tabler/core@1.6.1/') || response.url()==='https://code.jquery.com/jquery-3.7.1.js')assetJobs.push((async()=>{
-            const body=await response.body();const asset={url:response.url(),status:response.status(),sha256:sha(body),
-                sri256:'sha256-'+crypto.createHash('sha256').update(body).digest('base64'),
-                sri384:'sha384-'+crypto.createHash('sha384').update(body).digest('base64')};
-            const previous=report.assets.find(a=>a.url===asset.url);if(previous)assert.equal(previous.sha256,asset.sha256,'Asset changed during run');else report.assets.push(asset);
-        })());});
+        report.assets=[];report.assetErrors=[];const assetJobs=[],assetSeen=new Set();
+        page.on('response',response=>{if(response.url().startsWith('https://cdn.jsdelivr.net/npm/@tabler/core@1.6.1/') || response.url()==='https://code.jquery.com/jquery-3.7.1.js')observeAsset(response,report,assetJobs,assetSeen);});
         page.on('pageerror',e=>report.pageErrors.push(e.message));
         page.on('console',m=>{if(m.type()==='error')report.consoleErrors.push(m.text());});
         const base=`http://127.0.0.1:${port}`;
@@ -378,6 +386,7 @@ async function main() {
         await ownedForm(page,base,report);
         await page.waitForFunction(()=>!!globalThis.tabler?.Modal);
         await Promise.all(assetJobs);
+        assert.deepEqual(report.assetErrors,[]);
         report.assetDeclarations=await page.locator('script[src^="https:"],link[href^="https:"]').evaluateAll(nodes=>nodes.map(el=>({url:el.src||el.href,integrity:el.integrity,crossorigin:el.crossOrigin})));
         for(const declared of report.assetDeclarations) {const asset=report.assets.find(a=>a.url===declared.url);assert(asset && [asset.sri256,asset.sri384].includes(declared.integrity),'Actual asset integrity mismatch');}
         for(const suffix of ['css/tabler.min.css','js/tabler-theme.min.js','js/tabler.min.js'])assert(report.assets.some(a=>a.url.endsWith(suffix)&&a.status===200&&a.sha256),`Missing real Tabler asset ${suffix}`);
@@ -391,6 +400,7 @@ async function main() {
             await cancelNavigation(page,base,report);
             await csrfPost(page,base,report);
             await Promise.all(assetJobs);
+            assert.deepEqual(report.assetErrors,[]);
             assert(report.assets.some(a=>a.url==='https://code.jquery.com/jquery-3.7.1.js' && a.status===200),'Missing formset jQuery asset');
         }
         report.expectedHTTPConsoleErrors=report.consoleErrors.filter(message=>/^Failed to load resource: the server responded with a status of 422 \(Unprocessable Content\)$/.test(message));
@@ -418,5 +428,5 @@ async function main() {
         console.log(JSON.stringify({status:report.status,cases:report.cases.length,error:report.error}));
     }
 }
-module.exports={resolveCompanionPython,resolveSource,portValue,available,configuration,atomicJSON,mergeFormProbe,commandRecord};
+module.exports={resolveCompanionPython,resolveSource,portValue,available,configuration,atomicJSON,mergeFormProbe,commandRecord,observeAsset};
 if(require.main===module) main().catch(error=>{console.error(error.stack);process.exitCode=1;});

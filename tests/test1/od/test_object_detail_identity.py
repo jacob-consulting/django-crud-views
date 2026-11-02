@@ -65,9 +65,10 @@ def test_standalone_tab_has_label_without_missing_control():
     assert "active" in panel.classes and "show" in panel.classes
 
 
+@pytest.mark.parametrize("layout", ["tabs-vertical", "accordion"])
 @pytest.mark.parametrize("icon", ["host:edit", "fas:pen", "", None, "disabled"])
 @pytest.mark.parametrize("hostile", [False, True])
-def test_tabs_title_button_owns_icon(icon, hostile):
+def test_interactive_title_button_owns_icon(icon, hostile, layout):
     group = ResolvedGroup(title='<em>Title & "text"</em>', icon=icon)
     with override_settings(
         CRUD_VIEWS_ICON_LIBRARIES={"host": {"renderer": "font", "placement": "host", "class": "icon-{name}"}},
@@ -77,15 +78,19 @@ def test_tabs_title_button_owns_icon(icon, hostile):
             "heading-group:icon-inline": 'inline" onerror="attack' if hostile else "group-inline",
         },
     ):
-        doc = render([group])
-    (button,) = doc.cssselect('[role="tab"]')
-    assert button.text_content().strip() == group.title
+        doc = render([group], layout=layout)
+    (button,) = doc.cssselect("button[data-bs-toggle]")
+    assert group.title in button.text_content()
     assert not doc.cssselect("em, [onclick], [onerror]")
-    assert {"nav-link", "text-start", "active"} <= button.classes
+    structural = (
+        {"nav-link", "text-start", "active"} if layout == "tabs-vertical" else {"accordion-button", "collapsed"}
+    )
+    assert structural <= button.classes
     assert len(button.cssselect("i")) == (1 if icon == "fas:pen" else 0)
     assert ("icon-edit" in button.get("class")) == (icon == "host:edit")
     if icon == "fas:pen":
         assert button.cssselect("i")[0].get("aria-hidden") == "true"
+    assert not any("icon-edit" in heading.get("class", "") for heading in doc.cssselect("h2, h5"))
 
 
 @pytest.mark.parametrize("token", ["", "1bad", "bad token", "with.dot", "é", 'x" onclick="bad', 123, False])
@@ -94,3 +99,41 @@ def test_invalid_component_token_rejected(token):
 
     with pytest.raises(ImproperlyConfigured, match="component_id"):
         render_object_detail(Context(), None, [], layout="tabs-vertical", component_id=token)
+
+
+def test_accordion_targets_belong_to_their_component():
+    groups = [ResolvedGroup(title=title) for title in ["A B", "A-B", "", gettext_lazy("日本語")]]
+    doc = render(groups, layout="accordion", repeat=True)
+    ids = doc.xpath("//@id")
+    assert len(ids) == len(set(ids))
+    for root in doc.cssselect(".accordion"):
+        controls = root.cssselect(".accordion-button")
+        panels = root.cssselect(".accordion-collapse")
+        assert len(controls) == len(panels) == len(groups)
+        for control, panel in zip(controls, panels, strict=True):
+            assert control.get("id")
+            assert control.get("aria-controls") == panel.get("id")
+            assert control.get("data-bs-target") == "#" + panel.get("id")
+            assert panel.get("aria-labelledby") == control.get("id")
+            assert panel.get("data-bs-parent") == "#" + root.get("id")
+            assert control.get("aria-expanded") == "false"
+            assert "show" not in panel.classes
+
+
+def test_standalone_accordion_omits_unrendered_parent():
+    doc = render([ResolvedGroup(title="Same")], layout="accordion", standalone=True, repeat=True)
+    ids = doc.xpath("//@id")
+    assert len(ids) == len(set(ids))
+    assert not doc.cssselect("[data-bs-parent]")
+    for control, panel in zip(doc.cssselect("button"), doc.cssselect(".accordion-collapse"), strict=True):
+        assert panel.get("aria-labelledby") == control.get("id")
+        assert control.get("aria-controls") == panel.get("id")
+
+
+def test_duplicate_supplied_component_in_direct_scope_fails():
+    from crud_views_object_detail.templatetags.crud_views_object_detail import render_object_detail
+
+    context = Context()
+    render_object_detail(context, None, [ResolvedGroup(title="One")], layout="accordion", component_id="stable")
+    with pytest.raises(ImproperlyConfigured, match="stable"):
+        render_object_detail(context, None, [ResolvedGroup(title="Two")], layout="tabs-vertical", component_id="stable")

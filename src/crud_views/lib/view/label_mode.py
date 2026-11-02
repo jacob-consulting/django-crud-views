@@ -118,12 +118,11 @@ def _invalid_label_mode(source: str, location: str, value: object, fallback: Cal
 
 
 def default_label_mode(location: str) -> str:
-    """The label-mode floor of a button location: CRUD_VIEWS_LABEL_MODE_DEFAULTS merged per key over
-    LABEL_MODE_DEFAULTS.
+    """The per-location floor: live CRUD_VIEWS_LABEL_MODE_DEFAULTS over theme over package defaults.
 
     Read on every call. A location outside button_data.LOCATIONS is a caller bug and raises in every mode. A
     malformed setting, or a malformed mode for this location, raises in strict mode and otherwise falls back to
-    the package default for the location (logged once); unknown keys in the setting are ignored here (E108).
+    the theme or package default for the location (logged once); unknown setting keys are ignored here (E108).
     """
     # deferred: button_data imports this module
     from .button_data import LOCATIONS
@@ -138,7 +137,7 @@ def default_label_mode(location: str) -> str:
             f"setting CRUD_VIEWS_LABEL_MODE_DEFAULTS must be a dict of location -> one of {sorted(LABEL_MODES)}",
             location,
             raw,
-            lambda: LABEL_MODE_DEFAULTS[location],
+            lambda: _theme_or_package_default(location),
         )
     if location not in raw:
         return _theme_or_package_default(location)
@@ -149,7 +148,7 @@ def default_label_mode(location: str) -> str:
         f"setting CRUD_VIEWS_LABEL_MODE_DEFAULTS key {location!r} must be one of {sorted(LABEL_MODES)}",
         location,
         value,
-        lambda: LABEL_MODE_DEFAULTS[location],
+        lambda: _theme_or_package_default(location),
     )
 
 

@@ -1,0 +1,55 @@
+# Phase 06.6 action-group pack evidence
+
+The ordinary upstream FormActions probe below was executed before the bridge implementation,
+using the checkout via PYTHONPATH=src:. Both render real layout fields. Probe exit 0 means
+the observation was captured; the floor's consumes_class=false is the actual supported-pack
+incompatibility, not passing class support.
+
+The production bridge is selected only for pack bootstrap5, the real path of the installed
+crispy-bootstrap5 distribution's own layout/formactions.html, and the entire exact audited
+2023.10 source. Every predicate is required on each render. The bridge adds escaped class
+text only to the original outer wrapper and retains attrs/flat_attrs, label_class,
+field_class, blank lines and fields_output exactly. There is no hidden-input branch in
+this original template. Filter trailing-input preservation is verified separately.
+
+The library uses a render-local copy for effective classes, retaining the authored object
+and its primitive registry key. No installed template, global pack override, HTML
+postprocessing, capability cache or generic fallback is used.
+
+## Upstream source contract
+
+The installed crispy-forms 2.0 and 2.7 FormActions implementations both render their
+fields, select the active pack template, and pass formactions plus fields_output.
+The adapter preserves that contract and the resolved template.
+[Official FormActions source](https://django-crispy-forms.readthedocs.io/en/latest/_modules/crispy_forms/bootstrap.html)
+was checked alongside both installed versions. Context7 CLI was unavailable.
+
+## Original current-pack observation
+
+Command: PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_theme_action_groups.py::test_pack_structure_probe -q -s
+
+```text
+{"versions": {"Django": "5.2.18", "django-crispy-forms": "2.7", "crispy-bootstrap5": "2026.9"}, "origin": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/lib/python3.12/site-packages/crispy_bootstrap5/templates/bootstrap5/layout/formactions.html", "source": "<div\n    {% if formactions.flat_attrs %}{{ formactions.flat_attrs }}{% endif %} \n    class=\"mb-3{% if 'form-horizontal' in form_class %} row{% endif %} {{ formactions.css_class|default:'' }} {{ field_class }}\" \n    {% if formactions.id %} id=\"{{ formactions.id }}\"{% endif %}>\n    {% if label_class %}\n        <div class=\"aab {{ label_class }}\"></div>\n    {% endif %}\n    <div class=\"{{ field_class }}\">\n        {{ fields_output|safe }}\n    </div>\n</div>\n", "empty": "<div\n     \n    class=\"mb-3  fields\" \n    >\n    \n        <div class=\"aab labels\"></div>\n    \n    <div class=\"fields\">\n        <b>Control</b>\n    </div>\n</div>\n", "nonempty": "<div\n     \n    class=\"mb-3 phase066-probe fields\" \n    >\n    \n        <div class=\"aab labels\"></div>\n    \n    <div class=\"fields\">\n        <b>Control</b>\n    </div>\n</div>\n", "consumes_class": true}
+.
+1 passed in 0.09s
+```
+
+## Original floor-pack observation
+
+Command: PYTHONPATH=src:. .nox/crispy_floor-3-12-django-6-0/bin/python -m pytest tests/test1/test_theme_action_groups.py::test_pack_structure_probe -q -s
+
+```text
+{"versions": {"Django": "6.0.9", "django-crispy-forms": "2.0", "crispy-bootstrap5": "2023.10"}, "origin": "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/crispy_bootstrap5/templates/bootstrap5/layout/formactions.html", "source": "<div{% if formactions.attrs %} {{ formactions.flat_attrs }}{% endif %} class=\"mb-3\">\n    {% if label_class %}\n        <div class=\"aab {{ label_class }}\"></div>\n    {% endif %}\n\n    <div class=\"{{ field_class }}\">\n        {{ fields_output|safe }}\n    </div>\n</div>\n", "empty": "<div class=\"mb-3\">\n    \n        <div class=\"aab labels\"></div>\n    \n\n    <div class=\"fields\">\n        <b>Control</b>\n    </div>\n</div>\n", "nonempty": "<div class=\"mb-3\">\n    \n        <div class=\"aab labels\"></div>\n    \n\n    <div class=\"fields\">\n        <b>Control</b>\n    </div>\n</div>\n", "consumes_class": false}
+.
+1 passed in 0.07s
+```
+
+## Scoped bridge verification
+
+The task 03-01 ordinary/pack_structure selection passes 14 cases on current Django 5.2
+and 14 on the Django 6.0 floor. It verifies exact empty-wrapper bytes, ordinary/delete
+sentinels, the complete audited source, changed attrs/label/field/output/whitespace,
+custom filesystem/locmem origins and a fresh selection after template override restoration.
+Custom templates with even the exact floor text remain unmodified.
+
+Later task results and the independent Django 4.2 floor run are recorded below when executed.

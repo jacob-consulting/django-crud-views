@@ -4,6 +4,7 @@ from crispy_forms.layout import BaseInput, Layout, LayoutObject, Row
 from django.forms import BooleanField, Form, ModelForm
 from django.utils.translation import gettext_lazy as _
 
+from crud_views.lib.crispy.actions import _ThemedFormActions
 from crud_views.lib.crispy.buttons import Button, Submit
 from crud_views.lib.crispy.table import Column4
 
@@ -54,7 +55,7 @@ class CrispyFormMixin:
         raise NotImplementedError
 
     def get_form_actions(self) -> FormActions:
-        return FormActions(self.get_submit_button(), self.get_cancel_button())
+        return _ThemedFormActions(self.get_submit_button(), self.get_cancel_button())
 
     def get_submit_button_kwargs(self) -> dict:
         return {"name": "submit", "value": self.submit_label}
@@ -140,7 +141,7 @@ class CrispyDeleteForm(CrispyForm):
         helper.form_tag = False
         helper.layout = Layout(
             Row(Column4("confirm")),
-            FormActions(
+            _ThemedFormActions(
                 self.get_delete_button(),
                 self.get_cancel_button(),
             ),

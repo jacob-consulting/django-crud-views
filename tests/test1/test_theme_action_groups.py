@@ -2,11 +2,13 @@
 
 import importlib.metadata
 import json
+from types import SimpleNamespace
 
 import pytest
 from crispy_forms.bootstrap import FormActions
 from crispy_forms.layout import HTML
 from django import forms
+from django.conf import settings
 from django.template import Context
 from django.template.loader import get_template
 from django.test import override_settings
@@ -95,3 +97,75 @@ def test_ordinary_delete_group_classes():
         wrapper = html.fromstring(render_group(group))
     assert "delete-sentinel" in wrapper.classes
     assert wrapper.cssselect("button[name=delete]")[0].get("type") == "submit"
+
+
+def test_pack_structure_installed_discriminator():
+    from crud_views.lib.crispy.actions import _BOOTSTRAP5_FLOOR_SOURCE, _use_bootstrap5_floor_bridge
+
+    template = get_template("bootstrap5/layout/formactions.html")
+    assert _BOOTSTRAP5_FLOOR_SOURCE == FLOOR_SOURCE
+    assert _use_bootstrap5_floor_bridge("bootstrap5", template) is (template.template.source == FLOOR_SOURCE)
+    assert not _use_bootstrap5_floor_bridge("custom", template)
+
+
+@pytest.mark.parametrize("change", ["origin", "attrs", "label", "field", "output", "whitespace"])
+def test_pack_structure_discriminator_requires_full_match(change, tmp_path):
+    from crud_views.lib.crispy.actions import _use_bootstrap5_floor_bridge
+
+    installed = importlib.metadata.distribution("crispy-bootstrap5").locate_file(
+        "crispy_bootstrap5/templates/bootstrap5/layout/formactions.html"
+    )
+    candidate = SimpleNamespace(
+        origin=SimpleNamespace(name=str(installed)), template=SimpleNamespace(source=FLOOR_SOURCE)
+    )
+    assert _use_bootstrap5_floor_bridge("bootstrap5", candidate)
+    if change == "origin":
+        candidate.origin.name = str(tmp_path / "custom.html")
+    else:
+        needle = {
+            "attrs": "flat_attrs",
+            "label": "label_class",
+            "field": "field_class",
+            "output": "fields_output",
+            "whitespace": "\n",
+        }[change]
+        candidate.template.source = FLOOR_SOURCE.replace(needle, "changed", 1)
+    assert not _use_bootstrap5_floor_bridge("bootstrap5", candidate)
+
+
+def custom_templates(source, tmp_path=None):
+    templates = [
+        {
+            **settings.TEMPLATES[0],
+            "APP_DIRS": False,
+            "OPTIONS": {
+                **settings.TEMPLATES[0].get("OPTIONS", {}),
+                "loaders": [
+                    ("django.template.loaders.locmem.Loader", {"bootstrap5/layout/formactions.html": source}),
+                    "django.template.loaders.app_directories.Loader",
+                ],
+            },
+        }
+    ]
+    if tmp_path is not None:
+        path = tmp_path / "bootstrap5/layout/formactions.html"
+        path.parent.mkdir(parents=True)
+        path.write_text(source)
+        templates[0]["DIRS"] = [str(tmp_path)]
+        templates[0]["OPTIONS"]["loaders"][0] = "django.template.loaders.filesystem.Loader"
+    return override_settings(TEMPLATES=templates)
+
+
+@pytest.mark.parametrize("filesystem", [False, True])
+def test_pack_structure_custom_origin_never_bridged(filesystem, tmp_path):
+    from crud_views.lib.crispy.actions import _use_bootstrap5_floor_bridge
+
+    group = ordinary_group()
+    with custom_templates(FLOOR_SOURCE, tmp_path if filesystem else None):
+        template = get_template("bootstrap5/layout/formactions.html")
+        assert not _use_bootstrap5_floor_bridge("bootstrap5", template)
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"form:actions": "ignored-by-custom"}):
+            assert "ignored-by-custom" not in render_group(group)
+    # Same object, different loader selection: no global bridge capability cache.
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"form:actions": "back-to-installed"}):
+        assert "back-to-installed" in render_group(group)

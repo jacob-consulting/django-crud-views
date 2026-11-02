@@ -28,6 +28,20 @@ def test_missing_sources_fail_closed(tmp_path):
         sources.inspect_sources(tmp_path / "absent", "abc", "https://example.invalid/theme.git")
 
 
+@pytest.mark.parametrize("target", ["CLAUDE.md", "../private", "/etc/passwd", "absent.md", "AGENTS.md"])
+def test_archive_materializes_only_internal_regular_file_links(tmp_path, target):
+    root, _ = repository(tmp_path / "linked", {"CLAUDE.md": b"project instructions"})
+    (root / "AGENTS.md").symlink_to(target)
+    run_git(root, "add", "AGENTS.md")
+    run_git(root, "commit", "-m", "link")
+    revision = run_git(root, "rev-parse", "HEAD")
+    if target == "CLAUDE.md":
+        assert sources.archive_files(root, revision)["AGENTS.md"] == b"project instructions"
+    else:
+        with pytest.raises(sources.EvidenceError, match="symlink"):
+            sources.archive_files(root, revision)
+
+
 ORIGIN = "https://example.invalid/theme.git"
 FILES = {
     "src/crud_views_tabler/templates/crud_views/modal/shell.html": b"<div>modal</div>",
@@ -583,7 +597,8 @@ def test_wrong_module_and_template_origins_fail(tmp_path):
         sources.validate_origins(bad, companion, core, FILES, CORE_FILES)
 
 
-def test_real_archive_capture_and_check_use_pinned_copies(repo, tmp_path, monkeypatch):
+@pytest.mark.parametrize("committed_settings", [False, True])
+def test_real_archive_capture_and_check_use_pinned_copies(repo, tmp_path, monkeypatch, committed_settings):
     root, revision = repo
     core, core_revision = repository(tmp_path / "core", CORE_FILES)
     monkeypatch.setattr(sources, "COMPANION_ROOT", str(root))
@@ -594,6 +609,9 @@ def test_real_archive_capture_and_check_use_pinned_copies(repo, tmp_path, monkey
     # The user's dirty settings never enter the archive used by either suite.
     settings_path = root / "example/config/settings.py"
     settings_path.write_text('SECRET_KEY = "private-user-value"\n')
+    if committed_settings:
+        run_git(root, "add", "example/config/settings.py")
+        run_git(root, "commit", "-m", "user settings change")
     before = sources.preservation(root)
     observed = []
 
@@ -649,6 +667,57 @@ def test_real_archive_capture_and_check_use_pinned_copies(repo, tmp_path, monkey
     broken["tests_outcome"] = "passed"
     with pytest.raises(sources.EvidenceError, match="relabeled"):
         sources.check_baseline(broken, env={}, probe=lambda _: runtime())
+
+
+@pytest.mark.parametrize("path", ["src/crud_views_tabler/checks.py", "tests/new.py", "pyproject.toml"])
+def test_capture_rejects_non_settings_descendant_changes(repo, monkeypatch, path):
+    root, revision = repo
+    monkeypatch.setattr(sources, "COMPANION_ROOT", str(root))
+    monkeypatch.setattr(sources, "COMPANION_REVISION", revision)
+    monkeypatch.setattr(sources, "COMPANION_ORIGIN", ORIGIN)
+    target = root / path
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text("# unrelated source change\n")
+    run_git(root, "add", path)
+    run_git(root, "commit", "-m", "changed integration input")
+    with pytest.raises(sources.EvidenceError, match="continuity"):
+        sources._capture_inputs({}, probe=lambda _: runtime())
+
+
+def test_capture_rejects_non_descendant_identity(repo, monkeypatch):
+    root, revision = repo
+    monkeypatch.setattr(sources, "COMPANION_ROOT", str(root))
+    monkeypatch.setattr(sources, "COMPANION_REVISION", revision)
+    monkeypatch.setattr(sources, "COMPANION_ORIGIN", ORIGIN)
+    run_git(root, "checkout", "--orphan", "unrelated")
+    run_git(root, "commit", "-m", "same tree without ancestry")
+    with pytest.raises(sources.EvidenceError, match=r"ancestor|merge-base"):
+        sources._capture_inputs({}, probe=lambda _: runtime())
+
+
+def test_delivery_preserves_settings_only_commit_outside_replay(repo, tmp_path):
+    root, revision = repo
+    path = root / "example/config/settings.py"
+    path.write_text('SECRET_KEY = "user-committed-value"\n')
+    run_git(root, "add", "example/config/settings.py")
+    run_git(root, "commit", "-m", "user settings")
+    parent = run_git(root, "rev-parse", "HEAD")
+    baseline = {
+        "preserved": sources.preservation(root),
+        "source_continuity": sources.capture_continuity(root, revision),
+    }
+    snapshot = sources.load_json(sources.private_snapshot(root, tmp_path / "private"))
+    candidate = dict(FILES)
+    target = "src/crud_views_tabler/templates/crud_views/tags/alert.html"
+    candidate[target] = b"<div>adopted alert</div>"
+    (root / target).write_bytes(candidate[target])
+    assert sources.check_delivery_tree(root, candidate, baseline, snapshot)
+    run_git(root, "add", target)
+    run_git(root, "commit", "-m", "scoped adoption")
+    assert sources.check_delivery_tree(root, candidate, baseline, snapshot, receipt=receipt(root, parent))
+    path.write_text('SECRET_KEY = "changed-private-value"\n')
+    with pytest.raises(sources.EvidenceError, match="private settings"):
+        sources.check_delivery_tree(root, candidate, baseline, snapshot)
 
 
 def receipt(root, parent):
@@ -947,6 +1016,19 @@ def test_capture_missing_dependencies_halts_before_copying(repo, tmp_path, monke
             runner=lambda *a, **kw: pytest.fail("suite cannot run without prerequisites"),
         )
     assert not output.exists()
+
+
+def test_django_failed_summary_is_not_a_failing_test_identity():
+    observed = sources.suite_result(
+        command(
+            "FAIL: test_example (app.tests.Example.test_example)\nRan 2 tests in 0.1s\nFAILED (failures=1)\n", code=1
+        )
+    )
+    assert observed == {
+        "count": 2,
+        "outcome": "failed",
+        "failures": ["test_example (app.tests.Example.test_example)"],
+    }
 
 
 def test_committed_slot_alone_cannot_mark_bundle_complete(tmp_path):

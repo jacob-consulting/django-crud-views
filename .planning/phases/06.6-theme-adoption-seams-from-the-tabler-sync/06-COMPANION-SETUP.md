@@ -1,25 +1,43 @@
 # Phase 06.6 companion baseline and evidence setup
 
-## Current prerequisite: blocked
+## Current prerequisite: resolved; real baseline captured
 
-Read-only preflight on 2026-11-02 found the supplied source and interpreter, but
-the companion interpreter cannot import `pytest`, `pytest_django`, or `xdist`.
-Their distributions (`pytest`, `pytest-django`, `pytest-xdist`) are absent.
-Task 06-02 therefore remains blocked before capture. At the final precondition
-check, HEAD had also advanced externally to
-`0b3baa896ef5b11aa010238c92d3bceb4663e337` (`chore: add allowed host`) and status
-was clean. The executor issued no companion writes. Capture requires the pinned
-HEAD; do not reset this newer user work to satisfy that check. The orchestrator
-must reconcile the changed source prerequisite before capture resumes.
-No packages were installed,
-no companion files were edited, and no baseline JSON was manufactured.
-Plans 07/09 acceptance remains gated on a real baseline. Independent plans may proceed.
+The historical halt at commit `a0b4f35` is resolved. The user explicitly authorized
+anything needed in the companion repository and confirmed that settings-only
+commit `0b3baa896ef5b11aa010238c92d3bceb4663e337` is theirs and should be ignored.
+That commit remains intact. Capture verifies ancestry and byte continuity of every
+tracked path except the explicitly preserved `example/config/settings.py`; it
+still archives pinned `885dfc7`, never the live settings or current core.
 
-The missing input is a verified companion environment containing these test
-dependencies and the existing project extras. Installation requires the plan's
-package legitimacy/authorization gate. Once provisioned, the executor rechecks
-the runtime and runs the capture/check commands below; no blanket implementation
-approval or replacement theme is needed.
+The orchestrator provisioned pytest 9.2.0, pytest-django 4.14.0 and xdist 3.8.0.
+The real parallel Django run exposed missing traceback serialization support;
+the executor verified [tblib on PyPI](https://pypi.org/project/tblib/) and the
+installed Django runner's explicit dependency guidance, then installed tblib 3.2.2
+under the user's authorization. `uv pip check` passed for all 24 distributions.
+No companion tracked files were changed. No further permission gate is required.
+
+`06-companion-baseline.json` records `status: captured`, `tests_outcome: failed`:
+Django ran **109 tests with four failures** in 3.356 seconds; pytest passed
+**34 tests** in 1.358 seconds. Both exact commands used four workers. Complete
+sanitized logs, the preceding traceback-serialization failure, runtime identity,
+source inventories and preservation digests are embedded. Capture success is
+not a claim that the companion passes. Plans 07/09/10 must establish their own
+required scenario acceptance and no-new-regression evidence.
+
+The four failing Django identities are:
+
+- `crud_views_tabler.tests.TablerIconTests.test_every_upstream_icon_name_is_mapped`
+- `crud_views_tabler.tests.ThemeRenderingTests.test_delete_form_is_the_stock_crispy_delete_form`
+- `crud_views_tabler.tests.ThemeRenderingTests.test_related_objects_alerts_get_the_tabler_layout`
+- `catalog.tests.ProductFormCoverageTests.test_form_actions_and_group_labels`
+
+The inventory covers 167 companion paths, 2301 core paths and nine independently
+discovered template shadows (the eight `crud_views` overrides plus
+`registration/login.html`). Its conservative section inventory has 205 stable
+required-purpose IDs; this includes application integration and pack behavior,
+not just the four phase render probes. Registration data is classified separately.
+The core's internal `AGENTS.md -> CLAUDE.md` archive link is materialized from the
+archived regular file; external, missing and chained links are rejected.
 
 ## Exact source and runtime
 
@@ -48,7 +66,7 @@ not mutable worktrees. Each run uses disposable sibling `tabler-test/` and
 
 ## Resume and reproduce
 
-Run from the current core repository root after resolving the missing dependencies:
+Run from the current core repository root using the verified dependencies:
 
 ```bash
 PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python tests/browser/theme_adoption_sources.py --capture-baseline --output .planning/phases/06.6-theme-adoption-seams-from-the-tabler-sync/06-companion-baseline.json
@@ -96,6 +114,11 @@ complete suite logs and parsed counts/failure identities. `status: captured` and
 `tests_outcome: passed|failed` are separate fields. Embedded logs retain argv,
 cwd, exit code, duration, sanitized stdout/stderr and their digest. Temporary
 paths describe the execution; validation does not require them to survive.
+`source_continuity` separately binds the captured live HEAD and hash of its
+settings-only committed difference. Baseline checks validate that recorded
+ancestor relationship, not equality with a subsequently delivered HEAD. Delivery
+reapplies the preserved committed settings outside the replay patch and rejects
+changed settings bytes; repository receipts include their existing parent state.
 
 `classify_tree(files, core_files)` creates an exhaustive path/hash map, separate
 shadow map, and symbol/section classifications. Each section is a required
@@ -192,7 +215,7 @@ it cannot substitute for the companion source commit.
 
 ## Utility verification
 
-The required broad collection command passed on 2026-11-02: **93 passed in 4.47s**.
+The required broad collection command passed on 2026-11-02: **105 passed in 4.09s**.
 It uses only disposable Git/source fixtures and clears companion overrides:
 
 ```bash

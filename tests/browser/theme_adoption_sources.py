@@ -114,7 +114,17 @@ def archive_files(root, revision):
         for member in archive:
             path = Path(member.name)
             require(not path.is_absolute() and ".." not in path.parts, "unsafe archive path")
-            require(member.isfile() or member.isdir(), f"unsupported archive entry: {member.name}")
+            require(member.isfile() or member.isdir() or member.issym(), f"unsupported archive entry: {member.name}")
+            if member.issym():
+                target = path.parent / member.linkname
+                require(not target.is_absolute() and ".." not in target.parts, "unsafe archive symlink")
+                try:
+                    linked = archive.getmember(target.as_posix())
+                except KeyError as exc:
+                    raise EvidenceError("missing archive symlink target") from exc
+                require(linked.isfile(), "archive symlink target must be a regular file")
+                # Materialize repository-local documentation links; never follow host filesystem links.
+                files[member.name] = archive.extractfile(linked).read()
             if member.isfile():
                 files[member.name] = archive.extractfile(member).read()
     require(files, "empty source archive")
@@ -215,13 +225,13 @@ def resolve_recorded_source(operand="recorded", *, manifest=None, env=None):
 
 
 RUNTIME_PROBE = """import importlib.util,importlib.metadata,json,sys
-names=['Django','django-crispy-forms','crispy-bootstrap5','pytest','pytest-django','pytest-xdist']
+names=['Django','django-crispy-forms','crispy-bootstrap5','pytest','pytest-django','pytest-xdist','tblib']
 versions={}
 for name in names:
  try: versions[name]=importlib.metadata.version(name)
  except importlib.metadata.PackageNotFoundError: versions[name]=None
 print(json.dumps({'python':list(sys.version_info[:3]),'prefix':sys.prefix,'versions':versions,
- 'missing':[name for name in ['django','crispy_forms','crispy_bootstrap5','pytest','pytest_django','xdist']
+ 'missing':[name for name in ['django','crispy_forms','crispy_bootstrap5','pytest','pytest_django','xdist','tblib']
             if importlib.util.find_spec(name) is None]}))
 """
 
@@ -463,7 +473,7 @@ def suite_result(record, *, passing=False):
     count = int(django_count[-1]) if django_count else sum(map(int, pytest_count))
     # Django parallel tracebacks name the individual test in FAIL/ERROR headers.
     failures = re.findall(r"^(?:FAIL|ERROR): (.+)$", output, flags=re.M)
-    failures += re.findall(r"^(?:FAILED|ERROR) (\S+)", output, flags=re.M)
+    failures += re.findall(r"^(?:FAILED|ERROR) ([^\s(]\S*)", output, flags=re.M)
     require(count > 0, "zero collected tests or missing suite results")
     require(record["exit_code"] in (0, 1), "suite infrastructure/collection failed")
     require(record["exit_code"] == 0 or failures, "failed suite lacks failure identities")
@@ -798,7 +808,7 @@ def _capture_inputs(env, *, probe=runtime_probe):
     )
     require(root == Path(COMPANION_ROOT).resolve(), "source overrides must match supplied identity")
     identity = inspect_sources(root, COMPANION_REVISION, COMPANION_ORIGIN)
-    require(git(root, "rev-parse", "HEAD").decode().strip() == COMPANION_REVISION, "baseline source HEAD changed")
+    capture_continuity(root, COMPANION_REVISION)
     require(env.get("CV_THEME_CORE_BASE", CORE_BASE) == CORE_BASE, "wrong pinned pre-change core revision")
     executable = absolute_path(
         env.get("CV_THEME_PYTHON", str(root / ".venv/bin/python")), "CV_THEME_PYTHON", resolve=False
@@ -806,6 +816,17 @@ def _capture_inputs(env, *, probe=runtime_probe):
     runtime = probe(executable)
     validate_runtime(runtime)
     return root, identity, executable, runtime
+
+
+def capture_continuity(root, revision, head=None):
+    """Keep the pinned archive while preserving the user's settings-only descendant commit."""
+    head = head or git(root, "rev-parse", "HEAD").decode().strip()
+    require(git(root, "merge-base", revision, head).decode().strip() == revision, "baseline is not an ancestor")
+    before, after = archive_files(root, revision), archive_files(root, head)
+    changed = {path for path in before.keys() | after.keys() if before.get(path) != after.get(path)}
+    require(changed <= {"example/config/settings.py"}, "baseline source continuity changed outside private settings")
+    require(set(before) == set(after), "baseline source continuity changed tracked paths")
+    return {"head": head, "preserved_committed_paths": {path: digest(after[path]) for path in sorted(changed)}}
 
 
 def capture_baseline(output, *, env=None, runner=command_record, probe=runtime_probe):
@@ -823,6 +844,7 @@ def capture_baseline(output, *, env=None, runner=command_record, probe=runtime_p
         "companion_python": str(executable),
         "runtime": runtime,
         "preserved": before,
+        "source_continuity": capture_continuity(root, COMPANION_REVISION, before["head"]),
         "inventory": classify_tree(companion_files, base_core_files),
         "test_configuration": {
             "DJANGO_SECRET_KEY": "isolated-theme-adoption-test-only",
@@ -877,6 +899,10 @@ def check_baseline(report, *, env=None, probe=runtime_probe):
         "changed companion source fingerprint",
     )
     require(report.get("core_tracked_tree") == inventory(base_core), "changed core source fingerprint")
+    require(
+        report.get("source_continuity") == capture_continuity(root, report["revision"], report["preserved"]["head"]),
+        "changed recorded source continuity",
+    )
     validate_classifications(report.get("inventory", {}), files, base_core)
     require(report.get("status") == "captured" and len(report.get("suites", [])) == 2, "incomplete baseline capture")
     validate_suite_commands(report, report["companion_python"])
@@ -1031,8 +1057,17 @@ def check_delivery_tree(root, candidate_files, baseline, snapshot, *, receipt=No
         ),
         "original private settings changed",
     )
+    committed_files = dict(candidate_files)
+    # The user's settings-only commit predates this task and is not part of the replay patch.
+    preserved_committed = baseline.get("source_continuity", {}).get("preserved_committed_paths", {})
+    if preserved_committed:
+        parent_files = archive_files(root, snapshot["preserved"]["head"])
+        for path, fingerprint in preserved_committed.items():
+            require(path == "example/config/settings.py", "unexpected preserved committed path")
+            require(digest(parent_files.get(path)) == fingerprint, "original committed private settings changed")
+            committed_files[path] = parent_files[path]
     expected = (
-        patched_files(candidate_files, snapshot["worktree_patch"]) if snapshot["worktree_patch"] else candidate_files
+        patched_files(committed_files, snapshot["worktree_patch"]) if snapshot["worktree_patch"] else committed_files
     )
     actual = working_files(root)
     require(
@@ -1048,7 +1083,7 @@ def check_delivery_tree(root, candidate_files, baseline, snapshot, *, receipt=No
         "unrelated staged index entry changed",
     )
     if receipt is not None:
-        verify_receipt(root, receipt, candidate_files, snapshot["preserved"]["head"])
+        verify_receipt(root, receipt, committed_files, snapshot["preserved"]["head"])
     return {
         "source_sha256": digest(inventory(candidate_files)),
         "preserved_dirty_sha256": digest(baseline["preserved"]),

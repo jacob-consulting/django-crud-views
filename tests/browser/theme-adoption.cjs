@@ -94,6 +94,7 @@ async function ownedForm(page, base, report) {
     check(record,'raw-no-nesting-one-owned-token',owners.length===1 && owners[0].tokens===1 && siblings.length===2 && siblings.every(f=>f.tokens===1) && raw.last.nested.length===0,raw.last);
     const ownership=await page.locator('form.cv-form').evaluate(form=>({
         method:form.method, encoding:form.enctype, action:form.action,
+        submitSVG:[...form.querySelectorAll('[type=submit] svg path:not([stroke="none"])')].map(el=>el.getAttribute('d')),
         controls:[...form.querySelectorAll('input,button,select,textarea')].map(el=>({name:el.name,owned:el.form===form})),
         token:new FormData(form).getAll('csrfmiddlewaretoken').length,
         submitter:(()=>{const button=form.querySelector('[type=submit]');return new FormData(form,button).get(button.name)===button.value;})(),

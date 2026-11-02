@@ -12,6 +12,21 @@ test('shared recorded interpreter resolver exists without starting the CLI', () 
     assert.equal(typeof harness.resolveCompanionPython, 'function');
 });
 
+test('real Tabler create uses the native check icon from its registered form floor',()=>{
+    const temporary=fs.mkdtempSync(path.join(os.tmpdir(),'theme-native-check-'));
+    try {
+        const output=path.join(temporary,'report.json');const env={...process.env,CV_THEME_PORT:'8158'};
+        delete env.CV_THEME_PYTHON;delete env.CV_FOCUS_PYTHON;
+        const result=cp.spawnSync(process.execPath,[entry,'--case','owned-form','--output',output],{env,encoding:'utf8',timeout:40000,shell:false});
+        assert.equal(result.status,0,result.stdout+result.stderr);
+        const report=JSON.parse(fs.readFileSync(output));
+        const ownership=report.cases[0].assertions.find(a=>a.id==='native-controls-formdata-submitter').observed;
+        assert.deepEqual(ownership.submitSVG,['M5 12l5 5l10 -10']);
+        assert.equal(report.cleanup.temporaryRemoved,true);
+        assert.equal(report.cleanup.serverExit.code,0);
+    } finally {fs.rmSync(temporary,{recursive:true,force:true});}
+});
+
 test('fresh process resolves the recorded executable with both overrides absent', () => {
     const env={...process.env}; delete env.CV_THEME_PYTHON; delete env.CV_FOCUS_PYTHON;
     const result=cp.spawnSync(process.execPath,['-e',`console.log(JSON.stringify(require(${JSON.stringify(entry)}).resolveCompanionPython()))`],{cwd:os.tmpdir(),env,encoding:'utf8',shell:false});

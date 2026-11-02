@@ -16,6 +16,7 @@ import tarfile
 import tempfile
 import time
 import uuid
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
 COMPANION_ROOT = "/home/alex/projects/alex/tabler-test"
@@ -1303,19 +1304,264 @@ def delivered_probe(root, baseline, replay, output, *, require_committed=False, 
         raise
 
 
+FINAL_PYTHONS = {
+    "django42-current": ("tests-3-12-django-4-2", "4.2", False),
+    "django52-current": ("tests-3-12-django-5-2", "5.2", False),
+    "django42-floor": ("crispy_floor-3-12-django-4-2", "4.2", True),
+    "django60-floor": ("crispy_floor-3-12-django-6-0", "6.0", True),
+    "example": ("tests-3-12-django-5-2", "5.2", False),
+}
+FINAL_COMMANDS = {
+    "javascript": ["node", "node_modules/vitest/vitest.mjs", "run", "--maxWorkers=2"],
+    "fragments": ["node", "node_modules/vitest/vitest.mjs", "run", "--config", "vitest.integration.config.js"],
+    "modal-focus": ["node", "tests/browser/modal-focus.cjs", "--output", PHASE_DIR + "/09-evidence/modal-focus.json"],
+    "conditional-formsets": [
+        "node",
+        "tests/browser/conditional-formsets.cjs",
+        "--case",
+        "lifecycle",
+        "--output",
+        PHASE_DIR + "/09-evidence/conditional-formsets.json",
+    ],
+    "docs": [".venv/bin/mkdocs", "build", "--strict"],
+    "lint": [".venv/bin/ruff", "check", "src", "tests", "examples"],
+    "format": [".venv/bin/ruff", "format", "--check", "src", "tests", "examples"],
+    "whitespace": ["git", "diff", "--check"],
+    "configuration": [
+        "env",
+        "-u",
+        "CV_THEME_PYTHON",
+        "-u",
+        "CV_FOCUS_PYTHON",
+        "node",
+        "--test",
+        "tests/browser/theme-adoption-config.test.cjs",
+    ],
+}
+FLOOR_EXCLUSION = "tests/test1/test_form_buttons_golden.py::test_filter_form_baseline"
+
+
+def final_inventory():
+    return inventory(
+        {
+            p: v
+            for p, v in working_files(core_root()).items()
+            if p.startswith(("src/", "tests/", "docs/", "examples/"))
+            or p
+            in {
+                "noxfile.py",
+                "pyproject.toml",
+                "package.json",
+                "package-lock.json",
+                "mkdocs.yml",
+                "vitest.config.js",
+                "vitest.integration.config.js",
+                "CHANGELOG.md",
+            }
+        }
+    )
+
+
+def final_commands():
+    commands = dict(FINAL_COMMANDS)
+    for name, (environment, _series, floor) in FINAL_PYTHONS.items():
+        selection = ["-c", "examples/bootstrap5/pytest.ini", "examples/bootstrap5"] if name == "example" else ["tests"]
+        commands[name] = [f".nox/{environment}/bin/python", "-m", "pytest", *selection, "-n", "4", "-q"]
+        if floor:
+            commands[name] += ["--deselect", FLOOR_EXCLUSION]
+        commands[name] += [f"--junitxml={PHASE_DIR}/09-evidence/{name}.xml"]
+    return commands
+
+
+def validate_final_gates(report, expected_inventory):
+    require(report.get("source_inventory") == expected_inventory, "stale final source inventory")
+    gates = report.get("gates", {})
+    for name, argv in final_commands().items():
+        gate = gates.get(name, {})
+        require(gate.get("source_sha256") == digest(expected_inventory), f"stale {name} source binding")
+        record = gate.get("command", {})
+        log = validate_log(record)
+        require(record.get("argv") == argv and record.get("cwd") == str(core_root()), f"substituted {name} command")
+        require(record["exit_code"] == 0 and gate.get("status") == "passed", f"nonpassing {name}")
+        require(record.get("duration_seconds", -1) >= 0, f"missing {name} duration")
+        if name in FINAL_PYTHONS:
+            environment, series, floor = FINAL_PYTHONS[name]
+            runtime = gate.get("runtime", {})
+            preflight = gate.get("preflight", {})
+            validate_log(preflight)
+            require(
+                preflight["exit_code"] == 0 and json.loads(preflight["stdout"]) == runtime,
+                f"missing actual {name} runtime probe",
+            )
+            require(
+                runtime.get("executable") == str(core_root() / f".nox/{environment}/bin/python"),
+                f"wrong {name} interpreter",
+            )
+            require(
+                runtime.get("core_module") == str(core_root() / "src/crud_views/__init__.py"),
+                f"unsupported {name} source import",
+            )
+            versions = runtime.get("versions", {})
+            require(versions.get("Django", "").startswith(series + "."), f"wrong {name} Django series")
+            if floor:
+                require(
+                    versions.get("django-crispy-forms") == "2.0" and versions.get("crispy-bootstrap5") == "2023.10",
+                    f"wrong {name} floor",
+                )
+            xml = gate.get("junit", "")
+            require(gate.get("junit_sha256") == digest(xml.encode()), f"tampered {name} JUnit")
+            try:
+                cases = ET.fromstring(xml).findall(".//testcase")
+            except ET.ParseError as exc:
+                raise EvidenceError(f"invalid {name} JUnit") from exc
+            require(
+                cases and not any(c.find("failure") is not None or c.find("error") is not None for c in cases),
+                f"zero/failing {name} cases",
+            )
+            skipped = [c for c in cases if c.find("skipped") is not None]
+            require(
+                all(
+                    name != "example"
+                    and series != "6.0"
+                    and c.get("classname") == "tests.test1.test_assets"
+                    and c.get("name") == "test_django6_builtin_csp_nonce_roundtrip"
+                    for c in skipped
+                ),
+                f"required {name} case skipped",
+            )
+            require(len(cases) - len(skipped) > 0, f"zero passing {name} cases")
+            if name != "example":
+                for module in (
+                    "theme_form_ownership",
+                    "theme_label_modes",
+                    "theme_action_groups",
+                    "theme_form_requests",
+                    "theme_adoption_docs",
+                    "alerts",
+                    "button_classes",
+                ):
+                    require(
+                        any(c.get("classname") == "tests.test1.test_" + module for c in cases),
+                        f"missing {name} required module {module}",
+                    )
+                require(
+                    not floor
+                    or not any(
+                        c.get("classname") == "tests.test1.test_form_buttons_golden"
+                        and c.get("name") == "test_filter_form_baseline"
+                        for c in cases
+                    ),
+                    "floor exclusion differs",
+                )
+            require(
+                gate.get("passed") == len(cases) - len(skipped) and gate.get("skipped") == len(skipped),
+                f"incorrect {name} counts",
+            )
+        elif name in {"javascript", "fragments"}:
+            require(re.search(r"Tests\s+\d+ passed", log), f"zero {name} cases")
+        elif name == "configuration":
+            require(re.search(r"# pass [1-9]\d*", log) and "# fail 0" in log, "nonpassing fresh-shell configuration")
+        elif name in {"modal-focus", "conditional-formsets"}:
+            browser = gate.get("browser", {})
+            require(browser and gate.get("browser_sha256") == digest(browser), f"missing {name} browser evidence")
+            require(browser.get("passed") is True, f"failed {name} browser evidence")
+    require(
+        report.get("coverage_limits", {}).get("django60_current_pack") == "untested-no-cached-runtime",
+        "current-pack Django 6.0 limit missing",
+    )
+    return True
+
+
+def validate_committed_delivery(bundle, baseline, replay, candidate, *, env=None):
+    root = resolve_recorded_source(manifest=baseline, env=env)
+    binding = check_delivery_tree(
+        root, candidate, baseline, bundle.get("preservation_snapshot", {}), receipt=bundle.get("companion_receipt", {})
+    )
+    bindings = {
+        **binding,
+        "runtime_sha256": digest(baseline["runtime"]),
+        "config_sha256": digest(baseline["test_configuration"]),
+        "core_sha256": digest(replay["core_inventory"]),
+    }
+    validate_bundle(bundle, bindings, committed=True)
+    before = archive_files(root, baseline["revision"])
+    for slot in ("form_probe", "delivered_probe", "committed_probe"):
+        validate_phase_evidence(bundle[slot], candidate, before, complete=False)
+    receipt = bundle.get("core_receipt", {})
+    validate_core_receipt(receipt, core_root())
+    paths = receipt["evidence_paths"]
+    delivery_path = PHASE_DIR + "/10-companion-delivery.json"
+    commit = git(core_root(), "log", "-1", "--format=%H", "--", delivery_path).decode().strip()
+    require(
+        set(git(core_root(), "diff-tree", "--no-commit-id", "--name-only", "-r", commit).decode().splitlines())
+        == set(paths),
+        "core evidence commit swept unrelated paths",
+    )
+    require(
+        git(core_root(), "rev-parse", commit + "^").decode().strip() == receipt["before_head"],
+        "wrong core evidence parent",
+    )
+    for path in paths:
+        require(
+            git(core_root(), "show", commit + ":" + path) == (core_root() / path).read_bytes(),
+            "uncommitted/tampered core delivery evidence",
+        )
+    require(load_json(core_root() / delivery_path) == bundle, "substituted delivery bundle")
+    return {"core_evidence_commit": commit, "companion_commit": bundle["companion_receipt"]["after_head"]}
+
+
+def validate_final_sources(baseline, browser, replay, delivery, *, env=None):
+    candidate = verify_replay(replay, baseline, env=env)
+    # Candidate and fresh replay must independently satisfy the complete source/suite/branch contract.
+    verify_replay({**browser, "patch": replay["patch"], "patch_sha256": replay["patch_sha256"]}, baseline, env=env)
+    require(browser.get("core_inventory") == replay["core_inventory"], "stale candidate core evidence")
+    require(browser.get("assets") == replay.get("assets"), "candidate/replay asset mismatch")
+    return validate_committed_delivery(delivery, baseline, replay, candidate, env=env)
+
+
+def check_final(report, *, env=None):
+    validate_final_gates(report, final_inventory())
+    phase = core_root() / PHASE_DIR
+    receipts = validate_final_sources(
+        load_json(phase / BASELINE_NAME),
+        load_json(phase / "07-browser-results.json"),
+        load_json(phase / REPLAY_NAME),
+        load_json(phase / "10-companion-delivery.json"),
+        env=env,
+    )
+    artifacts = {
+        name: digest((phase / name).read_bytes())
+        for name in (
+            BASELINE_NAME,
+            REPLAY_NAME,
+            "07-browser-results.json",
+            "10-companion-delivery.json",
+            "07-TABLER-HANDOFF.md",
+            "07-tabler-adaptation.patch",
+        )
+    }
+    require(report.get("artifacts") == artifacts, "stale final evidence artifact binding")
+    return {"status": "automated-passed", "acceptance": "pending-human-observations", **receipts}
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     modes = parser.add_mutually_exclusive_group()
     modes.add_argument("--capture-baseline", action="store_true")
     modes.add_argument("--check-baseline", action="store_true")
     modes.add_argument("--verify-replay", action="store_true")
+    modes.add_argument("--check-final", action="store_true")
     parser.add_argument("--delivered-source")
     parser.add_argument("--require-committed", action="store_true")
     parser.add_argument("--output", required=True)
     args = parser.parse_args(argv)
     try:
         require(
-            args.capture_baseline or args.check_baseline or args.verify_replay or args.delivered_source,
+            args.capture_baseline
+            or args.check_baseline
+            or args.verify_replay
+            or args.delivered_source
+            or args.check_final,
             "choose baseline, replay or delivered-source validation",
         )
         require(
@@ -1323,7 +1569,9 @@ def main(argv=None):
             "baseline modes cannot validate delivery",
         )
         require(not args.require_committed or args.delivered_source, "require-committed needs delivered-source")
-        if args.capture_baseline:
+        if args.check_final:
+            result = check_final(load_json(args.output))
+        elif args.capture_baseline:
             result = capture_baseline(args.output)
         elif args.check_baseline:
             check_baseline(load_json(args.output))

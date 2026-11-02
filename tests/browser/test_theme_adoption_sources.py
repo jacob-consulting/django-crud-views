@@ -1,7 +1,7 @@
 """Hermetic companion evidence tests; no production companion or Django imports."""
 
-import copy
 import ast
+import copy
 import importlib.util
 import json
 import subprocess
@@ -41,7 +41,8 @@ def test_floor_selection_covers_theme_modules():
     }
     assert required <= set(assignments["CRISPY_FLOOR_TESTS"])
     assert assignments["CRISPY_FLOOR_DESELECT"] == [
-        "--deselect", "tests/test1/test_form_buttons_golden.py::test_filter_form_baseline"
+        "--deselect",
+        "tests/test1/test_form_buttons_golden.py::test_filter_form_baseline",
     ]
 
 
@@ -944,6 +945,10 @@ def test_replay_checks_patch_full_tree_and_concrete_evidence(tmp_path, monkeypat
     for row in report["actions"]:
         row["source_sha256"] = sources.digest(sources.inventory(candidate_files))
     assert sources.verify_replay(report, baseline, env={}) == candidate_files
+    # Only the independently tested Git delivery boundary is replaced here; final candidate/replay
+    # validation still reconstructs real archives and patches and runs every branch predicate.
+    monkeypatch.setattr(sources, "validate_committed_delivery", lambda *a, **kw: {"fixture": "receipt"})
+    assert sources.validate_final_sources(baseline, report, report, {}, env={}) == {"fixture": "receipt"}
     for mutation in ("patch", "tree", "core", "scenario", "action-source", "added-file", "borrow-purpose"):
         bad = copy.deepcopy(report)
         if mutation == "patch":
@@ -974,6 +979,11 @@ def test_replay_checks_patch_full_tree_and_concrete_evidence(tmp_path, monkeypat
                 )
         with pytest.raises(sources.EvidenceError):
             sources.verify_replay(bad, baseline, env={})
+        with pytest.raises(sources.EvidenceError):
+            sources.validate_final_sources(baseline, report, bad, {}, env={})
+        if mutation not in {"patch", "added-file"}:  # candidate has no patch field; replay owns the exact patch
+            with pytest.raises(sources.EvidenceError):
+                sources.validate_final_sources(baseline, bad, report, {}, env={})
 
 
 def test_baseline_failure_comparison_requires_unchanged_test_class_and_rejects_new_failures():
@@ -1238,3 +1248,153 @@ def test_committed_slot_alone_cannot_mark_bundle_complete(tmp_path):
     with pytest.raises(sources.EvidenceError):
         sources.merge_delivery(output, "committed_probe", delivery_record())
     assert not output.exists()
+
+
+def final_report_fixture():
+    source = {"src/package.py": "fingerprint"}
+    report = {
+        "source_inventory": source,
+        "gates": {},
+        "coverage_limits": {"django60_current_pack": "untested-no-cached-runtime"},
+    }
+    for name, argv in sources.final_commands().items():
+        record = command("Tests 1 passed\n# pass 1\n# fail 0\n", argv=argv, cwd=sources.core_root())
+        record["duration_seconds"] = 0.1
+        gate = {"command": record, "status": "passed", "source_sha256": sources.digest(source)}
+        if name in sources.FINAL_PYTHONS:
+            environment, series, floor = sources.FINAL_PYTHONS[name]
+            runtime_record = {
+                "executable": str(sources.core_root() / f".nox/{environment}/bin/python"),
+                "core_module": str(sources.core_root() / "src/crud_views/__init__.py"),
+                "versions": {
+                    "Django": series + ".1",
+                    "django-crispy-forms": "2.0" if floor else "2.7",
+                    "crispy-bootstrap5": "2023.10" if floor else "2026.9",
+                },
+            }
+            modules = (
+                [
+                    "theme_form_ownership",
+                    "theme_label_modes",
+                    "theme_action_groups",
+                    "theme_form_requests",
+                    "theme_adoption_docs",
+                    "alerts",
+                    "button_classes",
+                ]
+                if name != "example"
+                else ["example"]
+            )
+            xml = (
+                "<testsuites><testsuite>"
+                + "".join(f'<testcase classname="tests.test1.test_{m}" name="test_contract"/>' for m in modules)
+                + "</testsuite></testsuites>"
+            )
+            gate.update(
+                runtime=runtime_record,
+                preflight=command(json.dumps(runtime_record)),
+                junit=xml,
+                junit_sha256=sources.digest(xml.encode()),
+                passed=len(modules),
+                skipped=0,
+            )
+        elif name in {"modal-focus", "conditional-formsets"}:
+            gate.update(browser={"passed": True}, browser_sha256=sources.digest({"passed": True}))
+        report["gates"][name] = gate
+    return report
+
+
+def test_final_required_gates_complete_positive_fixture():
+    report = final_report_fixture()
+    assert sources.validate_final_gates(report, report["source_inventory"])
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    [
+        "missing-floor42",
+        "missing-floor60",
+        "missing-example",
+        "stale-source",
+        "stale-gate",
+        "failed",
+        "zero",
+        "skip",
+        "missing-module",
+        "wrong-import",
+        "wrong-python",
+        "wrong-floor",
+        "tampered-log",
+        "tampered-junit",
+        "substituted-command",
+        "zero-js",
+        "failed-browser",
+        "missing-limit",
+        "wrong-count",
+    ],
+)
+def test_final_rejects_incomplete_or_substituted_gate_results(mutation):
+    report = final_report_fixture()
+    expected = dict(report["source_inventory"])
+    gate = report["gates"]["django42-floor"]
+    if mutation.startswith("missing-") and mutation not in {"missing-module", "missing-limit"}:
+        report["gates"].pop(
+            {"missing-floor42": "django42-floor", "missing-floor60": "django60-floor", "missing-example": "example"}[
+                mutation
+            ]
+        )
+    elif mutation == "stale-source":
+        report["source_inventory"]["src/package.py"] = "changed"
+    elif mutation == "stale-gate":
+        gate["source_sha256"] = "old"
+    elif mutation == "failed":
+        gate["status"] = "failed"
+    elif mutation in {"zero", "skip", "missing-module"}:
+        gate["junit"] = (
+            "<testsuites><testsuite>"
+            + (
+                ""
+                if mutation == "zero"
+                else '<testcase classname="tests.test1.test_theme_form_ownership" '
+                'name="test_contract">' + ("<skipped/>" if mutation == "skip" else "") + "</testcase>"
+            )
+            + "</testsuite></testsuites>"
+        )
+        gate["junit_sha256"] = sources.digest(gate["junit"].encode())
+    elif mutation in {"wrong-import", "wrong-python", "wrong-floor"}:
+        if mutation == "wrong-import":
+            gate["runtime"]["core_module"] = "/installed/wheel/crud_views/__init__.py"
+        elif mutation == "wrong-python":
+            gate["runtime"]["executable"] = "/other/python"
+        else:
+            gate["runtime"]["versions"]["django-crispy-forms"] = "2.7"
+        gate["preflight"] = command(json.dumps(gate["runtime"]))
+    elif mutation == "tampered-log":
+        gate["command"]["stdout"] += "changed"
+    elif mutation == "tampered-junit":
+        gate["junit"] += "changed"
+    elif mutation == "substituted-command":
+        gate["command"] = command(argv=["true"], cwd=sources.core_root())
+    elif mutation == "zero-js":
+        report["gates"]["javascript"]["command"] = command(
+            "No tests found", argv=sources.final_commands()["javascript"], cwd=sources.core_root()
+        )
+    elif mutation == "failed-browser":
+        report["gates"]["modal-focus"]["browser"]["passed"] = False
+    elif mutation == "missing-limit":
+        report.pop("coverage_limits")
+    else:
+        gate["passed"] = 999
+    with pytest.raises(sources.EvidenceError):
+        sources.validate_final_gates(report, expected)
+
+
+def test_check_final_requires_gate_validation_before_companion_access(monkeypatch):
+    monkeypatch.setattr(sources, "final_inventory", lambda: {})
+
+    def unexpected(*args, **kwargs):
+        raise AssertionError("must reject absent gates before source access")
+
+    monkeypatch.setattr(sources, "load_json", unexpected)
+    with pytest.raises(sources.EvidenceError):
+        sources.check_final({})

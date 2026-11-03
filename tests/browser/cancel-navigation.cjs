@@ -343,16 +343,30 @@ async function main() {
         for (const ctx of contexts) await ctx.close();
     } catch (error) {report.status = 'failed'; report.error = error.stack; process.exitCode = 1;}
     finally {
-        if (browser) await browser.close();
+        function cleanupError(stage, error) {
+            (report.cleanupErrors ??= []).push({stage, error: error.stack});
+            report.status = 'failed';
+            report.error ??= error.stack;
+            process.exitCode = 1;
+        }
+        // Cleanup stages are independent: a rejected browser close must not retain
+        // the owned fixture/database or prevent recording the original failure.
+        try {if (browser) await browser.close();}
+        catch (error) {cleanupError('browser.close', error);}
         if (server) {
-            await stopOwned(server.child);
-            report.cleanup = {pid: server.child.pid, exitCode: server.child.exitCode, signal: server.child.signalCode,
-                stopped: server.child.exitCode !== null || server.child.signalCode !== null, databaseRemoved: !fs.existsSync(server.ready.database)};
-            report.serverLogs = server.logs();
+            try {await stopOwned(server.child);}
+            catch (error) {cleanupError('server.stop', error);}
+            try {
+                report.cleanup = {pid: server.child.pid, exitCode: server.child.exitCode, signal: server.child.signalCode,
+                    stopped: server.child.exitCode !== null || server.child.signalCode !== null, databaseRemoved: !fs.existsSync(server.ready.database)};
+                report.serverLogs = server.logs();
+            } catch (error) {cleanupError('server.report', error);}
         }
         report.durationSeconds = (Date.now() - started) / 1000;
-        fs.writeFileSync(path.resolve(opts.output), JSON.stringify(report, null, 2) + '\n');
-        console.log(JSON.stringify({status: report.status, cases: report.cases.length, output: path.resolve(opts.output), error: report.error}));
+        try {fs.writeFileSync(path.resolve(opts.output), JSON.stringify(report, null, 2) + '\n');}
+        catch (error) {cleanupError('report.write', error);}
+        console.log(JSON.stringify({status: report.status, cases: report.cases.length, output: path.resolve(opts.output),
+            error: report.error, cleanupErrors: report.cleanupErrors}));
     }
 }
 module.exports = {loadAssets, assetFor, options, stopOwned, runtime};

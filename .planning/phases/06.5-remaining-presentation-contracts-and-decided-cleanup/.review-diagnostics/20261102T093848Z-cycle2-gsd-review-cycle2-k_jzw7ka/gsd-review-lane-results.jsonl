@@ -1,0 +1,2 @@
+{"slug": "claude", "ok": true, "stubbed": false, "model": {"value": "claude-fable-5-1 (reasoning=high)", "source": "pinned"}}
+{"slug": "opencode", "ok": true, "stubbed": false, "model": {"value": "openrouter/x-ai/grok-4.7 (reasoning=high)", "source": "pinned"}}

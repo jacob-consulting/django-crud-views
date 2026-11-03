@@ -1,6 +1,7 @@
 {% load crud_views i18n %}
 <div class="modal-header">
-    {% cv_heading "header" level=5 class="modal-title" %}{% cv_header_icon %} {% cv_header %}{% endcv_heading %}
+    {% cv_heading_icon view.cv_get_header_icon location="modal" as title_icon %}
+    {% cv_heading "header" level=5 class="modal-title" icon_class=title_icon.host_class %}{{ title_icon.inline_html }} {% cv_header %}{% endcv_heading %}
     <button type="button" class="btn-close" data-cv-modal-dismiss aria-label="{% translate 'Close' %}"></button>
 </div>
 <div class="modal-body">

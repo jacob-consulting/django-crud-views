@@ -1,0 +1,1391 @@
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF [ 46%]
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF [ 93%]
+FFFFFFFFFF                                                               [100%]
+=================================== FAILURES ===================================
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False--assign_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: ''
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False--remove_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: ''
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False--get_objects_for_user] _
+tests/test1/test_guardian_policy.py:695: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    pol.pub_vs.get_objects_for_user(user, perm, qs=scope)
+src/crud_views_guardian/lib/viewset.py:104: in get_objects_for_user
+    self.permissions[perm],
+    ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: ''
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-typo-assign_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'typo'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-typo-remove_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'typo'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-typo-get_objects_for_user] _
+tests/test1/test_guardian_policy.py:695: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    pol.pub_vs.get_objects_for_user(user, perm, qs=scope)
+src/crud_views_guardian/lib/viewset.py:104: in get_objects_for_user
+    self.permissions[perm],
+    ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'typo'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-View-assign_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'View'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-View-remove_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'View'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-View-get_objects_for_user] _
+tests/test1/test_guardian_policy.py:695: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    pol.pub_vs.get_objects_for_user(user, perm, qs=scope)
+src/crud_views_guardian/lib/viewset.py:104: in get_objects_for_user
+    self.permissions[perm],
+    ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'View'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-view -assign_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'view '
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-view -remove_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'view '
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-view -get_objects_for_user] _
+tests/test1/test_guardian_policy.py:695: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    pol.pub_vs.get_objects_for_user(user, perm, qs=scope)
+src/crud_views_guardian/lib/viewset.py:104: in get_objects_for_user
+    self.permissions[perm],
+    ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'view '
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-v\u0456ew-assign_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'vіew'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-v\u0456ew-remove_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'vіew'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-v\u0456ew-get_objects_for_user] _
+tests/test1/test_guardian_policy.py:695: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    pol.pub_vs.get_objects_for_user(user, perm, qs=scope)
+src/crud_views_guardian/lib/viewset.py:104: in get_objects_for_user
+    self.permissions[perm],
+    ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'vіew'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-None-assign_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: None
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-None-remove_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: None
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-None-get_objects_for_user] _
+tests/test1/test_guardian_policy.py:695: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    pol.pub_vs.get_objects_for_user(user, perm, qs=scope)
+src/crud_views_guardian/lib/viewset.py:104: in get_objects_for_user
+    self.permissions[perm],
+    ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: None
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-1-assign_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 1
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-1-remove_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 1
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-1-get_objects_for_user] _
+tests/test1/test_guardian_policy.py:695: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    pol.pub_vs.get_objects_for_user(user, perm, qs=scope)
+src/crud_views_guardian/lib/viewset.py:104: in get_objects_for_user
+    self.permissions[perm],
+    ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 1
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-perm7-assign_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: unhashable type: 'list'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-perm7-remove_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: unhashable type: 'list'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-perm7-get_objects_for_user] _
+tests/test1/test_guardian_policy.py:695: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    pol.pub_vs.get_objects_for_user(user, perm, qs=scope)
+src/crud_views_guardian/lib/viewset.py:104: in get_objects_for_user
+    self.permissions[perm],
+    ^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: unhashable type: 'list'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-perm8-assign_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: unhashable type: 'dict'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-perm8-remove_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: unhashable type: 'dict'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-perm8-get_objects_for_user] _
+tests/test1/test_guardian_policy.py:695: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    pol.pub_vs.get_objects_for_user(user, perm, qs=scope)
+src/crud_views_guardian/lib/viewset.py:104: in get_objects_for_user
+    self.permissions[perm],
+    ^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: unhashable type: 'dict'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-view-assign_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: b'view'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-view-remove_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: b'view'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-view-get_objects_for_user] _
+tests/test1/test_guardian_policy.py:695: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    pol.pub_vs.get_objects_for_user(user, perm, qs=scope)
+src/crud_views_guardian/lib/viewset.py:104: in get_objects_for_user
+    self.permissions[perm],
+    ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: b'view'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True--assign_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: ''
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True--remove_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: ''
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True--get_objects_for_user] _
+tests/test1/test_guardian_policy.py:695: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    pol.pub_vs.get_objects_for_user(user, perm, qs=scope)
+src/crud_views_guardian/lib/viewset.py:104: in get_objects_for_user
+    self.permissions[perm],
+    ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: ''
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-typo-assign_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'typo'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-typo-remove_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'typo'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-typo-get_objects_for_user] _
+tests/test1/test_guardian_policy.py:695: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    pol.pub_vs.get_objects_for_user(user, perm, qs=scope)
+src/crud_views_guardian/lib/viewset.py:104: in get_objects_for_user
+    self.permissions[perm],
+    ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'typo'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-View-assign_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'View'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-View-remove_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'View'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-View-get_objects_for_user] _
+tests/test1/test_guardian_policy.py:695: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    pol.pub_vs.get_objects_for_user(user, perm, qs=scope)
+src/crud_views_guardian/lib/viewset.py:104: in get_objects_for_user
+    self.permissions[perm],
+    ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'View'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-view -assign_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'view '
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-view -remove_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'view '
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-view -get_objects_for_user] _
+tests/test1/test_guardian_policy.py:695: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    pol.pub_vs.get_objects_for_user(user, perm, qs=scope)
+src/crud_views_guardian/lib/viewset.py:104: in get_objects_for_user
+    self.permissions[perm],
+    ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'view '
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-v\u0456ew-assign_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'vіew'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-v\u0456ew-remove_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'vіew'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-v\u0456ew-get_objects_for_user] _
+tests/test1/test_guardian_policy.py:695: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    pol.pub_vs.get_objects_for_user(user, perm, qs=scope)
+src/crud_views_guardian/lib/viewset.py:104: in get_objects_for_user
+    self.permissions[perm],
+    ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'vіew'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-None-assign_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: None
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-None-remove_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: None
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-None-get_objects_for_user] _
+tests/test1/test_guardian_policy.py:695: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    pol.pub_vs.get_objects_for_user(user, perm, qs=scope)
+src/crud_views_guardian/lib/viewset.py:104: in get_objects_for_user
+    self.permissions[perm],
+    ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: None
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-1-assign_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 1
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-1-remove_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 1
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-1-get_objects_for_user] _
+tests/test1/test_guardian_policy.py:695: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    pol.pub_vs.get_objects_for_user(user, perm, qs=scope)
+src/crud_views_guardian/lib/viewset.py:104: in get_objects_for_user
+    self.permissions[perm],
+    ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 1
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-perm7-assign_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: unhashable type: 'list'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-perm7-remove_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: unhashable type: 'list'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-perm7-get_objects_for_user] _
+tests/test1/test_guardian_policy.py:695: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    pol.pub_vs.get_objects_for_user(user, perm, qs=scope)
+src/crud_views_guardian/lib/viewset.py:104: in get_objects_for_user
+    self.permissions[perm],
+    ^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: unhashable type: 'list'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-perm8-assign_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: unhashable type: 'dict'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-perm8-remove_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: unhashable type: 'dict'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-perm8-get_objects_for_user] _
+tests/test1/test_guardian_policy.py:695: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    pol.pub_vs.get_objects_for_user(user, perm, qs=scope)
+src/crud_views_guardian/lib/viewset.py:104: in get_objects_for_user
+    self.permissions[perm],
+    ^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: unhashable type: 'dict'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-view-assign_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: b'view'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-view-remove_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: b'view'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-view-get_objects_for_user] _
+tests/test1/test_guardian_policy.py:695: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    pol.pub_vs.get_objects_for_user(user, perm, qs=scope)
+src/crud_views_guardian/lib/viewset.py:104: in get_objects_for_user
+    self.permissions[perm],
+    ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: b'view'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False--assign_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: ''
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False--remove_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: ''
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False--get_objects_for_user] _
+tests/test1/test_guardian_policy.py:695: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    pol.pub_vs.get_objects_for_user(user, perm, qs=scope)
+src/crud_views_guardian/lib/viewset.py:101: in get_objects_for_user
+    return qs.none()
+           ^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1134: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1138: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1193: in _execute_mock_call
+    raise effect
+E   AssertionError: queryset accessed before key validation
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-typo-assign_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'typo'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-typo-remove_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'typo'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-typo-get_objects_for_user] _
+tests/test1/test_guardian_policy.py:695: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    pol.pub_vs.get_objects_for_user(user, perm, qs=scope)
+src/crud_views_guardian/lib/viewset.py:101: in get_objects_for_user
+    return qs.none()
+           ^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1134: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1138: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1193: in _execute_mock_call
+    raise effect
+E   AssertionError: queryset accessed before key validation
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-View-assign_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'View'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-View-remove_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'View'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-View-get_objects_for_user] _
+tests/test1/test_guardian_policy.py:695: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    pol.pub_vs.get_objects_for_user(user, perm, qs=scope)
+src/crud_views_guardian/lib/viewset.py:101: in get_objects_for_user
+    return qs.none()
+           ^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1134: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1138: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1193: in _execute_mock_call
+    raise effect
+E   AssertionError: queryset accessed before key validation
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-view -assign_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'view '
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-view -remove_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'view '
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-view -get_objects_for_user] _
+tests/test1/test_guardian_policy.py:695: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    pol.pub_vs.get_objects_for_user(user, perm, qs=scope)
+src/crud_views_guardian/lib/viewset.py:101: in get_objects_for_user
+    return qs.none()
+           ^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1134: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1138: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1193: in _execute_mock_call
+    raise effect
+E   AssertionError: queryset accessed before key validation
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-v\u0456ew-assign_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'vіew'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-v\u0456ew-remove_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'vіew'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-v\u0456ew-get_objects_for_user] _
+tests/test1/test_guardian_policy.py:695: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    pol.pub_vs.get_objects_for_user(user, perm, qs=scope)
+src/crud_views_guardian/lib/viewset.py:101: in get_objects_for_user
+    return qs.none()
+           ^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1134: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1138: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1193: in _execute_mock_call
+    raise effect
+E   AssertionError: queryset accessed before key validation
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-None-assign_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: None
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-None-remove_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: None
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-None-get_objects_for_user] _
+tests/test1/test_guardian_policy.py:695: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    pol.pub_vs.get_objects_for_user(user, perm, qs=scope)
+src/crud_views_guardian/lib/viewset.py:101: in get_objects_for_user
+    return qs.none()
+           ^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1134: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1138: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1193: in _execute_mock_call
+    raise effect
+E   AssertionError: queryset accessed before key validation
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-1-assign_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 1
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-1-remove_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 1
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-1-get_objects_for_user] _
+tests/test1/test_guardian_policy.py:695: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    pol.pub_vs.get_objects_for_user(user, perm, qs=scope)
+src/crud_views_guardian/lib/viewset.py:101: in get_objects_for_user
+    return qs.none()
+           ^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1134: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1138: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1193: in _execute_mock_call
+    raise effect
+E   AssertionError: queryset accessed before key validation
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-perm7-assign_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: unhashable type: 'list'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-perm7-remove_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: unhashable type: 'list'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-perm7-get_objects_for_user] _
+tests/test1/test_guardian_policy.py:695: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    pol.pub_vs.get_objects_for_user(user, perm, qs=scope)
+src/crud_views_guardian/lib/viewset.py:101: in get_objects_for_user
+    return qs.none()
+           ^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1134: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1138: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1193: in _execute_mock_call
+    raise effect
+E   AssertionError: queryset accessed before key validation
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-perm8-assign_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: unhashable type: 'dict'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-perm8-remove_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: unhashable type: 'dict'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-perm8-get_objects_for_user] _
+tests/test1/test_guardian_policy.py:695: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    pol.pub_vs.get_objects_for_user(user, perm, qs=scope)
+src/crud_views_guardian/lib/viewset.py:101: in get_objects_for_user
+    return qs.none()
+           ^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1134: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1138: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1193: in _execute_mock_call
+    raise effect
+E   AssertionError: queryset accessed before key validation
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-view-assign_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: b'view'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-view-remove_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: b'view'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-view-get_objects_for_user] _
+tests/test1/test_guardian_policy.py:695: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    pol.pub_vs.get_objects_for_user(user, perm, qs=scope)
+src/crud_views_guardian/lib/viewset.py:101: in get_objects_for_user
+    return qs.none()
+           ^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1134: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1138: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1193: in _execute_mock_call
+    raise effect
+E   AssertionError: queryset accessed before key validation
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True--assign_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: ''
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True--remove_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: ''
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True--get_objects_for_user] _
+tests/test1/test_guardian_policy.py:695: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    pol.pub_vs.get_objects_for_user(user, perm, qs=scope)
+src/crud_views_guardian/lib/viewset.py:101: in get_objects_for_user
+    return qs.none()
+           ^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1134: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1138: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1193: in _execute_mock_call
+    raise effect
+E   AssertionError: queryset accessed before key validation
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-typo-assign_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'typo'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-typo-remove_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'typo'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-typo-get_objects_for_user] _
+tests/test1/test_guardian_policy.py:695: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    pol.pub_vs.get_objects_for_user(user, perm, qs=scope)
+src/crud_views_guardian/lib/viewset.py:101: in get_objects_for_user
+    return qs.none()
+           ^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1134: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1138: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1193: in _execute_mock_call
+    raise effect
+E   AssertionError: queryset accessed before key validation
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-View-assign_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'View'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-View-remove_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'View'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-View-get_objects_for_user] _
+tests/test1/test_guardian_policy.py:695: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    pol.pub_vs.get_objects_for_user(user, perm, qs=scope)
+src/crud_views_guardian/lib/viewset.py:101: in get_objects_for_user
+    return qs.none()
+           ^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1134: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1138: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1193: in _execute_mock_call
+    raise effect
+E   AssertionError: queryset accessed before key validation
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-view -assign_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'view '
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-view -remove_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'view '
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-view -get_objects_for_user] _
+tests/test1/test_guardian_policy.py:695: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    pol.pub_vs.get_objects_for_user(user, perm, qs=scope)
+src/crud_views_guardian/lib/viewset.py:101: in get_objects_for_user
+    return qs.none()
+           ^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1134: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1138: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1193: in _execute_mock_call
+    raise effect
+E   AssertionError: queryset accessed before key validation
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-v\u0456ew-assign_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'vіew'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-v\u0456ew-remove_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'vіew'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-v\u0456ew-get_objects_for_user] _
+tests/test1/test_guardian_policy.py:695: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    pol.pub_vs.get_objects_for_user(user, perm, qs=scope)
+src/crud_views_guardian/lib/viewset.py:101: in get_objects_for_user
+    return qs.none()
+           ^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1134: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1138: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1193: in _execute_mock_call
+    raise effect
+E   AssertionError: queryset accessed before key validation
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-None-assign_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: None
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-None-remove_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: None
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-None-get_objects_for_user] _
+tests/test1/test_guardian_policy.py:695: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    pol.pub_vs.get_objects_for_user(user, perm, qs=scope)
+src/crud_views_guardian/lib/viewset.py:101: in get_objects_for_user
+    return qs.none()
+           ^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1134: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1138: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1193: in _execute_mock_call
+    raise effect
+E   AssertionError: queryset accessed before key validation
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-1-assign_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 1
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-1-remove_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 1
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-1-get_objects_for_user] _
+tests/test1/test_guardian_policy.py:695: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    pol.pub_vs.get_objects_for_user(user, perm, qs=scope)
+src/crud_views_guardian/lib/viewset.py:101: in get_objects_for_user
+    return qs.none()
+           ^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1134: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1138: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1193: in _execute_mock_call
+    raise effect
+E   AssertionError: queryset accessed before key validation
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-perm7-assign_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: unhashable type: 'list'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-perm7-remove_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: unhashable type: 'list'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-perm7-get_objects_for_user] _
+tests/test1/test_guardian_policy.py:695: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    pol.pub_vs.get_objects_for_user(user, perm, qs=scope)
+src/crud_views_guardian/lib/viewset.py:101: in get_objects_for_user
+    return qs.none()
+           ^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1134: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1138: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1193: in _execute_mock_call
+    raise effect
+E   AssertionError: queryset accessed before key validation
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-perm8-assign_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: unhashable type: 'dict'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-perm8-remove_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: unhashable type: 'dict'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-perm8-get_objects_for_user] _
+tests/test1/test_guardian_policy.py:695: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    pol.pub_vs.get_objects_for_user(user, perm, qs=scope)
+src/crud_views_guardian/lib/viewset.py:101: in get_objects_for_user
+    return qs.none()
+           ^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1134: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1138: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1193: in _execute_mock_call
+    raise effect
+E   AssertionError: queryset accessed before key validation
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-view-assign_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: b'view'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-view-remove_perm] _
+tests/test1/test_guardian_policy.py:697: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    getattr(pol.pub_vs, helper)(perm, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: b'view'
+_ test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-view-get_objects_for_user] _
+tests/test1/test_guardian_policy.py:695: in test_invalid_helper_keys_validate_before_guardian_or_permission_writes
+    pol.pub_vs.get_objects_for_user(user, perm, qs=scope)
+src/crud_views_guardian/lib/viewset.py:101: in get_objects_for_user
+    return qs.none()
+           ^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1134: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1138: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1193: in _execute_mock_call
+    raise effect
+E   AssertionError: queryset accessed before key validation
+___________ test_invalid_query_key_precedes_default_queryset_access ____________
+tests/test1/test_guardian_policy.py:712: in test_invalid_query_key_precedes_default_queryset_access
+    pol.pub_vs.get_objects_for_user(user, "typo")
+src/crud_views_guardian/lib/viewset.py:99: in get_objects_for_user
+    qs = qs if qs is not None else self.model.objects.all()
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1134: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1138: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.12/unittest/mock.py:1193: in _execute_mock_call
+    raise effect
+E   AssertionError: default queryset accessed before key validation
+______ test_diagnostics_list_sorted_actual_configured_keys[assign_perm-] _______
+tests/test1/test_guardian_policy.py:733: in test_diagnostics_list_sorted_actual_configured_keys
+    getattr(pol.pub_vs, helper)(invalid, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: ''
+____ test_diagnostics_list_sorted_actual_configured_keys[assign_perm-view] _____
+tests/test1/test_guardian_policy.py:733: in test_diagnostics_list_sorted_actual_configured_keys
+    getattr(pol.pub_vs, helper)(invalid, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'view'
+_ test_diagnostics_list_sorted_actual_configured_keys[assign_perm-R\xe9viser] __
+tests/test1/test_guardian_policy.py:733: in test_diagnostics_list_sorted_actual_configured_keys
+    getattr(pol.pub_vs, helper)(invalid, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'Réviser'
+_ test_diagnostics_list_sorted_actual_configured_keys[assign_perm-r\xe9viser ] _
+tests/test1/test_guardian_policy.py:733: in test_diagnostics_list_sorted_actual_configured_keys
+    getattr(pol.pub_vs, helper)(invalid, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'réviser '
+_ test_diagnostics_list_sorted_actual_configured_keys[assign_perm-re\u0301viser] _
+tests/test1/test_guardian_policy.py:733: in test_diagnostics_list_sorted_actual_configured_keys
+    getattr(pol.pub_vs, helper)(invalid, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'réviser'
+_ test_diagnostics_list_sorted_actual_configured_keys[assign_perm-r\xe9v\u0456ser] _
+tests/test1/test_guardian_policy.py:733: in test_diagnostics_list_sorted_actual_configured_keys
+    getattr(pol.pub_vs, helper)(invalid, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'révіser'
+____ test_diagnostics_list_sorted_actual_configured_keys[assign_perm-None] _____
+tests/test1/test_guardian_policy.py:733: in test_diagnostics_list_sorted_actual_configured_keys
+    getattr(pol.pub_vs, helper)(invalid, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: None
+__ test_diagnostics_list_sorted_actual_configured_keys[assign_perm-invalid7] ___
+tests/test1/test_guardian_policy.py:733: in test_diagnostics_list_sorted_actual_configured_keys
+    getattr(pol.pub_vs, helper)(invalid, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: unhashable type: 'list'
+__ test_diagnostics_list_sorted_actual_configured_keys[assign_perm-invalid8] ___
+tests/test1/test_guardian_policy.py:733: in test_diagnostics_list_sorted_actual_configured_keys
+    getattr(pol.pub_vs, helper)(invalid, user, obj)
+src/crud_views_guardian/lib/viewset.py:81: in assign_perm
+    assign_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: unhashable type: 'dict'
+______ test_diagnostics_list_sorted_actual_configured_keys[remove_perm-] _______
+tests/test1/test_guardian_policy.py:733: in test_diagnostics_list_sorted_actual_configured_keys
+    getattr(pol.pub_vs, helper)(invalid, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: ''
+____ test_diagnostics_list_sorted_actual_configured_keys[remove_perm-view] _____
+tests/test1/test_guardian_policy.py:733: in test_diagnostics_list_sorted_actual_configured_keys
+    getattr(pol.pub_vs, helper)(invalid, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'view'
+_ test_diagnostics_list_sorted_actual_configured_keys[remove_perm-R\xe9viser] __
+tests/test1/test_guardian_policy.py:733: in test_diagnostics_list_sorted_actual_configured_keys
+    getattr(pol.pub_vs, helper)(invalid, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'Réviser'
+_ test_diagnostics_list_sorted_actual_configured_keys[remove_perm-r\xe9viser ] _
+tests/test1/test_guardian_policy.py:733: in test_diagnostics_list_sorted_actual_configured_keys
+    getattr(pol.pub_vs, helper)(invalid, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'réviser '
+_ test_diagnostics_list_sorted_actual_configured_keys[remove_perm-re\u0301viser] _
+tests/test1/test_guardian_policy.py:733: in test_diagnostics_list_sorted_actual_configured_keys
+    getattr(pol.pub_vs, helper)(invalid, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'réviser'
+_ test_diagnostics_list_sorted_actual_configured_keys[remove_perm-r\xe9v\u0456ser] _
+tests/test1/test_guardian_policy.py:733: in test_diagnostics_list_sorted_actual_configured_keys
+    getattr(pol.pub_vs, helper)(invalid, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'révіser'
+____ test_diagnostics_list_sorted_actual_configured_keys[remove_perm-None] _____
+tests/test1/test_guardian_policy.py:733: in test_diagnostics_list_sorted_actual_configured_keys
+    getattr(pol.pub_vs, helper)(invalid, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: None
+__ test_diagnostics_list_sorted_actual_configured_keys[remove_perm-invalid7] ___
+tests/test1/test_guardian_policy.py:733: in test_diagnostics_list_sorted_actual_configured_keys
+    getattr(pol.pub_vs, helper)(invalid, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: unhashable type: 'list'
+__ test_diagnostics_list_sorted_actual_configured_keys[remove_perm-invalid8] ___
+tests/test1/test_guardian_policy.py:733: in test_diagnostics_list_sorted_actual_configured_keys
+    getattr(pol.pub_vs, helper)(invalid, user, obj)
+src/crud_views_guardian/lib/viewset.py:87: in remove_perm
+    remove_perm(self.permissions[perm], user_or_group, obj)
+                ^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: unhashable type: 'dict'
+__ test_diagnostics_list_sorted_actual_configured_keys[get_objects_for_user-] __
+tests/test1/test_guardian_policy.py:731: in test_diagnostics_list_sorted_actual_configured_keys
+    pol.pub_vs.get_objects_for_user(user, invalid)
+src/crud_views_guardian/lib/viewset.py:104: in get_objects_for_user
+    self.permissions[perm],
+    ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: ''
+_ test_diagnostics_list_sorted_actual_configured_keys[get_objects_for_user-view] _
+tests/test1/test_guardian_policy.py:731: in test_diagnostics_list_sorted_actual_configured_keys
+    pol.pub_vs.get_objects_for_user(user, invalid)
+src/crud_views_guardian/lib/viewset.py:104: in get_objects_for_user
+    self.permissions[perm],
+    ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'view'
+_ test_diagnostics_list_sorted_actual_configured_keys[get_objects_for_user-R\xe9viser] _
+tests/test1/test_guardian_policy.py:731: in test_diagnostics_list_sorted_actual_configured_keys
+    pol.pub_vs.get_objects_for_user(user, invalid)
+src/crud_views_guardian/lib/viewset.py:104: in get_objects_for_user
+    self.permissions[perm],
+    ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'Réviser'
+_ test_diagnostics_list_sorted_actual_configured_keys[get_objects_for_user-r\xe9viser ] _
+tests/test1/test_guardian_policy.py:731: in test_diagnostics_list_sorted_actual_configured_keys
+    pol.pub_vs.get_objects_for_user(user, invalid)
+src/crud_views_guardian/lib/viewset.py:104: in get_objects_for_user
+    self.permissions[perm],
+    ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'réviser '
+_ test_diagnostics_list_sorted_actual_configured_keys[get_objects_for_user-re\u0301viser] _
+tests/test1/test_guardian_policy.py:731: in test_diagnostics_list_sorted_actual_configured_keys
+    pol.pub_vs.get_objects_for_user(user, invalid)
+src/crud_views_guardian/lib/viewset.py:104: in get_objects_for_user
+    self.permissions[perm],
+    ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'réviser'
+_ test_diagnostics_list_sorted_actual_configured_keys[get_objects_for_user-r\xe9v\u0456ser] _
+tests/test1/test_guardian_policy.py:731: in test_diagnostics_list_sorted_actual_configured_keys
+    pol.pub_vs.get_objects_for_user(user, invalid)
+src/crud_views_guardian/lib/viewset.py:104: in get_objects_for_user
+    self.permissions[perm],
+    ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'révіser'
+_ test_diagnostics_list_sorted_actual_configured_keys[get_objects_for_user-None] _
+tests/test1/test_guardian_policy.py:731: in test_diagnostics_list_sorted_actual_configured_keys
+    pol.pub_vs.get_objects_for_user(user, invalid)
+src/crud_views_guardian/lib/viewset.py:104: in get_objects_for_user
+    self.permissions[perm],
+    ^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: None
+_ test_diagnostics_list_sorted_actual_configured_keys[get_objects_for_user-invalid7] _
+tests/test1/test_guardian_policy.py:731: in test_diagnostics_list_sorted_actual_configured_keys
+    pol.pub_vs.get_objects_for_user(user, invalid)
+src/crud_views_guardian/lib/viewset.py:104: in get_objects_for_user
+    self.permissions[perm],
+    ^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: unhashable type: 'list'
+_ test_diagnostics_list_sorted_actual_configured_keys[get_objects_for_user-invalid8] _
+tests/test1/test_guardian_policy.py:731: in test_diagnostics_list_sorted_actual_configured_keys
+    pol.pub_vs.get_objects_for_user(user, invalid)
+src/crud_views_guardian/lib/viewset.py:104: in get_objects_for_user
+    self.permissions[perm],
+    ^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: unhashable type: 'dict'
+___ test_policy_mutation_cannot_turn_global_permission_into_helper_authority ___
+tests/test1/test_guardian_policy.py:792: in test_policy_mutation_cannot_turn_global_permission_into_helper_authority
+    assert result == []
+E   assert [1, 2] == []
+E     
+E     Left contains 2 more items, first extra item: 1
+E     Use -v to get more diff
+_ test_inactive_viewset_typo_is_an_error_instead_of_empty_authority[ordinary] __
+tests/test1/test_guardian_inactive.py:402: in test_inactive_viewset_typo_is_an_error_instead_of_empty_authority
+    with pytest.raises(ValueError) as error:
+E   Failed: DID NOT RAISE ValueError
+___ test_inactive_viewset_typo_is_an_error_instead_of_empty_authority[group] ___
+tests/test1/test_guardian_inactive.py:402: in test_inactive_viewset_typo_is_an_error_instead_of_empty_authority
+    with pytest.raises(ValueError) as error:
+E   Failed: DID NOT RAISE ValueError
+__ test_inactive_viewset_typo_is_an_error_instead_of_empty_authority[global] ___
+tests/test1/test_guardian_inactive.py:402: in test_inactive_viewset_typo_is_an_error_instead_of_empty_authority
+    with pytest.raises(ValueError) as error:
+E   Failed: DID NOT RAISE ValueError
+_ test_inactive_viewset_typo_is_an_error_instead_of_empty_authority[superuser] _
+tests/test1/test_guardian_inactive.py:402: in test_inactive_viewset_typo_is_an_error_instead_of_empty_authority
+    with pytest.raises(ValueError) as error:
+E   Failed: DID NOT RAISE ValueError
+______________ test_strict_helper_policy_rejects_mapping_mutation ______________
+tests/test1/test_guardian_policy.py:771: in test_strict_helper_policy_rejects_mapping_mutation
+    ???
+E   Failed: DID NOT RAISE TypeError
+=========================== short test summary info ============================
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False--assign_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False--remove_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False--get_objects_for_user]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-typo-assign_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-typo-remove_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-typo-get_objects_for_user]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-View-assign_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-View-remove_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-View-get_objects_for_user]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-view -assign_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-view -remove_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-view -get_objects_for_user]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-v\u0456ew-assign_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-v\u0456ew-remove_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-v\u0456ew-get_objects_for_user]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-None-assign_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-None-remove_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-None-get_objects_for_user]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-1-assign_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-1-remove_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-1-get_objects_for_user]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-perm7-assign_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-perm7-remove_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-perm7-get_objects_for_user]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-perm8-assign_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-perm8-remove_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-perm8-get_objects_for_user]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-view-assign_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-view-remove_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-False-view-get_objects_for_user]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True--assign_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True--remove_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True--get_objects_for_user]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-typo-assign_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-typo-remove_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-typo-get_objects_for_user]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-View-assign_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-View-remove_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-View-get_objects_for_user]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-view -assign_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-view -remove_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-view -get_objects_for_user]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-v\u0456ew-assign_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-v\u0456ew-remove_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-v\u0456ew-get_objects_for_user]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-None-assign_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-None-remove_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-None-get_objects_for_user]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-1-assign_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-1-remove_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-1-get_objects_for_user]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-perm7-assign_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-perm7-remove_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-perm7-get_objects_for_user]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-perm8-assign_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-perm8-remove_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-perm8-get_objects_for_user]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-view-assign_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-view-remove_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[True-True-view-get_objects_for_user]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False--assign_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False--remove_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False--get_objects_for_user]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-typo-assign_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-typo-remove_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-typo-get_objects_for_user]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-View-assign_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-View-remove_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-View-get_objects_for_user]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-view -assign_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-view -remove_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-view -get_objects_for_user]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-v\u0456ew-assign_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-v\u0456ew-remove_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-v\u0456ew-get_objects_for_user]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-None-assign_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-None-remove_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-None-get_objects_for_user]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-1-assign_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-1-remove_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-1-get_objects_for_user]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-perm7-assign_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-perm7-remove_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-perm7-get_objects_for_user]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-perm8-assign_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-perm8-remove_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-perm8-get_objects_for_user]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-view-assign_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-view-remove_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-False-view-get_objects_for_user]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True--assign_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True--remove_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True--get_objects_for_user]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-typo-assign_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-typo-remove_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-typo-get_objects_for_user]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-View-assign_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-View-remove_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-View-get_objects_for_user]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-view -assign_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-view -remove_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-view -get_objects_for_user]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-v\u0456ew-assign_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-v\u0456ew-remove_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-v\u0456ew-get_objects_for_user]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-None-assign_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-None-remove_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-None-get_objects_for_user]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-1-assign_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-1-remove_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-1-get_objects_for_user]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-perm7-assign_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-perm7-remove_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-perm7-get_objects_for_user]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-perm8-assign_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-perm8-remove_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-perm8-get_objects_for_user]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-view-assign_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-view-remove_perm]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_helper_keys_validate_before_guardian_or_permission_writes[False-True-view-get_objects_for_user]
+FAILED tests/test1/test_guardian_policy.py::test_invalid_query_key_precedes_default_queryset_access
+FAILED tests/test1/test_guardian_policy.py::test_diagnostics_list_sorted_actual_configured_keys[assign_perm-]
+FAILED tests/test1/test_guardian_policy.py::test_diagnostics_list_sorted_actual_configured_keys[assign_perm-view]
+FAILED tests/test1/test_guardian_policy.py::test_diagnostics_list_sorted_actual_configured_keys[assign_perm-R\xe9viser]
+FAILED tests/test1/test_guardian_policy.py::test_diagnostics_list_sorted_actual_configured_keys[assign_perm-r\xe9viser ]
+FAILED tests/test1/test_guardian_policy.py::test_diagnostics_list_sorted_actual_configured_keys[assign_perm-re\u0301viser]
+FAILED tests/test1/test_guardian_policy.py::test_diagnostics_list_sorted_actual_configured_keys[assign_perm-r\xe9v\u0456ser]
+FAILED tests/test1/test_guardian_policy.py::test_diagnostics_list_sorted_actual_configured_keys[assign_perm-None]
+FAILED tests/test1/test_guardian_policy.py::test_diagnostics_list_sorted_actual_configured_keys[assign_perm-invalid7]
+FAILED tests/test1/test_guardian_policy.py::test_diagnostics_list_sorted_actual_configured_keys[assign_perm-invalid8]
+FAILED tests/test1/test_guardian_policy.py::test_diagnostics_list_sorted_actual_configured_keys[remove_perm-]
+FAILED tests/test1/test_guardian_policy.py::test_diagnostics_list_sorted_actual_configured_keys[remove_perm-view]
+FAILED tests/test1/test_guardian_policy.py::test_diagnostics_list_sorted_actual_configured_keys[remove_perm-R\xe9viser]
+FAILED tests/test1/test_guardian_policy.py::test_diagnostics_list_sorted_actual_configured_keys[remove_perm-r\xe9viser ]
+FAILED tests/test1/test_guardian_policy.py::test_diagnostics_list_sorted_actual_configured_keys[remove_perm-re\u0301viser]
+FAILED tests/test1/test_guardian_policy.py::test_diagnostics_list_sorted_actual_configured_keys[remove_perm-r\xe9v\u0456ser]
+FAILED tests/test1/test_guardian_policy.py::test_diagnostics_list_sorted_actual_configured_keys[remove_perm-None]
+FAILED tests/test1/test_guardian_policy.py::test_diagnostics_list_sorted_actual_configured_keys[remove_perm-invalid7]
+FAILED tests/test1/test_guardian_policy.py::test_diagnostics_list_sorted_actual_configured_keys[remove_perm-invalid8]
+FAILED tests/test1/test_guardian_policy.py::test_diagnostics_list_sorted_actual_configured_keys[get_objects_for_user-]
+FAILED tests/test1/test_guardian_policy.py::test_diagnostics_list_sorted_actual_configured_keys[get_objects_for_user-view]
+FAILED tests/test1/test_guardian_policy.py::test_diagnostics_list_sorted_actual_configured_keys[get_objects_for_user-R\xe9viser]
+FAILED tests/test1/test_guardian_policy.py::test_diagnostics_list_sorted_actual_configured_keys[get_objects_for_user-r\xe9viser ]
+FAILED tests/test1/test_guardian_policy.py::test_diagnostics_list_sorted_actual_configured_keys[get_objects_for_user-re\u0301viser]
+FAILED tests/test1/test_guardian_policy.py::test_diagnostics_list_sorted_actual_configured_keys[get_objects_for_user-r\xe9v\u0456ser]
+FAILED tests/test1/test_guardian_policy.py::test_diagnostics_list_sorted_actual_configured_keys[get_objects_for_user-None]
+FAILED tests/test1/test_guardian_policy.py::test_diagnostics_list_sorted_actual_configured_keys[get_objects_for_user-invalid7]
+FAILED tests/test1/test_guardian_policy.py::test_diagnostics_list_sorted_actual_configured_keys[get_objects_for_user-invalid8]
+FAILED tests/test1/test_guardian_policy.py::test_policy_mutation_cannot_turn_global_permission_into_helper_authority
+FAILED tests/test1/test_guardian_inactive.py::test_inactive_viewset_typo_is_an_error_instead_of_empty_authority[ordinary]
+FAILED tests/test1/test_guardian_inactive.py::test_inactive_viewset_typo_is_an_error_instead_of_empty_authority[group]
+FAILED tests/test1/test_guardian_inactive.py::test_inactive_viewset_typo_is_an_error_instead_of_empty_authority[global]
+FAILED tests/test1/test_guardian_inactive.py::test_inactive_viewset_typo_is_an_error_instead_of_empty_authority[superuser]
+FAILED tests/test1/test_guardian_policy.py::test_strict_helper_policy_rejects_mapping_mutation
+154 failed, 117 deselected in 47.88s

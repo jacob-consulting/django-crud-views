@@ -1,0 +1,551 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="10" skipped="0" tests="20" time="1.832" timestamp="2026-11-02T11:23:54.851793+00:00" hostname="weaver-dev"><testcase classname="tests.test1.od.test_layout_packs" name="test_group_only_copy_reuses_enclosing_projection[None-0-split-card]" time="0.011" /><testcase classname="tests.test1.od.test_layout_packs" name="test_group_only_copy_reuses_enclosing_projection[None-0-card-rows]" time="0.004" /><testcase classname="tests.test1.od.test_layout_packs" name="test_group_only_copy_reuses_enclosing_projection[None-0-table-inline]" time="0.004" /><testcase classname="tests.test1.od.test_layout_packs" name="test_group_only_copy_reuses_enclosing_projection[None-0-list-group-3col]" time="0.004" /><testcase classname="tests.test1.od.test_layout_packs" name="test_group_only_copy_reuses_enclosing_projection[None-0-striped-rows]" time="0.004" /><testcase classname="tests.test1.od.test_layout_packs" name="test_group_only_copy_reuses_enclosing_projection[None-2-split-card]" time="0.007"><failure message="AssertionError: assert False&#10; +  where False = &lt;built-in method endswith of str object at 0xb3c3f0&gt;('-root')&#10; +    where &lt;built-in method endswith of str object at 0xb3c3f0&gt; = ''.endswith">pack = 'split-card', count = 2, component_id = None
+
+    @pytest.mark.parametrize("pack", ["split-card", "card-rows", "table-inline", "list-group-3col", "striped-rows"])
+    @pytest.mark.parametrize("count", [0, 2])
+    @pytest.mark.parametrize("component_id", [None, "page-details"])
+    def test_group_only_copy_reuses_enclosing_projection(pack, count, component_id):
+        """Only group.html is copied; the actual shipped fallback supplies the projection."""
+        templates = deepcopy(settings.TEMPLATES)
+        templates[0]["APP_DIRS"] = False
+        group_path = f"crud_views_object_detail/layouts/{pack}/group.html"
+        templates[0]["OPTIONS"]["loaders"] = [
+            (
+                "django.template.loaders.locmem.Loader",
+                {
+                    group_path: """{% load crud_views_object_detail %}
+    &lt;section data-panel="{{ presentation.panel_id }}" data-control="{{ presentation.control_id }}"
+             data-component="{{ component.id }}" data-selected="{{ presentation.selected|yesno:'true,false' }}"&gt;
+        &lt;header&gt;{{ group.title }}&lt;/header&gt;
+        {% for prop in group.properties %}{% render_property prop layout=layout %}{% endfor %}
+    &lt;/section&gt;""",
+                },
+            ),
+            "django.template.loaders.app_directories.Loader",
+        ]
+        groups = [
+            ResolvedGroup(
+                title=f"Title {index} &lt;script&gt;bad&lt;/script&gt;",
+                properties=[ResolvedProperty(path="name", label="Label &lt;text&gt;", value=f"Value {index} &lt;img&gt;")],
+            )
+            for index in range(count)
+        ]
+        with override_settings(TEMPLATES=templates):
+            fallback = get_template("crud_views_object_detail/object_detail.html")
+            assert fallback.origin.name.endswith("src/crud_views_object_detail/templates/crud_views_object_detail/object_detail.html")
+            tpl = Template(
+                "{% load crud_views_object_detail %}"
+                "{% render_object_detail obj groups layout=layout component_id=component_id %}"
+            )
+            context = {"groups": groups, "layout": pack, "component_id": component_id}
+            docs = [lxml_html.fromstring("&lt;main&gt;" + tpl.render(Context(context)) + "&lt;/main&gt;") for _ in range(2)]
+        first, second = [doc.cssselect("section") for doc in docs]
+        assert len(first) == len(second) == count
+        for doc in docs:
+            assert not doc.cssselect("script, img, [aria-labelledby], [data-bs-parent]")
+            for index in range(count):
+                assert f"Title {index} &lt;script&gt;bad&lt;/script&gt;" in doc.text_content()
+                assert f"Value {index} &lt;img&gt;" in doc.text_content()
+                assert "Label &lt;text&gt;" in doc.text_content()
+        for index, (entry, again) in enumerate(zip(first, second, strict=True)):
+            component = entry.get("data-component")
+&gt;           assert component.endswith("-root")
+E           AssertionError: assert False
+E            +  where False = &lt;built-in method endswith of str object at 0xb3c3f0&gt;('-root')
+E            +    where &lt;built-in method endswith of str object at 0xb3c3f0&gt; = ''.endswith
+
+tests/test1/od/test_layout_packs.py:151: AssertionError</failure></testcase><testcase classname="tests.test1.od.test_layout_packs" name="test_group_only_copy_reuses_enclosing_projection[None-2-card-rows]" time="0.007"><failure message="AssertionError: assert False&#10; +  where False = &lt;built-in method endswith of str object at 0xb3c3f0&gt;('-root')&#10; +    where &lt;built-in method endswith of str object at 0xb3c3f0&gt; = ''.endswith">pack = 'card-rows', count = 2, component_id = None
+
+    @pytest.mark.parametrize("pack", ["split-card", "card-rows", "table-inline", "list-group-3col", "striped-rows"])
+    @pytest.mark.parametrize("count", [0, 2])
+    @pytest.mark.parametrize("component_id", [None, "page-details"])
+    def test_group_only_copy_reuses_enclosing_projection(pack, count, component_id):
+        """Only group.html is copied; the actual shipped fallback supplies the projection."""
+        templates = deepcopy(settings.TEMPLATES)
+        templates[0]["APP_DIRS"] = False
+        group_path = f"crud_views_object_detail/layouts/{pack}/group.html"
+        templates[0]["OPTIONS"]["loaders"] = [
+            (
+                "django.template.loaders.locmem.Loader",
+                {
+                    group_path: """{% load crud_views_object_detail %}
+    &lt;section data-panel="{{ presentation.panel_id }}" data-control="{{ presentation.control_id }}"
+             data-component="{{ component.id }}" data-selected="{{ presentation.selected|yesno:'true,false' }}"&gt;
+        &lt;header&gt;{{ group.title }}&lt;/header&gt;
+        {% for prop in group.properties %}{% render_property prop layout=layout %}{% endfor %}
+    &lt;/section&gt;""",
+                },
+            ),
+            "django.template.loaders.app_directories.Loader",
+        ]
+        groups = [
+            ResolvedGroup(
+                title=f"Title {index} &lt;script&gt;bad&lt;/script&gt;",
+                properties=[ResolvedProperty(path="name", label="Label &lt;text&gt;", value=f"Value {index} &lt;img&gt;")],
+            )
+            for index in range(count)
+        ]
+        with override_settings(TEMPLATES=templates):
+            fallback = get_template("crud_views_object_detail/object_detail.html")
+            assert fallback.origin.name.endswith("src/crud_views_object_detail/templates/crud_views_object_detail/object_detail.html")
+            tpl = Template(
+                "{% load crud_views_object_detail %}"
+                "{% render_object_detail obj groups layout=layout component_id=component_id %}"
+            )
+            context = {"groups": groups, "layout": pack, "component_id": component_id}
+            docs = [lxml_html.fromstring("&lt;main&gt;" + tpl.render(Context(context)) + "&lt;/main&gt;") for _ in range(2)]
+        first, second = [doc.cssselect("section") for doc in docs]
+        assert len(first) == len(second) == count
+        for doc in docs:
+            assert not doc.cssselect("script, img, [aria-labelledby], [data-bs-parent]")
+            for index in range(count):
+                assert f"Title {index} &lt;script&gt;bad&lt;/script&gt;" in doc.text_content()
+                assert f"Value {index} &lt;img&gt;" in doc.text_content()
+                assert "Label &lt;text&gt;" in doc.text_content()
+        for index, (entry, again) in enumerate(zip(first, second, strict=True)):
+            component = entry.get("data-component")
+&gt;           assert component.endswith("-root")
+E           AssertionError: assert False
+E            +  where False = &lt;built-in method endswith of str object at 0xb3c3f0&gt;('-root')
+E            +    where &lt;built-in method endswith of str object at 0xb3c3f0&gt; = ''.endswith
+
+tests/test1/od/test_layout_packs.py:151: AssertionError</failure></testcase><testcase classname="tests.test1.od.test_layout_packs" name="test_group_only_copy_reuses_enclosing_projection[None-2-table-inline]" time="0.008"><failure message="AssertionError: assert False&#10; +  where False = &lt;built-in method endswith of str object at 0xb3c3f0&gt;('-root')&#10; +    where &lt;built-in method endswith of str object at 0xb3c3f0&gt; = ''.endswith">pack = 'table-inline', count = 2, component_id = None
+
+    @pytest.mark.parametrize("pack", ["split-card", "card-rows", "table-inline", "list-group-3col", "striped-rows"])
+    @pytest.mark.parametrize("count", [0, 2])
+    @pytest.mark.parametrize("component_id", [None, "page-details"])
+    def test_group_only_copy_reuses_enclosing_projection(pack, count, component_id):
+        """Only group.html is copied; the actual shipped fallback supplies the projection."""
+        templates = deepcopy(settings.TEMPLATES)
+        templates[0]["APP_DIRS"] = False
+        group_path = f"crud_views_object_detail/layouts/{pack}/group.html"
+        templates[0]["OPTIONS"]["loaders"] = [
+            (
+                "django.template.loaders.locmem.Loader",
+                {
+                    group_path: """{% load crud_views_object_detail %}
+    &lt;section data-panel="{{ presentation.panel_id }}" data-control="{{ presentation.control_id }}"
+             data-component="{{ component.id }}" data-selected="{{ presentation.selected|yesno:'true,false' }}"&gt;
+        &lt;header&gt;{{ group.title }}&lt;/header&gt;
+        {% for prop in group.properties %}{% render_property prop layout=layout %}{% endfor %}
+    &lt;/section&gt;""",
+                },
+            ),
+            "django.template.loaders.app_directories.Loader",
+        ]
+        groups = [
+            ResolvedGroup(
+                title=f"Title {index} &lt;script&gt;bad&lt;/script&gt;",
+                properties=[ResolvedProperty(path="name", label="Label &lt;text&gt;", value=f"Value {index} &lt;img&gt;")],
+            )
+            for index in range(count)
+        ]
+        with override_settings(TEMPLATES=templates):
+            fallback = get_template("crud_views_object_detail/object_detail.html")
+            assert fallback.origin.name.endswith("src/crud_views_object_detail/templates/crud_views_object_detail/object_detail.html")
+            tpl = Template(
+                "{% load crud_views_object_detail %}"
+                "{% render_object_detail obj groups layout=layout component_id=component_id %}"
+            )
+            context = {"groups": groups, "layout": pack, "component_id": component_id}
+            docs = [lxml_html.fromstring("&lt;main&gt;" + tpl.render(Context(context)) + "&lt;/main&gt;") for _ in range(2)]
+        first, second = [doc.cssselect("section") for doc in docs]
+        assert len(first) == len(second) == count
+        for doc in docs:
+            assert not doc.cssselect("script, img, [aria-labelledby], [data-bs-parent]")
+            for index in range(count):
+                assert f"Title {index} &lt;script&gt;bad&lt;/script&gt;" in doc.text_content()
+                assert f"Value {index} &lt;img&gt;" in doc.text_content()
+                assert "Label &lt;text&gt;" in doc.text_content()
+        for index, (entry, again) in enumerate(zip(first, second, strict=True)):
+            component = entry.get("data-component")
+&gt;           assert component.endswith("-root")
+E           AssertionError: assert False
+E            +  where False = &lt;built-in method endswith of str object at 0xb3c3f0&gt;('-root')
+E            +    where &lt;built-in method endswith of str object at 0xb3c3f0&gt; = ''.endswith
+
+tests/test1/od/test_layout_packs.py:151: AssertionError</failure></testcase><testcase classname="tests.test1.od.test_layout_packs" name="test_group_only_copy_reuses_enclosing_projection[None-2-list-group-3col]" time="0.007"><failure message="AssertionError: assert False&#10; +  where False = &lt;built-in method endswith of str object at 0xb3c3f0&gt;('-root')&#10; +    where &lt;built-in method endswith of str object at 0xb3c3f0&gt; = ''.endswith">pack = 'list-group-3col', count = 2, component_id = None
+
+    @pytest.mark.parametrize("pack", ["split-card", "card-rows", "table-inline", "list-group-3col", "striped-rows"])
+    @pytest.mark.parametrize("count", [0, 2])
+    @pytest.mark.parametrize("component_id", [None, "page-details"])
+    def test_group_only_copy_reuses_enclosing_projection(pack, count, component_id):
+        """Only group.html is copied; the actual shipped fallback supplies the projection."""
+        templates = deepcopy(settings.TEMPLATES)
+        templates[0]["APP_DIRS"] = False
+        group_path = f"crud_views_object_detail/layouts/{pack}/group.html"
+        templates[0]["OPTIONS"]["loaders"] = [
+            (
+                "django.template.loaders.locmem.Loader",
+                {
+                    group_path: """{% load crud_views_object_detail %}
+    &lt;section data-panel="{{ presentation.panel_id }}" data-control="{{ presentation.control_id }}"
+             data-component="{{ component.id }}" data-selected="{{ presentation.selected|yesno:'true,false' }}"&gt;
+        &lt;header&gt;{{ group.title }}&lt;/header&gt;
+        {% for prop in group.properties %}{% render_property prop layout=layout %}{% endfor %}
+    &lt;/section&gt;""",
+                },
+            ),
+            "django.template.loaders.app_directories.Loader",
+        ]
+        groups = [
+            ResolvedGroup(
+                title=f"Title {index} &lt;script&gt;bad&lt;/script&gt;",
+                properties=[ResolvedProperty(path="name", label="Label &lt;text&gt;", value=f"Value {index} &lt;img&gt;")],
+            )
+            for index in range(count)
+        ]
+        with override_settings(TEMPLATES=templates):
+            fallback = get_template("crud_views_object_detail/object_detail.html")
+            assert fallback.origin.name.endswith("src/crud_views_object_detail/templates/crud_views_object_detail/object_detail.html")
+            tpl = Template(
+                "{% load crud_views_object_detail %}"
+                "{% render_object_detail obj groups layout=layout component_id=component_id %}"
+            )
+            context = {"groups": groups, "layout": pack, "component_id": component_id}
+            docs = [lxml_html.fromstring("&lt;main&gt;" + tpl.render(Context(context)) + "&lt;/main&gt;") for _ in range(2)]
+        first, second = [doc.cssselect("section") for doc in docs]
+        assert len(first) == len(second) == count
+        for doc in docs:
+            assert not doc.cssselect("script, img, [aria-labelledby], [data-bs-parent]")
+            for index in range(count):
+                assert f"Title {index} &lt;script&gt;bad&lt;/script&gt;" in doc.text_content()
+                assert f"Value {index} &lt;img&gt;" in doc.text_content()
+                assert "Label &lt;text&gt;" in doc.text_content()
+        for index, (entry, again) in enumerate(zip(first, second, strict=True)):
+            component = entry.get("data-component")
+&gt;           assert component.endswith("-root")
+E           AssertionError: assert False
+E            +  where False = &lt;built-in method endswith of str object at 0xb3c3f0&gt;('-root')
+E            +    where &lt;built-in method endswith of str object at 0xb3c3f0&gt; = ''.endswith
+
+tests/test1/od/test_layout_packs.py:151: AssertionError</failure></testcase><testcase classname="tests.test1.od.test_layout_packs" name="test_group_only_copy_reuses_enclosing_projection[None-2-striped-rows]" time="0.007"><failure message="AssertionError: assert False&#10; +  where False = &lt;built-in method endswith of str object at 0xb3c3f0&gt;('-root')&#10; +    where &lt;built-in method endswith of str object at 0xb3c3f0&gt; = ''.endswith">pack = 'striped-rows', count = 2, component_id = None
+
+    @pytest.mark.parametrize("pack", ["split-card", "card-rows", "table-inline", "list-group-3col", "striped-rows"])
+    @pytest.mark.parametrize("count", [0, 2])
+    @pytest.mark.parametrize("component_id", [None, "page-details"])
+    def test_group_only_copy_reuses_enclosing_projection(pack, count, component_id):
+        """Only group.html is copied; the actual shipped fallback supplies the projection."""
+        templates = deepcopy(settings.TEMPLATES)
+        templates[0]["APP_DIRS"] = False
+        group_path = f"crud_views_object_detail/layouts/{pack}/group.html"
+        templates[0]["OPTIONS"]["loaders"] = [
+            (
+                "django.template.loaders.locmem.Loader",
+                {
+                    group_path: """{% load crud_views_object_detail %}
+    &lt;section data-panel="{{ presentation.panel_id }}" data-control="{{ presentation.control_id }}"
+             data-component="{{ component.id }}" data-selected="{{ presentation.selected|yesno:'true,false' }}"&gt;
+        &lt;header&gt;{{ group.title }}&lt;/header&gt;
+        {% for prop in group.properties %}{% render_property prop layout=layout %}{% endfor %}
+    &lt;/section&gt;""",
+                },
+            ),
+            "django.template.loaders.app_directories.Loader",
+        ]
+        groups = [
+            ResolvedGroup(
+                title=f"Title {index} &lt;script&gt;bad&lt;/script&gt;",
+                properties=[ResolvedProperty(path="name", label="Label &lt;text&gt;", value=f"Value {index} &lt;img&gt;")],
+            )
+            for index in range(count)
+        ]
+        with override_settings(TEMPLATES=templates):
+            fallback = get_template("crud_views_object_detail/object_detail.html")
+            assert fallback.origin.name.endswith("src/crud_views_object_detail/templates/crud_views_object_detail/object_detail.html")
+            tpl = Template(
+                "{% load crud_views_object_detail %}"
+                "{% render_object_detail obj groups layout=layout component_id=component_id %}"
+            )
+            context = {"groups": groups, "layout": pack, "component_id": component_id}
+            docs = [lxml_html.fromstring("&lt;main&gt;" + tpl.render(Context(context)) + "&lt;/main&gt;") for _ in range(2)]
+        first, second = [doc.cssselect("section") for doc in docs]
+        assert len(first) == len(second) == count
+        for doc in docs:
+            assert not doc.cssselect("script, img, [aria-labelledby], [data-bs-parent]")
+            for index in range(count):
+                assert f"Title {index} &lt;script&gt;bad&lt;/script&gt;" in doc.text_content()
+                assert f"Value {index} &lt;img&gt;" in doc.text_content()
+                assert "Label &lt;text&gt;" in doc.text_content()
+        for index, (entry, again) in enumerate(zip(first, second, strict=True)):
+            component = entry.get("data-component")
+&gt;           assert component.endswith("-root")
+E           AssertionError: assert False
+E            +  where False = &lt;built-in method endswith of str object at 0xb3c3f0&gt;('-root')
+E            +    where &lt;built-in method endswith of str object at 0xb3c3f0&gt; = ''.endswith
+
+tests/test1/od/test_layout_packs.py:151: AssertionError</failure></testcase><testcase classname="tests.test1.od.test_layout_packs" name="test_group_only_copy_reuses_enclosing_projection[page-details-0-split-card]" time="0.004" /><testcase classname="tests.test1.od.test_layout_packs" name="test_group_only_copy_reuses_enclosing_projection[page-details-0-card-rows]" time="0.004" /><testcase classname="tests.test1.od.test_layout_packs" name="test_group_only_copy_reuses_enclosing_projection[page-details-0-table-inline]" time="0.003" /><testcase classname="tests.test1.od.test_layout_packs" name="test_group_only_copy_reuses_enclosing_projection[page-details-0-list-group-3col]" time="0.003" /><testcase classname="tests.test1.od.test_layout_packs" name="test_group_only_copy_reuses_enclosing_projection[page-details-0-striped-rows]" time="0.003" /><testcase classname="tests.test1.od.test_layout_packs" name="test_group_only_copy_reuses_enclosing_projection[page-details-2-split-card]" time="0.006"><failure message="AssertionError: assert False&#10; +  where False = &lt;built-in method endswith of str object at 0xb3c3f0&gt;('-root')&#10; +    where &lt;built-in method endswith of str object at 0xb3c3f0&gt; = ''.endswith">pack = 'split-card', count = 2, component_id = 'page-details'
+
+    @pytest.mark.parametrize("pack", ["split-card", "card-rows", "table-inline", "list-group-3col", "striped-rows"])
+    @pytest.mark.parametrize("count", [0, 2])
+    @pytest.mark.parametrize("component_id", [None, "page-details"])
+    def test_group_only_copy_reuses_enclosing_projection(pack, count, component_id):
+        """Only group.html is copied; the actual shipped fallback supplies the projection."""
+        templates = deepcopy(settings.TEMPLATES)
+        templates[0]["APP_DIRS"] = False
+        group_path = f"crud_views_object_detail/layouts/{pack}/group.html"
+        templates[0]["OPTIONS"]["loaders"] = [
+            (
+                "django.template.loaders.locmem.Loader",
+                {
+                    group_path: """{% load crud_views_object_detail %}
+    &lt;section data-panel="{{ presentation.panel_id }}" data-control="{{ presentation.control_id }}"
+             data-component="{{ component.id }}" data-selected="{{ presentation.selected|yesno:'true,false' }}"&gt;
+        &lt;header&gt;{{ group.title }}&lt;/header&gt;
+        {% for prop in group.properties %}{% render_property prop layout=layout %}{% endfor %}
+    &lt;/section&gt;""",
+                },
+            ),
+            "django.template.loaders.app_directories.Loader",
+        ]
+        groups = [
+            ResolvedGroup(
+                title=f"Title {index} &lt;script&gt;bad&lt;/script&gt;",
+                properties=[ResolvedProperty(path="name", label="Label &lt;text&gt;", value=f"Value {index} &lt;img&gt;")],
+            )
+            for index in range(count)
+        ]
+        with override_settings(TEMPLATES=templates):
+            fallback = get_template("crud_views_object_detail/object_detail.html")
+            assert fallback.origin.name.endswith("src/crud_views_object_detail/templates/crud_views_object_detail/object_detail.html")
+            tpl = Template(
+                "{% load crud_views_object_detail %}"
+                "{% render_object_detail obj groups layout=layout component_id=component_id %}"
+            )
+            context = {"groups": groups, "layout": pack, "component_id": component_id}
+            docs = [lxml_html.fromstring("&lt;main&gt;" + tpl.render(Context(context)) + "&lt;/main&gt;") for _ in range(2)]
+        first, second = [doc.cssselect("section") for doc in docs]
+        assert len(first) == len(second) == count
+        for doc in docs:
+            assert not doc.cssselect("script, img, [aria-labelledby], [data-bs-parent]")
+            for index in range(count):
+                assert f"Title {index} &lt;script&gt;bad&lt;/script&gt;" in doc.text_content()
+                assert f"Value {index} &lt;img&gt;" in doc.text_content()
+                assert "Label &lt;text&gt;" in doc.text_content()
+        for index, (entry, again) in enumerate(zip(first, second, strict=True)):
+            component = entry.get("data-component")
+&gt;           assert component.endswith("-root")
+E           AssertionError: assert False
+E            +  where False = &lt;built-in method endswith of str object at 0xb3c3f0&gt;('-root')
+E            +    where &lt;built-in method endswith of str object at 0xb3c3f0&gt; = ''.endswith
+
+tests/test1/od/test_layout_packs.py:151: AssertionError</failure></testcase><testcase classname="tests.test1.od.test_layout_packs" name="test_group_only_copy_reuses_enclosing_projection[page-details-2-card-rows]" time="0.007"><failure message="AssertionError: assert False&#10; +  where False = &lt;built-in method endswith of str object at 0xb3c3f0&gt;('-root')&#10; +    where &lt;built-in method endswith of str object at 0xb3c3f0&gt; = ''.endswith">pack = 'card-rows', count = 2, component_id = 'page-details'
+
+    @pytest.mark.parametrize("pack", ["split-card", "card-rows", "table-inline", "list-group-3col", "striped-rows"])
+    @pytest.mark.parametrize("count", [0, 2])
+    @pytest.mark.parametrize("component_id", [None, "page-details"])
+    def test_group_only_copy_reuses_enclosing_projection(pack, count, component_id):
+        """Only group.html is copied; the actual shipped fallback supplies the projection."""
+        templates = deepcopy(settings.TEMPLATES)
+        templates[0]["APP_DIRS"] = False
+        group_path = f"crud_views_object_detail/layouts/{pack}/group.html"
+        templates[0]["OPTIONS"]["loaders"] = [
+            (
+                "django.template.loaders.locmem.Loader",
+                {
+                    group_path: """{% load crud_views_object_detail %}
+    &lt;section data-panel="{{ presentation.panel_id }}" data-control="{{ presentation.control_id }}"
+             data-component="{{ component.id }}" data-selected="{{ presentation.selected|yesno:'true,false' }}"&gt;
+        &lt;header&gt;{{ group.title }}&lt;/header&gt;
+        {% for prop in group.properties %}{% render_property prop layout=layout %}{% endfor %}
+    &lt;/section&gt;""",
+                },
+            ),
+            "django.template.loaders.app_directories.Loader",
+        ]
+        groups = [
+            ResolvedGroup(
+                title=f"Title {index} &lt;script&gt;bad&lt;/script&gt;",
+                properties=[ResolvedProperty(path="name", label="Label &lt;text&gt;", value=f"Value {index} &lt;img&gt;")],
+            )
+            for index in range(count)
+        ]
+        with override_settings(TEMPLATES=templates):
+            fallback = get_template("crud_views_object_detail/object_detail.html")
+            assert fallback.origin.name.endswith("src/crud_views_object_detail/templates/crud_views_object_detail/object_detail.html")
+            tpl = Template(
+                "{% load crud_views_object_detail %}"
+                "{% render_object_detail obj groups layout=layout component_id=component_id %}"
+            )
+            context = {"groups": groups, "layout": pack, "component_id": component_id}
+            docs = [lxml_html.fromstring("&lt;main&gt;" + tpl.render(Context(context)) + "&lt;/main&gt;") for _ in range(2)]
+        first, second = [doc.cssselect("section") for doc in docs]
+        assert len(first) == len(second) == count
+        for doc in docs:
+            assert not doc.cssselect("script, img, [aria-labelledby], [data-bs-parent]")
+            for index in range(count):
+                assert f"Title {index} &lt;script&gt;bad&lt;/script&gt;" in doc.text_content()
+                assert f"Value {index} &lt;img&gt;" in doc.text_content()
+                assert "Label &lt;text&gt;" in doc.text_content()
+        for index, (entry, again) in enumerate(zip(first, second, strict=True)):
+            component = entry.get("data-component")
+&gt;           assert component.endswith("-root")
+E           AssertionError: assert False
+E            +  where False = &lt;built-in method endswith of str object at 0xb3c3f0&gt;('-root')
+E            +    where &lt;built-in method endswith of str object at 0xb3c3f0&gt; = ''.endswith
+
+tests/test1/od/test_layout_packs.py:151: AssertionError</failure></testcase><testcase classname="tests.test1.od.test_layout_packs" name="test_group_only_copy_reuses_enclosing_projection[page-details-2-table-inline]" time="0.007"><failure message="AssertionError: assert False&#10; +  where False = &lt;built-in method endswith of str object at 0xb3c3f0&gt;('-root')&#10; +    where &lt;built-in method endswith of str object at 0xb3c3f0&gt; = ''.endswith">pack = 'table-inline', count = 2, component_id = 'page-details'
+
+    @pytest.mark.parametrize("pack", ["split-card", "card-rows", "table-inline", "list-group-3col", "striped-rows"])
+    @pytest.mark.parametrize("count", [0, 2])
+    @pytest.mark.parametrize("component_id", [None, "page-details"])
+    def test_group_only_copy_reuses_enclosing_projection(pack, count, component_id):
+        """Only group.html is copied; the actual shipped fallback supplies the projection."""
+        templates = deepcopy(settings.TEMPLATES)
+        templates[0]["APP_DIRS"] = False
+        group_path = f"crud_views_object_detail/layouts/{pack}/group.html"
+        templates[0]["OPTIONS"]["loaders"] = [
+            (
+                "django.template.loaders.locmem.Loader",
+                {
+                    group_path: """{% load crud_views_object_detail %}
+    &lt;section data-panel="{{ presentation.panel_id }}" data-control="{{ presentation.control_id }}"
+             data-component="{{ component.id }}" data-selected="{{ presentation.selected|yesno:'true,false' }}"&gt;
+        &lt;header&gt;{{ group.title }}&lt;/header&gt;
+        {% for prop in group.properties %}{% render_property prop layout=layout %}{% endfor %}
+    &lt;/section&gt;""",
+                },
+            ),
+            "django.template.loaders.app_directories.Loader",
+        ]
+        groups = [
+            ResolvedGroup(
+                title=f"Title {index} &lt;script&gt;bad&lt;/script&gt;",
+                properties=[ResolvedProperty(path="name", label="Label &lt;text&gt;", value=f"Value {index} &lt;img&gt;")],
+            )
+            for index in range(count)
+        ]
+        with override_settings(TEMPLATES=templates):
+            fallback = get_template("crud_views_object_detail/object_detail.html")
+            assert fallback.origin.name.endswith("src/crud_views_object_detail/templates/crud_views_object_detail/object_detail.html")
+            tpl = Template(
+                "{% load crud_views_object_detail %}"
+                "{% render_object_detail obj groups layout=layout component_id=component_id %}"
+            )
+            context = {"groups": groups, "layout": pack, "component_id": component_id}
+            docs = [lxml_html.fromstring("&lt;main&gt;" + tpl.render(Context(context)) + "&lt;/main&gt;") for _ in range(2)]
+        first, second = [doc.cssselect("section") for doc in docs]
+        assert len(first) == len(second) == count
+        for doc in docs:
+            assert not doc.cssselect("script, img, [aria-labelledby], [data-bs-parent]")
+            for index in range(count):
+                assert f"Title {index} &lt;script&gt;bad&lt;/script&gt;" in doc.text_content()
+                assert f"Value {index} &lt;img&gt;" in doc.text_content()
+                assert "Label &lt;text&gt;" in doc.text_content()
+        for index, (entry, again) in enumerate(zip(first, second, strict=True)):
+            component = entry.get("data-component")
+&gt;           assert component.endswith("-root")
+E           AssertionError: assert False
+E            +  where False = &lt;built-in method endswith of str object at 0xb3c3f0&gt;('-root')
+E            +    where &lt;built-in method endswith of str object at 0xb3c3f0&gt; = ''.endswith
+
+tests/test1/od/test_layout_packs.py:151: AssertionError</failure></testcase><testcase classname="tests.test1.od.test_layout_packs" name="test_group_only_copy_reuses_enclosing_projection[page-details-2-list-group-3col]" time="0.008"><failure message="AssertionError: assert False&#10; +  where False = &lt;built-in method endswith of str object at 0xb3c3f0&gt;('-root')&#10; +    where &lt;built-in method endswith of str object at 0xb3c3f0&gt; = ''.endswith">pack = 'list-group-3col', count = 2, component_id = 'page-details'
+
+    @pytest.mark.parametrize("pack", ["split-card", "card-rows", "table-inline", "list-group-3col", "striped-rows"])
+    @pytest.mark.parametrize("count", [0, 2])
+    @pytest.mark.parametrize("component_id", [None, "page-details"])
+    def test_group_only_copy_reuses_enclosing_projection(pack, count, component_id):
+        """Only group.html is copied; the actual shipped fallback supplies the projection."""
+        templates = deepcopy(settings.TEMPLATES)
+        templates[0]["APP_DIRS"] = False
+        group_path = f"crud_views_object_detail/layouts/{pack}/group.html"
+        templates[0]["OPTIONS"]["loaders"] = [
+            (
+                "django.template.loaders.locmem.Loader",
+                {
+                    group_path: """{% load crud_views_object_detail %}
+    &lt;section data-panel="{{ presentation.panel_id }}" data-control="{{ presentation.control_id }}"
+             data-component="{{ component.id }}" data-selected="{{ presentation.selected|yesno:'true,false' }}"&gt;
+        &lt;header&gt;{{ group.title }}&lt;/header&gt;
+        {% for prop in group.properties %}{% render_property prop layout=layout %}{% endfor %}
+    &lt;/section&gt;""",
+                },
+            ),
+            "django.template.loaders.app_directories.Loader",
+        ]
+        groups = [
+            ResolvedGroup(
+                title=f"Title {index} &lt;script&gt;bad&lt;/script&gt;",
+                properties=[ResolvedProperty(path="name", label="Label &lt;text&gt;", value=f"Value {index} &lt;img&gt;")],
+            )
+            for index in range(count)
+        ]
+        with override_settings(TEMPLATES=templates):
+            fallback = get_template("crud_views_object_detail/object_detail.html")
+            assert fallback.origin.name.endswith("src/crud_views_object_detail/templates/crud_views_object_detail/object_detail.html")
+            tpl = Template(
+                "{% load crud_views_object_detail %}"
+                "{% render_object_detail obj groups layout=layout component_id=component_id %}"
+            )
+            context = {"groups": groups, "layout": pack, "component_id": component_id}
+            docs = [lxml_html.fromstring("&lt;main&gt;" + tpl.render(Context(context)) + "&lt;/main&gt;") for _ in range(2)]
+        first, second = [doc.cssselect("section") for doc in docs]
+        assert len(first) == len(second) == count
+        for doc in docs:
+            assert not doc.cssselect("script, img, [aria-labelledby], [data-bs-parent]")
+            for index in range(count):
+                assert f"Title {index} &lt;script&gt;bad&lt;/script&gt;" in doc.text_content()
+                assert f"Value {index} &lt;img&gt;" in doc.text_content()
+                assert "Label &lt;text&gt;" in doc.text_content()
+        for index, (entry, again) in enumerate(zip(first, second, strict=True)):
+            component = entry.get("data-component")
+&gt;           assert component.endswith("-root")
+E           AssertionError: assert False
+E            +  where False = &lt;built-in method endswith of str object at 0xb3c3f0&gt;('-root')
+E            +    where &lt;built-in method endswith of str object at 0xb3c3f0&gt; = ''.endswith
+
+tests/test1/od/test_layout_packs.py:151: AssertionError</failure></testcase><testcase classname="tests.test1.od.test_layout_packs" name="test_group_only_copy_reuses_enclosing_projection[page-details-2-striped-rows]" time="0.007"><failure message="AssertionError: assert False&#10; +  where False = &lt;built-in method endswith of str object at 0xb3c3f0&gt;('-root')&#10; +    where &lt;built-in method endswith of str object at 0xb3c3f0&gt; = ''.endswith">pack = 'striped-rows', count = 2, component_id = 'page-details'
+
+    @pytest.mark.parametrize("pack", ["split-card", "card-rows", "table-inline", "list-group-3col", "striped-rows"])
+    @pytest.mark.parametrize("count", [0, 2])
+    @pytest.mark.parametrize("component_id", [None, "page-details"])
+    def test_group_only_copy_reuses_enclosing_projection(pack, count, component_id):
+        """Only group.html is copied; the actual shipped fallback supplies the projection."""
+        templates = deepcopy(settings.TEMPLATES)
+        templates[0]["APP_DIRS"] = False
+        group_path = f"crud_views_object_detail/layouts/{pack}/group.html"
+        templates[0]["OPTIONS"]["loaders"] = [
+            (
+                "django.template.loaders.locmem.Loader",
+                {
+                    group_path: """{% load crud_views_object_detail %}
+    &lt;section data-panel="{{ presentation.panel_id }}" data-control="{{ presentation.control_id }}"
+             data-component="{{ component.id }}" data-selected="{{ presentation.selected|yesno:'true,false' }}"&gt;
+        &lt;header&gt;{{ group.title }}&lt;/header&gt;
+        {% for prop in group.properties %}{% render_property prop layout=layout %}{% endfor %}
+    &lt;/section&gt;""",
+                },
+            ),
+            "django.template.loaders.app_directories.Loader",
+        ]
+        groups = [
+            ResolvedGroup(
+                title=f"Title {index} &lt;script&gt;bad&lt;/script&gt;",
+                properties=[ResolvedProperty(path="name", label="Label &lt;text&gt;", value=f"Value {index} &lt;img&gt;")],
+            )
+            for index in range(count)
+        ]
+        with override_settings(TEMPLATES=templates):
+            fallback = get_template("crud_views_object_detail/object_detail.html")
+            assert fallback.origin.name.endswith("src/crud_views_object_detail/templates/crud_views_object_detail/object_detail.html")
+            tpl = Template(
+                "{% load crud_views_object_detail %}"
+                "{% render_object_detail obj groups layout=layout component_id=component_id %}"
+            )
+            context = {"groups": groups, "layout": pack, "component_id": component_id}
+            docs = [lxml_html.fromstring("&lt;main&gt;" + tpl.render(Context(context)) + "&lt;/main&gt;") for _ in range(2)]
+        first, second = [doc.cssselect("section") for doc in docs]
+        assert len(first) == len(second) == count
+        for doc in docs:
+            assert not doc.cssselect("script, img, [aria-labelledby], [data-bs-parent]")
+            for index in range(count):
+                assert f"Title {index} &lt;script&gt;bad&lt;/script&gt;" in doc.text_content()
+                assert f"Value {index} &lt;img&gt;" in doc.text_content()
+                assert "Label &lt;text&gt;" in doc.text_content()
+        for index, (entry, again) in enumerate(zip(first, second, strict=True)):
+            component = entry.get("data-component")
+&gt;           assert component.endswith("-root")
+E           AssertionError: assert False
+E            +  where False = &lt;built-in method endswith of str object at 0xb3c3f0&gt;('-root')
+E            +    where &lt;built-in method endswith of str object at 0xb3c3f0&gt; = ''.endswith
+
+tests/test1/od/test_layout_packs.py:151: AssertionError</failure></testcase></testsuite></testsuites>

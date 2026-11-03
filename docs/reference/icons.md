@@ -160,7 +160,9 @@ CRUD_VIEWS_ICONS = {"update": "ui:edit", "create": "ui:plus"}
   one kind of host writes e.g. `"menu:icon-host": "link-icon {name_class}"`; `None` switches the icon off there. The
   mode markers (`btn-with-icon`, `btn-icon-only`) belong in the `location:variant:mode` keys
   ([Buttons](buttons.md#the-class-table)).
-- **Everywhere else** (`{% cv_icon %}`: alerts, pagination, formset controls, table sort, object detail, ...) the
+- **On headings and title buttons**, use the [heading projection](#heading-icons) to place host classes on the
+  heading or its title-bearing button, or render one child icon for element libraries.
+- **Standalone sites** (`{% cv_icon %}`: alerts, pagination, formset controls, table sort, ...) render the
   icon is a standalone element. `standalone` is a format string with `{name_class}`; it gives the classes of that
   element.
 
@@ -180,7 +182,6 @@ icon-bearing modes (`"icon"` and `"both"`). It uses host placement only when bot
 two classes on the button ([JavaScript](javascript.md#the-filter-toggle-contract)). A mixed pair, or
 `context:icon-host` switched off, renders the two icons as standalone elements instead. In `"label"` mode it renders
 no host classes, no icon elements and no icon-swap attributes ([The filter toggle](context_buttons.md#the-filter-toggle)).
-Headings and modal titles are not hosts yet (#259).
 
 For your own templates, `{% cv_icon_class value location %}` returns the class a host icon adds at `location`
 (`""` for any other icon), and supports `as`:
@@ -192,7 +193,67 @@ For your own templates, `{% cv_icon_class value location %}` returns the class a
 
 Host placement needs the `font` renderer; a custom renderer returns markup for inside the element.
 
-### Custom renderer
+## Heading icons
+
+`{% cv_heading_icon value location="page" as title_icon %}` resolves one icon into two fields:
+`host_class` is the escaped-by-the-consumer class contribution for a host library, and `inline_html` is the
+already escaped renderer output for an element library. Only one is populated. Locations are `page`, `modal`
+and `group`; `page` is the default. Mixed libraries work per icon. Empty or disabled icon values yield neither
+field, preserving the visible title. A suppressed host icon never falls back to a standalone element.
+
+Styling uses shared defaults and optional location overrides. The builtin registry contains these values;
+an absent override inherits the shared styling, while an explicit empty string stops that fallback:
+
+| Key | Builtin value |
+|---|---|
+| `heading:icon-host` | `"{name_class}"` |
+| `heading:icon-inline` | `"me-2"` |
+| `heading-page:icon-host` | Absent (inherits shared styling) |
+| `heading-page:icon-inline` | `""` |
+| `heading-modal:icon-host` | Absent (inherits shared styling) |
+| `heading-modal:icon-inline` | `""` |
+| `heading-group:icon-host` | Absent (inherits shared styling) |
+| `heading-group:icon-inline` | Absent (inherits shared styling) |
+
+Resolve by configuration layer first: **project location → project shared → theme location → theme shared →
+builtin location → builtin shared**. An explicit `None` or `""` stops fallback. For `icon-host` it suppresses the
+host icon; for `icon-inline` it removes only added styling, so the element icon still renders. Disable the icon
+itself in `CRUD_VIEWS_ICONS` with `None` or `""` when neither placement should appear.
+
+### Plain group title recipe
+
+`title_classes` is the application's ordinary class string. `icon_class` independently escapes and appends the
+host contribution after it, adding no whitespace for an empty host:
+
+```django
+{% load crud_views %}
+{% cv_heading_icon group.icon location="group" as title_icon %}
+{% cv_heading level=5 class=title_classes icon_class=title_icon.host_class %}{{ title_icon.inline_html }}{{ group.title }}{% endcv_heading %}
+```
+
+The stock split-card and striped-rows icons now live on or inside their title heading, with no sibling icon.
+Split-card's old literal `text-default fs-5 me-2` icon styling is replaced by the group slot above; use a location
+override to restore that styling if your theme needs it. Existing title/container classes and property output
+remain; layouts without an icon site retain their structure.
+
+### Title-button recipe
+
+When a button holds the title (for example a tab or accordion trigger), put the projection on that button,
+not its outer heading. Keep the widget's IDs, ARIA relationships and behavior attributes around this title
+fragment. This minimal fragment demonstrates class composition only; it is not a complete interactive widget:
+
+```django
+{% load crud_views %}
+{% cv_heading_icon group.icon location="group" as title_icon %}
+<button type="button" class="{{ title_classes }}{% if title_icon.host_class %} {{ title_icon.host_class }}{% endif %}">{{ title_icon.inline_html }}{{ group.title }}</button>
+```
+
+Unlike `cv_heading`'s `icon_class` argument, a button attribute appends the autoescaped `host_class` explicitly,
+with exactly one preceding space only when nonempty. Do not add `|safe` or render `cv_icon` again. Keep the
+visible title for either placement and for empty icons. See the [page and modal recipes](templates.md#page-title-recipe)
+for the immediate migration of old standalone heading-icon copies.
+
+## Custom renderer
 
 A renderer is a callable with this contract and returns a `SafeString`:
 

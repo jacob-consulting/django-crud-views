@@ -1,0 +1,7 @@
+Command: .venv/bin/mkdocs build --strict && .venv/bin/ruff check src tests examples && .venv/bin/ruff format --check src tests examples && git diff --check
+Exit: 0
+INFO    -  Cleaning site directory
+INFO    -  Building documentation to directory: /home/alex/projects/alex/django-crud-views/site
+INFO    -  Documentation built in 1.21 seconds
+All checks passed!
+482 files already formatted

@@ -183,16 +183,15 @@ here and reported by E106, E108, E210 or E211.
 Cards do not use the maps. For one inline card button:
 
 1. `CardAction.label_mode`, if it is not `None`;
-2. `CardAction(no_label=True)` renders `"icon"`;
-3. the card view's own instance `cv_card_actions_label_mode`, if it is not `None`; without an own instance value,
+2. the card view's own instance `cv_card_actions_label_mode`, if it is not `None`; without an own instance value,
    the class-level resolver uses the class attribute if it is not `None`;
-4. `default_label_mode("card")`: the `"card"` entry of `CRUD_VIEWS_LABEL_MODE_DEFAULTS`, package default `"both"`.
+3. `default_label_mode("card")`: the `"card"` entry of `CRUD_VIEWS_LABEL_MODE_DEFAULTS`, package default `"both"`.
 
-An own instance `None` opts directly into step 4, bypassing an inherited class value. This includes an explicit
+An own instance `None` opts directly into step 3, bypassing an inherited class value. This includes an explicit
 `None` passed to `as_view()` or assigned to `self` during a request. The floor is read lazily, only when needed.
 
 The public classmethod `CardListView.cv_get_card_actions_label_mode()` resolves class-level defaults (class
-attribute, otherwise step 4) and stays callable on the class. Calling it through an instance still reads class
+attribute, otherwise step 3) and stays callable on the class. Calling it through an instance still reads class
 configuration. Subclass resolver overrides remain fallback hooks when there is no own instance value; an explicit
 instance choice, including `None`, takes precedence over them. To read the effective mode of one action, use its
 stamped `cv_label_mode` from `cv_get_card_action_data()` or the rendered button context. See
@@ -275,7 +274,7 @@ Menu items show the target view's icon (fixed width, `cv-icon-fw`) and a visible
 (`cv_action_short_label`), or `CardAction.label` on cards — in every [label mode](#label-mode). A context menu item
 carries the full label as `title` only when its action is `icon`, so a labelled action has no tooltip inline or
 folded. A context button's own `label_template` / `label_template_code` is also used as its menu item text.
-`CardAction.variant`, `flex`, `label_mode` and the superseded alias `no_label` apply to inline card buttons only.
+`CardAction.variant`, `flex` and `label_mode` apply to inline card buttons only.
 
 On the context toolbar the current page's action is highlighted: inline with `.active`, inside the menu with
 `.active` and `aria-current="page"`.

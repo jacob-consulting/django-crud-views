@@ -1,0 +1,13 @@
+{
+  "command": "PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_button_classes_checks.py::test_optional_heading_keys_are_recognized -q --junitxml=.planning/phases/06.5-remaining-presentation-contracts-and-decided-cleanup/.review-diagnostics/01-02-red.xml",
+  "exitCode": 1,
+  "output": "<?xml version=\"1.0\" encoding=\"utf-8\"?><testsuites name=\"pytest tests\"><testsuite name=\"pytest\" errors=\"0\" failures=\"1\" skipped=\"0\" tests=\"1\" time=\"0.169\" timestamp=\"2026-11-02T10:32:35.771724+00:00\" hostname=\"weaver-dev\"><testcase classname=\"tests.test1.test_button_classes_checks\" name=\"test_optional_heading_keys_are_recognized\" time=\"0.002\"><failure message=\"assert [&lt;Warning: le..._views.W362'&gt;] == []&#10;  &#10;  Left contains 4 more items, first extra item: &lt;Warning: level=30, msg=&quot;Button class 'heading-page:icon-host' is not a known key (typo?).&quot;, hint='See the buttons documentation page for the list of keys.', obj=None, id='crud_views.W362'&gt;&#10;  Use -v to get more diff\">def test_optional_heading_keys_are_recognized():\n        values = {\n            f\"heading-{location}:{slot}\": \"{name_class}\" if slot == \"icon-host\" else \"spacing\"\n            for location in (\"page\", \"modal\", \"group\")\n            for slot in (\"icon-host\", \"icon-inline\")\n        }\n        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=values):\n&gt;           assert check_button_classes() == []\nE           assert [&lt;Warning: le..._views.W362'&gt;] == []\nE             \nE             Left contains 4 more items, first extra item: &lt;Warning: level=30, msg=\"Button class 'heading-page:icon-host' is not a known key (typo?).\", hint='See the buttons documentation page for the list of keys.', obj=None, id='crud_views.W362'&gt;\nE             Use -v to get more diff\n\ntests/test1/test_button_classes_checks.py:37: AssertionError</failure></testcase></testsuite></testsuites>",
+  "targetTest": "test_optional_heading_keys_are_recognized",
+  "targetFile": "tests/test1/test_button_classes_checks.py",
+  "expected": "no warnings for all six optional heading keys",
+  "actual": "four W362 warnings",
+  "reportPath": ".planning/phases/06.5-remaining-presentation-contracts-and-decided-cleanup/.review-diagnostics/01-02-red.xml",
+  "runStartedAt": "2026-11-02T10:32:35.771724+00:00",
+  "reportModifiedAt": "2026-11-02T10:32:35.939578+00:00",
+  "semanticAssessment": "Target executed; supported optional heading overrides incorrectly receive unknown-key warnings."
+}

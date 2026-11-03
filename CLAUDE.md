@@ -21,8 +21,8 @@ task dev
 # Run tests via nox (matrix: Python 3.12/3.13/3.14/3.15 × Django 4.2/5.2/6.0)
 task test
 
-# Run tests directly for quick iteration (from the repo root)
-pytest tests
+# Run the full suite directly using multiple cores (from the repo root)
+pytest tests -n auto
 
 # Run a single test file
 pytest tests/test1/test_crud.py
@@ -87,6 +87,8 @@ All settings live in `crud_views/lib/settings.py` as a Pydantic model (`CrudView
 `crud_views/templatetags/crud_views.py` and `crud_views_formsets.py` provide template tags for rendering view components.
 
 ## Testing
+
+Prefer multicore pytest (`-n auto`, or a bounded `-n N` when resources are shared) for broad test runs. This is the user's preference and matches the existing nox sessions and `pytest-xdist` dependency. Sequential Django-version runs can still use multiple workers within each run. Use serial execution only for a concrete isolation/order/debugging constraint or a tiny selection where worker startup costs more; explain the reason rather than silently running a full suite on one core. Do not interrupt an already-running verification solely to change worker count.
 
 Tests are in `tests/test1/`. The test project (`tests/test1/conftest.py`) configures Django in-memory with `pytest_configure()`. Test models (Author with UUID PK, Publisher with int PK, Book as child of Publisher, Vehicle as polymorphic, Campaign as workflow) are defined in `tests/test1/app/models.py`.
 

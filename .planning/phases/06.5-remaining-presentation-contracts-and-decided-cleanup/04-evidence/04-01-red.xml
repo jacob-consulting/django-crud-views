@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="11" skipped="0" tests="51" time="2.712" timestamp="2026-11-02T11:31:10.752185+00:00" hostname="weaver-dev"><testcase classname="tests.test1.od.test_object_detail_identity" name="test_real_detail_stable_page_modal_identity[False]" time="0.569"><failure message="AssertionError: assert {'cvod-c33-g3...f9-root', ...} == {'cvod-c11-au...s-panel', ...}&#10;  &#10;  Extra items in the left set:&#10;  'cvod-c33-g379224e8918841f4a21c818747c3e1f9-i0-control'&#10;  'cvod-c33-g379224e8918841f4a21c818747c3e1f9-i1-panel'&#10;  'cvod-c33-g379224e8918841f4a21c818747c3e1f9-content'&#10;  'cvod-c33-g379224e8918841f4a21c818747c3e1f9-i0-panel'&#10;  'cvod-c33-g379224e8918841f4a21c818747c3e1f9-root'...&#10;  &#10;  ...Full output truncated, use '-vv' to show">client_user_author_view = &lt;django.test.client.Client object at 0x7a4c5438ed80&gt;
+author_douglas_adams = &lt;Author: Douglas Adams&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7a4c542af5c0&gt;
+native = False
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("native", [False, True])
+    def test_real_detail_stable_page_modal_identity(client_user_author_view, author_douglas_adams, monkeypatch, native):
+        from django.conf import settings
+        from django.urls import reverse
+    
+        from crud_views.lib.view.base import cv_is_modal_request
+        from tests.test1.app.views import AuthorDetailView
+    
+        monkeypatch.setattr(AuthorDetailView, "cv_object_detail_layout", "identity-native" if native else "tabs-vertical")
+        monkeypatch.setattr(AuthorDetailView, "cv_object_detail_id", "author-page", raising=False)
+        groups = [
+            {"title": "Biography", "id": "bio", "properties": ["first_name"]},
+            {"title": "Dates", "id": "dates", "properties": ["first_name"]},
+        ]
+        monkeypatch.setattr(AuthorDetailView, "cv_property_display", groups)
+        templates = deepcopy(settings.TEMPLATES)
+        if native:
+            templates[0]["APP_DIRS"] = False
+            templates[0]["OPTIONS"]["loaders"] = [
+                ("django.template.loaders.locmem.Loader", {
+                    "crud_views_object_detail/layouts/identity-native/group.html":
+                        '{% load crud_views_object_detail %}&lt;section id="{{ presentation.panel_id }}" '
+                        'data-root="{{ component.id }}"&gt;&lt;h2 id="{{ presentation.control_id }}"&gt;{{ group.title }}&lt;/h2&gt;'
+                        '{% for prop in group.properties %}{% render_property prop layout="table-inline" %}{% endfor %}'
+                        '&lt;/section&gt;',
+                }),
+                "django.template.loaders.app_directories.Loader",
+            ]
+    
+        def expected(token):
+            base = f"cvod-c{len(token)}-{token}"
+            ids = {f"{base}-s{len(key)}-{key}-{kind}" for key in ("bio", "dates") for kind in ("control", "panel")}
+            if not native:
+                ids |= {f"{base}-{kind}" for kind in ("root", "tabs", "content")}
+            return ids
+    
+        url = reverse("author-detail", kwargs={"pk": author_douglas_adams.pk})
+        with override_settings(TEMPLATES=templates):
+            # Attribute default must reach the actual content template, with no implicit suffix.
+            response = client_user_author_view.get(url)
+            assert response.status_code == 200
+            doc = html.fromstring(response.content)
+&gt;           assert set(doc.xpath('//@id[starts-with(., "cvod-")]')) == expected("author-page")
+E           AssertionError: assert {'cvod-c33-g3...f9-root', ...} == {'cvod-c11-au...s-panel', ...}
+E             
+E             Extra items in the left set:
+E             'cvod-c33-g379224e8918841f4a21c818747c3e1f9-i0-control'
+E             'cvod-c33-g379224e8918841f4a21c818747c3e1f9-i1-panel'
+E             'cvod-c33-g379224e8918841f4a21c818747c3e1f9-content'
+E             'cvod-c33-g379224e8918841f4a21c818747c3e1f9-i0-panel'
+E             'cvod-c33-g379224e8918841f4a21c818747c3e1f9-root'...
+E             
+E             ...Full output truncated, use '-vv' to show
+
+tests/test1/od/test_object_detail_identity.py:202: AssertionError</failure></testcase><testcase classname="tests.test1.od.test_object_detail_identity" name="test_real_detail_stable_page_modal_identity[True]" time="0.263"><failure message="AssertionError: assert {'cvod-c33-gc...3ea-i1-panel'} == {'cvod-c11-au...-dates-panel'}&#10;  &#10;  Extra items in the left set:&#10;  'cvod-c33-gc643120bef084ab892a1e83ebdb0b3ea-i0-panel'&#10;  'cvod-c33-gc643120bef084ab892a1e83ebdb0b3ea-i1-panel'&#10;  'cvod-c33-gc643120bef084ab892a1e83ebdb0b3ea-i1-control'&#10;  'cvod-c33-gc643120bef084ab892a1e83ebdb0b3ea-i0-control'&#10;  Extra items in the right set:...&#10;  &#10;  ...Full output truncated, use '-vv' to show">client_user_author_view = &lt;django.test.client.Client object at 0x7a4c540baf60&gt;
+author_douglas_adams = &lt;Author: Douglas Adams&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7a4c5438fc20&gt;
+native = True
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("native", [False, True])
+    def test_real_detail_stable_page_modal_identity(client_user_author_view, author_douglas_adams, monkeypatch, native):
+        from django.conf import settings
+        from django.urls import reverse
+    
+        from crud_views.lib.view.base import cv_is_modal_request
+        from tests.test1.app.views import AuthorDetailView
+    
+        monkeypatch.setattr(AuthorDetailView, "cv_object_detail_layout", "identity-native" if native else "tabs-vertical")
+        monkeypatch.setattr(AuthorDetailView, "cv_object_detail_id", "author-page", raising=False)
+        groups = [
+            {"title": "Biography", "id": "bio", "properties": ["first_name"]},
+            {"title": "Dates", "id": "dates", "properties": ["first_name"]},
+        ]
+        monkeypatch.setattr(AuthorDetailView, "cv_property_display", groups)
+        templates = deepcopy(settings.TEMPLATES)
+        if native:
+            templates[0]["APP_DIRS"] = False
+            templates[0]["OPTIONS"]["loaders"] = [
+                ("django.template.loaders.locmem.Loader", {
+                    "crud_views_object_detail/layouts/identity-native/group.html":
+                        '{% load crud_views_object_detail %}&lt;section id="{{ presentation.panel_id }}" '
+                        'data-root="{{ component.id }}"&gt;&lt;h2 id="{{ presentation.control_id }}"&gt;{{ group.title }}&lt;/h2&gt;'
+                        '{% for prop in group.properties %}{% render_property prop layout="table-inline" %}{% endfor %}'
+                        '&lt;/section&gt;',
+                }),
+                "django.template.loaders.app_directories.Loader",
+            ]
+    
+        def expected(token):
+            base = f"cvod-c{len(token)}-{token}"
+            ids = {f"{base}-s{len(key)}-{key}-{kind}" for key in ("bio", "dates") for kind in ("control", "panel")}
+            if not native:
+                ids |= {f"{base}-{kind}" for kind in ("root", "tabs", "content")}
+            return ids
+    
+        url = reverse("author-detail", kwargs={"pk": author_douglas_adams.pk})
+        with override_settings(TEMPLATES=templates):
+            # Attribute default must reach the actual content template, with no implicit suffix.
+            response = client_user_author_view.get(url)
+            assert response.status_code == 200
+            doc = html.fromstring(response.content)
+&gt;           assert set(doc.xpath('//@id[starts-with(., "cvod-")]')) == expected("author-page")
+E           AssertionError: assert {'cvod-c33-gc...3ea-i1-panel'} == {'cvod-c11-au...-dates-panel'}
+E             
+E             Extra items in the left set:
+E             'cvod-c33-gc643120bef084ab892a1e83ebdb0b3ea-i0-panel'
+E             'cvod-c33-gc643120bef084ab892a1e83ebdb0b3ea-i1-panel'
+E             'cvod-c33-gc643120bef084ab892a1e83ebdb0b3ea-i1-control'
+E             'cvod-c33-gc643120bef084ab892a1e83ebdb0b3ea-i0-control'
+E             Extra items in the right set:...
+E             
+E             ...Full output truncated, use '-vv' to show
+
+tests/test1/od/test_object_detail_identity.py:202: AssertionError</failure></testcase><testcase classname="tests.test1.od.test_object_detail_identity" name="test_tabs_initial_selection[False-0]" time="0.008" /><testcase classname="tests.test1.od.test_object_detail_identity" name="test_tabs_initial_selection[False-1]" time="0.003" /><testcase classname="tests.test1.od.test_object_detail_identity" name="test_tabs_initial_selection[False-2]" time="0.002" /><testcase classname="tests.test1.od.test_object_detail_identity" name="test_tabs_initial_selection[True-0]" time="0.001" /><testcase classname="tests.test1.od.test_object_detail_identity" name="test_tabs_initial_selection[True-1]" time="0.002" /><testcase classname="tests.test1.od.test_object_detail_identity" name="test_tabs_initial_selection[True-2]" time="0.002" /><testcase classname="tests.test1.od.test_object_detail_identity" name="test_generated_targets_ignore_titles_and_do_not_mutate_groups" time="0.004" /><testcase classname="tests.test1.od.test_object_detail_identity" name="test_standalone_tab_has_label_without_missing_control" time="0.001" /><testcase classname="tests.test1.od.test_object_detail_identity" name="test_interactive_title_button_owns_icon[False-host:edit-tabs-vertical]" time="0.002" /><testcase classname="tests.test1.od.test_object_detail_identity" name="test_interactive_title_button_owns_icon[False-host:edit-accordion]" time="0.004" /><testcase classname="tests.test1.od.test_object_detail_identity" name="test_interactive_title_button_owns_icon[False-fas:pen-tabs-vertical]" time="0.002" /><testcase classname="tests.test1.od.test_object_detail_identity" name="test_interactive_title_button_owns_icon[False-fas:pen-accordion]" time="0.002" /><testcase classname="tests.test1.od.test_object_detail_identity" name="test_interactive_title_button_owns_icon[False--tabs-vertical]" time="0.002" /><testcase classname="tests.test1.od.test_object_detail_identity" name="test_interactive_title_button_owns_icon[False--accordion]" time="0.001" /><testcase classname="tests.test1.od.test_object_detail_identity" name="test_interactive_title_button_owns_icon[False-None-tabs-vertical]" time="0.002" /><testcase classname="tests.test1.od.test_object_detail_identity" name="test_interactive_title_button_owns_icon[False-None-accordion]" time="0.002" /><testcase classname="tests.test1.od.test_object_detail_identity" name="test_interactive_title_button_owns_icon[False-disabled-tabs-vertical]" time="0.002" /><testcase classname="tests.test1.od.test_object_detail_identity" name="test_interactive_title_button_owns_icon[False-disabled-accordion]" time="0.001" /><testcase classname="tests.test1.od.test_object_detail_identity" name="test_interactive_title_button_owns_icon[True-host:edit-tabs-vertical]" time="0.001" /><testcase classname="tests.test1.od.test_object_detail_identity" name="test_interactive_title_button_owns_icon[True-host:edit-accordion]" time="0.002" /><testcase classname="tests.test1.od.test_object_detail_identity" name="test_interactive_title_button_owns_icon[True-fas:pen-tabs-vertical]" time="0.002" /><testcase classname="tests.test1.od.test_object_detail_identity" name="test_interactive_title_button_owns_icon[True-fas:pen-accordion]" time="0.002" /><testcase classname="tests.test1.od.test_object_detail_identity" name="test_interactive_title_button_owns_icon[True--tabs-vertical]" time="0.002" /><testcase classname="tests.test1.od.test_object_detail_identity" name="test_interactive_title_button_owns_icon[True--accordion]" time="0.002" /><testcase classname="tests.test1.od.test_object_detail_identity" name="test_interactive_title_button_owns_icon[True-None-tabs-vertical]" time="0.002" /><testcase classname="tests.test1.od.test_object_detail_identity" name="test_interactive_title_button_owns_icon[True-None-accordion]" time="0.002" /><testcase classname="tests.test1.od.test_object_detail_identity" name="test_interactive_title_button_owns_icon[True-disabled-tabs-vertical]" time="0.002" /><testcase classname="tests.test1.od.test_object_detail_identity" name="test_interactive_title_button_owns_icon[True-disabled-accordion]" time="0.002" /><testcase classname="tests.test1.od.test_object_detail_identity" name="test_invalid_component_token_rejected[]" time="0.001" /><testcase classname="tests.test1.od.test_object_detail_identity" name="test_invalid_component_token_rejected[1bad]" time="0.001" /><testcase classname="tests.test1.od.test_object_detail_identity" name="test_invalid_component_token_rejected[bad token]" time="0.001" /><testcase classname="tests.test1.od.test_object_detail_identity" name="test_invalid_component_token_rejected[with.dot]" time="0.001" /><testcase classname="tests.test1.od.test_object_detail_identity" name="test_invalid_component_token_rejected[\xe9]" time="0.001" /><testcase classname="tests.test1.od.test_object_detail_identity" name="test_invalid_component_token_rejected[x&quot; onclick=&quot;bad]" time="0.001" /><testcase classname="tests.test1.od.test_object_detail_identity" name="test_invalid_component_token_rejected[123]" time="0.001" /><testcase classname="tests.test1.od.test_object_detail_identity" name="test_invalid_component_token_rejected[False]" time="0.001" /><testcase classname="tests.test1.od.test_object_detail_identity" name="test_accordion_targets_belong_to_their_component" time="0.003" /><testcase classname="tests.test1.od.test_object_detail_identity" name="test_standalone_accordion_omits_unrendered_parent" time="0.002" /><testcase classname="tests.test1.od.test_object_detail_identity" name="test_duplicate_supplied_component_in_direct_scope_fails" time="0.001" /><testcase classname="tests.test1.od.test_object_detail_identity" name="test_group_config_rejects_invalid_identity_before_coercion[False]" time="0.001"><failure message="Failed: DID NOT RAISE ImproperlyConfigured">token = False
+
+    @pytest.mark.parametrize("token", [False, 0, "", " ", "with.dot", "1bad", "é", 'x" onclick="bad'])
+    def test_group_config_rejects_invalid_identity_before_coercion(token):
+        from crud_views_object_detail.lib.config import PropertyGroupConfig
+    
+&gt;       with pytest.raises(ImproperlyConfigured, match="group id"):
+E       Failed: DID NOT RAISE ImproperlyConfigured
+
+tests/test1/od/test_object_detail_identity.py:146: Failed</failure></testcase><testcase classname="tests.test1.od.test_object_detail_identity" name="test_group_config_rejects_invalid_identity_before_coercion[0]" time="0.001"><failure message="Failed: DID NOT RAISE ImproperlyConfigured">token = 0
+
+    @pytest.mark.parametrize("token", [False, 0, "", " ", "with.dot", "1bad", "é", 'x" onclick="bad'])
+    def test_group_config_rejects_invalid_identity_before_coercion(token):
+        from crud_views_object_detail.lib.config import PropertyGroupConfig
+    
+&gt;       with pytest.raises(ImproperlyConfigured, match="group id"):
+E       Failed: DID NOT RAISE ImproperlyConfigured
+
+tests/test1/od/test_object_detail_identity.py:146: Failed</failure></testcase><testcase classname="tests.test1.od.test_object_detail_identity" name="test_group_config_rejects_invalid_identity_before_coercion[]" time="0.001"><failure message="Failed: DID NOT RAISE ImproperlyConfigured">token = ''
+
+    @pytest.mark.parametrize("token", [False, 0, "", " ", "with.dot", "1bad", "é", 'x" onclick="bad'])
+    def test_group_config_rejects_invalid_identity_before_coercion(token):
+        from crud_views_object_detail.lib.config import PropertyGroupConfig
+    
+&gt;       with pytest.raises(ImproperlyConfigured, match="group id"):
+E       Failed: DID NOT RAISE ImproperlyConfigured
+
+tests/test1/od/test_object_detail_identity.py:146: Failed</failure></testcase><testcase classname="tests.test1.od.test_object_detail_identity" name="test_group_config_rejects_invalid_identity_before_coercion[ ]" time="0.001"><failure message="Failed: DID NOT RAISE ImproperlyConfigured">token = ' '
+
+    @pytest.mark.parametrize("token", [False, 0, "", " ", "with.dot", "1bad", "é", 'x" onclick="bad'])
+    def test_group_config_rejects_invalid_identity_before_coercion(token):
+        from crud_views_object_detail.lib.config import PropertyGroupConfig
+    
+&gt;       with pytest.raises(ImproperlyConfigured, match="group id"):
+E       Failed: DID NOT RAISE ImproperlyConfigured
+
+tests/test1/od/test_object_detail_identity.py:146: Failed</failure></testcase><testcase classname="tests.test1.od.test_object_detail_identity" name="test_group_config_rejects_invalid_identity_before_coercion[with.dot]" time="0.001"><failure message="Failed: DID NOT RAISE ImproperlyConfigured">token = 'with.dot'
+
+    @pytest.mark.parametrize("token", [False, 0, "", " ", "with.dot", "1bad", "é", 'x" onclick="bad'])
+    def test_group_config_rejects_invalid_identity_before_coercion(token):
+        from crud_views_object_detail.lib.config import PropertyGroupConfig
+    
+&gt;       with pytest.raises(ImproperlyConfigured, match="group id"):
+E       Failed: DID NOT RAISE ImproperlyConfigured
+
+tests/test1/od/test_object_detail_identity.py:146: Failed</failure></testcase><testcase classname="tests.test1.od.test_object_detail_identity" name="test_group_config_rejects_invalid_identity_before_coercion[1bad]" time="0.001"><failure message="Failed: DID NOT RAISE ImproperlyConfigured">token = '1bad'
+
+    @pytest.mark.parametrize("token", [False, 0, "", " ", "with.dot", "1bad", "é", 'x" onclick="bad'])
+    def test_group_config_rejects_invalid_identity_before_coercion(token):
+        from crud_views_object_detail.lib.config import PropertyGroupConfig
+    
+&gt;       with pytest.raises(ImproperlyConfigured, match="group id"):
+E       Failed: DID NOT RAISE ImproperlyConfigured
+
+tests/test1/od/test_object_detail_identity.py:146: Failed</failure></testcase><testcase classname="tests.test1.od.test_object_detail_identity" name="test_group_config_rejects_invalid_identity_before_coercion[\xe9]" time="0.001"><failure message="Failed: DID NOT RAISE ImproperlyConfigured">token = 'é'
+
+    @pytest.mark.parametrize("token", [False, 0, "", " ", "with.dot", "1bad", "é", 'x" onclick="bad'])
+    def test_group_config_rejects_invalid_identity_before_coercion(token):
+        from crud_views_object_detail.lib.config import PropertyGroupConfig
+    
+&gt;       with pytest.raises(ImproperlyConfigured, match="group id"):
+E       Failed: DID NOT RAISE ImproperlyConfigured
+
+tests/test1/od/test_object_detail_identity.py:146: Failed</failure></testcase><testcase classname="tests.test1.od.test_object_detail_identity" name="test_group_config_rejects_invalid_identity_before_coercion[x&quot; onclick=&quot;bad]" time="0.001"><failure message="Failed: DID NOT RAISE ImproperlyConfigured">token = 'x" onclick="bad'
+
+    @pytest.mark.parametrize("token", [False, 0, "", " ", "with.dot", "1bad", "é", 'x" onclick="bad'])
+    def test_group_config_rejects_invalid_identity_before_coercion(token):
+        from crud_views_object_detail.lib.config import PropertyGroupConfig
+    
+&gt;       with pytest.raises(ImproperlyConfigured, match="group id"):
+E       Failed: DID NOT RAISE ImproperlyConfigured
+
+tests/test1/od/test_object_detail_identity.py:146: Failed</failure></testcase><testcase classname="tests.test1.od.test_object_detail_identity" name="test_group_identity_preserved_by_resolution_and_positional_compatibility" time="0.001"><failure message="AssertionError: assert None == 'Biography_2'&#10; +  where None = getattr(ResolvedGroup(title='Title', description=None, icon=None, properties=[]), 'id', None)&#10; +    where ResolvedGroup(title='Title', description=None, icon=None, properties=[]) = &lt;function resolve_group at 0x7a4c570e8680&gt;(None, PropertyGroupConfig(title='Title', description=None, icon=None, properties=[]))">def test_group_identity_preserved_by_resolution_and_positional_compatibility():
+        from crud_views_object_detail.lib.config import PropertyGroupConfig
+        from crud_views_object_detail.lib.resolvers import resolve_group
+    
+        config = PropertyGroupConfig(title="Title", properties=[], id="Biography_2")
+&gt;       assert getattr(resolve_group(None, config), "id", None) == "Biography_2"
+E       AssertionError: assert None == 'Biography_2'
+E        +  where None = getattr(ResolvedGroup(title='Title', description=None, icon=None, properties=[]), 'id', None)
+E        +    where ResolvedGroup(title='Title', description=None, icon=None, properties=[]) = &lt;function resolve_group at 0x7a4c570e8680&gt;(None, PropertyGroupConfig(title='Title', description=None, icon=None, properties=[]))
+
+tests/test1/od/test_object_detail_identity.py:155: AssertionError</failure></testcase><testcase classname="tests.test1.test_no_django_bootstrap5" name="test_no_django_bootstrap5_reference[tests/test1/od/test_object_detail_identity.py]" time="0.001" /></testsuite></testsuites>

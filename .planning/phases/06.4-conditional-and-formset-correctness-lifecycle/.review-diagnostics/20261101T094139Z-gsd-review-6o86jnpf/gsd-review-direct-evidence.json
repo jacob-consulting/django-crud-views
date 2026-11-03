@@ -1,0 +1,37 @@
+{
+  "Pillow_import_spec": {
+    ".venv/bin/python": {
+      "returncode": 0,
+      "stdout": "None",
+      "stderr": ""
+    },
+    ".nox/crispy_floor-3-12-django-4-2/bin/python": {
+      "returncode": 0,
+      "stdout": "None",
+      "stderr": ""
+    },
+    ".nox/tests-3-12-django-5-2/bin/python": {
+      "returncode": 0,
+      "stdout": "None",
+      "stderr": ""
+    },
+    ".nox/crispy_floor-3-12-django-6-0/bin/python": {
+      "returncode": 0,
+      "stdout": "None",
+      "stderr": ""
+    }
+  },
+  "source_sha256": {
+    "src/crud_views/lib/formsets/formsets.py": "b71e383bb1f8d6d13ded8893804655aa2c8c2a7c7cb99439fe0f013a375219bd",
+    "src/crud_views/checks.py": "b3273f8aa6d63ac7f665c970651fdadafd1c48487d15ad1459439fdfaad3587d",
+    "tests/test1/test_conditional_checks.py": "0fb49d753dd4f2b8fa4375ede7b3c7d7274a3a11821dc9889d59d72ffc638a8a",
+    "tests/browser/modal-focus.cjs": "925595ba32db569d02946e932047e96ddb2dd7dd92e6b2cd4287426fa28e48d0",
+    "pyproject.toml": "96234e1ba7ea5f683b9bb6480c22bd89cb4dddac199bedb67879c4f440eb662e",
+    "uv.lock": "800d8edeae14c58b7d4757b948e22d5d7807f9f5d09080db6641dacbb414263f",
+    "noxfile.py": "bbf7d47ca7d27c4f67d7b089dd4720cb2b15db3fdcf21f595fe1729c457664a8",
+    ".nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/fields.py": "b1273eaa32e6a2e985d30fb34965bb3afc57af27af07cef3a69299612f963eac",
+    ".nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/db/models/fields/files.py": "8e24944a312f413b12b720893328451db0762b5d48b05c7e8d9dfdc6485ebb63"
+  },
+  "key_grammar": "^[a-z\\-]+$",
+  "note": "Read-only dependency probes and source checks, not implementation tests. No installation or source edits."
+}

@@ -36,34 +36,72 @@ CRUD_VIEWS_HEADER_LEVEL = 1  # my {% cv_header %} is the page h1
 | not set | `None` | unchanged (`h5`; the object-detail accordion `h2`) |
 
 This covers card titles in a card list, the workflow page's "Workflow Action" and "Workflow History", and the group
-headings of every object-detail layout. They keep their look: Bootstrap sizes headings by tag, so a heading that
-moves to another level also gets the size class of its stock level, e.g. `<h2 class="h5 card-title">`. In a
+headings of every object-detail layout. By default a heading that moves to another level gets the size class of
+its stock level, e.g. `<h2 class="h5 card-title">`. Themes can replace or clear that size class. In a
 [modal](modals.md) the modal title is the view header, so it renders at the setting's level and the content one
 below, the same outline as the full page.
 
-Render the view title with `{% cv_heading "header" %}` and it follows the same setting. Write `level=` as the
-number you set, so your own `class` alone sizes the title:
+Render the view title with `{% cv_heading "header" level=1 %}` and it follows the same setting. Semantic level and
+visual size are independent:
+
+`{% cv_heading ["header"] level=N [size=N] [class=…] [icon_class=…] %}…{% endcv_heading %}`
+
+- `level` is a required literal integer 1–6, used while `CRUD_VIEWS_HEADER_LEVEL` is unset.
+  It must still be supplied when that setting is configured; there is no implicit default.
+- Without `"header"` it renders at `CRUD_VIEWS_HEADER_LEVEL + 1`; with `"header"`, at the configured level.
+- Explicit `size` is a literal integer 1–6 and always resolves `heading:size-N`. Without it, the tag uses
+  `heading:size-{level}` only when the semantic level differs from `level`, preserving the original default markup.
+- The six class-table keys are `heading:size-1`, `heading:size-2`, `heading:size-3`, `heading:size-4`,
+  `heading:size-5` and `heading:size-6`, defaulting to `h1` through `h6`. Project
+  `CRUD_VIEWS_BUTTON_CLASSES` overrides theme registration, which overrides builtins. `None` or `""` removes only
+  that size contribution; caller utility classes and semantic level remain intact.
+- `class` and `icon_class` each take a literal or variable. The size, caller and icon contributions are
+  independently escaped and joined in that order, with no separator for an empty contribution. Django's usual
+  explicit safe-value behavior still applies; never mark untrusted classes or title text safe.
+- The body retains the template context and overridable blocks. A theme's own headings can use the same tag.
+
+### Page title recipe
+
+Use a non-heading wrapper around this title and any context actions. Resolve the icon once, place host classes
+on the heading with `icon_class`, and render only the projection's `inline_html` inside it:
 
 ```django
 {% load crud_views %}
-<div class="d-flex justify-content-between align-items-center mb-2">
-    {% cv_heading "header" level=1 class="h3 mb-0" %}
-        {% cv_header_icon %} {% cv_header %}
-    {% endcv_heading %}
-    {% cv_context_actions object %}
-</div>
+{% cv_heading_icon view.cv_get_header_icon location="page" as title_icon %}
+{% cv_heading "header" level=1 size=3 class="mb-0" icon_class=title_icon.host_class %}
+    {{ title_icon.inline_html }}
+    {% block cv_header %}{% cv_header %}{% endblock cv_header %}
+{% endcv_heading %}
 ```
 
-`{% cv_heading ["header"] level=N [class=…] %}…{% endcv_heading %}`:
+The visible-title `cv_header` body block remains supported. Override it with ordinary escaped template content.
+Keep any `{% cv_context_actions object %}` alongside the heading in the surrounding flex container.
 
-- `level` (an int 1–6) is the level the heading has while `CRUD_VIEWS_HEADER_LEVEL` is unset.
-- Without `"header"` (a content heading) it renders at `CRUD_VIEWS_HEADER_LEVEL + 1`; with `"header"`, at
-  `CRUD_VIEWS_HEADER_LEVEL`.
-- When the rendered level differs from `level`, `h{level}` is prepended to `class`.
-- `class` takes a literal or a variable and is escaped (a value already marked safe is kept as it is). The body renders with the template's context, and blocks
-  inside it can be overridden as usual.
+### Modal title recipe
 
-A theme or project template that writes its own headings can use the same tag.
+The modal uses the same projection at its own location. Preserve the literal space between the inline icon and
+title, including when the icon is empty:
+
+```django
+{% load crud_views %}
+{% cv_heading_icon view.cv_get_header_icon location="modal" as title_icon %}
+{% cv_heading "header" level=5 class="modal-title" icon_class=title_icon.host_class %}{{ title_icon.inline_html }} {{ view.cv_header }}{% endcv_heading %}
+```
+
+### Migrating copied heading templates
+
+Migrate incompatible copies immediately before 1.0: replace literal sizing such as `class="h3 mb-0"` with
+`size=3 class="mb-0"`, remove nested heading wrappers, and replace standalone title icons with the projection
+shown above. Keep application utility classes; the tag does not strip classes by prefix.
+
+`cv_header_icon` still renders an icon, but it is a standalone renderer and cannot put a host-library icon on
+the title-bearing heading. The old separate `cv_header_icon` block placement is replaced by this contract;
+customize the icon through `view.cv_get_header_icon`, the registry and heading class slots. Preserve the
+`cv_header` block for visible-title overrides. Empty/disabled icons must leave the title visible.
+
+See [heading icon placement](icons.md#heading-icons) and the [native class table](theme.md#native-heading-class-table).
+These recipes exercise markup, semantics and escaping; they do not certify screen-reader behavior or the visual
+appearance of a complete non-Bootstrap theme.
 
 ## Resolution order
 

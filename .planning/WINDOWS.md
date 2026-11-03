@@ -1,10 +1,10 @@
 ---
 schema_version: 1
 open_count: 6
-waived_count: 1
+waived_count: 2
 fixed_count: 14
-total_count: 21
-last_updated: 2026-11-01T17:22:40.406Z
+total_count: 22
+last_updated: 2026-11-02T13:51:14.237Z
 ---
 
 # Broken Windows Ledger
@@ -36,6 +36,7 @@ last_updated: 2026-11-01T17:22:40.406Z
 | 19 | 06.4 | deviation | tests/test1/test_conditional_persistence.py |  | Disabled ImageField reference-only fixture uses native initial=None/no-change because validating a nonempty disabled image initial requires Pillow; production image validation remains unchanged. | fixed |  | 2026-11-01T11:10:51.632Z | 2026-11-01T11:11:17.692Z |
 | 20 | 06.4 | deviation | .planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py | 984 | WR-03: aggregate checker accepts missing or contradictory corruption subprocess evidence; independent security T22/T28/T33 remains blocking | open |  | 2026-11-01T17:22:40.240Z |  |
 | 21 | 06.4 | deviation | .planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py | 857 | WR-04: aggregate checker omits conditional screenshot inventory/hash contract; security T22/T33 high and T31 medium remain open | open |  | 2026-11-01T17:22:40.406Z |  |
+| 22 | 06.5 | deviation | tests/test1/test_form_buttons_golden.py | 268 | Required raw Django 6.0 full gate fails the pre-existing crispy-floor wrapper golden; no deselection or waiver applied. | waived | User explicitly authorized existing CRISPY_FLOOR_DESELECT for only test_form_buttons_golden.py::test_filter_form_baseline and multicore rerun on 2026-11-02. Reconciled plan09 command passed 8328 tests with -n 4 in 256.14s, zero skips/failures; companion controls and Django6 CSP executed. Separate 09-evidence/django60-floor-multicore.log/xml; original django60.log remains byte-identical to de61f3c with 1 failed, 8328 passed. Wrapper mismatch not fixed; no other exclusion or install authorized. | 2026-11-02T13:17:44.247Z | 2026-11-02T13:51:14.237Z |
 
 ````json
 [
@@ -301,6 +302,19 @@ last_updated: 2026-11-01T17:22:40.406Z
     "reason": "",
     "recorded_at": "2026-11-01T17:22:40.406Z",
     "resolved_at": null,
+    "milestone": "v1.0"
+  },
+  {
+    "id": 22,
+    "kind": "deviation",
+    "phase": "06.5",
+    "file": "tests/test1/test_form_buttons_golden.py",
+    "line": 268,
+    "description": "Required raw Django 6.0 full gate fails the pre-existing crispy-floor wrapper golden; no deselection or waiver applied.",
+    "status": "waived",
+    "reason": "User explicitly authorized existing CRISPY_FLOOR_DESELECT for only test_form_buttons_golden.py::test_filter_form_baseline and multicore rerun on 2026-11-02. Reconciled plan09 command passed 8328 tests with -n 4 in 256.14s, zero skips/failures; companion controls and Django6 CSP executed. Separate 09-evidence/django60-floor-multicore.log/xml; original django60.log remains byte-identical to de61f3c with 1 failed, 8328 passed. Wrapper mismatch not fixed; no other exclusion or install authorized.",
+    "recorded_at": "2026-11-02T13:17:44.247Z",
+    "resolved_at": "2026-11-02T13:51:14.237Z",
     "milestone": "v1.0"
   }
 ]

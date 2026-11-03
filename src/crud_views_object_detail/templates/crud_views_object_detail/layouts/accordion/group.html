@@ -1,18 +1,21 @@
 {% load i18n crud_views crud_views_object_detail %}
 <div class="accordion-item">
     {% cv_heading level=2 class="accordion-header" %}
-        <button class="accordion-button collapsed" type="button"
-                data-bs-toggle="collapse" data-bs-target="#objectDetailCollapse-{{ group.title|slugify }}"
+        {% cv_heading_icon group.icon location="group" as icon %}
+        <button class="accordion-button collapsed{% if icon.host_class %} {{ icon.host_class }}{% endif %}" type="button"
+                id="{{ presentation.control_id }}"
+                data-bs-toggle="collapse" data-bs-target="#{{ presentation.panel_id }}"
                 aria-expanded="false"
-                aria-controls="objectDetailCollapse-{{ group.title|slugify }}">
-            {% if group.icon %}{% cv_icon group.icon css="me-2" %}{% endif %}
+                aria-controls="{{ presentation.panel_id }}">
+            {{ icon.inline_html }}
             {{ group.title }}
             <span class="badge text-bg-secondary ms-2">{{ group.properties|length }} properties</span>
         </button>
     {% endcv_heading %}
-    <div id="objectDetailCollapse-{{ group.title|slugify }}"
+    <div id="{{ presentation.panel_id }}"
          class="accordion-collapse collapse"
-         data-bs-parent="#objectDetailAccordion">
+         aria-labelledby="{{ presentation.control_id }}"
+         {% if component %}data-bs-parent="#{{ component.id }}"{% endif %}>
         <div class="accordion-body">
             {% if group.description %}<p class="text-body-secondary small mb-3">{{ group.description }}</p>{% endif %}
             <table class="table table-sm table-borderless mb-0">

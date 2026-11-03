@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+
 from django import template
 from django.conf import settings
 from django.template.loader import get_template, render_to_string
@@ -8,9 +10,9 @@ from django.utils.translation import get_language, get_language_info
 from django_tables2.templatetags import django_tables2 as _dt2
 
 from crud_views.lib import assets
-from crud_views.lib.button_classes import get_button_class, get_container_layout, get_icon_host_class
+from crud_views.lib.button_classes import _heading_class, get_button_class, get_container_layout, get_icon_host_class
 from crud_views.lib.exceptions import ViewSetKeyFoundError, ignore_exception
-from crud_views.lib.icons import render_icon
+from crud_views.lib.icons import render_icon, resolve_icon_name_class
 from crud_views.lib.messages import alert_data, message_alerts
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import CrudView
@@ -327,14 +329,37 @@ def cv_header(context):
     return view.cv_header
 
 
+@dataclass(frozen=True)
+class HeadingIconPresentation:
+    """Mutually exclusive heading host classes and an inline icon element."""
+
+    host_class: str
+    inline_html: str
+
+
+@register.simple_tag
+def cv_heading_icon(value, location="page"):
+    """Project one icon onto its title host, or render one child element."""
+    name_class = resolve_icon_name_class(value)
+    if name_class is not None:
+        try:
+            host_class = _heading_class(location, "icon-host").format(name_class=name_class)
+        except Exception:
+            host_class = ""
+        return HeadingIconPresentation(host_class, "")
+    return HeadingIconPresentation("", render_icon(value, css=_heading_class(location, "icon-inline")))
+
+
 class CvHeadingNode(template.Node):
     child_nodelists = ("nodelist",)
 
-    def __init__(self, nodelist, level: int, css, header: bool):
+    def __init__(self, nodelist, level: int, css, header: bool, size: int | None = None, icon_css=None):
         self.nodelist = nodelist
         self.level = level
         self.css = css
         self.header = header
+        self.size = size
+        self.icon_css = icon_css
 
     def render(self, context):
         # read at render time, so a changed setting applies without re-parsing templates
@@ -345,22 +370,28 @@ class CvHeadingNode(template.Node):
             rendered = header_level
         else:
             rendered = header_level + 1
-        classes = [f"h{self.level}"] if rendered != self.level else []
-        css = conditional_escape(self.css.resolve(context)) if self.css is not None else ""
-        if css:
-            classes.append(css)
+        size_css = (
+            get_button_class("heading", f"size-{self.size if self.size is not None else self.level}")
+            if self.size is not None or rendered != self.level
+            else ""
+        )
+        classes = [conditional_escape(size_css)] if size_css else []
+        for expression in (self.css, self.icon_css):
+            css = conditional_escape(expression.resolve(context)) if expression is not None else ""
+            if css:
+                classes.append(css)
         attr = f' class="{" ".join(classes)}"' if classes else ""
         return mark_safe(f"<h{rendered}{attr}>{self.nodelist.render(context)}</h{rendered}>")
 
 
 @register.tag(name="cv_heading")
 def cv_heading(parser, token):
-    """``{% cv_heading ["header"] level=N [class=…] %}…{% endcv_heading %}``: a heading that follows
+    """``{% cv_heading ["header"] level=N [size=N] [class=…] [icon_class=…] %}…{% endcv_heading %}`` follows
     CRUD_VIEWS_HEADER_LEVEL (#251).
 
     ``level`` is the template's own level, used while the setting is unset. Set, a content heading renders one below
     the header, and ``"header"`` renders exactly at the header level. When the rendered level differs from ``level``,
-    Bootstrap's ``h{level}`` size class keeps the look.
+    ``heading:size-N`` keeps the look. Explicit ``size`` applies independently of semantic level.
     """
     bits = token.split_contents()
     name, bits = bits[0], bits[1:]
@@ -370,21 +401,30 @@ def cv_heading(parser, token):
         bits = bits[1:]
     kwargs = template.base.token_kwargs(bits, parser)
     if bits:
-        raise template.TemplateSyntaxError(f"{name} accepts only an optional 'header', level= and class=")
-    unknown = set(kwargs) - {"level", "class"}
+        raise template.TemplateSyntaxError(
+            f"{name} accepts only an optional 'header', level=, size=, class= and icon_class="
+        )
+    unknown = set(kwargs) - {"level", "size", "class", "icon_class"}
     if unknown:
         raise template.TemplateSyntaxError(f"{name} got unknown arguments: {', '.join(sorted(unknown))}")
     if "level" not in kwargs:
         raise template.TemplateSyntaxError(f"{name} requires level=")
     # only a number literal: a Variable without lookups, no filters (a variable or "5" is rejected below)
-    var = kwargs["level"].var
-    is_literal = isinstance(var, template.Variable) and var.lookups is None and not kwargs["level"].filters
-    level = var.literal if is_literal else None
-    if type(level) is not int or not 1 <= level <= 6:
-        raise template.TemplateSyntaxError(f"{name} level= must be an int literal from 1 to 6")
+    numbers = {}
+    for key in ("level", "size"):
+        if key not in kwargs:
+            continue
+        var = kwargs[key].var
+        is_literal = isinstance(var, template.Variable) and var.lookups is None and not kwargs[key].filters
+        number = var.literal if is_literal else None
+        if type(number) is not int or not 1 <= number <= 6:
+            raise template.TemplateSyntaxError(f"{name} {key}= must be an int literal from 1 to 6")
+        numbers[key] = number
     nodelist = parser.parse(("endcv_heading",))
     parser.delete_first_token()
-    return CvHeadingNode(nodelist, level, kwargs.get("class"), header)
+    return CvHeadingNode(
+        nodelist, numbers["level"], kwargs.get("class"), header, numbers.get("size"), kwargs.get("icon_class")
+    )
 
 
 @register.inclusion_tag(f"{crud_views_settings.theme_path}/tags/breadcrumb.html", takes_context=True)

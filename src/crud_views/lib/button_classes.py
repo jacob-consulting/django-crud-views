@@ -13,6 +13,16 @@ from django.dispatch import receiver
 from django.utils.translation import gettext, gettext_noop
 
 DEFAULT_BUTTON_CLASSES: dict[str, str | None] = {
+    "heading:size-1": "h1",
+    "heading:size-2": "h2",
+    "heading:size-3": "h3",
+    "heading:size-4": "h4",
+    "heading:size-5": "h5",
+    "heading:size-6": "h6",
+    "heading:icon-host": "{name_class}",
+    "heading:icon-inline": "me-2",
+    "heading-page:icon-inline": "",
+    "heading-modal:icon-inline": "",
     "context:primary": "btn btn-outline-primary btn-lg",
     "context:secondary": "btn btn-outline-primary btn-lg",
     "context:tertiary": "btn btn-outline-primary btn-lg",
@@ -171,6 +181,20 @@ def get_icon_host_class(location: str, value: str | None) -> str:
         return ""
 
 
+def _heading_class(location: str, slot: str) -> str:
+    """Resolve heading styling by configuration layer first, then location specificity.
+
+    Presence (including None/empty) stops fallback. Read project settings at render time;
+    the merged button cache cannot preserve these layer boundaries.
+    """
+    for layer in (_settings_layer(), _THEME_BUTTON_CLASSES, DEFAULT_BUTTON_CLASSES):
+        for key in (f"heading-{location}:{slot}", f"heading:{slot}"):
+            if key in layer:
+                value = layer[key]
+                return value if isinstance(value, str) else ""
+    return ""
+
+
 CONTAINER_SINGLE_MODES: tuple[str, ...] = ("container", "bare")
 
 
@@ -217,6 +241,9 @@ FORM_KINDS: frozenset[str] = frozenset({"submit", "cancel", "delete", "filter-su
 
 # the elements a form button may render as (Phase 6.1): exactly these strings, never stripped or case-folded
 FORM_TAGS: frozenset[str] = frozenset({"button", "a"})
+HEADING_LOCATION_KEYS: frozenset[str] = frozenset(
+    f"heading-{location}:{slot}" for location in ("page", "modal", "group") for slot in ("icon-host", "icon-inline")
+)
 # the class-table key selecting the element of an eligible cancel; a value of None means "button"
 CANCEL_TAG_KEY = "form:cancel-tag"
 
@@ -299,7 +326,7 @@ def button_class_check_messages() -> list[CheckMessage]:
     from .view.label_mode import LABEL_MODES
 
     for key in (*_THEME_BUTTON_CLASSES, *_settings_layer()):
-        if key in DEFAULT_BUTTON_CLASSES or _is_action_mode_key(key):
+        if key in DEFAULT_BUTTON_CLASSES or key in HEADING_LOCATION_KEYS or _is_action_mode_key(key):
             continue
         if (parts := _action_key_parts(key)) is not None:
             messages.append(

@@ -1,0 +1,30 @@
+.FF                                                                      [100%]
+=================================== FAILURES ===================================
+____ test_registered_polymorphic_base_content_type_policy_residual[helper] _____
+tests/test1/test_guardian_policy.py:903: in test_registered_polymorphic_base_content_type_policy_residual
+    result = viewset.get_objects_for_user(user, "view") if path_kind == "helper" else view.get_queryset()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/crud_views_guardian/lib/viewset.py:114: in get_objects_for_user
+    return get_objects_for_user(
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:672: in get_objects_for_user
+    ctype, queryset = _compute_queryset(ctype, klass)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:561: in _compute_queryset
+    raise MixedContentTypeError("Content type for given perms and klass differs")
+E   guardian.exceptions.MixedContentTypeError: Content type for given perms and klass differs
+_____ test_registered_polymorphic_base_content_type_policy_residual[list] ______
+tests/test1/test_guardian_policy.py:903: in test_registered_polymorphic_base_content_type_policy_residual
+    result = viewset.get_objects_for_user(user, "view") if path_kind == "helper" else view.get_queryset()
+                                                                                      ^^^^^^^^^^^^^^^^^^^
+src/crud_views_guardian/lib/mixins.py:193: in get_queryset
+    return get_objects_for_user(
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:672: in get_objects_for_user
+    ctype, queryset = _compute_queryset(ctype, klass)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:561: in _compute_queryset
+    raise MixedContentTypeError("Content type for given perms and klass differs")
+E   guardian.exceptions.MixedContentTypeError: Content type for given perms and klass differs
+=========================== short test summary info ============================
+FAILED tests/test1/test_guardian_policy.py::test_registered_polymorphic_base_content_type_policy_residual[helper]
+FAILED tests/test1/test_guardian_policy.py::test_registered_polymorphic_base_content_type_policy_residual[list]
+2 failed, 1 passed, 201 deselected in 1.52s

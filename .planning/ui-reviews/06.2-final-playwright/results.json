@@ -1,0 +1,80 @@
+{
+  "browser": "149.0.7827.55",
+  "results": [
+    {
+      "scenario": "core-hidden full",
+      "exists": true,
+      "contracts": 1
+    },
+    {
+      "scenario": "core-hidden modal",
+      "exists": true,
+      "contracts": 1
+    },
+    {
+      "scenario": "core-hidden modal closed after mobile resize",
+      "passed": true
+    },
+    {
+      "scenario": "core-visible full",
+      "exists": true,
+      "contracts": 1
+    },
+    {
+      "scenario": "core-visible modal",
+      "exists": true,
+      "contracts": 1
+    },
+    {
+      "scenario": "core-visible modal closed after mobile resize",
+      "passed": true
+    },
+    {
+      "scenario": "core-stale modal 422 recovery",
+      "exists": true,
+      "contracts": 1
+    },
+    {
+      "scenario": "core-stale modal closed after mobile resize",
+      "passed": true
+    },
+    {
+      "scenario": "guardian-hidden full",
+      "exists": true,
+      "contracts": 1
+    },
+    {
+      "scenario": "guardian-hidden modal",
+      "exists": true,
+      "contracts": 1
+    },
+    {
+      "scenario": "guardian-hidden modal closed after mobile resize",
+      "passed": true
+    },
+    {
+      "scenario": "guardian-visible full",
+      "exists": true,
+      "contracts": 1
+    },
+    {
+      "scenario": "guardian-visible modal",
+      "exists": true,
+      "contracts": 1
+    },
+    {
+      "scenario": "guardian-visible modal closed after mobile resize",
+      "passed": true
+    },
+    {
+      "scenario": "guardian-stale modal 422 recovery",
+      "exists": true,
+      "contracts": 1
+    },
+    {
+      "scenario": "guardian-stale modal closed after mobile resize",
+      "passed": true
+    }
+  ],
+  "pageErrors": []
+}

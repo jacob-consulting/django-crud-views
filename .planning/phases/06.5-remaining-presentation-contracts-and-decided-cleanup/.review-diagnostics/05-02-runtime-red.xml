@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="3" failures="1" errors="0" time="4.440452907">
+    <testsuite name="tests/js/runtime-contract.test.js" timestamp="2026-11-02T11:48:56.299Z" hostname="weaver-dev" tests="3" failures="1" errors="0" skipped="0" time="4.440452907">
+        <testcase classname="tests/js/runtime-contract.test.js" name="test runtime boundary &gt; runs every other ordinary JS file in a checkout with only Node available" time="0.006674998">
+            <failure message="expected false to be true // Object.is equality" type="AssertionError">
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/js/runtime-contract.test.js:69:90
+            </failure>
+        </testcase>
+        <testcase classname="tests/js/runtime-contract.test.js" name="test runtime boundary &gt; fails the required integration lane for a missing selected Python" time="2.195234373">
+        </testcase>
+        <testcase classname="tests/js/runtime-contract.test.js" name="test runtime boundary &gt; fails the required integration lane for a invalid selected Python" time="2.2294231">
+        </testcase>
+    </testsuite>
+</testsuites>

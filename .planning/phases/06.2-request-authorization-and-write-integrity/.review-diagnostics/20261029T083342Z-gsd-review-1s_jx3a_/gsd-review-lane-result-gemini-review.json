@@ -1,0 +1,9 @@
+{
+  "slug": "opencode",
+  "ok": true,
+  "stubbed": false,
+  "model": {
+    "value": "openrouter/google/gemini-4-argon (reasoning=high)",
+    "source": "pinned"
+  }
+}

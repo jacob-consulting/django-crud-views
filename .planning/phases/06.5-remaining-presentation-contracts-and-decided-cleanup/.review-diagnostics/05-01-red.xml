@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="1.609" timestamp="2026-11-02T11:45:52.034082+00:00" hostname="weaver-dev"><testcase classname="tests.test1.od.test_presentation_assets" name="test_presentation_assets_installed_extension_emits_once" time="0.005"><failure message="assert 0 == 1&#10; +  where 0 = &lt;built-in method count of SafeString object at 0x736187d5a1b0&gt;('src=&quot;/static/crud_views_object_detail/js/tabs.js&quot;')&#10; +    where &lt;built-in method count of SafeString object at 0x736187d5a1b0&gt; = '\n    &lt;script type=&quot;application/javascript&quot; src=&quot;/static/crud_views/js/adapters.js&quot;&gt;&lt;/script&gt;\n\n    &lt;script type=&quot;ap...toggle.js&quot;&gt;&lt;/script&gt;\n\n    &lt;script type=&quot;application/javascript&quot; src=&quot;/static/crud_views/js/tooltip.js&quot;&gt;&lt;/script&gt;\n\n'.count">def test_presentation_assets_installed_extension_emits_once():
+        html = render_scripts()
+&gt;       assert html.count(f'src="/static/{SCRIPT}"') == 1
+E       assert 0 == 1
+E        +  where 0 = &lt;built-in method count of SafeString object at 0x736187d5a1b0&gt;('src="/static/crud_views_object_detail/js/tabs.js"')
+E        +    where &lt;built-in method count of SafeString object at 0x736187d5a1b0&gt; = '\n    &lt;script type="application/javascript" src="/static/crud_views/js/adapters.js"&gt;&lt;/script&gt;\n\n    &lt;script type="ap...toggle.js"&gt;&lt;/script&gt;\n\n    &lt;script type="application/javascript" src="/static/crud_views/js/tooltip.js"&gt;&lt;/script&gt;\n\n'.count
+
+tests/test1/od/test_presentation_assets.py:21: AssertionError</failure></testcase></testsuite></testsuites>

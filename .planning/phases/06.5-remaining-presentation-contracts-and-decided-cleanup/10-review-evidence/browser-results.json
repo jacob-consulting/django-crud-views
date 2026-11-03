@@ -1,0 +1,4468 @@
+{
+  "captured": "2026-11-02T14:32:24.927Z",
+  "command": [
+    "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
+    "/home/alex/projects/alex/django-crud-views/tests/browser/presentation.cjs",
+    "--case",
+    "all",
+    "--output",
+    ".planning/phases/06.5-remaining-presentation-contracts-and-decided-cleanup/10-review-evidence/browser-results.json"
+  ],
+  "scope": "all",
+  "revision": "86d79b2c82b01e0da9d1d256202444eef8cbbd46",
+  "sourceHashes": {
+    "src/crud_views/lib/button_classes.py": "6514f2bc304e8fbc2c8b4fd4924a1292a7fa80232b4619b59e12757c13aed68a",
+    "src/crud_views/lib/icons.py": "bc3a3d3ef8913f1d6ac194d025ae539c1503afd8c8f929c272eef1ecc9307b25",
+    "src/crud_views/static/crud_views/js/adapters.js": "6134473b5f0fb183aae7f4b035ad38a56a902b8f58c8b5c688c9638d1cef2580",
+    "src/crud_views/static/crud_views/js/formset.js": "7f60fcc6afe66b50eced9e87d66a59f9a83555623a3e52d24a298ae8a8e71fbb",
+    "src/crud_views/static/crud_views/js/list.filter.js": "86600d74a66dcd586a6eb749369b858a19e365b21f9ff17646b79457805810a3",
+    "src/crud_views/static/crud_views/js/modal.js": "c8acbd5973f7e73f48537758394920c4923a67c6ccc10b6490742ca0e63c651e",
+    "src/crud_views/static/crud_views/js/toggle.js": "057805c08eea725b67ac6ce9bf40d656d9bf506231a88cc79da35e762525fc21",
+    "src/crud_views/static/crud_views/js/tooltip.js": "69212dee6b30d655c08dbfeb2e423ede582c8b9ecf10358d64bf5d9196e62802",
+    "src/crud_views/static/crud_views/js/viewset.js": "f3a411cc7b779a88e40a86e8189eafcc8e9c965e47503f94cad218b7b9fd5367",
+    "src/crud_views/templates/crud_views/modal/content.html": "0c537498854336c1ff8179f5d8f87df0e567beab72ba8a57c50c7d3651b02257",
+    "src/crud_views/templatetags/crud_views.py": "9cea71ca25b45e359bc0cec7a341d339a96e91a92a819788db5bbf8550cf5519",
+    "src/crud_views_object_detail/lib/mixins.py": "95e77fe33257b64c5de02c67b0ca56b48b66ca3e68f6b54c4794f0af5df73b2d",
+    "src/crud_views_object_detail/lib/presentation.py": "49f0b9d4776f45e38584ffedeeaf183f17a7a035588841b357a5a9db7418fdf5",
+    "src/crud_views_object_detail/lib/resolvers.py": "1422b5fc932803e73480a4b54fb357488cf5ff1a567285ef44acd29d16a4affe",
+    "src/crud_views_object_detail/static/crud_views_object_detail/js/tabs.js": "558d449db4fcd8ff795a618488fde2ae1a605a7c1331af6412a5f129cbce411d",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/layouts/accordion/group.html": "6c945a058134fa1b2e275be023d2c731e74a530a259ec6baaa47f4165febfb1c",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/layouts/accordion/object_detail.html": "b2460fdf3f82f8e4d4cc9f37223d94918db56ff7a15ccbced53ed26066675678",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/layouts/accordion/property.html": "75d254e113714a603cabbbcfd1ce58f9d1e6b4449b07ef61629667aba82b519c",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/layouts/card-rows/group.html": "806ae82dc77ecba37d97e5955752f42ac7fa1ef3f06ad43df8cdcd31ad6cf319",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/layouts/card-rows/property.html": "84b317f4880635acdd6a1c7ce203d151205af418a45d23e5c9430cc64a92975c",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/layouts/list-group-3col/group.html": "bc2408679442cd64f625829d8d4fcd2b7dc9e081c808c24151e40c29581194d4",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/layouts/list-group-3col/property.html": "2c903610dad42f1272498f0d108dc44d0944e7ecdf918bbc6fdcd96b87dbcabb",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/layouts/split-card/group.html": "195e3771be6c05218ca93291ff147c6270fd8102e3c227b13bec02d1b4aa187d",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/layouts/split-card/property.html": "dc0f8e4474641d12a723af12f0c94a73fbea494d34b0241289661662fecb4ca5",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/layouts/striped-rows/group.html": "00c94ab4ba8b89a431314bfc97211e4c56d1f10f1c5148058a535b21d27bc0b5",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/layouts/striped-rows/property.html": "d023cbf1405dd69cba4912b5b3734e72216ea2ded965737e45369c4ff157cf2d",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/layouts/table-inline/group.html": "ad0cf317bc6050db9d325146317cc173c8523a7d8bfb28bcc8e10121da77830a",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/layouts/table-inline/property.html": "543c4182ce45846a5f6c028ade59e010d294e68f4d13538591fe7a224d231aef",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/layouts/tabs-vertical/group.html": "6a827d4527f54ad918c5e4e6d42017f24804ac5fc5c7f9ab32a983652338fce3",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/layouts/tabs-vertical/object_detail.html": "a7338450062e383a8004ee4902ef9106a5dbb5423f4926898289fbf680a2af5f",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/layouts/tabs-vertical/property.html": "df8df2a39e3673b88fec94a25950f37dd7fce017b58662f9b537de7cdd109f96",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/object_detail.html": "07d71590bbe4d200ed744310b736bc36c3964d6c19c89852e5719edf05cc400f",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/types/default/badge.html": "0df24991b8ce73e9f03b710ea10448bfdf411a21d02aa41d53ea25f243739498",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/types/default/boolean.html": "9b331ba3d8111b5e7ce48bd07b4d5925c32dbe3708f7982f1875fa0aad812bd4",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/types/default/char.html": "0da504ef408c139fc2530f1479a56263f957ace8bc389408ae795785f27d5c45",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/types/default/date.html": "23f2a2c3122a78cfbba599baef2be47239864eddec16ea528b6d9bded7ad6fac",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/types/default/datetime.html": "df8f74b183a4f6188f5ea14c04084ca83a586b9890eea1061c7bef6d7c254038",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/types/default/default.html": "0da504ef408c139fc2530f1479a56263f957ace8bc389408ae795785f27d5c45",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/types/default/float.html": "0da504ef408c139fc2530f1479a56263f957ace8bc389408ae795785f27d5c45",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/types/default/foreignkey.html": "0da504ef408c139fc2530f1479a56263f957ace8bc389408ae795785f27d5c45",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/types/default/integer.html": "0da504ef408c139fc2530f1479a56263f957ace8bc389408ae795785f27d5c45",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/types/default/manytomany.html": "3f526f47a0586869c3c6bd6a312b9bd8d065f2d533186640d963bda013535025",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/types/default/text.html": "9313503da10283bc97e73168875e9615bfd5bb7c09632140f4ba60561656eefe",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/types/default/timestamp.html": "8a248a2b8920bf6037a00fa7576e7616c089129da25b7b753e189541e97951c6",
+    "src/crud_views_object_detail/templates/crud_views_object_detail/view_detail.content.html": "2ee488ed149f5d1ff0b7cdd372ffeb497deeceebb17d60547317a22ebacbeed0",
+    "src/crud_views_object_detail/templatetags/crud_views_object_detail.py": "96b6e72890f957fdeb658d36fffe71a0fafa4c813cd12eb63c5bc1933b6c1ffc",
+    "tests/browser/presentation-config.test.cjs": "e3019e8d7fd42cdf5dabf67771b385ec11f340d9f612353b9facbe35e1921e88",
+    "tests/browser/presentation.cjs": "64060cce631781c9cb9edafb4f0ec6593c971d843a3ce4ffd8c6c207ece55842",
+    "tests/browser/presentation_server.py": "3f6351974e122790fbf8135d8d61c62806d2640b11c78f2e1e3f98542b021b93",
+    "tests/browser/templates/presentation/native.html": "d98429624e14dc85d9c2ed32c8648482d46c4fd8e7821e86627bb62b55417ab0",
+    "tests/browser/templates/presentation/stock.html": "031406931245254f72f8f928143e8c05d81cfafcbf354873a40d96bcc1aa775c",
+    "tests/test1/app/templates/app/base.html": "f2f325b993a2e91be2f7cd235f0f1bcab8f3cfa9f51c5709c4e4f15ff85f1c08"
+  },
+  "runtime": {
+    "node": "v24.21.0",
+    "nodePath": "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
+    "pythonPath": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python",
+    "playwrightPath": "/home/alex/.npm/_npx/e41f203b7505f1fb/node_modules/playwright",
+    "chromiumPath": "/home/alex/.cache/ms-playwright/chromium-1228/chrome-linux64/chrome",
+    "playwright": "1.64.1",
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "django": "5.2.18",
+    "packagePath": "/home/alex/projects/alex/django-crud-views/src/crud_views/__init__.py",
+    "chromium": "149.0.7827.55"
+  },
+  "cases": [
+    {
+      "id": "tabs-1-plain-page",
+      "assertions": [
+        {
+          "id": "first-paint",
+          "passed": true,
+          "observed": {
+            "focus": "",
+            "tabs": [
+              {
+                "id": "cvod-c11-author-page-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c11-author-page-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s7-january-panel",
+                  "label": "cvod-c11-author-page-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "keyboard-1-ArrowDown",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c11-author-page-s7-january-control",
+            "tabs": [
+              {
+                "id": "cvod-c11-author-page-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c11-author-page-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s7-january-panel",
+                  "label": "cvod-c11-author-page-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "keyboard-2-ArrowDown",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c11-author-page-s7-january-control",
+            "tabs": [
+              {
+                "id": "cvod-c11-author-page-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c11-author-page-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s7-january-panel",
+                  "label": "cvod-c11-author-page-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "keyboard-3-ArrowUp",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c11-author-page-s7-january-control",
+            "tabs": [
+              {
+                "id": "cvod-c11-author-page-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c11-author-page-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s7-january-panel",
+                  "label": "cvod-c11-author-page-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "keyboard-4-Home",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c11-author-page-s7-january-control",
+            "tabs": [
+              {
+                "id": "cvod-c11-author-page-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c11-author-page-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s7-january-panel",
+                  "label": "cvod-c11-author-page-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "keyboard-5-End",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c11-author-page-s7-january-control",
+            "tabs": [
+              {
+                "id": "cvod-c11-author-page-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c11-author-page-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s7-january-panel",
+                  "label": "cvod-c11-author-page-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "click-0",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c11-author-page-s7-january-control",
+            "tabs": [
+              {
+                "id": "cvod-c11-author-page-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c11-author-page-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s7-january-panel",
+                  "label": "cvod-c11-author-page-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "tab-panel-0",
+          "passed": true,
+          "observed": "cvod-c11-author-page-s7-january-panel"
+        },
+        {
+          "id": "tab-exit-0",
+          "passed": true,
+          "observed": "#after-tabs"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "tabs-1-plain-modal",
+      "assertions": [
+        {
+          "id": "first-paint",
+          "passed": true,
+          "observed": {
+            "focus": "cv-modal",
+            "tabs": [
+              {
+                "id": "cvod-c12-author-modal-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c12-author-modal-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s7-january-panel",
+                  "label": "cvod-c12-author-modal-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "keyboard-1-ArrowDown",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c12-author-modal-s7-january-control",
+            "tabs": [
+              {
+                "id": "cvod-c12-author-modal-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c12-author-modal-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s7-january-panel",
+                  "label": "cvod-c12-author-modal-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "keyboard-2-ArrowDown",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c12-author-modal-s7-january-control",
+            "tabs": [
+              {
+                "id": "cvod-c12-author-modal-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c12-author-modal-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s7-january-panel",
+                  "label": "cvod-c12-author-modal-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "keyboard-3-ArrowUp",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c12-author-modal-s7-january-control",
+            "tabs": [
+              {
+                "id": "cvod-c12-author-modal-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c12-author-modal-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s7-january-panel",
+                  "label": "cvod-c12-author-modal-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "keyboard-4-Home",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c12-author-modal-s7-january-control",
+            "tabs": [
+              {
+                "id": "cvod-c12-author-modal-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c12-author-modal-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s7-january-panel",
+                  "label": "cvod-c12-author-modal-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "keyboard-5-End",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c12-author-modal-s7-january-control",
+            "tabs": [
+              {
+                "id": "cvod-c12-author-modal-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c12-author-modal-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s7-january-panel",
+                  "label": "cvod-c12-author-modal-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "click-0",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c12-author-modal-s7-january-control",
+            "tabs": [
+              {
+                "id": "cvod-c12-author-modal-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c12-author-modal-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s7-january-panel",
+                  "label": "cvod-c12-author-modal-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "tab-panel-0",
+          "passed": true,
+          "observed": "cvod-c12-author-modal-s7-january-panel"
+        },
+        {
+          "id": "tab-exit-0",
+          "passed": true,
+          "observed": "#modal-after-tabs"
+        },
+        {
+          "id": "replacement-real-http",
+          "passed": true
+        },
+        {
+          "id": "replacement-first-paint",
+          "passed": true,
+          "observed": {
+            "focus": "",
+            "tabs": [
+              {
+                "id": "cvod-c12-author-modal-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c12-author-modal-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s7-january-panel",
+                  "label": "cvod-c12-author-modal-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "completed-close-restores-opener",
+          "passed": true
+        },
+        {
+          "id": "reopened-keyboard",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c12-author-modal-s7-january-control",
+            "tabs": [
+              {
+                "id": "cvod-c12-author-modal-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c12-author-modal-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s7-january-panel",
+                  "label": "cvod-c12-author-modal-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "tabs-1-link-page",
+      "assertions": [
+        {
+          "id": "first-paint",
+          "passed": true,
+          "observed": {
+            "focus": "",
+            "tabs": [
+              {
+                "id": "cvod-c11-author-page-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c11-author-page-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s7-january-panel",
+                  "label": "cvod-c11-author-page-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "keyboard-1-ArrowDown",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c11-author-page-s7-january-control",
+            "tabs": [
+              {
+                "id": "cvod-c11-author-page-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c11-author-page-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s7-january-panel",
+                  "label": "cvod-c11-author-page-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "keyboard-2-ArrowDown",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c11-author-page-s7-january-control",
+            "tabs": [
+              {
+                "id": "cvod-c11-author-page-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c11-author-page-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s7-january-panel",
+                  "label": "cvod-c11-author-page-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "keyboard-3-ArrowUp",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c11-author-page-s7-january-control",
+            "tabs": [
+              {
+                "id": "cvod-c11-author-page-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c11-author-page-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s7-january-panel",
+                  "label": "cvod-c11-author-page-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "keyboard-4-Home",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c11-author-page-s7-january-control",
+            "tabs": [
+              {
+                "id": "cvod-c11-author-page-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c11-author-page-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s7-january-panel",
+                  "label": "cvod-c11-author-page-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "keyboard-5-End",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c11-author-page-s7-january-control",
+            "tabs": [
+              {
+                "id": "cvod-c11-author-page-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c11-author-page-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s7-january-panel",
+                  "label": "cvod-c11-author-page-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "click-0",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c11-author-page-s7-january-control",
+            "tabs": [
+              {
+                "id": "cvod-c11-author-page-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c11-author-page-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s7-january-panel",
+                  "label": "cvod-c11-author-page-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "tab-panel-0",
+          "passed": true,
+          "observed": "cvod-c11-author-page-s7-january-panel"
+        },
+        {
+          "id": "tab-exit-0",
+          "passed": true,
+          "observed": "#cvod-c11-author-page-s7-january-panel a[href=\"/panel-link/\"]"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "tabs-1-link-modal",
+      "assertions": [
+        {
+          "id": "first-paint",
+          "passed": true,
+          "observed": {
+            "focus": "cv-modal",
+            "tabs": [
+              {
+                "id": "cvod-c12-author-modal-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c12-author-modal-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s7-january-panel",
+                  "label": "cvod-c12-author-modal-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "keyboard-1-ArrowDown",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c12-author-modal-s7-january-control",
+            "tabs": [
+              {
+                "id": "cvod-c12-author-modal-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c12-author-modal-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s7-january-panel",
+                  "label": "cvod-c12-author-modal-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "keyboard-2-ArrowDown",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c12-author-modal-s7-january-control",
+            "tabs": [
+              {
+                "id": "cvod-c12-author-modal-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c12-author-modal-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s7-january-panel",
+                  "label": "cvod-c12-author-modal-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "keyboard-3-ArrowUp",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c12-author-modal-s7-january-control",
+            "tabs": [
+              {
+                "id": "cvod-c12-author-modal-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c12-author-modal-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s7-january-panel",
+                  "label": "cvod-c12-author-modal-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "keyboard-4-Home",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c12-author-modal-s7-january-control",
+            "tabs": [
+              {
+                "id": "cvod-c12-author-modal-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c12-author-modal-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s7-january-panel",
+                  "label": "cvod-c12-author-modal-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "keyboard-5-End",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c12-author-modal-s7-january-control",
+            "tabs": [
+              {
+                "id": "cvod-c12-author-modal-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c12-author-modal-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s7-january-panel",
+                  "label": "cvod-c12-author-modal-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "click-0",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c12-author-modal-s7-january-control",
+            "tabs": [
+              {
+                "id": "cvod-c12-author-modal-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c12-author-modal-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s7-january-panel",
+                  "label": "cvod-c12-author-modal-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "tab-panel-0",
+          "passed": true,
+          "observed": "cvod-c12-author-modal-s7-january-panel"
+        },
+        {
+          "id": "tab-exit-0",
+          "passed": true,
+          "observed": "#cvod-c12-author-modal-s7-january-panel a[href=\"/panel-link/\"]"
+        },
+        {
+          "id": "replacement-real-http",
+          "passed": true
+        },
+        {
+          "id": "replacement-first-paint",
+          "passed": true,
+          "observed": {
+            "focus": "",
+            "tabs": [
+              {
+                "id": "cvod-c12-author-modal-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c12-author-modal-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s7-january-panel",
+                  "label": "cvod-c12-author-modal-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "completed-close-restores-opener",
+          "passed": true
+        },
+        {
+          "id": "reopened-keyboard",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c12-author-modal-s7-january-control",
+            "tabs": [
+              {
+                "id": "cvod-c12-author-modal-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c12-author-modal-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s7-january-panel",
+                  "label": "cvod-c12-author-modal-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "tabs-2-plain-page",
+      "assertions": [
+        {
+          "id": "first-paint",
+          "passed": true,
+          "observed": {
+            "focus": "",
+            "tabs": [
+              {
+                "id": "cvod-c11-author-page-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c11-author-page-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s7-january-panel",
+                  "label": "cvod-c11-author-page-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              },
+              {
+                "id": "cvod-c11-author-page-s8-february-control",
+                "name": "February",
+                "selected": "false",
+                "tabIndex": -1,
+                "active": false,
+                "target": "#cvod-c11-author-page-s8-february-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s8-february-panel",
+                  "label": "cvod-c11-author-page-s8-february-control",
+                  "visible": false,
+                  "active": false,
+                  "shown": false,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "keyboard-1-ArrowDown",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c11-author-page-s8-february-control",
+            "tabs": [
+              {
+                "id": "cvod-c11-author-page-s7-january-control",
+                "name": "January",
+                "selected": "false",
+                "tabIndex": -1,
+                "active": false,
+                "target": "#cvod-c11-author-page-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s7-january-panel",
+                  "label": "cvod-c11-author-page-s7-january-control",
+                  "visible": false,
+                  "active": false,
+                  "shown": false,
+                  "tabIndex": 0
+                }
+              },
+              {
+                "id": "cvod-c11-author-page-s8-february-control",
+                "name": "February",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c11-author-page-s8-february-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s8-february-panel",
+                  "label": "cvod-c11-author-page-s8-february-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "keyboard-2-ArrowDown",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c11-author-page-s7-january-control",
+            "tabs": [
+              {
+                "id": "cvod-c11-author-page-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c11-author-page-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s7-january-panel",
+                  "label": "cvod-c11-author-page-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              },
+              {
+                "id": "cvod-c11-author-page-s8-february-control",
+                "name": "February",
+                "selected": "false",
+                "tabIndex": -1,
+                "active": false,
+                "target": "#cvod-c11-author-page-s8-february-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s8-february-panel",
+                  "label": "cvod-c11-author-page-s8-february-control",
+                  "visible": false,
+                  "active": false,
+                  "shown": false,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "keyboard-3-ArrowUp",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c11-author-page-s8-february-control",
+            "tabs": [
+              {
+                "id": "cvod-c11-author-page-s7-january-control",
+                "name": "January",
+                "selected": "false",
+                "tabIndex": -1,
+                "active": false,
+                "target": "#cvod-c11-author-page-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s7-january-panel",
+                  "label": "cvod-c11-author-page-s7-january-control",
+                  "visible": false,
+                  "active": false,
+                  "shown": false,
+                  "tabIndex": 0
+                }
+              },
+              {
+                "id": "cvod-c11-author-page-s8-february-control",
+                "name": "February",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c11-author-page-s8-february-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s8-february-panel",
+                  "label": "cvod-c11-author-page-s8-february-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "keyboard-4-Home",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c11-author-page-s7-january-control",
+            "tabs": [
+              {
+                "id": "cvod-c11-author-page-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c11-author-page-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s7-january-panel",
+                  "label": "cvod-c11-author-page-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              },
+              {
+                "id": "cvod-c11-author-page-s8-february-control",
+                "name": "February",
+                "selected": "false",
+                "tabIndex": -1,
+                "active": false,
+                "target": "#cvod-c11-author-page-s8-february-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s8-february-panel",
+                  "label": "cvod-c11-author-page-s8-february-control",
+                  "visible": false,
+                  "active": false,
+                  "shown": false,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "keyboard-5-End",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c11-author-page-s8-february-control",
+            "tabs": [
+              {
+                "id": "cvod-c11-author-page-s7-january-control",
+                "name": "January",
+                "selected": "false",
+                "tabIndex": -1,
+                "active": false,
+                "target": "#cvod-c11-author-page-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s7-january-panel",
+                  "label": "cvod-c11-author-page-s7-january-control",
+                  "visible": false,
+                  "active": false,
+                  "shown": false,
+                  "tabIndex": 0
+                }
+              },
+              {
+                "id": "cvod-c11-author-page-s8-february-control",
+                "name": "February",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c11-author-page-s8-february-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s8-february-panel",
+                  "label": "cvod-c11-author-page-s8-february-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "click-0",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c11-author-page-s7-january-control",
+            "tabs": [
+              {
+                "id": "cvod-c11-author-page-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c11-author-page-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s7-january-panel",
+                  "label": "cvod-c11-author-page-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              },
+              {
+                "id": "cvod-c11-author-page-s8-february-control",
+                "name": "February",
+                "selected": "false",
+                "tabIndex": -1,
+                "active": false,
+                "target": "#cvod-c11-author-page-s8-february-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s8-february-panel",
+                  "label": "cvod-c11-author-page-s8-february-control",
+                  "visible": false,
+                  "active": false,
+                  "shown": false,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "tab-panel-0",
+          "passed": true,
+          "observed": "cvod-c11-author-page-s7-january-panel"
+        },
+        {
+          "id": "tab-exit-0",
+          "passed": true,
+          "observed": "#after-tabs"
+        },
+        {
+          "id": "click-1",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c11-author-page-s8-february-control",
+            "tabs": [
+              {
+                "id": "cvod-c11-author-page-s7-january-control",
+                "name": "January",
+                "selected": "false",
+                "tabIndex": -1,
+                "active": false,
+                "target": "#cvod-c11-author-page-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s7-january-panel",
+                  "label": "cvod-c11-author-page-s7-january-control",
+                  "visible": false,
+                  "active": false,
+                  "shown": false,
+                  "tabIndex": 0
+                }
+              },
+              {
+                "id": "cvod-c11-author-page-s8-february-control",
+                "name": "February",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c11-author-page-s8-february-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s8-february-panel",
+                  "label": "cvod-c11-author-page-s8-february-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "tab-panel-1",
+          "passed": true,
+          "observed": "cvod-c11-author-page-s8-february-panel"
+        },
+        {
+          "id": "tab-exit-1",
+          "passed": true,
+          "observed": "#after-tabs"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "tabs-2-plain-modal",
+      "assertions": [
+        {
+          "id": "first-paint",
+          "passed": true,
+          "observed": {
+            "focus": "cv-modal",
+            "tabs": [
+              {
+                "id": "cvod-c12-author-modal-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c12-author-modal-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s7-january-panel",
+                  "label": "cvod-c12-author-modal-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              },
+              {
+                "id": "cvod-c12-author-modal-s8-february-control",
+                "name": "February",
+                "selected": "false",
+                "tabIndex": -1,
+                "active": false,
+                "target": "#cvod-c12-author-modal-s8-february-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s8-february-panel",
+                  "label": "cvod-c12-author-modal-s8-february-control",
+                  "visible": false,
+                  "active": false,
+                  "shown": false,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "keyboard-1-ArrowDown",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c12-author-modal-s8-february-control",
+            "tabs": [
+              {
+                "id": "cvod-c12-author-modal-s7-january-control",
+                "name": "January",
+                "selected": "false",
+                "tabIndex": -1,
+                "active": false,
+                "target": "#cvod-c12-author-modal-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s7-january-panel",
+                  "label": "cvod-c12-author-modal-s7-january-control",
+                  "visible": false,
+                  "active": false,
+                  "shown": false,
+                  "tabIndex": 0
+                }
+              },
+              {
+                "id": "cvod-c12-author-modal-s8-february-control",
+                "name": "February",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c12-author-modal-s8-february-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s8-february-panel",
+                  "label": "cvod-c12-author-modal-s8-february-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "keyboard-2-ArrowDown",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c12-author-modal-s7-january-control",
+            "tabs": [
+              {
+                "id": "cvod-c12-author-modal-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c12-author-modal-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s7-january-panel",
+                  "label": "cvod-c12-author-modal-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              },
+              {
+                "id": "cvod-c12-author-modal-s8-february-control",
+                "name": "February",
+                "selected": "false",
+                "tabIndex": -1,
+                "active": false,
+                "target": "#cvod-c12-author-modal-s8-february-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s8-february-panel",
+                  "label": "cvod-c12-author-modal-s8-february-control",
+                  "visible": false,
+                  "active": false,
+                  "shown": false,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "keyboard-3-ArrowUp",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c12-author-modal-s8-february-control",
+            "tabs": [
+              {
+                "id": "cvod-c12-author-modal-s7-january-control",
+                "name": "January",
+                "selected": "false",
+                "tabIndex": -1,
+                "active": false,
+                "target": "#cvod-c12-author-modal-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s7-january-panel",
+                  "label": "cvod-c12-author-modal-s7-january-control",
+                  "visible": false,
+                  "active": false,
+                  "shown": false,
+                  "tabIndex": 0
+                }
+              },
+              {
+                "id": "cvod-c12-author-modal-s8-february-control",
+                "name": "February",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c12-author-modal-s8-february-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s8-february-panel",
+                  "label": "cvod-c12-author-modal-s8-february-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "keyboard-4-Home",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c12-author-modal-s7-january-control",
+            "tabs": [
+              {
+                "id": "cvod-c12-author-modal-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c12-author-modal-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s7-january-panel",
+                  "label": "cvod-c12-author-modal-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              },
+              {
+                "id": "cvod-c12-author-modal-s8-february-control",
+                "name": "February",
+                "selected": "false",
+                "tabIndex": -1,
+                "active": false,
+                "target": "#cvod-c12-author-modal-s8-february-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s8-february-panel",
+                  "label": "cvod-c12-author-modal-s8-february-control",
+                  "visible": false,
+                  "active": false,
+                  "shown": false,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "keyboard-5-End",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c12-author-modal-s8-february-control",
+            "tabs": [
+              {
+                "id": "cvod-c12-author-modal-s7-january-control",
+                "name": "January",
+                "selected": "false",
+                "tabIndex": -1,
+                "active": false,
+                "target": "#cvod-c12-author-modal-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s7-january-panel",
+                  "label": "cvod-c12-author-modal-s7-january-control",
+                  "visible": false,
+                  "active": false,
+                  "shown": false,
+                  "tabIndex": 0
+                }
+              },
+              {
+                "id": "cvod-c12-author-modal-s8-february-control",
+                "name": "February",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c12-author-modal-s8-february-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s8-february-panel",
+                  "label": "cvod-c12-author-modal-s8-february-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "click-0",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c12-author-modal-s7-january-control",
+            "tabs": [
+              {
+                "id": "cvod-c12-author-modal-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c12-author-modal-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s7-january-panel",
+                  "label": "cvod-c12-author-modal-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              },
+              {
+                "id": "cvod-c12-author-modal-s8-february-control",
+                "name": "February",
+                "selected": "false",
+                "tabIndex": -1,
+                "active": false,
+                "target": "#cvod-c12-author-modal-s8-february-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s8-february-panel",
+                  "label": "cvod-c12-author-modal-s8-february-control",
+                  "visible": false,
+                  "active": false,
+                  "shown": false,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "tab-panel-0",
+          "passed": true,
+          "observed": "cvod-c12-author-modal-s7-january-panel"
+        },
+        {
+          "id": "tab-exit-0",
+          "passed": true,
+          "observed": "#modal-after-tabs"
+        },
+        {
+          "id": "click-1",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c12-author-modal-s8-february-control",
+            "tabs": [
+              {
+                "id": "cvod-c12-author-modal-s7-january-control",
+                "name": "January",
+                "selected": "false",
+                "tabIndex": -1,
+                "active": false,
+                "target": "#cvod-c12-author-modal-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s7-january-panel",
+                  "label": "cvod-c12-author-modal-s7-january-control",
+                  "visible": false,
+                  "active": false,
+                  "shown": false,
+                  "tabIndex": 0
+                }
+              },
+              {
+                "id": "cvod-c12-author-modal-s8-february-control",
+                "name": "February",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c12-author-modal-s8-february-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s8-february-panel",
+                  "label": "cvod-c12-author-modal-s8-february-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "tab-panel-1",
+          "passed": true,
+          "observed": "cvod-c12-author-modal-s8-february-panel"
+        },
+        {
+          "id": "tab-exit-1",
+          "passed": true,
+          "observed": "#modal-after-tabs"
+        },
+        {
+          "id": "replacement-real-http",
+          "passed": true
+        },
+        {
+          "id": "replacement-first-paint",
+          "passed": true,
+          "observed": {
+            "focus": "",
+            "tabs": [
+              {
+                "id": "cvod-c12-author-modal-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c12-author-modal-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s7-january-panel",
+                  "label": "cvod-c12-author-modal-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              },
+              {
+                "id": "cvod-c12-author-modal-s8-february-control",
+                "name": "February",
+                "selected": "false",
+                "tabIndex": -1,
+                "active": false,
+                "target": "#cvod-c12-author-modal-s8-february-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s8-february-panel",
+                  "label": "cvod-c12-author-modal-s8-february-control",
+                  "visible": false,
+                  "active": false,
+                  "shown": false,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "completed-close-restores-opener",
+          "passed": true
+        },
+        {
+          "id": "reopened-keyboard",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c12-author-modal-s8-february-control",
+            "tabs": [
+              {
+                "id": "cvod-c12-author-modal-s7-january-control",
+                "name": "January",
+                "selected": "false",
+                "tabIndex": -1,
+                "active": false,
+                "target": "#cvod-c12-author-modal-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s7-january-panel",
+                  "label": "cvod-c12-author-modal-s7-january-control",
+                  "visible": false,
+                  "active": false,
+                  "shown": false,
+                  "tabIndex": 0
+                }
+              },
+              {
+                "id": "cvod-c12-author-modal-s8-february-control",
+                "name": "February",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c12-author-modal-s8-february-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s8-february-panel",
+                  "label": "cvod-c12-author-modal-s8-february-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "tabs-2-link-page",
+      "assertions": [
+        {
+          "id": "first-paint",
+          "passed": true,
+          "observed": {
+            "focus": "",
+            "tabs": [
+              {
+                "id": "cvod-c11-author-page-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c11-author-page-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s7-january-panel",
+                  "label": "cvod-c11-author-page-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              },
+              {
+                "id": "cvod-c11-author-page-s8-february-control",
+                "name": "February",
+                "selected": "false",
+                "tabIndex": -1,
+                "active": false,
+                "target": "#cvod-c11-author-page-s8-february-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s8-february-panel",
+                  "label": "cvod-c11-author-page-s8-february-control",
+                  "visible": false,
+                  "active": false,
+                  "shown": false,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "keyboard-1-ArrowDown",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c11-author-page-s8-february-control",
+            "tabs": [
+              {
+                "id": "cvod-c11-author-page-s7-january-control",
+                "name": "January",
+                "selected": "false",
+                "tabIndex": -1,
+                "active": false,
+                "target": "#cvod-c11-author-page-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s7-january-panel",
+                  "label": "cvod-c11-author-page-s7-january-control",
+                  "visible": false,
+                  "active": false,
+                  "shown": false,
+                  "tabIndex": 0
+                }
+              },
+              {
+                "id": "cvod-c11-author-page-s8-february-control",
+                "name": "February",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c11-author-page-s8-february-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s8-february-panel",
+                  "label": "cvod-c11-author-page-s8-february-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "keyboard-2-ArrowDown",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c11-author-page-s7-january-control",
+            "tabs": [
+              {
+                "id": "cvod-c11-author-page-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c11-author-page-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s7-january-panel",
+                  "label": "cvod-c11-author-page-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              },
+              {
+                "id": "cvod-c11-author-page-s8-february-control",
+                "name": "February",
+                "selected": "false",
+                "tabIndex": -1,
+                "active": false,
+                "target": "#cvod-c11-author-page-s8-february-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s8-february-panel",
+                  "label": "cvod-c11-author-page-s8-february-control",
+                  "visible": false,
+                  "active": false,
+                  "shown": false,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "keyboard-3-ArrowUp",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c11-author-page-s8-february-control",
+            "tabs": [
+              {
+                "id": "cvod-c11-author-page-s7-january-control",
+                "name": "January",
+                "selected": "false",
+                "tabIndex": -1,
+                "active": false,
+                "target": "#cvod-c11-author-page-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s7-january-panel",
+                  "label": "cvod-c11-author-page-s7-january-control",
+                  "visible": false,
+                  "active": false,
+                  "shown": false,
+                  "tabIndex": 0
+                }
+              },
+              {
+                "id": "cvod-c11-author-page-s8-february-control",
+                "name": "February",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c11-author-page-s8-february-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s8-february-panel",
+                  "label": "cvod-c11-author-page-s8-february-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "keyboard-4-Home",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c11-author-page-s7-january-control",
+            "tabs": [
+              {
+                "id": "cvod-c11-author-page-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c11-author-page-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s7-january-panel",
+                  "label": "cvod-c11-author-page-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              },
+              {
+                "id": "cvod-c11-author-page-s8-february-control",
+                "name": "February",
+                "selected": "false",
+                "tabIndex": -1,
+                "active": false,
+                "target": "#cvod-c11-author-page-s8-february-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s8-february-panel",
+                  "label": "cvod-c11-author-page-s8-february-control",
+                  "visible": false,
+                  "active": false,
+                  "shown": false,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "keyboard-5-End",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c11-author-page-s8-february-control",
+            "tabs": [
+              {
+                "id": "cvod-c11-author-page-s7-january-control",
+                "name": "January",
+                "selected": "false",
+                "tabIndex": -1,
+                "active": false,
+                "target": "#cvod-c11-author-page-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s7-january-panel",
+                  "label": "cvod-c11-author-page-s7-january-control",
+                  "visible": false,
+                  "active": false,
+                  "shown": false,
+                  "tabIndex": 0
+                }
+              },
+              {
+                "id": "cvod-c11-author-page-s8-february-control",
+                "name": "February",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c11-author-page-s8-february-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s8-february-panel",
+                  "label": "cvod-c11-author-page-s8-february-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "click-0",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c11-author-page-s7-january-control",
+            "tabs": [
+              {
+                "id": "cvod-c11-author-page-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c11-author-page-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s7-january-panel",
+                  "label": "cvod-c11-author-page-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              },
+              {
+                "id": "cvod-c11-author-page-s8-february-control",
+                "name": "February",
+                "selected": "false",
+                "tabIndex": -1,
+                "active": false,
+                "target": "#cvod-c11-author-page-s8-february-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s8-february-panel",
+                  "label": "cvod-c11-author-page-s8-february-control",
+                  "visible": false,
+                  "active": false,
+                  "shown": false,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "tab-panel-0",
+          "passed": true,
+          "observed": "cvod-c11-author-page-s7-january-panel"
+        },
+        {
+          "id": "tab-exit-0",
+          "passed": true,
+          "observed": "#cvod-c11-author-page-s7-january-panel a[href=\"/panel-link/\"]"
+        },
+        {
+          "id": "click-1",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c11-author-page-s8-february-control",
+            "tabs": [
+              {
+                "id": "cvod-c11-author-page-s7-january-control",
+                "name": "January",
+                "selected": "false",
+                "tabIndex": -1,
+                "active": false,
+                "target": "#cvod-c11-author-page-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s7-january-panel",
+                  "label": "cvod-c11-author-page-s7-january-control",
+                  "visible": false,
+                  "active": false,
+                  "shown": false,
+                  "tabIndex": 0
+                }
+              },
+              {
+                "id": "cvod-c11-author-page-s8-february-control",
+                "name": "February",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c11-author-page-s8-february-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s8-february-panel",
+                  "label": "cvod-c11-author-page-s8-february-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "tab-panel-1",
+          "passed": true,
+          "observed": "cvod-c11-author-page-s8-february-panel"
+        },
+        {
+          "id": "tab-exit-1",
+          "passed": true,
+          "observed": "#cvod-c11-author-page-s8-february-panel a[href=\"/panel-link/\"]"
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "tabs-2-link-modal",
+      "assertions": [
+        {
+          "id": "first-paint",
+          "passed": true,
+          "observed": {
+            "focus": "cv-modal",
+            "tabs": [
+              {
+                "id": "cvod-c12-author-modal-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c12-author-modal-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s7-january-panel",
+                  "label": "cvod-c12-author-modal-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              },
+              {
+                "id": "cvod-c12-author-modal-s8-february-control",
+                "name": "February",
+                "selected": "false",
+                "tabIndex": -1,
+                "active": false,
+                "target": "#cvod-c12-author-modal-s8-february-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s8-february-panel",
+                  "label": "cvod-c12-author-modal-s8-february-control",
+                  "visible": false,
+                  "active": false,
+                  "shown": false,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "keyboard-1-ArrowDown",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c12-author-modal-s8-february-control",
+            "tabs": [
+              {
+                "id": "cvod-c12-author-modal-s7-january-control",
+                "name": "January",
+                "selected": "false",
+                "tabIndex": -1,
+                "active": false,
+                "target": "#cvod-c12-author-modal-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s7-january-panel",
+                  "label": "cvod-c12-author-modal-s7-january-control",
+                  "visible": false,
+                  "active": false,
+                  "shown": false,
+                  "tabIndex": 0
+                }
+              },
+              {
+                "id": "cvod-c12-author-modal-s8-february-control",
+                "name": "February",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c12-author-modal-s8-february-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s8-february-panel",
+                  "label": "cvod-c12-author-modal-s8-february-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "keyboard-2-ArrowDown",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c12-author-modal-s7-january-control",
+            "tabs": [
+              {
+                "id": "cvod-c12-author-modal-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c12-author-modal-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s7-january-panel",
+                  "label": "cvod-c12-author-modal-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              },
+              {
+                "id": "cvod-c12-author-modal-s8-february-control",
+                "name": "February",
+                "selected": "false",
+                "tabIndex": -1,
+                "active": false,
+                "target": "#cvod-c12-author-modal-s8-february-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s8-february-panel",
+                  "label": "cvod-c12-author-modal-s8-february-control",
+                  "visible": false,
+                  "active": false,
+                  "shown": false,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "keyboard-3-ArrowUp",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c12-author-modal-s8-february-control",
+            "tabs": [
+              {
+                "id": "cvod-c12-author-modal-s7-january-control",
+                "name": "January",
+                "selected": "false",
+                "tabIndex": -1,
+                "active": false,
+                "target": "#cvod-c12-author-modal-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s7-january-panel",
+                  "label": "cvod-c12-author-modal-s7-january-control",
+                  "visible": false,
+                  "active": false,
+                  "shown": false,
+                  "tabIndex": 0
+                }
+              },
+              {
+                "id": "cvod-c12-author-modal-s8-february-control",
+                "name": "February",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c12-author-modal-s8-february-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s8-february-panel",
+                  "label": "cvod-c12-author-modal-s8-february-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "keyboard-4-Home",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c12-author-modal-s7-january-control",
+            "tabs": [
+              {
+                "id": "cvod-c12-author-modal-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c12-author-modal-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s7-january-panel",
+                  "label": "cvod-c12-author-modal-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              },
+              {
+                "id": "cvod-c12-author-modal-s8-february-control",
+                "name": "February",
+                "selected": "false",
+                "tabIndex": -1,
+                "active": false,
+                "target": "#cvod-c12-author-modal-s8-february-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s8-february-panel",
+                  "label": "cvod-c12-author-modal-s8-february-control",
+                  "visible": false,
+                  "active": false,
+                  "shown": false,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "keyboard-5-End",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c12-author-modal-s8-february-control",
+            "tabs": [
+              {
+                "id": "cvod-c12-author-modal-s7-january-control",
+                "name": "January",
+                "selected": "false",
+                "tabIndex": -1,
+                "active": false,
+                "target": "#cvod-c12-author-modal-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s7-january-panel",
+                  "label": "cvod-c12-author-modal-s7-january-control",
+                  "visible": false,
+                  "active": false,
+                  "shown": false,
+                  "tabIndex": 0
+                }
+              },
+              {
+                "id": "cvod-c12-author-modal-s8-february-control",
+                "name": "February",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c12-author-modal-s8-february-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s8-february-panel",
+                  "label": "cvod-c12-author-modal-s8-february-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "click-0",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c12-author-modal-s7-january-control",
+            "tabs": [
+              {
+                "id": "cvod-c12-author-modal-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c12-author-modal-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s7-january-panel",
+                  "label": "cvod-c12-author-modal-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              },
+              {
+                "id": "cvod-c12-author-modal-s8-february-control",
+                "name": "February",
+                "selected": "false",
+                "tabIndex": -1,
+                "active": false,
+                "target": "#cvod-c12-author-modal-s8-february-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s8-february-panel",
+                  "label": "cvod-c12-author-modal-s8-february-control",
+                  "visible": false,
+                  "active": false,
+                  "shown": false,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "tab-panel-0",
+          "passed": true,
+          "observed": "cvod-c12-author-modal-s7-january-panel"
+        },
+        {
+          "id": "tab-exit-0",
+          "passed": true,
+          "observed": "#cvod-c12-author-modal-s7-january-panel a[href=\"/panel-link/\"]"
+        },
+        {
+          "id": "click-1",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c12-author-modal-s8-february-control",
+            "tabs": [
+              {
+                "id": "cvod-c12-author-modal-s7-january-control",
+                "name": "January",
+                "selected": "false",
+                "tabIndex": -1,
+                "active": false,
+                "target": "#cvod-c12-author-modal-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s7-january-panel",
+                  "label": "cvod-c12-author-modal-s7-january-control",
+                  "visible": false,
+                  "active": false,
+                  "shown": false,
+                  "tabIndex": 0
+                }
+              },
+              {
+                "id": "cvod-c12-author-modal-s8-february-control",
+                "name": "February",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c12-author-modal-s8-february-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s8-february-panel",
+                  "label": "cvod-c12-author-modal-s8-february-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "tab-panel-1",
+          "passed": true,
+          "observed": "cvod-c12-author-modal-s8-february-panel"
+        },
+        {
+          "id": "tab-exit-1",
+          "passed": true,
+          "observed": "#cvod-c12-author-modal-s8-february-panel a[href=\"/panel-link/\"]"
+        },
+        {
+          "id": "replacement-real-http",
+          "passed": true
+        },
+        {
+          "id": "replacement-first-paint",
+          "passed": true,
+          "observed": {
+            "focus": "",
+            "tabs": [
+              {
+                "id": "cvod-c12-author-modal-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c12-author-modal-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s7-january-panel",
+                  "label": "cvod-c12-author-modal-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              },
+              {
+                "id": "cvod-c12-author-modal-s8-february-control",
+                "name": "February",
+                "selected": "false",
+                "tabIndex": -1,
+                "active": false,
+                "target": "#cvod-c12-author-modal-s8-february-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s8-february-panel",
+                  "label": "cvod-c12-author-modal-s8-february-control",
+                  "visible": false,
+                  "active": false,
+                  "shown": false,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "completed-close-restores-opener",
+          "passed": true
+        },
+        {
+          "id": "reopened-keyboard",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c12-author-modal-s8-february-control",
+            "tabs": [
+              {
+                "id": "cvod-c12-author-modal-s7-january-control",
+                "name": "January",
+                "selected": "false",
+                "tabIndex": -1,
+                "active": false,
+                "target": "#cvod-c12-author-modal-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s7-january-panel",
+                  "label": "cvod-c12-author-modal-s7-january-control",
+                  "visible": false,
+                  "active": false,
+                  "shown": false,
+                  "tabIndex": 0
+                }
+              },
+              {
+                "id": "cvod-c12-author-modal-s8-february-control",
+                "name": "February",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c12-author-modal-s8-february-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s8-february-panel",
+                  "label": "cvod-c12-author-modal-s8-february-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "identity-isolation",
+      "assertions": [
+        {
+          "id": "two-independent-page-tablists",
+          "passed": true,
+          "observed": 2
+        },
+        {
+          "id": "primary-switched",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c11-author-page-s8-february-control",
+            "tabs": [
+              {
+                "id": "cvod-c11-author-page-s7-january-control",
+                "name": "January",
+                "selected": "false",
+                "tabIndex": -1,
+                "active": false,
+                "target": "#cvod-c11-author-page-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s7-january-panel",
+                  "label": "cvod-c11-author-page-s7-january-control",
+                  "visible": false,
+                  "active": false,
+                  "shown": false,
+                  "tabIndex": 0
+                }
+              },
+              {
+                "id": "cvod-c11-author-page-s8-february-control",
+                "name": "February",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c11-author-page-s8-february-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s8-february-panel",
+                  "label": "cvod-c11-author-page-s8-february-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "sibling-unaffected",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c11-author-page-s8-february-control",
+            "tabs": [
+              {
+                "id": "cvod-c14-author-sibling-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c14-author-sibling-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c14-author-sibling-s7-january-panel",
+                  "label": "cvod-c14-author-sibling-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              },
+              {
+                "id": "cvod-c14-author-sibling-s8-february-control",
+                "name": "February",
+                "selected": "false",
+                "tabIndex": -1,
+                "active": false,
+                "target": "#cvod-c14-author-sibling-s8-february-panel",
+                "panel": {
+                  "id": "cvod-c14-author-sibling-s8-february-panel",
+                  "label": "cvod-c14-author-sibling-s8-february-control",
+                  "visible": false,
+                  "active": false,
+                  "shown": false,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "sibling-keyboard",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c14-author-sibling-s8-february-control",
+            "tabs": [
+              {
+                "id": "cvod-c14-author-sibling-s7-january-control",
+                "name": "January",
+                "selected": "false",
+                "tabIndex": -1,
+                "active": false,
+                "target": "#cvod-c14-author-sibling-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c14-author-sibling-s7-january-panel",
+                  "label": "cvod-c14-author-sibling-s7-january-control",
+                  "visible": false,
+                  "active": false,
+                  "shown": false,
+                  "tabIndex": 0
+                }
+              },
+              {
+                "id": "cvod-c14-author-sibling-s8-february-control",
+                "name": "February",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c14-author-sibling-s8-february-panel",
+                "panel": {
+                  "id": "cvod-c14-author-sibling-s8-february-panel",
+                  "label": "cvod-c14-author-sibling-s8-february-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "primary-unaffected",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c14-author-sibling-s8-february-control",
+            "tabs": [
+              {
+                "id": "cvod-c11-author-page-s7-january-control",
+                "name": "January",
+                "selected": "false",
+                "tabIndex": -1,
+                "active": false,
+                "target": "#cvod-c11-author-page-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s7-january-panel",
+                  "label": "cvod-c11-author-page-s7-january-control",
+                  "visible": false,
+                  "active": false,
+                  "shown": false,
+                  "tabIndex": 0
+                }
+              },
+              {
+                "id": "cvod-c11-author-page-s8-february-control",
+                "name": "February",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c11-author-page-s8-february-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s8-february-panel",
+                  "label": "cvod-c11-author-page-s8-february-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "modal-independent-keyboard",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c12-author-modal-s8-february-control",
+            "tabs": [
+              {
+                "id": "cvod-c12-author-modal-s7-january-control",
+                "name": "January",
+                "selected": "false",
+                "tabIndex": -1,
+                "active": false,
+                "target": "#cvod-c12-author-modal-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s7-january-panel",
+                  "label": "cvod-c12-author-modal-s7-january-control",
+                  "visible": false,
+                  "active": false,
+                  "shown": false,
+                  "tabIndex": 0
+                }
+              },
+              {
+                "id": "cvod-c12-author-modal-s8-february-control",
+                "name": "February",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c12-author-modal-s8-february-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s8-february-panel",
+                  "label": "cvod-c12-author-modal-s8-february-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "modal-home",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c12-author-modal-s7-january-control",
+            "tabs": [
+              {
+                "id": "cvod-c12-author-modal-s7-january-control",
+                "name": "January",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c12-author-modal-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s7-january-panel",
+                  "label": "cvod-c12-author-modal-s7-january-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              },
+              {
+                "id": "cvod-c12-author-modal-s8-february-control",
+                "name": "February",
+                "selected": "false",
+                "tabIndex": -1,
+                "active": false,
+                "target": "#cvod-c12-author-modal-s8-february-panel",
+                "panel": {
+                  "id": "cvod-c12-author-modal-s8-february-panel",
+                  "label": "cvod-c12-author-modal-s8-february-control",
+                  "visible": false,
+                  "active": false,
+                  "shown": false,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "page-unaffected-by-modal",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c12-author-modal-s7-january-control",
+            "tabs": [
+              {
+                "id": "cvod-c11-author-page-s7-january-control",
+                "name": "January",
+                "selected": "false",
+                "tabIndex": -1,
+                "active": false,
+                "target": "#cvod-c11-author-page-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s7-january-panel",
+                  "label": "cvod-c11-author-page-s7-january-control",
+                  "visible": false,
+                  "active": false,
+                  "shown": false,
+                  "tabIndex": 0
+                }
+              },
+              {
+                "id": "cvod-c11-author-page-s8-february-control",
+                "name": "February",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c11-author-page-s8-february-panel",
+                "panel": {
+                  "id": "cvod-c11-author-page-s8-february-panel",
+                  "label": "cvod-c11-author-page-s8-february-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "sibling-unaffected-by-modal",
+          "passed": true,
+          "observed": {
+            "focus": "cvod-c12-author-modal-s7-january-control",
+            "tabs": [
+              {
+                "id": "cvod-c14-author-sibling-s7-january-control",
+                "name": "January",
+                "selected": "false",
+                "tabIndex": -1,
+                "active": false,
+                "target": "#cvod-c14-author-sibling-s7-january-panel",
+                "panel": {
+                  "id": "cvod-c14-author-sibling-s7-january-panel",
+                  "label": "cvod-c14-author-sibling-s7-january-control",
+                  "visible": false,
+                  "active": false,
+                  "shown": false,
+                  "tabIndex": 0
+                }
+              },
+              {
+                "id": "cvod-c14-author-sibling-s8-february-control",
+                "name": "February",
+                "selected": "true",
+                "tabIndex": 0,
+                "active": true,
+                "target": "#cvod-c14-author-sibling-s8-february-panel",
+                "panel": {
+                  "id": "cvod-c14-author-sibling-s8-february-panel",
+                  "label": "cvod-c14-author-sibling-s8-february-control",
+                  "visible": true,
+                  "active": true,
+                  "shown": true,
+                  "tabIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "page-modal-all-ids-unique",
+          "passed": true
+        },
+        {
+          "id": "two-scoped-accordions",
+          "passed": true,
+          "observed": [
+            {
+              "id": "cvod-c33-gf764f4ac991e41fe939089918090f830-root",
+              "controls": [
+                {
+                  "control": "cvod-c33-gf764f4ac991e41fe939089918090f830-i0-control",
+                  "title": "Repeated",
+                  "panel": "cvod-c33-gf764f4ac991e41fe939089918090f830-i0-panel",
+                  "target": "#cvod-c33-gf764f4ac991e41fe939089918090f830-i0-panel",
+                  "parent": "#cvod-c33-gf764f4ac991e41fe939089918090f830-root",
+                  "label": "cvod-c33-gf764f4ac991e41fe939089918090f830-i0-control",
+                  "contained": true
+                },
+                {
+                  "control": "cvod-c33-gf764f4ac991e41fe939089918090f830-i1-control",
+                  "title": "Repeated",
+                  "panel": "cvod-c33-gf764f4ac991e41fe939089918090f830-i1-panel",
+                  "target": "#cvod-c33-gf764f4ac991e41fe939089918090f830-i1-panel",
+                  "parent": "#cvod-c33-gf764f4ac991e41fe939089918090f830-root",
+                  "label": "cvod-c33-gf764f4ac991e41fe939089918090f830-i1-control",
+                  "contained": true
+                },
+                {
+                  "control": "cvod-c33-gf764f4ac991e41fe939089918090f830-i2-control",
+                  "title": "",
+                  "panel": "cvod-c33-gf764f4ac991e41fe939089918090f830-i2-panel",
+                  "target": "#cvod-c33-gf764f4ac991e41fe939089918090f830-i2-panel",
+                  "parent": "#cvod-c33-gf764f4ac991e41fe939089918090f830-root",
+                  "label": "cvod-c33-gf764f4ac991e41fe939089918090f830-i2-control",
+                  "contained": true
+                },
+                {
+                  "control": "cvod-c33-gf764f4ac991e41fe939089918090f830-i3-control",
+                  "title": "A !?",
+                  "panel": "cvod-c33-gf764f4ac991e41fe939089918090f830-i3-panel",
+                  "target": "#cvod-c33-gf764f4ac991e41fe939089918090f830-i3-panel",
+                  "parent": "#cvod-c33-gf764f4ac991e41fe939089918090f830-root",
+                  "label": "cvod-c33-gf764f4ac991e41fe939089918090f830-i3-control",
+                  "contained": true
+                },
+                {
+                  "control": "cvod-c33-gf764f4ac991e41fe939089918090f830-i4-control",
+                  "title": "日本語",
+                  "panel": "cvod-c33-gf764f4ac991e41fe939089918090f830-i4-panel",
+                  "target": "#cvod-c33-gf764f4ac991e41fe939089918090f830-i4-panel",
+                  "parent": "#cvod-c33-gf764f4ac991e41fe939089918090f830-root",
+                  "label": "cvod-c33-gf764f4ac991e41fe939089918090f830-i4-control",
+                  "contained": true
+                }
+              ]
+            },
+            {
+              "id": "cvod-c33-g03263a9f31d841e9b8a5b65f3aafcb4e-root",
+              "controls": [
+                {
+                  "control": "cvod-c33-g03263a9f31d841e9b8a5b65f3aafcb4e-i0-control",
+                  "title": "Repeated",
+                  "panel": "cvod-c33-g03263a9f31d841e9b8a5b65f3aafcb4e-i0-panel",
+                  "target": "#cvod-c33-g03263a9f31d841e9b8a5b65f3aafcb4e-i0-panel",
+                  "parent": "#cvod-c33-g03263a9f31d841e9b8a5b65f3aafcb4e-root",
+                  "label": "cvod-c33-g03263a9f31d841e9b8a5b65f3aafcb4e-i0-control",
+                  "contained": true
+                },
+                {
+                  "control": "cvod-c33-g03263a9f31d841e9b8a5b65f3aafcb4e-i1-control",
+                  "title": "Repeated",
+                  "panel": "cvod-c33-g03263a9f31d841e9b8a5b65f3aafcb4e-i1-panel",
+                  "target": "#cvod-c33-g03263a9f31d841e9b8a5b65f3aafcb4e-i1-panel",
+                  "parent": "#cvod-c33-g03263a9f31d841e9b8a5b65f3aafcb4e-root",
+                  "label": "cvod-c33-g03263a9f31d841e9b8a5b65f3aafcb4e-i1-control",
+                  "contained": true
+                },
+                {
+                  "control": "cvod-c33-g03263a9f31d841e9b8a5b65f3aafcb4e-i2-control",
+                  "title": "",
+                  "panel": "cvod-c33-g03263a9f31d841e9b8a5b65f3aafcb4e-i2-panel",
+                  "target": "#cvod-c33-g03263a9f31d841e9b8a5b65f3aafcb4e-i2-panel",
+                  "parent": "#cvod-c33-g03263a9f31d841e9b8a5b65f3aafcb4e-root",
+                  "label": "cvod-c33-g03263a9f31d841e9b8a5b65f3aafcb4e-i2-control",
+                  "contained": true
+                },
+                {
+                  "control": "cvod-c33-g03263a9f31d841e9b8a5b65f3aafcb4e-i3-control",
+                  "title": "A !?",
+                  "panel": "cvod-c33-g03263a9f31d841e9b8a5b65f3aafcb4e-i3-panel",
+                  "target": "#cvod-c33-g03263a9f31d841e9b8a5b65f3aafcb4e-i3-panel",
+                  "parent": "#cvod-c33-g03263a9f31d841e9b8a5b65f3aafcb4e-root",
+                  "label": "cvod-c33-g03263a9f31d841e9b8a5b65f3aafcb4e-i3-control",
+                  "contained": true
+                },
+                {
+                  "control": "cvod-c33-g03263a9f31d841e9b8a5b65f3aafcb4e-i4-control",
+                  "title": "日本語",
+                  "panel": "cvod-c33-g03263a9f31d841e9b8a5b65f3aafcb4e-i4-panel",
+                  "target": "#cvod-c33-g03263a9f31d841e9b8a5b65f3aafcb4e-i4-panel",
+                  "parent": "#cvod-c33-g03263a9f31d841e9b8a5b65f3aafcb4e-root",
+                  "label": "cvod-c33-g03263a9f31d841e9b8a5b65f3aafcb4e-i4-control",
+                  "contained": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "arbitrary-repeated-titles",
+          "passed": true
+        },
+        {
+          "id": "accordion-0-icon-0",
+          "passed": true
+        },
+        {
+          "id": "accordion-0-icon-1",
+          "passed": true
+        },
+        {
+          "id": "accordion-0-icon-2",
+          "passed": true
+        },
+        {
+          "id": "accordion-0-icon-3",
+          "passed": true
+        },
+        {
+          "id": "accordion-0-icon-4",
+          "passed": true
+        },
+        {
+          "id": "accordion-1-icon-0",
+          "passed": true
+        },
+        {
+          "id": "accordion-1-icon-1",
+          "passed": true
+        },
+        {
+          "id": "accordion-1-icon-2",
+          "passed": true
+        },
+        {
+          "id": "accordion-1-icon-3",
+          "passed": true
+        },
+        {
+          "id": "accordion-1-icon-4",
+          "passed": true
+        },
+        {
+          "id": "accordion-0-cvod-c33-gf764f4ac991e41fe939089918090f830-i0-control",
+          "passed": true
+        },
+        {
+          "id": "accordion-0-cvod-c33-gf764f4ac991e41fe939089918090f830-i1-control",
+          "passed": true
+        },
+        {
+          "id": "accordion-0-cvod-c33-gf764f4ac991e41fe939089918090f830-i2-control",
+          "passed": true
+        },
+        {
+          "id": "accordion-0-cvod-c33-gf764f4ac991e41fe939089918090f830-i3-control",
+          "passed": true
+        },
+        {
+          "id": "accordion-0-cvod-c33-gf764f4ac991e41fe939089918090f830-i4-control",
+          "passed": true
+        },
+        {
+          "id": "second-accordion-stays-collapsed",
+          "passed": true
+        },
+        {
+          "id": "accordion-1-cvod-c33-g03263a9f31d841e9b8a5b65f3aafcb4e-i0-control",
+          "passed": true
+        },
+        {
+          "id": "accordion-1-cvod-c33-g03263a9f31d841e9b8a5b65f3aafcb4e-i1-control",
+          "passed": true
+        },
+        {
+          "id": "accordion-1-cvod-c33-g03263a9f31d841e9b8a5b65f3aafcb4e-i2-control",
+          "passed": true
+        },
+        {
+          "id": "accordion-1-cvod-c33-g03263a9f31d841e9b8a5b65f3aafcb4e-i3-control",
+          "passed": true
+        },
+        {
+          "id": "accordion-1-cvod-c33-g03263a9f31d841e9b8a5b65f3aafcb4e-i4-control",
+          "passed": true
+        },
+        {
+          "id": "first-accordion-keeps-selection",
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "stable-translated-identities",
+      "assertions": [
+        {
+          "id": "exact-supplied-page-targets-0",
+          "passed": true
+        },
+        {
+          "id": "stable-page-0",
+          "passed": true,
+          "observed": [
+            {
+              "id": "cvod-c11-author-page-s7-january-control",
+              "panel": "cvod-c11-author-page-s7-january-panel",
+              "title": "January"
+            },
+            {
+              "id": "cvod-c11-author-page-s8-february-control",
+              "panel": "cvod-c11-author-page-s8-february-panel",
+              "title": "February"
+            }
+          ]
+        },
+        {
+          "id": "real-translated-titles-0",
+          "passed": true,
+          "observed": [
+            {
+              "id": "cvod-c11-author-page-s7-january-control",
+              "panel": "cvod-c11-author-page-s7-january-panel",
+              "title": "January"
+            },
+            {
+              "id": "cvod-c11-author-page-s8-february-control",
+              "panel": "cvod-c11-author-page-s8-february-panel",
+              "title": "February"
+            }
+          ]
+        },
+        {
+          "id": "generated-distinct-0",
+          "passed": true
+        },
+        {
+          "id": "exact-supplied-modal-targets-0",
+          "passed": true
+        },
+        {
+          "id": "stable-modal-0",
+          "passed": true,
+          "observed": [
+            {
+              "id": "cvod-c12-author-modal-s7-january-control",
+              "panel": "cvod-c12-author-modal-s7-january-panel",
+              "title": "January"
+            },
+            {
+              "id": "cvod-c12-author-modal-s8-february-control",
+              "panel": "cvod-c12-author-modal-s8-february-panel",
+              "title": "February"
+            }
+          ]
+        },
+        {
+          "id": "modal-translation-0",
+          "passed": true
+        },
+        {
+          "id": "exact-supplied-page-targets-1",
+          "passed": true
+        },
+        {
+          "id": "stable-page-1",
+          "passed": true,
+          "observed": [
+            {
+              "id": "cvod-c11-author-page-s7-january-control",
+              "panel": "cvod-c11-author-page-s7-january-panel",
+              "title": "January"
+            },
+            {
+              "id": "cvod-c11-author-page-s8-february-control",
+              "panel": "cvod-c11-author-page-s8-february-panel",
+              "title": "February"
+            }
+          ]
+        },
+        {
+          "id": "real-translated-titles-1",
+          "passed": true,
+          "observed": [
+            {
+              "id": "cvod-c11-author-page-s7-january-control",
+              "panel": "cvod-c11-author-page-s7-january-panel",
+              "title": "January"
+            },
+            {
+              "id": "cvod-c11-author-page-s8-february-control",
+              "panel": "cvod-c11-author-page-s8-february-panel",
+              "title": "February"
+            }
+          ]
+        },
+        {
+          "id": "generated-distinct-1",
+          "passed": true
+        },
+        {
+          "id": "exact-supplied-modal-targets-1",
+          "passed": true
+        },
+        {
+          "id": "stable-modal-1",
+          "passed": true,
+          "observed": [
+            {
+              "id": "cvod-c12-author-modal-s7-january-control",
+              "panel": "cvod-c12-author-modal-s7-january-panel",
+              "title": "January"
+            },
+            {
+              "id": "cvod-c12-author-modal-s8-february-control",
+              "panel": "cvod-c12-author-modal-s8-february-panel",
+              "title": "February"
+            }
+          ]
+        },
+        {
+          "id": "modal-translation-1",
+          "passed": true
+        },
+        {
+          "id": "exact-supplied-page-targets-2",
+          "passed": true
+        },
+        {
+          "id": "stable-page-2",
+          "passed": true,
+          "observed": [
+            {
+              "id": "cvod-c11-author-page-s7-january-control",
+              "panel": "cvod-c11-author-page-s7-january-panel",
+              "title": "Januar"
+            },
+            {
+              "id": "cvod-c11-author-page-s8-february-control",
+              "panel": "cvod-c11-author-page-s8-february-panel",
+              "title": "Februar"
+            }
+          ]
+        },
+        {
+          "id": "real-translated-titles-2",
+          "passed": true,
+          "observed": [
+            {
+              "id": "cvod-c11-author-page-s7-january-control",
+              "panel": "cvod-c11-author-page-s7-january-panel",
+              "title": "Januar"
+            },
+            {
+              "id": "cvod-c11-author-page-s8-february-control",
+              "panel": "cvod-c11-author-page-s8-february-panel",
+              "title": "Februar"
+            }
+          ]
+        },
+        {
+          "id": "generated-distinct-2",
+          "passed": true
+        },
+        {
+          "id": "exact-supplied-modal-targets-2",
+          "passed": true
+        },
+        {
+          "id": "stable-modal-2",
+          "passed": true,
+          "observed": [
+            {
+              "id": "cvod-c12-author-modal-s7-january-control",
+              "panel": "cvod-c12-author-modal-s7-january-panel",
+              "title": "Januar"
+            },
+            {
+              "id": "cvod-c12-author-modal-s8-february-control",
+              "panel": "cvod-c12-author-modal-s8-february-panel",
+              "title": "Februar"
+            }
+          ]
+        },
+        {
+          "id": "modal-translation-2",
+          "passed": true
+        },
+        {
+          "id": "exact-supplied-page-targets-3",
+          "passed": true
+        },
+        {
+          "id": "stable-page-3",
+          "passed": true,
+          "observed": [
+            {
+              "id": "cvod-c11-author-page-s8-february-control",
+              "panel": "cvod-c11-author-page-s8-february-panel",
+              "title": "Februar"
+            },
+            {
+              "id": "cvod-c11-author-page-s7-january-control",
+              "panel": "cvod-c11-author-page-s7-january-panel",
+              "title": "Januar"
+            }
+          ]
+        },
+        {
+          "id": "real-translated-titles-3",
+          "passed": true,
+          "observed": [
+            {
+              "id": "cvod-c11-author-page-s8-february-control",
+              "panel": "cvod-c11-author-page-s8-february-panel",
+              "title": "Februar"
+            },
+            {
+              "id": "cvod-c11-author-page-s7-january-control",
+              "panel": "cvod-c11-author-page-s7-january-panel",
+              "title": "Januar"
+            }
+          ]
+        },
+        {
+          "id": "generated-distinct-3",
+          "passed": true
+        },
+        {
+          "id": "exact-supplied-modal-targets-3",
+          "passed": true
+        },
+        {
+          "id": "stable-modal-3",
+          "passed": true,
+          "observed": [
+            {
+              "id": "cvod-c12-author-modal-s8-february-control",
+              "panel": "cvod-c12-author-modal-s8-february-panel",
+              "title": "Februar"
+            },
+            {
+              "id": "cvod-c12-author-modal-s7-january-control",
+              "panel": "cvod-c12-author-modal-s7-january-panel",
+              "title": "Januar"
+            }
+          ]
+        },
+        {
+          "id": "modal-translation-3",
+          "passed": true
+        },
+        {
+          "id": "exact-supplied-page-targets-4",
+          "passed": true
+        },
+        {
+          "id": "stable-page-4",
+          "passed": true,
+          "observed": [
+            {
+              "id": "cvod-c11-author-page-s7-january-control",
+              "panel": "cvod-c11-author-page-s7-january-panel",
+              "title": "January"
+            },
+            {
+              "id": "cvod-c11-author-page-s8-february-control",
+              "panel": "cvod-c11-author-page-s8-february-panel",
+              "title": "February"
+            }
+          ]
+        },
+        {
+          "id": "real-translated-titles-4",
+          "passed": true,
+          "observed": [
+            {
+              "id": "cvod-c11-author-page-s7-january-control",
+              "panel": "cvod-c11-author-page-s7-january-panel",
+              "title": "January"
+            },
+            {
+              "id": "cvod-c11-author-page-s8-february-control",
+              "panel": "cvod-c11-author-page-s8-february-panel",
+              "title": "February"
+            }
+          ]
+        },
+        {
+          "id": "generated-distinct-4",
+          "passed": true
+        },
+        {
+          "id": "exact-supplied-modal-targets-4",
+          "passed": true
+        },
+        {
+          "id": "stable-modal-4",
+          "passed": true,
+          "observed": [
+            {
+              "id": "cvod-c12-author-modal-s7-january-control",
+              "panel": "cvod-c12-author-modal-s7-january-panel",
+              "title": "January"
+            },
+            {
+              "id": "cvod-c12-author-modal-s8-february-control",
+              "panel": "cvod-c12-author-modal-s8-february-panel",
+              "title": "February"
+            }
+          ]
+        },
+        {
+          "id": "modal-translation-4",
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "mixed-heading-icons",
+      "assertions": [
+        {
+          "id": "host-default-h3-placement",
+          "passed": true,
+          "observed": {
+            "tag": "H2",
+            "text": "Presentation author",
+            "classes": [
+              "h3",
+              "fa-solid",
+              "fa-user"
+            ],
+            "host": {
+              "content": "\"\"",
+              "font": "\"Font Awesome 6 Free\""
+            },
+            "children": []
+          }
+        },
+        {
+          "id": "host-default-h3-sizing",
+          "passed": true
+        },
+        {
+          "id": "host-default-h3-accessible",
+          "passed": true
+        },
+        {
+          "id": "host-default-h5-placement",
+          "passed": true,
+          "observed": {
+            "tag": "H2",
+            "text": "Author",
+            "classes": [
+              "h5",
+              "modal-title",
+              "fa-solid",
+              "fa-user"
+            ],
+            "host": {
+              "content": "\"\"",
+              "font": "\"Font Awesome 6 Free\""
+            },
+            "children": []
+          }
+        },
+        {
+          "id": "host-default-h5-sizing",
+          "passed": true
+        },
+        {
+          "id": "host-default-h5-accessible",
+          "passed": true
+        },
+        {
+          "id": "host-default-#primary-group-icons",
+          "passed": true
+        },
+        {
+          "id": "host-default-#primary-tab-accessible-names",
+          "passed": true
+        },
+        {
+          "id": "host-default-#cv-modal-group-icons",
+          "passed": true
+        },
+        {
+          "id": "host-default-#cv-modal-tab-accessible-names",
+          "passed": true
+        },
+        {
+          "id": "host-replace-h3-placement",
+          "passed": true,
+          "observed": {
+            "tag": "H2",
+            "text": "Presentation author",
+            "classes": [
+              "native-title-size",
+              "fa-solid",
+              "fa-user"
+            ],
+            "host": {
+              "content": "\"\"",
+              "font": "\"Font Awesome 6 Free\""
+            },
+            "children": []
+          }
+        },
+        {
+          "id": "host-replace-h3-sizing",
+          "passed": true
+        },
+        {
+          "id": "host-replace-h3-accessible",
+          "passed": true
+        },
+        {
+          "id": "host-replace-h5-placement",
+          "passed": true,
+          "observed": {
+            "tag": "H2",
+            "text": "Author",
+            "classes": [
+              "native-title-size",
+              "modal-title",
+              "fa-solid",
+              "fa-user"
+            ],
+            "host": {
+              "content": "\"\"",
+              "font": "\"Font Awesome 6 Free\""
+            },
+            "children": []
+          }
+        },
+        {
+          "id": "host-replace-h5-sizing",
+          "passed": true
+        },
+        {
+          "id": "host-replace-h5-accessible",
+          "passed": true
+        },
+        {
+          "id": "host-replace-#primary-group-icons",
+          "passed": true
+        },
+        {
+          "id": "host-replace-#primary-tab-accessible-names",
+          "passed": true
+        },
+        {
+          "id": "host-replace-#cv-modal-group-icons",
+          "passed": true
+        },
+        {
+          "id": "host-replace-#cv-modal-tab-accessible-names",
+          "passed": true
+        },
+        {
+          "id": "host-remove-h3-placement",
+          "passed": true,
+          "observed": {
+            "tag": "H2",
+            "text": "Presentation author",
+            "classes": [
+              "fa-solid",
+              "fa-user"
+            ],
+            "host": {
+              "content": "\"\"",
+              "font": "\"Font Awesome 6 Free\""
+            },
+            "children": []
+          }
+        },
+        {
+          "id": "host-remove-h3-sizing",
+          "passed": true
+        },
+        {
+          "id": "host-remove-h3-accessible",
+          "passed": true
+        },
+        {
+          "id": "host-remove-h5-placement",
+          "passed": true,
+          "observed": {
+            "tag": "H2",
+            "text": "Author",
+            "classes": [
+              "modal-title",
+              "fa-solid",
+              "fa-user"
+            ],
+            "host": {
+              "content": "\"\"",
+              "font": "\"Font Awesome 6 Free\""
+            },
+            "children": []
+          }
+        },
+        {
+          "id": "host-remove-h5-sizing",
+          "passed": true
+        },
+        {
+          "id": "host-remove-h5-accessible",
+          "passed": true
+        },
+        {
+          "id": "host-remove-#primary-group-icons",
+          "passed": true
+        },
+        {
+          "id": "host-remove-#primary-tab-accessible-names",
+          "passed": true
+        },
+        {
+          "id": "host-remove-#cv-modal-group-icons",
+          "passed": true
+        },
+        {
+          "id": "host-remove-#cv-modal-tab-accessible-names",
+          "passed": true
+        },
+        {
+          "id": "element-default-h3-placement",
+          "passed": true,
+          "observed": {
+            "tag": "H2",
+            "text": "Presentation author",
+            "classes": [
+              "h3"
+            ],
+            "host": {
+              "content": "none",
+              "font": "system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"Noto Sans\", \"Liberation Sans\", Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\""
+            },
+            "children": [
+              {
+                "classes": [
+                  "fa-solid",
+                  "fa-user"
+                ],
+                "hidden": "true",
+                "content": "\"\"",
+                "font": "\"Font Awesome 6 Free\""
+              }
+            ]
+          }
+        },
+        {
+          "id": "element-default-h3-sizing",
+          "passed": true
+        },
+        {
+          "id": "element-default-h3-accessible",
+          "passed": true
+        },
+        {
+          "id": "element-default-h5-placement",
+          "passed": true,
+          "observed": {
+            "tag": "H2",
+            "text": "Author",
+            "classes": [
+              "h5",
+              "modal-title"
+            ],
+            "host": {
+              "content": "none",
+              "font": "system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"Noto Sans\", \"Liberation Sans\", Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\""
+            },
+            "children": [
+              {
+                "classes": [
+                  "fa-solid",
+                  "fa-user"
+                ],
+                "hidden": "true",
+                "content": "\"\"",
+                "font": "\"Font Awesome 6 Free\""
+              }
+            ]
+          }
+        },
+        {
+          "id": "element-default-h5-sizing",
+          "passed": true
+        },
+        {
+          "id": "element-default-h5-accessible",
+          "passed": true
+        },
+        {
+          "id": "element-default-#primary-group-icons",
+          "passed": true
+        },
+        {
+          "id": "element-default-#primary-tab-accessible-names",
+          "passed": true
+        },
+        {
+          "id": "element-default-#cv-modal-group-icons",
+          "passed": true
+        },
+        {
+          "id": "element-default-#cv-modal-tab-accessible-names",
+          "passed": true
+        },
+        {
+          "id": "element-replace-h3-placement",
+          "passed": true,
+          "observed": {
+            "tag": "H2",
+            "text": "Presentation author",
+            "classes": [
+              "native-title-size"
+            ],
+            "host": {
+              "content": "none",
+              "font": "system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"Noto Sans\", \"Liberation Sans\", Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\""
+            },
+            "children": [
+              {
+                "classes": [
+                  "fa-solid",
+                  "fa-user"
+                ],
+                "hidden": "true",
+                "content": "\"\"",
+                "font": "\"Font Awesome 6 Free\""
+              }
+            ]
+          }
+        },
+        {
+          "id": "element-replace-h3-sizing",
+          "passed": true
+        },
+        {
+          "id": "element-replace-h3-accessible",
+          "passed": true
+        },
+        {
+          "id": "element-replace-h5-placement",
+          "passed": true,
+          "observed": {
+            "tag": "H2",
+            "text": "Author",
+            "classes": [
+              "native-title-size",
+              "modal-title"
+            ],
+            "host": {
+              "content": "none",
+              "font": "system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"Noto Sans\", \"Liberation Sans\", Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\""
+            },
+            "children": [
+              {
+                "classes": [
+                  "fa-solid",
+                  "fa-user"
+                ],
+                "hidden": "true",
+                "content": "\"\"",
+                "font": "\"Font Awesome 6 Free\""
+              }
+            ]
+          }
+        },
+        {
+          "id": "element-replace-h5-sizing",
+          "passed": true
+        },
+        {
+          "id": "element-replace-h5-accessible",
+          "passed": true
+        },
+        {
+          "id": "element-replace-#primary-group-icons",
+          "passed": true
+        },
+        {
+          "id": "element-replace-#primary-tab-accessible-names",
+          "passed": true
+        },
+        {
+          "id": "element-replace-#cv-modal-group-icons",
+          "passed": true
+        },
+        {
+          "id": "element-replace-#cv-modal-tab-accessible-names",
+          "passed": true
+        },
+        {
+          "id": "element-remove-h3-placement",
+          "passed": true,
+          "observed": {
+            "tag": "H2",
+            "text": "Presentation author",
+            "classes": [],
+            "host": {
+              "content": "none",
+              "font": "system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"Noto Sans\", \"Liberation Sans\", Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\""
+            },
+            "children": [
+              {
+                "classes": [
+                  "fa-solid",
+                  "fa-user"
+                ],
+                "hidden": "true",
+                "content": "\"\"",
+                "font": "\"Font Awesome 6 Free\""
+              }
+            ]
+          }
+        },
+        {
+          "id": "element-remove-h3-sizing",
+          "passed": true
+        },
+        {
+          "id": "element-remove-h3-accessible",
+          "passed": true
+        },
+        {
+          "id": "element-remove-h5-placement",
+          "passed": true,
+          "observed": {
+            "tag": "H2",
+            "text": "Author",
+            "classes": [
+              "modal-title"
+            ],
+            "host": {
+              "content": "none",
+              "font": "system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"Noto Sans\", \"Liberation Sans\", Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\""
+            },
+            "children": [
+              {
+                "classes": [
+                  "fa-solid",
+                  "fa-user"
+                ],
+                "hidden": "true",
+                "content": "\"\"",
+                "font": "\"Font Awesome 6 Free\""
+              }
+            ]
+          }
+        },
+        {
+          "id": "element-remove-h5-sizing",
+          "passed": true
+        },
+        {
+          "id": "element-remove-h5-accessible",
+          "passed": true
+        },
+        {
+          "id": "element-remove-#primary-group-icons",
+          "passed": true
+        },
+        {
+          "id": "element-remove-#primary-tab-accessible-names",
+          "passed": true
+        },
+        {
+          "id": "element-remove-#cv-modal-group-icons",
+          "passed": true
+        },
+        {
+          "id": "element-remove-#cv-modal-tab-accessible-names",
+          "passed": true
+        },
+        {
+          "id": "empty-default-h3-placement",
+          "passed": true,
+          "observed": {
+            "tag": "H2",
+            "text": "Presentation author",
+            "classes": [
+              "h3"
+            ],
+            "host": {
+              "content": "none",
+              "font": "system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"Noto Sans\", \"Liberation Sans\", Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\""
+            },
+            "children": []
+          }
+        },
+        {
+          "id": "empty-default-h3-sizing",
+          "passed": true
+        },
+        {
+          "id": "empty-default-h3-accessible",
+          "passed": true
+        },
+        {
+          "id": "empty-default-h5-placement",
+          "passed": true,
+          "observed": {
+            "tag": "H2",
+            "text": "Author",
+            "classes": [
+              "h5",
+              "modal-title"
+            ],
+            "host": {
+              "content": "none",
+              "font": "system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"Noto Sans\", \"Liberation Sans\", Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\""
+            },
+            "children": []
+          }
+        },
+        {
+          "id": "empty-default-h5-sizing",
+          "passed": true
+        },
+        {
+          "id": "empty-default-h5-accessible",
+          "passed": true
+        },
+        {
+          "id": "empty-default-#primary-group-icons",
+          "passed": true
+        },
+        {
+          "id": "empty-default-#primary-tab-accessible-names",
+          "passed": true
+        },
+        {
+          "id": "empty-default-#cv-modal-group-icons",
+          "passed": true
+        },
+        {
+          "id": "empty-default-#cv-modal-tab-accessible-names",
+          "passed": true
+        },
+        {
+          "id": "empty-replace-h3-placement",
+          "passed": true,
+          "observed": {
+            "tag": "H2",
+            "text": "Presentation author",
+            "classes": [
+              "native-title-size"
+            ],
+            "host": {
+              "content": "none",
+              "font": "system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"Noto Sans\", \"Liberation Sans\", Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\""
+            },
+            "children": []
+          }
+        },
+        {
+          "id": "empty-replace-h3-sizing",
+          "passed": true
+        },
+        {
+          "id": "empty-replace-h3-accessible",
+          "passed": true
+        },
+        {
+          "id": "empty-replace-h5-placement",
+          "passed": true,
+          "observed": {
+            "tag": "H2",
+            "text": "Author",
+            "classes": [
+              "native-title-size",
+              "modal-title"
+            ],
+            "host": {
+              "content": "none",
+              "font": "system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"Noto Sans\", \"Liberation Sans\", Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\""
+            },
+            "children": []
+          }
+        },
+        {
+          "id": "empty-replace-h5-sizing",
+          "passed": true
+        },
+        {
+          "id": "empty-replace-h5-accessible",
+          "passed": true
+        },
+        {
+          "id": "empty-replace-#primary-group-icons",
+          "passed": true
+        },
+        {
+          "id": "empty-replace-#primary-tab-accessible-names",
+          "passed": true
+        },
+        {
+          "id": "empty-replace-#cv-modal-group-icons",
+          "passed": true
+        },
+        {
+          "id": "empty-replace-#cv-modal-tab-accessible-names",
+          "passed": true
+        },
+        {
+          "id": "empty-remove-h3-placement",
+          "passed": true,
+          "observed": {
+            "tag": "H2",
+            "text": "Presentation author",
+            "classes": [],
+            "host": {
+              "content": "none",
+              "font": "system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"Noto Sans\", \"Liberation Sans\", Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\""
+            },
+            "children": []
+          }
+        },
+        {
+          "id": "empty-remove-h3-sizing",
+          "passed": true
+        },
+        {
+          "id": "empty-remove-h3-accessible",
+          "passed": true
+        },
+        {
+          "id": "empty-remove-h5-placement",
+          "passed": true,
+          "observed": {
+            "tag": "H2",
+            "text": "Author",
+            "classes": [
+              "modal-title"
+            ],
+            "host": {
+              "content": "none",
+              "font": "system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"Noto Sans\", \"Liberation Sans\", Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\""
+            },
+            "children": []
+          }
+        },
+        {
+          "id": "empty-remove-h5-sizing",
+          "passed": true
+        },
+        {
+          "id": "empty-remove-h5-accessible",
+          "passed": true
+        },
+        {
+          "id": "empty-remove-#primary-group-icons",
+          "passed": true
+        },
+        {
+          "id": "empty-remove-#primary-tab-accessible-names",
+          "passed": true
+        },
+        {
+          "id": "empty-remove-#cv-modal-group-icons",
+          "passed": true
+        },
+        {
+          "id": "empty-remove-#cv-modal-tab-accessible-names",
+          "passed": true
+        },
+        {
+          "id": "disabled-default-h3-placement",
+          "passed": true,
+          "observed": {
+            "tag": "H2",
+            "text": "Presentation author",
+            "classes": [
+              "h3"
+            ],
+            "host": {
+              "content": "none",
+              "font": "system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"Noto Sans\", \"Liberation Sans\", Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\""
+            },
+            "children": []
+          }
+        },
+        {
+          "id": "disabled-default-h3-sizing",
+          "passed": true
+        },
+        {
+          "id": "disabled-default-h3-accessible",
+          "passed": true
+        },
+        {
+          "id": "disabled-default-h5-placement",
+          "passed": true,
+          "observed": {
+            "tag": "H2",
+            "text": "Author",
+            "classes": [
+              "h5",
+              "modal-title"
+            ],
+            "host": {
+              "content": "none",
+              "font": "system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"Noto Sans\", \"Liberation Sans\", Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\""
+            },
+            "children": []
+          }
+        },
+        {
+          "id": "disabled-default-h5-sizing",
+          "passed": true
+        },
+        {
+          "id": "disabled-default-h5-accessible",
+          "passed": true
+        },
+        {
+          "id": "disabled-default-#primary-group-icons",
+          "passed": true
+        },
+        {
+          "id": "disabled-default-#primary-tab-accessible-names",
+          "passed": true
+        },
+        {
+          "id": "disabled-default-#cv-modal-group-icons",
+          "passed": true
+        },
+        {
+          "id": "disabled-default-#cv-modal-tab-accessible-names",
+          "passed": true
+        },
+        {
+          "id": "disabled-replace-h3-placement",
+          "passed": true,
+          "observed": {
+            "tag": "H2",
+            "text": "Presentation author",
+            "classes": [
+              "native-title-size"
+            ],
+            "host": {
+              "content": "none",
+              "font": "system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"Noto Sans\", \"Liberation Sans\", Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\""
+            },
+            "children": []
+          }
+        },
+        {
+          "id": "disabled-replace-h3-sizing",
+          "passed": true
+        },
+        {
+          "id": "disabled-replace-h3-accessible",
+          "passed": true
+        },
+        {
+          "id": "disabled-replace-h5-placement",
+          "passed": true,
+          "observed": {
+            "tag": "H2",
+            "text": "Author",
+            "classes": [
+              "native-title-size",
+              "modal-title"
+            ],
+            "host": {
+              "content": "none",
+              "font": "system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"Noto Sans\", \"Liberation Sans\", Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\""
+            },
+            "children": []
+          }
+        },
+        {
+          "id": "disabled-replace-h5-sizing",
+          "passed": true
+        },
+        {
+          "id": "disabled-replace-h5-accessible",
+          "passed": true
+        },
+        {
+          "id": "disabled-replace-#primary-group-icons",
+          "passed": true
+        },
+        {
+          "id": "disabled-replace-#primary-tab-accessible-names",
+          "passed": true
+        },
+        {
+          "id": "disabled-replace-#cv-modal-group-icons",
+          "passed": true
+        },
+        {
+          "id": "disabled-replace-#cv-modal-tab-accessible-names",
+          "passed": true
+        },
+        {
+          "id": "disabled-remove-h3-placement",
+          "passed": true,
+          "observed": {
+            "tag": "H2",
+            "text": "Presentation author",
+            "classes": [],
+            "host": {
+              "content": "none",
+              "font": "system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"Noto Sans\", \"Liberation Sans\", Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\""
+            },
+            "children": []
+          }
+        },
+        {
+          "id": "disabled-remove-h3-sizing",
+          "passed": true
+        },
+        {
+          "id": "disabled-remove-h3-accessible",
+          "passed": true
+        },
+        {
+          "id": "disabled-remove-h5-placement",
+          "passed": true,
+          "observed": {
+            "tag": "H2",
+            "text": "Author",
+            "classes": [
+              "modal-title"
+            ],
+            "host": {
+              "content": "none",
+              "font": "system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"Noto Sans\", \"Liberation Sans\", Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\""
+            },
+            "children": []
+          }
+        },
+        {
+          "id": "disabled-remove-h5-sizing",
+          "passed": true
+        },
+        {
+          "id": "disabled-remove-h5-accessible",
+          "passed": true
+        },
+        {
+          "id": "disabled-remove-#primary-group-icons",
+          "passed": true
+        },
+        {
+          "id": "disabled-remove-#primary-tab-accessible-names",
+          "passed": true
+        },
+        {
+          "id": "disabled-remove-#cv-modal-group-icons",
+          "passed": true
+        },
+        {
+          "id": "disabled-remove-#cv-modal-tab-accessible-names",
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    {
+      "id": "native-projection-escaping",
+      "assertions": [
+        {
+          "id": "native-http-rendered",
+          "passed": true
+        },
+        {
+          "id": "escaped-original-group",
+          "passed": true
+        },
+        {
+          "id": "original-resolved-properties",
+          "passed": true
+        },
+        {
+          "id": "native-semantic-color-pill",
+          "passed": true
+        },
+        {
+          "id": "original-value-prop-settings-context",
+          "passed": true,
+          "observed": [
+            {
+              "color": "brand-custom",
+              "pill": "True",
+              "value": "<script>window.presentationAttack=1</script> & \"value\"",
+              "path": "first_name",
+              "newline": "linebreaksbr",
+              "text": "<script>window.presentationAttack=1</script> & \"value\"",
+              "classes": [
+                "status",
+                "status-brand",
+                "status-pill"
+              ]
+            },
+            {
+              "color": "custom\" onclick=\"attack",
+              "pill": "False",
+              "value": "<script>window.presentationAttack=1</script> & \"value\"",
+              "path": "first_name",
+              "newline": "linebreaksbr",
+              "text": "<script>window.presentationAttack=1</script> & \"value\"",
+              "classes": [
+                "status"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "no-script-attribute-injection",
+          "passed": true
+        },
+        {
+          "id": "no-bootstrap-assets-or-markup",
+          "passed": true,
+          "observed": [
+            "http://127.0.0.1:8145/detail/623952c0-76d3-4027-a025-8885b6d19f3c/?theme=native"
+          ]
+        },
+        {
+          "id": "stock-after-native",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "observed": {
+        "title": "<script>window.presentationAttack=1</script> & \"value\"",
+        "groupId": "native",
+        "root": "cvod-c11-author-page-root",
+        "panel": "cvod-c11-author-page-s6-native-panel",
+        "properties": [
+          {
+            "originalPath": "first_name",
+            "originalValue": "<script>window.presentationAttack=1</script> & \"value\"",
+            "text": "<script>window.presentationAttack=1</script> & \"value\""
+          },
+          {
+            "originalPath": "first_name",
+            "originalValue": "<script>window.presentationAttack=1</script> & \"value\"",
+            "text": "<script>window.presentationAttack=1</script> & \"value\""
+          },
+          {
+            "originalPath": "last_name",
+            "originalValue": "Author",
+            "text": "Author"
+          }
+        ],
+        "badges": [
+          {
+            "color": "brand-custom",
+            "pill": "True",
+            "value": "<script>window.presentationAttack=1</script> & \"value\"",
+            "path": "first_name",
+            "newline": "linebreaksbr",
+            "text": "<script>window.presentationAttack=1</script> & \"value\"",
+            "classes": [
+              "status",
+              "status-brand",
+              "status-pill"
+            ]
+          },
+          {
+            "color": "custom\" onclick=\"attack",
+            "pill": "False",
+            "value": "<script>window.presentationAttack=1</script> & \"value\"",
+            "path": "first_name",
+            "newline": "linebreaksbr",
+            "text": "<script>window.presentationAttack=1</script> & \"value\"",
+            "classes": [
+              "status"
+            ]
+          }
+        ],
+        "scripts": 0,
+        "bootstrap": 0
+      }
+    }
+  ],
+  "pageErrors": [],
+  "consoleErrors": [],
+  "cleanup": {
+    "browserClosed": true,
+    "serverExit": {
+      "code": 0,
+      "signal": null
+    },
+    "reaped": true
+  },
+  "coverageLimits": [
+    "No human visual acceptance",
+    "No screen-reader or assistive-technology certification",
+    "Native case is bounded projection/escaping, not native tabs or a full alternative theme"
+  ],
+  "status": "passed",
+  "passed": true,
+  "font": {
+    "loaded": true,
+    "family": "\"Font Awesome 6 Free\"",
+    "weight": "900",
+    "glyph": "\"\""
+  },
+  "assets": [
+    {
+      "requestedURL": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+      "integrity": "sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==",
+      "crossorigin": "anonymous",
+      "version": "6.7.2",
+      "finalURL": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+      "status": 200,
+      "sha256": "74005d7c17d4a02f2f25404ec0655d9bc2fdaa53166874c87d7b7eec69d9088a",
+      "integrityAccepted": true
+    },
+    {
+      "requestedURL": "https://code.jquery.com/jquery-3.7.1.js",
+      "integrity": "sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=",
+      "crossorigin": "anonymous",
+      "version": "3.7.1",
+      "finalURL": "https://code.jquery.com/jquery-3.7.1.js",
+      "status": 200,
+      "sha256": "78a85aca2f0b110c29e0d2b137e09f0a1fb7a8e554b499f740d6744dc8962cfe",
+      "integrityAccepted": true
+    },
+    {
+      "requestedURL": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "integrity": "sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH",
+      "crossorigin": "anonymous",
+      "version": "5.3.3",
+      "finalURL": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "status": 200,
+      "sha256": "3c8f27e6009ccfd710a905e6dcf12d0ee3c6f2ac7da05b0572d3e0d12e736fc8",
+      "integrityAccepted": true
+    },
+    {
+      "requestedURL": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "integrity": "sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz",
+      "crossorigin": "anonymous",
+      "version": "5.3.3",
+      "finalURL": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "status": 200,
+      "sha256": "0833b2e9c3a26c258476c46266e6877fc75218625162e0460be9a3a098a61c6c",
+      "integrityAccepted": true
+    },
+    {
+      "requestedURL": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
+      "integrity": null,
+      "crossorigin": null,
+      "version": "6.7.2",
+      "finalURL": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
+      "status": 200,
+      "sha256": "aa75998623a391e61c6901794ace832e3ecdd288b56d608f21bea0411acc0b8e",
+      "integrityAccepted": true
+    }
+  ],
+  "assetFailures": [],
+  "missingAssets": [],
+  "serverLog": "{\"ready\": 8145, \"database\": \"temporary SQLite\", \"media\": \"temporary\"}\n127.0.0.1 - - [02/Nov/2026 14:32:26] \"GET /signin/ HTTP/1.1\" 200 79\n127.0.0.1 - - [02/Nov/2026 14:32:26] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/ HTTP/1.1\" 200 6029\n127.0.0.1 - - [02/Nov/2026 14:32:26] \"GET /static/crud_views/js/adapters.js HTTP/1.1\" 200 5683\n127.0.0.1 - - [02/Nov/2026 14:32:26] \"GET /static/crud_views/js/viewset.js HTTP/1.1\" 200 1997\n127.0.0.1 - - [02/Nov/2026 14:32:26] \"GET /static/crud_views/css/property.css HTTP/1.1\" 200 247\n127.0.0.1 - - [02/Nov/2026 14:32:26] \"GET /static/crud_views/js/formset.js HTTP/1.1\" 200 21079\n127.0.0.1 - - [02/Nov/2026 14:32:26] \"GET /static/crud_views/js/list.filter.js HTTP/1.1\" 200 3099\n127.0.0.1 - - [02/Nov/2026 14:32:26] \"GET /static/crud_views/css/table.css HTTP/1.1\" 200 1539\n127.0.0.1 - - [02/Nov/2026 14:32:26] \"GET /static/crud_views/css/formset.css HTTP/1.1\" 200 755\n127.0.0.1 - - [02/Nov/2026 14:32:26] \"GET /static/crud_views/css/icons.css HTTP/1.1\" 200 86\n127.0.0.1 - - [02/Nov/2026 14:32:26] \"GET /static/crud_views/js/modal.js HTTP/1.1\" 200 10190\n127.0.0.1 - - [02/Nov/2026 14:32:26] \"GET /static/crud_views/js/toggle.js HTTP/1.1\" 200 10043\n127.0.0.1 - - [02/Nov/2026 14:32:26] \"GET /static/crud_views/js/tooltip.js HTTP/1.1\" 200 3395\n127.0.0.1 - - [02/Nov/2026 14:32:26] \"GET /static/crud_views_object_detail/js/tabs.js HTTP/1.1\" 200 2271\n127.0.0.1 - - [02/Nov/2026 14:32:26] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [02/Nov/2026 14:32:26] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?count=1&links=0 HTTP/1.1\" 200 4898\n127.0.0.1 - - [02/Nov/2026 14:32:26] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [02/Nov/2026 14:32:27] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?count=1&links=0 HTTP/1.1\" 200 2012\n127.0.0.1 - - [02/Nov/2026 14:32:27] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?count=1&links=0 HTTP/1.1\" 200 2012\n127.0.0.1 - - [02/Nov/2026 14:32:28] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?count=1&links=0 HTTP/1.1\" 200 2012\n127.0.0.1 - - [02/Nov/2026 14:32:29] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?count=1&links=1 HTTP/1.1\" 200 4925\n127.0.0.1 - - [02/Nov/2026 14:32:29] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [02/Nov/2026 14:32:29] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?count=1&links=1 HTTP/1.1\" 200 2039\n127.0.0.1 - - [02/Nov/2026 14:32:29] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?count=1&links=1 HTTP/1.1\" 200 2039\n127.0.0.1 - - [02/Nov/2026 14:32:30] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?count=1&links=1 HTTP/1.1\" 200 2039\n127.0.0.1 - - [02/Nov/2026 14:32:31] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?count=2&links=0 HTTP/1.1\" 200 6067\n127.0.0.1 - - [02/Nov/2026 14:32:31] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [02/Nov/2026 14:32:32] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?count=2&links=0 HTTP/1.1\" 200 3186\n127.0.0.1 - - [02/Nov/2026 14:32:34] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?count=2&links=0 HTTP/1.1\" 200 3186\n127.0.0.1 - - [02/Nov/2026 14:32:35] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?count=2&links=0 HTTP/1.1\" 200 3186\n127.0.0.1 - - [02/Nov/2026 14:32:36] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?count=2&links=1 HTTP/1.1\" 200 6121\n127.0.0.1 - - [02/Nov/2026 14:32:36] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [02/Nov/2026 14:32:37] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?count=2&links=1 HTTP/1.1\" 200 3240\n127.0.0.1 - - [02/Nov/2026 14:32:39] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?count=2&links=1 HTTP/1.1\" 200 3240\n127.0.0.1 - - [02/Nov/2026 14:32:39] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?count=2&links=1 HTTP/1.1\" 200 3240\n127.0.0.1 - - [02/Nov/2026 14:32:41] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?expanded=1 HTTP/1.1\" 200 24494\n127.0.0.1 - - [02/Nov/2026 14:32:41] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [02/Nov/2026 14:32:41] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?expanded=1 HTTP/1.1\" 200 3186\n127.0.0.1 - - [02/Nov/2026 14:32:51] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?expanded=1&lang=en HTTP/1.1\" 200 24518\n127.0.0.1 - - [02/Nov/2026 14:32:51] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [02/Nov/2026 14:32:51] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?expanded=1&lang=en HTTP/1.1\" 200 3186\n127.0.0.1 - - [02/Nov/2026 14:32:52] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?expanded=1&lang=en HTTP/1.1\" 200 24518\n127.0.0.1 - - [02/Nov/2026 14:32:52] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [02/Nov/2026 14:32:52] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?expanded=1&lang=en HTTP/1.1\" 200 3186\n127.0.0.1 - - [02/Nov/2026 14:32:53] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?expanded=1&lang=de HTTP/1.1\" 200 24500\n127.0.0.1 - - [02/Nov/2026 14:32:53] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [02/Nov/2026 14:32:53] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?expanded=1&lang=de HTTP/1.1\" 200 3187\n127.0.0.1 - - [02/Nov/2026 14:32:54] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?expanded=1&lang=de&reverse=1 HTTP/1.1\" 200 24528\n127.0.0.1 - - [02/Nov/2026 14:32:54] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [02/Nov/2026 14:32:54] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?expanded=1&lang=de&reverse=1 HTTP/1.1\" 200 3187\n127.0.0.1 - - [02/Nov/2026 14:32:55] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?expanded=1&lang=en HTTP/1.1\" 200 24518\n127.0.0.1 - - [02/Nov/2026 14:32:55] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [02/Nov/2026 14:32:55] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?expanded=1&lang=en HTTP/1.1\" 200 3186\n127.0.0.1 - - [02/Nov/2026 14:32:56] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?icon=host&size=default&heading=2 HTTP/1.1\" 200 6115\n127.0.0.1 - - [02/Nov/2026 14:32:56] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [02/Nov/2026 14:32:56] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?icon=host&size=default&heading=2 HTTP/1.1\" 200 3195\n127.0.0.1 - - [02/Nov/2026 14:32:57] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?icon=host&size=replace&heading=2 HTTP/1.1\" 200 6160\n127.0.0.1 - - [02/Nov/2026 14:32:57] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [02/Nov/2026 14:32:57] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?icon=host&size=replace&heading=2 HTTP/1.1\" 200 3240\n127.0.0.1 - - [02/Nov/2026 14:32:58] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?icon=host&size=remove&heading=2 HTTP/1.1\" 200 6104\n127.0.0.1 - - [02/Nov/2026 14:32:58] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [02/Nov/2026 14:32:58] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?icon=host&size=remove&heading=2 HTTP/1.1\" 200 3186\n127.0.0.1 - - [02/Nov/2026 14:32:59] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?icon=element&size=default&heading=2 HTTP/1.1\" 200 6155\n127.0.0.1 - - [02/Nov/2026 14:32:59] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [02/Nov/2026 14:32:59] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?icon=element&size=default&heading=2 HTTP/1.1\" 200 3229\n127.0.0.1 - - [02/Nov/2026 14:33:00] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?icon=element&size=replace&heading=2 HTTP/1.1\" 200 6200\n127.0.0.1 - - [02/Nov/2026 14:33:00] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [02/Nov/2026 14:33:00] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?icon=element&size=replace&heading=2 HTTP/1.1\" 200 3274\n127.0.0.1 - - [02/Nov/2026 14:33:01] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?icon=element&size=remove&heading=2 HTTP/1.1\" 200 6136\n127.0.0.1 - - [02/Nov/2026 14:33:01] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [02/Nov/2026 14:33:01] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?icon=element&size=remove&heading=2 HTTP/1.1\" 200 3220\n127.0.0.1 - - [02/Nov/2026 14:33:02] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?icon=empty&size=default&heading=2 HTTP/1.1\" 200 6100\n127.0.0.1 - - [02/Nov/2026 14:33:02] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [02/Nov/2026 14:33:02] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?icon=empty&size=default&heading=2 HTTP/1.1\" 200 3178\n127.0.0.1 - - [02/Nov/2026 14:33:03] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?icon=empty&size=replace&heading=2 HTTP/1.1\" 200 6145\n127.0.0.1 - - [02/Nov/2026 14:33:03] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [02/Nov/2026 14:33:03] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?icon=empty&size=replace&heading=2 HTTP/1.1\" 200 3223\n127.0.0.1 - - [02/Nov/2026 14:33:04] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?icon=empty&size=remove&heading=2 HTTP/1.1\" 200 6081\n127.0.0.1 - - [02/Nov/2026 14:33:05] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [02/Nov/2026 14:33:05] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?icon=empty&size=remove&heading=2 HTTP/1.1\" 200 3169\n127.0.0.1 - - [02/Nov/2026 14:33:06] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?icon=disabled&size=default&heading=2 HTTP/1.1\" 200 6106\n127.0.0.1 - - [02/Nov/2026 14:33:06] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [02/Nov/2026 14:33:06] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?icon=disabled&size=default&heading=2 HTTP/1.1\" 200 3178\n127.0.0.1 - - [02/Nov/2026 14:33:07] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?icon=disabled&size=replace&heading=2 HTTP/1.1\" 200 6151\n127.0.0.1 - - [02/Nov/2026 14:33:07] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [02/Nov/2026 14:33:07] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?icon=disabled&size=replace&heading=2 HTTP/1.1\" 200 3223\n127.0.0.1 - - [02/Nov/2026 14:33:08] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?icon=disabled&size=remove&heading=2 HTTP/1.1\" 200 6087\n127.0.0.1 - - [02/Nov/2026 14:33:08] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [02/Nov/2026 14:33:08] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?icon=disabled&size=remove&heading=2 HTTP/1.1\" 200 3169\n127.0.0.1 - - [02/Nov/2026 14:33:09] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/?theme=native HTTP/1.1\" 200 1602\n127.0.0.1 - - [02/Nov/2026 14:33:09] \"GET /favicon.ico HTTP/1.1\" 204 0\n127.0.0.1 - - [02/Nov/2026 14:33:09] \"GET /detail/623952c0-76d3-4027-a025-8885b6d19f3c/ HTTP/1.1\" 200 6029\n127.0.0.1 - - [02/Nov/2026 14:33:09] \"GET /favicon.ico HTTP/1.1\" 204 0\n",
+  "completed": true
+}

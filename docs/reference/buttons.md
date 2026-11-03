@@ -143,9 +143,14 @@ apply to the buttons a map, a context button, a target view or `CRUD_VIEWS_LABEL
 | `alert:info` | `alert alert-info` |
 | `alert:debug` | `alert alert-secondary` |
 | `context:icon-host` / `list:icon-host` / `card:icon-host` / `menu:icon-host` / `form:icon-host` | `{name_class}` |
+| `heading:size-1` / `heading:size-2` / `heading:size-3` / `heading:size-4` / `heading:size-5` / `heading:size-6` | `h1` / `h2` / `h3` / `h4` / `h5` / `h6`, respectively |
+| `heading:icon-host` | `{name_class}` |
+| `heading:icon-inline` | `me-2` |
+| `heading-page:icon-inline` / `heading-modal:icon-inline` | `""` |
 
-The default table has 74 keys: the rows with four variants stand for four keys each, the rows with three locations
-for three, the `*:hidden-label` row of the button locations for four and the `*:icon-host` row for five. The `context` and `list`
+The default table has 84 keys: the rows with four variants stand for four keys each, the rows with three locations
+for three, the `*:hidden-label` row of the button locations for four and the button `*:icon-host` row for five.
+Heading styling adds six size keys, two shared icon keys and two location defaults. The `context` and `list`
 buttons look the same for every variant by default, the `card` buttons distinguish them. Mode keys such as
 `card:tertiary:icon` and `form:submit:icon` are addressable but not shipped; their possible combinations are excluded
 from the default-table count.
@@ -229,13 +234,36 @@ CRUD_VIEWS_BUTTON_CLASSES = {"list:container-tag": "div", "list:container-label"
 The five `alert:*` keys colour the one alert frame, `tags/alert.html`, which renders every alert in the package:
 the slot is the alert's level (`error`, `warning`, `success`, `info`, `debug`). See [Flash messages](messages.md).
 
-The five `*:icon-host` keys are format strings: the class a [host-placed icon](icons.md#host-placement) adds to
+The five button `*:icon-host` keys are format strings: the class a [host-placed icon](icons.md#host-placement) adds to
 its button, with `{name_class}` standing for the icon library's name class. `"card:icon-host": "icon {name_class}"`
 adds a base class on card buttons only; `None` or `""` switches host icons off at that location (no class and
 nothing inline). The filter toggle is the exception in its icon-bearing modes (`"icon"` and `"both"`): with
 `context:icon-host` off it falls back to its two icon spans, which show the standalone icons. In `"label"` mode it
 renders no icons at all, whatever the host keys say, `None` and `""` included. The keys have no effect for an icon
 library without `placement: "host"`.
+
+### Heading styling
+
+`cv_heading` resolves visual sizing through `heading:size-1` through `heading:size-6`. Without an explicit
+`size=N`, it uses the template's `level` size only when the semantic heading level changes. Explicit `size=N`
+applies even when the semantic level stays the same. `None` or `""` removes only that size contribution;
+caller classes such as `modal-title` and `mb-0` remain. `class=` and `icon_class=` are independent template
+expressions; the resulting classes are escaped separately and joined in size, caller, icon order.
+
+`{% cv_heading_icon value location="modal" as title_icon %}` projects a host icon into
+`title_icon.host_class` or renders one element into `title_icon.inline_html`. Place the host classes on the
+title-bearing heading (or interactive title button) and render the inline HTML before the visible title.
+Suppressing a host slot never falls back to an inline icon and never removes the title text.
+
+The shared slots are `heading:icon-host` and `heading:icon-inline`. Optional location keys are
+`heading-page:icon-host`, `heading-modal:icon-host`, `heading-group:icon-host` and their `:icon-inline`
+counterparts. Only page/modal inline overrides ship as defaults; the other four are addressable keys without
+default entries and are excluded from the count above. Group inline icons use the shared `me-2` spacing;
+the shared slot replaces group-specific hardcoded icon styling when group templates adopt this projection.
+
+Heading icon lookup checks project location, project shared, theme location, theme shared, builtin location,
+then builtin shared. Presence wins, including `None` or `""`. Thus a project shared override beats a theme
+location override. This heading-specific fallback leaves existing button mode lookup unchanged.
 
 ## `CRUD_VIEWS_BUTTON_CLASSES`
 
@@ -392,7 +420,8 @@ keys are `LEAF_KEYS`:
 
 A renderer registered through the icon library config must emit `aria-hidden="true"` on the icon, as `render_icon()` does.
 The `"both"` branch of the bundled leaf relies on it: the visible `<span>` must be the button's only accessible name.
-A `cv_no_label` key in the context passed to `cv_button_data()` raises `ValueError`; use `cv_label_mode`.
+Use `cv_label_mode` in the context passed to `cv_button_data()`. A stray `cv_no_label` key is ignored and remains
+absent from the projected leaf data; it does not change the effective mode.
 
 `cv_key` is the key of the view a button targets, not the button's own key: `ContextButton(key="home",
 key_target="list")` renders `cv-key="list"`. The filter toggle is the exception — it toggles the filter of the page the

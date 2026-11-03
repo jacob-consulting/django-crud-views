@@ -123,11 +123,6 @@ def cv_button_data(ctx: dict, location: str, kind: str = "action") -> dict:
         if kind != "action":
             raise ValueError(f'kind must be "action" for location "form", got {kind!r}')
         return _form_button_data(ctx)
-    if "cv_no_label" in ctx:
-        raise ValueError(
-            "cv_no_label is no longer a leaf input; use CardAction.label_mode or cv_label_mode"
-            " (it is also picked up from the page template context, so check for a stray cv_no_label variable there)"
-        )
     card = location == "card"
 
     disabled = bool(ctx.get("cv_disabled"))

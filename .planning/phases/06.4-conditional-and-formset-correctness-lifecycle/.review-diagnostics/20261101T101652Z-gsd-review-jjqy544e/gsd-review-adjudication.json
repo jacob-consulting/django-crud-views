@@ -1,0 +1,40 @@
+{
+  "current_high": 0,
+  "current_actionable": 0,
+  "high": [],
+  "actionable": [],
+  "closed_prior_high": [
+    "H1",
+    "H2",
+    "H3"
+  ],
+  "closed_prior_actionable": [
+    "A01",
+    "A02",
+    "A03",
+    "A04",
+    "A05",
+    "A06",
+    "A07",
+    "A08",
+    "A09",
+    "A10",
+    "A11",
+    "A12",
+    "A13",
+    "A14",
+    "A15",
+    "A16",
+    "A17",
+    "A18"
+  ],
+  "new_high_gate": "Three actual source-cited reviewers, no leading evidence discounts; no new HIGH raised or suppressed.",
+  "fresh_low_dispositions": {
+    "cancel_test": "Already incorporated by 06:111-116: tdd=true, actual combined listeners, honor earlier defaultPrevented, zero fetch. preventDefault-only is discriminating implementation of that existing requirement.",
+    "server_startup": "08:119 explicitly forbids model-check invocation/Pillow requirement and uses existing startup analog; server API choice is implementation detail.",
+    "docstring": "Wording consistency already owned by 09:102 corrected never-validated promise and 02 edits group.py; no new runtime contract.",
+    "W320": "09:102 replacement of W320 plus 09:118 every changed contract/Breaking migration pairing already owns this.",
+    "jsdom_resolution": "01:114 resolved repository cwd loading already specified; absolute module path is optional equivalent detail.",
+    "wave1_identity": "01:114 tracer requires identity round-trip; field-aware clearing remains plan02."
+  }
+}

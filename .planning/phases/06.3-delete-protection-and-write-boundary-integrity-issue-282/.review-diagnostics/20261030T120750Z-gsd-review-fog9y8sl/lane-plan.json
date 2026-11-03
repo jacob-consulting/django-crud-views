@@ -1,0 +1,10 @@
+[
+  {
+    "slug": "opencode",
+    "ok": true,
+    "section": "OpenCode",
+    "transport": "spawn",
+    "promptBudget": null,
+    "promptPath": "/tmp/gsd-review-fog9y8sl/gsd-review-prompt.md"
+  }
+]

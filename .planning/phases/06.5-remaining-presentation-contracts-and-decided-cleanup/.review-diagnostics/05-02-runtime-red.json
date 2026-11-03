@@ -1,0 +1,10 @@
+{
+  "command": "node node_modules/vitest/vitest.mjs run tests/js/runtime-contract.test.js --reporter=junit --outputFile=.planning/phases/06.5-remaining-presentation-contracts-and-decided-cleanup/.review-diagnostics/05-02-runtime-red.xml",
+  "exitCode": 1,
+  "output": "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n<testsuites name=\"vitest tests\" tests=\"3\" failures=\"1\" errors=\"0\" time=\"4.440452907\">\n    <testsuite name=\"tests/js/runtime-contract.test.js\" timestamp=\"2026-11-02T11:48:56.299Z\" hostname=\"weaver-dev\" tests=\"3\" failures=\"1\" errors=\"0\" skipped=\"0\" time=\"4.440452907\">\n        <testcase classname=\"tests/js/runtime-contract.test.js\" name=\"test runtime boundary &gt; runs every other ordinary JS file in a checkout with only Node available\" time=\"0.006674998\">\n            <failure message=\"expected false to be true // Object.is equality\" type=\"AssertionError\">\nAssertionError: expected false to be true // Object.is equality\n\n- Expected\n+ Received\n\n- true\n+ false\n\n \u276f tests/js/runtime-contract.test.js:69:90\n            </failure>\n        </testcase>\n        <testcase classname=\"tests/js/runtime-contract.test.js\" name=\"test runtime boundary &gt; fails the required integration lane for a missing selected Python\" time=\"2.195234373\">\n        </testcase>\n        <testcase classname=\"tests/js/runtime-contract.test.js\" name=\"test runtime boundary &gt; fails the required integration lane for a invalid selected Python\" time=\"2.2294231\">\n        </testcase>\n    </testsuite>\n</testsuites>\n",
+  "targetTest": "test runtime boundary > runs every other ordinary JS file in a checkout with only Node available",
+  "targetFile": "tests/js/runtime-contract.test.js",
+  "expected": "Copied extension tabs.js exists",
+  "actual": "Copied extension asset does not exist",
+  "semanticAssessment": "Target executed and failed its planned assertion; no collection/fixture failure; existing negative interpreter cases still pass in runtime report."
+}

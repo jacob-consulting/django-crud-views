@@ -1,0 +1,815 @@
+{
+  "high": [
+    {
+      "id": "H1",
+      "title": "Inline conditional clearing can be skipped by has_changed",
+      "class": "judgment",
+      "reviewers": [
+        "grok-review"
+      ],
+      "raw": [
+        "G04",
+        "G10",
+        "G23",
+        "G27",
+        "G30"
+      ],
+      "plans": [
+        "02",
+        "04",
+        "08",
+        "10"
+      ],
+      "needed": "Assign render_tree.py ownership to force the existing inline save path when resolved conditional values require persistence, even when ordinary has_changed is false. Add an unchanged/off-toggle FileField/ImageField inline regression using actual XFormSet.save, plus a required browser/evidence assertion ID. Preserve disabled precedence and do not persist untouched blank extras.",
+      "evidence": [
+        "src/crud_views/lib/formsets/render_tree.py:256-260",
+        ".nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/forms/fields.py:703-704",
+        "06.4-02-PLAN.md:87",
+        "06.4-02-PLAN.md:101"
+      ]
+    },
+    {
+      "id": "H2",
+      "title": "Fragment close-tag repair is conditional on a parser that can hide the defect",
+      "class": "judgment (with independently confirmed existence premises)",
+      "reviewers": [
+        "grok-review",
+        "fable-review"
+      ],
+      "raw": [
+        "G20",
+        "G25",
+        "G30",
+        "F22",
+        "F23"
+      ],
+      "plans": [
+        "07",
+        "08",
+        "10"
+      ],
+      "needed": "Make the render_rows_only closing-condition repair unconditional; verify raw rendered fragment structure before a browser repairs stray end tags, retain parsed insertion/POST proofs, and include the raw-balance assertion in required evidence. Update the stale A19 source docstring.",
+      "evidence": [
+        "src/crud_views/templates/crud_views/formsets/formset.html:4",
+        "src/crud_views/templates/crud_views/formsets/formset.html:56",
+        "src/crud_views/lib/formsets/render_tree.py:102",
+        "src/crud_views/lib/formsets/formsets.py:417-418",
+        "06.4-07-PLAN.md:99"
+      ]
+    },
+    {
+      "id": "H3",
+      "title": "Edit-only and native-subclass HTTP fixture construction is underspecified",
+      "class": "existence; absence directly checked; materially corroborated by G11",
+      "reviewers": [
+        "fable-review",
+        "grok-review"
+      ],
+      "raw": [
+        "F12",
+        "G11"
+      ],
+      "plans": [
+        "04"
+      ],
+      "needed": "Explicitly construct test-local registered create/update ViewSets, edit_only/restricted-queryset declarations, and a Django BaseInlineFormSet subclass accepting formset/parent_form kwargs without inheriting the package InlineFormSet.clean. Own these fixtures inside the new policy test module and assert that requests reach the runtime policy gate.",
+      "evidence": [
+        "tests/test1/test_fragment_authorization.py:195",
+        "src/crud_views/lib/formsets/formsets.py:148-160",
+        "06.4-04-PLAN.md:89",
+        "No edit_only fixture declaration found under tests/test1/app by rg -n edit_only."
+      ]
+    }
+  ],
+  "actionable": [
+    {
+      "id": "A01",
+      "severity": "MEDIUM",
+      "title": "Isolate persistence test storage",
+      "raw": [
+        "F05"
+      ],
+      "plans": [
+        "02"
+      ],
+      "needed": "Require temporary MEDIA_ROOT/storage and cleanup for real file/image tests; keep deletion spies on that isolated storage."
+    },
+    {
+      "id": "A02",
+      "severity": "MEDIUM",
+      "title": "Test per-inline-form static-check field namespaces",
+      "raw": [
+        "F09"
+      ],
+      "plans": [
+        "03"
+      ],
+      "needed": "Explicitly recompute declared/injected toggle sets per inline form class and test distinct main/inline field namespaces so E311 does not inherit the main form\u2019s fields."
+    },
+    {
+      "id": "A04",
+      "severity": "MEDIUM",
+      "title": "Use post-default native reset scheduling",
+      "raw": [
+        "F16"
+      ],
+      "plans": [
+        "05",
+        "08"
+      ],
+      "needed": "Specify a task/macrotask resync after native reset, then test a real user-triggered reset button and later cancellation; do not rely only on programmatic form.reset plus microtask timing."
+    },
+    {
+      "id": "A06",
+      "severity": "MEDIUM",
+      "title": "Preserve browser runtime environment overrides",
+      "raw": [
+        "F26"
+      ],
+      "plans": [
+        "08"
+      ],
+      "needed": "Name and honor runtime/Playwright/Chromium overrides inherited from the existing runner, and record resolved paths/version provenance."
+    },
+    {
+      "id": "A07",
+      "severity": "MEDIUM",
+      "title": "Keep browser server ports and process scheduling independent",
+      "raw": [
+        "F27",
+        "F32",
+        "G24",
+        "G31"
+      ],
+      "plans": [
+        "08",
+        "10"
+      ],
+      "needed": "Choose a separate configured/default loopback port from modal-focus\u2019s 8143 and run the two owned browser servers sequentially with cleanup and occupied-port failure retained."
+    },
+    {
+      "id": "A08",
+      "severity": "LOW",
+      "title": "Update stale conditional example guidance",
+      "raw": [
+        "G09",
+        "G29"
+      ],
+      "plans": [
+        "09"
+      ],
+      "needed": "Add examples/bootstrap5/conditional/models.py to documentation ownership and revise the W320/universal-None comment to the new supported clearing contract."
+    },
+    {
+      "id": "A10",
+      "severity": "MEDIUM",
+      "title": "Run same-value disabled-ownership cases in Chromium",
+      "raw": [
+        "G15",
+        "G25"
+      ],
+      "plans": [
+        "08"
+      ],
+      "needed": "Require external disabled=true while already conditionally disabled, followed by external false and off/on, in actual Chromium and required evidence; generic external-disabled coverage does not name this observation edge."
+    },
+    {
+      "id": "A11",
+      "severity": "MEDIUM",
+      "title": "Render the stock Add-control template in verification",
+      "raw": [
+        "G17"
+      ],
+      "plans": [
+        "06"
+      ],
+      "needed": "Add a Django-rendered edit_only true/false stock control assertion and its runnable pytest check; the current plan 06 verify command only runs JS fixtures."
+    },
+    {
+      "id": "A12",
+      "severity": "LOW",
+      "title": "Address formset prefix selector escaping",
+      "raw": [
+        "G19"
+      ],
+      "plans": [
+        "06"
+      ],
+      "needed": "Use exact attribute equality or safe escaping for formset row/management lookup, with a supported-prefix regression, or explicitly defer broader prefix grammar with rationale."
+    },
+    {
+      "id": "A13",
+      "severity": "MEDIUM",
+      "title": "Document JSON pk as grammar rather than row identity",
+      "raw": [
+        "G28"
+      ],
+      "plans": [
+        "09"
+      ],
+      "needed": "State that XFormSet data.pk is the PK grammar; distinguish XForm\u2019s enum spelling/row prefix identity and link exact projection examples."
+    }
+  ],
+  "findings": [
+    {
+      "id": "F01",
+      "reviewer": "fable-review",
+      "plan": "06.4-01",
+      "line": 35,
+      "finding": "- **MEDIUM \u2014 two existing JS tests assert the old suffix contract and are not named for replacement.** `tests/js/toggle.test.js:67-71` (\"finds the checkbox by formset-prefixed suffix name\") passes `cv-data-toggle-field=\"active\"` with checkbox `book-None-0-active` and expects hide. Under exact matching this becomes an unresolved group (display untouched) and the test fails. `:89-97` (\"leaves a group without a matching checkbox untouched\") still passes but now describes the retry case rather than an error. Plan 01-01 says \"Expand JS cases\" but must also *delete or invert* the suffix test; otherwise the verify command for 01-01 cannot go green.",
+      "disposition": "INCORPORATED / no separate action",
+      "plan_evidence": "01:112,115",
+      "rationale": "Exact matching replaces suffix behavior, tests/js/toggle.test.js is an owned artifact and mandatory verify gate. Updating contradictory existing assertions is already necessary to execute the stated change."
+    },
+    {
+      "id": "F02",
+      "reviewer": "fable-review",
+      "plan": "06.4-01",
+      "line": 36,
+      "finding": "- **MEDIUM \u2014 `XFormSet` is a Pydantic model; \"private field\" needs `PrivateAttr` or an explicit field.** `render_tree.py:93` declares `class XFormSet(BaseModel, arbitrary_types_allowed=True)`. Setting an undeclared attribute on a Pydantic v2 model raises. The plan's \"private cv_bound_toggle_field\" must be either a declared field (`cv_bound_toggle_field: str = \"\"`) or `PrivateAttr`. Not a design flaw, but the executor should know before writing.",
+      "disposition": "INCORPORATED / no separate action",
+      "plan_evidence": "01:82,128",
+      "rationale": "The artifact explicitly declares an XFormSet field and task passes it into the runtime model; this is not an instruction to assign an undeclared attribute. Pydantic syntax is an implementation choice."
+    },
+    {
+      "id": "F03",
+      "reviewer": "fable-review",
+      "plan": "06.4-01",
+      "line": 37,
+      "finding": "- **LOW \u2014 `ModelFieldToggle.is_on` already uses `form.add_prefix`** (`toggle.py:29`), so server authority is unaffected by the rendering change; worth stating in the tracer's assertions so the \"server policy unchanged\" claim is tested, not assumed.",
+      "disposition": "INCORPORATED / no separate action",
+      "plan_evidence": "01:112",
+      "rationale": "Tracer binds actual FormData to the correct Django ModelForm, saves and refreshes both records; server-side binding preservation is already exercised."
+    },
+    {
+      "id": "F04",
+      "reviewer": "fable-review",
+      "plan": "06.4-01",
+      "line": 38,
+      "finding": "- **LOW \u2014 wrapper scope.** `formsets.html` is rendered via the `Formsets` crispy layout object (`layout.py:7-19`) inside the main form's crispy layout, so `group.closest(\"form\")` resolves the main form. The plan relies on this but does not assert it; a test with two prefixed forms each carrying a formset wrapper would pin it.",
+      "disposition": "INCORPORATED / no separate action",
+      "plan_evidence": "01:128;08:116",
+      "rationale": "Prefixed wrapper identity and actual stock/native two-form repeated-prefix integration are already required. No new behavior beyond those tasks is identified."
+    },
+    {
+      "id": "F05",
+      "reviewer": "fable-review",
+      "plan": "06.4-02",
+      "line": 59,
+      "finding": "- **MEDIUM \u2014 no `MEDIA_ROOT` in the test settings.** `tests/test1/conftest.py` (DB block at :91-100) sets no `MEDIA_ROOT`/`STORAGES`. \"Use real storage and spy on delete\" (02-02) will write uploaded files relative to the CWD (repo root) unless the test overrides `MEDIA_ROOT` to `tmp_path`. The plan should require an `override_settings(MEDIA_ROOT=tmp_path)` fixture; otherwise the test litters the checkout and can collide across workers.",
+      "disposition": "OPEN: A01"
+    },
+    {
+      "id": "F06",
+      "reviewer": "fable-review",
+      "plan": "06.4-02",
+      "line": 60,
+      "finding": "- **MEDIUM \u2014 explicit `None` for FileField is \"no change\", but the current mixin pops the field error and rewrites `cleaned_data`.** With `empty_values={\"attachment\": None}` an explicit None means *keep the existing reference* yet *discard the off-group upload*. `_cv_clear_group` currently assigns `cleaned[name] = None` which construct_instance passes to `save_form_data(instance, None)` \u2192 no change: fine. But `request.FILES` still carries the upload, and nothing in the plan states that the file upload is discarded *and* not validated when off. The behavior statement (\"explicit None retains the reference\") should add \"and the posted file is neither validated nor stored.\"",
+      "disposition": "INCORPORATED / no separate action",
+      "plan_evidence": "02:101",
+      "rationale": "Action already says discard off-group uploaded data, distinguish explicit None/no-change from False/clear, and test falsy values. A blanket promise of no inherited validation would conflict with retained invariants."
+    },
+    {
+      "id": "F07",
+      "reviewer": "fable-review",
+      "plan": "06.4-02",
+      "line": 61,
+      "finding": "- **LOW \u2014 M2M off-value through `save_m2m`.** `render_tree.py:233-234` calls `instance.save()` then `form.save_m2m()`. Django's `_save_m2m` only touches fields in `cleaned_data`; with `[]` it clears. Correct, but note that the main-form path (`super().cv_form_valid`) uses `form.save()`; both paths must be exercised, as the plan says. Fine as written.",
+      "disposition": "INCORPORATED / no separate action",
+      "plan_evidence": "02:101",
+      "rationale": "Action expressly tests the real formset commit=False\u2192instance.save\u2192save_m2m sequence. The separate has_changed omission is H1."
+    },
+    {
+      "id": "F08",
+      "reviewer": "fable-review",
+      "plan": "06.4-02",
+      "line": 62,
+      "finding": "- **LOW \u2014 plan test model is in the shared `tests/test1/app/models.py`.** Without a migrations dir this is syncdb-created at test DB setup; no migration needed. The browser fixture in plan 08 says it will create its own table separately; that is consistent.",
+      "disposition": "INCORPORATED / no separate action",
+      "plan_evidence": "02:68-70;08:79",
+      "rationale": "Test-model and isolated browser-model ownership are explicitly separated; reviewer states they are consistent."
+    },
+    {
+      "id": "F09",
+      "reviewer": "fable-review",
+      "plan": "06.4-03",
+      "line": 81,
+      "finding": "- **MEDIUM \u2014 nested-form static checks need the inline form's `base_fields`, but `cv_conditional_groups` on inline forms is not in the current traversal and the `declared` set at `checks.py:166` is computed only for the view's `form_class`.** The plan says \"include form classes reachable from all FormSet declarations\" but 03-01's acceptance (\"including inline/custom declarations\") needs an explicit statement that `declared`/`available_toggles` is recomputed per inline form class; otherwise E311 false positives are likely on inline forms whose toggle is injected.",
+      "disposition": "OPEN: A02"
+    },
+    {
+      "id": "F10",
+      "reviewer": "fable-review",
+      "plan": "06.4-03",
+      "line": 82,
+      "finding": "- **MEDIUM \u2014 \"retire W320\" changes a registered check ID.** Phase 7 freezes check IDs; removing W320 is a public-surface change. The plan routes documentation to 09 but does not say whether the ID is *removed* or *kept-but-never-emitted*. Removal is a Breaking entry per the project's docs rule; the plan should decide.",
+      "disposition": "INCORPORATED / no separate action",
+      "plan_evidence": "03:86;09:98,114",
+      "rationale": "W320 emission is retired in the action; checks.py registers the encompassing check function, not a separate W320 registration. Docs already require replacement of W320 and paired clearing/check Breaking guidance. A second registration-policy choice adds no behavior."
+    },
+    {
+      "id": "F11",
+      "reviewer": "fable-review",
+      "plan": "06.4-03",
+      "line": 83,
+      "finding": "- **LOW \u2014 \"Active-only unsupported fields still need configuration suitable for being switched off.\"** Correct policy, but it means some currently passing projects will fail checks at startup after upgrade. This should be called out as Breaking in 09's inputs.",
+      "disposition": "INCORPORATED / no separate action",
+      "plan_evidence": "03:100;09:98,114",
+      "rationale": "Active-only unsupported fields explicitly need off-capable configuration; startup/runtime E312 failure semantics and clearing/check migration are already assigned to 03/09."
+    },
+    {
+      "id": "F12",
+      "reviewer": "fable-review",
+      "plan": "06.4-04",
+      "line": 103,
+      "finding": "- **HIGH \u2014 no edit-only formset fixture exists anywhere in the test app.** `grep -rn edit_only tests/` finds only fakes in `test_conditional_checks.py:306-339` and the JS DOM helper. 04-01 requires \"a real create/update request test\" against an edit-only formset with both the package subclass and a native `BaseInlineFormSet`. The plan's `files_modified` lists neither `tests/test1/app/views_formset.py` nor a new fixture module; it relies on \"existing test-local registry/URL cleanup patterns\" (the `fr` fixture in `test_fragment_authorization.py:217-335`). That is workable but it is unstated scope: the executor must build URL-registered viewsets with `edit_only=True`, a restricted-queryset formset, and a native-subclass variant inside `test_formsets_policy.py`. Name it.",
+      "disposition": "OPEN: H3"
+    },
+    {
+      "id": "F13",
+      "reviewer": "fable-review",
+      "plan": "06.4-04",
+      "line": 104,
+      "finding": "- **MEDIUM \u2014 appending to `_non_form_errors` after `is_valid()` must not break Django's `errors` caching for the re-render.** `formset.html:27` renders `x_formset.instance|as_crispy_errors`, which reads `non_form_errors()`. Appending to the existing `ErrorList` after `full_clean` works; replacing it would not because `is_valid()` (`formsets.py:379`) re-reads `self.non_form_errors()`. The plan should state \"append to the existing list\" to avoid an executor rebuilding it.",
+      "disposition": "INCORPORATED / no separate action",
+      "plan_evidence": "04:89",
+      "rationale": "Task preserves custom clean/errors and repeated-validity idempotence. Appending rather than replacing an ErrorList is not independently required if those invariants remain satisfied."
+    },
+    {
+      "id": "F14",
+      "reviewer": "fable-review",
+      "plan": "06.4-04",
+      "line": 105,
+      "finding": "- **MEDIUM \u2014 existing-row identity check must use the parsed pk, not `cleaned_data[\"id\"]`.** The hidden pk `ModelChoiceField` is built from `self.model._default_manager.get_queryset()` and validates existence anywhere, so `cleaned_data[pk]` can be a foreign instance. The plan says this (\"not merely a broad ModelChoiceField queryset\"); good. But also note `form.instance._state.adding` is the reliable \"Django bound a persisted row\" signal, and `_cv_prefix_identity` (`formsets.py:28-37`) already encodes this rule; reuse it.",
+      "disposition": "INCORPORATED / no separate action",
+      "plan_evidence": "04:103",
+      "rationale": "Action already requires PK conversion, authorized queryset membership, actual persisted instance agreement, and distinguishing unsaved UUIDs."
+    },
+    {
+      "id": "F15",
+      "reviewer": "fable-review",
+      "plan": "06.4-04",
+      "line": 106,
+      "finding": "- **LOW \u2014 DELETE-marked forged rows.** `render_tree.py:244-250` deletes when `form.instance.pk` is truthy. A forged foreign id yields instance pk `None` (unfetched), so no cross-parent delete occurs today; the plan's \"including DELETE-marked rows\" is still right because the generic error must be raised regardless.",
+      "disposition": "INCORPORATED / no separate action",
+      "plan_evidence": "04:103",
+      "rationale": "DELETE-marked invalid-ID rows are explicitly included; no new action requested."
+    },
+    {
+      "id": "F16",
+      "reviewer": "fable-review",
+      "plan": "06.4-05",
+      "line": 126,
+      "finding": "- **MEDIUM \u2014 \"schedule synchronization after the default reset algorithm\" must be a macrotask, not a microtask.** When a *user* activates a reset button, the browser dispatches `reset`; after each listener returns the JS stack is empty, so a microtask checkpoint runs *before* the UA performs the default reset of controls. A `queueMicrotask`/`Promise.then` resync would therefore read pre-reset `checked` state. In jsdom, `form.reset()` called from test code keeps the stack non-empty, so a microtask would run after reset and the unit test would pass. Only `setTimeout(\u2026, 0)` (or `requestAnimationFrame`) is safe in both. 05-02 should name the macrotask explicitly; plan 08's keyboard reset case will catch a wrong choice, but late.",
+      "disposition": "OPEN: A04"
+    },
+    {
+      "id": "F17",
+      "reviewer": "fable-review",
+      "plan": "06.4-05",
+      "line": 127,
+      "finding": "- **MEDIUM \u2014 observer scope on detached modal content.** `cvModalInject` (`modal.js:90-96`) dispatches `cv:modal:unload` while old nodes are attached, then `innerHTML = html`. The plan says to dispose observers on unload. MutationObservers on removed nodes are GC-safe, but `WeakMap` per-form bookkeeping keyed on a detached form is also fine. The risk is the *reverse*: 422 replacement injects a new `<form>` while the page-level `document` listener for `cv:modal:loaded` (`toggle.js:59-61`) calls the initializer; nothing there is wrong, but the plan must ensure the initializer runs on the *new* form root, and that `cv:modal:loaded` fires before modal.js's focus recovery (`modal.js:96-102`) so hiding does not strand focus mid-recovery. The plan says this; keep it as an explicit test.",
+      "disposition": "INCORPORATED / no separate action",
+      "plan_evidence": "05:92;06:108",
+      "rationale": "Unload while attached, initialized replacement before focus recovery, and open\u2192422\u2192close\u2192open integration tests already exist in actions."
+    },
+    {
+      "id": "F18",
+      "reviewer": "fable-review",
+      "plan": "06.4-05",
+      "line": 128,
+      "finding": "- **LOW \u2014 external true\u2192false while inactive.** With `attributeOldValue`, a record with oldValue `\"\"` and current absence means \"externally enabled\". But if the library itself is currently holding `disabled` true, an external `el.disabled = false` is observable only if the external write happened while the library's observer was connected. The plan's \"disconnect only around the library's synchronous writes after draining\" handles this; the spike test should include this exact case.",
+      "disposition": "INCORPORATED / no separate action",
+      "plan_evidence": "05:78",
+      "rationale": "Action explicitly preserves external true\u2192false/false\u2192true changes while active/inactive and drains external records around own writes."
+    },
+    {
+      "id": "F19",
+      "reviewer": "fable-review",
+      "plan": "06.4-06",
+      "line": 148,
+      "finding": "- **MEDIUM \u2014 the modal `defaultPrevented` concern is partly moot and partly real.** formset.js's handler is jQuery `.on(\"submit\")` returning `false` (`:485-488`), which calls `stopPropagation` as well, so the document-level modal listener (`modal.js:227-233`) never fires on a formset reorder failure *today*. The real gap is that modal forms get no formset submit handler at all because binding happened at page start. Once the plan binds per form via native listeners (no `return false`), the document listener *will* run, so checking `event.defaultPrevented` in `modal.js` becomes necessary. The plan's wording should state that the check is needed *because* of the new binding model, not that it is a pre-existing hole.",
+      "disposition": "INCORPORATED / no separate action",
+      "plan_evidence": "06:108",
+      "rationale": "Plan specifies the new composed submit behavior, reorder failure handling and defaultPrevented check; it does not require a false claim about old jQuery propagation."
+    },
+    {
+      "id": "F20",
+      "reviewer": "fable-review",
+      "plan": "06.4-06",
+      "line": 149,
+      "finding": "- **MEDIUM \u2014 double-binding risk on `row-added`.** `XForm.add()` calls `this.ctl.add_form_control_for_new_rows(rows)` (`formset.js:341`) *and then* dispatches `row-added` (`:342`). If the initializer also listens for `row-added` and binds controls, rows get two handlers unless binding is delegated at form level. The plan says \"delegated or namespaced handlers\"; it should mandate delegated binding (one click handler per form, matching `.cv-form-ctrl-*` by `closest`) and drop `add_form_control_for_new_rows`, otherwise the \"no duplicate action handlers\" acceptance is at risk.",
+      "disposition": "INCORPORATED / no separate action",
+      "plan_evidence": "06:94,108",
+      "rationale": "Idempotent delegated OR namespaced handlers and no duplicate row/control events are explicit acceptance. Forcing delegation is optional when namespacing satisfies the same contract."
+    },
+    {
+      "id": "F21",
+      "reviewer": "fable-review",
+      "plan": "06.4-06",
+      "line": 150,
+      "finding": "- **LOW \u2014 existing tests construct `new window.cv.CrudViewsFormset()` directly** (`tests/js/formset.test.js:296-363`). The plan keeps old seams internal; those tests will still pass only if the constructor remains callable without arguments. If the constructor becomes form-scoped, those tests need updating; the plan's `files_modified` includes `formset.test.js`, so this is covered but unstated.",
+      "disposition": "INCORPORATED / no separate action",
+      "plan_evidence": "06:94",
+      "rationale": "Constructor/lookup scoping and tests/js/formset.test.js ownership plus passing verify are explicit; no promise that private no-argument constructor remains public exists."
+    },
+    {
+      "id": "F22",
+      "reviewer": "fable-review",
+      "plan": "06.4-07",
+      "line": 169,
+      "finding": "- **MEDIUM \u2014 the `end_at_rows` imbalance is demonstrable now, not conditionally.** `formset.html:56` reads `x_formset.end_at_rows`; `XFormSet` (`render_tree.py:93-102`) defines `render_rows_only` only. Django templates resolve the missing attribute to empty, so every fragment emits four unmatched closing tags. Browsers drop stray end tags in `insertAdjacentHTML`, which is why it has gone unnoticed. 07-02's \"align closing behavior \u2026 only where the regression demonstrates unbalanced fragment output\" should simply be \"fix the closing condition to `render_rows_only` and add the parsed-DOM test\"; the conditional phrasing invites an executor to skip a known defect.",
+      "disposition": "OPEN: H2"
+    },
+    {
+      "id": "F23",
+      "reviewer": "fable-review",
+      "plan": "06.4-07",
+      "line": 170,
+      "finding": "- **LOW \u2014 `_cv_validate_fragment_coordinates` docstring and `docs/reference/formsets.md:205-210` both state the A19 limitation.** The plan routes docs to 09 but the docstring at `formsets.py:417-418` is source and should be updated in 07-01.",
+      "disposition": "OPEN: H2"
+    },
+    {
+      "id": "F24",
+      "reviewer": "fable-review",
+      "plan": "06.4-08",
+      "line": 189,
+      "finding": "- **MEDIUM \u2014 the fixture server lives in `tests/browser/` while its analog lives under `.planning/` (`modal-focus.cjs:88` spawns `${phase}/17-evidence/server.py`).** Moving it into `tests/browser/` is better for Phase 7, but `pytest` collection (`tests` root) and Ruff will now see it; ensure it is not collected as a test module (name it without `test_` prefix, which the plan does) and that it passes lint, since plan 10 runs touched-file Ruff.",
+      "disposition": "INCORPORATED / no separate action",
+      "plan_evidence": "08:79;10:96",
+      "rationale": "Server name lacks test_ prefix and touched-Python lint is required. Reviewer confirms these choices already meet the concern."
+    },
+    {
+      "id": "F25",
+      "reviewer": "fable-review",
+      "plan": "06.4-08",
+      "line": 190,
+      "finding": "- **MEDIUM \u2014 \"private BrowserMemo fixture model \u2026 create/drop the fixture-only table in its isolated DB.\"** The 06.3 fixture used `call_command(\"migrate\", run_syncdb=True)` on a temp SQLite file (`17-evidence/server.py:20,37`). A model defined outside an `INSTALLED_APPS` app label cannot be synced that way; it needs either a tiny fixture app in `tests/browser/` or `schema_editor.create_model`. The plan should pick one; otherwise the executor may put the model in the shared `tests/test1/app/models.py`, which plan 02 owns in wave 1 and which the SOURCE-AUDIT says is isolated from browser fixtures.",
+      "disposition": "INCORPORATED / no separate action",
+      "plan_evidence": "08:79,102",
+      "rationale": "The plan explicitly owns the private fixture model in the server module and requires create/drop of its isolated table. schema_editor versus an isolated fixture app is executor design; adding to shared models would already violate ownership."
+    },
+    {
+      "id": "F26",
+      "reviewer": "fable-review",
+      "plan": "06.4-08",
+      "line": 191,
+      "finding": "- **MEDIUM \u2014 the runner reads a Node runtime path from `.planning/phases/06-form-button-leaf/06-JS-RUNTIME.json` (`modal-focus.cjs:11-17`) and hard-codes Playwright/Chromium paths (`:82-83`).** The new runner will inherit the same machine-specific defaults. Acceptable for this repo's established practice, but the plan should require env-var overrides (as the analog does) and record them in evidence.",
+      "disposition": "OPEN: A06"
+    },
+    {
+      "id": "F27",
+      "reviewer": "fable-review",
+      "plan": "06.4-08",
+      "line": 192,
+      "finding": "- **LOW \u2014 port.** Analog uses 8143; the plan says \"separate port\" without a number; both runners are in plan 10's gate, so they must not collide.",
+      "disposition": "OPEN: A07"
+    },
+    {
+      "id": "F28",
+      "reviewer": "fable-review",
+      "plan": "06.4-08",
+      "line": 193,
+      "finding": "- **LOW \u2014 \"JS-disabled/direct tampered HTTP POST\"** is best done via `context.request.post` with the session cookie and CSRF token rather than a JS-disabled page; either works, but the evidence should capture the server-received payload (the plan says so).",
+      "disposition": "INCORPORATED / no separate action",
+      "plan_evidence": "08:116",
+      "rationale": "JS-disabled/direct tampered HTTP, server-received payload, and DB/save-count assertions are already explicit; HTTP client selection is discretionary."
+    },
+    {
+      "id": "F29",
+      "reviewer": "fable-review",
+      "plan": "06.4-09",
+      "line": 212,
+      "finding": "- **MEDIUM \u2014 Breaking items are incomplete relative to the upstream plans.** Besides the bound-marker change (01), two further changes are user-visible breaks: (a) W320 retirement/E312 introduction can turn previously passing projects into startup errors (03); (b) `render_tree.save` behavior change: edit-only extras and forged ids that were previously *saved* are now rejected (04). The migration guide must tell users what used to happen and what now happens. The plan lists \"strict pre-save row rejection as applicable\" for migration but not the check-ID change.",
+      "disposition": "INCORPORATED / no separate action",
+      "plan_evidence": "09:98,114",
+      "rationale": "Both W320 replacement and strict pre-save row rejection are explicitly in the documentation actions and paired Breaking guidance; the reviewer overlooks those clauses."
+    },
+    {
+      "id": "F30",
+      "reviewer": "fable-review",
+      "plan": "06.4-09",
+      "line": 213,
+      "finding": "- **LOW \u2014 `.venv/bin/mkdocs build --strict` is the verify command; `mkdocs.yml` nav must already include the touched pages.** They are existing pages, so fine; new anchors referenced from `migrating-1.0.md` must exist or strict mode fails. Normal risk.",
+      "disposition": "INCORPORATED / no separate action",
+      "plan_evidence": "09:98,114",
+      "rationale": "Strict docs build and linked executable recipes are explicit; existing pages are already in navigation and no concrete missing link is identified."
+    },
+    {
+      "id": "F31",
+      "reviewer": "fable-review",
+      "plan": "06.4-10",
+      "line": 231,
+      "finding": "- **MEDIUM \u2014 the `crispy_floor` envs pin crispy floors; the full-suite \"three series\" run therefore mixes one floor-pinned 4.2 env, one floor-pinned 6.0 env and one current-pin 5.2 env.** `noxfile.py:96-106` shows `crispy_floor` deselects `CRISPY_FLOOR_DESELECT` tests. Plan 10's \"full tests in these three environments\" must apply the same deselection on the floor envs or it will record a known golden failure as new. The 06.3 gate handled this; the plan should cite the exact deselect expression rather than \"honor only the exact documented existing exclusions\".",
+      "disposition": "INCORPORATED / no separate action",
+      "plan_evidence": "10:95-96",
+      "rationale": "Read-first includes noxfile.py and 06.3 gates; action explicitly requires the exact documented CSP/golden node IDs/reasons. Duplicating their current expression is unnecessary."
+    },
+    {
+      "id": "F32",
+      "reviewer": "fable-review",
+      "plan": "06.4-10",
+      "line": 232,
+      "finding": "- **LOW \u2014 both browser runners (new `conditional-formsets.cjs` and `modal-focus.cjs --case all`) hard-code loopback ports; running them sequentially is fine, but the evidence runner must not launch them concurrently.**",
+      "disposition": "OPEN: A07"
+    },
+    {
+      "id": "F33",
+      "reviewer": "fable-review",
+      "plan": "06.4-10",
+      "line": 233,
+      "finding": "- **LOW \u2014 \"descriptor-less prohibition status from 02 as flagged-unverified\"** is correctly carried; nothing to add.",
+      "disposition": "INCORPORATED / no separate action",
+      "plan_evidence": "10:111",
+      "rationale": "The flagged-unverified prohibition status is explicitly retained; reviewer says nothing to add."
+    },
+    {
+      "id": "G01",
+      "reviewer": "grok-review",
+      "plan": "06.4-01",
+      "line": 15,
+      "finding": "- MEDIUM: Task 01 does not say to delete the `DOMContentLoaded` / `cv:modal:loaded` / `cv:formset:row-added` calls to `wireGroups` (`toggle.js:53-65`). Plan 05 adds `cv.initConditional` on those same events. Leaving both binds two `change` handlers.",
+      "disposition": "INCORPORATED / no separate action",
+      "plan_evidence": "01:112;05:92",
+      "rationale": "Single successful binding state/handlers and routing all automatic events through cv.initConditional already prohibit a second legacy binding path."
+    },
+    {
+      "id": "G02",
+      "reviewer": "grok-review",
+      "plan": "06.4-01",
+      "line": 16,
+      "finding": "- LOW: `FSET-02` is listed here, but automatic page/modal/row startup is plan 05/06. This plan only proves an explicit `cv.initConditional` call.",
+      "disposition": "INCORPORATED / no separate action",
+      "plan_evidence": "01:112;05:92;06:94",
+      "rationale": "Requirements may span ordered plans. Later startup tasks are explicit; reviewer says this is bookkeeping."
+    },
+    {
+      "id": "G03",
+      "reviewer": "grok-review",
+      "plan": "06.4-01",
+      "line": 17,
+      "finding": "- LOW: `XFormSet` is a pydantic model with no `extra` allowance (`render_tree.py:93-102`). `cv_bound_toggle_field` must be a declared field; a bare attribute assignment will raise.",
+      "disposition": "INCORPORATED / no separate action",
+      "plan_evidence": "01:82,128",
+      "rationale": "Same disposition as F02: declared new runtime field, not undeclared attribute assignment."
+    },
+    {
+      "id": "G04",
+      "reviewer": "grok-review",
+      "plan": "06.4-02",
+      "line": 37,
+      "finding": "- HIGH: `XFormSet.save` writes a row only when `form.has_changed()` (`render_tree.py:256-260`). `FileField.has_changed` returns false when `data is None`. An off group omits the upload, so an inline file/image clear never reaches `save_form_data`. Plan 02 never edits `render_tree.py` and can go green with `ModelForm.save()` only. Plan 03 explicitly covers inline form classes, so this path is in scope.",
+      "disposition": "OPEN: H1"
+    },
+    {
+      "id": "G05",
+      "reviewer": "grok-review",
+      "plan": "06.4-02",
+      "line": 38,
+      "finding": "- MEDIUM: Disabled fields also report `has_changed() == False`. Preservation is fine if the row is not saved; if another cleared field forces a save, disabled precedence must already have been applied in `clean` before `_post_clean`. The plan says that, but the file-only row never enters that code.",
+      "disposition": "INCORPORATED / no separate action",
+      "plan_evidence": "02:87,101",
+      "rationale": "Disabled precedence before suppression/clearing and disabled file/M2M cases are explicit. Remaining persistence reachability is H1."
+    },
+    {
+      "id": "G06",
+      "reviewer": "grok-review",
+      "plan": "06.4-02",
+      "line": 39,
+      "finding": "- LOW: `CrispyModelForm.__init__` requires `cv_view` (`form.py:39`). Persistence tests must follow `test_conditional_group.py`, not a bare `ModelForm()`.",
+      "disposition": "INCORPORATED / no separate action",
+      "plan_evidence": "02:85",
+      "rationale": "read_first includes existing conditional-group tests and crispy form.py; test-construction conventions are discoverable. Task explicitly supports plain Forms as well as ModelForms, so requiring CrispyModelForm everywhere would narrow scope."
+    },
+    {
+      "id": "G07",
+      "reviewer": "grok-review",
+      "plan": "06.4-03",
+      "line": 58,
+      "finding": "- MEDIUM: Startup checks must not instantiate request-bound forms. The plan says that, but `resolve_conditional_empty_value(form_field, model_field, ...)` still needs a form field object. Use `base_fields` only. A check that calls `form_class()` will break views whose form `__init__` requires `cv_view`.",
+      "disposition": "INCORPORATED / no separate action",
+      "plan_evidence": "03:86",
+      "rationale": "Action explicitly says inspect base_fields and never construct arbitrary request-dependent forms at startup."
+    },
+    {
+      "id": "G08",
+      "reviewer": "grok-review",
+      "plan": "06.4-03",
+      "line": 59,
+      "finding": "- MEDIUM: Raising `ImproperlyConfigured` from `clean`/`_post_clean` 500s the request. That matches D-10, but a test that only expects a check message will miss a dynamic field that is absent from `base_fields`. Task 03-02 covers that; keep it on the dynamic form, not a second static check.",
+      "disposition": "INCORPORATED / no separate action",
+      "plan_evidence": "03:100",
+      "rationale": "Task explicitly tests a dynamic field absent from static base_fields, ImproperlyConfigured before save, and zero-save spying."
+    },
+    {
+      "id": "G09",
+      "reviewer": "grok-review",
+      "plan": "06.4-03",
+      "line": 60,
+      "finding": "- LOW: `examples/bootstrap5/conditional/models.py` still says off-group clear is `None` because of W320. Plan 09 does not list that file.",
+      "disposition": "OPEN: A08"
+    },
+    {
+      "id": "G10",
+      "reviewer": "grok-review",
+      "plan": "06.4-04",
+      "line": 79,
+      "finding": "- HIGH: This plan also misses `render_tree.py:259`. Edit-only rejection is before save, but a valid off-group file clear is not a policy error and still dies on `has_changed`.",
+      "disposition": "OPEN: H1"
+    },
+    {
+      "id": "G11",
+      "reviewer": "grok-review",
+      "plan": "06.4-04",
+      "line": 80,
+      "finding": "- MEDIUM: `FormSet.init` always passes `formset=` and `parent_form=` (`formsets.py:148-160`). Django's `BaseInlineFormSet.__init__` forwards unknown kwargs into `BaseFormSet`, which rejects them. A raw native class never reaches the policy. An executor who then subclasses `InlineFormSet` will not prove the bypass.",
+      "disposition": "OPEN: H3"
+    },
+    {
+      "id": "G12",
+      "reviewer": "grok-review",
+      "plan": "06.4-04",
+      "line": 81,
+      "finding": "- MEDIUM: A foreign id can still produce Django's \"Select a valid choice\" on the PK field while the new error says \"Invalid row.\" The plan requires one generic error and no existence leak, but it does not say to drop the choice error.",
+      "disposition": "INCORPORATED / no separate action",
+      "plan_evidence": "04:103,104;08:116",
+      "rationale": "All invalid-ID variants must share the generic error without disclosing existence, with real HTTP cases. Identity-specific errors that reveal validity already violate this acceptance; normalizing without discarding unrelated errors is an implementation detail."
+    },
+    {
+      "id": "G13",
+      "reviewer": "grok-review",
+      "plan": "06.4-04",
+      "line": 82,
+      "finding": "- LOW: `LIFE-02` is documentation. This plan does not publish it; plan 09 does.",
+      "disposition": "INCORPORATED / no separate action",
+      "plan_evidence": "04:103;09:98",
+      "rationale": "Documentation requirement is implemented in plan 09 after the policy behavior; no missing task."
+    },
+    {
+      "id": "G14",
+      "reviewer": "grok-review",
+      "plan": "06.4-05",
+      "line": 102,
+      "finding": "- MEDIUM: If plan 01 leaves `wireGroups`, this plan must remove it. The acceptance says no duplicate handlers, but the action does not name the old listener.",
+      "disposition": "INCORPORATED / no separate action",
+      "plan_evidence": "01:112;05:92",
+      "rationale": "Same single-listener-path obligation as G01; automatic events invoke the supported initializer already."
+    },
+    {
+      "id": "G15",
+      "reviewer": "grok-review",
+      "plan": "06.4-05",
+      "line": 103,
+      "finding": "- MEDIUM: The observer proof is jsdom-only. Plan 08 does not require the \"set `disabled=true` while already conditionally disabled, then clear it\" case. jsdom `attributeOldValue` has been wrong before; Chromium would not catch a false green.",
+      "disposition": "OPEN: A10"
+    },
+    {
+      "id": "G16",
+      "reviewer": "grok-review",
+      "plan": "06.4-05",
+      "line": 104,
+      "finding": "- LOW: Define \"transition\" so the first init of an already-off group does not move focus. D-05 forbids focus changes on initialization.",
+      "disposition": "INCORPORATED / no separate action",
+      "plan_evidence": "05:92;08:116",
+      "rationale": "Existing plan explicitly avoids early focus in hidden modal shells, preserves focus outside actual hiding, and tests initialization/focus. A blanket no-focus-on-initialization rule is not required by D-05 when late initialization actually strands focused content."
+    },
+    {
+      "id": "G17",
+      "reviewer": "grok-review",
+      "plan": "06.4-06",
+      "line": 124,
+      "finding": "- MEDIUM: Task 06-01 changes `control.html`, but the verify command is only `tests/js/formset.test.js`. Vitest does not render that template. Stock Add can remain in the Django template while JS fixtures omit it.",
+      "disposition": "OPEN: A11"
+    },
+    {
+      "id": "G18",
+      "reviewer": "grok-review",
+      "plan": "06.4-06",
+      "line": 125,
+      "finding": "- MEDIUM: `find_page_form_controls` passes `edit_only: false` for the whole page (`formset.js:542-546`). Per-formset flags exist only on the row path (`formset.js:554-556`). A page-level delegated handler must read the clicked control's own JSON, not the page-wide flags. The plan says this; it is easy to \"fix\" by hiding the button and leaving the old page lookup.",
+      "disposition": "INCORPORATED / no separate action",
+      "plan_evidence": "06:94",
+      "rationale": "Action already says resolve flags from that control\u2019s own formset at activation and stop edit-only custom Add, including synthetic invocation."
+    },
+    {
+      "id": "G19",
+      "reviewer": "grok-review",
+      "plan": "06.4-06",
+      "line": 126,
+      "finding": "- LOW: `formset.js:165` builds an unquoted attribute selector from the prefix. Scoping to the form does not by itself make that selector safe. Compare names in JS, as plan 01 does for toggles.",
+      "disposition": "OPEN: A12"
+    },
+    {
+      "id": "G20",
+      "reviewer": "grok-review",
+      "plan": "06.4-07",
+      "line": 145,
+      "finding": "- HIGH: Closing wrappers test `end_at_rows` (`formset.html:56`). `XFormSet` has `render_rows_only` and no `end_at_rows` (`render_tree.py:102`). Django treats the missing attribute as empty, so `{% if not x_formset.end_at_rows %}` is true. `template()` sets `render_rows_only=True` for the selected fragment (`formsets.py:224`). Open tags are skipped and close tags are emitted. `test_crispy_buttons.py:903` still passes `end_at_rows=True` on a `SimpleNamespace`, which shows the template contract and the model diverged at the rename. The plan repairs this only if a parsed insertion fails. `insertAdjacentHTML` drops stray end tags, so the regression can pass while the raw fragment stays unbalanced.",
+      "disposition": "OPEN: H2"
+    },
+    {
+      "id": "G21",
+      "reviewer": "grok-review",
+      "plan": "06.4-07",
+      "line": 146,
+      "finding": "- MEDIUM: Deeper non-first descendants need the selected node's own sibling index, not only the top-level child's. `get_template` always starts the selected node at `level=0`. Don't \"fix\" that by changing nested `template()` child indexes (`formsets.py:254-257`); those are already correct.",
+      "disposition": "INCORPORATED / no separate action",
+      "plan_evidence": "07:85",
+      "rationale": "Action explicitly derives the selected declaration\u2019s own index from its parent\u2019s ordered children, and tests deeper non-first descendants."
+    },
+    {
+      "id": "G22",
+      "reviewer": "grok-review",
+      "plan": "06.4-07",
+      "line": 147,
+      "finding": "- LOW: Replacing the characterization assertion in the same test is right, but keep the denied-editor and forged-ancestry loops (`test_fragment_authorization.py:1187-1203`) in that test, as the plan says.",
+      "disposition": "INCORPORATED / no separate action",
+      "plan_evidence": "07:85",
+      "rationale": "The denied-editor/forged-ancestry assertions are explicitly retained in the same case."
+    },
+    {
+      "id": "G23",
+      "reviewer": "grok-review",
+      "plan": "06.4-08",
+      "line": 166,
+      "finding": "- HIGH: If the fixture saves with `form.save()` instead of `FormSetMixin.cv_form_valid` \u2192 `XFormSet.save`, the file-clear hole stays green. The action says \"real package CRUD views/formsets\"; add an assertion that the inline save path ran.",
+      "disposition": "OPEN: H1"
+    },
+    {
+      "id": "G24",
+      "reviewer": "grok-review",
+      "plan": "06.4-08",
+      "line": 167,
+      "finding": "- MEDIUM: `modal-focus.cjs:21` binds `127.0.0.1:8143`. This plan does not pick another port. Plan 10 runs both browsers. A leaked 06.3 server or an overlap fails the occupied-port check for the wrong reason.",
+      "disposition": "OPEN: A07"
+    },
+    {
+      "id": "G25",
+      "reviewer": "grok-review",
+      "plan": "06.4-08",
+      "line": 168,
+      "finding": "- MEDIUM: No case requires the external disabled mutation from plan 05, or raw fragment tag balance from plan 07.",
+      "disposition": "OPEN: H2, A10"
+    },
+    {
+      "id": "G26",
+      "reviewer": "grok-review",
+      "plan": "06.4-08",
+      "line": 169,
+      "finding": "- LOW: `--check-evidence` must hash the new server and templates. `modal-focus.cjs` hashes a fixed input list; a new runner that hashes too little will accept stale JS.",
+      "disposition": "INCORPORATED / no separate action",
+      "plan_evidence": "08:102;10:96,111",
+      "rationale": "Exact checkout source hashes and a source manifest excluding only planning-status edits already include the runner/server/template test inputs. A fixture-only pass with stale hashed sources violates this contract."
+    },
+    {
+      "id": "G27",
+      "reviewer": "grok-review",
+      "plan": "06.4-09",
+      "line": 189,
+      "finding": "- MEDIUM: The matrix in 09 must not document file clear as supported on inline rows until plan 02/04 persists it through `has_changed`. Otherwise the published contract is wider than the code.",
+      "disposition": "OPEN: H1"
+    },
+    {
+      "id": "G28",
+      "reviewer": "grok-review",
+      "plan": "06.4-09",
+      "line": 190,
+      "finding": "- MEDIUM: JSON `pk` is `FormSet.PK.value`, the grammar, not the row id (`render_tree.py:188`). Documenting it as the row primary key would be false. Row identity is in the prefix.",
+      "disposition": "OPEN: A13"
+    },
+    {
+      "id": "G29",
+      "reviewer": "grok-review",
+      "plan": "06.4-09",
+      "line": 191,
+      "finding": "- LOW: `examples/bootstrap5/conditional/models.py` will still mention W320/`None` clearing after this plan.",
+      "disposition": "OPEN: A08"
+    },
+    {
+      "id": "G30",
+      "reviewer": "grok-review",
+      "plan": "06.4-10",
+      "line": 210,
+      "finding": "- HIGH: `--check` validates commands, counts, and hashes. It does not know that file-clear through `XFormSet.save` or raw fragment balance were required. A complete green packet can still miss those.",
+      "disposition": "OPEN: H1, H2"
+    },
+    {
+      "id": "G31",
+      "reviewer": "grok-review",
+      "plan": "06.4-10",
+      "line": 211,
+      "finding": "- MEDIUM: Full suite times three, plus both browser runners, will collide if both bind port 8143.",
+      "disposition": "OPEN: A07"
+    },
+    {
+      "id": "G32",
+      "reviewer": "grok-review",
+      "plan": "06.4-10",
+      "line": 212,
+      "finding": "- LOW: Planning-file edits in task 10-02 must stay out of the product hash set, as the plan says. Include the new browser server and templates or the checker will not notice a fixture-only pass.",
+      "disposition": "INCORPORATED / no separate action",
+      "plan_evidence": "08:102;10:96,111",
+      "rationale": "Same source-manifest obligation as G26; product/test/docs sources are explicitly distinct from planning-only status edits."
+    }
+  ]
+}

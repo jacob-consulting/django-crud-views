@@ -86,7 +86,7 @@ def test_no_hardcoded_icon_classes_in_templates_and_js():
 
 
 @pytest.mark.django_db
-def test_card_no_label_has_visually_hidden_label(client_full, author_douglas_adams):
+def test_card_icon_mode_has_visually_hidden_label(client_full, author_douglas_adams):
     resp = client_full.get(reverse(cv_author.get_router_name("card")))
     assert resp.status_code == 200
     doc = lxml_html.fromstring(resp.content)

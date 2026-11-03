@@ -1,0 +1,144 @@
+{
+  "verifiedAt": "2026-11-02T14:34:01.592Z",
+  "revision": "86d79b2c82b01e0da9d1d256202444eef8cbbd46",
+  "currentRevision": "86d79b2c82b01e0da9d1d256202444eef8cbbd46",
+  "runtime": {
+    "node": "v24.21.0",
+    "nodePath": "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
+    "pythonPath": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python",
+    "playwrightPath": "/home/alex/.npm/_npx/e41f203b7505f1fb/node_modules/playwright",
+    "chromiumPath": "/home/alex/.cache/ms-playwright/chromium-1228/chrome-linux64/chrome",
+    "playwright": "1.64.1",
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "django": "5.2.18",
+    "packagePath": "/home/alex/projects/alex/django-crud-views/src/crud_views/__init__.py",
+    "chromium": "149.0.7827.55"
+  },
+  "status": "passed",
+  "passed": true,
+  "completed": true,
+  "cases": 12,
+  "assertions": 297,
+  "allCasesPassed": true,
+  "pageErrors": [],
+  "consoleErrors": [],
+  "cleanup": {
+    "browserClosed": true,
+    "serverExit": {
+      "code": 0,
+      "signal": null
+    },
+    "reaped": true
+  },
+  "assets": [
+    {
+      "requestedURL": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+      "integrity": "sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==",
+      "crossorigin": "anonymous",
+      "version": "6.7.2",
+      "finalURL": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css",
+      "status": 200,
+      "sha256": "74005d7c17d4a02f2f25404ec0655d9bc2fdaa53166874c87d7b7eec69d9088a",
+      "integrityAccepted": true
+    },
+    {
+      "requestedURL": "https://code.jquery.com/jquery-3.7.1.js",
+      "integrity": "sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=",
+      "crossorigin": "anonymous",
+      "version": "3.7.1",
+      "finalURL": "https://code.jquery.com/jquery-3.7.1.js",
+      "status": 200,
+      "sha256": "78a85aca2f0b110c29e0d2b137e09f0a1fb7a8e554b499f740d6744dc8962cfe",
+      "integrityAccepted": true
+    },
+    {
+      "requestedURL": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "integrity": "sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH",
+      "crossorigin": "anonymous",
+      "version": "5.3.3",
+      "finalURL": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      "status": 200,
+      "sha256": "3c8f27e6009ccfd710a905e6dcf12d0ee3c6f2ac7da05b0572d3e0d12e736fc8",
+      "integrityAccepted": true
+    },
+    {
+      "requestedURL": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "integrity": "sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz",
+      "crossorigin": "anonymous",
+      "version": "5.3.3",
+      "finalURL": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      "status": 200,
+      "sha256": "0833b2e9c3a26c258476c46266e6877fc75218625162e0460be9a3a098a61c6c",
+      "integrityAccepted": true
+    },
+    {
+      "requestedURL": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
+      "integrity": null,
+      "crossorigin": null,
+      "version": "6.7.2",
+      "finalURL": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/webfonts/fa-solid-900.woff2",
+      "status": 200,
+      "sha256": "aa75998623a391e61c6901794ace832e3ecdd288b56d608f21bea0411acc0b8e",
+      "integrityAccepted": true
+    }
+  ],
+  "assetFailures": [],
+  "missingAssets": [],
+  "font": {
+    "loaded": true,
+    "family": "\"Font Awesome 6 Free\"",
+    "weight": "900",
+    "glyph": "\"\""
+  },
+  "sourceHashes": {
+    "freshCount": 52,
+    "freshMismatches": [],
+    "originalPresentationMismatches": [
+      "tests/browser/presentation.cjs"
+    ],
+    "lifecycleCount": 35,
+    "lifecycleMismatches": []
+  },
+  "preservedArtifacts": [
+    {
+      "path": ".planning/phases/06.5-remaining-presentation-contracts-and-decided-cleanup/06.5-REVIEW.md",
+      "unchangedSinceReview": true,
+      "sha256": "51debb26c49554c3ed617adefad2dd15dd8fbe79a43c7e0baeb4bfa84d87c92b"
+    },
+    {
+      "path": ".planning/phases/06.5-remaining-presentation-contracts-and-decided-cleanup/06.5-SECURITY.md",
+      "unchangedSinceReview": true,
+      "sha256": "4ed949e80d7a6e9a5ecd950e435b2884664f0a0014ba4845a80195f920677138"
+    },
+    {
+      "path": ".planning/phases/06.5-remaining-presentation-contracts-and-decided-cleanup/09-browser-results.json",
+      "unchangedSinceReview": true,
+      "sha256": "ca1fcd33b5e1f8f1d819553ad00063c6bee14550d2ea961ed57622c0658ec60c"
+    },
+    {
+      "path": ".planning/phases/06.5-remaining-presentation-contracts-and-decided-cleanup/09-existing-lifecycle.json",
+      "unchangedSinceReview": true,
+      "sha256": "29791ce6b6d3882938715453b09de6dc6a0419fcf0ea0aa16bd4ea4277f3fba2"
+    },
+    {
+      "path": ".planning/phases/06.5-remaining-presentation-contracts-and-decided-cleanup/09-evidence/django60.log",
+      "unchangedSinceReview": true,
+      "sha256": "0fe7d3374a9c8437677b306c6c6f46f422c6b4ed5d60a0d316a4a7004de6faef"
+    },
+    {
+      "path": ".planning/phases/06.5-remaining-presentation-contracts-and-decided-cleanup/09-evidence/django60-floor-multicore.log",
+      "unchangedSinceReview": true,
+      "sha256": "ddd1add57b074e3f161a8d2ac317ee820ad8d9f31b17767630973f37ea2290c6"
+    },
+    {
+      "path": ".planning/phases/06.5-remaining-presentation-contracts-and-decided-cleanup/09-evidence/django60-floor-multicore.xml",
+      "unchangedSinceReview": true,
+      "sha256": "c1a7dd7bf960e535c8b74d03f1061d10e1f1804ecce99059e84f493d5baae096"
+    }
+  ],
+  "sourceChangesSinceReview": [
+    "tests/browser/presentation-cleanup.test.cjs",
+    "tests/browser/presentation.cjs",
+    "tests/test1/test_heading_docs.py"
+  ]
+}

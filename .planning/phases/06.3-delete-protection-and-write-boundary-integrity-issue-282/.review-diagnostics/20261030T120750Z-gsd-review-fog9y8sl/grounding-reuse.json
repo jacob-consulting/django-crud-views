@@ -1,0 +1,9 @@
+{
+  "baseline_inventory": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/.review-diagnostics/20261030T115707Z-gsd-review-q38u6zqr/grounding-inventory.json",
+  "baseline_sha256": "72be9d7bc9ec381cc12cda5f2e71efade3f82e1c125d223526343972a1f669f6",
+  "baseline_entries": 204,
+  "unchanged_source": "git diff cc5caa7..1366dac -- src tests docs CHANGELOG.md is empty",
+  "removed_reference": "_assert_collection_error corrected; no longer an existing-reference claim",
+  "delta_rows": 13,
+  "all_current_plans_read": "full current plans/DESIGN loaded; changed plan02/03/05+VALIDATION diff reviewed; other inputs match prior package"
+}

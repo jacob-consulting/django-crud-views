@@ -1,0 +1,34 @@
+{
+  "reviewed_commit": "1a827674",
+  "selection": "review.default_reviewers",
+  "parallel_lanes": true,
+  "reviewers": [
+    "fable-review",
+    "grok-review",
+    "gemini-review"
+  ],
+  "models": {
+    "fable-review": {
+      "value": "claude-fable-5-1 (reasoning=high)",
+      "source": "pinned"
+    },
+    "grok-review": {
+      "value": "openrouter/x-ai/grok-4.7 (reasoning=high)",
+      "source": "pinned"
+    },
+    "gemini-review": {
+      "value": "openrouter/google/gemini-4-argon (reasoning=high)",
+      "source": "pinned"
+    }
+  },
+  "source_grounding_authority": "intel",
+  "counts": {
+    "current_high": 6,
+    "current_actionable": 16
+  },
+  "phase_status": {
+    "verdict": "consistent",
+    "stateStatus": "Ready to plan",
+    "roadmapStatus": "Not started"
+  }
+}

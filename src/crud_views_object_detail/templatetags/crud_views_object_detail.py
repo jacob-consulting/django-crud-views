@@ -6,13 +6,14 @@ from crud_views.lib.button_classes import get_button_class
 from crud_views.lib.icons import render_icon
 from crud_views_object_detail.lib.conf import crud_views_object_detail_settings
 from crud_views_object_detail.lib.config import parse_property_display
+from crud_views_object_detail.lib.presentation import _SCOPE_KEY, _project_component, _render_scope
 from crud_views_object_detail.lib.resolvers import resolve_all
 
 register = template.Library()
 
 
 @register.simple_tag(takes_context=True)
-def render_object_detail(context, obj, groups=None, property_display=None, layout=None):
+def render_object_detail(context, obj, groups=None, property_display=None, layout=None, component_id=None):
     """Render all property groups for an object.
 
     ``groups`` can be pre-resolved ``ResolvedGroup`` instances (from the mixin)
@@ -35,11 +36,17 @@ def render_object_detail(context, obj, groups=None, property_display=None, layou
             "crud_views_object_detail/object_detail.html",
         ]
     )
-    return mark_safe(tpl.render({"groups": groups or [], "layout": pack}, context.get("request")))
+    scope = _render_scope(context)
+    component = _project_component(groups or [], component_id=component_id, scope=scope)
+    return mark_safe(
+        tpl.render(
+            {"groups": groups or [], "layout": pack, "component": component, _SCOPE_KEY: scope}, context.get("request")
+        )
+    )
 
 
 @register.simple_tag(takes_context=True)
-def render_group(context, group, layout=None):
+def render_group(context, group, layout=None, presentation=None, component=None):
     """Render a single property group using the configured layout pack.
 
     ``layout`` optionally overrides the layout pack for this render only (see
@@ -51,7 +58,15 @@ def render_group(context, group, layout=None):
             f"crud_views_object_detail/layouts/{pack}/group.html",
         ]
     )
-    return mark_safe(tpl.render({"group": group, "layout": pack}, context.get("request")))
+    scope = _render_scope(context)
+    if presentation is None:
+        presentation = _project_component([group], scope=scope).groups[0]
+    return mark_safe(
+        tpl.render(
+            {"group": group, "layout": pack, "presentation": presentation, "component": component, _SCOPE_KEY: scope},
+            context.get("request"),
+        )
+    )
 
 
 @register.simple_tag(takes_context=True)
@@ -67,7 +82,7 @@ def render_property(context, prop, layout=None):
             f"crud_views_object_detail/layouts/{pack}/property.html",
         ]
     )
-    return mark_safe(tpl.render({"prop": prop}, context.get("request")))
+    return mark_safe(tpl.render({"prop": prop, _SCOPE_KEY: _render_scope(context)}, context.get("request")))
 
 
 @register.simple_tag(takes_context=True)
@@ -95,7 +110,10 @@ def render_property_value(context, prop):
     od_settings = {
         "property_text_newline": crud_views_object_detail_settings.property_text_newline,
     }
-    return tpl.render({"prop": prop, "value": prop.value, "od_settings": od_settings}, context.get("request"))
+    return tpl.render(
+        {"prop": prop, "value": prop.value, "od_settings": od_settings, _SCOPE_KEY: _render_scope(context)},
+        context.get("request"),
+    )
 
 
 @register.simple_tag

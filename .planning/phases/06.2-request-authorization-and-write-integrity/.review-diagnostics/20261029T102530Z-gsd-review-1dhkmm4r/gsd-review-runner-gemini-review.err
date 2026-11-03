@@ -1,0 +1,1 @@
+gsd-tools: warning: /home/alex/.gsd/defaults.json sets resolve_model_ids, runtime but a project config takes precedence here — those global keys are ignored for model resolution. (#3532)

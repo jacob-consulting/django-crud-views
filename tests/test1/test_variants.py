@@ -99,9 +99,9 @@ def test_card_action_fallback(cv_author, cv_publisher, author_douglas_adams, pub
     view = client.get("/author/card/").context["view"]
     assert isinstance(view, AuthorCardListView)
     user = view.request.user
-    data = view.cv_get_card_action_data(CardAction(key="delete", no_label=True), author_douglas_adams, user)
+    data = view.cv_get_card_action_data(CardAction(key="delete", label_mode="icon"), author_douglas_adams, user)
     assert data["cv_variant"] == "danger"
-    action = CardAction(key="delete", no_label=True, variant="tertiary")
+    action = CardAction(key="delete", label_mode="icon", variant="tertiary")
     assert view.cv_get_card_action_data(action, author_douglas_adams, user)["cv_variant"] == "tertiary"
 
     client = _client(cv_publisher, ["view"])

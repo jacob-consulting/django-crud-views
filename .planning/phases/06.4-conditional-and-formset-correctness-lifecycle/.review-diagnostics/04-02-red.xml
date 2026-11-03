@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.876" timestamp="2026-11-01T11:30:12.837215+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_formsets_policy" name="test_invalid_existing_ids_never_save[native-foreign-True-False]" time="0.727"><failure message="AssertionError: assert [] == [('cv_invalid...valid row.'])]&#10;  &#10;  Right contains one more item: ('cv_invalid_row', ['Invalid row.'])&#10;  Use -v to get more diff">policy_routes = namespace(client=&lt;django.test.client.Client object at 0x788665c6e660&gt;, routes={True: namespace(vs=ViewSet(policy16f4e1..._formsets=[], js_data={}, scripts=True))}, family=&lt;class 'tests.test1.test_formsets_policy.PolicyNativeInlineFormSet'&gt;)
+policy_world = namespace(parent=&lt;Publisher: Original&gt;, book=&lt;Book: book&gt;, sibling=&lt;Book: sibling original&gt;, note=&lt;BookNote: original note&gt;)
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x788665fdd2b0&gt;
+edit_only = False, deleted = True, identity = 'foreign'
+
+    @pytest.mark.parametrize("edit_only", [True, False])
+    @pytest.mark.parametrize("deleted", [False, True])
+    @pytest.mark.parametrize("identity", ["missing", "malformed", "nonexistent", "foreign", "filtered"])
+    def test_invalid_existing_ids_never_save(policy_routes, policy_world, monkeypatch, edit_only, deleted, identity):
+        url, good = editor(policy_routes, policy_world, edit_only=edit_only)
+        assert policy_routes.client.post(url, good).status_code == 302
+        foreign_parent = Publisher.objects.create(name="Other parent")
+        foreign = Book.objects.create(publisher=foreign_parent, title="foreign")
+        filtered = Book.objects.create(publisher=policy_world.parent, title="filtered")
+        url, payload = editor(policy_routes, policy_world, edit_only=edit_only)
+        prefix = f"books-{policy_world.parent.pk}-0"
+        payload["name"] = "Must not save"
+        payload[f"{prefix}-0-title"] = "must not edit"
+        payload[f"siblings-{policy_world.parent.pk}-0-0-title"] = "sibling must not edit"
+        ids = {"missing": "", "malformed": "bad-pk", "nonexistent": "99999999",
+               "foreign": str(foreign.pk), "filtered": str(filtered.pk)}
+        payload[f"{prefix}-0-id"] = ids[identity]
+        if identity == "missing":
+            del payload[f"{prefix}-0-id"]
+        if deleted:
+            payload[f"{prefix}-0-DELETE"] = "on"
+        saves = observe_saves(monkeypatch)
+        policy = observe_policy(monkeypatch)
+        response = policy_routes.client.post(url, payload)
+        assert response.status_code == 200
+        errors = response.context["formsets"].x_formsets[0].instance.non_form_errors().as_data()
+&gt;       assert [(e.code, e.messages) for e in errors] == [("cv_invalid_row", ["Invalid row."])]
+E       AssertionError: assert [] == [('cv_invalid...valid row.'])]
+E         
+E         Right contains one more item: ('cv_invalid_row', ['Invalid row.'])
+E         Use -v to get more diff
+
+tests/test1/test_formsets_policy.py:327: AssertionError</failure></testcase></testsuite></testsuites>

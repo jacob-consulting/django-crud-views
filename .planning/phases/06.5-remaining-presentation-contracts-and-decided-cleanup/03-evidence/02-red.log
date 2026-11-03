@@ -1,0 +1,105 @@
+.........F.........F................FFF.                                 [100%]
+=================================== FAILURES ===================================
+______ test_interactive_title_button_owns_icon[False-host:edit-accordion] ______
+
+icon = 'host:edit', hostile = False, layout = 'accordion'
+
+    @pytest.mark.parametrize("layout", ["tabs-vertical", "accordion"])
+    @pytest.mark.parametrize("icon", ["host:edit", "fas:pen", "", None, "disabled"])
+    @pytest.mark.parametrize("hostile", [False, True])
+    def test_interactive_title_button_owns_icon(icon, hostile, layout):
+        group = ResolvedGroup(title='<em>Title & "text"</em>', icon=icon)
+        with override_settings(
+            CRUD_VIEWS_ICON_LIBRARIES={"host": {"renderer": "font", "placement": "host", "class": "icon-{name}"}},
+            CRUD_VIEWS_ICONS={"disabled": None},
+            CRUD_VIEWS_BUTTON_CLASSES={
+                "heading-group:icon-host": '{name_class}" onclick="attack' if hostile else "group {name_class}",
+                "heading-group:icon-inline": 'inline" onerror="attack' if hostile else "group-inline",
+            },
+        ):
+            doc = render([group], layout=layout)
+        (button,) = doc.cssselect('button[data-bs-toggle]')
+        assert group.title in button.text_content()
+        assert not doc.cssselect("em, [onclick], [onerror]")
+        structural = {"nav-link", "text-start", "active"} if layout == "tabs-vertical" else {"accordion-button", "collapsed"}
+        assert structural <= button.classes
+>       assert len(button.cssselect("i")) == (1 if icon == "fas:pen" else 0)
+E       AssertionError: assert 1 == 0
+E        +  where 1 = len([<Element i at 0x77432570ad00>])
+E        +    where [<Element i at 0x77432570ad00>] = cssselect('i')
+E        +      where cssselect = <Element button at 0x77432570ada0>.cssselect
+
+tests/test1/od/test_object_detail_identity.py:87: AssertionError
+______ test_interactive_title_button_owns_icon[True-host:edit-accordion] _______
+
+icon = 'host:edit', hostile = True, layout = 'accordion'
+
+    @pytest.mark.parametrize("layout", ["tabs-vertical", "accordion"])
+    @pytest.mark.parametrize("icon", ["host:edit", "fas:pen", "", None, "disabled"])
+    @pytest.mark.parametrize("hostile", [False, True])
+    def test_interactive_title_button_owns_icon(icon, hostile, layout):
+        group = ResolvedGroup(title='<em>Title & "text"</em>', icon=icon)
+        with override_settings(
+            CRUD_VIEWS_ICON_LIBRARIES={"host": {"renderer": "font", "placement": "host", "class": "icon-{name}"}},
+            CRUD_VIEWS_ICONS={"disabled": None},
+            CRUD_VIEWS_BUTTON_CLASSES={
+                "heading-group:icon-host": '{name_class}" onclick="attack' if hostile else "group {name_class}",
+                "heading-group:icon-inline": 'inline" onerror="attack' if hostile else "group-inline",
+            },
+        ):
+            doc = render([group], layout=layout)
+        (button,) = doc.cssselect('button[data-bs-toggle]')
+        assert group.title in button.text_content()
+        assert not doc.cssselect("em, [onclick], [onerror]")
+        structural = {"nav-link", "text-start", "active"} if layout == "tabs-vertical" else {"accordion-button", "collapsed"}
+        assert structural <= button.classes
+>       assert len(button.cssselect("i")) == (1 if icon == "fas:pen" else 0)
+E       AssertionError: assert 1 == 0
+E        +  where 1 = len([<Element i at 0x77432553efd0>])
+E        +    where [<Element i at 0x77432553efd0>] = cssselect('i')
+E        +      where cssselect = <Element button at 0x77432553e9e0>.cssselect
+
+tests/test1/od/test_object_detail_identity.py:87: AssertionError
+_______________ test_accordion_targets_belong_to_their_component _______________
+
+    def test_accordion_targets_belong_to_their_component():
+        groups = [ResolvedGroup(title=title) for title in ["A B", "A-B", "", gettext_lazy("日本語")]]
+        doc = render(groups, layout="accordion", repeat=True)
+        ids = doc.xpath("//@id")
+>       assert len(ids) == len(set(ids))
+E       AssertionError: assert 10 == 3
+E        +  where 10 = len(['objectDetailAccordion', 'objectDetailCollapse-a-b', 'objectDetailCollapse-a-b', 'objectDetailCollapse-', 'objectDetailCollapse-', 'objectDetailAccordion', ...])
+E        +  and   3 = len({'objectDetailAccordion', 'objectDetailCollapse-', 'objectDetailCollapse-a-b'})
+E        +    where {'objectDetailAccordion', 'objectDetailCollapse-', 'objectDetailCollapse-a-b'} = set(['objectDetailAccordion', 'objectDetailCollapse-a-b', 'objectDetailCollapse-a-b', 'objectDetailCollapse-', 'objectDetailCollapse-', 'objectDetailAccordion', ...])
+
+tests/test1/od/test_object_detail_identity.py:106: AssertionError
+______________ test_standalone_accordion_omits_unrendered_parent _______________
+
+    def test_standalone_accordion_omits_unrendered_parent():
+        doc = render([ResolvedGroup(title="Same")], layout="accordion", standalone=True, repeat=True)
+        ids = doc.xpath("//@id")
+>       assert len(ids) == len(set(ids))
+E       AssertionError: assert 2 == 1
+E        +  where 2 = len(['objectDetailCollapse-same', 'objectDetailCollapse-same'])
+E        +  and   1 = len({'objectDetailCollapse-same'})
+E        +    where {'objectDetailCollapse-same'} = set(['objectDetailCollapse-same', 'objectDetailCollapse-same'])
+
+tests/test1/od/test_object_detail_identity.py:124: AssertionError
+___________ test_duplicate_supplied_component_in_direct_scope_fails ____________
+
+    def test_duplicate_supplied_component_in_direct_scope_fails():
+        from crud_views_object_detail.templatetags.crud_views_object_detail import render_object_detail
+    
+        context = Context()
+        render_object_detail(context, None, [ResolvedGroup(title="One")], layout="accordion", component_id="stable")
+>       with pytest.raises(ImproperlyConfigured, match="stable"):
+E       Failed: DID NOT RAISE ImproperlyConfigured
+
+tests/test1/od/test_object_detail_identity.py:136: Failed
+=========================== short test summary info ============================
+FAILED tests/test1/od/test_object_detail_identity.py::test_interactive_title_button_owns_icon[False-host:edit-accordion]
+FAILED tests/test1/od/test_object_detail_identity.py::test_interactive_title_button_owns_icon[True-host:edit-accordion]
+FAILED tests/test1/od/test_object_detail_identity.py::test_accordion_targets_belong_to_their_component
+FAILED tests/test1/od/test_object_detail_identity.py::test_standalone_accordion_omits_unrendered_parent
+FAILED tests/test1/od/test_object_detail_identity.py::test_duplicate_supplied_component_in_direct_scope_fails
+5 failed, 35 passed, 8206 deselected in 1.75s

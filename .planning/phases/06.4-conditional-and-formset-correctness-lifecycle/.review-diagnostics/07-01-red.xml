@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.888" timestamp="2026-11-01T11:54:28.781003+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_fragment_authorization" name="test_two_child_declaration_round_trips_emitted_index_and_keeps_gates" time="0.739"><failure message="AssertionError: assert ['books-memos-1-0-0-1-0-1'] == ['books-memos-1-0-0-1-1-1']&#10;  &#10;  At index 0 diff: 'books-memos-1-0-0-1-0-1' != 'books-memos-1-0-0-1-1-1'&#10;  Use -v to get more diff">fr = namespace(gpub_vs=ViewSet(frgpubbc260eb7), gbook_vs=ViewSet(frgbookbc260eb7), cpub_vs=ViewSet(frcpubbc260eb7), g2pub_v...lisherUpdate=&lt;class 'tests.test1.test_fragment_authorization.fr.&lt;locals&gt;.FrCPublisherUpdateView'&gt;, calls={'render': 2})
+world = namespace(publisher_a=&lt;Publisher: Pan Books&gt;, publisher_b=&lt;Publisher: Gollancz&gt;, book_a=&lt;Book: Hitchhiker's Guide&gt;, book_b=&lt;Book: Mort&gt;)
+
+    @pytest.mark.django_db
+    def test_two_child_declaration_round_trips_emitted_index_and_keeps_gates(fr, world):
+        """A19: a real second-child fragment extends its owner and survives an authorized POST."""
+        pa, ba = world.publisher_a, world.book_a
+        client = _editor_client(fr, world, viewset=fr.g2pub_vs)
+        url = _url(fr.g2pub_vs, "update", pk=pa.pk)
+        page = client.get(url)
+        assert page.status_code == 200
+        meta = _formset_metadata(page.content)
+        notes_prefix = f"books-notes-{pa.pk}-0-0-{ba.pk}-0"
+        memos_prefix = f"books-memos-{pa.pk}-0-0-{ba.pk}-1"
+        assert notes_prefix in meta and memos_prefix in meta
+        before = _counts()
+    
+        # first child: the fragment extends its initialized formset
+        _assert_fragment(_get(client, url, browser_add_row(page.content, notes_prefix)), [f"{notes_prefix}-1"], ["note"])
+    
+        memos_payload = browser_add_row(page.content, memos_prefix)
+        assert memos_payload == {
+            "template": "books|memos",
+            "pk": str(ba.pk),
+            "num": "1",
+            "formset_parent_prefix_key": f"{pa.pk}-0-0",
+        }
+&gt;       memos = _assert_fragment(_get(client, url, memos_payload), [f"{memos_prefix}-1"], ["note", "contract"])
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test1/test_fragment_authorization.py:1184: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+response = &lt;JsonResponse status_code=200, "application/json"&gt;
+expected_rows = ['books-memos-1-0-0-1-1-1'], fields = ['note', 'contract']
+
+    def _assert_fragment(response, expected_rows, fields):
+        assert response.status_code == 200, response.content[:500]
+        data = response.json()
+        assert set(data) == {"html", "rows"}
+&gt;       assert data["rows"] == expected_rows
+E       AssertionError: assert ['books-memos-1-0-0-1-0-1'] == ['books-memos-1-0-0-1-1-1']
+E         
+E         At index 0 diff: 'books-memos-1-0-0-1-0-1' != 'books-memos-1-0-0-1-1-1'
+E         Use -v to get more diff
+
+tests/test1/test_fragment_authorization.py:451: AssertionError</failure></testcase></testsuite></testsuites>

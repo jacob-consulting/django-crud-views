@@ -1,4 +1,5 @@
 from collections.abc import Iterable
+from urllib.parse import urlencode
 
 from django import forms
 from django.http import HttpResponseRedirect
@@ -7,8 +8,10 @@ from django.views import generic
 from polymorphic.models import PolymorphicModel
 
 from crud_views.lib.check import Check, CheckEitherAttribute
+from crud_views.lib.exceptions import ViewSetKeyFoundError
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import CrudView, CrudViewPermissionRequiredMixin
+from crud_views.lib.view.cancel import effective_cancel_keys, encode_cancel_state, navigation_params, read_cancel_state
 
 from .utils import get_polymorphic_child_models_content_types
 
@@ -30,6 +33,7 @@ class PolymorphicCreateSelectView(CrudView, generic.FormView):
     cv_object = False
     cv_path = "create/select"
     cv_success_key = "list"
+    cv_cancel_keys = "auto"
     cv_context_actions = crud_views_settings.create_select_context_actions
     cv_polymorphic_exclude: list[type[PolymorphicModel]] | None = None
     cv_polymorphic_include: list[type[PolymorphicModel]] | None = None
@@ -69,6 +73,26 @@ class PolymorphicCreateSelectView(CrudView, generic.FormView):
         polymorphic_ctype_id = form.cleaned_data["polymorphic_ctype_id"]
         kwargs = {"polymorphic_ctype_id": polymorphic_ctype_id}
         url = self.cv_get_url("create", extra_kwargs=kwargs)
+        concrete = self.cv_get_cls("create")
+        allowed = effective_cancel_keys(concrete)
+        if allowed:
+            capture = read_cancel_state(self)
+            token_name = navigation_params()[1]
+            token = None
+            if capture and capture.origin in allowed:
+                try:
+                    origin_cls = self.cv_get_cls(capture.origin)
+                except ViewSetKeyFoundError:
+                    origin_cls = None
+                if origin_cls and not origin_cls.cv_object:
+                    # Re-encode only validated state; legacy input keeps query=None.
+                    token = encode_cancel_state(self, capture.origin, capture.query)
+            if token is None and (capture is not None or token_name in self.request.GET):
+                # Invalid input must not become trusted absent-token input downstream.
+                token = "invalid"
+            if token is not None:
+                # Do not forward the shared success-origin key or selector form fields.
+                url += "?" + urlencode({token_name: token})
         return HttpResponseRedirect(url)
 
 

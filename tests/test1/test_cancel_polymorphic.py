@@ -134,3 +134,46 @@ def test_direct_concrete_success_still_uses_explicit_shared_origin(vehicle_clien
     response = vehicle_client.post(f"/vehicle/create/ct/{ct.pk}/?cv_from=list", {"name": "Direct", "doors": 2})
     assert response.status_code == 302
     assert response["Location"] == "/vehicle/"
+
+
+def test_card_origin_uses_local_route(vehicle_client, cv_vehicle, monkeypatch, settings):
+    from django.urls import path
+
+    from crud_views.lib.views import CardListViewPermissionRequired
+    from tests.test1.app.urls import urlpatterns
+
+    class VehicleCards(CardListViewPermissionRequired):
+        cv_viewset = None
+        cv_context_actions = ["create_select"]
+
+    monkeypatch.setattr(VehicleCards, "cv_viewset", cv_vehicle)
+    monkeypatch.setattr(VehicleCards, "model", cv_vehicle.model)
+    monkeypatch.setitem(cv_vehicle._views, "card", VehicleCards)
+    settings.ROOT_URLCONF = type(
+        "VehicleCardURLs",
+        (),
+        {"urlpatterns": [path("vehicle/cards/", VehicleCards.as_view(), name="vehicle-card"), *urlpatterns]},
+    )
+    page = vehicle_client.get("/vehicle/cards/?x=&x=card")
+    link = emitted_link(page, "/vehicle/create/select/")
+    concrete = select(vehicle_client, link)
+    assert rendered_cancel(vehicle_client.post(concrete, {})) == "/vehicle/cards/?x=&x=card&cv_from_restore=1"
+
+
+@pytest.mark.parametrize("signed", [False, True])
+def test_object_origin_cannot_be_forwarded_to_create(vehicle_client, monkeypatch, car_sedan, signed):
+    from crud_views.lib.view.cancel import encode_cancel_state
+    from tests.test1.app.views import VehicleDetailView
+
+    monkeypatch.setattr(VehicleDetailView, "cv_context_actions", ["create_select"])
+    monkeypatch.setattr(VehicleCreateView, "cv_cancel_keys", ["detail"])
+    monkeypatch.setattr(VehicleCreateSelectView, "cv_cancel_keys", ["detail"])
+    detail = vehicle_client.get(f"/vehicle/{car_sedan.pk}/detail/?x=detail")
+    link = emitted_link(detail, "/vehicle/create/select/")
+    assert not urlsplit(link).query
+    params = {"cv_from": "detail"}
+    if signed:
+        params["cv_from_cancel"] = encode_cancel_state(detail.context["view"], "detail", "x=detail")
+    concrete = select(vehicle_client, link + "?" + urlencode(params))
+    assert parse_qs(urlsplit(concrete).query) == {"cv_from_cancel": ["invalid"]}
+    assert rendered_cancel(vehicle_client.post(concrete, {})) == "/vehicle/"

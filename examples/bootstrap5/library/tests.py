@@ -1,8 +1,11 @@
 from decimal import Decimal
+from urllib.parse import parse_qs, urlsplit
 
 from django.contrib.auth import get_user_model
+from django.core import signing
 from django.test import TestCase
 from django.urls import reverse
+from lxml import html
 
 from library.models import Author, Book
 
@@ -63,20 +66,43 @@ class AuthorCrudTest(LibraryTestCase):
         self.assertFalse(Author.objects.filter(pk=author.pk).exists())
 
     def test_update_cancel_returns_to_detail_origin(self):
-        detail_url = reverse("author-detail", kwargs={"pk": self.author.pk})
-        update_url = reverse("author-update", kwargs={"pk": self.author.pk})
-        resp = self.client.get(detail_url)
-        self.assertContains(resp, f'href="{update_url}?cv_from=detail"')
-        resp = self.client.get(update_url, {"cv_from": "detail"})
-        self.assertContains(resp, f'data-cv-cancel-url="{detail_url}"')
+        self.assert_cancel_round_trip("detail")
 
     def test_update_cancel_returns_to_list_origin(self):
-        list_url = reverse("author-list")
+        self.assert_cancel_round_trip("list")
+
+    def assert_cancel_round_trip(self, origin):
+        origin_url = reverse(f"author-{origin}", kwargs={"pk": self.author.pk} if origin == "detail" else {})
         update_url = reverse("author-update", kwargs={"pk": self.author.pk})
-        resp = self.client.get(list_url)
-        self.assertContains(resp, f'href="{update_url}?cv_from=list"')
-        resp = self.client.get(update_url, {"cv_from": "list"})
-        self.assertContains(resp, f'data-cv-cancel-url="{list_url}"')
+        query = "last_name=guin&x=&x=%3Ctag%3E%26%22"
+        resp = self.client.get(origin_url + "?" + query)
+        links = html.fromstring(resp.content).xpath("//a/@href")
+        link = next(value for value in links if urlsplit(value).path == update_url)
+        params = parse_qs(urlsplit(link).query)
+        self.assertEqual(params["cv_from"], [origin])
+        self.assertEqual(len(params["cv_from_cancel"]), 1)
+        capture = signing.Signer(salt="crud_views.cancel.v1").unsign_object(params["cv_from_cancel"][0])
+        self.assertEqual(capture, {"v": 1, "origin": origin, "query": query, "viewset": ["", "author"], "parents": {}})
+        form = self.client.get(link)
+        (cancel,) = html.fromstring(form.content).xpath("//form//*[@data-cv-cancel-url]/@data-cv-cancel-url")
+        self.assertEqual(urlsplit(cancel).path, origin_url)
+        restored = parse_qs(urlsplit(cancel).query, keep_blank_values=True)
+        expected = parse_qs(query, keep_blank_values=True)
+        if origin == "list":
+            expected["cv_from_restore"] = ["1"]
+        self.assertEqual(restored, expected)
+        returned = self.client.get(cancel)
+        self.assertEqual(returned.status_code, 200)
+        self.assertEqual(returned.wsgi_request.GET.getlist("x"), ["", '<tag>&"'])
+        self.assertEqual(Author.objects.get(pk=self.author.pk).first_name, "Ursula")
+
+    def test_legacy_key_only_cancel_stays_uncaptured(self):
+        update_url = reverse("author-update", kwargs={"pk": self.author.pk})
+        for origin in ("detail", "list"):
+            with self.subTest(origin=origin):
+                expected = reverse(f"author-{origin}", kwargs={"pk": self.author.pk} if origin == "detail" else {})
+                response = self.client.get(update_url, {"cv_from": origin})
+                self.assertContains(response, f'data-cv-cancel-url="{expected}"')
 
     def test_update_success_returns_to_detail_origin(self):
         detail_url = reverse("author-detail", kwargs={"pk": self.author.pk})

@@ -214,9 +214,10 @@ Full documentation of parent/child ViewSets: [Nested ViewSets](reference/nested.
 
 ## How do I send Cancel and Save back to the page the user came from?
 
-Form views go back to the list by default, both on **Cancel** (`cv_cancel_key`) and after a
-successful **Save** (`cv_success_key`). When a form can be opened from several places, typically
-the list and the detail page, list those places as allowed origins instead:
+Standard form views use `cv_cancel_keys="auto"`: **Cancel** returns to an accessible list/card
+origin with its captured query, or same-object detail for object forms. Its fallback is
+`cv_cancel_key` (default `"list"`). **Save** still defaults to `cv_success_key` (`"list"`);
+configure `cv_success_keys` independently to return to an allowed origin key:
 
 <!-- cv-sync: library/views.py -->
 ```python
@@ -224,27 +225,32 @@ class AuthorUpdateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, UpdateVie
     cv_viewset = cv_author
     form_class = AuthorForm
     cv_message_template_code = _("Updated author “{{ object }}”")
-    cv_cancel_keys = ["list", "detail"]  # cancel returns to where the user came from
-    cv_success_keys = ["list", "detail"]  # so does save
+    cv_success_keys = ["list", "detail"]  # Save selects a key, without Cancel query restoration
 ```
 
-The two options are independent; set either one, or both:
+The two options are independent; explicit `cv_cancel_keys=None` or `[]` keeps static cancellation:
 
 | Attribute         | Controls                          | Falls back to    |
 |-------------------|-----------------------------------|------------------|
 | `cv_cancel_keys`  | the target of the Cancel button   | `cv_cancel_key`  |
 | `cv_success_keys` | the redirect after a valid submit | `cv_success_key` |
 
-Links into the form carry the origin view key as `?cv_from=detail` (parameter name:
-`CRUD_VIEWS_ORIGIN_PARAM`). The value is a **view key**, never a URL, and is only used when it is
-listed and registered on the ViewSet, so it cannot redirect elsewhere. Anything else falls back to
-the static key.
+Links into the form carry the origin view key (`cv_from` by default) and signed query capture
+(`cv_from_cancel`). Destinations are reversed in the same ViewSet and parent context. Cancel tries
+the allowed accessible origin, then the accessible fallback; if neither is accessible, it is omitted.
+Missing/unusable configured fallback routes raise `viewset.E256` / `ImproperlyConfigured` when needed.
 
-Two limits follow from that:
+The behavior differs for Cancel and Save:
 
 - An origin that needs an object is skipped when there is none: Cancel on a create view never
   returns to `detail`, and Save on a delete view never does (system check `viewset.E254`).
-- Returning to the list drops its filter, sort order and page.
+- Cancel restores filters, sort order, page, repeated values and blanks. With persistence enabled the
+  restored list query becomes remembered state; explicitly empty capture clears memory. Other open forms
+  keep their independent captures. Disabled persistence is respected.
+- Save does not restore Cancel query state. Its existing redirect behavior is unchanged.
+
+Copied Cancel templates must use guarded `cv_cancel_url`; see the
+[immediate migration](migrating-1.0.md#dynamic-cancel-navigation).
 
 *See it running: [`examples/bootstrap5/library/`](https://github.com/jacob-consulting/django-crud-views/tree/main/examples/bootstrap5/library) ·
 Full docs: [Dynamic cancel target](reference/update_view.md#dynamic-cancel-target) ·

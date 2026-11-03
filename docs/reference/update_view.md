@@ -66,8 +66,7 @@ class AuthorUpdateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, UpdateVie
     cv_viewset = cv_author
     form_class = AuthorForm
     cv_message_template_code = _("Updated author “{{ object }}”")
-    cv_cancel_keys = ["list", "detail"]  # cancel returns to where the user came from
-    cv_success_keys = ["list", "detail"]  # so does save
+    cv_success_keys = ["list", "detail"]  # Save selects a key, without Cancel query restoration
 ```
 
 Links into eligible forms carry the origin key plus signed query state: filters, ordering, pagination,
@@ -184,9 +183,9 @@ By default a successful submit redirects to `cv_success_key` (`"list"`). With `c
 it redirects to the sibling view the user came from instead, so saving from the detail page
 lands back on the detail page (see the example above).
 
-It shares the origin parameter with `cv_cancel_keys` and resolves it the same way:
+It shares the origin parameter with `cv_cancel_keys` and keeps its existing key-based resolution:
 
-- A link into the view carries the origin when the key is listed in `cv_cancel_keys` **or**
+- A link into the view carries the origin when the key is allowed by `cv_cancel_keys` **or**
   `cv_success_keys`. Both lists are resolved independently, so a view can return Cancel to the
   detail page while Save always goes to the list.
 - `cv_get_success_key()` returns the origin when it is valid, listed in `cv_success_keys` and

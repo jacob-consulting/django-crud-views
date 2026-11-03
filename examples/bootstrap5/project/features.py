@@ -78,8 +78,9 @@ FEATURES: list[Feature] = [
         look_at=(
             "the cv_author and cv_book ViewSets and their List/Detail/Create/Update/Delete views; AuthorTable "
             "and AuthorFilter for the table and filter; BookUpView / BookDownView for ordering; "
-            "cv_cancel_keys on AuthorUpdateView / AuthorDeleteView, which sends Cancel back to the page "
-            "you came from (list or detail); cv_success_keys on AuthorUpdateView does the same for Save."
+            "the automatic Cancel origin on AuthorUpdateView, which returns to the originating list or detail "
+            "with captured query state; AuthorDeleteView demonstrates an explicit allowed-key list. "
+            "cv_success_keys on AuthorUpdateView selects Save's destination without restoring Cancel query state."
         ),
         url_name="author-list",
         icon="fa-solid fa-book",

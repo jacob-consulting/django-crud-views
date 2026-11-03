@@ -1,5 +1,7 @@
 """Execute the published cancellation recipes against real view instances and responses."""
 
+import ast
+import inspect
 import re
 from pathlib import Path
 from urllib.parse import parse_qs, urlsplit
@@ -125,3 +127,34 @@ def test_documented_transport_limits_and_parameters(monkeypatch):
     assert cancel.navigation_params() == ("back", "back_cancel", "back_restore")
     for term in ("query=null", 'query=""', "SECRET_KEY_FALLBACKS", "414/400", "do not encrypt"):
         assert term in settings_doc
+
+
+def test_public_surface_and_synchronized_example(cv_author, monkeypatch):
+    from crud_views.lib.view.base import CrudView
+    from crud_views.templatetags import crud_views as tags
+    from tests.test1.test_cancel_origin import check_ids
+
+    signature = inspect.signature(CrudView.cv_get_cancel_url)
+    assert list(signature.parameters) == ["self", "obj", "user", "request"]
+    assert all(signature.parameters[name].default is None for name in ("obj", "user", "request"))
+    tag_signature = inspect.signature(tags.cv_cancel_url)
+    assert list(tag_signature.parameters) == ["context", "obj"]
+    assert tag_signature.parameters["obj"].default is None
+    assert "cv_cancel_url" in tags.register.tags
+    target = cv_author.get_view_class("update")
+    assert target.cv_cancel_keys == "auto"
+    monkeypatch.setattr(target, "cv_cancel_key", "missing")
+    monkeypatch.setattr(target, "cv_cancel_keys", None)
+    ids = check_ids(target)
+    assert "viewset.E256" in ids and "viewset.E255" not in ids
+    source = (ROOT / "examples/bootstrap5/library/views.py").read_text()
+    tree = ast.parse(source)
+    (update,) = [node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "AuthorUpdateView"]
+    assignments = {
+        assignment.targets[0].id: assignment.value for assignment in update.body if isinstance(assignment, ast.Assign)
+    }
+    assert "cv_cancel_keys" not in assignments
+    assert ast.literal_eval(assignments["cv_success_keys"]) == ["list", "detail"]
+    for path in (REFERENCE, ROOT / "docs/faq.md"):
+        (block,) = re.findall(r"<!-- cv-sync: library/views.py -->\n```python\n(.*?)\n```", path.read_text(), re.S)
+        assert block in source

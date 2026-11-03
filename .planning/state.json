@@ -75,9 +75,9 @@
     }
   ],
   "next": {
-    "command": "$gsd-progress --next",
-    "label": "Advance to the next step",
-    "reason": "Phase 17 of 19 · executing"
+    "command": "$gsd-execute-phase 06.7",
+    "label": "Execute Phase 06.7",
+    "reason": "Phase 06.7 plans converged after three review cycles; five plans ready to execute"
   },
   "updated_at": "2026-11-03T15:06:12.675Z"
 }

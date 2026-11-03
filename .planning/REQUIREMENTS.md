@@ -174,7 +174,7 @@ Source: issue #302 and Phase 06.7 CONTEXT.md D-01–D-16. These are pending impl
 - [x] **CAN-04**: Invalid submissions retain the original capture across create/update/delete and both custom-form families, supported modal replacements and polymorphic selector-to-create forwarding.
 - [x] **CAN-05**: Allowed usable accessible origin wins, then accessible configured fallback, then omission; malformed/disallowed input falls back safely, missing configured fallback produces an actionable configuration diagnostic, and core/Guardian object, queryset, parent and state policies remain authoritative.
 - [x] **CAN-06**: Crispy buttons, native anchors and a documented cancel URL helper share destination and omission; copied key-only cancel templates migrate immediately, with dynamic/static examples, settings/limits and paired Breaking/migration guidance.
-- [ ] **CAN-07**: Real request/browser acceptance proves all five issue flows without writes on Cancel and preserves save/delete success redirects, form ownership/CSRF/escaping, conditional/formset/modal contracts and existing protected-delete omission; no cross-ViewSet/history, browser-state capture or additional modal support is introduced.
+- [x] **CAN-07**: Real request/browser acceptance proves all five issue flows without writes on Cancel and preserves save/delete success redirects, form ownership/CSRF/escaping, conditional/formset/modal contracts and existing protected-delete omission; no cross-ViewSet/history, browser-state capture or additional modal support is introduced.
 
 ### Stability policy (plan 4)
 
@@ -223,7 +223,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CAN-04 | Phase 6.7 | Complete |
 | CAN-05 | Phase 6.7 | Complete |
 | CAN-06 | Phase 6.7 | Complete |
-| CAN-07 | Phase 6.7 | Pending |
+| CAN-07 | Phase 6.7 | Complete |
 | THEME-01 | Phase 6.6 | Complete |
 | THEME-02 | Phase 6.6 | Complete |
 | THEME-03 | Phase 6.6 | Complete |

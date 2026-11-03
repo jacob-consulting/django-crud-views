@@ -1,0 +1,1 @@
+{"content":"Official Django CSRF docs require csrf_token inside internal POST forms and explicit enforce_csrf_checks in test clients. Keep CSRF middleware and outer token; avoid suppressing request-wide protection to remove duplicate crispy tokens.","source":"web","provider":"websearch","confidence":"MEDIUM","fetched_at":"2026-11-02T16:30:41.581Z","ttl":86400000,"kind":"docs"}

@@ -1,6 +1,6 @@
 {
-  "captured": "2026-11-03T06:16:15.183Z",
-  "revision": "5590c94f75e0caf1b007ea6da65416a369f1d8ef",
+  "captured": "2026-11-03T06:34:51.462Z",
+  "revision": "f0510f1628db8ae57dc72f0d75a8e8788aa8e1b5",
   "sourceHashes": {
     "src/crud_views/static/crud_views/js/modal.js": "c8acbd5973f7e73f48537758394920c4923a67c6ccc10b6490742ca0e63c651e",
     "src/crud_views/static/crud_views/js/adapters.js": "6134473b5f0fb183aae7f4b035ad38a56a902b8f58c8b5c688c9638d1cef2580",
@@ -712,7 +712,7 @@
         },
         {
           "path": ".planning/ui-reviews/06.3-focus/modal-focus-repeated-open-dismiss-3.png",
-          "sha256": "dd78e9689deccf46f740f940db4fc64e592ba1598badf22124f9b3a2a861e442"
+          "sha256": "0004a2b59d40b8ced06d7dc968419376c59f2dd8bf19420cc36915d1400cfb8f"
         },
         {
           "path": ".planning/ui-reviews/06.3-focus/modal-focus-repeated-open-dismiss-4.png",

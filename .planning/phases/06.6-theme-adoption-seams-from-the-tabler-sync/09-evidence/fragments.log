@@ -4,8 +4,8 @@
 
  Test Files  1 passed (1)
       Tests  2 passed (2)
-   Start at  06:16:04
-   Duration  9.92s (tests 93%, environment 6%, setup 1%, transform 1%)
+   Start at  06:34:41
+   Duration  9.80s (tests 94%, environment 5%, setup 1%)
 
 
 (!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:

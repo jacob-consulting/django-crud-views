@@ -2,7 +2,7 @@
 
 **Automated gates passed; all seven scoped human checks passed in 06.6-UAT.md. Final canonical verification remains orchestrator-owned.**
 
-Final source inventory SHA-256: `c5af7b9e294793cdc165744314f219ed7c2072afb43f846a263f4856aa247e7c`. The exact per-file inventory,
+Final source inventory SHA-256: `27675fa0d6f7f164291fb9c843578ddf774ae8068d2dc60b0990051a3508d66d`. The exact per-file inventory,
 embedded stdout/stderr, JUnit, commands, measured duration, interpreter/package/module/template origins,
 environment selections and browser evidence are retained in [09-final-evidence.json](09-final-evidence.json).
 The report has no self-hash. `--check-final` independently revalidates actual sources and both repositories.
@@ -11,20 +11,20 @@ The report has no self-hash. `--check-final` independently revalidates actual so
 
 | Gate | Result | Duration (seconds) |
 | --- | --- | --- |
-| conditional-formsets | 2 cases passed | 14.307 |
-| configuration | 21 passed | 16.959 |
-| django42-current | 8716 passed; 1 skipped | 146.809 |
-| django42-floor | 8715 passed; 1 skipped | 143.734 |
-| django52-current | 8716 passed; 1 skipped | 200.81 |
-| django60-floor | 8716 passed; 0 skipped | 240.561 |
-| docs | passed | 1.508 |
-| example | 301 passed; 0 skipped | 12.954 |
-| format | passed | 0.029 |
-| fragments | 2 passed | 10.287 |
-| javascript | 363 passed | 12.92 |
-| lint | passed | 0.028 |
-| modal-focus | 12 cases passed | 23.856 |
-| whitespace | passed | 0.181 |
+| conditional-formsets | 2 cases passed | 14.171 |
+| configuration | 21 passed | 16.806 |
+| django42-current | 8720 passed; 1 skipped | 146.182 |
+| django42-floor | 8719 passed; 1 skipped | 145.61 |
+| django52-current | 8720 passed; 1 skipped | 200.489 |
+| django60-floor | 8720 passed; 0 skipped | 238.016 |
+| docs | passed | 1.43 |
+| example | 301 passed; 0 skipped | 13.637 |
+| format | passed | 0.015 |
+| fragments | 2 passed | 10.164 |
+| javascript | 363 passed | 12.15 |
+| lint | passed | 0.042 |
+| modal-focus | 12 cases passed | 24.285 |
+| whitespace | passed | 0.13 |
 
 ## Exact commands
 
@@ -67,7 +67,7 @@ The independently recorded Python 3.14.7 / Django 6.1.2 companion runtime remain
 Fresh final-source candidate and exact-patch replay each pass all eight real browser families, 11 focused native/class-table/parity/package tests, and 34 companion pytest cases.
 The broad Django suite retains its actual failed status: 114 tests / three unchanged baseline failures, compared with 109 / four at the pinned baseline. Complete failing classes and identities are checked, and passing suites cannot hide reduced collection or newly skipped cases.
 The source inventories retain 167 paths, nine shadows and 205 required customization purposes. No required override grows or is retired without proof.
-Actual companion commit: `3315eef6671f502d859bba877322a5853388c508`. Current two-file core delivery evidence commit: `5590c94f75e0caf1b007ea6da65416a369f1d8ef`.
+Actual companion commit: `3315eef6671f502d859bba877322a5853388c508`. Current two-file core delivery evidence commit: `f0510f1628db8ae57dc72f0d75a8e8788aa8e1b5`.
 Private settings, unrelated source/index bytes and the five-file patch are unchanged. Provisional/committed probes, refreshed CSRF denied POSTs, complete cancel activations and native assets are retained in the canonical reports.
 Chromium 149.0.7827.55 exercised Tabler 1.6.1 CSS/theme/main JS and the existing jQuery 3.7.1 fixture asset. Each observed asset has hashes/SRI; equality uses unique URL/content records, not network completion order.
 
@@ -95,3 +95,9 @@ The final validator binds every gate to the complete source inventory and exact 
 Fresh candidate and exact-patch replay passed all eight families, followed by provisional and committed actual-source probes. The first attempt to reuse the old delivered slot was correctly rejected as stale; its complete commands/error are retained in delivery-post-uat-stale-attempt.json. The successful refresh rebuilt both slots. Companion source and user settings remain unchanged.
 
 Seven human checks passed and W1 spacing was accepted in [06.6-UAT.md](06.6-UAT.md). The checker itself validates automated evidence only and retains its fixed pending-human-observations return value; the separate human_acceptance record stores the actual UAT result and artifact hash. Browser/version was not supplied; no assistive-technology claim is inferred.
+
+## Final IDE metadata correction
+
+After the post-UAT checker passed, six ignored local .idea files appeared in the companion checkout and the strict source check correctly stopped on the unclassified files. RED cd10b31 demonstrates the classification defect; GREEN 9957754 omits only Git-ignored, untracked paths under the repository-root .idea directory. Tracked/nonignored IDE files, arbitrary ignored source, symlinks, private settings and index preservation remain checked. The four new real-repository regression cases pass; the utility selection totals 153 tests.
+
+Six user IDE files were preserved in place; ide-metadata-before.json and ide-metadata-preservation.json contain hashes only. Fresh candidate-post-ide.json/replay-post-ide.json, provisional/committed delivery probes and all 14 gates bind the corrected validator source. The prior post-UAT matrix remains historical in a prior-gates report; no old test execution was rebound. Human UAT seven-pass status and browser/AT limits remain unchanged.

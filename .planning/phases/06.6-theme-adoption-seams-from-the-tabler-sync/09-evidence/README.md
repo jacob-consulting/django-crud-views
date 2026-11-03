@@ -8,13 +8,21 @@ The authoritative final artifacts are **one directory above this folder**:
 - `10-companion-delivery.json`: current committed companion probes and repository-qualified receipts.
 - `09-REGRESSION.md`, `06.6-ACCEPTANCE.md`, `06.6-09-SUMMARY.md`: results and explicit acceptance limits.
 
-The final candidate/replay captures in this folder are `candidate-post-uat.json` and
-`replay-post-uat.json`. They bind the source after fixture correction `f237abd`, matching the canonical
-reports. `delivered-candidate-post-uat.json` separately retains the successful eight-family delivered-source
+The final candidate/replay captures in this folder are `candidate-post-ide.json` and
+`replay-post-ide.json`. They bind the source after fixture correction `f237abd` and the narrow ignored-IDE
+metadata correction `9957754`, matching the canonical reports. `candidate-post-uat.json` and
+`replay-post-uat.json` retain the preceding successful run before the validator correction.
+`delivered-candidate-post-uat.json` separately retains the successful eight-family delivered-source
 browser probe; its provisional status is resolved through the canonical committed-delivery validator.
 Earlier `candidate-accepted-source.json` / `replay-accepted-source.json` retain the pre-UAT-fix inventory
 `b2a7911ff5764f5323dee75fc9cef3f6bec4186fc25a57a331516d6902825cd0` as historical evidence.
 Source agreement does not supply human approval; actual seven-check approval is in `../06.6-UAT.md`.
+
+`ide-metadata-red.*` preserves the real one-failure/three-pass RED run; `ide-metadata-green.*` records
+153 passing utility tests. `ide-metadata-before.json` and `ide-metadata-preservation.json` contain only
+the six user IDE file hashes and demonstrate that the files were left intact. Only untracked files that
+Git ignores inside the IDE-owned `.idea` directory are omitted from source inventory; other source and
+existing symlink/private/index boundaries remain enforced.
 
 **All other candidate/replay filenames here are historical attempts**, including names containing `final`,
 `settled`, or `verified`. Those names describe an execution attempt, not current acceptance. They retain

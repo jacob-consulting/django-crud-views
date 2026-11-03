@@ -46,6 +46,11 @@ DEFAULT_ICONS: dict[str, str] = {
     "message-warning": "fas:triangle-exclamation",
     "message-error": "fas:circle-exclamation",
     "message-debug": "fas:bug",
+    # the form-button kinds (Phase 6): submit saves, cancel leaves the form, filter-reset clears the filter form
+    # (delete and filter-submit reuse "delete" and "filter")
+    "save": "far:floppy-disk",
+    "cancel": "fas:xmark",
+    "filter-reset": "fas:rotate-left",
 }
 
 BOOTSTRAP_ICONS: dict[str, str] = {
@@ -85,6 +90,9 @@ BOOTSTRAP_ICONS: dict[str, str] = {
         "message-warning": "exclamation-triangle-fill",
         "message-error": "exclamation-octagon-fill",
         "message-debug": "bug-fill",
+        "save": "floppy",
+        "cancel": "x-lg",
+        "filter-reset": "arrow-counterclockwise",
     }.items()
 }
 
@@ -257,6 +265,40 @@ def resolve_icon_name_class(value: str | None) -> str | None:
         return template.format(name=name)
     except Exception:
         return None
+
+
+def _icon_available(value: str | None) -> bool:
+    """True when ``value`` resolves to an icon the registry can render, decided without rendering (Phase 6, D-16).
+
+    Unavailable: an empty value, a semantic name the icon table maps to None / "", a ``prefix:name`` whose prefix
+    has no dict library entry or no usable renderer, and a built-in font library (explicit ``"font"`` or the omitted
+    default) whose ``class`` is not a nonempty str that formats with the icon name. A raw CSS class (no prefix) is
+    available. A custom renderer counts as available: resolving the callable is allowed, calling it is not, so no
+    renderer runs here. Placement is not decided here: a valid host icon is available, and a ``*:icon-host`` slot
+    set to None is the caller's placement opt-out. The registry checks (E351 / E354 / E355 / W352) stay the
+    diagnostics of the library configuration itself.
+    """
+    resolved = resolve_icon(value)
+    if resolved is None:
+        return False
+    prefix, name = resolved
+    if not prefix:
+        return True
+    config = get_libraries().get(prefix)
+    if not isinstance(config, dict):
+        return False
+    renderer = _get_renderers().get(prefix)
+    if renderer is None:
+        return False
+    if renderer is font_renderer:
+        template = config.get("class")
+        if not template or not isinstance(template, str):
+            return False
+        try:
+            template.format(name=name)
+        except Exception:
+            return False
+    return True
 
 
 REMOVED_SETTINGS: dict[str, str] = {

@@ -18,6 +18,8 @@ class WorkflowForm(CrispyForm):
         fields = ["transition", "comment"]  # noqa: RUF012
 
     submit_label: str = _("Process Workflow Step")
+    # the workflow icon replaces the submit kind's save icon; a subclass submit_icon wins
+    submit_icon: str | None = "workflow"
 
     transition = ChoiceField(
         choices=(),

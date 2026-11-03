@@ -1,6 +1,6 @@
 import $ from "jquery";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
-import { loadScript, nav } from "./helpers/load.js";
+import { loadScript, nav, resetNav } from "./helpers/load.js";
 import { modalSkeleton } from "./helpers/dom.js";
 
 function textResponse(html, { ok = true, status = 200, headers = {} } = {}) {
@@ -235,6 +235,181 @@ describe("modal.js", () => {
                 expect(event.defaultPrevented).toBe(false);
             }
             expect(fetch).not.toHaveBeenCalled();
+        });
+    });
+
+    // Phase 06 (D-17): the form-button leaf renders <button> bodies with nested icon / text spans. The browser's
+    // own SubmitEvent.submitter and FormData(form, submitter) carry the clicked button; nothing here is mocked
+    // except fetch, which is only spied on to read the body it was given.
+    describe("native submitters (form-button leaf)", () => {
+        // the three server-rendered bodies of a form button (crud_views/tags/button/form.html)
+        const ICON = '<i class="fa-regular fa-trash-can" aria-hidden="true"></i>';
+        const BODIES = {
+            label: (text) => `<span>${text}</span>`,
+            icon: (text) => `${ICON}<span class="visually-hidden">${text}</span>`,
+            both: (text) => `${ICON} <span>${text}</span>`,
+        };
+        // a Django-escaped value, as {{ }} renders it, and the literal text a browser must submit for it
+        const HOSTILE_HTML = "&quot;&gt;&lt;script&gt;alert(1)&lt;/script&gt; &amp; Ünïcødé ✓ 搜索 &#x27;x&#x27;";
+        const HOSTILE = `"><script>alert(1)</script> & Ünïcødé ✓ 搜索 'x'`;
+
+        // the delete confirmation shape: hidden CSRF + confirmation, the delete submitter, a sibling submitter and
+        // the type="button" cancel control
+        function deleteForm(mode = "label", { deleteValue = "Delete", inModal = true } = {}) {
+            const html = `
+                <form method="post" action="/author/1/delete/">
+                    <input type="hidden" name="csrfmiddlewaretoken" value="csrf-tok">
+                    <input type="hidden" name="confirm" value="true">
+                    <button type="submit" name="delete" value="${deleteValue}" id="submit-id-delete"
+                            class="btn btn-danger">${BODIES[mode]("Delete")}</button>
+                    <button type="submit" name="submit" value="Create" id="submit-id-submit"
+                            class="btn btn-primary">${BODIES[mode]("Create")}</button>
+                    <button type="button" name="reset" value="Cancel" id="button-id-reset" class="btn btn-secondary"
+                            data-cv-cancel-url="/author/">${BODIES[mode]("Cancel")}</button>
+                </form>`;
+            if (inModal) {
+                document.getElementById("cv-modal-content").innerHTML = html;
+            } else {
+                document.body.insertAdjacentHTML("beforeend", `<div id="native">${html}</div>`);
+            }
+            const form = document.querySelector(inModal ? "#cv-modal-content form" : "#native form");
+            return {
+                form,
+                del: form.querySelector('[name="delete"]'),
+                other: form.querySelector('[name="submit"]'),
+                cancel: form.querySelector('[name="reset"]'),
+            };
+        }
+
+        function redirectFetch() {
+            return stubFetch(new Response(null, { status: 204, headers: { "X-CV-Redirect": "/author/" } }));
+        }
+
+        async function postedBody(fetchMock) {
+            await vi.waitFor(() => expect(nav.assign).toHaveBeenCalledWith("/author/"));
+            expect(fetchMock).toHaveBeenCalledTimes(1);
+            const [url, options] = fetchMock.mock.calls[0];
+            expect(url).toBe("/author/1/delete/");
+            expect(options.method).toBe("POST");
+            expect(options.headers).toEqual({ "X-CV-Modal": "true" });
+            expect(options.body).toBeInstanceOf(FormData);
+            return options.body;
+        }
+
+        function entries(formData) {
+            return [...formData.entries()];
+        }
+
+        it("runs on the browser's own SubmitEvent and FormData", () => {
+            // no polyfill or stub: the jsdom window's constructors are the globals the script resolves
+            expect(globalThis.FormData).toBe(window.FormData);
+            expect(globalThis.SubmitEvent).toBe(window.SubmitEvent);
+            expect(Object.getOwnPropertyDescriptor(window.SubmitEvent.prototype, "submitter").get).toBeTypeOf("function");
+            expect(Object.getOwnPropertyDescriptor(window.HTMLFormElement.prototype, "requestSubmit").value)
+                .toBeTypeOf("function");
+            const { form, del } = deleteForm();
+            expect(new FormData(form, del).get("delete")).toBe("Delete");
+            expect(new FormData(form).get("delete")).toBeNull();
+        });
+
+        it.each(Object.keys(BODIES))("a %s-body click on the button, icon or text posts only that submitter", async (mode) => {
+            for (const pick of [
+                (b) => b,
+                (b) => b.querySelector("span"),
+                (b) => b.querySelector("i") ?? b.querySelector("span"),
+            ]) {
+                resetNav();
+                const fetchMock = redirectFetch();
+                const { form, del, other } = deleteForm(mode);
+                const seen = [];
+                form.addEventListener("submit", (event) => seen.push(event));
+                const target = pick(del);
+                expect(del.contains(target)).toBe(true);
+                target.click();
+                expect(seen).toHaveLength(1);
+                expect(seen[0]).toBeInstanceOf(window.SubmitEvent);
+                expect(seen[0].submitter).toBe(del);
+                expect(seen[0].defaultPrevented).toBe(true);
+                const body = await postedBody(fetchMock);
+                expect(entries(body)).toEqual([
+                    ["csrfmiddlewaretoken", "csrf-tok"],
+                    ["confirm", "true"],
+                    ["delete", "Delete"],
+                ]);
+                expect(body.has(other.name)).toBe(false);
+                expect(body.has("reset")).toBe(false);
+            }
+        });
+
+        it("posts the sibling submitter instead when that one is clicked", async () => {
+            const fetchMock = redirectFetch();
+            const { form, other } = deleteForm("both");
+            form.requestSubmit(other);
+            const body = await postedBody(fetchMock);
+            expect(entries(body)).toEqual([
+                ["csrfmiddlewaretoken", "csrf-tok"],
+                ["confirm", "true"],
+                ["submit", "Create"],
+            ]);
+        });
+
+        it("a type=button cancel click submits nothing", () => {
+            const fetchMock = redirectFetch();
+            const { form, cancel } = deleteForm("icon");
+            const submit = vi.fn();
+            form.addEventListener("submit", submit);
+            cancel.querySelector("span").click();
+            expect(submit).not.toHaveBeenCalled();
+            expect(fetchMock).not.toHaveBeenCalled();
+        });
+
+        it("keeps the no-button fallback when the form is submitted without a submitter", async () => {
+            const fetchMock = redirectFetch();
+            const { form } = deleteForm("icon");
+            const seen = [];
+            form.addEventListener("submit", (event) => seen.push(event.submitter));
+            form.requestSubmit();
+            expect(seen).toEqual([null]);
+            const body = await postedBody(fetchMock);
+            expect(entries(body)).toEqual([
+                ["csrfmiddlewaretoken", "csrf-tok"],
+                ["confirm", "true"],
+            ]);
+        });
+
+        it("transmits a hostile / Unicode button value as its decoded literal text", async () => {
+            const fetchMock = redirectFetch();
+            const { form, del } = deleteForm("both", { deleteValue: HOSTILE_HTML });
+            expect(del.value).toBe(HOSTILE);
+            expect(form.querySelectorAll("script")).toHaveLength(0);
+            del.querySelector("i").click();
+            const body = await postedBody(fetchMock);
+            expect(body.get("delete")).toBe(HOSTILE);
+            expect(body.getAll("delete")).toEqual([HOSTILE]);
+            expect(body.get("csrfmiddlewaretoken")).toBe("csrf-tok");
+        });
+
+        it("leaves a form outside the modal to native submission with the same submitter payload", () => {
+            const fetchMock = redirectFetch();
+            const { form, del, other } = deleteForm("icon", { inModal: false });
+            const seen = [];
+            // registered after modal.js's document listener, so it sees the event the browser would act on
+            const native = (event) => {
+                seen.push([event.defaultPrevented, event.submitter, entries(new FormData(event.target, event.submitter))]);
+                event.preventDefault(); // jsdom does not implement the navigation itself
+            };
+            window.addEventListener("submit", native);
+            try {
+                del.querySelector("i").click();
+                other.querySelector("span").click();
+            } finally {
+                window.removeEventListener("submit", native);
+            }
+            expect(seen).toEqual([
+                [false, del, [["csrfmiddlewaretoken", "csrf-tok"], ["confirm", "true"], ["delete", "Delete"]]],
+                [false, other, [["csrfmiddlewaretoken", "csrf-tok"], ["confirm", "true"], ["submit", "Create"]]],
+            ]);
+            expect(fetchMock).not.toHaveBeenCalled();
         });
     });
 

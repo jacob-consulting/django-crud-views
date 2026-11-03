@@ -1,44 +1,46 @@
 ---
 gsd_state_version: "1.0"
-current_phase: 6
-current_phase_name: Form-button leaf
+milestone: v1.0
+current_phase: 7
+current_phase_name: Theme-surface stability policy
 status: planning
-stopped_at: Phase 05 complete, ready to plan Phase 6
-last_updated: "2026-10-27T13:54:06.447Z"
-last_activity: 2026-10-27
-last_activity_desc: Phase 05 complete, transitioned to Phase 6
-state_head: a6a6cb9da9114f9153f5f5eff4ce022f2cb5ceff
+stopped_at: Phase 06 complete, ready to plan Phase 7
+last_updated: "2026-10-28T14:17:56.648Z"
+last_activity: 2026-10-28
+last_activity_desc: Phase 06 complete, transitioned to Phase 7
+state_head: dbca22ea38bc3a7c25be2fc1338efbf69233e6d4
 progress:
   total_phases: 7
-  completed_phases: 5
-  total_plans: 14
-  completed_plans: 14
-  percent: 71
+  completed_phases: 6
+  total_plans: 24
+  completed_plans: 24
+  percent: 86
+milestone_name: milestone
 ---
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-10-27)
+See: .planning/PROJECT.md (updated 2026-10-28)
 
 **Core value:** Every public theme name settles once, consistently, before 1.0.0 freezes it — no public name changes twice.
-**Current focus:** Phase 6 — Form-button leaf
+**Current focus:** Phase 7 — Theme-surface stability policy
 
 ## Current Position
 
-Phase: 6 — Form-button leaf
+Phase: 7 — Theme-surface stability policy
 Plan: Not started
 Status: Ready to plan
-Last activity: 2026-10-27 — Phase 05 complete, transitioned to Phase 6
+Last activity: 2026-10-28 — Phase 06 complete, transitioned to Phase 7
 
-Progress: [███████░░░] 71%
+Progress: 24/24 plans executed ([█████████░] 86%); 6/7 phases complete
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 14
+- Total plans completed: 24
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -51,6 +53,7 @@ Progress: [███████░░░] 71%
 | 03 | 2 | - | - |
 | 04 | 3 | - | - |
 | 05 | 3 | - | - |
+| 06 | 10 | - | - |
 
 **Recent Trend:**
 
@@ -76,6 +79,16 @@ Progress: [███████░░░] 71%
 | Phase 05 P01 | 5 min | 3 tasks | 10 files |
 | Phase 05 P02 | 8 min | 2 tasks | 2 files |
 | Phase 05 P03 | 9 min | 3 tasks | 9 files |
+| Phase 06 P01 | 16 min | 3 tasks | 11 files |
+| Phase 06 P02 | 17min | 3 tasks | 20 files |
+| Phase 06 P03 | 11 min | 2 tasks | 9 files |
+| Phase 06 P04 | 12 min | 2 tasks | 7 files |
+| Phase 06 P05 | 15 min | 2 tasks | 5 files |
+| Phase 06 P06 | 20 min | 2 tasks | 10 files |
+| Phase 06 P07 | 14min | 3 tasks | 7 files |
+| Phase 06 P08 | 16 min | 3 tasks | 14 files |
+| Phase 06 P09 | 22min | 2 tasks | 3 files |
+| Phase 06 P10 | 13min | 3 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -88,6 +101,7 @@ Recent decisions affecting current work:
 - Roadmap: Phases 4 and 5 (plan 3A/3B) can be dropped if 1.0.0 ships early.
 - Research: the 1A setting is read lazily from `django.conf.settings`, not as a Pydantic snapshot, so
   `override_settings` works.
+
 - Phase 1 completed on `feat/label-mode-defaults`; user explicitly requested staying on the current branch.
 - [Phase 01]: 01-01: Label-mode warn-once dedup is process-lifetime, keyed (location, repr(value)), no source dimension, no setting_changed reset; tests isolate via autouse conftest fixture
 - [Phase 01]: 01-01: default_label_mode reads the raw setting every call (no merged-map cache); setting fallbacks return LABEL_MODE_DEFAULTS[location] directly so nested recovery terminates
@@ -120,6 +134,35 @@ Recent decisions affecting current work:
 - [Phase 05]: 05-03: table pagination Breaking entry and migrating-1.0.md 'Table pagination overrides' share commit 09549b2; the guarded myproject/table.html recipe (DJANGO_TABLES2_TEMPLATE at startup) is extracted and rendered by tests/test1/test_pagination_docs.py on pages 1/2/3 with class/icon overrides
 - [Phase 05]: 05-03: German catalog keeps only the pagination/previous/next reference updates for both templates; django.mo byte-identical to a fresh msgfmt build; unrelated makemessages churn deferred (deferred-items.md)
 - [Phase 05]: UAT 2/2 passed; all 7 review findings fixed after review (WR-01/WR-02, IN-01..IN-05, incl. disabled `...` range items and whitespace-free range anchors); re-verification 19/19 passed
+- [Phase 06]: 06-01: D-18 gate passed on introduce-gsd @ 49f44cd (Phase 1 lazy floor + Phase 2 finite FORM_KINDS verified; 201 passed); 06-SPEC.md settles FORM_LEAF_KEYS, literal/attribute, template, ownership, helper-lifecycle, icon and golden contracts
+- [Phase 06]: 06-01: before-change form-button goldens committed src-free: CRUD 2956f3e, workflow+filter 98b71ed; filter scope is _extract_filter_form_region (raw form#filter-form slice) and 06-05 must reuse it unchanged
+- [Phase 06]: 06-01: JS gates run only via 06-js-verify.sh (nvm Node v24.21.0, npm 11.19.0, lock sha 567bff55...); lockfile/manifests unchanged
+- [Phase 06]: 06-02: form normalizer input contract cv_key/cv_type/cv_name/cv_value/cv_label/cv_id/cv_css_id/cv_css_class/cv_attrs/cv_label_mode/cv_icon; reserved attributes resolve in the normalizer
+- [Phase 06]: 06-02: cv_cancel_url exists for kind cancel only and is None without a URL; leaf emits data-cv-cancel-url only when not None
+- [Phase 06]: 06-02: icon-mode form button with empty label renders no title/tooltip (matches action leaf)
+- [Phase 06]: 06-02: layout render rejects slots other than form:<FORM_KINDS>; construction and legacy helper.inputs accept any slot
+- [Phase 06]: 06-03: form maps (setting/ViewSet/view) are selected whole on the owner; invalid selected maps or values use the shared strict/log fallback to the form floor
+- [Phase 06]: 06-03: form-button owner = render form cv_view, else current crispy helper overlay (or private _cv_helper_owner entry), else page (transported _cv_page_owner, else nearest non-None view outside response overlays); identity, quiet
+- [Phase 06]: 06-04: layout form buttons pick a semantic icon from the slot kind (submit save, delete delete, cancel cancel, filter-submit filter, filter-reset filter-reset). icon= has a sentinel default, so explicit None/empty means no icon
+- [Phase 06]: 06-04: icon precedence is hook kwargs, then the form attribute (CrispyFormMixin.submit_icon='save', CrispyDeleteForm.delete_icon='delete', WorkflowForm.submit_icon='workflow'), then the adapter kind default. A delete payload moved to slot form:cancel keeps delete_icon
+- [Phase 06]: 06-04: registry glyphs save far:floppy-disk/bi:floppy, cancel fas:xmark/bi:x-lg, filter-reset fas:rotate-left/bi:arrow-counterclockwise (distinct from filter-close)
+- [Phase 06]: 06-05: ListViewFilterFormHelper calls FormHelper.__init__() without the form and keeps helper.form identity, so form= never replaces a declared layout
+- [Phase 06]: 06-05: filter layouts are deep-copied into a private always-truthy layout, prepared in get_attributes() before crispy's dispatch guard; exactly-once actions keyed on prepared-layout identity
+- [Phase 06]: 06-05: get_form_actions() None omits the filter action group, empty FormActions keeps an explicit empty group; hidden sort/order/dir stay add_input(Hidden) after the actions
+- [Phase 06]: 06-06: form cv_form_actions_label_mode uses a form-only policy (E211 shape stops traversal, E210 per invalid mode, W291 unknown kinds with valid modes); settings form map is E106 and ViewSet form map a construction error against FORM_KINDS
+- [Phase 06]: 06-06: W292 static reach picks the provider first (CrispyDeleteForm delete+cancel, else submit+cancel), filter helpers with inherited get_form_actions, concrete dict polymorphic_forms; overridden hooks and custom get_form_class are runtime-only
+- [Phase 06]: 06-06: icons._icon_available decides availability without rendering (registry None/empty, unknown prefix, unusable renderer, invalid built-in font class); the form normalizer raises in strict mode, else logs per render and falls back to label
+- [Phase 06]: 06-07: modal.js, viewset.js and list.filter.js stay byte-identical; native submitter, cancel and reset regressions pass on the existing handlers and are proven discriminating by source mutations
+- [Phase 06]: 06-07: crispy_floor nox session (py3.12 x Django 4.2/6.0, crispy 2.0 / crispy-bootstrap5 2023.10) deselects only the pack-whitespace-bound filter region golden; test_filter_form_controls_match_golden byte-checks the leaf controls everywhere
+- [Phase 06]: 06-07: list.filter.test.js:159 jsdom 30.1.2 selector failure fixed test-only with :scope; full JS gate 223/223
+- [Phase 06]: 06-08: Form resolution prose lives once in action_menus.md (Form label-mode resolution, Form checks); settings.md adds separate form rows to the single merge/replace table
+- [Phase 06]: 06-08: The migration guide's Form buttons section is a top-level section before A downstream theme, keeping Table pagination overrides adjacent to Silent breaks
+- [Phase 06]: 06-08: The example sets only CRUD_VIEWS_LABEL_MODE_DEFAULTS form=both; other locations keep their package floors
+- [Phase 06]: 06-09: whole-repo ruff format --check recorded as not green (9 pre-existing planning Markdown files, WINDOWS #4); code and Phase 06 changed files formatted
+- [Phase 06]: 06-09: hover tooltip, visual quality, screen reader and migration readability remain pending human; automated Chromium evidence covers names, focus, focus tooltips, cancel, filter reset and modal submit
+- [Phase 06]: 06-10: icon= omission is stored as the private bool _cv_kind_icon (sentinel compared in __init__ only); deepcopy isolation of filter layouts kept
+- [Phase 06]: 06-10: _form_button_data treats any non-str or whitespace-only cv_icon as None before availability, diagnostics, host classes and the leaf; accepted strings kept exactly
+- [Phase 06]: UAT 4/4 passed; review IN-01..IN-03 fixed (aed6003, 92d5430, d75fb31; disposition open 0/6); re-verification 42/42 passed (dbca22e); full suite 4632 passed
 
 ### Pending Todos
 
@@ -129,14 +172,20 @@ None yet.
 
 - Phase 2: Ruff 0.16.10 is below the manifest range and global formatting flags eight pre-existing planning
   Markdown files; product formatting passes. See phase deferred-items.md and WINDOWS entry 4.
-- Phases 6 and 7: each needs a spec or maintainer decision before planning.
+
+- Phase 7: needs a spec or maintainer decision before planning.
 - Phase 7: retain the decided stable label-mode names; track the separately planned `no_label` removal before 1.0.
 - Phase 7: carry the Phase 5 class key `pagination:hidden-label` into the stability surface.
-- Phase 6 must commit before-change goldens; today's goldens contain no form buttons (Phase 4 committed the
-  dismissible alert golden first, f6982bf; Phase 5 the table pagination goldens, be7daa5).
+
 - [Phase 4] Four open Info review findings (IN-01 `[role~="alert"]`, IN-02 hand-copied allowlist, IN-04 no guard for
   the non-core data-bs-* sentence, IN-05 missing-script enumeration) — see 04-REVIEW-DISPOSITION.md; candidates for Phase 7.
+
 - Phase 2: Both source-probe classifier limitations remain documented; explicit tests and completed human prose UAT independently establish acceptance. See 02-VERIFICATION.md.
+- Phase 7: carry the Phase 6 form surface (`form` location, `tags/button/form.html`, `FORM_LEAF_KEYS`, `get_form_actions()`, icons `save`/`cancel`/`filter-reset`) into the stability doc.
+
+### Roadmap Evolution
+
+- Phase 06 edited: User decision D-18: verify completed Phase 1/2 contracts on executing working branch before spec; main merge no longer prerequisite
 
 ## Deferred Items
 
@@ -146,6 +195,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-27T14:00:00Z
-Stopped at: Phase 05 complete, ready to plan Phase 6
+Last session: 2026-10-28
+Stopped at: Phase 06 complete, ready to plan Phase 7
 Resume file: None

@@ -17,6 +17,7 @@ from crud_views.lib.resource import Resource
 from crud_views.lib.viewset import path_regs
 
 from .. import check
+from ..button_classes import FORM_KINDS
 from ..check import Check, CheckAttributeReg, CheckExpression, CheckTemplate
 from ..settings import crud_views_settings
 from ..view import (
@@ -27,6 +28,7 @@ from ..view import (
 from ..view import (
     CrudViewPermissionRequiredMixin as CrudViewPermissionRequiredMixin,
 )
+from ..view.action_menu import cv_is_form_label_mode_map
 from ..view.buttons import context_button_checks, context_buttons_default
 from ..view.label_mode import LABEL_MODES, is_label_mode_map
 from ..views.manage import ManageView
@@ -84,6 +86,8 @@ class ViewSet(BaseModel):
     # None: CRUD_VIEWS_*_ACTIONS_LABEL_MODE
     context_actions_label_mode: dict[str, str] | None = None
     list_actions_label_mode: dict[str, str] | None = None
+    # label mode of crispy form buttons (Phase 6): form kind -> mode; None: CRUD_VIEWS_FORM_ACTIONS_LABEL_MODE
+    form_actions_label_mode: dict[str, str] | None = None
     # Resource-based ViewSets only: explicit permission map, e.g.
     # {"view": "storage.view_s3object", "delete": "storage.delete_s3object"}.
     # None means: no permissions declared (only non-PermissionRequired views).
@@ -108,6 +112,14 @@ class ViewSet(BaseModel):
         """The dict shape is Pydantic's; the values must be label modes (#216)."""
         if not is_label_mode_map(value):
             raise ValueError(f"must map action keys to one of {sorted(LABEL_MODES)}, got {value!r}")
+        return value
+
+    @field_validator("form_actions_label_mode")
+    @classmethod
+    def check_form_label_mode_map(cls, value):
+        """Form kinds are finite (Phase 6): the keys must be FORM_KINDS, the values label modes."""
+        if value is not None and not cv_is_form_label_mode_map(value):
+            raise ValueError(f"must map form kinds {sorted(FORM_KINDS)} to one of {sorted(LABEL_MODES)}, got {value!r}")
         return value
 
     @model_validator(mode="after")

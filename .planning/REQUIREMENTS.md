@@ -51,10 +51,10 @@ except where a requirement says the markup changes.
 
 ### Alert dismiss (plan 3A)
 
-- [ ] **ALRT-01**: Golden of today's dismissible alert is committed before the change
-- [ ] **ALRT-02**: `tags/alert.html` renders `data-cv-alert-dismiss` instead of `data-bs-dismiss="alert"`; one delegated click handler calls `cv.adapters.alert.close(el)`
-- [ ] **ALRT-03**: `cv.adapters.alert.close` uses Bootstrap's `Alert` when present and falls back to `el.remove()` inside the adapter; vitest covers both
-- [ ] **ALRT-04**: `grep -rn 'data-bs-' src/crud_views/templates` lists only the dropdown templates named in `theme.md`; docs (`javascript.md`, `messages.md`, `theme.md`), CHANGELOG Breaking and migration bullet updated
+- [x] **ALRT-01**: Golden of today's dismissible alert is committed before the change
+- [x] **ALRT-02**: `tags/alert.html` renders `data-cv-alert-dismiss` instead of `data-bs-dismiss="alert"`; one delegated click handler calls `cv.adapters.alert.close(el)`
+- [x] **ALRT-03**: `cv.adapters.alert.close` uses Bootstrap's `Alert` when present and falls back to `el.remove()` inside the adapter; vitest covers both
+- [x] **ALRT-04**: `grep -rn 'data-bs-' src/crud_views/templates` lists only the dropdown templates named in `theme.md`; docs (`javascript.md`, `messages.md`, `theme.md`), CHANGELOG Breaking and migration bullet updated
 
 ### Table pagination (plan 3B)
 
@@ -118,10 +118,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | FILT-02 | Phase 3 (plan 1B) | Complete |
 | FILT-03 | Phase 3 (plan 1B) | Complete |
 | FILT-04 | Phase 3 (plan 1B) | Complete |
-| ALRT-01 | Phase 4 (plan 3A) | Pending |
-| ALRT-02 | Phase 4 (plan 3A) | Pending |
-| ALRT-03 | Phase 4 (plan 3A) | Pending |
-| ALRT-04 | Phase 4 (plan 3A) | Pending |
+| ALRT-01 | Phase 4 (plan 3A) | Complete |
+| ALRT-02 | Phase 4 (plan 3A) | Complete |
+| ALRT-03 | Phase 4 (plan 3A) | Complete |
+| ALRT-04 | Phase 4 (plan 3A) | Complete |
 | PAGE-01 | Phase 5 (plan 3B) | Pending |
 | PAGE-02 | Phase 5 (plan 3B) | Pending |
 | PAGE-03 | Phase 5 (plan 3B) | Pending |

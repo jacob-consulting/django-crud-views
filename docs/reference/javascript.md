@@ -11,7 +11,7 @@ The scripts render in this order from `{% cv_js %}` (and `cv_sources("js")` for 
 | Script | Needs at load | Needs at use |
 |---|---|---|
 | `adapters.js` | nothing | nothing |
-| `viewset.js` | nothing | nothing |
+| `viewset.js` | nothing | `cv.adapters.alert`, when an alert's close control is clicked, see [Dismissible alerts](#dismissible-alerts) |
 | `formset.js` | nothing | jQuery, on pages with formsets |
 | `list.filter.js` | nothing | `cvGetConfig`, `cv.adapters.collapse` |
 | `modal.js` | nothing | `cv.adapters.modal` |
@@ -36,10 +36,12 @@ assignment at any point before the user acts takes effect.
 | `tooltip` | `hide(el)` (optional) | a click lands on or inside a `[data-cv-tooltip]`, see [Tooltips](#tooltips) | `Tooltip.getInstance(el)?.hide()`; does nothing without `Tooltip` or without an instance |
 | `tooltip` | `dispose(el)` (optional) | for every `[data-cv-tooltip]` under `#cv-modal` on `cv:modal:unload`, before the content is replaced | `Tooltip.getInstance(el)?.dispose()`; does nothing without `Tooltip` or without an instance |
 | `collapse` | `toggle(el)` | the filter toggle button is clicked, with `#filter-collapse` | `Collapse.getOrCreateInstance(el).toggle()`; throws a clear error when the namespace has no `Collapse`; returns `false` without toggling while the panel is still animating (`.collapsing`), because Bootstrap ignores a toggle then |
+| `alert` | `close(el)` | a click lands on or inside a `[data-cv-alert-dismiss]` element, with its nearest `role="alert"` ancestor, see [Dismissible alerts](#dismissible-alerts) | `Alert.getOrCreateInstance(el).close()`; removes `el` from the page when the namespace has no `Alert` |
 
 A failing `modal.show` is logged with `console.error` and the modal flow falls back to opening the full page. A
 `collapse.toggle` that throws or returns exactly `false` leaves the filter toggle's icon, `aria-expanded` and persisted
-state untouched; any other return value counts as toggled, so a custom adapter may simply return nothing.
+state untouched; any other return value counts as toggled, so a custom adapter may simply return nothing. An
+`alert.close` that throws is not caught, see [Dismissible alerts](#dismissible-alerts).
 
 Replace an adapter from any script that loads after core:
 
@@ -50,11 +52,27 @@ cv.adapters.tooltip = {init(el, {location}) { /* your tooltip library */ }};
 Adapters assigned **before** `adapters.js` loads are kept, so a hand-written object may also be set earlier. Create the
 namespace first: `globalThis.cv ??= {}; cv.adapters ??= {};`. The merge is
 shallow, per adapter: assigning `cv.adapters.modal = {...}` replaces the whole default `modal` adapter, so provide
-`show`, `hide` and `setSize` together.
+`show`, `hide` and `setSize` together. Every adapter such an early map leaves out gets its default while
+`adapters.js` loads, so a partial map assigned before core needs nothing else.
+
+Replacing the **whole map after** core loads is different: `cv.adapters = {...}` discards the defaults, and core never
+fills them in again. Such a map must provide every adapter core calls, `alert` with `close(el)` included; without it,
+a click on an alert's close control throws a `TypeError` and the alert stays. Prefer replacing single entries
+(`cv.adapters.modal = {...}`) or merging into the existing map (`Object.assign(cv.adapters, {...})`). A theme that
+builds its own map for a Bootstrap-compatible namespace takes the alert entry from the factory:
+
+```javascript
+cv.adapters = {
+    modal: myModalAdapter,
+    tooltip: myTooltipAdapter,
+    collapse: myCollapseAdapter,
+    alert: cv.bootstrapAdapters(() => globalThis.tabler).alert,
+};
+```
 
 ## Bootstrap under another name
 
-`cv.bootstrapAdapters(ns)` builds all three adapters for any Bootstrap-compatible namespace. `ns` is an object or a
+`cv.bootstrapAdapters(ns)` builds all four adapters for any Bootstrap-compatible namespace. `ns` is an object or a
 function returning one; a function is resolved on every call, so load order does not matter.
 
 **Tabler** exposes Bootstrap's components as `window.tabler`. Register one small script as an asset (loaded after core,
@@ -166,6 +184,39 @@ cv.adapters.tooltip = {
 
 `hide` and `dispose` are optional; leave them out and core skips those steps. A hidden label
 (`<location>:hidden-label`) or an `aria-label` on every stock trigger keeps the accessible name once `title` is gone.
+
+## Dismissible alerts
+
+The close control of a dismissible alert ([flash messages](messages.md) and `{% cv_alert ... dismissible=True %}`)
+carries `data-cv-alert-dismiss`, and the alert frame carries `role="alert"`. `viewset.js` handles every such control
+through one delegated `click` listener on `document`. A click on or inside a marked control finds the control's
+nearest `role="alert"` ancestor and calls `cv.adapters.alert.close(frame)`, looking the adapter up at the time of the
+click. Alerts inserted after page load, modal content included, therefore close without any initialisation, and an
+adapter replaced at any point before the click takes effect. A marked control with no `role="alert"` ancestor is
+ignored. Classes play no part, so a [custom frame](theme.md#custom-alert-frame) keeps working as long as it keeps both
+hooks.
+
+The default adapter closes the frame with Bootstrap's `Alert` component, transition included, when the namespace has
+one. Only when there is no `Alert` (no Bootstrap JavaScript, or a build without the component) does it remove the frame
+itself with `el.remove()`. That removal belongs to the default adapter alone; core has no second closing path:
+
+- An error thrown by a present `Alert` component, or by your own adapter, is not caught. It surfaces as an uncaught
+  error of the click; core does not log it, does not remove the frame and does not undo what the adapter already
+  changed.
+- An adapter that does nothing leaves the alert on the page.
+- A missing `cv.adapters.alert` is not repaired: the click throws a `TypeError` (see the whole-map note under
+  [`cv.adapters`](#cvadapters)).
+
+A theme closes alerts its own way by replacing the entry from a script loaded after core:
+
+```javascript
+cv.adapters.alert = {
+    close(el) {
+        el.classList.add("is-leaving");
+        el.addEventListener("transitionend", () => el.remove(), {once: true});
+    },
+};
+```
 
 ## jQuery
 

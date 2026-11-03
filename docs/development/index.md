@@ -38,7 +38,7 @@ task run
 ```
 > **Note:** This will run the migrations, seed demo data, and start the dev server. It creates the demo users `alice` / `alice` and `bob` / `bob` (see `project/seeding.py`). To use the Django admin at `/admin/`, create a superuser first: `python manage.py createsuperuser`.
 
-[Then open the app in your browser at http://localhost:8000](http://localhost:8000)
+[Then open the app in your browser at http://localhost:9000](http://localhost:9000)
 
 ## Deploying the demo
 

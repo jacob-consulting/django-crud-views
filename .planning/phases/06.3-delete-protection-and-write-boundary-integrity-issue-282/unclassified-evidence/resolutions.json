@@ -1,0 +1,34 @@
+[
+  {
+    "requirement_id": "DEL-01",
+    "category": "unclassified",
+    "status": "dismissed",
+    "verification": null,
+    "resolution": null,
+    "reason": "Recovered input matches zero classifier shapes; the sole candidate is a manual-review fallback, not an undisclosed approval condition. Original, repair and focus approval records bind actual maintainer responses to reviewed designs. Prohibition-01 was separately accepted. No additional actionable finding after bounded review; no release approval inferred."
+  },
+  {
+    "requirement_id": "DEL-03",
+    "category": "unclassified",
+    "status": "dismissed",
+    "verification": null,
+    "resolution": null,
+    "reason": "Recovered input matches zero classifier shapes; the sole candidate is a manual-review fallback, not an undisclosed exception case. Bounded native/custom provenance, stale preview, real commit/rollback and callback-event review is documented and replayed. Concrete CR findings are separately repaired. No additional actionable finding; no universal application-handler guarantee inferred."
+  },
+  {
+    "requirement_id": "DEL-04",
+    "category": "unclassified",
+    "status": "dismissed",
+    "verification": null,
+    "resolution": null,
+    "reason": "Recovered input matches zero classifier shapes; the sole candidate is a manual-review fallback, not an undisclosed database condition. Bounded colliding-PK, selected protection, pinned alias/transaction/commit and selected-row/parent review covers the declared contract. No additional actionable finding; no central-auth or general cross-database Guardian support inferred."
+  },
+  {
+    "requirement_id": "AUTH-06",
+    "category": "unclassified",
+    "status": "dismissed",
+    "verification": null,
+    "resolution": null,
+    "reason": "Recovered Phase 6.2 and 6.3 inputs both match zero classifier shapes; this is a manual-review fallback. The bounded policy review covers inherited/per-view flags, removed settings, strict helper, actors, scope, manage diagnostics and detached state. IN-02/IN-03 and CT-01 are separately fixed. No additional actionable finding; closure follows recovered detector semantics and review, not an assumption that CT-01 was a hidden predicate. General Guardian precision remains unverified."
+  }
+]

@@ -36,6 +36,8 @@ the message:
 | `crud_views.E350` **[0.30]** | a removed icon setting is still defined: `CRUD_VIEWS_ACTIONS_MENU_ICON`, `CRUD_VIEWS_FILTER_ICON`, `CRUD_VIEWS_OBJECT_DETAIL_ICONS_LIBRARY`, `_ICONS_CLASS`, `_ICONS_TYPE`, `_ICONS_PREFIX`, `CRUD_VIEWS_OBJECT_DETAIL_NAMED_ICONS` | move the value into `CRUD_VIEWS_ICONS`, see [Settings](#settings) |
 | `crud_views.E360` | `CRUD_VIEWS_FILTER_RESET_BUTTON_CSS_CLASS` is still defined | `CRUD_VIEWS_BUTTON_CLASSES = {"form:filter-reset": "..."}` |
 | `viewset.E250` | `cv_modal_size` is a Bootstrap class such as `"modal-lg"` | use the token: `""`, `"sm"`, `"lg"` or `"xl"` |
+| `viewset.E263` | an effective `cv_get_related_objects()` override remains | use the [safe provider and display filter](#safe-deletion-preview-overrides); runtime rejects it without invocation |
+| `viewset.E264` | an inspectable model `delete` cannot bind keyword `using` | accept/forward `using` or `**kwargs`; [opaque methods fail at runtime](#delete-method-signatures-and-database-selection) |
 | `viewset.W246` **[0.30]** | an object detail group `icon` uses a `prefix:` that is not registered | register the library in `CRUD_VIEWS_ICON_LIBRARIES`, or fix the prefix |
 
 Two removals raise at runtime instead, the first time the page renders:
@@ -401,22 +403,19 @@ with `accept_global_perms=True`. See [Strict Mode](reference/guardian.md#strict-
 
 With `cv_show_related_objects`, `protected_objects` now holds only the protected objects the user may view. Preview
 labels, tree and summary keys still depend on that option. `has_protected_objects` is now present on every delete
-GET/POST context regardless of the option, and is true whenever the unfiltered collection blocks deletion. Summary
-counts are unchanged. The separate [Blocked deletions](#blocked-deletions) change below adds form/POST handling.
+GET/POST context regardless of the option, and combines native and provider blockers before permission filtering.
+`delete_preview_incomplete` is also always present. Inspection reads supported metadata without executing deletion
+handlers, factories or model deletion. Unknown/custom effects leave boundaries and partial counts, including on
+ordinary ordered-model Author and polymorphic Car pages. The aggregate disclosure policy is unchanged; incomplete
+summaries qualify their integer counts in the heading. See the [provider contract](reference/delete_view.md#inspection-and-provider-api).
 
 - **A copied `crud_views/view_delete.content.html`**: include the snippet on the new flag as well. A copy that still
-  tests `related_summary or protected_objects` drops the whole snippet when the user may view no protected object:
-
-    ```django
-    {# before #}
-    {% if related_summary or protected_objects %}
-    {# after #}
-    {% if related_summary or has_protected_objects %}
-    ```
+  tests `related_summary or protected_objects` drops the whole snippet when the user may view no protected object.
+  Use `related_summary or has_protected_objects` and keep the incomplete warning independent of that include.
 
 - **A copied `crud_views/snippets/delete/related_objects.html`**: show the blocked notice on the flag and list only
   `protected_objects`, which is already filtered. Use the complete two-branch recipe in
-  [Blocked deletions](#blocked-deletions) so hidden labels still get explanatory text. Do not fetch protected objects
+  [Copied delete templates](#copied-delete-templates-with-incomplete-previews) so hidden labels still get explanatory text. Do not fetch protected objects
   another way.
 
 - **A custom `cv_filter_related_objects`** now has to filter `related.protected` as well as the tree. Return only
@@ -435,60 +434,326 @@ counts are unchanged. The separate [Blocked deletions](#blocked-deletions) chang
 
 ### Blocked deletions
 
-Every delete page now has `has_protected_objects`, derived from the unfiltered collection even with
+Every delete page now has `has_protected_objects`, derived from native plus provider blockers even with
 `cv_show_related_objects = False`. The stock content template omits the entire confirmation form while blocked,
 including its checkbox, submit and form-contained cancel control, matching the custom-protection page. In a copied
 `crud_views/view_delete.content.html`, keep the custom-protection branch and snippet include guard
-`{% if related_summary or has_protected_objects %}`, and change the form guard:
-
-```django
-{# before: inside the branch with no custom protection errors #}
-<form method="post">{% csrf_token %}{% cv_render_form %}</form>
-{# after #}
-{% if not has_protected_objects %}
-    <form method="post">{% csrf_token %}{% cv_render_form %}</form>
-{% endif %}
-```
-
-In a copied `crud_views/snippets/delete/related_objects.html`, retain the labelled heading with its colon and items,
-and add the colon-free heading and generic sentence when labels are absent:
-
-```django
-{% load crud_views i18n %}
-{% if has_protected_objects %}
-    {% if protected_objects %}
-        {% cv_alert "error" heading=_("Deletion is blocked by protected relationships:") items=protected_objects %}
-    {% else %}
-        {% cv_alert "error" heading=_("Deletion is blocked by protected relationships") text=_("Other objects still reference this one; remove or reassign them before deleting it.") %}
-    {% endif %}
-{% endif %}
-```
+`{% if related_summary or has_protected_objects %}`, and wrap the entire form in
+`{% if not has_protected_objects %}`. The complete content/snippet recipe below also retains the independent
+incomplete warning, custom-protection branch and hidden-label notice.
 
 A copied alert leaf must render `alert.text` or `alert.body_template` as well as heading/items; otherwise the generic
 sentence disappears. Labels remain escaped and permission-filtered, and summary counts keep their existing policy.
 
-A confirmed POST with genuinely blocked target protection now returns **200** full page / **422** modal with storage
-intact, instead of letting native `ProtectedError` / `RestrictedError` escape. Update downstream tests or middleware
-that expected that exception to assert the status and intact storage. The early check handles visible protection;
-the race backstop handles only native target collection proven by both pre-call native-graph eligibility and exact
-target `Model.delete` / `Collector.collect` frames, after the existing transaction unwinds. Django can aggregate a
-custom relationship handler's `ProtectedError` and lose its traceback, so collector frames alone prove too little.
+A confirmed POST stopped by the early check returns **200** full page / **422** modal with storage intact.
+The fresh-write race backstop applies only to exact Django `Model.delete`: adapted native collection emits a private
+marker when native protection is observed before any custom collection callback has been entered. `post` translates
+that marker after the atomic block unwinds. It does not infer origin from graph certification or traceback frames.
+Native `PROTECT` stops immediately; `RESTRICT` reconciles the supported native closure. Provider-deleted rows do not
+clear a native restricted row outside that closure.
 
-Custom handlers anywhere in possible cascade/parent paths, every `SET(...)` closure, `SET_DEFAULT`, private
-bulk-related callbacks, nonstandard row loaders and unknown collectors are excluded from translation, even on empty
-relations. Real `model.delete()` still runs and the early check remains; these exclusions introduce no new
-transaction or support promise for arbitrary collector extensions. Those unknown collection failures, errors from
-`cv_post_hook`, custom `cv_form_valid`, `cv_form_valid_hook`, `cv_on_commit`, model overrides and signals continue to
-propagate. After-commit callback failure leaves the target deleted. With `cv_atomic=False`, committed side effects
-from custom collection callbacks survive collection failure. Delegate custom `post` overrides to the standard path
-for this HTTP response handling and preserve its lifecycle; a direct `cv_form_valid_process` call does not
-automatically receive a protection response.
+Other actual model methods receive `delete(using=...)` once, retaining ordered sibling reordering and polymorphic
+parent semantics. Their stale protection errors propagate. Custom callbacks, factories, private collectors, loaders,
+signals and lifecycle hooks also retain their errors. A custom callback that returns before a later native block
+makes that later native error propagate too: its effects may already have happened. With `cv_atomic=False`, database
+effects can survive that failure; external I/O cannot be rolled back even with an atomic block. Commit callback
+failure leaves committed deletion intact. Friendly native markers do not certify external rollback.
+Delegate custom `post` to the standard path for HTTP handling; direct `cv_form_valid_process` callers own the gates.
 
-Existing `cv_get_related_objects` overrides now run once per context with previews disabled too. Return an accurate,
-unfiltered protected collection and keep it local; display authorization belongs in `cv_filter_related_objects`.
-The default traversal uses `router.db_for_write` and `NestedObjects`, disables fast deletion and materializes complete
-cascade rows/tree/summary on every GET/POST. An allowed POST also performs actual deletion collection. Hiding labels
-cannot safely remove the check. There is no new option, large-cascade bound or benchmark claim.
+Inspection uses full display rows, not `NestedObjects` or executable collection. Large cascades still materialize;
+there is no large-graph bound. ORM reads can run application converters/managers/read signals. Providers and filters
+must be read-only trusted application code, not a sandbox. Read/provider/render failures propagate.
+
+### Safe deletion preview overrides
+
+Remove every `cv_get_related_objects()` override immediately. Startup check **`viewset.E263`** and runtime
+`ImproperlyConfigured` name `cv_get_delete_preview` and `cv_filter_related_objects` as replacements; the legacy method
+is never invoked. Its base implementation remains a read-only accessor, and the old `RelatedObjects` import works.
+
+This example assumes your existing `Document.delete(*, using)` deletes `PreviewNote` rows whose integer
+`document_key` equals the document PK, then delegates to Django. That method's only extra deletion effect is these
+notes. Move the old preview's extra rows into a boundary contribution; narrow only already-permitted display data.
+Import your existing ViewSet from a module that does not import this view. The example deliberately leaves other
+boundaries unresolved. Do not attest this contract for an arbitrary model or library override.
+
+```python
+from crud_views.lib.crispy import CrispyDeleteForm, CrispyViewMixin
+from crud_views.lib.deletion import DeletePreviewContribution
+from crud_views.lib.views import DeleteViewPermissionRequired
+from myapp.models import Document, PreviewNote
+from myapp.viewsets import cv_document
+
+
+class DocumentDeleteView(CrispyViewMixin, DeleteViewPermissionRequired):
+    cv_viewset = cv_document
+    form_class = CrispyDeleteForm
+    cv_show_related_objects = True
+
+    def cv_get_delete_preview(self, boundaries, *, using):
+        contributions = list(super().cv_get_delete_preview(boundaries, using=using))
+        for boundary in boundaries:
+            if boundary.kind == "model_delete" and boundary.model is Document:
+                notes = tuple(PreviewNote.objects.using(using).filter(document_key__in=boundary.source_pks))
+                contributions.append(DeletePreviewContribution(boundary, deleted=notes, complete=True))
+        return contributions
+
+    def cv_filter_related_objects(self, user, related):
+        related = super().cv_filter_related_objects(user, related)
+        # Additional business redaction after core/Guardian authorization, never raw protected rows.
+        return related._replace(protected=[row for row in related.protected if not getattr(row, "is_archived", False)])
+```
+
+Use the corresponding Guardian base class in a Guardian project. Its `super()` supplies the Guardian projection;
+do not reapply the core model-permission filter afterward. The filter runs only with display enabled. The provider
+runs even with display disabled, before the unfiltered blocked flag is computed. Never call deletion to simulate a
+preview. Each boundary must match all six fields of the current supplied descriptor: `kind`, `model`, `field_name`,
+`using`, **ordered** `source_pks` and `field_model`. Model-delete boundaries retain `field_model=None`.
+Saved same-alias model tuples are required; invalid, duplicate, stale or cross-alias contributions raise `ValueError`.
+`complete=True` attests only this boundary, not purity or completeness of other effects.
+
+### Describing custom deletion effects
+
+Suppose `Attachment.document` uses your custom `delete_attachments(collector, field, sub_objs, using)` handler,
+whose complete effect is to cascade-delete those Attachment rows, with no further attachment relations or effects.
+Describe that effect with reads on `using`; do not call the handler. Keep `complete=False` until you can attest the
+whole effect. This standalone view is an alternative to the preceding one; combine their provider loops if you
+need both descriptions. Any custom root-model method remains a separate unresolved boundary here.
+
+**Immediate provider migration:** `DeletePreviewBoundary` appends the immutable `field_model` identity field.
+Select supplied field descriptors by their declaring owner as well as source model and field name, as below.
+Old copied **ownerless** `on_delete` or `private_relation` descriptors now raise `ValueError` before confirmation;
+there is no grace period. Do not reconstruct an ambiguous source/name descriptor. A reconstructed descriptor must
+equal a supplied descriptor in all six fields, including owner, alias and the exact ordered source batch.
+Model-delete descriptors keep `field_model=None` and their existing construction remains valid.
+
+Here `model is Document` and `source_pks` identify the inspected Document rows; `field_model is Attachment`
+identifies who declares `document`, not those source rows. Each reverse relation, unsupported parent link and
+private relation retains its declaring field model. A newly added `OtherAttachment.document` has a separate
+boundary, including when it has no rows. The provider below must leave that boundary incomplete until another
+explicit description attests it. One owner's contribution cannot complete another owner's effects.
+
+```python
+from crud_views.lib.crispy import CrispyDeleteForm, CrispyViewMixin
+from crud_views.lib.deletion import DeletePreviewContribution
+from crud_views.lib.views import DeleteViewPermissionRequired
+from myapp.models import Attachment, Document
+from myapp.viewsets import cv_document
+
+
+class DocumentEffectsDeleteView(CrispyViewMixin, DeleteViewPermissionRequired):
+    cv_viewset = cv_document
+    form_class = CrispyDeleteForm
+    cv_show_related_objects = True
+
+    def cv_get_delete_preview(self, boundaries, *, using):
+        contributions = list(super().cv_get_delete_preview(boundaries, using=using))
+        for boundary in boundaries:
+            if (
+                boundary.kind == "on_delete"
+                and boundary.model is Document
+                and boundary.field_model is Attachment
+                and boundary.field_name == "document"
+            ):
+                rows = tuple(Attachment.objects.using(using).filter(document_id__in=boundary.source_pks))
+                contributions.append(DeletePreviewContribution(boundary, deleted=rows, complete=True))
+        return contributions
+```
+
+If your read-only policy also finds protected rows, return them as `protected=(row, ...)`: this is an additive veto
+even without native protection. Contributions cannot remove native blockers or expand native `RESTRICT` closure.
+Do not use `complete=True` merely to remove a warning. Full API fields and limits are in
+[Inspection and provider API](reference/delete_view.md#inspection-and-provider-api).
+
+### Copied delete templates with incomplete previews
+
+Save this complete content override as `myapp/delete.content.html` and set your delete view's
+`cv_content_template` to that path. It uses the package form frame and your copied snippet. The independent warning
+survives previews disabled, hidden labels and custom protection. No extra acknowledgement replaces the ordinary
+confirmation.
+
+```django
+{% extends "crud_views/snippets/form_frame.html" %}
+{% load crud_views i18n %}
+{% block cv_form_body %}
+    {% if delete_preview_incomplete %}
+        {% cv_alert "warning" text=_("This preview is incomplete. Custom deletion behavior may affect additional objects.") %}
+    {% endif %}
+    {% if delete_protection_errors %}
+        {% include "crud_views/snippets/delete/protection_errors.html" %}
+    {% else %}
+        {% if related_summary or has_protected_objects %}
+            {% include "myapp/delete_related.html" %}
+        {% endif %}
+        {% if not has_protected_objects %}
+            <form class="cv-form" method="post" action="{{ request.get_full_path }}" novalidate>
+                {% csrf_token %}
+                {{ form.non_form_errors }}
+                {% cv_render_form %}
+            </form>
+        {% endif %}
+    {% endif %}
+{% endblock %}
+```
+
+Save the companion snippet as `myapp/delete_related.html`. Keep both notice branches; use only the filtered labels.
+Partial counts stay numeric, qualified by the heading. A copied alert leaf must render body/text too.
+
+```django
+{% load crud_views i18n %}
+<div class="cv-related-objects mb-3">
+    {% if has_protected_objects %}
+        {% if protected_objects %}
+            {% cv_alert "error" heading=_("Deletion is blocked by protected relationships:") items=protected_objects %}
+        {% else %}
+            {% cv_alert "error" heading=_("Deletion is blocked by protected relationships") text=_("Other objects still reference this one; remove or reassign them before deleting it.") %}
+        {% endif %}
+    {% endif %}
+    {% if related_summary %}
+        {% if delete_preview_incomplete %}
+            {% cv_alert "warning" heading=_("Some related objects that will also be deleted (partial counts):") items=related_summary_items %}
+        {% else %}
+            {% cv_alert "warning" heading=_("The following related objects will also be deleted:") items=related_summary_items %}
+        {% endif %}
+        {% with items=related_objects %}
+            {% cv_alert "warning" heading=_("Details about the related objects to be deleted:") body_template="crud_views/snippets/delete/related_objects_tree.html" %}
+        {% endwith %}
+    {% endif %}
+</div>
+```
+
+### Delete method signatures and database selection
+
+Custom and library model methods execute once as `delete(using=...)`, preserving their real semantics. A method
+without keyword `using` (including a positional-only parameter) fails startup check **`viewset.E264`** and raises
+`ImproperlyConfigured` before invocation. Opaque signatures fail at runtime and require an inspectable adapter.
+For your own model, accept and forward `using`; for example:
+
+```python
+def delete(self, *, using=None, keep_parents=False):
+    return super().delete(using=using, keep_parents=keep_parents)
+```
+
+An inspectable `def delete(self, **kwargs): return super().delete(**kwargs)` adapter also works. Do not catch a
+`TypeError` from inside deletion and retry, or bypass ordered/polymorphic overrides through `Model.delete`.
+
+`cv_get_delete_db_alias()` is the new pinned accessor. After authorized saved-object resolution it calls the
+`cv_get_db_alias()` selection hook once, validates the configured alias and shares it across inspection, deletion,
+default atomic and `on_commit`. Its delete default uses `router.db_for_write(type(self.object), instance=self.object)`.
+Before a saved target exists it raises `ImproperlyConfigured`. Direct process callers must supply one and own
+authorization/confirmation. A selector may intentionally choose another alias: native execution reloads the same
+model/PK there immediately before collection, using current non-PK and actual parent-link values rather than cached
+parent descriptors. Custom methods still execute on the original authorized instance with `using` and own their
+relation routing and external effects. Request inputs do not select the alias. See
+[Execution order](reference/delete_view.md#execution-order) for native origin/PK state, missing-selected-row
+propagation, null-join semantics and concurrency limits.
+
+Migrate custom delete atomic overrides from repeated `cv_get_db_alias()` calls to the accessor:
+
+```python
+from django.db import transaction
+
+
+def cv_get_atomic(self):
+    return transaction.atomic(using=self.cv_get_delete_db_alias(), savepoint=False)
+```
+
+Preserve your `cv_atomic` policy when needed, or call `super().cv_get_atomic()`. Application hook queries must use
+the intended alias explicitly. Atomic overrides and routers remain trusted; no cross-database transaction or
+rollback of external effects is supplied. Generic create/update/resource lifecycle remains unchanged.
+
+### Guardian permission keys
+
+`GuardianViewSet.assign_perm`, `remove_perm` and `get_objects_for_user` now raise **`ValueError`**, rather than
+`KeyError`, for an unknown key. Replace downstream `except KeyError` expectations with `ValueError` where handling
+an invalid application selection is appropriate. Empty strings and **all non-string inputs** (`None`, integers,
+bytes, lists, dicts) are programming errors with the same diagnostic, not silent denial. Validation precedes the
+inactive-user shortcut, target queryset access and Guardian calls/writes. A valid key for an inactive user still
+returns an empty queryset. No case, whitespace or Unicode normalization is performed.
+
+For a `GuardianViewSet` with configured keys `zebra`, `réviser`, `alpha`, requesting `view` produces exactly:
+
+```text
+Invalid permission key 'view'. Valid keys: 'alpha', 'réviser', 'zebra'.
+```
+
+The message uses `repr` of the supplied value and the actual sorted configured keys:
+`ValueError(f"Invalid permission key {perm!r}. Valid keys: {', '.join(repr(key) for key in sorted(self.permissions))}.")`.
+Use the configured key exactly, and let programming errors propagate. Here `cv_document` is your existing
+**GuardianViewSet**, and a valid `permission_key` is a string from its `permissions` mapping:
+
+```python
+from myapp.viewsets import cv_document
+
+
+def visible_documents(user, permission_key):
+    return cv_document.get_objects_for_user(user, permission_key)
+```
+
+The helper remains strict and reads an immutable `MappingProxyType` policy; per-view global fallback is independent.
+Manage dictionaries are detached display copies, not mutable authority. Supported delete-preview database topology
+requires actor/auth/grant/content-type routes co-located with candidate rows; unsupported topology hides labels
+without clearing protection or aggregates. See [Guardian database topology](reference/guardian.md#delete-preview-database-topology).
+The configured Car helper/list mismatch is repaired as described below. That bounded repair does not settle the
+separate unclassified AUTH-06 residual or unspecified custom-PK/database-cast/collation precision backstop.
+
+### Guardian configured content-type permissions
+
+`GuardianViewSet` now discovers default permissions through Guardian's configured `GUARDIAN_GET_CONTENT_TYPE`
+resolver. Previously a Car ViewSet inferred `app.view_car` even when Guardian selected Vehicle, so a valid
+`view_vehicle` grant could raise `MixedContentTypeError` in the helper or list. Under a polymorphic-base resolver,
+`GuardianViewSet(model=Car)` now infers `app.view_vehicle`; its queryset still contains Car instances.
+With the default concrete resolver, Car retains `app.view_car`, while PublisherProxy uses `app.view_publisher`.
+
+Set `GUARDIAN_GET_CONTENT_TYPE = "polymorphic.contrib.guardian.get_polymorphic_base_content_type"` in Django settings
+before starting the application. After migrations have created Vehicle's permissions, put the following in your
+ViewSet module. Here `myapp.models.Car` inherits from `Vehicle`. Include `cv_car.urlpatterns` in your project's URL
+configuration as for other ViewSets. The functions accept an existing user/group and select a saved Car by PK.
+Call `grant_car_view(user, car.pk)`, query `visible_cars(user)`, and use
+`revoke_car_view(user, car)` to remove that grant. The registered strict list uses the same permission mapping.
+
+```python
+from crud_views_guardian.lib.views import GuardianListViewPermissionRequired
+from crud_views_guardian.lib.viewset import GuardianViewSet
+from myapp.models import Car
+
+cv_car = GuardianViewSet(model=Car, name="configured_car")
+
+
+class CarListView(GuardianListViewPermissionRequired):
+    cv_viewset = cv_car
+
+
+def grant_car_view(user_or_group, car_pk):
+    car = Car.objects.get(pk=car_pk)
+    cv_car.assign_perm("view", user_or_group, car)
+    return car
+
+
+def visible_cars(user, queryset=None):
+    return cv_car.get_objects_for_user(user, "view", qs=queryset)
+
+
+def revoke_car_view(user_or_group, car):
+    cv_car.remove_perm("view", user_or_group, car)
+```
+
+Audit existing grants against the selected content type before deploying; this discovery correction does not copy
+or convert stored permission rows. Defaults include only Permission rows on that selected type. For example,
+Vehicle's `inspect_status_vehicle` becomes key `inspect_status` with value `app.inspect_status_vehicle`.
+Only the exact terminal `_<selected_type.model>` suffix is removed. Child-only `child_only_car` is no longer an
+inferred key when the selected type is Vehicle; move the intended permission/grants to Vehicle or deliberately
+choose a compatible resolver and mapping. There is no compatibility grace period or child/base permission union.
+
+An application's explicit `permissions` property override remains authoritative: exact string keys and qualified
+values are forwarded unchanged. No trimming, normalization or automatic child-to-base translation occurs.
+An explicit `app.view_car` mapping under a Vehicle resolver remains incompatible and raises Guardian's original
+`MixedContentTypeError`; fix the configuration rather than catching it as empty access. Invalid keys still raise
+`ValueError` with the actual sorted available keys, including selected-type custom keys.
+
+Nonempty discovered defaults are cached on the ViewSet for its process lifetime; empty discovery retries.
+Configure the resolver before startup. Changes to permissions or the resolver after discovery need a fresh
+ViewSet or process restart; runtime setting hot reload is not promised. The strict helper, per-view global
+fallback, object/group grants, active-superuser behavior, inactive denial and manage policy remain unchanged.
 
 ### The Guardian manage page
 
@@ -889,3 +1154,22 @@ about these.
   ([Delete previews and protected objects](#delete-previews-and-protected-objects)).
 - [ ] A Guardian manage template that reads `guardian_config.cv_guardian_accept_global_perms` renders an empty cell
   ([The Guardian manage page](#the-guardian-manage-page)).
+
+## Modal adapter completed-hide lifecycle
+
+Hand-written `cv.adapters.modal` objects must now provide `onHidden(modalEl, callback)` alongside
+`show`, `hide` and `setSize`. There is no compatibility grace period. The method subscribes to completed
+hiding and returns an idempotent unsubscribe function; it must not invoke the callback during subscription.
+Notify after the modal is hidden and its focus trap/inertness is released, for Close, Escape, backdrop and
+API dismissal alike. A prevented hide must not notify. Core consumes the callback once per open session
+and unsubscribes on completed hide, failed open or replacement by a new session.
+
+`cv.bootstrapAdapters(ns)` supplies this automatically, including Bootstrap and Tabler consumers.
+Custom asynchronous adapters must await their completed-hide event; calling the callback immediately after
+starting a hide animation is too early. Synchronous adapters may notify after completing hide and trap release.
+Missing hooks and hooks that do not return a function log a descriptive error and navigate to the full page
+before injecting/showing a modal. See the complete [native-dialog recipe](reference/javascript.md#a-non-bootstrap-modal).
+
+The modal recovers focus lost during a 422 replacement and restores the opener after completed dismissal.
+If the opener is removed, disabled or hidden, a usable main landmark is preferred, then an external focusable
+control; the body is the last resort. Initial-show focus remains the adapter's responsibility.

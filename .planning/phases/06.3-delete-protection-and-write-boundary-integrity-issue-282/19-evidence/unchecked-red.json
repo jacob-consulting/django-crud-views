@@ -1,0 +1,67 @@
+{
+  "captured": "2026-10-31T08:32:40.051Z",
+  "revision": "b6e7b89d11ca1d7b811f8d3102d1ec8905509491",
+  "sourceHashes": {
+    "src/crud_views/static/crud_views/js/modal.js": "4bf800195d81ac141b7d0b665140f736a75ba3a42b9c80cf466e2f7700a3a441",
+    "src/crud_views/static/crud_views/js/adapters.js": "c800bec450e77910c8d1dc70f8a031be8171428a1a991ab752e97f3fb94eefbe",
+    "tests/browser/modal-focus.cjs": "bee9024b9f48795168fc5b0e8edbf03bf6921b33fef6c7298dc4d4bf349cc0e0",
+    "docs/reference/javascript.md": "7a94c3f577ea855a47ba8c14c162798b5bbc2cb4dcde71c47e59b47d1e370854",
+    "docs/reference/modals.md": "f817e9204640f30b34f055b9d8cd2459ca29e844571a7b0ab79e36257bfbc37c",
+    ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/17-evidence/server.py": "19160e33bd34943829258db4faf4560e840a0f598cd8717b1822ccd9314ede67",
+    "src/crud_views/templates/crud_views/modal/shell.html": "bc5b91977d517671b9c246cbbbce5a813a0d8bc10caf36f8c78f214df15328ee",
+    "src/crud_views/templates/crud_views/modal/content.html": "385a9fe7721f506cd760f5f6b1171a30f779280b50c42a32a9e937e99cc12e67",
+    "package-lock.json": "567bff553002a1452d08db94660a206507d70df9711cdd11fd82ee51f4175d2e"
+  },
+  "command": [
+    "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
+    "/home/alex/projects/alex/django-crud-views/tests/browser/modal-focus.cjs",
+    "--case",
+    "unchecked",
+    "--output",
+    ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/19-evidence/unchecked-red.json"
+  ],
+  "runtime": {
+    "node": "v24.21.0",
+    "nodePath": "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]\n6.0.9",
+    "pythonPath": "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+    "playwrightPath": "/home/alex/.npm/_npx/e41f203b7505f1fb/node_modules/playwright",
+    "chromiumPath": "/home/alex/.cache/ms-playwright/chromium-1228/chrome-linux64/chrome",
+    "browser": "149.0.7827.55"
+  },
+  "completed": true,
+  "passed": false,
+  "cases": [
+    {
+      "id": "unchecked",
+      "passed": false,
+      "assertions": [
+        {
+          "name": "real 422",
+          "passed": true
+        },
+        {
+          "name": "invalid confirmation retains visible keyboard focus",
+          "passed": false
+        }
+      ],
+      "screenshots": [
+        {
+          "path": ".planning/ui-reviews/06.3-focus/unchecked.png",
+          "sha256": "dddfca3c25ecd3f2105a15c0f00c4bdf71334bc693c62202706cf2a06fadb1d2"
+        }
+      ],
+      "status": 422,
+      "focus": {
+        "tag": "BODY",
+        "id": "",
+        "connected": true,
+        "visible": true,
+        "focusVisible": false,
+        "inModal": false
+      }
+    }
+  ],
+  "pageErrors": [],
+  "error": "AssertionError [ERR_ASSERTION]: invalid confirmation retains visible keyboard focus\n    at check (/home/alex/projects/alex/django-crud-views/tests/browser/modal-focus.cjs:76:106)\n    at main (/home/alex/projects/alex/django-crud-views/tests/browser/modal-focus.cjs:99:9)"
+}

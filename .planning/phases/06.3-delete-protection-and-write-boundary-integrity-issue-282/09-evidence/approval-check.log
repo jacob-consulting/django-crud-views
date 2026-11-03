@@ -1,0 +1,16 @@
+{
+  "label": "approval-check",
+  "started": "2026-10-30T14:45:09.430800+00:00",
+  "head": "b0f739b608e8cbd363f0f02f471fa03b1c1e1234",
+  "diff_sha256": "ec026078b98b14c0b0d50b6a946b21b47866415759cd3b4c1e298332cb98db04",
+  "source_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "source_tree_sha256": "3afbb8ca117aa3c798b692e1a8255a007158403d12cbaaa11a3d79c2349a7eec",
+  "command": ".venv/bin/python -c 'from pathlib import Path; import hashlib; p=Path(\".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282\"); a=(p/\"06.3-APPROVAL.md\").read_text(); assert \"decision: approved\" in a and \"reviewer:\" in a and \"reviewed_revision:\" in a; digest=hashlib.sha256((p/\"06.3-DESIGN.md\").read_bytes()).hexdigest(); assert digest in a; print(\"Approval record matches DESIGN sha256\", digest)'",
+  "environment": {
+    "PYTHONPATH": null,
+    "PYTEST_XDIST_AUTO_NUM_WORKERS": null
+  }
+}
+Approval record matches DESIGN sha256 1642a5751e0a8e0bd9ee9df8ca3429c962e701e4078988108f8878617174d7e4
+
+RESULT {"label": "approval-check", "started": "2026-10-30T14:45:09.430800+00:00", "head": "b0f739b608e8cbd363f0f02f471fa03b1c1e1234", "diff_sha256": "ec026078b98b14c0b0d50b6a946b21b47866415759cd3b4c1e298332cb98db04", "source_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "source_tree_sha256": "3afbb8ca117aa3c798b692e1a8255a007158403d12cbaaa11a3d79c2349a7eec", "command": ".venv/bin/python -c 'from pathlib import Path; import hashlib; p=Path(\".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282\"); a=(p/\"06.3-APPROVAL.md\").read_text(); assert \"decision: approved\" in a and \"reviewer:\" in a and \"reviewed_revision:\" in a; digest=hashlib.sha256((p/\"06.3-DESIGN.md\").read_bytes()).hexdigest(); assert digest in a; print(\"Approval record matches DESIGN sha256\", digest)'", "environment": {"PYTHONPATH": null, "PYTEST_XDIST_AUTO_NUM_WORKERS": null}, "exit_code": 0, "duration_seconds": 0.044, "finished": "2026-10-30T14:45:09.507130+00:00"}

@@ -41,7 +41,12 @@
     {
       "number": "6.2",
       "name": "Request authorization and write integrity",
-      "status": "in_progress"
+      "status": "complete"
+    },
+    {
+      "number": "6.3",
+      "name": "Delete protection and write-boundary integrity",
+      "status": "complete"
     },
     {
       "number": "7",
@@ -50,9 +55,9 @@
     }
   ],
   "next": {
-    "command": "$gsd-execute-phase 06.2",
-    "label": "Resume phase gates after UI-review choice",
-    "reason": "Phase 8 of 9; 9/9 plans executed; UI review choice pending before final verification"
+    "command": "$gsd-spec-phase 7",
+    "label": "Define the Phase 7 stability-policy specification",
+    "reason": "Phase 6.3 complete; 9/10 phases complete. Phase 7 requires a specification before planning."
   },
-  "updated_at": "2026-10-30T07:51:22.129Z"
+  "updated_at": "2026-11-01T08:03:45.934Z"
 }

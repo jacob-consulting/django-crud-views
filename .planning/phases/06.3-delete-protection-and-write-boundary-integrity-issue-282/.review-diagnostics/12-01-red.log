@@ -1,0 +1,320 @@
+FFFF                                                                     [100%]
+=================================== FAILURES ===================================
+_________ test_configured_base_content_type_registered_access[helper] __________
+
+ct_routes = <function ct_routes.<locals>.build at 0x78e9844c44a0>
+client = <django.test.client.Client object at 0x78e984476510>
+path_kind = 'helper'
+
+    @pytest.mark.parametrize("path_kind", ["helper", "request"])
+    def test_configured_base_content_type_registered_access(ct_routes, client, path_kind):
+        granted = Car.objects.create(name="Granted Car", doors=4)
+        sibling = Car.objects.create(name="Ungranted Car", doors=4)
+        user = User.objects.create_user(username="ct_granted")
+        routes = ct_routes()
+        assign_perm("view_vehicle", user, granted)
+    
+        if path_kind == "helper":
+            scope = Car.objects.using("default").filter(pk__in=[granted.pk, sibling.pk]).order_by("pk")
+>           result = routes.viewset.get_objects_for_user(user, "view", qs=scope)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test1/test_guardian_content_types.py:99: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/crud_views_guardian/lib/viewset.py:114: in get_objects_for_user
+    return get_objects_for_user(
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:672: in get_objects_for_user
+    ctype, queryset = _compute_queryset(ctype, klass)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+ctype = <ContentType: App | car>
+klass = <PolymorphicQuerySet [<Car: Granted Car>, <Car: Ungranted Car>]>
+
+    def _compute_queryset(
+        ctype: ContentType | None,
+        klass: type[T] | Manager[T] | QuerySet[T] | None,
+    ) -> tuple[ContentType, QuerySet[T]]:
+        """Computes QuerySet and ContentType if still missing"""
+        if ctype is None and klass is not None:
+            queryset = _get_queryset(klass)
+            ctype = get_content_type(queryset.model)
+        elif ctype is not None and klass is None:
+            queryset = _get_queryset(ctype.model_class())
+        elif klass is None:
+            raise WrongAppError("Cannot determine content type")
+        else:
+            queryset = _get_queryset(klass)
+            if ctype != get_content_type(queryset.model):
+>               raise MixedContentTypeError("Content type for given perms and klass differs")
+E               guardian.exceptions.MixedContentTypeError: Content type for given perms and klass differs
+
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:561: MixedContentTypeError
+_________ test_configured_base_content_type_registered_access[request] _________
+
+ct_routes = <function ct_routes.<locals>.build at 0x78e9848ea520>
+client = <django.test.client.Client object at 0x78e9848cbc20>
+path_kind = 'request'
+
+    @pytest.mark.parametrize("path_kind", ["helper", "request"])
+    def test_configured_base_content_type_registered_access(ct_routes, client, path_kind):
+        granted = Car.objects.create(name="Granted Car", doors=4)
+        sibling = Car.objects.create(name="Ungranted Car", doors=4)
+        user = User.objects.create_user(username="ct_granted")
+        routes = ct_routes()
+        assign_perm("view_vehicle", user, granted)
+    
+        if path_kind == "helper":
+            scope = Car.objects.using("default").filter(pk__in=[granted.pk, sibling.pk]).order_by("pk")
+            result = routes.viewset.get_objects_for_user(user, "view", qs=scope)
+            assert result.model is Car and result.db == scope.db
+            assert _pks(result) == [granted.pk]
+            assert not routes.viewset.get_objects_for_user(user, "view", qs=scope.filter(pk=sibling.pk)).exists()
+            assert not routes.viewset.get_objects_for_user(user, "view", qs=scope.none()).exists()
+        else:
+            client.force_login(user)
+>           response = client.get(_url(routes, "list"))
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test1/test_guardian_content_types.py:106: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/test/client.py:1127: in get
+    response = super().get(
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/test/client.py:475: in get
+    return self.generic(
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/test/client.py:671: in generic
+    return self.request(**r)
+           ^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/test/client.py:1090: in request
+    self.check_exception(response)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/test/client.py:805: in check_exception
+    raise exc_value
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/core/handlers/exception.py:55: in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/core/handlers/base.py:198: in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/views/generic/base.py:106: in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/crud_views_guardian/lib/mixins.py:277: in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/contrib/auth/mixins.py:110: in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/view/base.py:228: in dispatch
+    response = super().dispatch(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/views/generic/base.py:145: in dispatch
+    return handler(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/views/generic/list.py:158: in get
+    self.object_list = self.get_queryset()
+                       ^^^^^^^^^^^^^^^^^^^
+src/crud_views_guardian/lib/mixins.py:193: in get_queryset
+    return get_objects_for_user(
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:672: in get_objects_for_user
+    ctype, queryset = _compute_queryset(ctype, klass)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+ctype = <ContentType: App | car>
+klass = <PolymorphicQuerySet [<Car: Granted Car>, <Car: Ungranted Car>]>
+
+    def _compute_queryset(
+        ctype: ContentType | None,
+        klass: type[T] | Manager[T] | QuerySet[T] | None,
+    ) -> tuple[ContentType, QuerySet[T]]:
+        """Computes QuerySet and ContentType if still missing"""
+        if ctype is None and klass is not None:
+            queryset = _get_queryset(klass)
+            ctype = get_content_type(queryset.model)
+        elif ctype is not None and klass is None:
+            queryset = _get_queryset(ctype.model_class())
+        elif klass is None:
+            raise WrongAppError("Cannot determine content type")
+        else:
+            queryset = _get_queryset(klass)
+            if ctype != get_content_type(queryset.model):
+>               raise MixedContentTypeError("Content type for given perms and klass differs")
+E               guardian.exceptions.MixedContentTypeError: Content type for given perms and klass differs
+
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:561: MixedContentTypeError
+------------------------------ Captured log call -------------------------------
+ERROR    django.request:log.py:249 Internal Server Error: /ct800a6deef88c4ffc915db2680eb690e3/
+Traceback (most recent call last):
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/core/handlers/base.py", line 198, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/views/generic/base.py", line 106, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views_guardian/lib/mixins.py", line 277, in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/contrib/auth/mixins.py", line 110, in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/view/base.py", line 228, in dispatch
+    response = super().dispatch(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/views/generic/base.py", line 145, in dispatch
+    return handler(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/views/generic/list.py", line 158, in get
+    self.object_list = self.get_queryset()
+                       ^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/src/crud_views_guardian/lib/mixins.py", line 193, in get_queryset
+    return get_objects_for_user(
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py", line 672, in get_objects_for_user
+    ctype, queryset = _compute_queryset(ctype, klass)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py", line 561, in _compute_queryset
+    raise MixedContentTypeError("Content type for given perms and klass differs")
+guardian.exceptions.MixedContentTypeError: Content type for given perms and klass differs
+____ test_registered_polymorphic_base_content_type_policy_residual[helper] _____
+
+unique_name = 'polctor8cf88cdf'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78e9848838f0>
+path_kind = 'helper'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("path_kind", ["helper", "list"])
+    def test_registered_polymorphic_base_content_type_policy_residual(unique_name, monkeypatch, path_kind):
+        """CT-01: a configured base grant supports both registered access paths."""
+        from guardian.conf import settings as guardian_settings
+        from guardian.shortcuts import assign_perm
+    
+        from crud_views_guardian.lib.views import GuardianListViewPermissionRequired
+        from crud_views_guardian.lib.viewset import GuardianViewSet
+        from tests.test1.app.models import Car
+    
+        monkeypatch.setattr(
+            guardian_settings, "GET_CONTENT_TYPE", "polymorphic.contrib.guardian.get_polymorphic_base_content_type"
+        )
+        car = Car.objects.create(name="Residual content type", doors=4)
+        user = _user("polymorphic_policy")
+        viewset = GuardianViewSet(model=Car, name=unique_name)
+    
+        class CarListView(GuardianListViewPermissionRequired):
+            cv_viewset = viewset
+    
+        assign_perm("view_vehicle", user, car)
+        view = CarListView()
+        view.request = SimpleNamespace(user=user)
+        view.kwargs = {}
+        if path_kind == "helper":
+>           result = viewset.get_objects_for_user(user, "view")
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test1/test_guardian_policy.py:904: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/crud_views_guardian/lib/viewset.py:114: in get_objects_for_user
+    return get_objects_for_user(
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:672: in get_objects_for_user
+    ctype, queryset = _compute_queryset(ctype, klass)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+ctype = <ContentType: App | car>
+klass = <PolymorphicQuerySet [<Car: Residual content type>]>
+
+    def _compute_queryset(
+        ctype: ContentType | None,
+        klass: type[T] | Manager[T] | QuerySet[T] | None,
+    ) -> tuple[ContentType, QuerySet[T]]:
+        """Computes QuerySet and ContentType if still missing"""
+        if ctype is None and klass is not None:
+            queryset = _get_queryset(klass)
+            ctype = get_content_type(queryset.model)
+        elif ctype is not None and klass is None:
+            queryset = _get_queryset(ctype.model_class())
+        elif klass is None:
+            raise WrongAppError("Cannot determine content type")
+        else:
+            queryset = _get_queryset(klass)
+            if ctype != get_content_type(queryset.model):
+>               raise MixedContentTypeError("Content type for given perms and klass differs")
+E               guardian.exceptions.MixedContentTypeError: Content type for given perms and klass differs
+
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:561: MixedContentTypeError
+_____ test_registered_polymorphic_base_content_type_policy_residual[list] ______
+
+unique_name = 'polctor6ed1c3a2'
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78e98463dd60>
+path_kind = 'list'
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize("path_kind", ["helper", "list"])
+    def test_registered_polymorphic_base_content_type_policy_residual(unique_name, monkeypatch, path_kind):
+        """CT-01: a configured base grant supports both registered access paths."""
+        from guardian.conf import settings as guardian_settings
+        from guardian.shortcuts import assign_perm
+    
+        from crud_views_guardian.lib.views import GuardianListViewPermissionRequired
+        from crud_views_guardian.lib.viewset import GuardianViewSet
+        from tests.test1.app.models import Car
+    
+        monkeypatch.setattr(
+            guardian_settings, "GET_CONTENT_TYPE", "polymorphic.contrib.guardian.get_polymorphic_base_content_type"
+        )
+        car = Car.objects.create(name="Residual content type", doors=4)
+        user = _user("polymorphic_policy")
+        viewset = GuardianViewSet(model=Car, name=unique_name)
+    
+        class CarListView(GuardianListViewPermissionRequired):
+            cv_viewset = viewset
+    
+        assign_perm("view_vehicle", user, car)
+        view = CarListView()
+        view.request = SimpleNamespace(user=user)
+        view.kwargs = {}
+        if path_kind == "helper":
+            result = viewset.get_objects_for_user(user, "view")
+        else:
+>           result = view.get_queryset()
+                     ^^^^^^^^^^^^^^^^^^^
+
+tests/test1/test_guardian_policy.py:906: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/crud_views_guardian/lib/mixins.py:193: in get_queryset
+    return get_objects_for_user(
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:672: in get_objects_for_user
+    ctype, queryset = _compute_queryset(ctype, klass)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+ctype = <ContentType: App | car>
+klass = <PolymorphicQuerySet [<Car: Residual content type>]>
+
+    def _compute_queryset(
+        ctype: ContentType | None,
+        klass: type[T] | Manager[T] | QuerySet[T] | None,
+    ) -> tuple[ContentType, QuerySet[T]]:
+        """Computes QuerySet and ContentType if still missing"""
+        if ctype is None and klass is not None:
+            queryset = _get_queryset(klass)
+            ctype = get_content_type(queryset.model)
+        elif ctype is not None and klass is None:
+            queryset = _get_queryset(ctype.model_class())
+        elif klass is None:
+            raise WrongAppError("Cannot determine content type")
+        else:
+            queryset = _get_queryset(klass)
+            if ctype != get_content_type(queryset.model):
+>               raise MixedContentTypeError("Content type for given perms and klass differs")
+E               guardian.exceptions.MixedContentTypeError: Content type for given perms and klass differs
+
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/guardian/shortcuts.py:561: MixedContentTypeError
+=========================== short test summary info ============================
+FAILED tests/test1/test_guardian_content_types.py::test_configured_base_content_type_registered_access[helper]
+FAILED tests/test1/test_guardian_content_types.py::test_configured_base_content_type_registered_access[request]
+FAILED tests/test1/test_guardian_policy.py::test_registered_polymorphic_base_content_type_policy_residual[helper]
+FAILED tests/test1/test_guardian_policy.py::test_registered_polymorphic_base_content_type_policy_residual[list]
+4 failed, 202 deselected in 1.20s

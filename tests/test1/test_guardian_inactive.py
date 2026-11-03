@@ -395,13 +395,24 @@ def test_inactive_viewset_get_objects_for_user_is_empty(world, kind):
 
 
 @pytest.mark.parametrize("kind", ACTORS)
+@pytest.mark.django_db
+def test_inactive_viewset_typo_is_an_error_instead_of_empty_authority(world, kind):
+    from tests.test1.app.views import cv_guardian_author
+
+    with pytest.raises(ValueError) as error:
+        cv_guardian_author.get_objects_for_user(_actor(world, kind), "veiw")
+    assert "'veiw'" in str(error.value)
+    assert "'view'" in str(error.value)
+
+
+@pytest.mark.parametrize("kind", ACTORS)
 @pytest.mark.parametrize("accept_global", [False, True])
 @pytest.mark.django_db
 def test_inactive_permitted_pks_cache_is_empty(world, kind, accept_global):
     from crud_views_guardian.lib.views import _PermittedPks
     from tests.test1.app.models import Author
 
-    assert _PermittedPks(_actor(world, kind), accept_global)(Author) == set()
+    assert _PermittedPks(_actor(world, kind), accept_global)(Author, using="default") == set()
 
 
 @pytest.mark.parametrize("kind", ACTORS)

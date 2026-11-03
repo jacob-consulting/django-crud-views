@@ -4,6 +4,7 @@ Django settings for the django-crud-views example project.
 One self-contained example app per crud_views feature — see the home page.
 """
 
+import os
 from pathlib import Path
 
 from django.utils.translation import gettext_lazy as _
@@ -12,7 +13,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = "django-insecure-example-project-do-not-use-in-production"
 DEBUG = True  # NOSONAR S4507: local example only; settings_demo.py sets DEBUG = False
-ALLOWED_HOSTS = []
+
+# Set when developing through the Cloudflare tunnel, see dev/docker-compose.yaml
+_tunnel_host = os.environ.get("DEV_TUNNEL_HOSTNAME", "")
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", _tunnel_host] if _tunnel_host else []
+CSRF_TRUSTED_ORIGINS = [f"https://{_tunnel_host}"] if _tunnel_host else []
 
 INSTALLED_APPS = [
     "django.contrib.admin",

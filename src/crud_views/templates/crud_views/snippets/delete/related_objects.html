@@ -9,7 +9,11 @@
         {% endif %}
     {% endif %}
     {% if related_summary %}
+        {% if delete_preview_incomplete %}
+        {% cv_alert "warning" heading=_("Some related objects that will also be deleted (partial counts):") items=related_summary_items %}
+        {% else %}
         {% cv_alert "warning" heading=_("The following related objects will also be deleted:") items=related_summary_items %}
+        {% endif %}
         {% with items=related_objects %}
             {% cv_alert "warning" heading=_("Details about the related objects to be deleted:") body_template="crud_views/snippets/delete/related_objects_tree.html" %}
         {% endwith %}

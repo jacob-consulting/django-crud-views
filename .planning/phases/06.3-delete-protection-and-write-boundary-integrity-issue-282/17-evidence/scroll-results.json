@@ -1,0 +1,123 @@
+{
+  "active": "cv-modal",
+  "boxShadow": "none",
+  "font": "system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", \"Noto Sans\", \"Liberation Sans\", Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+  "scrollTop": 481,
+  "scrollHeight": 1293,
+  "clientHeight": 812,
+  "fullText": "Publisher\nDiese Vorschau ist unvollständig. Benutzerdefiniertes Löschverhalten kann weitere Objekte betreffen.\nEinige verknüpfte Objekte, die ebenfalls gelöscht werden (Teilanzahlen):\nbook: 2\nbook note: 2\nDetails zu den zu löschenden verknüpften Objekten:\nde partial — München 東京\n0 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\n1 — München 東京 <escaped> — Long label Long label Long label Long label Long label Long label Long label Long label\nNested 0 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nNested 1 — 雪 — Readable nested text Readable nested text Readable nested text Readable nested text Readable nested text\nLöschen bestätigen*\nLöschen Abbrechen",
+  "screenshots": [
+    {
+      "file": "de-blocked-modal-1440x900.png",
+      "sha256": "b87ad39c6da4d09fbbba3057a9bfb8b92dbb9e9c4712a0119954e3b6a68a5ea8"
+    },
+    {
+      "file": "de-blocked-modal-375x812.png",
+      "sha256": "dfa4ab74d64853bd81316312cb4640d389f35fe44683ece69e76cb8b1841c826"
+    },
+    {
+      "file": "de-blocked-modal-768x1024.png",
+      "sha256": "1abbc2cc6893148a7cdcebc8e833abeae122bf81fb3e567c769005b46c905982"
+    },
+    {
+      "file": "de-blocked-page-1440x900.png",
+      "sha256": "40c9b7fc83355771bb84d7307fe0bf2c641ed35b4f51f0a41be68d0286f612dc"
+    },
+    {
+      "file": "de-blocked-page-375x812.png",
+      "sha256": "1b94e89c19c4a603d4dd40e09ee5c7923e455322391923cff6f032479782a756"
+    },
+    {
+      "file": "de-blocked-page-768x1024.png",
+      "sha256": "671eb39039c39225ffe434a629c0592b0ff2686033977af672a08ab1df19def6"
+    },
+    {
+      "file": "de-partial-modal-1440x900.png",
+      "sha256": "8333d4f8873bd28e5247444c6166e20aa0b506c31e0fa97e0ed9d10be2458a76"
+    },
+    {
+      "file": "de-partial-modal-375x812-scrolled-confirm.png",
+      "sha256": "86547d68960de58339cede82f44e1d799ad730b6c2394f665cbd0e585a33bcce"
+    },
+    {
+      "file": "de-partial-modal-375x812.png",
+      "sha256": "c3146f400f98cc766866b64f734a0c8b4b7bb5ec592e3402206faa02122b00bf"
+    },
+    {
+      "file": "de-partial-modal-768x1024.png",
+      "sha256": "cc72d716b41985a410eb1e2d4dda8e4cb3029e446ceaee927bf208200544211e"
+    },
+    {
+      "file": "de-partial-page-1440x900.png",
+      "sha256": "ce194431669ac5a8d2a0fc4510cd40953747f54e81ecdea312cfe7fcaf44b735"
+    },
+    {
+      "file": "de-partial-page-375x812.png",
+      "sha256": "b61851ec32e6020c11a750ae49224e3c82e955d4a676a544cb929a96fa4e15c0"
+    },
+    {
+      "file": "de-partial-page-768x1024.png",
+      "sha256": "c4c219abeef01f855fcc48d8dc03e8c2f8aa3553dc062d9060788d04569e45ea"
+    },
+    {
+      "file": "en-blocked-modal-1440x900.png",
+      "sha256": "61956d1417d5b9c85f429e0d34b123c709c31b27cc79734c6ee86ddf24baa193"
+    },
+    {
+      "file": "en-blocked-modal-375x812.png",
+      "sha256": "20ae87e974fdb756db3675de777c9ff65763a125c49bf44c1fb03b7f9bfac8ee"
+    },
+    {
+      "file": "en-blocked-modal-768x1024.png",
+      "sha256": "378254d1a0ec2e7707d4eba5cf610d9ec0f2e940c125da24a6e82a77f7d2d7c3"
+    },
+    {
+      "file": "en-blocked-page-1440x900.png",
+      "sha256": "22c4204ee93cee115723433511f188b4b194037dc96d80f4545d4b256e51694c"
+    },
+    {
+      "file": "en-blocked-page-375x812.png",
+      "sha256": "ca2a235c64f50b3f522750cc6be31363663c370422019e4bb0fcc2b06903fe6b"
+    },
+    {
+      "file": "en-blocked-page-768x1024.png",
+      "sha256": "2f769943cff667f95f15d7e77594ef53f623d2284402bcd2213c38339976af81"
+    },
+    {
+      "file": "en-partial-modal-1440x900.png",
+      "sha256": "b359b2658d2dff321f821d2bf9b1923ea4890fc0f02358f12b6a412ab7c1fec8"
+    },
+    {
+      "file": "en-partial-modal-375x812.png",
+      "sha256": "d921b3e0b797ca78f7c175386459ecee738c6e282c84690e3bb456dbfbe3e0ad"
+    },
+    {
+      "file": "en-partial-modal-768x1024.png",
+      "sha256": "f1a0ff390e1a7baccd5393bfaef8863c4068080e73ba9aa20e612f8ee1bd32ff"
+    },
+    {
+      "file": "en-partial-page-1440x900.png",
+      "sha256": "8ae08d4c6e2eff107f3a1a0630421903c601057ec21c9dbb38aea748d132dd73"
+    },
+    {
+      "file": "en-partial-page-375x812.png",
+      "sha256": "422bf4993a7c94a8ce132c3892ad9dbed31de407519a9dc04f22033a44f81d73"
+    },
+    {
+      "file": "en-partial-page-768x1024.png",
+      "sha256": "211ec1461d76fbf659e82770d1d3885935657f16779edec325d35800d2846526"
+    },
+    {
+      "file": "keyboard-after-blocked-422.png",
+      "sha256": "f1b102ea4bfe66a1fd0d766ac93eb3cc24fa77b7950529c430cb97a0c48a9635"
+    },
+    {
+      "file": "keyboard-after-unchecked-422.png",
+      "sha256": "214099388a14090ede5ca3be92961debfe9995ef43f18275888eb4db345fb2f4"
+    },
+    {
+      "file": "keyboard-confirm-focused.png",
+      "sha256": "4b5bc24a1664a18f2147617f4f1ee653ebfd7dbdf999be254995b82c8c54365c"
+    }
+  ]
+}

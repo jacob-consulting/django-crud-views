@@ -1,0 +1,14 @@
+{
+  "checked_at": "2026-10-31T13:19:48.100891+00:00",
+  "total": 12,
+  "accepted": 8,
+  "explicitly_retained_unresolved": [
+    "DEL-01-unclassified",
+    "DEL-03-unclassified",
+    "DEL-04-unclassified",
+    "AUTH-06-unclassified"
+  ],
+  "unanswered": 0,
+  "general_Guardian_precision": "unverified beyond accepted tested scope",
+  "result": "TWELVE_DISPOSITIONS_PRESERVED"
+}

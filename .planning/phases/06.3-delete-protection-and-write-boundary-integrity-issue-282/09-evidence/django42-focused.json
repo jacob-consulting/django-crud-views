@@ -1,0 +1,77 @@
+{
+  "label": "django42-focused",
+  "started": "2026-10-30T14:37:27.519534+00:00",
+  "head": "b0f739b608e8cbd363f0f02f471fa03b1c1e1234",
+  "diff_sha256": "ec026078b98b14c0b0d50b6a946b21b47866415759cd3b4c1e298332cb98db04",
+  "source_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "source_tree_sha256": "3afbb8ca117aa3c798b692e1a8255a007158403d12cbaaa11a3d79c2349a7eec",
+  "command": ".nox/crispy_floor-3-12-django-4-2/bin/python -m pytest tests/test1/test_delete_inspection.py tests/test1/test_delete_provenance.py tests/test1/test_delete_databases.py tests/test1/test_delete_migration_docs.py tests/test1/test_delete.py tests/test1/test_guardian_delete.py tests/test1/test_guardian.py tests/test1/test_guardian_inactive.py tests/test1/test_polymorphic.py tests/test1/test_transactions.py tests/test1/test_authorization_matrix.py tests/test1/test_authorization_templates.py tests/test1/test_guardian_policy.py -q -p no:cacheprovider",
+  "environment": {
+    "PYTHONPATH": "/home/alex/projects/alex/django-crud-views/src:/home/alex/projects/alex/django-crud-views",
+    "PYTEST_XDIST_AUTO_NUM_WORKERS": null
+  },
+  "runtime": {
+    "executable": "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-4-2/bin/python",
+    "python": "3.12.3",
+    "django": "4.2.30",
+    "crud_views": "/home/alex/projects/alex/django-crud-views/src/crud_views/__init__.py",
+    "versions": {
+      "django": "4.2.30",
+      "django-guardian": "3.5.2",
+      "django-polymorphic": "4.11.7",
+      "django-ordered-model": "3.7.4",
+      "django-crispy-forms": "2.0",
+      "crispy-bootstrap5": "2023.10",
+      "pytest": "9.2.0",
+      "pytest-django": "4.14.0",
+      "pydantic": "2.14.1"
+    },
+    "django_deletion_sha256": "4a486c648cdbd28ac68593aec59a82fd1884110443549de767546b37e8945aa3",
+    "changed_production_hashes": {
+      "src/crud_views/lib/deletion.py": {
+        "imported": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/deletion.py",
+        "checkout_sha256": "1988932a0433be5ff3663563bfd339a877649c952f0d024797acfbe464be3525",
+        "imported_sha256": "1988932a0433be5ff3663563bfd339a877649c952f0d024797acfbe464be3525"
+      },
+      "src/crud_views/lib/views/delete.py": {
+        "imported": "/home/alex/projects/alex/django-crud-views/src/crud_views/lib/views/delete.py",
+        "checkout_sha256": "4c9e0eba468e16e57a4738226b540b2b1dfa3ee27f8a3e6538e23ff30a377d7e",
+        "imported_sha256": "4c9e0eba468e16e57a4738226b540b2b1dfa3ee27f8a3e6538e23ff30a377d7e"
+      },
+      "src/crud_views/locale/de/LC_MESSAGES/django.mo": {
+        "imported": "/home/alex/projects/alex/django-crud-views/src/crud_views/locale/de/LC_MESSAGES/django.mo",
+        "checkout_sha256": "8f921cc881a23dd003bdbf02942ad9ed46e4a70165ceed206820dbe660c549dd",
+        "imported_sha256": "8f921cc881a23dd003bdbf02942ad9ed46e4a70165ceed206820dbe660c549dd"
+      },
+      "src/crud_views/locale/de/LC_MESSAGES/django.po": {
+        "imported": "/home/alex/projects/alex/django-crud-views/src/crud_views/locale/de/LC_MESSAGES/django.po",
+        "checkout_sha256": "cae21eb03c92346467ee3a26aaa91387c92920c3409f77969145676ccb5b37a6",
+        "imported_sha256": "cae21eb03c92346467ee3a26aaa91387c92920c3409f77969145676ccb5b37a6"
+      },
+      "src/crud_views/templates/crud_views/snippets/delete/related_objects.html": {
+        "imported": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/snippets/delete/related_objects.html",
+        "checkout_sha256": "8165790ead799807aa3854cba495c4166f92c2f1fd7f977b040e0f49b9f47c23",
+        "imported_sha256": "8165790ead799807aa3854cba495c4166f92c2f1fd7f977b040e0f49b9f47c23"
+      },
+      "src/crud_views/templates/crud_views/view_delete.content.html": {
+        "imported": "/home/alex/projects/alex/django-crud-views/src/crud_views/templates/crud_views/view_delete.content.html",
+        "checkout_sha256": "63c6fae38dbaf038eed76f7269ce333b88816b121908f73aa08cf131174c3c66",
+        "imported_sha256": "63c6fae38dbaf038eed76f7269ce333b88816b121908f73aa08cf131174c3c66"
+      },
+      "src/crud_views_guardian/lib/views.py": {
+        "imported": "/home/alex/projects/alex/django-crud-views/src/crud_views_guardian/lib/views.py",
+        "checkout_sha256": "811da5ddeba75f8a8cbe6ba432036e158f8c94dc9cbf490f4527df6cdbaf841b",
+        "imported_sha256": "811da5ddeba75f8a8cbe6ba432036e158f8c94dc9cbf490f4527df6cdbaf841b"
+      },
+      "src/crud_views_guardian/lib/viewset.py": {
+        "imported": "/home/alex/projects/alex/django-crud-views/src/crud_views_guardian/lib/viewset.py",
+        "checkout_sha256": "e6b1eadcda4363c1b2ac8e64ae79b217c8ba47f97ec5427b4a26d6fc4f865d99",
+        "imported_sha256": "e6b1eadcda4363c1b2ac8e64ae79b217c8ba47f97ec5427b4a26d6fc4f865d99"
+      }
+    },
+    "all_changed_source_matches": true
+  },
+  "exit_code": 0,
+  "duration_seconds": 281.469,
+  "finished": "2026-10-30T14:42:09.211904+00:00"
+}

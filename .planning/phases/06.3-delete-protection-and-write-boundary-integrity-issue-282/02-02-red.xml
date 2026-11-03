@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="2" time="0.453" timestamp="2026-10-30T12:52:08.334446+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_delete_inspection" name="test_direct_delete_process_pins_alias_before_write_and_keeps_it_for_hooks[False]" time="0.295"><failure message="django.core.exceptions.ImproperlyConfigured: Resolve a saved self.object before calling cv_get_delete_db_alias()">publisher_penguin = &lt;Publisher: Penguin&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7697e82bfe00&gt;
+atomic = False
+
+    @pytest.mark.django_db(transaction=True)
+    @pytest.mark.parametrize("atomic", [False, True])
+    def test_direct_delete_process_pins_alias_before_write_and_keeps_it_for_hooks(publisher_penguin, monkeypatch, atomic):
+        view = PublisherCascadeDeleteView()
+        view.object = publisher_penguin
+        view.cv_atomic = atomic
+        events = []
+    
+        def select():
+            events.append("select")
+            return "default"
+    
+        def hook(context):
+            assert view.object.pk is None
+            assert view.cv_get_delete_db_alias() == "default"
+            events.append("hook")
+    
+        monkeypatch.setattr(view, "cv_get_db_alias", select)
+        monkeypatch.setattr(view, "cv_form_valid_hook", hook)
+        monkeypatch.setattr(view, "cv_on_commit", lambda context: events.append("commit"))
+        pk = publisher_penguin.pk
+&gt;       view.cv_form_valid_process({})
+
+tests/test1/test_delete_inspection.py:104: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/crud_views/lib/views/delete.py:130: in cv_form_valid_process
+    self.cv_form_valid_hook(context)
+tests/test1/test_delete_inspection.py:97: in hook
+    assert view.cv_get_delete_db_alias() == "default"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;tests.test1.app.views.PublisherCascadeDeleteView object at 0x7697e82bf020&gt;
+
+    def cv_get_delete_db_alias(self) -&gt; str:
+        """Pin the selection once, after authorized resolution of a saved target."""
+        target = getattr(self, "object", None)
+        if not isinstance(target, Model) or target._state.adding or target.pk is None:
+&gt;           raise ImproperlyConfigured("Resolve a saved self.object before calling cv_get_delete_db_alias()")
+E           django.core.exceptions.ImproperlyConfigured: Resolve a saved self.object before calling cv_get_delete_db_alias()
+
+src/crud_views/lib/views/delete.py:114: ImproperlyConfigured</failure></testcase><testcase classname="tests.test1.test_delete_inspection" name="test_direct_delete_process_pins_alias_before_write_and_keeps_it_for_hooks[True]" time="0.017"><failure message="django.core.exceptions.ImproperlyConfigured: Resolve a saved self.object before calling cv_get_delete_db_alias()">publisher_penguin = &lt;Publisher: Penguin&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7697e815b650&gt;
+atomic = True
+
+    @pytest.mark.django_db(transaction=True)
+    @pytest.mark.parametrize("atomic", [False, True])
+    def test_direct_delete_process_pins_alias_before_write_and_keeps_it_for_hooks(publisher_penguin, monkeypatch, atomic):
+        view = PublisherCascadeDeleteView()
+        view.object = publisher_penguin
+        view.cv_atomic = atomic
+        events = []
+    
+        def select():
+            events.append("select")
+            return "default"
+    
+        def hook(context):
+            assert view.object.pk is None
+            assert view.cv_get_delete_db_alias() == "default"
+            events.append("hook")
+    
+        monkeypatch.setattr(view, "cv_get_db_alias", select)
+        monkeypatch.setattr(view, "cv_form_valid_hook", hook)
+        monkeypatch.setattr(view, "cv_on_commit", lambda context: events.append("commit"))
+        pk = publisher_penguin.pk
+&gt;       view.cv_form_valid_process({})
+
+tests/test1/test_delete_inspection.py:104: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/crud_views/lib/views/delete.py:130: in cv_form_valid_process
+    self.cv_form_valid_hook(context)
+tests/test1/test_delete_inspection.py:97: in hook
+    assert view.cv_get_delete_db_alias() == "default"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;tests.test1.app.views.PublisherCascadeDeleteView object at 0x7697e8158770&gt;
+
+    def cv_get_delete_db_alias(self) -&gt; str:
+        """Pin the selection once, after authorized resolution of a saved target."""
+        target = getattr(self, "object", None)
+        if not isinstance(target, Model) or target._state.adding or target.pk is None:
+&gt;           raise ImproperlyConfigured("Resolve a saved self.object before calling cv_get_delete_db_alias()")
+E           django.core.exceptions.ImproperlyConfigured: Resolve a saved self.object before calling cv_get_delete_db_alias()
+
+src/crud_views/lib/views/delete.py:114: ImproperlyConfigured</failure></testcase></testsuite></testsuites>

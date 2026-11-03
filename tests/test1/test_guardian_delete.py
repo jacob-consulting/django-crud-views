@@ -4,6 +4,69 @@ from tests.lib.helper.guardian import user_guardian_object_perm
 
 
 @pytest.mark.django_db
+@pytest.mark.parametrize("superuser", [False, True])
+@pytest.mark.parametrize("details", [False, True])
+def test_partial_provider_no_view_and_through_projection(
+    client_guardian, user_guardian, publisher_a, monkeypatch, superuser, details
+):
+    """Provider-only blockers and through rows cannot manufacture ordinary-user view authority."""
+    from django.contrib.auth.models import Permission
+    from django.contrib.contenttypes.models import ContentType
+
+    from crud_views.lib.deletion import DeletePreviewContribution
+    from tests.test1.app.models import Genre, Publisher, Royalty
+    from tests.test1.app.views import GuardianPublisherCascadeDeleteView, cv_guardian_publisher_cascade
+
+    genre = Genre.objects.create(name="Surviving provider genre")
+    genre.publishers.add(publisher_a)
+    through = Genre.publishers.through
+    row = through.objects.get(publisher=publisher_a)
+    other = Publisher.objects.create(name="Provider owner")
+    royalty = Royalty.objects.create(publisher=other, title="<i>Secret</i> 权利")
+    assert not Permission.objects.filter(codename="view_royalty").exists()
+    through_ct = ContentType.objects.filter(app_label="app", model=through._meta.model_name)
+    assert not through_ct.exists()
+    user_guardian.is_superuser = superuser
+    user_guardian.save(update_fields=["is_superuser"])
+    client_guardian.force_login(user_guardian)
+    user_guardian_object_perm(user_guardian, cv_guardian_publisher_cascade, "delete", publisher_a)
+    events = []
+
+    def delete(self, *, using):
+        events.append("delete")
+        raise AssertionError("provider protection must block mutation")
+
+    def provider(self, boundaries, *, using):
+        assert using == "default" and len(boundaries) == 1
+        return [DeletePreviewContribution(boundaries[0], deleted=(row,), protected=(royalty,))]
+
+    monkeypatch.setattr(Publisher, "delete", delete)
+    monkeypatch.setattr(GuardianPublisherCascadeDeleteView, "cv_get_delete_preview", provider)
+    monkeypatch.setattr(GuardianPublisherCascadeDeleteView, "cv_show_related_objects", details)
+    url = f"/guardian_publisher_cascade/{publisher_a.pk}/delete/"
+    for method in ("get", "get", "post"):
+        response = getattr(client_guardian, method)(url, {"confirm": True} if method == "post" else {})
+        assert response.status_code == 200
+        assert response.context["has_protected_objects"] is True
+        assert response.context["delete_preview_incomplete"] is True
+        visible_royalties = _response_instances(response, Royalty)
+        assert set(visible_royalties) == ({royalty} if details and superuser else set())
+        if details:
+            assert response.context["protected_objects"] == ([royalty] if superuser else [])
+            assert response.context["related_summary"] == {str(through._meta.verbose_name): 1}
+            assert bool(_response_instances(response, through)) is superuser
+        else:
+            assert "protected_objects" not in response.context
+            assert _response_instances(response, through) == []
+        assert "This preview is incomplete." in response.content.decode()
+        assert "<form" not in response.content.decode()
+        assert "<i>Secret</i>" not in response.content.decode()
+        assert ("&lt;i&gt;Secret&lt;/i&gt; 权利" in response.content.decode()) is (details and superuser)
+        assert not through_ct.exists()
+        assert events == []
+
+
+@pytest.mark.django_db
 def test_guardian_per_object_filtering(client_guardian, user_guardian, cv_guardian_publisher, publisher_a):
     """Guardian delete view filters related objects by per-object view permission."""
     from tests.test1.app.models import Book
@@ -67,7 +130,7 @@ def test_permitted_pks_through_actor_modes_never_create_content_type(user_guardi
         actor.save(update_fields=["is_superuser", "is_active"])
 
     permitted = _PermittedPks(actor, False)
-    assert permitted(through) == ({through_pk} if actor_mode == "superuser" else set())
+    assert permitted(through, using="default") == ({through_pk} if actor_mode == "superuser" else set())
     assert not content_types.exists()
 
 
@@ -81,7 +144,7 @@ def test_permitted_pks_model_without_view_permission(user_guardian, publisher_a,
     royalty = Royalty.objects.create(publisher=publisher_a, title="No View Royalty")
     user_guardian.is_superuser = superuser
     user_guardian.save(update_fields=["is_superuser"])
-    assert _PermittedPks(user_guardian, False)(Royalty) == ({royalty.pk} if superuser else set())
+    assert _PermittedPks(user_guardian, False)(Royalty, using="default") == ({royalty.pk} if superuser else set())
 
 
 @pytest.mark.django_db
@@ -92,9 +155,9 @@ def test_permitted_pks_proxy_uses_concrete_object_grant(user_guardian, publisher
     from crud_views_guardian.lib.views import _PermittedPks
     from tests.test1.app.models import PublisherProxy
 
-    assert _PermittedPks(user_guardian, False)(PublisherProxy) == set()
+    assert _PermittedPks(user_guardian, False)(PublisherProxy, using="default") == set()
     assign_perm("view_publisher", user_guardian, publisher_a)
-    assert _PermittedPks(user_guardian, False)(PublisherProxy) == {publisher_a.pk}
+    assert _PermittedPks(user_guardian, False)(PublisherProxy, using="default") == {publisher_a.pk}
 
 
 @pytest.mark.django_db
@@ -110,9 +173,9 @@ def test_permitted_pks_polymorphic_uses_base_object_grant(user_guardian, monkeyp
         guardian_settings, "GET_CONTENT_TYPE", "polymorphic.contrib.guardian.get_polymorphic_base_content_type"
     )
     car = Car.objects.create(name="Permitted Car", doors=4)
-    assert _PermittedPks(user_guardian, False)(Car) == set()
+    assert _PermittedPks(user_guardian, False)(Car, using="default") == set()
     assign_perm("view_vehicle", user_guardian, car)
-    assert _PermittedPks(user_guardian, False)(Car) == {car.pk}
+    assert _PermittedPks(user_guardian, False)(Car, using="default") == {car.pk}
 
 
 @pytest.mark.django_db
@@ -124,13 +187,13 @@ def test_permitted_pks_cache_is_projection_local(user_guardian, publisher_a):
     from tests.test1.app.models import Publisher
 
     permitted = _PermittedPks(user_guardian, False)
-    initial = permitted(Publisher)
+    initial = permitted(Publisher, using="default")
     assert initial == set()
-    assert permitted(Publisher) is initial
+    assert permitted(Publisher, using="default") is initial
     assign_perm("view_publisher", user_guardian, publisher_a)
-    assert permitted(Publisher) is initial
+    assert permitted(Publisher, using="default") is initial
     assert initial == set()
-    assert _PermittedPks(user_guardian, False)(Publisher) == {publisher_a.pk}
+    assert _PermittedPks(user_guardian, False)(Publisher, using="default") == {publisher_a.pk}
 
 
 @pytest.mark.django_db
@@ -154,7 +217,7 @@ def test_permitted_pks_proxy_global_fallback(user_guardian, publisher_a, accept_
     user_guardian.user_permissions.add(permission)
     assert set(user_guardian.user_permissions.all()) == {permission}
     expected = {publisher_a.pk} if accept_global and not proxy_only else set()
-    assert _PermittedPks(user_guardian, accept_global)(PublisherProxy) == expected
+    assert _PermittedPks(user_guardian, accept_global)(PublisherProxy, using="default") == expected
 
 
 @pytest.mark.django_db
@@ -176,7 +239,7 @@ def test_permitted_pks_polymorphic_global_fallback(user_guardian, monkeypatch, a
     permission = Permission.objects.get(content_type=ct, codename="view_vehicle")
     user_guardian.user_permissions.add(permission)
     assert set(user_guardian.user_permissions.all()) == {permission}
-    assert _PermittedPks(user_guardian, accept_global)(Car) == ({car.pk} if accept_global else set())
+    assert _PermittedPks(user_guardian, accept_global)(Car, using="default") == ({car.pk} if accept_global else set())
 
 
 def _contract(publisher, title):

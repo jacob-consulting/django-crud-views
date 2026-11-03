@@ -1,0 +1,89 @@
+{
+  "captured": "2026-10-31T13:34:35.166Z",
+  "revision": "885d8ddcafd589e05d5a04b0558a877d48675a24",
+  "sourceHashes": {
+    "src/crud_views/static/crud_views/js/modal.js": "d83524a2ec90670d9df82aac7cd0b69c0af37fc4093176dcbfdd79944c7cf9cb",
+    "src/crud_views/static/crud_views/js/adapters.js": "6134473b5f0fb183aae7f4b035ad38a56a902b8f58c8b5c688c9638d1cef2580",
+    "tests/js/modal.test.js": "17ae8550c333c74c3fa690d6807fcc25d3e3c87237c47f71704c5f070af15c59",
+    "tests/js/adapters.test.js": "d62b08bb9fd113b5cbdf83b1a9922b864b4d702e3011cc515a8f32116c68121c",
+    "CHANGELOG.md": "ceae060f1272f3c7994fcf7afdf68a9ea63f7b63b1de41a3379aba0916daa2d1",
+    "docs/migrating-1.0.md": "1e39865fb95377a77403a99473e2fd96f91c7f85ee10388afdd2f7de90cb2b76",
+    "src/crud_views/lib/deletion.py": "91b3464f8337006d79b839e4af344dd223fcf12e2ee536f14d0545c3f36280b6",
+    "src/crud_views/lib/views/delete.py": "4c9e0eba468e16e57a4738226b540b2b1dfa3ee27f8a3e6538e23ff30a377d7e",
+    "src/crud_views/templates/crud_views/view_delete.content.html": "63c6fae38dbaf038eed76f7269ce333b88816b121908f73aa08cf131174c3c66",
+    "tests/test1/app/templates/app/base.html": "f2f325b993a2e91be2f7cd235f0f1bcab8f3cfa9f51c5709c4e4f15ff85f1c08",
+    "tests/browser/modal-focus.cjs": "925595ba32db569d02946e932047e96ddb2dd7dd92e6b2cd4287426fa28e48d0",
+    "tests/test1/app/views.py": "6b550392458efea4a1bbc23326c3df2c393210881b22c26bc292a95b271fc7d7",
+    "docs/reference/javascript.md": "a898961e7176fd76db7fa4c32979ea4a1be6dbfdd076030262377aff1eea6a56",
+    "docs/reference/modals.md": "1db9b5176a5b5e8e9067f5ba42b0900f079577764e03a5ea655117b9c47af573",
+    ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/17-evidence/server.py": "19160e33bd34943829258db4faf4560e840a0f598cd8717b1822ccd9314ede67",
+    "src/crud_views/templates/crud_views/modal/shell.html": "bc5b91977d517671b9c246cbbbce5a813a0d8bc10caf36f8c78f214df15328ee",
+    "src/crud_views/templates/crud_views/modal/content.html": "385a9fe7721f506cd760f5f6b1171a30f779280b50c42a32a9e937e99cc12e67",
+    "package-lock.json": "567bff553002a1452d08db94660a206507d70df9711cdd11fd82ee51f4175d2e"
+  },
+  "command": [
+    "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
+    "/home/alex/projects/alex/django-crud-views/tests/browser/modal-focus.cjs",
+    "--case",
+    "pending-close",
+    "--output",
+    ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/20-evidence/pending-close-browser-red.json"
+  ],
+  "runtime": {
+    "node": "v24.21.0",
+    "nodePath": "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]\n6.0.9",
+    "pythonPath": "/home/alex/projects/alex/django-crud-views/.nox/crispy_floor-3-12-django-6-0/bin/python",
+    "playwrightPath": "/home/alex/.npm/_npx/e41f203b7505f1fb/node_modules/playwright",
+    "chromiumPath": "/home/alex/.cache/ms-playwright/chromium-1228/chrome-linux64/chrome",
+    "browser": "149.0.7827.55"
+  },
+  "completed": true,
+  "passed": false,
+  "cases": [
+    {
+      "id": "pending-close",
+      "passed": false,
+      "assertions": [
+        {
+          "name": "completed dismissal hides dialog",
+          "passed": true
+        },
+        {
+          "name": "exact usable return target",
+          "passed": false
+        }
+      ],
+      "screenshots": [
+        {
+          "path": ".planning/ui-reviews/06.3-focus/pending-close-browser-red-pending-close-dismiss-0.png",
+          "sha256": "151354757cc6babbfc2790586665b4c072808fd37b56450f7cbc69d429243e75"
+        }
+      ],
+      "observations": [
+        {
+          "label": "dismiss-0",
+          "tag": "BODY",
+          "id": "",
+          "connected": true,
+          "visible": true,
+          "focusVisible": false,
+          "inModal": false,
+          "main": false,
+          "outline": "rgb(33, 37, 41) none 3px",
+          "boxShadow": "none"
+        }
+      ],
+      "hideEvents": [
+        [
+          {
+            "kind": "hidden",
+            "visible": false
+          }
+        ]
+      ]
+    }
+  ],
+  "pageErrors": [],
+  "error": "AssertionError [ERR_ASSERTION]: pending-close: exact usable return target\n    at check (/home/alex/projects/alex/django-crud-views/tests/browser/modal-focus.cjs:166:110)\n    at dismiss (/home/alex/projects/alex/django-crud-views/tests/browser/modal-focus.cjs:212:17)\n    at async main (/home/alex/projects/alex/django-crud-views/tests/browser/modal-focus.cjs:290:21)"
+}

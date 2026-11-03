@@ -1,0 +1,49 @@
+{
+  "argv": [
+    ".nox/tests-3-12-django-5-2/bin/python",
+    ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/16-evidence/run.py",
+    "_pytest",
+    "/home/alex/projects/alex/django-crud-views/.planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/16-evidence/django52-full.nodes.json",
+    "tests/test1",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "-ra",
+    "--junitxml=/home/alex/projects/alex/django-crud-views/.planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/16-evidence/django52-full.xml"
+  ],
+  "artifacts": {
+    "log": "50ab28fb6c91238f0ea0db56f90a2f182d81be06dd3977f496b073920d3ee1e2",
+    "nodes.json": "07248a6d9d0c95e451b04a23bd18be9bd2b81f691d3ecd0d54ab1b247229b58c",
+    "xml": "21798e05668c886edd80b228d0f5f18949156ac0f7d8215382a2fcf70f852509"
+  },
+  "command": ".nox/tests-3-12-django-5-2/bin/python .planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/16-evidence/run.py _pytest /home/alex/projects/alex/django-crud-views/.planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/16-evidence/django52-full.nodes.json tests/test1 -q -p no:cacheprovider -ra --junitxml=/home/alex/projects/alex/django-crud-views/.planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/16-evidence/django52-full.xml",
+  "duration_seconds": 663.575,
+  "environment": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONPATH": "/home/alex/projects/alex/django-crud-views/src:/home/alex/projects/alex/django-crud-views"
+  },
+  "exit_code": 0,
+  "finished": "2026-10-31T00:14:46.945916+00:00",
+  "head": "b3e7026fa4ba993e994b310690eecc6289480f93",
+  "kind": "test",
+  "label": "django52-full",
+  "pid": 52339,
+  "pytest_argv": [
+    "tests/test1",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "-ra",
+    "--junitxml=/home/alex/projects/alex/django-crud-views/.planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/16-evidence/django52-full.xml"
+  ],
+  "series": "5.2",
+  "source_after_sha256": "bc5a56a8c8b9254bfe0e87d893a74ff57e72e38f85646b31b6206e1222717a12",
+  "source_sha256": "bc5a56a8c8b9254bfe0e87d893a74ff57e72e38f85646b31b6206e1222717a12",
+  "started": "2026-10-31T00:03:43.370851+00:00",
+  "status": "complete",
+  "tools": {
+    "check.py": "ff0d624c9c97154dbd6925d11c5d22b85ac982bb9abb4f7f7cd5e614f8221029",
+    "run.py": "9abc3a69ddef1822c090f0e805978f1b8fb9776f7fc01280c601305462886048"
+  },
+  "tracked_diff_sha256": "1f2a99e5d384d7fab75c5ab169ada980d0e5ca40ae68105f8a822cb00c5fc6c1"
+}

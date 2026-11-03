@@ -1,0 +1,460 @@
+FFFFFFFF                                                                 [100%]
+=================================== FAILURES ===================================
+____________ test_native_selected_join_request[False-False-default] ____________
+
+selected_graph = namespace(Root=<class 'tests.test1.test_delete_join_identity.selected_graph.<locals>.Root'>, Child=<class 'tests.test1...ginal>), ('hook', <Root: original>, None, False), ('commit', <Root: original>, False)], url='/selected_join/1/delete/')
+database_routes = <function database_routes.<locals>.route at 0x726d2d971580>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x726d2d8d7440>
+using = 'default', atomic = False, modal = False
+
+    @pytest.mark.parametrize("using", ALIASES)
+    @pytest.mark.parametrize("atomic", [False, True])
+    @pytest.mark.parametrize("modal", [False, True])
+    def test_native_selected_join_request(selected_graph, database_routes, monkeypatch, using, atomic, modal):
+        g = selected_graph
+        read = _join_world(g, using)
+        monkeypatch.setattr(g.view, "cv_atomic", atomic)
+        with database_routes(read):
+            actor = User.objects.create_user(username="join_actor", is_superuser=True)
+            client = Client()
+            client.force_login(actor)
+            original_route = router.db_for_write
+    
+            def write(model, **hints):
+                if model is g.Root:
+                    g.events.append(("hint", hints.get("instance")))
+                    return using
+                return original_route(model, **hints)
+    
+            monkeypatch.setattr(router, "db_for_write", write)
+            headers = {"X-CV-Modal": "true"} if modal else {}
+            preview = client.get(g.url, headers=headers)
+            assert preview.status_code == 200
+            assert preview.context["related_summary"] == {}
+            assert preview.context["has_protected_objects"] is False
+            assert not [event for event in g.events if event[0] in ("pre", "post", "hook", "commit")]
+            g.events.clear()
+            invalid = client.post(g.url, {}, headers=headers)
+            assert invalid.status_code == (422 if modal else 200)
+            assert invalid.context["form"].errors
+            assert not [event for event in g.events if event[0] in ("pre", "post", "hook", "commit")]
+            assert set(g.Root.objects.using(using).values_list("pk", flat=True)) == {1, 2}
+            assert set(g.Child.objects.using(using).values_list("pk", flat=True)) == {22}
+            g.events.clear()
+            # A transaction on the read alias must not defer the selected alias's callback.
+            with transaction.atomic(using=read):
+                response = client.post(g.url, {"confirm": "on"}, headers=headers)
+                assert response.status_code == (204 if modal else 302)
+                assert g.events[-1][0] == "commit"
+        assert set(g.Root.objects.using(using).values_list("pk", flat=True)) == {2}
+>       assert set(g.Child.objects.using(using).values_list("pk", flat=True)) == {22}
+E       assert set() == {22}
+E         
+E         Extra items in the right set:
+E         22
+E         Use -v to get more diff
+
+tests/test1/test_delete_join_identity.py:159: AssertionError
+_____________ test_native_selected_join_request[False-False-shard] _____________
+
+selected_graph = namespace(Root=<class 'tests.test1.test_delete_join_identity.selected_graph.<locals>.Root'>, Child=<class 'tests.test1...ginal>), ('hook', <Root: original>, None, False), ('commit', <Root: original>, False)], url='/selected_join/1/delete/')
+database_routes = <function database_routes.<locals>.route at 0x726d2d87ab60>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x726d2d86fad0>
+using = 'shard', atomic = False, modal = False
+
+    @pytest.mark.parametrize("using", ALIASES)
+    @pytest.mark.parametrize("atomic", [False, True])
+    @pytest.mark.parametrize("modal", [False, True])
+    def test_native_selected_join_request(selected_graph, database_routes, monkeypatch, using, atomic, modal):
+        g = selected_graph
+        read = _join_world(g, using)
+        monkeypatch.setattr(g.view, "cv_atomic", atomic)
+        with database_routes(read):
+            actor = User.objects.create_user(username="join_actor", is_superuser=True)
+            client = Client()
+            client.force_login(actor)
+            original_route = router.db_for_write
+    
+            def write(model, **hints):
+                if model is g.Root:
+                    g.events.append(("hint", hints.get("instance")))
+                    return using
+                return original_route(model, **hints)
+    
+            monkeypatch.setattr(router, "db_for_write", write)
+            headers = {"X-CV-Modal": "true"} if modal else {}
+            preview = client.get(g.url, headers=headers)
+            assert preview.status_code == 200
+            assert preview.context["related_summary"] == {}
+            assert preview.context["has_protected_objects"] is False
+            assert not [event for event in g.events if event[0] in ("pre", "post", "hook", "commit")]
+            g.events.clear()
+            invalid = client.post(g.url, {}, headers=headers)
+            assert invalid.status_code == (422 if modal else 200)
+            assert invalid.context["form"].errors
+            assert not [event for event in g.events if event[0] in ("pre", "post", "hook", "commit")]
+            assert set(g.Root.objects.using(using).values_list("pk", flat=True)) == {1, 2}
+            assert set(g.Child.objects.using(using).values_list("pk", flat=True)) == {22}
+            g.events.clear()
+            # A transaction on the read alias must not defer the selected alias's callback.
+            with transaction.atomic(using=read):
+                response = client.post(g.url, {"confirm": "on"}, headers=headers)
+                assert response.status_code == (204 if modal else 302)
+                assert g.events[-1][0] == "commit"
+        assert set(g.Root.objects.using(using).values_list("pk", flat=True)) == {2}
+>       assert set(g.Child.objects.using(using).values_list("pk", flat=True)) == {22}
+E       assert set() == {22}
+E         
+E         Extra items in the right set:
+E         22
+E         Use -v to get more diff
+
+tests/test1/test_delete_join_identity.py:159: AssertionError
+____________ test_native_selected_join_request[False-True-default] _____________
+
+selected_graph = namespace(Root=<class 'tests.test1.test_delete_join_identity.selected_graph.<locals>.Root'>, Child=<class 'tests.test1...iginal>), ('hook', <Root: original>, None, True), ('commit', <Root: original>, False)], url='/selected_join/1/delete/')
+database_routes = <function database_routes.<locals>.route at 0x726d2d8b5120>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x726d2d7ef560>
+using = 'default', atomic = True, modal = False
+
+    @pytest.mark.parametrize("using", ALIASES)
+    @pytest.mark.parametrize("atomic", [False, True])
+    @pytest.mark.parametrize("modal", [False, True])
+    def test_native_selected_join_request(selected_graph, database_routes, monkeypatch, using, atomic, modal):
+        g = selected_graph
+        read = _join_world(g, using)
+        monkeypatch.setattr(g.view, "cv_atomic", atomic)
+        with database_routes(read):
+            actor = User.objects.create_user(username="join_actor", is_superuser=True)
+            client = Client()
+            client.force_login(actor)
+            original_route = router.db_for_write
+    
+            def write(model, **hints):
+                if model is g.Root:
+                    g.events.append(("hint", hints.get("instance")))
+                    return using
+                return original_route(model, **hints)
+    
+            monkeypatch.setattr(router, "db_for_write", write)
+            headers = {"X-CV-Modal": "true"} if modal else {}
+            preview = client.get(g.url, headers=headers)
+            assert preview.status_code == 200
+            assert preview.context["related_summary"] == {}
+            assert preview.context["has_protected_objects"] is False
+            assert not [event for event in g.events if event[0] in ("pre", "post", "hook", "commit")]
+            g.events.clear()
+            invalid = client.post(g.url, {}, headers=headers)
+            assert invalid.status_code == (422 if modal else 200)
+            assert invalid.context["form"].errors
+            assert not [event for event in g.events if event[0] in ("pre", "post", "hook", "commit")]
+            assert set(g.Root.objects.using(using).values_list("pk", flat=True)) == {1, 2}
+            assert set(g.Child.objects.using(using).values_list("pk", flat=True)) == {22}
+            g.events.clear()
+            # A transaction on the read alias must not defer the selected alias's callback.
+            with transaction.atomic(using=read):
+                response = client.post(g.url, {"confirm": "on"}, headers=headers)
+                assert response.status_code == (204 if modal else 302)
+                assert g.events[-1][0] == "commit"
+        assert set(g.Root.objects.using(using).values_list("pk", flat=True)) == {2}
+>       assert set(g.Child.objects.using(using).values_list("pk", flat=True)) == {22}
+E       assert set() == {22}
+E         
+E         Extra items in the right set:
+E         22
+E         Use -v to get more diff
+
+tests/test1/test_delete_join_identity.py:159: AssertionError
+_____________ test_native_selected_join_request[False-True-shard] ______________
+
+selected_graph = namespace(Root=<class 'tests.test1.test_delete_join_identity.selected_graph.<locals>.Root'>, Child=<class 'tests.test1...iginal>), ('hook', <Root: original>, None, True), ('commit', <Root: original>, False)], url='/selected_join/1/delete/')
+database_routes = <function database_routes.<locals>.route at 0x726d2daed080>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x726d2d9f66f0>
+using = 'shard', atomic = True, modal = False
+
+    @pytest.mark.parametrize("using", ALIASES)
+    @pytest.mark.parametrize("atomic", [False, True])
+    @pytest.mark.parametrize("modal", [False, True])
+    def test_native_selected_join_request(selected_graph, database_routes, monkeypatch, using, atomic, modal):
+        g = selected_graph
+        read = _join_world(g, using)
+        monkeypatch.setattr(g.view, "cv_atomic", atomic)
+        with database_routes(read):
+            actor = User.objects.create_user(username="join_actor", is_superuser=True)
+            client = Client()
+            client.force_login(actor)
+            original_route = router.db_for_write
+    
+            def write(model, **hints):
+                if model is g.Root:
+                    g.events.append(("hint", hints.get("instance")))
+                    return using
+                return original_route(model, **hints)
+    
+            monkeypatch.setattr(router, "db_for_write", write)
+            headers = {"X-CV-Modal": "true"} if modal else {}
+            preview = client.get(g.url, headers=headers)
+            assert preview.status_code == 200
+            assert preview.context["related_summary"] == {}
+            assert preview.context["has_protected_objects"] is False
+            assert not [event for event in g.events if event[0] in ("pre", "post", "hook", "commit")]
+            g.events.clear()
+            invalid = client.post(g.url, {}, headers=headers)
+            assert invalid.status_code == (422 if modal else 200)
+            assert invalid.context["form"].errors
+            assert not [event for event in g.events if event[0] in ("pre", "post", "hook", "commit")]
+            assert set(g.Root.objects.using(using).values_list("pk", flat=True)) == {1, 2}
+            assert set(g.Child.objects.using(using).values_list("pk", flat=True)) == {22}
+            g.events.clear()
+            # A transaction on the read alias must not defer the selected alias's callback.
+            with transaction.atomic(using=read):
+                response = client.post(g.url, {"confirm": "on"}, headers=headers)
+                assert response.status_code == (204 if modal else 302)
+                assert g.events[-1][0] == "commit"
+        assert set(g.Root.objects.using(using).values_list("pk", flat=True)) == {2}
+>       assert set(g.Child.objects.using(using).values_list("pk", flat=True)) == {22}
+E       assert set() == {22}
+E         
+E         Extra items in the right set:
+E         22
+E         Use -v to get more diff
+
+tests/test1/test_delete_join_identity.py:159: AssertionError
+____________ test_native_selected_join_request[True-False-default] _____________
+
+selected_graph = namespace(Root=<class 'tests.test1.test_delete_join_identity.selected_graph.<locals>.Root'>, Child=<class 'tests.test1...ginal>), ('hook', <Root: original>, None, False), ('commit', <Root: original>, False)], url='/selected_join/1/delete/')
+database_routes = <function database_routes.<locals>.route at 0x726d2d879b20>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x726d2d84f0b0>
+using = 'default', atomic = False, modal = True
+
+    @pytest.mark.parametrize("using", ALIASES)
+    @pytest.mark.parametrize("atomic", [False, True])
+    @pytest.mark.parametrize("modal", [False, True])
+    def test_native_selected_join_request(selected_graph, database_routes, monkeypatch, using, atomic, modal):
+        g = selected_graph
+        read = _join_world(g, using)
+        monkeypatch.setattr(g.view, "cv_atomic", atomic)
+        with database_routes(read):
+            actor = User.objects.create_user(username="join_actor", is_superuser=True)
+            client = Client()
+            client.force_login(actor)
+            original_route = router.db_for_write
+    
+            def write(model, **hints):
+                if model is g.Root:
+                    g.events.append(("hint", hints.get("instance")))
+                    return using
+                return original_route(model, **hints)
+    
+            monkeypatch.setattr(router, "db_for_write", write)
+            headers = {"X-CV-Modal": "true"} if modal else {}
+            preview = client.get(g.url, headers=headers)
+            assert preview.status_code == 200
+            assert preview.context["related_summary"] == {}
+            assert preview.context["has_protected_objects"] is False
+            assert not [event for event in g.events if event[0] in ("pre", "post", "hook", "commit")]
+            g.events.clear()
+            invalid = client.post(g.url, {}, headers=headers)
+            assert invalid.status_code == (422 if modal else 200)
+            assert invalid.context["form"].errors
+            assert not [event for event in g.events if event[0] in ("pre", "post", "hook", "commit")]
+            assert set(g.Root.objects.using(using).values_list("pk", flat=True)) == {1, 2}
+            assert set(g.Child.objects.using(using).values_list("pk", flat=True)) == {22}
+            g.events.clear()
+            # A transaction on the read alias must not defer the selected alias's callback.
+            with transaction.atomic(using=read):
+                response = client.post(g.url, {"confirm": "on"}, headers=headers)
+                assert response.status_code == (204 if modal else 302)
+                assert g.events[-1][0] == "commit"
+        assert set(g.Root.objects.using(using).values_list("pk", flat=True)) == {2}
+>       assert set(g.Child.objects.using(using).values_list("pk", flat=True)) == {22}
+E       assert set() == {22}
+E         
+E         Extra items in the right set:
+E         22
+E         Use -v to get more diff
+
+tests/test1/test_delete_join_identity.py:159: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:249 Unprocessable Entity: /selected_join/1/delete/
+_____________ test_native_selected_join_request[True-False-shard] ______________
+
+selected_graph = namespace(Root=<class 'tests.test1.test_delete_join_identity.selected_graph.<locals>.Root'>, Child=<class 'tests.test1...ginal>), ('hook', <Root: original>, None, False), ('commit', <Root: original>, False)], url='/selected_join/1/delete/')
+database_routes = <function database_routes.<locals>.route at 0x726d2d9731a0>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x726d2da3a5a0>
+using = 'shard', atomic = False, modal = True
+
+    @pytest.mark.parametrize("using", ALIASES)
+    @pytest.mark.parametrize("atomic", [False, True])
+    @pytest.mark.parametrize("modal", [False, True])
+    def test_native_selected_join_request(selected_graph, database_routes, monkeypatch, using, atomic, modal):
+        g = selected_graph
+        read = _join_world(g, using)
+        monkeypatch.setattr(g.view, "cv_atomic", atomic)
+        with database_routes(read):
+            actor = User.objects.create_user(username="join_actor", is_superuser=True)
+            client = Client()
+            client.force_login(actor)
+            original_route = router.db_for_write
+    
+            def write(model, **hints):
+                if model is g.Root:
+                    g.events.append(("hint", hints.get("instance")))
+                    return using
+                return original_route(model, **hints)
+    
+            monkeypatch.setattr(router, "db_for_write", write)
+            headers = {"X-CV-Modal": "true"} if modal else {}
+            preview = client.get(g.url, headers=headers)
+            assert preview.status_code == 200
+            assert preview.context["related_summary"] == {}
+            assert preview.context["has_protected_objects"] is False
+            assert not [event for event in g.events if event[0] in ("pre", "post", "hook", "commit")]
+            g.events.clear()
+            invalid = client.post(g.url, {}, headers=headers)
+            assert invalid.status_code == (422 if modal else 200)
+            assert invalid.context["form"].errors
+            assert not [event for event in g.events if event[0] in ("pre", "post", "hook", "commit")]
+            assert set(g.Root.objects.using(using).values_list("pk", flat=True)) == {1, 2}
+            assert set(g.Child.objects.using(using).values_list("pk", flat=True)) == {22}
+            g.events.clear()
+            # A transaction on the read alias must not defer the selected alias's callback.
+            with transaction.atomic(using=read):
+                response = client.post(g.url, {"confirm": "on"}, headers=headers)
+                assert response.status_code == (204 if modal else 302)
+                assert g.events[-1][0] == "commit"
+        assert set(g.Root.objects.using(using).values_list("pk", flat=True)) == {2}
+>       assert set(g.Child.objects.using(using).values_list("pk", flat=True)) == {22}
+E       assert set() == {22}
+E         
+E         Extra items in the right set:
+E         22
+E         Use -v to get more diff
+
+tests/test1/test_delete_join_identity.py:159: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:249 Unprocessable Entity: /selected_join/1/delete/
+_____________ test_native_selected_join_request[True-True-default] _____________
+
+selected_graph = namespace(Root=<class 'tests.test1.test_delete_join_identity.selected_graph.<locals>.Root'>, Child=<class 'tests.test1...iginal>), ('hook', <Root: original>, None, True), ('commit', <Root: original>, False)], url='/selected_join/1/delete/')
+database_routes = <function database_routes.<locals>.route at 0x726d2dac3880>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x726d2d963080>
+using = 'default', atomic = True, modal = True
+
+    @pytest.mark.parametrize("using", ALIASES)
+    @pytest.mark.parametrize("atomic", [False, True])
+    @pytest.mark.parametrize("modal", [False, True])
+    def test_native_selected_join_request(selected_graph, database_routes, monkeypatch, using, atomic, modal):
+        g = selected_graph
+        read = _join_world(g, using)
+        monkeypatch.setattr(g.view, "cv_atomic", atomic)
+        with database_routes(read):
+            actor = User.objects.create_user(username="join_actor", is_superuser=True)
+            client = Client()
+            client.force_login(actor)
+            original_route = router.db_for_write
+    
+            def write(model, **hints):
+                if model is g.Root:
+                    g.events.append(("hint", hints.get("instance")))
+                    return using
+                return original_route(model, **hints)
+    
+            monkeypatch.setattr(router, "db_for_write", write)
+            headers = {"X-CV-Modal": "true"} if modal else {}
+            preview = client.get(g.url, headers=headers)
+            assert preview.status_code == 200
+            assert preview.context["related_summary"] == {}
+            assert preview.context["has_protected_objects"] is False
+            assert not [event for event in g.events if event[0] in ("pre", "post", "hook", "commit")]
+            g.events.clear()
+            invalid = client.post(g.url, {}, headers=headers)
+            assert invalid.status_code == (422 if modal else 200)
+            assert invalid.context["form"].errors
+            assert not [event for event in g.events if event[0] in ("pre", "post", "hook", "commit")]
+            assert set(g.Root.objects.using(using).values_list("pk", flat=True)) == {1, 2}
+            assert set(g.Child.objects.using(using).values_list("pk", flat=True)) == {22}
+            g.events.clear()
+            # A transaction on the read alias must not defer the selected alias's callback.
+            with transaction.atomic(using=read):
+                response = client.post(g.url, {"confirm": "on"}, headers=headers)
+                assert response.status_code == (204 if modal else 302)
+                assert g.events[-1][0] == "commit"
+        assert set(g.Root.objects.using(using).values_list("pk", flat=True)) == {2}
+>       assert set(g.Child.objects.using(using).values_list("pk", flat=True)) == {22}
+E       assert set() == {22}
+E         
+E         Extra items in the right set:
+E         22
+E         Use -v to get more diff
+
+tests/test1/test_delete_join_identity.py:159: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:249 Unprocessable Entity: /selected_join/1/delete/
+______________ test_native_selected_join_request[True-True-shard] ______________
+
+selected_graph = namespace(Root=<class 'tests.test1.test_delete_join_identity.selected_graph.<locals>.Root'>, Child=<class 'tests.test1...iginal>), ('hook', <Root: original>, None, True), ('commit', <Root: original>, False)], url='/selected_join/1/delete/')
+database_routes = <function database_routes.<locals>.route at 0x726d2d973e20>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x726d2d960f80>
+using = 'shard', atomic = True, modal = True
+
+    @pytest.mark.parametrize("using", ALIASES)
+    @pytest.mark.parametrize("atomic", [False, True])
+    @pytest.mark.parametrize("modal", [False, True])
+    def test_native_selected_join_request(selected_graph, database_routes, monkeypatch, using, atomic, modal):
+        g = selected_graph
+        read = _join_world(g, using)
+        monkeypatch.setattr(g.view, "cv_atomic", atomic)
+        with database_routes(read):
+            actor = User.objects.create_user(username="join_actor", is_superuser=True)
+            client = Client()
+            client.force_login(actor)
+            original_route = router.db_for_write
+    
+            def write(model, **hints):
+                if model is g.Root:
+                    g.events.append(("hint", hints.get("instance")))
+                    return using
+                return original_route(model, **hints)
+    
+            monkeypatch.setattr(router, "db_for_write", write)
+            headers = {"X-CV-Modal": "true"} if modal else {}
+            preview = client.get(g.url, headers=headers)
+            assert preview.status_code == 200
+            assert preview.context["related_summary"] == {}
+            assert preview.context["has_protected_objects"] is False
+            assert not [event for event in g.events if event[0] in ("pre", "post", "hook", "commit")]
+            g.events.clear()
+            invalid = client.post(g.url, {}, headers=headers)
+            assert invalid.status_code == (422 if modal else 200)
+            assert invalid.context["form"].errors
+            assert not [event for event in g.events if event[0] in ("pre", "post", "hook", "commit")]
+            assert set(g.Root.objects.using(using).values_list("pk", flat=True)) == {1, 2}
+            assert set(g.Child.objects.using(using).values_list("pk", flat=True)) == {22}
+            g.events.clear()
+            # A transaction on the read alias must not defer the selected alias's callback.
+            with transaction.atomic(using=read):
+                response = client.post(g.url, {"confirm": "on"}, headers=headers)
+                assert response.status_code == (204 if modal else 302)
+                assert g.events[-1][0] == "commit"
+        assert set(g.Root.objects.using(using).values_list("pk", flat=True)) == {2}
+>       assert set(g.Child.objects.using(using).values_list("pk", flat=True)) == {22}
+E       assert set() == {22}
+E         
+E         Extra items in the right set:
+E         22
+E         Use -v to get more diff
+
+tests/test1/test_delete_join_identity.py:159: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:249 Unprocessable Entity: /selected_join/1/delete/
+=========================== short test summary info ============================
+FAILED tests/test1/test_delete_join_identity.py::test_native_selected_join_request[False-False-default]
+FAILED tests/test1/test_delete_join_identity.py::test_native_selected_join_request[False-False-shard]
+FAILED tests/test1/test_delete_join_identity.py::test_native_selected_join_request[False-True-default]
+FAILED tests/test1/test_delete_join_identity.py::test_native_selected_join_request[False-True-shard]
+FAILED tests/test1/test_delete_join_identity.py::test_native_selected_join_request[True-False-default]
+FAILED tests/test1/test_delete_join_identity.py::test_native_selected_join_request[True-False-shard]
+FAILED tests/test1/test_delete_join_identity.py::test_native_selected_join_request[True-True-default]
+FAILED tests/test1/test_delete_join_identity.py::test_native_selected_join_request[True-True-shard]
+8 failed in 1.20s

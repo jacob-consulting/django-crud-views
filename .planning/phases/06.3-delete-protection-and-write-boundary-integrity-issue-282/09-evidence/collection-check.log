@@ -1,0 +1,18 @@
+{
+  "label": "collection-check",
+  "started": "2026-10-30T14:42:31.104708+00:00",
+  "head": "b0f739b608e8cbd363f0f02f471fa03b1c1e1234",
+  "diff_sha256": "ec026078b98b14c0b0d50b6a946b21b47866415759cd3b4c1e298332cb98db04",
+  "source_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "source_tree_sha256": "3afbb8ca117aa3c798b692e1a8255a007158403d12cbaaa11a3d79c2349a7eec",
+  "command": "python3 .planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/09-evidence/check-collection.py",
+  "environment": {
+    "PYTHONPATH": null,
+    "PYTEST_XDIST_AUTO_NUM_WORKERS": null
+  }
+}
+{"series": "42", "selected": 1767, "missing_required": [], "required_families": 94, "per_module": {"tests/test1/test_authorization_matrix.py": 550, "tests/test1/test_authorization_templates.py": 135, "tests/test1/test_delete.py": 151, "tests/test1/test_delete_databases.py": 154, "tests/test1/test_delete_inspection.py": 170, "tests/test1/test_delete_migration_docs.py": 23, "tests/test1/test_delete_provenance.py": 79, "tests/test1/test_guardian.py": 77, "tests/test1/test_guardian_delete.py": 47, "tests/test1/test_guardian_inactive.py": 72, "tests/test1/test_guardian_policy.py": 204, "tests/test1/test_polymorphic.py": 58, "tests/test1/test_transactions.py": 47}}
+{"series": "52", "selected": 1767, "missing_required": [], "required_families": 94, "per_module": {"tests/test1/test_authorization_matrix.py": 550, "tests/test1/test_authorization_templates.py": 135, "tests/test1/test_delete.py": 151, "tests/test1/test_delete_databases.py": 154, "tests/test1/test_delete_inspection.py": 170, "tests/test1/test_delete_migration_docs.py": 23, "tests/test1/test_delete_provenance.py": 79, "tests/test1/test_guardian.py": 77, "tests/test1/test_guardian_delete.py": 47, "tests/test1/test_guardian_inactive.py": 72, "tests/test1/test_guardian_policy.py": 204, "tests/test1/test_polymorphic.py": 58, "tests/test1/test_transactions.py": 47}}
+{"series": "60", "selected": 1767, "missing_required": [], "required_families": 94, "per_module": {"tests/test1/test_authorization_matrix.py": 550, "tests/test1/test_authorization_templates.py": 135, "tests/test1/test_delete.py": 151, "tests/test1/test_delete_databases.py": 154, "tests/test1/test_delete_inspection.py": 170, "tests/test1/test_delete_migration_docs.py": 23, "tests/test1/test_delete_provenance.py": 79, "tests/test1/test_guardian.py": 77, "tests/test1/test_guardian_delete.py": 47, "tests/test1/test_guardian_inactive.py": 72, "tests/test1/test_guardian_policy.py": 204, "tests/test1/test_polymorphic.py": 58, "tests/test1/test_transactions.py": 47}}
+
+RESULT {"label": "collection-check", "started": "2026-10-30T14:42:31.104708+00:00", "head": "b0f739b608e8cbd363f0f02f471fa03b1c1e1234", "diff_sha256": "ec026078b98b14c0b0d50b6a946b21b47866415759cd3b4c1e298332cb98db04", "source_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "source_tree_sha256": "3afbb8ca117aa3c798b692e1a8255a007158403d12cbaaa11a3d79c2349a7eec", "command": "python3 .planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/09-evidence/check-collection.py", "environment": {"PYTHONPATH": null, "PYTEST_XDIST_AUTO_NUM_WORKERS": null}, "exit_code": 0, "duration_seconds": 0.06, "finished": "2026-10-30T14:42:31.191441+00:00"}

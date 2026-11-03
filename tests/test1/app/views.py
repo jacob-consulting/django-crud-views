@@ -780,8 +780,13 @@ cv_publisher_cascade = ViewSet(
 )
 
 
+class PublisherCascadeTable(PublisherTable):
+    # This fixture has list/delete views only, so IDs must not link to a detail view.
+    id = tables.Column()
+
+
 class PublisherCascadeListView(ListViewTableMixin, ListViewPermissionRequired):
-    table_class = PublisherTable
+    table_class = PublisherCascadeTable
     cv_viewset = cv_publisher_cascade
 
 

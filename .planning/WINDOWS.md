@@ -1,15 +1,15 @@
 ---
 schema_version: 1
 open_count: 4
-waived_count: 0
-fixed_count: 5
-total_count: 9
-last_updated: 2026-10-28T08:48:15.158Z
+waived_count: 1
+fixed_count: 12
+total_count: 17
+last_updated: 2026-11-01T07:57:07.320Z
 ---
 
 # Broken Windows Ledger
 
-> Cross-phase defect register. `/gsd-ship` blocks while `open_count > 0`.
+> Cross-phase defect register. With `workflow.windows_enforce` enabled, `/gsd-ship` blocks while `open_count > 0`.
 > Waive with `gsd-tools windows waive <id> "<reason>"` (reason required).
 > Mark fixed with `gsd-tools windows fixed <id>`.
 
@@ -24,6 +24,14 @@ last_updated: 2026-10-28T08:48:15.158Z
 | 7 | 06 | stub | src/crud_views/lib/crispy/buttons.py |  | Crispy layout form buttons pass no icon yet: icon/both modes (form floor set to icon or both) render no visible icon until 06-04 adds kind-default icons, icon= hooks and the missing-icon policy | fixed |  | 2026-10-28T06:36:10.760Z | 2026-10-28T07:04:38.892Z |
 | 8 | 06 | stub | src/crud_views/lib/view/button_data.py |  | Form missing-icon policy not yet applied: an icon-mode form button whose icon is explicitly None/empty or unavailable renders hidden text only (no strict ValueError, no logged label fallback) until 06-06 adds the availability predicate and runtime policy | fixed |  | 2026-10-28T07:04:39.037Z | 2026-10-28T07:48:56.639Z |
 | 9 | 06 | unrun-verify | .planning/phases/06-form-button-leaf/06-ACCEPTANCE.md |  | 06-09 human-check pending: hover tooltip (not observed in headless harness), visual quality in label/both/icon, screen-reader announcement and migration-prose readability | open |  | 2026-10-28T08:48:15.158Z |  |
+| 10 | 06.3 | unmet-truth | tests/test1/test_guardian_policy.py | 879 | CT-01 has candidate repair evidence: configured Car helper/list and published grant/revoke positives pass on all three series; AUTH-06-unclassified remains unresolved and independent review is pending. | fixed | CT-01 independently repaired and reviewed; AUTH-06 classifier fallback dismissed by recovered-source investigation (06.3-UNCLASSIFIED-REVIEW.md). | 2026-10-30T13:35:57.187Z | 2026-11-01T07:57:07.320Z |
+| 11 | 06.3 | unmet-truth | .planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-GUARDIAN-REVIEW.md |  | GUA-01 precision backstop remains human_needed/insufficient_spec: normal int/UUID and exact configured-key tests pass, but no general custom-PK/coercion predicate was supplied. | waived | Maintainer authorized formal scope reconciliation on 2026-11-01: tested int/UUID/exact-key/queryset/alias predicate is the phase contract; broader custom-PK/cast/collation compatibility remains unverified follow-up in issue 286. Not a universal precision pass. | 2026-10-30T13:36:14.791Z | 2026-11-01T07:57:07.320Z |
+| 12 | 06.3 | deviation | tests/test1/test_delete.py | 1397 | Plan 13 synthetic deletion metadata fixtures now supply declaring field owners; directly impacted compatibility correction verified on Django 4.2 and 6.0. | fixed |  | 2026-10-30T23:41:34.442Z | 2026-10-30T23:41:41.882Z |
+| 13 | 06.3 | deviation | src/crud_views/lib/deletion.py | 258 | Fixed absent nullable parent joins in _native_parent_rows alongside inspection; prevents unrelated null-key parent deletion. | fixed |  | 2026-10-30T23:46:34.873Z | 2026-10-30T23:47:17.135Z |
+| 14 | 06.3 | deviation | .planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/16-evidence/check.py |  | Plan 16 checker now independently validates overlapping package and imported-module hashes; original capture checker retained and 11 invalid variants rejected. | fixed |  | 2026-10-31T00:00:58.208Z | 2026-10-31T00:01:09.404Z |
+| 15 | 06.3 | deviation | .planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/16-evidence/check.py |  | Plan 16 JUnit reconciliation now handles class-qualified full-suite nodes; copied class controls pass and mismatches reject, without repeating unchanged product suites. | fixed |  | 2026-10-31T00:05:45.859Z | 2026-10-31T00:05:46.035Z |
+| 16 | 06.3 | unmet-truth | src/crud_views/static/crud_views/js/modal.js | 43 | UI-F01: real keyboard invalid/blocked 422 modal replacement leaves focus on BODY until next Tab; Close also leaves BODY. Newly observed on unchanged baseline JS; independent severity/remediation review required. | fixed | UI-F01/CR-04 and CR-05 repaired; current twelve-case browser evidence source-validated and owner keyboard review accepted. | 2026-10-31T00:26:22.293Z | 2026-11-01T07:57:07.320Z |
+| 17 | 06.3 | unrun-verify | .planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-GAP-REVIEW.md |  | Plan 17 final human checks pending for all twelve individually tracked IDs: GUA-precision, four unclassified predicates, four prohibitions and UI-01/02/03. Design approval does not answer these final questions. | fixed | All twelve owner responses preserved; four detector flags dismissed after investigation; bounded precision predicate established and broader scope deferred to issue 286 under formal reconciliation. | 2026-10-31T00:26:22.432Z | 2026-11-01T07:57:07.320Z |
 
 ````json
 [
@@ -134,6 +142,110 @@ last_updated: 2026-10-28T08:48:15.158Z
     "reason": "",
     "recorded_at": "2026-10-28T08:48:15.158Z",
     "resolved_at": null
+  },
+  {
+    "id": 10,
+    "kind": "unmet-truth",
+    "phase": "06.3",
+    "file": "tests/test1/test_guardian_policy.py",
+    "line": 879,
+    "description": "CT-01 has candidate repair evidence: configured Car helper/list and published grant/revoke positives pass on all three series; AUTH-06-unclassified remains unresolved and independent review is pending.",
+    "status": "fixed",
+    "reason": "CT-01 independently repaired and reviewed; AUTH-06 classifier fallback dismissed by recovered-source investigation (06.3-UNCLASSIFIED-REVIEW.md).",
+    "recorded_at": "2026-10-30T13:35:57.187Z",
+    "resolved_at": "2026-11-01T07:57:07.320Z",
+    "milestone": "v1.0"
+  },
+  {
+    "id": 11,
+    "kind": "unmet-truth",
+    "phase": "06.3",
+    "file": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-GUARDIAN-REVIEW.md",
+    "line": null,
+    "description": "GUA-01 precision backstop remains human_needed/insufficient_spec: normal int/UUID and exact configured-key tests pass, but no general custom-PK/coercion predicate was supplied.",
+    "status": "waived",
+    "reason": "Maintainer authorized formal scope reconciliation on 2026-11-01: tested int/UUID/exact-key/queryset/alias predicate is the phase contract; broader custom-PK/cast/collation compatibility remains unverified follow-up in issue 286. Not a universal precision pass.",
+    "recorded_at": "2026-10-30T13:36:14.791Z",
+    "resolved_at": "2026-11-01T07:57:07.320Z",
+    "milestone": "v1.0"
+  },
+  {
+    "id": 12,
+    "kind": "deviation",
+    "phase": "06.3",
+    "file": "tests/test1/test_delete.py",
+    "line": 1397,
+    "description": "Plan 13 synthetic deletion metadata fixtures now supply declaring field owners; directly impacted compatibility correction verified on Django 4.2 and 6.0.",
+    "status": "fixed",
+    "reason": "",
+    "recorded_at": "2026-10-30T23:41:34.442Z",
+    "resolved_at": "2026-10-30T23:41:41.882Z",
+    "milestone": "v1.0"
+  },
+  {
+    "id": 13,
+    "kind": "deviation",
+    "phase": "06.3",
+    "file": "src/crud_views/lib/deletion.py",
+    "line": 258,
+    "description": "Fixed absent nullable parent joins in _native_parent_rows alongside inspection; prevents unrelated null-key parent deletion.",
+    "status": "fixed",
+    "reason": "",
+    "recorded_at": "2026-10-30T23:46:34.873Z",
+    "resolved_at": "2026-10-30T23:47:17.135Z",
+    "milestone": "v1.0"
+  },
+  {
+    "id": 14,
+    "kind": "deviation",
+    "phase": "06.3",
+    "file": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/16-evidence/check.py",
+    "line": null,
+    "description": "Plan 16 checker now independently validates overlapping package and imported-module hashes; original capture checker retained and 11 invalid variants rejected.",
+    "status": "fixed",
+    "reason": "",
+    "recorded_at": "2026-10-31T00:00:58.208Z",
+    "resolved_at": "2026-10-31T00:01:09.404Z",
+    "milestone": "v1.0"
+  },
+  {
+    "id": 15,
+    "kind": "deviation",
+    "phase": "06.3",
+    "file": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/16-evidence/check.py",
+    "line": null,
+    "description": "Plan 16 JUnit reconciliation now handles class-qualified full-suite nodes; copied class controls pass and mismatches reject, without repeating unchanged product suites.",
+    "status": "fixed",
+    "reason": "",
+    "recorded_at": "2026-10-31T00:05:45.859Z",
+    "resolved_at": "2026-10-31T00:05:46.035Z",
+    "milestone": "v1.0"
+  },
+  {
+    "id": 16,
+    "kind": "unmet-truth",
+    "phase": "06.3",
+    "file": "src/crud_views/static/crud_views/js/modal.js",
+    "line": 43,
+    "description": "UI-F01: real keyboard invalid/blocked 422 modal replacement leaves focus on BODY until next Tab; Close also leaves BODY. Newly observed on unchanged baseline JS; independent severity/remediation review required.",
+    "status": "fixed",
+    "reason": "UI-F01/CR-04 and CR-05 repaired; current twelve-case browser evidence source-validated and owner keyboard review accepted.",
+    "recorded_at": "2026-10-31T00:26:22.293Z",
+    "resolved_at": "2026-11-01T07:57:07.320Z",
+    "milestone": "v1.0"
+  },
+  {
+    "id": 17,
+    "kind": "unrun-verify",
+    "phase": "06.3",
+    "file": ".planning/phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-GAP-REVIEW.md",
+    "line": null,
+    "description": "Plan 17 final human checks pending for all twelve individually tracked IDs: GUA-precision, four unclassified predicates, four prohibitions and UI-01/02/03. Design approval does not answer these final questions.",
+    "status": "fixed",
+    "reason": "All twelve owner responses preserved; four detector flags dismissed after investigation; bounded precision predicate established and broader scope deferred to issue 286 under formal reconciliation.",
+    "recorded_at": "2026-10-31T00:26:22.432Z",
+    "resolved_at": "2026-11-01T07:57:07.320Z",
+    "milestone": "v1.0"
   }
 ]
 ````

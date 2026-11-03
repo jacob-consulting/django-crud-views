@@ -1,0 +1,120 @@
+{
+  "baseline": "c65bfd5",
+  "method": "Every added top-level behavioral test family since maintainer approval; parametrized variants validated against each collected log",
+  "required_families": {
+    "tests/test1/test_authorization_templates.py": [
+      "test_partial_delete_request_gates_precede_inspector",
+      "test_partial_native_template_context_shape"
+    ],
+    "tests/test1/test_delete.py": [
+      "test_delete_collection_loader_error_propagates_unchanged",
+      "test_delete_empty_relationship_inspection_completeness",
+      "test_delete_legacy_preview_override_rejected_without_invocation",
+      "test_delete_preview_read_errors_propagate",
+      "test_delete_private_and_unknown_field_boundaries",
+      "test_delete_safe_preview_provider_called_once"
+    ],
+    "tests/test1/test_delete_databases.py": [
+      "test_alias_direct_process_pins_before_pk_clear",
+      "test_alias_incompatible_custom_signature_never_runs",
+      "test_alias_invalid_selector_fails_before_mutation",
+      "test_alias_unresolved_view_diagnostic",
+      "test_core_alias_request_uses_only_selected_protection",
+      "test_guardian_alias_cache_and_interleaved_requests",
+      "test_guardian_anonymous_actor_topology",
+      "test_guardian_configured_content_type_must_be_on_candidate_alias",
+      "test_guardian_cross_alias_global_cache_does_not_grant_labels",
+      "test_guardian_misrouted_authenticated_request_hides_labels",
+      "test_guardian_other_alias_grant_never_reveals_colliding_label",
+      "test_guardian_real_requests_colocate_actor_grants_and_labels",
+      "test_guardian_signature_requires_candidate_alias",
+      "test_guardian_through_same_alias_never_looks_up_content_type",
+      "test_guardian_topology_mismatch_hides_every_fast_path",
+      "test_guardian_uncertified_backend_cross_alias_global_path",
+      "test_routing_atomic_and_commit_pin_once",
+      "test_routing_instance_hint_overrides_read_alias",
+      "test_routing_request_gates_read_identity_before_trusted_write_selection"
+    ],
+    "tests/test1/test_delete_inspection.py": [
+      "test_complete_preview_retains_copy_and_one_confirmation",
+      "test_custom_delete_signature_diagnostics",
+      "test_delete_alias_requires_resolved_saved_target",
+      "test_direct_delete_process_pins_alias_before_write_and_keeps_it_for_hooks",
+      "test_empty_root_and_empty_unknown_relationship_have_distinct_completeness",
+      "test_german_delete_catalog_matches_source",
+      "test_inspection_diamond_cycle_restrict_and_proxy",
+      "test_inspection_distinct_parent_link_keys",
+      "test_inspection_native_skips_through_and_custom_metadata",
+      "test_inspection_proxy_self_cycle_has_no_phantom_root_count",
+      "test_inspection_reverse_fk_to_field",
+      "test_legacy_collection_override_startup_and_runtime",
+      "test_missing_target_never_inspects_or_writes",
+      "test_native_multitable_parent_preview_and_write",
+      "test_native_restrict_closure_and_cycles_use_real_rows",
+      "test_partial_notice_modes_and_german",
+      "test_provider_rejects_invalid_records",
+      "test_provider_scoped_coverage_permission_order_and_exceptions",
+      "test_provider_tree_shape_and_counts",
+      "test_real_preview_callback_safety_and_confirmed_positive_control",
+      "test_shipped_custom_delete_stale_native_protection_propagates",
+      "test_shipped_model_overrides_are_partial_and_run_once_with_using",
+      "test_signature_checks_skip_bare_and_resource_views",
+      "test_tracer_real_preview_confirmation_and_commit"
+    ],
+    "tests/test1/test_delete_migration_docs.py": [
+      "test_copied_templates_preserve_independent_notices_and_gates",
+      "test_copied_templates_render_attested_counts_and_authorized_labels",
+      "test_delete_breaking_entries_have_matching_migration_contracts",
+      "test_documented_delete_diagnostics_reject_before_invocation",
+      "test_documented_guardian_key_recipe_and_exact_diagnostic",
+      "test_documented_signature_and_atomic_adapters_execute",
+      "test_published_provider_boundary_attestation_and_public_imports",
+      "test_published_provider_invalid_records_fail_before_write",
+      "test_published_providers_and_copied_templates_execute",
+      "test_real_author_and_car_remain_incomplete_without_attestation"
+    ],
+    "tests/test1/test_delete_provenance.py": [
+      "test_actual_custom_method_signature_dispatch",
+      "test_callback_real_transaction_effects",
+      "test_custom_before_native_protect_propagates",
+      "test_custom_lazy_sub_objs_and_request_local_stickiness",
+      "test_native_nested_stale_provider_preview",
+      "test_native_parent_order_and_keep_parents",
+      "test_native_pk_validation_precedes_collection",
+      "test_native_protect_before_custom_stops",
+      "test_native_restrict_outer_closure",
+      "test_native_set_null_and_do_nothing_remain_friendly",
+      "test_native_sql_signals_origin_fast_deletes_and_updates",
+      "test_nested_converter_protected_error_identity",
+      "test_on_commit_inside_handler_immediate_or_deferred",
+      "test_real_commit_success_order_and_repeated_post",
+      "test_request_failure_durable_state_and_external_events"
+    ],
+    "tests/test1/test_guardian_delete.py": [
+      "test_partial_provider_no_view_and_through_projection"
+    ],
+    "tests/test1/test_guardian_inactive.py": [
+      "test_inactive_viewset_typo_is_an_error_instead_of_empty_authority"
+    ],
+    "tests/test1/test_guardian_policy.py": [
+      "test_custom_unicode_key_round_trip_preserves_permission_and_queryset_types",
+      "test_diagnostics_list_sorted_actual_configured_keys",
+      "test_inherited_global_flag_and_explicit_sibling_override_remain_independent",
+      "test_invalid_helper_keys_validate_before_guardian_or_permission_writes",
+      "test_invalid_query_key_precedes_default_queryset_access",
+      "test_manage_policy_copies_are_detached_across_requests_and_from_helper",
+      "test_policy_mutation_cannot_turn_global_permission_into_helper_authority",
+      "test_registered_polymorphic_base_content_type_policy_residual",
+      "test_registered_proxy_viewset_uses_concrete_permission_without_key_or_pk_coercion",
+      "test_strict_helper_policy_rejects_mapping_mutation",
+      "test_strict_helper_preserves_uuid_queryset_identities"
+    ],
+    "tests/test1/test_polymorphic.py": [
+      "test_library_delete_author_reorders_and_remains_partial",
+      "test_library_delete_car_override_failure_propagates",
+      "test_library_delete_car_parent_rows_and_partial",
+      "test_library_delete_native_protection_before_or_inside_override",
+      "test_library_delete_polymorphic_denied_never_inspects_or_calls_override"
+    ]
+  }
+}

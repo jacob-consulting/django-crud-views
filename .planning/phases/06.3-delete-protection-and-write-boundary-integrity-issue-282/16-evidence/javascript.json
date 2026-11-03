@@ -1,0 +1,32 @@
+{
+  "argv": [
+    "bash",
+    ".planning/phases/06-form-button-leaf/06-js-verify.sh"
+  ],
+  "artifacts": {
+    "log": "396640ce36c81757263731496b35fd716882ba2c126a8b97e8fe8e42242135bc"
+  },
+  "command": "bash .planning/phases/06-form-button-leaf/06-js-verify.sh",
+  "duration_seconds": 3.387,
+  "environment": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONPATH": "/home/alex/projects/alex/django-crud-views/src:/home/alex/projects/alex/django-crud-views"
+  },
+  "exit_code": 0,
+  "finished": "2026-10-31T00:03:46.770674+00:00",
+  "head": "b3e7026fa4ba993e994b310690eecc6289480f93",
+  "kind": null,
+  "label": "javascript",
+  "pid": 52348,
+  "pytest_argv": null,
+  "series": null,
+  "source_after_sha256": "bc5a56a8c8b9254bfe0e87d893a74ff57e72e38f85646b31b6206e1222717a12",
+  "source_sha256": "bc5a56a8c8b9254bfe0e87d893a74ff57e72e38f85646b31b6206e1222717a12",
+  "started": "2026-10-31T00:03:43.382877+00:00",
+  "status": "complete",
+  "tools": {
+    "check.py": "ff0d624c9c97154dbd6925d11c5d22b85ac982bb9abb4f7f7cd5e614f8221029",
+    "run.py": "9abc3a69ddef1822c090f0e805978f1b8fb9776f7fc01280c601305462886048"
+  },
+  "tracked_diff_sha256": "1f2a99e5d384d7fab75c5ab169ada980d0e5ca40ae68105f8a822cb00c5fc6c1"
+}

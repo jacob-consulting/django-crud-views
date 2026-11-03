@@ -1,0 +1,13 @@
+{
+  "finding": "CR-05",
+  "contract": "Approved FOCUS-DESIGN: completed dismissal invalidates pending work and restores a usable return target.",
+  "red": "acc4354; pending-close-unit-red.log (3 failures) and pending-close-browser-red.json (actual Bootstrap focus failure)",
+  "repair": "Subscribe to completed hide immediately for a pending visible replacement; consume its dismissal before response headers/body/error can act. Reuse subscription on successful replacement. Preserve initial hidden loading and intentional reopen during existing hide.",
+  "green": {
+    "javascript": "266 tests / 8 files pass; pending-close-full-js.log",
+    "browser": "12 cases pass including pending-close and native-pending-close; final-browser-results.json",
+    "evidence_validator": "FOCUS_EVIDENCE_OK"
+  },
+  "source_sha256": "1b47bdd0bf0d5130e4a1ada0b0a51880cc24ae7be6cea8f29e976ef24c8fd5c0",
+  "owner_acceptance": "Earlier acceptances remain scoped to reviewed flows; this additional race has automated checks and awaits independent re-review."
+}

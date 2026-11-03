@@ -1,0 +1,23 @@
+{"ready": "http://127.0.0.1:8143", "database": "disposable temporary SQLite"}
+127.0.0.1 - - [31/Oct/2026 08:34:24] "GET /cases/ HTTP/1.1" 200 692
+127.0.0.1 - - [31/Oct/2026 08:34:25] "GET /signin/ HTTP/1.1" 302 0
+127.0.0.1 - - [31/Oct/2026 08:34:25] "GET /harness/ HTTP/1.1" 200 3640
+127.0.0.1 - - [31/Oct/2026 08:34:25] "GET /static/crud_views/css/property.css HTTP/1.1" 200 247
+127.0.0.1 - - [31/Oct/2026 08:34:25] "GET /static/crud_views/js/adapters.js HTTP/1.1" 200 3371
+127.0.0.1 - - [31/Oct/2026 08:34:25] "GET /static/crud_views/js/viewset.js HTTP/1.1" 200 1997
+127.0.0.1 - - [31/Oct/2026 08:34:25] "GET /static/crud_views/js/formset.js HTTP/1.1" 200 20320
+127.0.0.1 - - [31/Oct/2026 08:34:25] "GET /static/crud_views/css/table.css HTTP/1.1" 200 1539
+127.0.0.1 - - [31/Oct/2026 08:34:25] "GET /static/crud_views/css/formset.css HTTP/1.1" 200 755
+127.0.0.1 - - [31/Oct/2026 08:34:25] "GET /static/crud_views/css/icons.css HTTP/1.1" 200 86
+127.0.0.1 - - [31/Oct/2026 08:34:25] "GET /static/crud_views/js/list.filter.js HTTP/1.1" 200 3099
+127.0.0.1 - - [31/Oct/2026 08:34:25] "GET /static/crud_views/js/modal.js HTTP/1.1" 200 9625
+127.0.0.1 - - [31/Oct/2026 08:34:25] "GET /static/crud_views/js/toggle.js HTTP/1.1" 200 2502
+127.0.0.1 - - [31/Oct/2026 08:34:25] "GET /static/crud_views/js/tooltip.js HTTP/1.1" 200 3395
+Not Found: /favicon.ico
+127.0.0.1 - - [31/Oct/2026 08:34:25] "GET /favicon.ico HTTP/1.1" 404 61116
+127.0.0.1 - - [31/Oct/2026 08:34:25] "GET /cases/ HTTP/1.1" 200 692
+127.0.0.1 - - [31/Oct/2026 08:34:25] "GET /harness/?target=%2Fpublisher_cascade%2F1%2Fdelete%2F HTTP/1.1" 200 3710
+127.0.0.1 - - [31/Oct/2026 08:34:25] "GET /publisher_cascade/1/delete/ HTTP/1.1" 200 3177
+Unprocessable Entity: /publisher_cascade/1/delete/
+127.0.0.1 - - [31/Oct/2026 08:34:26] "POST /publisher_cascade/1/delete/ HTTP/1.1" 422 3347
+127.0.0.1 - - [31/Oct/2026 08:34:26] "GET /state/1/ HTTP/1.1" 200 30

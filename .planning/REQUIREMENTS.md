@@ -68,44 +68,54 @@ except where a requirement says the markup changes.
 Source: `superpowers/notes/2026-10-28-pre-1.0-before-theme-freeze-analysis.md` B1–B7; locked decisions in
 `.planning/phases/06.2-request-authorization-and-write-integrity/06.2-CONTEXT.md`.
 
-- [ ] **AUTH-01**: All package delete views reject HTTP DELETE with 405 while the validated POST protection, form, hook and transaction lifecycle remains intact.
+- [x] **AUTH-01**: All package delete views reject HTTP DELETE with 405 while the validated POST protection, form, hook and transaction lifecycle remains intact.
 - [x] **AUTH-02**: Formset fragments authorize the target and validate root/parent/fragment ancestry before rendering; valid persisted and unsaved nested rows retain the request and {html, rows} protocol.
-- [ ] **AUTH-03**: Core and Guardian delete previews expose only permitted protected-object labels and an independent generic blocked notice, including when every label is hidden.
+- [x] **AUTH-03**: Core and Guardian delete previews expose only permitted protected-object labels and an independent generic blocked notice, including when every label is hidden.
 - [x] **AUTH-04**: Parent permission None preserves actual parent resolution and action-state enforcement; create controls/helpers and direct GET/POST agree without adding child-add requirements.
 - [x] **AUTH-05**: Inactive actors receive no unauthorized rows or object access through Guardian request and callable helper paths, including when authentication permits inactive sessions; active-superuser behavior is preserved.
 - [x] **AUTH-06**: Global fallback remains per view; the inert ViewSet flag is removed with clear diagnostics/migration; get_objects_for_user stays strict and manage shows effective policy per view and the strict helper policy.
-- [ ] **AUTH-07**: Direct-request actor and native-template regressions preserve parent/global, aggregate purge and form/cancel contracts; changed method/access/config/context behavior is documented with paired Breaking and migration guidance.
+- [x] **AUTH-07**: Direct-request actor and native-template regressions preserve parent/global, aggregate purge and form/cancel contracts; changed method/access/config/context behavior is documented with paired Breaking and migration guidance.
 
 #### Acceptance ownership split (2026-10-30)
 
-The AUTH wording above is retained; unchecked entries are not wholly accepted. Historical passing evidence remains
-in [06.2-ACCEPTANCE](phases/06.2-request-authorization-and-write-integrity/06.2-ACCEPTANCE.md), subject to this split.
-Phase 6.2 retained-scope verification and UAT passed on 2026-10-30. This does not accept the transferred obligations; AUTH-01/03/07 remain partial and GUA-01 remains unresolved.
+The AUTH wording above is retained. Historical Phase 6.2 evidence remains in
+[06.2-ACCEPTANCE](phases/06.2-request-authorization-and-write-integrity/06.2-ACCEPTANCE.md).
+Phase 6.2 retained-scope verification/UAT passed on 2026-10-30; Phase 6.3 now completes the transferred
+AUTH-01/03/07 and bounded GUA-01 obligations (2026-11-01, verification 91/91). The table records current
+ownership outcomes; the original transfer history remains in the phase artifacts.
 
 | Requirement | Retained Phase 6.2 evidence | Outstanding obligation / owner |
 | --- | --- | --- |
-| AUTH-01 | HTTP DELETE rejection and named POST form/hook/atomic controls | CR-02/03/04: callback-safe inspection, unknown-error propagation and database alignment → 6.3; overall unresolved |
+| AUTH-01 | HTTP DELETE rejection and named POST form/hook/atomic controls | Complete; deletion/write repairs and scoped owner acceptance verified in Phase 6.3 |
 | AUTH-02 | Fragment authorization/ancestry and first-child round trips | A19 sibling-index round trip → proposed 6.4, not 6.3; IN-04 closed as documented integer/UUID-only fragment boundary |
-| AUTH-03 | Permitted protected labels, independent notice, fixed CR-01/WR-02 response scope | CR-02/04: obtain blocked state without callbacks and from the target database → 6.3; overall unresolved |
+| AUTH-03 | Permitted protected labels, independent notice, fixed CR-01/WR-02 response scope | Complete; authorization/projection and repaired modal focus verified in Phase 6.3 |
 | AUTH-04 | Parent-None dispatch and Guardian helper/state regressions | WR-01 core rendered-state agreement fixed by quick 261030-csg (bd31992); 25 core and 86 preservation cases pass on both supported cached versions; retained-scope verification and UAT passed on 2026-10-30 |
 | AUTH-05 | Named inactive-actor request/helper regressions | Retain recorded evidence; no new result or broader certification |
-| AUTH-06 | Named per-view configuration, helper and manage regressions | Unspecified review flag and IN-02/IN-03 → Phase 6.3 GUA-01, unresolved; IN-05 composition guard fixed; checked item covers named evidence only |
-| AUTH-07 | Recorded actor/native-template replay and paired documentation | Real-preview, converter, routing and preservation re-review → 6.3; existing suite passes do not cover CR-02–CR-04 |
+| AUTH-06 | Named per-view configuration, helper and manage regressions | Complete within reconciled scope; CT-01 fixed, detector flag dismissed; broader identity compatibility → issue #286 |
+| AUTH-07 | Recorded actor/native-template replay and paired documentation | Complete; recorded three-series evidence, migrations and scoped acceptance verified |
 
 ### Delete protection remediation and bounded Guardian policy review (Phase 6.3)
+
+**Scope reconciliation — 2026-11-01:** The four detector fallbacks are dismissed with recovered-source
+evidence. GUA-01 precision acceptance is limited to the explicitly tested integer/UUID, exact configured-key,
+queryset/model/type and same-alias identity predicates. Broader custom-PK/backend-cast/collation work is
+unverified follow-up under issue #286, outside this phase's gate. See
+[scope reconciliation](phases/06.3-delete-protection-and-write-boundary-integrity-issue-282/06.3-SCOPE-RECONCILIATION.md).
+Formal re-verification passed 91/91 with no overrides; Phase 6.3 completed on 2026-11-01.
+
 
 Source: [issue #282](https://github.com/jacob-consulting/django-crud-views/issues/282), revised analysis addendum/§8,
 and [06.2-REVIEW](phases/06.2-request-authorization-and-write-integrity/06.2-REVIEW.md) CR-02–CR-04.
 These remediate the existing AUTH promises; deferral leaves them unresolved and does not reopen fixed CR-01/WR-02.
 
-- [ ] **DEL-01**: Maintainer reviews detailed design/plan for safe protection inspection, supported custom behavior, exception translation, routing and override compatibility before implementation; architecture is not selected here.
-- [ ] **DEL-02**: Real-preview GET, invalid confirmation and custom-protected POST execute no deletion callbacks, including SET/default factories; failed valid POST preserves the write boundary. Database rollback alone is insufficient for external effects (CR-02; AUTH-01/03/07).
-- [ ] **DEL-03**: Established native PROTECT/RESTRICT retains friendly handling; unknown custom handlers, converters, model methods, hooks and commit callbacks propagate. Nested cascades/stale previews and real commit/rollback evidence cover both atomic settings (CR-03; AUTH-01/07).
-- [ ] **DEL-04**: Two-database tests with colliding PKs and protection on only one alias prove instance-aware inspection/deletion routing and alignment with transaction/commit hooks (CR-04; AUTH-01/03/07).
-- [ ] **DEL-05**: Core, Guardian and polymorphic authorization, filtered protected labels, independent blocked notice and coherent full-page/modal responses remain enforced (AUTH-03/07 preservation).
-- [ ] **DEL-06**: Reproduce fixes on Django 4.2/6.0, add supported Django 5.2 coverage, rerun deletion/transaction/authorization suites, update deletion/override docs and changelog (Breaking paired with migrating-1.0.md), and re-review affected 6.2 acceptance before closure.
+- [x] **DEL-01**: Maintainer reviews detailed design/plan for safe protection inspection, supported custom behavior, exception translation, routing and override compatibility before implementation; architecture is not selected here.
+- [x] **DEL-02**: Real-preview GET, invalid confirmation and custom-protected POST execute no deletion callbacks, including SET/default factories; failed valid POST preserves the write boundary. Database rollback alone is insufficient for external effects (CR-02; AUTH-01/03/07).
+- [x] **DEL-03**: Established native PROTECT/RESTRICT retains friendly handling; unknown custom handlers, converters, model methods, hooks and commit callbacks propagate. Nested cascades/stale previews and real commit/rollback evidence cover both atomic settings (CR-03; AUTH-01/07).
+- [x] **DEL-04**: Two-database tests with colliding PKs and protection on only one alias prove instance-aware inspection/deletion routing and alignment with transaction/commit hooks (CR-04; AUTH-01/03/07).
+- [x] **DEL-05**: Core, Guardian and polymorphic authorization, filtered protected labels, independent blocked notice and coherent full-page/modal responses remain enforced (AUTH-03/07 preservation).
+- [x] **DEL-06**: Reproduce fixes on Django 4.2/6.0, add supported Django 5.2 coverage, rerun deletion/transaction/authorization suites, update deletion/override docs and changelog (Breaking paired with migrating-1.0.md), and re-review affected 6.2 acceptance before closure.
 
-- [ ] **GUA-01**: Perform a bounded review of AUTH-06 policy boundaries and findings IN-02 (mutable strict-helper policy) / IN-03 (unknown permission-key diagnostics). Record a concrete scenario and expected outcome for each actionable gap; fix and test confirmed defects, preserving named AUTH-06 behaviors. If no additional gap supports the unclassified detector flag, close that flag with a documented rationale. Record explicit dispositions for IN-02/IN-03 and replay the policy tests on cached Django 4.2/6.0. This task transfers unresolved review work, not completed AUTH-06 implementation; any substantial policy redesign requires a separate scope decision.
+- [x] **GUA-01**: Perform a bounded review of AUTH-06 policy boundaries and findings IN-02 (mutable strict-helper policy) / IN-03 (unknown permission-key diagnostics). Record a concrete scenario and expected outcome for each actionable gap; fix and test confirmed defects, preserving named AUTH-06 behaviors. If no additional gap supports the unclassified detector flag, close that flag with a documented rationale. Record explicit dispositions for IN-02/IN-03 and replay the policy tests on cached Django 4.2/6.0. This task transfers unresolved review work, not completed AUTH-06 implementation; any substantial policy redesign requires a separate scope decision.
 
 GUA-01 was added by explicit user decision on 2026-10-30 as a bounded continuation of 6.2, alongside the
 deletion work; it does not change issue #282 itself. IN-02/IN-03 are deferred here and remain unresolved.
@@ -191,20 +201,20 @@ Which phases cover which requirements. Updated during roadmap creation.
 | FORM-11 | Phase 6 (plan 2) | Complete |
 | FORM-12 | Phase 6 (plan 2) | Complete |
 | FORM-13 | Phase 6 (plan 2) | Complete |
-| AUTH-01 | Phase 6.2 + 6.3 | Partial; CR-02–CR-04 unresolved in 6.3 |
+| AUTH-01 | Phase 6.2 + 6.3 | Complete; deletion/write repairs and scoped owner acceptance verified in Phase 6.3 |
 | AUTH-02 | Phase 6.2 | Named evidence retained; A19 open; IN-04 documented unsupported boundary |
-| AUTH-03 | Phase 6.2 + 6.3 | Partial; CR-02/CR-04 unresolved in 6.3 |
+| AUTH-03 | Phase 6.2 + 6.3 | Complete; authorization/projection and repaired modal focus verified in Phase 6.3 |
 | AUTH-04 | Phase 6.2 | Complete; WR-01 fixed; verification/UAT passed |
 | AUTH-05 | Phase 6.2 | Complete |
-| AUTH-06 | Phase 6.2 + 6.3 | Named 6.2 evidence retained; residual flag and IN-02/03 → GUA-01; IN-05 fixed |
-| AUTH-07 | Phase 6.2 + 6.3 | Partial; #282 re-review pending in 6.3 |
-| DEL-01 | Phase 6.3 | Pending; unresolved |
-| DEL-02 | Phase 6.3 | Pending; unresolved |
-| DEL-03 | Phase 6.3 | Pending; unresolved |
-| DEL-04 | Phase 6.3 | Pending; unresolved |
-| DEL-05 | Phase 6.3 | Pending; unresolved |
-| DEL-06 | Phase 6.3 | Pending; unresolved |
-| GUA-01 | Phase 6.3 | Pending; AUTH-06 review flag and IN-02/03 unresolved |
+| AUTH-06 | Phase 6.2 + 6.3 | Complete within reconciled scope; CT-01 fixed, detector flag dismissed; broader identity compatibility → issue #286 |
+| AUTH-07 | Phase 6.2 + 6.3 | Complete; recorded three-series evidence, migrations and scoped acceptance verified |
+| DEL-01 | Phase 6.3 | Complete; actual bound approvals and prohibition-01 acceptance retained; detector fallback dismissed |
+| DEL-02 | Phase 6.3 | Complete; callback-safe inspection, repaired joins and scoped human dispositions verified |
+| DEL-03 | Phase 6.3 | Complete; native/custom provenance verified; detector fallback dismissed |
+| DEL-04 | Phase 6.3 | Complete; selected native row/parent identity verified; detector fallback dismissed |
+| DEL-05 | Phase 6.3 | Complete; authorization, partial notices and repaired focus verified |
+| DEL-06 | Phase 6.3 | Complete; recorded three-series evidence, migrations, repairs and scoped human acceptance verified |
+| GUA-01 | Phase 6.3 | Complete within explicit bounded identity scope; IN-02/03 and CT-01 fixed; broader compatibility unverified in issue #286 |
 | STAB-01 | Phase 7 (plan 4) | Pending |
 | STAB-02 | Phase 7 (plan 4) | Pending |
 | STAB-03 | Phase 7 (plan 4) | Pending |

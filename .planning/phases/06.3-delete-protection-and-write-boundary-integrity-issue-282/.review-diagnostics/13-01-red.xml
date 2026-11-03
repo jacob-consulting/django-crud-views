@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="7" skipped="0" tests="7" time="1.084" timestamp="2026-10-30T23:35:41.818103+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_delete_inspection" name="test_boundary_field_owner_batching[First-False]" time="0.297"><failure message="AssertionError: Each declaring field owner needs its own boundary, even without related rows&#10;assert 1 == 2&#10; +  where 1 = len((DeletePreviewBoundary(kind='on_delete', model=&lt;class 'tests.test1.test_delete_inspection.owner_graph.&lt;locals&gt;.Root'&gt;, field_name='target', using='default', source_pks=(22, 11)),))&#10;[+1 more line; full report in element text]">owner_graph = namespace(Root=&lt;class 'tests.test1.test_delete_inspection.owner_graph.&lt;locals&gt;.Root'&gt;, First=&lt;class 'tests.test1.test_...e_inspection.owner_graph.&lt;locals&gt;.RootDelete'&gt;, client=&lt;django.test.client.Client object at 0x7840b99dd220&gt;, events=[])
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7840b9226fc0&gt;
+reverse_order = False, attested = 'First'
+
+    @pytest.mark.parametrize("reverse_order", [False, True])
+    @pytest.mark.parametrize("attested", ["First", "Second"])
+    def test_boundary_field_owner_batching(owner_graph, monkeypatch, reverse_order, attested):
+        from crud_views.lib import deletion
+        from crud_views.lib.deletion import DeletePreviewContribution, inspect_deletion, merge_delete_preview
+    
+        g = owner_graph
+        first = g.Root.objects.create(pk=11)
+        g.Root.objects.create(pk=22, parent=first)
+        before = inspect_deletion(first, using="default")
+&gt;       assert len(before.boundaries) == 2, "Each declaring field owner needs its own boundary, even without related rows"
+E       AssertionError: Each declaring field owner needs its own boundary, even without related rows
+E       assert 1 == 2
+E        +  where 1 = len((DeletePreviewBoundary(kind='on_delete', model=&lt;class 'tests.test1.test_delete_inspection.owner_graph.&lt;locals&gt;.Root'&gt;, field_name='target', using='default', source_pks=(22, 11)),))
+E        +    where (DeletePreviewBoundary(kind='on_delete', model=&lt;class 'tests.test1.test_delete_inspection.owner_graph.&lt;locals&gt;.Root'&gt;, field_name='target', using='default', source_pks=(22, 11)),) = DeleteInspection(related=RelatedObjects(tree=[&lt;Root: Root object (11)&gt;, [&lt;Root: Root object (22)&gt;]], summary={}, prote...test1.test_delete_inspection.owner_graph.&lt;locals&gt;.Root'&gt;, field_name='target', using='default', source_pks=(22, 11)),)).boundaries
+
+tests/test1/test_delete_inspection.py:141: AssertionError</failure></testcase><testcase classname="tests.test1.test_delete_inspection" name="test_boundary_field_owner_batching[First-True]" time="0.024"><failure message="AssertionError: Each declaring field owner needs its own boundary, even without related rows&#10;assert 1 == 2&#10; +  where 1 = len((DeletePreviewBoundary(kind='on_delete', model=&lt;class 'tests.test1.test_delete_inspection.owner_graph.&lt;locals&gt;.Root'&gt;, field_name='target', using='default', source_pks=(22, 11)),))&#10;[+1 more line; full report in element text]">owner_graph = namespace(Root=&lt;class 'tests.test1.test_delete_inspection.owner_graph.&lt;locals&gt;.Root'&gt;, First=&lt;class 'tests.test1.test_...e_inspection.owner_graph.&lt;locals&gt;.RootDelete'&gt;, client=&lt;django.test.client.Client object at 0x7840b9b0c800&gt;, events=[])
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7840b920f5c0&gt;
+reverse_order = True, attested = 'First'
+
+    @pytest.mark.parametrize("reverse_order", [False, True])
+    @pytest.mark.parametrize("attested", ["First", "Second"])
+    def test_boundary_field_owner_batching(owner_graph, monkeypatch, reverse_order, attested):
+        from crud_views.lib import deletion
+        from crud_views.lib.deletion import DeletePreviewContribution, inspect_deletion, merge_delete_preview
+    
+        g = owner_graph
+        first = g.Root.objects.create(pk=11)
+        g.Root.objects.create(pk=22, parent=first)
+        before = inspect_deletion(first, using="default")
+&gt;       assert len(before.boundaries) == 2, "Each declaring field owner needs its own boundary, even without related rows"
+E       AssertionError: Each declaring field owner needs its own boundary, even without related rows
+E       assert 1 == 2
+E        +  where 1 = len((DeletePreviewBoundary(kind='on_delete', model=&lt;class 'tests.test1.test_delete_inspection.owner_graph.&lt;locals&gt;.Root'&gt;, field_name='target', using='default', source_pks=(22, 11)),))
+E        +    where (DeletePreviewBoundary(kind='on_delete', model=&lt;class 'tests.test1.test_delete_inspection.owner_graph.&lt;locals&gt;.Root'&gt;, field_name='target', using='default', source_pks=(22, 11)),) = DeleteInspection(related=RelatedObjects(tree=[&lt;Root: Root object (11)&gt;, [&lt;Root: Root object (22)&gt;]], summary={}, prote...test1.test_delete_inspection.owner_graph.&lt;locals&gt;.Root'&gt;, field_name='target', using='default', source_pks=(22, 11)),)).boundaries
+
+tests/test1/test_delete_inspection.py:141: AssertionError</failure></testcase><testcase classname="tests.test1.test_delete_inspection" name="test_boundary_field_owner_batching[Second-False]" time="0.024"><failure message="AssertionError: Each declaring field owner needs its own boundary, even without related rows&#10;assert 1 == 2&#10; +  where 1 = len((DeletePreviewBoundary(kind='on_delete', model=&lt;class 'tests.test1.test_delete_inspection.owner_graph.&lt;locals&gt;.Root'&gt;, field_name='target', using='default', source_pks=(22, 11)),))&#10;[+1 more line; full report in element text]">owner_graph = namespace(Root=&lt;class 'tests.test1.test_delete_inspection.owner_graph.&lt;locals&gt;.Root'&gt;, First=&lt;class 'tests.test1.test_...e_inspection.owner_graph.&lt;locals&gt;.RootDelete'&gt;, client=&lt;django.test.client.Client object at 0x7840b9b87b00&gt;, events=[])
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7840b9320080&gt;
+reverse_order = False, attested = 'Second'
+
+    @pytest.mark.parametrize("reverse_order", [False, True])
+    @pytest.mark.parametrize("attested", ["First", "Second"])
+    def test_boundary_field_owner_batching(owner_graph, monkeypatch, reverse_order, attested):
+        from crud_views.lib import deletion
+        from crud_views.lib.deletion import DeletePreviewContribution, inspect_deletion, merge_delete_preview
+    
+        g = owner_graph
+        first = g.Root.objects.create(pk=11)
+        g.Root.objects.create(pk=22, parent=first)
+        before = inspect_deletion(first, using="default")
+&gt;       assert len(before.boundaries) == 2, "Each declaring field owner needs its own boundary, even without related rows"
+E       AssertionError: Each declaring field owner needs its own boundary, even without related rows
+E       assert 1 == 2
+E        +  where 1 = len((DeletePreviewBoundary(kind='on_delete', model=&lt;class 'tests.test1.test_delete_inspection.owner_graph.&lt;locals&gt;.Root'&gt;, field_name='target', using='default', source_pks=(22, 11)),))
+E        +    where (DeletePreviewBoundary(kind='on_delete', model=&lt;class 'tests.test1.test_delete_inspection.owner_graph.&lt;locals&gt;.Root'&gt;, field_name='target', using='default', source_pks=(22, 11)),) = DeleteInspection(related=RelatedObjects(tree=[&lt;Root: Root object (11)&gt;, [&lt;Root: Root object (22)&gt;]], summary={}, prote...test1.test_delete_inspection.owner_graph.&lt;locals&gt;.Root'&gt;, field_name='target', using='default', source_pks=(22, 11)),)).boundaries
+
+tests/test1/test_delete_inspection.py:141: AssertionError</failure></testcase><testcase classname="tests.test1.test_delete_inspection" name="test_boundary_field_owner_batching[Second-True]" time="0.028"><failure message="AssertionError: Each declaring field owner needs its own boundary, even without related rows&#10;assert 1 == 2&#10; +  where 1 = len((DeletePreviewBoundary(kind='on_delete', model=&lt;class 'tests.test1.test_delete_inspection.owner_graph.&lt;locals&gt;.Root'&gt;, field_name='target', using='default', source_pks=(22, 11)),))&#10;[+1 more line; full report in element text]">owner_graph = namespace(Root=&lt;class 'tests.test1.test_delete_inspection.owner_graph.&lt;locals&gt;.Root'&gt;, First=&lt;class 'tests.test1.test_...e_inspection.owner_graph.&lt;locals&gt;.RootDelete'&gt;, client=&lt;django.test.client.Client object at 0x7840b9ad05f0&gt;, events=[])
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7840b9321f10&gt;
+reverse_order = True, attested = 'Second'
+
+    @pytest.mark.parametrize("reverse_order", [False, True])
+    @pytest.mark.parametrize("attested", ["First", "Second"])
+    def test_boundary_field_owner_batching(owner_graph, monkeypatch, reverse_order, attested):
+        from crud_views.lib import deletion
+        from crud_views.lib.deletion import DeletePreviewContribution, inspect_deletion, merge_delete_preview
+    
+        g = owner_graph
+        first = g.Root.objects.create(pk=11)
+        g.Root.objects.create(pk=22, parent=first)
+        before = inspect_deletion(first, using="default")
+&gt;       assert len(before.boundaries) == 2, "Each declaring field owner needs its own boundary, even without related rows"
+E       AssertionError: Each declaring field owner needs its own boundary, even without related rows
+E       assert 1 == 2
+E        +  where 1 = len((DeletePreviewBoundary(kind='on_delete', model=&lt;class 'tests.test1.test_delete_inspection.owner_graph.&lt;locals&gt;.Root'&gt;, field_name='target', using='default', source_pks=(22, 11)),))
+E        +    where (DeletePreviewBoundary(kind='on_delete', model=&lt;class 'tests.test1.test_delete_inspection.owner_graph.&lt;locals&gt;.Root'&gt;, field_name='target', using='default', source_pks=(22, 11)),) = DeleteInspection(related=RelatedObjects(tree=[&lt;Root: Root object (11)&gt;, [&lt;Root: Root object (22)&gt;]], summary={}, prote...test1.test_delete_inspection.owner_graph.&lt;locals&gt;.Root'&gt;, field_name='target', using='default', source_pks=(22, 11)),)).boundaries
+
+tests/test1/test_delete_inspection.py:141: AssertionError</failure></testcase><testcase classname="tests.test1.test_delete_inspection" name="test_boundary_field_owner_request[none-False-False-First]" time="0.086"><failure message="AssertionError: Independent field owners must survive into the request provider&#10;assert 1 == 2&#10; +  where 1 = len((DeletePreviewBoundary(kind='on_delete', model=&lt;class 'tests.test1.test_delete_inspection.owner_graph.&lt;locals&gt;.Root'&gt;, field_name='target', using='default', source_pks=(1,)),))">owner_graph = namespace(Root=&lt;class 'tests.test1.test_delete_inspection.owner_graph.&lt;locals&gt;.Root'&gt;, First=&lt;class 'tests.test1.test_...e_inspection.owner_graph.&lt;locals&gt;.RootDelete'&gt;, client=&lt;django.test.client.Client object at 0x7840b9b1cfb0&gt;, events=[])
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7840b921aff0&gt;
+owner = 'First', modal = False, details = False, block = 'none'
+
+    @pytest.mark.parametrize("owner", ["First", "Second"])
+    @pytest.mark.parametrize("modal", [False, True])
+    @pytest.mark.parametrize("details", [False, True])
+    @pytest.mark.parametrize("block", ["none", "native", "provider"])
+    def test_boundary_field_owner_request(owner_graph, monkeypatch, owner, modal, details, block):
+        from lxml import html
+    
+        g = owner_graph
+        root = g.Root.objects.create()
+        g.First.objects.create(target=root)
+        g.Second.objects.create(target=root)
+        monkeypatch.setattr(g.view, "cv_attested_owner", getattr(g, owner))
+        monkeypatch.setattr(g.view, "cv_show_related_objects", details)
+        monkeypatch.setattr(g.view, "cv_provider_block", block == "provider")
+        if block == "native":
+            g.Blocker.objects.create(target=root)
+        url = f"/field_owner/{root.pk}/delete/"
+        headers = {"X-CV-Modal": "true"} if modal else {}
+&gt;       for response in (g.client.get(url, headers=headers), g.client.post(url, {}, headers=headers)):
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test1/test_delete_inspection.py:182: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/test/client.py:1127: in get
+    response = super().get(
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/test/client.py:475: in get
+    return self.generic(
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/test/client.py:671: in generic
+    return self.request(**r)
+           ^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/test/client.py:1090: in request
+    self.check_exception(response)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/test/client.py:805: in check_exception
+    raise exc_value
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/core/handlers/exception.py:55: in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/core/handlers/base.py:198: in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/views/generic/base.py:106: in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/contrib/auth/mixins.py:110: in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/view/base.py:228: in dispatch
+    response = super().dispatch(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/views/delete.py:44: in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/views/generic/base.py:145: in dispatch
+    return handler(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/views/generic/detail.py:113: in get
+    context = self.get_context_data(object=self.object)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/views/delete.py:269: in get_context_data
+    inspection = self._cv_inspect_deletion()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/views/delete.py:178: in _cv_inspect_deletion
+    contributions = self.cv_get_delete_preview(inspection.boundaries, using=using)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;tests.test1.test_delete_inspection.owner_graph.&lt;locals&gt;.RootDelete object at 0x7840b9b0f890&gt;
+boundaries = (DeletePreviewBoundary(kind='on_delete', model=&lt;class 'tests.test1.test_delete_inspection.owner_graph.&lt;locals&gt;.Root'&gt;, field_name='target', using='default', source_pks=(1,)),)
+using = 'default'
+
+    def cv_get_delete_preview(self, boundaries, *, using):
+&gt;       assert len(boundaries) == 2, "Independent field owners must survive into the request provider"
+E       AssertionError: Independent field owners must survive into the request provider
+E       assert 1 == 2
+E        +  where 1 = len((DeletePreviewBoundary(kind='on_delete', model=&lt;class 'tests.test1.test_delete_inspection.owner_graph.&lt;locals&gt;.Root'&gt;, field_name='target', using='default', source_pks=(1,)),))
+
+tests/test1/test_delete_inspection.py:86: AssertionError</failure></testcase><testcase classname="tests.test1.test_delete_inspection" name="test_boundary_field_owner_request[none-False-True-First]" time="0.029"><failure message="AssertionError: Independent field owners must survive into the request provider&#10;assert 1 == 2&#10; +  where 1 = len((DeletePreviewBoundary(kind='on_delete', model=&lt;class 'tests.test1.test_delete_inspection.owner_graph.&lt;locals&gt;.Root'&gt;, field_name='target', using='default', source_pks=(1,)),))">owner_graph = namespace(Root=&lt;class 'tests.test1.test_delete_inspection.owner_graph.&lt;locals&gt;.Root'&gt;, First=&lt;class 'tests.test1.test_...e_inspection.owner_graph.&lt;locals&gt;.RootDelete'&gt;, client=&lt;django.test.client.Client object at 0x7840b91be870&gt;, events=[])
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7840b9b2b260&gt;
+owner = 'First', modal = True, details = False, block = 'none'
+
+    @pytest.mark.parametrize("owner", ["First", "Second"])
+    @pytest.mark.parametrize("modal", [False, True])
+    @pytest.mark.parametrize("details", [False, True])
+    @pytest.mark.parametrize("block", ["none", "native", "provider"])
+    def test_boundary_field_owner_request(owner_graph, monkeypatch, owner, modal, details, block):
+        from lxml import html
+    
+        g = owner_graph
+        root = g.Root.objects.create()
+        g.First.objects.create(target=root)
+        g.Second.objects.create(target=root)
+        monkeypatch.setattr(g.view, "cv_attested_owner", getattr(g, owner))
+        monkeypatch.setattr(g.view, "cv_show_related_objects", details)
+        monkeypatch.setattr(g.view, "cv_provider_block", block == "provider")
+        if block == "native":
+            g.Blocker.objects.create(target=root)
+        url = f"/field_owner/{root.pk}/delete/"
+        headers = {"X-CV-Modal": "true"} if modal else {}
+&gt;       for response in (g.client.get(url, headers=headers), g.client.post(url, {}, headers=headers)):
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test1/test_delete_inspection.py:182: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/test/client.py:1127: in get
+    response = super().get(
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/test/client.py:475: in get
+    return self.generic(
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/test/client.py:671: in generic
+    return self.request(**r)
+           ^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/test/client.py:1090: in request
+    self.check_exception(response)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/test/client.py:805: in check_exception
+    raise exc_value
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/core/handlers/exception.py:55: in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/core/handlers/base.py:198: in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/views/generic/base.py:106: in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/contrib/auth/mixins.py:110: in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/view/base.py:228: in dispatch
+    response = super().dispatch(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/views/delete.py:44: in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/views/generic/base.py:145: in dispatch
+    return handler(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/views/generic/detail.py:113: in get
+    context = self.get_context_data(object=self.object)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/views/delete.py:269: in get_context_data
+    inspection = self._cv_inspect_deletion()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/views/delete.py:178: in _cv_inspect_deletion
+    contributions = self.cv_get_delete_preview(inspection.boundaries, using=using)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;tests.test1.test_delete_inspection.owner_graph.&lt;locals&gt;.RootDelete object at 0x7840b9b1df40&gt;
+boundaries = (DeletePreviewBoundary(kind='on_delete', model=&lt;class 'tests.test1.test_delete_inspection.owner_graph.&lt;locals&gt;.Root'&gt;, field_name='target', using='default', source_pks=(1,)),)
+using = 'default'
+
+    def cv_get_delete_preview(self, boundaries, *, using):
+&gt;       assert len(boundaries) == 2, "Independent field owners must survive into the request provider"
+E       AssertionError: Independent field owners must survive into the request provider
+E       assert 1 == 2
+E        +  where 1 = len((DeletePreviewBoundary(kind='on_delete', model=&lt;class 'tests.test1.test_delete_inspection.owner_graph.&lt;locals&gt;.Root'&gt;, field_name='target', using='default', source_pks=(1,)),))
+
+tests/test1/test_delete_inspection.py:86: AssertionError</failure></testcase><testcase classname="tests.test1.test_delete_inspection" name="test_boundary_field_owner_request[none-True-False-First]" time="0.030"><failure message="AssertionError: Independent field owners must survive into the request provider&#10;assert 1 == 2&#10; +  where 1 = len((DeletePreviewBoundary(kind='on_delete', model=&lt;class 'tests.test1.test_delete_inspection.owner_graph.&lt;locals&gt;.Root'&gt;, field_name='target', using='default', source_pks=(1,)),))">owner_graph = namespace(Root=&lt;class 'tests.test1.test_delete_inspection.owner_graph.&lt;locals&gt;.Root'&gt;, First=&lt;class 'tests.test1.test_...e_inspection.owner_graph.&lt;locals&gt;.RootDelete'&gt;, client=&lt;django.test.client.Client object at 0x7840b9af6cc0&gt;, events=[])
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7840b9b2ab10&gt;
+owner = 'First', modal = False, details = True, block = 'none'
+
+    @pytest.mark.parametrize("owner", ["First", "Second"])
+    @pytest.mark.parametrize("modal", [False, True])
+    @pytest.mark.parametrize("details", [False, True])
+    @pytest.mark.parametrize("block", ["none", "native", "provider"])
+    def test_boundary_field_owner_request(owner_graph, monkeypatch, owner, modal, details, block):
+        from lxml import html
+    
+        g = owner_graph
+        root = g.Root.objects.create()
+        g.First.objects.create(target=root)
+        g.Second.objects.create(target=root)
+        monkeypatch.setattr(g.view, "cv_attested_owner", getattr(g, owner))
+        monkeypatch.setattr(g.view, "cv_show_related_objects", details)
+        monkeypatch.setattr(g.view, "cv_provider_block", block == "provider")
+        if block == "native":
+            g.Blocker.objects.create(target=root)
+        url = f"/field_owner/{root.pk}/delete/"
+        headers = {"X-CV-Modal": "true"} if modal else {}
+&gt;       for response in (g.client.get(url, headers=headers), g.client.post(url, {}, headers=headers)):
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test1/test_delete_inspection.py:182: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/test/client.py:1127: in get
+    response = super().get(
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/test/client.py:475: in get
+    return self.generic(
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/test/client.py:671: in generic
+    return self.request(**r)
+           ^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/test/client.py:1090: in request
+    self.check_exception(response)
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/test/client.py:805: in check_exception
+    raise exc_value
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/core/handlers/exception.py:55: in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/core/handlers/base.py:198: in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/views/generic/base.py:106: in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/contrib/auth/mixins.py:110: in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/view/base.py:228: in dispatch
+    response = super().dispatch(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/views/delete.py:44: in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/views/generic/base.py:145: in dispatch
+    return handler(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.nox/crispy_floor-3-12-django-6-0/lib/python3.12/site-packages/django/views/generic/detail.py:113: in get
+    context = self.get_context_data(object=self.object)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/views/delete.py:269: in get_context_data
+    inspection = self._cv_inspect_deletion()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/crud_views/lib/views/delete.py:178: in _cv_inspect_deletion
+    contributions = self.cv_get_delete_preview(inspection.boundaries, using=using)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;tests.test1.test_delete_inspection.owner_graph.&lt;locals&gt;.RootDelete object at 0x7840b9b942f0&gt;
+boundaries = (DeletePreviewBoundary(kind='on_delete', model=&lt;class 'tests.test1.test_delete_inspection.owner_graph.&lt;locals&gt;.Root'&gt;, field_name='target', using='default', source_pks=(1,)),)
+using = 'default'
+
+    def cv_get_delete_preview(self, boundaries, *, using):
+&gt;       assert len(boundaries) == 2, "Independent field owners must survive into the request provider"
+E       AssertionError: Independent field owners must survive into the request provider
+E       assert 1 == 2
+E        +  where 1 = len((DeletePreviewBoundary(kind='on_delete', model=&lt;class 'tests.test1.test_delete_inspection.owner_graph.&lt;locals&gt;.Root'&gt;, field_name='target', using='default', source_pks=(1,)),))
+
+tests/test1/test_delete_inspection.py:86: AssertionError</failure></testcase></testsuite></testsuites>

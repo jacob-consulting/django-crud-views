@@ -1,0 +1,41 @@
+06-js-verify: node v24.21.0 (/home/alex/.nvm/versions/node/v24.21.0/bin/node); npm 11.19.0 (/home/alex/.nvm/versions/node/v24.21.0/lib/node_modules/npm/bin/npm-cli.js); lock sha256 567bff553002a1452d08db94660a206507d70df9711cdd11fd82ee51f4175d2e; 71 installed packages match the lock, 72 engine ranges satisfied; 25 optional packages for other platforms skipped; jquery@3.7.1 jsdom@30.1.2 vitest@5.0.3
+
+> django-crud-views-js-tests@1.0.0 test
+> vitest run tests/js/modal.test.js -t already visible modal
+
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.js:1:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.3 /home/alex/projects/alex/django-crud-views
+
+ ❯ tests/js/modal.test.js (53 tests | 1 failed | 52 skipped) 165ms
+   ❯ modal focus lifecycle (22)
+     × recovers focus when an already visible modal navigates to replacement content 159ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/js/modal.test.js > modal focus lifecycle > recovers focus when an already visible modal navigates to replacement content
+AssertionError: expected '' to be 'next-field' // Object.is equality
+
+- Expected
++ Received
+
+- next-field
+
+ ❯ tests/js/modal.test.js:530:43
+    528|         window.cv.cvModalOpen('/next', '', content.querySelector('inpu…
+    529|         await loaded;
+    530|         expect(document.activeElement.id).toBe('next-field');
+       |                                           ^
+    531|     });
+    532|     it('ignores stale hidden callbacks after a new open and releases p…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 52 skipped (53)
+   Start at  08:43:11
+   Duration  1.08s (environment 61%, tests 18%, transform 11%, setup 8%, import 2%)
+

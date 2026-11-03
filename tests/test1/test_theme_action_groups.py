@@ -242,7 +242,7 @@ def test_same_prepared_filter_reads_live_classes_and_deepcopy():
         assert filter_group(render_filter(helper)).classes == {"mb-3", "authored", "project"}
     for copied in (helper, deepcopy(helper)):
         assert filter_group(render_filter(copied)).classes == {"mb-3", "authored", "second"}
-        assert render_filter(copied) == render_filter(copied)
+        assert render_filter(copied) == render_filter(copied)  # NOSONAR S5863: renders twice to prove determinism
         assert copied._cv_actions.css_class == "authored"
     assert helper._cv_actions is group
     group.css_class = None

@@ -35,7 +35,7 @@ function resolveSource(operand, {root = ROOT, env = process.env} = {}) {
     assert.equal(selected, expected, 'delivered source does not match recorded root');
     for (const key of ['CV_THEME_SOURCE', 'CV_PACK_SOURCE']) if (key in env) assert.equal(absolute(env[key], key), expected, `conflicting ${key}`);
     assert(fs.statSync(selected).isDirectory(), 'recorded companion source missing');
-    const git = args => cp.execFileSync('git', ['-C', selected, ...args], {encoding: 'utf8', shell: false}).trim();
+    const git = args => cp.execFileSync('git', ['-C', selected, ...args], {encoding: 'utf8', shell: false}).trim(); // NOSONAR S4036: test harness
     assert.equal(git(['rev-parse', '--show-toplevel']), fs.realpathSync(selected));
     assert.equal(git(['remote', 'get-url', 'origin']), recorded.origin, 'source origin mismatch');
     assert.equal(git(['rev-parse', `${recorded.revision}^{commit}`]), recorded.revision, 'source revision mismatch');
@@ -86,7 +86,7 @@ function atomicJSON(target, value) {
 }
 function canonical(value) {
     if(Array.isArray(value))return value.map(canonical);
-    if(value && typeof value==='object')return Object.fromEntries(Object.keys(value).sort().map(k=>[k,canonical(value[k])]));
+    if(value && typeof value==='object')return Object.fromEntries(Object.keys(value).sort().map(k=>[k,canonical(value[k])])); // NOSONAR S2871: test harness
     return value;
 }
 function commandRecord(argv,cwd,exit_code,stdout,stderr) {
@@ -295,7 +295,7 @@ async function conditionalFormset(page,base,report) {
         check(record,`${route}-conditional-off`,await contact.isDisabled() && !await contact.isVisible());
         await page.locator('[name=enabled]').check();
         check(record,`${route}-conditional-on`,!await contact.isDisabled() && await contact.isVisible());
-        const total=page.locator('input[name^="books-"][name$="-TOTAL_FORMS"]').first();const before=+(await total.inputValue());
+        const total=page.locator('input[name^="books-"][name$="-TOTAL_FORMS"]').first();const before=+(await total.inputValue()); // NOSONAR S2757: test harness
         const prefix=(await total.getAttribute('name')).slice(0,-'-TOTAL_FORMS'.length);
         await page.locator('.cv-form-ctrl-add[cv-data-formset-form-prefix^="books-"]').first().click();
         await page.waitForFunction(({prefix,before})=>+document.querySelector(`[name="${prefix}-TOTAL_FORMS"]`).value===before+1,{prefix,before});
@@ -422,7 +422,7 @@ async function main() {
         try {if(browser) await bounded(browser.close(),5000,'Browser cleanup timeout'); report.cleanup.browserClosed=true;}
         catch(error) {report.cleanup.browserError=error.message;report.status='failed';process.exitCode=1;}
         if(child && child.exitCode===null && child.signalCode===null)child.kill('SIGTERM');
-        if(exit) {try {report.cleanup.serverExit=await bounded(exit,5000,'Server cleanup timeout');} catch {child.kill('SIGKILL');report.cleanup.serverExit=await exit;}}
+        if(exit) {try {report.cleanup.serverExit=await bounded(exit,5000,'Server cleanup timeout');} catch {child.kill('SIGKILL');report.cleanup.serverExit=await exit;}} // NOSONAR S6544: test harness
         report.serverLog=log; fs.rmSync(work,{recursive:true,force:true});report.cleanup.temporaryRemoved=!fs.existsSync(work);
         if(report.preserved) {
             try {

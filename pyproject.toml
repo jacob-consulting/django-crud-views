@@ -124,7 +124,7 @@ only-include = [
 
 [tool.ruff]
 line-length = 120
-extend-exclude = ["superpowers/**"]
+extend-exclude = ["superpowers/**", ".planning/**"]
 
 [tool.ruff.format]
 quote-style = "double"

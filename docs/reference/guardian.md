@@ -310,6 +310,7 @@ before the core view class in the inheritance list. For example:
 from crud_views.lib.views import UpdateViewPermissionRequired
 from crud_views_guardian.lib.mixins import GuardianObjectPermissionMixin, GuardianParentPermissionMixin
 
+
 class BookUpdateView(GuardianParentPermissionMixin, GuardianObjectPermissionMixin, UpdateViewPermissionRequired):
     cv_viewset = cv_book
     form_class = BookForm

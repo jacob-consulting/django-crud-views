@@ -1,6 +1,7 @@
 """Real page/modal owners, template provenance and enforced-CSRF write contracts."""
 
 import json
+from importlib import import_module
 from pathlib import Path
 from types import ModuleType
 
@@ -22,7 +23,11 @@ pytestmark = pytest.mark.django_db
 MODES = [(kind, False) for kind in ("create", "update", "custom", "delete", "workflow")] + [
     (kind, True) for kind in ("custom", "delete", "workflow")
 ]
-ROOT = Path(__file__).resolve().parents[2] / "src"
+
+
+def _package_template(name):
+    """Path of a package template wherever the package is installed (src/ or site-packages)."""
+    return Path(import_module(name.split("/")[0]).__file__).resolve().parent / "templates" / name
 
 
 def _snapshot():
@@ -41,7 +46,7 @@ def _workflow_templates(response, modal, choices, record_property):
         else ["crud_views_workflow/view_workflow.content.html", "crud_views_workflow/view_workflow.action.html"]
     )
     for name in expected:
-        assert Path(actual[name]).resolve() == ROOT / name.split("/")[0] / "templates" / name
+        assert Path(actual[name]).resolve() == _package_template(name)
     if modal:
         assert "crud_views/modal/content.html" in actual
         assert "crud_views_workflow/view_workflow.content.html" not in actual

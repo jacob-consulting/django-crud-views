@@ -37,12 +37,12 @@ const CASE_IDS = ['unchecked', 'blocked', 'close', 'escape', 'removed-opener', '
 function checkEvidence(file) {
     const record = JSON.parse(fs.readFileSync(file));
     assert(record.completed && record.passed && !record.error, 'Run incomplete or failed');
-    assert.deepEqual(Object.keys(record.sourceHashes).sort(), inputs.slice().sort(), 'Wrong source input set');
+    assert.deepEqual(Object.keys(record.sourceHashes).sort(), inputs.slice().sort(), 'Wrong source input set'); // NOSONAR S2871: test harness
     assert.deepEqual(record.sourceHashes, hashes(), 'Stale source hashes');
     assert(record.runtime.node && record.runtime.browser && record.runtime.python && record.runtime.playwrightPath && record.runtime.chromiumPath, 'Missing runtime');
     assert(Array.isArray(record.command) && record.command.length >= 2 && record.revision && record.captured, 'Missing command/revision');
     assert(Array.isArray(record.pageErrors) && record.pageErrors.length === 0, 'Page errors');
-    assert.deepEqual(record.cases.map(c => c.id).sort(), CASE_IDS.slice().sort(), 'Missing/duplicate case');
+    assert.deepEqual(record.cases.map(c => c.id).sort(), CASE_IDS.slice().sort(), 'Missing/duplicate case'); // NOSONAR S2871: test harness
     for (const result of record.cases) {
         assert(result.passed && result.assertions.length >= 2 && result.assertions.every(a => a.passed === true && a.name), `Failed assertions: ${result.id}`);
         const names = result.assertions.map(a => a.name);
@@ -66,7 +66,7 @@ function checkEvidence(file) {
     console.log('FOCUS_EVIDENCE_OK');
 }
 async function main() {
-    const record = {captured: new Date().toISOString(), revision: cp.execFileSync('git', ['rev-parse', 'HEAD'], {encoding: 'utf8'}).trim(),
+    const record = {captured: new Date().toISOString(), revision: cp.execFileSync('git', ['rev-parse', 'HEAD'], {encoding: 'utf8'}).trim(), // NOSONAR S4036: test harness
         sourceHashes: hashes(), command: [process.execPath, __filename, ...argv], runtime: {node: process.version, nodePath: process.execPath},
         completed: false, passed: false, cases: [], pageErrors: []};
     let child, browser;
@@ -183,7 +183,7 @@ async function main() {
                         await page.evaluate(({shell, code}) => {
                             document.getElementById('cv-modal').outerHTML = shell;
                             // Execute the published adapter, with no Bootstrap involvement.
-                            new Function('cv', code)(cv); window.bootstrap = undefined;
+                            new Function('cv', code)(cv); window.bootstrap = undefined; // NOSONAR S1523: test harness
                         }, {shell, code});
                     }
                     await page.evaluate(native => {

@@ -4,6 +4,6 @@
     {% endif %}
 
     <div class="{{ field_class }}">
-        {{ fields_output|safe }}
+        {{ fields_output|safe }}{# NOSONAR S5247: crispy's rendered, already-escaped buttons, as in crispy-bootstrap5's formactions.html #}
     </div>
 </div>

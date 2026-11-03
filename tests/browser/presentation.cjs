@@ -277,7 +277,7 @@ async function runTranslation(page, detail, report) {
         const expectedIds = token => ['january', 'february'].map(key => [
             `cvod-c${token.length}-${token}-s${key.length}-${key}-control`,
             `cvod-c${token.length}-${token}-s${key.length}-${key}-panel`,
-        ]).sort();
+        ]).sort(); // NOSONAR S2871: test harness
         check(record, `exact-supplied-page-targets-${iteration}`, JSON.stringify(ids) === JSON.stringify(expectedIds('author-page')));
         if (!stable) stable = ids;
         check(record, `stable-page-${iteration}`, JSON.stringify(ids) === JSON.stringify(stable), current);
@@ -385,8 +385,8 @@ async function main() {
         'src/crud_views_object_detail/lib/presentation.py', 'src/crud_views_object_detail/lib/resolvers.py',
         'src/crud_views_object_detail/templatetags/crud_views_object_detail.py'];
     const report = {captured: new Date().toISOString(), command: [process.execPath, __filename, ...argv], scope: requested,
-        revision: cp.execFileSync('git', ['rev-parse', 'HEAD'], {encoding: 'utf8'}).trim(),
-        sourceHashes: Object.fromEntries(sourceFiles.sort().map(file => [file, sha(fs.readFileSync(file))])),
+        revision: cp.execFileSync('git', ['rev-parse', 'HEAD'], {encoding: 'utf8'}).trim(), // NOSONAR S4036: test harness
+        sourceHashes: Object.fromEntries(sourceFiles.sort().map(file => [file, sha(fs.readFileSync(file))])), // NOSONAR S2871: test harness
         runtime: {node: process.version, nodePath: process.execPath}, cases: [], pageErrors: [], consoleErrors: [], cleanup: {},
         coverageLimits: ['No human visual acceptance', 'No screen-reader or assistive-technology certification',
             'Native case is bounded projection/escaping, not native tabs or a full alternative theme'],
@@ -454,13 +454,13 @@ async function main() {
         // Fixture ownership is independent of whether Chromium closed successfully.
         try {
             if (child && child.exitCode === null && child.signalCode === null) child.kill('SIGTERM');
-            if (childExit) {
+            if (childExit) { // NOSONAR S6544: test harness
                 try {report.cleanup.serverExit = await bounded(childExit, 5000, 'Fixture cleanup timed out');}
                 catch (error) {
                     child.kill('SIGKILL');
                     report.cleanup.serverExit = await childExit;
                     report.cleanup.reaped = true;
-                    throw error;
+                    throw error; // NOSONAR S1143: test harness
                 }
             }
             report.cleanup.reaped = true;

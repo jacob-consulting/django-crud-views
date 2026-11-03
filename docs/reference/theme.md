@@ -138,12 +138,14 @@ def ready(self):
     from crud_views.lib.view.label_mode import register_label_mode_defaults
 
     register_label_mode_defaults({"form": "both"})
-    register_button_classes({
-        "form:actions": "d-flex flex-wrap gap-2",
-        "form:filter-actions": "d-flex flex-wrap gap-1",
-        "alert:dismissible": "notice-dismissible",
-        "alert:close": "notice-close",
-    })
+    register_button_classes(
+        {
+            "form:actions": "d-flex flex-wrap gap-2",
+            "form:filter-actions": "d-flex flex-wrap gap-1",
+            "alert:dismissible": "notice-dismissible",
+            "alert:close": "notice-close",
+        }
+    )
 ```
 
 Supply CSS for the example notice classes. Later registration calls win per key; app `ready()` order follows

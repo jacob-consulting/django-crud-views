@@ -610,12 +610,14 @@ def test_view_and_viewset_maps_reach_the_leaf(monkeypatch, instance):
 
 
 @pytest.mark.django_db
-def test_view_map_reaches_the_endpoint(monkeypatch, client_user_author_add):
+def test_view_map_reaches_the_endpoint(monkeypatch, client_user_author_add, user_author_add):
     from django.urls import reverse
     from lxml import html as lxml_html
 
+    from tests.lib.helper.user import user_viewset_permission
     from tests.test1.app.views import AuthorCreateView
 
+    user_viewset_permission(user_author_add, cv_author, "view")
     _no_form_maps(monkeypatch)
     monkeypatch.setattr(AuthorCreateView, "cv_form_actions_label_mode", {"submit": "icon"})
     page = client_user_author_add.get(reverse(cv_author.get_router_name("create"))).content.decode()

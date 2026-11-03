@@ -5,6 +5,7 @@ from django.template import Context, Template
 from django.urls import reverse
 
 from tests.lib.helper.user import user_viewset_permission
+from tests.test1.test_cancel_navigation import checked_action_url
 
 
 @pytest.fixture
@@ -35,7 +36,7 @@ def test_url_returned_when_access(client_author_view_change, cv_author, author_d
     view, request = _detail_view(client_author_view_change, cv_author, author_douglas_adams)
     expected = reverse(cv_author.get_router_name("update"), kwargs={"pk": author_douglas_adams.pk})
     out = _render(view, request, "{% cv_context_url 'update' as u %}{{ u|default:'NONE' }}")
-    assert out == expected
+    assert checked_action_url(out, view) == expected
 
 
 @pytest.mark.django_db

@@ -90,6 +90,10 @@ class CrispyFormMixin:
         }
 
     def get_cancel_button(self) -> Button | None:
+        if self.cv_view is None:
+            # Standalone helpers may supply a complete kwargs hook without a view.
+            # Bound views still resolve policy first, so custom kwargs cannot undo denial.
+            return Button(**self.get_cancel_button_kwargs())
         context = self._cv_get_cancel_button_context()
         if context["cv_url"] is None:
             return None

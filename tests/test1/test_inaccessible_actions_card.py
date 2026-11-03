@@ -102,9 +102,13 @@ def test_child_card_action_disabled_for_state(client_user_publisher_card_149, cv
 def test_card_action_truthy_non_bool_access_renders_normal_link(
     client_user_author_view, author_douglas_adams, monkeypatch
 ):
+    from tests.test1.test_cancel_navigation import checked_action_url
+
     monkeypatch.setattr(AuthorUpdateView, "cv_has_access", classmethod(lambda cls, user, obj=None: 1))
-    _, card = _card(client_user_author_view, "/author/card/")
+    response = client_user_author_view.get("/author/card/")
+    assert response.status_code == 200
+    card = lxml_html.fromstring(response.content).cssselect(".card.mb-3")[0]
     (btn,) = _by_text(card, "Edit")
-    assert btn.get("href") == f"/author/{author_douglas_adams.pk}/update/"
+    assert checked_action_url(btn.get("href"), response.context["view"]) == f"/author/{author_douglas_adams.pk}/update/"
     assert "disabled" not in btn.get("class").split()
     assert btn.get("disabled") is None

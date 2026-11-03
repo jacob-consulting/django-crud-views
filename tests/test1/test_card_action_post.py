@@ -4,6 +4,7 @@ from lxml import html
 
 from crud_views.lib.view import CardAction
 from tests.lib.helper.user import user_viewset_permission
+from tests.test1.test_cancel_navigation import checked_action_url
 
 
 @pytest.fixture
@@ -82,7 +83,7 @@ def test_card_modal_action_renders_modal_trigger(
     modal_trigger = card.cssselect("a[data-cv-modal='true']")
     assert len(modal_trigger) == 1
     assert modal_trigger[0].get("data-cv-modal-size") == "lg"
-    assert modal_trigger[0].get("href") == f"/author/{pk}/delete/"
+    assert checked_action_url(modal_trigger[0].get("href"), response.context["view"]) == f"/author/{pk}/delete/"
 
     # A modal action is neither a submit-form trigger nor does it emit a hidden form
     assert len(card.cssselect("a[data-cv-action='submit-form']")) == 0

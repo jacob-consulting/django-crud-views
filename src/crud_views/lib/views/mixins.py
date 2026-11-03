@@ -8,7 +8,7 @@ from urllib.parse import parse_qs, urlencode
 from django.contrib import messages
 from django.core.exceptions import BadRequest
 from django.db import transaction
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, QueryDict
 from django.utils.text import capfirst
 from django.utils.translation import gettext as _
 from django_filters.views import FilterView
@@ -18,6 +18,7 @@ from crud_views.lib.check import Check, CheckTemplateOrCode
 from crud_views.lib.session import SessionData
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view.base import cv_is_modal_request
+from crud_views.lib.view.cancel import clean_navigation_query
 
 
 class CrudViewProcessFormMixin:
@@ -26,6 +27,8 @@ class CrudViewProcessFormMixin:
     Note ProcessFormView.post is overridden.
     Why? Because we need a more detailed handling of the post method.
     """
+
+    cv_cancel_keys = "auto"
 
     def post(self, request, *args, **kwargs):  # NOSONAR S1172: Django View.post signature
         """
@@ -361,13 +364,22 @@ class ListViewTableFilterMixin(FilterView):
             https://github.com/LorenzoProd/django-persistent-filters
         """
 
+        self._cv_consume_cancel_restore(request)
         if not self.cv_filter_persistence:
             return super().get(request, *args, **kwargs)
 
         with SessionData.from_view(self) as sd:
             # get stored query string and request query string
-            stored_query_string = sd.get(self.cv_session_key_querystring, "")
+            stored_query_string = clean_navigation_query(QueryDict(sd.get(self.cv_session_key_querystring, ""))).urlencode()
             query_string = self.request.META["QUERY_STRING"]
+
+            if getattr(request, "_cv_cancel_restored", False):
+                if query_string:
+                    sd[self.cv_session_key_querystring] = query_string
+                else:
+                    with contextlib.suppress(KeyError):
+                        del sd[self.cv_session_key_querystring]
+                stored_query_string = ""
 
             # reset filter ?
             qs = parse_qs(query_string)

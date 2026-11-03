@@ -14,6 +14,8 @@ if TYPE_CHECKING:
 from typing import Self
 
 from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.core.exceptions import ImproperlyConfigured
+from django.http import Http404
 from django.db import router, transaction
 from django.db.models import Model
 from django.shortcuts import get_object_or_404
@@ -48,6 +50,10 @@ from .action_menu import (
 )
 from .buttons import ContextButton, context_button_checks, cv_form_icon_mode_checks, cv_icon_mode_checks
 from .context import ViewContext
+from .cancel import (
+    capture_cancel_state, clean_navigation_query, effective_cancel_keys,
+    is_cancel_list_destination, navigation_params, read_cancel_state,
+)
 from .label_mode import default_label_mode, form_label_mode, label_mode_check
 from .meta import CrudViewMetaClass
 from .variant import variant_check
@@ -79,7 +85,7 @@ class CrudView(metaclass=CrudViewMetaClass):
     cv_success_key: str | None = "list"  # success url, defaults to list
     cv_success_keys: list[str] | None = None  # origin keys the success redirect may return to; None = static
     cv_cancel_key: str | None = "list"  # cancel url, defaults to list
-    cv_cancel_keys: list[str] | None = None  # origin keys the cancel button may return to; None = static
+    cv_cancel_keys: list[str] | str | None = None  # "auto" on forms; None/[] = static
     cv_atomic: bool = True  # run the POST write phase in transaction.atomic(); see request_lifecycle.md
 
     cv_extends_template: str | None = None  # template to extend
@@ -173,7 +179,7 @@ class CrudView(metaclass=CrudViewMetaClass):
         yield CheckExpression(
             context=cls,
             id="E252",
-            expression=cls.cv_origin_keys_registered(cls.cv_cancel_keys),
+            expression=cls.cv_cancel_keys == "auto" or cls.cv_origin_keys_registered(cls.cv_cancel_keys),
             msg=f"cv_cancel_keys entries must be registered view keys, got {cls.cv_cancel_keys!r}",
         )
         yield CheckExpression(
@@ -225,10 +231,20 @@ class CrudView(metaclass=CrudViewMetaClass):
         return super().get_template_names()
 
     def dispatch(self, request, *args, **kwargs):
+        self._cv_consume_cancel_restore(request)
         response = super().dispatch(request, *args, **kwargs)
         if self.cv_modal:
             patch_vary_headers(response, ["X-CV-Modal"])
         return response
+
+    def _cv_consume_cancel_restore(self, request):
+        if request.method != "GET" or not is_cancel_list_destination(type(self)):
+            return
+        if hasattr(request, "_cv_cancel_restored"):
+            return
+        request._cv_cancel_restored = request.GET.getlist(navigation_params()[2]) == ["1"]
+        request.GET = clean_navigation_query(request.GET)
+        request.META["QUERY_STRING"] = request.GET.urlencode()
 
     def cv_get_db_alias(self) -> str:
         """Database alias of the POST write phase; follows DATABASE_ROUTERS for the ViewSet's model."""
@@ -517,7 +533,11 @@ class CrudView(metaclass=CrudViewMetaClass):
     @classmethod
     def cv_origin_keys_registered(cls, keys: list[str] | None) -> bool:
         """True when every origin key is a registered sibling key ("list" may fall back to "card")."""
-        if not keys or cls.cv_viewset is None:
+        if keys is None:
+            return True
+        if not isinstance(keys, list) or any(not isinstance(key, str) for key in keys):
+            return False
+        if cls.cv_viewset is None:
             return True
         viewset = cls.cv_viewset
         return all(
@@ -750,14 +770,12 @@ class CrudView(metaclass=CrudViewMetaClass):
             return None
 
     def cv_get_cancel_key(self, obj: Model | None = None) -> str | None:
-        """The key the cancel button returns to: a validated origin, else cv_cancel_key.
-
-        obj defaults to the view's own object so templates can call this without arguments
-        ({% cv_context_url view.cv_get_cancel_key as url %}).
-        """
+        """Resolve only a sibling key; use cv_get_cancel_url for cancel rendering."""
         if obj is None:
             obj = getattr(self, "object", None)
-        allowed = self.cv_get_allowed_origin_cls(self.cv_cancel_keys)
+        if not self.cv_object:
+            obj = None
+        allowed = self.cv_get_allowed_origin_cls(effective_cancel_keys(self))
         if allowed is None:
             return self.cv_cancel_key
         origin, cls = allowed
@@ -770,6 +788,63 @@ class CrudView(metaclass=CrudViewMetaClass):
         if cls.cv_object and (obj is None or unsaved):
             return self.cv_cancel_key
         return origin
+
+    @classmethod
+    def _cv_cancel_target_available(cls, user, obj, rendering_view):
+        target_obj = obj if cls.cv_object else None
+        if not cls.cv_has_access(user, target_obj):
+            return False
+        action_obj = target_obj
+        if not cls.cv_object and cls.cv_viewset.has_parent:
+            try:
+                action_obj = rendering_view.cv_get_parent_object()
+            except Http404:
+                return False
+        return cls._cv_action_enabled_for_rendering(user, action_obj, rendering_view)
+
+    def cv_get_cancel_url(self, obj=None, user=None, request=None):
+        """Return an accessible sibling URL with captured query state, or None."""
+        request = request if request is not None else getattr(self, "request", None)
+        if request is None:
+            raise ImproperlyConfigured("cv_get_cancel_url requires a request")
+        user = request.user if user is None else user
+        if obj is None:
+            obj = getattr(self, "object", None)
+        if not self.cv_object or getattr(getattr(obj, "_state", None), "adding", False):
+            obj = None
+        # A request override is local; do not mutate the bound view or cache across requests.
+        from copy import copy
+        owner = copy(self)
+        owner.request = request
+        capture = read_cancel_state(owner) if effective_cancel_keys(self) else None
+        if capture and capture.origin in effective_cancel_keys(self):
+            try:
+                target = self.cv_get_cls(capture.origin)
+            except ViewSetKeyFoundError:
+                target = None
+            if target and (not target.cv_object or obj is not None):
+                if target._cv_cancel_target_available(user, obj, owner):
+                    url = self.cv_get_url(capture.origin, obj)
+                    if capture.query is not None:
+                        query = capture.query
+                        if is_cancel_list_destination(target):
+                            query += ("&" if query else "") + urlencode({navigation_params()[2]: "1"})
+                        if query:
+                            url += "?" + query
+                    return url
+        try:
+            target = self.cv_get_cls(self.cv_cancel_key)
+        except ViewSetKeyFoundError as exc:
+            raise ImproperlyConfigured(
+                f"{type(self).__name__}.cv_cancel_key={self.cv_cancel_key!r}: configure an existing destination"
+            ) from exc
+        if target.cv_object and obj is None:
+            raise ImproperlyConfigured(
+                f"{type(self).__name__}.cv_cancel_key={self.cv_cancel_key!r}: configure an existing usable destination"
+            )
+        if not target._cv_cancel_target_available(user, obj, owner):
+            return None
+        return self.cv_get_url(self.cv_cancel_key, obj)
 
     def cv_get_success_key(self, obj: Model | None = None) -> str | None:
         """The key the success redirect goes to: a validated origin, else cv_success_key.
@@ -793,7 +868,7 @@ class CrudView(metaclass=CrudViewMetaClass):
         A card page on a ViewSet without a list view counts as the "list" origin (the same
         container fallback ViewSet.get_view_class applies when resolving the key).
         """
-        keys = (*(cls.cv_cancel_keys or ()), *(cls.cv_success_keys or ()))
+        keys = (*effective_cancel_keys(cls), *(cls.cv_success_keys or ()))
         if self.cv_key in keys:
             origin = self.cv_key
         elif self.cv_key == "card" and "list" in keys and not self.cv_viewset.is_view_registered("list"):
@@ -811,16 +886,25 @@ class CrudView(metaclass=CrudViewMetaClass):
         url = self.cv_get_url(key=key, obj=obj)  # reverse() only, never has a query string
         origin = self.cv_get_link_origin_key(cls)
         if origin:
-            url += "?" + urlencode({crud_views_settings.origin_param: origin})
+            origin_name, token_name, _ = navigation_params()
+            params = {origin_name: origin}
+            if origin in effective_cancel_keys(cls):
+                token = capture_cancel_state(self, origin)
+                if token is not None:
+                    params[token_name] = token
+                elif origin in (cls.cv_success_keys or ()):
+                    params[token_name] = "invalid"
+                else:
+                    params = {}
+            if params:
+                url += "?" + urlencode(params)
         return url
 
     def get_cancel_button_context(self, obj: Model | None = None, user: User | None = None, request=None) -> dict:
         """
         Get the context for the cancel button
         """
-        if obj is None:
-            obj = getattr(self, "object", None)
-        url = self.cv_get_url(key=self.cv_get_cancel_key(obj), obj=obj)
+        url = self.cv_get_cancel_url(obj=obj, user=user, request=request)
         return {"cv_url": url, "cv_action_label": _("Cancel")}
 
     def cv_get_child_url(self, name: str, key: str, obj: Model | None = None) -> str:

@@ -55,7 +55,7 @@ class CrispyFormMixin:
         raise NotImplementedError
 
     def get_form_actions(self) -> FormActions:
-        return _ThemedFormActions(self.get_submit_button(), self.get_cancel_button())
+        return _ThemedFormActions(*[button for button in (self.get_submit_button(), self.get_cancel_button()) if button is not None])
 
     def get_submit_button_kwargs(self) -> dict:
         return {"name": "submit", "value": self.submit_label}
@@ -82,7 +82,9 @@ class CrispyFormMixin:
             "data_cv_cancel_url": url,
         }
 
-    def get_cancel_button(self) -> Button:
+    def get_cancel_button(self) -> Button | None:
+        if self.cv_view.cv_get_cancel_url() is None:
+            return None
         return Button(**self.get_cancel_button_kwargs())
 
 
@@ -142,8 +144,7 @@ class CrispyDeleteForm(CrispyForm):
         helper.layout = Layout(
             Row(Column4("confirm")),
             _ThemedFormActions(
-                self.get_delete_button(),
-                self.get_cancel_button(),
+                *[button for button in (self.get_delete_button(), self.get_cancel_button()) if button is not None],
             ),
         )
         return helper

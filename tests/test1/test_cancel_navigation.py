@@ -45,10 +45,12 @@ def test_emitted_list_update_round_trip(
     monkeypatch.setattr(FilteredAuthors, "cv_viewset", cv_author_origin)
     monkeypatch.setattr(cv_author_origin.get_view_class("update"), "cv_cancel_keys", "auto")
     from tests.test1.app.urls import urlpatterns
+    from django.urls import reverse
 
     before = list(Author.objects.order_by("pk").values())
-    with override_settings(ROOT_URLCONF=type("URLs", (), {"urlpatterns": [path("capture/", FilteredAuthors.as_view()), *urlpatterns]})):
-        response = client_user_author_origin.get("/capture/?last_name=Adams")
+    list_url = reverse(cv_author_origin.get_router_name("list"))
+    with override_settings(ROOT_URLCONF=type("URLs", (), {"urlpatterns": [path(list_url.lstrip("/"), FilteredAuthors.as_view()), *urlpatterns]})):
+        response = client_user_author_origin.get(list_url + "?last_name=Adams")
         assert response.status_code == 200
         view = response.context["view"]
         update = emitted_link(response, view.cv_get_url("update", author_douglas_adams))
@@ -59,9 +61,8 @@ def test_emitted_list_update_round_trip(
         form = client_user_author_origin.get(update)
         cancel = rendered_cancel(form)
         assert parse_qs(urlsplit(cancel).query) == {"last_name": ["Adams"], "cv_from_restore": ["1"]}
-        client_user_author_origin.get("/capture/?last_name=Pratchett")
-        # The fixture-only filtered route shares the registered list's session identity.
-        returned = client_user_author_origin.get("/capture/?" + urlsplit(cancel).query)
+        client_user_author_origin.get(list_url + "?last_name=Pratchett")
+        returned = client_user_author_origin.get(cancel)
         assert list(returned.context["object_list"]) == [author_douglas_adams], "returned records"
         assert SessionData.from_view(returned.context["view"]).get("filter_query_string") == "last_name=Adams"
     assert list(Author.objects.order_by("pk").values()) == before, "Cancel performs no model writes"

@@ -47,17 +47,18 @@ Both inherit from Django's `generic.UpdateView` and `CrudView`.
 | `form_class` | `Form` | — | The form class for the update form |
 | `cv_viewset` | `ViewSet` | — | The ViewSet this view belongs to |
 | `cv_success_key` | `str` | `"list"` | ViewSet key to redirect to after success |
-| `cv_cancel_key` | `str` | `"list"` | ViewSet key the cancel button returns to (static fallback) |
-| `cv_cancel_keys` | `list[str] \| None` | `None` | Origin keys the cancel button may return to dynamically; see [Dynamic cancel target](#dynamic-cancel-target) |
+| `cv_cancel_key` | `str \| None` | `"list"` | ViewSet key the cancel button returns to (static fallback) |
+| `cv_cancel_keys` | `str \| list[str] \| None` | `"auto"` | Origin keys the cancel button may return to dynamically; see [Dynamic cancel target](#dynamic-cancel-target) |
 | `cv_success_keys` | `list[str] \| None` | `None` | Origin keys the success redirect may return to dynamically; see [Dynamic success target](#dynamic-success-target) |
 | `cv_context_actions` | `list[str]` | `["home", "detail", "update", "delete"]` | Actions shown in the header area |
 
 ## Dynamic cancel target
 
-*Available since 0.21.0.*
-
-By default the cancel button always returns to `cv_cancel_key` (`"list"`). With `cv_cancel_keys`
-the button returns to the sibling view the user came from instead:
+Standard form views default to `cv_cancel_keys="auto"`: Cancel returns to an accessible registered
+`list` or `card` origin, and object-based forms also accept `detail`. Detail uses the form's current saved
+object; detail → create is excluded. Explicit lists can allow other registered keys. `None` or `[]`
+selects the static `cv_cancel_key` fallback (default `"list"`, resolving to card when no list exists).
+Successful submission is configured independently:
 
 <!-- cv-sync: library/views.py -->
 ```python
@@ -69,28 +70,111 @@ class AuthorUpdateView(BreadcrumbMixin, CrispyViewMixin, MessageMixin, UpdateVie
     cv_success_keys = ["list", "detail"]  # so does save
 ```
 
-How it works:
+Links into eligible forms carry the origin key plus signed query state: filters, ordering, pagination,
+repeated values and empty values. Per-key value order is preserved. URLs are reversed within the same
+ViewSet and current parent coordinates; no external return path is accepted. See
+[Origin parameter and captured query](settings.md#origin-parameter) for limits and session behavior.
 
-- Links **into** a view with `cv_cancel_keys` carry the current view's key as a query parameter
-  when that key is listed: `/author/<pk>/update/?cv_from=detail` from the detail page,
-  `?cv_from=list` from the list. Links into views without `cv_cancel_keys` or `cv_success_keys`
-  are unchanged. The parameter name is `CRUD_VIEWS_ORIGIN_PARAM` (default `cv_from`, see
-  [Settings](settings.md#origin-parameter)).
-- The view resolves the target with `cv_get_cancel_key()`: the value must match `^[a-z][a-z0-9_]*$`,
-  be listed in `cv_cancel_keys`, be registered on the ViewSet, and, for object views such as `detail`,
-  the current view must have an object (a create view falls back). Anything else falls back to
-  `cv_cancel_key`. The parameter is a **view key**, never a URL, so it cannot redirect elsewhere.
-- The origin survives validation errors: the form posts to `request.get_full_path`, so an invalid
-  submit re-renders with the same cancel target, in full-page and modal mode.
-- System check `viewset.E252` fails at startup when an entry of `cv_cancel_keys` is not a registered
-  view key (`"list"` is accepted when only a card view is registered).
+`view.cv_get_cancel_url(obj=None, user=None, request=None)` returns the accessible destination URL,
+or `None` if neither origin nor fallback is accessible. Omitted arguments use `view.object`,
+`request.user` and `view.request`; a request is required. Core and Guardian destination permissions,
+parent/object rules and action state apply independently of permission to submit the current form.
+Invalid, disallowed or unusable request origins use the configured fallback. If that fallback is
+needed but missing or structurally unusable, runtime raises `ImproperlyConfigured`; startup check
+`viewset.E256` diagnoses the configuration. `viewset.E255` remains the unrelated context-button check.
+`viewset.E252` validates explicit allowed keys (including list-to-card fallback).
+
+The original capture survives invalid submissions because forms post to `request.get_full_path`.
+Supported delete/custom/workflow modal paths keep it through invalid replacements. Create/update
+modal opt-in remains unsupported (`viewset.E251`). Polymorphic selectors forward validated cancel
+state into concrete creation without expanding `cv_success_keys`.
 
 Code that builds sibling links itself (themes, custom columns) should call
 `view.cv_get_link_url(target_cls, key, obj)` instead of `view.cv_get_url(key, obj)` so the link
 carries the origin. On a ViewSet without a list view, the card page counts as the `list` origin,
-the same fallback `cv_get_cancel_key()` and `viewset.E252` already apply.
+the same list-to-card fallback used by `viewset.E252` applies.
 
 Works the same on `CreateView`, `DeleteView`, `CustomFormView` and `CustomFormNoObjectView`.
+
+### Custom Cancel templates
+
+Use the context-taking tag `cv_cancel_url(context, obj=None)` with `view` and `request` in context.
+It delegates to the URL resolver and does not hide configuration errors. An optional object argument
+uses the view object when omitted, empty or unresolved. Preserve your theme classes and translated label:
+
+<!-- cancel-recipe: guarded-template -->
+```django
+{% load crud_views i18n %}
+{% cv_cancel_url as url %}
+{% if url %}<a href="{{ url }}" class="btn btn-secondary">{% translate "Cancel" %}</a>{% endif %}
+```
+
+Keep autoescaping enabled. The old key-only recipe is unsupported for Cancel immediately; migrate
+copied templates using [the migration guide](../migrating-1.0.md#dynamic-cancel-navigation).
+`cv_get_cancel_key()` remains a key helper for other callers; it does not provide the URL-level
+permission omission or captured query contract.
+
+### Explicit cancellation settings
+
+These mixins can precede your standard form view in its bases. Singular `cv_cancel_key=None` means
+the current view as fallback; plural `cv_cancel_keys=None` disables origin selection:
+
+<!-- cancel-recipe: configuration -->
+```python
+class StaticCancelMixin:
+    cv_cancel_keys = None
+    cv_cancel_key = "list"
+
+
+class CurrentViewCancelMixin:
+    cv_cancel_keys = None
+    cv_cancel_key = None
+
+
+class CustomOriginCancelMixin:
+    cv_cancel_keys = ["list", "contact"]  # contact must be registered and usable
+    cv_cancel_key = "list"
+```
+
+### Custom form action groups
+
+`get_cancel_button()` returns `Button | None`. Filter `None` before constructing custom groups or
+layouts; `get_cancel_button_kwargs()` remains a dict customization hook for accessible outcomes.
+This mixin keeps the ordinary submit action and the page-owned form provided by `CrispyModelForm`:
+
+<!-- cancel-recipe: actions -->
+```python
+from crispy_forms.bootstrap import FormActions
+
+
+class CancelAwareActionsMixin:
+    def get_form_actions(self):
+        buttons = [self.get_submit_button(), self.get_cancel_button()]
+        return FormActions(*[button for button in buttons if button is not None])
+```
+
+Place it before your `CrispyModelForm` subclass. For a custom delete helper, use
+`get_delete_button()` for the primary action, keep `helper.form_tag = False`, and apply the same
+filter before adding controls to `Layout`/`FormActions`. Do not wrap the page's existing form again.
+
+<!-- cancel-recipe: delete-helper -->
+```python
+from crispy_forms.bootstrap import FormActions
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout
+
+
+class CancelAwareDeleteHelperMixin:
+    @property
+    def helper(self):
+        helper = FormHelper()
+        helper.form_tag = False
+        buttons = [self.get_delete_button(), self.get_cancel_button()]
+        helper.layout = Layout("confirm", FormActions(*[button for button in buttons if button is not None]))
+        return helper
+```
+
+Place this mixin before your `CrispyDeleteForm` subclass; it keeps the confirmation field and Delete action.
 
 ## Dynamic success target
 
@@ -117,11 +201,8 @@ It shares the origin parameter with `cv_cancel_keys` and resolves it the same wa
 - System check `viewset.E253` fails at startup when an entry of `cv_success_keys` is not a
   registered view key (`"list"` is accepted when only a card view is registered).
 
-!!! note "The list loses its state"
-    Both targets are view keys, never URLs, so returning to the list drops its filter, sort
-    order and page. That is the price of not accepting arbitrary redirect URLs.
-Custom templates that build a back link from the cancel key should use
-`{% cv_context_url view.cv_get_cancel_key as url %}` rather than `view.cv_cancel_key`.
+Save retains its existing key-based redirect behavior; it does not restore Cancel's captured query.
+Cancel query restoration does not change successful-save/deletion redirects or modal redirect headers.
 
 ## Reusing the Create Form
 

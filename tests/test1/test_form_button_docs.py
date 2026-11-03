@@ -295,8 +295,11 @@ def test_cancel_link_section_publishes_each_opt_in_path():
 
 @pytest.mark.django_db
 def test_documented_theme_registration_renders_a_native_link(
-    isolated_theme_registry, client_user_author_add, cv_author
+    isolated_theme_registry, client_user_author_add, user_author_add, cv_author
 ):
+    from tests.lib.helper.user import user_viewset_permission
+
+    user_viewset_permission(user_author_add, cv_author, "view")
     default = _page_cancel(_create_page(client_user_author_add, cv_author))
     assert default.tag == "button"
     destination = default.get("data-cv-cancel-url")
@@ -315,7 +318,10 @@ def test_documented_theme_registration_renders_a_native_link(
 
 
 @pytest.mark.django_db
-def test_documented_project_setting_renders_a_native_link(client_user_author_add, cv_author):
+def test_documented_project_setting_renders_a_native_link(client_user_author_add, user_author_add, cv_author):
+    from tests.lib.helper.user import user_viewset_permission
+
+    user_viewset_permission(user_author_add, cv_author, "view")
     classes = _exec_fence(_cancel_fences()["settings.py"])["CRUD_VIEWS_BUTTON_CLASSES"]
     assert classes == {"form:cancel-tag": "a"}
     with override_settings(CRUD_VIEWS_BUTTON_CLASSES=classes):
@@ -326,7 +332,10 @@ def test_documented_project_setting_renders_a_native_link(client_user_author_add
 
 
 @pytest.mark.django_db
-def test_documented_form_hooks_select_the_tag_per_form(client_user_author_add, cv_author, monkeypatch):
+def test_documented_form_hooks_select_the_tag_per_form(client_user_author_add, user_author_add, cv_author, monkeypatch):
+    from tests.lib.helper.user import user_viewset_permission
+
+    user_viewset_permission(user_author_add, cv_author, "view")
     from tests.test1.app.views import AuthorCreateView, AuthorForm
 
     recipes = _exec_classes(_cancel_fences()["forms.py"])

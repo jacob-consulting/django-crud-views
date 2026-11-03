@@ -312,9 +312,15 @@ filter keeps the active order.
 
 When a ViewSet has a `CardListView` but no `ListView`, keys that reference `"list"`
 (such as `cv_success_key`, `cv_success_keys`, `cv_cancel_key`, `cv_cancel_keys`, and the default "home"
-context button) automatically fall back to `"card"`. No manual overrides needed. Card actions carry the
-`card` origin key into views that list it in `cv_cancel_keys` or `cv_success_keys`
-(see [Dynamic cancel target](update_view.md#dynamic-cancel-target)).
+context button) automatically fall back to `"card"`. No manual overrides needed. Standard forms use
+`cv_cancel_keys="auto"`, accepting registered list/card origins. Card actions carry the eligible origin
+and signed query capture (including filters, ordering, page, repeated and empty values). An explicit
+allowed `"list"` key also accepts the card origin when no list exists; explicit `None` or `[]` keeps
+static cancellation. Cancel restores the captured query and, when persistence is enabled, remembers
+that restored state. An explicit empty capture clears that list's memory. Destination access is checked;
+if neither origin nor fallback is accessible, Cancel is omitted. See
+[Dynamic cancel target](update_view.md#dynamic-cancel-target) and [query settings](settings.md#origin-parameter).
+`cv_success_keys` stays independently configured and successful redirects do not restore Cancel query state.
 
 This means a ViewSet with only a `CardListView` works out of the box — CreateView,
 UpdateView, and DeleteView all redirect to the card view after success.

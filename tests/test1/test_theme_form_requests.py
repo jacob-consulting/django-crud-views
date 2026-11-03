@@ -38,6 +38,14 @@ def _snapshot():
     )
 
 
+def _grant_cancel_view(user, viewset):
+    from tests.lib.helper.user import user_viewset_permission
+
+    user_viewset_permission(user, viewset, "view")
+    for name in ("_perm_cache", "_user_perm_cache", "_group_perm_cache"):
+        user.__dict__.pop(name, None)
+
+
 def _workflow_templates(response, modal, choices, record_property):
     actual = {template.name: template.origin.name for template in response.templates if template.name}
     expected = (
@@ -105,6 +113,9 @@ def test_owned_form_request_matrix(kind, modal, request, monkeypatch, record_pro
             if kind == "custom"
             else {"confirm": "on"}
         )
+    from tests.test1.app.views import cv_author, cv_campaign
+
+    _grant_cancel_view(user, cv_campaign if kind == "workflow" else cv_author)
     client = Client(enforce_csrf_checks=True)
     client.force_login(user)
     headers = {"X-CV-Modal": "true"} if modal else {}
@@ -155,6 +166,9 @@ def test_owned_form_request_matrix(kind, modal, request, monkeypatch, record_pro
 def test_workflow_no_choices_preserves_distinct_bodies(
     modal, campaign_success, user_campaign_change, monkeypatch, record_property
 ):
+    from tests.test1.app.views import cv_campaign
+
+    _grant_cancel_view(user_campaign_change, cv_campaign)
     monkeypatch.setattr(CampaignWorkflowView, "cv_modal", modal)
     client = Client(enforce_csrf_checks=True)
     client.force_login(user_campaign_change)
@@ -318,6 +332,9 @@ def test_owned_form_payload_preservation(kind, request, monkeypatch, settings, a
 
 
 def test_existing_polymorphic_selection_route(user_vehicle_add):
+    from tests.test1.app.views import cv_vehicle
+
+    _grant_cancel_view(user_vehicle_add, cv_vehicle)
     client = Client(enforce_csrf_checks=True)
     client.force_login(user_vehicle_add)
     url = "/vehicle/create/select/"

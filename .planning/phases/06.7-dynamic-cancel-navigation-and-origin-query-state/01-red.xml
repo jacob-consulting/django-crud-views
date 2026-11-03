@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.828" timestamp="2026-11-03T16:03:00.031110+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_cancel_navigation" name="test_emitted_list_update_round_trip" time="0.717"><failure message="AssertionError: rendered Update link must own its captured query&#10;assert 'cv_from_cancel' in {}">client_user_author_origin = &lt;django.test.client.Client object at 0x742a07687ad0&gt;
+cv_author_origin = ViewSet(author_origin)
+author_douglas_adams = &lt;Author: Douglas Adams&gt;
+author_terry_pratchett = &lt;Author: Terry Pratchett&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x742a077df680&gt;
+
+    @pytest.mark.django_db
+    def test_emitted_list_update_round_trip(
+        client_user_author_origin, cv_author_origin, author_douglas_adams, author_terry_pratchett, monkeypatch
+    ):
+        from django.test import override_settings
+        from django.urls import path
+    
+        original = cv_author_origin.get_view_class("list")
+    
+        class AuthorFilter(FilterSet):
+            class Meta:
+                model = Author
+                fields = ["last_name"]
+    
+        class FilteredAuthors(ListViewTableFilterMixin, original):
+            cv_viewset = None
+            filterset_class = AuthorFilter
+    
+        monkeypatch.setattr(FilteredAuthors, "cv_viewset", cv_author_origin)
+        monkeypatch.setattr(cv_author_origin.get_view_class("update"), "cv_cancel_keys", "auto")
+        from tests.test1.app.urls import urlpatterns
+    
+        before = list(Author.objects.order_by("pk").values())
+        with override_settings(ROOT_URLCONF=type("URLs", (), {"urlpatterns": [path("capture/", FilteredAuthors.as_view()), *urlpatterns]})):
+            response = client_user_author_origin.get("/capture/?last_name=Adams")
+            assert response.status_code == 200
+            view = response.context["view"]
+            update = emitted_link(response, view.cv_get_url("update", author_douglas_adams))
+            query = parse_qs(urlsplit(update).query)
+&gt;           assert "cv_from_cancel" in query, "rendered Update link must own its captured query"
+E           AssertionError: rendered Update link must own its captured query
+E           assert 'cv_from_cancel' in {}
+
+tests/test1/test_cancel_navigation.py:56: AssertionError</failure></testcase></testsuite></testsuites>

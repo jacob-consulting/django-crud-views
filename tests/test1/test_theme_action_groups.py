@@ -60,6 +60,21 @@ def ordinary_group():
     return OrdinaryForm(None).get_form_actions()
 
 
+@pytest.mark.parametrize("form_class", [OrdinaryForm, DeleteForm])
+def test_standalone_custom_cancel_kwargs_without_view(form_class):
+    """An explicit standalone kwargs hook remains usable without request-owned navigation."""
+    form = form_class(None)
+    try:
+        button = form.get_cancel_button()
+    except AttributeError:
+        button = None
+    assert button is not None, "Standalone custom Cancel must not require a request-bound view"
+    control = html.fromstring(render_group(FormActions(button))).cssselect("button")[0]
+    assert control.get("data-cv-cancel-url") == "/back/"
+    assert control.get("type") == "button"
+    assert control.text_content().strip() == "Cancel"
+
+
 def render_group(group, **context):
     return group.render(
         forms.Form(), Context({"field_class": "fields", "label_class": "labels", **context}), template_pack="bootstrap5"

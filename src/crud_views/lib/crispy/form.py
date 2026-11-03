@@ -55,7 +55,9 @@ class CrispyFormMixin:
         raise NotImplementedError
 
     def get_form_actions(self) -> FormActions:
-        return _ThemedFormActions(self.get_submit_button(), self.get_cancel_button())
+        return _ThemedFormActions(
+            *[button for button in (self.get_submit_button(), self.get_cancel_button()) if button is not None]
+        )
 
     def get_submit_button_kwargs(self) -> dict:
         return {"name": "submit", "value": self.submit_label}
@@ -66,7 +68,7 @@ class CrispyFormMixin:
         """
         return Submit(**{"icon": self.submit_icon, **self.get_submit_button_kwargs()})
 
-    def get_cancel_button_kwargs(self) -> dict:
+    def _cv_get_cancel_button_context(self) -> dict:
         request = self.cv_view.request
         # prefer the view's own object: it is the authoritative saved object for object-based
         # views (ModelForm.instance is a form implementation detail that, on CustomFormView, is
@@ -74,7 +76,12 @@ class CrispyFormMixin:
         obj = getattr(self.cv_view, "object", None)
         if obj is None:
             obj = getattr(self, "instance", None)
-        context = self.cv_view.get_cancel_button_context(obj=obj, user=request.user, request=request)
+        return self.cv_view.get_cancel_button_context(obj=obj, user=request.user, request=request)
+
+    def get_cancel_button_kwargs(self) -> dict:
+        context = getattr(self, "_cv_cancel_button_context", None)
+        if context is None:
+            context = self._cv_get_cancel_button_context()
         url = context["cv_url"]
         return {
             "name": "reset",
@@ -82,8 +89,25 @@ class CrispyFormMixin:
             "data_cv_cancel_url": url,
         }
 
-    def get_cancel_button(self) -> Button:
-        return Button(**self.get_cancel_button_kwargs())
+    def get_cancel_button(self) -> Button | None:
+        if self.cv_view is None:
+            # Standalone helpers may supply a complete kwargs hook without a view.
+            # Bound views still resolve policy first, so custom kwargs cannot undo denial.
+            return Button(**self.get_cancel_button_kwargs())
+        context = self._cv_get_cancel_button_context()
+        if context["cv_url"] is None:
+            return None
+        # Share only within this render: custom kwargs hooks still run, while the
+        # permission/state resolver executes once and denial cannot be overridden.
+        previous = getattr(self, "_cv_cancel_button_context", None)
+        self._cv_cancel_button_context = context
+        try:
+            return Button(**self.get_cancel_button_kwargs())
+        finally:
+            if previous is None:
+                del self._cv_cancel_button_context
+            else:
+                self._cv_cancel_button_context = previous
 
 
 class CrispyModelForm(CrispyFormMixin, ModelForm):
@@ -142,8 +166,7 @@ class CrispyDeleteForm(CrispyForm):
         helper.layout = Layout(
             Row(Column4("confirm")),
             _ThemedFormActions(
-                self.get_delete_button(),
-                self.get_cancel_button(),
+                *[button for button in (self.get_delete_button(), self.get_cancel_button()) if button is not None],
             ),
         )
         return helper

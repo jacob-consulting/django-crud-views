@@ -5,6 +5,66 @@ the route from **0.29.x** to 1.0.0. The [CHANGELOG](https://github.com/jacob-con
 stays the complete record, ordered by release and issue; this page orders the same changes by what you have to
 touch.
 
+## Dynamic Cancel navigation
+
+Standard create/update/delete/custom forms now default to `cv_cancel_keys="auto"`. Cancel accepts
+registered usable list/card origins and, for object forms, same-object detail. Detail → Create is
+excluded. Explicit lists may allow custom registered keys. Set `cv_cancel_keys=None` (or `[]`) to
+retain static cancellation to `cv_cancel_key`, default `"list"` with card fallback. Singular
+`cv_cancel_key=None` instead means the current view as fallback.
+
+Copied templates must migrate immediately. **Before — unsupported key-only Cancel integration:**
+
+```django
+{% cv_context_url view.cv_get_cancel_key as url %}
+<a href="{{ url }}">Cancel</a>
+```
+
+**After — resolve the URL and omit inaccessible Cancel:**
+
+<!-- cancel-recipe: guarded-template -->
+```django
+{% load crud_views i18n %}
+{% cv_cancel_url as url %}
+{% if url %}<a href="{{ url }}" class="btn btn-secondary">{% translate "Cancel" %}</a>{% endif %}
+```
+
+Keep your translated label and theme classes, preserve autoescaping, and do not apply `safe`.
+`cv_get_cancel_url(obj=None, user=None, request=None)` uses the bound object's/request's context by
+default and returns a URL or `None`. The context-taking tag `cv_cancel_url(context, obj=None)` uses
+the template's `view` and `request`. The retained `cv_get_cancel_key()` is a key helper for other
+callers, not a supported reduced-function Cancel integration.
+
+`get_cancel_button()` now returns `Button | None`; `get_cancel_button_kwargs()` remains a dict hook.
+Filter `None` before constructing custom `FormActions`/layouts, retain Submit/Delete, and keep the
+page-owned form (`helper.form_tag=False`). Execute the
+[custom group and delete-helper recipes](reference/update_view.md#custom-form-action-groups) in your integration.
+
+An allowed accessible origin takes priority, then the accessible configured fallback. If neither is
+accessible, omit Cancel while retaining authorized form submission. A needed fallback with no usable
+registered route is a configuration error: startup `viewset.E256`, runtime `ImproperlyConfigured`.
+Configure an existing usable destination, including when neither list nor card exists. `viewset.E255`
+continues to diagnose context buttons; it is not the Cancel fallback code.
+
+Generated links now include signed captured query state alongside the origin key. Their default href
+bytes intentionally change. Action-menu comparisons validate route/origin/signature/capture first,
+then normalize only reserved navigation fields in comparison copies; existing golden files stay intact.
+Applications asserting exact old links should follow the emitted links and check decoded state.
+
+Cancel restores filters, sorting, page, repeated and empty values. A returned list remembers that query
+when persistence is enabled; explicit empty clears memory, disabled persistence leaves memory untouched,
+and other open forms retain independent captures. Signed `query=null` is legacy uncaptured state;
+`query=""` explicitly restores an empty query. See [settings](reference/settings.md#origin-parameter)
+for derived/renamed parameter names, token/JSON/query/pair bounds, visible URL data and signing-key rotation.
+Parser bounds do not guarantee a portable full request-line size; upstream 414/400 rejection can happen
+before Django receives a request, so fallback cannot be promised for those requests.
+
+Save, successful deletion, `cv_success_keys` and modal redirect headers retain their existing behavior.
+Save does not restore Cancel's capture. Invalid submissions retain capture; polymorphic selectors forward
+cancel-only state. Supported delete/custom/workflow modal paths remain supported; create/update modal
+opt-in remains unsupported (`viewset.E251`). No new protected-delete Cancel control, cross-ViewSet return,
+history, scroll, browser-only state or unsaved-input restoration is introduced.
+
 ## Who this is for
 
 - **An app on the stock bootstrap5 theme.** You override no crud_views template, but you have a base template,

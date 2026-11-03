@@ -30,6 +30,41 @@ Session settings.
 |------------------|------------------------------------------------------------|-------|-----------|
 | CRUD_VIEWS_ORIGIN_PARAM | Query-string parameter that carries the origin view key for views with `cv_cancel_keys` or `cv_success_keys` (see [Dynamic cancel target](update_view.md#dynamic-cancel-target) and [Dynamic success target](update_view.md#dynamic-success-target)). Must match `^[a-z][a-z0-9_]*$`; otherwise system check `crud_views.E103` fails. Renamed from `CRUD_VIEWS_CANCEL_ORIGIN_PARAM` in 0.26.0. | `str` | `cv_from` |
 
+The derived reserved names are `<origin>_cancel` for signed captured query state and `<origin>_restore`
+for a returned list's restoration marker. Defaults are `cv_from`, `cv_from_cancel`, `cv_from_restore`.
+For `CRUD_VIEWS_ORIGIN_PARAM = "back"`, they become `back`, `back_cancel`, `back_restore`; there
+are no separate cancel/restore naming settings. These fields are removed before list filtering,
+ordering, pagination, hidden controls, session storage and subsequent capture.
+
+Standard form views default to `cv_cancel_keys="auto"`; explicit `None` or `[]` disables origin selection.
+The signed capture preserves actual URL query values, including repeated values (in per-key order)
+and blanks. It is bound to the same ViewSet and parent coordinates. It does not capture browser-only
+state, unsaved fields, scroll position or a history stack, and does not enable cross-ViewSet returns.
+Query data remains visible in URLs: signatures authenticate data; they do not encrypt it.
+
+When `cv_filter_persistence` is enabled, following Cancel to a list stores the restored query for later
+bare-list visits. Explicit empty capture clears only that list's remembered query. Disabled persistence
+renders the restored state without writing or clearing session memory. Rendering a form alone does
+not update memory. Independently open forms retain their own captures even when another tab changes memory.
+Signed `query=null` means legacy origin without captured query: it does not clear session state.
+Signed `query=""` means explicit-empty restoration. Old unsigned key-only origins likewise have no capture.
+
+Parser limits are 16,384 ASCII bytes for a token, 12,288 bytes for decoded serialized JSON, 8,192 UTF-8
+bytes for the query and 128 query pairs. Tokens are uncompressed. Oversized/malformed input received by
+Django safely uses the configured fallback (subject to its availability and configuration).
+These bounds are not a guarantee that the full percent-encoded request line fits a browser, proxy or
+server limit: an upstream 414/400 may occur before Django receives the request and can choose fallback.
+
+After `SECRET_KEY` rotation, old signed links fail validation and use the configured fallback unless
+the old key remains in Django's `SECRET_KEY_FALLBACKS`. Removing it retires those links again.
+Signatures never bypass destination permissions; there is no package-specific key-management setting.
+
+Invalid submissions retain the capture in the existing full-path form action. Polymorphic selectors
+forward cancel-only signed state into the concrete create form, without expanding `cv_success_keys`.
+Save and successful deletion keep their existing redirects and do not restore Cancel query state.
+For permission omission, fallback errors and the required copied-template migration, see
+[Dynamic cancel navigation](../migrating-1.0.md#dynamic-cancel-navigation).
+
 ## Filter
 
 Settings for filter.

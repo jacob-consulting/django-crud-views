@@ -1,0 +1,1024 @@
+{
+  "AaGi_A935Jm_DsC5O-lW": {
+    "original_rule": "javascript:S3776",
+    "original_file": "tests/browser/cancel-navigation.cjs",
+    "original_line": 114,
+    "original_function": null,
+    "disposition": "repaired_locally",
+    "repair": "Extract browserScenarios and use sequential operations for dependent scenarios and cleanup.",
+    "verification": "tests/browser/cancel-navigation.test.cjs (16 passing tests); real smoke1/full28 case replay with30 Cancel clicks",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGi_A935Jm_DsC5O-ln": {
+    "original_rule": "javascript:S1121",
+    "original_file": "tests/browser/cancel-navigation.cjs",
+    "original_line": 347,
+    "original_function": null,
+    "disposition": "repaired_locally",
+    "repair": "Initialize report.cleanupErrors in a standalone statement before pushing the secondary error.",
+    "verification": "tests/browser/cancel-navigation.test.cjs (16 passing tests); real smoke1/full28 case replay with30 Cancel clicks",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGi_A935Jm_DsC5O-lO": {
+    "original_rule": "javascript:S5443",
+    "original_file": "tests/browser/cancel-navigation.cjs",
+    "original_line": 11,
+    "original_function": null,
+    "disposition": "repaired_locally",
+    "repair": "Replace the shared fixed /tmp report name with mkdtempSync's exclusive directory (mode0700) and a report inside it; explicit output remains caller-owned.",
+    "verification": "tests/browser/cancel-navigation.test.cjs (16 passing tests); real smoke1/full28 case replay with30 Cancel clicks",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGi_A935Jm_DsC5O-lP": {
+    "original_rule": "javascript:S3776",
+    "original_file": "tests/browser/cancel-navigation.cjs",
+    "original_line": 26,
+    "original_function": null,
+    "disposition": "repaired_locally",
+    "repair": "Extract asset containment/hash/SRI reading and CSS dependency expansion.",
+    "verification": "tests/browser/cancel-navigation.test.cjs (16 passing tests); real smoke1/full28 case replay with30 Cancel clicks",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGi_A935Jm_DsC5O-lQ": {
+    "original_rule": "javascript:S4138",
+    "original_file": "tests/browser/cancel-navigation.cjs",
+    "original_line": 33,
+    "original_function": null,
+    "disposition": "repaired_locally",
+    "repair": "Use for-of on the growing pending asset queue; appended CSS dependencies remain traversed.",
+    "verification": "tests/browser/cancel-navigation.test.cjs (16 passing tests); real smoke1/full28 case replay with30 Cancel clicks",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGi_A935Jm_DsC5O-lR": {
+    "original_rule": "javascript:S6582",
+    "original_file": "tests/browser/cancel-navigation.cjs",
+    "original_line": 79,
+    "original_function": null,
+    "disposition": "repaired_locally",
+    "repair": "Use child?.exitCode for the optional owned-child guard, retaining no-child/exited-child no-op behavior.",
+    "verification": "tests/browser/cancel-navigation.test.cjs (16 passing tests); real smoke1/full28 case replay with30 Cancel clicks",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGi_A935Jm_DsC5O-lS": {
+    "original_rule": "javascript:S4036",
+    "original_file": "tests/browser/cancel-navigation.cjs",
+    "original_line": 86,
+    "original_function": null,
+    "disposition": "repaired_locally",
+    "repair": "Use gitExecutable()/validateExecutable() with absolute explicit executable paths, regular-file/non-group-or-world-writable checks and X_OK; no PATH lookup.",
+    "verification": "tests/browser/cancel-navigation.test.cjs (16 passing tests); real smoke1/full28 case replay with30 Cancel clicks",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGi_A935Jm_DsC5O-lT": {
+    "original_rule": "javascript:S2871",
+    "original_file": "tests/browser/cancel-navigation.cjs",
+    "original_line": 89,
+    "original_function": null,
+    "disposition": "repaired_locally",
+    "repair": "Use the explicit compare comparator for deterministic source manifest ordering (also cached runtime ordering).",
+    "verification": "tests/browser/cancel-navigation.test.cjs (16 passing tests); real smoke1/full28 case replay with30 Cancel clicks",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGi_A935Jm_DsC5O-lU": {
+    "original_rule": "javascript:S9382",
+    "original_file": "tests/browser/cancel-navigation.cjs",
+    "original_line": 104,
+    "original_function": null,
+    "disposition": "repaired_locally",
+    "repair": "Replace startup polling with event-driven complete-line readiness plus a bounded timeout, exit/error rejection and listener cleanup.",
+    "verification": "tests/browser/cancel-navigation.test.cjs (16 passing tests); real smoke1/full28 case replay with30 Cancel clicks",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGi_A935Jm_DsC5O-lV": {
+    "original_rule": "javascript:S7723",
+    "original_file": "tests/browser/cancel-navigation.cjs",
+    "original_line": 106,
+    "original_function": null,
+    "disposition": "repaired_locally",
+    "repair": "Construct startup failure/timeout exceptions with new Error().",
+    "verification": "tests/browser/cancel-navigation.test.cjs (16 passing tests); real smoke1/full28 case replay with30 Cancel clicks",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGi_A935Jm_DsC5O-lX": {
+    "original_rule": "javascript:S4036",
+    "original_file": "tests/browser/cancel-navigation.cjs",
+    "original_line": 123,
+    "original_function": null,
+    "disposition": "repaired_locally",
+    "repair": "Use gitExecutable()/validateExecutable() with absolute explicit executable paths, regular-file/non-group-or-world-writable checks and X_OK; no PATH lookup.",
+    "verification": "tests/browser/cancel-navigation.test.cjs (16 passing tests); real smoke1/full28 case replay with30 Cancel clicks",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGi_A935Jm_DsC5O-lY": {
+    "original_rule": "javascript:S3358",
+    "original_file": "tests/browser/cancel-navigation.cjs",
+    "original_line": 150,
+    "original_function": null,
+    "disposition": "repaired_locally",
+    "repair": "Extract assetContentType() with an extension-to-MIME mapping and default instead of the nested ternary.",
+    "verification": "tests/browser/cancel-navigation.test.cjs (16 passing tests); real smoke1/full28 case replay with30 Cancel clicks",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGi_A935Jm_DsC5O-lZ": {
+    "original_rule": "javascript:S3358",
+    "original_file": "tests/browser/cancel-navigation.cjs",
+    "original_line": 151,
+    "original_function": null,
+    "disposition": "repaired_locally",
+    "repair": "Extract assetContentType() with an extension-to-MIME mapping and default instead of the nested ternary.",
+    "verification": "tests/browser/cancel-navigation.test.cjs (16 passing tests); real smoke1/full28 case replay with30 Cancel clicks",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGi_A935Jm_DsC5O-la": {
+    "original_rule": "javascript:S9382",
+    "original_file": "tests/browser/cancel-navigation.cjs",
+    "original_line": 240,
+    "original_function": null,
+    "disposition": "repaired_locally",
+    "repair": "Run this dependent scenario/repetition/context-close operation through sequence; promise chaining settles each operation before starting the next and stops on rejection.",
+    "verification": "tests/browser/cancel-navigation.test.cjs (16 passing tests); real smoke1/full28 case replay with30 Cancel clicks",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGi_A935Jm_DsC5O-lb": {
+    "original_rule": "javascript:S9382",
+    "original_file": "tests/browser/cancel-navigation.cjs",
+    "original_line": 242,
+    "original_function": null,
+    "disposition": "repaired_locally",
+    "repair": "Run this dependent scenario/repetition/context-close operation through sequence; promise chaining settles each operation before starting the next and stops on rejection.",
+    "verification": "tests/browser/cancel-navigation.test.cjs (16 passing tests); real smoke1/full28 case replay with30 Cancel clicks",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGi_A935Jm_DsC5O-lc": {
+    "original_rule": "javascript:S9382",
+    "original_file": "tests/browser/cancel-navigation.cjs",
+    "original_line": 255,
+    "original_function": null,
+    "disposition": "repaired_locally",
+    "repair": "Run this dependent scenario/repetition/context-close operation through sequence; promise chaining settles each operation before starting the next and stops on rejection.",
+    "verification": "tests/browser/cancel-navigation.test.cjs (16 passing tests); real smoke1/full28 case replay with30 Cancel clicks",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGi_A935Jm_DsC5O-ld": {
+    "original_rule": "javascript:S9382",
+    "original_file": "tests/browser/cancel-navigation.cjs",
+    "original_line": 260,
+    "original_function": null,
+    "disposition": "repaired_locally",
+    "repair": "Run this dependent scenario/repetition/context-close operation through sequence; promise chaining settles each operation before starting the next and stops on rejection.",
+    "verification": "tests/browser/cancel-navigation.test.cjs (16 passing tests); real smoke1/full28 case replay with30 Cancel clicks",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGi_A935Jm_DsC5O-le": {
+    "original_rule": "javascript:S9382",
+    "original_file": "tests/browser/cancel-navigation.cjs",
+    "original_line": 277,
+    "original_function": null,
+    "disposition": "repaired_locally",
+    "repair": "Run this dependent scenario/repetition/context-close operation through sequence; promise chaining settles each operation before starting the next and stops on rejection.",
+    "verification": "tests/browser/cancel-navigation.test.cjs (16 passing tests); real smoke1/full28 case replay with30 Cancel clicks",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGi_A935Jm_DsC5O-lf": {
+    "original_rule": "javascript:S9382",
+    "original_file": "tests/browser/cancel-navigation.cjs",
+    "original_line": 289,
+    "original_function": null,
+    "disposition": "repaired_locally",
+    "repair": "Run this dependent scenario/repetition/context-close operation through sequence; promise chaining settles each operation before starting the next and stops on rejection.",
+    "verification": "tests/browser/cancel-navigation.test.cjs (16 passing tests); real smoke1/full28 case replay with30 Cancel clicks",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGi_A935Jm_DsC5O-lg": {
+    "original_rule": "javascript:S9382",
+    "original_file": "tests/browser/cancel-navigation.cjs",
+    "original_line": 297,
+    "original_function": null,
+    "disposition": "repaired_locally",
+    "repair": "Run this dependent scenario/repetition/context-close operation through sequence; promise chaining settles each operation before starting the next and stops on rejection.",
+    "verification": "tests/browser/cancel-navigation.test.cjs (16 passing tests); real smoke1/full28 case replay with30 Cancel clicks",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGi_A935Jm_DsC5O-lh": {
+    "original_rule": "javascript:S9382",
+    "original_file": "tests/browser/cancel-navigation.cjs",
+    "original_line": 297,
+    "original_function": null,
+    "disposition": "repaired_locally",
+    "repair": "Run this dependent scenario/repetition/context-close operation through sequence; promise chaining settles each operation before starting the next and stops on rejection.",
+    "verification": "tests/browser/cancel-navigation.test.cjs (16 passing tests); real smoke1/full28 case replay with30 Cancel clicks",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGi_A935Jm_DsC5O-li": {
+    "original_rule": "javascript:S9382",
+    "original_file": "tests/browser/cancel-navigation.cjs",
+    "original_line": 299,
+    "original_function": null,
+    "disposition": "repaired_locally",
+    "repair": "Run this dependent scenario/repetition/context-close operation through sequence; promise chaining settles each operation before starting the next and stops on rejection.",
+    "verification": "tests/browser/cancel-navigation.test.cjs (16 passing tests); real smoke1/full28 case replay with30 Cancel clicks",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGi_A935Jm_DsC5O-lj": {
+    "original_rule": "javascript:S9382",
+    "original_file": "tests/browser/cancel-navigation.cjs",
+    "original_line": 300,
+    "original_function": null,
+    "disposition": "repaired_locally",
+    "repair": "Run this dependent scenario/repetition/context-close operation through sequence; promise chaining settles each operation before starting the next and stops on rejection.",
+    "verification": "tests/browser/cancel-navigation.test.cjs (16 passing tests); real smoke1/full28 case replay with30 Cancel clicks",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGi_A935Jm_DsC5O-lk": {
+    "original_rule": "javascript:S9382",
+    "original_file": "tests/browser/cancel-navigation.cjs",
+    "original_line": 306,
+    "original_function": null,
+    "disposition": "repaired_locally",
+    "repair": "Run this dependent scenario/repetition/context-close operation through sequence; promise chaining settles each operation before starting the next and stops on rejection.",
+    "verification": "tests/browser/cancel-navigation.test.cjs (16 passing tests); real smoke1/full28 case replay with30 Cancel clicks",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGi_A935Jm_DsC5O-ll": {
+    "original_rule": "javascript:S9382",
+    "original_file": "tests/browser/cancel-navigation.cjs",
+    "original_line": 313,
+    "original_function": null,
+    "disposition": "repaired_locally",
+    "repair": "Run this dependent scenario/repetition/context-close operation through sequence; promise chaining settles each operation before starting the next and stops on rejection.",
+    "verification": "tests/browser/cancel-navigation.test.cjs (16 passing tests); real smoke1/full28 case replay with30 Cancel clicks",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGi_A935Jm_DsC5O-lm": {
+    "original_rule": "javascript:S9382",
+    "original_file": "tests/browser/cancel-navigation.cjs",
+    "original_line": 343,
+    "original_function": null,
+    "disposition": "repaired_locally",
+    "repair": "Run this dependent scenario/repetition/context-close operation through sequence; promise chaining settles each operation before starting the next and stops on rejection.",
+    "verification": "tests/browser/cancel-navigation.test.cjs (16 passing tests); real smoke1/full28 case replay with30 Cancel clicks",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGi_A905Jm_DsC5O-lN": {
+    "original_rule": "python:S9073",
+    "original_file": "tests/test1/test_cancel_docs.py",
+    "original_line": 153,
+    "original_function": "test_public_surface_and_synchronized_example",
+    "disposition": "repaired_locally",
+    "repair": "Split the composite assertion in test_public_surface_and_synchronized_example into independent assertions, retaining each original condition.",
+    "verification": "tests/test1/test_cancel_docs.py::test_public_surface_and_synchronized_example",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGi_A905Jm_DsC5O-lM": {
+    "original_rule": "python:S9073",
+    "original_file": "tests/test1/test_cancel_docs.py",
+    "original_line": 63,
+    "original_function": "test_guarded_template_matches_stock",
+    "disposition": "repaired_locally",
+    "repair": "Split the composite assertion in test_guarded_template_matches_stock into independent assertions, retaining each original condition.",
+    "verification": "tests/test1/test_cancel_docs.py::test_guarded_template_matches_stock",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGi_AxX5Jm_DsC5O-lD": {
+    "original_rule": "python:S9073",
+    "original_file": "tests/test1/test_cancel_rendering.py",
+    "original_line": 51,
+    "original_function": "assert_owner",
+    "disposition": "repaired_locally",
+    "repair": "Split the composite assertion in assert_owner into independent assertions, retaining each original condition.",
+    "verification": "tests/test1/test_cancel_rendering.py::assert_owner",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGi_AxX5Jm_DsC5O-lE": {
+    "original_rule": "python:S5778",
+    "original_file": "tests/test1/test_cancel_rendering.py",
+    "original_line": 109,
+    "original_function": "test_tag_errors_are_not_suppressed",
+    "disposition": "repaired_locally",
+    "repair": "Move view binding/Context/bind setup outside pytest.raises in test_tag_errors_are_not_suppressed; retain one potentially throwing call and the original exception/message.",
+    "verification": "tests/test1/test_cancel_rendering.py::test_tag_errors_are_not_suppressed",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGi_AxX5Jm_DsC5O-lF": {
+    "original_rule": "python:S5778",
+    "original_file": "tests/test1/test_cancel_rendering.py",
+    "original_line": 111,
+    "original_function": "test_tag_errors_are_not_suppressed",
+    "disposition": "repaired_locally",
+    "repair": "Move view binding/Context/bind setup outside pytest.raises in test_tag_errors_are_not_suppressed; retain one potentially throwing call and the original exception/message.",
+    "verification": "tests/test1/test_cancel_rendering.py::test_tag_errors_are_not_suppressed",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGi_AxX5Jm_DsC5O-lG": {
+    "original_rule": "python:S5778",
+    "original_file": "tests/test1/test_cancel_rendering.py",
+    "original_line": 114,
+    "original_function": "test_tag_errors_are_not_suppressed",
+    "disposition": "repaired_locally",
+    "repair": "Move view binding/Context/bind setup outside pytest.raises in test_tag_errors_are_not_suppressed; retain one potentially throwing call and the original exception/message.",
+    "verification": "tests/test1/test_cancel_rendering.py::test_tag_errors_are_not_suppressed",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGi_AnD5Jm_DsC5O-lA": {
+    "original_rule": "python:S3776",
+    "original_file": "src/crud_views_polymorphic/lib/create_select.py",
+    "original_line": 72,
+    "original_function": "form_valid",
+    "disposition": "repaired_locally",
+    "repair": "Extract concrete-origin token and cancel-only query creation; preserve invalid markers and exclude the shared success-origin field.",
+    "verification": "test_cancel_quality.py::test_selector_unregistered_origin_forwards_invalid_marker; test_cancel_polymorphic.py",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGi_AnH5Jm_DsC5O-lB": {
+    "original_rule": "python:S3776",
+    "original_file": "src/crud_views_guardian/lib/mixins.py",
+    "original_line": 248,
+    "original_function": "_cv_cancel_target_available",
+    "disposition": "repaired_locally",
+    "repair": "Extract no-object child target access policy; preserve parent resolution, object/queryset/create gates and one state adapter call.",
+    "verification": "test_cancel_permissions.py::test_guardian_parent_only_and_create_targets; existing Guardian request tests",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGi_A115Jm_DsC5O-lL": {
+    "original_rule": "python:S9073",
+    "original_file": "tests/test1/test_cancel_permissions.py",
+    "original_line": 506,
+    "original_function": "test_guardian_parent_only_and_create_targets",
+    "disposition": "repaired_locally",
+    "repair": "Split the composite assertion in test_guardian_parent_only_and_create_targets into independent assertions, retaining each original condition.",
+    "verification": "tests/test1/test_cancel_permissions.py::test_guardian_parent_only_and_create_targets",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGi_Ak65Jm_DsC5O-k4": {
+    "original_rule": "python:S3776",
+    "original_file": "src/crud_views/lib/view/base.py",
+    "original_line": 846,
+    "original_function": "cv_get_cancel_url",
+    "disposition": "repaired_locally",
+    "repair": "Separate request-copy binding, origin resolution and configured fallback into _cv_cancel_owner, _cv_cancel_origin_url and _cv_cancel_fallback; keep per-call destination availability memoization.",
+    "verification": "test_cancel_quality.py, test_cancel_permissions.py, test_cancel_state.py",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGi_A115Jm_DsC5O-lJ": {
+    "original_rule": "python:S9073",
+    "original_file": "tests/test1/test_cancel_permissions.py",
+    "original_line": 299,
+    "original_function": "test_core_custom_create_and_rendering_adapter",
+    "disposition": "repaired_locally",
+    "repair": "Split the composite assertion in test_core_custom_create_and_rendering_adapter into independent assertions, retaining each original condition.",
+    "verification": "tests/test1/test_cancel_permissions.py::test_core_custom_create_and_rendering_adapter",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGi_A115Jm_DsC5O-lK": {
+    "original_rule": "python:S5778",
+    "original_file": "tests/test1/test_cancel_permissions.py",
+    "original_line": 349,
+    "original_function": "test_core_structurally_impossible_fallback_is_configuration_error",
+    "disposition": "repaired_locally",
+    "repair": "Move view binding/Context/bind setup outside pytest.raises in test_core_structurally_impossible_fallback_is_configuration_error; retain one potentially throwing call and the original exception/message.",
+    "verification": "tests/test1/test_cancel_permissions.py::test_core_structurally_impossible_fallback_is_configuration_error",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGi_A115Jm_DsC5O-lH": {
+    "original_rule": "python:S9073",
+    "original_file": "tests/test1/test_cancel_permissions.py",
+    "original_line": 102,
+    "original_function": "test_registered_cancel_fallback_inventory",
+    "disposition": "repaired_locally",
+    "repair": "Split the composite assertion in test_registered_cancel_fallback_inventory into independent assertions, retaining each original condition.",
+    "verification": "tests/test1/test_cancel_permissions.py::test_registered_cancel_fallback_inventory",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGi_A115Jm_DsC5O-lI": {
+    "original_rule": "python:S5778",
+    "original_file": "tests/test1/test_cancel_permissions.py",
+    "original_line": 267,
+    "original_function": "test_core_state_errors_propagate",
+    "disposition": "repaired_locally",
+    "repair": "Move view binding/Context/bind setup outside pytest.raises in test_core_state_errors_propagate; retain one potentially throwing call and the original exception/message.",
+    "verification": "tests/test1/test_cancel_permissions.py::test_core_state_errors_propagate",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGi_Abj5Jm_DsC5O-k3": {
+    "original_rule": "python:S3776",
+    "original_file": "src/crud_views/lib/views/mixins.py",
+    "original_line": 360,
+    "original_function": "get",
+    "disposition": "repaired_locally",
+    "repair": "Extract session query write/delete and reset URL construction; retain restore-before-reset ordering.",
+    "verification": "test_cancel_quality.py::test_reset_drops_remembered_filter_and_retains_order_controls; test_cancel_state.py::test_list_family_returns_clean_state",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGi_AvU5Jm_DsC5O-lC": {
+    "original_rule": "python:S5778",
+    "original_file": "tests/test1/test_cancel_state.py",
+    "original_line": 244,
+    "original_function": "test_parent_binding_and_programming_errors",
+    "disposition": "repaired_locally",
+    "repair": "Move view binding/Context/bind setup outside pytest.raises in test_parent_binding_and_programming_errors; retain one potentially throwing call and the original exception/message.",
+    "verification": "tests/test1/test_cancel_state.py::test_parent_binding_and_programming_errors",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGi_Ak65Jm_DsC5O-k5": {
+    "original_rule": "pythonbugs:S2583",
+    "original_file": "src/crud_views/lib/view/base.py",
+    "original_line": 837,
+    "original_function": "_cv_cancel_target_available",
+    "disposition": "repaired_locally",
+    "repair": "Evaluate concrete destination hooks in module-level _cancel_target_available(target,...) and delegate the inherited classmethod to it; preserve dynamic override dispatch, short-circuit denial, exact user/object arguments and per-destination memoization.",
+    "verification": "test_cancel_quality.py::test_cancel_dispatches_concrete_destination_policy (detail/list x allow/deny);259focused regressions;28browser cases",
+    "fresh_analysis_status": "followup_repaired_locally_pending_remote_analysis",
+    "remote_closed": false,
+    "repaired_source_head": "2d8d794f5b772bfafefc14028baf43cea05e4135",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "OPEN"
+      }
+    ],
+    "repair_history": [
+      "Use explicit object and no-object control flow before parent lookup/state evaluation, preserving saved object and parent arguments."
+    ]
+  },
+  "AaGi_Ak95Jm_DsC5O-k6": {
+    "original_rule": "python:S3776",
+    "original_file": "src/crud_views/lib/view/cancel.py",
+    "original_line": 62,
+    "original_function": "_valid_payload",
+    "disposition": "repaired_locally",
+    "repair": "Separate identity schema validation (_valid_identity) and bounded browser payload parsing (_read_payload) from application coordinate checks.",
+    "verification": "test_cancel_quality.py::test_malformed_signed_identity_cannot_restore_query; test_cancel_state.py",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGi_Ak95Jm_DsC5O-k7": {
+    "original_rule": "python:S5713",
+    "original_file": "src/crud_views/lib/view/cancel.py",
+    "original_line": 98,
+    "original_function": "encode_cancel_state",
+    "disposition": "repaired_locally",
+    "repair": "Catch ValueError once: UnicodeError, binascii.Error and JSONDecodeError derive from it; keep BadSignature separate and application coordinates outside the catch.",
+    "verification": "test_cancel_quality.py::test_malformed_signed_identity_cannot_restore_query; test_cancel_state.py",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGi_Ak95Jm_DsC5O-k8": {
+    "original_rule": "python:S3776",
+    "original_file": "src/crud_views/lib/view/cancel.py",
+    "original_line": 109,
+    "original_function": "read_cancel_state",
+    "disposition": "repaired_locally",
+    "repair": "Separate identity schema validation (_valid_identity) and bounded browser payload parsing (_read_payload) from application coordinate checks.",
+    "verification": "test_cancel_quality.py::test_malformed_signed_identity_cannot_restore_query; test_cancel_state.py",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGi_Ak95Jm_DsC5O-k-": {
+    "original_rule": "python:S5713",
+    "original_file": "src/crud_views/lib/view/cancel.py",
+    "original_line": 136,
+    "original_function": "read_cancel_state",
+    "disposition": "repaired_locally",
+    "repair": "Catch ValueError once: UnicodeError, binascii.Error and JSONDecodeError derive from it; keep BadSignature separate and application coordinates outside the catch.",
+    "verification": "test_cancel_quality.py::test_malformed_signed_identity_cannot_restore_query; test_cancel_state.py",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGi_Ak95Jm_DsC5O-k9": {
+    "original_rule": "python:S5713",
+    "original_file": "src/crud_views/lib/view/cancel.py",
+    "original_line": 136,
+    "original_function": "read_cancel_state",
+    "disposition": "repaired_locally",
+    "repair": "Catch ValueError once: UnicodeError, binascii.Error and JSONDecodeError derive from it; keep BadSignature separate and application coordinates outside the catch.",
+    "verification": "test_cancel_quality.py::test_malformed_signed_identity_cannot_restore_query; test_cancel_state.py",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGi_Ak95Jm_DsC5O-k_": {
+    "original_rule": "python:S5713",
+    "original_file": "src/crud_views/lib/view/cancel.py",
+    "original_line": 136,
+    "original_function": "read_cancel_state",
+    "disposition": "repaired_locally",
+    "repair": "Catch ValueError once: UnicodeError, binascii.Error and JSONDecodeError derive from it; keep BadSignature separate and application coordinates outside the catch.",
+    "verification": "test_cancel_quality.py::test_malformed_signed_identity_cannot_restore_query; test_cancel_state.py",
+    "fresh_analysis_status": "not_returned_in_fresh_open_inventory_at_4a58c5a",
+    "remote_closed": null,
+    "repaired_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "not_returned_in_open_issue_inventory"
+      }
+    ],
+    "resolution_note": "Explicit resolution status was not queried; fresh open-issue inventory has no entry for this key."
+  },
+  "AaGjMUR57LdlyTs9qwQL": {
+    "original_rule": "javascript:S2004",
+    "original_file": "tests/browser/cancel-navigation.cjs",
+    "original_line": 313,
+    "original_function": "modal response predicate",
+    "first_observed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+    "disposition": "followup_repaired_locally",
+    "repair": "Flatten modal scenario descriptors and extract named isModalPost response predicate; keep sequential modal repetitions and real422responses.",
+    "verification": "16Node tests and full28case/30click browser replay",
+    "fresh_analysis_status": "followup_repaired_locally_pending_remote_analysis",
+    "remote_closed": false,
+    "repaired_source_head": "2d8d794f5b772bfafefc14028baf43cea05e4135",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "OPEN"
+      }
+    ]
+  },
+  "AaGjMT0G7LdlyTs9qwQK": {
+    "original_rule": "pythonbugs:S2583",
+    "original_file": "src/crud_views/lib/view/base.py",
+    "original_line": 840,
+    "original_function": "_cv_cancel_target_available",
+    "first_observed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+    "disposition": "followup_repaired_locally",
+    "repair": "Move concrete destination hook dispatch into module-level _cancel_target_available(target,...), preserving access-before-state and exact context arguments.",
+    "verification": "Four real concrete-class override cases and259focused Python regressions; all helper executable lines covered",
+    "fresh_analysis_status": "followup_repaired_locally_pending_remote_analysis",
+    "remote_closed": false,
+    "repaired_source_head": "2d8d794f5b772bfafefc14028baf43cea05e4135",
+    "analysis_observations": [
+      {
+        "analyzed_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+        "inventory": "sonar-after1.json",
+        "status": "OPEN"
+      }
+    ]
+  }
+}

@@ -872,7 +872,9 @@ def test_child_card_row_create_action_uses_row_parent(
     (row,) = [data for key, obj, data in records if key == "create"]
     assert row["cv_access"] is create_grant
     assert row["cv_action_enabled"] is enabled
-    assert row["cv_url"] == create_url
+    from tests.test1.test_cancel_navigation import checked_action_url
+
+    assert checked_action_url(row["cv_url"], response.context["view"]) == create_url
     assert row["cv_label"] == "Sibling book"
     (detail,) = [data for key, obj, data in records if key == "detail"]
     assert detail["cv_access"] is True  # the other card action keeps its own row-object semantics

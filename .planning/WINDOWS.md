@@ -2,9 +2,9 @@
 schema_version: 1
 open_count: 6
 waived_count: 2
-fixed_count: 15
-total_count: 23
-last_updated: 2026-11-02T21:25:49.151Z
+fixed_count: 23
+total_count: 31
+last_updated: 2026-11-03T19:53:19.111Z
 ---
 
 # Broken Windows Ledger
@@ -38,6 +38,14 @@ last_updated: 2026-11-02T21:25:49.151Z
 | 21 | 06.4 | deviation | .planning/phases/06.4-conditional-and-formset-correctness-lifecycle/15-evidence/run.py | 857 | WR-04: aggregate checker omits conditional screenshot inventory/hash contract; security T22/T33 high and T31 medium remain open | open |  | 2026-11-01T17:22:40.406Z |  |
 | 22 | 06.5 | deviation | tests/test1/test_form_buttons_golden.py | 268 | Required raw Django 6.0 full gate fails the pre-existing crispy-floor wrapper golden; no deselection or waiver applied. | waived | User explicitly authorized existing CRISPY_FLOOR_DESELECT for only test_form_buttons_golden.py::test_filter_form_baseline and multicore rerun on 2026-11-02. Reconciled plan09 command passed 8328 tests with -n 4 in 256.14s, zero skips/failures; companion controls and Django6 CSP executed. Separate 09-evidence/django60-floor-multicore.log/xml; original django60.log remains byte-identical to de61f3c with 1 failed, 8328 passed. Wrapper mismatch not fixed; no other exclusion or install authorized. | 2026-11-02T13:17:44.247Z | 2026-11-02T13:51:14.237Z |
 | 23 | 06.6 | unrun-verify | .planning/phases/06.6-theme-adoption-seams-from-the-tabler-sync/06.6-06-PLAN.md |  | Task 06-02 real companion capture/check blocked: pytest, pytest-django and pytest-xdist absent; source HEAD externally advanced from pinned revision. | fixed |  | 2026-11-02T21:10:26.684Z | 2026-11-02T21:25:49.151Z |
+| 24 | 06.7 | deviation | src/crud_views/lib/crispy/form.py |  | Share one cancel context during button rendering to prevent duplicate destination state evaluation while preserving custom kwargs hooks. | fixed |  | 2026-11-03T16:41:44.156Z | 2026-11-03T16:41:52.777Z |
+| 25 | 06.7 | deviation | tests/test1/test_crispy_buttons.py |  | Authorize list destinations locally in 17 presentation cases whose pre-plan fixtures lacked the permission required for visible Cancel. | fixed |  | 2026-11-03T16:41:44.314Z | 2026-11-03T16:41:52.936Z |
+| 26 | 06.7 | deviation | tests/test1/test_cancel_permissions.py |  | Migrate selector fallback diagnostic to automatic defaults while retaining explicit static invalid-fallback coverage. | fixed |  | 2026-11-03T16:54:56.249Z | 2026-11-03T16:55:04.782Z |
+| 27 | 06.7 | deviation | tests/test1/test_cancel_navigation.py |  | Isolate late-registration fixture registry so it cannot contaminate the registered-form inventory. | fixed |  | 2026-11-03T16:54:56.421Z | 2026-11-03T16:55:04.913Z |
+| 28 | 06.7 | deviation | tests/test1/test_form_button_docs.py |  | Cancel-present documentation fixtures now grant view permission; three legacy add-only fixture failures fixed and verified in 34-test recipe selection. | fixed |  | 2026-11-03T17:03:26.320Z | 2026-11-03T17:04:29.345Z |
+| 29 | 06.7 | deviation | src/crud_views/lib/crispy/form.py | 92 | Plan05 final matrix exposed standalone custom Cancel kwargs regression plus remaining exact-link/permission fixtures; scoped plan01/02 repair preserves bound policy and passed 334 focused tests. | fixed |  | 2026-11-03T18:10:58.862Z | 2026-11-03T18:13:00.670Z |
+| 30 | 06.7 | unrun-verify | .planning/phases/06.7-dynamic-cancel-navigation-and-origin-query-state/06.7-ACCEPTANCE.md |  | Human keyboard, focus and visual Cancel acceptance plus UI consideration confirmation remain pending; automated browser results do not supply human acceptance. | fixed |  | 2026-11-03T18:10:59.020Z | 2026-11-03T19:53:19.111Z |
+| 31 | 06.7 | deviation | tests/test1/test_cancel_state.py |  | Plan05 Django4.2 replay required explicit filter helpers and removal of filtering metadata from plain-list fixtures; 83 focused tests pass on4.2 and5.2 with product unchanged. | fixed |  | 2026-11-03T18:17:50.004Z | 2026-11-03T18:17:50.177Z |
 
 ````json
 [
@@ -329,6 +337,110 @@ last_updated: 2026-11-02T21:25:49.151Z
     "reason": "",
     "recorded_at": "2026-11-02T21:10:26.684Z",
     "resolved_at": "2026-11-02T21:25:49.151Z",
+    "milestone": "v1.0"
+  },
+  {
+    "id": 24,
+    "kind": "deviation",
+    "phase": "06.7",
+    "file": "src/crud_views/lib/crispy/form.py",
+    "line": null,
+    "description": "Share one cancel context during button rendering to prevent duplicate destination state evaluation while preserving custom kwargs hooks.",
+    "status": "fixed",
+    "reason": "",
+    "recorded_at": "2026-11-03T16:41:44.156Z",
+    "resolved_at": "2026-11-03T16:41:52.777Z",
+    "milestone": "v1.0"
+  },
+  {
+    "id": 25,
+    "kind": "deviation",
+    "phase": "06.7",
+    "file": "tests/test1/test_crispy_buttons.py",
+    "line": null,
+    "description": "Authorize list destinations locally in 17 presentation cases whose pre-plan fixtures lacked the permission required for visible Cancel.",
+    "status": "fixed",
+    "reason": "",
+    "recorded_at": "2026-11-03T16:41:44.314Z",
+    "resolved_at": "2026-11-03T16:41:52.936Z",
+    "milestone": "v1.0"
+  },
+  {
+    "id": 26,
+    "kind": "deviation",
+    "phase": "06.7",
+    "file": "tests/test1/test_cancel_permissions.py",
+    "line": null,
+    "description": "Migrate selector fallback diagnostic to automatic defaults while retaining explicit static invalid-fallback coverage.",
+    "status": "fixed",
+    "reason": "",
+    "recorded_at": "2026-11-03T16:54:56.249Z",
+    "resolved_at": "2026-11-03T16:55:04.782Z",
+    "milestone": "v1.0"
+  },
+  {
+    "id": 27,
+    "kind": "deviation",
+    "phase": "06.7",
+    "file": "tests/test1/test_cancel_navigation.py",
+    "line": null,
+    "description": "Isolate late-registration fixture registry so it cannot contaminate the registered-form inventory.",
+    "status": "fixed",
+    "reason": "",
+    "recorded_at": "2026-11-03T16:54:56.421Z",
+    "resolved_at": "2026-11-03T16:55:04.913Z",
+    "milestone": "v1.0"
+  },
+  {
+    "id": 28,
+    "kind": "deviation",
+    "phase": "06.7",
+    "file": "tests/test1/test_form_button_docs.py",
+    "line": null,
+    "description": "Cancel-present documentation fixtures now grant view permission; three legacy add-only fixture failures fixed and verified in 34-test recipe selection.",
+    "status": "fixed",
+    "reason": "",
+    "recorded_at": "2026-11-03T17:03:26.320Z",
+    "resolved_at": "2026-11-03T17:04:29.345Z",
+    "milestone": "v1.0"
+  },
+  {
+    "id": 29,
+    "kind": "deviation",
+    "phase": "06.7",
+    "file": "src/crud_views/lib/crispy/form.py",
+    "line": 92,
+    "description": "Plan05 final matrix exposed standalone custom Cancel kwargs regression plus remaining exact-link/permission fixtures; scoped plan01/02 repair preserves bound policy and passed 334 focused tests.",
+    "status": "fixed",
+    "reason": "",
+    "recorded_at": "2026-11-03T18:10:58.862Z",
+    "resolved_at": "2026-11-03T18:13:00.670Z",
+    "milestone": "v1.0"
+  },
+  {
+    "id": 30,
+    "kind": "unrun-verify",
+    "phase": "06.7",
+    "file": ".planning/phases/06.7-dynamic-cancel-navigation-and-origin-query-state/06.7-ACCEPTANCE.md",
+    "line": null,
+    "description": "Human keyboard, focus and visual Cancel acceptance plus UI consideration confirmation remain pending; automated browser results do not supply human acceptance.",
+    "status": "fixed",
+    "reason": "",
+    "recorded_at": "2026-11-03T18:10:59.020Z",
+    "resolved_at": "2026-11-03T19:53:19.111Z",
+    "milestone": "v1.0"
+  },
+  {
+    "id": 31,
+    "kind": "deviation",
+    "phase": "06.7",
+    "file": "tests/test1/test_cancel_state.py",
+    "line": null,
+    "description": "Plan05 Django4.2 replay required explicit filter helpers and removal of filtering metadata from plain-list fixtures; 83 focused tests pass on4.2 and5.2 with product unchanged.",
+    "status": "fixed",
+    "reason": "",
+    "recorded_at": "2026-11-03T18:17:50.004Z",
+    "resolved_at": "2026-11-03T18:17:50.177Z",
     "milestone": "v1.0"
   }
 ]

@@ -1,0 +1,286 @@
+{
+  "total": 3,
+  "p": 1,
+  "ps": 100,
+  "paging": {
+    "pageIndex": 1,
+    "pageSize": 100,
+    "total": 3
+  },
+  "effortTotal": 50,
+  "debtTotal": 50,
+  "issues": [
+    {
+      "key": "AaGjMUR57LdlyTs9qwQL",
+      "rule": "javascript:S2004",
+      "severity": "CRITICAL",
+      "component": "jacob-consulting_django-crud-views:tests/browser/cancel-navigation.cjs",
+      "project": "jacob-consulting_django-crud-views",
+      "line": 313,
+      "hash": "6dd6d21c6ad7ccfd1b9ed37f4dd8ad54",
+      "textRange": {
+        "startLine": 313,
+        "endLine": 313,
+        "startOffset": 52,
+        "endOffset": 54
+      },
+      "flows": [
+        {
+          "locations": [
+            {
+              "component": "jacob-consulting_django-crud-views:tests/browser/cancel-navigation.cjs",
+              "textRange": {
+                "startLine": 155,
+                "endLine": 155,
+                "startOffset": 15,
+                "endOffset": 31
+              },
+              "msg": "Nesting +1"
+            }
+          ]
+        },
+        {
+          "locations": [
+            {
+              "component": "jacob-consulting_django-crud-views:tests/browser/cancel-navigation.cjs",
+              "textRange": {
+                "startLine": 255,
+                "endLine": 255,
+                "startOffset": 87,
+                "endOffset": 89
+              },
+              "msg": "Nesting +1"
+            }
+          ]
+        },
+        {
+          "locations": [
+            {
+              "component": "jacob-consulting_django-crud-views:tests/browser/cancel-navigation.cjs",
+              "textRange": {
+                "startLine": 306,
+                "endLine": 306,
+                "startOffset": 54,
+                "endOffset": 56
+              },
+              "msg": "Nesting +1"
+            }
+          ]
+        },
+        {
+          "locations": [
+            {
+              "component": "jacob-consulting_django-crud-views:tests/browser/cancel-navigation.cjs",
+              "textRange": {
+                "startLine": 306,
+                "endLine": 306,
+                "startOffset": 105,
+                "endOffset": 107
+              },
+              "msg": "Nesting +1"
+            }
+          ]
+        },
+        {
+          "locations": [
+            {
+              "component": "jacob-consulting_django-crud-views:tests/browser/cancel-navigation.cjs",
+              "textRange": {
+                "startLine": 307,
+                "endLine": 307,
+                "startOffset": 88,
+                "endOffset": 90
+              },
+              "msg": "Nesting +1"
+            }
+          ]
+        }
+      ],
+      "status": "OPEN",
+      "message": "Refactor this code to not nest functions more than 5 levels deep.",
+      "effort": "20min",
+      "debt": "20min",
+      "tags": [
+        "brain-overload",
+        "editable-source"
+      ],
+      "creationDate": "2026-11-03T20:39:32+0000",
+      "updateDate": "2026-11-03T20:53:58+0000",
+      "type": "CODE_SMELL",
+      "organization": "jacob-consulting",
+      "pullRequest": "303",
+      "cleanCodeAttribute": "FOCUSED",
+      "cleanCodeAttributeCategory": "ADAPTABLE",
+      "impacts": [
+        {
+          "softwareQuality": "MAINTAINABILITY",
+          "severity": "HIGH"
+        }
+      ],
+      "issueStatus": "OPEN",
+      "projectName": "django-crud-views",
+      "internalTags": [],
+      "lastChangeAnalysisUuid": "400047e8-133e-4847-88ac-c9c2a04b7067",
+      "lastChangeSource": "ANALYSIS"
+    },
+    {
+      "key": "AaGjMT0G7LdlyTs9qwQK",
+      "rule": "pythonbugs:S2583",
+      "severity": "MAJOR",
+      "component": "jacob-consulting_django-crud-views:src/crud_views/lib/view/base.py",
+      "project": "jacob-consulting_django-crud-views",
+      "line": 840,
+      "hash": "c93792e17dbeefaf748104386abffcb5",
+      "textRange": {
+        "startLine": 840,
+        "endLine": 840,
+        "startOffset": 11,
+        "endOffset": 44
+      },
+      "flows": [
+        {
+          "locations": [
+            {
+              "component": "jacob-consulting_django-crud-views:src/crud_views/lib/view/base.py",
+              "textRange": {
+                "startLine": 841,
+                "endLine": 841,
+                "startOffset": 12,
+                "endOffset": 24
+              },
+              "msg": "Unreachable code"
+            }
+          ]
+        }
+      ],
+      "status": "OPEN",
+      "message": "Fix this condition that always evaluates to false.",
+      "effort": "15min",
+      "debt": "15min",
+      "tags": [
+        "cwe",
+        "pitfall",
+        "suspicious",
+        "unused"
+      ],
+      "creationDate": "2026-11-03T20:30:07+0000",
+      "updateDate": "2026-11-03T20:53:58+0000",
+      "type": "BUG",
+      "organization": "jacob-consulting",
+      "pullRequest": "303",
+      "cleanCodeAttribute": "LOGICAL",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "impacts": [
+        {
+          "softwareQuality": "RELIABILITY",
+          "severity": "MEDIUM"
+        }
+      ],
+      "issueStatus": "OPEN",
+      "projectName": "django-crud-views",
+      "internalTags": [],
+      "lastChangeAnalysisUuid": "400047e8-133e-4847-88ac-c9c2a04b7067",
+      "lastChangeSource": "ANALYSIS"
+    },
+    {
+      "key": "AaGi_Ak65Jm_DsC5O-k5",
+      "rule": "pythonbugs:S2583",
+      "severity": "MAJOR",
+      "component": "jacob-consulting_django-crud-views:src/crud_views/lib/view/base.py",
+      "project": "jacob-consulting_django-crud-views",
+      "line": 837,
+      "hash": "2ac2289c6967d2ee4df4b294ea8c7868",
+      "textRange": {
+        "startLine": 837,
+        "endLine": 837,
+        "startOffset": 15,
+        "endOffset": 47
+      },
+      "flows": [
+        {
+          "locations": [
+            {
+              "component": "jacob-consulting_django-crud-views:src/crud_views/lib/view/base.py",
+              "textRange": {
+                "startLine": 838,
+                "endLine": 838,
+                "startOffset": 16,
+                "endOffset": 28
+              },
+              "msg": "Unreachable code"
+            }
+          ]
+        }
+      ],
+      "status": "OPEN",
+      "message": "Fix this condition that always evaluates to false.",
+      "effort": "15min",
+      "debt": "15min",
+      "tags": [
+        "cwe",
+        "pitfall",
+        "suspicious",
+        "unused"
+      ],
+      "creationDate": "2026-11-03T16:04:24+0000",
+      "updateDate": "2026-11-03T19:55:51+0000",
+      "type": "BUG",
+      "organization": "jacob-consulting",
+      "pullRequest": "303",
+      "cleanCodeAttribute": "LOGICAL",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "impacts": [
+        {
+          "softwareQuality": "RELIABILITY",
+          "severity": "MEDIUM"
+        }
+      ],
+      "issueStatus": "OPEN",
+      "projectName": "django-crud-views",
+      "internalTags": [],
+      "lastChangeAnalysisUuid": "400047e8-133e-4847-88ac-c9c2a04b7067",
+      "lastChangeSource": "ANALYSIS"
+    }
+  ],
+  "components": [
+    {
+      "organization": "jacob-consulting",
+      "key": "jacob-consulting_django-crud-views:tests/browser/cancel-navigation.cjs",
+      "uuid": "AaGi_ARt5Jm_DsC5O-hr",
+      "enabled": true,
+      "qualifier": "FIL",
+      "name": "cancel-navigation.cjs",
+      "longName": "tests/browser/cancel-navigation.cjs",
+      "path": "tests/browser/cancel-navigation.cjs",
+      "pullRequest": "303"
+    },
+    {
+      "organization": "jacob-consulting",
+      "key": "jacob-consulting_django-crud-views:src/crud_views/lib/view/base.py",
+      "uuid": "AaGi_ARr5Jm_DsC5O-YC",
+      "enabled": true,
+      "qualifier": "FIL",
+      "name": "base.py",
+      "longName": "src/crud_views/lib/view/base.py",
+      "path": "src/crud_views/lib/view/base.py",
+      "pullRequest": "303"
+    },
+    {
+      "organization": "jacob-consulting",
+      "key": "jacob-consulting_django-crud-views",
+      "uuid": "AaGi-2BJe_O68Cs8N8Uk",
+      "enabled": true,
+      "qualifier": "TRK",
+      "name": "django-crud-views",
+      "longName": "django-crud-views",
+      "pullRequest": "303"
+    }
+  ],
+  "organizations": [
+    {
+      "key": "jacob-consulting",
+      "name": "Jacob Consulting GmbH"
+    }
+  ],
+  "facets": []
+}

@@ -1,0 +1,67 @@
+{
+  "committed_source_head": "2d8d794f5b772bfafefc14028baf43cea05e4135",
+  "analysis_trigger_head": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+  "original_findings": 49,
+  "original_findings_not_returned_open": 48,
+  "original_findings_still_open_before_followup": 1,
+  "new_findings": 2,
+  "tracked_unique_findings": 51,
+  "remote_followup_status": "pending_parent_push_and_fresh_analysis",
+  "private_evidence_directory": "/tmp/cancel-quality-followup.blarlj2t",
+  "python": {
+    "command": "PYTHONPATH=src:. COVERAGE_FILE=/tmp/cancel-quality-followup.blarlj2t/core.coverage /home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_cancel_quality.py tests/test1/test_cancel_state.py tests/test1/test_cancel_permissions.py tests/test1/test_cancel_navigation.py tests/test1/test_cancel_origin.py tests/test1/test_cancel_rendering.py -n 4 -q --cov=crud_views.lib.view.base --cov-report=json:/tmp/cancel-quality-followup.blarlj2t/core-coverage.json --cov-report=term-missing",
+    "passed": 259,
+    "exit": 0,
+    "duration_seconds": 17.66,
+    "coverage_percent": 91.24797406807131,
+    "new_helper_missing_executable_lines": []
+  },
+  "node": {
+    "command": "node --test --test-reporter=tap tests/browser/cancel-navigation.test.cjs",
+    "passed": 16,
+    "exit": 0
+  },
+  "browser": {
+    "command": [
+      "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
+      "/home/alex/.codex/worktrees/181e/django-crud-views/tests/browser/cancel-navigation.cjs",
+      "--output",
+      "/tmp/cancel-quality-followup.blarlj2t/browser-final.json"
+    ],
+    "execution_revision": "4a58c5a9c52fc91ca5a3ff49d6ff8ee750bdb580",
+    "source_hashes_match_committed_files": true,
+    "cases": 28,
+    "cancel_clicks": 30,
+    "cleanup": {
+      "pid": 1016847,
+      "exitCode": 0,
+      "signal": null,
+      "stopped": true,
+      "databaseRemoved": true
+    },
+    "runtime": {
+      "node": "v24.21.0",
+      "nodePath": "/home/alex/.nvm/versions/node/v24.21.0/bin/node",
+      "playwrightPath": "/home/alex/.npm/_npx/e41f203b7505f1fb/node_modules/playwright",
+      "playwright": "1.64.1",
+      "chromiumPath": "/home/alex/.cache/ms-playwright/chromium-1228/chrome-linux64/chrome",
+      "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+      "django": "5.2.18",
+      "packagePath": "/home/alex/.codex/worktrees/181e/django-crud-views/src/crud_views/__init__.py",
+      "pythonPath": "/home/alex/projects/alex/django-crud-views/.nox/tests-3-12-django-5-2/bin/python",
+      "chromium": "149.0.7827.55"
+    },
+    "duration_seconds": 26.19,
+    "exit": 0
+  },
+  "ruff": {
+    "check": "passed",
+    "format_check": "568files formatted",
+    "version": "0.17.3"
+  },
+  "metrics_from_original_ledger_base": {
+    "commits": 7,
+    "tokens": 95624
+  },
+  "package_coverage_note": "Prior100%patch estimate and8987full-suite result are historical; base.py changed again. Current scoped run covers every executable line of the new helper; fresh remote multi-runtime Codecov must recalculate overall patch coverage."
+}

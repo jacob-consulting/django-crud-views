@@ -451,16 +451,20 @@ PILL = ContextButton(
 @pytest.mark.django_db
 @pytest.mark.parametrize("inline", [None, ["detail"]])
 def test_custom_template_button_in_container(client_full, author_douglas_adams, monkeypatch, inline):
+    from tests.test1.test_cancel_navigation import checked_action_url
+
     monkeypatch.setattr(AuthorDetailView, "cv_context_buttons", [*(AuthorDetailView.cv_context_buttons or []), PILL])
     monkeypatch.setattr(AuthorDetailView, "cv_context_actions", [*AuthorDetailView.cv_context_actions, "pill"])
     monkeypatch.setattr(AuthorDetailView, "cv_context_actions_inline", inline)
-    _, doc = _get(client_full, "detail", pk=author_douglas_adams.pk)
+    response, doc = _get(client_full, "detail", pk=author_douglas_adams.pk)
     toolbar = _toolbar(doc)
     pill = [a for a in toolbar if a.get("class") == "pill"]
     assert len(pill) == 1, "the custom button is a direct child of the container, not folded into the menu"
     # ContextButton data carries the target view's key, so {{ cv_key }} in the button's own template is "update"
     assert pill[0].get("cv-key") == "update"
-    assert pill[0].get("href") == reverse(cv_author.get_router_name("update"), kwargs={"pk": author_douglas_adams.pk})
+    assert checked_action_url(pill[0].get("href"), response.context["view"]) == reverse(
+        cv_author.get_router_name("update"), kwargs={"pk": author_douglas_adams.pk}
+    )
     assert pill[0].cssselect("i")
     assert toolbar.cssselect("a[cv-key=detail]")
 

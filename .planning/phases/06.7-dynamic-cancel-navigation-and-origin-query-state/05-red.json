@@ -1,0 +1,10 @@
+{
+  "command": "node --test --test-reporter=tap --test-name-pattern='missing asset manifest fails closed' tests/browser/cancel-navigation.test.cjs",
+  "exitCode": 1,
+  "output": "TAP version 13\n# Subtest: missing asset manifest fails closed\nnot ok 1 - missing asset manifest fails closed\n  ---\n  duration_ms: 2.468412\n  type: 'test'\n  location: '/home/alex/projects/alex/django-crud-views/tests/browser/cancel-navigation.test.cjs:20:1'\n  failureType: 'testCodeFailure'\n  error: 'Missing expected exception.'\n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected:\n  operator: 'throws'\n  stack: |-\n    TestContext.<anonymous> (/home/alex/projects/alex/django-crud-views/tests/browser/cancel-navigation.test.cjs:23:12)\n    Test.runInAsyncScope (node:async_hooks:227:14)\n    Test.run (node:internal/test_runner/test:1402:25)\n    Test.start (node:internal/test_runner/test:1262:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 82.972261\n",
+  "targetTest": "missing asset manifest fails closed",
+  "targetFile": "tests/browser/cancel-navigation.test.cjs",
+  "expected": "Missing assets.json is rejected before browser launch",
+  "actual": "loadAssets accepted absent manifest without throwing",
+  "semanticAssessment": "Target executed and failed its assert.throws on absent manifest; no syntax, import, collection or fixture error."
+}

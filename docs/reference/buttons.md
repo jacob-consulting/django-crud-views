@@ -488,6 +488,16 @@ How a button renders depends on where it is placed:
 `get_form_actions()` returns the whole `FormActions` group. The filter helper has the same hook, see
 [Custom filter helpers](list_view.md#custom-filter-helpers).
 
+For view-owned forms, `get_cancel_button()` returns `Button | None`: when neither the allowed
+origin nor configured fallback is accessible, Cancel is omitted. `get_cancel_button_kwargs()`
+still returns a dict and customizes accessible controls. Custom groups/helpers must remove `None`
+before layout construction while keeping their submit control and page-owned form. See the executable
+[custom form action group recipe](update_view.md#custom-form-action-groups) and
+[guarded template recipe](update_view.md#custom-cancel-templates). Standard forms use
+`cv_cancel_keys="auto"`; explicit `None` or `[]` selects static cancellation. All stock control
+styles resolve `cv_get_cancel_url(obj=None, user=None, request=None)` and share its URL-or-None result.
+This omission contract does not change standalone URL-less `Button` rendering described below.
+
 Library ordinary and delete groups consume `form:actions`; default filter groups consume
 `form:filter-actions`. Both default to empty strings and add classes alongside the pack's own classes.
 Theme registrations and project settings apply on every render, including prepared filter helpers.

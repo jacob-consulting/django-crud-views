@@ -57,6 +57,8 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 - ✓ **6.6** Theme-adoption seams (#277–#280): page-owned forms/helper diagnostics, atomic theme label defaults, independent action-group/alert keys, tested migrations and verified companion delivery — Phase 06.6; canonical25/25, UAT7/7 and security27/27. Runtime/browser limits and three unchanged companion failures remain explicit.
 
+- ✓ **6.7** Dynamic Cancel defaults, independent captured query restoration, destination permissions and guarded template migration — Phase 06.7; canonical32/32 and UAT5/5 passed. Chrome/Orca stock-theme scope and unchanged success-navigation limits are recorded.
+
 ### Active
 
 - [ ] **4** Theme surface in `docs/development/stability.md` (icons, buttons, alerts, JS, theme hooks) + guard test
@@ -100,6 +102,7 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
+| Dynamic Cancel uses allowed origin, configured fallback, then permission omission; successful-save navigation stays independent | Preserve independent form captures and existing success behavior; copied templates use guarded cv_cancel_url | Validated (Phase 06.7) |
 | Group findings into phases by dependency, not rank order or one change | Reviewable units; #257 depends on 1A+1C; stability policy must be last | — Pending |
 | Option A: `form:<kind>:<mode>`; context/list/card retain variants | Independent finite vocabularies preserve W362 boundaries; form rendering and floors remain Phase 6 work | Validated (Phase 2) |
 | Label-mode defaults are a per-location floor with package → theme → project-setting precedence; explicit owner modes remain above it | Phase 06.6 D-15 adds register_label_mode_defaults without renaming existing owner APIs or merging their maps | Phase 1 contract extended by Phase 06.6 |
@@ -148,4 +151,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-11-03 after Phase 06.6 completion*
+*Last updated: 2026-11-03 after Phase 06.7 completion*

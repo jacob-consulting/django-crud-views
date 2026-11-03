@@ -28,6 +28,7 @@ from tests.test1.app.views import (
     cv_book,
     cv_publisher,
 )
+from tests.test1.test_cancel_navigation import checked_action_markup
 
 GOLDEN_DIR = Path(__file__).parent / "golden" / "action_menus"
 AUTHOR_PK = uuid.UUID("00000000-0000-4000-8000-000000000174")
@@ -68,7 +69,7 @@ def _client(grants) -> Client:
 def _fragments(client, url, xpath) -> str:
     resp = client.get(url)
     assert resp.status_code == 200
-    doc = lxml_html.fromstring(resp.content)
+    doc = lxml_html.fromstring(checked_action_markup(resp))
     nodes = doc.xpath(xpath)
     assert nodes, f"no node for {xpath} at {url}"
     return "\n".join(_norm(lxml_html.tostring(_canonical(n), encoding="unicode")) for n in nodes)

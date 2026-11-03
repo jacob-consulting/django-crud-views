@@ -3,18 +3,17 @@ gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: 7
 current_phase_name: Theme-surface stability policy
-status: planning
-stopped_at: Phase 06.6 complete, ready to plan Phase 7
-last_updated: "2026-11-03T06:42:23.598Z"
+status: "Phase 06.7 shipped — PR #303"
+stopped_at: Phase 06.7 complete, ready to plan Phase 7
+last_updated: "2026-11-03T20:49:28.173Z"
 last_activity: 2026-11-03
-last_activity_desc: Phase 06.6 complete, transitioned to Phase 7
-state_head: a3081128b07bdaa9fbc5bcd71a5429ddab7a41eb
+state_head: 82fe1881169fe0197b14b0f67c41ee59403ce327
 progress:
-  total_phases: 13
-  completed_phases: 12
-  total_plans: 101
-  completed_plans: 101
-  percent: 92
+  total_phases: 14
+  completed_phases: 13
+  total_plans: 106
+  completed_plans: 106
+  percent: 93
 milestone_name: milestone
 ---
 
@@ -31,11 +30,57 @@ See: .planning/PROJECT.md (updated 2026-11-03)
 
 Phase: 7 — Theme-surface stability policy
 Plan: Not started
-Status: Ready to plan
-Last activity: 2026-11-03 — Phase 06.6 complete, transitioned to Phase 7
+Status: Phase 06.7 shipped — PR #303
+Last activity: 2026-11-03
 
-Progress: [█████████░] 92%
-Next: $gsd-discuss-phase 7
+Progress: [█████████░] 93%
+Next: $gsd-discuss-phase 7 — settle the theme-surface stability policy before planning
+
+### Phase 06.7 completion — 2026-11-03
+
+- All five plans and CAN-01–CAN-07 complete; canonical verification passed and UAT 5/5 passed with no unresolved Cancel issues.
+- Maintainer approved the intended contract and migration guidance. Chrome 156.0.8078.79 with Orca passed button/link keyboard, omission, repeated invalid modal focus, and responsive label/both/icon/long-label checks at all three specified sizes.
+- The restricted user's save succeeded; its existing list success redirect returned 403. Recorded as an example/fixture limitation, not a Cancel failure; success behavior remains unchanged.
+- WINDOWS 30 resolved. Low query-visibility acceptance-record obligation remains open below the configured security threshold; no risk acceptance is inferred.
+- Temporary user/author removed; normal example settings restored on port 9000 with the tunnel hostname. Existing configuration and untracked artifacts preserved. No push, merge or release.
+- Earlier pending-human entries below are historical and superseded by this completion entry. Phase 7 needs discussion; no new phase implementation started.
+
+### Phase 06.7 canonical verification — 2026-11-03
+
+- All five plans complete. Canonical report human_needed: 32/32 must-haves verified, no implementation blocker; independent 72 Python and 2 cleanup tests pass.
+- Full available Django 4.2/5.2/6.0 gates each recorded 8962 passes with exact documented skip/floor exclusion. Examples302+43subtests, JS363, browser28 pass; later diagnostic/test-only changes have explicit continuity and targeted evidence.
+- Review repairs: isolated temporary registry, guaranteed cleanup after browser-close failure, robust malformed-config checks and real create recipe coverage. All independently rechecked; 0 open code findings.
+- Validation compliant7requirements/12tasks; security13/14closed with0blocking, LOW query-visibility acceptance record remains open; UI22/24 with human/visual limits.
+- User authorized exact browser asset downloads;12local files verified,4SRI values match. Earlier missing-assets checkpoint is resolved.
+- Four human checks persisted in 06.7-UAT.md: UI/state confirmation, keyboard/focus, responsive visual inspection, migration readability. UI-SPEC remains draft; no human approval inferred.
+- Next: $gsd-verify-work 06.7. Phase remains incomplete; existing config and draft/review artifacts preserved, no merge/push/release.
+
+### Phase 06.7 plan 05 prerequisite checkpoint — resolved 2026-11-03
+
+- Original stop: plan 05 had no local asset manifest and made no writes. User subsequently authorized exact fixture asset downloads; the orchestrator supplied `/home/alex/.cache/django-crud-views/cancel-assets-06.7/assets.json`.
+- Executor independently validated all 12 hashes and four CSS/JS SRI declarations, then completed both tasks with blocked-network real Chromium acceptance. No package or browser installation occurred.
+- Final automated evidence: 28 browser cases/30 Cancel clicks; 8962 tests pass on each Django 4.2, 5.2 and 6.0 series; expected version skips and sole authorized floor exclusion are explicit. Full examples: 302 tests plus 43 subtests; JS: 363; docs/Ruff pass.
+- UI-SPEC checker 7/7 is clear per orchestrator; user UI consideration confirmation and human keyboard/focus/visual acceptance remain pending (WINDOWS 30). No phase completion, merge or publication is claimed.
+
+### Phase 06.7 execution checkpoint — 2026-11-03
+
+- Plan 01 complete: 189 focused and 918 migration tests pass, Ruff clean, golden files unchanged.
+- Post-wave source compilation and JavaScript regression pass (363 tests across 10 files).
+- Plan 02 complete: E256 fallback diagnostics and Guardian target policy; 297 core/Guardian and 676 permission/Crispy tests pass, plus 52 new cases on each cached Django 4.2/6.0 runtime.
+- Schema gate clear; codebase mapping drift advisory. UI-SPEC now exists and checker passed 7/7 per orchestrator; human UI consideration confirmation remains pending.
+- Plan 03 complete: polymorphic cancel-only handoff and guarded template helper; 730 rendering/modal/success/Crispy and 315 integration tests pass, plus 82 new cases on each cached Django 4.2/6.0 runtime. CAN-04 complete; CAN-06/CAN-07 retain later-plan acceptance obligations.
+- Plan 04 complete: 34 documentation recipe tests and 71 example/sync tests plus two legacy subtests pass; strict MkDocs and changed-file Ruff pass. CAN-06 complete, exact Phase 7 helper/default/diagnostic surface recorded in summary.
+- Plan 05 complete: source-bound browser and supported-runtime acceptance, scoped standalone Cancel compatibility repair and fixture corrections are committed. CAN-07 automated obligations pass; phase verification and human UI consideration/keyboard/visual acceptance remain pending.
+- Existing configuration and untracked review artifacts preserved. No phase completion, merge or publication.
+
+### Phase 06.7 plan convergence — 2026-11-03
+
+- Five plans, twelve tasks, four waves; all seven CAN requirements and sixteen discussion decisions covered.
+- Fable, Grok and Gemini completed three review cycles. HIGH/actionable counts: 7/12 → 0/1 → 0/0; final review `0264110` has zero open revision conflicts.
+- Revisions cover shared list-family query cleanup, explicit custom-key empty restoration, Guardian destination policies, selector/success isolation, fixture ownership and complete documentation/example migration.
+- Structural checks pass; all 26 automated commands have failure signals. Implementation, browser prerequisites and human acceptance remain pending.
+- Gemini's timeout increased to 1500 seconds per invocation at the user's request; OpenCode session continuation succeeded. Shared/Grok timeout remains 1200 seconds. Raw attempts and source-grounding limitations remain recorded in review evidence.
+- Planning/review artifacts committed; no product implementation, merge or publication. Existing configuration edits remain preserved.
 
 ### Phase 06.6 completion — 2026-11-03
 
@@ -303,7 +348,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 
 **Velocity:**
 
-- Total plans completed: 101
+- Total plans completed: 106
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -323,6 +368,7 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | 06.4 | 26 | - | - |
 | 06.5 | 9 | - | - |
 | 06.6 | 10 | - | - |
+| 06.7 | 5 | - | - |
 
 **Recent Trend:**
 
@@ -401,6 +447,11 @@ The following dated checkpoints and accumulated decisions preserve execution his
 | Phase 06.6 P08 | 5min | 2 tasks | 7 files |
 | Phase 06.6 P10 | 18min | 3 tasks | 13 files |
 | Phase 06.6 P09 | 48min | 2 tasks | 78 files |
+| Phase 06.7 P01 | 12min | 3 tasks | 19 files |
+| Phase 06.7 P02 | 14min | 2 tasks | 7 files |
+| Phase 06.7 P03 | 9min | 2 tasks | 9 files |
+| Phase 06.7 P04 | 5min | 3 tasks | 16 files |
+| Phase 06.7 P05 | 30min | 2 tasks | 17 files |
 
 ## Accumulated Context
 
@@ -554,6 +605,15 @@ Recent decisions affecting current work:
 - [Phase 06.6]: Plan08 publishes executable theme defaults, page/helper/copy/standalone migrations with paired Breaking links; strict docs passed, no live companion delivery claim.
 - [Phase 06.6]: Plan10 delivered the exact five-file Tabler adaptation in companion3315eef over preserved user commit0b3baa8; core evidence67aca38 binds fresh provisional/committed probes and snapshot-independent preservation. Phase-wide acceptance remains plan09.
 - [Phase 06.6]: Plan 09 automated gates pass against final source; retain unchanged companion failures and current-pack Django 6.0 absence; human visual/AT acceptance remains pending.
+- [Phase 06.7]: 01: Bound signed cancellation to current ViewSet/parent coordinates; clean all list-family controls before persistence, and validate navigation before golden normalization.
+- [Phase 06.7]: 02: Guardian cancel destinations apply target parent/object/queryset policy before one rendering-state evaluation; parent-only routes require no child/model grant.
+- [Phase 06.7]: 02: E256 diagnoses missing usable form fallbacks; share Cancel context only within Crispy button construction, preserving kwargs hooks and fresh subsequent evaluation.
+- [Phase 06.7]: Polymorphic selection forwards only revalidated cancel state, preserving independent successful-save redirects.
+- [Phase 06.7]: Publish URL-or-None cancellation and mandatory omission guards while retaining the key helper and independent success semantics.
+- [Phase 06.7]: Follow actual emitted example links and validate signed captures before asserting returned state; retain direct legacy and exact success tests.
+- [Phase 06.7]: Plan05 verifies Cancel using exact local SRI assets and source-bound Chromium; supported runtime gates pass after scoped compatibility/fixture repairs, while phase and human UI verification remain pending.
+- [Phase 06.7]: Preserve standalone custom Cancel kwargs when cv_view is None; bound views still resolve destination access/state before kwargs and cannot override denial.
+- [Phase 06.7]: Retain unchanged-product browser/full5.2 evidence across the two-file filter fixture correction, explicitly recording continuity and focused5.2 plus full4.2/6.0 replay.
 
 ### Pending Todos
 
@@ -575,6 +635,7 @@ None yet.
 - Phase 7: carry the Phase 6 form surface (`form` location, `tags/button/form.html`, `FORM_LEAF_KEYS`, `get_form_actions()`, icons `save`/`cancel`/`filter-reset`) into the stability doc.
 - Phase 7: carry the Phase 6.1 additions (`form:cancel-tag` key, `Button(tag=...)` keyword, `cv_tag` leaf field, `crud_views.E365`) into the stability doc.
 - Phase 06.2 retained scope complete: CR-02–CR-04 transferred to Phase 6.3 / issue #282 and closed by its 2026-11-01 verification; AUTH-01/03/07 split recorded in ACCEPTANCE and REQUIREMENTS. AUTH-06 residual flag and IN-02/IN-03 transfer completed within 6.3 GUA-01 scope; broader Guardian identity compatibility remains in #286; WR-01 fixed in bd31992; IN-01/IN-04 closed with explicit rationale, IN-05 fixed with startup/runtime composition guards; canonical verification and UAT pass recorded after Playwright checked the final blocked-delete interaction.
+- Phase 06.7 complete: canonical verification and UAT passed; carry the dynamic Cancel helper/defaults/omission contract into Phase 7. Low query-visibility acceptance-record obligation remains open below the configured security threshold.
 
 ### Quick Tasks Completed
 
@@ -582,6 +643,7 @@ None yet.
 |---|-------------|------|--------|-----------|
 | 261030-bqk | Reconcile 06.2 closure with #282: defer unresolved CR-02–CR-04 to 6.3, split acceptance, retain older open findings; documentation only | 2026-10-30 | 491ae9c | [261030-bqk-reconcile-phase-06-2-closure-with-issue-](./quick/261030-bqk-reconcile-phase-06-2-closure-with-issue-/) |
 | 261030-csg | Fix Phase 06.2 WR-01 core nested-create control state; supported-version regressions pass | 2026-10-30 | bd31992 | [261030-csg-fix-phase-06-2-wr-01-core-nested-create-](./quick/261030-csg-fix-phase-06-2-wr-01-core-nested-create-/) |
+| 261103-sag | Fix SonarQube and Codecov failures on PR 303 (local gates passed; remote confirmation pending) | 2026-11-03 | 82fe188 | [261103-sag-fix-sonarqube-and-codecov-failures-on-pr](./quick/261103-sag-fix-sonarqube-and-codecov-failures-on-pr/) |
 
 ### Roadmap Evolution
 
@@ -594,6 +656,7 @@ None yet.
 - Phase 6.4 inserted after Phase 6.3: Conditional and formset correctness/lifecycle (analysis A1–A7); complete before Phase 7 freezes the theme surface (URGENT)
 - Phase 6.5 inserted after Phase 6.4: Remaining presentation contracts and decided cleanup — source analysis §8 (#259, C1/C2, Python no_label and obsolete guard removal) (URGENT)
 - Phase 06.6 inserted after Phase 06.5: Theme-adoption seams from the Tabler sync (#277–#280); source analysis §8 slice 6.6; complete before Phase 7 freezes the theme surface (URGENT)
+- Phase 06.7 inserted after Phase 06.6: Dynamic cancel navigation and origin query state (#302); approved scope and defaults; complete before Phase 7 freezes the public surface (URGENT)
 
 ## Deferred Items
 
@@ -603,6 +666,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-03T06:43:07.801739+00:00
-Stopped at: Phase 06.6 complete, ready to discuss Phase 7
+Last session: 2026-11-03T19:53:19.147283+00:00
+Stopped at: Phase 06.7 complete, ready to plan Phase 7
 Resume file: None

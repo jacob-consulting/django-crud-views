@@ -8,7 +8,7 @@ from urllib.parse import parse_qs, urlencode
 from django.contrib import messages
 from django.core.exceptions import BadRequest
 from django.db import transaction
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, QueryDict
 from django.utils.text import capfirst
 from django.utils.translation import gettext as _
 from django_filters.views import FilterView
@@ -18,6 +18,7 @@ from crud_views.lib.check import Check, CheckTemplateOrCode
 from crud_views.lib.session import SessionData
 from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view.base import cv_is_modal_request
+from crud_views.lib.view.cancel import clean_navigation_query
 
 
 class CrudViewProcessFormMixin:
@@ -26,6 +27,8 @@ class CrudViewProcessFormMixin:
     Note ProcessFormView.post is overridden.
     Why? Because we need a more detailed handling of the post method.
     """
+
+    cv_cancel_keys = "auto"
 
     def post(self, request, *args, **kwargs):  # NOSONAR S1172: Django View.post signature
         """
@@ -354,6 +357,23 @@ class ListViewTableFilterMixin(FilterView):
 
         return JsonResponse({"status": "ok", "filter_expanded": filter_expanded})
 
+    def _cv_store_filter_query(self, session, query):
+        if query:
+            session[self.cv_session_key_querystring] = query
+        else:
+            with contextlib.suppress(KeyError):
+                del session[self.cv_session_key_querystring]
+
+    def _cv_reset_filter_url(self, query):
+        keep = {}
+        order_param = getattr(self, "cv_order_param", "order")
+        dir_param = getattr(self, "cv_order_dir_param", "dir")
+        for key in ("sort", order_param, dir_param):
+            value = query.get(key, [None])[0]
+            if value:
+                keep[key] = value
+        return self.request.path + ("?" + urlencode(keep) if keep else "")
+
     def get(self, request, *args, **kwargs):
         """
         Add filter persistence via session here.
@@ -361,31 +381,29 @@ class ListViewTableFilterMixin(FilterView):
             https://github.com/LorenzoProd/django-persistent-filters
         """
 
+        self._cv_consume_cancel_restore(request)
         if not self.cv_filter_persistence:
             return super().get(request, *args, **kwargs)
 
         with SessionData.from_view(self) as sd:
             # get stored query string and request query string
-            stored_query_string = sd.get(self.cv_session_key_querystring, "")
+            stored_query_string = clean_navigation_query(
+                QueryDict(sd.get(self.cv_session_key_querystring, ""))
+            ).urlencode()
+            if stored_query_string != sd.get(self.cv_session_key_querystring, ""):
+                self._cv_store_filter_query(sd, stored_query_string)
             query_string = self.request.META["QUERY_STRING"]
+
+            if getattr(request, "_cv_cancel_restored", False):
+                self._cv_store_filter_query(sd, query_string)
+                stored_query_string = ""
 
             # reset filter ?
             qs = parse_qs(query_string)
             reset_filter = qs.get("reset_filter", ["false"])[0] == "true"
             if reset_filter:
-                with contextlib.suppress(KeyError):
-                    del sd[self.cv_session_key_querystring]
-                url = self.request.path
-                keep = {}
-                order_param = getattr(self, "cv_order_param", "order")
-                dir_param = getattr(self, "cv_order_dir_param", "dir")
-                for key in ("sort", order_param, dir_param):
-                    value = qs.get(key, [None])[0]
-                    if value:
-                        keep[key] = value
-                if keep:
-                    url += "?" + urlencode(keep)
-                return HttpResponseRedirect(url)
+                self._cv_store_filter_query(sd, "")
+                return HttpResponseRedirect(self._cv_reset_filter_url(qs))
 
             # there is a query string, update data
             if len(query_string) > 0:

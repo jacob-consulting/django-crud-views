@@ -451,7 +451,9 @@ def test_child_card_create_action_uses_row_parent(native, tp, client, world, cre
 
     response = client.get(_u(tp.book_vs, "card", parent_pk=world.a.pk))
     assert response.status_code == 200
-    content = response.content.decode()
+    from tests.test1.test_cancel_navigation import checked_action_markup
+
+    content = checked_action_markup(response)
     assert "MX-CARD Card Child" in content
     assert f'href="{_u(tp.book_vs, "detail", book.pk, world.a.pk)}">Open</a>' in content
     assert (f'href="{_create_url(tp, world)}">Sibling book</a>' in content) is (create_grant and enabled)

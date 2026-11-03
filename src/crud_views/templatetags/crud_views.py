@@ -279,6 +279,17 @@ def cv_context_button(context, key, obj=None):
 
 
 @register.simple_tag(takes_context=True)
+def cv_cancel_url(context, obj=None) -> str | None:
+    """Resolve Cancel for this form; custom templates must guard an omitted URL."""
+    view = cv_get_view(context)
+    obj = obj if obj else None  # unresolved template variables arrive as empty strings
+    if obj is None:
+        obj = getattr(view, "object", None)
+    request = context["request"]
+    return view.cv_get_cancel_url(obj=obj, user=request.user, request=request)
+
+
+@register.simple_tag(takes_context=True)
 @ignore_exception(ViewSetKeyFoundError, default_value=None)
 def cv_context_url(context, key, obj=None):
     obj = obj if obj else None  # fix empty string from template

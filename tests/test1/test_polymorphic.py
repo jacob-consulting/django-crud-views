@@ -105,6 +105,14 @@ def library_delete_case(request, monkeypatch, settings):
 
 
 def _exercise_actual_library_delete(case, monkeypatch, atomic, covered):
+    if case.family == "author":
+        from django.contrib.auth.models import User
+
+        from tests.lib.helper.user import user_viewset_permission
+        from tests.test1.app.views import cv_author
+
+        user = User.objects.get(pk=case.client.session["_auth_user_id"])
+        user_viewset_permission(user, cv_author, "view")
     from django.db.models.signals import post_delete, pre_delete
 
     from crud_views.lib.deletion import DeletePreviewContribution

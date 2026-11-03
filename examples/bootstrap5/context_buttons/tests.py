@@ -1,4 +1,7 @@
+from urllib.parse import parse_qs, urlsplit
+
 from django.contrib.auth import get_user_model
+from django.core import signing
 from django.test import TestCase
 from django.urls import reverse
 from lxml import html as lxml_html
@@ -49,8 +52,20 @@ class TicketDetailEditorTest(ContextButtonsTestCase):
 
     def test_url_tile_links_to_update(self):
         resp = self.detail(self.editor)
-        tile = f'href="{self.update_url}?cv_from=detail" class="card text-decoration-none" id="url-tile"'
-        self.assertIn(tile, self.rendered(resp))
+        (tile,) = lxml_html.fromstring(self.rendered(resp)).cssselect("#url-tile")
+        self.assertEqual(tile.tag, "a")
+        self.assertEqual(tile.get("class"), "card text-decoration-none")
+        link = tile.get("href")
+        self.assertEqual(urlsplit(link).path, self.update_url)
+        params = parse_qs(urlsplit(link).query)
+        self.assertEqual(params["cv_from"], ["detail"])
+        self.assertEqual(len(params["cv_from_cancel"]), 1)
+        capture = signing.Signer(salt="crud_views.cancel.v1").unsign_object(params["cv_from_cancel"][0])
+        self.assertEqual(capture, {"v": 1, "origin": "detail", "query": "", "viewset": ["", "ticket"], "parents": {}})
+        form = self.client.get(link)
+        (cancel,) = lxml_html.fromstring(form.content).xpath("//form//*[@data-cv-cancel-url]/@data-cv-cancel-url")
+        self.assertEqual(cancel, reverse("ticket-detail", kwargs={"pk": self.ticket.pk}))
+        self.assertEqual(self.client.get(cancel).status_code, 200)
 
     def test_gated_section_shown(self):
         self.assertIn('id="gated-section"', self.rendered(self.detail(self.editor)))

@@ -282,14 +282,14 @@ def test_parent_lookup_and_custom_failures_have_distinct_outcomes(cv_book, book_
 
 
 @pytest.fixture
-def state_routes():
+def state_routes(request):
     import uuid
 
     from django_filters import FilterSet
 
     from crud_views.lib.views.list import ListViewFilterFormHelper
     from crud_views.lib.views.mixins import ListViewTableFilterMixin
-    from crud_views.lib.viewset import ViewSet
+    from crud_views.lib.viewset import _REGISTRY, _REGISTRY_LOCK, ViewSet
     from tests.test1.app.models import Author
     from tests.test1.app.urls import urlpatterns
     from tests.test1.app.views import (
@@ -300,6 +300,16 @@ def state_routes():
         AuthorUpdateView,
     )
 
+    # URL fixtures register forms globally; preserve the registry object imported
+    # by checks and inventory tests while removing this fixture's registrations.
+    snapshot = dict(_REGISTRY)
+
+    def restore_registry():
+        with _REGISTRY_LOCK:
+            _REGISTRY.clear()
+            _REGISTRY.update(snapshot)
+
+    request.addfinalizer(restore_registry)
     vs = ViewSet(model=Author, name="cancel_state_" + uuid.uuid4().hex[:8])
 
     class AuthorFilter(FilterSet):

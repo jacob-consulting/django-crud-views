@@ -117,9 +117,14 @@ def test_token_only_handoff_and_explicit_allowlist(vehicle_client, monkeypatch, 
 
 
 def test_parallel_selector_forms_keep_original_state(vehicle_client):
+    from crud_views.lib.session import SessionData
+
     first = selector_link(vehicle_client, "x=first&x=")
     second = selector_link(vehicle_client, "x=second")
-    vehicle_client.get("/vehicle/?x=changed")
+    changed = vehicle_client.get("/vehicle/?x=changed")
+    with SessionData.from_view(changed.context["view"]) as memory:
+        memory["filter_query_string"] = "x=changed"
+    changed.wsgi_request.session.save()
     for link, query in [(second, "x=second"), (first, "x=first&x=")]:
         one = select(vehicle_client, link)
         two = select(vehicle_client, link)

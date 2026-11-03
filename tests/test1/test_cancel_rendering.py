@@ -1,7 +1,9 @@
 """Cancel parity across migrated templates, Crispy controls and invalid form responses."""
 
 import re
+from copy import copy
 from html import unescape
+from urllib.parse import urlencode
 
 import pytest
 from crispy_forms.bootstrap import FormActions
@@ -9,13 +11,27 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout
 from django.core.exceptions import ImproperlyConfigured
 from django.template import Context, Template
+from lxml import html as lxml_html
 
 from crud_views.lib.view.cancel import encode_cancel_state
 from crud_views.templatetags import crud_views as tags
 from tests.test1.app.models import Author
-from tests.test1.test_cancel_navigation import emitted_link, rendered_cancel
+from tests.test1.test_cancel_navigation import emitted_link
 
 MIGRATED = '{% load crud_views %}{% cv_cancel_url as url %}{% if url %}<a href="{{ url }}">Cancel</a>{% endif %}'
+
+
+def cancel_control(response):
+    nodes = lxml_html.fromstring(response.content).xpath(
+        "//form//button[@data-cv-cancel-url] | //form//a[normalize-space(.)='Cancel']"
+    )
+    assert len(nodes) == 1
+    return nodes[0]
+
+
+def rendered_cancel(response):
+    node = cancel_control(response)
+    return node.get("data-cv-cancel-url") or node.get("href")
 
 
 def test_cancel_url_tag_registered():
@@ -33,6 +49,9 @@ def assert_owner(response):
     assert html.count('name="csrfmiddlewaretoken"') == 1
     assert 'type="submit"' in html
     assert 'name="None"' not in html and 'id="div_id_None"' not in html
+    (form,) = lxml_html.fromstring(response.content).xpath("//form")
+    # Workflow's existing page form omits action, which submits to the current URL.
+    assert (form.get("action") or response.wsgi_request.get_full_path()) == response.wsgi_request.get_full_path()
 
 
 @pytest.mark.django_db
@@ -46,6 +65,7 @@ def test_invalid_posts_keep_surface_parity(
     source = cv_author_origin.get_view_class("list")
     monkeypatch.setattr(source, "cv_context_actions", ["create", "broadcast"])
     monkeypatch.setattr(source, "cv_list_actions", ["update", "delete", "contact"])
+    monkeypatch.setattr(cv_author_origin.get_view_class("broadcast"), "cv_icon_action", "create")
     target = cv_author_origin.get_view_class(key)
     monkeypatch.setattr(target, "cv_cancel_keys", "auto")
     prefix = f"/author_origin/{author_douglas_adams.pk}" if target.cv_object else "/author_origin"
@@ -62,8 +82,9 @@ def test_invalid_posts_keep_surface_parity(
         assert url == expected
         copied = migrated(response)
         assert unescape(re.search(r'href="([^"]+)"', copied)[1]) == url
-        assert "&amp;" in copied and "<script>" not in copied
-        assert re.search(rf"<{tag}\b[^>]*data-cv-cancel-url=", response.content.decode())
+        assert ("&amp;" in copied) is bool(query)
+        assert "<script>" not in copied
+        assert cancel_control(response).tag == tag
     assert list(Author.objects.values()) == before
 
 
@@ -97,9 +118,11 @@ def test_tag_errors_are_not_suppressed(client_user_author_origin, cv_author_orig
 @pytest.mark.django_db
 @pytest.mark.parametrize("key", ["create", "delete"])
 @pytest.mark.parametrize("allowed", [False, True])
+@pytest.mark.parametrize("tag", ["a", "button"])
 def test_custom_action_groups_filter_omitted_cancel(
-    client_user_author_origin, cv_author_origin, author_douglas_adams, monkeypatch, key, allowed
+    client_user_author_origin, cv_author_origin, author_douglas_adams, monkeypatch, settings, key, allowed, tag
 ):
+    settings.CRUD_VIEWS_BUTTON_CLASSES = {"form:cancel-tag": tag}
     target = cv_author_origin.get_view_class(key)
     calls = []
 
@@ -138,7 +161,14 @@ def test_custom_action_groups_filter_omitted_cancel(
     assert response.status_code == 200
     assert_owner(response)
     html = response.content.decode()
-    assert ("data-cv-cancel-url" in html) is allowed
+    assert (
+        bool(
+            lxml_html.fromstring(html).xpath(
+                "//form//a[normalize-space(.)='Cancel'] | //form//button[@data-cv-cancel-url]"
+            )
+        )
+        is allowed
+    )
     assert ("custom-cancel" in html) is allowed
     assert bool(calls) is allowed
     assert bool(migrated(response)) is allowed
@@ -173,6 +203,9 @@ def test_workflow_invalid_submission_inherits_cancel(
 
     user_viewset_permission(user_campaign_change, cv_campaign, "view")
     monkeypatch.setattr(cv_campaign.get_view_class("workflow"), "cv_modal", modal)
+    monkeypatch.setattr(
+        cv_campaign.get_view_class("list"), "get_queryset", lambda self: self.model.objects.order_by("pk")
+    )
     page = client_user_campaign_change.get("/campaign/?x=&x=workflow")
     link = emitted_link(page, f"/campaign/{campaign_new.pk}/workflow/")
     for _ in range(2):
@@ -201,7 +234,7 @@ def test_protected_delete_omits_form_and_cancel(client_user_author_origin, autho
 def test_request_override_uses_current_context(client_user_author_origin, cv_author_origin, monkeypatch):
     response = client_user_author_origin.get("/author_origin/create/")
     view = response.context["view"]
-    request = response.wsgi_request
+    request = copy(response.wsgi_request)
     request.GET = request.GET.copy()
     request.GET["cv_from_cancel"] = encode_cancel_state(view, "list", "x=override")
     monkeypatch.setattr(view, "cv_get_link_url", lambda *a, **kw: pytest.fail("Cancel must not capture its form"))
@@ -209,3 +242,57 @@ def test_request_override_uses_current_context(client_user_author_origin, cv_aut
         tags.cv_cancel_url(Context({"view": view, "request": request}))
         == "/author_origin/?x=override&cv_from_restore=1"
     )
+    assert view.request.GET == {}
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("key", ["create", "update"])
+def test_capture_does_not_change_save_location(client_user_author_origin, cv_author_origin, author_douglas_adams, key):
+    page = client_user_author_origin.get("/author_origin/?x=old")
+    view = page.context["view"]
+    link = view.cv_get_link_url(view.cv_get_cls(key), key, author_douglas_adams)
+    response = client_user_author_origin.post(link, {"first_name": "Saved", "last_name": "Name"})
+    assert response.status_code == 302
+    assert response["Location"] == "/author_origin/"
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("key", ["delete", "contact"])
+def test_capture_does_not_change_modal_success_location(client_user_author_modal, author_douglas_adams, key):
+    page = client_user_author_modal.get("/author_modal/?x=old")
+    view = page.context["view"]
+    link = view.cv_get_link_url(view.cv_get_cls(key), key, author_douglas_adams)
+    data = {"confirm": True} if key == "delete" else {"subject": "Hello", "body": "Message"}
+    response = client_user_author_modal.post(link, data, headers={"X-CV-Modal": "true"})
+    assert response.status_code == 204
+    assert response["X-CV-Redirect"] == "/author_modal/"
+
+
+@pytest.mark.parametrize("key", ["create", "update"])
+def test_cancel_does_not_enable_unsupported_modals(cv_author_origin, monkeypatch, key):
+    cls = cv_author_origin.get_view_class(key)
+    monkeypatch.setattr(cls, "cv_modal", True)
+    assert "viewset.E251" in [message.id for check in cls.checks() for message in check.messages()]
+
+
+@pytest.mark.django_db
+def test_template_autoescapes_resolver_url(client_user_author_origin, monkeypatch):
+    response = client_user_author_origin.get("/author_origin/create/")
+    url = '/author_origin/?q="quoted"&next=<script>alert(1)</script>'
+    monkeypatch.setattr(response.context["view"], "cv_get_cancel_url", lambda **kwargs: url)
+    result = migrated(response)
+    assert (
+        result
+        == '<a href="/author_origin/?q=&quot;quoted&quot;&amp;next=&lt;script&gt;alert(1)&lt;/script&gt;">Cancel</a>'
+    )
+
+
+@pytest.mark.django_db
+def test_invalid_capture_survives_repeated_posts(client_user_author_origin, author_douglas_adams):
+    link = f"/author_origin/{author_douglas_adams.pk}/update/?" + urlencode(
+        {"cv_from": "detail", "cv_from_cancel": "invalid"}
+    )
+    for _ in range(2):
+        response = client_user_author_origin.post(link, {})
+        assert rendered_cancel(response) == "/author_origin/card/"
+        assert "/author_origin/card/" in migrated(response)

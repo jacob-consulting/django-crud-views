@@ -125,11 +125,14 @@ def test_explicit_keys_are_fresh_and_repeatable(
 
 
 def test_auto_defaults_follow_registration_and_mro(cv_author, monkeypatch):
+    from crud_views.lib import viewset as viewset_module
     from crud_views.lib.view.cancel import effective_cancel_keys
     from crud_views.lib.views import ListView, UpdateView
     from crud_views.lib.viewset import ViewSet
     from tests.test1.test_cancel_origin import check_ids
 
+    # Late registration belongs to this test, not the process-wide form inventory.
+    monkeypatch.setattr(viewset_module, "_REGISTRY", dict(viewset_module._REGISTRY))
     viewset = ViewSet(model=Author, name="cancel_late_registry")
 
     class LateForm(UpdateView):

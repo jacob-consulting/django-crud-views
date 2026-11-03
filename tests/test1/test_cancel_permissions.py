@@ -152,6 +152,8 @@ def test_core_fallback_diagnostic_scoped_to_forms(cv_publisher, monkeypatch):
         assert not fallback_errors(cls)
     selector = ViewSet.get_viewset("vehicle").get_view_class("create_select")
     monkeypatch.setattr(selector, "cv_cancel_key", "missing")
+    assert not fallback_errors(selector)  # automatic cancellation has a usable list origin
+    monkeypatch.setattr(selector, "cv_cancel_keys", None)
     assert fallback_errors(selector)
 
 

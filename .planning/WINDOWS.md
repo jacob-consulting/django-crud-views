@@ -2,9 +2,9 @@
 schema_version: 1
 open_count: 6
 waived_count: 2
-fixed_count: 17
-total_count: 25
-last_updated: 2026-11-03T16:41:52.936Z
+fixed_count: 19
+total_count: 27
+last_updated: 2026-11-03T16:55:04.913Z
 ---
 
 # Broken Windows Ledger
@@ -40,6 +40,8 @@ last_updated: 2026-11-03T16:41:52.936Z
 | 23 | 06.6 | unrun-verify | .planning/phases/06.6-theme-adoption-seams-from-the-tabler-sync/06.6-06-PLAN.md |  | Task 06-02 real companion capture/check blocked: pytest, pytest-django and pytest-xdist absent; source HEAD externally advanced from pinned revision. | fixed |  | 2026-11-02T21:10:26.684Z | 2026-11-02T21:25:49.151Z |
 | 24 | 06.7 | deviation | src/crud_views/lib/crispy/form.py |  | Share one cancel context during button rendering to prevent duplicate destination state evaluation while preserving custom kwargs hooks. | fixed |  | 2026-11-03T16:41:44.156Z | 2026-11-03T16:41:52.777Z |
 | 25 | 06.7 | deviation | tests/test1/test_crispy_buttons.py |  | Authorize list destinations locally in 17 presentation cases whose pre-plan fixtures lacked the permission required for visible Cancel. | fixed |  | 2026-11-03T16:41:44.314Z | 2026-11-03T16:41:52.936Z |
+| 26 | 06.7 | deviation | tests/test1/test_cancel_permissions.py |  | Migrate selector fallback diagnostic to automatic defaults while retaining explicit static invalid-fallback coverage. | fixed |  | 2026-11-03T16:54:56.249Z | 2026-11-03T16:55:04.782Z |
+| 27 | 06.7 | deviation | tests/test1/test_cancel_navigation.py |  | Isolate late-registration fixture registry so it cannot contaminate the registered-form inventory. | fixed |  | 2026-11-03T16:54:56.421Z | 2026-11-03T16:55:04.913Z |
 
 ````json
 [
@@ -357,6 +359,32 @@ last_updated: 2026-11-03T16:41:52.936Z
     "reason": "",
     "recorded_at": "2026-11-03T16:41:44.314Z",
     "resolved_at": "2026-11-03T16:41:52.936Z",
+    "milestone": "v1.0"
+  },
+  {
+    "id": 26,
+    "kind": "deviation",
+    "phase": "06.7",
+    "file": "tests/test1/test_cancel_permissions.py",
+    "line": null,
+    "description": "Migrate selector fallback diagnostic to automatic defaults while retaining explicit static invalid-fallback coverage.",
+    "status": "fixed",
+    "reason": "",
+    "recorded_at": "2026-11-03T16:54:56.249Z",
+    "resolved_at": "2026-11-03T16:55:04.782Z",
+    "milestone": "v1.0"
+  },
+  {
+    "id": 27,
+    "kind": "deviation",
+    "phase": "06.7",
+    "file": "tests/test1/test_cancel_navigation.py",
+    "line": null,
+    "description": "Isolate late-registration fixture registry so it cannot contaminate the registered-form inventory.",
+    "status": "fixed",
+    "reason": "",
+    "recorded_at": "2026-11-03T16:54:56.421Z",
+    "resolved_at": "2026-11-03T16:55:04.913Z",
     "milestone": "v1.0"
   }
 ]

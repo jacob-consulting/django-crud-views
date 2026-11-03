@@ -4,10 +4,11 @@ from collections.abc import Callable, Iterable, Iterator, Sequence
 from dataclasses import dataclass, field
 from typing import Any
 
+from crud_views.lib.button_classes import FORM_KINDS
 from crud_views.lib.check import Check, CheckExpression, CheckWarningExpression
 from crud_views.lib.settings import crud_views_settings
 
-from .label_mode import LABEL_MODES, is_label_mode_map
+from .label_mode import LABEL_MODES, is_label_mode, is_label_mode_map
 
 
 def cv_is_inline_keys(value: Any) -> bool:
@@ -69,6 +70,62 @@ def cv_label_mode_checks(cls, attribute: str, known_keys: Iterable[str] | None) 
         id="W291",
         expression=not unknown,
         msg=f"{attribute} names {unknown!r}, which are not among this view's actions {known!r} (typo?)",
+    )
+
+
+_FORM_FLOOR_HINT = "kinds not named take the form floor CRUD_VIEWS_LABEL_MODE_DEFAULTS['form']"
+
+
+def cv_is_form_label_mode_map(value: Any) -> bool:
+    """True for a dict of finite form kind (button_classes.FORM_KINDS) -> label mode (Phase 6).
+
+    None is not accepted here: callers that allow None (the ViewSet field) check it themselves. Unlike the open
+    context / list maps, a key outside FORM_KINDS is invalid.
+    """
+    return isinstance(value, dict) and all(
+        isinstance(key, str) and key in FORM_KINDS and is_label_mode(mode) for key, mode in value.items()
+    )
+
+
+def cv_form_label_mode_checks(cls, attribute: str = "cv_form_actions_label_mode") -> Iterator[Check]:
+    """viewset.E211 / E210 / W291 for a view's own cv_form_actions_label_mode (Phase 6, D-16).
+
+    A form-only policy, distinct from cv_label_mode_checks: a value that is not None or a dict, or a dict with a
+    non-string key, is one E211 and stops the traversal; each invalid mode of a string-keyed dict is one E210, in
+    insertion order; kinds outside the finite FORM_KINDS whose modes are valid are one W291. The ViewSet and setting
+    maps are validated by their own owners (constructor / E106), never here. The mode is never resolved.
+    """
+    value = getattr(cls, attribute)
+    if value is None:
+        return
+    kinds = sorted(FORM_KINDS)
+    if not isinstance(value, dict) or not all(isinstance(key, str) for key in value):
+        yield CheckExpression(
+            context=cls,
+            id="E211",
+            expression=False,
+            msg=(
+                f"{attribute} must be None or a dict of form kind -> one of {sorted(LABEL_MODES)}, got {value!r} "
+                f"(form kinds: {kinds}; {_FORM_FLOOR_HINT})"
+            ),
+        )
+        return
+    unknown: list[str] = []
+    for kind, mode in value.items():
+        if not is_label_mode(mode):
+            yield CheckExpression(
+                context=cls,
+                id="E210",
+                expression=False,
+                msg=f"{attribute} form kind {kind!r} must be one of {sorted(LABEL_MODES)}, got {mode!r}",
+            )
+        elif kind not in FORM_KINDS:
+            unknown.append(kind)
+    yield CheckWarningExpression(
+        context=cls,
+        id="W291",
+        expression=not unknown,
+        msg=f"{attribute} names {unknown!r}, which are not form kinds {kinds} (typo?); {_FORM_FLOOR_HINT}",
     )
 
 

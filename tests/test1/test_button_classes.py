@@ -61,6 +61,8 @@ EXPECTED_KEYS = {
     "list:hidden-label",
     "card:hidden-label",
     "pagination:hidden-label",
+    # the form leaf's utilities (Phase 6): never a mode suffix
+    "form:hidden-label",
     "card:root",
     "card:body",
     "card:title",
@@ -73,6 +75,7 @@ EXPECTED_KEYS = {
     "list:icon-host",
     "card:icon-host",
     "menu:icon-host",
+    "form:icon-host",
 }
 
 
@@ -87,7 +90,7 @@ def _isolate_registry():
 
 
 def test_default_table_is_complete():
-    assert len(EXPECTED_KEYS) == 71
+    assert len(EXPECTED_KEYS) == 73
     assert set(DEFAULT_BUTTON_CLASSES) == EXPECTED_KEYS
     assert get_button_class("context", "primary") == "btn btn-outline-primary btn-lg"
     assert get_button_class("card", "danger") == "btn btn-secondary btn-sm"
@@ -114,6 +117,8 @@ def test_documented_default_key_count_matches_table():
         ("list", "hidden-label", "visually-hidden"),
         ("card", "hidden-label", "visually-hidden"),
         ("pagination", "hidden-label", "visually-hidden"),
+        ("form", "hidden-label", "visually-hidden"),
+        ("form", "icon-host", "{name_class}"),
     ],
 )
 def test_utility_slots_default_to_the_bootstrap_word(location, slot, default):
@@ -301,8 +306,9 @@ host_icons = override_settings(CRUD_VIEWS_ICON_LIBRARIES=HOST_LIBRARY, CRUD_VIEW
 
 
 def test_icon_host_default_slots():
-    for location in ("context", "list", "card", "menu"):
+    for location in ("context", "list", "card", "menu", "form"):
         assert DEFAULT_BUTTON_CLASSES[f"{location}:icon-host"] == "{name_class}"
+    assert len([key for key in DEFAULT_BUTTON_CLASSES if key.endswith(":icon-host")]) == 5
 
 
 @host_icons
@@ -331,3 +337,25 @@ def test_get_icon_host_class_slot_none():
 def test_get_icon_host_class_unusable_slot():
     with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"list:icon-host": "{name}"}):
         assert get_icon_host_class("list", "update") == ""
+
+
+@pytest.mark.parametrize("slot", ["hidden-label", "icon-host"])
+@pytest.mark.parametrize("mode", ["label", "icon", "both"])
+def test_form_utility_keys_take_no_mode_suffix(slot, mode):
+    # a utility key is location:slot only; a mode suffix is an unknown key (W362), never a form-kind mode key
+    key = f"form:{slot}:{mode}"
+    assert not bc._is_action_mode_key(key)
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={key: "x"}):
+        assert [m.id for m in button_class_check_messages() if key in m.msg] == ["crud_views.W362"]
+        assert get_button_class("form", slot, mode) == "x"  # addressable, but reported
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={f"form:{slot}": "y"}):
+        assert [m for m in button_class_check_messages() if f"form:{slot}" in m.msg] == []
+
+
+@host_icons
+def test_form_icon_host_class():
+    assert get_icon_host_class("form", "update") == "icon-edit"
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"form:icon-host": "icon {name_class}"}):
+        assert get_icon_host_class("form", "update") == "icon icon-edit"
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"form:icon-host": None}):
+        assert get_icon_host_class("form", "update") == ""

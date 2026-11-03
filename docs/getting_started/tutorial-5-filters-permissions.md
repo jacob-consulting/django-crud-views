@@ -30,8 +30,10 @@ class AuthorFilterFormHelper(ListViewFilterFormHelper):
 ```
 
 `ListViewFilterFormHelper` is a crispy `FormHelper` subclass tuned for filter
-forms (no submit button of its own — the list view renders one). Set
-`layout` the same way you would on a `CrispyModelForm`.
+forms. Declare only the fields in `layout`, the same way you would on a
+`CrispyModelForm`: the helper appends the Apply and Reset buttons after them.
+To replace or remove those buttons, override its `get_form_actions()` hook, see
+[Custom filter helpers](../reference/list_view.md#custom-filter-helpers).
 
 ## The final list view
 

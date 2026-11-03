@@ -156,7 +156,7 @@ describe("list.filter.js", () => {
         f.toggle.click();
         expect(f.toggle.getAttribute("aria-expanded")).toBe("true");
         expect([f.open.hidden, f.close.hidden]).toEqual([true, false]);
-        expect(f.toggle.querySelector("#cv-filter-toggle > span:not([data-cv-filter-icon])")).toBe(f.label);
+        expect(f.toggle.querySelector(":scope > span:not([data-cv-filter-icon])")).toBe(f.label);
         expect(f.label.textContent).toBe("Filter");
         expect(fetchMock).toHaveBeenCalledWith("/books/", {
             method: "POST",
@@ -242,6 +242,113 @@ describe("list.filter.js", () => {
         await loadScript("list.filter");
         document.getElementById("filter-button-reset").click();
         expect(nav.href).toBe(expected);
+    });
+
+    // Phase 06 (D-14/D-17): the filter helper renders Reset through the form-button leaf as a type="reset"
+    // <button name="reset" id="filter-button-reset"> inside #filter-form, with a label, icon or both body
+    // (crud_views/tags/button/form.html), followed by the retained sort / order / dir hidden inputs.
+    const RESET_ICON = '<i class="fa-solid fa-rotate-left" aria-hidden="true"></i>';
+    const RESET_BODIES = {
+        label: "<span>Reset Filter</span>",
+        icon: `${RESET_ICON}<span class="visually-hidden">Reset Filter</span>`,
+        both: `${RESET_ICON} <span>Reset Filter</span>`,
+    };
+
+    function filterForm(mode, { queryString = "", fields = true } = {}) {
+        // the toggle in label mode: its icon loop runs over no icon wrapper at all
+        document.body.innerHTML = `
+            <div id="cv-config" data-request-path="/publisher/" data-query-string="" data-csrf-token="t" hidden></div>
+            <button type="button" id="cv-filter-toggle" aria-expanded="false" aria-controls="filter-collapse">
+                <span>Filter</span>
+            </button>
+            <div id="filter-collapse">
+                <form id="filter-form" method="get">
+                    ${fields ? '<input type="text" name="name" class="textinput form-control" id="id_name" value="">' : ""}
+                    <button type="submit" name="submit" value="Apply Filter" id="filter-button"
+                            class="btn btn-primary"><span>Apply Filter</span></button>
+                    <button type="reset" name="reset" value="Reset Filter" id="filter-button-reset"
+                            class="btn btn-secondary">${RESET_BODIES[mode]}</button>
+                    <input type="hidden" name="sort" value="name">
+                    <input type="hidden" name="order" value="name">
+                    <input type="hidden" name="dir" value="desc">
+                </form>
+            </div>`;
+        const config = vi.fn(() => ({ request: { path: "/publisher/", query_string: queryString }, csrfToken: "t" }));
+        vi.stubGlobal("cvGetConfig", config);
+        const form = document.getElementById("filter-form");
+        return { form, reset: document.getElementById("filter-button-reset"), field: form.elements.name, config };
+    }
+
+    const RESET_TARGETS = [
+        ["the button", (b) => b],
+        ["its label", (b) => b.querySelector("span")],
+        ["its icon", (b) => b.querySelector("i") ?? b.querySelector("span")],
+    ];
+
+    describe.each(Object.keys(RESET_BODIES))("a %s-body filter reset", (mode) => {
+        it.each(RESET_TARGETS)("a click on %s resets the fields natively and navigates once", async (_n, pick) => {
+            const f = filterForm(mode, { queryString: "sort=name&order=name&dir=desc&name=pen&page=2" });
+            await loadScript("list.filter");
+            expect(document.querySelectorAll("#filter-button-reset")).toHaveLength(1);
+            f.field.value = "pen";
+            const resets = [];
+            f.form.addEventListener("reset", (event) => resets.push(event.defaultPrevented));
+            const submit = vi.fn();
+            f.form.addEventListener("submit", submit);
+            const target = pick(f.reset);
+            expect(f.reset.contains(target)).toBe(true);
+            const event = new MouseEvent("click", { bubbles: true, cancelable: true });
+            target.dispatchEvent(event);
+            expect(event.defaultPrevented).toBe(false); // the native reset is not cancelled
+            expect(resets).toEqual([false]);
+            expect(f.field.value).toBe("");
+            expect([...new FormData(f.form).entries()]).toEqual([
+                ["name", ""],
+                ["sort", "name"],
+                ["order", "name"],
+                ["dir", "desc"],
+            ]);
+            expect(f.config).toHaveBeenCalledTimes(1); // the reset handler ran exactly once
+            expect(nav.href).toBe("/publisher/?sort=name&order=name&dir=desc&reset_filter=true");
+            expect(submit).not.toHaveBeenCalled();
+            expect(toggle).not.toHaveBeenCalled();
+            expect(fetchMock).not.toHaveBeenCalled();
+        });
+    });
+
+    it.each([
+        ["no filter field, no query", false, "", "/publisher/?reset_filter=true"],
+        ["no filter field, retained sort", false, "dir=asc&sort=name", "/publisher/?sort=name&dir=asc&reset_filter=true"],
+        ["empty retained values", true, "sort=&order=&dir=&name=", "/publisher/?sort=&order=&dir=&reset_filter=true"],
+        [
+            "encoded non-ASCII values",
+            true,
+            "order=n%C3%A4me&sort=%E5%90%8D&name=%C3%BC&dir=desc",
+            "/publisher/?sort=%E5%90%8D&order=n%C3%A4me&dir=desc&reset_filter=true",
+        ],
+        ["raw non-ASCII values", true, "sort=名前&order=ä", "/publisher/?sort=%E5%90%8D%E5%89%8D&order=%C3%A4&reset_filter=true"],
+        ["plus and encoded plus", true, "sort=a+b&order=a%2Bb", "/publisher/?sort=a+b&order=a%2Bb&reset_filter=true"],
+        ["encoded separators", true, "sort=a%26b%3Dc&dir=%23", "/publisher/?sort=a%26b%3Dc&dir=%23&reset_filter=true"],
+        ["a repeated key keeps its first value", true, "sort=a&sort=b", "/publisher/?sort=a&reset_filter=true"],
+        ["a stale reset flag is not duplicated", true, "reset_filter=true&sort=a", "/publisher/?sort=a&reset_filter=true"],
+    ])("reset keeps the ordering parameters: %s", async (_n, fields, queryString, expected) => {
+        const f = filterForm("icon", { queryString, fields });
+        await loadScript("list.filter");
+        f.reset.querySelector("i").click();
+        expect(nav.href).toBe(expected);
+        expect(f.config).toHaveBeenCalledTimes(1);
+    });
+
+    it("the label-mode toggle stays safe next to the reset (an empty icon loop)", async () => {
+        const f = filterForm("label");
+        await loadScript("list.filter");
+        const label = document.querySelector("#cv-filter-toggle > span");
+        document.getElementById("cv-filter-toggle").click();
+        expect(toggle).toHaveBeenCalledTimes(1);
+        expect(document.getElementById("cv-filter-toggle").getAttribute("aria-expanded")).toBe("true");
+        expect(document.querySelector("#cv-filter-toggle > span")).toBe(label);
+        f.reset.querySelector("span").click();
+        expect(nav.href).toBe("/publisher/?reset_filter=true");
     });
 
     describe.each(LAYOUTS)("a %s-mode toggle with %s icons (#262)", (mode, placement) => {

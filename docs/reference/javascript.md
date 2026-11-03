@@ -104,6 +104,7 @@ the marker's value names where the trigger sits:
 | `card-order` | the ascending / descending toggles of the card ordering bar |
 | `formset` | the formset row controls (move up, move down, add, delete) |
 | `object-detail` | the property-detail button of `crud_views_object_detail` |
+| `form` | icon-only crispy form buttons (in `"icon"` mode only, see [Forms](buttons.md#forms)) |
 | `""` | a bare `data-cv-tooltip` in your own templates |
 
 Menu items and the `⋯` toggle carry no marker. With Bootstrap's JavaScript loaded, the default adapter turns every

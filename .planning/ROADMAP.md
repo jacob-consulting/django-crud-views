@@ -31,6 +31,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 6.4: Conditional and formset correctness/lifecycle (INSERTED)** - analysis A1–A7: correct conditional state, server save behavior and dynamic formset initialization before the freeze (completed 2026-11-02)
 - [x] **Phase 6.5: Remaining presentation contracts and decided cleanup (INSERTED)** - analysis #259/C1/C2 and decided alias cleanup before the freeze (completed 2026-11-02)
 - [x] **Phase 6.6: Theme-adoption seams from the Tabler sync (INSERTED)** - issues #277–#280 before the freeze (completed 2026-11-03)
+- [ ] **Phase 6.7: Dynamic cancel navigation and origin query state (INSERTED)** - #302: dynamic defaults and reliable origin query restoration before the freeze
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Phase Details
@@ -771,18 +772,69 @@ Plans:
 
 **UI hint**: yes (forms, action groups and alerts across stock and reference themes).
 
+### Phase 06.7: Dynamic cancel navigation and origin query state (INSERTED)
+
+**Goal:** Cancel returns to the originating allowed sibling view with its filters, sorting and pagination preserved,
+independently of session changes in another tab or parent context. Standard forms enable dynamic cancellation by
+default while retaining explicit static overrides and the List fallback.
+**Source**: [Issue #302 — Dynamic cancel navigation by default, preserving origin query state](https://github.com/jacob-consulting/django-crud-views/issues/302)
+**Requirements**: CAN-01, CAN-02, CAN-03, CAN-04, CAN-05, CAN-06, CAN-07
+**Depends on:** Phase 06.6
+**Parallel with**: None (settle the cancel contract before Phase 7 freezes the public surface).
+**Decisions settled**: Create and no-object custom forms accept registered list/card origins; update, delete and
+object-based custom forms also accept detail. `cv_cancel_key` remains the fallback (default `"list"`, with existing
+card fallback); explicit `cv_cancel_keys=None` keeps static cancellation and explicit lists select allowed keys.
+Unspecified defaults must remain distinguishable from explicit static overrides. Destinations stay within the same
+ViewSet; detail destinations use the form's existing object.
+**Success Criteria** (what must be TRUE):
+
+  1. List → update/create/delete → Cancel restores the originating list query; detail → update/delete → Cancel
+     returns to the same object's detail without changing or deleting it. Equivalent custom form flows work.
+  2. List/card origins preserve repeated query values, filters, sorting and page. Explicitly unfiltered origins
+     remain unfiltered despite stored session filters, another tab cannot overwrite the captured destination,
+     and nested ViewSets retain the correct parent context. Internal navigation parameters do not accumulate.
+  3. Origin information survives invalid submissions for all supported form types and polymorphic type selection.
+     Crispy buttons, native cancel links, supported modals and the documented custom-template URL helper resolve
+     the same destination.
+  4. Missing, malformed, disallowed or unusable origin information falls back safely. Explicit static cancellation
+     remains supported; Save and successful deletion redirects retain their existing behavior.
+  5. Tests cover issue #302's acceptance checklist. Documentation covers defaults, overrides, query state and the
+     URL-level API; the default change has a `### Breaking` changelog entry and paired `docs/migrating-1.0.md` guidance.
+
+**Scope exclusions**: Detail → create → detail (Create uses its configured fallback), cross-ViewSet navigation,
+history stacks, browser-only state, success redirect changes, new modal support and new Cancel controls on protected
+deletion pages that currently hide the form.
+**Plans:** 0/5 plans executed
+
+Plans:
+**Wave 1**
+- [ ] 06.7-01-PLAN.md — Capture and restore independent cancel destinations with automatic form defaults
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 06.7-02-PLAN.md — Resolve permission-aware destinations and actionable fallback diagnostics
+- [ ] 06.7-03-PLAN.md — Preserve origin across selectors and unify custom-template/modal rendering
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [ ] 06.7-04-PLAN.md — Publish executable immediate migrations and updated examples
+
+**Wave 4** *(blocked on Wave 3 completion)*
+- [ ] 06.7-05-PLAN.md — Prove browser cancellation and record supported-runtime preservation
+
+**UI hint**: yes (cancel navigation across existing form surfaces; no layout redesign).
+
 ### Phase 7: Theme-surface stability policy
 
 **Goal**: Theme authors can see exactly which names they may rely on at 1.0.0, and a test stops any public theme name
 from shipping undocumented or being documented without existing.
 **Source**: plan 4 · branch `docs/stability-theme-surface`
-**Depends on**: Phase 6.6, Phase 4 and Phase 5 (and so, transitively, Phases 6.5, 6.4, 6.3, 6.2, 6.1, 6, 1 and 2). It merges last, before the 1.0.0
-bump. If Phases 4/5 are dropped, it depends on Phase 6.6 only and documents the surface as it is. Include the cancel
+**Depends on**: Phase 6.7, Phase 4 and Phase 5 (and so, transitively, Phases 6.6, 6.5, 6.4, 6.3, 6.2, 6.1, 6, 1 and 2). It merges last, before the 1.0.0
+bump. If Phases 4/5 are dropped, it depends on Phase 6.7 only and documents the surface as it is. Include the cancel
 tag key, `Button(tag=...)` and form-leaf `cv_tag` contract introduced by #275, plus the settled request,
 protected-preview and Guardian configuration contracts from Phase 6.2, qualified by the unresolved acceptance
 split above until Phase 6.3 remediation is verified. Include the settled conditional/formset contracts from Phase 6.4.
 Include the settled heading, object-detail ID/context and alias cleanup contracts from Phase 6.5.
 Include the settled form ownership, label-mode registration, action-group and alert contracts from Phase 6.6.
+Include the dynamic cancel defaults, origin query preservation and custom-template URL API settled by Phase 6.7.
 **Parallel with**: None
 **Research/spec**: **Needs a maintainer decision/spec**:
 
@@ -814,7 +866,7 @@ Include the settled form ownership, label-mode registration, action-group and al
 ## Progress
 
 **Execution Order:**
-Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 6.1 → 6.2 → 6.3 → 6.4 → 6.5 → 6.6 → 7) is valid. With parallelization, run in waves:
+Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 6.1 → 6.2 → 6.3 → 6.4 → 6.5 → 6.6 → 6.7 → 7) is valid. With parallelization, run in waves:
 
 | Wave | Phases | Notes |
 |------|--------|-------|
@@ -827,7 +879,8 @@ Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 6.1 → 6.2 → 6.3 → 6.4 �
 | 7 | 6.4 (analysis A1–A7) | Conditional/formset correctness and lifecycle before freezing their theme contracts |
 | 8 | 6.5 (analysis #259/C1/C2) | Remaining presentation contracts and decided alias cleanup before the freeze |
 | 9 | 6.6 (#277–#280) | Theme-adoption seams from the Tabler sync before the freeze |
-| 10 | 7 (plan 4) | Needs 6.6, 4 and 5 merged; last change before the 1.0.0 bump |
+| 10 | 6.7 (#302) | Dynamic cancel defaults and origin query preservation before the freeze |
+| 11 | 7 (plan 4) | Needs 6.7, 4 and 5 merged; last change before the 1.0.0 bump |
 
 Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 
@@ -845,4 +898,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 6.4. Conditional and formset correctness/lifecycle | 26/26 | Complete    | 2026-11-02 |
 | 6.5. Remaining presentation contracts and decided cleanup | 9/9 | Complete    | 2026-11-02 |
 | 6.6. Theme-adoption seams from the Tabler sync | 10/10 | Complete    | 2026-11-03 |
+| 6.7. Dynamic cancel navigation and origin query state | 0/5 | Planned     | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

@@ -164,6 +164,18 @@ the initial spec-less fallback was skipped while IDs were TBD, and generated no 
 - [x] **THEME-05**: Real reference theme/pack revisions have an unmodified baseline, all required automated/real-browser scenarios pass with no new regressions, required overrides do not grow, and a tested exact-base adaptation patch/replay/migration handoff is retained and delivered to the companion under the 2026-11-02 D-11/D-14 amendment; unrelated work and coverage limits remain explicit.
 - [x] **THEME-06**: Executable migration examples document ownership, diagnostics, registration/precedence and group opt-in; nested-form/token DOM correction and every intentional compatibility change are recorded, Breaking entries pair with migrating-1.0.md, and Phase 7 receives the exact settled surface.
 
+### Dynamic cancel navigation and origin query state (Phase 06.7)
+
+Source: issue #302 and Phase 06.7 CONTEXT.md D-01–D-16. These are pending implementation requirements.
+
+- [ ] **CAN-01**: Standard create/update/delete and object/no-object custom forms use automatic eligible sibling origins by default; explicit None/empty lists remain static, explicit lists allow custom keys, list-to-card fallback survives, and detail origins use only the current saved form object. Detail-to-create restores no source object.
+- [ ] **CAN-02**: Emitted sibling links capture bounded query state with repeated/blank values, filters, ordering and pagination; validated captures remain independent across tabs and parent contexts, bind to the same ViewSet/current parent coordinates, and strip internal navigation fields without accepting return URLs.
+- [ ] **CAN-03**: Cancel restores nonempty or explicitly empty list state before session fallback; enabled persistence remembers the restored query or clears old filters, disabled persistence never writes or clears memory, and ordinary bare-list behavior remains intact.
+- [ ] **CAN-04**: Invalid submissions retain the original capture across create/update/delete and both custom-form families, supported modal replacements and polymorphic selector-to-create forwarding.
+- [ ] **CAN-05**: Allowed usable accessible origin wins, then accessible configured fallback, then omission; malformed/disallowed input falls back safely, missing configured fallback produces an actionable configuration diagnostic, and core/Guardian object, queryset, parent and state policies remain authoritative.
+- [ ] **CAN-06**: Crispy buttons, native anchors and a documented cancel URL helper share destination and omission; copied key-only cancel templates migrate immediately, with dynamic/static examples, settings/limits and paired Breaking/migration guidance.
+- [ ] **CAN-07**: Real request/browser acceptance proves all five issue flows without writes on Cancel and preserves save/delete success redirects, form ownership/CSRF/escaping, conditional/formset/modal contracts and existing protected-delete omission; no cross-ViewSet/history, browser-state capture or additional modal support is introduced.
+
 ### Stability policy (plan 4)
 
 - [ ] **STAB-01**: `docs/development/stability.md` lists the theme surface (icons, buttons, alerts, JavaScript adapters/events/DOM contract, theme hooks, leaf templates) with explicit names, no wildcards
@@ -205,6 +217,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
+| CAN-01 | Phase 6.7 | Pending |
+| CAN-02 | Phase 6.7 | Pending |
+| CAN-03 | Phase 6.7 | Pending |
+| CAN-04 | Phase 6.7 | Pending |
+| CAN-05 | Phase 6.7 | Pending |
+| CAN-06 | Phase 6.7 | Pending |
+| CAN-07 | Phase 6.7 | Pending |
 | THEME-01 | Phase 6.6 | Complete |
 | THEME-02 | Phase 6.6 | Complete |
 | THEME-03 | Phase 6.6 | Complete |
@@ -285,8 +304,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 **Coverage:**
 
-- v1 requirements: 77 total (counted from defined requirement entries during Phase 06.6 planning)
-- Mapped to phases: 77
+- v1 requirements: 84 total (77 prior requirements plus seven CAN requirements)
+- Mapped to phases: 84
 - Unmapped: 0 ✓
 
 ---

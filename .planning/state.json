@@ -64,15 +64,20 @@
       "status": "complete"
     },
     {
+      "number": "6.7",
+      "name": "Dynamic cancel navigation and origin query state",
+      "status": "pending"
+    },
+    {
       "number": "7",
       "name": "Theme-surface stability policy",
       "status": "pending"
     }
   ],
   "next": {
-    "command": "$gsd-discuss-phase 7",
-    "label": "Discuss Phase 7",
-    "reason": "Phase 06.6 complete; theme-surface stability decisions remain"
+    "command": "$gsd-plan-phase 06.7",
+    "label": "Plan Phase 06.7",
+    "reason": "Phase 06.7 inserted for approved issue #302; plan before the Phase 7 stability freeze"
   },
-  "updated_at": "2026-11-03T06:43:07.802842+00:00"
+  "updated_at": "2026-11-03T13:02:17.889Z"
 }

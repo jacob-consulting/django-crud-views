@@ -1,0 +1,28 @@
+F...                                                                     [100%]
+=================================== FAILURES ===================================
+_ test_delivery_ignores_only_untracked_gitignored_ide_metadata_without_changing_it _
+
+tmp_path = PosixPath('/tmp/pytest-of-alex/pytest-1547/test_delivery_ignores_only_unt0')
+
+    def test_delivery_ignores_only_untracked_gitignored_ide_metadata_without_changing_it(tmp_path):
+        root, _ = repository(tmp_path / "ide repository", {**FILES, ".gitignore": b".idea/\n"})
+        expected = sources.working_files(root)
+        baseline = {"preserved": sources.preservation(root)}
+        snapshot = sources.load_json(sources.private_snapshot(root, tmp_path / "private"))
+        metadata = root / ".idea/inspectionProfiles/settings.xml"
+        metadata.parent.mkdir(parents=True)
+        metadata.write_bytes(b"local IDE preferences")
+        before = sources.digest(metadata.read_bytes())
+    
+>       assert sources.working_files(root) == expected
+E       AssertionError: assert {'.gitignore'...rn []\n', ...} == {'.gitignore'...rn []\n', ...}
+E         
+E         Omitting 8 identical items, use -vv to show
+E         Left contains 1 more item:
+E         {'.idea/inspectionProfiles/settings.xml': b'local IDE preferences'}
+E         Use -v to get more diff
+
+tests/browser/test_theme_adoption_sources.py:80: AssertionError
+=========================== short test summary info ============================
+FAILED tests/browser/test_theme_adoption_sources.py::test_delivery_ignores_only_untracked_gitignored_ide_metadata_without_changing_it
+1 failed, 3 passed, 149 deselected in 0.81s

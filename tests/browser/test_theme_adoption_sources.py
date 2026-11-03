@@ -67,6 +67,47 @@ def test_working_inventory_excludes_generated_egg_info_without_deleting_it(tmp_p
     assert (metadata / "PKG-INFO").read_text() == "editable runtime metadata"
 
 
+def test_delivery_ignores_only_untracked_gitignored_ide_metadata_without_changing_it(tmp_path):
+    root, _ = repository(tmp_path / "ide repository", {**FILES, ".gitignore": b".idea/\n"})
+    expected = sources.working_files(root)
+    baseline = {"preserved": sources.preservation(root)}
+    snapshot = sources.load_json(sources.private_snapshot(root, tmp_path / "private"))
+    metadata = root / ".idea/inspectionProfiles/settings.xml"
+    metadata.parent.mkdir(parents=True)
+    metadata.write_bytes(b"local IDE preferences")
+    before = sources.digest(metadata.read_bytes())
+
+    assert sources.working_files(root) == expected
+    assert sources.check_delivery_tree(root, expected, baseline, snapshot)["index_preserved"]
+    assert sources.digest(metadata.read_bytes()) == before
+
+
+@pytest.mark.parametrize("mutation", ["tracked-ide", "nonignored-ide", "ignored-source"])
+def test_delivery_still_rejects_source_changes_when_ide_metadata_is_ignored(tmp_path, mutation):
+    root, _ = repository(
+        tmp_path / "ide repository", {**FILES, ".gitignore": b".idea/workspace.xml\nsrc/ignored.py\n"}
+    )
+    tracked = root / ".idea/workspace.xml"
+    tracked.parent.mkdir()
+    tracked.write_bytes(b"tracked IDE configuration")
+    run_git(root, "add", "-f", ".idea/workspace.xml")
+    run_git(root, "commit", "-m", "tracked IDE configuration")
+    expected = sources.working_files(root)
+    assert expected[".idea/workspace.xml"] == b"tracked IDE configuration"
+    baseline = {"preserved": sources.preservation(root)}
+    snapshot = sources.load_json(sources.private_snapshot(root, tmp_path / "private"))
+    path = {
+        "tracked-ide": tracked,
+        "nonignored-ide": root / ".idea/project.xml",
+        "ignored-source": root / "src/ignored.py",
+    }[mutation]
+    path.write_bytes(b"unexpected source change")
+
+    assert sources.working_files(root)[path.relative_to(root).as_posix()] == b"unexpected source change"
+    with pytest.raises(sources.EvidenceError, match="unaccounted changed/new/missing"):
+        sources.check_delivery_tree(root, expected, baseline, snapshot)
+
+
 @pytest.mark.parametrize("target", ["CLAUDE.md", "../private", "/etc/passwd", "absent.md", "AGENTS.md"])
 def test_archive_materializes_only_internal_regular_file_links(tmp_path, target):
     root, _ = repository(tmp_path / "linked", {"CLAUDE.md": b"project instructions"})

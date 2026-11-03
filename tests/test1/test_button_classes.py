@@ -44,6 +44,8 @@ EXPECTED_KEYS = {
     "form:delete",
     "form:filter-submit",
     "form:filter-reset",
+    # the element of an eligible cancel (Phase 6.1): a structural value, "button" or "a", never classes
+    "form:cancel-tag",
     "formset:control",
     "formset:container",
     "formset:control-danger",
@@ -90,7 +92,7 @@ def _isolate_registry():
 
 
 def test_default_table_is_complete():
-    assert len(EXPECTED_KEYS) == 73
+    assert len(EXPECTED_KEYS) == 74
     assert set(DEFAULT_BUTTON_CLASSES) == EXPECTED_KEYS
     assert get_button_class("context", "primary") == "btn btn-outline-primary btn-lg"
     assert get_button_class("card", "danger") == "btn btn-secondary btn-sm"
@@ -359,3 +361,72 @@ def test_form_icon_host_class():
         assert get_icon_host_class("form", "update") == "icon icon-edit"
     with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"form:icon-host": None}):
         assert get_icon_host_class("form", "update") == ""
+
+
+# --- form:cancel-tag (Phase 6.1, D-13): the element of an eligible cancel, through both registration paths --------
+
+
+def _cancel_tag(**ctx) -> str:
+    """The effective tag the form normalizer gives an enabled cancel with a destination."""
+    from crud_views.lib.view.button_data import cv_button_data
+
+    raw = {"cv_key": "cancel", "cv_type": "button", "cv_attrs": {"data-cv-cancel-url": "/back/"}, **ctx}
+    return cv_button_data(raw, "form")["cv_tag"]
+
+
+def _rendered_cancel(**ctx) -> str:
+    """The element name of the bundled leaf's render of that cancel."""
+    from django.template.loader import render_to_string
+
+    from crud_views.lib.view.button_data import cv_button_data
+
+    raw = {"cv_key": "cancel", "cv_type": "button", "cv_value": "Back", "cv_attrs": {"data-cv-cancel-url": "/b/"}}
+    markup = render_to_string("crud_views/tags/button/form.html", cv_button_data({**raw, **ctx}, "form"))
+    return re.match(r"<(\w+)", markup).group(1)
+
+
+def test_cancel_tag_defaults_to_button():
+    assert DEFAULT_BUTTON_CLASSES["form:cancel-tag"] == "button"
+    assert get_button_classes()["form:cancel-tag"] == "button"
+    assert _cancel_tag() == "button"
+    assert _rendered_cancel() == "button"
+
+
+def test_theme_registers_the_cancel_tag():
+    register_button_classes({"form:cancel-tag": "a"})
+    assert _cancel_tag() == "a"
+    assert _rendered_cancel() == "a"
+
+
+@pytest.mark.parametrize(
+    "theme,project,expected",
+    [("a", "button", "button"), ("button", "a", "a"), ("a", None, "button"), (None, "a", "a")],
+    ids=["project-button", "project-a", "project-none", "theme-none"],
+)
+def test_project_cancel_tag_wins_over_the_theme(theme, project, expected):
+    register_button_classes({"form:cancel-tag": theme})
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"form:cancel-tag": project}):
+        assert get_button_classes()["form:cancel-tag"] == project
+        assert _cancel_tag() == expected
+        assert _rendered_cancel() == expected
+        # an explicit tag beats both layers (D-14)
+        assert _cancel_tag(cv_tag="button") == "button"
+        assert _cancel_tag(cv_tag="a") == "a"
+
+
+def test_cancel_tag_follows_cache_invalidation():
+    seen = [_cancel_tag()]
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"form:cancel-tag": "a"}):
+        seen.append(_cancel_tag())
+    seen.append(_cancel_tag())
+    register_button_classes({"form:cancel-tag": "a"})
+    seen.append(_cancel_tag())
+    register_button_classes({"form:cancel-tag": "button"})
+    seen.append(_cancel_tag())
+    assert seen == ["button", "a", "button", "a", "button"]
+
+
+def test_cancel_tag_is_not_a_css_class():
+    # the CSS accessor never treats the structural key as a class source of any leaf
+    assert "form:cancel-tag" not in {f"form:{kind}" for kind in bc.FORM_KINDS}
+    assert get_button_class("form", "cancel") == "btn btn-secondary"

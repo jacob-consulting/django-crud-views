@@ -1,7 +1,8 @@
 """Crispy form buttons: classes from the layered button class table, rendered through the form-button leaf.
 
 In a crispy ``Layout`` (e.g. ``FormActions``) a button renders as one ``<button>`` through
-``crud_views/tags/button/form.html`` (Phase 6). Its value, label, name, id and attributes are literal text, never
+``crud_views/tags/button/form.html`` (Phase 6); a cancel configured with ``tag="a"`` or ``form:cancel-tag`` renders as
+a native ``<a>`` link instead (Phase 6.1). Its value, label, name, id and attributes are literal text, never
 template code. Added with ``helper.add_input()`` it stays a crispy input, rendered by the template pack.
 """
 
@@ -117,6 +118,11 @@ class _TableClassMixin:
     icon (submit ``save``, delete ``delete``, cancel ``cancel``, filter-submit ``filter``, filter-reset
     ``filter-reset``); an explicit None or ``""`` means no icon.
 
+    ``tag`` is rendering configuration too (Phase 6.1): None (the default) inherits ``form:cancel-tag``, ``"button"``
+    keeps the native button and ``"a"`` asks for a native link. Only a cancel (the ``form:cancel`` slot with the
+    native type ``button``) may ask for a link; any other value raises ValueError here, on both the layout and the
+    legacy ``helper.add_input()`` path. Whether a link actually renders is decided per render (destination, disabled).
+
     On the layout path ``render()`` replaces crispy's: it never renders the value as a template and gives the
     selected template only the normalized form-button data (``FORM_LEAF_KEYS``), no ``input`` object.
     """
@@ -125,16 +131,35 @@ class _TableClassMixin:
     # the bundled leaf; a subclass ``template`` or an explicit ``template=`` argument wins (``%s`` is the pack)
     template = FORM_LEAF_TEMPLATE
 
-    def __init__(self, name, value, *, slot: str | None = None, icon=_KIND_ICON, **kwargs):
+    def __init__(self, name, value, *, slot: str | None = None, icon=_KIND_ICON, tag=None, **kwargs):
         self._cv_slot = slot or self.slot
         # icon= omitted: the slot's kind picks the icon at render time; a bool copies as itself
         self._cv_kind_icon = icon is _KIND_ICON
         self._cv_icon = None if self._cv_kind_icon else icon
+        # tag= is the explicit intent only (None inherits); the class table is read per render, never cached here
+        self._cv_check_tag(tag)
+        self._cv_tag = tag
         self.field_classes = get_button_class(*self._cv_slot.split(":", 1))
         self._cv_css_id = kwargs.get("css_id")
         self._cv_css_class = kwargs.get("css_class")
         self._cv_attrs = {k: v for k, v in kwargs.items() if k not in ("css_id", "css_class", "template")}
         super().__init__(name, value, **kwargs)
+
+    def _cv_check_tag(self, tag) -> None:
+        """Reject an unsupported explicit ``tag`` (D-01/D-03) and a link on a control that is not a cancel (D-09).
+
+        None and exactly ``"button"`` are always accepted without looking at the slot, so legacy helper inputs with any
+        slot stay quiet. ``"a"`` needs the ``form:cancel`` slot and the native type ``button``.
+        """
+        if tag is None or (isinstance(tag, str) and tag == "button"):
+            return
+        if not isinstance(tag, str) or tag != "a":
+            raise ValueError(f"{type(self).__name__} tag must be 'button', 'a' or None, got {tag!r}")
+        if self._cv_slot != "form:cancel" or self.input_type != "button":
+            raise ValueError(
+                f"{type(self).__name__} tag='a' is only for a cancel (slot 'form:cancel' with the native type"
+                f" 'button'), got slot {self._cv_slot!r} with the native type {self.input_type!r}"
+            )
 
     def _cv_form_kind(self) -> str:
         """The semantic form kind of the slot: ``form:<FORM_KINDS member>``, else ValueError (layout path only)."""
@@ -161,6 +186,8 @@ class _TableClassMixin:
             "cv_css_class": self._cv_css_class,
             "cv_attrs": dict(self._cv_attrs),
             "cv_icon": _KIND_ICONS[kind] if self._cv_kind_icon else self._cv_icon,
+            # the raw tag intent: None inherits form:cancel-tag; the normalizer decides the effective tag
+            "cv_tag": self._cv_tag,
         }
 
     def render(self, form, context, template_pack=TEMPLATE_PACK, **kwargs):

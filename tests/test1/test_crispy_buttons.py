@@ -20,6 +20,7 @@ from lxml import html as lxml_html
 
 from crud_views.lib.crispy import Button, CrispyDeleteForm, Reset, Submit
 from crud_views.lib.settings import CrudViewsSettings
+from tests.lib.helper.icons import HOST_ICONS, HOST_LIBRARY
 
 
 def url(viewset, key, pk=None) -> str:
@@ -1893,3 +1894,774 @@ def test_copied_adapter_preserves_explicit_icon(control, expected, fa):
         assert _icon_classes(el) == fa
     # the original keeps its own explicit choice
     assert control._cv_button_context()["cv_icon"] == expected
+
+
+# --- cancel links (Phase 6.1): an eligible cancel renders as a native <a> ------------------------------------------
+
+LINK = {"form:cancel-tag": "a"}
+BUTTON_LOGGER = "crud_views.lib.view.button_data"
+
+
+def _links(markup: str) -> list:
+    return _fragment(markup).cssselect("a")
+
+
+def _tag_warnings(caplog) -> list[str]:
+    return [r.getMessage() for r in caplog.records if r.name == BUTTON_LOGGER and r.levelno >= logging.WARNING]
+
+
+class _BackButton(Button):
+    """A Button subclass: still the cancel kind with the native type button, so it may become a link."""
+
+
+def test_configured_cancel_renders_one_native_link():
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES=LINK):
+        markup = _render(_helper(Submit("submit", "Save"), Button("reset", "Cancel", data_cv_cancel_url="/back/")))
+    (link,) = _links(markup)
+    (submit,) = _buttons(markup)
+    assert dict(link.attrib) == {"href": "/back/", "id": "button-id-reset", "class": "btn btn-secondary"}
+    assert [s.text for s in link.cssselect("span")] == ["Cancel"]
+    assert (submit.get("type"), submit.get("name"), submit.get("value")) == ("submit", "submit", "Save")
+    # no tag attribute, no button identity / submission attributes, no cancel-handler marker on the anchor
+    assert "tag=" not in markup
+    assert "data-cv-cancel-url" not in markup
+
+
+def test_explicit_tag_a_renders_one_native_link_with_an_escaped_destination():
+    markup = _render(_helper(Button("reset", "Cancel", tag="a", data_cv_cancel_url="/back/?a=1&b=<2>")))
+    assert not _buttons(markup)
+    (link,) = _links(markup)
+    assert link.get("href") == "/back/?a=1&b=<2>"
+    assert 'href="/back/?a=1&amp;b=&lt;2&gt;"' in markup
+    assert link.text_content() == "Cancel"
+
+
+@pytest.mark.parametrize("mode", ["label", "both", "icon"])
+def test_cancel_link_keeps_the_label_mode_body(mode):
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"form": mode}):
+        (link,) = _links(_render(_helper(Button("reset", "Cancel", tag="a", data_cv_cancel_url="/b/"))))
+    assert link.text_content().strip() == "Cancel"
+    assert [i.get("class") for i in link.cssselect("i")] == ([] if mode == "label" else ["fa-solid fa-xmark"])
+    if mode == "icon":
+        assert (link.get("title"), link.get("data-cv-tooltip")) == ("Cancel", "form")
+        assert [s.text for s in link.cssselect("span.visually-hidden")] == ["Cancel"]
+    else:
+        assert link.get("title") is None
+
+
+def test_tag_keyword_is_configuration_not_an_attribute():
+    control = Button("reset", "Cancel", tag="a", data_cv_cancel_url="/b/")
+    assert "tag" not in str(control.flat_attrs)
+    assert "tag" not in control._cv_attrs
+    assert control._cv_button_context()["cv_tag"] == "a"
+    assert Button("reset", "Cancel")._cv_button_context()["cv_tag"] is None
+
+
+def test_unconfigured_cancel_stays_the_original_button():
+    markup = _render(_helper(Button("reset", "Cancel", data_cv_cancel_url="/b/")))
+    assert not _links(markup)
+    (el,) = _buttons(markup)
+    assert (el.get("type"), el.get("data-cv-cancel-url")) == ("button", "/b/")
+
+
+def test_explicit_none_inherits_and_table_none_selects_button():
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES=LINK):
+        assert _links(_render(_helper(Button("reset", "Back", tag=None, data_cv_cancel_url="/b/"))))
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"form:cancel-tag": None}):
+        markup = _render(_helper(Button("reset", "Back", data_cv_cancel_url="/b/")))
+    assert not _links(markup) and len(_buttons(markup)) == 1
+
+
+INVALID_TAGS = ["", " a", "a ", "A", "Button", "BUTTON", "link", "anchor", 0, 1, True, False, ["a"], {"a": 1}, b"a"]
+
+
+@pytest.mark.parametrize("value", INVALID_TAGS, ids=repr)
+@pytest.mark.parametrize("adapter", [Submit, Button, Reset])
+@pytest.mark.parametrize("path", ["layout", "input"])
+def test_invalid_explicit_tag_raises_at_construction(path, adapter, value):
+    """D-01/D-03: only exactly "button", "a" or None; raised before either the layout or the legacy path renders."""
+    with pytest.raises(ValueError, match="tag"):
+        control = adapter("go", "Go", tag=value, data_cv_cancel_url="/b/")
+        _render(_helper(control) if path == "layout" else _helper(inputs=[control]))
+
+
+NONELIGIBLE = [
+    (Submit, None),  # ordinary submit
+    (Reset, None),  # ordinary reset
+    (Submit, "form:cancel"),  # native submit re-slotted to cancel stays a submit
+    (Reset, "form:cancel"),  # native reset re-slotted to cancel stays a reset
+    (Button, "form:submit"),  # a Button re-slotted away from cancel
+    (Button, "form:filter-reset"),
+    (Button, "formset:control"),
+]
+NONELIGIBLE_IDS = ["submit", "reset", "submit-as-cancel", "reset-as-cancel", "button-as-submit", "button-as-reset", "x"]
+
+
+@pytest.mark.parametrize("adapter,slot", NONELIGIBLE, ids=NONELIGIBLE_IDS)
+@pytest.mark.parametrize("path", ["layout", "input"])
+def test_explicit_link_on_a_noneligible_control_raises(path, adapter, slot):
+    """D-09: only the cancel kind with the native type button may become a link; native actions stay native."""
+    with pytest.raises(ValueError, match="cancel"):
+        control = adapter("reset", "Back", slot=slot, tag="a", data_cv_cancel_url="/b/")
+        _render(_helper(control) if path == "layout" else _helper(inputs=[control]))
+
+
+@pytest.mark.parametrize("adapter,slot", NONELIGIBLE[:6], ids=NONELIGIBLE_IDS[:6])
+@pytest.mark.parametrize("config", ["a", "bogus"])
+def test_noneligible_controls_ignore_the_inherited_cancel_tag(adapter, slot, config, caplog):
+    """D-11: configuration never turns a native action into a link, and its value is never read for one."""
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"form:cancel-tag": config}, CRUD_VIEWS_STRICT=True):
+        for tag_value in (None, "button"):
+            markup = _render(_helper(adapter("reset", "Back", slot=slot, tag=tag_value, data_cv_cancel_url="/b/")))
+            assert not _links(markup)
+            (el,) = _buttons(markup)
+            assert el.get("type") == adapter.input_type
+    assert _tag_warnings(caplog) == []
+
+
+@pytest.mark.parametrize("adapter", [Submit, Button, Reset])
+def test_explicit_button_is_valid_everywhere(adapter):
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES=LINK):
+        markup = _render(_helper(adapter("reset", "Back", tag="button", data_cv_cancel_url="/b/")))
+    assert not _links(markup)
+    (el,) = _buttons(markup)
+    assert el.get("type") == adapter.input_type
+    assert el.get("tag") is None
+
+
+def test_button_subclass_is_eligible():
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES=LINK):
+        (link,) = _links(_render(_helper(_BackButton("reset", "Back", data_cv_cancel_url="/b/"))))
+    assert link.get("href") == "/b/"
+    (link,) = _links(_render(_helper(_BackButton("reset", "Back", tag="a", data_cv_cancel_url="/b/"))))
+    assert link.get("href") == "/b/"
+
+
+INVALID_CONFIG = ["", " a", "A", "Button", "link", 0, True, False, ["a"], {"a": 1}]
+
+
+@pytest.mark.parametrize("value", INVALID_CONFIG, ids=repr)
+@pytest.mark.parametrize("state", ["url", "no-url", "disabled"])
+def test_selected_invalid_configuration_raises_in_strict_mode(value, state):
+    """D-01/D-04: a selected invalid table value is never hidden by the missing-URL or disabled fallback."""
+    extras = {"url": {"data_cv_cancel_url": "/b/"}, "no-url": {}, "disabled": {"data_cv_cancel_url": "/b/"}}[state]
+    if state == "disabled":
+        extras["disabled"] = True
+    config = override_settings(CRUD_VIEWS_BUTTON_CLASSES={"form:cancel-tag": value}, CRUD_VIEWS_STRICT=True)
+    with config, pytest.raises(ValueError, match="form:cancel-tag"):
+        _render(_helper(Button("reset", "Back", **extras)))
+
+
+@pytest.mark.parametrize("value", INVALID_CONFIG, ids=repr)
+@pytest.mark.parametrize("state", ["url", "no-url", "disabled"])
+def test_selected_invalid_configuration_warns_and_renders_a_button_when_lenient(value, state, caplog):
+    extras = {"url": {"data_cv_cancel_url": "/b/"}, "no-url": {}, "disabled": {"data_cv_cancel_url": "/b/"}}[state]
+    if state == "disabled":
+        extras["disabled"] = True
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"form:cancel-tag": value}, CRUD_VIEWS_STRICT=False):
+        markup = _render(_helper(Button("reset", "Back", **extras)))
+    assert not _links(markup)
+    (el,) = _buttons(markup)
+    assert el.get("type") == "button"
+    (message,) = _tag_warnings(caplog)
+    assert "form:cancel-tag" in message and repr(value) in message
+
+
+@pytest.mark.parametrize("explicit", ["button", "a"])
+@pytest.mark.parametrize("value", ["bogus", "", ["a"]], ids=repr)
+def test_valid_explicit_tag_bypasses_invalid_configuration(explicit, value, caplog):
+    """D-12: the overridden table value is not read during this render, so it cannot fail it."""
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"form:cancel-tag": value}, CRUD_VIEWS_STRICT=True):
+        markup = _render(_helper(Button("reset", "Back", tag=explicit, data_cv_cancel_url="/b/")))
+    assert len(_links(markup)) == (explicit == "a")
+    assert len(_buttons(markup)) == (explicit == "button")
+    assert _tag_warnings(caplog) == []
+
+
+@pytest.mark.parametrize(
+    "extras",
+    [{}, {"data_cv_cancel_url": None}, {"data_cv_cancel_url": False}, {"data_cv_cancel_url": ""}],
+    ids=["missing", "none", "false", "empty"],
+)
+def test_missing_or_empty_destination_keeps_the_button(extras):
+    """D-08: no href="" and no link without a destination; the original button output is kept."""
+    expected = _render(_helper(Button("reset", "Back", **extras)))
+    for control in (Button("reset", "Back", tag="a", **extras), Button("reset", "Back", **extras)):
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=LINK):
+            markup = _render(_helper(control))
+        assert markup == expected
+        assert not _links(markup) and "href" not in markup
+
+
+@pytest.mark.parametrize("order", ["underscore-first", "hyphen-first"])
+def test_hyphenated_destination_alias_wins_in_either_order(order):
+    pairs = [("data_cv_cancel_url", "/u/"), ("data-cv-cancel-url", "/h/")]
+    if order == "hyphen-first":
+        pairs.reverse()
+    (link,) = _links(_render(_helper(Button("reset", "Back", tag="a", **dict(pairs)))))
+    assert link.get("href") == "/h/"
+    # an empty winning alias never resurrects the losing one
+    pairs = [("data_cv_cancel_url", "/u/"), ("data-cv-cancel-url", "")]
+    if order == "hyphen-first":
+        pairs.reverse()
+    markup = _render(_helper(Button("reset", "Back", tag="a", **dict(pairs))))
+    assert not _links(markup)
+    (el,) = _buttons(markup)
+    assert el.get("data-cv-cancel-url") == ""
+
+
+@pytest.mark.parametrize(
+    "name,value,emitted",
+    [
+        # lxml reports a bare boolean attribute with its own name as the value
+        ("disabled", True, "disabled"),
+        ("disabled", "", ""),
+        ("disabled", 0, "0"),
+        ("disabled", "false", "false"),
+        ("disabled", "disabled", "disabled"),
+        ("DISABLED", True, "disabled"),
+        ("Disabled", "", ""),
+    ],
+    ids=repr,
+)
+def test_emitted_disabled_keeps_the_native_button(name, value, emitted):
+    """D-06: any emitted disabled attribute (HTML presence, not Python truth) keeps a native disabled button."""
+    for control in (
+        Button("reset", "Back", tag="a", data_cv_cancel_url="/b/", **{name: value}),
+        Button("reset", "Back", data_cv_cancel_url="/b/", **{name: value}),
+    ):
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=LINK):
+            markup = _render(_helper(control))
+        assert not _links(markup)
+        (el,) = _buttons(markup)
+        assert el.get("disabled") == emitted
+        assert el.get("data-cv-cancel-url") == "/b/"
+
+
+@pytest.mark.parametrize("value", [False, None])
+def test_omitted_disabled_still_renders_the_link(value):
+    (link,) = _links(_render(_helper(Button("reset", "Back", tag="a", data_cv_cancel_url="/b/", disabled=value))))
+    assert link.get("href") == "/b/"
+    assert "disabled" not in link.attrib
+
+
+def test_legacy_helper_inputs_with_valid_tags_stay_quiet_pack_inputs(caplog):
+    """D-17: a legacy helper input never renders the leaf, so its tag is never resolved, warned about or emitted."""
+    caplog.set_level(logging.DEBUG)
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES={"form:cancel-tag": "bogus"}, CRUD_VIEWS_STRICT=True):
+            markup = _render(
+                _helper(
+                    inputs=(
+                        Button("reset", "Back", tag="a", data_cv_cancel_url="/b/"),
+                        Submit("go", "Go", tag="button"),
+                        Submit("odd", "Odd", slot="formset:control", tag=None),
+                        Submit("unknown", "Unknown", slot="form:unknown", tag="button"),
+                        Reset("clear", "Clear", tag=None),
+                    )
+                )
+            )
+    assert caught == []
+    assert [r for r in caplog.records if r.levelno >= logging.WARNING] == []
+    doc = _fragment(markup)
+    assert not doc.cssselect("button, a")
+    by_name = {el.get("name"): el for el in doc.cssselect("input")}
+    assert set(by_name) == {"reset", "go", "odd", "unknown", "clear"}
+    assert by_name["reset"].get("data-cv-cancel-url") == "/b/"
+    assert all(el.get("tag") is None for el in by_name.values())
+    assert "tag=" not in markup
+
+
+def test_tag_choice_is_resolved_per_render():
+    shared = Button("reset", "Back", data_cv_cancel_url="/b/")
+    copied = copy.deepcopy(shared)
+    seen = []
+    for config in ({}, LINK, {}, LINK):
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=config):
+            for control in (shared, copied):
+                seen.append(len(_links(_render(_helper(control)))))
+    assert seen == [0, 0, 1, 1, 0, 0, 1, 1]
+    assert shared._cv_tag is None and copied._cv_tag is None
+
+
+# --- cancel link attributes (Phase 6.1, D-05, D-07, D-15): one destination, no button-only attributes -------------
+
+# WHATWG button-only attributes plus the submission identity (06.1-RESEARCH Pattern 3)
+BUTTON_ONLY = [
+    "command",
+    "commandfor",
+    "disabled",
+    "form",
+    "formaction",
+    "formenctype",
+    "formmethod",
+    "formnovalidate",
+    "formtarget",
+    "name",
+    "popovertarget",
+    "popovertargetaction",
+    "type",
+    "value",
+]
+
+
+host_icons_crispy = override_settings(CRUD_VIEWS_ICON_LIBRARIES=HOST_LIBRARY, CRUD_VIEWS_ICONS=HOST_ICONS)
+
+
+def _start_tag(markup: str, element: str) -> str:
+    (start,) = re.findall(rf"<{element}\b[^>]*>", markup)
+    return start
+
+
+def _raw_names(start: str) -> list[str]:
+    """Every attribute name of a raw opening tag, lower-cased (HTML names are case-insensitive)."""
+    body = re.sub(r'"[^"]*"', '""', start[start.index(" ") :].rstrip(">"))
+    return [n.lower() for n in re.findall(r"""([^\s=]+)(?:=""|(?=\s|$))""", body)]
+
+
+def _body(markup: str, element: str) -> str:
+    return re.search(rf"<{element}\b[^>]*>(.*)</{element}>", markup, re.S).group(1)
+
+
+@pytest.mark.parametrize("how", ["configured", "explicit"])
+@pytest.mark.parametrize("mode", ["label", "both", "icon"])
+def test_cancel_link_with_conflicting_extras_renders_one_authoritative_href(mode, how):
+    """D-05/D-07/D-15: the escaped destination is the only href; button-only and marker attributes are dropped."""
+    control = Button(
+        "reset",
+        "Cancel",
+        tag="a" if how == "explicit" else None,
+        data_cv_cancel_url="/back/?a=1&b=2",
+        **{
+            "href": "/evil/",
+            "HREF": "/EVIL/",
+            "Href": "/Evil/",
+            "formaction": "/post/",
+            "FormNoValidate": True,
+            "form": "other",
+            "Type": "submit",
+            "NAME": "n",
+            "Value": "v",
+            "Data-Cv-Cancel-Url": "/marker/",
+            "target": "_blank",
+            "rel": "noopener",
+            "data_x": "1",
+        },
+    )
+    config = LINK if how == "configured" else {}
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES=config, CRUD_VIEWS_LABEL_MODE_DEFAULTS={"form": mode}):
+        markup = _render(_helper(control))
+    assert not _buttons(markup)
+    start = _start_tag(markup, "a")
+    names = _raw_names(start)
+    assert len(names) == len(set(names)), names
+    assert names.count("href") == 1
+    assert 'href="/back/?a=1&amp;b=2"' in start
+    for dropped in ("formaction", "formnovalidate", "form", "type", "name", "value", "data-cv-cancel-url"):
+        assert dropped not in names, dropped
+    (link,) = _links(markup)
+    assert link.get("href") == "/back/?a=1&b=2"
+    assert (link.get("id"), link.get("class")) == ("button-id-reset", "btn btn-secondary")
+    assert (link.get("target"), link.get("rel"), link.get("data-x")) == ("_blank", "noopener", "1")
+    assert "/evil/" not in markup.lower() and "/marker/" not in markup
+
+
+@pytest.mark.parametrize("spelling", ["lower", "upper"])
+@pytest.mark.parametrize("attr", BUTTON_ONLY)
+def test_cancel_link_drops_each_button_only_attribute(attr, spelling):
+    # name / value are the adapter's own positional arguments, type its native type: only alternate spellings reach
+    # the extras on the crispy path (the normalizer tests cover the exact spellings)
+    name = attr.upper() if spelling == "upper" or attr in ("name", "value", "type") else attr
+    value = False if attr == "disabled" else "x"
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES=LINK):
+        markup = _render(_helper(Button("reset", "Back", data_cv_cancel_url="/b/", **{name: value})))
+    names = _raw_names(_start_tag(markup, "a"))
+    assert attr not in names
+    assert names == ["href", "id", "class"]
+
+
+@pytest.mark.parametrize("attr", [a for a in BUTTON_ONLY if a not in ("name", "value", "type")] + ["href", "HREF"])
+@pytest.mark.parametrize("fallback", ["missing-url", "empty-url", "disabled"])
+def test_cancel_fallback_button_keeps_button_only_attributes(attr, fallback):
+    """D-06/D-08: the fallback is the unconfigured button byte for byte, its extras included."""
+    extras = {attr: "x", **{"missing-url": {}, "empty-url": {"data_cv_cancel_url": ""}}.get(fallback, {})}
+    if fallback == "disabled":
+        extras.update(data_cv_cancel_url="/b/", DISABLED=True)
+    expected = _render(_helper(Button("reset", "Back", **extras)))
+    assert f'{attr}="x"' in _start_tag(expected, "button")
+    for control in (Button("reset", "Back", tag="a", **extras), Button("reset", "Back", **extras)):
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=LINK):
+            assert _render(_helper(control)) == expected
+
+
+@host_icons_crispy
+@pytest.mark.parametrize("icon", ["cancel", "update"], ids=["inline", "host"])
+@pytest.mark.parametrize("mode", ["label", "both", "icon"])
+def test_cancel_link_presentation_matches_the_button(mode, icon):
+    """D-15: id, classes (with css_class and host icon class), title, tooltip marker and body are the button's."""
+    kwargs = {"css_class": "extra", "data_cv_cancel_url": "/b/", "icon": icon, "aria_label": "Back to the list"}
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"form": mode}):
+        button_markup = _render(_helper(Button("reset", "Back", **kwargs)))
+        link_markup = _render(_helper(Button("reset", "Back", tag="a", **kwargs)))
+    (el,) = _buttons(button_markup)
+    (link,) = _links(link_markup)
+    assert _body(link_markup, "a") == _body(button_markup, "button")
+    keep = ("id", "class", "title", "data-cv-tooltip", "aria-label")
+    assert {k: link.get(k) for k in keep} == {k: el.get(k) for k in keep}
+    assert "extra" in link.get("class").split()
+    assert ("icon-edit" in link.get("class").split()) is (mode != "label" and icon == "update")
+    if mode == "icon":
+        assert (link.get("title"), link.get("data-cv-tooltip")) == ("Back", "form")
+        assert [s.text for s in link.cssselect("span.visually-hidden")] == ["Back"]
+
+
+@pytest.mark.parametrize("mode", ["label", "both", "icon"])
+def test_cancel_link_case_variant_extras_never_duplicate_generated_attributes(mode):
+    extras = {"ID": "i", "Class": "c", "TITLE": "t", "Data-Cv-Tooltip": "x"}
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"form": mode}):
+        markup = _render(_helper(Button("reset", "Back", tag="a", css_id="cid", data_cv_cancel_url="/b/", **extras)))
+    names = _raw_names(_start_tag(markup, "a"))
+    assert len(names) == len(set(names)), names
+    (link,) = _links(markup)
+    assert link.get("id") == "cid"
+    if mode == "icon":
+        assert (link.get("title"), link.get("data-cv-tooltip")) == ("Back", "form")
+    else:
+        assert (link.get("title"), link.get("data-cv-tooltip")) == ("t", "x")
+
+
+@pytest.mark.parametrize("text", HOSTILE, ids=repr)
+@pytest.mark.parametrize("safe", [False, True])
+@pytest.mark.parametrize("mode", ["label", "both", "icon"])
+def test_cancel_link_hostile_literals_never_create_nodes_or_attributes(text, safe, mode):
+    from django.utils.safestring import mark_safe
+
+    wrap = mark_safe if safe else str
+    destination = "/b/?q=" + text
+    control = Button(
+        "reset",
+        wrap(text),
+        tag="a",
+        css_class=wrap("c"),
+        data_cv_cancel_url=wrap(destination),
+        title=wrap(text),
+        target=wrap(text),
+        data_note=wrap(text),
+        aria_label=wrap(text),
+        HREF=wrap(text),
+    )
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"form": mode}):
+        markup = _render(_helper(control), request=SimpleNamespace(user="LEAKED-USER"))
+    doc = _fragment(markup)
+    (link,) = doc.cssselect("a")
+    assert not doc.cssselect("img, b, script, button")
+    names = _raw_names(_start_tag(markup, "a"))
+    assert len(names) == len(set(names)) and names.count("href") == 1
+    # decoded once: the parsed values equal the original text exactly (no double escaping, nothing evaluated)
+    assert link.get("href") == destination
+    assert link.cssselect("span")[-1].text_content() == text
+    assert link.get("target") == text and link.get("data-note") == text and link.get("aria-label") == text
+    expected = {"href", "id", "class", "target", "data-note", "aria-label"}
+    if mode != "icon":
+        assert link.get("title") == text
+        expected.add("title")
+    elif text:
+        assert link.get("title") == text
+        expected |= {"title", "data-cv-tooltip"}
+    assert set(link.attrib) == expected
+    assert "LEAKED-USER" not in markup
+
+
+@pytest.mark.parametrize("language", ["en", "de"])
+def test_cancel_link_lazy_text_resolves_per_render(language):
+    from django.utils import translation
+    from django.utils.translation import gettext, gettext_lazy
+
+    with translation.override(language):
+        expected = gettext("Cancel")
+    control = Button(
+        "reset",
+        gettext_lazy("Cancel"),
+        tag="a",
+        data_cv_cancel_url="/b/",
+        title=gettext_lazy("Cancel"),
+        aria_label=gettext_lazy("Cancel"),
+    )
+    for active, text in (("en", "Cancel"), (language, expected), ("en", "Cancel")):
+        with translation.override(active):
+            (link,) = _links(_render(_helper(control)))
+        assert (link.text_content(), link.get("title"), link.get("aria-label")) == (text, text, text)
+
+
+# --- cancel links and custom templates, owners and copies (Phase 6.1, D-16, D-17) ---------------------------------
+
+# a cancel-capable custom template: branches on the effective tag and still receives every prior field
+TAGGED = (
+    "[{{ cv_tag }}|{{ cv_key }}|{{ cv_type }}|{{ cv_name }}|{{ cv_value }}|{{ cv_label }}|{{ cv_id }}"
+    "|{{ cv_label_mode }}|{{ cv_cancel_url }}|{{ cv_title }}|{{ cv_flat_attrs }}|input={{ input }}|form={{ form }}"
+    "|helper={{ helper }}|outer={{ outer }}]"
+)
+
+
+@pytest.fixture
+def tagged_templates(settings):
+    """A locmem loader with tag-aware templates; the old ``custom_templates`` fixture stays as it was."""
+    templates = copy.deepcopy(settings.TEMPLATES)
+    engine = templates[0]
+    engine["APP_DIRS"] = False
+    engine["OPTIONS"]["loaders"] = [
+        (
+            "django.template.loaders.locmem.Loader",
+            {
+                "custom/tagged.html": "explicit" + TAGGED,
+                "custom/tagged-subclass.html": "subclass" + TAGGED,
+                "bootstrap5/custom/tagged-pack.html": "pack" + TAGGED,
+            },
+        ),
+        "django.template.loaders.filesystem.Loader",
+        "django.template.loaders.app_directories.Loader",
+    ]
+    settings.TEMPLATES = templates
+    yield
+
+
+def test_old_custom_template_renders_its_fields_under_a_configured_link(custom_templates):
+    """D-16: a template written before cv_tag existed renders its own markup with the same fields; the bundled anchor
+    is never forced over it."""
+    control = Button("reset", "Back", template="custom/explicit.html", css_class="x", data_cv_cancel_url="/b/")
+    expected = _custom_fields(_render(_helper(control), input="OUTER-INPUT", outer="OUTER"))
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES=LINK):
+        markup = _render(_helper(control), input="OUTER-INPUT", outer="OUTER")
+    assert _custom_name(markup) == "explicit" and not _links(markup)
+    assert _custom_fields(markup) == expected
+    assert expected[:10] == [
+        "form",
+        "cancel",
+        "button",
+        "reset",
+        "Back",
+        "Back",
+        "button-id-reset",
+        "label",
+        "x",
+        "/b/",
+    ]
+    explicit = Button(
+        "reset", "Back", tag="a", template="custom/explicit.html", css_class="x", data_cv_cancel_url="/b/"
+    )
+    assert _custom_fields(_render(_helper(explicit), input="OUTER-INPUT", outer="OUTER")) == expected
+
+
+@pytest.mark.parametrize(
+    ("control", "config", "expected"),
+    [
+        (lambda **kw: Button("reset", "Back", data_cv_cancel_url="/b/", **kw), LINK, "a"),
+        (lambda **kw: Button("reset", "Back", tag="a", data_cv_cancel_url="/b/", **kw), {}, "a"),
+        (lambda **kw: Button("reset", "Back", data_cv_cancel_url="/b/", **kw), {}, "button"),
+        (lambda **kw: Button("reset", "Back", tag="button", data_cv_cancel_url="/b/", **kw), LINK, "button"),
+        (lambda **kw: Button("reset", "Back", tag="a", **kw), LINK, "button"),
+        (lambda **kw: Button("reset", "Back", tag="a", data_cv_cancel_url="", **kw), LINK, "button"),
+        (lambda **kw: Button("reset", "Back", tag="a", data_cv_cancel_url="/b/", disabled=True, **kw), LINK, "button"),
+        (lambda **kw: Submit("reset", "Back", data_cv_cancel_url="/b/", **kw), LINK, "button"),
+        (lambda **kw: Reset("reset", "Back", **kw), LINK, "button"),
+    ],
+    ids=[
+        "configured",
+        "explicit",
+        "unconfigured",
+        "explicit-button",
+        "no-url",
+        "empty-url",
+        "disabled",
+        "submit",
+        "reset",
+    ],
+)
+def test_tag_aware_template_receives_the_effective_tag(tagged_templates, control, config, expected):
+    """D-10/D-16: the effective tag after every fallback, with type, name, value and the cancel URL retained."""
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES=config):
+        markup = _render(_helper(control(template="custom/tagged.html")), outer="OUTER", cv_tag="OUTER-TAG")
+    fields = _custom_fields(markup)
+    assert fields[0] == expected
+    assert fields[3:5] == ["reset", "Back"]
+    assert fields[-4:] == ["input=", "form=", "helper=", "outer="]
+    assert "OUTER" not in markup
+
+
+@pytest.mark.parametrize("how", ["configured", "explicit"])
+def test_tag_aware_template_precedence_and_pack_substitution(tagged_templates, how):
+    """D-16: explicit template > subclass template > bundled leaf, ``%s`` the pack; each receives the link tag."""
+
+    class Subclassed(Button):
+        template = "custom/tagged-subclass.html"
+
+    tag_kw = {"tag": "a"} if how == "explicit" else {}
+    config = LINK if how == "configured" else {}
+
+    def render(adapter, **kwargs):
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=config):
+            return _render(_helper(adapter("reset", "Back", data_cv_cancel_url="/b/", **tag_kw, **kwargs)))
+
+    for markup, name in (
+        (render(Subclassed), "subclass"),
+        (render(Subclassed, template="custom/tagged.html"), "explicit"),
+        (render(Button, template="custom/tagged.html"), "explicit"),
+        (render(Button, template="%s/custom/tagged-pack.html"), "pack"),
+        (render(Subclassed, template=""), "subclass"),
+    ):
+        assert _custom_name(markup) == name
+        fields = _custom_fields(markup)
+        assert (fields[0], fields[2], fields[8]) == ("a", "button", "/b/")
+    for markup in (render(Button), render(Button, template="")):
+        (link,) = _links(markup)
+        assert link.get("href") == "/b/"
+
+
+@pytest.mark.parametrize("mode", ["label", "both", "icon"])
+def test_tag_aware_template_title_follows_icon_mode(tagged_templates, mode):
+    with override_settings(CRUD_VIEWS_BUTTON_CLASSES=LINK, CRUD_VIEWS_LABEL_MODE_DEFAULTS={"form": mode}):
+        markup = _render(
+            _helper(Button("reset", "Back", template="custom/tagged.html", data_cv_cancel_url="/b/", target="_top")),
+            cv_title="OUTER-TITLE",
+        )
+    fields = _custom_fields(markup)
+    assert (fields[0], fields[7]) == ("a", mode)
+    assert fields[9] == ("Back" if mode == "icon" else "")
+    # the filtered link attributes: target kept, the destination marker gone
+    assert fields[10] == ' target="_top"'
+
+
+def _link_controls(tag: str):
+    """Like ``_controls``, with a destination on every cancel, so a configured cancel becomes a link."""
+    return (
+        FormActions(Submit(f"{tag}-s1", "S"), Button(f"{tag}-c1", "C", data_cv_cancel_url="/b/")),
+        FormActions(Submit(f"{tag}-s2", "S"), Button(f"{tag}-c2", "C", data_cv_cancel_url="/b/")),
+        Submit(f"{tag}-s3", "S"),
+    )
+
+
+def _link_modes(markup: str) -> dict[str, tuple[str, str]]:
+    """tag -> (submit mode, cancel mode); every cancel must be a link, every submit a native submit button."""
+    seen: dict[str, set] = {}
+    for el in _fragment(markup).cssselect("a, button"):
+        tag, _, which = el.get("id").split("-id-", 1)[1].rpartition("-")
+        assert el.tag == ("a" if which[0] == "c" else "button"), el.get("id")
+        if el.tag == "button":
+            assert (el.get("type"), el.get("name"), el.get("value")) == ("submit", f"{tag}-{which}", "S")
+        seen.setdefault(tag, set()).add((which[0], el.get("class").removeprefix("m-")))
+    result = {}
+    for tag, pairs in seen.items():
+        submit = {m for w, m in pairs if w == "s"}
+        cancel = {m for w, m in pairs if w == "c"}
+        assert len(submit) == 1 and len(cancel) == 1, (tag, pairs)
+        result[tag] = (submit.pop(), cancel.pop())
+    return result
+
+
+@pytest.mark.parametrize(
+    ("form_owner", "helper_owner", "page_owner", "winner"),
+    [("R", "RH", "P", "R"), (_ABSENT, "RH", "P", "RH"), (None, None, "P", "P"), (None, None, None, "S")],
+)
+def test_cancel_links_keep_the_owner_selected_label_mode(
+    owners, settings, form_owner, helper_owner, page_owner, winner
+):
+    """D-17: link configuration changes the element only; ownership and label modes stay quiet and unchanged."""
+    settings.CRUD_VIEWS_BUTTON_CLASSES = {**MODE_CLASSES, **LINK}
+
+    def resolve(value):
+        return value if value is _ABSENT or value is None else _resolve_owner(owners, value)
+
+    page = {} if page_owner is _ABSENT else {"view": resolve(page_owner)}
+    helper = _owner_helper(*_link_controls("x"), view=resolve(helper_owner))
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        markup = _crispy_owned(_owned_form(resolve(form_owner)), helper, **page)
+    assert _link_modes(markup) == {"x": _sig(winner)}
+
+
+def test_interleaved_owners_and_settings_of_one_shared_link_helper_do_not_leak(owners, settings):
+    shared = _owner_helper(*_link_controls("x"), view=None)
+    first = Context({"form": _owned_form(owners.R), "helper": shared, "view": owners.P})
+    second = Context({"form": _owned_form(), "helper": shared})
+    layers = ([dict(d) for d in first.dicts], [dict(d) for d in second.dicts])
+    out = []
+    for context in (first, second, first, second):
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES={**MODE_CLASSES, **LINK}):
+            out.append(CRISPY.render(context))
+    assert [_link_modes(o) for o in out] == [{"x": SIGNATURES["R"]}, {"x": S}] * 2
+    # outside the link configuration the very same helper renders native cancel buttons again
+    assert _modes(CRISPY.render(first)) == {"x": SIGNATURES["R"]}
+    assert not _links(CRISPY.render(second))
+    assert ([dict(d) for d in first.dicts], [dict(d) for d in second.dicts]) == layers
+    assert not hasattr(shared, "_cv_owner")
+
+
+def test_shared_and_deepcopied_cancel_adapters_resolve_tag_and_mode_per_render():
+    """D-17: before / inside / after the settings override, original and copy render alike and keep no state."""
+    shared = Button("reset", "Back", data_cv_cancel_url="/b/", css_class="extra", target="_top")
+    copied = copy.deepcopy(shared)
+    state = [(c._cv_tag, dict(c._cv_attrs), str(c.flat_attrs), c.field_classes, c.template) for c in (shared, copied)]
+    steps = [({}, "label"), (LINK, "icon"), (LINK, "label"), ({}, "icon"), (LINK, "both"), ({}, "label")]
+    for config, mode in steps:
+        rendered = []
+        for control in (shared, copied):
+            context = Context({"form": _EmptyForm(), "helper": _helper(control), "input": "OUTER"})
+            before = [dict(d) for d in context.dicts]
+            with override_settings(CRUD_VIEWS_BUTTON_CLASSES=config, CRUD_VIEWS_LABEL_MODE_DEFAULTS={"form": mode}):
+                rendered.append(CRISPY.render(context))
+            assert [dict(d) for d in context.dicts] == before
+        assert rendered[0] == rendered[1]
+        if config:
+            (el,) = _links(rendered[0])
+            assert (el.get("href"), el.get("target")) == ("/b/", "_top")
+        else:
+            (el,) = _buttons(rendered[0])
+            assert el.get("data-cv-cancel-url") == "/b/"
+        assert el.get("class") == "btn btn-secondary extra"
+        assert (el.get("title") == "Back") is (mode == "icon")
+    after = [(c._cv_tag, dict(c._cv_attrs), str(c.flat_attrs), c.field_classes, c.template) for c in (shared, copied)]
+    assert after == state
+
+
+def test_filter_helper_copies_render_independent_cancel_tags():
+    """D-17: a cancel in a filter layout is deep-copied per helper instance; Apply / Reset stay native everywhere."""
+    layout = Layout("name", FormActions(Button("back", "Back", data_cv_cancel_url="/list/")))
+    helper_cls = _filter_helper_class(layout=layout)
+    first, second = _new_filter_helper(helper_cls), _new_filter_helper(helper_cls)
+    out = []
+    for helper, config in ((first, {}), (second, LINK), (first, LINK), (second, {})):
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=config):
+            out.append(_filter_render(_CityForm(), helper))
+    for markup, config in zip(out, ({}, LINK, LINK, {}), strict=True):
+        controls = _controls_of(markup)
+        # the stock Apply / Reset actions and the hidden sort input are untouched by the configuration
+        assert [c for c in controls if c[2] != "back" and c[0] == "button"] == DEFAULT_ACTIONS
+        assert HIDDEN_SORT[0] in controls
+        links = _links(markup)
+        if config:
+            assert [link.get("href") for link in links] == ["/list/"]
+            assert ("button", "button", "back", "Back") not in controls
+        else:
+            assert links == [] and ("button", "button", "back", "Back") in controls
+    assert out[0] == out[3] and out[1] == out[2]
+    assert helper_cls.layout is layout
+
+
+def test_legacy_helper_inputs_stay_quiet_pack_inputs_under_a_link_configuration(caplog):
+    """D-17: add_input() controls never render the leaf, so the link configuration neither migrates nor warns."""
+    caplog.set_level(logging.DEBUG)
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        with override_settings(CRUD_VIEWS_BUTTON_CLASSES=LINK):
+            markup = _render(_helper(inputs=(Button("reset", "Back", data_cv_cancel_url="/b/"), Submit("go", "Go"))))
+    assert caught == []
+    assert [r for r in caplog.records if r.levelno >= logging.WARNING] == []
+    doc = _fragment(markup)
+    assert not doc.cssselect("button, a")
+    assert [(el.get("type"), el.get("name")) for el in doc.cssselect("input")] == [
+        ("button", "reset"),
+        ("submit", "go"),
+    ]
+    assert doc.cssselect("input")[0].get("data-cv-cancel-url") == "/b/"
+    assert "tag=" not in markup

@@ -188,6 +188,67 @@ describe("viewset.js", () => {
             expect(submit).toHaveBeenCalledTimes(1);
             expect(submit.mock.calls[0][0].submitter).toBe(form.querySelector("#submit-id-submit"));
         });
+
+        // Phase 06.1 (D-14/D-17): a cancel configured as a link renders a native <a href> without the
+        // data-cv-cancel-url marker (crud_views/tags/button/form.html). The delegated handler must leave it to the
+        // browser: it neither prevents the default nor writes location.href. These cases prove handler
+        // noninterference in jsdom only; actual browser navigation and new-tab behavior are not observed here.
+        function cancelLinkForm(mode) {
+            document.body.innerHTML = `
+                <form method="post" action="/author/create/">
+                    <input type="text" name="first_name" value="initial">
+                    <button type="submit" name="submit" value="Create" id="submit-id-submit" class="btn btn-primary"><span>Create</span></button>
+                    <a href="/author/" id="button-id-reset" class="btn btn-secondary">${BODIES[mode]}</a>
+                </form>`;
+            return document.querySelector("#button-id-reset");
+        }
+
+        // Records defaultPrevented after the document-level handlers ran (window is reached later in the bubble
+        // phase), then cancels the event itself so jsdom does not attempt its unimplemented navigation.
+        function clickUnderObservation(target) {
+            const seen = [];
+            const observe = (event) => {
+                seen.push(event.defaultPrevented);
+                event.preventDefault();
+            };
+            window.addEventListener("click", observe);
+            const event = new MouseEvent("click", { bubbles: true, cancelable: true });
+            let writes;
+            try {
+                const errors = listenerErrors(() => {
+                    writes = recordNavigation(() => target.dispatchEvent(event));
+                });
+                expect(errors).toEqual([]);
+            } finally {
+                window.removeEventListener("click", observe);
+            }
+            return { seen, writes, event };
+        }
+
+        describe.each(Object.keys(BODIES))("a %s-body form cancel link", (mode) => {
+            it.each(TARGETS)("a click on %s is not intercepted", (_name, pick) => {
+                const link = cancelLinkForm(mode);
+                expect(link.hasAttribute("data-cv-cancel-url")).toBe(false);
+                const target = pick(link);
+                expect(link.contains(target)).toBe(true);
+                const { seen, writes, event } = clickUnderObservation(target);
+                expect(seen).toEqual([false]); // the package handler did not prevent the native navigation
+                expect(writes).toEqual([]); // and did not navigate through its hook
+                expect(event.cancelable).toBe(true);
+            });
+        });
+
+        it("still intercepts a marked button next to an unmarked link", () => {
+            const link = cancelLinkForm("both");
+            link.insertAdjacentHTML(
+                "afterend",
+                `<button type="button" id="other" data-cv-cancel-url="/books/"><span>Back</span></button>`,
+            );
+            expect(clickUnderObservation(link.querySelector("span")).writes).toEqual([]);
+            const marked = clickUnderObservation(document.querySelector("#other span"));
+            expect(marked.seen).toEqual([true]);
+            expect(marked.writes).toEqual(["/books/"]);
+        });
     });
 
     describe("rendered alert dismissal tracer", () => {

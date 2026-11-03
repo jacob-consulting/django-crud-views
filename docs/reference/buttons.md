@@ -120,6 +120,7 @@ apply to the buttons a map, a context button, a target view or `CRUD_VIEWS_LABEL
 | `form:delete` | `btn btn-primary` |
 | `form:filter-submit` | `btn btn-primary` |
 | `form:filter-reset` | `btn btn-secondary` |
+| `form:cancel-tag` | `"button"` (`"a"`: an eligible cancel renders as a native link, see [Forms](#forms)) |
 | `formset:control` | `btn btn-light` |
 | `formset:container` | `btn-group` |
 | `formset:control-danger` | `btn btn-danger` |
@@ -143,7 +144,7 @@ apply to the buttons a map, a context button, a target view or `CRUD_VIEWS_LABEL
 | `alert:debug` | `alert alert-secondary` |
 | `context:icon-host` / `list:icon-host` / `card:icon-host` / `menu:icon-host` / `form:icon-host` | `{name_class}` |
 
-The default table has 73 keys: the rows with four variants stand for four keys each, the rows with three locations
+The default table has 74 keys: the rows with four variants stand for four keys each, the rows with three locations
 for three, the `*:hidden-label` row of the button locations for four and the `*:icon-host` row for five. The `context` and `list`
 buttons look the same for every variant by default, the `card` buttons distinguish them. Mode keys such as
 `card:tertiary:icon` and `form:submit:icon` are addressable but not shipped; their possible combinations are excluded
@@ -151,7 +152,12 @@ from the default-table count.
 
 The table holds what a theme restyles: classes. What the markup needs to work stays in the templates and is not
 configurable here: the element, `href`, `type`, `disabled`, the `data-cv-*` attributes, `aria-*`, `cv-key`,
-`dropdown-toggle`, `data-bs-toggle` and the like. The presentational words the leaves used to hard-code are keys:
+`dropdown-toggle`, `data-bs-toggle` and the like. The one exception for an element is the exact key
+`form:cancel-tag`: `"button"` (the default, also for `None`) or `"a"`, which renders an enabled cancel form button
+with a destination as a native `<a href>` link. It selects the element of that one control only, has no mode keys,
+and does not configure its `href`, its native `type` or `disabled`: a disabled cancel or one without a destination
+stays the native button, and submit, delete and the filter actions are never links. A value other than these is
+check error `crud_views.E365` (a non-str value is `crud_views.E361`). The presentational words the leaves used to hard-code are keys:
 `<location>:active` for the button that points at the current page, `card:flex` for a stretched card action and
 `<location>:hidden-label` for the screen-reader text of an icon-only button. A theme on another framework registers
 its own words there (`is-active`, `is-sr-only`, `sr-only`) and overrides no leaf. `None` on a `hidden-label` key
@@ -425,7 +431,8 @@ How a button renders depends on where it is placed:
 
 - **In a layout** (`Layout(...)`, typically inside `FormActions`) it renders one `<button>` through the form-button
   leaf `crud_views/tags/button/form.html`, with its resolved [label mode](action_menus.md#form-label-mode-resolution),
-  its icon and the `form:<kind>:<mode>` classes. This is the path of every package form: `CrispyFormMixin`,
+  its icon and the `form:<kind>:<mode>` classes. A cancel can opt into one native `<a href>` link instead, see
+  [Cancel links](#cancel-links); by default every form button is a `<button>`. This is the path of every package form: `CrispyFormMixin`,
   `CrispyDeleteForm`, the workflow form and the [list filter](list_view.md#filtering-with-django-filter). A layout
   button needs a slot `form:<kind>` with one of the five kinds; any other slot (`formset:control`, `form:unknown`)
   raises `ValueError` when it renders.
@@ -442,6 +449,119 @@ How a button renders depends on where it is placed:
 
 The removed tags `cv_submit_button`, `cv_cancel_button` and `cv_delete_button` and their templates are replaced by
 these classes.
+
+### Cancel links
+
+By default the cancel button navigates with JavaScript: it is a `<button type="button">` whose `data-cv-cancel-url`
+`viewset.js` follows on a click. A theme, a project or a single form can render it as a native `<a href>` link
+instead. A link navigates without JavaScript, and the browser's own gestures (middle click, the context menu) open it
+in another tab while the form stays open. Nothing changes until you opt in.
+
+The option takes `"button"` (the default), `"a"` or `None`, which inherits. The first value that is set wins:
+
+1. the `tag=` keyword of the `Button`, for example `Button("reset", "Back", tag="a")`; `None`, the default, inherits;
+2. the class-table key `form:cancel-tag`, from a theme registration or `CRUD_VIEWS_BUTTON_CLASSES` (settings win, see
+   [Precedence](#precedence)); when the key is absent or `None`, the cancel stays a `"button"`.
+
+A theme registers the key from `AppConfig.ready()`:
+
+```python
+# myapp_theme/apps.py
+def ready(self):
+    from crud_views.lib.button_classes import register_button_classes
+
+    register_button_classes({"form:cancel-tag": "a"})
+```
+
+A project sets it for every form:
+
+```python
+# settings.py
+CRUD_VIEWS_BUTTON_CLASSES = {"form:cancel-tag": "a"}
+```
+
+A form picks its own element through `get_cancel_button_kwargs()`, and its explicit `tag=` wins over the table
+either way. Subclass these forms like `CrispyModelForm`, with your own `Meta`:
+
+```python
+# forms.py
+from crud_views.lib.crispy import CrispyModelForm
+
+
+class CancelLinkForm(CrispyModelForm):
+    """The cancel is a link on this form, whatever the theme selects."""
+
+    def get_cancel_button_kwargs(self) -> dict:
+        return {**super().get_cancel_button_kwargs(), "tag": "a"}
+
+
+class CancelButtonForm(CrispyModelForm):
+    """The cancel stays the native button on this form, even when the theme or the project selects links."""
+
+    def get_cancel_button_kwargs(self) -> dict:
+        return {**super().get_cancel_button_kwargs(), "tag": "button"}
+```
+
+In a layout of your own, pass `tag=` to the `Button`:
+
+```python
+# a layout of your own
+from crispy_forms.bootstrap import FormActions
+
+from crud_views.lib.crispy import Button, Submit
+
+actions = FormActions(
+    Submit("submit", "Save"),
+    Button("reset", "Back", tag="a", data_cv_cancel_url="/authors/"),
+)
+
+# a plain click opens a new tab: set target and rel yourself
+new_tab = Button("reset", "Back", tag="a", data_cv_cancel_url="/authors/", target="_blank", rel="noopener")
+```
+
+**Which control can be a link.** Only a cancel can: form kind `cancel` (the slot `form:cancel`, the default of
+`Button`) with the native type `button`. A subclass of `Button` qualifies too. `tag="a"` on a `Submit`, a `Reset` or a
+`Button` with another slot raises `ValueError` when it is built, while `tag="button"` is accepted on every control.
+Submit, delete and the filter actions never become links, and they never read the key.
+
+**Validation.** `tag=` accepts exactly `None`, `"button"` and `"a"`. Any other value (`""`, `"A"`, `" a"`, a
+non-str) raises `ValueError` when the button is built, even for a button added with `helper.add_input()`. A
+configured `form:cancel-tag` str other than `"button"` or `"a"` is the check error `crud_views.E365`; a non-str value
+is `crud_views.E361`. If such a value is selected at render, it raises `ValueError` under `CRUD_VIEWS_STRICT` and
+otherwise logs a warning and renders the button. The value is checked before the fallback below, so it is reported
+even for a cancel without a destination or a disabled one. An explicit valid `tag=` never reads the key, but the check
+still reports an invalid key.
+
+**Fallback.** A selected `"a"` renders a link only for an enabled cancel with a destination. When the destination is
+missing (`data_cv_cancel_url` absent, `None` or `""`), or the cancel carries a `disabled` attribute (any value except
+`False` and `None`, in any letter case), the cancel renders exactly the native button it renders without the option,
+because a link cannot be disabled. `cv_tag` in [the form leaf contract](#the-form-leaf-contract) is the resulting
+element.
+
+**The link.** It is `<a href id class>` with the classes, label-mode body, icon, `title` and tooltip of the button.
+Its only `href` is the cancel destination, escaped once. It drops what has no meaning on a link: `type`, `name`,
+`value`, `data-cv-cancel-url` and an extra `href`, plus the button-only attributes `command`, `commandfor`,
+`disabled`, `form`, `formaction`, `formenctype`, `formmethod`, `formnovalidate`, `formtarget`, `popovertarget` and
+`popovertargetaction`, each in any letter case. The other extras stay: `target`, `rel`, `aria-*`, other `data-*`,
+`autofocus`, and `title` outside `"icon"` mode. In the leaf contract `cv_tag` is `"a"`, while `cv_type`, `cv_name`,
+`cv_value` and `cv_cancel_url` keep their values, so a custom template can still read them. Like the cancel button,
+the link submits nothing.
+
+**Navigation.** The link navigates without JavaScript. `viewset.js` only follows elements that carry
+`data-cv-cancel-url`, and a link carries none, so the script never intercepts it. Opening the link in another tab
+needs no option. If a plain click should open a new tab, set `target="_blank"` and `rel="noopener"` yourself, as in
+the example above. The link keeps `target` and `rel` exactly as given, and never adds or rewrites `rel`.
+
+**Trusted destinations.** The `href` is the destination the cancel hooks return: the view's
+`get_cancel_button_context()` (a URL of the ViewSet by default) or the `data_cv_cancel_url` you pass. Escaping keeps
+the value inside its attribute. It is HTML escaping, not URL validation, so a `javascript:` URL renders as given.
+Build destinations with `reverse()` from your own URL patterns, never from unchecked request input.
+
+**Helper inputs.** A button added with `helper.add_input()` stays the template pack's input: its `tag=` is checked as
+above, but it never reads `form:cancel-tag` and never renders a link. An input without `tag=` or with
+`tag="button"` stays quiet. To get a link, move the cancel into a layout `FormActions`; inputs are not migrated
+automatically. A custom button template chooses its own markup, see
+[Cancel links in custom form-button templates](theme.md#cancel-links-in-custom-form-button-templates).
 
 ### Literal text
 
@@ -464,7 +584,9 @@ Each reserved attribute is resolved once and rendered once:
 - Underscores in keyword names become hyphens (`data_x` is `data-x`); when both spellings are given the hyphenated one
   wins. `True` renders a bare attribute, `False` and `None` omit it.
 - `data_cv_cancel_url` (or `data-cv-cancel-url`) of a `cancel` button becomes `cv_cancel_url` and renders once as
-  `data-cv-cancel-url`; on any other kind it stays an ordinary attribute.
+  `data-cv-cancel-url` (as the `href` of a [cancel link](#cancel-links)); on any other kind it stays an ordinary
+  attribute.
+- `tag` is never an attribute: it selects the element of a cancel, see [Cancel links](#cancel-links).
 - In `"icon"` mode the generated `title` and `data-cv-tooltip="form"` win over an extra `title` or `data-cv-tooltip`;
   in `"label"` and `"both"` mode those stay ordinary attributes.
 
@@ -473,8 +595,9 @@ Attribute names are code you write; attribute values may be untrusted text.
 ### The form leaf contract
 
 The leaf receives the flat dict `FORM_LEAF_KEYS` (`crud_views.lib.view.button_data`), a separate set from the
-action `LEAF_KEYS`. None of the action-only keys (`cv_href`, `cv_tag`, `cv_modal`, `cv_disabled`, `cv_variant`, ...)
-appear in it, and neither does crispy's `input` object:
+action `LEAF_KEYS`. None of the action-only keys (`cv_href`, `cv_submit_target`, `cv_modal`, `cv_disabled`,
+`cv_variant`, ...) appear in it, and neither does crispy's `input` object. `cv_tag` is shared by name only: in a form
+it is the effective element of the form button, never an action's link or POST decision:
 
 | Key | Meaning |
 |---|---|
@@ -493,10 +616,13 @@ appear in it, and neither does crispy's `input` object:
 | `cv_flat_attrs` | the other attributes, already escaped and serialized (`SafeString`), output as is |
 | `cv_title` | the generated `title` (the label); present only in `"icon"` mode |
 | `cv_cancel_url` | the navigation URL of the cancel button (`None` without one); present only for kind `cancel` |
+| `cv_tag` | the effective element, after every fallback: `"a"` only for an enabled cancel (kind `cancel`, native type `"button"`) whose selected tag is `"a"` (its `tag=` keyword, else [`form:cancel-tag`](#the-class-table)) and whose `cv_cancel_url` is not empty; `"button"` otherwise, including a disabled cancel and one without a destination. Present on every form button; `cv_type`, `cv_name`, `cv_value` and `cv_cancel_url` keep their values when it is `"a"` |
 
 The bundled leaf renders `<button type name value id class>` with `{% cv_button_class "form" cv_key cv_label_mode %}`,
 then `cv_css_class` and `cv_icon_class`, then `data-cv-cancel-url` when `cv_cancel_url` is present, `title` with
-`data-cv-tooltip="form"` in `"icon"` mode, and `cv_flat_attrs`. Its body follows the action leaf:
+`data-cv-tooltip="form"` in `"icon"` mode, and `cv_flat_attrs`. When `cv_tag` is `"a"` it renders a native
+`<a href id class>` instead, with `cv_cancel_url` as its `href` and the same classes, `title`, tooltip and body, but
+without `type`, `name`, `value` and `data-cv-cancel-url`. Its body follows the action leaf:
 
 | Mode | Body |
 |---|---|
@@ -576,6 +702,7 @@ override the leaf, otherwise an action disabled by `CRUD_VIEWS_INACCESSIBLE_ACTI
 | `crud_views.E361` | error | a `CRUD_VIEWS_BUTTON_CLASSES` value or registered theme value is neither a str nor `None` |
 | `crud_views.E363` | error | an `*:icon-host` value is not a valid format string with `{name_class}` as its only placeholder |
 | `crud_views.E364` | error | a `*:container-single` value is neither `"container"` nor `"bare"` (`None` and `""` mean `"container"`) |
+| `crud_views.E365` | error | a `form:cancel-tag` str value is neither `"button"` nor `"a"` (`""`, whitespace and other letter cases included); the hint names `'button'`, `'a'` and `None`. A non-str value is `crud_views.E361` only. Reported even when every cancel overrides it with an explicit `tag=` |
 | `crud_views.W362` | warning | a `CRUD_VIEWS_BUTTON_CLASSES` or theme key is neither in the default table nor a valid `location:variant:mode` at `context`/`list`/`card` or `form:kind:mode` (typo, or an unknown label mode) |
 | `viewset.E209` | error | a `cv_action_variant`, `ContextButton.variant` or `CardAction.variant` is not one of the four variants |
 | `crud_views.E106` | error | a `CRUD_VIEWS_CONTEXT_ACTIONS_LABEL_MODE` or `CRUD_VIEWS_LIST_ACTIONS_LABEL_MODE` setting is not a dict of action key → `"label"` / `"icon"` / `"both"`; `CRUD_VIEWS_FORM_ACTIONS_LABEL_MODE` is not a dict of form kind → mode (an unknown form kind is an error here, not a W291) |

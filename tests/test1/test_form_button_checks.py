@@ -891,7 +891,10 @@ def test_non_strict_missing_icon_logs_and_uses_the_label(caplog, calls, font_cal
     assert ("cv_cancel_url" in first) is (kind == "cancel")
     if kind == "cancel":
         assert first["cv_cancel_url"] == "/back/"
-    for action_only in ("cv_href", "cv_submit_target", "cv_modal", "cv_tag", "cv_variant", "cv_disabled"):
+    # Phase 6.1: the effective tag is part of the form contract and coexists with the missing-icon fallback;
+    # unconfigured, every kind keeps the native button
+    assert first["cv_tag"] == "button"
+    for action_only in ("cv_href", "cv_submit_target", "cv_modal", "cv_variant", "cv_disabled"):
         assert action_only not in first
     assert calls == [] and font_calls == []
 

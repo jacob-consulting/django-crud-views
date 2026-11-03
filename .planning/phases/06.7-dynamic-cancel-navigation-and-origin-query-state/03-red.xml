@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.210" timestamp="2026-11-03T16:08:29.890424+00:00" hostname="weaver-dev"><testcase classname="tests.test1.test_cancel_state" name="test_old_session_navigation_is_cleaned_on_read" time="0.029"><failure message="AssertionError: assert 'name=Penguin...rom_restore=1' == 'name=Penguin'&#10;  &#10;  - name=Penguin&#10;  + name=Penguin&amp;cv_from=detail&amp;cv_from_cancel=bad&amp;cv_from_restore=1">cv_publisher = ViewSet(publisher)
+
+    def test_old_session_navigation_is_cleaned_on_read(cv_publisher):
+        view = cv_publisher.get_view_class("list")()
+        view.kwargs = {}
+        view.request = RequestFactory().get("/publisher/")
+        view.request.session = {}
+        with SessionData.from_view(view) as state:
+            state["filter_query_string"] = "name=Penguin&amp;cv_from=detail&amp;cv_from_cancel=bad&amp;cv_from_restore=1"
+        response = view.get(view.request)
+        assert response["Location"] == "/publisher/?name=Penguin"
+&gt;       assert SessionData.from_view(view).get("filter_query_string") == "name=Penguin"
+E       AssertionError: assert 'name=Penguin...rom_restore=1' == 'name=Penguin'
+E         
+E         - name=Penguin
+E         + name=Penguin&amp;cv_from=detail&amp;cv_from_cancel=bad&amp;cv_from_restore=1
+
+tests/test1/test_cancel_state.py:48: AssertionError</failure></testcase></testsuite></testsuites>

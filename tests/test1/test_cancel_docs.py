@@ -93,7 +93,9 @@ def test_custom_actions_recipe(
     monkeypatch.setattr(target, "form_class", type("DocumentedForm", (mixin, target.form_class), {}))
     for destination in ("list", "card"):
         monkeypatch.setattr(
-            cv_author_origin.get_view_class(destination), "cv_has_access", classmethod(lambda cls, user, obj=None: allowed)
+            cv_author_origin.get_view_class(destination),
+            "cv_has_access",
+            classmethod(lambda cls, user, obj=None: allowed),
         )
     path = "/author_origin/create/" if key == "create" else f"/author_origin/{author_douglas_adams.pk}/delete/"
     response = client_user_author_origin.get(path)

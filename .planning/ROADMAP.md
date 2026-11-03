@@ -804,11 +804,11 @@ ViewSet; detail destinations use the form's existing object.
 **Scope exclusions**: Detail → create → detail (Create uses its configured fallback), cross-ViewSet navigation,
 history stacks, browser-only state, success redirect changes, new modal support and new Cancel controls on protected
 deletion pages that currently hide the form.
-**Plans:** 0/5 plans executed
+**Plans:** 1/5 plans executed
 
 Plans:
 **Wave 1**
-- [ ] 06.7-01-PLAN.md — Capture and restore independent cancel destinations with automatic form defaults
+- [x] 06.7-01-PLAN.md — Capture and restore independent cancel destinations with automatic form defaults
 
 **Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 06.7-02-PLAN.md — Resolve permission-aware destinations and actionable fallback diagnostics
@@ -898,5 +898,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 6.4. Conditional and formset correctness/lifecycle | 26/26 | Complete    | 2026-11-02 |
 | 6.5. Remaining presentation contracts and decided cleanup | 9/9 | Complete    | 2026-11-02 |
 | 6.6. Theme-adoption seams from the Tabler sync | 10/10 | Complete    | 2026-11-03 |
-| 6.7. Dynamic cancel navigation and origin query state | 0/5 | Planned     | - |
+| 6.7. Dynamic cancel navigation and origin query state | 1/5 | In Progress | - |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

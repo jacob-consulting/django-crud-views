@@ -84,9 +84,7 @@ def test_delivery_ignores_only_untracked_gitignored_ide_metadata_without_changin
 
 @pytest.mark.parametrize("mutation", ["tracked-ide", "nonignored-ide", "ignored-source"])
 def test_delivery_still_rejects_source_changes_when_ide_metadata_is_ignored(tmp_path, mutation):
-    root, _ = repository(
-        tmp_path / "ide repository", {**FILES, ".gitignore": b".idea/workspace.xml\nsrc/ignored.py\n"}
-    )
+    root, _ = repository(tmp_path / "ide repository", {**FILES, ".gitignore": b".idea/workspace.xml\nsrc/ignored.py\n"})
     tracked = root / ".idea/workspace.xml"
     tracked.parent.mkdir()
     tracked.write_bytes(b"tracked IDE configuration")

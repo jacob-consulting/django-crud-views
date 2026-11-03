@@ -150,6 +150,15 @@ def write_tree(files, target):
 def working_files(root):
     root = Path(root)
     files = {}
+    ignored_ide = set()
+    if (root / ".git").exists() and (root / ".idea").is_dir():
+        # Only untracked, Git-ignored files in the IDE-owned directory are metadata.
+        # Tracked/nonignored IDE files and arbitrary ignored source remain inventoried.
+        ignored_ide = set(
+            git(root, "ls-files", "--others", "--ignored", "--exclude-standard", "-z", "--", ".idea")
+            .decode()
+            .split("\0")
+        )
     for directory, directories, names in os.walk(root):
         directories[:] = [
             name for name in directories if name not in RUNTIME_EXCLUDES and not name.endswith(".egg-info")
@@ -163,7 +172,7 @@ def working_files(root):
                 files[rel.as_posix()] = target.read_bytes()
                 continue
             require(not path.is_symlink(), f"unexpected source symlink: {rel}")
-            if name not in {"db.sqlite3", ".coverage"} and path.is_file():
+            if name not in {"db.sqlite3", ".coverage"} and rel.as_posix() not in ignored_ide and path.is_file():
                 files[rel.as_posix()] = path.read_bytes()
     return files
 

@@ -1,5 +1,5 @@
 {
-  "committed_source_head": "82fe1881169fe0197b14b0f67c41ee59403ce327",
+  "committed_source_head": "2d8d794f5b772bfafefc14028baf43cea05e4135",
   "hashes": {
     "src/crud_views_guardian/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "src/crud_views_guardian/apps.py": "0ba2babfa16a252062da72175393b5138ee18b650b56cb98fac8f45236187782",
@@ -132,7 +132,7 @@
     "src/crud_views/lib/vendor.py": "ea903c796bc4238e5932e5de52bfe1bc4261ccf53d6f2683ae7f22dd277da09c",
     "src/crud_views/lib/view/__init__.py": "12348de5ba48918ca6b4e7693720e07164e60388ee4dcc0d39dac3e3281d8255",
     "src/crud_views/lib/view/action_menu.py": "f39bb30b71d706012341f9f3ee4abdf299b2d2a28ffa18da279284a072745602",
-    "src/crud_views/lib/view/base.py": "340e57813d58edbcf64597d4a031f36058c749d2ff5b59ba502a8b45d5adcaf0",
+    "src/crud_views/lib/view/base.py": "7a13c5ea22ae6f7b22c345edd6a593bc6d09d57ab082216c38100766ece49623",
     "src/crud_views/lib/view/button_data.py": "60f218d8a8a2398c7e871c260f06a8ad22462c6c29e5ad6f1c294835edb20e34",
     "src/crud_views/lib/view/buttons.py": "7ba1ff9ccbd0b5b1354610f0bb4656eace86d0b5c3a7e17a6fa3a8aa36f0d218",
     "src/crud_views/lib/view/cancel.py": "2346062872e6d8e2c606aca91a81c39469f9873c90a93e59fe857d66c821e8af",
@@ -293,7 +293,7 @@
     "src/crud_views/templatetags/crud_views.py": "6f15b31248dd18370011b4973484df0f9c8272db191cf0da89ba74626ce7ca4a",
     "tests/browser/cancel_fixture_http.py": "450f31bce67854e35e92e2874dc1aa679323ff4d32fa53aadd9937ef00c590a0",
     "tests/browser/cancel_navigation_server.py": "48ad9f2a5b88261668f9a652a47c333574ff1d33549202fffd5ed02c33c2ae34",
-    "tests/browser/cancel-navigation.cjs": "0d9b38b6c4ebc95efa38de381e57d778d5f673812ff4418ae3e2ae0b1f0c0278",
+    "tests/browser/cancel-navigation.cjs": "61a487af09627f078ea6f1a977e042076a246cee72c53fd8254ccb21212d561c",
     "tests/browser/cancel-navigation.test.cjs": "ce898bbdd4557fce725c20bb1d9f8eb714fc08ed426af57c0a671626ca16cc93",
     "tests/test1/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "tests/test1/app/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -405,7 +405,7 @@
     "tests/test1/test_cancel_origin.py": "fb41b960a8d6e52f66559072092f0f96d164f2689ddfc1b93b67fcc3c6e8f926",
     "tests/test1/test_cancel_permissions.py": "7b22df4b2ebe197154912fb1c575390df62cb0256b0bf5f7368cb36b10424149",
     "tests/test1/test_cancel_polymorphic.py": "15094c607e8f5044e7c8d8164f86eba36c5cf18d5c2b1d6ad2be9bb9c7441bdb",
-    "tests/test1/test_cancel_quality.py": "c2956811202369b8ef21ec4f6ebece071d6297411de4b076aeea07c2a2047065",
+    "tests/test1/test_cancel_quality.py": "32117fe380e98060bd6df3f2ae2846496b6b5a4acb5daef1bab3bb666095431a",
     "tests/test1/test_cancel_rendering.py": "fec3afb041358445e9176c831ae9e0c90caf73e75a0158f70ea84cd3b8ae1db1",
     "tests/test1/test_cancel_state.py": "478e4358b51e26432de6fedb9e6eb8e1ac2c6abf9341c32838c1b8eb7b5dfa5f",
     "tests/test1/test_card_action_label_mode_field.py": "3c8a1df141f1da913826030c76089389e7f64808d7e0b714209c2cab240d3aa6",

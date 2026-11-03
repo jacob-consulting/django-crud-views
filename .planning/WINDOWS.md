@@ -2,9 +2,9 @@
 schema_version: 1
 open_count: 6
 waived_count: 2
-fixed_count: 19
-total_count: 27
-last_updated: 2026-11-03T16:55:04.913Z
+fixed_count: 20
+total_count: 28
+last_updated: 2026-11-03T17:04:29.345Z
 ---
 
 # Broken Windows Ledger
@@ -42,6 +42,7 @@ last_updated: 2026-11-03T16:55:04.913Z
 | 25 | 06.7 | deviation | tests/test1/test_crispy_buttons.py |  | Authorize list destinations locally in 17 presentation cases whose pre-plan fixtures lacked the permission required for visible Cancel. | fixed |  | 2026-11-03T16:41:44.314Z | 2026-11-03T16:41:52.936Z |
 | 26 | 06.7 | deviation | tests/test1/test_cancel_permissions.py |  | Migrate selector fallback diagnostic to automatic defaults while retaining explicit static invalid-fallback coverage. | fixed |  | 2026-11-03T16:54:56.249Z | 2026-11-03T16:55:04.782Z |
 | 27 | 06.7 | deviation | tests/test1/test_cancel_navigation.py |  | Isolate late-registration fixture registry so it cannot contaminate the registered-form inventory. | fixed |  | 2026-11-03T16:54:56.421Z | 2026-11-03T16:55:04.913Z |
+| 28 | 06.7 | deviation | tests/test1/test_form_button_docs.py |  | Cancel-present documentation fixtures now grant view permission; three legacy add-only fixture failures fixed and verified in 34-test recipe selection. | fixed |  | 2026-11-03T17:03:26.320Z | 2026-11-03T17:04:29.345Z |
 
 ````json
 [
@@ -385,6 +386,19 @@ last_updated: 2026-11-03T16:55:04.913Z
     "reason": "",
     "recorded_at": "2026-11-03T16:54:56.421Z",
     "resolved_at": "2026-11-03T16:55:04.913Z",
+    "milestone": "v1.0"
+  },
+  {
+    "id": 28,
+    "kind": "deviation",
+    "phase": "06.7",
+    "file": "tests/test1/test_form_button_docs.py",
+    "line": null,
+    "description": "Cancel-present documentation fixtures now grant view permission; three legacy add-only fixture failures fixed and verified in 34-test recipe selection.",
+    "status": "fixed",
+    "reason": "",
+    "recorded_at": "2026-11-03T17:03:26.320Z",
+    "resolved_at": "2026-11-03T17:04:29.345Z",
     "milestone": "v1.0"
   }
 ]

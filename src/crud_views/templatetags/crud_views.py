@@ -1,7 +1,11 @@
+import logging
 from dataclasses import dataclass
 
+from crispy_forms.helper import FormHelper
+from crispy_forms.utils import TEMPLATE_PACK, render_field
 from django import template
 from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
 from django.template.loader import get_template, render_to_string
 from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
@@ -11,7 +15,7 @@ from django_tables2.templatetags import django_tables2 as _dt2
 
 from crud_views.lib import assets
 from crud_views.lib.button_classes import _heading_class, get_button_class, get_container_layout, get_icon_host_class
-from crud_views.lib.exceptions import ViewSetKeyFoundError, ignore_exception
+from crud_views.lib.exceptions import ViewSetKeyFoundError, ignore_exception, is_strict
 from crud_views.lib.icons import render_icon, resolve_icon_name_class
 from crud_views.lib.messages import alert_data, message_alerts
 from crud_views.lib.settings import crud_views_settings
@@ -20,6 +24,7 @@ from crud_views.lib.view.button_data import cv_button_data, icon_host_keys
 from crud_views.lib.view.visibility import cv_resolve_action
 
 register = template.Library()
+logger = logging.getLogger(__name__)
 
 # django-tables2 3.0.0 renamed the ``querystring`` tag to ``querystring_replace`` (to avoid shadowing
 # Django 5.1's built-in tag). Resolve whichever the installed version provides; both share the same
@@ -463,7 +468,85 @@ def cv_paragraph(context):
 
 @register.simple_tag(takes_context=True)
 def cv_render_form(context):
-    return render_to_string(f"{crud_views_settings.theme_path}/tags/form.html", context.flatten())
+    helper = _prepare_form_helper(context["form"])
+    template = get_template(f"{crud_views_settings.theme_path}/tags/form.html")
+    with context.push(cv_form_helper=helper):
+        return mark_safe(template.template.render(context))
+
+
+class _PageFormHelper(FormHelper):
+    """Delegate helper hooks unchanged; suppress CSRF only in a fresh render attribute mapping.
+
+    Copying arbitrary helpers is unsafe: __copy__ can alias or raise, and disable_csrf can be read-only.
+    Hooks stay bound to the source, retaining subclass behavior and shared layouts without assigning to them.
+    Crispy's formset-only hidden-field request is applied after the source layout hook returns.
+    """
+
+    def __init__(self, source):
+        object.__setattr__(self, "_source", source)
+
+    def __getattribute__(self, name):
+        if name in {"_source", "get_attributes", "render_layout"}:
+            return object.__getattribute__(self, name)
+        return getattr(object.__getattribute__(self, "_source"), name)
+
+    def __bool__(self):
+        return bool(self._source)
+
+    def get_attributes(self, *args, **kwargs):
+        return {**self._source.get_attributes(*args, **kwargs), "disable_csrf": True}
+
+    def render_layout(self, form, context, template_pack=TEMPLATE_PACK):
+        html = self._source.render_layout(form, context, template_pack=template_pack)
+        # Crispy sets this on the adapter for formsets. The source-bound hook cannot
+        # see that render-local flag; complete only the hidden fields it left out.
+        if object.__getattribute__(self, "__dict__").get("render_hidden_fields", False):
+            if not hasattr(form, "rendered_fields"):
+                form.rendered_fields = set()
+            if not hasattr(form, "crispy_field_template"):
+                form.crispy_field_template = self.field_template
+            for name, field in form.fields.items():
+                if field.widget.is_hidden and name not in form.rendered_fields:
+                    html += render_field(name, form, context, template_pack=template_pack)
+        return mark_safe(html)
+
+
+def _prepare_form_helper(form):
+    helper = getattr(form, "helper", None)
+    if helper is None:
+        helper = FormHelper()
+        helper.form_tag = False
+    if helper.form_tag:
+        raise ImproperlyConfigured(
+            f"{type(helper).__name__}: cv_render_form requires form_tag=False; the page template owns the outer form."
+        )
+    _diagnose_form_wrapper(helper)
+    return _PageFormHelper(helper)
+
+
+def _diagnose_form_wrapper(helper):
+    """Diagnose detectable wrapper configuration without resolving form_action or exposing its value."""
+    configured = [
+        option
+        for option, attribute in (
+            ("form_action", "_form_action"),
+            ("form_id", "form_id"),
+            ("attrs", "attrs"),
+            ("form_class", "form_class"),
+        )
+        if getattr(helper, attribute, None)
+    ]
+    if helper.form_method != "post":
+        configured.append("form_method")
+    if not configured:
+        return
+    message = (
+        f"{type(helper).__name__}: {', '.join(configured)} outer-form configuration is ignored by cv_render_form. "
+        "Override the page template to configure its form; helper method/classes may still affect pack internals."
+    )
+    if is_strict():
+        raise ImproperlyConfigured(message)
+    logger.warning(message)
 
 
 @register.simple_tag(takes_context=True)

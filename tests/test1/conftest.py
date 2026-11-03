@@ -21,6 +21,14 @@ def asset_registry():
 
 
 @pytest.fixture(autouse=True)
+def isolate_theme_label_modes(monkeypatch):
+    """Restore theme registrations by rebind, independently of warning deduplication."""
+    from crud_views.lib.view import label_mode
+
+    monkeypatch.setattr(label_mode, "_THEME_LABEL_MODE_DEFAULTS", dict(label_mode._THEME_LABEL_MODE_DEFAULTS))
+
+
+@pytest.fixture(autouse=True)
 def isolate_label_mode_warnings(monkeypatch):
     """A fresh once-per-(location, value) label-mode warning register for every test.
 

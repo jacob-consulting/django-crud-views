@@ -30,6 +30,7 @@ Numeric order is a valid execution order. The dependency graph also allows paral
 - [x] **Phase 6.3: Delete protection and write-boundary integrity (INSERTED)** - issue #282 (completed 2026-11-01)
 - [x] **Phase 6.4: Conditional and formset correctness/lifecycle (INSERTED)** - analysis A1–A7: correct conditional state, server save behavior and dynamic formset initialization before the freeze (completed 2026-11-02)
 - [x] **Phase 6.5: Remaining presentation contracts and decided cleanup (INSERTED)** - analysis #259/C1/C2 and decided alias cleanup before the freeze (completed 2026-11-02)
+- [x] **Phase 6.6: Theme-adoption seams from the Tabler sync (INSERTED)** - issues #277–#280 before the freeze (completed 2026-11-03)
 - [ ] **Phase 7: Theme-surface stability policy** - plan 4: `stability.md` freezes the theme surface; a guard test checks it in both directions
 
 ## Phase Details
@@ -745,28 +746,28 @@ warning/strict errors, atomic theme registration and both alert keys. The 2026-1
 authorizes verified companion delivery/local commits while retaining isolated baseline/replay and unrelated-work preservation.
 **Scope exclusions**: Reopening completed authorization/deletion/conditional/formset/presentation acceptance,
 full jQuery removal, and final stability-policy inventory.
-**Plans**: 10 plans
+**Plans**: 10/10 plans complete
 
 Plans:
 **Wave 1**
-- [ ] 06.6-01-PLAN.md — Single-form/CSRF tracer and helper diagnostics (wave 1)
-- [ ] 06.6-04-PLAN.md — Alert utility classes and preserved dismissal (wave 1)
-- [ ] 06.6-06-PLAN.md — Real companion acquisition and exact-source baseline (wave 1)
+- [x] 06.6-01-PLAN.md — Single-form/CSRF tracer and helper diagnostics (wave 1)
+- [x] 06.6-04-PLAN.md — Alert utility classes and preserved dismissal (wave 1)
+- [x] 06.6-06-PLAN.md — Real companion acquisition and exact-source baseline (wave 1)
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 06.6-02-PLAN.md — Atomic theme label defaults and effective checks (wave 2)
-- [ ] 06.6-03-PLAN.md — Supported-pack action-group styling (wave 2)
-- [ ] 06.6-05-PLAN.md — Full stock/workflow request and DOM preservation (wave 2)
+- [x] 06.6-02-PLAN.md — Atomic theme label defaults and effective checks (wave 2)
+- [x] 06.6-03-PLAN.md — Supported-pack action-group styling (wave 2)
+- [x] 06.6-05-PLAN.md — Full stock/workflow request and DOM preservation (wave 2)
 
 **Wave 3** *(blocked on Wave 2 completion)*
-- [ ] 06.6-07-PLAN.md — Real Tabler/browser acceptance and replayable patch (wave 3)
-- [ ] 06.6-08-PLAN.md — Executable adoption and paired migrations (wave 3)
+- [x] 06.6-07-PLAN.md — Real Tabler/browser acceptance and replayable patch (wave 3)
+- [x] 06.6-08-PLAN.md — Executable adoption and paired migrations (wave 3)
 
 **Wave 4** *(blocked on Wave 3 completion)*
-- [ ] 06.6-10-PLAN.md — Verified companion source delivery and local commit (wave 4)
+- [x] 06.6-10-PLAN.md — Verified companion source delivery and local commit (wave 4)
 
 **Wave 5** *(blocked on Wave 4 completion)*
-- [ ] 06.6-09-PLAN.md — Final regression evidence and Phase 7 handoff (wave 5)
+- [x] 06.6-09-PLAN.md — Final regression evidence and Phase 7 handoff (wave 5)
 
 **UI hint**: yes (forms, action groups and alerts across stock and reference themes).
 
@@ -775,13 +776,13 @@ Plans:
 **Goal**: Theme authors can see exactly which names they may rely on at 1.0.0, and a test stops any public theme name
 from shipping undocumented or being documented without existing.
 **Source**: plan 4 · branch `docs/stability-theme-surface`
-**Depends on**: Phase 6.5, Phase 4 and Phase 5 (and so, transitively, Phases 6.4, 6.3, 6.2, 6.1, 6, 1 and 2). It merges last, before the 1.0.0
-bump. If Phases 4/5 are dropped, it depends on Phase 6.5 only and documents the surface as it is. Include the cancel
+**Depends on**: Phase 6.6, Phase 4 and Phase 5 (and so, transitively, Phases 6.5, 6.4, 6.3, 6.2, 6.1, 6, 1 and 2). It merges last, before the 1.0.0
+bump. If Phases 4/5 are dropped, it depends on Phase 6.6 only and documents the surface as it is. Include the cancel
 tag key, `Button(tag=...)` and form-leaf `cv_tag` contract introduced by #275, plus the settled request,
 protected-preview and Guardian configuration contracts from Phase 6.2, qualified by the unresolved acceptance
 split above until Phase 6.3 remediation is verified. Include the settled conditional/formset contracts from Phase 6.4.
 Include the settled heading, object-detail ID/context and alias cleanup contracts from Phase 6.5.
-Keep proposed 6.6 ahead of Phase 7 if accepted.
+Include the settled form ownership, label-mode registration, action-group and alert contracts from Phase 6.6.
 **Parallel with**: None
 **Research/spec**: **Needs a maintainer decision/spec**:
 
@@ -813,7 +814,7 @@ Keep proposed 6.6 ahead of Phase 7 if accepted.
 ## Progress
 
 **Execution Order:**
-Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 6.1 → 6.2 → 6.3 → 6.4 → 6.5 → 7) is valid. With parallelization, run in waves:
+Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 6.1 → 6.2 → 6.3 → 6.4 → 6.5 → 6.6 → 7) is valid. With parallelization, run in waves:
 
 | Wave | Phases | Notes |
 |------|--------|-------|
@@ -825,7 +826,8 @@ Numeric order (1 → 2 → 3 → 4 → 5 → 6 → 6.1 → 6.2 → 6.3 → 6.4 �
 | 6 | 6.3 (#282) | Delete protection and write-boundary integrity before the freeze |
 | 7 | 6.4 (analysis A1–A7) | Conditional/formset correctness and lifecycle before freezing their theme contracts |
 | 8 | 6.5 (analysis #259/C1/C2) | Remaining presentation contracts and decided alias cleanup before the freeze |
-| 9 | 7 (plan 4) | Needs 6.5, 4 and 5 merged; last change before the 1.0.0 bump |
+| 9 | 6.6 (#277–#280) | Theme-adoption seams from the Tabler sync before the freeze |
+| 10 | 7 (plan 4) | Needs 6.6, 4 and 5 merged; last change before the 1.0.0 bump |
 
 Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 
@@ -842,5 +844,5 @@ Droppable if 1.0.0 must ship early: Phases 4 and 5 (plan 3A/3B).
 | 6.3. Delete protection and write-boundary integrity | 20/20 | Complete    | 2026-11-01 |
 | 6.4. Conditional and formset correctness/lifecycle | 26/26 | Complete    | 2026-11-02 |
 | 6.5. Remaining presentation contracts and decided cleanup | 9/9 | Complete    | 2026-11-02 |
-| 6.6. Theme-adoption seams from the Tabler sync | 0/10 | Planned | - |
+| 6.6. Theme-adoption seams from the Tabler sync | 10/10 | Complete    | 2026-11-03 |
 | 7. Theme-surface stability policy | 0/TBD | Not started | - |

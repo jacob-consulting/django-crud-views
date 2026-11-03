@@ -157,12 +157,12 @@ Source: Phase 06.5 CONTEXT.md D-01–D-17. Completed 2026-11-02: canonical verif
 Source: Phase 06.6 CONTEXT.md D-01–D-19 and issues #277–#280. These IDs transcribe the accepted scope;
 the initial spec-less fallback was skipped while IDs were TBD, and generated no probe predicates.
 
-- [ ] **THEME-01**: Page templates own actionable create/update/custom/delete/workflow forms and CSRF, including page/modal POST; library helpers are nonwrapping, incompatible application helpers always reject, and detectable unused wrapper settings warn normally/raise strict without mutating caller helpers. Preserve accepted controls, escaping, authorization, deletion and conditional/formset/focus behavior.
-- [ ] **THEME-02**: register_label_mode_defaults validates atomically and merges per key with later registration winning; package → theme → live project setting resolves below explicit owner modes, invalid settings warn/fall back theme→package or raise strict, and E108/W292 reflect the effective contract.
-- [ ] **THEME-03**: Empty-default form:actions and form:filter-actions independently style ordinary/delete versus filter default groups, supplement current/floor pack structure, preserve custom layouts with tested opt-in, and update W362/key inventory.
-- [ ] **THEME-04**: alert:dismissible and alert:close replace or omit classes while preserving byte-identical Bootstrap defaults, escaping, accessible names, semantic markup and dismissal behavior.
-- [ ] **THEME-05**: Real reference theme/pack revisions have an unmodified baseline, all required automated/real-browser scenarios pass with no new regressions, required overrides do not grow, and a tested exact-base adaptation patch/replay/migration handoff is retained and delivered to the companion under the 2026-11-02 D-11/D-14 amendment; unrelated work and coverage limits remain explicit.
-- [ ] **THEME-06**: Executable migration examples document ownership, diagnostics, registration/precedence and group opt-in; nested-form/token DOM correction and every intentional compatibility change are recorded, Breaking entries pair with migrating-1.0.md, and Phase 7 receives the exact settled surface.
+- [x] **THEME-01**: Page templates own actionable create/update/custom/delete/workflow forms and CSRF, including page/modal POST; library helpers are nonwrapping, incompatible application helpers always reject, and detectable unused wrapper settings warn normally/raise strict without mutating caller helpers. Preserve accepted controls, escaping, authorization, deletion and conditional/formset/focus behavior.
+- [x] **THEME-02**: register_label_mode_defaults validates atomically and merges per key with later registration winning; package → theme → live project setting resolves below explicit owner modes, invalid settings warn/fall back theme→package or raise strict, and E108/W292 reflect the effective contract.
+- [x] **THEME-03**: Empty-default form:actions and form:filter-actions independently style ordinary/delete versus filter default groups, supplement current/floor pack structure, preserve custom layouts with tested opt-in, and update W362/key inventory.
+- [x] **THEME-04**: alert:dismissible and alert:close replace or omit classes while preserving byte-identical Bootstrap defaults, escaping, accessible names, semantic markup and dismissal behavior.
+- [x] **THEME-05**: Real reference theme/pack revisions have an unmodified baseline, all required automated/real-browser scenarios pass with no new regressions, required overrides do not grow, and a tested exact-base adaptation patch/replay/migration handoff is retained and delivered to the companion under the 2026-11-02 D-11/D-14 amendment; unrelated work and coverage limits remain explicit.
+- [x] **THEME-06**: Executable migration examples document ownership, diagnostics, registration/precedence and group opt-in; nested-form/token DOM correction and every intentional compatibility change are recorded, Breaking entries pair with migrating-1.0.md, and Phase 7 receives the exact settled surface.
 
 ### Stability policy (plan 4)
 
@@ -205,12 +205,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| THEME-01 | Phase 6.6 | Planned |
-| THEME-02 | Phase 6.6 | Planned |
-| THEME-03 | Phase 6.6 | Planned |
-| THEME-04 | Phase 6.6 | Planned |
-| THEME-05 | Phase 6.6 | Planned |
-| THEME-06 | Phase 6.6 | Planned |
+| THEME-01 | Phase 6.6 | Complete |
+| THEME-02 | Phase 6.6 | Complete |
+| THEME-03 | Phase 6.6 | Complete |
+| THEME-04 | Phase 6.6 | Complete |
+| THEME-05 | Phase 6.6 | Complete |
+| THEME-06 | Phase 6.6 | Complete |
 | PRES-01 | Phase 6.5 | Complete |
 | PRES-02 | Phase 6.5 | Complete |
 | PRES-03 | Phase 6.5 | Complete |

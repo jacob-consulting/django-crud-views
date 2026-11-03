@@ -120,6 +120,7 @@ apply to the buttons a map, a context button, a target view or `CRUD_VIEWS_LABEL
 | `form:delete` | `btn btn-primary` |
 | `form:filter-submit` | `btn btn-primary` |
 | `form:filter-reset` | `btn btn-secondary` |
+| `form:actions` / `form:filter-actions` | `""` |
 | `form:cancel-tag` | `"button"` (`"a"`: an eligible cancel renders as a native link, see [Forms](#forms)) |
 | `formset:control` | `btn btn-light` |
 | `formset:container` | `btn-group` |
@@ -142,18 +143,29 @@ apply to the buttons a map, a context button, a target view or `CRUD_VIEWS_LABEL
 | `alert:success` | `alert alert-success` |
 | `alert:info` | `alert alert-info` |
 | `alert:debug` | `alert alert-secondary` |
+| `alert:dismissible` | `alert-dismissible fade show` |
+| `alert:close` | `btn-close` |
 | `context:icon-host` / `list:icon-host` / `card:icon-host` / `menu:icon-host` / `form:icon-host` | `{name_class}` |
 | `heading:size-1` / `heading:size-2` / `heading:size-3` / `heading:size-4` / `heading:size-5` / `heading:size-6` | `h1` / `h2` / `h3` / `h4` / `h5` / `h6`, respectively |
 | `heading:icon-host` | `{name_class}` |
 | `heading:icon-inline` | `me-2` |
 | `heading-page:icon-inline` / `heading-modal:icon-inline` | `""` |
 
-The default table has 84 keys: the rows with four variants stand for four keys each, the rows with three locations
+The default table has 88 keys: the rows with four variants stand for four keys each, the rows with three locations
 for three, the `*:hidden-label` row of the button locations for four and the button `*:icon-host` row for five.
-Heading styling adds six size keys, two shared icon keys and two location defaults. The `context` and `list`
+Heading styling adds six size keys, two shared icon keys and two location defaults. Alert styling has five level
+keys and two dismissal utilities; the two form-group utilities each contribute one key. The `context` and `list`
 buttons look the same for every variant by default, the `card` buttons distinguish them. Mode keys such as
 `card:tertiary:icon` and `form:submit:icon` are addressable but not shipped; their possible combinations are excluded
 from the default-table count.
+
+For dismissible alerts, `alert:dismissible` supplies classes on the alert frame and `alert:close` supplies
+classes on its close button. Theme registrations and project settings follow the same per-key precedence as
+the rest of the table. Setting either to `None` or `""` omits those classes: an omitted dismissal value adds no
+separator to the level classes, and an omitted close value leaves `class=""` on the button. Nonempty strings
+retain their supplied whitespace. Neither utility accepts a mode suffix, so `alert:close:icon` and
+`alert:dismissible:both` receive W362. These settings preserve the alert role, native button type, translated
+Close name and `data-cv-alert-dismiss` hook; they do not add a close control to nondismissible alerts.
 
 The table holds what a theme restyles: classes. What the markup needs to work stays in the templates and is not
 configurable here: the element, `href`, `type`, `disabled`, the `data-cv-*` attributes, `aria-*`, `cv-key`,
@@ -475,6 +487,27 @@ How a button renders depends on where it is placed:
 `get_delete_button_kwargs()` / `get_delete_button()` (slot `form:delete`); see [Delete view](delete_view.md).
 `get_form_actions()` returns the whole `FormActions` group. The filter helper has the same hook, see
 [Custom filter helpers](list_view.md#custom-filter-helpers).
+
+Library ordinary and delete groups consume `form:actions`; default filter groups consume
+`form:filter-actions`. Both default to empty strings and add classes alongside the pack's own classes.
+Theme registrations and project settings apply on every render, including prepared filter helpers.
+Neither key accepts a label-mode suffix. Hidden filter inputs remain in the pack's separate trailing wrapper.
+
+A replacement `get_form_actions()` retains ownership, including `None` and empty groups. To keep the library's
+class lookup while customizing its group, call `super()`; no private adapter import is needed:
+
+```python
+class ActionClassesMixin:
+    def get_form_actions(self):
+        group = super().get_form_actions()
+        group.css_class = "my-actions"
+        return group
+```
+
+Place this mixin before your `CrispyForm`/`CrispyModelForm` or `ListViewFilterFormHelper` subclass in the bases.
+The returned group keeps its buttons and native submit/reset/cancel behavior. Current Bootstrap and the exact
+supported Bootstrap 2023.10 template support these classes. Custom packs retain their own templates and must
+consume `formactions.css_class` to opt in; core never replaces arbitrary class-dropping templates.
 
 The removed tags `cv_submit_button`, `cv_cancel_button` and `cv_delete_button` and their templates are replaced by
 these classes.

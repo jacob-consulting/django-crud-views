@@ -1,0 +1,13 @@
+Retained transcript from the initial final-source composition command at core 044cdc1.
+This command's output was returned by the execution tool; this file transcribes that output rather than
+claiming a second execution. Candidate/replay asset rows had identical content but different fetch order.
+The subsequent bb6b343 repair compares unique URL-keyed records and rejects missing/duplicate/changed assets.
+
+Exit code: 1
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/home/alex/projects/alex/django-crud-views/tests/browser/theme_adoption_sources.py", line 1560, in validate_final_sources
+    require(browser.get("assets") == replay.get("assets"), "candidate/replay asset mismatch")
+  File "/home/alex/projects/alex/django-crud-views/tests/browser/theme_adoption_sources.py", line 83, in require
+    raise EvidenceError(message)
+s.EvidenceError: candidate/replay asset mismatch

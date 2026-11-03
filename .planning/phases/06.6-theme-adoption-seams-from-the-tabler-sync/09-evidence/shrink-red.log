@@ -1,0 +1,28 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_ test_passing_companion_suite_cannot_hide_reduced_or_skipped_collection[Ran 1 test in 0.1s\nOK\n] _
+
+output = 'Ran 1 test in 0.1s\nOK\n'
+
+    @pytest.mark.parametrize("output", ["Ran 1 test in 0.1s\nOK\n", "Ran 109 tests in 0.1s\nOK (skipped=108)\n"])
+    def test_passing_companion_suite_cannot_hide_reduced_or_skipped_collection(output):
+        baseline = {"command": command("FAIL: test_old (theme.tests.OldTests.test_old)\nRan 109 tests in 1s\nFAILED (failures=1)\n", code=1)}
+>       with pytest.raises(sources.EvidenceError, match="collection shrank|new skipped"):
+E       Failed: DID NOT RAISE EvidenceError
+
+tests/browser/test_theme_adoption_sources.py:1016: Failed
+_ test_passing_companion_suite_cannot_hide_reduced_or_skipped_collection[Ran 109 tests in 0.1s\nOK (skipped=108)\n] _
+
+output = 'Ran 109 tests in 0.1s\nOK (skipped=108)\n'
+
+    @pytest.mark.parametrize("output", ["Ran 1 test in 0.1s\nOK\n", "Ran 109 tests in 0.1s\nOK (skipped=108)\n"])
+    def test_passing_companion_suite_cannot_hide_reduced_or_skipped_collection(output):
+        baseline = {"command": command("FAIL: test_old (theme.tests.OldTests.test_old)\nRan 109 tests in 1s\nFAILED (failures=1)\n", code=1)}
+>       with pytest.raises(sources.EvidenceError, match="collection shrank|new skipped"):
+E       Failed: DID NOT RAISE EvidenceError
+
+tests/browser/test_theme_adoption_sources.py:1016: Failed
+=========================== short test summary info ============================
+FAILED tests/browser/test_theme_adoption_sources.py::test_passing_companion_suite_cannot_hide_reduced_or_skipped_collection[Ran 1 test in 0.1s\nOK\n]
+FAILED tests/browser/test_theme_adoption_sources.py::test_passing_companion_suite_cannot_hide_reduced_or_skipped_collection[Ran 109 tests in 0.1s\nOK (skipped=108)\n]
+2 failed, 143 deselected in 0.16s

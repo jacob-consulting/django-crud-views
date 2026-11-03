@@ -55,10 +55,9 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 
 - ✓ **6.5** Heading presentation, stable object-detail identity/tab selection, semantic badges and alias cleanup; PRES-01–06, paired migrations and public-surface handoff — Phase 06.5; UAT 28/28, canonical verification passed.
 
-### Active
+- ✓ **6.6** Theme-adoption seams (#277–#280): page-owned forms/helper diagnostics, atomic theme label defaults, independent action-group/alert keys, tested migrations and verified companion delivery — Phase 06.6; canonical25/25, UAT7/7 and security27/27. Runtime/browser limits and three unchanged companion failures remain explicit.
 
-- [ ] **6.6** Theme-adoption seams (#277–#280): page-owned forms and helper diagnostics, validated theme label defaults,
-  independent action-group/alert keys, real isolated companion acceptance and tested migrations before Phase 7.
+### Active
 
 - [ ] **4** Theme surface in `docs/development/stability.md` (icons, buttons, alerts, JS, theme hooks) + guard test
   `tests/test1/test_stability_doc.py`; closes the theme part of #89
@@ -68,7 +67,7 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 - Renaming the `cv_context_actions_label_mode` / `cv_context_action_label_mode` pair — rejected, not deferred: both names stay stable (Phase 1 decision, LATER-02 won't rename)
 - E36x check for `container-tag` — tracked separately
 - #211 stale-override detection — tracked separately; #259 is now owned by Phase 6.5.
-- Permanent Tabler theme changes in its own repository — Phase 06.6 permits isolated temporary adaptations and a tested patch handoff only; original companion worktrees remain unchanged
+- Publishing or pushing companion changes — Phase 06.6 authorized verified five-file delivery and a scoped local commit; unrelated settings and IDE metadata remain preserved.
 - The 1.0.0 version bump itself — follows after Phase 4
 
 ## Context
@@ -128,6 +127,9 @@ consistently, before 1.0.0 freezes it — no public name changes twice.
 | Complete the retained 6.2 scope while explicitly transferring deletion and residual Guardian review to 6.3 | Preserve measured fixes without claiming unresolved callbacks/converters/database guarantees | Decided; 6.3 remains open |
 | Normalize nested-create rendered state against the target URL parent while preserving permission and label inputs | Controls agree with direct requests without broadening authority | Validated (WR-01, Phase 6.2) |
 
+| Preserve source-bound companion evidence while excluding only Git-ignored, untracked IDE metadata | Exact source/index/settings checks remain strict; ordinary IDE use must not invalidate delivery | Validated (Phase 06.6) |
+| Follow successful form POST redirects in fixture regression tests | Persistence alone did not reveal an unregistered detail link on the destination list | Validated (Phase 06.6 UAT repair) |
+
 ## Evolution
 
 This document evolves at phase transitions and milestone boundaries.
@@ -146,4 +148,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-11-02 after Phase 06.5 completion*
+*Last updated: 2026-11-03 after Phase 06.6 completion*

@@ -3,13 +3,12 @@ Characterization tests for the nested formsets subsystem
 (Publisher → books → notes, see tests/test1/app/views_formset.py).
 """
 
-import re
-
 import pytest
 from django.test.client import Client
 
 from tests.lib.helper.forms import field_key, field_keys, form_payload
 from tests.test1.app.models import Book, BookNote, Publisher
+from tests.test1.test_theme_form_ownership import assert_owned_form_markup
 
 
 @pytest.mark.django_db
@@ -25,13 +24,108 @@ def test_formset_create_page_has_no_nested_form(client_user_publisher_formset: C
     """
     response = client_user_publisher_formset.get("/publisher-formset/create/")
     assert response.status_code == 200
-    html = response.content.decode("utf-8", "replace")
-    start = html.find('class="cv-form"')
-    assert start != -1, "cv-form not found on the formset create page"
-    # cv-form's own "<form" opening is before its class attribute, so any "<form"
-    # found from the class attribute onward is a nested form.
-    nested = len(re.findall(r"<form\b", html[start:]))
-    assert nested == 0, f"formset parent form nested {nested} <form> tag(s) inside cv-form"
+    assert_owned_form_markup(response.content.decode())
+
+
+def test_parent_inherited_helper_exposes_static_w292(monkeypatch):
+    from django.test import override_settings
+
+    from tests.test1.app.views_formset import PublisherFormSetCreateView, PublisherFormSetForm
+    from tests.test1.test_form_button_checks import _w292
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("Static parent checks must not construct forms")
+
+    monkeypatch.setattr(PublisherFormSetForm, "__init__", forbidden)
+    monkeypatch.setattr(PublisherFormSetForm, "submit_icon", None)
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"form": "icon"}):
+        assert _w292(PublisherFormSetCreateView) == [("submit", "PublisherFormSetForm")]
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("operation", ["create", "update"])
+def test_parent_formset_owned_csrf_and_nested_payload(operation, user_publisher_formset):
+    from lxml import html
+
+    from crud_views.lib.crispy.form import CrispyFormMixin
+    from tests.test1.app.views_formset import PublisherFormSetForm
+
+    assert PublisherFormSetForm.helper is CrispyFormMixin.helper
+    client = Client(enforce_csrf_checks=True)
+    client.force_login(user_publisher_formset)
+    publisher = Publisher.objects.create(name="Existing")
+    if operation == "update":
+        book = Book.objects.create(publisher=publisher, title="Original")
+        BookNote.objects.create(book=book, note="Original note")
+    url = "/publisher-formset/create/" if operation == "create" else f"/publisher-formset/{publisher.pk}/update/"
+    response = client.get(url)
+    assert response.status_code == 200
+    owner = assert_owned_form_markup(response.content.decode())
+    assert response.context["form"].helper.form_tag is False
+    document = html.fromstring(response.content)
+    form = document.cssselect("form.cv-form")[0]
+    management = form.cssselect("input[name$='-TOTAL_FORMS'], input[name$='-INITIAL_FORMS']")
+    assert management
+    for control in document.cssselect("input, select, textarea, button[type=submit]"):
+        assert next(control.iterancestors("form"), None) is form
+    payload = form_payload(response)
+    payload["name"] = "Saved parent"
+    title_key = next(
+        k for k in field_keys(payload, "-title") if payload[k] == ("Original" if operation == "update" else "")
+    )
+    note_key = next(
+        k for k in field_keys(payload, "-note") if payload[k] == ("Original note" if operation == "update" else "")
+    )
+    payload[title_key] = "Saved child"
+    payload[note_key] = "Saved grandchild"
+    submitter = owner["submitters"][0]
+    payload[submitter["name"]] = submitter["value"]
+    before = (list(Publisher.objects.values()), list(Book.objects.values()), list(BookNote.objects.values()))
+
+    def unchanged():
+        assert (
+            list(Publisher.objects.values()),
+            list(Book.objects.values()),
+            list(BookNote.objects.values()),
+        ) == before
+
+    for token in (None, "invalid"):
+        rejected = dict(payload)
+        rejected.pop("csrfmiddlewaretoken")
+        if token is not None:
+            rejected["csrfmiddlewaretoken"] = token
+        assert client.post(url, rejected).status_code == 403
+        unchanged()
+    invalid = client.post(url, {**payload, "name": ""})
+    assert invalid.status_code == 200
+    assert invalid.context["form"].errors
+    assert_owned_form_markup(invalid.content.decode())
+    invalid_payload = form_payload(invalid)
+    for control in management:
+        assert invalid_payload[control.get("name")] == payload[control.get("name")]
+    unchanged()
+    result = client.post(url, payload)
+    assert result.status_code == 302
+    saved = Publisher.objects.get(name="Saved parent")
+    if operation == "update":
+        assert saved.pk == publisher.pk
+    child = Book.objects.get(publisher=saved, title="Saved child")
+    assert BookNote.objects.filter(book=child, note="Saved grandchild").count() == 1
+    assert result.wsgi_request.POST[submitter["name"]] == submitter["value"]
+    destination = client.get(result["Location"])
+    assert destination.status_code == 200
+    assert b"Saved parent" in destination.content
+
+
+def test_example_parent_inherits_library_helper():
+    """The example's import graph belongs to its own Django project; inspect only the named class here."""
+    import ast
+    from pathlib import Path
+
+    tree = ast.parse((Path(__file__).resolve().parents[2] / "examples/bootstrap5/formsets/views.py").read_text())
+    parent = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "QuestionnaireForm")
+    assert any(isinstance(base, ast.Name) and base.id == "CrispyModelForm" for base in parent.bases)
+    assert not any(isinstance(node, ast.FunctionDef) and node.name == "helper" for node in parent.body)
 
 
 @pytest.mark.django_db

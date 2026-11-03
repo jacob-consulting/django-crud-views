@@ -61,7 +61,7 @@ class CrudViewsSettings(BaseModel):
     # label mode of context / list actions (#216): action key -> "label" | "icon" | "both". Each layer is selected
     # whole, never merged: the view's map (cv_*_actions_label_mode) if not None, else the ViewSet's
     # (*_actions_label_mode), else this setting, resolved on the rendering view. Keys not named take the
-    # configurable location floor default_label_mode() (CRUD_VIEWS_LABEL_MODE_DEFAULTS over the package "icon"; in
+    # configurable location floor default_label_mode() (live CRUD_VIEWS_LABEL_MODE_DEFAULTS over theme over package; in
     # the toolbar the target view's cv_context_action_label_mode first, #269). The floor setting is not a field:
     # it is read raw at call time (override_settings applies) and validated by E108
     context_actions_label_mode: Any = from_settings("CRUD_VIEWS_CONTEXT_ACTIONS_LABEL_MODE", default={})
@@ -156,8 +156,8 @@ class CrudViewsSettings(BaseModel):
                     ),
                 )
             )
-        # the per-location floor, read raw on every check (like default_label_mode): absent means the package
-        # defaults, anything else must be a dict; one Error per bad entry, an unknown location before its mode
+        # The project floor, read raw on every check: absent uses theme/package defaults, anything else must be a
+        # dict; one Error per bad entry, an unknown location before its mode. Themes never mask bad project settings.
         defaults = _raw_label_mode_defaults()
         if defaults is not _UNSET:
             if not isinstance(defaults, dict):

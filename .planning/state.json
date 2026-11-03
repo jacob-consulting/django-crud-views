@@ -59,15 +59,20 @@
       "status": "complete"
     },
     {
+      "number": "6.6",
+      "name": "Theme-adoption seams from the Tabler sync",
+      "status": "complete"
+    },
+    {
       "number": "7",
       "name": "Theme-surface stability policy",
       "status": "pending"
     }
   ],
   "next": {
-    "command": "$gsd-progress --next",
-    "label": "Advance to the next step (plan phase 7)",
-    "reason": "Phase 15 of 15 — needs a plan"
+    "command": "$gsd-discuss-phase 7",
+    "label": "Discuss Phase 7",
+    "reason": "Phase 06.6 complete; theme-surface stability decisions remain"
   },
-  "updated_at": "2026-11-02T15:49:08.732Z"
+  "updated_at": "2026-11-03T06:43:07.802842+00:00"
 }

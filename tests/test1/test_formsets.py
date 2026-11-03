@@ -112,6 +112,9 @@ def test_parent_formset_owned_csrf_and_nested_payload(operation, user_publisher_
     child = Book.objects.get(publisher=saved, title="Saved child")
     assert BookNote.objects.filter(book=child, note="Saved grandchild").count() == 1
     assert result.wsgi_request.POST[submitter["name"]] == submitter["value"]
+    destination = client.get(result["Location"])
+    assert destination.status_code == 200
+    assert b"Saved parent" in destination.content
 
 
 def test_example_parent_inherits_library_helper():

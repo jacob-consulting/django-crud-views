@@ -16,7 +16,7 @@ from django.forms.models import inlineformset_factory
 
 from crud_views.lib.crispy import Column4, Column8, CrispyModelForm, CrispyViewMixin
 from crud_views.lib.formsets import FormSet, FormSetMixin, FormSets, Formsets, InlineFormSet
-from crud_views.lib.table import LinkDetailColumn, Table
+from crud_views.lib.table import Table
 from crud_views.lib.views import (
     CreateViewPermissionRequired,
     ListViewPermissionRequired,
@@ -106,7 +106,7 @@ publisher_formsets: FormSets = FormSets(
 
 
 class PublisherFormSetTable(Table):
-    id = LinkDetailColumn()
+    id = tables.Column()
     name = tables.Column()
 
 

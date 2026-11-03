@@ -8,5 +8,6 @@
   "actual": "No E256 error",
   "reportPath": "/tmp/06702-red.xml",
   "reportModifiedAt": 1793723408.3465364,
-  "semanticAssessment": "Named target executed and failed on the planned assertion: missing static fallback produced no diagnostic, without setup or collection errors."
+  "semanticAssessment": "Named target executed and failed on the planned assertion: missing static fallback produced no diagnostic, without setup or collection errors.",
+  "runStartedAt": "2026-11-03T16:30:08.169744+00:00"
 }

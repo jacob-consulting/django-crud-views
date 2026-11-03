@@ -8,5 +8,6 @@
   "actual": "Cancel incorrectly rendered to parent-denied list",
   "reportPath": "/tmp/06702-guardian-red.xml",
   "reportModifiedAt": 1793723668.9055824,
-  "semanticAssessment": "Actual authorized form GET returned 200 but included a Cancel destination requiring a different ungranted parent permission. Planned omission assertion failed, no setup or collection failure."
+  "semanticAssessment": "Actual authorized form GET returned 200 but included a Cancel destination requiring a different ungranted parent permission. Planned omission assertion failed, no setup or collection failure.",
+  "runStartedAt": "2026-11-03T16:34:28.109915+00:00"
 }

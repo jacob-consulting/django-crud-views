@@ -10,13 +10,16 @@ from django.core.exceptions import ImproperlyConfigured
 from django.db import DatabaseError
 from django.http import Http404, HttpResponse
 from django.test import RequestFactory, override_settings
-from django.urls import clear_url_caches, include, path, reverse
+from django.urls import clear_url_caches, include, path
 from django.views.generic.edit import FormMixin
 
 from crud_views.lib.view.cancel import effective_cancel_keys
 from crud_views.lib.viewset import _REGISTRY, _REGISTRY_LOCK, ViewSet
+from tests.test1 import test_guardian_parent_none as parent_none
 from tests.test1.test_cancel_origin import cancel_url, url
-from tests.test1.test_guardian_parent_none import _grant_global, _url, _user, pn  # noqa: F401 -- shared isolated fixture
+from tests.test1.test_guardian_parent_none import _grant_global, _url, _user
+
+pn = parent_none.pn
 
 
 def fallback_errors(cls):
@@ -115,15 +118,15 @@ def test_registered_cancel_fallback_inventory(monkeypatch, record_property):
 
 def test_fallback_diagnostic_identifier_is_unique():
     declarations = []
-    for path in Path("src").rglob("*.py"):
-        for node in ast.walk(ast.parse(path.read_text())):
+    for source in Path("src").rglob("*.py"):
+        for node in ast.walk(ast.parse(source.read_text())):
             if (
                 isinstance(node, ast.keyword)
                 and node.arg == "id"
                 and isinstance(node.value, ast.Constant)
                 and node.value.value == "E256"
             ):
-                declarations.append(str(path))
+                declarations.append(str(source))
     assert declarations == ["src/crud_views/lib/view/base.py"]
 
 
@@ -329,6 +332,8 @@ def test_guardian_form_parent_grant_does_not_authorize_list(pn, publisher_a, cli
     response = client.get(_url(pn.book_vs, "create", publisher_a.pk))
     assert response.status_code == 200
     assert "data-cv-cancel-url" not in response.content.decode()
+    calls.clear()  # isolate Cancel from the page's ordinary toolbar metadata
+    assert response.context["view"].cv_get_cancel_url() is None
     assert calls == []  # denied destination policy precedes state
     assert client.get(_url(pn.book_vs, "list", publisher_a.pk)).status_code == 403
     response = client.post(_url(pn.book_vs, "create", publisher_a.pk), {"title": "Allowed without Cancel"})
@@ -353,6 +358,7 @@ def test_guardian_empty_list_is_accessible(pn, publisher_a, client):
 )
 def test_guardian_object_destination_policy(pn, publisher_a, client, monkeypatch, grant, global_opt_in, accessible):
     from guardian.shortcuts import assign_perm
+
     from tests.test1.app.models import Book
 
     book = Book.objects.create(title="Cancel object", publisher=publisher_a)
@@ -380,6 +386,7 @@ def test_guardian_object_destination_policy(pn, publisher_a, client, monkeypatch
 @pytest.mark.parametrize("target_key", ["list", "detail", "create"])
 def test_guardian_denies_anonymous_and_inactive_destinations(pn, publisher_a, monkeypatch, actor, target_key):
     from django.contrib.auth.models import AnonymousUser
+
     from tests.test1.app.models import Book
 
     user = AnonymousUser() if actor == "anonymous" else _user("inactive_cancel", superuser=True, active=False)
@@ -395,7 +402,7 @@ def test_guardian_denies_anonymous_and_inactive_destinations(pn, publisher_a, mo
 @pytest.fixture
 def guardian_targets(pn):
     """Custom parent-only and create targets in the same isolated child ViewSet."""
-    from crud_views.lib.views import CustomFormNoObjectViewPermissionRequired
+    from crud_views.lib.views.form import CustomFormNoObjectViewPermissionRequired
     from crud_views_guardian.lib.mixins import GuardianParentPermissionMixin
 
     events = []
@@ -444,6 +451,7 @@ def guardian_targets(pn):
             return HttpResponse("Nested create destination")
 
     urls = ModuleType("cancel_guardian_custom_urls")
+    pn.book_vs.__dict__.pop("urlpatterns", None)  # pn built its URL table before these custom registrations
     urls.urlpatterns = [*pn.pub_vs.urlpatterns, *pn.book_vs.urlpatterns, path("", include("tests.test1.project.urls"))]
     with override_settings(ROOT_URLCONF=urls):
         clear_url_caches()
@@ -518,3 +526,141 @@ def test_guardian_custom_parent_failures_propagate(pn, publisher_a, monkeypatch,
     view = bound(pn.BookCreate, _user("cancel_custom_failure"), **{pn.book_vs.parent.get_pk_name(): publisher_a.pk})
     with pytest.raises(error, match="custom Guardian parent"):
         view.cv_get_cancel_url()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("global_opt_in", [False, True])
+def test_guardian_parent_global_policy(pn, publisher_a, client, monkeypatch, global_opt_in):
+    from guardian.shortcuts import assign_perm
+
+    user = _grant_global(_user("cancel_global_parent"), "view_publisher")
+    assign_perm("change_publisher", user, publisher_a)
+    monkeypatch.setattr(pn.book_vs, "cv_guardian_parent_permission", "view")
+    monkeypatch.setattr(pn.book_vs, "cv_guardian_parent_create_permission", "change")
+    monkeypatch.setattr(pn.BookList, "cv_guardian_accept_global_perms", global_opt_in)
+    client.force_login(user)
+    response = client.get(_url(pn.book_vs, "create", publisher_a.pk))
+    assert response.status_code == 200
+    if global_opt_in:
+        assert cancel_url(response) == _url(pn.book_vs, "list", publisher_a.pk)
+        assert client.get(cancel_url(response)).status_code == 200
+    else:
+        assert "data-cv-cancel-url" not in response.content.decode()
+        assert client.get(_url(pn.book_vs, "list", publisher_a.pk)).status_code == 403
+
+
+@pytest.mark.django_db
+def test_guardian_child_object_state_once_after_parent_and_object_policy(pn, publisher_a, publisher_b, monkeypatch):
+    from guardian.shortcuts import assign_perm
+
+    from tests.test1.app.models import Book
+
+    book = Book.objects.create(title="Object state", publisher=publisher_a)
+    user = _user("cancel_object_state")
+    assign_perm("view_publisher", user, publisher_a)
+    monkeypatch.setattr(pn.book_vs, "cv_guardian_parent_permission", "view")
+    events = []
+    monkeypatch.setattr(
+        pn.BookDetail, "cv_action_enabled", classmethod(lambda cls, user, obj: events.append(obj) or False)
+    )
+    view = bound(pn.BookUpdate, user, book, {"cv_from": "detail"}, **{pn.book_vs.parent.get_pk_name(): publisher_a.pk})
+    view.cv_cancel_key = "detail"
+    assert view.cv_get_cancel_url() is None  # parent granted, child denied
+    assert events == []
+    assign_perm("view_book", user, book)
+    assert view.cv_get_cancel_url() is None  # child granted, state denied
+    assert events == [book]
+    events.clear()
+    view.kwargs[pn.book_vs.parent.get_pk_name()] = publisher_b.pk
+    assert view.cv_get_cancel_url() is None
+    assert events == []
+
+
+@pytest.mark.django_db
+def test_guardian_invalid_child_composition_rejected(pn, publisher_a, monkeypatch):
+    from crud_views.lib.views import DetailViewPermissionRequired
+    from crud_views_guardian.lib.mixins import GuardianParentPermissionMixin
+
+    class InvalidChild(GuardianParentPermissionMixin, DetailViewPermissionRequired):
+        pass
+
+    InvalidChild.cv_viewset = pn.book_vs
+    monkeypatch.setitem(pn.book_vs._views, "detail", InvalidChild)
+    view = bound(
+        pn.BookUpdate, _user("invalid_composition"), publisher_a, **{pn.book_vs.parent.get_pk_name(): publisher_a.pk}
+    )
+    view.cv_cancel_key = "detail"
+    with pytest.raises(ImproperlyConfigured, match="require GuardianObjectPermissionMixin"):
+        view.cv_get_cancel_url()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("family", ["object", "queryset"])
+@pytest.mark.parametrize("actor", ["anonymous", "inactive", "active"])
+def test_guardian_standalone_mixin_actor_and_top_level_policy(pn, publisher_a, monkeypatch, family, actor):
+    from django.contrib.auth.models import AnonymousUser
+    from guardian.shortcuts import assign_perm
+
+    from crud_views.lib.views import DetailViewPermissionRequired, ListViewPermissionRequired
+    from crud_views_guardian.lib.mixins import GuardianObjectPermissionMixin, GuardianQuerysetMixin
+
+    if family == "object":
+
+        class Target(GuardianObjectPermissionMixin, DetailViewPermissionRequired):
+            pass
+    else:
+
+        class Target(GuardianQuerysetMixin, ListViewPermissionRequired):
+            pass
+
+    Target.cv_viewset = pn.pub_vs
+    key = "detail" if family == "object" else "list"
+    monkeypatch.setitem(pn.pub_vs._views, key, Target)
+    user = AnonymousUser() if actor == "anonymous" else _user("standalone_cancel", active=actor == "active")
+    if actor == "active":
+        assign_perm("view_publisher", user, publisher_a)
+    events = []
+    monkeypatch.setattr(Target, "cv_action_enabled", classmethod(lambda cls, user, obj: events.append(obj) or True))
+    view = bound(Target, user, publisher_a)
+    view.cv_cancel_key = key
+    result = view.cv_get_cancel_url()
+    assert bool(result) is (actor == "active")
+    assert events == ([publisher_a if family == "object" else None] if actor == "active" else [])
+
+
+@pytest.mark.django_db
+def test_core_cancel_kwargs_hook_cannot_restore_denied_destination(cv_publisher, user_publisher_view, monkeypatch):
+    from tests.test1.app.views import PublisherForm
+
+    events = []
+    policy = {"enabled": True, "raise": False}
+
+    class CustomForm(PublisherForm):
+        def get_cancel_button_kwargs(self):
+            events.append("kwargs")
+            if policy["raise"]:
+                raise ValueError("custom kwargs failed")
+            # Repeated calls to super must reuse the authoritative result within this render.
+            assert super().get_cancel_button_kwargs() == super().get_cancel_button_kwargs()
+            return {**super().get_cancel_button_kwargs(), "css_class": "custom"}
+
+    def state(cls, user, obj):
+        events.append("state")
+        return policy["enabled"]
+
+    monkeypatch.setattr(cv_publisher.get_view_class("list"), "cv_action_enabled", classmethod(state))
+    form = CustomForm(cv_view=bound(cv_publisher.get_view_class("create"), user_publisher_view))
+    assert form.get_cancel_button() is not None
+    assert events == ["state", "kwargs"]
+    assert not hasattr(form, "_cv_cancel_button_context")
+    events.clear()
+    policy["enabled"] = False
+    assert form.get_cancel_button() is None
+    assert events == ["state"]
+    events.clear()
+    policy["enabled"] = True
+    policy["raise"] = True
+    with pytest.raises(ValueError, match="custom kwargs failed"):
+        form.get_cancel_button()
+    assert events == ["state", "kwargs"]
+    assert not hasattr(form, "_cv_cancel_button_context")

@@ -15,7 +15,7 @@ from django.template import Context, Template
 from django.template.exceptions import TemplateDoesNotExist, TemplateSyntaxError
 from django.template.loader import get_template
 from django.test import override_settings
-from django.urls import reverse
+from django.urls import resolve, reverse
 from lxml import html as lxml_html
 
 from crud_views.lib.crispy import Button, CrispyDeleteForm, Reset, Submit
@@ -46,8 +46,19 @@ def button(html: str, **attrs) -> str:
     raise AssertionError(f"no button with {attrs} in page")
 
 
+def _grant_cancel_view(client, viewset):
+    """Presentation assertions requiring Cancel also authorize its list destination."""
+    from django.contrib.auth import get_user_model
+    from django.contrib.auth.models import Permission
+
+    app_label, codename = viewset.permissions["view"].split(".")
+    user = get_user_model().objects.get(pk=client.session["_auth_user_id"])
+    user.user_permissions.add(Permission.objects.get(content_type__app_label=app_label, codename=codename))
+
+
 @pytest.mark.django_db
 def test_submit_and_cancel_classes(client_user_author_add, cv_author):
+    _grant_cancel_view(client_user_author_add, cv_author)
     html = client_user_author_add.get(url(cv_author, "create")).content.decode()
     assert 'class="btn btn-primary"' in button(html, name="submit")
     assert 'class="btn btn-secondary"' in button(html, name="reset")
@@ -109,6 +120,8 @@ def test_filter_buttons(client_user_publisher_view, cv_publisher):
 def test_project_css_class_still_appended(client_user_author_add, cv_author, monkeypatch):
     from tests.test1.app.views import AuthorCreateView, AuthorForm
 
+    _grant_cancel_view(client_user_author_add, cv_author)
+
     class ExtraForm(AuthorForm):
         def get_cancel_button_kwargs(self) -> dict:
             return {**super().get_cancel_button_kwargs(), "css_class": "extra"}
@@ -164,6 +177,7 @@ def _buttons(markup: str) -> list:
 
 @pytest.mark.django_db
 def test_endpoint_layout_controls_are_buttons(client_user_author_add, cv_author):
+    _grant_cancel_view(client_user_author_add, cv_author)
     html = client_user_author_add.get(url(cv_author, "create")).content.decode()
     doc = lxml_html.fromstring(html)
     assert not doc.cssselect('input[name="submit"], input[name="reset"]')
@@ -1166,6 +1180,8 @@ def test_interleaved_icons_of_shared_adapters_do_not_leak():
 def _page_buttons(client, path, *names, mode=None) -> dict:
     from django.utils import translation
 
+    if "reset" in names:
+        _grant_cancel_view(client, resolve(path).func.view_class.cv_viewset)
     floor = {"CRUD_VIEWS_LABEL_MODE_DEFAULTS": {"form": mode}} if mode else {}
     with override_settings(**floor), translation.override("en"):
         response = client.get(path)

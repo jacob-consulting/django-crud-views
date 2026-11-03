@@ -42,6 +42,12 @@ class GuardianObjectPermissionMixin:
     cv_guardian_accept_global_perms: bool = False
     cv_guardian_anonymous_behavior: str = "redirect"
 
+    @classmethod
+    def _cv_cancel_target_available(cls, user, obj, rendering_view):
+        if not user.is_authenticated or _guardian_inactive_actor(user):
+            return False
+        return super()._cv_cancel_target_available(user, obj, rendering_view)
+
     def has_permission(self):
         if not self.request.user.is_authenticated:
             if self.cv_guardian_anonymous_behavior == "404":
@@ -114,6 +120,13 @@ class GuardianQuerysetMixin:
 
     cv_guardian_accept_global_perms: bool = False
     cv_guardian_anonymous_behavior: str = "redirect"
+
+    @classmethod
+    def _cv_cancel_target_available(cls, user, obj, rendering_view):
+        if not user.is_authenticated or _guardian_inactive_actor(user):
+            return False
+        # Entry is allowed even with zero visible rows; never test queryset truthiness.
+        return super()._cv_cancel_target_available(user, obj, rendering_view)
 
     def has_permission(self):
         if not self.request.user.is_authenticated:
@@ -230,6 +243,35 @@ class GuardianParentPermissionMixin:
     # the annotation still makes the names known to the W280 unknown-attribute check.
     cv_guardian_accept_global_perms: bool
     cv_guardian_anonymous_behavior: str
+
+    @classmethod
+    def _cv_cancel_target_available(cls, user, obj, rendering_view):
+        error = cls._guardian_child_composition_error()
+        if error:
+            raise ImproperlyConfigured(error)
+        if not user.is_authenticated or _guardian_inactive_actor(user):
+            return False
+        if cls.cv_viewset.parent is None:
+            return super()._cv_cancel_target_available(user, obj, rendering_view)
+
+        parent_obj = rendering_view._cv_cancel_parent_object()
+        if parent_obj is None or not cls._guardian_user_has_parent_perm(user, parent_obj):
+            return False
+        if cls.cv_object:
+            if not cls.cv_has_access(user, obj):
+                return False
+            action_obj = obj
+        else:
+            if issubclass(cls, GuardianQuerysetMixin):
+                if not cls.cv_has_access(user, None):
+                    return False
+            elif hasattr(cls, "cv_create_has_access") and not cls.cv_create_has_access(
+                user, rendering_view, parent_obj
+            ):
+                return False
+            # Parent-only views bypass child/model permission exactly as dispatch does.
+            action_obj = parent_obj
+        return cls._cv_action_enabled_for_rendering(user, action_obj, rendering_view)
 
     @classmethod
     def _guardian_child_composition_error(cls):

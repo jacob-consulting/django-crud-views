@@ -1,0 +1,13 @@
+{
+  "command": "PYTHONPATH=src:. .nox/tests-3-12-django-5-2/bin/python -m pytest tests/test1/test_cancel_polymorphic.py::test_picker_preserves_captured_query -q --junitxml=/tmp/067-03-01-red.xml",
+  "exitCode": 1,
+  "output": "<?xml version=\"1.0\" encoding=\"utf-8\"?><testsuites name=\"pytest tests\"><testsuite name=\"pytest\" errors=\"0\" failures=\"1\" skipped=\"0\" tests=\"1\" time=\"0.776\" timestamp=\"2026-11-03T16:46:47.031945+00:00\" hostname=\"weaver-dev\"><testcase classname=\"tests.test1.test_cancel_polymorphic\" name=\"test_picker_preserves_captured_query\" time=\"0.595\"><failure message=\"AssertionError: assert '/vehicle/' == '/vehicle/?x=...rom_restore=1'&#10;  &#10;  - /vehicle/?x=&amp;x=two&amp;cv_from_restore=1&#10;  + /vehicle/\">vehicle_client = &lt;django.test.client.Client object at 0x7b84601482f0&gt;\n\n    def test_picker_preserves_captured_query(vehicle_client):\n        link = selector_link(vehicle_client)\n        concrete = select(vehicle_client, link)\n        response = vehicle_client.get(concrete)\n&gt;       assert rendered_cancel(response) == \"/vehicle/?x=&amp;x=two&amp;cv_from_restore=1\"\nE       AssertionError: assert '/vehicle/' == '/vehicle/?x=...rom_restore=1'\nE         \nE         - /vehicle/?x=&amp;x=two&amp;cv_from_restore=1\nE         + /vehicle/\n\ntests/test1/test_cancel_polymorphic.py:43: AssertionError</failure></testcase></testsuite></testsuites>",
+  "reportPath": "/tmp/067-03-01-red.xml",
+  "runStartedAt": "2026-11-03T16:46:04Z",
+  "reportModifiedAt": "2026-11-03T16:46:47.806405+00:00",
+  "targetTest": "test_picker_preserves_captured_query",
+  "targetFile": "tests/test1/test_cancel_polymorphic.py",
+  "expected": "/vehicle/?x=&x=two&cv_from_restore=1",
+  "actual": "/vehicle/",
+  "semanticAssessment": "Executed target failed its destination assertion because the selector drops captured state; no setup or collection failure."
+}

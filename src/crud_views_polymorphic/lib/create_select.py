@@ -69,31 +69,36 @@ class PolymorphicCreateSelectView(CrudView, generic.FormView):
         form_kwargs = self.get_form_kwargs()
         return form_class(polymorphic_ctype_choices=polymorphic_ctype_choices, **form_kwargs)
 
-    def form_valid(self, form):
-        polymorphic_ctype_id = form.cleaned_data["polymorphic_ctype_id"]
-        kwargs = {"polymorphic_ctype_id": polymorphic_ctype_id}
-        url = self.cv_get_url("create", extra_kwargs=kwargs)
+    def _cv_concrete_cancel_token(self, capture, allowed):
+        if capture is None or capture.origin not in allowed:
+            return None
+        try:
+            origin_cls = self.cv_get_cls(capture.origin)
+        except ViewSetKeyFoundError:
+            return None
+        if origin_cls.cv_object:
+            return None
+        # Re-encode only validated state; legacy input keeps query=None.
+        return encode_cancel_state(self, capture.origin, capture.query)
+
+    def _cv_concrete_cancel_query(self):
         concrete = self.cv_get_cls("create")
         allowed = effective_cancel_keys(concrete)
-        if allowed:
-            capture = read_cancel_state(self)
-            token_name = navigation_params()[1]
-            token = None
-            if capture and capture.origin in allowed:
-                try:
-                    origin_cls = self.cv_get_cls(capture.origin)
-                except ViewSetKeyFoundError:
-                    origin_cls = None
-                if origin_cls and not origin_cls.cv_object:
-                    # Re-encode only validated state; legacy input keeps query=None.
-                    token = encode_cancel_state(self, capture.origin, capture.query)
-            if token is None and (capture is not None or token_name in self.request.GET):
-                # Invalid input must not become trusted absent-token input downstream.
-                token = "invalid"
-            if token is not None:
-                # Do not forward the shared success-origin key or selector form fields.
-                url += "?" + urlencode({token_name: token})
-        return HttpResponseRedirect(url)
+        if not allowed:
+            return ""
+        capture = read_cancel_state(self)
+        token_name = navigation_params()[1]
+        token = self._cv_concrete_cancel_token(capture, allowed)
+        if token is None and (capture is not None or token_name in self.request.GET):
+            # Invalid input must not become trusted absent-token input downstream.
+            token = "invalid"
+        # Do not forward the shared success-origin key or selector form fields.
+        return "?" + urlencode({token_name: token}) if token is not None else ""
+
+    def form_valid(self, form):
+        kwargs = {"polymorphic_ctype_id": form.cleaned_data["polymorphic_ctype_id"]}
+        url = self.cv_get_url("create", extra_kwargs=kwargs)
+        return HttpResponseRedirect(url + self._cv_concrete_cancel_query())
 
 
 class PolymorphicCreateSelectViewPermissionRequired(CrudViewPermissionRequiredMixin, PolymorphicCreateSelectView):

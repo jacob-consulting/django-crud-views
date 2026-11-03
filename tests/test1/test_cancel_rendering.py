@@ -48,7 +48,8 @@ def assert_owner(response):
     assert len(re.findall(r"<form\b", html)) == 1
     assert html.count('name="csrfmiddlewaretoken"') == 1
     assert 'type="submit"' in html
-    assert 'name="None"' not in html and 'id="div_id_None"' not in html
+    assert 'name="None"' not in html
+    assert 'id="div_id_None"' not in html
     (form,) = lxml_html.fromstring(response.content).xpath("//form")
     # Workflow's existing page form omits action, which submits to the current URL.
     assert (form.get("action") or response.wsgi_request.get_full_path()) == response.wsgi_request.get_full_path()
@@ -106,13 +107,16 @@ def test_template_object_arguments(client_user_author_origin, author_douglas_ada
 def test_tag_errors_are_not_suppressed(client_user_author_origin, cv_author_origin, monkeypatch):
     response = client_user_author_origin.get("/author_origin/create/")
     view = response.context["view"]
+    no_view = Context({"request": response.wsgi_request})
     with pytest.raises(KeyError):
-        tags.cv_cancel_url(Context({"request": response.wsgi_request}))
+        tags.cv_cancel_url(no_view)
+    no_request = Context({"view": view})
     with pytest.raises(KeyError):
-        tags.cv_cancel_url(Context({"view": view}))
+        tags.cv_cancel_url(no_request)
     monkeypatch.setattr(view, "cv_cancel_key", "missing")
+    context = Context({"view": view, "request": response.wsgi_request})
     with pytest.raises(ImproperlyConfigured, match="configure a registered usable destination"):
-        tags.cv_cancel_url(Context({"view": view, "request": response.wsgi_request}))
+        tags.cv_cancel_url(context)
 
 
 @pytest.mark.django_db

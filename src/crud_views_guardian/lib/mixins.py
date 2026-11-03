@@ -262,16 +262,19 @@ class GuardianParentPermissionMixin:
                 return False
             action_obj = obj
         else:
-            if issubclass(cls, GuardianQuerysetMixin):
-                if not cls.cv_has_access(user, None):
-                    return False
-            elif hasattr(cls, "cv_create_has_access") and not cls.cv_create_has_access(
-                user, rendering_view, parent_obj
-            ):
+            if not cls._cv_cancel_parent_target_access(user, rendering_view, parent_obj):
                 return False
             # Parent-only views bypass child/model permission exactly as dispatch does.
             action_obj = parent_obj
         return cls._cv_action_enabled_for_rendering(user, action_obj, rendering_view)
+
+    @classmethod
+    def _cv_cancel_parent_target_access(cls, user, rendering_view, parent_obj):
+        if issubclass(cls, GuardianQuerysetMixin):
+            return cls.cv_has_access(user, None)
+        if hasattr(cls, "cv_create_has_access"):
+            return cls.cv_create_has_access(user, rendering_view, parent_obj)
+        return True
 
     @classmethod
     def _guardian_child_composition_error(cls):

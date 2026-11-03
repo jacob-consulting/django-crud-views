@@ -60,7 +60,8 @@ def test_guarded_template_matches_stock(
         assert node.get("href") == rendered_cancel(response)
         if outcome == "origin":
             assert parse_qs(urlsplit(node.get("href")).query, keep_blank_values=True)["x"] == ["", "<script>&\"'"]
-            assert "&amp;" in result and "<script>" not in result
+            assert "&amp;" in result
+            assert "<script>" not in result
         else:
             assert node.get("href") == "/author_origin/card/"
     assert_owner(response)
@@ -150,7 +151,8 @@ def test_public_surface_and_synchronized_example(cv_author, monkeypatch):
     monkeypatch.setattr(target, "cv_cancel_key", "missing")
     monkeypatch.setattr(target, "cv_cancel_keys", None)
     ids = check_ids(target)
-    assert "viewset.E256" in ids and "viewset.E255" not in ids
+    assert "viewset.E256" in ids
+    assert "viewset.E255" not in ids
     source = (ROOT / "examples/bootstrap5/library/views.py").read_text()
     tree = ast.parse(source)
     (update,) = [node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "AuthorUpdateView"]

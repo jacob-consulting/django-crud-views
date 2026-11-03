@@ -357,6 +357,23 @@ class ListViewTableFilterMixin(FilterView):
 
         return JsonResponse({"status": "ok", "filter_expanded": filter_expanded})
 
+    def _cv_store_filter_query(self, session, query):
+        if query:
+            session[self.cv_session_key_querystring] = query
+        else:
+            with contextlib.suppress(KeyError):
+                del session[self.cv_session_key_querystring]
+
+    def _cv_reset_filter_url(self, query):
+        keep = {}
+        order_param = getattr(self, "cv_order_param", "order")
+        dir_param = getattr(self, "cv_order_dir_param", "dir")
+        for key in ("sort", order_param, dir_param):
+            value = query.get(key, [None])[0]
+            if value:
+                keep[key] = value
+        return self.request.path + ("?" + urlencode(keep) if keep else "")
+
     def get(self, request, *args, **kwargs):
         """
         Add filter persistence via session here.
@@ -374,38 +391,19 @@ class ListViewTableFilterMixin(FilterView):
                 QueryDict(sd.get(self.cv_session_key_querystring, ""))
             ).urlencode()
             if stored_query_string != sd.get(self.cv_session_key_querystring, ""):
-                if stored_query_string:
-                    sd[self.cv_session_key_querystring] = stored_query_string
-                else:
-                    with contextlib.suppress(KeyError):
-                        del sd[self.cv_session_key_querystring]
+                self._cv_store_filter_query(sd, stored_query_string)
             query_string = self.request.META["QUERY_STRING"]
 
             if getattr(request, "_cv_cancel_restored", False):
-                if query_string:
-                    sd[self.cv_session_key_querystring] = query_string
-                else:
-                    with contextlib.suppress(KeyError):
-                        del sd[self.cv_session_key_querystring]
+                self._cv_store_filter_query(sd, query_string)
                 stored_query_string = ""
 
             # reset filter ?
             qs = parse_qs(query_string)
             reset_filter = qs.get("reset_filter", ["false"])[0] == "true"
             if reset_filter:
-                with contextlib.suppress(KeyError):
-                    del sd[self.cv_session_key_querystring]
-                url = self.request.path
-                keep = {}
-                order_param = getattr(self, "cv_order_param", "order")
-                dir_param = getattr(self, "cv_order_dir_param", "dir")
-                for key in ("sort", order_param, dir_param):
-                    value = qs.get(key, [None])[0]
-                    if value:
-                        keep[key] = value
-                if keep:
-                    url += "?" + urlencode(keep)
-                return HttpResponseRedirect(url)
+                self._cv_store_filter_query(sd, "")
+                return HttpResponseRedirect(self._cv_reset_filter_url(qs))
 
             # there is a query string, update data
             if len(query_string) > 0:

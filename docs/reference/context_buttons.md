@@ -51,15 +51,17 @@ ContextButton(
 | `template`            | `str \| None` | `None`   | Path to a Django template for the whole button   |
 | `template_code`       | `str \| None` | `None`   | Inline Django template string for the whole button |
 | `variant`             | `str \| None` | `None`   | Semantic variant; `None` uses the target view's `cv_action_variant`, see [Buttons](buttons.md#variants) |
-| `label_mode`          | `str \| None` | `None`   | `"label"`, `"icon"` or `"both"` in the context toolbar; `None` follows the view's [label mode map](action_menus.md#label-mode) |
+| `label_mode`          | `str \| None` | `None`   | `"label"`, `"icon"` or `"both"` in the context toolbar; `None` follows the maps, the target view and the project floor, see [Context label-mode resolution](action_menus.md#context-label-mode-resolution) |
 
 Access is checked via the target view's `cv_has_access(user, obj)`.
 
 `label_mode` is the button's mode in the context toolbar of every view of the ViewSet, so a text-only button type
-does not need its key in a map on every ViewSet. A view's own `cv_context_actions_label_mode` that names the key still
-wins; below the maps, the target view's `cv_context_action_label_mode` applies, so a button with no `label_mode` of
-its own follows the view it opens (`parent`, child and sibling buttons too); see
-[Action menus](action_menus.md#target-view-default) for the full order. It applies to inline toolbar buttons and
+does not need its key in a map on every ViewSet. A view's own `cv_context_actions_label_mode` (the plural per-key dict
+of the page showing the toolbar) that names the key still wins; below the maps, the target view's
+`cv_context_action_label_mode` (the singular default string of the view a button opens) applies, so a button with no
+`label_mode` of its own follows the view it opens (`parent`, child and sibling buttons too), and below that the
+`"context"` entry of `CRUD_VIEWS_LABEL_MODE_DEFAULTS`; see
+[Context label-mode resolution](action_menus.md#context-label-mode-resolution) for the full order. It applies to inline toolbar buttons and
 `{% cv_context_button %}` (an action folded into the menu shows icon and label in every mode), not to row actions, which follow the list maps even when they resolve through the same
 button. An invalid value fails `viewset.E210`.
 
@@ -253,7 +255,7 @@ flowchart TD
         M1 -- "no" --> M2{"ContextButton.label_mode"}
         M2 -- "no" --> M3{"ViewSet context_actions_label_mode,<br/>then setting<br/>CRUD_VIEWS_CONTEXT_ACTIONS_LABEL_MODE"}
         M3 -- "no" --> M4{"target view's<br/>cv_context_action_label_mode"}
-        M4 -- "no" --> MICON["icon"]
+        M4 -- "no" --> MICON["defaults map (default icon)"]
     end
     M1 -- "yes" --> L1
     M2 -- "yes" --> L1
@@ -312,8 +314,11 @@ flowchart TD
     style FIX fill:#fafaf9,stroke:#a8a29e
 ```
 
-The label mode is taken from the first of the four places that names the key, else it is `icon`
-(`cv_get_action_label_mode()`). The label and icon come from the button's `get_context()`, or from the target view's
+The label mode is taken from the first of the four places that names the key (`cv_get_action_label_mode()`). The
+"defaults map" node is the `"context"` entry of `CRUD_VIEWS_LABEL_MODE_DEFAULTS`, the project floor, whose package
+default is `"icon"`; [Context label-mode resolution](action_menus.md#context-label-mode-resolution) gives the
+canonical order. In the diagram the plural `cv_context_actions_label_mode` is the per-key dict of the page showing the
+toolbar, the singular `cv_context_action_label_mode` the default string of the view a button opens. The label and icon come from the button's `get_context()`, or from the target view's
 `cv_get_dict()` for a plain view key; `cv_button_data()` applies the corrections, and the leaf
 `crud_views/tags/button/action.html` renders the result. See [Action menus](action_menus.md#label-mode) for the
 label-mode maps and [Buttons](buttons.md#the-leaf-contract) for the leaf. System check `viewset.W292` reports the

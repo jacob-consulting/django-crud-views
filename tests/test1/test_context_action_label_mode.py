@@ -1,6 +1,9 @@
 """#269: cv_context_action_label_mode — the target view's label mode in the context toolbar."""
 
+import logging
+
 import pytest
+from django.test import override_settings
 from django.urls import reverse
 from lxml import html as lxml_html
 
@@ -239,3 +242,216 @@ def test_w292_invalid_target_attribute_does_not_crash(monkeypatch):
     _set_target(monkeypatch, _target("update"), "text")
     (msg,) = _w292()  # a non-mode value counts as unset; E210 reports it on the target view
     assert "'update'" in msg
+
+
+# CRUD_VIEWS_LABEL_MODE_DEFAULTS["context"]: the floor after the view map, button, resolved map and target view
+
+BOTH = {"context": "both"}
+# ordinary toolbar actions; the filter toggle renders its own template with a fixed mode (Phase 3)
+ELIGIBLE = './*[@cv-key][not(@cv-key="filter") and not(@id="cv-filter-toggle")]'
+ROUTES = ["list", "card", "create", "detail", "update"]
+
+
+def _route_url(route, author):
+    kwargs = {"pk": author.pk} if route in ("detail", "update") else {}
+    return reverse(cv_author.get_router_name(route), kwargs=kwargs)
+
+
+def _unmapped(monkeypatch):
+    """No view map, ViewSet map, setting map, button or target view names an author toolbar key."""
+    monkeypatch.setattr(cv_author, "context_actions_label_mode", None)
+    monkeypatch.setattr(crud_views_settings, "context_actions_label_mode", {})
+    for view in cv_author.get_all_views().values():
+        monkeypatch.setattr(view, "cv_context_actions_label_mode", None)
+        monkeypatch.setattr(view, "cv_context_action_label_mode", None)
+    assert all(button.label_mode is None for button in cv_author.context_buttons)
+
+
+def _icon_only(el) -> bool:
+    return bool(el.get("title")) and bool(el.xpath("./span[contains(@class, 'visually-hidden')]"))
+
+
+def _icon_and_short_label(el) -> bool:
+    spans = el.xpath("./span[not(@class)]")
+    return (
+        _has_icon_and_text(el)
+        and el.get("title") is None
+        and el.xpath("./span[contains(@class, 'visually-hidden')]") == []
+        and len(spans) == 1
+        and bool((spans[0].text or "").strip())
+    )
+
+
+def _bodies(doc, container: str) -> list[bytes]:
+    return [lxml_html.tostring(el) for el in doc.xpath(f"//*[@{container}]")]
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("route", ROUTES)
+def test_context_floor_renders_unmapped_toolbar(author_douglas_adams, monkeypatch, route):
+    _unmapped(monkeypatch)
+    client = _client([AUTHOR_FULL])
+    url = _route_url(route, author_douglas_adams)
+    before = _toolbar(client, url).xpath(ELIGIBLE)
+    assert before
+    assert all(_icon_only(el) for el in before)  # unconfigured: unchanged
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS=BOTH):
+        actions = _toolbar(client, url).xpath(ELIGIBLE)
+    assert [el.get("cv-key") for el in actions] == [el.get("cv-key") for el in before]
+    for el in actions:
+        assert _icon_and_short_label(el), lxml_html.tostring(el)
+
+
+@pytest.mark.django_db
+def test_context_floor_does_not_change_rows_or_cards(author_douglas_adams, monkeypatch):
+    _unmapped(monkeypatch)
+    client = _client([AUTHOR_FULL])
+    list_url, card_url = _route_url("list", author_douglas_adams), _route_url("card", author_douglas_adams)
+
+    def pages():
+        list_doc = lxml_html.fromstring(client.get(list_url).content)
+        card_doc = lxml_html.fromstring(client.get(card_url).content)
+        toolbar = card_doc.xpath("//fieldset[@cv-context-container]")[0]
+        return _bodies(list_doc, "cv-list-container"), _bodies(card_doc, "cv-card-container"), toolbar
+
+    rows, cards, card_toolbar = pages()
+    assert rows
+    assert cards
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS=BOTH):
+        rows_after, cards_after, card_toolbar_after = pages()
+    assert rows_after == rows
+    assert cards_after == cards
+    # the card page's own toolbar follows the floor
+    assert lxml_html.tostring(card_toolbar_after) != lxml_html.tostring(card_toolbar)
+    assert all(_icon_and_short_label(el) for el in card_toolbar_after.xpath(ELIGIBLE))
+
+
+def _floor_case_unmapped(monkeypatch):
+    return "update", None
+
+
+def _floor_case_view_map(monkeypatch):
+    monkeypatch.setattr(AuthorDetailView, "cv_context_actions_label_mode", {"update": "label"})
+    return "update", None
+
+
+def _floor_case_button(monkeypatch):
+    _with_viewset_buttons(monkeypatch, ContextButton(key="edit", key_target="update", label_mode="label"))
+    return "edit", None
+
+
+def _floor_case_viewset_map(monkeypatch):
+    monkeypatch.setattr(cv_author, "context_actions_label_mode", {"update": "label"})
+    return "update", None
+
+
+def _floor_case_setting_map(monkeypatch):
+    monkeypatch.setattr(crud_views_settings, "context_actions_label_mode", {"update": "label"})
+    return "update", None
+
+
+def _floor_case_target(monkeypatch):
+    return "update", "label"
+
+
+def _floor_case_target_icon(monkeypatch):
+    return "update", "icon"  # an explicit "icon" on the target view still beats the floor
+
+
+def _floor_case_empty_view_map(monkeypatch):
+    # an empty view map replaces the ViewSet map whole: the key reaches the floor
+    monkeypatch.setattr(AuthorDetailView, "cv_context_actions_label_mode", {})
+    monkeypatch.setattr(cv_author, "context_actions_label_mode", {"update": "label"})
+    return "update", None
+
+
+def _floor_case_empty_view_map_target(monkeypatch):
+    # ... but the target view still comes before the floor
+    monkeypatch.setattr(AuthorDetailView, "cv_context_actions_label_mode", {})
+    monkeypatch.setattr(cv_author, "context_actions_label_mode", {"update": "icon"})
+    return "update", "label"
+
+
+@pytest.mark.parametrize(
+    ("case", "expected"),
+    [
+        (_floor_case_unmapped, "both"),
+        (_floor_case_view_map, "label"),
+        (_floor_case_button, "label"),
+        (_floor_case_viewset_map, "label"),
+        (_floor_case_setting_map, "label"),
+        (_floor_case_target, "label"),
+        (_floor_case_target_icon, "icon"),
+        (_floor_case_empty_view_map, "both"),
+        (_floor_case_empty_view_map_target, "label"),
+    ],
+    ids=lambda v: v.__name__.removeprefix("_floor_case_") if callable(v) else v,
+)
+def test_context_floor_preserves_precedence(monkeypatch, case, expected):
+    key, target_default = case(monkeypatch)
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS=BOTH):
+        assert AuthorDetailView.cv_get_action_label_mode("context", key, target_default=target_default) == expected
+
+
+@pytest.mark.parametrize(
+    "case",
+    [
+        _floor_case_view_map,
+        _floor_case_button,
+        _floor_case_viewset_map,
+        _floor_case_setting_map,
+        _floor_case_target,
+        _floor_case_empty_view_map_target,
+    ],
+    ids=lambda v: v.__name__.removeprefix("_floor_case_"),
+)
+@pytest.mark.parametrize("floor", [{"context": "nope"}, None], ids=["bad-mode", "non-dict"])
+def test_explicit_context_mode_bypasses_invalid_floor(monkeypatch, caplog, case, floor):
+    key, target_default = case(monkeypatch)
+    with (
+        caplog.at_level(logging.WARNING, logger="crud_views.lib.view.label_mode"),
+        override_settings(CRUD_VIEWS_STRICT=True, CRUD_VIEWS_LABEL_MODE_DEFAULTS=floor),
+    ):
+        assert AuthorDetailView.cv_get_action_label_mode("context", key, target_default=target_default) == "label"
+    assert caplog.records == []  # the floor was never read
+
+
+@pytest.mark.parametrize("floor", [{"context": "nope"}, None], ids=["bad-mode", "non-dict"])
+def test_unmapped_context_key_reads_invalid_floor(monkeypatch, caplog, floor):
+    with (
+        override_settings(CRUD_VIEWS_STRICT=True, CRUD_VIEWS_LABEL_MODE_DEFAULTS=floor),
+        pytest.raises(ValueError, match="CRUD_VIEWS_LABEL_MODE_DEFAULTS"),
+    ):
+        AuthorDetailView.cv_get_action_label_mode("context", "update")
+    with (
+        caplog.at_level(logging.WARNING, logger="crud_views.lib.view.label_mode"),
+        override_settings(CRUD_VIEWS_STRICT=False, CRUD_VIEWS_LABEL_MODE_DEFAULTS=floor),
+    ):
+        assert AuthorDetailView.cv_get_action_label_mode("context", "update") == "icon"
+        assert AuthorDetailView.cv_get_action_label_mode("context", "delete") == "icon"
+    assert len(caplog.records) == 1  # once per (location, value)
+
+
+@pytest.mark.django_db
+def test_invalid_target_mode_renders_configured_floor(author_douglas_adams, monkeypatch, caplog):
+    # the raw target-view value is stamped unchanged; cv_button_data recovers it to the configured floor (D-10)
+    _unmapped(monkeypatch)
+    _set_target(monkeypatch, AuthorUpdateView, "nope")
+    assert AuthorUpdateView.cv_icon_action or cv_author.icon_header  # a real icon is rendered
+    client = _client([AUTHOR_FULL])
+    url = _detail_url(author_douglas_adams)
+    with (
+        caplog.at_level(logging.WARNING, logger="crud_views.lib.view.label_mode"),
+        override_settings(CRUD_VIEWS_STRICT=False, CRUD_VIEWS_LABEL_MODE_DEFAULTS=BOTH),
+    ):
+        responses = [client.get(url), client.get(url)]
+    for resp in responses:
+        assert resp.status_code == 200
+        (update,) = lxml_html.fromstring(resp.content).xpath('//*[@cv-key="update"]')
+        assert _icon_and_short_label(update), lxml_html.tostring(update)
+        assert update.xpath("./i[@aria-hidden='true']")
+    records = [r for r in caplog.records if r.name == "crud_views.lib.view.label_mode"]
+    assert len(records) == 1
+    message = records[0].getMessage()
+    assert "cv_label_mode" in message
+    assert "'nope'" in message

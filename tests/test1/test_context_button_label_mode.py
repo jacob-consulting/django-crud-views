@@ -1,6 +1,7 @@
 """#264: ContextButton.label_mode — precedence, toolbar-only reach and system check viewset.E210."""
 
 import pytest
+from django.test import override_settings
 from lxml import html as lxml_html
 
 from crud_views.lib.view import ContextButton, ParentContextButton
@@ -243,3 +244,56 @@ def test_w292_does_not_crash_on_invalid_inline(monkeypatch, inline):
     monkeypatch.setattr(AuthorDetailView, "cv_context_actions_inline", inline)
     ids = [m.id for c in AuthorDetailView.checks() for m in c.messages()]
     assert "viewset.W292" not in ids
+
+
+# W292 and CRUD_VIEWS_LABEL_MODE_DEFAULTS["context"]
+
+
+@pytest.mark.parametrize("floor", ["label", "both"])
+def test_w292_silent_with_context_floor(monkeypatch, floor):
+    monkeypatch.setattr(_target("update"), "cv_icon_action", None)
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"context": floor}):
+        assert _w292() == []
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"list": floor, "card": floor}):
+        (msg,) = _w292()  # other locations do not reach the toolbar
+    assert "'update'" in msg
+
+
+@pytest.mark.parametrize(
+    "explicit",
+    [
+        lambda mp: mp.setattr(AuthorDetailView, "cv_context_actions_label_mode", {"update": "icon"}),
+        lambda mp: mp.setattr(cv_author, "context_actions_label_mode", {"update": "icon"}),
+        lambda mp: mp.setattr(_target("update"), "cv_context_action_label_mode", "icon"),
+        lambda mp: _with_viewset_buttons(mp, _update_button("icon")),
+    ],
+    ids=["view-map", "viewset-map", "target-view", "button"],
+)
+def test_w292_explicit_icon_still_warns_with_floor(monkeypatch, explicit):
+    # a valid both floor silences W292 only for keys that actually use it
+    monkeypatch.setattr(_target("update"), "cv_icon_action", None)
+    monkeypatch.setattr(_target("delete"), "cv_icon_action", None)
+    explicit(monkeypatch)
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"context": "both"}):
+        (msg,) = _w292()
+    assert "'update'" in msg
+
+
+@pytest.mark.parametrize("floor", [{"context": "nope"}, None], ids=["bad-mode", "non-dict"])
+def test_invalid_floor_check_viewsets_returns_e108(monkeypatch, floor):
+    from crud_views.checks import check_viewsets
+
+    # an icon-less, unmapped target: W292 has to resolve the mode through the invalid floor
+    monkeypatch.setattr(_target("update"), "cv_icon_action", None)
+    # an unrelated diagnostic of the same view that must survive too
+    monkeypatch.setattr(AuthorDetailView, "cv_context_actions_label_mode", {"udpate": "both"})
+    with override_settings(CRUD_VIEWS_STRICT=True, CRUD_VIEWS_LABEL_MODE_DEFAULTS=floor):
+        messages = check_viewsets()
+        # strict rendering still raises for that key
+        with pytest.raises(ValueError, match="CRUD_VIEWS_LABEL_MODE_DEFAULTS"):
+            AuthorDetailView.cv_get_action_label_mode("context", "update")
+    ids = [m.id for m in messages]
+    assert "crud_views.E108" in ids
+    w291 = [m for m in messages if m.id == "viewset.W291" and "udpate" in m.msg]
+    assert w291
+    assert [m for m in messages if m.id == W292 and "AuthorDetailView" in m.msg] == []

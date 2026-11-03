@@ -9,6 +9,7 @@ from django.test import Client, override_settings
 from django.urls import reverse
 from lxml import html as lxml_html
 
+from crud_views.lib.settings import crud_views_settings
 from crud_views.lib.view import ContextButton
 from tests.lib.helper.guardian import user_guardian_object_perm
 from tests.lib.helper.user import user_viewset_permission
@@ -250,3 +251,57 @@ def test_guardian_override_forwards_the_location(
     detail = _button(td.cssselect("fieldset")[0], "detail")
     assert detail.get("title") is None
     assert [span.text for span in detail.xpath("./span")] == ["Detail"]
+
+
+# CRUD_VIEWS_LABEL_MODE_DEFAULTS["list"] on real table rows
+
+
+def _text_only(el) -> bool:
+    spans = el.xpath("./span")
+    return (
+        el.xpath("./*[@aria-hidden='true']") == []
+        and el.get("title") is None
+        and len(spans) == 1
+        and spans[0].get("class") is None
+        and bool((spans[0].text or "").strip())
+    )
+
+
+def _icon_only(el) -> bool:
+    return (
+        bool(el.xpath("./*[@aria-hidden='true']"))
+        and bool(el.get("title"))
+        and bool(el.xpath("./span[contains(@class, 'visually-hidden')]"))
+    )
+
+
+@pytest.mark.django_db
+def test_list_floor_renders_unmapped_rows(author_douglas_adams, monkeypatch):
+    monkeypatch.setattr(AuthorListView, "cv_list_actions_label_mode", None)
+    monkeypatch.setattr(cv_author, "list_actions_label_mode", None)
+    monkeypatch.setattr(crud_views_settings, "list_actions_label_mode", {})
+    client = _client([AUTHOR_FULL])
+    list_url = reverse(cv_author.get_router_name("list"))
+
+    (td,) = _rows(client)
+    keys = [el.get("cv-key") for el in td.cssselect("fieldset")[0].xpath("./*[@cv-key]")]
+    assert keys == ["detail", "update", "delete"]
+    assert all(_icon_only(_button(td.cssselect("fieldset")[0], k)) for k in keys)  # unconfigured: unchanged
+
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"list": "label"}):
+        (td,) = _rows(client)
+        toolbar = _toolbar(client, list_url)
+    fieldset = td.cssselect("fieldset")[0]
+    for key in keys:
+        assert _text_only(_button(fieldset, key)), lxml_html.tostring(_button(fieldset, key))
+    # the context floor is independent: the toolbar stays icon-only
+    assert all(_icon_only(el) for el in toolbar.xpath("./*[@cv-key]"))
+
+    # an explicitly mapped key keeps its mode; the view map replaces the lower maps whole
+    monkeypatch.setattr(AuthorListView, "cv_list_actions_label_mode", {"update": "icon"})
+    with override_settings(CRUD_VIEWS_LABEL_MODE_DEFAULTS={"list": "label"}):
+        (td,) = _rows(client)
+    fieldset = td.cssselect("fieldset")[0]
+    assert _icon_only(_button(fieldset, "update"))
+    assert _text_only(_button(fieldset, "detail"))
+    assert _text_only(_button(fieldset, "delete"))

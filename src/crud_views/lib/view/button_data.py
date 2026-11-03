@@ -5,7 +5,7 @@ import logging
 from ..button_classes import get_icon_host_class
 from ..exceptions import is_strict
 from ..icons import resolve_icon_name_class
-from .label_mode import LABEL_MODES, is_label_mode
+from .label_mode import LABEL_MODES, _invalid_label_mode, default_label_mode, is_label_mode
 
 logger = logging.getLogger(__name__)
 
@@ -79,10 +79,19 @@ def cv_button_data(ctx: dict, location: str, kind: str = "action") -> dict:
     else:
         label = ctx.get("cv_action_label", "") or ""
         short_label = ctx.get("cv_action_short_label") or ctx.get("cv_action_label") or ""
-    # cards default to both; context and list to icon, unless the view stamped a mode for the key (#216)
-    label_mode = ctx.get("cv_label_mode") or ("both" if card else "icon")
-    if not is_label_mode(label_mode):
-        raise ValueError(f"cv_label_mode must be one of {sorted(LABEL_MODES)}, got {label_mode!r}")
+    # a mode the view stamped for the key wins (#216); unset (falsey), the location's floor from
+    # default_label_mode: CRUD_VIEWS_LABEL_MODE_DEFAULTS over the package defaults (card both, context / list icon).
+    # A malformed stamp raises in strict mode, else it logs once and uses that floor
+    label_mode = ctx.get("cv_label_mode")
+    if not label_mode:
+        label_mode = default_label_mode(location)
+    elif not is_label_mode(label_mode):
+        label_mode = _invalid_label_mode(
+            f"cv_label_mode must be one of {sorted(LABEL_MODES)}",
+            location,
+            label_mode,
+            lambda: default_label_mode(location),
+        )
     if not label:
         label_mode = "icon"
     if kind == "action" and label_mode == "icon" and not ctx.get("cv_icon_action"):
